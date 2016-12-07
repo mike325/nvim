@@ -58,3 +58,9 @@
 [submodule "bundle/bufferbye"]
 	path = bundle/bufferbye
 	url = https://github.com/moll/vim-bbye.git
+[submodule "bundle/signature"]
+	path = bundle/signature
+	url = https://github.com/kshenoy/vim-signature.git
+[submodule "bundle/ctrlp"]
+	path = bundle/ctrlp
+	url = https://github.com/kien/ctrlp.vim.git
