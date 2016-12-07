@@ -55,3 +55,6 @@
 [submodule "bundle/Dockerfile"]
 	path = bundle/Dockerfile
 	url = https://github.com/ekalinin/Dockerfile.vim.git
+[submodule "bundle/bufferbye"]
+	path = bundle/bufferbye
+	url = https://github.com/moll/vim-bbye.git
