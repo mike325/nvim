@@ -100,7 +100,7 @@ nmap fn :bn<cr>
 nmap fb :bp<cr>
 
 " Delete buffer
-nmap fd :bd<cr>
+nmap fd :Bdelete<cr>
 
 " Quick buffer change by number
 nnoremap f1 :b 1<cr>
