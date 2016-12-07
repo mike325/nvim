@@ -4,7 +4,7 @@ Just my personal vim settings (v:version >= 7.4).
 You can test my settings by clonning this repo into your `$HOME`
 
 ```
-git clone --recursive https://github.com/Mike325/.vim.git ~/.vim
+git clone --recursive https://git.prodeveloper.me.com/mike/.vim.git ~/.vim
 
 cp ~/.vim/init.vim ~/.vimrc
 ```
@@ -15,6 +15,6 @@ If you are using [neovim](https://neovim.io/) you just need to move the repo to 
 
 or just clone it there
 
-    git clone --recursive https://github.com/Mike325/.vim.git ~/.config/nvim
+    git clone --recursive https://git.prodeveloper.me.com/mike/.vim.git ~/.config/nvim
     
 Feel free to change anything to fit your needs! 
