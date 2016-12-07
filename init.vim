@@ -94,27 +94,27 @@ nnoremap <leader>c :tabclose<CR>
 
 " ################# Buffer management ################# 
  " Next buffer
-nmap fn :bn<cr>
+nmap fn :bn<CR>
 
 " Prev buffer
-nmap fb :bp<cr>
+nmap fb :bp<CR>
 
 " Delete buffer
-nmap fd :Bdelete<cr>
+nmap fd :Bdelete<CR>
 
 " Quick buffer change by number
-nnoremap f1 :b 1<cr>
-nnoremap f2 :b 2<cr>
-nnoremap f3 :b 3<cr>
-nnoremap f4 :b 4<cr>
-nnoremap f5 :b 5<cr>
-nnoremap f6 :b 6<cr>
-nnoremap f7 :b 7<cr>
-nnoremap f8 :b 8<cr>
-nnoremap f9 :b 9<cr>
+nnoremap f1 :b 1<CR>
+nnoremap f2 :b 2<CR>
+nnoremap f3 :b 3<CR>
+nnoremap f4 :b 4<CR>
+nnoremap f5 :b 5<CR>
+nnoremap f6 :b 6<CR>
+nnoremap f7 :b 7<CR>
+nnoremap f8 :b 8<CR>
+nnoremap f9 :b 9<CR>
 
 " ################# Native Vim Explorer ################# 
-nnoremap E :Explore<cr>
+nnoremap E :Explore<CR>
 let g:netrw_liststyle=3
 
 
@@ -147,6 +147,17 @@ imap <F2> <Esc><F2>a
 "                               Plugin configuraitions
 "
 " ############################################################################
+
+if &runtimepath =~ 'ctrlp'
+    nmap <leader>b :CtrlPBuffer<CR>
+    let g:ctrlp_match_window = 'bottom,order:ttb,min:1,max:30,results:50'
+    let g:ctrlp_map = '<c-p>'
+    let g:ctrlp_working_path_mode = 'ra'
+    let g:ctrlp_custom_ignore = {
+      \ 'dir':  '\v[\/]\.(git|hg|svn)$',
+      \ 'file': '\v\.(exe|so|dll|pyc|zip|sw|swp)$',
+      \ }
+endif
 
 if &runtimepath =~ 'nerdcommenter'
     let g:NERDSpaceDelims            = 1      " Add spaces after comment delimiters by default
@@ -182,12 +193,14 @@ if has('gui_running')
     set background=dark
 endif
 
-colorscheme railscasts 
+" colorscheme railscasts
+colorscheme Monokai
 nmap cm :colorscheme Monokai<CR>
 nmap cr :colorscheme railscasts<CR>
 
-let g:airline_theme='tomorrow'
+let g:airline_theme='molokai'
 let g:airline#extensions#tabline#enabled = 1
+" let g:airline_powerline_fonts = 1
 
 " ################# Snnipets    #################
 if has('python')
@@ -253,13 +266,25 @@ nmap tw :set wrap!<CR>
 nmap tc :set cursorline!<CR>
 
 
-nmap tl :GitGutterLineHighlightsToggle<CR>
+if &runtimepath =~ 'gitglutter'
+    nmap tg :GitGutterToggle<CR>
+    nmap tl :GitGutterLineHighlightsToggle<CR>
+endif
+
+if &runtimepath =~ 'signature'
+    nmap <C-s>g :SignatureListGlobalMarks<CR>
+    imap <C-s>g <ESC>:SignatureListGlobalMarks<CR>
+
+    nmap <C-s>b :SignatureListBufferMarks<CR>
+    imap <C-s>b <ESC>:SignatureListBufferMarks<CR>
+
+    nmap ts :SignatureToggleSigns<CR>
+endif
 
 if &runtimepath =~ 'tagbar'
     nmap <F6> :TagbarToggle<CR>
     imap <F6> :TagbarToggle<CR>
     vmap <F6> :TagbarToggle<CR>
-
     nmap tt :TagbarToggle<CR>
 endif
 
