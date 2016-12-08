@@ -31,6 +31,8 @@ set showmatch    " Show matching parenthesis
 set number       " Show line numbers
 syntax enable    " add syntax highlighting
 
+set visualbell
+
 autocmd FileType c,cpp,java,php,python,shell autocmd BufWritePre <buffer> %s/\s\+$//e
 
 hi CursorLine term=bold cterm=bold guibg=Grey40
