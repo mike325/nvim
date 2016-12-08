@@ -150,6 +150,13 @@ imap <F2> <Esc><F2>a
 "
 " ############################################################################
 
+if &runtimepath =~ 'sessions'
+    let g:session_autosave = 'yes'
+    nmap <leader>o :OpenSession
+    nmap <leader>s :SaveSession
+    nmap <leader>d :DeleteSession
+endif
+
 if &runtimepath =~ 'ctrlp'
     nmap <leader>b :CtrlPBuffer<CR>
     let g:ctrlp_match_window = 'bottom,order:ttb,min:1,max:30,results:50'
@@ -224,13 +231,13 @@ if has('python')
             nnoremap <F5> :YcmForceCompileAndDiagnostics<CR>
             
             nnoremap <leader>i :YcmCompleter GoToInclude<CR>
-            nnoremap <leader>d :YcmCompleter GoToDeclaration<CR>
             nnoremap <leader>g :YcmCompleter GoTo<CR>
             nnoremap <leader>r :YcmCompleter GoToReferences<CR>
             nnoremap <leader>p :YcmCompleter GetParent<CR>
             nnoremap <leader>F :YcmCompleter FixIt<CR>
             nnoremap <leader>D :YcmCompleter GetDoc<CR>
-            "nnoremap <leader>t :YcmCompleter GetType<CR>
+            " nnoremap <leader>d :YcmCompleter GoToDeclaration<CR>
+            " nnoremap <leader>t :YcmCompleter GetType<CR>
         endif
     endif
 endif
