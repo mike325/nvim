@@ -8,7 +8,7 @@ set fileencoding=utf-8 " The encoding written to file.
 
 " ############################################################################
 "
-"                               Small improvements 
+"                               Small improvements
 "
 " ############################################################################
 
@@ -21,7 +21,7 @@ vmap , :
 set nocompatible
 set splitright
 set nowrap
-set ruler       
+set ruler
 set tabstop=4    " 1 tab = 4 spaces
 set shiftwidth=4 " Same for autoindenting
 set expandtab    " Use  spaces for indenting
@@ -31,9 +31,13 @@ set showmatch    " Show matching parenthesis
 set number       " Show line numbers
 syntax enable    " add syntax highlighting
 
+" cd to current file
+autocmd BufEnter * silent! lcd %:p:h
+
+" disable sounds
 set visualbell
 
-autocmd FileType c,cpp,java,php,python,shell autocmd BufWritePre <buffer> %s/\s\+$//e
+autocmd FileType c,cpp,java,php,python,shell,vim autocmd BufWritePre <buffer> %s/\s\+$//e
 
 hi CursorLine term=bold cterm=bold guibg=Grey40
 
@@ -44,7 +48,7 @@ set copyindent
 
 set hlsearch      " highlight search terms
 set incsearch     " show search matches as you type
-set ignorecase  
+set ignorecase
 
 set pastetoggle=<F4>
 
@@ -74,11 +78,13 @@ if !isdirectory(&undodir)
     call mkdir(&undodir, "p")
 endif
 
+nmap <leader>z ZZ
 
-" ################# visual selection go also to clipboard ################# 
+
+" ################# visual selection go also to clipboard #################
 set go+=a
 
-" ################# Tabs management ################# 
+" ################# Tabs management #################
 nnoremap <leader>1 1gt
 nnoremap <leader>2 2gt
 nnoremap <leader>3 3gt
@@ -88,58 +94,67 @@ nnoremap <leader>6 6gt
 nnoremap <leader>7 7gt
 nnoremap <leader>8 8gt
 nnoremap <leader>9 9gt
-
 nnoremap <leader>0 :tablast<CR>
-nnoremap <leader>n :tabNext<CR>
-nnoremap <leader>p :tabprevious<CR>
-nnoremap <leader>c :tabclose<CR>
 
-" ################# Buffer management ################# 
- " Next buffer
-nmap fn :bn<CR>
+nnoremap <leader><leader>n :tabNext<CR>
+nnoremap <leader><leader>p :tabprevious<CR>
+nnoremap <leader><leader>c :tabclose<CR>
+
+" ################# Buffer management #################
+" buffer add
+nmap <leader>a :badd
+
+" Next buffer
+nmap <leader>n :bn<CR>
 
 " Prev buffer
-nmap fb :bp<CR>
+nmap <leader>p :bp<CR>
 
 " Delete buffer
-nmap fd :Bdelete<CR>
+nmap <leader>d :bdelete<CR>
+
+"go to last buffer
+nmap <leader>l :blast<CR>
 
 " Quick buffer change by number
-nnoremap f1 :b 1<CR>
-nnoremap f2 :b 2<CR>
-nnoremap f3 :b 3<CR>
-nnoremap f4 :b 4<CR>
-nnoremap f5 :b 5<CR>
-nnoremap f6 :b 6<CR>
-nnoremap f7 :b 7<CR>
-nnoremap f8 :b 8<CR>
-nnoremap f9 :b 9<CR>
+" nnoremap b1 :b 1<CR>
+" nnoremap b2 :b 2<CR>
+" nnoremap b3 :b 3<CR>
+" nnoremap b4 :b 4<CR>
+" nnoremap b5 :b 5<CR>
+" nnoremap b6 :b 6<CR>
+" nnoremap b7 :b 7<CR>
+" nnoremap b8 :b 8<CR>
+" nnoremap b9 :b 9<CR>
 
-" ################# Native Vim Explorer ################# 
+" ################# Native Vim Explorer #################
 nnoremap E :Explore<CR>
 let g:netrw_liststyle=3
 
-
-" ################# Change current active file split ################# 
+" ################# Change current active file split #################
+map <leader>x <c-w><c-w>
 nmap <c-x> <c-w><c-w>
 imap <c-x> <ESC><c-x>
 
-map <C-h> <C-w>h
-map <C-j> <C-w>j
-map <C-k> <C-w>k
-map <C-l> <C-w>l
+map <leader>h <C-w>h
+map <leader>j <C-w>j
+map <leader>k <C-w>k
+map <leader>l <C-w>l
+
+map <leader>i <C-w>=
+map <leader>- <C-w>-
 
 if exists('+colorcolumn')
     let &colorcolumn="80,".join(range(120,999),",")
 endif
 
-" ################# folding settings ################# 
+" ################# folding settings #################
 set foldmethod=indent " fold based on indent
 set foldnestmax=10    " deepest fold is 10 levels
 set foldlevel=1       " this is just what i use
 set nofoldenable      " dont fold by default
 
-" ################# Easy Save file ################# 
+" ################# Easy Save file #################
 nmap <F2> :update<CR>
 vmap <F2> <Esc><F2>gv
 imap <F2> <Esc><F2>a
@@ -150,11 +165,21 @@ imap <F2> <Esc><F2>a
 "
 " ############################################################################
 
+if &runtimepath =~ 'bufferbye'
+    " better behave buffer deletion
+    nmap <leader>d :Bdelete<CR>
+endif
+
 if &runtimepath =~ 'sessions'
     let g:session_autosave = 'yes'
+    let g:session_autoload = 'no'
+
+    " nmap <leader>d :DeleteSession
     nmap <leader>o :OpenSession
     nmap <leader>s :SaveSession
-    nmap <leader>d :DeleteSession
+    nmap <leader>C :CloseSession<CR>
+    nmap <leader><leader>s :SaveSession<CR>
+    nmap <leader><leader>d :DeleteSession<CR>
 endif
 
 if &runtimepath =~ 'ctrlp'
@@ -184,8 +209,8 @@ nmap <leader>f <Plug>(easymotion-overwin-f)
 vmap <leader>f <Plug>(easymotion-overwin-f)
 
 " x{char} to move to {char}
-"nmap <leader>x <Plug>(easymotion-s) 
-"vmap <leader>x <Plug>(easymotion-s) 
+"nmap <leader>x <Plug>(easymotion-s)
+"vmap <leader>x <Plug>(easymotion-s)
 
 " Move to line
 "map <leader>L <Plug>(easymotion-bd-jk)
@@ -194,8 +219,8 @@ vmap <leader>L <Plug>(easymotion-overwin-line)
 
 " Move to word
 "map  <leader>w <Plug>(easymotion-bd-w)
-nmap <leader>w <Plug>(easymotion-overwin-w)
-vmap <leader>w <Plug>(easymotion-overwin-w)
+nmap <leader><leader>w <Plug>(easymotion-overwin-w)
+vmap <leader><leader>w <Plug>(easymotion-overwin-w)
 
 " ################# Themes #################
 if has('gui_running')
@@ -207,9 +232,20 @@ colorscheme Monokai
 nmap cm :colorscheme Monokai<CR>
 nmap cr :colorscheme railscasts<CR>
 
-let g:airline_theme='molokai'
-let g:airline#extensions#tabline#enabled = 1
-" let g:airline_powerline_fonts = 1
+if &runtimepath =~ 'airline'
+    let g:airline_theme = 'molokai'
+
+    let g:airline#extensions#tabline#enabled           = 1
+    let g:airline#extensions#tabline#fnamemod          = ':t'
+    let g:airline#extensions#tabline#close_symbol      = '×'
+    let g:airline#extensions#tabline#show_tabs         = 1
+    let g:airline#extensions#tabline#show_buffers      = 1
+    let g:airline#extensions#tabline#show_close_button = 0
+    let g:airline#extensions#tabline#show_splits       = 0
+
+    " let g:airline#extensions#tabline#show_tab_nr = 0
+    " let g:airline_powerline_fonts = 1
+endif
 
 " ################# Snnipets    #################
 if has('python')
@@ -227,22 +263,22 @@ if has('python')
         if &runtimepath =~ 'YouCompleteMe'
             "call youcompleteme#GetErrorCount()
             "call youcompleteme#GetWarningCount()
-            
+
             nnoremap <F5> :YcmForceCompileAndDiagnostics<CR>
-            
+
             nnoremap <leader>i :YcmCompleter GoToInclude<CR>
             nnoremap <leader>g :YcmCompleter GoTo<CR>
             nnoremap <leader>r :YcmCompleter GoToReferences<CR>
-            nnoremap <leader>p :YcmCompleter GetParent<CR>
             nnoremap <leader>F :YcmCompleter FixIt<CR>
             nnoremap <leader>D :YcmCompleter GetDoc<CR>
+            " nnoremap <leader>p :YcmCompleter GetParent<CR>
             " nnoremap <leader>d :YcmCompleter GoToDeclaration<CR>
             " nnoremap <leader>t :YcmCompleter GetType<CR>
         endif
     endif
 endif
 
-" ################# NERDTree quick open/close ################# 
+" ################# NERDTree quick open/close #################
 if &runtimepath =~ 'nerdtree'
     let NERDTreeShowHidden          = 1
     let NERDTreeDirArrowExpandable  = "+"
@@ -250,7 +286,7 @@ if &runtimepath =~ 'nerdtree'
     let NERDTreeIgnore              = ['\.pyc$', '\~$', '\.sw$', '\.swp$'] "ignore files in NERDTree
 endif
 
-" ################ Alignment with Tabularize ################# 
+" ################ Alignment with Tabularize #################
 if &runtimepath =~ 'tabular'
     nmap <leader>t= :Tabularize /=<CR>
     vmap <leader>t= :Tabularize /=<CR>
@@ -267,7 +303,8 @@ if &runtimepath =~ 'tabular'
     nmap <leader>t* :Tabularize /*<CR>
     vmap <leader>t* :Tabularize /*<CR>
 endif
-" ################# Toggles ################# 
+
+" ################# Toggles #################
 nmap tn :set number!<CR>
 nmap th :set hlsearch!<CR>
 nmap ti :set ignorecase!<CR>
@@ -281,10 +318,10 @@ if &runtimepath =~ 'gitglutter'
 endif
 
 if &runtimepath =~ 'signature'
-    nmap <C-s>g :SignatureListGlobalMarks<CR>
+    nmap <leader><leader>g :SignatureListGlobalMarks<CR>
     imap <C-s>g <ESC>:SignatureListGlobalMarks<CR>
 
-    nmap <C-s>b :SignatureListBufferMarks<CR>
+    nmap leader><leader>b :SignatureListBufferMarks<CR>
     imap <C-s>b <ESC>:SignatureListBufferMarks<CR>
 
     nmap ts :SignatureToggleSigns<CR>
