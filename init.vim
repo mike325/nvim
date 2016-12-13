@@ -184,6 +184,7 @@ endif
 
 if &runtimepath =~ 'ctrlp'
     nmap <leader>b :CtrlPBuffer<CR>
+    nmap <leader>P :CtrlP<CR>
     let g:ctrlp_match_window = 'bottom,order:ttb,min:1,max:30,results:50'
     let g:ctrlp_map = '<c-p>'
     let g:ctrlp_working_path_mode = 'ra'
@@ -321,7 +322,7 @@ if &runtimepath =~ 'signature'
     nmap <leader><leader>g :SignatureListGlobalMarks<CR>
     imap <C-s>g <ESC>:SignatureListGlobalMarks<CR>
 
-    nmap leader><leader>b :SignatureListBufferMarks<CR>
+    nmap <leader><leader>b :SignatureListBufferMarks<CR>
     imap <C-s>b <ESC>:SignatureListBufferMarks<CR>
 
     nmap ts :SignatureToggleSigns<CR>
