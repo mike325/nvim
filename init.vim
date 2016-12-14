@@ -130,6 +130,7 @@ nmap <leader>p :bp<CR>
 
 " Delete buffer
 nmap <leader>d :bdelete<CR>
+" nmap fd :bdelete<CR>
 
 "go to last buffer
 nmap <leader>l :blast<CR>
@@ -185,6 +186,21 @@ nmap <F2> :update<CR>
 vmap <F2> <Esc><F2>gv
 imap <F2> <Esc><F2>a
 
+" ################# Toggles #################
+nmap tn :set number!<CR>
+nmap th :set hlsearch!<CR>
+nmap ti :set ignorecase!<CR>
+nmap tw :set wrap!<CR>
+nmap tc :set cursorline!<CR>
+
+if (has("nvim"))
+    let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+endif
+
+if (has("termguicolors"))
+    set termguicolors
+endif
+
 " ############################################################################
 "
 "                               Plugin configuraitions
@@ -230,33 +246,48 @@ if &runtimepath =~ 'nerdcommenter'
                                               " of following code indentation
 endif
 
-" <leader>f{char} to move to {char}
-"map  <leader>f <Plug>(easymotion-bd-f)
-nmap <leader>f <Plug>(easymotion-overwin-f)
-vmap <leader>f <Plug>(easymotion-overwin-f)
+if &runtimepath =~"easymotion"
+" Disable default mappings
+    let g:EasyMotion_do_mapping = 0
+    let g:EasyMotion_smartcase = 1
 
-" x{char} to move to {char}
-"nmap <leader>x <Plug>(easymotion-s)
-"vmap <leader>x <Plug>(easymotion-s)
+    nmap tea :let g:EasyMotion_smartcase=1<CR>
+    nmap ted :let g:EasyMotion_smartcase=0<CR>
 
-" Move to line
-"map <leader>L <Plug>(easymotion-bd-jk)
-nmap <leader>L <Plug>(easymotion-overwin-line)
-vmap <leader>L <Plug>(easymotion-overwin-line)
+    " <leader>f{char} to move to {char}
+    nmap f <Plug>(easymotion-bd-f)
+    nmap F <Plug>(easymotion-overwin-f)
 
-" Move to word
-"map  <leader>w <Plug>(easymotion-bd-w)
-nmap <leader><leader>w <Plug>(easymotion-overwin-w)
-vmap <leader><leader>w <Plug>(easymotion-overwin-w)
+    vmap f <Plug>(easymotion-bd-f)
+    vmap F <Plug>(easymotion-overwin-f)
+
+    nmap <leader>f <Plug>(easymotion-fl)
+    vmap <leader>f <Plug>(easymotion-fl)
+
+    " Move to line
+    "map <leader>L <Plug>(easymotion-bd-jk)
+    nmap <leader>L <Plug>(easymotion-overwin-line)
+    vmap <leader>L <Plug>(easymotion-overwin-line)
+
+    " Move to word
+    nmap <leader><leader>w <Plug>(easymotion-bd-w)
+    nmap <leader><leader>W <Plug>(easymotion-overwin-w)
+
+    vmap <leader><leader>w <Plug>(easymotion-bd-w)
+    vmap <leader><leader>W <Plug>(easymotion-overwin-w)
+
+
+    nmap <leader>. <Plug>(easymotion-repeat)
+    nmap <leader>, <Plug>(easymotion-next)
+    nmap <leader>; <Plug>(easymotion-prev)
+
+    vmap <leader>. <Plug>(easymotion-repeat)
+    vmap <leader>, <Plug>(easymotion-next)
+    vmap <leader>; <Plug>(easymotion-prev)
+
+endif
 
 " ################# Themes #################
-if (has("nvim"))
-    let $NVIM_TUI_ENABLE_TRUE_COLOR=1
-endif
-
-if (has("termguicolors"))
-    set termguicolors
-endif
 
 " colorscheme railscasts
 colorscheme Monokai
@@ -315,7 +346,8 @@ if &runtimepath =~ 'nerdtree'
     let NERDTreeShowHidden          = 1
     let NERDTreeDirArrowExpandable  = "+"
     let NERDTreeDirArrowCollapsible = "~"
-    let NERDTreeIgnore              = ['\.pyc$', '\~$', '\.sw$', '\.swp$'] "ignore files in NERDTree
+"ignore files in NERDTree
+    let NERDTreeIgnore              = ['\.pyc$', '\~$', '\.sw$', '\.swp$']
 endif
 
 " ################ Alignment with Tabularize #################
@@ -335,14 +367,6 @@ if &runtimepath =~ 'tabular'
     nmap <leader>t* :Tabularize /*<CR>
     vmap <leader>t* :Tabularize /*<CR>
 endif
-
-" ################# Toggles #################
-nmap tn :set number!<CR>
-nmap th :set hlsearch!<CR>
-nmap ti :set ignorecase!<CR>
-nmap tw :set wrap!<CR>
-nmap tc :set cursorline!<CR>
-
 
 if &runtimepath =~ 'gitglutter'
     nmap tg :GitGutterToggle<CR>
