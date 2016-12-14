@@ -93,6 +93,11 @@ endif
 
 nmap <leader>z ZZ
 
+" ################# Set Neovim settings #################
+if (has("nvim"))
+    set inccommand=split
+endif
+
 
 " ################# visual selection go also to clipboard #################
 set go+=a
@@ -275,7 +280,7 @@ if &runtimepath =~ 'airline'
 endif
 
 " ################# Snnipets    #################
-if has('python')
+if ( has('python') || has('python3') )
     let g:UltiSnipsSnippetDirectories=["UltiSnips"]
 
     if has('python3')
@@ -286,7 +291,7 @@ if has('python')
     let g:UltiSnipsJumpForwardTrigger="<c-b>"
     let g:UltiSnipsExpandTrigger="<c-w>"
 
-    if v:version == 704 && has("patch143")
+    if ( v:version == 704 && has("patch143") )
         if &runtimepath =~ 'YouCompleteMe'
             "call youcompleteme#GetErrorCount()
             "call youcompleteme#GetWarningCount()
