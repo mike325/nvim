@@ -46,8 +46,8 @@ set autoindent
 set smartindent
 set copyindent
 
-set hlsearch      " highlight search terms
-set incsearch     " show search matches as you type
+set hlsearch  " highlight search terms
+set incsearch " show search matches as you type
 set ignorecase
 
 set pastetoggle=<F4>
@@ -57,13 +57,26 @@ nmap <c-o> O<Esc>
 nmap <CR> o<Esc>
 
 " better backup, swap and undos storage
-set directory=~/.vim/tmp_dirs/swap    " directory to place swap files in
-set backup                            " make backup files
-set backupdir=~/.vim/tmp_dirs/backups " where to put backup files
-set undofile                          " persistent undos - undo after you re-open the file
-set undodir=~/.vim/tmp_dirs/undos
-set viminfo+=n~/.vim/tmp_dirs/viminfo
-let g:yankring_history_dir = '~/.vim/tmp_dirs/' " store yankring history file there too
+set backup   " make backup files
+set undofile " persistent undos - undo after you re-open the file
+
+if has("nvim")
+" nvim stuff
+    set directory=~/.config/nvim/tmp_dirs/swap    " directory to place swap files in
+    set backupdir=~/.config/nvim/tmp_dirs/backups " where to put backup files
+    set undodir=~/.config/nvim/tmp_dirs/undos
+    set viminfo+=n~/.config/nvim/tmp_dirs/viminfo
+" store yankring history file there too
+    let g:yankring_history_dir = '~/.config/nvim/tmp_dirs/'
+else
+" vim stuff
+    set directory=~/.vim/tmp_dirs/swap    " directory to place swap files in
+    set backupdir=~/.vim/tmp_dirs/backups " where to put backup files
+    set undodir=~/.vim/tmp_dirs/undos
+    set viminfo+=n~/.vim/tmp_dirs/viminfo
+" store yankring history file there too
+    let g:yankring_history_dir = '~/.vim/tmp_dirs/'
+endif
 
 " create needed directories if they don't exist
 if !isdirectory(&backupdir)
@@ -132,17 +145,25 @@ nnoremap E :Explore<CR>
 let g:netrw_liststyle=3
 
 " ################# Change current active file split #################
-map <leader>x <c-w><c-w>
+nmap <leader>x <c-w><c-w>
 nmap <c-x> <c-w><c-w>
 imap <c-x> <ESC><c-x>
 
-map <leader>h <C-w>h
-map <leader>j <C-w>j
-map <leader>k <C-w>k
-map <leader>l <C-w>l
+nmap <leader>h <C-w>h
+nmap <leader>j <C-w>j
+nmap <leader>k <C-w>k
+nmap <leader>l <C-w>l
 
-map <leader>i <C-w>=
-map <leader>- <C-w>-
+if has("nvim")
+    tnoremap <leader-h> <C-\><C-n><C-w>h
+    tnoremap <leader-j> <C-\><C-n><C-w>j
+    tnoremap <leader-k> <C-\><C-n><C-w>k
+    tnoremap <leader-l> <C-\><C-n><C-w>l
+    tnoremap <Esc> <C-\><C-n>
+endif
+
+nmap <leader>i <C-w>=
+nmap <leader>- <C-w>-
 
 if exists('+colorcolumn')
     let &colorcolumn="80,".join(range(120,999),",")
@@ -231,6 +252,7 @@ endif
 " colorscheme railscasts
 colorscheme Monokai
 nmap cm :colorscheme Monokai<CR>
+nmap co :colorscheme onedark<CR>
 nmap cr :colorscheme railscasts<CR>
 
 if &runtimepath =~ 'airline'
