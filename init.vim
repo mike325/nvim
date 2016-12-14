@@ -245,8 +245,12 @@ nmap <leader><leader>w <Plug>(easymotion-overwin-w)
 vmap <leader><leader>w <Plug>(easymotion-overwin-w)
 
 " ################# Themes #################
-if has('gui_running')
-    set background=dark
+if (has("nvim"))
+    let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+endif
+
+if (has("termguicolors"))
+    set termguicolors
 endif
 
 " colorscheme railscasts
