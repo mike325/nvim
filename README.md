@@ -42,7 +42,7 @@ Included plugins:
 * [snippets](https://github.com/honza/vim-snippets)
 * [supertab](https://github.com/ervandew/supertab)
 * [tabular](https://github.com/godlygeek/tabular)
-* [tagbar](rhttps://github.com/majutsushi/tagbar)
+* [tagbar](https://github.com/majutsushi/tagbar)
 * [ultisnips](https://github.com/SirVer/ultisnips)
 * [vim-misc](https://github.com/xolox/vim-misc)
 * [vim-surround](https://github.com/tpope/vim-surround)
