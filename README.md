@@ -21,11 +21,11 @@ Feel free to change anything to fit your needs!
 
 Included plugins:
 
-* [airline-themes](https://github.com/vim-airline-themes/)
-* [airline](https://github.com/vim-airline/)
-* [bufferbye](https://github.com//)
-* [colorschemes](https://github.com/colorschemes/)
-* [ctrlp](https://github.com//)
+* [airline-themes](https://github.com/vim-airline/vim-airline-themes/)
+* [airline](https://github.com/vim-airline/vim-airline/)
+* [bufferbye](https://github.com/moll/vim-bbye)
+* [colorschemes](https://github.com/flazz/vim-colorschemes)
+* [ctrlp](https://github.com/kien/ctrlp.vim)
 * [delimitMate](https://github.com/Raimondi/delimitMate.git)
 * [Dockerfile](https://github.com/ekalinin/Dockerfile.vim)
 * [easymotion](https://github.com/easymotion/vim-easymotion)
