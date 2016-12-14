@@ -18,3 +18,31 @@ or just clone it there
     git clone --recursive https://github.com/Mike325/.vim.git ~/.config/nvim
     
 Feel free to change anything to fit your needs! 
+
+Included plugins:
+
+* [airline-themes](https://github.com/vim-airline-themes/)
+* [airline](https://github.com/vim-airline/)
+* [bufferbye](https://github.com//)
+* [colorschemes](https://github.com/colorschemes/)
+* [ctrlp](https://github.com//)
+* [delimitMate](https://github.com/Raimondi/delimitMate.git)
+* [Dockerfile](https://github.com/ekalinin/Dockerfile.vim)
+* [easymotion](https://github.com/easymotion/vim-easymotion)
+* [fugitive](https://github.com/tpope/vim-fugitive)
+* [gitglutter](https://github.com/airblade/vim-gitgutter)
+* [multicursors](https://github.com/terryma/vim-multiple-cursors)
+* [nerdcommenter](https://github.com/scrooloose/nerdcommenter)
+* [nerdtree-tabs](https://github.com/jistr/vim-nerdtree-tabs)
+* [nerdtree](https://github.com/scrooloose/nerdtree)
+* [polyglot](https://github.com/sheerun/vim-polyglot)
+* [sensible](https://github.com/tpope/vim-sensible)
+* [sessions](https://github.com/xolox/vim-session)
+* [signature](https://github.com/kshenoy/vim-signature)
+* [snippets](https://github.com/honza/vim-snippets)
+* [supertab](https://github.com/ervandew/supertab)
+* [tabular](https://github.com/godlygeek/tabular)
+* [tagbar](rhttps://github.com/majutsushi/tagbar)
+* [ultisnips](https://github.com/SirVer/ultisnips)
+* [vim-misc](https://github.com/xolox/vim-misc)
+* [vim-surround](https://github.com/tpope/vim-surround)
