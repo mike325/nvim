@@ -355,7 +355,7 @@ if ( has('python') || has('python3') )
 
     " if ( v:version == 704 && has("patch143") )
     if &runtimepath =~ 'youcompleteme'
-        nnoremap <F5> :YcmForceCompileAndDiagnostics<CR>
+        " nnoremap <F5> :YcmForceCompileAndDiagnostics<CR>
 
         " nnoremap <leader>g :YcmCompleter GoTo<CR>
         " nnoremap <leader>r :YcmCompleter GoToReferences<CR>
@@ -369,10 +369,41 @@ if ( has('python') || has('python3') )
     " endif
 endif
 
+" ################# Syntax check #################
+if &runtimepath =~ "syntastic"
+    set sessionoptions-=blank
+
+    set statusline+=%#warningmsg#
+    set statusline+=%{SyntasticStatuslineFlag()}
+    set statusline+=%*
+
+    nmap ts :SyntasticToggleMode<CR>
+
+    let g:syntastic_always_populate_loc_list = 1
+    let g:syntastic_auto_loc_list = 1
+    let g:syntastic_check_on_open = 0
+    let g:syntastic_check_on_wq = 0
+
+    let g:syntastic_python_checkers = ['flake8']
+
+    imap <F5> <ESC>:SyntasticCheck<CR>a
+    nmap <F5> :SyntasticCheck<CR>
+
+    imap <F6> <ESC>:SyntasticInfo<CR>a
+    nmap <F6> :SyntasticInfo<CR>
+
+    imap <F7> <ESC>:Errors<CR>a
+    nmap <F7> :Errors<CR>
+
+    imap <F8> <ESC>:lclose<CR>a
+    nmap <F8> :lclose<CR>
+endif
+
+
 " ################# NERDTree quick open/close #################
 if &runtimepath =~ 'nerdtree'
-    " let NERDTreeDirArrowExpandable  = '+'
-    " let NERDTreeDirArrowCollapsible = '~'
+    let NERDTreeDirArrowExpandable  = '+'
+    let NERDTreeDirArrowCollapsible = '~'
     "ignore files in NERDTree
     let NERDTreeIgnore              = ['\.pyc$', '\~$', '\.sw$', '\.swp$']
     let NERDTreeShowHidden          = 1
@@ -408,13 +439,13 @@ if &runtimepath =~ 'signature'
     nmap <leader><leader>b :SignatureListBufferMarks<CR>
     imap <C-s>b <ESC>:SignatureListBufferMarks<CR>
 
-    nmap ts :SignatureToggleSigns<CR>
+    nmap tS :SignatureToggleSigns<CR>
 endif
 
 if &runtimepath =~ 'tagbar'
-    nmap <F6> :TagbarToggle<CR>
-    imap <F6> :TagbarToggle<CR>
-    vmap <F6> :TagbarToggle<CR>
+    nmap <F1> :TagbarToggle<CR>
+    imap <F1> :TagbarToggle<CR>
+    vmap <F1> :TagbarToggle<CR>gv
     nmap tt :TagbarToggle<CR>
 endif
 
