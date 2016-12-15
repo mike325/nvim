@@ -60,6 +60,8 @@ nmap <CR> o<Esc>
 set backup   " make backup files
 set undofile " persistent undos - undo after you re-open the file
 
+nmap <BS> dd
+
 if has("nvim")
     " nvim stuff
     set directory=~/.config/nvim/tmp_dirs/swap    " directory to place swap files in
@@ -120,7 +122,7 @@ nnoremap <leader><leader>c :tabclose<CR>
 
 " ################# Buffer management #################
 " buffer add
-nmap <leader>a :badd
+" nmap <leader>a :badd
 
 " Next buffer
 nmap <leader>n :bn<CR>
@@ -133,7 +135,7 @@ nmap <leader>d :bdelete<CR>
 " nmap fd :bdelete<CR>
 
 "go to last buffer
-nmap <leader>l :blast<CR>
+" nmap <leader>l :blast<CR>
 
 " Quick buffer change by number
 " nnoremap b1 :b 1<CR>
@@ -151,14 +153,12 @@ nnoremap E :Explore<CR>
 let g:netrw_liststyle=3
 
 " ################# Change current active file split #################
-nmap <leader>x <c-w><c-w>
-nmap <c-x> <c-w><c-w>
-imap <c-x> <ESC><c-x>
-
 nmap <tab> >>
 nmap <S-tab> <<
 
-nmap <leader>x <C-w><C-w>
+imap <S-tab> <C-p>
+
+" nmap <leader>x <C-w><C-w>
 nmap <C-x> <C-w><C-w>
 imap <C-x> <ESC><C-x>
 
@@ -230,7 +230,7 @@ if &runtimepath =~ 'sessions'
     " nmap <leader>d :DeleteSession
     nmap <leader>o :OpenSession
     nmap <leader>s :SaveSession
-    nmap <leader>C :CloseSession<CR>
+    nmap <leader>c :CloseSession<CR>
     nmap <leader><leader>s :SaveSession<CR>
     nmap <leader><leader>d :DeleteSession<CR>
 endif
@@ -276,8 +276,8 @@ if &runtimepath =~"easymotion"
     vmap F <Plug>(easymotion-overwin-f)
 
     " search a character in the current line
-    nmap <leader>f <Plug>(easymotion-Fl)
-    vmap <leader>f <Plug>(easymotion-Fl)
+    nmap <leader>f <Plug>(easymotion-sl)
+    vmap <leader>f <Plug>(easymotion-sl)
 
     " Move to line
     " move to a line in the current layout
@@ -328,15 +328,30 @@ endif
 
 " ################# Snnipets    #################
 if ( has('python') || has('python3') )
-    let g:UltiSnipsSnippetDirectories=["UltiSnips"]
+    if &runtimepath =~ "ultisnips"
+        let g:UltiSnipsSnippetDirectories=["UltiSnips"]
 
-    if has('python3')
-        let g:UltiSnipsUsePythonVersion = 3
+        if has('python3')
+            let g:UltiSnipsUsePythonVersion = 3
+        endif
+
+        let g:UltiSnipsJumpForwardTrigger="<C-a>"
+        let g:UltiSnipsJumpBackwardTrigger="<C-z>"
+        let g:UltiSnipsExpandTrigger="<C-x>"
     endif
 
-    let g:UltiSnipsJumpForwardTrigger="<C-a>"
-    let g:UltiSnipsJumpBackwardTrigger="<C-z>"
-    let g:UltiSnipsExpandTrigger="<C-x>"
+    if &runtimepath =~ "jedi"
+        let g:jedi#popup_on_dot = 1
+        let g:jedi#popup_select_first = 1
+        let g:jedi#completions_command = "<C-c>"
+        let g:jedi#goto_command = "<leader>g"
+        let g:jedi#goto_assignments_command = "<leader>a"
+        let g:jedi#goto_definitions_command = "<leader>D"
+        let g:jedi#documentation_command = "K"
+        let g:jedi#usages_command = "<leader>u"
+        let g:jedi#rename_command = "<leader>r"
+    endif
+
 
     " if ( v:version == 704 && has("patch143") )
     if &runtimepath =~ 'youcompleteme'
