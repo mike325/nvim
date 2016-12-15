@@ -53,7 +53,7 @@ set ignorecase
 set pastetoggle=<F4>
 
 "nmap <S-Enter> O<Esc>
-nmap <c-o> O<Esc>
+nmap <C-o> O<Esc>
 nmap <CR> o<Esc>
 
 " better backup, swap and undos storage
@@ -61,20 +61,20 @@ set backup   " make backup files
 set undofile " persistent undos - undo after you re-open the file
 
 if has("nvim")
-" nvim stuff
+    " nvim stuff
     set directory=~/.config/nvim/tmp_dirs/swap    " directory to place swap files in
     set backupdir=~/.config/nvim/tmp_dirs/backups " where to put backup files
     set undodir=~/.config/nvim/tmp_dirs/undos
     set viminfo+=n~/.config/nvim/tmp_dirs/viminfo
-" store yankring history file there too
+    " store yankring history file there too
     let g:yankring_history_dir = '~/.config/nvim/tmp_dirs/'
 else
-" vim stuff
+    " vim stuff
     set directory=~/.vim/tmp_dirs/swap    " directory to place swap files in
     set backupdir=~/.vim/tmp_dirs/backups " where to put backup files
     set undodir=~/.vim/tmp_dirs/undos
     set viminfo+=n~/.vim/tmp_dirs/viminfo
-" store yankring history file there too
+    " store yankring history file there too
     let g:yankring_history_dir = '~/.vim/tmp_dirs/'
 endif
 
@@ -155,17 +155,28 @@ nmap <leader>x <c-w><c-w>
 nmap <c-x> <c-w><c-w>
 imap <c-x> <ESC><c-x>
 
+nmap <tab> >>
+nmap <S-tab> <<
+
+nmap <leader>x <C-w><C-w>
+nmap <C-x> <C-w><C-w>
+imap <C-x> <ESC><C-x>
+
 nmap <leader>h <C-w>h
 nmap <leader>j <C-w>j
 nmap <leader>k <C-w>k
 nmap <leader>l <C-w>l
 
 if has("nvim")
+    tnoremap <Esc> <C-\><C-n>
+    nmap <A-t> :terminal<CR>
+    nmap <A-s> <C-w>s
+    nmap <A-v> <C-w>v
+
     tnoremap <leader-h> <C-\><C-n><C-w>h
     tnoremap <leader-j> <C-\><C-n><C-w>j
     tnoremap <leader-k> <C-\><C-n><C-w>k
     tnoremap <leader-l> <C-\><C-n><C-w>l
-    tnoremap <Esc> <C-\><C-n>
 endif
 
 nmap <leader>i <C-w>=
@@ -228,12 +239,12 @@ if &runtimepath =~ 'ctrlp'
     nmap <leader>b :CtrlPBuffer<CR>
     nmap <leader>P :CtrlP<CR>
     let g:ctrlp_match_window = 'bottom,order:ttb,min:1,max:30,results:50'
-    let g:ctrlp_map = '<c-p>'
+    let g:ctrlp_map = '<C-p>'
     let g:ctrlp_working_path_mode = 'ra'
     let g:ctrlp_custom_ignore = {
-      \ 'dir':  '\v[\/]\.(git|hg|svn)$',
-      \ 'file': '\v\.(exe|so|dll|pyc|zip|sw|swp)$',
-      \ }
+                \ 'dir':  '\v[\/]\.(git|hg|svn)$',
+                \ 'file': '\v\.(exe|so|dll|pyc|zip|sw|swp)$',
+                \ }
 endif
 
 if &runtimepath =~ 'nerdcommenter'
@@ -247,44 +258,49 @@ if &runtimepath =~ 'nerdcommenter'
 endif
 
 if &runtimepath =~"easymotion"
-" Disable default mappings
+    " Disable default mappings
     let g:EasyMotion_do_mapping = 0
+    " Turn on ignore case
     let g:EasyMotion_smartcase = 1
 
+    " toggle ignore case
     nmap tea :let g:EasyMotion_smartcase=1<CR>
     nmap ted :let g:EasyMotion_smartcase=0<CR>
 
     " <leader>f{char} to move to {char}
+    " search a character in the current buffer
     nmap f <Plug>(easymotion-bd-f)
-    nmap F <Plug>(easymotion-overwin-f)
-
     vmap f <Plug>(easymotion-bd-f)
+    " search a character in the current layout
+    nmap F <Plug>(easymotion-overwin-f)
     vmap F <Plug>(easymotion-overwin-f)
 
-    nmap <leader>f <Plug>(easymotion-fl)
-    vmap <leader>f <Plug>(easymotion-fl)
+    " search a character in the current line
+    nmap <leader>f <Plug>(easymotion-Fl)
+    vmap <leader>f <Plug>(easymotion-Fl)
 
     " Move to line
-    "map <leader>L <Plug>(easymotion-bd-jk)
+    " move to a line in the current layout
     nmap <leader>L <Plug>(easymotion-overwin-line)
     vmap <leader>L <Plug>(easymotion-overwin-line)
 
     " Move to word
+    " move to a any word in the current buffer
     nmap <leader><leader>w <Plug>(easymotion-bd-w)
-    nmap <leader><leader>W <Plug>(easymotion-overwin-w)
-
     vmap <leader><leader>w <Plug>(easymotion-bd-w)
+    " move to a any word in the current layout
+    nmap <leader><leader>W <Plug>(easymotion-overwin-w)
     vmap <leader><leader>W <Plug>(easymotion-overwin-w)
 
-
+    " repeat the last motion
     nmap <leader>. <Plug>(easymotion-repeat)
-    nmap <leader>, <Plug>(easymotion-next)
-    nmap <leader>; <Plug>(easymotion-prev)
-
     vmap <leader>. <Plug>(easymotion-repeat)
+    " repeat the next match of the current last motion
+    nmap <leader>, <Plug>(easymotion-next)
     vmap <leader>, <Plug>(easymotion-next)
+    " repeat the prev match of the current last motion
+    nmap <leader>; <Plug>(easymotion-prev)
     vmap <leader>; <Plug>(easymotion-prev)
-
 endif
 
 " ################# Themes #################
@@ -318,36 +334,33 @@ if ( has('python') || has('python3') )
         let g:UltiSnipsUsePythonVersion = 3
     endif
 
-    let g:UltiSnipsJumpBackwardTrigger="<c-z>"
-    let g:UltiSnipsJumpForwardTrigger="<c-b>"
-    let g:UltiSnipsExpandTrigger="<c-w>"
+    let g:UltiSnipsJumpForwardTrigger="<C-a>"
+    let g:UltiSnipsJumpBackwardTrigger="<C-z>"
+    let g:UltiSnipsExpandTrigger="<C-x>"
 
-    if ( v:version == 704 && has("patch143") )
-        if &runtimepath =~ 'YouCompleteMe'
-            "call youcompleteme#GetErrorCount()
-            "call youcompleteme#GetWarningCount()
+    " if ( v:version == 704 && has("patch143") )
+    if &runtimepath =~ 'youcompleteme'
+        nnoremap <F5> :YcmForceCompileAndDiagnostics<CR>
 
-            nnoremap <F5> :YcmForceCompileAndDiagnostics<CR>
-
-            nnoremap <leader>i :YcmCompleter GoToInclude<CR>
-            nnoremap <leader>g :YcmCompleter GoTo<CR>
-            nnoremap <leader>r :YcmCompleter GoToReferences<CR>
-            nnoremap <leader>F :YcmCompleter FixIt<CR>
-            nnoremap <leader>D :YcmCompleter GetDoc<CR>
-            " nnoremap <leader>p :YcmCompleter GetParent<CR>
-            " nnoremap <leader>d :YcmCompleter GoToDeclaration<CR>
-            " nnoremap <leader>t :YcmCompleter GetType<CR>
-        endif
+        " nnoremap <leader>g :YcmCompleter GoTo<CR>
+        " nnoremap <leader>r :YcmCompleter GoToReferences<CR>
+        " nnoremap <leader>F :YcmCompleter FixIt<CR>
+        " nnoremap <leader>D :YcmCompleter GetDoc<CR>
+        " nnoremap <leader>p :YcmCompleter GetParent<CR>
+        " nnoremap <leader>i :YcmCompleter GoToInclude<CR>
+        " nnoremap <leader>d :YcmCompleter GoToDeclaration<CR>
+        " nnoremap <leader>t :YcmCompleter GetType<CR>
     endif
+    " endif
 endif
 
 " ################# NERDTree quick open/close #################
 if &runtimepath =~ 'nerdtree'
-    let NERDTreeShowHidden          = 1
-    let NERDTreeDirArrowExpandable  = "+"
-    let NERDTreeDirArrowCollapsible = "~"
-"ignore files in NERDTree
+    " let NERDTreeDirArrowExpandable  = '+'
+    " let NERDTreeDirArrowCollapsible = '~'
+    "ignore files in NERDTree
     let NERDTreeIgnore              = ['\.pyc$', '\~$', '\.sw$', '\.swp$']
+    let NERDTreeShowHidden          = 1
 endif
 
 " ################ Alignment with Tabularize #################
