@@ -37,7 +37,8 @@ autocmd BufEnter * silent! lcd %:p:h
 " disable sounds
 set visualbell
 
-autocmd FileType c,cpp,java,php,python,shell,vim autocmd BufWritePre <buffer> %s/\s\+$//e
+" Trim whitespaces in selected files
+autocmd FileType c,cpp,java,php,python,shell,vim,html,css,javascript,go autocmd BufWritePre <buffer> %s/\s\+$//e
 
 hi CursorLine term=bold cterm=bold guibg=Grey40
 
@@ -53,6 +54,7 @@ set ignorecase
 set pastetoggle=<F4>
 
 "nmap <S-Enter> O<Esc>
+" Add lines in normal mode without enter in insert mode
 nmap <C-o> O<Esc>
 nmap <CR> o<Esc>
 
@@ -60,6 +62,7 @@ nmap <CR> o<Esc>
 set backup   " make backup files
 set undofile " persistent undos - undo after you re-open the file
 
+" Easy remove line in normal mode
 nmap <BS> dd
 
 if has("nvim")
@@ -93,10 +96,28 @@ if !isdirectory(&undodir)
     call mkdir(&undodir, "p")
 endif
 
+" Close buffer/Editor
 nmap <leader>z ZZ
+
+" easy dump bin files into hex
+nmap <leader>x :%!xxd<CR>
+augroup Binary
+	au!
+	au BufReadPre   *.bin,*.exe let &bin=1
+	au BufReadPost  *.bin,*.exe if &bin | silent! %!xxd
+	au BufReadPost  *.bin,*.exe set ft=xxd | endif
+	au BufWritePre  *.bin,*.exe if &bin | %!xxd -r
+	au BufWritePre  *.bin,*.exe endif
+	au BufWritePost *.bin,*.exe if &bin | %!xxd
+	au BufWritePost *.bin,*.exe set nomod | endif
+augroup END
+
+" Use shell grep
+nmap gp :!grep --color -nr
 
 " ################# Set Neovim settings #################
 if (has("nvim"))
+    " live preview of Substitute
     set inccommand=split
 endif
 
@@ -153,35 +174,43 @@ nnoremap E :Explore<CR>
 let g:netrw_liststyle=3
 
 " ################# Change current active file split #################
+" Easy indentation in normal mode
 nmap <tab> >>
 nmap <S-tab> <<
 
-imap <S-tab> <C-p>
+" imap <S-tab> <C-p>
 
 " nmap <leader>x <C-w><C-w>
 nmap <C-x> <C-w><C-w>
 imap <C-x> <ESC><C-x>
 
+" Buffer
 nmap <leader>h <C-w>h
 nmap <leader>j <C-w>j
 nmap <leader>k <C-w>k
 nmap <leader>l <C-w>l
 
 if has("nvim")
-    tnoremap <Esc> <C-\><C-n>
-    nmap <A-t> :terminal<CR>
+    " Better splits
     nmap <A-s> <C-w>s
     nmap <A-v> <C-w>v
 
+    " Better terminal access
+    nmap <A-t> :terminal<CR>
+    tnoremap <Esc> <C-\><C-n>
+
+    " Better terminal movement
     tnoremap <leader-h> <C-\><C-n><C-w>h
     tnoremap <leader-j> <C-\><C-n><C-w>j
     tnoremap <leader-k> <C-\><C-n><C-w>k
     tnoremap <leader-l> <C-\><C-n><C-w>l
 endif
 
+" Resize buffer splits
 nmap <leader>i <C-w>=
 nmap <leader>- <C-w>-
 
+" Color columns
 if exists('+colorcolumn')
     let &colorcolumn="80,".join(range(120,999),",")
 endif
@@ -204,11 +233,14 @@ nmap ti :set ignorecase!<CR>
 nmap tw :set wrap!<CR>
 nmap tc :set cursorline!<CR>
 
+" ################# Terminal colors #################
 if (has("nvim"))
+    " Neovim colors stuff
     let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 endif
 
 if (has("termguicolors"))
+    " set terminal colors
     set termguicolors
 endif
 
@@ -224,14 +256,23 @@ if &runtimepath =~ 'bufferbye'
 endif
 
 if &runtimepath =~ 'sessions'
+    " Session management
+
+    " Auto save on exit
     let g:session_autosave = 'yes'
+    " Don't ask for load last session
     let g:session_autoload = 'no'
 
     " nmap <leader>d :DeleteSession
+    " Quick open session
     nmap <leader>o :OpenSession
+    " Save current files in a session
     nmap <leader>s :SaveSession
+    " close current session !!!!!!!! use this instead of close the buffers !!!!!!!!
     nmap <leader>c :CloseSession<CR>
+    " Quick save current session
     nmap <leader><leader>s :SaveSession<CR>
+    " Quick delete current session
     nmap <leader><leader>d :DeleteSession<CR>
 endif
 
@@ -305,11 +346,13 @@ endif
 
 " ################# Themes #################
 
-" colorscheme railscasts
-colorscheme Monokai
-nmap cm :colorscheme Monokai<CR>
-nmap co :colorscheme onedark<CR>
-nmap cr :colorscheme railscasts<CR>
+if &runtimepath =~ 'colorschemes'
+    " colorscheme railscasts
+    colorscheme Monokai
+    nmap cm :colorscheme Monokai<CR>
+    nmap co :colorscheme onedark<CR>
+    nmap cr :colorscheme railscasts<CR>
+endif
 
 if &runtimepath =~ 'airline'
     let g:airline_theme = 'molokai'
@@ -354,7 +397,7 @@ if ( has('python') || has('python3') )
 
 
     " if ( v:version == 704 && has("patch143") )
-    if &runtimepath =~ 'youcompleteme'
+    " if &runtimepath =~ 'youcompleteme'
         " nnoremap <F5> :YcmForceCompileAndDiagnostics<CR>
 
         " nnoremap <leader>g :YcmCompleter GoTo<CR>
@@ -365,7 +408,7 @@ if ( has('python') || has('python3') )
         " nnoremap <leader>i :YcmCompleter GoToInclude<CR>
         " nnoremap <leader>d :YcmCompleter GoToDeclaration<CR>
         " nnoremap <leader>t :YcmCompleter GetType<CR>
-    endif
+    " endif
     " endif
 endif
 
@@ -425,6 +468,23 @@ if &runtimepath =~ 'tabular'
 
     nmap <leader>t* :Tabularize /*<CR>
     vmap <leader>t* :Tabularize /*<CR>
+endif
+
+if &runtimepath =~ 'fugitive'
+    nmap gs :Gstatus<CR>
+    nmap gc :Gcommit<CR>
+    nmap gb :Gblame<CR>
+    nmap gl :Git log<CR>
+    nmap gll :Git log --oneline<CR>
+    nmap go :Git checkout
+    nmap gom :Git checkout master<CR>
+    nmap gps :Git push
+    nmap gpo :Git push origin
+    nmap gpl :Git pull
+    nmap gplo :Git pull origin<CR>
+    nmap gpom :Git push origin master<CR>
+    nmap gsa :Git stash apply
+    nmap gsp :Git stash pop<CR>
 endif
 
 if &runtimepath =~ 'gitglutter'

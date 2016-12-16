@@ -1,5 +1,38 @@
-# .vim
-Just my personal vim settings (v:version >= 7.4).
+# Vimrc
+This repo have mi personal Vim/Neovim setings that I have been collecting for a while, feel free to change
+anything to fit your needs or suggest me something that you think could be useful.
+
+*This settings require Vim >= 7.4 or Neovim >= 0.12 with **python** and **lua** support and **ctags**.*
+
+I have personally test this configurations in the following enviroments:
+
+* Linux
+    * Debian 8/8.5 jessie
+        - Vim 7.4.143
+
+    * Ubuntu 14.04 trusty
+        - Vim 7.4.52
+
+    * Archlinux
+        - Vim 8.0.94
+        - Neovim 0.15
+
+* Android (In my nexus 6 via Termux)
+    * Marshmallow 6.0/6.1 
+        - Vim 8.0.0104 (without python modules)
+        - Neovim 0.2-dev (without python modules)
+
+    * Nougat 7.0
+        - Vim 8.0.0104 (without python modules)
+        - Neovim 0.2-dev (without python modules)
+
+* Windows
+    * Cygwin 
+        - Vim 8.0.94
+    * Git bash (some problems loading python modules)
+        - Vim 8.0.27
+
+I you 
 
 You can test my settings by clonning this repo into your `$HOME`
 
@@ -9,15 +42,13 @@ git clone --recursive https://git.prodeveloper.me.com/mike/.vim.git ~/.vim
 ln -s ~/.vim/init.vim ~/.vimrc
 ```
 
-If you are using [neovim](https://neovim.io/) you just need to move the repo to `~/.config/nvim`
+If you are using [Neovim](https://neovim.io/) you just need to move the repo to `~/.config/nvim`
     
     mv ~/.vim ~/.config/nvim
 
 or just clone it there
 
     git clone --recursive https://git.prodeveloper.me.com/mike/.vim.git ~/.config/nvim
-    
-Feel free to change anything to fit your needs! 
 
 Included plugins:
 
@@ -46,3 +77,16 @@ Included plugins:
 * [ultisnips](https://github.com/SirVer/ultisnips)
 * [vim-misc](https://github.com/xolox/vim-misc)
 * [vim-surround](https://github.com/tpope/vim-surround)
+* [jedi](https://github.com/davidhalter/jedi-vim)
+* [syntastic](https://github.com/vim-syntastic/vim-syntastic)
+
+If you want to test a more specific configuration or you don't have **python**, **lua** or ctags try to clone the repo 
+and then init the submodules that you want to setup.
+
+```
+git clone https://git.prodeveloper.me/mike/.vim ~/.vim
+ln -s ~/.vim/init.vim ~/.vimrc
+cd ~/.vim
+git submodule update --init --recursive bundle/nerdtree
+```
+Feel free to change anything to fit your needs! 
