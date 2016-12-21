@@ -366,7 +366,9 @@ if &runtimepath =~ 'airline'
     let g:airline#extensions#tabline#show_splits       = 0
 
     " let g:airline#extensions#tabline#show_tab_nr = 0
-    " let g:airline_powerline_fonts = 1
+    " Powerline fonts, check https://github.com/powerline/fonts.git for more
+    " info
+    let g:airline_powerline_fonts = 1
 endif
 
 " ################# Snnipets    #################
@@ -445,9 +447,10 @@ endif
 
 " ################# NERDTree quick open/close #################
 if &runtimepath =~ 'nerdtree'
-    let NERDTreeDirArrowExpandable  = '+'
-    let NERDTreeDirArrowCollapsible = '~'
-    "ignore files in NERDTree
+    " If you don't have unicode, uncomment the following lines
+    " let NERDTreeDirArrowExpandable  = '+'
+    " let NERDTreeDirArrowCollapsible = '~'
+    " Ignore files in NERDTree
     let NERDTreeIgnore              = ['\.pyc$', '\~$', '\.sw$', '\.swp$']
     let NERDTreeShowHidden          = 1
 endif
