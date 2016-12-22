@@ -65,6 +65,14 @@ set undofile " persistent undos - undo after you re-open the file
 " Easy remove line in normal mode
 nmap <BS> dd
 
+" if has("win32")
+"     set directory=C:/Users/mochax/vim/tmp_dirs/swap    " directory to place swap files in
+"     set backupdir=C:/Users/mochax/vim/tmp_dirs/backups " where to put backup files
+"     set undodir=C:/Users/mochax/vim/tmp_dirs/undos
+"     set viminfo+=nC:/Users/mochax/vim/tmp_dirs/viminfo
+"     " store yankring history file there too
+"     let g:yankring_history_dir = '~/.vim/tmp_dirs/'
+" else
 if has("nvim")
     " nvim stuff
     set directory=~/.config/nvim/tmp_dirs/swap    " directory to place swap files in
@@ -82,6 +90,7 @@ else
     " store yankring history file there too
     let g:yankring_history_dir = '~/.vim/tmp_dirs/'
 endif
+" endif
 
 " create needed directories if they don't exist
 if !isdirectory(&backupdir)
@@ -112,8 +121,15 @@ augroup Binary
 	au BufWritePost *.bin,*.exe set nomod | endif
 augroup END
 
-" Use shell grep
-nmap gp :!grep --color -nr
+if ( has("gui_running" ) && has("win32") )
+    set guifont=Lucida_Console:h10
+endif
+
+if !has("gui_running") && !has("nvim")
+    " Use shell grep
+    nmap gp :!grep --color -nr
+endif
+
 
 " ################# Set Neovim settings #################
 if (has("nvim"))
@@ -177,6 +193,8 @@ let g:netrw_liststyle=3
 " Easy indentation in normal mode
 nmap <tab> >>
 nmap <S-tab> <<
+vmap <tab> >gv
+vmap <S-tab> <gv
 
 " imap <S-tab> <C-p>
 
