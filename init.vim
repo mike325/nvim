@@ -64,6 +64,7 @@ set undofile " persistent undos - undo after you re-open the file
 
 " Easy remove line in normal mode
 nmap <BS> dd
+vmap <BS> dd
 
 " if has("win32")
 "     set directory=C:/Users/mochax/vim/tmp_dirs/swap    " directory to place swap files in
@@ -107,19 +108,20 @@ endif
 
 " Close buffer/Editor
 nmap <leader>z ZZ
+nmap <leader>Z :q!<CR>
 
 " easy dump bin files into hex
 nmap <leader>x :%!xxd<CR>
-augroup Binary
-	au!
-	au BufReadPre   *.bin,*.exe let &bin=1
-	au BufReadPost  *.bin,*.exe if &bin | silent! %!xxd
-	au BufReadPost  *.bin,*.exe set ft=xxd | endif
-	au BufWritePre  *.bin,*.exe if &bin | %!xxd -r
-	au BufWritePre  *.bin,*.exe endif
-	au BufWritePost *.bin,*.exe if &bin | %!xxd
-	au BufWritePost *.bin,*.exe set nomod | endif
-augroup END
+" augroup Binary
+"     au!
+"     au BufReadPre   *.bin,*.exe let &bin=1
+"     au BufReadPost  *.bin,*.exe if &bin | silent! %!xxd
+"     au BufReadPost  *.bin,*.exe set ft=xxd | endif
+"     au BufWritePre  *.bin,*.exe if &bin | %!xxd -r
+"     au BufWritePre  *.bin,*.exe endif
+"     au BufWritePost *.bin,*.exe if &bin | %!xxd
+"     au BufWritePost *.bin,*.exe set nomod | endif
+" augroup END
 
 if ( has("gui_running" ) && has("win32") )
     set guifont=Lucida_Console:h10
@@ -245,11 +247,11 @@ vmap <F2> <Esc><F2>gv
 imap <F2> <Esc><F2>a
 
 " ################# Toggles #################
-nmap tn :set number!<CR>
-nmap th :set hlsearch!<CR>
-nmap ti :set ignorecase!<CR>
-nmap tw :set wrap!<CR>
-nmap tc :set cursorline!<CR>
+nmap tn :set number!<Bar>set number?<CR>
+nmap th :set hlsearch!<Bar>set hlsearch?<CR>
+nmap ti :set ignorecase!<Bar>set ignorecase?<CR>
+nmap tw :set wrap!<Bar>set wrap?<CR>
+nmap tc :set cursorline!<Bar>set cursorline?<CR>
 
 " ################# Terminal colors #################
 if (has("nvim"))
@@ -290,7 +292,7 @@ if &runtimepath =~ 'sessions'
     nmap <leader>c :CloseSession<CR>
     " Quick save current session
     nmap <leader><leader>s :SaveSession<CR>
-    " Quick delete current session
+    " Quick delete session
     nmap <leader><leader>d :DeleteSession<CR>
 endif
 
@@ -302,7 +304,7 @@ if &runtimepath =~ 'ctrlp'
     let g:ctrlp_working_path_mode = 'ra'
     let g:ctrlp_custom_ignore = {
                 \ 'dir':  '\v[\/]\.(git|hg|svn)$',
-                \ 'file': '\v\.(exe|so|dll|pyc|zip|sw|swp)$',
+                \ 'file': '\v\.(exe|bin|o|so|dll|pyc|zip|sw|swp)$',
                 \ }
 endif
 
@@ -323,8 +325,8 @@ if &runtimepath =~"easymotion"
     let g:EasyMotion_smartcase = 1
 
     " toggle ignore case
-    nmap tea :let g:EasyMotion_smartcase=1<CR>
-    nmap ted :let g:EasyMotion_smartcase=0<CR>
+    nmap tes :let g:EasyMotion_smartcase=1<CR>
+    nmap tec :let g:EasyMotion_smartcase=0<CR>
 
     " <leader>f{char} to move to {char}
     " search a character in the current buffer
@@ -389,7 +391,8 @@ if &runtimepath =~ 'airline'
     let g:airline_powerline_fonts = 1
 endif
 
-" ################# Snnipets    #################
+" ################# Snnipets and completition #################
+
 if ( has('python') || has('python3') )
     if &runtimepath =~ "ultisnips"
         let g:UltiSnipsSnippetDirectories=["UltiSnips"]
@@ -434,7 +437,7 @@ endif
 
 " ################# Syntax check #################
 if &runtimepath =~ "syntastic"
-    set sessionoptions-=blank
+    " set sessionoptions-=blank
 
     set statusline+=%#warningmsg#
     set statusline+=%{SyntasticStatuslineFlag()}
@@ -462,15 +465,14 @@ if &runtimepath =~ "syntastic"
     nmap <F8> :lclose<CR>
 endif
 
-
 " ################# NERDTree quick open/close #################
 if &runtimepath =~ 'nerdtree'
-    " If you don't have unicode, uncomment the following lines
-    " let NERDTreeDirArrowExpandable  = '+'
-    " let NERDTreeDirArrowCollapsible = '~'
     " Ignore files in NERDTree
     let NERDTreeIgnore              = ['\.pyc$', '\~$', '\.sw$', '\.swp$']
     let NERDTreeShowHidden          = 1
+    " If you don't have unicode, uncomment the following lines
+    " let NERDTreeDirArrowExpandable  = '+'
+    " let NERDTreeDirArrowCollapsible = '~'
 endif
 
 " ################ Alignment with Tabularize #################
