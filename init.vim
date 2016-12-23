@@ -108,7 +108,7 @@ endif
 
 " Close buffer/Editor
 nmap <leader>z ZZ
-nmap <leader>Z :q!<CR>
+nmap <leader>q :q!<CR>
 
 " easy dump bin files into hex
 nmap <leader>x :%!xxd<CR>
