@@ -37,7 +37,8 @@ autocmd BufEnter * silent! lcd %:p:h
 " disable sounds
 set visualbell
 
-autocmd FileType c,cpp,java,php,python,shell,vim autocmd BufWritePre <buffer> %s/\s\+$//e
+" Trim whitespaces in selected files
+autocmd FileType c,cpp,java,php,python,shell,vim,html,css,javascript,go autocmd BufWritePre <buffer> %s/\s\+$//e
 
 hi CursorLine term=bold cterm=bold guibg=Grey40
 
@@ -53,12 +54,17 @@ set ignorecase
 set pastetoggle=<F4>
 
 "nmap <S-Enter> O<Esc>
+" Add lines in normal mode without enter in insert mode
 nmap <C-o> O<Esc>
 nmap <CR> o<Esc>
 
 " better backup, swap and undos storage
 set backup   " make backup files
 set undofile " persistent undos - undo after you re-open the file
+
+" Easy remove line in normal mode
+nmap <BS> dd
+vmap <BS> dd
 
 if has("nvim")
     " nvim stuff
@@ -77,6 +83,7 @@ else
     " store yankring history file there too
     let g:yankring_history_dir = '~/.vim/tmp_dirs/'
 endif
+" endif
 
 " create needed directories if they don't exist
 if !isdirectory(&backupdir)
@@ -91,10 +98,38 @@ if !isdirectory(&undodir)
     call mkdir(&undodir, "p")
 endif
 
+" Close buffer/Editor
 nmap <leader>z ZZ
+nmap <leader>q :q!<CR>
+
+" easy dump bin files into hex
+nmap <leader>x :%!xxd<CR>
+" Already have a plugin to do this *Hexmode*
+" augroup Binary
+"     au!
+"     au BufReadPre   *.bin,*.exe let &bin=1
+"     au BufReadPost  *.bin,*.exe if &bin | silent! %!xxd
+"     au BufReadPost  *.bin,*.exe set ft=xxd | endif
+"     au BufWritePre  *.bin,*.exe if &bin | %!xxd -r
+"     au BufWritePre  *.bin,*.exe endif
+"     au BufWritePost *.bin,*.exe if &bin | %!xxd
+"     au BufWritePost *.bin,*.exe set nomod | endif
+" augroup END
+
+" Better font for Gvim in Windows
+if ( has("gui_running" ) && has("win32") )
+    set guifont=Lucida_Console:h10
+endif
+
+if !has("gui_running") && !has("nvim")
+    " Use shell grep
+    nmap gp :!grep --color -nr
+endif
+
 
 " ################# Set Neovim settings #################
 if (has("nvim"))
+    " live preview of Substitute
     set inccommand=split
 endif
 
@@ -120,7 +155,7 @@ nnoremap <leader><leader>c :tabclose<CR>
 
 " ################# Buffer management #################
 " buffer add
-nmap <leader>a :badd
+" nmap <leader>a :badd
 
 " Next buffer
 nmap <leader>n :bn<CR>
@@ -133,7 +168,7 @@ nmap <leader>d :bdelete<CR>
 " nmap fd :bdelete<CR>
 
 "go to last buffer
-nmap <leader>l :blast<CR>
+" nmap <leader>l :blast<CR>
 
 " Quick buffer change by number
 " nnoremap b1 :b 1<CR>
@@ -151,37 +186,46 @@ nnoremap E :Explore<CR>
 let g:netrw_liststyle=3
 
 " ################# Change current active file split #################
-nmap <leader>x <c-w><c-w>
-nmap <c-x> <c-w><c-w>
-imap <c-x> <ESC><c-x>
-
+" Easy indentation in normal and visual modes
 nmap <tab> >>
 nmap <S-tab> <<
+vmap <tab> >gv
+vmap <S-tab> <gv
 
-nmap <leader>x <C-w><C-w>
+" imap <S-tab> <C-p>
+
+" nmap <leader>x <C-w><C-w>
 nmap <C-x> <C-w><C-w>
-imap <C-x> <ESC><C-x>
+" Already map to use <C-x> with UltiSnips
+" imap <C-x> <ESC><C-x>
 
+" easy move between Buffers
 nmap <leader>h <C-w>h
 nmap <leader>j <C-w>j
 nmap <leader>k <C-w>k
 nmap <leader>l <C-w>l
 
 if has("nvim")
-    tnoremap <Esc> <C-\><C-n>
-    nmap <A-t> :terminal<CR>
+    " Better splits
     nmap <A-s> <C-w>s
     nmap <A-v> <C-w>v
 
+    " Better terminal access
+    nmap <A-t> :terminal<CR>
+    tnoremap <Esc> <C-\><C-n>
+
+    " Better terminal movement
     tnoremap <leader-h> <C-\><C-n><C-w>h
     tnoremap <leader-j> <C-\><C-n><C-w>j
     tnoremap <leader-k> <C-\><C-n><C-w>k
     tnoremap <leader-l> <C-\><C-n><C-w>l
 endif
 
+" Resize buffer splits
 nmap <leader>i <C-w>=
 nmap <leader>- <C-w>-
 
+" Color columns
 if exists('+colorcolumn')
     let &colorcolumn="80,".join(range(120,999),",")
 endif
@@ -198,17 +242,25 @@ vmap <F2> <Esc><F2>gv
 imap <F2> <Esc><F2>a
 
 " ################# Toggles #################
-nmap tn :set number!<CR>
-nmap th :set hlsearch!<CR>
-nmap ti :set ignorecase!<CR>
-nmap tw :set wrap!<CR>
-nmap tc :set cursorline!<CR>
+" Toggle line numbers
+nmap tn :set number!<Bar>set number?<CR>
+" Toggle highlight search
+nmap th :set hlsearch!<Bar>set hlsearch?<CR>
+" Toggle ignorecase
+nmap ti :set ignorecase!<Bar>set ignorecase?<CR>
+" Toggle line wrap
+nmap tw :set wrap!<Bar>set wrap?<CR>
+" Toggle current line highlight
+nmap tc :set cursorline!<Bar>set cursorline?<CR>
 
+" ################# Terminal colors #################
 if (has("nvim"))
+    " Neovim colors stuff
     let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 endif
 
 if (has("termguicolors"))
+    " set terminal colors
     set termguicolors
 endif
 
@@ -224,14 +276,23 @@ if &runtimepath =~ 'bufferbye'
 endif
 
 if &runtimepath =~ 'sessions'
+    " Session management
+
+    " Auto save on exit
     let g:session_autosave = 'yes'
+    " Don't ask for load last session
     let g:session_autoload = 'no'
 
     " nmap <leader>d :DeleteSession
+    " Quick open session
     nmap <leader>o :OpenSession
+    " Save current files in a session
     nmap <leader>s :SaveSession
-    nmap <leader>C :CloseSession<CR>
+    " close current session !!!!!!!! use this instead of close the buffers !!!!!!!!
+    nmap <leader>c :CloseSession<CR>
+    " Quick save current session
     nmap <leader><leader>s :SaveSession<CR>
+    " Quick delete session
     nmap <leader><leader>d :DeleteSession<CR>
 endif
 
@@ -243,7 +304,7 @@ if &runtimepath =~ 'ctrlp'
     let g:ctrlp_working_path_mode = 'ra'
     let g:ctrlp_custom_ignore = {
                 \ 'dir':  '\v[\/]\.(git|hg|svn)$',
-                \ 'file': '\v\.(exe|so|dll|pyc|zip|sw|swp)$',
+                \ 'file': '\v\.(exe|bin|o|so|dll|pyc|zip|sw|swp)$',
                 \ }
 endif
 
@@ -264,8 +325,8 @@ if &runtimepath =~"easymotion"
     let g:EasyMotion_smartcase = 1
 
     " toggle ignore case
-    nmap tea :let g:EasyMotion_smartcase=1<CR>
-    nmap ted :let g:EasyMotion_smartcase=0<CR>
+    nmap tes :let g:EasyMotion_smartcase=1<CR>
+    nmap tec :let g:EasyMotion_smartcase=0<CR>
 
     " <leader>f{char} to move to {char}
     " search a character in the current buffer
@@ -276,8 +337,8 @@ if &runtimepath =~"easymotion"
     vmap F <Plug>(easymotion-overwin-f)
 
     " search a character in the current line
-    nmap <leader>f <Plug>(easymotion-Fl)
-    vmap <leader>f <Plug>(easymotion-Fl)
+    nmap <leader>f <Plug>(easymotion-sl)
+    vmap <leader>f <Plug>(easymotion-sl)
 
     " Move to line
     " move to a line in the current layout
@@ -305,11 +366,13 @@ endif
 
 " ################# Themes #################
 
-" colorscheme railscasts
-colorscheme Monokai
-nmap cm :colorscheme Monokai<CR>
-nmap co :colorscheme onedark<CR>
-nmap cr :colorscheme railscasts<CR>
+if &runtimepath =~ 'colorschemes'
+    " colorscheme railscasts
+    colorscheme Monokai
+    nmap cm :colorscheme Monokai<CR>
+    nmap co :colorscheme onedark<CR>
+    nmap cr :colorscheme railscasts<CR>
+endif
 
 if &runtimepath =~ 'airline'
     let g:airline_theme = 'molokai'
@@ -323,24 +386,42 @@ if &runtimepath =~ 'airline'
     let g:airline#extensions#tabline#show_splits       = 0
 
     " let g:airline#extensions#tabline#show_tab_nr = 0
-    " let g:airline_powerline_fonts = 1
+    " Powerline fonts, check https://github.com/powerline/fonts.git for more
+    " info
+    let g:airline_powerline_fonts = 1
 endif
 
-" ################# Snnipets    #################
-if ( has('python') || has('python3') )
-    let g:UltiSnipsSnippetDirectories=["UltiSnips"]
+" ################# Snnipets and completition #################
 
-    if has('python3')
-        let g:UltiSnipsUsePythonVersion = 3
+if ( has('python') || has('python3') )
+    if &runtimepath =~ "ultisnips"
+        let g:UltiSnipsSnippetDirectories=["UltiSnips"]
+
+        if has('python3')
+            let g:UltiSnipsUsePythonVersion = 3
+        endif
+
+        let g:UltiSnipsJumpForwardTrigger="<C-a>"
+        let g:UltiSnipsJumpBackwardTrigger="<C-z>"
+        let g:UltiSnipsExpandTrigger="<C-x>"
     endif
 
-    let g:UltiSnipsJumpForwardTrigger="<C-a>"
-    let g:UltiSnipsJumpBackwardTrigger="<C-z>"
-    let g:UltiSnipsExpandTrigger="<C-x>"
+    if &runtimepath =~ "jedi"
+        let g:jedi#popup_on_dot = 1
+        let g:jedi#popup_select_first = 1
+        let g:jedi#completions_command = "<C-c>"
+        let g:jedi#goto_command = "<leader>g"
+        let g:jedi#goto_assignments_command = "<leader>a"
+        let g:jedi#goto_definitions_command = "<leader>D"
+        let g:jedi#documentation_command = "K"
+        let g:jedi#usages_command = "<leader>u"
+        let g:jedi#rename_command = "<leader>r"
+    endif
+
 
     " if ( v:version == 704 && has("patch143") )
-    if &runtimepath =~ 'youcompleteme'
-        nnoremap <F5> :YcmForceCompileAndDiagnostics<CR>
+    " if &runtimepath =~ 'youcompleteme'
+        " nnoremap <F5> :YcmForceCompileAndDiagnostics<CR>
 
         " nnoremap <leader>g :YcmCompleter GoTo<CR>
         " nnoremap <leader>r :YcmCompleter GoToReferences<CR>
@@ -350,17 +431,18 @@ if ( has('python') || has('python3') )
         " nnoremap <leader>i :YcmCompleter GoToInclude<CR>
         " nnoremap <leader>d :YcmCompleter GoToDeclaration<CR>
         " nnoremap <leader>t :YcmCompleter GetType<CR>
-    endif
+    " endif
     " endif
 endif
 
 " ################# NERDTree quick open/close #################
 if &runtimepath =~ 'nerdtree'
-    " let NERDTreeDirArrowExpandable  = '+'
-    " let NERDTreeDirArrowCollapsible = '~'
-    "ignore files in NERDTree
+    " Ignore files in NERDTree
     let NERDTreeIgnore              = ['\.pyc$', '\~$', '\.sw$', '\.swp$']
     let NERDTreeShowHidden          = 1
+    " If you don't have unicode, uncomment the following lines
+    " let NERDTreeDirArrowExpandable  = '+'
+    " let NERDTreeDirArrowCollapsible = '~'
 endif
 
 " ################ Alignment with Tabularize #################
@@ -381,11 +463,31 @@ if &runtimepath =~ 'tabular'
     vmap <leader>t* :Tabularize /*<CR>
 endif
 
+" ################ Manage git within vim #################
+if &runtimepath =~ 'fugitive'
+    nmap gs :Gstatus<CR>
+    nmap gc :Gcommit<CR>
+    nmap gb :Gblame<CR>
+    nmap gl :Git log<CR>
+    nmap gll :Git log --oneline<CR>
+    nmap go :Git checkout
+    nmap gom :Git checkout master<CR>
+    nmap gps :Git push
+    nmap gpo :Git push origin
+    nmap gpl :Git pull
+    nmap gplo :Git pull origin<CR>
+    nmap gpom :Git push origin master<CR>
+    nmap gsa :Git stash apply
+    nmap gsp :Git stash pop<CR>
+endif
+
+" ################ Highlight Git changes #################
 if &runtimepath =~ 'gitglutter'
     nmap tg :GitGutterToggle<CR>
     nmap tl :GitGutterLineHighlightsToggle<CR>
 endif
 
+" ################ Show marks #################
 if &runtimepath =~ 'signature'
     nmap <leader><leader>g :SignatureListGlobalMarks<CR>
     imap <C-s>g <ESC>:SignatureListGlobalMarks<CR>
@@ -393,16 +495,19 @@ if &runtimepath =~ 'signature'
     nmap <leader><leader>b :SignatureListBufferMarks<CR>
     imap <C-s>b <ESC>:SignatureListBufferMarks<CR>
 
-    nmap ts :SignatureToggleSigns<CR>
+    nmap tS :SignatureToggleSigns<CR>
 endif
 
+" ################ Use Ctags #################
+" Need to install Ctags in the system !!!
 if &runtimepath =~ 'tagbar'
-    nmap <F6> :TagbarToggle<CR>
-    imap <F6> :TagbarToggle<CR>
-    vmap <F6> :TagbarToggle<CR>
+    nmap <F1> :TagbarToggle<CR>
+    imap <F1> :TagbarToggle<CR>
+    vmap <F1> :TagbarToggle<CR>gv
     nmap tt :TagbarToggle<CR>
 endif
 
+" ################ Mirror Nerdtree across all vim tabs #################
 if &runtimepath =~ 'nerdtree-tabs'
     "nmap T :NERDTree<CR>
     nmap T :NERDTreeTabsToggle<CR>
