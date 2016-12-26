@@ -2,7 +2,7 @@
 This repo have mi personal Vim/Neovim setings that I have been collecting for a while, feel free to change
 anything to fit your needs or suggest me something that you think could be useful.
 
-*This settings require Vim >= 7.4 or Neovim >= 0.12 with **python** and **lua** support and **ctags**.*
+This settings require Vim >= 7.4 or Neovim >= 0.12 with **python** and **lua** support and **ctags**.
 
 I have personally tested this configurations in the following environments:
 
@@ -32,8 +32,6 @@ I have personally tested this configurations in the following environments:
     * Git bash (some problems loading python modules)
         - Vim 8.0.27
 
-I you 
-
 You can test my settings by clonning this repo into your `$HOME`
 
 ```
@@ -52,36 +50,36 @@ or just clone it there
 
 Included plugins:
 
-* [airline-themes](https://github.com/vim-airline/vim-airline-themes/)
-* [airline](https://github.com/vim-airline/vim-airline/)
-* [bufferbye](https://github.com/moll/vim-bbye)
-* [colorschemes](https://github.com/flazz/vim-colorschemes)
-* [ctrlp](https://github.com/kien/ctrlp.vim)
-* [delimitMate](https://github.com/Raimondi/delimitMate.git)
-* [Dockerfile](https://github.com/ekalinin/Dockerfile.vim)
-* [easymotion](https://github.com/easymotion/vim-easymotion)
-* [fugitive](https://github.com/tpope/vim-fugitive)
-* [gitglutter](https://github.com/airblade/vim-gitgutter)
-* [multicursors](https://github.com/terryma/vim-multiple-cursors)
-* [nerdcommenter](https://github.com/scrooloose/nerdcommenter)
-* [nerdtree-tabs](https://github.com/jistr/vim-nerdtree-tabs)
-* [nerdtree](https://github.com/scrooloose/nerdtree)
-* [polyglot](https://github.com/sheerun/vim-polyglot)
-* [sensible](https://github.com/tpope/vim-sensible)
-* [sessions](https://github.com/xolox/vim-session)
-* [signature](https://github.com/kshenoy/vim-signature)
-* [snippets](https://github.com/honza/vim-snippets)
-* [supertab](https://github.com/ervandew/supertab)
-* [tabular](https://github.com/godlygeek/tabular)
-* [tagbar](https://github.com/majutsushi/tagbar)
-* [ultisnips](https://github.com/SirVer/ultisnips)
-* [vim-misc](https://github.com/xolox/vim-misc)
-* [vim-surround](https://github.com/tpope/vim-surround)
-* [jedi](https://github.com/davidhalter/jedi-vim)
-* [hexmode](https://github.com/fidian/hexmode)
+* [Airline-themes](https://github.com/vim-airline/vim-airline-themes/)
+* [Airline](https://github.com/vim-airline/vim-airline/)
+* [Bufferbye](https://github.com/moll/vim-bbye)
+* [Colorschemes](https://github.com/flazz/vim-colorschemes)
+* [Ctrlp](https://github.com/kien/ctrlp.vim)
+* [DelimitMate](https://github.com/Raimondi/delimitMate.git)
+* [dockerfile](https://github.com/ekalinin/Dockerfile.vim)
+* [Easymotion](https://github.com/easymotion/vim-easymotion)
+* [Fugitive](https://github.com/tpope/vim-fugitive)
+* [Gitglutter](https://github.com/airblade/vim-gitgutter)
+* [Multicursors](https://github.com/terryma/vim-multiple-cursors)
+* [Nerdcommenter](https://github.com/scrooloose/nerdcommenter)
+* [Nerdtree-tabs](https://github.com/jistr/vim-nerdtree-tabs)
+* [Nerdtree](https://github.com/scrooloose/nerdtree)
+* [Polyglot](https://github.com/sheerun/vim-polyglot)
+* [Sensible](https://github.com/tpope/vim-sensible)
+* [Sessions](https://github.com/xolox/vim-session)
+* [Signature](https://github.com/kshenoy/vim-signature)
+* [Snippets](https://github.com/honza/vim-snippets)
+* [Supertab](https://github.com/ervandew/supertab)
+* [Tabular](https://github.com/godlygeek/tabular)
+* [Tagbar](https://github.com/majutsushi/tagbar)
+* [Ultisnips](https://github.com/SirVer/ultisnips)
+* [Vim-misc](https://github.com/xolox/vim-misc)
+* [Vim-surround](https://github.com/tpope/vim-surround)
+* [Jedi](https://github.com/davidhalter/jedi-vim)
+* [Hexmode](https://github.com/fidian/hexmode)
 
-If you want to test a more specific configuration or you don't have **python**, **lua** or **ctags** try to clone the repo 
-and then init the submodules that you want to setup.
+If you want to test a more specific configuration or you don't have **python**, **lua** or **ctags** 
+try to clone the repo and then init the submodules that you want to setup.
 
 ```
 git clone https://github.com/mike325/.vim.git ~/.vim
