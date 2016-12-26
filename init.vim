@@ -541,3 +541,7 @@ if &runtimepath =~ 'nerdtree-tabs'
     imap <F3> <Esc><F3>
     vmap <F3> <Esc><F3>
 endif
+
+if &runtimepath =~ 'move'
+    let g:move_key_modifier = 'C'
+endif

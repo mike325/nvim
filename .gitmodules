@@ -82,3 +82,12 @@
 [submodule "bundle/hexmode"]
 	path = bundle/hexmode
 	url = https://github.com/fidian/hexmode.git
+[submodule "bundle/move"]
+	path = bundle/move
+	url = https://github.com/matze/vim-move.git
+[submodule "bundle/macroeditor"]
+	path = bundle/macroeditor
+	url = https://github.com/dohsimpson/vim-macroeditor.git
+[submodule "bundle/committia"]
+	path = bundle/committia
+	url = https://github.com/rhysd/committia.vim.git
