@@ -289,7 +289,7 @@ if &runtimepath =~ 'sessions'
     " Save current files in a session
     nmap <leader>s :SaveSession
     " close current session !!!!!!!! use this instead of close the buffers !!!!!!!!
-    nmap <leader>c :CloseSession<CR>
+    nmap <leader>C :CloseSession<CR>
     " Quick save current session
     nmap <leader><leader>s :SaveSession<CR>
     " Quick delete session
