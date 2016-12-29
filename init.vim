@@ -79,9 +79,19 @@ if has("python") || has("python3")
     Plug 'SirVer/ultisnips'
     Plug 'davidhalter/jedi-vim'
 
-	" Plug 'vim-syntastic/syntastic'
+    Plug 'vim-syntastic/syntastic'
 
-    " Plug 'Valloric/YouCompleteMe', { 'do': './install.py' }
+    function! BuildYCM(info)
+          " info is a dictionary with 3 fields
+          "   " - name:   name of the plugin
+          "     " - status: 'installed', 'updated', or 'unchanged'
+          "       " - force:  set on PlugInstall! or PlugUpdate!
+        if a:info.status == 'installed' || a:info.force
+            !./install.py --gocode-completer --tern-completer
+        endif
+    endfunction
+
+    Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') }
     " if has("nvim")
     "     Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
     " endif
@@ -452,7 +462,12 @@ endif
 
 " colorscheme railscasts
 if &runtimepath =~ 'vim-colorschemes'
-    colorscheme Monokai
+    try
+        colorscheme Monokai
+    catch
+        echo 'Please run :PlugInstall to complete the installation'
+    endtry
+
     nmap cm :colorscheme Monokai<CR>
     nmap co :colorscheme onedark<CR>
     nmap cr :colorscheme railscasts<CR>
@@ -509,7 +524,10 @@ if ( has('python') || has('python3') )
     endif
 
     " if ( v:version == 704 && has("patch143") )
-    " if &runtimepath =~ 'youcompleteme'
+    if &runtimepath =~ 'YouCompleteMe'
+        let g:jedi#popup_on_dot = 0
+        let g:jedi#popup_select_first = 0
+
         " nnoremap <F5> :YcmForceCompileAndDiagnostics<CR>
 
         " nnoremap <leader>g :YcmCompleter GoTo<CR>
@@ -520,7 +538,7 @@ if ( has('python') || has('python3') )
         " nnoremap <leader>i :YcmCompleter GoToInclude<CR>
         " nnoremap <leader>d :YcmCompleter GoToDeclaration<CR>
         " nnoremap <leader>t :YcmCompleter GetType<CR>
-    " endif
+    endif
     " endif
 endif
 
