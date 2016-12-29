@@ -401,7 +401,7 @@ if has("nvim")
     let g:session_directory = '~/.config/nvim/sessions'
 endif
 
-if &runtimepath =~ "vim-sessions"
+if &runtimepath =~ "vim-session"
 	" nmap <leader>d :DeleteSession
 	" Quick open session
 	nmap <leader>o :OpenSession
