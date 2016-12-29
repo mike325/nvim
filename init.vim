@@ -123,10 +123,9 @@ if g:ycm_installed==0
         Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
         " Todo test personalize settings of deoplete
     else
+        Plug 'ervandew/supertab'
         if has("lua")
             Plug 'Shougo/neocomplete.vim'
-        else
-            Plug 'ervandew/supertab'
         endif
     endif
 endif
