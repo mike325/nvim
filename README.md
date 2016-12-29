@@ -104,6 +104,7 @@ Included plugins:
     * [Supertab](https://github.com/ervandew/supertab)
 
 If you want to deactivate some plugins just comment its line in the init.vim, ex. " Plug 'majutsushi/tagbar'.
-And run `:PlugInstall` all maps and settings will be automatically disable.
+And run `:PlugInstall` and the plugin will not be installed, if you already installed just remove its folder
+in plugged/{Plugin Name} and all maps and settings will be automatically disable.
 
 Feel free to change anything to fit your needs! 

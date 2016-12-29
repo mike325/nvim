@@ -574,7 +574,7 @@ if &runtimepath =~ 'neocomplete.vim'
     " Use smartcase.
     let g:neocomplete#enable_smart_case = 1
     " Set minimum syntax keyword length.
-    let g:neocomplete#sources#syntax#min_keyword_length = 2
+    let g:neocomplete#sources#syntax#min_keyword_length = 3
     let g:neocomplete#lock_buffer_name_pattern = '\*ku\*'
 
     " Define dictionary.
@@ -612,7 +612,7 @@ if &runtimepath =~ 'neocomplete.vim'
     inoremap <expr><C-e>  neocomplete#cancel_popup()
 
     " Close popup by <Space>.
-    inoremap <expr><Space> pumvisible() ? neocomplete#close_popup() : "\<Space>"
+    " inoremap <expr><Space> pumvisible() ? neocomplete#close_popup() : "\<Space>"
 
     " For cursor moving in insert mode(Not recommended)
     "inoremap <expr><Left>  neocomplete#close_popup() . "\<Left>"
@@ -625,7 +625,7 @@ if &runtimepath =~ 'neocomplete.vim'
     "let g:neocomplete#enable_insert_char_pre = 1
 
     " AutoComplPop like behavior.
-    "let g:neocomplete#enable_auto_select = 1
+    let g:neocomplete#enable_auto_select = 1
 
     " Shell like behavior(not recommended).
     "set completeopt+=longest
@@ -646,7 +646,6 @@ if &runtimepath =~ 'neocomplete.vim'
         let g:neocomplete#sources#omni#input_patterns = {}
     endif
 endif
-
 
 " ################# Syntax check #################
 if &runtimepath =~ "syntastic"
