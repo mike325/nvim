@@ -76,7 +76,7 @@ Plug 'dohsimpson/vim-macroeditor'
 
 let g:ycm_installed = 0
 
-if ( has('python') || has('python3') )
+if ( has("python") || has("python3") )
     function! BuildYCM(info)
         " info is a dictionary with 3 fields
         " - name:   name of the plugin
@@ -90,15 +90,17 @@ if ( has('python') || has('python3') )
     endfunction
 
 " Awesome completion engine
-    Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') }
-    let g:ycm_installed = 1
+    if has("nvim") || ( v:version >= 800 ) || ( v:version == 704 && has("patch143") )
+        Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') }
+        let g:ycm_installed = 1
+    endif
 
 " Snippets engine
     Plug 'SirVer/ultisnips'
 
     if g:ycm_installed==0
         " completion for python
-        " Plug 'davidhalter/jedi-vim'
+        Plug 'davidhalter/jedi-vim'
         " Syntaxis check
         Plug 'vim-syntastic/syntastic'
     endif
@@ -526,7 +528,7 @@ if ( has('python') || has('python3') )
     endif
 
 " ################ Jedi complete #################
-    if ( &runtimepath =~ 'jedi-vim' || &runtime =~ 'jedi'  )
+    if ( &runtimepath =~ 'jedi-vim' || &runtimepath =~ 'jedi'  )
         let g:jedi#popup_on_dot = 1
         let g:jedi#popup_select_first = 1
         let g:jedi#completions_command = "<C-c>"
