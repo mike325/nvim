@@ -113,8 +113,9 @@ endif
 
 " completion without ycm
 if g:ycm_installed==0
-    if has("nvim")
+    if ( has("nvim") && has("python3") )
         Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+        " Todo test personalize settings of deoplete
     else
         if has("lua")
             Plug 'Shougo/neocomplete.vim'
