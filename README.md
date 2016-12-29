@@ -2,7 +2,7 @@
 This repo have mi personal Vim/Neovim setings that I have been collecting for a while, feel free to change
 anything to fit your needs or suggest me something that you think could be useful.
 
-*This settings require Vim >= 7.4 or Neovim >= 0.12 with **python** and **lua** support and **ctags**.*
+This settings require Vim >= 7.4 or Neovim >= 0.15 with **python** and **lua** support and **ctags**.
 
 I have personally test this configurations in the following enviroments:
 
@@ -15,7 +15,7 @@ I have personally test this configurations in the following enviroments:
 
     * Archlinux
         - Vim 8.0.94
-        - Neovim 0.15
+        - Neovim 0.17
 
 * Android (In my nexus 6 via Termux)
     * Marshmallow 6.0/6.1 
