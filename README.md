@@ -2,9 +2,9 @@
 This repo have mi personal Vim/Neovim setings that I have been collecting for a while, feel free to change
 anything to fit your needs or suggest me something that you think could be useful.
 
-This settings require Vim >= 7.4 or Neovim >= 0.12 with **python** and **lua** support and **ctags**.
+This settings require Vim >= 7.4 or Neovim >= 0.15 with **python** and **lua** support and **ctags**.
 
-I have personally tested this configurations in the following environments:
+I have personally test this configurations in the following enviroments:
 
 * Linux
     * Debian 8/8.5 jessie
@@ -15,7 +15,7 @@ I have personally tested this configurations in the following environments:
 
     * Archlinux
         - Vim 8.0.94
-        - Neovim 0.15
+        - Neovim 0.17
 
 * Android (In my nexus 6 via Termux)
     * Marshmallow 6.0/6.1 
@@ -31,6 +31,8 @@ I have personally tested this configurations in the following environments:
         - Vim 8.0.94
     * Git bash (some problems loading python modules)
         - Vim 8.0.27
+
+I you 
 
 You can test my settings by clonning this repo into your `$HOME`
 
@@ -48,43 +50,61 @@ or just clone it there
 
     git clone --recursive https://github.com/mike325/.vim.git ~/.config/nvim
 
+Once you have cloneed the repo just run `:PlugInstall` inside vim/neovim to complete the installation process.
+
 Included plugins:
+- Default plugins
+    * [Vim Sensible](https://github.com/tpope/vim-sensible)
+    * [Colorschemes](https://github.com/flazz/vim-colorschemes)
+    * [deliMate](https://github.com/Raimondi/delimitMate)
+    * [NERDTree](https://github.com/scrooloose/nerdtree')
+    * [NERDTreeTabs](https://github.com/jistr/vim-nerdtree-tabs)
+    * [NERDCommenter](https://github.com/scrooloose/nerdcommenter)
+    * [Multiple-cursors](https://github.com/terryma/vim-multiple-cursors)
+    * [Vim Airline](https://github.com/vim-airline/vim-airline')
+    * [Vim Airline Themes](https://github.com/vim-airline/vim-airline-themes)
+    * [Gitgutter](https://github.com/airblade/vim-gitgutter)
+    * [Fugitive](https://github.com/tpope/vim-fugitive)
+    * [Committia](https://github.com/rhysd/committia.vim)
+    * [Tagbar](https://github.com/majutsushi/tagbar)
+    * [Tabular](https://github.com/godlygeek/tabular)
+    * [EasyMotions](https://github.com/easymotion/vim-easymotion)
+    * [Surround](https://github.com/tpope/vim-surround)
+    * [BufferBye](https://github.com/moll/vim-bbye)
+    * [Signature](https://github.com/kshenoy/vim-signature)
+    * [CtrP](https://github.com/kien/ctrlp.vim)
+    * [Vim misc](https://github.com/xolox/vim-misc)
+    * [Sessions](https://github.com/xolox/vim-session)
+    * [Polyglot](https://github.com/sheerun/vim-polyglot)
+    * [Hexmode](https://github.com/fidian/hexmode)
+    * [Snippets](https://github.com/honza/vim-snippets)
+    * [Move](https://github.com/matze/vim-move)
+    * [MacroEdit](https://github.com/dohsimpson/vim-macroeditor)
 
-* [Airline-themes](https://github.com/vim-airline/vim-airline-themes/)
-* [Airline](https://github.com/vim-airline/vim-airline/)
-* [Bufferbye](https://github.com/moll/vim-bbye)
-* [Colorschemes](https://github.com/flazz/vim-colorschemes)
-* [Ctrlp](https://github.com/kien/ctrlp.vim)
-* [DelimitMate](https://github.com/Raimondi/delimitMate.git)
-* [dockerfile](https://github.com/ekalinin/Dockerfile.vim)
-* [Easymotion](https://github.com/easymotion/vim-easymotion)
-* [Fugitive](https://github.com/tpope/vim-fugitive)
-* [Gitglutter](https://github.com/airblade/vim-gitgutter)
-* [Multicursors](https://github.com/terryma/vim-multiple-cursors)
-* [Nerdcommenter](https://github.com/scrooloose/nerdcommenter)
-* [Nerdtree-tabs](https://github.com/jistr/vim-nerdtree-tabs)
-* [Nerdtree](https://github.com/scrooloose/nerdtree)
-* [Polyglot](https://github.com/sheerun/vim-polyglot)
-* [Sensible](https://github.com/tpope/vim-sensible)
-* [Sessions](https://github.com/xolox/vim-session)
-* [Signature](https://github.com/kshenoy/vim-signature)
-* [Snippets](https://github.com/honza/vim-snippets)
-* [Supertab](https://github.com/ervandew/supertab)
-* [Tabular](https://github.com/godlygeek/tabular)
-* [Tagbar](https://github.com/majutsushi/tagbar)
-* [Ultisnips](https://github.com/SirVer/ultisnips)
-* [Vim-misc](https://github.com/xolox/vim-misc)
-* [Vim-surround](https://github.com/tpope/vim-surround)
-* [Jedi](https://github.com/davidhalter/jedi-vim)
-* [Hexmode](https://github.com/fidian/hexmode)
+- If python interface is available
+    * [Ultisnips](https://github.com/SirVer/ultisnips)
+    * [YouCompleteMe](https://github.com/Valloric/YouCompleteMe)
 
-If you want to test a more specific configuration or you don't have **python**, **lua** or **ctags** 
-try to clone the repo and then init the submodules that you want to setup.
+    - If YouCompleteMe was not installed
+        * [Jedi](https://github.com/davidhalter/jedi-vim)
+        * [Syntactic](https://github.com/vim-syntastic/syntastic)
 
-```
-git clone https://github.com/mike325/.vim.git ~/.vim
-ln -s ~/.vim/init.vim ~/.vimrc
-cd ~/.vim
-git submodule update --init --recursive bundle/nerdtree
-```
+- If python interface is not available
+    * [Addons mw ultis](https://github.com/MarcWeber/vim-addon-mw-utils)
+    * [Tlib](https://github.com/tomtom/tlib_vim)
+    * [SnipMate](https://github.com/garbas/vim-snipmate)
+
+- If YouCompleteMe was not installed and Neovim is being used
+    * [Deoplete](https://github.com/Shougo/deoplete.nvim')
+
+- If YouCompleteMe was not installed and lua is available
+    * [NeoComplete](https://github.com/Shougo/neocomplete.vim)
+
+- If YouCompleteMe was not installed and lua is not available
+    * [Supertab](https://github.com/ervandew/supertab)
+
+If you want to deactivate some plugins just comment its line in the init.vim, ex. " Plug 'majutsushi/tagbar'.
+And run `:PlugInstall` and the plugin will not be installed, if you already installed just remove its folder
+in `plugged/{Plugin Name}` and all maps and settings will be automatically disable.
+
 Feel free to change anything to fit your needs! 
