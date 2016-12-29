@@ -1,3 +1,9 @@
+" ############################################################################
+"
+"                               Plugin installation
+"
+" ############################################################################
+
 " Specify a directory for plugins (for Neovim: ~/.local/share/nvim/plugged)
 if has("nvim")
     call plug#begin('~/.config/nvim/plugged')
