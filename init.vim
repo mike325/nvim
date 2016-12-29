@@ -1,5 +1,100 @@
-execute pathogen#infect()
-execute pathogen#helptags()
+" Specify a directory for plugins (for Neovim: ~/.local/share/nvim/plugged)
+if has("nvim")
+    call plug#begin('~/.config/nvim/plugged')
+else
+    call plug#begin('~/.vim/plugged')
+endif
+
+" Basic settings
+Plug 'tpope/vim-sensible'
+
+" Colorschemes for vim
+Plug 'flazz/vim-colorschemes'
+
+" Auto Close ' " () [] {}
+Plug 'Raimondi/delimitMate'
+
+" File explorer, and
+Plug 'scrooloose/nerdtree', { 'on': [ 'NERDTreeToggle', 'NERDTreeTabsToggle' ] }
+
+" NERDTreeTabsToggle
+" Mirror NerdTree in all tabs
+Plug 'jistr/vim-nerdtree-tabs', { 'on': [ 'NERDTreeToggle', 'NERDTreeTabsToggle' ] }
+
+" Easy comments
+Plug 'scrooloose/nerdcommenter'
+
+" Simulate sublime cursors
+Plug 'terryma/vim-multiple-cursors'
+
+" Status bar and some themes
+Plug 'vim-airline/vim-airline' | Plug 'vim-airline/vim-airline-themes'
+
+" Git integrations
+Plug 'airblade/vim-gitgutter'
+Plug 'tpope/vim-fugitive'
+Plug 'rhysd/committia.vim'
+
+" Simple view of Tags using ctags
+Plug 'majutsushi/tagbar'
+
+" Easy aligment
+Plug 'godlygeek/tabular'
+
+" Better motions
+Plug 'easymotion/vim-easymotion'
+
+" Easy surround text objects with ' " () [] {} etc
+Plug 'tpope/vim-surround'
+
+" Better buffer deletions
+Plug 'moll/vim-bbye'
+
+" Visual marks
+Plug 'kshenoy/vim-signature'
+
+" Search files, buffers, etc
+Plug 'kien/ctrlp.vim'
+
+" Better sessions management
+Plug 'xolox/vim-misc'
+Plug 'xolox/vim-session'
+
+" Improve syntax
+Plug 'sheerun/vim-polyglot'
+
+" Auto convert bin files
+Plug 'fidian/hexmode'
+
+" Collection of snippets
+Plug 'honza/vim-snippets'
+
+" Move with identation
+Plug 'matze/vim-move'
+
+" Easy edit registers
+Plug 'dohsimpson/vim-macroeditor'
+
+if has("python") || has("python3")
+    Plug 'SirVer/ultisnips'
+    Plug 'davidhalter/jedi-vim'
+
+	" Plug 'vim-syntastic/syntastic'
+
+    " Plug 'Valloric/YouCompleteMe', { 'do': './install.py' }
+    " if has("nvim")
+    "     Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+    " endif
+else
+    if has("lua")
+        Plug 'Shougo/neocomplete.vim'
+    else
+        Plug 'ervandew/supertab'
+    endif
+endif
+
+" Initialize plugin system
+call plug#end()
 
 filetype plugin indent on
 
@@ -66,14 +161,6 @@ set undofile " persistent undos - undo after you re-open the file
 nmap <BS> dd
 vmap <BS> dd
 
-" if has("win32")
-"     set directory=C:/Users/mochax/vim/tmp_dirs/swap    " directory to place swap files in
-"     set backupdir=C:/Users/mochax/vim/tmp_dirs/backups " where to put backup files
-"     set undodir=C:/Users/mochax/vim/tmp_dirs/undos
-"     set viminfo+=nC:/Users/mochax/vim/tmp_dirs/viminfo
-"     " store yankring history file there too
-"     let g:yankring_history_dir = '~/.vim/tmp_dirs/'
-" else
 if has("nvim")
     " nvim stuff
     set directory=~/.config/nvim/tmp_dirs/swap    " directory to place swap files in
@@ -123,9 +210,9 @@ nmap <leader>x :%!xxd<CR>
 "     au BufWritePost *.bin,*.exe set nomod | endif
 " augroup END
 
-if ( has("gui_running" ) && has("win32") )
-    set guifont=Lucida_Console:h10
-endif
+" if ( has("gui_running" ) && has("win32") )
+"     set guifont=Lucida_Console:h10
+" endif
 
 if !has("gui_running") && !has("nvim")
     " Use shell grep
@@ -176,17 +263,6 @@ nmap <leader>d :bdelete<CR>
 "go to last buffer
 " nmap <leader>l :blast<CR>
 
-" Quick buffer change by number
-" nnoremap b1 :b 1<CR>
-" nnoremap b2 :b 2<CR>
-" nnoremap b3 :b 3<CR>
-" nnoremap b4 :b 4<CR>
-" nnoremap b5 :b 5<CR>
-" nnoremap b6 :b 6<CR>
-" nnoremap b7 :b 7<CR>
-" nnoremap b8 :b 8<CR>
-" nnoremap b9 :b 9<CR>
-
 " ################# Native Vim Explorer #################
 nnoremap E :Explore<CR>
 let g:netrw_liststyle=3
@@ -227,7 +303,7 @@ if has("nvim")
 endif
 
 " Resize buffer splits
-nmap <leader>i <C-w>=
+nmap <leader>e <C-w>=
 nmap <leader>- <C-w>-
 
 " Color columns
@@ -270,33 +346,39 @@ endif
 "
 " ############################################################################
 
-if &runtimepath =~ 'bufferbye'
-    " better behave buffer deletion
+" ################ BufferBye settings #################
+" better behave buffer deletion
+if &runtimepath =~ "vim-bbye"
     nmap <leader>d :Bdelete<CR>
 endif
 
-if &runtimepath =~ 'sessions'
-    " Session management
+" ################ Sessions settings #################
+" Session management
+" Auto save on exit
+let g:session_autosave = 'yes'
+" Don't ask for load last session
+let g:session_autoload = 'no'
 
-    " Auto save on exit
-    let g:session_autosave = 'yes'
-    " Don't ask for load last session
-    let g:session_autoload = 'no'
-
-    " nmap <leader>d :DeleteSession
-    " Quick open session
-    nmap <leader>o :OpenSession
-    " Save current files in a session
-    nmap <leader>s :SaveSession
-    " close current session !!!!!!!! use this instead of close the buffers !!!!!!!!
-    nmap <leader>C :CloseSession<CR>
-    " Quick save current session
-    nmap <leader><leader>s :SaveSession<CR>
-    " Quick delete session
-    nmap <leader><leader>d :DeleteSession<CR>
+if has("nvim")
+    let g:session_directory = '~/.config/nvim/sessions'
 endif
 
-if &runtimepath =~ 'ctrlp'
+if &runtimepath =~ "vim-sessions"
+	" nmap <leader>d :DeleteSession
+	" Quick open session
+	nmap <leader>o :OpenSession
+	" Save current files in a session
+	nmap <leader>s :SaveSession
+	" close current session !!!!!!!! use this instead of close the buffers !!!!!!!!
+	nmap <leader>C :CloseSession<CR>
+	" Quick save current session
+	nmap <leader><leader>s :SaveSession<CR>
+	" Quick delete session
+	nmap <leader><leader>d :DeleteSession<CR>
+endif
+
+" ################ CtrlP settings #################
+if &runtimepath =~ 'ctrlp.vim'
     nmap <leader>b :CtrlPBuffer<CR>
     nmap <leader>P :CtrlP<CR>
     let g:ctrlp_match_window = 'bottom,order:ttb,min:1,max:30,results:50'
@@ -308,17 +390,19 @@ if &runtimepath =~ 'ctrlp'
                 \ }
 endif
 
+" ################ NerdCommenter  #################
 if &runtimepath =~ 'nerdcommenter'
     let g:NERDSpaceDelims            = 1      " Add spaces after comment delimiters by default
     let g:NERDCompactSexyComs        = 1      " Use compact syntax for prettified multi-line comments
     let g:NERDTrimTrailingWhitespace = 1      " Enable trimming of trailing whitespace when uncommenting
     let g:NERDCommentEmptyLines      = 1      " Allow commenting and inverting empty lines
-                                              " (useful when commenting a region)
+    " (useful when commenting a region)
     let g:NERDDefaultAlign           = 'left' " Align line-wise comment delimiters flush left instead
-                                              " of following code indentation
+    " of following code indentation
 endif
 
-if &runtimepath =~"easymotion"
+" ################ #################
+if &runtimepath =~ 'vim-easymotion'
     " Disable default mappings
     let g:EasyMotion_do_mapping = 0
     " Turn on ignore case
@@ -366,17 +450,17 @@ endif
 
 " ################# Themes #################
 
-if &runtimepath =~ 'colorschemes'
-    " colorscheme railscasts
+" colorscheme railscasts
+if &runtimepath =~ 'vim-colorschemes'
     colorscheme Monokai
     nmap cm :colorscheme Monokai<CR>
     nmap co :colorscheme onedark<CR>
     nmap cr :colorscheme railscasts<CR>
 endif
 
-if &runtimepath =~ 'airline'
-    let g:airline_theme = 'molokai'
+" ################ Status bar Airline #################
 
+if &runtimepath =~ 'vim-airline'
     let g:airline#extensions#tabline#enabled           = 1
     let g:airline#extensions#tabline#fnamemod          = ':t'
     let g:airline#extensions#tabline#close_symbol      = '×'
@@ -391,10 +475,15 @@ if &runtimepath =~ 'airline'
     let g:airline_powerline_fonts = 1
 endif
 
+if &runtimepath =~ 'vim-airline-themes'
+    let g:airline_theme = 'molokai'
+endif
+
 " ################# Snnipets and completition #################
 
 if ( has('python') || has('python3') )
-    if &runtimepath =~ "ultisnips"
+" ################ UltiSnips #################
+    if &runtimepath =~ 'ultisnips'
         let g:UltiSnipsSnippetDirectories=["UltiSnips"]
 
         if has('python3')
@@ -406,7 +495,8 @@ if ( has('python') || has('python3') )
         let g:UltiSnipsExpandTrigger="<C-x>"
     endif
 
-    if &runtimepath =~ "jedi"
+" ################ Jedi complete #################
+    if ( &runtimepath =~ 'jedi-vim' || &runtime =~ 'jedi'  )
         let g:jedi#popup_on_dot = 1
         let g:jedi#popup_select_first = 1
         let g:jedi#completions_command = "<C-c>"
@@ -417,7 +507,6 @@ if ( has('python') || has('python3') )
         let g:jedi#usages_command = "<leader>u"
         let g:jedi#rename_command = "<leader>r"
     endif
-
 
     " if ( v:version == 704 && has("patch143") )
     " if &runtimepath =~ 'youcompleteme'
@@ -466,14 +555,19 @@ if &runtimepath =~ "syntastic"
 endif
 
 " ################# NERDTree quick open/close #################
-if &runtimepath =~ 'nerdtree'
-    " Ignore files in NERDTree
-    let NERDTreeIgnore              = ['\.pyc$', '\~$', '\.sw$', '\.swp$']
-    let NERDTreeShowHidden          = 1
-    " If you don't have unicode, uncomment the following lines
-    " let NERDTreeDirArrowExpandable  = '+'
-    " let NERDTreeDirArrowCollapsible = '~'
-endif
+" Lazy load must be out of if
+" Ignore files in NERDTree
+let NERDTreeIgnore              = ['\.pyc$', '\~$', '\.sw$', '\.swp$']
+let NERDTreeShowHidden          = 1
+" If you don't have unicode, uncomment the following lines
+" let NERDTreeDirArrowExpandable  = '+'
+" let NERDTreeDirArrowCollapsible = '~'
+
+"nmap T :NERDTree<CR>
+nmap T :NERDTreeTabsToggle<CR>
+nmap <F3> :NERDTreeTabsToggle<CR>
+imap <F3> <Esc><F3>
+vmap <F3> <Esc><F3>
 
 " ################ Alignment with Tabularize #################
 if &runtimepath =~ 'tabular'
@@ -493,7 +587,9 @@ if &runtimepath =~ 'tabular'
     vmap <leader>t* :Tabularize /*<CR>
 endif
 
-if &runtimepath =~ 'fugitive'
+" ################ Git integration #################
+" ################ Fugitive #################
+if &runtimepath =~ 'vim-fugitive'
     nmap gs :Gstatus<CR>
     nmap gc :Gcommit<CR>
     nmap gb :Gblame<CR>
@@ -510,12 +606,14 @@ if &runtimepath =~ 'fugitive'
     nmap gsp :Git stash pop<CR>
 endif
 
-if &runtimepath =~ 'gitglutter'
+" ################ GitGutter #################
+if &runtimepath =~ 'vim-gitgutter'
     nmap tg :GitGutterToggle<CR>
     nmap tl :GitGutterLineHighlightsToggle<CR>
 endif
 
-if &runtimepath =~ 'signature'
+" ################ Signature #################
+if &runtimepath =~ 'vim-signature'
     nmap <leader><leader>g :SignatureListGlobalMarks<CR>
     imap <C-s>g <ESC>:SignatureListGlobalMarks<CR>
 
@@ -525,23 +623,15 @@ if &runtimepath =~ 'signature'
     nmap tS :SignatureToggleSigns<CR>
 endif
 
+" ################ TagsBar #################
 if &runtimepath =~ 'tagbar'
+    nmap tt :TagbarToggle<CR>
     nmap <F1> :TagbarToggle<CR>
     imap <F1> :TagbarToggle<CR>
     vmap <F1> :TagbarToggle<CR>gv
-    nmap tt :TagbarToggle<CR>
 endif
 
-if &runtimepath =~ 'nerdtree-tabs'
-    "nmap T :NERDTree<CR>
-    nmap T :NERDTreeTabsToggle<CR>
-    nmap tm :NERDTreeMirrorToggle<CR>
-
-    nmap <F3> :NERDTreeTabsToggle<CR>
-    imap <F3> <Esc><F3>
-    vmap <F3> <Esc><F3>
-endif
-
-if &runtimepath =~ 'move'
+" ################ Move #################
+if &runtimepath =~ 'vim-move'
     let g:move_key_modifier = 'C'
 endif
