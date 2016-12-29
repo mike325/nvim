@@ -53,13 +53,13 @@ Plug 'easymotion/vim-easymotion'
 Plug 'tpope/vim-surround'
 
 " Better buffer deletions
-Plug 'moll/vim-bbye'
+Plug 'moll/vim-bbye', { 'on': [ 'Bdelete' ] }
 
 " Visual marks
 Plug 'kshenoy/vim-signature'
 
 " Search files, buffers, etc
-Plug 'kien/ctrlp.vim'
+Plug 'kien/ctrlp.vim', { 'on': [ 'CtrlPBuffer', 'CtrlP' ] }
 
 " Better sessions management
 Plug 'xolox/vim-misc'
@@ -78,10 +78,15 @@ Plug 'honza/vim-snippets'
 Plug 'matze/vim-move'
 
 " Easy edit registers
-Plug 'dohsimpson/vim-macroeditor'
+Plug 'dohsimpson/vim-macroeditor', { 'on': [ 'MacroEdit' ] }
+
+" Better sustition, improve aibbreviations and coercion
+Plug 'tpope/vim-abolish'
+
+" Map repeat key . for plugins
+Plug 'tpope/vim-repeat'
 
 let g:ycm_installed = 0
-
 if ( has("python") || has("python3") )
     function! BuildYCM(info)
         " info is a dictionary with 3 fields
@@ -385,9 +390,7 @@ endif
 
 " ################ BufferBye settings #################
 " better behave buffer deletion
-if &runtimepath =~ "vim-bbye"
-    nmap <leader>d :Bdelete<CR>
-endif
+nmap <leader>d :Bdelete<CR>
 
 " ################ Sessions settings #################
 " Session management
@@ -400,32 +403,30 @@ if has("nvim")
     let g:session_directory = '~/.config/nvim/sessions'
 endif
 
-if &runtimepath =~ "vim-session"
-	" nmap <leader>d :DeleteSession
-	" Quick open session
-	nmap <leader>o :OpenSession
-	" Save current files in a session
-	nmap <leader>s :SaveSession
-	" close current session !!!!!!!! use this instead of close the buffers !!!!!!!!
-	nmap <leader>C :CloseSession<CR>
-	" Quick save current session
-	nmap <leader><leader>s :SaveSession<CR>
-	" Quick delete session
-	nmap <leader><leader>d :DeleteSession<CR>
+if &runtimepath =~ 'vim-session'
+    " nmap <leader>d :DeleteSession
+    " Quick open session
+    nmap <leader>o :OpenSession
+    " Save current files in a session
+    nmap <leader>s :SaveSession
+    " close current session !!!!!!!! use this instead of close the buffers !!!!!!!!
+    nmap <leader>C :CloseSession<CR>
+    " Quick save current session
+    nmap <leader><leader>s :SaveSession<CR>
+    " Quick delete session
+    nmap <leader><leader>d :DeleteSession<CR>
 endif
 
 " ################ CtrlP settings #################
-if &runtimepath =~ 'ctrlp.vim'
-    nmap <leader>b :CtrlPBuffer<CR>
-    nmap <leader>P :CtrlP<CR>
-    let g:ctrlp_match_window = 'bottom,order:ttb,min:1,max:30,results:50'
-    let g:ctrlp_map = '<C-p>'
-    let g:ctrlp_working_path_mode = 'ra'
-    let g:ctrlp_custom_ignore = {
-                \ 'dir':  '\v[\/]\.(git|hg|svn)$',
-                \ 'file': '\v\.(exe|bin|o|so|dll|pyc|zip|sw|swp)$',
-                \ }
-endif
+nmap <leader>b :CtrlPBuffer<CR>
+nmap <leader>P :CtrlP<CR>
+let g:ctrlp_match_window = 'bottom,order:ttb,min:1,max:30,results:50'
+let g:ctrlp_map = '<C-p>'
+let g:ctrlp_working_path_mode = 'ra'
+let g:ctrlp_custom_ignore = {
+            \ 'dir':  '\v[\/]\.(git|hg|svn)$',
+            \ 'file': '\v\.(exe|bin|o|so|dll|pyc|zip|sw|swp)$',
+            \ }
 
 " ################ NerdCommenter  #################
 if &runtimepath =~ 'nerdcommenter'
@@ -492,12 +493,12 @@ if &runtimepath =~ 'vim-colorschemes'
     try
         colorscheme Monokai
     catch
-        echo 'Please run :PlugInstall to complete the installation'
+        echo 'Please run :PlugInstall to complete the installation or remove "colorscheme Monokai"'
     endtry
 
-    nmap cm :colorscheme Monokai<CR>
-    nmap co :colorscheme onedark<CR>
-    nmap cr :colorscheme railscasts<CR>
+    nmap csm :colorscheme Monokai<CR>
+    nmap cso :colorscheme onedark<CR>
+    nmap csr :colorscheme railscasts<CR>
 endif
 
 " ################ Status bar Airline #################
