@@ -37,7 +37,7 @@ I you
 You can test my settings by clonning this repo into your `$HOME`
 
 ```
-git clone --recursive https://git.prodeveloper.me.com/mike/.vim.git ~/.vim
+git clone --recursive https://git.prodeveloper.me/mike/.vim.git ~/.vim
 
 ln -s ~/.vim/init.vim ~/.vimrc
 ```
@@ -48,7 +48,7 @@ If you are using [Neovim](https://neovim.io/) you just need to move the repo to 
 
 or just clone it there
 
-    git clone --recursive https://git.prodeveloper.me.com/mike/.vim.git ~/.config/nvim
+    git clone --recursive https://git.prodeveloper.me/mike/.vim.git ~/.config/nvim
 
 Once you have cloneed the repo just run `:PlugInstall` inside vim/neovim to complete the installation process.
 
@@ -104,6 +104,6 @@ Included plugins:
     * [Supertab](https://github.com/ervandew/supertab)
 
 If you want to deactivate some plugins just comment its line in the init.vim, ex. " Plug 'majutsushi/tagbar'.
-And all maps and settings will be automatically disable.
+And run `:PlugInstall` all maps and settings will be automatically disable.
 
 Feel free to change anything to fit your needs! 
