@@ -625,7 +625,7 @@ if &runtimepath =~ 'neocomplete.vim'
     "let g:neocomplete#enable_insert_char_pre = 1
 
     " AutoComplPop like behavior.
-    let g:neocomplete#enable_auto_select = 1
+    " let g:neocomplete#enable_auto_select = 1
 
     " Shell like behavior(not recommended).
     "set completeopt+=longest
