@@ -17,7 +17,6 @@ Plug 'Raimondi/delimitMate'
 " File explorer, and
 Plug 'scrooloose/nerdtree', { 'on': [ 'NERDTreeToggle', 'NERDTreeTabsToggle' ] }
 
-" NERDTreeTabsToggle
 " Mirror NerdTree in all tabs
 Plug 'jistr/vim-nerdtree-tabs', { 'on': [ 'NERDTreeToggle', 'NERDTreeTabsToggle' ] }
 
@@ -75,31 +74,51 @@ Plug 'matze/vim-move'
 " Easy edit registers
 Plug 'dohsimpson/vim-macroeditor'
 
-if has("python") || has("python3")
-    Plug 'SirVer/ultisnips'
-    Plug 'davidhalter/jedi-vim'
+let g:ycm_installed = 0
 
-    Plug 'vim-syntastic/syntastic'
-
+if ( has('python') || has('python3') )
     function! BuildYCM(info)
-          " info is a dictionary with 3 fields
-          "   " - name:   name of the plugin
-          "     " - status: 'installed', 'updated', or 'unchanged'
-          "       " - force:  set on PlugInstall! or PlugUpdate!
+        " info is a dictionary with 3 fields
+        " - name:   name of the plugin
+        " - status: 'installed', 'updated', or 'unchanged'
+        " - force:  set on PlugInstall! or PlugUpdate!
         if a:info.status == 'installed' || a:info.force
-            !./install.py --gocode-completer --tern-completer
+            " !./install.py --all
+            " !./install.py --gocode-completer --tern-completer
+            !./install.py
         endif
     endfunction
 
+" Awesome completion engine
     Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') }
-    " if has("nvim")
-    "     Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-    " endif
+    let g:ycm_installed = 1
+
+" Snippets engine
+    Plug 'SirVer/ultisnips'
+
+    if g:ycm_installed==0
+        " completion for python
+        " Plug 'davidhalter/jedi-vim'
+        " Syntaxis check
+        Plug 'vim-syntastic/syntastic'
+    endif
 else
-    if has("lua")
-        Plug 'Shougo/neocomplete.vim'
+" Snippets without python interface
+    Plug 'MarcWeber/vim-addon-mw-utils'
+    Plug 'tomtom/tlib_vim'
+    Plug 'garbas/vim-snipmate'
+endif
+
+" completion without ycm
+if g:ycm_installed==0
+    if has("nvim")
+        Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
     else
-        Plug 'ervandew/supertab'
+        if has("lua")
+            Plug 'Shougo/neocomplete.vim'
+        else
+            Plug 'ervandew/supertab'
+        endif
     endif
 endif
 
@@ -494,7 +513,7 @@ if &runtimepath =~ 'vim-airline-themes'
     let g:airline_theme = 'molokai'
 endif
 
-" ################# Snnipets and completition #################
+" ################# Snnipets and completion #################
 
 if ( has('python') || has('python3') )
 " ################ UltiSnips #################
@@ -504,10 +523,6 @@ if ( has('python') || has('python3') )
         if has('python3')
             let g:UltiSnipsUsePythonVersion = 3
         endif
-
-        let g:UltiSnipsJumpForwardTrigger="<C-a>"
-        let g:UltiSnipsJumpBackwardTrigger="<C-z>"
-        let g:UltiSnipsExpandTrigger="<C-x>"
     endif
 
 " ################ Jedi complete #################
@@ -528,8 +543,11 @@ if ( has('python') || has('python3') )
         let g:jedi#popup_on_dot = 0
         let g:jedi#popup_select_first = 0
 
-        " nnoremap <F5> :YcmForceCompileAndDiagnostics<CR>
+        let g:UltiSnipsExpandTrigger="<C-x>"
+        let g:UltiSnipsJumpForwardTrigger="<C-a>"
+        let g:UltiSnipsJumpBackwardTrigger="<C-z>"
 
+        " nnoremap <F5> :YcmForceCompileAndDiagnostics<CR>
         " nnoremap <leader>g :YcmCompleter GoTo<CR>
         " nnoremap <leader>r :YcmCompleter GoToReferences<CR>
         " nnoremap <leader>F :YcmCompleter FixIt<CR>
