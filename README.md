@@ -81,7 +81,7 @@ Included plugins:
     * [Move](https://github.com/matze/vim-move)
     * [MacroEdit](https://github.com/dohsimpson/vim-macroeditor)
 
-- If python interface is avalible
+- If python interface is available
     * [Ultisnips](https://github.com/SirVer/ultisnips)
     * [YouCompleteMe](https://github.com/Valloric/YouCompleteMe)
 
@@ -89,7 +89,7 @@ Included plugins:
         * [Jedi](https://github.com/davidhalter/jedi-vim)
         * [Syntactic](https://github.com/vim-syntastic/syntastic)
 
-- If python interface is not avalible
+- If python interface is not available
     * [Addons mw ultis](https://github.com/MarcWeber/vim-addon-mw-utils)
     * [Tlib](https://github.com/tomtom/tlib_vim)
     * [SnipMate](https://github.com/garbas/vim-snipmate)
@@ -97,10 +97,10 @@ Included plugins:
 - If YouCompleteMe was not installed and Neovim is being used
     * [Deoplete](https://github.com/Shougo/deoplete.nvim')
 
-- If YouCompleteMe was not installed and lua is avalible
+- If YouCompleteMe was not installed and lua is available
     * [NeoComplete](https://github.com/Shougo/neocomplete.vim)
 
-- If YouCompleteMe was not installed and lua is not avalible
+- If YouCompleteMe was not installed and lua is not available
     * [Supertab](https://github.com/ervandew/supertab)
 
 If you want to deactivate some plugins just comment its line in the init.vim, ex. " Plug 'majutsushi/tagbar'.
