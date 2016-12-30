@@ -11,9 +11,6 @@ else
     call plug#begin('~/.vim/plugged')
 endif
 
-" Basic settings
-Plug 'tpope/vim-sensible'
-
 " Colorschemes for vim
 Plug 'flazz/vim-colorschemes'
 
@@ -39,9 +36,6 @@ Plug 'vim-airline/vim-airline' | Plug 'vim-airline/vim-airline-themes'
 Plug 'airblade/vim-gitgutter'
 Plug 'tpope/vim-fugitive'
 Plug 'rhysd/committia.vim'
-
-" Simple view of Tags using ctags
-Plug 'majutsushi/tagbar'
 
 " Easy aligment
 Plug 'godlygeek/tabular'
@@ -91,6 +85,20 @@ Plug 'Yggdroot/indentLine'
 
 " Auto indention put command
 Plug 'sickill/vim-pasta'
+
+" Code Format tool
+Plug 'chiel92/vim-autoformat'
+
+
+if !has("nvim")
+    " Basic settings
+    Plug 'tpope/vim-sensible'
+endif
+
+if executable("ctags")
+    " Simple view of Tags using ctags
+    Plug 'majutsushi/tagbar'
+endif
 
 let g:ycm_installed = 0
 if ( has("python") || has("python3") )
@@ -169,7 +177,7 @@ set showmatch    " Show matching parenthesis
 set number       " Show line numbers
 syntax enable    " add syntax highlighting
 
-" cd to current file
+" cd to current file path
 autocmd BufEnter * silent! lcd %:p:h
 
 " disable sounds
@@ -178,6 +186,10 @@ set visualbell
 " Trim whitespaces in selected files
 autocmd FileType c,cpp,java,php,python,shell,vim,html,css,javascript,go autocmd BufWritePre <buffer> %s/\s\+$//e
 
+" Set Syntax to *.in files
+autocmd BufRead,BufNewFile *.in set filetype=conf
+
+" Set highlight CursorLine
 hi CursorLine term=bold cterm=bold guibg=Grey40
 
 " Indenting stuff
@@ -276,7 +288,16 @@ endif
 
 
 " ################# visual selection go also to clipboard #################
-set go+=a
+if has('clipboard')
+    if !has("nvim")
+        set clipboard=unnamed
+    elseif (executable('pbcopy') || executable('xclip') || executable('xsel'))
+        set clipboard=unnamed
+    endif
+elseif has("nvim")
+    " Disable mouse to manually select text
+    set mouse=c
+endif
 
 " ################# Tabs management #################
 nnoremap <leader>1 1gt
@@ -765,11 +786,18 @@ if &runtimepath =~ 'vim-move'
     let g:move_key_modifier = 'C'
 endif
 
-
 " ################ indentLine #################
 if &runtimepath =~ 'indentLine'
     " Toggle display indent
     nmap tdi :IndentLinesToggle<CR>
     let g:indentLine_enabled = 0
     let g:indentLine_char = '┆'
+endif
+
+
+" ################ AutoFormat #################
+if &runtimepath =~ 'vim-autoformat'
+    noremap <F9> :Autoformat<CR>
+    vnoremap <F9> :Autoformat<CR>gv
+    autocmd FileType vim,tex,python,make,asm,conf let b:autoformat_autoindent=0
 endif
