@@ -311,6 +311,7 @@ nnoremap <leader>8 8gt
 nnoremap <leader>9 9gt
 nnoremap <leader>0 :tablast<CR>
 
+nnoremap <leader>N :tabNext<CR>
 nnoremap <leader><leader>n :tabnew<CR>
 nnoremap <leader><leader>c :tabclose<CR>
 
