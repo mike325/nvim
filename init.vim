@@ -86,6 +86,12 @@ Plug 'tpope/vim-abolish'
 " Map repeat key . for plugins
 Plug 'tpope/vim-repeat'
 
+" Display indention
+Plug 'Yggdroot/indentLine', { 'on':  [ 'IndentLinesToggle' ] }
+
+" Auto indention put command
+Plug 'sickill/vim-pasta'
+
 let g:ycm_installed = 0
 if ( has("python") || has("python3") )
     function! BuildYCM(info)
@@ -100,7 +106,7 @@ if ( has("python") || has("python3") )
         endif
     endfunction
 
-" Awesome completion engine
+" Awesome completion engine, comment the following if to deactivate ycm
     if has("nvim") || ( v:version >= 800 ) || ( v:version == 704 && has("patch143") )
         Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') }
         let g:ycm_installed = 1
@@ -159,11 +165,6 @@ set nocompatible
 set splitright
 set nowrap
 set ruler
-set tabstop=4    " 1 tab = 4 spaces
-set shiftwidth=4 " Same for autoindenting
-set expandtab    " Use  spaces for indenting
-set smarttab     " Insert tabs on the start of a line according to shiftwidth, not tabstop
-set shiftround   " Use multiple of shiftwidth when indenting with '<' and '>'
 set showmatch    " Show matching parenthesis
 set number       " Show line numbers
 syntax enable    " add syntax highlighting
@@ -183,6 +184,11 @@ hi CursorLine term=bold cterm=bold guibg=Grey40
 set autoindent
 set smartindent
 set copyindent
+set tabstop=4    " 1 tab = 4 spaces
+set shiftwidth=4 " Same for autoindenting
+set expandtab    " Use  spaces for indenting
+set smarttab     " Insert tabs on the start of a line according to shiftwidth, not tabstop
+set shiftround   " Use multiple of shiftwidth when indenting with '<' and '>'
 
 set hlsearch  " highlight search terms
 set incsearch " show search matches as you type
@@ -757,4 +763,12 @@ endif
 " ################ Move #################
 if &runtimepath =~ 'vim-move'
     let g:move_key_modifier = 'C'
+endif
+
+
+" ################ indentLine #################
+if &runtimepath =~ 'indentLine'
+    nmap til :IndentLinesToggle<CR>
+    let g:indentLine_enabled = 0
+    let g:indentLine_char = '┆'
 endif
