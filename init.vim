@@ -33,9 +33,7 @@ Plug 'terryma/vim-multiple-cursors'
 Plug 'vim-airline/vim-airline' | Plug 'vim-airline/vim-airline-themes'
 
 " Git integrations
-Plug 'airblade/vim-gitgutter'
-Plug 'tpope/vim-fugitive'
-Plug 'rhysd/committia.vim'
+Plug 'airblade/vim-gitgutter' | Plug 'tpope/vim-fugitive' | Plug 'rhysd/committia.vim'
 
 " Easy aligment
 Plug 'godlygeek/tabular'
@@ -110,7 +108,11 @@ if ( has("python") || has("python3") )
         if a:info.status == 'installed' || a:info.force
             " !./install.py --all
             " !./install.py --gocode-completer --tern-completer
-            !./install.py
+            if executable('go')
+                !./install.py --gocode-completer
+            else
+                !./install.py
+            endif
         endif
     endfunction
 
@@ -289,9 +291,7 @@ endif
 
 " ################# visual selection go also to clipboard #################
 if has('clipboard')
-    if !has("nvim")
-        set clipboard=unnamed
-    elseif (executable('pbcopy') || executable('xclip') || executable('xsel'))
+    if !has("nvim") || (executable('pbcopy') || executable('xclip') || executable('xsel'))
         set clipboard=unnamed
     endif
 elseif has("nvim")
@@ -311,8 +311,7 @@ nnoremap <leader>8 8gt
 nnoremap <leader>9 9gt
 nnoremap <leader>0 :tablast<CR>
 
-nnoremap <leader><leader>n :tabNext<CR>
-nnoremap <leader><leader>p :tabprevious<CR>
+nnoremap <leader><leader>n :tabnew<CR>
 nnoremap <leader><leader>c :tabclose<CR>
 
 " ################# Buffer management #################
@@ -347,7 +346,6 @@ vmap <S-tab> <gv
 
 " nmap <leader>x <C-w><C-w>
 nmap <C-x> <C-w><C-w>
-imap <C-x> <ESC><C-x>
 
 " Buffer
 nmap <leader>h <C-w>h
@@ -577,9 +575,9 @@ if &runtimepath =~ 'YouCompleteMe'
     let g:jedi#popup_on_dot = 0
     let g:jedi#popup_select_first = 0
 
-    let g:UltiSnipsExpandTrigger="<C-x>"
-    let g:UltiSnipsJumpForwardTrigger="<C-a>"
-    let g:UltiSnipsJumpBackwardTrigger="<C-z>"
+    let g:UltiSnipsExpandTrigger="<C-w>"
+    let g:UltiSnipsJumpForwardTrigger="<C-f>"
+    let g:UltiSnipsJumpBackwardTrigger="<C-b>"
 
     " nnoremap <F5> :YcmForceCompileAndDiagnostics<CR>
     " nnoremap <leader>g :YcmCompleter GoTo<CR>

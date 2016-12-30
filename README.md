@@ -2,7 +2,7 @@
 This repo have mi personal Vim/Neovim setings that I have been collecting for a while, feel free to change
 anything to fit your needs or suggest me something that you think could be useful.
 
-This settings require Vim >= 7.4 or Neovim >= 0.15 with **python** and **lua** support and **ctags**.
+This settings require Vim >= 7.4 or Neovim >= 0.17 with **python** and **lua** support and **ctags**.
 
 I have personally test this configurations in the following enviroments:
 
@@ -12,6 +12,7 @@ I have personally test this configurations in the following enviroments:
 
     * Ubuntu 14.04 trusty
         - Vim 7.4.52
+        - Neovim 0.17
 
     * Archlinux
         - Vim 8.0.94
@@ -31,8 +32,6 @@ I have personally test this configurations in the following enviroments:
         - Vim 8.0.94
     * Git bash (some problems loading python modules)
         - Vim 8.0.27
-
-I you 
 
 You can test my settings by clonning this repo into your `$HOME`
 
@@ -54,7 +53,7 @@ Once you have cloneed the repo just run `:PlugInstall` inside vim/neovim to comp
 
 Included plugins:
 - Default plugins
-    * [Vim Sensible](https://github.com/tpope/vim-sensible)
+    * [Vim Sensible](https://github.com/tpope/vim-sensible) (Not necessary in Neovim)
     * [Colorschemes](https://github.com/flazz/vim-colorschemes)
     * [deliMate](https://github.com/Raimondi/delimitMate)
     * [NERDTree](https://github.com/scrooloose/nerdtree')
@@ -66,7 +65,6 @@ Included plugins:
     * [Gitgutter](https://github.com/airblade/vim-gitgutter)
     * [Fugitive](https://github.com/tpope/vim-fugitive)
     * [Committia](https://github.com/rhysd/committia.vim)
-    * [Tagbar](https://github.com/majutsushi/tagbar)
     * [Tabular](https://github.com/godlygeek/tabular)
     * [EasyMotions](https://github.com/easymotion/vim-easymotion)
     * [Surround](https://github.com/tpope/vim-surround)
@@ -80,6 +78,12 @@ Included plugins:
     * [Snippets](https://github.com/honza/vim-snippets)
     * [Move](https://github.com/matze/vim-move)
     * [MacroEdit](https://github.com/dohsimpson/vim-macroeditor)
+    * [Tagbar](https://github.com/majutsushi/tagbar) (Only if ctags has been installed)
+    * [Abolish](https://github.com/tpope/vim-abolish)
+    * [Repeat](https://github.com/tpope/vim-repeat)
+    * [indentLine](https://github.com/Yggdroot/indentLine)
+    * [Pasta](https://github.com/sickill/vim-pasta)
+    * [Autoformat](https://github.com/chiel92/vim-autoformat)
 
 - If python interface is available
     * [Ultisnips](https://github.com/SirVer/ultisnips)
@@ -103,8 +107,7 @@ Included plugins:
 - If YouCompleteMe was not installed and lua is not available
     * [Supertab](https://github.com/ervandew/supertab)
 
-If you want to deactivate some plugins just comment its line in the init.vim, ex. " Plug 'majutsushi/tagbar'.
-And run `:PlugInstall` and the plugin will not be installed, if you already installed just remove its folder
-in plugged/{Plugin Name} and all maps and settings will be automatically disable.
+If you want to deactivate some plugins just comment its line in the init.vim, ex. `" Plug 'majutsushi/tagbar'`.
+And run `:PlugClean` to delete the plugin.
 
 Feel free to change anything to fit your needs! 
