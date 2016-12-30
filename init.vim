@@ -87,7 +87,7 @@ Plug 'tpope/vim-abolish'
 Plug 'tpope/vim-repeat'
 
 " Display indention
-Plug 'Yggdroot/indentLine', { 'on':  [ 'IndentLinesToggle' ] }
+Plug 'Yggdroot/indentLine'
 
 " Auto indention put command
 Plug 'sickill/vim-pasta'
@@ -768,7 +768,8 @@ endif
 
 " ################ indentLine #################
 if &runtimepath =~ 'indentLine'
-    nmap til :IndentLinesToggle<CR>
+    " Toggle display indent
+    nmap tdi :IndentLinesToggle<CR>
     let g:indentLine_enabled = 0
     let g:indentLine_char = '┆'
 endif
