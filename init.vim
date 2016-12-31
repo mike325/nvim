@@ -98,8 +98,18 @@ if executable("ctags")
     Plug 'majutsushi/tagbar'
 endif
 
-let g:ycm_installed = 0
+let b:neomake_installed = 0
+if has("nvim") || ( v:version >= 800 )
+    " Async Syntaxis check
+    Plug 'neomake/neomake'
+    let b:neomake_installed = 1
+endif
+
+let b:ycm_installed = 0
 if ( has("python") || has("python3") )
+    " Snippets engine
+        Plug 'SirVer/ultisnips'
+
     function! BuildYCM(info)
         " info is a dictionary with 3 fields
         " - name:   name of the plugin
@@ -119,24 +129,19 @@ if ( has("python") || has("python3") )
 " Awesome completion engine, comment the following if to deactivate ycm
     if has("nvim") || ( v:version >= 800 ) || ( v:version == 704 && has("patch143") )
         Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') }
-        let g:ycm_installed = 1
+        let b:ycm_installed = 1
     endif
 
-" Snippets engine
-    Plug 'SirVer/ultisnips'
-
-    if g:ycm_installed==0
+    if b:ycm_installed==0
         " completion for python
         Plug 'davidhalter/jedi-vim'
     endif
 
-    if has("nvim") || ( v:version >= 800 )
-        " Async Syntaxis check
-        Plug 'neomake/neomake'
-    else
+    if b:neomake_installed==0
         " Syntaxis check
         Plug 'vim-syntastic/syntastic'
     endif
+
 else
 " Snippets without python interface
     Plug 'MarcWeber/vim-addon-mw-utils'
@@ -145,7 +150,7 @@ else
 endif
 
 " completion without ycm
-if g:ycm_installed==0
+if b:ycm_installed==0
     if ( has("nvim") && has("python3") )
         Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
         " Todo test personalize settings of deoplete

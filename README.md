@@ -84,6 +84,7 @@ Included plugins:
     * [indentLine](https://github.com/Yggdroot/indentLine)
     * [Pasta](https://github.com/sickill/vim-pasta)
     * [Autoformat](https://github.com/chiel92/vim-autoformat)
+    * [Neomake](https://github.com/neomake/neomake) (Only available for Neovim and Vim 8)
 
 - If python interface is available
     * [Ultisnips](https://github.com/SirVer/ultisnips)
@@ -91,6 +92,8 @@ Included plugins:
 
     - If YouCompleteMe was not installed
         * [Jedi](https://github.com/davidhalter/jedi-vim)
+
+    - If Neomake was not available
         * [Syntactic](https://github.com/vim-syntastic/syntastic)
 
 - If python interface is not available
