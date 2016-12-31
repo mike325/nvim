@@ -573,22 +573,40 @@ if ( &runtimepath =~ 'jedi-vim' || &runtimepath =~ 'jedi'  )
 endif
 
 if &runtimepath =~ 'YouCompleteMe'
-    let g:jedi#popup_on_dot = 0
-    let g:jedi#popup_select_first = 0
+    let g:UltiSnipsExpandTrigger       = "<C-w>"
+    let g:UltiSnipsJumpForwardTrigger  = "<C-f>"
+    let g:UltiSnipsJumpBackwardTrigger = "<C-b>"
 
-    let g:UltiSnipsExpandTrigger="<C-w>"
-    let g:UltiSnipsJumpForwardTrigger="<C-f>"
-    let g:UltiSnipsJumpBackwardTrigger="<C-b>"
+    let g:ycm_complete_in_comments                      = 1
+    let g:ycm_seed_identifiers_with_syntax              = 1
+    let g:ycm_add_preview_to_completeopt                = 1
+    let g:ycm_autoclose_preview_window_after_completion = 1
+    let g:ycm_autoclose_preview_window_after_insertion  = 1
+    let g:ycm_key_detailed_diagnostics                  = '<leader>D'
 
-    " nnoremap <F5> :YcmForceCompileAndDiagnostics<CR>
-    " nnoremap <leader>g :YcmCompleter GoTo<CR>
-    " nnoremap <leader>r :YcmCompleter GoToReferences<CR>
-    " nnoremap <leader>F :YcmCompleter FixIt<CR>
-    " nnoremap <leader>D :YcmCompleter GetDoc<CR>
-    " nnoremap <leader>p :YcmCompleter GetParent<CR>
-    " nnoremap <leader>i :YcmCompleter GoToInclude<CR>
-    " nnoremap <leader>d :YcmCompleter GoToDeclaration<CR>
-    " nnoremap <leader>t :YcmCompleter GetType<CR>
+    if executable("ctags")
+        let g:ycm_collect_identifiers_from_tags_files = 1
+    endif
+
+    nnoremap <F5> :YcmForceCompileAndDiagnostics<CR>
+    inoremap <F5> :YcmForceCompileAndDiagnostics<CR>
+
+    nnoremap <leader>F :YcmCompleter FixIt<CR>
+    nnoremap <leader>gr :YcmCompleter GoToReferences<CR>
+    nnoremap <leader>gg :YcmCompleter GoTo<CR>
+    nnoremap <leader>gp :YcmCompleter GetParent<CR>
+    nnoremap <leader>gi :YcmCompleter GoToInclude<CR>
+    nnoremap <leader>gt :YcmCompleter GetType<CR>
+
+    " In case there are other completion plugins
+    " let g:ycm_filetype_blacklist = {
+    "       \ 'tagbar' : 1,
+    "       \}
+    "
+    " In case there are other completion plugins
+    " let g:ycm_filetype_specific_completion_to_disable = {
+    "       \ 'gitcommit': 1
+    "       \}
 endif
 
 if &runtimepath =~ 'neocomplete.vim'
