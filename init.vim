@@ -128,6 +128,12 @@ if ( has("python") || has("python3") )
     if g:ycm_installed==0
         " completion for python
         Plug 'davidhalter/jedi-vim'
+    endif
+
+    if has("nvim") || ( v:version >= 800 )
+        " Async Syntaxis check
+        Plug 'neomake/neomake'
+    else
         " Syntaxis check
         Plug 'vim-syntastic/syntastic'
     endif
@@ -692,6 +698,19 @@ if &runtimepath =~ 'neocomplete.vim'
 endif
 
 " ################# Syntax check #################
+if &runtimepath =~ "neomake"
+    autocmd BufWrite * :Neomake
+
+    nmap <F6> :Neomake<CR>
+    imap <F6> <ESC>:Neomake<CR>a
+
+    nmap <F7> :lopen<CR>
+    imap <F7> <ESC>:lopen<CR>
+
+    nmap <F8> :lclose<CR>
+    imap <F8> <ESC>:lclose<CR>a
+endif
+
 if &runtimepath =~ "syntastic"
     " set sessionoptions-=blank
 
