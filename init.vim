@@ -4,9 +4,15 @@
 "
 " ############################################################################
 
-" Specify a directory for plugins (for Neovim: ~/.local/share/nvim/plugged)
+" Specify a directory for plugins
 if has("nvim")
-    call plug#begin('~/.config/nvim/plugged')
+    if has("win32") || has("win64")
+        call plug#begin('~\AppData\Local\nvim\plugged')
+    else
+        call plug#begin('~/.config/nvim/plugged')
+    endif
+elseif has("win32") || has("win64")
+    call plug#begin('~\vimfiles\autoload')
 else
     call plug#begin('~/.vim/plugged')
 endif
@@ -108,7 +114,7 @@ endif
 let b:ycm_installed = 0
 if ( has("python") || has("python3") )
     " Snippets engine
-        Plug 'SirVer/ultisnips'
+    Plug 'SirVer/ultisnips'
 
     function! BuildYCM(info)
         " info is a dictionary with 3 fields
@@ -165,22 +171,25 @@ endif
 " Initialize plugin system
 call plug#end()
 
-filetype plugin indent on
-
-set encoding=utf-8     " The encoding displayed.
-set fileencoding=utf-8 " The encoding written to file.
-
 " ############################################################################
 "
 "                               Small improvements
 "
 " ############################################################################
+"
+filetype plugin indent on
+
+set encoding=utf-8     " The encoding displayed.
+set fileencoding=utf-8 " The encoding written to file.
 
 let mapleader=" "
 nnoremap ; :
 nnoremap , :
 vmap ; :
 vmap , :
+
+" Easy <ESC> insertmode
+imap ,, <Esc>
 
 set nocompatible
 set splitright
@@ -197,7 +206,8 @@ autocmd BufEnter * silent! lcd %:p:h
 set visualbell
 
 " Trim whitespaces in selected files
-autocmd FileType c,cpp,java,php,python,shell,vim,html,css,javascript,go autocmd BufWritePre <buffer> %s/\s\+$//e
+autocmd FileType c,cpp,java,php,python,shell,vim,html,css,javascript,go \
+                autocmd BufWritePre <buffer> %s/\s\+$//e
 
 " Set Syntax to *.in files
 autocmd BufRead,BufNewFile *.in set filetype=conf
@@ -236,20 +246,38 @@ vmap <BS> dd
 
 if has("nvim")
     " nvim stuff
-    set directory=~/.config/nvim/tmp_dirs/swap    " directory to place swap files in
-    set backupdir=~/.config/nvim/tmp_dirs/backups " where to put backup files
-    set undodir=~/.config/nvim/tmp_dirs/undos
-    set viminfo+=n~/.config/nvim/tmp_dirs/viminfo
-    " store yankring history file there too
-    let g:yankring_history_dir = '~/.config/nvim/tmp_dirs/'
+    if has("win32") || has("win64")
+        set directory=~\AppData\Local\nvim\tmp_dirs\swap    " directory to place swap files in
+        set backupdir=~\AppData\Local\nvim\tmp_dirs\backups " where to put backup files
+        set undodir=~\AppData\Local\nvim\tmp_dirs\undos
+        set viminfo+=n~\AppData\Local\nvim\tmp_dirs\viminfo
+        " store yankring history file there too
+        let g:yankring_history_dir = '~\AppData\Local\nvim\tmp_dirs'
+    else
+        set directory=~/.config/nvim/tmp_dirs/swap    " directory to place swap files in
+        set backupdir=~/.config/nvim/tmp_dirs/backups " where to put backup files
+        set undodir=~/.config/nvim/tmp_dirs/undos
+        set viminfo+=n~/.config/nvim/tmp_dirs/viminfo
+        " store yankring history file there too
+        let g:yankring_history_dir = '~/.config/nvim/tmp_dirs/'
+    endif
 else
-    " vim stuff
-    set directory=~/.vim/tmp_dirs/swap    " directory to place swap files in
-    set backupdir=~/.vim/tmp_dirs/backups " where to put backup files
-    set undodir=~/.vim/tmp_dirs/undos
-    set viminfo+=n~/.vim/tmp_dirs/viminfo
-    " store yankring history file there too
-    let g:yankring_history_dir = '~/.vim/tmp_dirs/'
+    if has("win32") || has("win64")
+        set directory=~\vimfiles\tmp_dirs\swap    " directory to place swap files in
+        set backupdir=~\vimfiles\tmp_dirs\backups " where to put backup files
+        set undodir=~\vimfiles\tmp_dirs\undos
+        set viminfo+=n~\vimfiles\tmp_dirs\viminfo
+        " store yankring history file there too
+        let g:yankring_history_dir = '~\vimfiles\tmp_dirs'
+    else
+        " vim stuff
+        set directory=~/.vim/tmp_dirs/swap    " directory to place swap files in
+        set backupdir=~/.vim/tmp_dirs/backups " where to put backup files
+        set undodir=~/.vim/tmp_dirs/undos
+        set viminfo+=n~/.vim/tmp_dirs/viminfo
+        " store yankring history file there too
+        let g:yankring_history_dir = '~/.vim/tmp_dirs/'
+    endif
 endif
 " endif
 
@@ -437,7 +465,13 @@ let g:session_autosave = 'yes'
 let g:session_autoload = 'no'
 
 if has("nvim")
-    let g:session_directory = '~/.config/nvim/sessions'
+    if has("win32") || has("win64")
+        let g:session_directory = '~\AppData\Local\nvim\sessions'
+    else
+        let g:session_directory = '~/.config/nvim/sessions'
+    endif
+elseif has("win32") || has("win64")
+    let g:session_directory = '~\vimfiles\sessions'
 endif
 
 if &runtimepath =~ 'vim-session'
