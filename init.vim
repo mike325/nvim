@@ -60,8 +60,7 @@ Plug 'kshenoy/vim-signature'
 Plug 'kien/ctrlp.vim', { 'on': [ 'CtrlPBuffer', 'CtrlP' ] }
 
 " Better sessions management
-Plug 'xolox/vim-misc'
-Plug 'xolox/vim-session'
+Plug 'xolox/vim-misc' | Plug 'xolox/vim-session'
 
 " Improve syntax
 Plug 'sheerun/vim-polyglot'
@@ -93,6 +92,8 @@ Plug 'sickill/vim-pasta'
 " Code Format tool
 Plug 'chiel92/vim-autoformat'
 
+" Easy change text
+Plug 'AndrewRadev/switch.vim'
 
 if !has("nvim")
     " Basic settings
@@ -189,9 +190,12 @@ vmap ; :
 vmap , :
 
 " Easy <ESC> insertmode
-imap ,, <Esc>
+imap jj <Esc>
 
-set nocompatible
+if !has("nvim")
+    set nocompatible
+endif
+
 set splitright
 set nowrap
 set ruler
@@ -206,8 +210,9 @@ autocmd BufEnter * silent! lcd %:p:h
 set visualbell
 
 " Trim whitespaces in selected files
-autocmd FileType c,cpp,java,php,python,shell,vim,html,css,javascript,go \
-                autocmd BufWritePre <buffer> %s/\s\+$//e
+autocmd FileType c,cpp,java,php,go autocmd BufWritePre <buffer> %s/\s\+$//e
+autocmd FileType ruby,python,shell,vim autocmd BufWritePre <buffer> %s/\s\+$//e
+autocmd FileType html,css,javascript autocmd BufWritePre <buffer> %s/\s\+$//e
 
 " Set Syntax to *.in files
 autocmd BufRead,BufNewFile *.in set filetype=conf
@@ -219,11 +224,32 @@ hi CursorLine term=bold cterm=bold guibg=Grey40
 set autoindent
 set smartindent
 set copyindent
-set tabstop=4    " 1 tab = 4 spaces
-set shiftwidth=4 " Same for autoindenting
-set expandtab    " Use  spaces for indenting
-set smarttab     " Insert tabs on the start of a line according to shiftwidth, not tabstop
-set shiftround   " Use multiple of shiftwidth when indenting with '<' and '>'
+set tabstop=4       " 1 tab = 4 spaces
+set shiftwidth=4    " Same for autoindenting
+set expandtab       " Use  spaces for indenting
+set smarttab        " Insert tabs on the start of a line according to shiftwidth, not tabstop
+set shiftround      " Use multiple of shiftwidth when indenting with '<' and '>'
+set magic           " change the way backslashes are used in search patterns
+
+" specially for html
+autocmd FileType xml,html,vim BufReadPre <buffer> set matchpairs+=<:>
+
+set fileformat=unix      " file mode is unix
+" Remove ^M characters from windows format
+nmap <leader>R :%s/\r\+$//e
+if has("win32") || has("win64")
+    " set fileformats=unix,dos " only detect unix file format, displays that ^M with dos files
+    " Remove ^M caracters
+    " autocmd FileType * autocmd BufReadPost <buffer> %s/\r\+$//e
+
+    " augroup WindowsFormat
+    "     au!
+    "     au BufReadPost  * if &bin | silent! %!xxd
+    "     au BufReadPost  * set ft=xxd | endif
+    "     au BufWritePre  * if &bin | %!xxd -r
+    "     au BufWritePre  * endif
+    " augroup END
+endif
 
 set hlsearch  " highlight search terms
 set incsearch " show search matches as you type
@@ -279,7 +305,6 @@ else
         let g:yankring_history_dir = '~/.vim/tmp_dirs/'
     endif
 endif
-" endif
 
 " create needed directories if they don't exist
 if !isdirectory(&backupdir)
@@ -420,9 +445,9 @@ endif
 
 " ################# folding settings #################
 set foldmethod=indent " fold based on indent
-set foldnestmax=10    " deepest fold is 10 levels
-set foldlevel=1       " this is just what i use
 set nofoldenable      " dont fold by default
+set foldnestmax=10    " deepest fold is 10 levels
+" set foldlevel=1       " this is just what i use
 
 " ################# Easy Save file #################
 nmap <F2> :update<CR>
@@ -505,9 +530,9 @@ if &runtimepath =~ 'nerdcommenter'
     let g:NERDCompactSexyComs        = 1      " Use compact syntax for prettified multi-line comments
     let g:NERDTrimTrailingWhitespace = 1      " Enable trimming of trailing whitespace when uncommenting
     let g:NERDCommentEmptyLines      = 1      " Allow commenting and inverting empty lines
-    " (useful when commenting a region)
+                                              " (useful when commenting a region)
     let g:NERDDefaultAlign           = 'left' " Align line-wise comment delimiters flush left instead
-    " of following code indentation
+                                              " of following code indentation
 endif
 
 " ################ EasyMotions Settings #################
@@ -604,6 +629,18 @@ if &runtimepath =~ 'ultisnips'
     endif
 endif
 
+if &runtimepath =~ 'switch.vim'
+    nnoremap + :call switch#Switch(g:variable_style_switch_definitions)<cr>
+    nnoremap - :Switch<cr>
+
+    autocmd FileType c,cpp let b:switch_custom_definitions =
+        \ [
+        \   {
+        \
+        \   },
+        \ ]
+endif
+
 " ################ Jedi complete #################
 if ( &runtimepath =~ 'jedi-vim' || &runtimepath =~ 'jedi'  )
     let g:jedi#popup_on_dot = 1
@@ -615,43 +652,6 @@ if ( &runtimepath =~ 'jedi-vim' || &runtimepath =~ 'jedi'  )
     let g:jedi#documentation_command = "K"
     let g:jedi#usages_command = "<leader>u"
     let g:jedi#rename_command = "<leader>r"
-endif
-
-if &runtimepath =~ 'YouCompleteMe'
-    let g:UltiSnipsExpandTrigger       = "<C-w>"
-    let g:UltiSnipsJumpForwardTrigger  = "<C-f>"
-    let g:UltiSnipsJumpBackwardTrigger = "<C-b>"
-
-    let g:ycm_complete_in_comments                      = 1
-    let g:ycm_seed_identifiers_with_syntax              = 1
-    let g:ycm_add_preview_to_completeopt                = 1
-    let g:ycm_autoclose_preview_window_after_completion = 1
-    let g:ycm_autoclose_preview_window_after_insertion  = 1
-    let g:ycm_key_detailed_diagnostics                  = '<leader>D'
-
-    if executable("ctags")
-        let g:ycm_collect_identifiers_from_tags_files = 1
-    endif
-
-    nnoremap <F5> :YcmForceCompileAndDiagnostics<CR>
-    inoremap <F5> :YcmForceCompileAndDiagnostics<CR>
-
-    nnoremap <leader>F :YcmCompleter FixIt<CR>
-    nnoremap <leader>gr :YcmCompleter GoToReferences<CR>
-    nnoremap <leader>gg :YcmCompleter GoTo<CR>
-    nnoremap <leader>gp :YcmCompleter GetParent<CR>
-    nnoremap <leader>gi :YcmCompleter GoToInclude<CR>
-    nnoremap <leader>gt :YcmCompleter GetType<CR>
-
-    " In case there are other completion plugins
-    " let g:ycm_filetype_blacklist = {
-    "       \ 'tagbar' : 1,
-    "       \}
-    "
-    " In case there are other completion plugins
-    " let g:ycm_filetype_specific_completion_to_disable = {
-    "       \ 'gitcommit': 1
-    "       \}
 endif
 
 if &runtimepath =~ 'neocomplete.vim'
@@ -734,6 +734,43 @@ if &runtimepath =~ 'neocomplete.vim'
     if !exists('g:neocomplete#sources#omni#input_patterns')
         let g:neocomplete#sources#omni#input_patterns = {}
     endif
+endif
+
+if &runtimepath =~ 'YouCompleteMe'
+    let g:UltiSnipsExpandTrigger       = "<C-w>"
+    let g:UltiSnipsJumpForwardTrigger  = "<C-f>"
+    let g:UltiSnipsJumpBackwardTrigger = "<C-b>"
+
+    let g:ycm_complete_in_comments                      = 1
+    let g:ycm_seed_identifiers_with_syntax              = 1
+    let g:ycm_add_preview_to_completeopt                = 1
+    let g:ycm_autoclose_preview_window_after_completion = 1
+    let g:ycm_autoclose_preview_window_after_insertion  = 1
+    let g:ycm_key_detailed_diagnostics                  = '<leader>D'
+
+    if executable("ctags")
+        let g:ycm_collect_identifiers_from_tags_files = 1
+    endif
+
+    nnoremap <F5> :YcmForceCompileAndDiagnostics<CR>
+    inoremap <F5> :YcmForceCompileAndDiagnostics<CR>
+
+    nnoremap <leader>F :YcmCompleter FixIt<CR>
+    nnoremap <leader>gr :YcmCompleter GoToReferences<CR>
+    nnoremap <leader>gg :YcmCompleter GoTo<CR>
+    nnoremap <leader>gp :YcmCompleter GetParent<CR>
+    nnoremap <leader>gi :YcmCompleter GoToInclude<CR>
+    nnoremap <leader>gt :YcmCompleter GetType<CR>
+
+    " In case there are other completion plugins
+    " let g:ycm_filetype_blacklist = {
+    "       \ 'tagbar' : 1,
+    "       \}
+    "
+    " In case there are other completion plugins
+    " let g:ycm_filetype_specific_completion_to_disable = {
+    "       \ 'gitcommit': 1
+    "       \}
 endif
 
 " ################# Syntax check #################
