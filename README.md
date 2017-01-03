@@ -14,6 +14,9 @@ I have personally test this configurations in the following enviroments:
         - Vim 7.4.52
         - Neovim 0.17
 
+    * openSUSE 13.2
+        - Vim 8.0.104
+
     * Archlinux
         - Vim 8.0.94
         - Neovim 0.17
@@ -57,7 +60,6 @@ Included plugins:
     * [Colorschemes](https://github.com/flazz/vim-colorschemes)
     * [deliMate](https://github.com/Raimondi/delimitMate)
     * [NERDTree](https://github.com/scrooloose/nerdtree')
-    * [NERDTreeTabs](https://github.com/jistr/vim-nerdtree-tabs)
     * [NERDCommenter](https://github.com/scrooloose/nerdcommenter)
     * [Multiple-cursors](https://github.com/terryma/vim-multiple-cursors)
     * [Vim Airline](https://github.com/vim-airline/vim-airline')
@@ -85,6 +87,7 @@ Included plugins:
     * [Pasta](https://github.com/sickill/vim-pasta)
     * [Autoformat](https://github.com/chiel92/vim-autoformat)
     * [Neomake](https://github.com/neomake/neomake) (Only available for Neovim and Vim 8)
+    * [Switch](https://github.comAndrewRadev/switch.vim)
 
 - If python interface is available
     * [Ultisnips](https://github.com/SirVer/ultisnips)

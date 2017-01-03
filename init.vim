@@ -215,7 +215,8 @@ autocmd FileType html,css,javascript autocmd BufWritePre <buffer> %s/\s\+$//e
 " Set Syntax to *.in files
 autocmd BufRead,BufNewFile *.in set filetype=conf
 " Set Syntax to *.bash* and *.zsh* files
-autocmd BufRead,BufNewFile *.bash*,*.zsh* set filetype=shell
+" autocmd BufRead,BufNewFile *.bash*,*.zsh* set filetype=shell
+" autocmd BufReadPost *.bash*,*.zsh* set syntax=shell
 
 " Set highlight CursorLine
 hi CursorLine term=bold cterm=bold guibg=Grey40
@@ -237,19 +238,6 @@ autocmd FileType xml,html,vim autocmd BufReadPre <buffer> set matchpairs+=<:>
 set fileformat=unix      " file mode is unix
 " Remove ^M characters from windows format
 nmap <leader>R :%s/\r\+$//e
-if has("win32") || has("win64")
-    " set fileformats=unix,dos " only detect unix file format, displays that ^M with dos files
-    " Remove ^M caracters
-    " autocmd FileType * autocmd BufReadPost <buffer> %s/\r\+$//e
-
-    " augroup WindowsFormat
-    "     au!
-    "     au BufReadPost  * if &bin | silent! %!xxd
-    "     au BufReadPost  * set ft=xxd | endif
-    "     au BufWritePre  * if &bin | %!xxd -r
-    "     au BufWritePre  * endif
-    " augroup END
-endif
 
 set hlsearch  " highlight search terms
 set incsearch " show search matches as you type
@@ -533,6 +521,9 @@ if &runtimepath =~ 'nerdcommenter'
                                               " (useful when commenting a region)
     let g:NERDDefaultAlign           = 'left' " Align line-wise comment delimiters flush left instead
                                               " of following code indentation
+    let g:NERDCustomDelimiters = {
+        \ 'dosini': { 'left': '#', 'leftAlt': ';' }
+        \ }
 endif
 
 " ################ EasyMotions Settings #################
@@ -541,10 +532,6 @@ if &runtimepath =~ 'vim-easymotion'
     let g:EasyMotion_do_mapping = 0
     " Turn on ignore case
     let g:EasyMotion_smartcase = 1
-
-    " toggle ignore case
-    nmap tes :let g:EasyMotion_smartcase=1<CR>
-    nmap tec :let g:EasyMotion_smartcase=0<CR>
 
     " <leader>f{char} to move to {char}
     " search a character in the current buffer
