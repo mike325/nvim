@@ -215,8 +215,16 @@ autocmd FileType c,cpp,java,php,go autocmd BufWritePre <buffer> %s/\s\+$//e
 autocmd FileType ruby,python,shell,vim autocmd BufWritePre <buffer> %s/\s\+$//e
 autocmd FileType html,css,javascript autocmd BufWritePre <buffer> %s/\s\+$//e
 
+" Auto reload init.vim file
+augroup ReloadVimrc
+    autocmd!
+    autocmd BufWritePost $MYVIMRC source $MYVIMRC
+augroup end
+
 " Set Syntax to *.in files
 autocmd BufRead,BufNewFile *.in set filetype=conf
+" Set Syntax to *.bash* and *.zsh* files
+autocmd BufRead,BufNewFile *.bash*,*.zsh* set filetype=shell
 
 " Set highlight CursorLine
 hi CursorLine term=bold cterm=bold guibg=Grey40
@@ -232,7 +240,7 @@ set smarttab        " Insert tabs on the start of a line according to shiftwidth
 set shiftround      " Use multiple of shiftwidth when indenting with '<' and '>'
 set magic           " change the way backslashes are used in search patterns
 
-" specially for html
+" Specially for html and xml
 autocmd FileType xml,html,vim autocmd BufReadPre <buffer> set matchpairs+=<:>
 
 set fileformat=unix      " file mode is unix
@@ -637,7 +645,15 @@ if &runtimepath =~ 'switch.vim'
     autocmd FileType c,cpp let b:switch_custom_definitions =
         \ [
         \   {
-        \
+        \       '^\(\k\+\)\.': '\1->',
+        \       '^\(\k\+\)\->': '\1.',
+        \   },
+        \ ]
+
+    autocmd FileType python let b:switch_custom_definitions =
+        \ [
+        \   {
+        \       '^\(.*\)True': '\1False',
         \   },
         \ ]
 endif
