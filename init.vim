@@ -797,6 +797,12 @@ endif
 
 if &runtimepath =~ "syntastic"
     " set sessionoptions-=blank
+    " Set passive mode by default, can be changed with ts map
+    let g:syntastic_mode_map = {
+        \ "mode": "passive",
+        \ "active_filetypes": ["python", "shell"],
+        \ "passive_filetypes": ["puppet"]
+        \ }
 
     set statusline+=%#warningmsg#
     set statusline+=%{SyntasticStatuslineFlag()}
@@ -811,15 +817,19 @@ if &runtimepath =~ "syntastic"
 
     let g:syntastic_python_checkers = ['flake8']
 
+    " Check Syntax in the current file
     imap <F5> <ESC>:SyntasticCheck<CR>a
     nmap <F5> :SyntasticCheck<CR>
 
+    " Give information about current checkers
     imap <F6> <ESC>:SyntasticInfo<CR>a
     nmap <F6> :SyntasticInfo<CR>
 
+    " Show the list of errors
     imap <F7> <ESC>:Errors<CR>a
     nmap <F7> :Errors<CR>
 
+    " Hide the list of errors
     imap <F8> <ESC>:lclose<CR>a
     nmap <F8> :lclose<CR>
 endif
