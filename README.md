@@ -60,7 +60,6 @@ Included plugins:
     * [Colorschemes](https://github.com/flazz/vim-colorschemes)
     * [deliMate](https://github.com/Raimondi/delimitMate)
     * [NERDTree](https://github.com/scrooloose/nerdtree')
-    * [NERDTreeTabs](https://github.com/jistr/vim-nerdtree-tabs)
     * [NERDCommenter](https://github.com/scrooloose/nerdcommenter)
     * [Multiple-cursors](https://github.com/terryma/vim-multiple-cursors)
     * [Vim Airline](https://github.com/vim-airline/vim-airline')

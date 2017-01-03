@@ -24,10 +24,7 @@ Plug 'flazz/vim-colorschemes'
 Plug 'Raimondi/delimitMate'
 
 " File explorer, and
-Plug 'scrooloose/nerdtree', { 'on': [ 'NERDTreeToggle', 'NERDTreeTabsToggle' ] }
-
-" Mirror NerdTree in all tabs
-Plug 'jistr/vim-nerdtree-tabs', { 'on': [ 'NERDTreeToggle', 'NERDTreeTabsToggle' ] }
+Plug 'scrooloose/nerdtree', { 'on': [ 'NERDTreeToggle' ] }
 
 " Easy comments
 Plug 'scrooloose/nerdcommenter'
@@ -100,7 +97,6 @@ if !has("nvim")
     Plug 'tpope/vim-sensible'
 endif
 
-" Only install tagsbar if ctags is available
 if executable("ctags")
     " Simple view of Tags using ctags
     Plug 'majutsushi/tagbar'
@@ -217,8 +213,6 @@ autocmd FileType html,css,javascript autocmd BufWritePre <buffer> %s/\s\+$//e
 
 " Set Syntax to *.in files
 autocmd BufRead,BufNewFile *.in set filetype=conf
-" Set Syntax to *.bash* and *.zsh* files
-autocmd BufRead,BufNewFile *.bash*,*.zsh* set filetype=shell
 
 " Set highlight CursorLine
 hi CursorLine term=bold cterm=bold guibg=Grey40
@@ -523,6 +517,9 @@ if &runtimepath =~ 'nerdcommenter'
                                               " (useful when commenting a region)
     let g:NERDDefaultAlign           = 'left' " Align line-wise comment delimiters flush left instead
                                               " of following code indentation
+    let g:NERDCustomDelimiters = {
+        \ 'dosini': { 'left': '#', 'leftAlt': ';' }
+        \ }
 endif
 
 " ################ EasyMotions Settings #################
@@ -531,10 +528,6 @@ if &runtimepath =~ 'vim-easymotion'
     let g:EasyMotion_do_mapping = 0
     " Turn on ignore case
     let g:EasyMotion_smartcase = 1
-
-    " toggle ignore case
-    nmap tes :let g:EasyMotion_smartcase=1<CR>
-    nmap tec :let g:EasyMotion_smartcase=0<CR>
 
     " <leader>f{char} to move to {char}
     " search a character in the current buffer
@@ -622,6 +615,21 @@ endif
 if &runtimepath =~ 'switch.vim'
     nnoremap + :call switch#Switch(g:variable_style_switch_definitions)<cr>
     nnoremap - :Switch<cr>
+
+    autocmd FileType c,cpp let b:switch_custom_definitions =
+        \ [
+        \   {
+        \       '^\(\k\+\)\.': '\1->',
+        \       '^\(\k\+\)\->': '\1.',
+        \   },
+        \ ]
+
+    autocmd FileType python let b:switch_custom_definitions =
+        \ [
+        \   {
+        \       '^\(.*\)True': '\1False',
+        \   },
+        \ ]
 endif
 
 " ################ Jedi complete #################
@@ -772,6 +780,12 @@ endif
 
 if &runtimepath =~ "syntastic"
     " set sessionoptions-=blank
+    " Set passive mode by default, can be changed with ts map
+    let g:syntastic_mode_map = {
+        \ "mode": "passive",
+        \ "active_filetypes": ["python", "shell"],
+        \ "passive_filetypes": ["puppet"]
+        \ }
 
     set statusline+=%#warningmsg#
     set statusline+=%{SyntasticStatuslineFlag()}
@@ -786,15 +800,19 @@ if &runtimepath =~ "syntastic"
 
     let g:syntastic_python_checkers = ['flake8']
 
+    " Check Syntax in the current file
     imap <F5> <ESC>:SyntasticCheck<CR>a
     nmap <F5> :SyntasticCheck<CR>
 
+    " Give information about current checkers
     imap <F6> <ESC>:SyntasticInfo<CR>a
     nmap <F6> :SyntasticInfo<CR>
 
+    " Show the list of errors
     imap <F7> <ESC>:Errors<CR>a
     nmap <F7> :Errors<CR>
 
+    " Hide the list of errors
     imap <F8> <ESC>:lclose<CR>a
     nmap <F8> :lclose<CR>
 endif
@@ -809,8 +827,8 @@ let NERDTreeShowHidden          = 1
 " let NERDTreeDirArrowCollapsible = '~'
 
 "nmap T :NERDTree<CR>
-nmap T :NERDTreeTabsToggle<CR>
-nmap <F3> :NERDTreeTabsToggle<CR>
+nmap T :NERDTreeToggle<CR>
+nmap <F3> :NERDTreeToggle<CR>
 imap <F3> <Esc><F3>
 vmap <F3> <Esc><F3>
 
