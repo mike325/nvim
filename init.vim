@@ -25,10 +25,7 @@ Plug 'flazz/vim-colorschemes'
 Plug 'Raimondi/delimitMate'
 
 " File explorer, and
-Plug 'scrooloose/nerdtree', { 'on': [ 'NERDTreeToggle', 'NERDTreeTabsToggle' ] }
-
-" Mirror NerdTree in all tabs
-Plug 'jistr/vim-nerdtree-tabs', { 'on': [ 'NERDTreeToggle', 'NERDTreeTabsToggle' ] }
+Plug 'scrooloose/nerdtree', { 'on': [ 'NERDTreeToggle' ] }
 
 " Easy comments
 Plug 'scrooloose/nerdcommenter'
@@ -843,8 +840,8 @@ let NERDTreeShowHidden          = 1
 " let NERDTreeDirArrowCollapsible = '~'
 
 "nmap T :NERDTree<CR>
-nmap T :NERDTreeTabsToggle<CR>
-nmap <F3> :NERDTreeTabsToggle<CR>
+nmap T :NERDTreeToggle<CR>
+nmap <F3> :NERDTreeToggle<CR>
 imap <F3> <Esc><F3>
 vmap <F3> <Esc><F3>
 
