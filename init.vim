@@ -1,5 +1,6 @@
 " ############################################################################
 "
+"
 "                               Plugin installation
 "
 " ############################################################################
@@ -232,7 +233,7 @@ set shiftround      " Use multiple of shiftwidth when indenting with '<' and '>'
 set magic           " change the way backslashes are used in search patterns
 
 " specially for html
-autocmd FileType xml,html,vim BufReadPre <buffer> set matchpairs+=<:>
+autocmd FileType xml,html,vim autocmd BufReadPre <buffer> set matchpairs+=<:>
 
 set fileformat=unix      " file mode is unix
 " Remove ^M characters from windows format
