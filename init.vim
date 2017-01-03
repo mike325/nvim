@@ -1,6 +1,5 @@
 " ############################################################################
 "
-"
 "                               Plugin installation
 "
 " ############################################################################
@@ -13,7 +12,7 @@ if has("nvim")
         call plug#begin('~/.config/nvim/plugged')
     endif
 elseif has("win32") || has("win64")
-    call plug#begin('~\vimfiles\autoload')
+    call plug#begin('~\vimfiles\plugged')
 else
     call plug#begin('~/.vim/plugged')
 endif
@@ -214,9 +213,6 @@ autocmd FileType html,css,javascript autocmd BufWritePre <buffer> %s/\s\+$//e
 
 " Set Syntax to *.in files
 autocmd BufRead,BufNewFile *.in set filetype=conf
-" Set Syntax to *.bash* and *.zsh* files
-" autocmd BufRead,BufNewFile *.bash*,*.zsh* set filetype=shell
-" autocmd BufReadPost *.bash*,*.zsh* set syntax=shell
 
 " Set highlight CursorLine
 hi CursorLine term=bold cterm=bold guibg=Grey40
