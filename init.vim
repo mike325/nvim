@@ -212,12 +212,6 @@ autocmd FileType c,cpp,java,php,go autocmd BufWritePre <buffer> %s/\s\+$//e
 autocmd FileType ruby,python,shell,vim autocmd BufWritePre <buffer> %s/\s\+$//e
 autocmd FileType html,css,javascript autocmd BufWritePre <buffer> %s/\s\+$//e
 
-" Auto reload init.vim file
-augroup ReloadVimrc
-    autocmd!
-    autocmd BufWritePost $MYVIMRC source $MYVIMRC
-augroup end
-
 " Set Syntax to *.in files
 autocmd BufRead,BufNewFile *.in set filetype=conf
 " Set Syntax to *.bash* and *.zsh* files
