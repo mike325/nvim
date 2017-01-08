@@ -208,11 +208,11 @@ set visualbell
 
 " Trim whitespaces in selected files
 autocmd FileType c,cpp,java,php,go autocmd BufWritePre <buffer> %s/\s\+$//e
-autocmd FileType ruby,python,shell,vim autocmd BufWritePre <buffer> %s/\s\+$//e
+autocmd FileType ruby,python,sh,vim autocmd BufWritePre <buffer> %s/\s\+$//e
 autocmd FileType html,css,javascript autocmd BufWritePre <buffer> %s/\s\+$//e
 
 " Set Syntax to *.in files
-autocmd BufRead,BufNewFile *.in set filetype=conf
+autocmd BufRead,BufNewFile *.in,*.simics,*.si,*.sle set filetype=conf
 
 " Set highlight CursorLine
 hi CursorLine term=bold cterm=bold guibg=Grey40
@@ -233,7 +233,7 @@ autocmd FileType xml,html,vim autocmd BufReadPre <buffer> set matchpairs+=<:>
 
 set fileformat=unix      " file mode is unix
 " Remove ^M characters from windows format
-nmap <leader>R :%s/\r\+$//e
+nnoremap <leader>R :%s/\r\+$//e
 
 set hlsearch  " highlight search terms
 set incsearch " show search matches as you type
@@ -241,17 +241,17 @@ set ignorecase
 
 set pastetoggle=<F4>
 
-"nmap <S-Enter> O<Esc>
+" nnoremap <S-Enter> O<Esc>
 " Add lines in normal mode without enter in insert mode
-nmap <C-o> O<Esc>
-nmap <CR> o<Esc>
+nnoremap <C-o> O<Esc>
+nnoremap <CR> o<Esc>
 
 " better backup, swap and undos storage
 set backup   " make backup files
 set undofile " persistent undos - undo after you re-open the file
 
 " Easy remove line in normal mode
-nmap <BS> dd
+nnoremap <BS> dd
 vmap <BS> dd
 
 if has("nvim")
@@ -304,11 +304,11 @@ if !isdirectory(&undodir)
 endif
 
 " Close buffer/Editor
-nmap <leader>z ZZ
-nmap <leader>q :q!<CR>
+nnoremap <leader>z ZZ
+nnoremap <leader>q :q!<CR>
 
 " easy dump bin files into hex
-nmap <leader>x :%!xxd<CR>
+nnoremap <leader>x :%!xxd<CR>
 " augroup Binary
 "     au!
 "     au BufReadPre   *.bin,*.exe let &bin=1
@@ -324,18 +324,11 @@ nmap <leader>x :%!xxd<CR>
 "     set guifont=Lucida_Console:h10
 " endif
 
-if !has("gui_running") && !has("nvim")
-    " Use shell grep
-    nmap gp :!grep --color -nr
-endif
-
-
 " ################# Set Neovim settings #################
 if (has("nvim"))
     " live preview of Substitute
     set inccommand=split
 endif
-
 
 " ################# visual selection go also to clipboard #################
 if has('clipboard')
@@ -365,20 +358,16 @@ nnoremap <leader><leader>c :tabclose<CR>
 
 " ################# Buffer management #################
 " buffer add
-" nmap <leader>a :badd
+" nnoremap <leader>a :badd
 
 " Next buffer
-nmap <leader>n :bn<CR>
+nnoremap <leader>n :bn<CR>
 
 " Prev buffer
-nmap <leader>p :bp<CR>
-
-" Delete buffer
-nmap <leader>d :bdelete<CR>
-" nmap fd :bdelete<CR>
+nnoremap <leader>p :bp<CR>
 
 "go to last buffer
-" nmap <leader>l :blast<CR>
+" nnoremap <leader>l :blast<CR>
 
 " ################# Native Vim Explorer #################
 nnoremap E :Explore<CR>
@@ -386,29 +375,29 @@ let g:netrw_liststyle=3
 
 " ################# Change current active file split #################
 " Easy indentation in normal mode
-nmap <tab> >>
-nmap <S-tab> <<
+nnoremap <tab> >>
+nnoremap <S-tab> <<
 vmap <tab> >gv
 vmap <S-tab> <gv
 
 " imap <S-tab> <C-p>
 
-" nmap <leader>x <C-w><C-w>
-nmap <C-x> <C-w><C-w>
+" nnoremap <leader>x <C-w><C-w>
+nnoremap <C-x> <C-w><C-w>
 
 " Buffer
-nmap <leader>h <C-w>h
-nmap <leader>j <C-w>j
-nmap <leader>k <C-w>k
-nmap <leader>l <C-w>l
+nnoremap <leader>h <C-w>h
+nnoremap <leader>j <C-w>j
+nnoremap <leader>k <C-w>k
+nnoremap <leader>l <C-w>l
 
 if has("nvim")
     " Better splits
-    nmap <A-s> <C-w>s
-    nmap <A-v> <C-w>v
+    nnoremap <A-s> <C-w>s
+    nnoremap <A-v> <C-w>v
 
     " Better terminal access
-    nmap <A-t> :terminal<CR>
+    nnoremap <A-t> :terminal<CR>
     tnoremap <Esc> <C-\><C-n>
 
     " Better terminal movement
@@ -419,8 +408,8 @@ if has("nvim")
 endif
 
 " Resize buffer splits
-nmap <leader>e <C-w>=
-nmap <leader>- <C-w>-
+nnoremap <leader>e <C-w>=
+nnoremap <leader>- <C-w>-
 
 " Color columns
 if exists('+colorcolumn')
@@ -428,22 +417,24 @@ if exists('+colorcolumn')
 endif
 
 " ################# folding settings #################
-set foldmethod=indent " fold based on indent
+set foldmethod=syntax " fold based on indent
 set nofoldenable      " dont fold by default
 set foldnestmax=10    " deepest fold is 10 levels
 " set foldlevel=1       " this is just what i use
 
+autocmd BufWinEnter *.py,*.vim,*.rb,*.tex setlocal foldmethod=indent
+
 " ################# Easy Save file #################
-nmap <F2> :update<CR>
+nnoremap <F2> :update<CR>
 vmap <F2> <Esc><F2>gv
 imap <F2> <Esc><F2>a
 
 " ################# Toggles #################
-nmap tn :set number!<Bar>set number?<CR>
-nmap th :set hlsearch!<Bar>set hlsearch?<CR>
-nmap ti :set ignorecase!<Bar>set ignorecase?<CR>
-nmap tw :set wrap!<Bar>set wrap?<CR>
-nmap tc :set cursorline!<Bar>set cursorline?<CR>
+nnoremap tn :set number!<Bar>set number?<CR>
+nnoremap th :set hlsearch!<Bar>set hlsearch?<CR>
+nnoremap ti :set ignorecase!<Bar>set ignorecase?<CR>
+nnoremap tw :set wrap!<Bar>set wrap?<CR>
+nnoremap tc :set cursorline!<Bar>set cursorline?<CR>
 
 " ################# Terminal colors #################
 if (has("nvim"))
@@ -464,7 +455,7 @@ endif
 
 " ################ BufferBye settings #################
 " better behave buffer deletion
-nmap <leader>d :Bdelete<CR>
+nnoremap <leader>d :Bdelete<CR>
 
 " ################ Sessions settings #################
 " Session management
@@ -484,22 +475,22 @@ elseif has("win32") || has("win64")
 endif
 
 if &runtimepath =~ 'vim-session'
-    " nmap <leader>d :DeleteSession
+    " nnoremap <leader>d :DeleteSession
     " Quick open session
-    nmap <leader>o :OpenSession
+    nnoremap <leader>o :OpenSession
     " Save current files in a session
-    nmap <leader>s :SaveSession
+    nnoremap <leader>s :SaveSession
     " close current session !!!!!!!! use this instead of close the buffers !!!!!!!!
-    nmap <leader>C :CloseSession<CR>
+    nnoremap <leader>c :CloseSession<CR>
     " Quick save current session
-    nmap <leader><leader>s :SaveSession<CR>
+    nnoremap <leader><leader>s :SaveSession<CR>
     " Quick delete session
-    nmap <leader><leader>d :DeleteSession<CR>
+    nnoremap <leader><leader>d :DeleteSession<CR>
 endif
 
 " ################ CtrlP settings #################
-nmap <leader>b :CtrlPBuffer<CR>
-nmap <leader>P :CtrlP<CR>
+nnoremap <C-b> :CtrlPBuffer<CR>
+nnoremap <C-p> :CtrlP<CR>
 let g:ctrlp_match_window = 'bottom,order:ttb,min:1,max:30,results:50'
 let g:ctrlp_map = '<C-p>'
 let g:ctrlp_working_path_mode = 'ra'
@@ -575,9 +566,9 @@ if &runtimepath =~ 'vim-colorschemes'
         echo 'Please run :PlugInstall to complete the installation or remove "colorscheme Monokai"'
     endtry
 
-    nmap csm :colorscheme Monokai<CR>
-    nmap cso :colorscheme onedark<CR>
-    nmap csr :colorscheme railscasts<CR>
+    nnoremap csm :colorscheme Monokai<CR>
+    nnoremap cso :colorscheme onedark<CR>
+    nnoremap csr :colorscheme railscasts<CR>
 endif
 
 " ################ Status bar Airline #################
@@ -728,7 +719,7 @@ if &runtimepath =~ 'neocomplete.vim'
 endif
 
 if &runtimepath =~ 'YouCompleteMe'
-    let g:UltiSnipsExpandTrigger       = "<C-w>"
+    let g:UltiSnipsExpandTrigger       = "<C-k>"
     let g:UltiSnipsJumpForwardTrigger  = "<C-f>"
     let g:UltiSnipsJumpBackwardTrigger = "<C-b>"
 
@@ -768,13 +759,13 @@ endif
 if &runtimepath =~ "neomake"
     autocmd BufWrite * :Neomake
 
-    nmap <F6> :Neomake<CR>
+    nnoremap <F6> :Neomake<CR>
     imap <F6> <ESC>:Neomake<CR>a
 
-    nmap <F7> :lopen<CR>
+    nnoremap <F7> :lopen<CR>
     imap <F7> <ESC>:lopen<CR>
 
-    nmap <F8> :lclose<CR>
+    nnoremap <F8> :lclose<CR>
     imap <F8> <ESC>:lclose<CR>a
 endif
 
@@ -783,7 +774,7 @@ if &runtimepath =~ "syntastic"
     " Set passive mode by default, can be changed with ts map
     let g:syntastic_mode_map = {
         \ "mode": "passive",
-        \ "active_filetypes": ["python", "shell"],
+        \ "active_filetypes": ["python", "sh"],
         \ "passive_filetypes": ["puppet"]
         \ }
 
@@ -791,7 +782,7 @@ if &runtimepath =~ "syntastic"
     set statusline+=%{SyntasticStatuslineFlag()}
     set statusline+=%*
 
-    nmap ts :SyntasticToggleMode<CR>
+    nnoremap ts :SyntasticToggleMode<CR>
 
     let g:syntastic_always_populate_loc_list = 1
     let g:syntastic_auto_loc_list = 1
@@ -802,51 +793,52 @@ if &runtimepath =~ "syntastic"
 
     " Check Syntax in the current file
     imap <F5> <ESC>:SyntasticCheck<CR>a
-    nmap <F5> :SyntasticCheck<CR>
+    nnoremap <F5> :SyntasticCheck<CR>
 
     " Give information about current checkers
     imap <F6> <ESC>:SyntasticInfo<CR>a
-    nmap <F6> :SyntasticInfo<CR>
+    nnoremap <F6> :SyntasticInfo<CR>
 
     " Show the list of errors
     imap <F7> <ESC>:Errors<CR>a
-    nmap <F7> :Errors<CR>
+    nnoremap <F7> :Errors<CR>
 
     " Hide the list of errors
     imap <F8> <ESC>:lclose<CR>a
-    nmap <F8> :lclose<CR>
+    nnoremap <F8> :lclose<CR>
 endif
 
 " ################# NERDTree quick open/close #################
 " Lazy load must be out of if
 " Ignore files in NERDTree
-let NERDTreeIgnore              = ['\.pyc$', '\~$', '\.sw$', '\.swp$']
-let NERDTreeShowHidden          = 1
+let NERDTreeShowBookmarks = 1
+let NERDTreeIgnore        = ['\.pyc$', '\~$', '\.sw$', '\.swp$']
+" let NERDTreeShowHidden   = 1
+
 " If you don't have unicode, uncomment the following lines
 " let NERDTreeDirArrowExpandable  = '+'
 " let NERDTreeDirArrowCollapsible = '~'
 
-"nmap T :NERDTree<CR>
-nmap T :NERDTreeToggle<CR>
-nmap <F3> :NERDTreeToggle<CR>
+nnoremap T :NERDTreeToggle<CR>
+nnoremap <F3> :NERDTreeToggle<CR>
 imap <F3> <Esc><F3>
 vmap <F3> <Esc><F3>
 
 " ################ Alignment with Tabularize #################
 if &runtimepath =~ 'tabular'
-    nmap <leader>t= :Tabularize /=<CR>
+    nnoremap <leader>t= :Tabularize /=<CR>
     vmap <leader>t= :Tabularize /=<CR>
 
-    nmap <leader>t: :Tabularize /:<CR>
+    nnoremap <leader>t: :Tabularize /:<CR>
     vmap <leader>t: :Tabularize /:<CR>
 
-    nmap <leader>t" :Tabularize /"<CR>
+    nnoremap <leader>t" :Tabularize /"<CR>
     vmap <leader>t" :Tabularize /"<CR>
 
-    nmap <leader>t# :Tabularize /#<CR>
+    nnoremap <leader>t# :Tabularize /#<CR>
     vmap <leader>t# :Tabularize /#<CR>
 
-    nmap <leader>t* :Tabularize /*<CR>
+    nnoremap <leader>t* :Tabularize /*<CR>
     vmap <leader>t* :Tabularize /*<CR>
 endif
 
@@ -854,42 +846,30 @@ endif
 " ################ Fugitive #################
 if &runtimepath =~ 'vim-fugitive'
     nmap gs :Gstatus<CR>
-    nmap gc :Gcommit<CR>
-    nmap gb :Gblame<CR>
-    nmap gl :Git log<CR>
-    nmap gll :Git log --oneline<CR>
-    nmap go :Git checkout
-    nmap gom :Git checkout master<CR>
-    nmap gps :Git push
-    nmap gpo :Git push origin
-    nmap gpl :Git pull
-    nmap gplo :Git pull origin<CR>
-    nmap gpom :Git push origin master<CR>
-    nmap gsa :Git stash apply
-    nmap gsp :Git stash pop<CR>
+    nnoremap gc :Gcommit<CR>
 endif
 
 " ################ GitGutter #################
 if &runtimepath =~ 'vim-gitgutter'
-    nmap tg :GitGutterToggle<CR>
-    nmap tl :GitGutterLineHighlightsToggle<CR>
+    nnoremap tg :GitGutterToggle<CR>
+    nnoremap tl :GitGutterLineHighlightsToggle<CR>
 endif
 
 " ################ Signature #################
 if &runtimepath =~ 'vim-signature'
-    nmap <leader><leader>g :SignatureListGlobalMarks<CR>
+    nnoremap <leader><leader>g :SignatureListGlobalMarks<CR>
     imap <C-s>g <ESC>:SignatureListGlobalMarks<CR>
 
-    nmap <leader><leader>b :SignatureListBufferMarks<CR>
+    nnoremap <leader><leader>b :SignatureListBufferMarks<CR>
     imap <C-s>b <ESC>:SignatureListBufferMarks<CR>
 
-    nmap tS :SignatureToggleSigns<CR>
+    nnoremap tS :SignatureToggleSigns<CR>
 endif
 
 " ################ TagsBar #################
 if &runtimepath =~ 'tagbar'
-    nmap tt :TagbarToggle<CR>
-    nmap <F1> :TagbarToggle<CR>
+    nnoremap tt :TagbarToggle<CR>
+    nnoremap <F1> :TagbarToggle<CR>
     imap <F1> :TagbarToggle<CR>
     vmap <F1> :TagbarToggle<CR>gv
 endif
@@ -902,7 +882,7 @@ endif
 " ################ indentLine #################
 if &runtimepath =~ 'indentLine'
     " Toggle display indent
-    nmap tdi :IndentLinesToggle<CR>
+    nnoremap tdi :IndentLinesToggle<CR>
     let g:indentLine_enabled = 0
     let g:indentLine_char = '┆'
 endif
