@@ -201,7 +201,8 @@ set number       " Show line numbers
 syntax enable    " add syntax highlighting
 
 " cd to current file path
-autocmd BufEnter * silent! lcd %:p:h
+" !! Removed to start using Tags file in projects
+" autocmd BufEnter * silent! lcd %:p:h
 
 " disable sounds
 set visualbell
@@ -212,7 +213,12 @@ autocmd FileType ruby,python,sh,vim autocmd BufWritePre <buffer> %s/\s\+$//e
 autocmd FileType html,css,javascript autocmd BufWritePre <buffer> %s/\s\+$//e
 
 " Set Syntax to *.in files
-autocmd BufRead,BufNewFile *.in,*.simics,*.si,*.sle set filetype=conf
+augroup filetypedetect
+    autocmd BufNewFile,BufRead .tmux.conf*,tmux.conf* setf tmux
+    autocmd BufNewFile,BufRead .nginx.conf*,nginx.conf* setf nginx
+    autocmd BufRead,BufNewFile *.in,*.simics,*.si,*.sle set setf conf
+augroup END
+
 
 " Set highlight CursorLine
 hi CursorLine term=bold cterm=bold guibg=Grey40
@@ -221,12 +227,12 @@ hi CursorLine term=bold cterm=bold guibg=Grey40
 set autoindent
 set smartindent
 set copyindent
-set tabstop=4       " 1 tab = 4 spaces
-set shiftwidth=4    " Same for autoindenting
-set expandtab       " Use  spaces for indenting
-set smarttab        " Insert tabs on the start of a line according to shiftwidth, not tabstop
-set shiftround      " Use multiple of shiftwidth when indenting with '<' and '>'
-set magic           " change the way backslashes are used in search patterns
+set tabstop=4    " 1 tab = 4 spaces
+set shiftwidth=4 " Same for autoindenting
+set expandtab    " Use  spaces for indenting
+set smarttab     " Insert tabs on the start of a line according to shiftwidth, not tabstop
+set shiftround   " Use multiple of shiftwidth when indenting with '<' and '>'
+set magic        " change the way backslashes are used in search patterns
 
 " Specially for html and xml
 autocmd FileType xml,html,vim autocmd BufReadPre <buffer> set matchpairs+=<:>
@@ -242,6 +248,7 @@ set ignorecase
 set pastetoggle=<F4>
 
 " nnoremap <S-Enter> O<Esc>
+"
 " Add lines in normal mode without enter in insert mode
 nnoremap <C-o> O<Esc>
 nnoremap <CR> o<Esc>
@@ -309,20 +316,12 @@ nnoremap <leader>q :q!<CR>
 
 " easy dump bin files into hex
 nnoremap <leader>x :%!xxd<CR>
-" augroup Binary
-"     au!
-"     au BufReadPre   *.bin,*.exe let &bin=1
-"     au BufReadPost  *.bin,*.exe if &bin | silent! %!xxd
-"     au BufReadPost  *.bin,*.exe set ft=xxd | endif
-"     au BufWritePre  *.bin,*.exe if &bin | %!xxd -r
-"     au BufWritePre  *.bin,*.exe endif
-"     au BufWritePost *.bin,*.exe if &bin | %!xxd
-"     au BufWritePost *.bin,*.exe set nomod | endif
-" augroup END
 
-" if ( has("gui_running" ) && has("win32") )
-"     set guifont=Lucida_Console:h10
-" endif
+if has("gui_running")
+    set guioptions-=m  "no menu
+    set guioptions-=T  "no toolbar
+    set guioptions-=r  "no scrollbar
+endif
 
 " ################# Set Neovim settings #################
 if (has("nvim"))
@@ -413,7 +412,8 @@ nnoremap <leader>- <C-w>-
 
 " Color columns
 if exists('+colorcolumn')
-    let &colorcolumn="80,".join(range(120,999),",")
+    " let &colorcolumn="80,".join(range(120,999),",")
+    let &colorcolumn="80"
 endif
 
 " ################# folding settings #################
@@ -428,6 +428,9 @@ autocmd BufWinEnter *.py,*.vim,*.rb,*.tex setlocal foldmethod=indent
 nnoremap <F2> :update<CR>
 vmap <F2> <Esc><F2>gv
 imap <F2> <Esc><F2>a
+
+" For systems without F's keys (ex. android)
+nmap <leader>w :update<CR>
 
 " ################# Toggles #################
 nnoremap tn :set number!<Bar>set number?<CR>
@@ -811,12 +814,13 @@ endif
 " ################# NERDTree quick open/close #################
 " Lazy load must be out of if
 " Ignore files in NERDTree
-let NERDTreeIgnore              = ['\.pyc$', '\~$', '\.sw$', '\.swp$']
-" let NERDTreeShowHidden          = 1
+let NERDTreeShowBookmarks = 1
+let NERDTreeIgnore        = ['\.pyc$', '\~$', '\.sw$', '\.swp$']
+" let NERDTreeShowHidden   = 1
+
 " If you don't have unicode, uncomment the following lines
 " let NERDTreeDirArrowExpandable  = '+'
 " let NERDTreeDirArrowCollapsible = '~'
-let NERDTreeBookmark = 1
 
 nnoremap T :NERDTreeToggle<CR>
 nnoremap <F3> :NERDTreeToggle<CR>
