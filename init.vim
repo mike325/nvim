@@ -92,8 +92,10 @@ Plug 'chiel92/vim-autoformat'
 " Easy change text
 Plug 'AndrewRadev/switch.vim'
 
-" Go developement
-Plug 'fatih/vim-go'
+if executable("go")
+    " Go developement
+    Plug 'fatih/vim-go'
+endif
 
 if !has("nvim")
     " Basic settings
@@ -149,11 +151,9 @@ if ( has("python") || has("python3") )
         endif
 
         let b:deoplete_installed = 1
-    else
-        if has("nvim") || ( v:version >= 800 ) || ( v:version == 704 && has("patch143") )
-            Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') }
-            let b:ycm_installed = 1
-        endif
+    elseif has("nvim") || ( v:version >= 800 ) || ( v:version == 704 && has("patch143") )
+        Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') }
+        let b:ycm_installed = 1
     endif
 
 
