@@ -395,10 +395,6 @@ let g:netrw_liststyle=3
 " Easy indentation in normal mode
 nnoremap <tab> >>
 nnoremap <S-tab> <<
-vmap <tab> >gv
-vmap <S-tab> <gv
-
-" imap <S-tab> <C-p>
 
 " nnoremap <leader>x <C-w><C-w>
 nnoremap <C-x> <C-w><C-w>
@@ -479,6 +475,7 @@ augroup omnifuncs
     autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
     autocmd FileType go setlocal omnifunc=go#complete#Complete
     autocmd FileType cs setlocal omnifunc=OmniSharp#Complete
+    autocmd FileType php setlocal omnifunc=phpcomplete#CompletePHP
 
     autocmd BufNewFile,BufRead,BufEnter *.cpp,*.hpp setlocal omnifunc=omni#cpp#complete#Main
     autocmd BufNewFile,BufRead,BufEnter *.c,*.h setlocal omnifunc=ccomplete#Complete
@@ -509,6 +506,16 @@ if has("nvim")
     endif
 elseif has("win32") || has("win64")
     let g:session_directory = '~\vimfiles\sessions'
+endif
+
+if &runtimepath =~ 'vim-multiple-cursors'
+    let g:multi_cursor_use_default_mapping=0
+
+    let g:multi_cursor_start_key='<leader><tab>'
+    let g:multi_cursor_next_key='<tab>'
+    let g:multi_cursor_prev_key='<C-a>'
+    let g:multi_cursor_skip_key='<C-x>'
+    let g:multi_cursor_quit_key='<Esc>'
 endif
 
 if &runtimepath =~ 'vim-session'
@@ -715,7 +722,6 @@ if &runtimepath =~ 'neocomplete.vim'
     inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
     " <C-h>, <BS>: close popup and delete backword char.
     inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
-    inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
     inoremap <expr><C-y>  neocomplete#close_popup()
     inoremap <expr><C-e>  neocomplete#cancel_popup()
 
@@ -748,6 +754,25 @@ if &runtimepath =~ 'neocomplete.vim'
 endif
 
 if &runtimepath =~ 'deoplete.nvim'
+    function Multiple_cursors_before()
+        let g:deoplete#disable_auto_complete = 1
+    endfunction
+
+    function Multiple_cursors_after()
+        let g:deoplete#disable_auto_complete = 0
+    endfunction
+
+    imap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+    function! s:my_cr_function()
+        return (pumvisible() ? "\<C-y>" : "" ) . "\<CR>"
+    endfunction
+
+    inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+    " <C-h>, <BS>: close popup and delete backword char.
+    inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
+    inoremap <expr><C-y>  neocomplete#close_popup()
+    inoremap <expr><C-e>  neocomplete#cancel_popup()
+
     let g:deoplete#enable_at_startup = 1
 
     if !exists('g:deoplete#omni#input_patterns')
@@ -757,6 +782,10 @@ if &runtimepath =~ 'deoplete.nvim'
     " let g:deoplete#disable_auto_complete = 1
     autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
     call deoplete#custom#set('ultisnips', 'matchers', ['matcher_fuzzy'])
+
+    let g:UltiSnipsExpandTrigger       = "<C-k>"
+    let g:UltiSnipsJumpForwardTrigger  = "<C-f>"
+    let g:UltiSnipsJumpBackwardTrigger = "<C-b>"
 endif
 
 if &runtimepath =~ 'deoplete-jedi'
@@ -773,8 +802,11 @@ if &runtimepath =~ 'deoplete-clang'
 endif
 
 if &runtimepath =~ 'deoplete-go'
-    let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
-    let g:deoplete#sources#go#use_cache  = 1
+    let g:deoplete#sources#go#sort_class    = ['package', 'func', 'type', 'var', 'const']
+    let g:deoplete#sources#go#use_cache     = 1
+    let g:deoplete#sources#go#cgo           = 1
+    let g:deoplete#sources#go#package_dot   = 1
+    let g:deoplete#sources#go#gocode_binary = '/usr/bin/go'
 endif
 
 if &runtimepath =~ 'YouCompleteMe'
