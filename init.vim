@@ -157,7 +157,7 @@ if ( has("python") || has("python3") )
     endif
 
 
-    if b:ycm_installed==0 || b:deoplete_installed==0
+    if b:ycm_installed==0 && b:deoplete_installed==0
         " completion for python
         Plug 'davidhalter/jedi-vim'
     endif
@@ -175,7 +175,7 @@ else
 endif
 
 " completion without ycm
-if b:ycm_installed==0
+if b:ycm_installed==0 && b:deoplete_installed==0
     Plug 'ervandew/supertab'
     if has("lua")
         Plug 'Shougo/neocomplete.vim'
@@ -478,6 +478,7 @@ augroup omnifuncs
     autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
     autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
     autocmd FileType go setlocal omnifunc=go#complete#Complete
+    autocmd FileType cs setlocal omnifunc=OmniSharp#Complete
 
     autocmd BufNewFile,BufRead,BufEnter *.cpp,*.hpp setlocal omnifunc=omni#cpp#complete#Main
     autocmd BufNewFile,BufRead,BufEnter *.c,*.h setlocal omnifunc=ccomplete#Complete
@@ -739,14 +740,6 @@ if &runtimepath =~ 'neocomplete.vim'
     "let g:neocomplete#enable_auto_select = 1
     "let g:neocomplete#disable_auto_complete = 1
     "inoremap <expr><TAB>  pumvisible() ? "\<Down>" : "\<C-x>\<C-u>"
-
-    " Enable omni completion.
-    autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
-    autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-    autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-    autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-    autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-    autocmd FileType cs setlocal omnifunc=OmniSharp#Complete
 
     " Enable heavy omni completion.
     if !exists('g:neocomplete#sources#omni#input_patterns')
