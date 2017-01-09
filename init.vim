@@ -179,6 +179,8 @@ if b:ycm_installed==0 && b:deoplete_installed==0
     Plug 'ervandew/supertab'
     if has("lua")
         Plug 'Shougo/neocomplete.vim'
+    else
+        Plug 'roxma/SimpleAutoComplPop'
     endif
 endif
 
@@ -223,6 +225,9 @@ syntax enable    " add syntax highlighting
 " !! Removed to start using Tags file in projects
 " autocmd BufEnter * silent! lcd %:p:h
 
+" set path to look recursive in the current dir
+set path+=**
+
 " disable sounds
 set visualbell
 
@@ -234,12 +239,13 @@ nmap <leader>R :%s/\r\+$//e
 autocmd FileType c,cpp,java,php,go autocmd BufWritePre <buffer> %s/\s\+$//e
 autocmd FileType ruby,python,sh,vim autocmd BufWritePre <buffer> %s/\s\+$//e
 autocmd FileType html,css,javascript autocmd BufWritePre <buffer> %s/\s\+$//e
+autocmd FileType make,conf autocmd BufWritePre <buffer> %s/\s\+$//e
 
 " Set Syntax to *.in files
 augroup filetypedetect
-    autocmd BufNewFile,BufRead .tmux.conf*,tmux.conf* setf tmux
-    autocmd BufNewFile,BufRead .nginx.conf*,nginx.conf* setf nginx
-    autocmd BufRead,BufNewFile *.in,*.simics,*.si,*.sle set setf conf
+    autocmd BufNewFile,BufRead .tmux.conf*,tmux.conf* set filetype=tmux
+    autocmd BufNewFile,BufRead .nginx.conf*,nginx.conf* set filetype=nginx
+    autocmd BufRead,BufNewFile *.in,*.simics,*.si,*.sle set filetype=conf
 augroup END
 
 " Specially for html and xml
@@ -485,7 +491,7 @@ augroup omnifuncs
 
     autocmd BufNewFile,BufRead,BufEnter *.cpp,*.hpp setlocal omnifunc=omni#cpp#complete#Main
     autocmd BufNewFile,BufRead,BufEnter *.c,*.h setlocal omnifunc=ccomplete#Complete
-augroup END
+augroup end
 
 " ############################################################################
 "
@@ -612,9 +618,9 @@ endif
 " colorscheme railscasts
 if &runtimepath =~ 'vim-colorschemes'
     try
-        colorscheme railscasts
+        colorscheme Monokai
     catch
-        echo 'Please run :PlugInstall to complete the installation or remove "colorscheme railscasts"'
+        echo 'Please run :PlugInstall to complete the installation or remove "colorscheme Monokai"'
     endtry
 
     nnoremap csm :colorscheme Monokai<CR>
@@ -652,6 +658,10 @@ if &runtimepath =~ 'ultisnips'
     if has('python3')
         let g:UltiSnipsUsePythonVersion = 3
     endif
+
+    let g:UltiSnipsExpandTrigger       = "<C-k>"
+    let g:UltiSnipsJumpForwardTrigger  = "<C-f>"
+    let g:UltiSnipsJumpBackwardTrigger = "<C-b>"
 endif
 
 if &runtimepath =~ 'switch.vim'
@@ -693,6 +703,47 @@ if ( &runtimepath =~ 'jedi-vim' || &runtimepath =~ 'jedi'  )
     let g:jedi#documentation_command = "K"
     let g:jedi#usages_command = "<leader>u"
     let g:jedi#rename_command = "<leader>r"
+endif
+
+if &runtimepath =~ 'SimpleAutoComplPop'
+    autocmd FileType go call sacp#enableForThisBuffer({ "matches": [
+                    \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
+                    \ { '=~': '\.$'            , 'feedkeys': "\<C-x>\<C-o>", "ignoreCompletionMode":1} ,
+                    \ ]})
+
+    " This is because if python is active jedi will provide completion
+    if ( has("python") || has("python3") )
+        autocmd FileType python call sacp#enableForThisBuffer({ "matches": [
+                    \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
+                    \ ]})
+    else
+        autocmd FileType python call sacp#enableForThisBuffer({ "matches": [
+                    \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
+                    \ { '=~': '\.$'            , 'feedkeys': "\<C-x>\<C-o>", "ignoreCompletionMode":1} ,
+                    \ ]})
+    endif
+
+    autocmd FileType javascript call sacp#enableForThisBuffer({ "matches": [
+                    \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
+                    \ { '=~': '\.$'            , 'feedkeys': "\<C-x>\<C-o>", "ignoreCompletionMode":1} ,
+                    \ ]})
+
+    autocmd BufNewFile,BufRead,BufEnter *.cpp,*.hpp call sacp#enableForThisBuffer({ "matches": [
+                    \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
+                    \ { '=~': '\.$'            , 'feedkeys': "\<C-x>\<C-o>", "ignoreCompletionMode":1} ,
+                    \ { '=~': '::$'           , 'feedkeys': "\<C-x>\<C-o>"},
+                    \ { '=~': '->$'           , 'feedkeys': "\<C-x>\<C-o>"},
+                    \ ]})
+
+    autocmd BufNewFile,BufRead,BufEnter *.c,*.h call sacp#enableForThisBuffer({ "matches": [
+                   \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
+                   \ { '=~': '\.$'            , 'feedkeys': "\<C-x>\<C-o>", "ignoreCompletionMode":1} ,
+                   \ { '=~': '->$'           , 'feedkeys': "\<C-x>\<C-o>"},
+                   \ ]})
+
+    autocmd FileType sh,vim,conf call sacp#enableForThisBuffer({ "matches": [
+                    \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
+                    \ ]})
 endif
 
 if &runtimepath =~ 'neocomplete.vim'
@@ -797,10 +848,6 @@ if &runtimepath =~ 'deoplete.nvim'
     " let g:deoplete#disable_auto_complete = 1
     autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
     call deoplete#custom#set('ultisnips', 'matchers', ['matcher_fuzzy'])
-
-    let g:UltiSnipsExpandTrigger       = "<C-k>"
-    let g:UltiSnipsJumpForwardTrigger  = "<C-f>"
-    let g:UltiSnipsJumpBackwardTrigger = "<C-b>"
 endif
 
 if &runtimepath =~ 'deoplete-jedi'
@@ -825,10 +872,6 @@ if &runtimepath =~ 'deoplete-go'
 endif
 
 if &runtimepath =~ 'YouCompleteMe'
-    let g:UltiSnipsExpandTrigger       = "<C-k>"
-    let g:UltiSnipsJumpForwardTrigger  = "<C-f>"
-    let g:UltiSnipsJumpBackwardTrigger = "<C-b>"
-
     let g:ycm_complete_in_comments                      = 1
     let g:ycm_seed_identifiers_with_syntax              = 1
     let g:ycm_add_preview_to_completeopt                = 1
@@ -992,7 +1035,6 @@ if &runtimepath =~ 'indentLine'
     let g:indentLine_enabled = 0
     let g:indentLine_char = '┆'
 endif
-
 
 " ################ AutoFormat #################
 if &runtimepath =~ 'vim-autoformat'
