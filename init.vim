@@ -177,6 +177,7 @@ endif
 " completion without ycm
 if b:ycm_installed==0 && b:deoplete_installed==0
     Plug 'ervandew/supertab'
+    Plug 'vim-scripts/AutoComplPop'
     if has("lua")
         Plug 'Shougo/neocomplete.vim'
     endif
@@ -234,6 +235,7 @@ nmap <leader>R :%s/\r\+$//e
 autocmd FileType c,cpp,java,php,go autocmd BufWritePre <buffer> %s/\s\+$//e
 autocmd FileType ruby,python,sh,vim autocmd BufWritePre <buffer> %s/\s\+$//e
 autocmd FileType html,css,javascript autocmd BufWritePre <buffer> %s/\s\+$//e
+autocmd FileType make,conf autocmd BufWritePre <buffer> %s/\s\+$//e
 
 " Set Syntax to *.in files
 augroup filetypedetect
@@ -485,7 +487,7 @@ augroup omnifuncs
 
     autocmd BufNewFile,BufRead,BufEnter *.cpp,*.hpp setlocal omnifunc=omni#cpp#complete#Main
     autocmd BufNewFile,BufRead,BufEnter *.c,*.h setlocal omnifunc=ccomplete#Complete
-augroup END
+augroup end
 
 " ############################################################################
 "
@@ -612,9 +614,9 @@ endif
 " colorscheme railscasts
 if &runtimepath =~ 'vim-colorschemes'
     try
-        colorscheme railscasts
+        colorscheme Monokai
     catch
-        echo 'Please run :PlugInstall to complete the installation or remove "colorscheme railscasts"'
+        echo 'Please run :PlugInstall to complete the installation or remove "colorscheme Monokai"'
     endtry
 
     nnoremap csm :colorscheme Monokai<CR>
@@ -992,7 +994,6 @@ if &runtimepath =~ 'indentLine'
     let g:indentLine_enabled = 0
     let g:indentLine_char = '┆'
 endif
-
 
 " ################ AutoFormat #################
 if &runtimepath =~ 'vim-autoformat'
