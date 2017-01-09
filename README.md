@@ -59,10 +59,10 @@ Included plugins:
     * [Vim Sensible](https://github.com/tpope/vim-sensible) (Not necessary in Neovim)
     * [Colorschemes](https://github.com/flazz/vim-colorschemes)
     * [deliMate](https://github.com/Raimondi/delimitMate)
-    * [NERDTree](https://github.com/scrooloose/nerdtree')
+    * [NERDTree](https://github.com/scrooloose/nerdtree)
     * [NERDCommenter](https://github.com/scrooloose/nerdcommenter)
     * [Multiple-cursors](https://github.com/terryma/vim-multiple-cursors)
-    * [Vim Airline](https://github.com/vim-airline/vim-airline')
+    * [Vim Airline](https://github.com/vim-airline/vim-airline)
     * [Vim Airline Themes](https://github.com/vim-airline/vim-airline-themes)
     * [Gitgutter](https://github.com/airblade/vim-gitgutter)
     * [Fugitive](https://github.com/tpope/vim-fugitive)
@@ -87,11 +87,20 @@ Included plugins:
     * [Pasta](https://github.com/sickill/vim-pasta)
     * [Autoformat](https://github.com/chiel92/vim-autoformat)
     * [Neomake](https://github.com/neomake/neomake) (Only available for Neovim and Vim 8)
-    * [Switch](https://github.comAndrewRadev/switch.vim)
+    * [Switch](https://github.com/AndrewRadev/switch.vim)
+    * [Vim-go](https://github.com/fatih/vim-go)
 
 - If python interface is available
     * [Ultisnips](https://github.com/SirVer/ultisnips)
-    * [YouCompleteMe](https://github.com/Valloric/YouCompleteMe)
+
+    - If python3 interface is avalible and neovim is runnin
+        * [Deoplete](https://github.com/Shougo/deoplete.nvim) 
+        * [Deoplete-jedi](https://github.com/zchee/deoplete-jedi) 
+        * [Deoplete-clang](https://github.com/zchee/deoplete-clang) 
+        * [Deoplete-go](https://github.com/zchee/deoplete-go) 
+
+    - If Deoplete could not be installed
+        * [YouCompleteMe](https://github.com/Valloric/YouCompleteMe)
 
     - If YouCompleteMe was not installed
         * [Jedi](https://github.com/davidhalter/jedi-vim)
@@ -105,7 +114,6 @@ Included plugins:
     * [SnipMate](https://github.com/garbas/vim-snipmate)
 
 - If YouCompleteMe was not installed and Neovim is being used
-    * [Deoplete](https://github.com/Shougo/deoplete.nvim')
 
 - If YouCompleteMe was not installed and lua is available
     * [NeoComplete](https://github.com/Shougo/neocomplete.vim)

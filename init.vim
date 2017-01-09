@@ -92,6 +92,11 @@ Plug 'chiel92/vim-autoformat'
 " Easy change text
 Plug 'AndrewRadev/switch.vim'
 
+if executable("go")
+    " Go developement
+    Plug 'fatih/vim-go'
+endif
+
 if !has("nvim")
     " Basic settings
     Plug 'tpope/vim-sensible'
@@ -110,6 +115,7 @@ if has("nvim") || ( v:version >= 800 )
 endif
 
 let b:ycm_installed = 0
+let b:deoplete_installed = 0
 if ( has("python") || has("python3") )
     " Snippets engine
     Plug 'SirVer/ultisnips'
@@ -131,12 +137,27 @@ if ( has("python") || has("python3") )
     endfunction
 
 " Awesome completion engine, comment the following if to deactivate ycm
-    if has("nvim") || ( v:version >= 800 ) || ( v:version == 704 && has("patch143") )
+    if ( has("nvim") && has("python3") )
+        " Todo test personalize settings of deoplete
+        Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+        Plug 'zchee/deoplete-jedi'
+
+        if executable("clang")
+            Plug 'zchee/deoplete-clang'
+        endif
+
+        if executable("go") && executable("make")
+            Plug 'zchee/deoplete-go', { 'do': 'make'}
+        endif
+
+        let b:deoplete_installed = 1
+    elseif has("nvim") || ( v:version >= 800 ) || ( v:version == 704 && has("patch143") )
         Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') }
         let b:ycm_installed = 1
     endif
 
-    if b:ycm_installed==0
+
+    if b:ycm_installed==0 && b:deoplete_installed==0
         " completion for python
         Plug 'davidhalter/jedi-vim'
     endif
@@ -154,15 +175,10 @@ else
 endif
 
 " completion without ycm
-if b:ycm_installed==0
-    if ( has("nvim") && has("python3") )
-        Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-        " Todo test personalize settings of deoplete
-    else
-        Plug 'ervandew/supertab'
-        if has("lua")
-            Plug 'Shougo/neocomplete.vim'
-        endif
+if b:ycm_installed==0 && b:deoplete_installed==0
+    Plug 'ervandew/supertab'
+    if has("lua")
+        Plug 'Shougo/neocomplete.vim'
     endif
 endif
 
@@ -186,6 +202,9 @@ nnoremap , :
 vmap ; :
 vmap , :
 
+" Similar behavior as C and D
+nnoremap Y y$
+
 " Easy <ESC> insertmode
 imap jj <Esc>
 
@@ -201,10 +220,15 @@ set number       " Show line numbers
 syntax enable    " add syntax highlighting
 
 " cd to current file path
-autocmd BufEnter * silent! lcd %:p:h
+" !! Removed to start using Tags file in projects
+" autocmd BufEnter * silent! lcd %:p:h
 
 " disable sounds
 set visualbell
+
+set fileformat=unix      " file mode is unix
+" Remove ^M characters from windows format
+nmap <leader>R :%s/\r\+$//e
 
 " Trim whitespaces in selected files
 autocmd FileType c,cpp,java,php,go autocmd BufWritePre <buffer> %s/\s\+$//e
@@ -212,7 +236,14 @@ autocmd FileType ruby,python,sh,vim autocmd BufWritePre <buffer> %s/\s\+$//e
 autocmd FileType html,css,javascript autocmd BufWritePre <buffer> %s/\s\+$//e
 
 " Set Syntax to *.in files
-autocmd BufRead,BufNewFile *.in,*.simics,*.si,*.sle set filetype=conf
+augroup filetypedetect
+    autocmd BufNewFile,BufRead .tmux.conf*,tmux.conf* setf tmux
+    autocmd BufNewFile,BufRead .nginx.conf*,nginx.conf* setf nginx
+    autocmd BufRead,BufNewFile *.in,*.simics,*.si,*.sle set setf conf
+augroup END
+
+" Specially for html and xml
+autocmd FileType xml,html,vim autocmd BufReadPre <buffer> set matchpairs+=<:>
 
 " Set highlight CursorLine
 hi CursorLine term=bold cterm=bold guibg=Grey40
@@ -221,20 +252,18 @@ hi CursorLine term=bold cterm=bold guibg=Grey40
 set autoindent
 set smartindent
 set copyindent
-set tabstop=4       " 1 tab = 4 spaces
-set shiftwidth=4    " Same for autoindenting
-set expandtab       " Use  spaces for indenting
-set smarttab        " Insert tabs on the start of a line according to shiftwidth, not tabstop
-set shiftround      " Use multiple of shiftwidth when indenting with '<' and '>'
-set magic           " change the way backslashes are used in search patterns
-
-" Specially for html and xml
-autocmd FileType xml,html,vim autocmd BufReadPre <buffer> set matchpairs+=<:>
+set tabstop=4    " 1 tab = 4 spaces
+set shiftwidth=4 " Same for autoindenting
+set expandtab    " Use  spaces for indenting
+set smarttab     " Insert tabs on the start of a line according to shiftwidth, not tabstop
+set shiftround   " Use multiple of shiftwidth when indenting with '<' and '>'
+set magic        " change the way backslashes are used in search patterns
 
 set fileformat=unix      " file mode is unix
 " Remove ^M characters from windows format
 nnoremap <leader>R :%s/\r\+$//e
 
+" Search settings
 set hlsearch  " highlight search terms
 set incsearch " show search matches as you type
 set ignorecase
@@ -242,6 +271,7 @@ set ignorecase
 set pastetoggle=<F4>
 
 " nnoremap <S-Enter> O<Esc>
+"
 " Add lines in normal mode without enter in insert mode
 nnoremap <C-o> O<Esc>
 nnoremap <CR> o<Esc>
@@ -309,20 +339,12 @@ nnoremap <leader>q :q!<CR>
 
 " easy dump bin files into hex
 nnoremap <leader>x :%!xxd<CR>
-" augroup Binary
-"     au!
-"     au BufReadPre   *.bin,*.exe let &bin=1
-"     au BufReadPost  *.bin,*.exe if &bin | silent! %!xxd
-"     au BufReadPost  *.bin,*.exe set ft=xxd | endif
-"     au BufWritePre  *.bin,*.exe if &bin | %!xxd -r
-"     au BufWritePre  *.bin,*.exe endif
-"     au BufWritePost *.bin,*.exe if &bin | %!xxd
-"     au BufWritePost *.bin,*.exe set nomod | endif
-" augroup END
 
-" if ( has("gui_running" ) && has("win32") )
-"     set guifont=Lucida_Console:h10
-" endif
+if has("gui_running")
+    set guioptions-=m  "no menu
+    set guioptions-=T  "no toolbar
+    set guioptions-=r  "no scrollbar
+endif
 
 " ################# Set Neovim settings #################
 if (has("nvim"))
@@ -377,10 +399,6 @@ let g:netrw_liststyle=3
 " Easy indentation in normal mode
 nnoremap <tab> >>
 nnoremap <S-tab> <<
-vmap <tab> >gv
-vmap <S-tab> <gv
-
-" imap <S-tab> <C-p>
 
 " nnoremap <leader>x <C-w><C-w>
 nnoremap <C-x> <C-w><C-w>
@@ -413,14 +431,17 @@ nnoremap <leader>- <C-w>-
 
 " Color columns
 if exists('+colorcolumn')
-    let &colorcolumn="80,".join(range(120,999),",")
+    " let &colorcolumn="80,".join(range(120,999),",")
+    let &colorcolumn="80"
 endif
 
 " ################# folding settings #################
 set foldmethod=syntax " fold based on indent
 set nofoldenable      " dont fold by default
 set foldnestmax=10    " deepest fold is 10 levels
-" set foldlevel=1       " this is just what i use
+" set foldlevel=1
+
+autocmd FileType python autocmd BufWritePre <buffer> set foldmethod=indent
 
 autocmd BufWinEnter *.py,*.vim,*.rb,*.tex setlocal foldmethod=indent
 
@@ -428,6 +449,9 @@ autocmd BufWinEnter *.py,*.vim,*.rb,*.tex setlocal foldmethod=indent
 nnoremap <F2> :update<CR>
 vmap <F2> <Esc><F2>gv
 imap <F2> <Esc><F2>a
+
+" For systems without F's keys (ex. android)
+nmap <leader>w :update<CR>
 
 " ################# Toggles #################
 nnoremap tn :set number!<Bar>set number?<CR>
@@ -446,6 +470,22 @@ if (has("termguicolors"))
     " set terminal colors
     set termguicolors
 endif
+
+" omnifuncs
+augroup omnifuncs
+    autocmd!
+    autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+    autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+    autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+    autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+    autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+    autocmd FileType go setlocal omnifunc=go#complete#Complete
+    autocmd FileType cs setlocal omnifunc=OmniSharp#Complete
+    autocmd FileType php setlocal omnifunc=phpcomplete#CompletePHP
+
+    autocmd BufNewFile,BufRead,BufEnter *.cpp,*.hpp setlocal omnifunc=omni#cpp#complete#Main
+    autocmd BufNewFile,BufRead,BufEnter *.c,*.h setlocal omnifunc=ccomplete#Complete
+augroup END
 
 " ############################################################################
 "
@@ -472,6 +512,16 @@ if has("nvim")
     endif
 elseif has("win32") || has("win64")
     let g:session_directory = '~\vimfiles\sessions'
+endif
+
+if &runtimepath =~ 'vim-multiple-cursors'
+    let g:multi_cursor_use_default_mapping=0
+
+    let g:multi_cursor_start_key='<leader><tab>'
+    let g:multi_cursor_next_key='<tab>'
+    let g:multi_cursor_prev_key='<C-a>'
+    let g:multi_cursor_skip_key='<C-x>'
+    let g:multi_cursor_quit_key='<Esc>'
 endif
 
 if &runtimepath =~ 'vim-session'
@@ -502,14 +552,15 @@ let g:ctrlp_custom_ignore = {
 " ################ NerdCommenter  #################
 if &runtimepath =~ 'nerdcommenter'
     let g:NERDSpaceDelims            = 1      " Add spaces after comment delimiters by default
-    let g:NERDCompactSexyComs        = 1      " Use compact syntax for prettified multi-line comments
+    let g:NERDCompactSexyComs        = 0      " Use compact syntax for prettified multi-line comments
     let g:NERDTrimTrailingWhitespace = 1      " Enable trimming of trailing whitespace when uncommenting
     let g:NERDCommentEmptyLines      = 1      " Allow commenting and inverting empty lines
                                               " (useful when commenting a region)
     let g:NERDDefaultAlign           = 'left' " Align line-wise comment delimiters flush left instead
                                               " of following code indentation
     let g:NERDCustomDelimiters = {
-        \ 'dosini': { 'left': '#', 'leftAlt': ';' }
+        \ 'dosini': { 'left': '#', 'leftAlt': ';' },
+        \ 'python': { 'left': '#', 'leftAlt': '"""', 'rightAlt': '"""' }
         \ }
 endif
 
@@ -561,9 +612,9 @@ endif
 " colorscheme railscasts
 if &runtimepath =~ 'vim-colorschemes'
     try
-        colorscheme Monokai
+        colorscheme railscasts
     catch
-        echo 'Please run :PlugInstall to complete the installation or remove "colorscheme Monokai"'
+        echo 'Please run :PlugInstall to complete the installation or remove "colorscheme railscasts"'
     endtry
 
     nnoremap csm :colorscheme Monokai<CR>
@@ -604,8 +655,8 @@ if &runtimepath =~ 'ultisnips'
 endif
 
 if &runtimepath =~ 'switch.vim'
-    nnoremap + :call switch#Switch(g:variable_style_switch_definitions)<cr>
-    nnoremap - :Switch<cr>
+    let g:switch_mapping = "-"
+    let g:switch_reverse_mapping = '+'
 
     autocmd FileType c,cpp let b:switch_custom_definitions =
         \ [
@@ -619,6 +670,14 @@ if &runtimepath =~ 'switch.vim'
         \ [
         \   {
         \       '^\(.*\)True': '\1False',
+        \       '^\(.*\)"\(.*\)"': "^\1'\2'",
+        \   },
+        \ ]
+
+    autocmd FileType vim let b:switch_custom_definitions =
+        \ [
+        \   {
+        \       '"\(\k\+\)"': "'\2'",
         \   },
         \ ]
 endif
@@ -678,7 +737,6 @@ if &runtimepath =~ 'neocomplete.vim'
     inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
     " <C-h>, <BS>: close popup and delete backword char.
     inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
-    inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
     inoremap <expr><C-y>  neocomplete#close_popup()
     inoremap <expr><C-e>  neocomplete#cancel_popup()
 
@@ -704,18 +762,66 @@ if &runtimepath =~ 'neocomplete.vim'
     "let g:neocomplete#disable_auto_complete = 1
     "inoremap <expr><TAB>  pumvisible() ? "\<Down>" : "\<C-x>\<C-u>"
 
-    " Enable omni completion.
-    autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
-    autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-    autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-    autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-    autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-    autocmd FileType cs setlocal omnifunc=OmniSharp#Complete
-
     " Enable heavy omni completion.
     if !exists('g:neocomplete#sources#omni#input_patterns')
         let g:neocomplete#sources#omni#input_patterns = {}
     endif
+endif
+
+if &runtimepath =~ 'deoplete.nvim'
+    function Multiple_cursors_before()
+        let g:deoplete#disable_auto_complete = 1
+    endfunction
+
+    function Multiple_cursors_after()
+        let g:deoplete#disable_auto_complete = 0
+    endfunction
+
+    imap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+    function! s:my_cr_function()
+        return (pumvisible() ? "\<C-y>" : "" ) . "\<CR>"
+    endfunction
+
+    inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+    " <C-h>, <BS>: close popup and delete backword char.
+    inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
+    inoremap <expr><C-y>  neocomplete#close_popup()
+    inoremap <expr><C-e>  neocomplete#cancel_popup()
+
+    let g:deoplete#enable_at_startup = 1
+
+    if !exists('g:deoplete#omni#input_patterns')
+        let g:deoplete#omni#input_patterns = {}
+    endif
+
+    " let g:deoplete#disable_auto_complete = 1
+    autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
+    call deoplete#custom#set('ultisnips', 'matchers', ['matcher_fuzzy'])
+
+    let g:UltiSnipsExpandTrigger       = "<C-k>"
+    let g:UltiSnipsJumpForwardTrigger  = "<C-f>"
+    let g:UltiSnipsJumpBackwardTrigger = "<C-b>"
+endif
+
+if &runtimepath =~ 'deoplete-jedi'
+    let g:deoplete#sources#jedi#enable_cache   = 1
+    let g:deoplete#sources#jedi#show_docstring = 1
+endif
+
+if &runtimepath =~ 'deoplete-clang'
+    " Set posible locations in linux
+    " /usr/lib/libclang.so
+    " /usr/lib/clang
+    let g:deoplete#sources#clang#libclang_path = '/usr/lib/libclang.so'
+    let g:deoplete#sources#clang#clang_header  = '/usr/lib/clang'
+endif
+
+if &runtimepath =~ 'deoplete-go'
+    let g:deoplete#sources#go#sort_class    = ['package', 'func', 'type', 'var', 'const']
+    let g:deoplete#sources#go#use_cache     = 1
+    let g:deoplete#sources#go#cgo           = 1
+    let g:deoplete#sources#go#package_dot   = 1
+    let g:deoplete#sources#go#gocode_binary = '/usr/bin/go'
 endif
 
 if &runtimepath =~ 'YouCompleteMe'
@@ -811,9 +917,9 @@ endif
 " ################# NERDTree quick open/close #################
 " Lazy load must be out of if
 " Ignore files in NERDTree
-let NERDTreeShowBookmarks = 1
-let NERDTreeIgnore        = ['\.pyc$', '\~$', '\.sw$', '\.swp$']
-" let NERDTreeShowHidden   = 1
+let NERDTreeIgnore              = ['\.pyc$', '\~$', '\.sw$', '\.swp$']
+let NERDTreeShowBookmarks       = 1
+" let NERDTreeShowHidden          = 1
 
 " If you don't have unicode, uncomment the following lines
 " let NERDTreeDirArrowExpandable  = '+'
