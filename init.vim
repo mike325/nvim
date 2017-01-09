@@ -177,7 +177,6 @@ endif
 " completion without ycm
 if b:ycm_installed==0 && b:deoplete_installed==0
     Plug 'ervandew/supertab'
-    Plug 'vim-scripts/AutoComplPop'
     if has("lua")
         Plug 'Shougo/neocomplete.vim'
     endif
@@ -224,6 +223,9 @@ syntax enable    " add syntax highlighting
 " !! Removed to start using Tags file in projects
 " autocmd BufEnter * silent! lcd %:p:h
 
+" set path to look recursive in the current dir
+set path+=**
+
 " disable sounds
 set visualbell
 
@@ -239,9 +241,9 @@ autocmd FileType make,conf autocmd BufWritePre <buffer> %s/\s\+$//e
 
 " Set Syntax to *.in files
 augroup filetypedetect
-    autocmd BufNewFile,BufRead .tmux.conf*,tmux.conf* setf tmux
-    autocmd BufNewFile,BufRead .nginx.conf*,nginx.conf* setf nginx
-    autocmd BufRead,BufNewFile *.in,*.simics,*.si,*.sle set setf conf
+    autocmd BufNewFile,BufRead .tmux.conf*,tmux.conf* set filetype=tmux
+    autocmd BufNewFile,BufRead .nginx.conf*,nginx.conf* set filetype=nginx
+    autocmd BufRead,BufNewFile *.in,*.simics,*.si,*.sle set filetype=conf
 augroup END
 
 " Specially for html and xml
