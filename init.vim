@@ -651,6 +651,12 @@ endif
 
 " ################# Snnipets and completion #################
 
+" ################ SnipMate #################
+if &runtimepath =~ 'vim-snipmate'
+    imap <C-k> <Plug>snipMateNextOrTrigger
+    smap <C-k> <Plug>snipMateNextOrTrigger
+endif
+
 " ################ UltiSnips #################
 if &runtimepath =~ 'ultisnips'
     let g:UltiSnipsSnippetDirectories=["UltiSnips"]
