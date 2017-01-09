@@ -119,6 +119,7 @@ Included plugins:
     * [NeoComplete](https://github.com/Shougo/neocomplete.vim)
 
 - If YouCompleteMe was not installed and lua is not available
+    * [SimpleAutoComplPop](https://github.com/roxma/SimpleAutoComplPop)
     * [Supertab](https://github.com/ervandew/supertab)
 
 If you want to deactivate some plugins just comment its line in the init.vim, ex. `" Plug 'majutsushi/tagbar'`.

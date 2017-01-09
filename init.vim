@@ -179,6 +179,8 @@ if b:ycm_installed==0 && b:deoplete_installed==0
     Plug 'ervandew/supertab'
     if has("lua")
         Plug 'Shougo/neocomplete.vim'
+    else
+        Plug 'roxma/SimpleAutoComplPop'
     endif
 endif
 
@@ -656,6 +658,10 @@ if &runtimepath =~ 'ultisnips'
     if has('python3')
         let g:UltiSnipsUsePythonVersion = 3
     endif
+
+    let g:UltiSnipsExpandTrigger       = "<C-k>"
+    let g:UltiSnipsJumpForwardTrigger  = "<C-f>"
+    let g:UltiSnipsJumpBackwardTrigger = "<C-b>"
 endif
 
 if &runtimepath =~ 'switch.vim'
@@ -697,6 +703,47 @@ if ( &runtimepath =~ 'jedi-vim' || &runtimepath =~ 'jedi'  )
     let g:jedi#documentation_command = "K"
     let g:jedi#usages_command = "<leader>u"
     let g:jedi#rename_command = "<leader>r"
+endif
+
+if &runtimepath =~ 'SimpleAutoComplPop'
+    autocmd FileType go call sacp#enableForThisBuffer({ "matches": [
+                    \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
+                    \ { '=~': '\.$'            , 'feedkeys': "\<C-x>\<C-o>", "ignoreCompletionMode":1} ,
+                    \ ]})
+
+    " This is because if python is active jedi will provide completion
+    if ( has("python") || has("python3") )
+        autocmd FileType python call sacp#enableForThisBuffer({ "matches": [
+                    \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
+                    \ ]})
+    else
+        autocmd FileType python call sacp#enableForThisBuffer({ "matches": [
+                    \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
+                    \ { '=~': '\.$'            , 'feedkeys': "\<C-x>\<C-o>", "ignoreCompletionMode":1} ,
+                    \ ]})
+    endif
+
+    autocmd FileType javascript call sacp#enableForThisBuffer({ "matches": [
+                    \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
+                    \ { '=~': '\.$'            , 'feedkeys': "\<C-x>\<C-o>", "ignoreCompletionMode":1} ,
+                    \ ]})
+
+    autocmd BufNewFile,BufRead,BufEnter *.cpp,*.hpp call sacp#enableForThisBuffer({ "matches": [
+                    \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
+                    \ { '=~': '\.$'            , 'feedkeys': "\<C-x>\<C-o>", "ignoreCompletionMode":1} ,
+                    \ { '=~': '::$'           , 'feedkeys': "\<C-x>\<C-o>"},
+                    \ { '=~': '->$'           , 'feedkeys': "\<C-x>\<C-o>"},
+                    \ ]})
+
+    autocmd BufNewFile,BufRead,BufEnter *.c,*.h call sacp#enableForThisBuffer({ "matches": [
+                   \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
+                   \ { '=~': '\.$'            , 'feedkeys': "\<C-x>\<C-o>", "ignoreCompletionMode":1} ,
+                   \ { '=~': '->$'           , 'feedkeys': "\<C-x>\<C-o>"},
+                   \ ]})
+
+    autocmd FileType sh,vim,conf call sacp#enableForThisBuffer({ "matches": [
+                    \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
+                    \ ]})
 endif
 
 if &runtimepath =~ 'neocomplete.vim'
@@ -801,10 +848,6 @@ if &runtimepath =~ 'deoplete.nvim'
     " let g:deoplete#disable_auto_complete = 1
     autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
     call deoplete#custom#set('ultisnips', 'matchers', ['matcher_fuzzy'])
-
-    let g:UltiSnipsExpandTrigger       = "<C-k>"
-    let g:UltiSnipsJumpForwardTrigger  = "<C-f>"
-    let g:UltiSnipsJumpBackwardTrigger = "<C-b>"
 endif
 
 if &runtimepath =~ 'deoplete-jedi'
@@ -829,10 +872,6 @@ if &runtimepath =~ 'deoplete-go'
 endif
 
 if &runtimepath =~ 'YouCompleteMe'
-    let g:UltiSnipsExpandTrigger       = "<C-k>"
-    let g:UltiSnipsJumpForwardTrigger  = "<C-f>"
-    let g:UltiSnipsJumpBackwardTrigger = "<C-b>"
-
     let g:ycm_complete_in_comments                      = 1
     let g:ycm_seed_identifiers_with_syntax              = 1
     let g:ycm_add_preview_to_completeopt                = 1
