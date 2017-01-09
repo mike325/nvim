@@ -226,6 +226,10 @@ syntax enable    " add syntax highlighting
 " disable sounds
 set visualbell
 
+set fileformat=unix      " file mode is unix
+" Remove ^M characters from windows format
+nmap <leader>R :%s/\r\+$//e
+
 " Trim whitespaces in selected files
 autocmd FileType c,cpp,java,php,go autocmd BufWritePre <buffer> %s/\s\+$//e
 autocmd FileType ruby,python,sh,vim autocmd BufWritePre <buffer> %s/\s\+$//e
@@ -238,6 +242,8 @@ augroup filetypedetect
     autocmd BufRead,BufNewFile *.in,*.simics,*.si,*.sle set setf conf
 augroup END
 
+" Specially for html and xml
+autocmd FileType xml,html,vim autocmd BufReadPre <buffer> set matchpairs+=<:>
 
 " Set highlight CursorLine
 hi CursorLine term=bold cterm=bold guibg=Grey40
@@ -253,13 +259,11 @@ set smarttab     " Insert tabs on the start of a line according to shiftwidth, n
 set shiftround   " Use multiple of shiftwidth when indenting with '<' and '>'
 set magic        " change the way backslashes are used in search patterns
 
-" Specially for html and xml
-autocmd FileType xml,html,vim autocmd BufReadPre <buffer> set matchpairs+=<:>
-
 set fileformat=unix      " file mode is unix
 " Remove ^M characters from windows format
 nnoremap <leader>R :%s/\r\+$//e
 
+" Search settings
 set hlsearch  " highlight search terms
 set incsearch " show search matches as you type
 set ignorecase
@@ -435,7 +439,9 @@ endif
 set foldmethod=syntax " fold based on indent
 set nofoldenable      " dont fold by default
 set foldnestmax=10    " deepest fold is 10 levels
-" set foldlevel=1       " this is just what i use
+" set foldlevel=1
+
+autocmd FileType python autocmd BufWritePre <buffer> set foldmethod=indent
 
 autocmd BufWinEnter *.py,*.vim,*.rb,*.tex setlocal foldmethod=indent
 
@@ -546,14 +552,15 @@ let g:ctrlp_custom_ignore = {
 " ################ NerdCommenter  #################
 if &runtimepath =~ 'nerdcommenter'
     let g:NERDSpaceDelims            = 1      " Add spaces after comment delimiters by default
-    let g:NERDCompactSexyComs        = 1      " Use compact syntax for prettified multi-line comments
+    let g:NERDCompactSexyComs        = 0      " Use compact syntax for prettified multi-line comments
     let g:NERDTrimTrailingWhitespace = 1      " Enable trimming of trailing whitespace when uncommenting
     let g:NERDCommentEmptyLines      = 1      " Allow commenting and inverting empty lines
                                               " (useful when commenting a region)
     let g:NERDDefaultAlign           = 'left' " Align line-wise comment delimiters flush left instead
                                               " of following code indentation
     let g:NERDCustomDelimiters = {
-        \ 'dosini': { 'left': '#', 'leftAlt': ';' }
+        \ 'dosini': { 'left': '#', 'leftAlt': ';' },
+        \ 'python': { 'left': '#', 'leftAlt': '"""', 'rightAlt': '"""' }
         \ }
 endif
 
@@ -605,9 +612,9 @@ endif
 " colorscheme railscasts
 if &runtimepath =~ 'vim-colorschemes'
     try
-        colorscheme Monokai
+        colorscheme railscasts
     catch
-        echo 'Please run :PlugInstall to complete the installation or remove "colorscheme Monokai"'
+        echo 'Please run :PlugInstall to complete the installation or remove "colorscheme railscasts"'
     endtry
 
     nnoremap csm :colorscheme Monokai<CR>
@@ -648,8 +655,8 @@ if &runtimepath =~ 'ultisnips'
 endif
 
 if &runtimepath =~ 'switch.vim'
-    nnoremap + :call switch#Switch(g:variable_style_switch_definitions)<cr>
-    nnoremap - :Switch<cr>
+    let g:switch_mapping = "-"
+    let g:switch_reverse_mapping = '+'
 
     autocmd FileType c,cpp let b:switch_custom_definitions =
         \ [
@@ -663,6 +670,14 @@ if &runtimepath =~ 'switch.vim'
         \ [
         \   {
         \       '^\(.*\)True': '\1False',
+        \       '^\(.*\)"\(.*\)"': "^\1'\2'",
+        \   },
+        \ ]
+
+    autocmd FileType vim let b:switch_custom_definitions =
+        \ [
+        \   {
+        \       '"\(\k\+\)"': "'\2'",
         \   },
         \ ]
 endif
@@ -902,9 +917,9 @@ endif
 " ################# NERDTree quick open/close #################
 " Lazy load must be out of if
 " Ignore files in NERDTree
-let NERDTreeShowBookmarks = 1
-let NERDTreeIgnore        = ['\.pyc$', '\~$', '\.sw$', '\.swp$']
-" let NERDTreeShowHidden   = 1
+let NERDTreeIgnore              = ['\.pyc$', '\~$', '\.sw$', '\.swp$']
+let NERDTreeShowBookmarks       = 1
+" let NERDTreeShowHidden          = 1
 
 " If you don't have unicode, uncomment the following lines
 " let NERDTreeDirArrowExpandable  = '+'
