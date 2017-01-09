@@ -92,6 +92,9 @@ Plug 'chiel92/vim-autoformat'
 " Easy change text
 Plug 'AndrewRadev/switch.vim'
 
+" Go developement
+Plug 'fatih/vim-go'
+
 if !has("nvim")
     " Basic settings
     Plug 'tpope/vim-sensible'
@@ -110,6 +113,7 @@ if has("nvim") || ( v:version >= 800 )
 endif
 
 let b:ycm_installed = 0
+let b:deoplete_installed = 0
 if ( has("python") || has("python3") )
     " Snippets engine
     Plug 'SirVer/ultisnips'
@@ -131,12 +135,29 @@ if ( has("python") || has("python3") )
     endfunction
 
 " Awesome completion engine, comment the following if to deactivate ycm
-    if has("nvim") || ( v:version >= 800 ) || ( v:version == 704 && has("patch143") )
-        Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') }
-        let b:ycm_installed = 1
+    if ( has("nvim") && has("python3") )
+        " Todo test personalize settings of deoplete
+        Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+        Plug 'zchee/deoplete-jedi'
+
+        if executable("clang")
+            Plug 'zchee/deoplete-clang'
+        endif
+
+        if executable("go") && executable("make")
+            Plug 'zchee/deoplete-go', { 'do': 'make'}
+        endif
+
+        let b:deoplete_installed = 1
+    else
+        if has("nvim") || ( v:version >= 800 ) || ( v:version == 704 && has("patch143") )
+            Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') }
+            let b:ycm_installed = 1
+        endif
     endif
 
-    if b:ycm_installed==0
+
+    if b:ycm_installed==0 || b:deoplete_installed==0
         " completion for python
         Plug 'davidhalter/jedi-vim'
     endif
@@ -155,14 +176,9 @@ endif
 
 " completion without ycm
 if b:ycm_installed==0
-    if ( has("nvim") && has("python3") )
-        Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-        " Todo test personalize settings of deoplete
-    else
-        Plug 'ervandew/supertab'
-        if has("lua")
-            Plug 'Shougo/neocomplete.vim'
-        endif
+    Plug 'ervandew/supertab'
+    if has("lua")
+        Plug 'Shougo/neocomplete.vim'
     endif
 endif
 
@@ -185,6 +201,9 @@ nnoremap ; :
 nnoremap , :
 vmap ; :
 vmap , :
+
+" Similar behavior as C and D
+nnoremap Y y$
 
 " Easy <ESC> insertmode
 imap jj <Esc>
@@ -449,6 +468,20 @@ if (has("termguicolors"))
     " set terminal colors
     set termguicolors
 endif
+
+" omnifuncs
+augroup omnifuncs
+    autocmd!
+    autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+    autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+    autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+    autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+    autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+    autocmd FileType go setlocal omnifunc=go#complete#Complete
+
+    autocmd BufNewFile,BufRead,BufEnter *.cpp,*.hpp setlocal omnifunc=omni#cpp#complete#Main
+    autocmd BufNewFile,BufRead,BufEnter *.c,*.h setlocal omnifunc=ccomplete#Complete
+augroup END
 
 " ############################################################################
 "
@@ -719,6 +752,35 @@ if &runtimepath =~ 'neocomplete.vim'
     if !exists('g:neocomplete#sources#omni#input_patterns')
         let g:neocomplete#sources#omni#input_patterns = {}
     endif
+endif
+
+if &runtimepath =~ 'deoplete.nvim'
+    let g:deoplete#enable_at_startup = 1
+
+    if !exists('g:deoplete#omni#input_patterns')
+        let g:deoplete#omni#input_patterns = {}
+    endif
+
+    " let g:deoplete#disable_auto_complete = 1
+    autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
+endif
+
+if &runtimepath =~ 'deoplete-jedi'
+    let g:deoplete#sources#jedi#enable_cache   = 1
+    let g:deoplete#sources#jedi#show_docstring = 1
+endif
+
+if &runtimepath =~ 'deoplete-clang'
+    " Set posible locations in linux
+    " /usr/lib/libclang.so
+    " /usr/lib/clang
+    let g:deoplete#sources#clang#libclang_path = '/usr/lib/libclang.so'
+    let g:deoplete#sources#clang#clang_header  = '/usr/lib/clang'
+endif
+
+if &runtimepath =~ 'deoplete-go'
+    let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
+    let g:deoplete#sources#go#use_cache  = 1
 endif
 
 if &runtimepath =~ 'YouCompleteMe'
