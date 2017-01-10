@@ -579,7 +579,7 @@ if &runtimepath =~ 'vim-grepper'
     " let g:grepper.tools = ['ag', 'ack', 'git', 'grep', 'findstr' ]
     " let g:grepper.highlight = 1
 
-    nmap <C-g> :Grepper -query <C-r>"<CR>
+    nmap <C-g> :Grepper -query
     " nmap <C-B> :Grepper -buffers -query <C-r>"<CR>
 
     nmap gs  <plug>(GrepperOperator)
