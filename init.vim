@@ -224,9 +224,10 @@ endif
 set splitright
 set nowrap
 set ruler
-set showmatch    " Show matching parenthesis
-set number       " Show line numbers
-syntax enable    " add syntax highlighting
+set showmatch      " Show matching parenthesis
+set relativenumber " Show line numbers in motions friendly way
+set number         " Show line numbers
+syntax enable      " add syntax highlighting
 
 " cd to current file path
 " !! Removed to start using Tags file in projects
@@ -479,6 +480,7 @@ nmap <leader>w :update<CR>
 
 " ################# Toggles #################
 nnoremap tn :set number!<Bar>set number?<CR>
+nnoremap tr :set relativenumber!<Bar>set relativenumber?<CR>
 nnoremap th :set hlsearch!<Bar>set hlsearch?<CR>
 nnoremap ti :set ignorecase!<Bar>set ignorecase?<CR>
 nnoremap tw :set wrap!<Bar>set wrap?<CR>
