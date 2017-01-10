@@ -796,7 +796,7 @@ if &runtimepath =~ 'SimpleAutoComplPop'
         \ { '=~': '/'              , 'feedkeys': "\<C-x>\<C-f>"  , "ignoreCompletionMode":1} ,
     \ ]})
 
-    autocmd FileType sh,vim,conf,make call sacp#enableForThisBuffer({ "matches": [
+    autocmd FileType sh,vim,conf,make,dosini call sacp#enableForThisBuffer({ "matches": [
         \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
         \ { '=~': '/'              , 'feedkeys': "\<C-x>\<C-f>"  , "ignoreCompletionMode":1} ,
     \ ]})
