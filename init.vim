@@ -739,6 +739,8 @@ if &runtimepath =~ 'vim-easytags'
         " Vim will block if it does not have Async support!!!
         let g:easytags_async = 1
     endif
+
+    nnoremap gtf :UpdateTags -R .<CR>
 endif
 
 " ################ Jedi complete #################
