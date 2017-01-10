@@ -92,6 +92,9 @@ Plug 'chiel92/vim-autoformat'
 " Easy change text
 Plug 'AndrewRadev/switch.vim'
 
+" Search into files
+Plug 'mhinz/vim-grepper'
+
 if executable("go")
     " Go developement
     Plug 'fatih/vim-go'
@@ -105,6 +108,7 @@ endif
 if executable("ctags")
     " Simple view of Tags using ctags
     Plug 'majutsushi/tagbar'
+    Plug 'xolox/vim-easytags'
 endif
 
 let b:neomake_installed = 0
@@ -207,13 +211,13 @@ vmap , :
 " Similar behavior as C and D
 nmap Y y$
 
-set ttyfast
 set lazyredraw
 
 " Easy <ESC> insertmode
 imap jj <Esc>
 
 if !has("nvim")
+    set ttyfast
     set nocompatible
 endif
 
@@ -273,14 +277,16 @@ hi CursorLine term=bold cterm=bold guibg=Grey40
 set autoindent
 set smartindent
 set copyindent
-set tabstop=4    " 1 tab = 4 spaces
-set shiftwidth=4 " Same for autoindenting
-set expandtab    " Use  spaces for indenting
-set smarttab     " Insert tabs on the start of a line according to shiftwidth, not tabstop
-set shiftround   " Use multiple of shiftwidth when indenting with '<' and '>'
-set magic        " change the way backslashes are used in search patterns
+set softtabstop=4   " makes the spaces feel like real tabs
+set tabstop=4       " 1 tab = 4 spaces
+set shiftwidth=4    " Same for autoindenting
+set expandtab       " Use  spaces for indenting
+set smarttab        " Insert tabs on the start of a line according to shiftwidth, not tabstop
+set shiftround      " Use multiple of shiftwidth when indenting with '<' and '>'
+set magic           " change the way backslashes are used in search patterns
 
-set fileformat=unix      " file mode is unix
+set fileformat=unix " file mode is unix
+"
 " Remove ^M characters from windows format
 nnoremap <leader>R :%s/\r\+$//e
 
@@ -295,7 +301,8 @@ set pastetoggle=<F4>
 "
 " Add lines in normal mode without enter in insert mode
 nnoremap <C-o> O<Esc>
-nnoremap <CR> o<Esc>
+" nnoremap <CR> o<Esc>
+nnoremap \ o<Esc>
 
 " better backup, swap and undos storage
 set backup   " make backup files
@@ -375,7 +382,7 @@ endif
 
 " ################# visual selection go also to clipboard #################
 if has('clipboard')
-    if !has("nvim") || (executable('pbcopy') || executable('xclip') || executable('xsel'))
+    if !has("nvim") || ( executable('pbcopy') || executable('xclip') || executable('xsel') )
         set clipboard=unnamed
     endif
 elseif has("nvim")
@@ -570,6 +577,17 @@ let g:ctrlp_custom_ignore = {
             \ 'file': '\v\.(exe|bin|o|so|dll|pyc|zip|sw|swp)$',
             \ }
 
+if &runtimepath =~ 'vim-grepper'
+    " let g:grepper.tools = ['ag', 'ack', 'git', 'grep', 'findstr' ]
+    " let g:grepper.highlight = 1
+
+    nmap <C-g> :Grepper -query <C-r>"<CR>
+    " nmap <C-B> :Grepper -buffers -query <C-r>"<CR>
+
+    nmap gs  <plug>(GrepperOperator)
+    xmap gs  <plug>(GrepperOperator)
+endif
+
 " ################ NerdCommenter  #################
 if &runtimepath =~ 'nerdcommenter'
     let g:NERDSpaceDelims            = 1      " Add spaces after comment delimiters by default
@@ -633,9 +651,9 @@ endif
 " colorscheme railscasts
 if &runtimepath =~ 'vim-colorschemes'
     try
-        colorscheme Monokai
+        colorscheme onedark
     catch
-        echo 'Please run :PlugInstall to complete the installation or remove "colorscheme Monokai"'
+        echo 'Please run :PlugInstall to complete the installation or remove "colorscheme onedark"'
     endtry
 
     nnoremap csm :colorscheme Monokai<CR>
@@ -711,6 +729,18 @@ if &runtimepath =~ 'switch.vim'
         \       '"\(\k\+\)"': "'\2'",
         \   },
         \ ]
+endif
+
+if &runtimepath =~ 'vim-easytags'
+    " You can update de tags with ':UpdateTags -R .' in your project's root.
+    let g:easytags_always_enabled = 1
+    let g:easytags_auto_highlight = 0
+    let g:easytags_auto_update    = 0
+
+    if !( has("win32") || has("win64") ) && ( has("nvim") || ( v:version >= 800 ) )
+        " Vim will block if it does not have Async support!!!
+        let g:easytags_async = 1
+    endif
 endif
 
 " ################ Jedi complete #################
@@ -815,12 +845,6 @@ if &runtimepath =~ 'neocomplete.vim'
     " Close popup by <Space>.
     " inoremap <expr><Space> pumvisible() ? neocomplete#close_popup() : "\<Space>"
 
-    " For cursor moving in insert mode(Not recommended)
-    "inoremap <expr><Left>  neocomplete#close_popup() . "\<Left>"
-    "inoremap <expr><Right> neocomplete#close_popup() . "\<Right>"
-    "inoremap <expr><Up>    neocomplete#close_popup() . "\<Up>"
-    "inoremap <expr><Down>  neocomplete#close_popup() . "\<Down>"
-    " Or set this.
     "let g:neocomplete#enable_cursor_hold_i = 1
     " Or set this.
     "let g:neocomplete#enable_insert_char_pre = 1
@@ -1015,8 +1039,8 @@ endif
 " ################ Git integration #################
 " ################ Fugitive #################
 if &runtimepath =~ 'vim-fugitive'
-    nmap gs :Gstatus<CR>
-    nnoremap gc :Gcommit<CR>
+    nnoremap <leader>gs :Gstatus<CR>
+    nnoremap <leader>gc :Gcommit<CR>
 endif
 
 " ################ GitGutter #################
@@ -1054,7 +1078,7 @@ if &runtimepath =~ 'indentLine'
     " Toggle display indent
     nnoremap tdi :IndentLinesToggle<CR>
     let g:indentLine_enabled = 0
-    let g:indentLine_char = '┆'
+    let g:indentLine_char    = '┊'
 endif
 
 " ################ AutoFormat #################
