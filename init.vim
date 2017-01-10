@@ -243,29 +243,25 @@ set fileformat=unix      " file mode is unix
 nmap <leader>R :%s/\r\+$//e
 
 " To be improve
-function! s:RemoveTrailingWhitespaces()
+function! RemoveTrailingWhitespaces()
     "Save last cursor position
-    let l = line(".")
-    let c = col(".")
+    let savepos = getpos('.')
 
     %s/\s\+$//e
 
-    call cursor(l,c)
+    call setpos('.', savepos)
 endfunction
 
 " Trim whitespaces in selected files
-" autocmd FileType c,cpp,java,php,go autocmd BufWritePre <buffer>  RemoveTrailingWhitespaces()
-" autocmd FileType ruby,python,sh,vim autocmd BufWritePre <buffer>  RemoveTrailingWhitespaces()
-" autocmd FileType html,css,javascript autocmd BufWritePre <buffer> RemoveTrailingWhitespaces()
-" autocmd FileType make,conf autocmd BufWritePre <buffer> RemoveTrailingWhitespaces()
-autocmd FileType * autocmd BufWritePre <buffer> %s/\s\+$//e
+" autocmd FileType * autocmd BufWritePre <buffer> %s/\s\+$//e
+autocmd FileType * autocmd BufWritePre <buffer> call RemoveTrailingWhitespaces()
 
 " Set Syntax to *.in files
 augroup filetypedetect
     autocmd BufNewFile,BufRead .tmux.conf*,tmux.conf* set filetype=tmux
     autocmd BufNewFile,BufRead .nginx.conf*,nginx.conf* set filetype=nginx
     autocmd BufRead,BufNewFile *.in,*.simics,*.si,*.sle set filetype=conf
-augroup END
+augroup end
 
 " Specially for html and xml
 autocmd FileType xml,html,vim autocmd BufReadPre <buffer> set matchpairs+=<:>
@@ -909,11 +905,12 @@ if &runtimepath =~ 'deoplete-clang'
 endif
 
 if &runtimepath =~ 'deoplete-go'
-    let g:deoplete#sources#go#sort_class    = ['package', 'func', 'type', 'var', 'const']
-    let g:deoplete#sources#go#use_cache     = 1
-    let g:deoplete#sources#go#cgo           = 1
-    let g:deoplete#sources#go#package_dot   = 1
-    let g:deoplete#sources#go#gocode_binary = '/usr/bin/go'
+    let g:deoplete#sources#go#sort_class  = ['package', 'func', 'type', 'var', 'const']
+    let g:deoplete#sources#go#use_cache   = 1
+    let g:deoplete#sources#go#package_dot = 1
+    let g:deoplete#sources#go             = 'vim-go'
+    " let g:deoplete#sources#go#cgo           = 1
+    " let g:deoplete#sources#go#gocode_binary = '/usr/bin/go'
 endif
 
 if &runtimepath =~ 'YouCompleteMe'
