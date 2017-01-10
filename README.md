@@ -89,6 +89,7 @@ Included plugins:
     * [Neomake](https://github.com/neomake/neomake) (Only available for Neovim and Vim 8)
     * [Switch](https://github.com/AndrewRadev/switch.vim)
     * [Vim-go](https://github.com/fatih/vim-go)
+    * [Grepper](https://github.com/mhinz/mhinz/vim-grepper)
     * [EasyTags](https://github.com/mhinz/xolox/vim-easytags) (Only if ctags has been installed)
 
 - If python interface is available
