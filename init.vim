@@ -732,11 +732,13 @@ if &runtimepath =~ 'switch.vim'
 endif
 
 if &runtimepath =~ 'vim-easytags'
+    " You can update de tags with ':UpdateTags -R .' in your project's root.
     let g:easytags_always_enabled = 1
     let g:easytags_auto_highlight = 0
     let g:easytags_auto_update    = 0
 
     if !( has("win32") || has("win64") ) && ( has("nvim") || ( v:version >= 800 ) )
+        " Vim will block if it does not have Async support!!!
         let g:easytags_async = 1
     endif
 endif
