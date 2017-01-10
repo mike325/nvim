@@ -22,7 +22,7 @@ I have personally test this configurations in the following enviroments:
         - Neovim 0.17
 
 * Android (In my nexus 6 via Termux)
-    * Marshmallow 6.0/6.1 
+    * Marshmallow 6.0/6.1
         - Vim 8.0.0104 (without python modules)
         - Neovim 0.2-dev (without python modules)
 
@@ -31,7 +31,7 @@ I have personally test this configurations in the following enviroments:
         - Neovim 0.2-dev (without python modules)
 
 * Windows
-    * Cygwin 
+    * Cygwin
         - Vim 8.0.94
     * Git bash (some problems loading python modules)
         - Vim 8.0.27
@@ -45,7 +45,7 @@ ln -s ~/.vim/init.vim ~/.vimrc
 ```
 
 If you are using [Neovim](https://neovim.io/) you just need to move the repo to `~/.config/nvim`
-    
+
     mv ~/.vim ~/.config/nvim
 
 or just clone it there
@@ -89,15 +89,16 @@ Included plugins:
     * [Neomake](https://github.com/neomake/neomake) (Only available for Neovim and Vim 8)
     * [Switch](https://github.com/AndrewRadev/switch.vim)
     * [Vim-go](https://github.com/fatih/vim-go)
+    * [Grepper](https://github.com/mhinz/vim-grepper)
 
 - If python interface is available
     * [Ultisnips](https://github.com/SirVer/ultisnips)
 
     - If python3 interface is avalible and neovim is runnin
-        * [Deoplete](https://github.com/Shougo/deoplete.nvim) 
-        * [Deoplete-jedi](https://github.com/zchee/deoplete-jedi) 
-        * [Deoplete-clang](https://github.com/zchee/deoplete-clang) 
-        * [Deoplete-go](https://github.com/zchee/deoplete-go) 
+        * [Deoplete](https://github.com/Shougo/deoplete.nvim)
+        * [Deoplete-jedi](https://github.com/zchee/deoplete-jedi)
+        * [Deoplete-clang](https://github.com/zchee/deoplete-clang)
+        * [Deoplete-go](https://github.com/zchee/deoplete-go)
 
     - If Deoplete could not be installed
         * [YouCompleteMe](https://github.com/Valloric/YouCompleteMe)
@@ -125,4 +126,4 @@ Included plugins:
 If you want to deactivate some plugins just comment its line in the init.vim, ex. `" Plug 'majutsushi/tagbar'`.
 And run `:PlugClean` to delete the plugin.
 
-Feel free to change anything to fit your needs! 
+Feel free to change anything to fit your needs!
