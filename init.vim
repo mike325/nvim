@@ -756,43 +756,50 @@ endif
 
 if &runtimepath =~ 'SimpleAutoComplPop'
     autocmd FileType go call sacp#enableForThisBuffer({ "matches": [
-                    \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
-                    \ { '=~': '\.$'            , 'feedkeys': "\<C-x>\<C-o>", "ignoreCompletionMode":1} ,
-                    \ ]})
+        \ { '=~': '\v[a-zA-Z]{2}$'   , 'feedkeys': "\<C-x>\<C-n>"} ,
+        \ { '=~': '\.$'              , 'feedkeys': "\<C-x>\<C-o>"  , "ignoreCompletionMode":1} ,
+        \ { '=~': '/'                , 'feedkeys': "\<C-x>\<C-f>"  , "ignoreCompletionMode":1} ,
+    \ ]})
 
-    " This is because if python is active jedi will provide completion
+      " This is because if python is active jedi will provide completion
     if ( has("python") || has("python3") )
         autocmd FileType python call sacp#enableForThisBuffer({ "matches": [
-                    \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
-                    \ ]})
+            \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
+            \ { '=~': '/'              , 'feedkeys': "\<C-x>\<C-f>"  , "ignoreCompletionMode":1} ,
+        \ ]})
     else
         autocmd FileType python call sacp#enableForThisBuffer({ "matches": [
-                    \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
-                    \ { '=~': '\.$'            , 'feedkeys': "\<C-x>\<C-o>", "ignoreCompletionMode":1} ,
-                    \ ]})
+            \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
+            \ { '=~': '\.$'            , 'feedkeys': "\<C-x>\<C-o>"  , "ignoreCompletionMode":1} ,
+            \ { '=~': '/'              , 'feedkeys': "\<C-x>\<C-f>"  , "ignoreCompletionMode":1} ,
+        \ ]})
     endif
 
-    autocmd FileType javascript call sacp#enableForThisBuffer({ "matches": [
-                    \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
-                    \ { '=~': '\.$'            , 'feedkeys': "\<C-x>\<C-o>", "ignoreCompletionMode":1} ,
-                    \ ]})
+    autocmd FileType javascript,java call sacp#enableForThisBuffer({ "matches": [
+        \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
+        \ { '=~': '\.$'            , 'feedkeys': "\<C-x>\<C-o>"  , "ignoreCompletionMode":1} ,
+        \ { '=~': '/'              , 'feedkeys': "\<C-x>\<C-f>"  , "ignoreCompletionMode":1} ,
+    \ ]})
 
     autocmd BufNewFile,BufRead,BufEnter *.cpp,*.hpp call sacp#enableForThisBuffer({ "matches": [
-                    \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
-                    \ { '=~': '\.$'            , 'feedkeys': "\<C-x>\<C-o>", "ignoreCompletionMode":1} ,
-                    \ { '=~': '::$'           , 'feedkeys': "\<C-x>\<C-o>"},
-                    \ { '=~': '->$'           , 'feedkeys': "\<C-x>\<C-o>"},
-                    \ ]})
+        \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
+        \ { '=~': '\.$'            , 'feedkeys': "\<C-x>\<C-o>"  , "ignoreCompletionMode":1} ,
+        \ { '=~': '::$'            , 'feedkeys': "\<C-x>\<C-o>"} ,
+        \ { '=~': '->$'            , 'feedkeys': "\<C-x>\<C-o>"} ,
+        \ { '=~': '/'              , 'feedkeys': "\<C-x>\<C-f>"  , "ignoreCompletionMode":1} ,
+    \ ]})
 
     autocmd BufNewFile,BufRead,BufEnter *.c,*.h call sacp#enableForThisBuffer({ "matches": [
-                   \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
-                   \ { '=~': '\.$'            , 'feedkeys': "\<C-x>\<C-o>", "ignoreCompletionMode":1} ,
-                   \ { '=~': '->$'           , 'feedkeys': "\<C-x>\<C-o>"},
-                   \ ]})
+        \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
+        \ { '=~': '\.$'            , 'feedkeys': "\<C-x>\<C-o>"  , "ignoreCompletionMode":1} ,
+        \ { '=~': '->$'            , 'feedkeys': "\<C-x>\<C-o>"} ,
+        \ { '=~': '/'              , 'feedkeys': "\<C-x>\<C-f>"  , "ignoreCompletionMode":1} ,
+    \ ]})
 
-    autocmd FileType sh,vim,conf call sacp#enableForThisBuffer({ "matches": [
-                    \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
-                    \ ]})
+    autocmd FileType sh,vim,conf,make call sacp#enableForThisBuffer({ "matches": [
+        \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
+        \ { '=~': '/'              , 'feedkeys': "\<C-x>\<C-f>"  , "ignoreCompletionMode":1} ,
+    \ ]})
 endif
 
 if &runtimepath =~ 'neocomplete.vim'
