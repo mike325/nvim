@@ -92,6 +92,9 @@ Plug 'chiel92/vim-autoformat'
 " Easy change text
 Plug 'AndrewRadev/switch.vim'
 
+" Search into files
+Plug 'mhinz/vim-grepper'
+
 if executable("go")
     " Go developement
     Plug 'fatih/vim-go'
@@ -207,13 +210,13 @@ vmap , :
 " Similar behavior as C and D
 nmap Y y$
 
-set ttyfast
 set lazyredraw
 
 " Easy <ESC> insertmode
 imap jj <Esc>
 
 if !has("nvim")
+    set ttyfast
     set nocompatible
 endif
 
@@ -273,14 +276,16 @@ hi CursorLine term=bold cterm=bold guibg=Grey40
 set autoindent
 set smartindent
 set copyindent
-set tabstop=4    " 1 tab = 4 spaces
-set shiftwidth=4 " Same for autoindenting
-set expandtab    " Use  spaces for indenting
-set smarttab     " Insert tabs on the start of a line according to shiftwidth, not tabstop
-set shiftround   " Use multiple of shiftwidth when indenting with '<' and '>'
-set magic        " change the way backslashes are used in search patterns
+set softtabstop=4   " makes the spaces feel like real tabs
+set tabstop=4       " 1 tab = 4 spaces
+set shiftwidth=4    " Same for autoindenting
+set expandtab       " Use  spaces for indenting
+set smarttab        " Insert tabs on the start of a line according to shiftwidth, not tabstop
+set shiftround      " Use multiple of shiftwidth when indenting with '<' and '>'
+set magic           " change the way backslashes are used in search patterns
 
-set fileformat=unix      " file mode is unix
+set fileformat=unix " file mode is unix
+"
 " Remove ^M characters from windows format
 nnoremap <leader>R :%s/\r\+$//e
 
@@ -295,7 +300,8 @@ set pastetoggle=<F4>
 "
 " Add lines in normal mode without enter in insert mode
 nnoremap <C-o> O<Esc>
-nnoremap <CR> o<Esc>
+" nnoremap <CR> o<Esc>
+nnoremap \ o<Esc>
 
 " better backup, swap and undos storage
 set backup   " make backup files
@@ -375,7 +381,7 @@ endif
 
 " ################# visual selection go also to clipboard #################
 if has('clipboard')
-    if !has("nvim") || (executable('pbcopy') || executable('xclip') || executable('xsel'))
+    if !has("nvim") || ( executable('pbcopy') || executable('xclip') || executable('xsel') )
         set clipboard=unnamed
     endif
 elseif has("nvim")
@@ -569,6 +575,17 @@ let g:ctrlp_custom_ignore = {
             \ 'dir':  '\v[\/]\.(git|hg|svn)$',
             \ 'file': '\v\.(exe|bin|o|so|dll|pyc|zip|sw|swp)$',
             \ }
+
+if &runtimepath =~ 'vim-grepper'
+    " let g:grepper.tools = ['ag', 'ack', 'git', 'grep', 'findstr' ]
+    " let g:grepper.highlight = 1
+
+    nmap <C-g> :Grepper -query <C-r>"<CR>
+    " nmap <C-B> :Grepper -buffers -query <C-r>"<CR>
+
+    nmap gs  <plug>(GrepperOperator)
+    xmap gs  <plug>(GrepperOperator)
+endif
 
 " ################ NerdCommenter  #################
 if &runtimepath =~ 'nerdcommenter'
@@ -1015,8 +1032,8 @@ endif
 " ################ Git integration #################
 " ################ Fugitive #################
 if &runtimepath =~ 'vim-fugitive'
-    nmap gs :Gstatus<CR>
-    nnoremap gc :Gcommit<CR>
+    nnoremap <leader>gs :Gstatus<CR>
+    nnoremap <leader>gc :Gcommit<CR>
 endif
 
 " ################ GitGutter #################
