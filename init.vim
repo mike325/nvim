@@ -108,6 +108,7 @@ endif
 if executable("ctags")
     " Simple view of Tags using ctags
     Plug 'majutsushi/tagbar'
+    Plug 'xolox/vim-easytags'
 endif
 
 let b:neomake_installed = 0
@@ -650,9 +651,9 @@ endif
 " colorscheme railscasts
 if &runtimepath =~ 'vim-colorschemes'
     try
-        colorscheme Monokai
+        colorscheme onedark
     catch
-        echo 'Please run :PlugInstall to complete the installation or remove "colorscheme Monokai"'
+        echo 'Please run :PlugInstall to complete the installation or remove "colorscheme onedark"'
     endtry
 
     nnoremap csm :colorscheme Monokai<CR>
@@ -728,6 +729,16 @@ if &runtimepath =~ 'switch.vim'
         \       '"\(\k\+\)"': "'\2'",
         \   },
         \ ]
+endif
+
+if &runtimepath =~ 'vim-easytags'
+    let g:easytags_always_enabled = 1
+    let g:easytags_auto_highlight = 0
+    let g:easytags_auto_update    = 0
+
+    if !( has("win32") || has("win64") ) && ( has("nvim") || ( v:version >= 800 ) )
+        let g:easytags_async = 1
+    endif
 endif
 
 " ################ Jedi complete #################
@@ -832,12 +843,6 @@ if &runtimepath =~ 'neocomplete.vim'
     " Close popup by <Space>.
     " inoremap <expr><Space> pumvisible() ? neocomplete#close_popup() : "\<Space>"
 
-    " For cursor moving in insert mode(Not recommended)
-    "inoremap <expr><Left>  neocomplete#close_popup() . "\<Left>"
-    "inoremap <expr><Right> neocomplete#close_popup() . "\<Right>"
-    "inoremap <expr><Up>    neocomplete#close_popup() . "\<Up>"
-    "inoremap <expr><Down>  neocomplete#close_popup() . "\<Down>"
-    " Or set this.
     "let g:neocomplete#enable_cursor_hold_i = 1
     " Or set this.
     "let g:neocomplete#enable_insert_char_pre = 1
@@ -1071,7 +1076,7 @@ if &runtimepath =~ 'indentLine'
     " Toggle display indent
     nnoremap tdi :IndentLinesToggle<CR>
     let g:indentLine_enabled = 0
-    let g:indentLine_char = '┆'
+    let g:indentLine_char    = '┊'
 endif
 
 " ################ AutoFormat #################
