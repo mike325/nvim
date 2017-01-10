@@ -205,7 +205,10 @@ vmap ; :
 vmap , :
 
 " Similar behavior as C and D
-nnoremap Y y$
+nmap Y y$
+
+set ttyfast
+set lazyredraw
 
 " Easy <ESC> insertmode
 imap jj <Esc>
@@ -235,11 +238,23 @@ set fileformat=unix      " file mode is unix
 " Remove ^M characters from windows format
 nmap <leader>R :%s/\r\+$//e
 
+" To be improve
+function! s:RemoveTrailingWhitespaces()
+    "Save last cursor position
+    let l = line(".")
+    let c = col(".")
+
+    %s/\s\+$//e
+
+    call cursor(l,c)
+endfunction
+
 " Trim whitespaces in selected files
-autocmd FileType c,cpp,java,php,go autocmd BufWritePre <buffer> %s/\s\+$//e
-autocmd FileType ruby,python,sh,vim autocmd BufWritePre <buffer> %s/\s\+$//e
-autocmd FileType html,css,javascript autocmd BufWritePre <buffer> %s/\s\+$//e
-autocmd FileType make,conf autocmd BufWritePre <buffer> %s/\s\+$//e
+" autocmd FileType c,cpp,java,php,go autocmd BufWritePre <buffer>  RemoveTrailingWhitespaces()
+" autocmd FileType ruby,python,sh,vim autocmd BufWritePre <buffer>  RemoveTrailingWhitespaces()
+" autocmd FileType html,css,javascript autocmd BufWritePre <buffer> RemoveTrailingWhitespaces()
+" autocmd FileType make,conf autocmd BufWritePre <buffer> RemoveTrailingWhitespaces()
+autocmd FileType * autocmd BufWritePre <buffer> %s/\s\+$//e
 
 " Set Syntax to *.in files
 augroup filetypedetect
@@ -382,7 +397,7 @@ nnoremap <leader>0 :tablast<CR>
 
 nnoremap <leader>N :tabNext<CR>
 nnoremap <leader><leader>n :tabnew<CR>
-nnoremap <leader><leader>c :tabclose<CR>
+nnoremap <leader>c :tabclose<CR>
 
 " ################# Buffer management #################
 " buffer add
@@ -537,7 +552,7 @@ if &runtimepath =~ 'vim-session'
     " Save current files in a session
     nnoremap <leader>s :SaveSession
     " close current session !!!!!!!! use this instead of close the buffers !!!!!!!!
-    nnoremap <leader>c :CloseSession<CR>
+    nnoremap <leader><leader>c :CloseSession<CR>
     " Quick save current session
     nnoremap <leader><leader>s :SaveSession<CR>
     " Quick delete session
