@@ -307,7 +307,7 @@ set undofile " persistent undos - undo after you re-open the file
 
 " Easy remove line in normal mode
 nnoremap <BS> dd
-vmap <BS> dd
+vmap <BS> d
 
 if has("nvim")
     " nvim stuff
