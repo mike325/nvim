@@ -844,7 +844,6 @@ if &runtimepath =~ 'neocomplete.vim'
         " For no inserting <CR> key.
         "return pumvisible() ? neocomplete#close_popup() : "\<CR>"
     endfunction
-
     " <TAB>: completion.
     inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
     " <C-h>, <BS>: close popup and delete backword char.
@@ -883,26 +882,57 @@ if &runtimepath =~ 'deoplete.nvim'
         let g:deoplete#disable_auto_complete = 0
     endfunction
 
+    let g:deoplete#enable_at_startup = 1
+
+    " Use smartcase.
+    let g:deoplete#enable_smart_case = 1
+    let g:deoplete#enable_refresh_always = 1
+
+    " Set minimum syntax keyword length.
+    let g:deoplete#sources#syntax#min_keyword_length = 1
+    let g:deoplete#lock_buffer_name_pattern = '\*ku\*'
+
     imap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
     function! s:my_cr_function()
         return (pumvisible() ? "\<C-y>" : "" ) . "\<CR>"
     endfunction
 
     inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
-    " <C-h>, <BS>: close popup and delete backword char.
-    inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
-    inoremap <expr><C-y>  neocomplete#close_popup()
-    inoremap <expr><C-e>  neocomplete#cancel_popup()
+    inoremap <expr><BS> deoplete#mappings#smart_close_popup()."\<C-h>"
+    inoremap <expr><C-h> deoplete#mappings#smart_close_popup()."\<C-h>"
+    inoremap <expr><C-y>  deoplete#mappings#smart_close_popup()
+    inoremap <expr><C-e>  deoplete#cancel_popup()
 
-    let g:deoplete#enable_at_startup = 1
+    let g:deoplete#omni#input_patterns = get(g:,'deoplete#omni#input_patterns',{})
+    let g:deoplete#omni#input_patterns.java = [
+                \'[^. \t0-9]\.\w*',
+                \'[^. \t0-9]\->\w*',
+                \'[^. \t0-9]\::\w*',
+                \]
 
-    if !exists('g:deoplete#omni#input_patterns')
-        let g:deoplete#omni#input_patterns = {}
-    endif
+    let g:deoplete#omni#input_patterns.cpp = [
+                \'[^. \t0-9]\.\w*',
+                \'[^. \t0-9]\->\w*',
+                \'[^. \t0-9]\::\w*',
+                \]
 
-    " let g:deoplete#disable_auto_complete = 1
+    let g:deoplete#omni#input_patterns.python = [
+                \'[^. \t0-9]\.\w*',
+                \]
+
+    let g:deoplete#omni#input_patterns.go = [
+                \'[^. \t0-9]\.\w*',
+                \]
+
+    " let g:deoplete#sources._ = ['buffer']
+    " let g:deoplete#sources._ = ['buffer', 'member', 'file', 'tags', 'ultisnips']
+
+    " if !exists('g:deoplete#omni#input_patterns')
+    "     let g:deoplete#omni#input_patterns = {}
+    " endif
+
     autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
-    call deoplete#custom#set('ultisnips', 'matchers', ['matcher_fuzzy'])
+    call deoplete#custom#set('ultisnips', 'matchers', ['matcher_full_fuzzy'])
 endif
 
 if &runtimepath =~ 'deoplete-jedi'
