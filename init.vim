@@ -588,8 +588,8 @@ endif
 
 " ################ NerdCommenter  #################
 if &runtimepath =~ 'nerdcommenter'
-    let g:NERDSpaceDelims            = 1      " Add spaces after comment delimiters by default
     let g:NERDCompactSexyComs        = 0      " Use compact syntax for prettified multi-line comments
+    let g:NERDSpaceDelims            = 1      " Add spaces after comment delimiters by default
     let g:NERDTrimTrailingWhitespace = 1      " Enable trimming of trailing whitespace when uncommenting
     let g:NERDCommentEmptyLines      = 1      " Allow commenting and inverting empty lines
                                               " (useful when commenting a region)
@@ -610,15 +610,15 @@ if &runtimepath =~ 'vim-easymotion'
 
     " <leader>f{char} to move to {char}
     " search a character in the current buffer
-    nmap f <Plug>(easymotion-bd-f)
-    vmap f <Plug>(easymotion-bd-f)
+    nmap s <Plug>(easymotion-bd-f)
+    vmap s <Plug>(easymotion-bd-f)
     " search a character in the current layout
-    nmap F <Plug>(easymotion-overwin-f)
-    vmap F <Plug>(easymotion-overwin-f)
+    nmap S <Plug>(easymotion-overwin-f)
+    vmap S <Plug>(easymotion-overwin-f)
 
     " search a character in the current line
-    nmap <leader>f <Plug>(easymotion-sl)
-    vmap <leader>f <Plug>(easymotion-sl)
+    nmap <leader>s <Plug>(easymotion-sl)
+    vmap <leader>s <Plug>(easymotion-sl)
 
     " Move to line
     " move to a line in the current layout
