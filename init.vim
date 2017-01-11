@@ -108,6 +108,7 @@ endif
 if executable("ctags")
     " Simple view of Tags using ctags
     Plug 'majutsushi/tagbar'
+    Plug 'xolox/vim-easytags'
 endif
 
 let b:neomake_installed = 0
@@ -223,9 +224,10 @@ endif
 set splitright
 set nowrap
 set ruler
-set showmatch    " Show matching parenthesis
-set number       " Show line numbers
-syntax enable    " add syntax highlighting
+set showmatch      " Show matching parenthesis
+set number         " Show line numbers
+set relativenumber " Show line numbers in motions friendly way
+syntax enable      " add syntax highlighting
 
 " cd to current file path
 " !! Removed to start using Tags file in projects
@@ -243,10 +245,14 @@ nmap <leader>R :%s/\r\+$//e
 
 " To be improve
 function! RemoveTrailingWhitespaces()
+<<<<<<< HEAD
     "Save last cursor position
+=======
+     "Save last cursor position
+>>>>>>> 405fd53796f1ceef0f6a757b5017dad385132910
     let savepos = getpos('.')
 
-    %s/\s\+$//e
+     %s/\s\+$//e
 
     call setpos('.', savepos)
 endfunction
@@ -305,7 +311,7 @@ set undofile " persistent undos - undo after you re-open the file
 
 " Easy remove line in normal mode
 nnoremap <BS> dd
-vmap <BS> dd
+vmap <BS> d
 
 if has("nvim")
     " nvim stuff
@@ -478,6 +484,7 @@ nmap <leader>w :update<CR>
 
 " ################# Toggles #################
 nnoremap tn :set number!<Bar>set number?<CR>
+nnoremap tr :set relativenumber!<Bar>set relativenumber?<CR>
 nnoremap th :set hlsearch!<Bar>set hlsearch?<CR>
 nnoremap ti :set ignorecase!<Bar>set ignorecase?<CR>
 nnoremap tw :set wrap!<Bar>set wrap?<CR>
@@ -576,7 +583,7 @@ if &runtimepath =~ 'vim-grepper'
     " let g:grepper.tools = ['ag', 'ack', 'git', 'grep', 'findstr' ]
     " let g:grepper.highlight = 1
 
-    nmap <C-g> :Grepper -query <C-r>"<CR>
+    nmap <C-g> :Grepper -query
     " nmap <C-B> :Grepper -buffers -query <C-r>"<CR>
 
     nmap gs  <plug>(GrepperOperator)
@@ -646,9 +653,9 @@ endif
 " colorscheme railscasts
 if &runtimepath =~ 'vim-colorschemes'
     try
-        colorscheme Monokai
+        colorscheme onedark
     catch
-        echo 'Please run :PlugInstall to complete the installation or remove "colorscheme Monokai"'
+        echo 'Please run :PlugInstall to complete the installation or remove "colorscheme onedark"'
     endtry
 
     nnoremap csm :colorscheme Monokai<CR>
@@ -726,6 +733,20 @@ if &runtimepath =~ 'switch.vim'
         \ ]
 endif
 
+if &runtimepath =~ 'vim-easytags'
+    " You can update de tags with ':UpdateTags -R .' in your project's root.
+    let g:easytags_always_enabled = 1
+    let g:easytags_auto_highlight = 0
+    let g:easytags_auto_update    = 0
+
+    if !( has("win32") || has("win64") ) && ( has("nvim") || ( v:version >= 800 ) )
+        " Vim will block if it does not have Async support!!!
+        let g:easytags_async = 1
+    endif
+
+    nnoremap gtf :UpdateTags -R .<CR>
+endif
+
 " ################ Jedi complete #################
 if ( &runtimepath =~ 'jedi-vim' || &runtimepath =~ 'jedi'  )
     let g:jedi#popup_on_dot = 1
@@ -741,43 +762,50 @@ endif
 
 if &runtimepath =~ 'SimpleAutoComplPop'
     autocmd FileType go call sacp#enableForThisBuffer({ "matches": [
-                    \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
-                    \ { '=~': '\.$'            , 'feedkeys': "\<C-x>\<C-o>", "ignoreCompletionMode":1} ,
-                    \ ]})
+        \ { '=~': '\v[a-zA-Z]{2}$'   , 'feedkeys': "\<C-x>\<C-n>"} ,
+        \ { '=~': '\.$'              , 'feedkeys': "\<C-x>\<C-o>"  , "ignoreCompletionMode":1} ,
+        \ { '=~': '/'                , 'feedkeys': "\<C-x>\<C-f>"  , "ignoreCompletionMode":1} ,
+    \ ]})
 
-    " This is because if python is active jedi will provide completion
+      " This is because if python is active jedi will provide completion
     if ( has("python") || has("python3") )
         autocmd FileType python call sacp#enableForThisBuffer({ "matches": [
-                    \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
-                    \ ]})
+            \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
+            \ { '=~': '/'              , 'feedkeys': "\<C-x>\<C-f>"  , "ignoreCompletionMode":1} ,
+        \ ]})
     else
         autocmd FileType python call sacp#enableForThisBuffer({ "matches": [
-                    \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
-                    \ { '=~': '\.$'            , 'feedkeys': "\<C-x>\<C-o>", "ignoreCompletionMode":1} ,
-                    \ ]})
+            \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
+            \ { '=~': '\.$'            , 'feedkeys': "\<C-x>\<C-o>"  , "ignoreCompletionMode":1} ,
+            \ { '=~': '/'              , 'feedkeys': "\<C-x>\<C-f>"  , "ignoreCompletionMode":1} ,
+        \ ]})
     endif
 
-    autocmd FileType javascript call sacp#enableForThisBuffer({ "matches": [
-                    \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
-                    \ { '=~': '\.$'            , 'feedkeys': "\<C-x>\<C-o>", "ignoreCompletionMode":1} ,
-                    \ ]})
+    autocmd FileType javascript,java call sacp#enableForThisBuffer({ "matches": [
+        \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
+        \ { '=~': '\.$'            , 'feedkeys': "\<C-x>\<C-o>"  , "ignoreCompletionMode":1} ,
+        \ { '=~': '/'              , 'feedkeys': "\<C-x>\<C-f>"  , "ignoreCompletionMode":1} ,
+    \ ]})
 
     autocmd BufNewFile,BufRead,BufEnter *.cpp,*.hpp call sacp#enableForThisBuffer({ "matches": [
-                    \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
-                    \ { '=~': '\.$'            , 'feedkeys': "\<C-x>\<C-o>", "ignoreCompletionMode":1} ,
-                    \ { '=~': '::$'           , 'feedkeys': "\<C-x>\<C-o>"},
-                    \ { '=~': '->$'           , 'feedkeys': "\<C-x>\<C-o>"},
-                    \ ]})
+        \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
+        \ { '=~': '\.$'            , 'feedkeys': "\<C-x>\<C-o>"  , "ignoreCompletionMode":1} ,
+        \ { '=~': '::$'            , 'feedkeys': "\<C-x>\<C-o>"} ,
+        \ { '=~': '->$'            , 'feedkeys': "\<C-x>\<C-o>"} ,
+        \ { '=~': '/'              , 'feedkeys': "\<C-x>\<C-f>"  , "ignoreCompletionMode":1} ,
+    \ ]})
 
     autocmd BufNewFile,BufRead,BufEnter *.c,*.h call sacp#enableForThisBuffer({ "matches": [
-                   \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
-                   \ { '=~': '\.$'            , 'feedkeys': "\<C-x>\<C-o>", "ignoreCompletionMode":1} ,
-                   \ { '=~': '->$'           , 'feedkeys': "\<C-x>\<C-o>"},
-                   \ ]})
+        \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
+        \ { '=~': '\.$'            , 'feedkeys': "\<C-x>\<C-o>"  , "ignoreCompletionMode":1} ,
+        \ { '=~': '->$'            , 'feedkeys': "\<C-x>\<C-o>"} ,
+        \ { '=~': '/'              , 'feedkeys': "\<C-x>\<C-f>"  , "ignoreCompletionMode":1} ,
+    \ ]})
 
-    autocmd FileType sh,vim,conf call sacp#enableForThisBuffer({ "matches": [
-                    \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
-                    \ ]})
+    autocmd FileType sh,vim,conf,make,dosini call sacp#enableForThisBuffer({ "matches": [
+        \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
+        \ { '=~': '/'              , 'feedkeys': "\<C-x>\<C-f>"  , "ignoreCompletionMode":1} ,
+    \ ]})
 endif
 
 if &runtimepath =~ 'neocomplete.vim'
@@ -828,12 +856,6 @@ if &runtimepath =~ 'neocomplete.vim'
     " Close popup by <Space>.
     " inoremap <expr><Space> pumvisible() ? neocomplete#close_popup() : "\<Space>"
 
-    " For cursor moving in insert mode(Not recommended)
-    "inoremap <expr><Left>  neocomplete#close_popup() . "\<Left>"
-    "inoremap <expr><Right> neocomplete#close_popup() . "\<Right>"
-    "inoremap <expr><Up>    neocomplete#close_popup() . "\<Up>"
-    "inoremap <expr><Down>  neocomplete#close_popup() . "\<Down>"
-    " Or set this.
     "let g:neocomplete#enable_cursor_hold_i = 1
     " Or set this.
     "let g:neocomplete#enable_insert_char_pre = 1
@@ -1066,7 +1088,7 @@ if &runtimepath =~ 'indentLine'
     " Toggle display indent
     nnoremap tdi :IndentLinesToggle<CR>
     let g:indentLine_enabled = 0
-    let g:indentLine_char = '┆'
+    let g:indentLine_char    = '┊'
 endif
 
 " ################ AutoFormat #################
