@@ -142,7 +142,6 @@ if ( has("python") || has("python3") )
 
 " Awesome completion engine, comment the following if to deactivate ycm
     if ( has("nvim") && has("python3") )
-        " Todo test personalize settings of deoplete
         Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
         Plug 'zchee/deoplete-jedi'
 
@@ -152,6 +151,10 @@ if ( has("python") || has("python3") )
 
         if executable("go") && executable("make")
             Plug 'zchee/deoplete-go', { 'do': 'make'}
+        endif
+
+        if executable("tern")
+            Plug 'carlitux/deoplete-ternjs'
         endif
 
         let b:deoplete_installed = 1
@@ -225,8 +228,8 @@ set splitright
 set nowrap
 set ruler
 set showmatch      " Show matching parenthesis
-set relativenumber " Show line numbers in motions friendly way
 set number         " Show line numbers
+set relativenumber " Show line numbers in motions friendly way
 syntax enable      " add syntax highlighting
 
 " cd to current file path
@@ -248,7 +251,7 @@ function! RemoveTrailingWhitespaces()
     "Save last cursor position
     let savepos = getpos('.')
 
-    %s/\s\+$//e
+     %s/\s\+$//e
 
     call setpos('.', savepos)
 endfunction
@@ -579,7 +582,7 @@ if &runtimepath =~ 'vim-grepper'
     " let g:grepper.tools = ['ag', 'ack', 'git', 'grep', 'findstr' ]
     " let g:grepper.highlight = 1
 
-    nmap <C-g> :Grepper -query <C-r>"<CR>
+    nmap <C-g> :Grepper -query
     " nmap <C-B> :Grepper -buffers -query <C-r>"<CR>
 
     nmap gs  <plug>(GrepperOperator)
@@ -588,8 +591,8 @@ endif
 
 " ################ NerdCommenter  #################
 if &runtimepath =~ 'nerdcommenter'
-    let g:NERDSpaceDelims            = 1      " Add spaces after comment delimiters by default
     let g:NERDCompactSexyComs        = 0      " Use compact syntax for prettified multi-line comments
+    let g:NERDSpaceDelims            = 1      " Add spaces after comment delimiters by default
     let g:NERDTrimTrailingWhitespace = 1      " Enable trimming of trailing whitespace when uncommenting
     let g:NERDCommentEmptyLines      = 1      " Allow commenting and inverting empty lines
                                               " (useful when commenting a region)
@@ -610,15 +613,15 @@ if &runtimepath =~ 'vim-easymotion'
 
     " <leader>f{char} to move to {char}
     " search a character in the current buffer
-    nmap f <Plug>(easymotion-bd-f)
-    vmap f <Plug>(easymotion-bd-f)
+    nmap s <Plug>(easymotion-bd-f)
+    vmap s <Plug>(easymotion-bd-f)
     " search a character in the current layout
-    nmap F <Plug>(easymotion-overwin-f)
-    vmap F <Plug>(easymotion-overwin-f)
+    nmap S <Plug>(easymotion-overwin-f)
+    vmap S <Plug>(easymotion-overwin-f)
 
     " search a character in the current line
-    nmap <leader>f <Plug>(easymotion-sl)
-    vmap <leader>f <Plug>(easymotion-sl)
+    nmap <leader>s <Plug>(easymotion-sl)
+    vmap <leader>s <Plug>(easymotion-sl)
 
     " Move to line
     " move to a line in the current layout
@@ -841,7 +844,6 @@ if &runtimepath =~ 'neocomplete.vim'
         " For no inserting <CR> key.
         "return pumvisible() ? neocomplete#close_popup() : "\<CR>"
     endfunction
-
     " <TAB>: completion.
     inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
     " <C-h>, <BS>: close popup and delete backword char.
@@ -880,26 +882,57 @@ if &runtimepath =~ 'deoplete.nvim'
         let g:deoplete#disable_auto_complete = 0
     endfunction
 
+    let g:deoplete#enable_at_startup = 1
+
+    " Use smartcase.
+    let g:deoplete#enable_smart_case = 1
+    let g:deoplete#enable_refresh_always = 1
+
+    " Set minimum syntax keyword length.
+    let g:deoplete#sources#syntax#min_keyword_length = 1
+    let g:deoplete#lock_buffer_name_pattern = '\*ku\*'
+
     imap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
     function! s:my_cr_function()
         return (pumvisible() ? "\<C-y>" : "" ) . "\<CR>"
     endfunction
 
     inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
-    " <C-h>, <BS>: close popup and delete backword char.
-    inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
-    inoremap <expr><C-y>  neocomplete#close_popup()
-    inoremap <expr><C-e>  neocomplete#cancel_popup()
+    inoremap <expr><BS> deoplete#mappings#smart_close_popup()."\<C-h>"
+    inoremap <expr><C-h> deoplete#mappings#smart_close_popup()."\<C-h>"
+    inoremap <expr><C-y>  deoplete#mappings#smart_close_popup()
+    inoremap <expr><C-e>  deoplete#cancel_popup()
 
-    let g:deoplete#enable_at_startup = 1
+    let g:deoplete#omni#input_patterns = get(g:,'deoplete#omni#input_patterns',{})
+    let g:deoplete#omni#input_patterns.java = [
+                \'[^. \t0-9]\.\w*',
+                \'[^. \t0-9]\->\w*',
+                \'[^. \t0-9]\::\w*',
+                \]
 
-    if !exists('g:deoplete#omni#input_patterns')
-        let g:deoplete#omni#input_patterns = {}
-    endif
+    let g:deoplete#omni#input_patterns.cpp = [
+                \'[^. \t0-9]\.\w*',
+                \'[^. \t0-9]\->\w*',
+                \'[^. \t0-9]\::\w*',
+                \]
 
-    " let g:deoplete#disable_auto_complete = 1
+    let g:deoplete#omni#input_patterns.python = [
+                \'[^. \t0-9]\.\w*',
+                \]
+
+    let g:deoplete#omni#input_patterns.go = [
+                \'[^. \t0-9]\.\w*',
+                \]
+
+    " let g:deoplete#sources._ = ['buffer']
+    " let g:deoplete#sources._ = ['buffer', 'member', 'file', 'tags', 'ultisnips']
+
+    " if !exists('g:deoplete#omni#input_patterns')
+    "     let g:deoplete#omni#input_patterns = {}
+    " endif
+
     autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
-    call deoplete#custom#set('ultisnips', 'matchers', ['matcher_fuzzy'])
+    call deoplete#custom#set('ultisnips', 'matchers', ['matcher_full_fuzzy'])
 endif
 
 if &runtimepath =~ 'deoplete-jedi'
@@ -920,8 +953,6 @@ if &runtimepath =~ 'deoplete-go'
     let g:deoplete#sources#go#use_cache   = 1
     let g:deoplete#sources#go#package_dot = 1
     let g:deoplete#sources#go             = 'vim-go'
-    " let g:deoplete#sources#go#cgo           = 1
-    " let g:deoplete#sources#go#gocode_binary = '/usr/bin/go'
 endif
 
 if &runtimepath =~ 'YouCompleteMe'
