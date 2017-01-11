@@ -142,7 +142,6 @@ if ( has("python") || has("python3") )
 
 " Awesome completion engine, comment the following if to deactivate ycm
     if ( has("nvim") && has("python3") )
-        " Todo test personalize settings of deoplete
         Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
         Plug 'zchee/deoplete-jedi'
 
@@ -152,6 +151,10 @@ if ( has("python") || has("python3") )
 
         if executable("go") && executable("make")
             Plug 'zchee/deoplete-go', { 'do': 'make'}
+        endif
+
+        if executable("tern")
+            Plug 'carlitux/deoplete-ternjs'
         endif
 
         let b:deoplete_installed = 1
@@ -245,11 +248,7 @@ nmap <leader>R :%s/\r\+$//e
 
 " To be improve
 function! RemoveTrailingWhitespaces()
-<<<<<<< HEAD
     "Save last cursor position
-=======
-     "Save last cursor position
->>>>>>> 405fd53796f1ceef0f6a757b5017dad385132910
     let savepos = getpos('.')
 
      %s/\s\+$//e
