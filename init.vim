@@ -265,7 +265,8 @@ augroup filetypedetect
     autocmd BufNewFile,BufRead .tmux.conf*,tmux.conf* set filetype=tmux
     autocmd BufNewFile,BufRead .nginx.conf*,nginx.conf* set filetype=nginx
     autocmd BufRead,BufNewFile *.in,*.simics,*.si,*.sle set filetype=conf
-augroup end
+    autocmd BufRead,BufNewFile *.bash* set filetype=sh
+augroup END
 
 " Specially for html and xml
 autocmd FileType xml,html,vim autocmd BufReadPre <buffer> set matchpairs+=<:>
@@ -445,7 +446,7 @@ if has("nvim")
     " Better terminal access
     nnoremap <A-t> :terminal<CR>
     tnoremap <Esc> <C-\><C-n>
-    tnoremap jj <C-\><C-n>
+    " tnoremap jj <C-\><C-n>
 
     " Better terminal movement
     tnoremap <leader-h> <C-\><C-n><C-w>h
@@ -525,84 +526,6 @@ augroup end
 " better behave buffer deletion
 nnoremap <leader>d :Bdelete<CR>
 
-" ################ Sessions settings #################
-" Session management
-" Auto save on exit
-let g:session_autosave = 'yes'
-" Don't ask for load last session
-let g:session_autoload = 'no'
-
-if has("nvim")
-    if has("win32") || has("win64")
-        let g:session_directory = '~\AppData\Local\nvim\sessions'
-    else
-        let g:session_directory = '~/.config/nvim/sessions'
-    endif
-elseif has("win32") || has("win64")
-    let g:session_directory = '~\vimfiles\sessions'
-endif
-
-if &runtimepath =~ 'vim-multiple-cursors'
-    let g:multi_cursor_use_default_mapping=0
-
-    let g:multi_cursor_start_key='<leader><tab>'
-    let g:multi_cursor_next_key='<tab>'
-    let g:multi_cursor_prev_key='<C-a>'
-    let g:multi_cursor_skip_key='<C-x>'
-    let g:multi_cursor_quit_key='<Esc>'
-endif
-
-if &runtimepath =~ 'vim-session'
-    " nnoremap <leader>d :DeleteSession
-    " Quick open session
-    nnoremap <leader>o :OpenSession
-    " Save current files in a session
-    nnoremap <leader>s :SaveSession
-    " close current session !!!!!!!! use this instead of close the buffers !!!!!!!!
-    nnoremap <leader><leader>c :CloseSession<CR>
-    " Quick save current session
-    nnoremap <leader><leader>s :SaveSession<CR>
-    " Quick delete session
-    nnoremap <leader><leader>d :DeleteSession<CR>
-endif
-
-" ################ CtrlP settings #################
-nnoremap <C-b> :CtrlPBuffer<CR>
-nnoremap <C-p> :CtrlP<CR>
-let g:ctrlp_match_window = 'bottom,order:ttb,min:1,max:30,results:50'
-let g:ctrlp_map = '<C-p>'
-let g:ctrlp_working_path_mode = 'ra'
-let g:ctrlp_custom_ignore = {
-            \ 'dir':  '\v[\/]\.(git|hg|svn)$',
-            \ 'file': '\v\.(exe|bin|o|so|dll|pyc|zip|sw|swp)$',
-            \ }
-
-if &runtimepath =~ 'vim-grepper'
-    " let g:grepper.tools = ['ag', 'ack', 'git', 'grep', 'findstr' ]
-    " let g:grepper.highlight = 1
-
-    nmap <C-g> :Grepper -query
-    " nmap <C-B> :Grepper -buffers -query <C-r>"<CR>
-
-    nmap gs  <plug>(GrepperOperator)
-    xmap gs  <plug>(GrepperOperator)
-endif
-
-" ################ NerdCommenter  #################
-if &runtimepath =~ 'nerdcommenter'
-    let g:NERDCompactSexyComs        = 0      " Use compact syntax for prettified multi-line comments
-    let g:NERDSpaceDelims            = 1      " Add spaces after comment delimiters by default
-    let g:NERDTrimTrailingWhitespace = 1      " Enable trimming of trailing whitespace when uncommenting
-    let g:NERDCommentEmptyLines      = 1      " Allow commenting and inverting empty lines
-                                              " (useful when commenting a region)
-    let g:NERDDefaultAlign           = 'left' " Align line-wise comment delimiters flush left instead
-                                              " of following code indentation
-    let g:NERDCustomDelimiters = {
-        \ 'dosini': { 'left': '#', 'leftAlt': ';' },
-        \ 'python': { 'left': '#', 'leftAlt': '"""', 'rightAlt': '"""' }
-        \ }
-endif
-
 " ################ EasyMotions Settings #################
 if &runtimepath =~ 'vim-easymotion'
     " Disable default mappings
@@ -644,6 +567,85 @@ if &runtimepath =~ 'vim-easymotion'
     " repeat the prev match of the current last motion
     nmap <leader>; <Plug>(easymotion-prev)
     vmap <leader>; <Plug>(easymotion-prev)
+endif
+
+" ################ Sessions settings #################
+" Session management
+" Auto save on exit
+let g:session_autosave = 'yes'
+" Don't ask for load last session
+let g:session_autoload = 'no'
+
+if has("nvim")
+    if has("win32") || has("win64")
+        let g:session_directory = '~\AppData\Local\nvim\sessions'
+    else
+        let g:session_directory = '~/.config/nvim/sessions'
+    endif
+elseif has("win32") || has("win64")
+    let g:session_directory = '~\vimfiles\sessions'
+endif
+
+if &runtimepath =~ 'vim-session'
+    " nnoremap <leader>d :DeleteSession
+    " Quick open session
+    nnoremap <leader>o :OpenSession
+    " Save current files in a session
+    nnoremap <leader>s :SaveSession
+    " close current session !!!!!!!! use this instead of close the buffers !!!!!!!!
+    nnoremap <leader><leader>c :CloseSession<CR>
+    " Quick save current session
+    nnoremap <leader><leader>s :SaveSession<CR>
+    " Quick delete session
+    nnoremap <leader><leader>d :DeleteSession<CR>
+endif
+
+if &runtimepath =~ 'vim-multiple-cursors'
+    let g:multi_cursor_use_default_mapping=0
+
+    let g:multi_cursor_start_key='<leader><tab>'
+    let g:multi_cursor_next_key='<tab>'
+    let g:multi_cursor_prev_key='<C-a>'
+    let g:multi_cursor_skip_key='<C-x>'
+    let g:multi_cursor_quit_key='<Esc>'
+endif
+
+
+" ################ CtrlP settings #################
+nnoremap <C-b> :CtrlPBuffer<CR>
+nnoremap <C-p> :CtrlP<CR>
+let g:ctrlp_match_window = 'bottom,order:ttb,min:1,max:30,results:50'
+let g:ctrlp_map = '<C-p>'
+let g:ctrlp_working_path_mode = 'ra'
+let g:ctrlp_custom_ignore = {
+            \ 'dir':  '\v[\/]\.(git|hg|svn)$',
+            \ 'file': '\v\.(exe|bin|o|so|dll|pyc|zip|sw|swp)$',
+            \ }
+
+if &runtimepath =~ 'vim-grepper'
+    " let g:grepper.tools = ['ag', 'ack', 'git', 'grep', 'findstr' ]
+    " let g:grepper.highlight = 1
+
+    nmap <C-g> :Grepper -query
+    " nmap <C-B> :Grepper -buffers -query <C-r>"<CR>
+
+    nmap gs  <plug>(GrepperOperator)
+    xmap gs  <plug>(GrepperOperator)
+endif
+
+" ################ NerdCommenter  #################
+if &runtimepath =~ 'nerdcommenter'
+    let g:NERDCompactSexyComs        = 0      " Use compact syntax for prettified multi-line comments
+    let g:NERDSpaceDelims            = 1      " Add spaces after comment delimiters by default
+    let g:NERDTrimTrailingWhitespace = 1      " Enable trimming of trailing whitespace when uncommenting
+    let g:NERDCommentEmptyLines      = 1      " Allow commenting and inverting empty lines
+                                              " (useful when commenting a region)
+    let g:NERDDefaultAlign           = 'left' " Align line-wise comment delimiters flush left instead
+                                              " of following code indentation
+    let g:NERDCustomDelimiters = {
+        \ 'dosini': { 'left': '#', 'leftAlt': ';' },
+        \ 'python': { 'left': '#', 'leftAlt': '"""', 'rightAlt': '"""' }
+        \ }
 endif
 
 " ################# Themes #################
