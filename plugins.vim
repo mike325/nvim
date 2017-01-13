@@ -135,14 +135,19 @@ endif
 " colorscheme railscasts
 if &runtimepath =~ 'vim-colorschemes'
     try
-        colorscheme onedark
+        colorscheme NeoSolarized
     catch
-        echo 'Please run :PlugInstall to complete the installation or remove "colorscheme onedark"'
+        echo 'Please run :PlugInstall to complete the installation or remove "colorscheme NeoSolarized"'
     endtry
 
     nnoremap csm :colorscheme Monokai<CR>
     nnoremap cso :colorscheme onedark<CR>
     nnoremap csr :colorscheme railscasts<CR>
+endif
+
+if &runtimepath =~ 'NeoSolarized'
+    let g:neosolarized_visibility = "high"
+    nnoremap csn :colorscheme NeoSolarized<CR>
 endif
 
 " ################ Status bar Airline #################
@@ -163,7 +168,8 @@ if &runtimepath =~ 'vim-airline'
 endif
 
 if &runtimepath =~ 'vim-airline-themes'
-    let g:airline_theme = 'molokai'
+    " let g:airline_theme = 'molokai'
+    let g:airline_theme = 'solarized'
 endif
 
 " ################# Snnipets and completion #################
@@ -213,6 +219,19 @@ if &runtimepath =~ 'switch.vim'
         \       '"\(\k\+\)"': "'\2'",
         \   },
         \ ]
+endif
+
+if &runtimepath =~ 'neotags.nvim'
+    " let g:neotags_file = '~/'
+    let g:neotags_enabled    = 1
+    let g:neotags_ctags_args = [
+            \ '-L -',
+            \ '--fields=+l',
+            \ '--c-kinds=+p',
+            \ '--c++-kinds=+p',
+            \ '--sort=yes',
+            \ '--extra=+q'
+            \ ]
 endif
 
 if &runtimepath =~ 'vim-easytags'

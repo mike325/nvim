@@ -248,12 +248,12 @@ if exists('+colorcolumn')
 endif
 
 " ################# folding settings #################
-set foldmethod=syntax " fold based on indent
+set foldmethod=indent " fold based on indent
 set nofoldenable      " dont fold by default
 set foldnestmax=10    " deepest fold is 10 levels
 " set foldlevel=1
 
-autocmd BufWinEnter *.py,*.vim,*.rb,*.tex setlocal foldmethod=indent
+autocmd BufWinEnter *.c,*.h,*.cpp,*.hpp,*.java,*.go,*.js setlocal foldmethod=syntax
 
 " ################# Easy Save file #################
 nnoremap <F2> :update<CR>
@@ -272,6 +272,8 @@ nnoremap tw :set wrap!<Bar>set wrap?<CR>
 nnoremap tc :set cursorline!<Bar>set cursorline?<CR>
 
 " ################# Terminal colors #################
+set background=dark
+
 if (has("nvim"))
     " Neovim colors stuff
     let $NVIM_TUI_ENABLE_TRUE_COLOR=1

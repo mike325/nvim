@@ -23,7 +23,7 @@ endif
 call plug#begin(g:os_editor.'plugged')
 
 " Colorschemes for vim
-Plug 'flazz/vim-colorschemes'
+Plug 'flazz/vim-colorschemes' | Plug 'icymind/NeoSolarized'
 
 " Auto Close ' " () [] {}
 Plug 'Raimondi/delimitMate'
@@ -113,7 +113,11 @@ endif
 if executable("ctags")
     " Simple view of Tags using ctags
     Plug 'majutsushi/tagbar'
-    Plug 'xolox/vim-easytags'
+    if ( has("nvim") || ( v:version >= 800 ) ) && has("python3")
+        Plug 'c0r73x/neotags.nvim'
+    else
+        Plug 'xolox/vim-easytags'
+    endif
 endif
 
 let b:neomake_installed = 0
@@ -136,8 +140,11 @@ if ( has("python") || has("python3") )
         " - force:  set on PlugInstall! or PlugUpdate!
         if a:info.status == 'installed' || a:info.force
             " !./install.py --all
-            " !./install.py --gocode-completer --tern-completer
-            if executable('go')
+            if executable('go') && executable("tern")
+                !./install.py --gocode-completer --tern-completer
+            elseif executable("tern")
+                !./install.py --tern-completer
+            elseif executable('go')
                 !./install.py --gocode-completer
             else
                 !./install.py
