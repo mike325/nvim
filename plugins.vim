@@ -135,14 +135,19 @@ endif
 " colorscheme railscasts
 if &runtimepath =~ 'vim-colorschemes'
     try
-        colorscheme onedark
+        colorscheme NeoSolarized
     catch
-        echo 'Please run :PlugInstall to complete the installation or remove "colorscheme onedark"'
+        echo 'Please run :PlugInstall to complete the installation or remove "colorscheme NeoSolarized"'
     endtry
 
     nnoremap csm :colorscheme Monokai<CR>
     nnoremap cso :colorscheme onedark<CR>
     nnoremap csr :colorscheme railscasts<CR>
+endif
+
+if &runtimepath =~ 'NeoSolarized'
+    let g:neosolarized_visibility = "high"
+    nnoremap csn :colorscheme NeoSolarized<CR>
 endif
 
 " ################ Status bar Airline #################
@@ -163,7 +168,8 @@ if &runtimepath =~ 'vim-airline'
 endif
 
 if &runtimepath =~ 'vim-airline-themes'
-    let g:airline_theme = 'molokai'
+    " let g:airline_theme = 'molokai'
+    let g:airline_theme = 'solarized'
 endif
 
 " ################# Snnipets and completion #################

@@ -23,7 +23,7 @@ endif
 call plug#begin(g:os_editor.'plugged')
 
 " Colorschemes for vim
-Plug 'flazz/vim-colorschemes'
+Plug 'flazz/vim-colorschemes' | Plug 'icymind/NeoSolarized'
 
 " Auto Close ' " () [] {}
 Plug 'Raimondi/delimitMate'
