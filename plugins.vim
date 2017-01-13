@@ -215,6 +215,19 @@ if &runtimepath =~ 'switch.vim'
         \ ]
 endif
 
+if &runtimepath =~ 'neotags.nvim'
+    " let g:neotags_file = '~/'
+    let g:neotags_enabled    = 1
+    let g:neotags_ctags_args = [
+            \ '-L -',
+            \ '--fields=+l',
+            \ '--c-kinds=+p',
+            \ '--c++-kinds=+p',
+            \ '--sort=yes',
+            \ '--extra=+q'
+            \ ]
+endif
+
 if &runtimepath =~ 'vim-easytags'
     " You can update de tags with ':UpdateTags -R .' in your project's root.
     let g:easytags_always_enabled = 1
