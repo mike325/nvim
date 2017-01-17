@@ -94,8 +94,8 @@ endif
 
 
 " ################ CtrlP settings #################
-nnoremap <C-b> :CtrlPBuffer<CR>
 nnoremap <C-p> :CtrlP<CR>
+nnoremap <C-b> :CtrlPBuffer<CR>
 let g:ctrlp_match_window = 'bottom,order:ttb,min:1,max:30,results:50'
 let g:ctrlp_map = '<C-p>'
 let g:ctrlp_working_path_mode = 'ra'
@@ -235,16 +235,21 @@ if &runtimepath =~ 'neotags.nvim'
 endif
 
 if &runtimepath =~ 'vim-easytags'
-    " You can update de tags with ':UpdateTags -R .' in your project's root.
-    let g:easytags_always_enabled = 1
-    let g:easytags_auto_highlight = 0
-    let g:easytags_auto_update    = 0
+    " Include structs/class members for C/C++/Java projects
+    let g:easytags_include_members = 1
+    let g:easytags_always_enabled  = 1
+    let g:easytags_auto_highlight  = 0
+    let g:easytags_auto_update     = 0
+    let g:easytags_dynamic_files   = 1
+
+    " let g:easytags_file = './tags'
 
     if !( has("win32") || has("win64") ) && ( has("nvim") || ( v:version >= 800 ) )
         " Vim will block if it does not have Async support!!!
         let g:easytags_async = 1
     endif
 
+    " You can update de tags with ':UpdateTags -R .' in your project's root.
     nnoremap gtf :UpdateTags -R .<CR>
 endif
 
