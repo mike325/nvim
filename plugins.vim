@@ -23,23 +23,6 @@ if &runtimepath =~ 'vim-easymotion'
     nmap Z <Plug>(easymotion-overwin-f)
     vmap Z <Plug>(easymotion-overwin-f)
 
-    " search a character in the current line
-    nmap <leader>z <Plug>(easymotion-sl)
-    vmap <leader>z <Plug>(easymotion-sl)
-
-    " Move to line
-    " move to a line in the current layout
-    nmap <leader>L <Plug>(easymotion-overwin-line)
-    vmap <leader>L <Plug>(easymotion-overwin-line)
-
-    " Move to word
-    " move to a any word in the current buffer
-    nmap <leader><leader>w <Plug>(easymotion-bd-w)
-    vmap <leader><leader>w <Plug>(easymotion-bd-w)
-    " move to a any word in the current layout
-    nmap <leader><leader>W <Plug>(easymotion-overwin-w)
-    vmap <leader><leader>W <Plug>(easymotion-overwin-w)
-
     " repeat the last motion
     nmap <leader>. <Plug>(easymotion-repeat)
     vmap <leader>. <Plug>(easymotion-repeat)
