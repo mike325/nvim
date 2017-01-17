@@ -113,6 +113,12 @@ Plug 'python-mode/python-mode'
 " Add Qml syntax highlight
 Plug 'peterhoeg/vim-qml'
 
+" Latex plugin
+Plug 'lervag/vimtex'
+
+" Change buffer position in the current layout
+Plug 'wesQ3/vim-windowswap'
+
 if executable("go")
     " Go developement
     Plug 'fatih/vim-go'
