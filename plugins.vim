@@ -41,15 +41,7 @@ let g:session_autosave = 'yes'
 " Don't ask for load last session
 let g:session_autoload = 'no'
 
-if has("nvim")
-    if has("win32") || has("win64")
-        let g:session_directory = '~\AppData\Local\nvim\sessions'
-    else
-        let g:session_directory = '~/.config/nvim/sessions'
-    endif
-elseif has("win32") || has("win64")
-    let g:session_directory = '~\vimfiles\sessions'
-endif
+let g:session_directory = g:os_editor.'sessions'
 
 if &runtimepath =~ 'vim-session'
     " nnoremap <leader>d :DeleteSession
@@ -57,7 +49,7 @@ if &runtimepath =~ 'vim-session'
     nnoremap <leader>o :OpenSession
     " Save current files in a session
     nnoremap <leader>s :SaveSession
-    " close current session !!!!!!!! use this instead of close the buffers !!!!!!!!
+    " Use this instead of close the buffers !!!!!!!!
     nnoremap <leader><leader>c :CloseSession<CR>
     " Quick save current session
     nnoremap <leader><leader>s :SaveSession<CR>
