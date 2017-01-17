@@ -295,6 +295,7 @@ augroup omnifuncs
     autocmd FileType go setlocal omnifunc=go#complete#Complete
     autocmd FileType cs setlocal omnifunc=OmniSharp#Complete
     autocmd FileType php setlocal omnifunc=phpcomplete#CompletePHP
+    autocmd FileType java setlocal omnifunc=javacomplete#Complete
 
     autocmd BufNewFile,BufRead,BufEnter *.cpp,*.hpp setlocal omnifunc=omni#cpp#complete#Main
     autocmd BufNewFile,BufRead,BufEnter *.c,*.h setlocal omnifunc=ccomplete#Complete

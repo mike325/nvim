@@ -367,7 +367,7 @@ if &runtimepath =~ 'neocomplete.vim'
     "set completeopt+=longest
     "let g:neocomplete#enable_auto_select = 1
     "let g:neocomplete#disable_auto_complete = 1
-    "inoremap <expr><TAB>  pumvisible() ? "\<Down>" : "\<C-x>\<C-u>"
+    "inoremap <expr><TAB>  pumvisible() ? "\<Down>" : "\<C-x>\<C-u>"8
 
     " Enable heavy omni completion.
     if !exists('g:neocomplete#sources#omni#input_patterns')
@@ -406,7 +406,12 @@ if &runtimepath =~ 'deoplete.nvim'
     inoremap <expr><C-e>  deoplete#cancel_popup()
 
     let g:deoplete#omni#input_patterns = get(g:,'deoplete#omni#input_patterns',{})
+
     let g:deoplete#omni#input_patterns.java = [
+                \'[^. \t0-9]\.\w*',
+                \]
+
+    let g:deoplete#omni#input_patterns.c = [
                 \'[^. \t0-9]\.\w*',
                 \'[^. \t0-9]\->\w*',
                 \'[^. \t0-9]\::\w*',
@@ -435,6 +440,11 @@ if &runtimepath =~ 'deoplete.nvim'
 
     autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
     call deoplete#custom#set('ultisnips', 'matchers', ['matcher_full_fuzzy'])
+endif
+
+if &runtimepath =~ 'vim-javacomplete2'
+    nnoremap <leader>si <Plug>(JavaComplete-Imports-AddSmart)
+    nnoremap <leader>mi <Plug>(JavaComplete-Imports-AddMissing)
 endif
 
 if &runtimepath =~ 'deoplete-jedi'

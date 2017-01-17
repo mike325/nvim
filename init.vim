@@ -157,6 +157,9 @@ if ( has("python") || has("python3") )
         Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
         Plug 'zchee/deoplete-jedi'
 
+        " Only works with JDK8
+        Plug 'artur-shaik/vim-javacomplete2'
+
         if executable("clang")
             Plug 'zchee/deoplete-clang'
         endif
