@@ -82,17 +82,6 @@ if &runtimepath =~ 'vim-session'
     nnoremap <leader><leader>d :DeleteSession<CR>
 endif
 
-if &runtimepath =~ 'vim-multiple-cursors'
-    let g:multi_cursor_use_default_mapping=0
-
-    let g:multi_cursor_start_key='<leader><tab>'
-    let g:multi_cursor_next_key='<tab>'
-    let g:multi_cursor_prev_key='<C-a>'
-    let g:multi_cursor_skip_key='<C-x>'
-    let g:multi_cursor_quit_key='<Esc>'
-endif
-
-
 " ################ CtrlP settings #################
 nnoremap <C-b> :CtrlPBuffer<CR>
 nnoremap <C-p> :CtrlP<CR>
@@ -221,18 +210,18 @@ if &runtimepath =~ 'switch.vim'
         \ ]
 endif
 
-if &runtimepath =~ 'neotags.nvim'
-    " let g:neotags_file = '~/'
-    let g:neotags_enabled    = 1
-    let g:neotags_ctags_args = [
-            \ '-L -',
-            \ '--fields=+l',
-            \ '--c-kinds=+p',
-            \ '--c++-kinds=+p',
-            \ '--sort=yes',
-            \ '--extra=+q'
-            \ ]
-endif
+" if &runtimepath =~ 'neotags.nvim'
+"     " let g:neotags_file = '~/'
+"     let g:neotags_enabled    = 1
+"     let g:neotags_ctags_args = [
+"             \ '-L -',
+"             \ '--fields=+l',
+"             \ '--c-kinds=+p',
+"             \ '--c++-kinds=+p',
+"             \ '--sort=yes',
+"             \ '--extra=+q'
+"             \ ]
+" endif
 
 if &runtimepath =~ 'vim-easytags'
     " You can update de tags with ':UpdateTags -R .' in your project's root.
@@ -249,7 +238,7 @@ if &runtimepath =~ 'vim-easytags'
 endif
 
 " ################ Jedi complete #################
-if ( &runtimepath =~ 'jedi-vim' || &runtimepath =~ 'jedi'  )
+if  &runtimepath =~ 'jedi-vim'
     let g:jedi#popup_on_dot = 1
     let g:jedi#popup_select_first = 1
     let g:jedi#completions_command = "<C-c>"
@@ -262,6 +251,11 @@ if ( &runtimepath =~ 'jedi-vim' || &runtimepath =~ 'jedi'  )
 endif
 
 if &runtimepath =~ 'SimpleAutoComplPop'
+    autocmd FileType * call sacp#enableForThisBuffer({ "matches": [
+        \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
+        \ { '=~': '/'              , 'feedkeys': "\<C-x>\<C-f>"  , "ignoreCompletionMode":1} ,
+    \ ]})
+
     autocmd FileType go call sacp#enableForThisBuffer({ "matches": [
         \ { '=~': '\v[a-zA-Z]{2}$'   , 'feedkeys': "\<C-x>\<C-n>"} ,
         \ { '=~': '\.$'              , 'feedkeys': "\<C-x>\<C-o>"  , "ignoreCompletionMode":1} ,
@@ -300,11 +294,6 @@ if &runtimepath =~ 'SimpleAutoComplPop'
         \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
         \ { '=~': '\.$'            , 'feedkeys': "\<C-x>\<C-o>"  , "ignoreCompletionMode":1} ,
         \ { '=~': '->$'            , 'feedkeys': "\<C-x>\<C-o>"} ,
-        \ { '=~': '/'              , 'feedkeys': "\<C-x>\<C-f>"  , "ignoreCompletionMode":1} ,
-    \ ]})
-
-    autocmd FileType sh,vim,conf,make,dosini call sacp#enableForThisBuffer({ "matches": [
-        \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
         \ { '=~': '/'              , 'feedkeys': "\<C-x>\<C-f>"  , "ignoreCompletionMode":1} ,
     \ ]})
 endif
@@ -376,14 +365,6 @@ if &runtimepath =~ 'neocomplete.vim'
 endif
 
 if &runtimepath =~ 'deoplete.nvim'
-    function Multiple_cursors_before()
-        let g:deoplete#disable_auto_complete = 1
-    endfunction
-
-    function Multiple_cursors_after()
-        let g:deoplete#disable_auto_complete = 0
-    endfunction
-
     let g:deoplete#enable_at_startup = 1
 
     " Use smartcase.
@@ -461,10 +442,10 @@ if &runtimepath =~ 'deoplete-clang'
 endif
 
 if &runtimepath =~ 'deoplete-go'
+    let g:deoplete#sources#go             = 'vim-go'
     let g:deoplete#sources#go#sort_class  = ['package', 'func', 'type', 'var', 'const']
     let g:deoplete#sources#go#use_cache   = 1
     let g:deoplete#sources#go#package_dot = 1
-    let g:deoplete#sources#go             = 'vim-go'
 endif
 
 if &runtimepath =~ 'YouCompleteMe'

@@ -31,21 +31,37 @@ set ruler
 set showmatch      " Show matching parenthesis
 set number         " Show line numbers
 set relativenumber " Show line numbers in motions friendly way
-syntax enable      " add syntax highlighting
+set syntax=on      " add syntax highlighting
+
+" Search settings
+set hlsearch  " highlight search terms
+set incsearch " show search matches as you type
+set ignorecase
+
+" Indenting stuff
+set autoindent
+set smartindent
+set copyindent
+set softtabstop=4   " makes the spaces feel like real tabs
+set tabstop=4       " 1 tab = 4 spaces
+set shiftwidth=4    " Same for autoindenting
+set expandtab       " Use  spaces for indenting
+set smarttab        " Insert tabs on the start of a line according to shiftwidth, not tabstop
+set shiftround      " Use multiple of shiftwidth when indenting with '<' and '>'
 
 " cd to current file path
 " !! Removed to start using Tags file in projects
 " autocmd BufEnter * silent! lcd %:p:h
 
-" set path to look recursive in the current dir
+" Set path to look recursive in the current dir
 set path+=**
 
 " disable sounds
 set visualbell
 
-set fileformat=unix      " file mode is unix
+set fileformat=unix,dos      " file mode is unix
 " Remove ^M characters from windows format
-nmap <leader>R :%s/\r\+$//e
+nnoremap <leader>R :%s/\r\+$//e
 
 " To be improve
 function! RemoveTrailingWhitespaces()
@@ -61,60 +77,27 @@ endfunction
 " autocmd FileType * autocmd BufWritePre <buffer> %s/\s\+$//e
 autocmd FileType * autocmd BufWritePre <buffer> call RemoveTrailingWhitespaces()
 
-" Set Syntax to *.in files
-augroup filetypedetect
-    autocmd BufNewFile,BufRead .tmux.conf*,tmux.conf* set filetype=tmux
-    autocmd BufNewFile,BufRead .nginx.conf*,nginx.conf* set filetype=nginx
-    autocmd BufRead,BufNewFile *.in,*.simics,*.si,*.sle set filetype=conf
-    autocmd BufRead,BufNewFile *.bash* set filetype=sh
-augroup END
-
 " Specially for html and xml
 autocmd FileType xml,html,vim autocmd BufReadPre <buffer> set matchpairs+=<:>
+
+" Default omnicomplete func
+set omnifunc=syntaxcomplete#Complete
 
 " Set highlight CursorLine
 hi CursorLine term=bold cterm=bold guibg=Grey40
 
-" Indenting stuff
-set autoindent
-set smartindent
-set copyindent
-set softtabstop=4   " makes the spaces feel like real tabs
-set tabstop=4       " 1 tab = 4 spaces
-set shiftwidth=4    " Same for autoindenting
-set expandtab       " Use  spaces for indenting
-set smarttab        " Insert tabs on the start of a line according to shiftwidth, not tabstop
-set shiftround      " Use multiple of shiftwidth when indenting with '<' and '>'
-" set magic           " change the way backslashes are used in search patterns
-
-set fileformat=unix " file mode is unix
-"
-" Remove ^M characters from windows format
-nnoremap <leader>R :%s/\r\+$//e
-
-" Search settings
-set hlsearch  " highlight search terms
-set incsearch " show search matches as you type
-set ignorecase
-
-" set pastetoggle=<F4>
-
 " nnoremap <S-Enter> O<Esc>
-"
 " Add lines in normal mode without enter in insert mode
 nnoremap <C-o> O<Esc>
 " nnoremap <CR> o<Esc>
 nnoremap \ o<Esc>
 
+" Easy remove line in normal mode
+nnoremap <BS> dd
+
 " better backup, swap and undos storage
 set backup   " make backup files
 set undofile " persistent undos - undo after you re-open the file
-
-" Easy remove line in normal mode
-nnoremap <BS> dd
-vmap <BS> d
-
-
 if has("win32") || has("win64")
     execute 'set directory='.fnameescape(g:os_editor.'tmp_dirs\swap')
     execute 'set backupdir='.fnameescape(g:os_editor.'tmp_dirs\backup')
@@ -239,7 +222,6 @@ endif
 
 " Resize buffer splits
 nnoremap <leader>e <C-w>=
-nnoremap <leader>- <C-w>-
 
 " Color columns
 if exists('+colorcolumn')
@@ -284,6 +266,14 @@ if has("termguicolors")
     set termguicolors
 endif
 
+" Set Syntax to *.in files
+augroup filetypedetect
+    autocmd BufNewFile,BufRead .tmux.conf*,tmux.conf* set filetype=tmux
+    autocmd BufNewFile,BufRead .nginx.conf*,nginx.conf* set filetype=nginx
+    autocmd BufRead,BufNewFile *.in,*.simics,*.si,*.sle set filetype=conf
+    autocmd BufRead,BufNewFile *.bash* set filetype=sh
+augroup END
+
 " omnifuncs
 augroup omnifuncs
     autocmd!
@@ -299,4 +289,9 @@ augroup omnifuncs
 
     autocmd BufNewFile,BufRead,BufEnter *.cpp,*.hpp setlocal omnifunc=omni#cpp#complete#Main
     autocmd BufNewFile,BufRead,BufEnter *.c,*.h setlocal omnifunc=ccomplete#Complete
+augroup END
+
+augroup Spells
+    autocmd FileType gitcommit setlocal spell
+    autocmd FileType markdown setlocal spell
 augroup END

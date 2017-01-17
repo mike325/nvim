@@ -34,14 +34,12 @@ Plug 'scrooloose/nerdtree', { 'on': [ 'NERDTreeToggle' ] }
 " Easy comments
 Plug 'scrooloose/nerdcommenter'
 
-" Simulate sublime cursors
-Plug 'terryma/vim-multiple-cursors'
-
 " Status bar and some themes
 Plug 'vim-airline/vim-airline' | Plug 'vim-airline/vim-airline-themes'
 
 " Git integrations
 Plug 'airblade/vim-gitgutter' | Plug 'tpope/vim-fugitive' | Plug 'rhysd/committia.vim'
+Plug 'tpope/vim-git'
 
 " Easy aligment
 Plug 'godlygeek/tabular'
@@ -63,9 +61,6 @@ Plug 'kien/ctrlp.vim', { 'on': [ 'CtrlPBuffer', 'CtrlP' ] }
 
 " Better sessions management
 Plug 'xolox/vim-misc' | Plug 'xolox/vim-session'
-
-" Improve syntax
-Plug 'sheerun/vim-polyglot'
 
 " Auto convert bin files
 Plug 'fidian/hexmode'
@@ -100,6 +95,24 @@ Plug 'AndrewRadev/switch.vim'
 " Search into files
 Plug 'mhinz/vim-grepper'
 
+" Improve Dockerfiles syntax highlight
+Plug 'ekalinin/Dockerfile.vim'
+
+" Improve json syntax highlight
+Plug 'elzr/vim-json'
+
+" Improve Lua syntax
+Plug 'tbastos/vim-lua'
+
+" Improve cpp syntax highlight
+Plug 'octol/vim-cpp-enhanced-highlight'
+
+" Add python highlight, folding, virtualenv, etc
+Plug 'python-mode/python-mode'
+
+" Add Qml syntax highlight
+Plug 'peterhoeg/vim-qml'
+
 if executable("go")
     " Go developement
     Plug 'fatih/vim-go'
@@ -113,11 +126,11 @@ endif
 if executable("ctags")
     " Simple view of Tags using ctags
     Plug 'majutsushi/tagbar'
-    if ( has("nvim") || ( v:version >= 800 ) ) && has("python3")
-        Plug 'c0r73x/neotags.nvim'
-    else
-        Plug 'xolox/vim-easytags'
-    endif
+    " if ( has("nvim") || ( v:version >= 800 ) ) && has("python3")
+    "     Plug 'c0r73x/neotags.nvim'
+    " else
+    Plug 'xolox/vim-easytags'
+    " endif
 endif
 
 let b:neomake_installed = 0
