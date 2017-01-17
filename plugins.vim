@@ -15,7 +15,7 @@ if &runtimepath =~ 'vim-easymotion'
     " Turn on ignore case
     let g:EasyMotion_smartcase = 1
 
-    " <leader>f{char} to move to {char}
+    " z{char} to move to {char}
     " search a character in the current buffer
     nmap z <Plug>(easymotion-bd-f)
     vmap z <Plug>(easymotion-bd-f)
