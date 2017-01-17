@@ -15,30 +15,13 @@ if &runtimepath =~ 'vim-easymotion'
     " Turn on ignore case
     let g:EasyMotion_smartcase = 1
 
-    " <leader>f{char} to move to {char}
+    " z{char} to move to {char}
     " search a character in the current buffer
-    nmap s <Plug>(easymotion-bd-f)
-    vmap s <Plug>(easymotion-bd-f)
+    nmap z <Plug>(easymotion-bd-f)
+    vmap z <Plug>(easymotion-bd-f)
     " search a character in the current layout
-    nmap S <Plug>(easymotion-overwin-f)
-    vmap S <Plug>(easymotion-overwin-f)
-
-    " search a character in the current line
-    nmap <leader>s <Plug>(easymotion-sl)
-    vmap <leader>s <Plug>(easymotion-sl)
-
-    " Move to line
-    " move to a line in the current layout
-    nmap <leader>L <Plug>(easymotion-overwin-line)
-    vmap <leader>L <Plug>(easymotion-overwin-line)
-
-    " Move to word
-    " move to a any word in the current buffer
-    nmap <leader><leader>w <Plug>(easymotion-bd-w)
-    vmap <leader><leader>w <Plug>(easymotion-bd-w)
-    " move to a any word in the current layout
-    nmap <leader><leader>W <Plug>(easymotion-overwin-w)
-    vmap <leader><leader>W <Plug>(easymotion-overwin-w)
+    nmap Z <Plug>(easymotion-overwin-f)
+    vmap Z <Plug>(easymotion-overwin-f)
 
     " repeat the last motion
     nmap <leader>. <Plug>(easymotion-repeat)
@@ -58,15 +41,7 @@ let g:session_autosave = 'yes'
 " Don't ask for load last session
 let g:session_autoload = 'no'
 
-if has("nvim")
-    if has("win32") || has("win64")
-        let g:session_directory = '~\AppData\Local\nvim\sessions'
-    else
-        let g:session_directory = '~/.config/nvim/sessions'
-    endif
-elseif has("win32") || has("win64")
-    let g:session_directory = '~\vimfiles\sessions'
-endif
+let g:session_directory = g:os_editor.'sessions'
 
 if &runtimepath =~ 'vim-session'
     " nnoremap <leader>d :DeleteSession
@@ -74,7 +49,7 @@ if &runtimepath =~ 'vim-session'
     nnoremap <leader>o :OpenSession
     " Save current files in a session
     nnoremap <leader>s :SaveSession
-    " close current session !!!!!!!! use this instead of close the buffers !!!!!!!!
+    " Use this instead of close the buffers !!!!!!!!
     nnoremap <leader><leader>c :CloseSession<CR>
     " Quick save current session
     nnoremap <leader><leader>s :SaveSession<CR>
@@ -82,20 +57,9 @@ if &runtimepath =~ 'vim-session'
     nnoremap <leader><leader>d :DeleteSession<CR>
 endif
 
-if &runtimepath =~ 'vim-multiple-cursors'
-    let g:multi_cursor_use_default_mapping=0
-
-    let g:multi_cursor_start_key='<leader><tab>'
-    let g:multi_cursor_next_key='<tab>'
-    let g:multi_cursor_prev_key='<C-a>'
-    let g:multi_cursor_skip_key='<C-x>'
-    let g:multi_cursor_quit_key='<Esc>'
-endif
-
-
 " ################ CtrlP settings #################
-nnoremap <C-p> :CtrlP<CR>
 nnoremap <C-b> :CtrlPBuffer<CR>
+nnoremap <C-p> :CtrlP<CR>
 let g:ctrlp_match_window = 'bottom,order:ttb,min:1,max:30,results:50'
 let g:ctrlp_map = '<C-p>'
 let g:ctrlp_working_path_mode = 'ra'
@@ -221,40 +185,35 @@ if &runtimepath =~ 'switch.vim'
         \ ]
 endif
 
-if &runtimepath =~ 'neotags.nvim'
-    " let g:neotags_file = '~/'
-    let g:neotags_enabled    = 1
-    let g:neotags_ctags_args = [
-            \ '-L -',
-            \ '--fields=+l',
-            \ '--c-kinds=+p',
-            \ '--c++-kinds=+p',
-            \ '--sort=yes',
-            \ '--extra=+q'
-            \ ]
-endif
+" if &runtimepath =~ 'neotags.nvim'
+"     " let g:neotags_file = '~/'
+"     let g:neotags_enabled    = 1
+"     let g:neotags_ctags_args = [
+"             \ '-L -',
+"             \ '--fields=+l',
+"             \ '--c-kinds=+p',
+"             \ '--c++-kinds=+p',
+"             \ '--sort=yes',
+"             \ '--extra=+q'
+"             \ ]
+" endif
 
 if &runtimepath =~ 'vim-easytags'
-    " Include structs/class members for C/C++/Java projects
-    let g:easytags_include_members = 1
-    let g:easytags_always_enabled  = 1
-    let g:easytags_auto_highlight  = 0
-    let g:easytags_auto_update     = 0
-    let g:easytags_dynamic_files   = 1
-
-    " let g:easytags_file = './tags'
+    " You can update de tags with ':UpdateTags -R .' in your project's root.
+    let g:easytags_always_enabled = 1
+    let g:easytags_auto_highlight = 0
+    let g:easytags_auto_update    = 0
 
     if !( has("win32") || has("win64") ) && ( has("nvim") || ( v:version >= 800 ) )
         " Vim will block if it does not have Async support!!!
         let g:easytags_async = 1
     endif
 
-    " You can update de tags with ':UpdateTags -R .' in your project's root.
     nnoremap gtf :UpdateTags -R .<CR>
 endif
 
 " ################ Jedi complete #################
-if ( &runtimepath =~ 'jedi-vim' || &runtimepath =~ 'jedi'  )
+if  &runtimepath =~ 'jedi-vim'
     let g:jedi#popup_on_dot = 1
     let g:jedi#popup_select_first = 1
     let g:jedi#completions_command = "<C-c>"
@@ -267,6 +226,11 @@ if ( &runtimepath =~ 'jedi-vim' || &runtimepath =~ 'jedi'  )
 endif
 
 if &runtimepath =~ 'SimpleAutoComplPop'
+    autocmd FileType * call sacp#enableForThisBuffer({ "matches": [
+        \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
+        \ { '=~': '/'              , 'feedkeys': "\<C-x>\<C-f>"  , "ignoreCompletionMode":1} ,
+    \ ]})
+
     autocmd FileType go call sacp#enableForThisBuffer({ "matches": [
         \ { '=~': '\v[a-zA-Z]{2}$'   , 'feedkeys': "\<C-x>\<C-n>"} ,
         \ { '=~': '\.$'              , 'feedkeys': "\<C-x>\<C-o>"  , "ignoreCompletionMode":1} ,
@@ -305,11 +269,6 @@ if &runtimepath =~ 'SimpleAutoComplPop'
         \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
         \ { '=~': '\.$'            , 'feedkeys': "\<C-x>\<C-o>"  , "ignoreCompletionMode":1} ,
         \ { '=~': '->$'            , 'feedkeys': "\<C-x>\<C-o>"} ,
-        \ { '=~': '/'              , 'feedkeys': "\<C-x>\<C-f>"  , "ignoreCompletionMode":1} ,
-    \ ]})
-
-    autocmd FileType sh,vim,conf,make,dosini call sacp#enableForThisBuffer({ "matches": [
-        \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
         \ { '=~': '/'              , 'feedkeys': "\<C-x>\<C-f>"  , "ignoreCompletionMode":1} ,
     \ ]})
 endif
@@ -372,7 +331,7 @@ if &runtimepath =~ 'neocomplete.vim'
     "set completeopt+=longest
     "let g:neocomplete#enable_auto_select = 1
     "let g:neocomplete#disable_auto_complete = 1
-    "inoremap <expr><TAB>  pumvisible() ? "\<Down>" : "\<C-x>\<C-u>"
+    "inoremap <expr><TAB>  pumvisible() ? "\<Down>" : "\<C-x>\<C-u>"8
 
     " Enable heavy omni completion.
     if !exists('g:neocomplete#sources#omni#input_patterns')
@@ -381,14 +340,6 @@ if &runtimepath =~ 'neocomplete.vim'
 endif
 
 if &runtimepath =~ 'deoplete.nvim'
-    function Multiple_cursors_before()
-        let g:deoplete#disable_auto_complete = 1
-    endfunction
-
-    function Multiple_cursors_after()
-        let g:deoplete#disable_auto_complete = 0
-    endfunction
-
     let g:deoplete#enable_at_startup = 1
 
     " Use smartcase.
@@ -411,7 +362,12 @@ if &runtimepath =~ 'deoplete.nvim'
     inoremap <expr><C-e>  deoplete#cancel_popup()
 
     let g:deoplete#omni#input_patterns = get(g:,'deoplete#omni#input_patterns',{})
+
     let g:deoplete#omni#input_patterns.java = [
+                \'[^. \t0-9]\.\w*',
+                \]
+
+    let g:deoplete#omni#input_patterns.c = [
                 \'[^. \t0-9]\.\w*',
                 \'[^. \t0-9]\->\w*',
                 \'[^. \t0-9]\::\w*',
@@ -442,6 +398,11 @@ if &runtimepath =~ 'deoplete.nvim'
     call deoplete#custom#set('ultisnips', 'matchers', ['matcher_full_fuzzy'])
 endif
 
+if &runtimepath =~ 'vim-javacomplete2'
+    nnoremap <leader>si <Plug>(JavaComplete-Imports-AddSmart)
+    nnoremap <leader>mi <Plug>(JavaComplete-Imports-AddMissing)
+endif
+
 if &runtimepath =~ 'deoplete-jedi'
     let g:deoplete#sources#jedi#enable_cache   = 1
     let g:deoplete#sources#jedi#show_docstring = 1
@@ -456,10 +417,10 @@ if &runtimepath =~ 'deoplete-clang'
 endif
 
 if &runtimepath =~ 'deoplete-go'
+    let g:deoplete#sources#go             = 'vim-go'
     let g:deoplete#sources#go#sort_class  = ['package', 'func', 'type', 'var', 'const']
     let g:deoplete#sources#go#use_cache   = 1
     let g:deoplete#sources#go#package_dot = 1
-    let g:deoplete#sources#go             = 'vim-go'
 endif
 
 if &runtimepath =~ 'YouCompleteMe'
