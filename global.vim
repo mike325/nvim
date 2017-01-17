@@ -59,7 +59,7 @@ set path+=**
 " disable sounds
 set visualbell
 
-set fileformat=unix,dos      " file mode is unix
+set fileformat=unix " file mode is unix
 " Remove ^M characters from windows format
 nnoremap <leader>R :%s/\r\+$//e
 

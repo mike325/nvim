@@ -17,15 +17,15 @@ if &runtimepath =~ 'vim-easymotion'
 
     " <leader>f{char} to move to {char}
     " search a character in the current buffer
-    nmap s <Plug>(easymotion-bd-f)
-    vmap s <Plug>(easymotion-bd-f)
+    nmap z <Plug>(easymotion-bd-f)
+    vmap z <Plug>(easymotion-bd-f)
     " search a character in the current layout
-    nmap S <Plug>(easymotion-overwin-f)
-    vmap S <Plug>(easymotion-overwin-f)
+    nmap Z <Plug>(easymotion-overwin-f)
+    vmap Z <Plug>(easymotion-overwin-f)
 
     " search a character in the current line
-    nmap <leader>s <Plug>(easymotion-sl)
-    vmap <leader>s <Plug>(easymotion-sl)
+    nmap <leader>z <Plug>(easymotion-sl)
+    vmap <leader>z <Plug>(easymotion-sl)
 
     " Move to line
     " move to a line in the current layout
