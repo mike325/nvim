@@ -48,6 +48,7 @@ set shiftwidth=4    " Same for autoindenting
 set expandtab       " Use  spaces for indenting
 set smarttab        " Insert tabs on the start of a line according to shiftwidth, not tabstop
 set shiftround      " Use multiple of shiftwidth when indenting with '<' and '>'
+set cursorline      " Turn on cursor line by default
 
 " cd to current file path
 " !! Removed to start using Tags file in projects
@@ -89,8 +90,7 @@ hi CursorLine term=bold cterm=bold guibg=Grey40
 " nnoremap <S-Enter> O<Esc>
 " Add lines in normal mode without enter in insert mode
 nnoremap <C-o> O<Esc>
-" nnoremap <CR> o<Esc>
-nnoremap \ o<Esc>
+nmap Q o<Esc>
 
 " Easy remove line in normal mode
 nnoremap <BS> dd
@@ -198,10 +198,10 @@ nnoremap <S-tab> <<
 nnoremap <C-x> <C-w><C-w>
 
 " Buffer
-nnoremap <leader>h <C-w>h
-nnoremap <leader>j <C-w>j
-nnoremap <leader>k <C-w>k
-nnoremap <leader>l <C-w>l
+nmap <leader>h <C-w>h
+nmap <leader>j <C-w>j
+nmap <leader>k <C-w>k
+nmap <leader>l <C-w>l
 
 if has("nvim")
     " Better splits
@@ -211,7 +211,7 @@ if has("nvim")
     " Better terminal access
     nnoremap <A-t> :terminal<CR>
     tnoremap <Esc> <C-\><C-n>
-    " tnoremap jj <C-\><C-n>
+    tnoremap qq <C-\><C-n>
 
     " Better terminal movement
     tnoremap <leader-h> <C-\><C-n><C-w>h
