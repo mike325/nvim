@@ -50,7 +50,7 @@ if &runtimepath =~ 'vim-session'
     " Save current files in a session
     nnoremap <leader>s :SaveSession
     " Use this instead of close the buffers !!!!!!!!
-    nnoremap <leader><leader>c :CloseSession<CR>
+    nnoremap <leader><leader>c :CloseSession!<CR>
     " Quick save current session
     nnoremap <leader><leader>s :SaveSession<CR>
     " Quick delete session
