@@ -203,16 +203,18 @@ endif
 " endif
 
 if &runtimepath =~ 'vim-easytags'
-    " You can update de tags with ':UpdateTags -R .' in your project's root.
-    let g:easytags_always_enabled = 1
-    let g:easytags_auto_highlight = 0
-    let g:easytags_auto_update    = 0
+    let g:easytags_include_members = 1
+    let g:easytags_always_enabled  = 1
+    let g:easytags_dynamic_files   = 1
+    let g:easytags_auto_highlight  = 0
+    let g:easytags_auto_update     = 0
 
     if !( has("win32") || has("win64") ) && ( has("nvim") || ( v:version >= 800 ) )
         " Vim will block if it does not have Async support!!!
         let g:easytags_async = 1
     endif
 
+    " You can update de tags with ':UpdateTags -R .' in your project's root.
     nnoremap gtf :UpdateTags -R .<CR>
 endif
 
@@ -335,7 +337,7 @@ if &runtimepath =~ 'neocomplete.vim'
     "set completeopt+=longest
     "let g:neocomplete#enable_auto_select = 1
     "let g:neocomplete#disable_auto_complete = 1
-    "inoremap <expr><TAB>  pumvisible() ? "\<Down>" : "\<C-x>\<C-u>"8
+    "inoremap <expr><TAB>  pumvisible() ? "\<Down>" : "\<C-x>\<C-u>"
 
     " Enable heavy omni completion.
     if !exists('g:neocomplete#sources#omni#input_patterns')
