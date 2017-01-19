@@ -99,19 +99,22 @@ endif
 " colorscheme railscasts
 if &runtimepath =~ 'vim-colorschemes'
     try
-        colorscheme NeoSolarized
+        colorscheme gruvbox
     catch
-        echo 'Please run :PlugInstall to complete the installation or remove "colorscheme NeoSolarized"'
+        echo 'Please run :PlugInstall to complete the installation or remove "colorscheme gruvbox"'
     endtry
 
-    nnoremap csm :colorscheme Monokai<CR>
-    nnoremap cso :colorscheme onedark<CR>
-    nnoremap csr :colorscheme railscasts<CR>
+    nnoremap csm :colorscheme Monokai<CR>:AirlineTheme molokai<CR>
+    nnoremap cso :colorscheme onedark<CR>:AirlineTheme solarized<CR>
+    nnoremap csr :colorscheme railscasts<CR>:AirlineTheme molokai<CR>
+    nnoremap csg :colorscheme gruvbox<CR>:AirlineTheme gruvbox<CR>
+
+    let g:gruvbox_contrast_dark = 'hard'
 endif
 
 if &runtimepath =~ 'NeoSolarized'
     let g:neosolarized_visibility = "high"
-    nnoremap csn :colorscheme NeoSolarized<CR>
+    nnoremap csn :colorscheme NeoSolarized<CR>:AirlineTheme solarized<CR>
 endif
 
 " ################ Status bar Airline #################
@@ -133,7 +136,8 @@ endif
 
 if &runtimepath =~ 'vim-airline-themes'
     " let g:airline_theme = 'molokai'
-    let g:airline_theme = 'solarized'
+    " let g:airline_theme = 'solarized'
+    let g:airline_theme = 'gruvbox'
 endif
 
 " ################# Snnipets and completion #################
@@ -199,7 +203,6 @@ endif
 " endif
 
 if &runtimepath =~ 'vim-easytags'
-    " Include structs/class members for C/C++/Java projects
     let g:easytags_include_members = 1
     let g:easytags_always_enabled  = 1
     let g:easytags_dynamic_files   = 1
