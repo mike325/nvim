@@ -59,12 +59,14 @@ Included plugins:
     * [Vim Sensible](https://github.com/tpope/vim-sensible) (Not necessary in Neovim)
     * [Colorschemes](https://github.com/flazz/vim-colorschemes)
     * [NeoSolarized](https://github.com/icymind/NeoSolarized)
+    * [Gruvbox](https://github.com/morhetz/gruvbox)
     * [NERDTree](https://github.com/scrooloose/nerdtree)
     * [NERDCommenter](https://github.com/scrooloose/nerdcommenter)
     * [Vim Airline](https://github.com/vim-airline/vim-airline)
     * [Vim Airline Themes](https://github.com/vim-airline/vim-airline-themes)
     * [Gitgutter](https://github.com/airblade/vim-gitgutter)
     * [Fugitive](https://github.com/tpope/vim-fugitive)
+    * [Vim-git](https://github.com/tpope/vim-git)
     * [Committia](https://github.com/rhysd/committia.vim)
     * [Tabular](https://github.com/godlygeek/tabular)
     * [EasyMotions](https://github.com/easymotion/vim-easymotion)
@@ -111,6 +113,7 @@ Included plugins:
 
     - If Deoplete could not be installed
         * [YouCompleteMe](https://github.com/Valloric/YouCompleteMe)
+        * [Ycm-generator](https://github.com/rdnetto/ycm-generator)
 
     - If YouCompleteMe was not installed
         * [Jedi](https://github.com/davidhalter/jedi-vim)

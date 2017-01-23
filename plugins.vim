@@ -72,9 +72,6 @@ if &runtimepath =~ 'vim-grepper'
     " let g:grepper.tools = ['ag', 'ack', 'git', 'grep', 'findstr' ]
     " let g:grepper.highlight = 1
 
-    nmap <C-g> :Grepper -query
-    " nmap <C-B> :Grepper -buffers -query <C-r>"<CR>
-
     nmap gs  <plug>(GrepperOperator)
     xmap gs  <plug>(GrepperOperator)
 endif
@@ -554,6 +551,8 @@ endif
 if &runtimepath =~ 'vim-fugitive'
     nnoremap <leader>gs :Gstatus<CR>
     nnoremap <leader>gc :Gcommit<CR>
+    nnoremap <leader>gd :Gdiff<CR>
+    " nnoremap <leader>gc :Gcommit<CR>
 endif
 
 " ################ GitGutter #################

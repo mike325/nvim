@@ -171,7 +171,7 @@ if ( has("python") || has("python3") )
         endif
     endfunction
 
-" Awesome completion engine, comment the following if to deactivate ycm
+" Awesome completion engine
     if ( has("nvim") && has("python3") )
         Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
         Plug 'zchee/deoplete-jedi'
@@ -194,6 +194,7 @@ if ( has("python") || has("python3") )
         let b:deoplete_installed = 1
     elseif has("nvim") || ( v:version >= 800 ) || ( v:version == 704 && has("patch143") )
         Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') }
+        Plug 'rdnetto/ycm-generator', { 'branch': 'stable' }
         let b:ycm_installed = 1
     endif
 

@@ -211,7 +211,7 @@ if has("nvim")
     " Better terminal access
     nnoremap <A-t> :terminal<CR>
     tnoremap <Esc> <C-\><C-n>
-    tnoremap qq <C-\><C-n>
+    tnoremap oo <C-\><C-n>
 
     " Better terminal movement
     tnoremap <leader-h> <C-\><C-n><C-w>h
