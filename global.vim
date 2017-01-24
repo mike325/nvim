@@ -8,9 +8,10 @@ set encoding=utf-8     " The encoding displayed.
 set fileencoding=utf-8 " The encoding written to file.
 
 let mapleader=" "
-nnoremap ; :
+" nnoremap ; :
+" vmap ; :
+
 nnoremap , :
-vmap ; :
 vmap , :
 
 " Similar behavior as C and D

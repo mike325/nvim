@@ -6,7 +6,7 @@
 
 " ################ BufferBye settings #################
 " better behave buffer deletion
-nnoremap <leader>d :Bdelete<CR>
+nnoremap <leader>d :Bdelete!<CR>
 
 " ################ EasyMotions Settings #################
 if &runtimepath =~ 'vim-easymotion'
@@ -17,11 +17,11 @@ if &runtimepath =~ 'vim-easymotion'
 
     " z{char} to move to {char}
     " search a character in the current buffer
-    nmap z <Plug>(easymotion-bd-f)
-    vmap z <Plug>(easymotion-bd-f)
+    nmap \ <Plug>(easymotion-bd-f)
+    vmap \ <Plug>(easymotion-bd-f)
     " search a character in the current layout
-    nmap Z <Plug>(easymotion-overwin-f)
-    vmap Z <Plug>(easymotion-overwin-f)
+    nmap <leader>\ <Plug>(easymotion-overwin-f)
+    vmap <leader>\ <Plug>(easymotion-overwin-f)
 
     " repeat the last motion
     nmap <leader>. <Plug>(easymotion-repeat)
