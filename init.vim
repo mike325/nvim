@@ -160,18 +160,18 @@ if ( has("python") || has("python3") )
         if a:info.status == 'installed' || a:info.force
             " !./install.py --all
             if executable('go') && executable("tern")
-                !./install.py --gocode-completer --tern-completer
+                !./install.py --gocode-completer --tern-completer --clang-completer
             elseif executable("tern")
-                !./install.py --tern-completer
+                !./install.py --tern-completer --clang-completer
             elseif executable('go')
-                !./install.py --gocode-completer
+                !./install.py --gocode-completer --clang-completer
             else
-                !./install.py
+                !./install.py --clang-completer
             endif
         endif
     endfunction
 
-" Awesome completion engine, comment the following if to deactivate ycm
+" Awesome completion engine
     if ( has("nvim") && has("python3") )
         Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
         Plug 'zchee/deoplete-jedi'
@@ -194,6 +194,7 @@ if ( has("python") || has("python3") )
         let b:deoplete_installed = 1
     elseif has("nvim") || ( v:version >= 800 ) || ( v:version == 704 && has("patch143") )
         Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') }
+        Plug 'rdnetto/ycm-generator', { 'branch': 'stable' }
         let b:ycm_installed = 1
     endif
 

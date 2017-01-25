@@ -8,9 +8,10 @@ set encoding=utf-8     " The encoding displayed.
 set fileencoding=utf-8 " The encoding written to file.
 
 let mapleader=" "
-nnoremap ; :
+" nnoremap ; :
+" vmap ; :
+
 nnoremap , :
-vmap ; :
 vmap , :
 
 " Similar behavior as C and D
@@ -211,7 +212,7 @@ if has("nvim")
     " Better terminal access
     nnoremap <A-t> :terminal<CR>
     tnoremap <Esc> <C-\><C-n>
-    tnoremap qq <C-\><C-n>
+    tnoremap oo <C-\><C-n>
 
     " Better terminal movement
     tnoremap <leader-h> <C-\><C-n><C-w>h

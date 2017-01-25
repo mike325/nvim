@@ -1,10 +1,10 @@
 # Vimrc
-This repo have mi personal Vim/Neovim setings that I have been collecting for a while, feel free to change
+This repo have mi personal Vim/Neovim settings that I have been collecting for a while, feel free to change
 anything to fit your needs or suggest me something that you think could be useful.
 
 This settings require Vim >= 7.4 or Neovim >= 0.17 with **python** and **lua** support and **ctags**.
 
-I have personally test this configurations in the following enviroments:
+I have personally test this configurations in the following environments:
 
 * Linux
     * Debian 8/8.5 jessie
@@ -36,7 +36,7 @@ I have personally test this configurations in the following enviroments:
     * Git bash (some problems loading python modules)
         - Vim 8.0.27
 
-You can test my settings by clonning this repo into your `$HOME`
+You can test my settings by cloning this repo into your `$HOME`
 
 ```
 git clone --recursive https://github.com/mike325/.vim.git ~/.vim
@@ -52,20 +52,22 @@ or just clone it there
 
     git clone --recursive https://github.com/mike325/.vim.git ~/.config/nvim
 
-Once you have cloneed the repo just run `:PlugInstall` inside vim/neovim to complete the installation process.
+Once you have cloned the repo just run `:PlugInstall` inside Vim/Neovim to complete the installation process.
 
 Included plugins:
 - Default plugins
     * [Vim Sensible](https://github.com/tpope/vim-sensible) (Not necessary in Neovim)
     * [Colorschemes](https://github.com/flazz/vim-colorschemes)
     * [deliMate](https://github.com/Raimondi/delimitMate)
+    * [NeoSolarized](https://github.com/icymind/NeoSolarized)
+    * [Gruvbox](https://github.com/morhetz/gruvbox)
     * [NERDTree](https://github.com/scrooloose/nerdtree)
     * [NERDCommenter](https://github.com/scrooloose/nerdcommenter)
-    * [Multiple-cursors](https://github.com/terryma/vim-multiple-cursors)
     * [Vim Airline](https://github.com/vim-airline/vim-airline)
     * [Vim Airline Themes](https://github.com/vim-airline/vim-airline-themes)
     * [Gitgutter](https://github.com/airblade/vim-gitgutter)
     * [Fugitive](https://github.com/tpope/vim-fugitive)
+    * [Vim-git](https://github.com/tpope/vim-git)
     * [Committia](https://github.com/rhysd/committia.vim)
     * [Tabular](https://github.com/godlygeek/tabular)
     * [EasyMotions](https://github.com/easymotion/vim-easymotion)
@@ -75,7 +77,6 @@ Included plugins:
     * [CtrP](https://github.com/kien/ctrlp.vim)
     * [Vim misc](https://github.com/xolox/vim-misc)
     * [Sessions](https://github.com/xolox/vim-session)
-    * [Polyglot](https://github.com/sheerun/vim-polyglot)
     * [Hexmode](https://github.com/fidian/hexmode)
     * [Snippets](https://github.com/honza/vim-snippets)
     * [Move](https://github.com/matze/vim-move)
@@ -90,19 +91,30 @@ Included plugins:
     * [Switch](https://github.com/AndrewRadev/switch.vim)
     * [Vim-go](https://github.com/fatih/vim-go)
     * [Grepper](https://github.com/mhinz/vim-grepper)
-    * [Easytags](https://github.com/xolox/vim-easytags) (Only if ctags has been installed)
+    * [EasyTags](https://github.com/xolox/vim-easytags) (Only if ctags has been installed)
+    * [Dockerfile.vim](https://github.com/ekalinin/Dockerfile.vim)
+    * [Vim-json](https://github.com/elzr/vim-json)
+    * [Vim-lua](https://github.com/tbastos/vim-lua)
+    * [Vim-cpp-enhanced-highlight](https://github.com/octol/vim-cpp-enhanced-highlight)
+    * [Python-mode](https://github.com/python-mode/python-mode)
+    * [Vim-qml](https://github.com/peterhoeg/vim-qml)
+    * [Vimtex](https://github.com/lervag/vimtex)
+    * [Vim-windowswap](https://github.com/wesQ3/vim-windowswap)
 
 - If python interface is available
     * [Ultisnips](https://github.com/SirVer/ultisnips)
 
-    - If python3 interface is avalible and neovim is runnin
+    - If python3 interface is available and Neovim is running
         * [Deoplete](https://github.com/Shougo/deoplete.nvim)
         * [Deoplete-jedi](https://github.com/zchee/deoplete-jedi)
         * [Deoplete-clang](https://github.com/zchee/deoplete-clang)
         * [Deoplete-go](https://github.com/zchee/deoplete-go)
+        * [deoplete-ternjs](https://github.com/carlitux/deoplete-ternjs)
+        * [Vim-javacomplete2](https://github.com/artur-shaik/vim-javacomplete2)
 
     - If Deoplete could not be installed
         * [YouCompleteMe](https://github.com/Valloric/YouCompleteMe)
+        * [Ycm-generator](https://github.com/rdnetto/ycm-generator)
 
     - If YouCompleteMe was not installed
         * [Jedi](https://github.com/davidhalter/jedi-vim)

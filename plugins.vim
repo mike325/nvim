@@ -6,7 +6,7 @@
 
 " ################ BufferBye settings #################
 " better behave buffer deletion
-nnoremap <leader>d :Bdelete<CR>
+nnoremap <leader>d :Bdelete!<CR>
 
 " ################ EasyMotions Settings #################
 if &runtimepath =~ 'vim-easymotion'
@@ -17,11 +17,11 @@ if &runtimepath =~ 'vim-easymotion'
 
     " z{char} to move to {char}
     " search a character in the current buffer
-    nmap z <Plug>(easymotion-bd-f)
-    vmap z <Plug>(easymotion-bd-f)
+    nmap \ <Plug>(easymotion-bd-f)
+    vmap \ <Plug>(easymotion-bd-f)
     " search a character in the current layout
-    nmap Z <Plug>(easymotion-overwin-f)
-    vmap Z <Plug>(easymotion-overwin-f)
+    nmap <leader>\ <Plug>(easymotion-overwin-f)
+    vmap <leader>\ <Plug>(easymotion-overwin-f)
 
     " repeat the last motion
     nmap <leader>. <Plug>(easymotion-repeat)
@@ -50,7 +50,7 @@ if &runtimepath =~ 'vim-session'
     " Save current files in a session
     nnoremap <leader>s :SaveSession
     " Use this instead of close the buffers !!!!!!!!
-    nnoremap <leader><leader>c :CloseSession<CR>
+    nnoremap <leader><leader>c :CloseSession!<CR>
     " Quick save current session
     nnoremap <leader><leader>s :SaveSession<CR>
     " Quick delete session
@@ -71,9 +71,6 @@ let g:ctrlp_custom_ignore = {
 if &runtimepath =~ 'vim-grepper'
     " let g:grepper.tools = ['ag', 'ack', 'git', 'grep', 'findstr' ]
     " let g:grepper.highlight = 1
-
-    nmap <C-g> :Grepper -query
-    " nmap <C-B> :Grepper -buffers -query <C-r>"<CR>
 
     nmap gs  <plug>(GrepperOperator)
     xmap gs  <plug>(GrepperOperator)
@@ -554,6 +551,8 @@ endif
 if &runtimepath =~ 'vim-fugitive'
     nnoremap <leader>gs :Gstatus<CR>
     nnoremap <leader>gc :Gcommit<CR>
+    nnoremap <leader>gd :Gdiff<CR>
+    " nnoremap <leader>gc :Gcommit<CR>
 endif
 
 " ################ GitGutter #################
