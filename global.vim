@@ -153,7 +153,7 @@ endif
 " ################# visual selection go also to clipboard #################
 if has('clipboard')
     if !has("nvim") || ( executable('pbcopy') || executable('xclip') || executable('xsel') || executable("lemonade") )
-        set clipboard+=unnamedplus
+        set clipboard+=unnamedplus,unnamed
     endif
 elseif has("nvim")
     " Disable mouse to manually select text
