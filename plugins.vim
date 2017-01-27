@@ -37,7 +37,7 @@ endif
 " ################ Sessions settings #################
 " Session management
 " Auto save on exit
-let g:session_autosave = 'yes'
+let g:session_autosave = 'no'
 " Don't ask for load last session
 let g:session_autoload = 'no'
 
