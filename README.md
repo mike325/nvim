@@ -58,6 +58,7 @@ Included plugins:
 - Default plugins
     * [Vim Sensible](https://github.com/tpope/vim-sensible) (Not necessary in Neovim)
     * [Colorschemes](https://github.com/flazz/vim-colorschemes)
+    * [deliMate](https://github.com/Raimondi/delimitMate)
     * [NeoSolarized](https://github.com/icymind/NeoSolarized)
     * [Gruvbox](https://github.com/morhetz/gruvbox)
     * [NERDTree](https://github.com/scrooloose/nerdtree)
