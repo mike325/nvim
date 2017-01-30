@@ -139,6 +139,9 @@ if has("gui_running")
     set guioptions-=m  "no menu
     set guioptions-=T  "no toolbar
     set guioptions-=r  "no scrollbar
+    if has("win32") || has("win64")
+        set guifont=DejaVu_Sans_Mono_for_Powerline:h11,DejaVu_Sans_Mono:h11
+    endif
 endif
 
 " ################# Set Neovim settings #################
@@ -150,7 +153,7 @@ endif
 " ################# visual selection go also to clipboard #################
 if has('clipboard')
     if !has("nvim") || ( executable('pbcopy') || executable('xclip') || executable('xsel') || executable("lemonade") )
-        set clipboard+=unnamedplus
+        set clipboard+=unnamedplus,unnamed
     endif
 elseif has("nvim")
     " Disable mouse to manually select text
