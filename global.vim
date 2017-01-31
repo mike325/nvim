@@ -94,7 +94,9 @@ nnoremap <C-o> O<Esc>
 nmap Q o<Esc>
 
 " Easy remove line in normal mode
-nnoremap <BS> dd
+" nnoremap <BS> dd
+nnoremap <BS> "_d
+vnoremap <BS> "_d
 
 " better backup, swap and undos storage
 set backup   " make backup files
