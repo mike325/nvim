@@ -2,6 +2,25 @@
 "
 "                               Small improvements
 "
+"                                       -`
+"                       ...            .o+`
+"                    .+++s'    h`+    `ooo/
+"                   `+++%+'   h+++   `+oooo:
+"                   +++o++   hhs++o `+oooooo:
+"                   +s%%so%%hohhooo -+oooooo+:
+"                   `+ooohs+h+sh++`/:-:++oooo+:
+"                    hh+o+hoso+h+`/++++/+++++++:
+"                     `+h+++h.+ `/++++++++++++++:
+"                              `/+++ooooooooooooo/`
+"                             ./ooosssso++osssssso+`
+"                            .oossssso-````/ossssss+`
+"                           -osssssso.      :ssssssso.
+"                          :osssssss/  Mike  osssso+++.
+"                         /ossssssss/   8a   +ssssooo/-
+"                       `/ossssso+/:-        -:/+osssso+-
+"                      `+sso+:-`                 `.-/+oso:
+"                     `++:.                           `-/+/
+"                     .`                                 `/
 " ############################################################################
 
 set encoding=utf-8     " The encoding displayed.
@@ -95,8 +114,8 @@ nmap Q o<Esc>
 
 " Easy remove line in normal mode
 " nnoremap <BS> dd
-nnoremap <BS> "_d
-vnoremap <BS> "_d
+nnoremap <BS> "_
+vnoremap <BS> "_
 
 " better backup, swap and undos storage
 set backup   " make backup files
