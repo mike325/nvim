@@ -4,24 +4,23 @@
 "
 "                                     -`
 "                     ...            .o+`
-"                  .+++s+   .h`+    `ooo/
+"                  .+++s+   .h`.    `ooo/
 "                 `+++%++  .h+++   `+oooo:
-"                 +++o+++ .hhs++o `+oooooo:
-"                 +s%%so%.hohhooo -+oooooo+:
-"                 `+ooohs+h+sh++`/:-:++oooo+:
-"                  hh+o+hoso+h+`/++++/+++++++:
+"                 +++o+++ .hhs++. `+oooooo:
+"                 +s%%so%.hohhoo'  'oooooo+:
+"                 `+ooohs+h+sh++`/:  ++oooo+:
+"                  hh+o+hoso+h+`/++++.+++++++:
 "                   `+h+++h.+ `/++++++++++++++:
 "                            `/+++ooooooooooooo/`
 "                           ./ooosssso++osssssso+`
-"                          .oossssso-````/ossssss+`
-"                         -osssssso.      :ssssssso.
-"                        :osssssss/  Mike  osssso+++.
-"                       /ossssssss/   8a   +ssssooo/-
-"                     `/ossssso+/:-        -:/+osssso+-
+"                          .oossssso-````/osssss::`
+"                         -osssssso.      :ssss``to.
+"                        :osssssss/  Mike  osssl   +
+"                       /ossssssss/   8a   +sssslb
+"                     `/ossssso+/:-        -:/+ossss'.-
 "                    `+sso+:-`                 `.-/+oso:
 "                   `++:.                           `-/+/
 "                   .`                                 `/
-"
 " ############################################################################
 
 set encoding=utf-8     " The encoding displayed.
