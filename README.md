@@ -1,5 +1,6 @@
 # Vimrc
 
+```shell
                                      -'
                      ...            .o+'
                   .+++s+   .h'+    'ooo/
@@ -19,6 +20,7 @@
                     '+sso+:-'                 '.-/+oso:
                    '++:.                           '-/+/
                    .'                                 '/
+```
 
 
 This repo have mi personal Vim/Neovim settings that I have been collecting for a while, feel free to change
