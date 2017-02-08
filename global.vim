@@ -2,6 +2,25 @@
 "
 "                               Small improvements
 "
+"                                     -`
+"                     ...            .o+`
+"                  .+++s+   .h`.    `ooo/
+"                 `+++%++  .h+++   `+oooo:
+"                 +++o+++ .hhs++. `+oooooo:
+"                 +s%%so%.hohhoo'  'oooooo+:
+"                 `+ooohs+h+sh++`/:  ++oooo+:
+"                  hh+o+hoso+h+`/++++.+++++++:
+"                   `+h+++h.+ `/++++++++++++++:
+"                            `/+++ooooooooooooo/`
+"                           ./ooosssso++osssssso+`
+"                          .oossssso-````/osssss::`
+"                         -osssssso.      :ssss``to.
+"                        :osssssss/  Mike  osssl   +
+"                       /ossssssss/   8a   +sssslb
+"                     `/ossssso+/:-        -:/+ossss'.-
+"                    `+sso+:-`                 `.-/+oso:
+"                   `++:.                           `-/+/
+"                   .`                                 `/
 " ############################################################################
 
 set encoding=utf-8     " The encoding displayed.
@@ -95,8 +114,8 @@ nmap Q o<Esc>
 
 " Easy remove line in normal mode
 " nnoremap <BS> dd
-nnoremap <BS> "_d
-vnoremap <BS> "_d
+nnoremap <BS> "_
+vnoremap <BS> "_
 
 " better backup, swap and undos storage
 set backup   " make backup files
@@ -105,7 +124,13 @@ if has("win32") || has("win64")
     execute 'set directory='.fnameescape(g:os_editor.'tmp_dirs\swap')
     execute 'set backupdir='.fnameescape(g:os_editor.'tmp_dirs\backup')
     execute 'set undodir='.fnameescape(g:os_editor.'tmp_dirs\undos')
-    execute 'set viminfo+=n'.fnameescape(g:os_editor.'tmp_dirs\viminfo')
+    " execute 'set viminfo+=n'.fnameescape(g:os_editor.'tmp_dirs\viminfo')
+
+    if has("nvim")
+        set viminfo+=n$USERPROFILE\\AppData\\Local\\nvim\\tmp_dirs\\viminfo
+    else
+        set viminfo+=n$USERPROFILE\\vimfiles\\tmp_dirs\\viminfo
+    endif
 
     let g:yankring_history_dir = g:os_editor.'tmp_dirs\yank'
 else

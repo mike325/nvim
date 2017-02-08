@@ -1,10 +1,34 @@
 # Vimrc
+
+```shell
+                                                             -`
+                                             ...            .o+`
+                                          .+++s+   .h`.    `ooo/
+                                         `+++%++  .h+++   `+oooo:
+                                         +++o+++ .hhs++. `+oooooo:
+                                         +s%%so%.hohhoo'  'oooooo+:
+                                         `+ooohs+h+sh++`/:  ++oooo+:
+                                          hh+o+hoso+h+`/++++.+++++++:
+                                           `+h+++h.+ `/++++++++++++++:
+                                                    `/+++ooooooooooooo/`
+                                                   ./ooosssso++osssssso+`
+                                                  .oossssso-````/osssss::`
+                                                 -osssssso.      :ssss``to.
+                                                :osssssss/  Mike  osssl   +
+                                               /ossssssss/   8a   +sssslb
+                                             `/ossssso+/:-        -:/+ossss'.-
+                                            `+sso+:-`                 `.-/+oso:
+                                           `++:.                           `-/+/
+                                           .`                                 `/
+```
+
+
 This repo have mi personal Vim/Neovim settings that I have been collecting for a while, feel free to change
 anything to fit your needs or suggest me something that you think could be useful.
 
 This settings require Vim >= 7.4 or Neovim >= 0.17 with **python** and **lua** support and **ctags**.
 
-I have personally test this configurations in the following environments:
+I have personally test this configurations in the following environment:
 
 * Linux
     * Debian 8/8.5 jessie
@@ -13,6 +37,9 @@ I have personally test this configurations in the following environments:
     * Ubuntu 14.04 trusty
         - Vim 7.4.52
         - Neovim 0.17
+
+    * SUSE Linux Enterprise Server 11
+        - Vim 8.0.104
 
     * openSUSE 13.2
         - Vim 8.0.104
@@ -30,11 +57,12 @@ I have personally test this configurations in the following environments:
         - Vim 8.0.0104 (without python modules)
         - Neovim 0.2-dev (without python modules)
 
-* Windows
+* Windows 8.1
     * Cygwin
         - Vim 8.0.94
     * Git bash (some problems loading python modules)
         - Vim 8.0.27
+    * Gvim 8.0 64 bits
 
 You can test my settings by cloning this repo into your `$HOME`
 
@@ -44,6 +72,14 @@ git clone --recursive https://github.com/mike325/.vim.git ~/.vim
 ln -s ~/.vim/init.vim ~/.vimrc
 ```
 
+If you are using GVim in Windows you may want to use the following procedure:
+(inside git bash)
+```
+git clone --recursive https://github.com/mike325/.vim.git ~/vimfiles
+
+cp ~/vimfiles/init.vim ~/_vimrc
+```
+
 If you are using [Neovim](https://neovim.io/) you just need to move the repo to `~/.config/nvim`
 
     mv ~/.vim ~/.config/nvim
@@ -51,6 +87,11 @@ If you are using [Neovim](https://neovim.io/) you just need to move the repo to 
 or just clone it there
 
     git clone --recursive https://github.com/mike325/.vim.git ~/.config/nvim
+
+To use Neovim in Windows (highly unstable and not well tested) clone the repo
+in the following location
+
+    git clone --recursive https://github.com/mike325/.vim.git ~/AppData/Local/nvim/
 
 Once you have cloned the repo just run `:PlugInstall` inside Vim/Neovim to complete the installation process.
 
