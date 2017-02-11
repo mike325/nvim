@@ -38,6 +38,9 @@ I have personally test this configurations in the following environment:
         - Vim 7.4.52
         - Neovim 0.17
 
+    * SUSE Linux Enterprise Server 11
+        - Vim 8.0.104
+
     * openSUSE 13.2
         - Vim 8.0.104
 
