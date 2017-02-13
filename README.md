@@ -72,7 +72,7 @@ git clone --recursive https://github.com/mike325/.vim.git ~/.vim
 ln -s ~/.vim/init.vim ~/.vimrc
 ```
 
-If you are using GVim in Windows you may want to use the following procedure:
+If you are using Gvim in Windows you may want to use the following procedure:
 (inside git bash)
 ```
 git clone --recursive https://github.com/mike325/.vim.git ~/vimfiles
