@@ -62,14 +62,15 @@ set ignorecase
 set autoindent
 set smartindent
 set copyindent
-set softtabstop=4   " makes the spaces feel like real tabs
-set tabstop=4       " 1 tab = 4 spaces
-set shiftwidth=4    " Same for autoindenting
-set expandtab       " Use  spaces for indenting
-" set smarttab        " Insert tabs on the start of a line according to shiftwidth, not tabstop
+set softtabstop=4  " makes the spaces feel like real tabs
+set tabstop=4      " 1 tab = 4 spaces
+set shiftwidth=4   " Same for autoindenting
+set expandtab      " Use  spaces for indenting
+" set smarttab       " Insert tabs on the start of a line according to
+"                    " shiftwidth, not tabstop
 
-set shiftround      " Use multiple of shiftwidth when indenting with '<' and '>'
-set cursorline      " Turn on cursor line by default
+set shiftround     " Use multiple of shiftwidth when indenting with '<' and '>'
+set cursorline     " Turn on cursor line by default
 
 " cd to current file path
 " !! Removed to start using Tags file in projects
@@ -113,8 +114,7 @@ hi CursorLine term=bold cterm=bold guibg=Grey40
 nnoremap <C-o> O<Esc>
 nmap Q o<Esc>
 
-" Easy remove line in normal mode
-" nnoremap <BS> dd
+" Remove stuff in normal/visul mode without change any normal register
 nnoremap <BS> "_
 vnoremap <BS> "_
 
@@ -330,4 +330,6 @@ augroup END
 augroup Spells
     autocmd FileType gitcommit setlocal spell
     autocmd FileType markdown setlocal spell
+    autocmd FileType plaintex setlocal spell
+    autocmd FileType text setlocal spell
 augroup END
