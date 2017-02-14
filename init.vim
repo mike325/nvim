@@ -152,11 +152,6 @@ endif
 if executable("ctags")
     " Simple view of Tags using ctags
     Plug 'majutsushi/tagbar'
-    " if ( has("nvim") || ( v:version >= 800 ) ) && has("python3")
-    "     Plug 'c0r73x/neotags.nvim'
-    " else
-    Plug 'xolox/vim-easytags'
-    " endif
 endif
 
 let b:neomake_installed = 0
