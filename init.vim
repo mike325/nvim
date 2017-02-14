@@ -214,7 +214,7 @@ if ( has("python") || has("python3") )
         let b:deoplete_installed = 1
     " elseif !(has("win32") || has("win64")) && (has("nvim") || ( v:version >= 800 ) || ( v:version == 704 && has("patch143") ))
     elseif (has("unix") || ((has("win32") || has("win64")) && executable("msbuild"))) &&
-                \ ( v:version >= 800 ) || ( v:version == 704 && has("patch143"))
+                \ has("nvim") || ( v:version >= 800 ) || ( v:version == 704 && has("patch143"))
         Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') }
         Plug 'rdnetto/ycm-generator', { 'branch': 'stable' }
         let b:ycm_installed = 1
