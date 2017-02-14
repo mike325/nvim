@@ -218,22 +218,6 @@ endif
 "             \ ]
 " endif
 
-if &runtimepath =~ 'vim-easytags'
-    let g:easytags_include_members = 1
-    let g:easytags_always_enabled  = 1
-    let g:easytags_dynamic_files   = 1
-    let g:easytags_auto_highlight  = 0
-    let g:easytags_auto_update     = 0
-
-    if !( has("win32") || has("win64") ) && ( has("nvim") || ( v:version >= 800 ) )
-        " Vim will block if it does not have Async support!!!
-        let g:easytags_async = 1
-    endif
-
-    " You can update de tags with ':UpdateTags -R .' in your project's root.
-    nnoremap gtf :UpdateTags -R .<CR>
-endif
-
 " ################ Jedi complete #################
 if  &runtimepath =~ 'jedi-vim'
     let g:jedi#popup_on_dot = 1

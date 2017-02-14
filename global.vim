@@ -79,6 +79,9 @@ set cursorline     " Turn on cursor line by default
 " Set path to look recursive in the current dir
 set path+=**
 
+" Set vertical diff
+set diffopt+=vertical
+
 " disable sounds
 set visualbell
 
