@@ -152,11 +152,6 @@ endif
 if executable("ctags")
     " Simple view of Tags using ctags
     Plug 'majutsushi/tagbar'
-    " if ( has("nvim") || ( v:version >= 800 ) ) && has("python3")
-    "     Plug 'c0r73x/neotags.nvim'
-    " else
-    Plug 'xolox/vim-easytags'
-    " endif
 endif
 
 let b:neomake_installed = 0
@@ -213,7 +208,7 @@ if ( has("python") || has("python3") )
 
         let b:deoplete_installed = 1
     elseif (has("unix") || ((has("win32") || has("win64")) && executable("msbuild"))) &&
-                \ ( v:version >= 800 ) || ( v:version == 704 && has("patch143"))
+                \ has("nvim") || ( v:version >= 800 ) || ( v:version == 704 && has("patch143"))
         Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') }
         Plug 'rdnetto/ycm-generator', { 'branch': 'stable' }
         let b:ycm_installed = 1
