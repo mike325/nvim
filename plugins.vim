@@ -28,30 +28,30 @@
 nnoremap <leader>d :Bdelete!<CR>
 
 " ################ EasyMotions Settings #################
-if &runtimepath =~ 'vim-easymotion'
-    " Disable default mappings
-    let g:EasyMotion_do_mapping = 0
-    " Turn on ignore case
-    let g:EasyMotion_smartcase = 1
-
-    " z{char} to move to {char}
-    " search a character in the current buffer
-    nmap \ <Plug>(easymotion-bd-f)
-    vmap \ <Plug>(easymotion-bd-f)
-    " search a character in the current layout
-    nmap <leader>\ <Plug>(easymotion-overwin-f)
-    vmap <leader>\ <Plug>(easymotion-overwin-f)
-
-    " repeat the last motion
-    nmap <leader>. <Plug>(easymotion-repeat)
-    vmap <leader>. <Plug>(easymotion-repeat)
-    " repeat the next match of the current last motion
-    nmap <leader>, <Plug>(easymotion-next)
-    vmap <leader>, <Plug>(easymotion-next)
-    " repeat the prev match of the current last motion
-    nmap <leader>; <Plug>(easymotion-prev)
-    vmap <leader>; <Plug>(easymotion-prev)
-endif
+" if &runtimepath =~ 'vim-easymotion'
+"     " Disable default mappings
+"     let g:EasyMotion_do_mapping = 0
+"     " Turn on ignore case
+"     let g:EasyMotion_smartcase = 1
+"
+"     " z{char} to move to {char}
+"     " search a character in the current buffer
+"     nmap \ <Plug>(easymotion-bd-f)
+"     vmap \ <Plug>(easymotion-bd-f)
+"     " search a character in the current layout
+"     nmap <leader>\ <Plug>(easymotion-overwin-f)
+"     vmap <leader>\ <Plug>(easymotion-overwin-f)
+"
+"     " repeat the last motion
+"     nmap <leader>. <Plug>(easymotion-repeat)
+"     vmap <leader>. <Plug>(easymotion-repeat)
+"     " repeat the next match of the current last motion
+"     nmap <leader>, <Plug>(easymotion-next)
+"     vmap <leader>, <Plug>(easymotion-next)
+"     " repeat the prev match of the current last motion
+"     nmap <leader>; <Plug>(easymotion-prev)
+"     vmap <leader>; <Plug>(easymotion-prev)
+" endif
 
 " ################ Sessions settings #################
 " Session management
@@ -176,47 +176,6 @@ if &runtimepath =~ 'ultisnips'
     let g:UltiSnipsJumpForwardTrigger  = "<C-f>"
     let g:UltiSnipsJumpBackwardTrigger = "<C-b>"
 endif
-
-if &runtimepath =~ 'switch.vim'
-    let g:switch_mapping = "-"
-    let g:switch_reverse_mapping = '+'
-
-    autocmd FileType c,cpp let b:switch_custom_definitions =
-        \ [
-        \   {
-        \       '^\(\k\+\)\.': '\1->',
-        \       '^\(\k\+\)\->': '\1.',
-        \   },
-        \ ]
-
-    autocmd FileType python let b:switch_custom_definitions =
-        \ [
-        \   {
-        \       '^\(.*\)True': '\1False',
-        \       '^\(.*\)"\(.*\)"': "^\1'\2'",
-        \   },
-        \ ]
-
-    autocmd FileType vim let b:switch_custom_definitions =
-        \ [
-        \   {
-        \       '"\(\k\+\)"': "'\2'",
-        \   },
-        \ ]
-endif
-
-" if &runtimepath =~ 'neotags.nvim'
-"     " let g:neotags_file = '~/'
-"     let g:neotags_enabled    = 1
-"     let g:neotags_ctags_args = [
-"             \ '-L -',
-"             \ '--fields=+l',
-"             \ '--c-kinds=+p',
-"             \ '--c++-kinds=+p',
-"             \ '--sort=yes',
-"             \ '--extra=+q'
-"             \ ]
-" endif
 
 " ################ Jedi complete #################
 if  &runtimepath =~ 'jedi-vim'
