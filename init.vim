@@ -207,7 +207,6 @@ if ( has("python") || has("python3") )
         endif
 
         let b:deoplete_installed = 1
-    " elseif !(has("win32") || has("win64")) && (has("nvim") || ( v:version >= 800 ) || ( v:version == 704 && has("patch143") ))
     elseif (has("unix") || ((has("win32") || has("win64")) && executable("msbuild"))) &&
                 \ has("nvim") || ( v:version >= 800 ) || ( v:version == 704 && has("patch143"))
         Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') }
@@ -232,14 +231,15 @@ else
     Plug 'tomtom/tlib_vim'
     Plug 'garbas/vim-snipmate'
 
-    " completion without ycm
-    if b:ycm_installed==0 && b:deoplete_installed==0
-        Plug 'ervandew/supertab'
-        if has("lua")
-            Plug 'Shougo/neocomplete.vim'
-        else
-            Plug 'roxma/SimpleAutoComplPop'
-        endif
+endif
+
+" completion without ycm
+if b:ycm_installed==0 && b:deoplete_installed==0
+    Plug 'ervandew/supertab'
+    if has("lua")
+        Plug 'Shougo/neocomplete.vim'
+    else
+        Plug 'roxma/SimpleAutoComplPop'
     endif
 endif
 
