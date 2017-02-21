@@ -89,6 +89,8 @@ set fileformats=unix,dos " file mode is unix
 " Remove ^M characters from windows format
 nnoremap <leader>R :%s/\r\+$//e
 
+nnoremap <leader><leader>e :echo expand("%")<CR>
+
 " To be improve
 function! RemoveTrailingWhitespaces()
     "Save last cursor position
