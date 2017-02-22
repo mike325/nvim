@@ -79,12 +79,17 @@ set cursorline     " Turn on cursor line by default
 " Set path to look recursive in the current dir
 set path+=**
 
+" Set vertical diff
+set diffopt+=vertical
+
 " disable sounds
 set visualbell
 
 set fileformats=unix,dos " file mode is unix
 " Remove ^M characters from windows format
 nnoremap <leader>R :%s/\r\+$//e
+
+nnoremap <leader><leader>e :echo expand("%")<CR>
 
 " To be improve
 function! RemoveTrailingWhitespaces()
