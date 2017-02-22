@@ -65,9 +65,8 @@ Plug 'tpope/vim-git'
 Plug 'godlygeek/tabular'
 
 " Better motions
-Plug 'easymotion/vim-easymotion'
+" Plug 'easymotion/vim-easymotion'
 
-" Easy surround text objects with ' " () [] {} etc
 Plug 'tpope/vim-surround'
 
 " Better buffer deletions
