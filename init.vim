@@ -67,6 +67,7 @@ Plug 'godlygeek/tabular'
 " Better motions
 " Plug 'easymotion/vim-easymotion'
 
+" Sorround motions
 Plug 'tpope/vim-surround'
 
 " Better buffer deletions
@@ -185,42 +186,52 @@ if ( has("python") || has("python3") )
         endif
     endfunction
 
-" Awesome completion engine
+    " Awesome completion engine
     if ( has("nvim") && has("python3") )
         Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+
+        " Python completion
         Plug 'zchee/deoplete-jedi'
 
         " Only works with JDK8
         Plug 'artur-shaik/vim-javacomplete2'
 
+        " C/C++ completion base on clang compiler
         if executable("clang")
             Plug 'zchee/deoplete-clang'
         endif
 
+        " Go completion
         if executable("go") && executable("make")
             Plug 'zchee/deoplete-go', { 'do': 'make'}
         endif
 
+        " Javascript completion
         if executable("tern")
             Plug 'carlitux/deoplete-ternjs'
         endif
 
         let b:deoplete_installed = 1
+
+        " Install ycm if neovim/vim8/vim7.143 is running on unix or
+        " If it is running on windows with neovim/vim8/vim7.143 and ms C compiler
     elseif (has("unix") || ((has("win32") || has("win64")) && executable("msbuild"))) &&
                 \ has("nvim") || ( v:version >= 800 ) || ( v:version == 704 && has("patch143"))
         Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') }
+
+        " C/C++ project generator
         Plug 'rdnetto/ycm-generator', { 'branch': 'stable' }
         let b:ycm_installed = 1
     endif
 
 
     if b:ycm_installed==0 && b:deoplete_installed==0
-        " completion for python
+        " Completion for python without engines
         Plug 'davidhalter/jedi-vim'
     endif
 
     if b:neomake_installed==0
-        " Syntaxis check
+        " Synchronous Syntax check
         Plug 'vim-syntastic/syntastic'
     endif
 
@@ -232,7 +243,7 @@ else
 
 endif
 
-" completion without ycm
+" completion without ycm or deoplete
 if b:ycm_installed==0 && b:deoplete_installed==0
     Plug 'ervandew/supertab'
     if has("lua")
@@ -247,5 +258,8 @@ call plug#end()
 
 filetype plugin indent on
 
+" Load general comfigurations (key mappings and autocommands)
 execute 'source '.fnameescape(g:os_editor.'global.vim')
+
+" Load plugins configurations
 execute 'source '.fnameescape(g:os_editor.'plugins.vim')

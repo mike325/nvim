@@ -28,6 +28,8 @@
 nnoremap <leader>d :Bdelete!<CR>
 
 " ################ EasyMotions Settings #################
+" Temporally removed
+"
 " if &runtimepath =~ 'vim-easymotion'
 "     " Disable default mappings
 "     let g:EasyMotion_do_mapping = 0
@@ -91,6 +93,7 @@ if &runtimepath =~ 'vim-grepper'
     " let g:grepper.tools = ['ag', 'ack', 'git', 'grep', 'findstr' ]
     " let g:grepper.highlight = 1
 
+    " Motions for grepper command
     nmap gs  <plug>(GrepperOperator)
     xmap gs  <plug>(GrepperOperator)
 endif
@@ -423,7 +426,7 @@ endif
 
 " ################# Syntax check #################
 if &runtimepath =~ "neomake"
-    autocmd BufWrite * :Neomake
+    autocmd BufWrite * :Neomake<CR>
 
     nnoremap <F6> :Neomake<CR>
     imap <F6> <ESC>:Neomake<CR>a
@@ -508,7 +511,6 @@ if &runtimepath =~ 'tabular'
     vmap <leader>t* :Tabularize /*<CR>
 endif
 
-" ################ Git integration #################
 " ################ Fugitive #################
 if &runtimepath =~ 'vim-fugitive'
     nnoremap <leader>gs :Gstatus<CR>
@@ -544,12 +546,13 @@ endif
 
 " ################ Move #################
 if &runtimepath =~ 'vim-move'
+    " Set Ctrl key as default. Commands <C-j> and <C-k>
     let g:move_key_modifier = 'C'
 endif
 
 " ################ indentLine #################
 if &runtimepath =~ 'indentLine'
-    " Toggle display indent
+    " Show indentation lines
     nnoremap tdi :IndentLinesToggle<CR>
     let g:indentLine_enabled = 0
     let g:indentLine_char    = '┊'

@@ -36,27 +36,28 @@ vmap , :
 " Similar behavior as C and D
 nmap Y y$
 
-" Easy <ESC> insertmode
+" Easy <ESC> insert mode
 imap jj <Esc>
 
+" Disable some vi compatibility
 if !has("nvim")
     set ttyfast
     set nocompatible
 endif
 
-set lazyredraw
-set splitright
-set nowrap
-set ruler
+set lazyredraw     " Don't draw when a macro is being executed
+set splitright     " Split on the right size
+set nowrap         " By default don't wrap the lines
 set showmatch      " Show matching parenthesis
 set number         " Show line numbers
 set relativenumber " Show line numbers in motions friendly way
 set syntax=on      " add syntax highlighting
+set ruler
 
 " Search settings
-set hlsearch  " highlight search terms
-set incsearch " show search matches as you type
-set ignorecase
+set hlsearch   " highlight search terms
+set incsearch  " show search matches as you type
+set ignorecase " ignore case
 
 " Indenting stuff
 set autoindent
@@ -66,6 +67,7 @@ set softtabstop=4  " makes the spaces feel like real tabs
 set tabstop=4      " 1 tab = 4 spaces
 set shiftwidth=4   " Same for autoindenting
 set expandtab      " Use  spaces for indenting
+
 " set smarttab       " Insert tabs on the start of a line according to
 "                    " shiftwidth, not tabstop
 
@@ -82,10 +84,11 @@ set path+=**
 " Set vertical diff
 set diffopt+=vertical
 
-" disable sounds
+" Disable sounds
 set visualbell
 
-set fileformats=unix,dos " file mode is unix
+set fileformats=unix,dos " File mode unix by default
+
 " Remove ^M characters from windows format
 nnoremap <leader>R :%s/\r\+$//e
 
@@ -123,9 +126,10 @@ nmap Q o<Esc>
 nnoremap <BS> "_
 vnoremap <BS> "_
 
-" better backup, swap and undos storage
+" Better backup, swap and undos storage
 set backup   " make backup files
 set undofile " persistent undos - undo after you re-open the file
+
 if has("win32") || has("win64")
     execute 'set directory='.fnameescape(g:os_editor.'tmp_dirs\swap')
     execute 'set backupdir='.fnameescape(g:os_editor.'tmp_dirs\backup')
@@ -148,7 +152,7 @@ else
     let g:yankring_history_dir = g:os_editor.'tmp_dirs/yank'
 endif
 
-" create needed directories if they don't exist
+" If the dirs does't exists, create them
 if !isdirectory(&backupdir)
     call mkdir(&backupdir, "p")
 endif
@@ -162,7 +166,7 @@ if !isdirectory(&undodir)
 endif
 
 " Close buffer/Editor
-nnoremap <leader>z ZZ
+" nnoremap <leader>z ZZ
 nnoremap <leader>q :q!<CR>
 
 " easy dump bin files into hex
@@ -172,6 +176,8 @@ if has("gui_running")
     set guioptions-=m  "no menu
     set guioptions-=T  "no toolbar
     set guioptions-=r  "no scrollbar
+
+    " Windoes gVim fonts
     if has("win32") || has("win64")
         set guifont=DejaVu_Sans_Mono_for_Powerline:h11,DejaVu_Sans_Mono:h11
     endif
@@ -179,17 +185,19 @@ endif
 
 " ################# Set Neovim settings #################
 if (has("nvim"))
-    " live preview of Substitute
+    " Live substitute preview
     set inccommand=split
 endif
 
 " ################# visual selection go also to clipboard #################
 if has('clipboard')
-    if !has("nvim") || ( executable('pbcopy') || executable('xclip') || executable('xsel') || executable("lemonade") )
+    if !has("nvim") || ( executable('pbcopy') || executable('xclip') ||
+                \ executable('xsel') || executable("lemonade") )
         set clipboard+=unnamedplus,unnamed
     endif
 elseif has("nvim")
-    " Disable mouse to manually select text
+    " If system clipboard is not available, let me use selet the text and
+    " maually copy it
     set mouse=c
 endif
 
@@ -210,9 +218,6 @@ nnoremap <leader><leader>n :tabnew<CR>
 nnoremap <leader>c :tabclose<CR>
 
 " ################# Buffer management #################
-" buffer add
-" nnoremap <leader>a :badd
-
 " Next buffer
 nnoremap <leader>n :bn<CR>
 
@@ -247,26 +252,28 @@ if has("nvim")
 
     " Better terminal access
     nnoremap <A-t> :terminal<CR>
+
+    " Use ESC to exit terminal mode
     tnoremap <Esc> <C-\><C-n>
-    tnoremap oo <C-\><C-n>
+
+    " Use jk to exit terminal mode
+    tnoremap jk <C-\><C-n>
 
     " Better terminal movement
-    tnoremap <leader-h> <C-\><C-n><C-w>h
-    tnoremap <leader-j> <C-\><C-n><C-w>j
-    tnoremap <leader-k> <C-\><C-n><C-w>k
-    tnoremap <leader-l> <C-\><C-n><C-w>l
+    nnoremap <C-x> <Esc><C-w><C-w>
 endif
 
-" Resize buffer splits
+" Equally resize buffer splits
 nnoremap <leader>e <C-w>=
 
 " Color columns
 if exists('+colorcolumn')
     " let &colorcolumn="80,".join(range(120,999),",")
+    " Visual ruler
     let &colorcolumn="80"
 endif
 
-" ################# folding settings #################
+" ################# Folding settings #################
 set foldmethod=indent " fold based on indent
 set nofoldenable      " dont fold by default
 set foldnestmax=10    " deepest fold is 10 levels
@@ -307,7 +314,7 @@ if has("termguicolors")
     set termguicolors
 endif
 
-" Set Syntax to *.in files
+" Set Syntax
 augroup filetypedetect
     autocmd BufNewFile,BufRead .tmux.conf*,tmux.conf* set filetype=tmux
     autocmd BufNewFile,BufRead .nginx.conf*,nginx.conf* set filetype=nginx
