@@ -2,6 +2,26 @@
 "
 "                               Plugin installation
 "
+"                                     -`
+"                     ...            .o+`
+"                  .+++s+   .h`.    `ooo/
+"                 `+++%++  .h+++   `+oooo:
+"                 +++o+++ .hhs++. `+oooooo:
+"                 +s%%so%.hohhoo'  'oooooo+:
+"                 `+ooohs+h+sh++`/:  ++oooo+:
+"                  hh+o+hoso+h+`/++++.+++++++:
+"                   `+h+++h.+ `/++++++++++++++:
+"                            `/+++ooooooooooooo/`
+"                           ./ooosssso++osssssso+`
+"                          .oossssso-````/osssss::`
+"                         -osssssso.      :ssss``to.
+"                        :osssssss/  Mike  osssl   +
+"                       /ossssssss/   8a   +sssslb
+"                     `/ossssso+/:-        -:/+ossss'.-
+"                    `+sso+:-`                 `.-/+oso:
+"                   `++:.                           `-/+/
+"                   .`                                 `/
+"
 " ############################################################################
 
 " I use this later in global.vim
@@ -36,6 +56,7 @@ Plug 'scrooloose/nerdcommenter'
 
 " Status bar and some themes
 Plug 'vim-airline/vim-airline' | Plug 'vim-airline/vim-airline-themes'
+Plug 'enricobacis/vim-airline-clock'
 
 " Git integrations
 Plug 'airblade/vim-gitgutter' | Plug 'tpope/vim-fugitive' | Plug 'rhysd/committia.vim'
@@ -45,9 +66,9 @@ Plug 'tpope/vim-git'
 Plug 'godlygeek/tabular'
 
 " Better motions
-Plug 'easymotion/vim-easymotion'
+" Plug 'easymotion/vim-easymotion'
 
-" Easy surround text objects with ' " () [] {} etc
+" Sorround motions
 Plug 'tpope/vim-surround'
 
 " Better buffer deletions
@@ -72,7 +93,7 @@ Plug 'honza/vim-snippets'
 Plug 'matze/vim-move'
 
 " Easy edit registers
-Plug 'dohsimpson/vim-macroeditor', { 'on': [ 'MacroEdit' ] }
+" Plug 'dohsimpson/vim-macroeditor', { 'on': [ 'MacroEdit' ] }
 
 " Better sustition, improve aibbreviations and coercion
 Plug 'tpope/vim-abolish'
@@ -90,7 +111,7 @@ Plug 'sickill/vim-pasta'
 Plug 'chiel92/vim-autoformat'
 
 " Easy change text
-Plug 'AndrewRadev/switch.vim'
+" Plug 'AndrewRadev/switch.vim'
 
 " Search into files
 Plug 'mhinz/vim-grepper'
@@ -106,9 +127,6 @@ Plug 'tbastos/vim-lua'
 
 " Improve cpp syntax highlight
 Plug 'octol/vim-cpp-enhanced-highlight'
-
-" Add python highlight, folding, virtualenv, etc
-Plug 'python-mode/python-mode'
 
 " Add Qml syntax highlight
 Plug 'peterhoeg/vim-qml'
@@ -132,11 +150,6 @@ endif
 if executable("ctags")
     " Simple view of Tags using ctags
     Plug 'majutsushi/tagbar'
-    " if ( has("nvim") || ( v:version >= 800 ) ) && has("python3")
-    "     Plug 'c0r73x/neotags.nvim'
-    " else
-    Plug 'xolox/vim-easytags'
-    " endif
 endif
 
 let b:neomake_installed = 0
@@ -149,6 +162,9 @@ endif
 let b:ycm_installed = 0
 let b:deoplete_installed = 0
 if ( has("python") || has("python3") )
+    " Add python highlight, folding, virtualenv, etc
+    Plug 'python-mode/python-mode'
+
     " Snippets engine
     Plug 'SirVer/ultisnips'
 
@@ -171,41 +187,52 @@ if ( has("python") || has("python3") )
         endif
     endfunction
 
-" Awesome completion engine
+    " Awesome completion engine
     if ( has("nvim") && has("python3") )
         Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+
+        " Python completion
         Plug 'zchee/deoplete-jedi'
 
         " Only works with JDK8
         Plug 'artur-shaik/vim-javacomplete2'
 
+        " C/C++ completion base on clang compiler
         if executable("clang")
             Plug 'zchee/deoplete-clang'
         endif
 
+        " Go completion
         if executable("go") && executable("make")
             Plug 'zchee/deoplete-go', { 'do': 'make'}
         endif
 
+        " Javascript completion
         if executable("tern")
             Plug 'carlitux/deoplete-ternjs'
         endif
 
         let b:deoplete_installed = 1
-    elseif !(has("win32") || has("win64")) && (has("nvim") || ( v:version >= 800 ) || ( v:version == 704 && has("patch143") ))
+
+        " Install ycm if neovim/vim8/vim7.143 is running on unix or
+        " If it is running on windows with neovim/vim8/vim7.143 and ms C compiler
+    elseif (has("unix") || ((has("win32") || has("win64")) && executable("msbuild"))) &&
+                \ has("nvim") || ( v:version >= 800 ) || ( v:version == 704 && has("patch143"))
         Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') }
+
+        " C/C++ project generator
         Plug 'rdnetto/ycm-generator', { 'branch': 'stable' }
         let b:ycm_installed = 1
     endif
 
 
     if b:ycm_installed==0 && b:deoplete_installed==0
-        " completion for python
+        " Completion for python without engines
         Plug 'davidhalter/jedi-vim'
     endif
 
     if b:neomake_installed==0
-        " Syntaxis check
+        " Synchronous Syntax check
         Plug 'vim-syntastic/syntastic'
     endif
 
@@ -214,9 +241,10 @@ else
     Plug 'MarcWeber/vim-addon-mw-utils'
     Plug 'tomtom/tlib_vim'
     Plug 'garbas/vim-snipmate'
+
 endif
 
-" completion without ycm
+" completion without ycm or deoplete
 if b:ycm_installed==0 && b:deoplete_installed==0
     Plug 'ervandew/supertab'
     if has("lua")
@@ -231,5 +259,8 @@ call plug#end()
 
 filetype plugin indent on
 
+" Load general comfigurations (key mappings and autocommands)
 execute 'source '.fnameescape(g:os_editor.'global.vim')
+
+" Load plugins configurations
 execute 'source '.fnameescape(g:os_editor.'plugins.vim')

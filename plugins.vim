@@ -2,6 +2,25 @@
 "
 "                               Plugin configuraitions
 "
+"                                     -`
+"                     ...            .o+`
+"                  .+++s+   .h`.    `ooo/
+"                 `+++%++  .h+++   `+oooo:
+"                 +++o+++ .hhs++. `+oooooo:
+"                 +s%%so%.hohhoo'  'oooooo+:
+"                 `+ooohs+h+sh++`/:  ++oooo+:
+"                  hh+o+hoso+h+`/++++.+++++++:
+"                   `+h+++h.+ `/++++++++++++++:
+"                            `/+++ooooooooooooo/`
+"                           ./ooosssso++osssssso+`
+"                          .oossssso-````/osssss::`
+"                         -osssssso.      :ssss``to.
+"                        :osssssss/  Mike  osssl   +
+"                       /ossssssss/   8a   +sssslb
+"                     `/ossssso+/:-        -:/+ossss'.-
+"                    `+sso+:-`                 `.-/+oso:
+"                   `++:.                           `-/+/
+"                   .`                                 `/
 " ############################################################################
 
 " ################ BufferBye settings #################
@@ -9,30 +28,32 @@
 nnoremap <leader>d :Bdelete!<CR>
 
 " ################ EasyMotions Settings #################
-if &runtimepath =~ 'vim-easymotion'
-    " Disable default mappings
-    let g:EasyMotion_do_mapping = 0
-    " Turn on ignore case
-    let g:EasyMotion_smartcase = 1
-
-    " z{char} to move to {char}
-    " search a character in the current buffer
-    nmap \ <Plug>(easymotion-bd-f)
-    vmap \ <Plug>(easymotion-bd-f)
-    " search a character in the current layout
-    nmap <leader>\ <Plug>(easymotion-overwin-f)
-    vmap <leader>\ <Plug>(easymotion-overwin-f)
-
-    " repeat the last motion
-    nmap <leader>. <Plug>(easymotion-repeat)
-    vmap <leader>. <Plug>(easymotion-repeat)
-    " repeat the next match of the current last motion
-    nmap <leader>, <Plug>(easymotion-next)
-    vmap <leader>, <Plug>(easymotion-next)
-    " repeat the prev match of the current last motion
-    nmap <leader>; <Plug>(easymotion-prev)
-    vmap <leader>; <Plug>(easymotion-prev)
-endif
+" Temporally removed
+"
+" if &runtimepath =~ 'vim-easymotion'
+"     " Disable default mappings
+"     let g:EasyMotion_do_mapping = 0
+"     " Turn on ignore case
+"     let g:EasyMotion_smartcase = 1
+"
+"     " z{char} to move to {char}
+"     " search a character in the current buffer
+"     nmap \ <Plug>(easymotion-bd-f)
+"     vmap \ <Plug>(easymotion-bd-f)
+"     " search a character in the current layout
+"     nmap <leader>\ <Plug>(easymotion-overwin-f)
+"     vmap <leader>\ <Plug>(easymotion-overwin-f)
+"
+"     " repeat the last motion
+"     nmap <leader>. <Plug>(easymotion-repeat)
+"     vmap <leader>. <Plug>(easymotion-repeat)
+"     " repeat the next match of the current last motion
+"     nmap <leader>, <Plug>(easymotion-next)
+"     vmap <leader>, <Plug>(easymotion-next)
+"     " repeat the prev match of the current last motion
+"     nmap <leader>; <Plug>(easymotion-prev)
+"     vmap <leader>; <Plug>(easymotion-prev)
+" endif
 
 " ################ Sessions settings #################
 " Session management
@@ -49,8 +70,8 @@ if &runtimepath =~ 'vim-session'
     nnoremap <leader>o :OpenSession
     " Save current files in a session
     nnoremap <leader>s :SaveSession
-    " Use this instead of close the buffers !!!!!!!!
-    nnoremap <leader><leader>c :CloseSession!<CR>
+    " Save the current session before close it, useful for neovim terminals
+    nnoremap <leader><leader>c :SaveSession<CR>:CloseSession!<CR>
     " Quick save current session
     nnoremap <leader><leader>s :SaveSession<CR>
     " Quick delete session
@@ -72,6 +93,7 @@ if &runtimepath =~ 'vim-grepper'
     " let g:grepper.tools = ['ag', 'ack', 'git', 'grep', 'findstr' ]
     " let g:grepper.highlight = 1
 
+    " Motions for grepper command
     nmap gs  <plug>(GrepperOperator)
     xmap gs  <plug>(GrepperOperator)
 endif
@@ -156,63 +178,6 @@ if &runtimepath =~ 'ultisnips'
     let g:UltiSnipsExpandTrigger       = "<C-k>"
     let g:UltiSnipsJumpForwardTrigger  = "<C-f>"
     let g:UltiSnipsJumpBackwardTrigger = "<C-b>"
-endif
-
-if &runtimepath =~ 'switch.vim'
-    let g:switch_mapping = "-"
-    let g:switch_reverse_mapping = '+'
-
-    autocmd FileType c,cpp let b:switch_custom_definitions =
-        \ [
-        \   {
-        \       '^\(\k\+\)\.': '\1->',
-        \       '^\(\k\+\)\->': '\1.',
-        \   },
-        \ ]
-
-    autocmd FileType python let b:switch_custom_definitions =
-        \ [
-        \   {
-        \       '^\(.*\)True': '\1False',
-        \       '^\(.*\)"\(.*\)"': "^\1'\2'",
-        \   },
-        \ ]
-
-    autocmd FileType vim let b:switch_custom_definitions =
-        \ [
-        \   {
-        \       '"\(\k\+\)"': "'\2'",
-        \   },
-        \ ]
-endif
-
-" if &runtimepath =~ 'neotags.nvim'
-"     " let g:neotags_file = '~/'
-"     let g:neotags_enabled    = 1
-"     let g:neotags_ctags_args = [
-"             \ '-L -',
-"             \ '--fields=+l',
-"             \ '--c-kinds=+p',
-"             \ '--c++-kinds=+p',
-"             \ '--sort=yes',
-"             \ '--extra=+q'
-"             \ ]
-" endif
-
-if &runtimepath =~ 'vim-easytags'
-    let g:easytags_include_members = 1
-    let g:easytags_always_enabled  = 1
-    let g:easytags_dynamic_files   = 1
-    let g:easytags_auto_highlight  = 0
-    let g:easytags_auto_update     = 0
-
-    if !( has("win32") || has("win64") ) && ( has("nvim") || ( v:version >= 800 ) )
-        " Vim will block if it does not have Async support!!!
-        let g:easytags_async = 1
-    endif
-
-    " You can update de tags with ':UpdateTags -R .' in your project's root.
-    nnoremap gtf :UpdateTags -R .<CR>
 endif
 
 " ################ Jedi complete #################
@@ -461,7 +426,7 @@ endif
 
 " ################# Syntax check #################
 if &runtimepath =~ "neomake"
-    autocmd BufWrite * :Neomake
+    autocmd BufWrite * :Neomake<CR>
 
     nnoremap <F6> :Neomake<CR>
     imap <F6> <ESC>:Neomake<CR>a
@@ -546,7 +511,6 @@ if &runtimepath =~ 'tabular'
     vmap <leader>t* :Tabularize /*<CR>
 endif
 
-" ################ Git integration #################
 " ################ Fugitive #################
 if &runtimepath =~ 'vim-fugitive'
     nnoremap <leader>gs :Gstatus<CR>
@@ -582,12 +546,13 @@ endif
 
 " ################ Move #################
 if &runtimepath =~ 'vim-move'
+    " Set Ctrl key as default. Commands <C-j> and <C-k>
     let g:move_key_modifier = 'C'
 endif
 
 " ################ indentLine #################
 if &runtimepath =~ 'indentLine'
-    " Toggle display indent
+    " Show indentation lines
     nnoremap tdi :IndentLinesToggle<CR>
     let g:indentLine_enabled = 0
     let g:indentLine_char    = '┊'
