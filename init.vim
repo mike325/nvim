@@ -56,6 +56,7 @@ Plug 'scrooloose/nerdcommenter'
 
 " Status bar and some themes
 Plug 'vim-airline/vim-airline' | Plug 'vim-airline/vim-airline-themes'
+Plug 'enricobacis/vim-airline-clock'
 
 " Git integrations
 Plug 'airblade/vim-gitgutter' | Plug 'tpope/vim-fugitive' | Plug 'rhysd/committia.vim'
