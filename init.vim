@@ -43,7 +43,10 @@ endif
 call plug#begin(g:os_editor.'plugged')
 
 " Colorschemes for vim
-Plug 'flazz/vim-colorschemes' | Plug 'icymind/NeoSolarized' | Plug 'morhetz/gruvbox'
+" Plug 'flazz/vim-colorschemes'
+Plug 'morhetz/gruvbox' | Plug 'sickill/vim-monokai'
+Plug 'nanotech/jellybeans.vim' | Plug 'whatyouhide/vim-gotham'
+Plug 'joshdick/onedark.vim'
 
 " Auto Close ' " () [] {}
 Plug 'Raimondi/delimitMate'
@@ -161,6 +164,7 @@ endif
 
 let b:ycm_installed = 0
 let b:deoplete_installed = 0
+let b:completor = 0
 if ( has("python") || has("python3") )
     " Add python highlight, folding, virtualenv, etc
     Plug 'python-mode/python-mode'
@@ -187,7 +191,7 @@ if ( has("python") || has("python3") )
         endif
     endfunction
 
-    " Awesome completion engine
+    " Awesome Async completion engine for Neovim
     if ( has("nvim") && has("python3") )
         Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 
@@ -214,10 +218,15 @@ if ( has("python") || has("python3") )
 
         let b:deoplete_installed = 1
 
-        " Install ycm if neovim/vim8/vim7.143 is running on unix or
-        " If it is running on windows with neovim/vim8/vim7.143 and ms C compiler
+    elseif ( v:version >= 800 ) || has("nvim")
+        " Test new completion Async framework that require python and vim 8 or
+        " Neovim (without python3)
+        Plug 'maralla/completor.vim'
+        let b:completor = 1
     elseif (has("unix") || ((has("win32") || has("win64")) && executable("msbuild"))) &&
                 \ has("nvim") || ( v:version >= 800 ) || ( v:version == 704 && has("patch143"))
+        " Install ycm if neovim/vim8/vim7.143 is running on unix or
+        " If it is running on windows with neovim/vim8/vim7.143 and ms C compiler
         Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') }
 
         " C/C++ project generator
@@ -226,7 +235,7 @@ if ( has("python") || has("python3") )
     endif
 
 
-    if b:ycm_installed==0 && b:deoplete_installed==0
+    if b:ycm_installed==0 && b:deoplete_installed==0 && b:completor==0
         " Completion for python without engines
         Plug 'davidhalter/jedi-vim'
     endif
@@ -235,17 +244,15 @@ if ( has("python") || has("python3") )
         " Synchronous Syntax check
         Plug 'vim-syntastic/syntastic'
     endif
-
 else
 " Snippets without python interface
     Plug 'MarcWeber/vim-addon-mw-utils'
     Plug 'tomtom/tlib_vim'
     Plug 'garbas/vim-snipmate'
-
 endif
 
 " completion without ycm or deoplete
-if b:ycm_installed==0 && b:deoplete_installed==0
+if b:ycm_installed==0 && b:deoplete_installed==0 && b:completor==0
     Plug 'ervandew/supertab'
     if has("lua")
         Plug 'Shougo/neocomplete.vim'

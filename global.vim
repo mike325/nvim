@@ -175,7 +175,11 @@ nnoremap <leader>x :%!xxd<CR>
 if has("gui_running")
     set guioptions-=m  "no menu
     set guioptions-=T  "no toolbar
-    set guioptions-=r  "no scrollbar
+    set guioptions-=L  "remove left-hand scroll bar in vsplit
+    set guioptions-=l  "remove left-hand scroll bar
+    set guioptions-=r  "remove right-hand scroll bar
+    set guioptions-=R  "remove right-hand scroll bar vsplit
+    set guioptions-=b  "remove bottom scroll bar
 
     " Windoes gVim fonts
     if has("win32") || has("win64")

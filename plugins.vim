@@ -115,25 +115,32 @@ endif
 
 " ################# Themes #################
 
-" colorscheme railscasts
-if &runtimepath =~ 'vim-colorschemes'
+if &runtimepath =~ 'gruvbox'
     try
         colorscheme gruvbox
     catch
         echo 'Please run :PlugInstall to complete the installation or remove "colorscheme gruvbox"'
     endtry
 
-    nnoremap csm :colorscheme Monokai<CR>:AirlineTheme molokai<CR>
-    nnoremap cso :colorscheme onedark<CR>:AirlineTheme solarized<CR>
-    nnoremap csr :colorscheme railscasts<CR>:AirlineTheme molokai<CR>
-    nnoremap csg :colorscheme gruvbox<CR>:AirlineTheme gruvbox<CR>
-
     let g:gruvbox_contrast_dark = 'hard'
+    nnoremap csg :colorscheme gruvbox<CR>:AirlineTheme gruvbox<CR>
 endif
 
-if &runtimepath =~ 'NeoSolarized'
-    let g:neosolarized_visibility = "high"
-    nnoremap csn :colorscheme NeoSolarized<CR>:AirlineTheme solarized<CR>
+if &runtimepath =~ 'vim-monokai'
+    nnoremap csm :colorscheme monokai<CR>:AirlineTheme molokai<CR>
+endif
+
+if &runtimepath =~ 'jellybeans.vim'
+    nnoremap csj :colorscheme jellybeans<CR>:AirlineTheme solarized<CR>
+endif
+
+if &runtimepath =~ 'onedark'
+    nnoremap cso :colorscheme onedark<CR>:AirlineTheme solarized<CR>
+endif
+
+if &runtimepath =~ 'vim-gotham'
+    " b for batman
+    nnoremap csb :colorscheme gotham<CR>:AirlineTheme gotham<CR>
 endif
 
 " ################ Status bar Airline #################
@@ -182,17 +189,18 @@ endif
 
 " ################ Jedi complete #################
 if  &runtimepath =~ 'jedi-vim'
-    let g:jedi#popup_on_dot = 1
-    let g:jedi#popup_select_first = 1
-    let g:jedi#completions_command = "<C-c>"
-    let g:jedi#goto_command = "<leader>g"
-    let g:jedi#goto_assignments_command = "<leader>a"
-    let g:jedi#goto_definitions_command = "<leader>D"
-    let g:jedi#documentation_command = "K"
-    let g:jedi#usages_command = "<leader>u"
-    let g:jedi#rename_command = "<leader>r"
+    autocmd FileType python let b:jedi#popup_on_dot = 1
+    autocmd FileType python let b:jedi#popup_select_first = 1
+    autocmd FileType python let b:jedi#completions_command = "<C-c>"
+    autocmd FileType python let b:jedi#goto_command = "<leader>g"
+    autocmd FileType python let b:jedi#goto_assignments_command = "<leader>a"
+    autocmd FileType python let b:jedi#goto_definitions_command = "<leader>D"
+    autocmd FileType python let b:jedi#documentation_command = "K"
+    autocmd FileType python let b:jedi#usages_command = "<leader>u"
+    autocmd FileType python let b:jedi#rename_command = "<leader>r"
 endif
 
+" TODO path completion should be improve
 if &runtimepath =~ 'SimpleAutoComplPop'
     autocmd FileType * call sacp#enableForThisBuffer({ "matches": [
         \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
@@ -424,9 +432,26 @@ if &runtimepath =~ 'YouCompleteMe'
     "       \}
 endif
 
+
+if &runtimepath =~ 'completor.vim'
+    inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+    inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+    inoremap <expr> <cr> pumvisible() ? "\<C-y>\<cr>" : "\<cr>"
+endif
+
 " ################# Syntax check #################
 if &runtimepath =~ "neomake"
-    autocmd BufWrite * Neomake
+    autocmd! BufWritePost * Neomake
+
+    let g:neomake_warning_sign = {
+        \ 'text': 'W',
+        \ 'texthl': 'WarningMsg',
+        \ }
+
+    let g:neomake_error_sign = {
+        \ 'text': 'E',
+        \ 'texthl': 'ErrorMsg',
+        \ }
 
     nnoremap <F6> :Neomake<CR>
     imap <F6> <ESC>:Neomake<CR>a
@@ -516,13 +541,25 @@ if &runtimepath =~ 'vim-fugitive'
     nnoremap <leader>gs :Gstatus<CR>
     nnoremap <leader>gc :Gcommit<CR>
     nnoremap <leader>gd :Gdiff<CR>
-    " nnoremap <leader>gc :Gcommit<CR>
+    nnoremap <leader>gw :Gwrite<CR>
 endif
 
 " ################ GitGutter #################
 if &runtimepath =~ 'vim-gitgutter'
     nnoremap tg :GitGutterToggle<CR>
     nnoremap tl :GitGutterLineHighlightsToggle<CR>
+    let g:gitgutter_map_keys = 0
+
+    nmap [h <Plug>GitGutterPrevHunk
+    nmap ]h <Plug>GitGutterNextHunk
+
+    nmap <leader>ghs <Plug>GitGutterStageHunk
+    nmap <leader>ghu <Plug>GitGutterUndoHunk
+
+    omap ih <Plug>GitGutterTextObjectInnerPending
+    omap ah <Plug>GitGutterTextObjectOuterPending
+    xmap ih <Plug>GitGutterTextObjectInnerVisual
+    xmap ah <Plug>GitGutterTextObjectOuterVisual
 endif
 
 " ################ Signature #################
@@ -554,13 +591,21 @@ endif
 if &runtimepath =~ 'indentLine'
     " Show indentation lines
     nnoremap tdi :IndentLinesToggle<CR>
-    let g:indentLine_enabled = 0
+    let g:indentLine_enabled = 1
     let g:indentLine_char    = '┊'
+
+    " augroup VisualIndent
+    "     autocmd!
+    "     autocmd FileType text autocmd BufReadPre IndentLinesDisable
+    "     autocmd FileType * autocmd BufReadPre IndentLinesEnable
+    " augroup END
+
 endif
 
 " ################ AutoFormat #################
 if &runtimepath =~ 'vim-autoformat'
     noremap <F9> :Autoformat<CR>
     vnoremap <F9> :Autoformat<CR>gv
+    autocmd! BufWritePost * Autoformat
     autocmd FileType vim,tex,python,make,asm,conf let b:autoformat_autoindent=0
 endif
