@@ -607,5 +607,5 @@ if &runtimepath =~ 'vim-autoformat'
     noremap <F9> :Autoformat<CR>
     vnoremap <F9> :Autoformat<CR>gv
     autocmd! BufWritePost * Autoformat
-    autocmd FileType vim,tex,python,make,asm,conf let b:autoformat_autoindent=0
+    autocmd FileType markdown,vim,tex,python,make,asm,conf let b:autoformat_autoindent=0
 endif

@@ -1,27 +1,11 @@
 # Vimrc
 
-```shell
-                                                             -`
-                                             ...            .o+`
-                                          .+++s+   .h`.    `ooo/
-                                         `+++%++  .h+++   `+oooo:
-                                         +++o+++ .hhs++. `+oooooo:
-                                         +s%%so%.hohhoo'  'oooooo+:
-                                         `+ooohs+h+sh++`/:  ++oooo+:
-                                          hh+o+hoso+h+`/++++.+++++++:
-                                           `+h+++h.+ `/++++++++++++++:
-                                                    `/+++ooooooooooooo/`
-                                                   ./ooosssso++osssssso+`
-                                                  .oossssso-````/osssss::`
-                                                 -osssssso.      :ssss``to.
-                                                :osssssss/  Mike  osssl   +
-                                               /ossssssss/   8a   +sssslb
-                                             `/ossssso+/:-        -:/+ossss'.-
-                                            `+sso+:-`                 `.-/+oso:
-                                           `++:.                           `-/+/
-                                           .`                                 `/
-```
-
+███╗   ███╗██╗██╗  ██╗███████╗    ██████╗  █████╗
+████╗ ████║██║██║ ██╔╝██╔════╝   ██╔═══██╗██╔══██╗
+██╔████╔██║██║█████╔╝ █████╗     ████████║███████║
+██║╚██╔╝██║██║██╔═██╗ ██╔══╝     ██║   ██║██╔══██║
+██║ ╚═╝ ██║██║██║  ██╗███████╗   ╚██████╔╝██║  ██║
+╚═╝     ╚═╝╚═╝╚═╝  ╚═╝╚══════╝    ╚═════╝ ╚═╝  ╚═╝
 
 This repo have mi personal Vim/Neovim settings that I have been collecting for a while, feel free to change
 anything to fit your needs or suggest me something that you think could be useful.
