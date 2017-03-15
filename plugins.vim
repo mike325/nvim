@@ -426,7 +426,7 @@ endif
 
 " ################# Syntax check #################
 if &runtimepath =~ "neomake"
-    autocmd BufWrite * :Neomake<CR>
+    autocmd BufWrite * Neomake
 
     nnoremap <F6> :Neomake<CR>
     imap <F6> <ESC>:Neomake<CR>a
