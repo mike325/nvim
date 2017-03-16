@@ -23,12 +23,12 @@
 "                   .`                                 `/
 " ############################################################################
 
+" BasicImprovements {{{
+
 set encoding=utf-8     " The encoding displayed.
 set fileencoding=utf-8 " The encoding written to file.
 
 let mapleader=" "
-" nnoremap ; :
-" vmap ; :
 
 nnoremap , :
 vmap , :
@@ -58,6 +58,11 @@ set ruler
 set hlsearch   " highlight search terms
 set incsearch  " show search matches as you type
 set ignorecase " ignore case
+
+if (has("nvim"))
+    " Live substitute preview
+    set inccommand=split
+endif
 
 " Indenting stuff
 set autoindent
@@ -89,42 +94,19 @@ set visualbell
 
 set fileformats=unix,dos " File mode unix by default
 
-" Remove ^M characters from windows format
-nnoremap <leader>R :%s/\r\+$//e
-
-nnoremap <leader><leader>e :echo expand("%")<CR>
-
-" To be improve
-function! RemoveTrailingWhitespaces()
-    "Save last cursor position
-    let savepos = getpos('.')
-
-     %s/\s\+$//e
-
-    call setpos('.', savepos)
-endfunction
-
-" Trim whitespaces in selected files
-" autocmd FileType * autocmd BufWritePre <buffer> %s/\s\+$//e
-autocmd FileType * autocmd BufWritePre <buffer> call RemoveTrailingWhitespaces()
-
-" Specially for html and xml
-autocmd FileType xml,html,vim autocmd BufReadPre <buffer> set matchpairs+=<:>
-
-" Default omnicomplete func
-set omnifunc=syntaxcomplete#Complete
-
-" Set highlight CursorLine
 hi CursorLine term=bold cterm=bold guibg=Grey40
 
-" nnoremap <S-Enter> O<Esc>
-" Add lines in normal mode without enter in insert mode
-nnoremap <C-o> O<Esc>
-nmap Q o<Esc>
+" Folding settings
+set foldmethod=indent " fold based on indent
+set nofoldenable      " dont fold by default
+set foldnestmax=10    " deepest fold is 10 levels
+" set foldlevel=1
 
-" Remove stuff in normal/visul mode without change any normal register
-nnoremap <BS> "_
-vnoremap <BS> "_
+autocmd BufWinEnter *.c,*.h,*.cpp,*.hpp,*.java,*.go,*.js setlocal foldmethod=syntax
+
+" }}} EndBasicImprovements
+
+" VimFiles {{{
 
 " Better backup, swap and undos storage
 set backup   " make backup files
@@ -165,12 +147,9 @@ if !isdirectory(&undodir)
     call mkdir(&undodir, "p")
 endif
 
-" Close buffer/Editor
-" nnoremap <leader>z ZZ
-nnoremap <leader>q :q!<CR>
+" }}} EndVimFiles
 
-" easy dump bin files into hex
-nnoremap <leader>x :%!xxd<CR>
+" GUISettings {{{
 
 if has("gui_running")
     set guioptions-=m  "no menu
@@ -187,13 +166,68 @@ if has("gui_running")
     endif
 endif
 
-" ################# Set Neovim settings #################
-if (has("nvim"))
-    " Live substitute preview
-    set inccommand=split
+" }}} EndGUISettings
+
+
+" JustSomeStuff {{{
+
+" Echo the relative path and of the file
+nnoremap <leader><leader>e :echo expand("%")<CR>
+
+" TODO To be improve
+function! RemoveTrailingWhitespaces()
+    "Save last cursor position
+    let savepos = getpos('.')
+    %s/\s\+$//e
+    call setpos('.', savepos)
+endfunction
+
+" Trim whitespaces in selected files
+" autocmd FileType * autocmd BufWritePre <buffer> %s/\s\+$//e
+autocmd FileType * autocmd BufWritePre <buffer> call RemoveTrailingWhitespaces()
+
+" Specially helpful for html and xml
+autocmd FileType xml,html,vim autocmd BufReadPre <buffer> set matchpairs+=<:>
+
+" Add lines in normal mode without enter in insert mode
+nnoremap <C-o> O<Esc>
+nmap Q o<Esc>
+
+" Remove stuff in normal/visul mode without change any register
+nnoremap <BS> "_
+vnoremap <BS> "_
+
+" Easy indentation in normal mode
+nnoremap <tab> >>
+nnoremap <S-tab> <<
+
+nnoremap <F2> :update<CR>
+vmap <F2> <Esc><F2>gv
+imap <F2> <Esc><F2>a
+
+" For systems without F's keys (ex. android)
+nmap <leader>w :update<CR>
+
+" Close buffer/Editor
+nnoremap <leader>q :q!<CR>
+
+" easy dump bin files into hex
+nnoremap <leader>x :%!xxd<CR>
+
+" Native explorer
+nnoremap E :Explore<CR>
+let g:netrw_liststyle=3
+
+" Color columns
+if exists('+colorcolumn')
+    " let &colorcolumn="80,".join(range(120,999),",")
+    " Visual ruler
+    let &colorcolumn="80"
 endif
 
-" ################# visual selection go also to clipboard #################
+" }}} EndJustSomeStuff
+
+" Clipboard {{{
 if has('clipboard')
     if !has("nvim") || ( executable('pbcopy') || executable('xclip') ||
                 \ executable('xsel') || executable("lemonade") )
@@ -205,7 +239,178 @@ elseif has("nvim")
     set mouse=c
 endif
 
-" ################# Tabs management #################
+" }}} EndClipboard
+
+" Next and previous {{{
+" Took from https://github.com/tpope/vim-unimpaired
+" TODO may fork and remove stuff
+"
+"  The following maps all correspond to normal mode commands.  If a count is
+"  given, it becomes an argument to the command.  A mnemonic for the 'a' commands
+"  is 'args' and for the 'q' commands is 'quickfix'.
+"
+"  *[a*     |:previous|
+"  *]a*     |:next|
+"  *[A*     |:first|
+"  *]A*     |:last|
+"  *[b*     |:bprevious|
+"  *]b*     |:bnext|
+"  *[B*     |:bfirst|
+"  *]B*     |:blast|
+"  *[l*     |:lprevious|
+"  *]l*     |:lnext|
+"  *[L*     |:lfirst|
+"  *]L*     |:llast|
+"  *[<C-L>* |:lpfile|
+"  *]<C-L>* |:lnfile|
+"  *[q*     |:cprevious|
+"  *]q*     |:cnext|
+"  *[Q*     |:cfirst|
+"  *]Q*     |:clast|
+"  *[<C-Q>* |:cpfile| (Note that <C-Q> only works in a terminal if you disable
+"  *]<C-Q>* |:cnfile| flow control: stty -ixon)
+"  *[t*     |:tprevious|
+"  *]t*     |:tnext|
+"  *[T*     |:tfirst|
+"  *]T*     |:tlast|
+
+function! s:MapNextFamily(map,cmd)
+    let map = '<Plug>unimpaired'.toupper(a:map)
+    let cmd = '".(v:count ? v:count : "")."'.a:cmd
+    let end = '"<CR>'.(a:cmd == 'l' || a:cmd == 'c' ? 'zv' : '')
+    execute 'nnoremap <silent> '.map.'Previous :<C-U>exe "'.cmd.'previous'.end
+    execute 'nnoremap <silent> '.map.'Next     :<C-U>exe "'.cmd.'next'.end
+    execute 'nnoremap <silent> '.map.'First    :<C-U>exe "'.cmd.'first'.end
+    execute 'nnoremap <silent> '.map.'Last     :<C-U>exe "'.cmd.'last'.end
+    execute 'nmap <silent> ['.        a:map .' '.map.'Previous'
+    execute 'nmap <silent> ]'.        a:map .' '.map.'Next'
+    execute 'nmap <silent> ['.toupper(a:map).' '.map.'First'
+    execute 'nmap <silent> ]'.toupper(a:map).' '.map.'Last'
+    if exists(':'.a:cmd.'nfile')
+        execute 'nnoremap <silent> '.map.'PFile :<C-U>exe "'.cmd.'pfile'.end
+        execute 'nnoremap <silent> '.map.'NFile :<C-U>exe "'.cmd.'nfile'.end
+        execute 'nmap <silent> [<C-'.a:map.'> '.map.'PFile'
+        execute 'nmap <silent> ]<C-'.a:map.'> '.map.'NFile'
+    endif
+endfunction
+
+call s:MapNextFamily('a','')
+call s:MapNextFamily('b','b')
+call s:MapNextFamily('l','l')
+call s:MapNextFamily('q','c')
+call s:MapNextFamily('t','t')
+
+function! s:entries(path)
+    let path = substitute(a:path,'[\\/]$','','')
+    let files = split(glob(path."/.*"),"\n")
+    let files += split(glob(path."/*"),"\n")
+    call map(files,'substitute(v:val,"[\\/]$","","")')
+    call filter(files,'v:val !~# "[\\\\/]\\.\\.\\=$"')
+
+    let filter_suffixes = substitute(escape(&suffixes, '~.*$^'), ',', '$\\|', 'g') .'$'
+    call filter(files, 'v:val !~# filter_suffixes')
+
+    return files
+endfunction
+
+function! s:FileByOffset(num)
+    let file = expand('%:p')
+    let num = a:num
+    while num
+        let files = s:entries(fnamemodify(file,':h'))
+        if a:num < 0
+            call reverse(sort(filter(files,'v:val <# file')))
+        else
+            call sort(filter(files,'v:val ># file'))
+        endif
+        let temp = get(files,0,'')
+        if temp == ''
+            let file = fnamemodify(file,':h')
+        else
+            let file = temp
+            while isdirectory(file)
+                let files = s:entries(file)
+                if files == []
+                    " TODO: walk back up the tree and continue
+                    break
+                endif
+                let file = files[num > 0 ? 0 : -1]
+            endwhile
+            let num += num > 0 ? -1 : 1
+        endif
+    endwhile
+    return file
+endfunction
+
+function! s:fnameescape(file) abort
+    if exists('*fnameescape')
+        return fnameescape(a:file)
+    else
+        return escape(a:file," \t\n*?[{`$\\%#'\"|!<")
+    endif
+endfunction
+
+nnoremap <silent> <Plug>unimpairedDirectoryNext     :<C-U>edit <C-R>=fnamemodify(<SID>fnameescape(<SID>FileByOffset(v:count1)), ':.')<CR><CR>
+nnoremap <silent> <Plug>unimpairedDirectoryPrevious :<C-U>edit <C-R>=fnamemodify(<SID>fnameescape(<SID>FileByOffset(-v:count1)), ':.')<CR><CR>
+nmap ]f <Plug>unimpairedDirectoryNext
+nmap [f <Plug>unimpairedDirectoryPrevious
+
+nmap <silent> <Plug>unimpairedONext     <Plug>unimpairedDirectoryNext:echohl WarningMSG<Bar>echo "]o is deprecated. Use ]f"<Bar>echohl NONE<CR>
+nmap <silent> <Plug>unimpairedOPrevious <Plug>unimpairedDirectoryPrevious:echohl WarningMSG<Bar>echo "[o is deprecated. Use [f"<Bar>echohl NONE<CR>
+nmap ]o <Plug>unimpairedONext
+nmap [o <Plug>unimpairedOPrevious
+
+" }}}1
+
+" Diff {{{
+nmap [n <Plug>unimpairedContextPrevious
+nmap ]n <Plug>unimpairedContextNext
+omap [n <Plug>unimpairedContextPrevious
+omap ]n <Plug>unimpairedContextNext
+
+nnoremap <silent> <Plug>unimpairedContextPrevious :call <SID>Context(1)<CR>
+nnoremap <silent> <Plug>unimpairedContextNext     :call <SID>Context(0)<CR>
+onoremap <silent> <Plug>unimpairedContextPrevious :call <SID>ContextMotion(1)<CR>
+onoremap <silent> <Plug>unimpairedContextNext     :call <SID>ContextMotion(0)<CR>
+
+function! s:Context(reverse)
+    call search('^\(@@ .* @@\|[<=>|]\{7}[<=>|]\@!\)', a:reverse ? 'bW' : 'W')
+endfunction
+
+function! s:ContextMotion(reverse)
+    if a:reverse
+        -
+    endif
+    call search('^@@ .* @@\|^diff \|^[<=>|]\{7}[<=>|]\@!', 'bWc')
+    if getline('.') =~# '^diff '
+        let end = search('^diff ', 'Wn') - 1
+        if end < 0
+            let end = line('$')
+        endif
+    elseif getline('.') =~# '^@@ '
+        let end = search('^@@ .* @@\|^diff ', 'Wn') - 1
+        if end < 0
+            let end = line('$')
+        endif
+    elseif getline('.') =~# '^=\{7\}'
+        +
+        let end = search('^>\{7}>\@!', 'Wnc')
+    elseif getline('.') =~# '^[<=>|]\{7\}'
+        let end = search('^[<=>|]\{7}[<=>|]\@!', 'Wn') - 1
+    else
+        return
+    endif
+    if end > line('.')
+        execute 'normal! V'.(end - line('.')).'j'
+    elseif end == line('.')
+        normal! V
+    endif
+endfunction
+
+" }}}1
+
+" TabBufferManagement {{{
+
 nnoremap <leader>1 1gt
 nnoremap <leader>2 2gt
 nnoremap <leader>3 3gt
@@ -221,29 +426,15 @@ nnoremap <leader>N :tabNext<CR>
 nnoremap <leader><leader>n :tabnew<CR>
 nnoremap <leader>c :tabclose<CR>
 
-" ################# Buffer management #################
 " Next buffer
 nnoremap <leader>n :bn<CR>
 
 " Prev buffer
 nnoremap <leader>p :bp<CR>
 
-"go to last buffer
-" nnoremap <leader>l :blast<CR>
-
-" ################# Native Vim Explorer #################
-nnoremap E :Explore<CR>
-let g:netrw_liststyle=3
-
-" ################# Change current active file split #################
-" Easy indentation in normal mode
-nnoremap <tab> >>
-nnoremap <S-tab> <<
-
-" nnoremap <leader>x <C-w><C-w>
 nnoremap <C-x> <C-w><C-w>
 
-" Buffer
+" Buffer movement
 nmap <leader>h <C-w>h
 nmap <leader>j <C-w>j
 nmap <leader>k <C-w>k
@@ -261,51 +452,38 @@ if has("nvim")
     tnoremap <Esc> <C-\><C-n>
 
     " Use jk to exit terminal mode
-    tnoremap jk <C-\><C-n>
+    " tnoremap jk <C-\><C-n>
 
     " Better terminal movement
-    nnoremap <C-x> <Esc><C-w><C-w>
+    tnoremap <C-x> <Esc><C-w><C-w>
 endif
 
 " Equally resize buffer splits
 nnoremap <leader>e <C-w>=
 
-" Color columns
-if exists('+colorcolumn')
-    " let &colorcolumn="80,".join(range(120,999),",")
-    " Visual ruler
-    let &colorcolumn="80"
-endif
+" }}} EndTabBufferManagement
 
-" ################# Folding settings #################
-set foldmethod=indent " fold based on indent
-set nofoldenable      " dont fold by default
-set foldnestmax=10    " deepest fold is 10 levels
-" set foldlevel=1
-
-autocmd BufWinEnter *.c,*.h,*.cpp,*.hpp,*.java,*.go,*.js setlocal foldmethod=syntax
-
-" ################# Easy Save file #################
-nnoremap <F2> :update<CR>
-vmap <F2> <Esc><F2>gv
-imap <F2> <Esc><F2>a
-
-" For systems without F's keys (ex. android)
-nmap <leader>w :update<CR>
-
-" ################# Toggles #################
+" Toggles {{{
 nnoremap tn :set number!<Bar>set number?<CR>
 nnoremap tr :set relativenumber!<Bar>set relativenumber?<CR>
+
 nnoremap th :set hlsearch!<Bar>set hlsearch?<CR>
 nnoremap ti :set ignorecase!<Bar>set ignorecase?<CR>
+
 nnoremap tw :set wrap!<Bar>set wrap?<CR>
-nnoremap tc :set cursorline!<Bar>set cursorline?<CR>
+
+nnoremap tcl :set cursorline!<Bar>set cursorline?<CR>
+nnoremap tcc :set cursorcolumn!<Bar>set cursorcolumn?<CR>
 
 nnoremap tss :setlocal spell!<Bar>set spell?<CR>
 nnoremap tse :setlocal spelllang=en_us<Bar>set spelllang?<CR>
 nnoremap tsm :setlocal spelllang=es_mx<Bar>set spelllang?<CR>
 
-" ################# Terminal colors #################
+nnoremap td :<C-R>=&diff ? 'diffoff' : 'diffthis'<CR><CR>
+
+" }}} EndToggles
+
+"  TerminalColors {{{
 set background=dark
 
 if (has("nvim"))
@@ -318,7 +496,9 @@ if has("termguicolors")
     set termguicolors
 endif
 
-" Set Syntax
+"  }}} EndTerminalColors
+
+" SetSyntax {{{
 augroup filetypedetect
     autocmd BufNewFile,BufRead .tmux.conf*,tmux.conf* set filetype=tmux
     autocmd BufNewFile,BufRead .nginx.conf*,nginx.conf* set filetype=nginx
@@ -326,7 +506,14 @@ augroup filetypedetect
     autocmd BufRead,BufNewFile *.bash* set filetype=sh
 augroup END
 
-" omnifuncs
+" }}} EndSetSyntax
+
+" Omnicomplete {{{
+" *currently no all functions work
+
+" Default omnicomplete func
+set omnifunc=syntaxcomplete#Complete
+
 augroup omnifuncs
     autocmd!
     autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
@@ -343,9 +530,13 @@ augroup omnifuncs
     autocmd BufNewFile,BufRead,BufEnter *.c,*.h setlocal omnifunc=ccomplete#Complete
 augroup END
 
+" }}} EndOmnicomplete
+
+" Spell {{{
 augroup Spells
     autocmd FileType gitcommit setlocal spell
     autocmd FileType markdown setlocal spell
     autocmd FileType plaintex setlocal spell
     autocmd FileType text setlocal spell
 augroup END
+" }}} EndSpell
