@@ -81,8 +81,10 @@ Once you have cloned the repo just run `:PlugInstall` inside Vim/Neovim to compl
 
 Included plugins:
 - Default plugins
-    * [Vim-colorschemes](https://github.com/flazz/vim-colorschemes)
-    * [neoSolarized](https://github.com/icymind/NeoSolarized)
+    * [Vim-monokai](https://github.com/sickill/vim-monokai)
+    * [Jellybeans.vim](https://github.com/nanotech/jellybeans.vim)
+    * [Vim-gotham](https://github.com/whatyouhide/vim-gotham)
+    * [Onedark.vim](https://github.com/joshdick/onedark.vim)
     * [Gruvbox](https://github.com/morhetz/gruvbox)
     * [DelimitMate](https://github.com/Raimondi/delimitMate)
     * [Nerdtree](https://github.com/scrooloose/nerdtree)
@@ -141,7 +143,10 @@ Included plugins:
         * [Deoplete-ternjs](https://github.com/carlitux/deoplete-ternjs)
         * [Vim-javacomplete2](https://github.com/artur-shaik/vim-javacomplete2)
 
-    - If Deoplete could not be installed
+    - If Deoplete could not be installed and Neovim or vim 8 is running
+        * [completor.vim](https://github.com/maralla/completor.vim)
+
+    - If neither Deoplete nor Completor could been installed
         * [YouCompleteMe](https://github.com/Valloric/YouCompleteMe)
         * [Ycm-generator](https://github.com/rdnetto/ycm-generator)
 
