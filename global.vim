@@ -301,9 +301,9 @@ nnoremap ti :set ignorecase!<Bar>set ignorecase?<CR>
 nnoremap tw :set wrap!<Bar>set wrap?<CR>
 nnoremap tc :set cursorline!<Bar>set cursorline?<CR>
 
-nnoremap tss :set spell!<Bar>set spell?<CR>
-nnoremap tse :set spelllang=en_us<Bar>set spelllang?<CR>
-nnoremap tsm :set spelllang=es_mx<Bar>set spelllang?<CR>
+nnoremap tss :setlocal spell!<Bar>set spell?<CR>
+nnoremap tse :setlocal spelllang=en_us<Bar>set spelllang?<CR>
+nnoremap tsm :setlocal spelllang=es_mx<Bar>set spelllang?<CR>
 
 " ################# Terminal colors #################
 set background=dark
