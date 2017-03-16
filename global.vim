@@ -407,7 +407,7 @@ function! s:ContextMotion(reverse)
     endif
 endfunction
 
-" }}}1
+" }}}1 End of unimpaired
 
 " TabBufferManagement {{{
 
