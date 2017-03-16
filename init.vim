@@ -140,6 +140,10 @@ Plug 'lervag/vimtex'
 " Change buffer position in the current layout
 Plug 'wesQ3/vim-windowswap'
 
+if has("unix")
+    Plug 'tpope/vim-eunuch'
+endif
+
 if executable("go")
     " Go developement
     Plug 'fatih/vim-go'

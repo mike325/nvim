@@ -119,6 +119,9 @@ Included plugins:
     * [Vimtex](https://github.com/lervag/vimtex)
     * [Vim-windowswap](https://github.com/wesQ3/vim-windowswap)
 
+- If is running on unix system
+    * [Vim-eunuch](https://github.com/tpope/vim-eunuch)
+
 - If go is install
     * [Vim-go](https://github.com/fatih/vim-go)
 
