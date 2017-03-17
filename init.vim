@@ -1,6 +1,6 @@
 " ############################################################################
 "
-"                               Plugin installation
+"                             Plugin installation
 "
 "                                     -`
 "                     ...            .o+`
@@ -43,7 +43,6 @@ endif
 call plug#begin(g:os_editor.'plugged')
 
 " Colorschemes for vim
-" Plug 'flazz/vim-colorschemes'
 Plug 'morhetz/gruvbox' | Plug 'sickill/vim-monokai'
 Plug 'nanotech/jellybeans.vim' | Plug 'whatyouhide/vim-gotham'
 Plug 'joshdick/onedark.vim'
@@ -65,13 +64,13 @@ Plug 'enricobacis/vim-airline-clock'
 Plug 'airblade/vim-gitgutter' | Plug 'tpope/vim-fugitive' | Plug 'rhysd/committia.vim'
 Plug 'tpope/vim-git'
 
-" Easy aligment
+" Easy alignment
 Plug 'godlygeek/tabular'
 
 " Better motions
-" Plug 'easymotion/vim-easymotion'
+Plug 'easymotion/vim-easymotion'
 
-" Sorround motions
+" Surround motions
 Plug 'tpope/vim-surround'
 
 " Better buffer deletions
@@ -92,13 +91,10 @@ Plug 'fidian/hexmode'
 " Collection of snippets
 Plug 'honza/vim-snippets'
 
-" Move with identation
+" Move with indentation
 Plug 'matze/vim-move'
 
-" Easy edit registers
-" Plug 'dohsimpson/vim-macroeditor', { 'on': [ 'MacroEdit' ] }
-
-" Better sustition, improve aibbreviations and coercion
+" Better substitution, improve abbreviations and coercion
 Plug 'tpope/vim-abolish'
 
 " Map repeat key . for plugins
@@ -145,7 +141,7 @@ if has("unix")
 endif
 
 if executable("go")
-    " Go developement
+    " Go development
     Plug 'fatih/vim-go'
 endif
 
@@ -161,7 +157,7 @@ endif
 
 let b:neomake_installed = 0
 if has("nvim") || ( v:version >= 800 )
-    " Async Syntaxis check
+    " Async Syntax's check
     Plug 'neomake/neomake'
     let b:neomake_installed = 1
 endif
@@ -215,7 +211,7 @@ if ( has("python") || has("python3") )
             Plug 'zchee/deoplete-go', { 'do': 'make'}
         endif
 
-        " Javascript completion
+        " JavaScript completion
         if executable("tern")
             Plug 'carlitux/deoplete-ternjs'
         endif
@@ -229,8 +225,8 @@ if ( has("python") || has("python3") )
         let b:completor = 1
     elseif (has("unix") || ((has("win32") || has("win64")) && executable("msbuild"))) &&
                 \ has("nvim") || ( v:version >= 800 ) || ( v:version == 704 && has("patch143"))
-        " Install ycm if neovim/vim8/vim7.143 is running on unix or
-        " If it is running on windows with neovim/vim8/vim7.143 and ms C compiler
+        " Install ycm if Neovim/vim 8/Vim 7.143 is running on unix or
+        " If it is running on windows with Neovim/Vim 8/Vim 7.143 and ms C compiler
         Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') }
 
         " C/C++ project generator
@@ -255,10 +251,12 @@ else
     Plug 'garbas/vim-snipmate'
 endif
 
-" completion without ycm or deoplete
+" completion without python completion engines ( ycm, deoplete or completer )
 if b:ycm_installed==0 && b:deoplete_installed==0 && b:completor==0
     Plug 'ervandew/supertab'
-    if has("lua")
+
+    " Neovim does not support Lua plugins
+    if has("lua") && !has("nvim")
         Plug 'Shougo/neocomplete.vim'
     else
         Plug 'roxma/SimpleAutoComplPop'
@@ -270,7 +268,7 @@ call plug#end()
 
 filetype plugin indent on
 
-" Load general comfigurations (key mappings and autocommands)
+" Load general configurations (key mappings and autocommands)
 execute 'source '.fnameescape(g:os_editor.'global.vim')
 
 " Load plugins configurations
