@@ -104,6 +104,9 @@ set foldnestmax=10    " deepest fold is 10 levels
 
 autocmd BufWinEnter *.c,*.h,*.cpp,*.hpp,*.java,*.go,*.js setlocal foldmethod=syntax
 
+autocmd InsertEnter * :set norelativenumber
+autocmd InsertLeave * :set relativenumber
+
 " }}} EndBasicImprovements
 
 " VimFiles {{{
