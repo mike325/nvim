@@ -210,6 +210,7 @@ endif
 " SnipMate {{{
 
 if &runtimepath =~ 'vim-snipmate'
+    nmap <C-k> <Plug>snipMateNextOrTrigger
     imap <C-k> <Plug>snipMateNextOrTrigger
     smap <C-k> <Plug>snipMateNextOrTrigger
 endif
@@ -231,6 +232,16 @@ if &runtimepath =~ 'ultisnips'
 endif
 
 " }}} EndUltiSnips
+
+" JavaComplete {{{
+
+if &runtimepath =~ 'vim-javacomplete2'
+    nnoremap <leader>si <Plug>(JavaComplete-Imports-AddSmart)
+    nnoremap <leader>mi <Plug>(JavaComplete-Imports-AddMissing)
+endif
+
+" }}} EndJavaComplete
+
 
 " Jedi {{{
 
@@ -401,6 +412,10 @@ if &runtimepath =~ 'deoplete.nvim'
                 \'[^. \t0-9]\.\w*',
                 \]
 
+    let g:deoplete#omni#input_patterns.javascript = [
+                \'[^. \t0-9]\.\w*',
+                \]
+
     let g:deoplete#omni#input_patterns.c = [
                 \'[^. \t0-9]\.\w*',
                 \'[^. \t0-9]\->\w*',
@@ -421,8 +436,18 @@ if &runtimepath =~ 'deoplete.nvim'
                 \'[^. \t0-9]\.\w*',
                 \]
 
-    " let g:deoplete#sources._ = ['buffer']
     " let g:deoplete#sources._ = ['buffer', 'member', 'file', 'tags', 'ultisnips']
+    let g:deoplete#sources={}
+    let g:deoplete#sources._    = ['buffer', 'member', 'file', 'ultisnips']
+
+    let g:deoplete#sources.vim        = ['buffer', 'member', 'file', 'ultisnips']
+    let g:deoplete#sources.c          = ['buffer', 'member', 'file', 'omni', 'ultisnips']
+    let g:deoplete#sources.cpp        = ['buffer', 'member', 'file', 'omni', 'ultisnips']
+    let g:deoplete#sources.go         = ['buffer', 'member', 'file', 'omni', 'ultisnips']
+    let g:deoplete#sources.java       = ['buffer', 'member', 'file', 'omni', 'ultisnips']
+    let g:deoplete#sources.python     = ['buffer', 'member', 'file', 'omni', 'ultisnips']
+    let g:deoplete#sources.javascript = ['buffer', 'member', 'file', 'omni', 'ultisnips']
+    let g:deoplete#sources.ruby       = ['buffer', 'member', 'file', 'ultisnips']
 
     " if !exists('g:deoplete#omni#input_patterns')
     "     let g:deoplete#omni#input_patterns = {}
@@ -430,11 +455,6 @@ if &runtimepath =~ 'deoplete.nvim'
 
     autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
     call deoplete#custom#set('ultisnips', 'matchers', ['matcher_full_fuzzy'])
-endif
-
-if &runtimepath =~ 'vim-javacomplete2'
-    nnoremap <leader>si <Plug>(JavaComplete-Imports-AddSmart)
-    nnoremap <leader>mi <Plug>(JavaComplete-Imports-AddMissing)
 endif
 
 if &runtimepath =~ 'deoplete-jedi'

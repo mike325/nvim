@@ -73,8 +73,8 @@ set tabstop=4      " 1 tab = 4 spaces
 set shiftwidth=4   " Same for autoindenting
 set expandtab      " Use  spaces for indenting
 
-" set smarttab       " Insert tabs on the start of a line according to
-"                    " shiftwidth, not tabstop
+set smarttab       " Insert tabs on the start of a line according to
+                   " shiftwidth, not tabstop
 
 set shiftround     " Use multiple of shiftwidth when indenting with '<' and '>'
 set cursorline     " Turn on cursor line by default
@@ -203,6 +203,9 @@ vnoremap <BS> "_
 " Easy indentation in normal mode
 nnoremap <tab> >>
 nnoremap <S-tab> <<
+
+vnoremap <tab> >gv
+vnoremap <S-tab> <gv
 
 nnoremap <F2> :update<CR>
 vmap <F2> <Esc><F2>gv

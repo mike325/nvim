@@ -191,15 +191,17 @@ if ( has("python") || has("python3") )
         endif
     endfunction
 
+    if has("nvim") || ( v:version >= 800 ) || ( v:version == 704 )
+        " Only works with JDK8!!!
+        Plug 'artur-shaik/vim-javacomplete2'
+    endif
+
     " Awesome Async completion engine for Neovim
     if ( has("nvim") && has("python3") )
         Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 
         " Python completion
         Plug 'zchee/deoplete-jedi'
-
-        " Only works with JDK8
-        Plug 'artur-shaik/vim-javacomplete2'
 
         " C/C++ completion base on clang compiler
         if executable("clang")
@@ -273,3 +275,8 @@ execute 'source '.fnameescape(g:os_editor.'global.vim')
 
 " Load plugins configurations
 execute 'source '.fnameescape(g:os_editor.'plugins.vim')
+
+" if
+"     " Load local configurations
+"     execute 'source '.fnameescape(.'local.vim')
+" endif
