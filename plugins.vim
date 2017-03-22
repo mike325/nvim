@@ -40,6 +40,22 @@ let g:ctrlp_custom_ignore = {
             \ 'file': '\v\.(exe|bin|o|so|dll|pyc|zip|sw|swp)$',
             \ }
 
+if has("win32") || has("win64")
+    let g:ctrlp_user_command = {
+        \   'types': {
+        \       1: ['.git', 'cd %s && git ls-files -co --exclude-standard']
+        \   },
+        \   'fallback': 'find %s -type f',
+        \ }
+else
+    let g:ctrlp_user_command = {
+        \   'types': {
+        \       1: ['.git', 'cd %s && git ls-files -co --exclude-standard']
+        \   },
+        \   'fallback': 'dir %s /-n /b /s /a-d',
+        \ }
+endif
+
 " }}} EndCtrlP
 
 " NERDTree {{{
@@ -47,7 +63,6 @@ let g:ctrlp_custom_ignore = {
 " Ignore files in NERDTree
 let NERDTreeIgnore              = ['\.pyc$', '\~$', '\.sw$', '\.swp$']
 let NERDTreeShowBookmarks       = 1
-" let NERDTreeShowHidden          = 1
 
 " If you don't have unicode, uncomment the following lines
 " let NERDTreeDirArrowExpandable  = '+'
@@ -57,6 +72,11 @@ nnoremap T :NERDTreeToggle<CR>
 nnoremap <F3> :NERDTreeToggle<CR>
 imap <F3> <Esc><F3>
 vmap <F3> <Esc><F3>
+
+" Enable line numbers
+let NERDTreeShowLineNumbers=1
+" Make sure relative line numbers are used
+autocmd FileType nerdtree setlocal relativenumber
 
 " }}} EndNERDTree
 
@@ -534,7 +554,23 @@ endif
 
 " Neomake {{{
 if &runtimepath =~ "neomake"
-    autocmd! BufWritePost * Neomake
+    " TODO Config the proper makers for the languages I use
+    augroup Checkers
+        autocmd!
+        autocmd BufWritePost * Neomake
+        " " npm install -g jsonlint
+        " autocmd BufWritePost *.json Neomake jsonlint
+        " " npm install -g typescript
+        " autocmd BufWritePost *.html Neomake tidy
+        " " gem install scss-lint
+        " autocmd BufWritePost *.scss Neomake sasslint
+        " " gem install mdl
+        " autocmd BufWritePost *.md Neomake mdl
+        " " ( apt-get install / yaourt -S / dnf install ) shellcheck
+        " autocmd BufWritePost *.sh Neomake shellcheck
+        " " pip3 install vim-vint
+        " autocmd BufWritePost *.vim Neomake vint
+    augroup end
 
     let g:neomake_warning_sign = {
         \ 'text': 'W',
@@ -562,7 +598,7 @@ endif
 
 if &runtimepath =~ "syntastic"
     " set sessionoptions-=blank
-    " Set passive mode by default, can be changed with ts map
+    " Set passive mode by default, can be changed with tsc map
     let g:syntastic_mode_map = {
         \ "mode": "passive",
         \ "active_filetypes": ["python", "sh"],
@@ -573,7 +609,7 @@ if &runtimepath =~ "syntastic"
     set statusline+=%{SyntasticStatuslineFlag()}
     set statusline+=%*
 
-    nnoremap ts :SyntasticToggleMode<CR>
+    nnoremap tsc :SyntasticToggleMode<CR>
 
     let g:syntastic_always_populate_loc_list = 1
     let g:syntastic_auto_loc_list = 1
@@ -700,6 +736,7 @@ if &runtimepath =~ 'indentLine'
     let g:indentLine_enabled = 1
     let g:indentLine_char    = '┊'
 
+    " TODO set visual lines only in source files
     " augroup VisualIndent
     "     autocmd!
     "     autocmd FileType text autocmd BufReadPre IndentLinesDisable

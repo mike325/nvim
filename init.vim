@@ -80,7 +80,7 @@ Plug 'moll/vim-bbye', { 'on': [ 'Bdelete' ] }
 Plug 'kshenoy/vim-signature'
 
 " Search files, buffers, etc
-Plug 'kien/ctrlp.vim', { 'on': [ 'CtrlPBuffer', 'CtrlP' ] }
+Plug 'ctrlpvim/ctrlp.vim', { 'on': [ 'CtrlPBuffer', 'CtrlP' ] }
 
 " Better sessions management
 Plug 'xolox/vim-misc' | Plug 'xolox/vim-session'
@@ -135,6 +135,21 @@ Plug 'lervag/vimtex'
 
 " Change buffer position in the current layout
 Plug 'wesQ3/vim-windowswap'
+
+" Some useful text objects
+Plug 'kana/vim-textobj-user'
+" il inside the line (without leading and trailing spaces)
+" al around the line (with leading and trailing spaces)
+Plug 'kana/vim-textobj-line'
+" ic inside the comment (without leading and trailing spaces and
+"                        without comment characters)
+" iC inside the comment (with leading and trailing spaces and
+"                        without comment characters)
+" ac around the comment (without leading and trailing spaces and
+"                        with comment characters)
+" aC around the comment (with leading and trailing spaces and
+"                        with comment characters)
+Plug 'glts/vim-textobj-comment'
 
 if has("unix")
     Plug 'tpope/vim-eunuch'

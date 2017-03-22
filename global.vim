@@ -102,7 +102,7 @@ set nofoldenable      " dont fold by default
 set foldnestmax=10    " deepest fold is 10 levels
 " set foldlevel=1
 
-autocmd BufWinEnter *.c,*.h,*.cpp,*.hpp,*.java,*.go,*.js setlocal foldmethod=syntax
+" autocmd BufWinEnter *.c,*.h,*.cpp,*.hpp,*.java,*.go,*.js, *.sh setlocal foldmethod=syntax
 
 autocmd InsertEnter * :set norelativenumber
 autocmd InsertLeave * :set relativenumber
@@ -510,7 +510,7 @@ augroup filetypedetect
     autocmd BufNewFile,BufRead .nginx.conf*,nginx.conf* set filetype=nginx
     autocmd BufRead,BufNewFile *.in,*.simics,*.si,*.sle set filetype=conf
     autocmd BufRead,BufNewFile *.bash* set filetype=sh
-augroup END
+augroup end
 
 " }}} EndSetSyntax
 
@@ -534,7 +534,7 @@ augroup omnifuncs
 
     autocmd BufNewFile,BufRead,BufEnter *.cpp,*.hpp setlocal omnifunc=omni#cpp#complete#Main
     autocmd BufNewFile,BufRead,BufEnter *.c,*.h setlocal omnifunc=ccomplete#Complete
-augroup END
+augroup end
 
 " }}} EndOmnicomplete
 
@@ -544,5 +544,5 @@ augroup Spells
     autocmd FileType markdown setlocal spell
     autocmd FileType plaintex setlocal spell
     autocmd FileType text setlocal spell
-augroup END
+augroup end
 " }}} EndSpell
