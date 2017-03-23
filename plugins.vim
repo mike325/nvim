@@ -290,7 +290,7 @@ if &runtimepath =~ 'SimpleAutoComplPop'
 
     autocmd FileType go call sacp#enableForThisBuffer({ "matches": [
         \ { '=~': '\v[a-zA-Z]{2}$'   , 'feedkeys': "\<C-x>\<C-n>"} ,
-        \ { '=~': '\.$'              , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)", "ignoreCompletionMode":1}
+        \ { '=~': '\.$'              , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)", "ignoreCompletionMode":1},
         \ { '=~': '/'                , 'feedkeys': "\<C-x>\<C-f>"  , "ignoreCompletionMode":1} ,
     \ ]})
 
@@ -303,29 +303,29 @@ if &runtimepath =~ 'SimpleAutoComplPop'
     else
         autocmd FileType python call sacp#enableForThisBuffer({ "matches": [
             \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"}                          ,
-            \ { '=~': '\.$'            , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)" , "ignoreCompletionMode":1}
+            \ { '=~': '\.$'            , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)" , "ignoreCompletionMode":1},
             \ { '=~': '/'              , 'feedkeys': "\<C-x>\<C-f>"                           , "ignoreCompletionMode":1} ,
         \ ]})
     endif
 
     autocmd FileType javascript,java call sacp#enableForThisBuffer({ "matches": [
         \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"}                          ,
-        \ { '=~': '\.$'            , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)" , "ignoreCompletionMode":1}
+        \ { '=~': '\.$'            , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)" , "ignoreCompletionMode":1},
         \ { '=~': '/'              , 'feedkeys': "\<C-x>\<C-f>"                           , "ignoreCompletionMode":1} ,
     \ ]})
 
     autocmd BufNewFile,BufRead,BufEnter *.cpp,*.hpp call sacp#enableForThisBuffer({ "matches": [
         \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
-        \ { '=~': '\.$'            , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)" , "ignoreCompletionMode":1}
-        \ { '=~': '->$'            , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)" , "ignoreCompletionMode":1}
-        \ { '=~': '::$'            , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)" , "ignoreCompletionMode":1}
+        \ { '=~': '\.$'            , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)" , "ignoreCompletionMode":1},
+        \ { '=~': '->$'            , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)" , "ignoreCompletionMode":1},
+        \ { '=~': '::$'            , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)" , "ignoreCompletionMode":1},
         \ { '=~': '/'              , 'feedkeys': "\<C-x>\<C-f>"  , "ignoreCompletionMode":1} ,
     \ ]})
 
     autocmd BufNewFile,BufRead,BufEnter *.c,*.h call sacp#enableForThisBuffer({ "matches": [
         \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
-        \ { '=~': '\.$'            , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)" , "ignoreCompletionMode":1}
-        \ { '=~': '->$'            , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)" , "ignoreCompletionMode":1}
+        \ { '=~': '\.$'            , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)" , "ignoreCompletionMode":1},
+        \ { '=~': '->$'            , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)" , "ignoreCompletionMode":1},
         \ { '=~': '/'              , 'feedkeys': "\<C-x>\<C-f>"  , "ignoreCompletionMode":1} ,
     \ ]})
 endif

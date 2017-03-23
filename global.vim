@@ -107,6 +107,25 @@ set foldnestmax=10    " deepest fold is 10 levels
 autocmd InsertEnter * :set norelativenumber
 autocmd InsertLeave * :set relativenumber
 
+if has("nvim")
+    " Set modifiable to use easymotions
+    " autocmd TermOpen * setlocal modifiable
+
+    " I like to see the numbers in the terminal
+    autocmd TermOpen * setlocal relativenumber
+    autocmd TermOpen * setlocal number
+
+    " Better splits
+    nnoremap <A-s> <C-w>s
+    nnoremap <A-v> <C-w>v
+
+    " Better terminal access
+    nnoremap <A-t> :terminal<CR>
+
+    " Use ESC to exit terminal mode
+    tnoremap <Esc> <C-\><C-n>
+endif
+
 " }}} EndBasicImprovements
 
 " VimFiles {{{
@@ -446,24 +465,6 @@ nmap <leader>j <C-w>j
 nmap <leader>k <C-w>k
 nmap <leader>l <C-w>l
 
-if has("nvim")
-    " Better splits
-    nnoremap <A-s> <C-w>s
-    nnoremap <A-v> <C-w>v
-
-    " Better terminal access
-    nnoremap <A-t> :terminal<CR>
-
-    " Use ESC to exit terminal mode
-    tnoremap <Esc> <C-\><C-n>
-
-    " Use jk to exit terminal mode
-    " tnoremap jk <C-\><C-n>
-
-    " Better terminal movement
-    tnoremap <C-x> <Esc><C-w><C-w>
-endif
-
 " Equally resize buffer splits
 nnoremap <leader>e <C-w>=
 
@@ -540,9 +541,31 @@ augroup end
 
 " Spell {{{
 augroup Spells
+    autocmd!
     autocmd FileType gitcommit setlocal spell
     autocmd FileType markdown setlocal spell
     autocmd FileType plaintex setlocal spell
     autocmd FileType text setlocal spell
 augroup end
 " }}} EndSpell
+
+" Skeletons {{{
+augroup Skeletons
+    autocmd!
+    autocmd BufNewFile *.css  exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.css')
+    autocmd BufNewFile *.html exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.html')
+    autocmd BufNewFile *.md   exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.md')
+    autocmd BufNewFile *.js   exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.js')
+    autocmd BufNewFile *.xml  exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.xml')
+    autocmd BufNewFile *.py   exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.py')
+    autocmd BufNewFile *.go   exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.go')
+    autocmd BufNewFile *.cs   exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.cs')
+    autocmd BufNewFile *.php  exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.php')
+    autocmd BufNewFile *.java exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.java')
+    autocmd BufNewFile *.sh   exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.sh')
+    autocmd BufNewFile *.cpp  exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.cpp')
+    autocmd BufNewFile *.hpp  exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.hpp')
+    autocmd BufNewFile *.c    exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.c')
+    autocmd BufNewFile *.h    exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.h')
+augroup end
+" }}} EndSkeletons
