@@ -745,6 +745,7 @@ if &runtimepath =~ 'indentLine'
         \     'text',
         \     'conf',
         \     'markdown',
+        \     'git',
         \ ]
     " TODO Check how to remove lines in neovim's terminal
     let g:indentLine_bufNameExclude = [
