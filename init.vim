@@ -43,8 +43,10 @@ endif
 call plug#begin(g:os_editor.'plugged')
 
 " Colorschemes for vim
-Plug 'morhetz/gruvbox' | Plug 'sickill/vim-monokai'
-Plug 'nanotech/jellybeans.vim' | Plug 'whatyouhide/vim-gotham'
+Plug 'morhetz/gruvbox'
+Plug 'sickill/vim-monokai'
+Plug 'nanotech/jellybeans.vim'
+Plug 'whatyouhide/vim-gotham'
 Plug 'joshdick/onedark.vim'
 
 " Auto Close ' " () [] {}
@@ -57,11 +59,15 @@ Plug 'scrooloose/nerdtree', { 'on': [ 'NERDTreeToggle' ] }
 Plug 'scrooloose/nerdcommenter'
 
 " Status bar and some themes
-Plug 'vim-airline/vim-airline' | Plug 'vim-airline/vim-airline-themes'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
 Plug 'enricobacis/vim-airline-clock'
 
 " Git integrations
-Plug 'airblade/vim-gitgutter' | Plug 'tpope/vim-fugitive' | Plug 'rhysd/committia.vim'
+Plug 'airblade/vim-gitgutter'
+Plug 'tpope/vim-fugitive'
+Plug 'gregsexton/gitv'
+Plug 'rhysd/committia.vim'
 Plug 'tpope/vim-git'
 
 " Easy alignment
@@ -83,7 +89,8 @@ Plug 'kshenoy/vim-signature'
 Plug 'ctrlpvim/ctrlp.vim', { 'on': [ 'CtrlPBuffer', 'CtrlP' ] }
 
 " Better sessions management
-Plug 'xolox/vim-misc' | Plug 'xolox/vim-session'
+Plug 'xolox/vim-misc'
+Plug 'xolox/vim-session'
 
 " Auto convert bin files
 Plug 'fidian/hexmode'
@@ -272,7 +279,7 @@ endif
 if b:ycm_installed==0 && b:deoplete_installed==0 && b:completor==0
     Plug 'ervandew/supertab'
 
-    " Neovim does not support Lua plugins
+    " Neovim does not support Lua plugins yet
     if has("lua") && !has("nvim")
         Plug 'Shougo/neocomplete.vim'
     else
@@ -290,8 +297,3 @@ execute 'source '.fnameescape(g:os_editor.'global.vim')
 
 " Load plugins configurations
 execute 'source '.fnameescape(g:os_editor.'plugins.vim')
-
-" if
-"     " Load local configurations
-"     execute 'source '.fnameescape(.'local.vim')
-" endif

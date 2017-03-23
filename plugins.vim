@@ -290,7 +290,7 @@ if &runtimepath =~ 'SimpleAutoComplPop'
 
     autocmd FileType go call sacp#enableForThisBuffer({ "matches": [
         \ { '=~': '\v[a-zA-Z]{2}$'   , 'feedkeys': "\<C-x>\<C-n>"} ,
-        \ { '=~': '\.$'              , 'feedkeys': "\<C-x>\<C-o>"  , "ignoreCompletionMode":1} ,
+        \ { '=~': '\.$'              , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)", "ignoreCompletionMode":1}
         \ { '=~': '/'                , 'feedkeys': "\<C-x>\<C-f>"  , "ignoreCompletionMode":1} ,
     \ ]})
 
@@ -302,30 +302,30 @@ if &runtimepath =~ 'SimpleAutoComplPop'
         \ ]})
     else
         autocmd FileType python call sacp#enableForThisBuffer({ "matches": [
-            \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
-            \ { '=~': '\.$'            , 'feedkeys': "\<C-x>\<C-o>"  , "ignoreCompletionMode":1} ,
-            \ { '=~': '/'              , 'feedkeys': "\<C-x>\<C-f>"  , "ignoreCompletionMode":1} ,
+            \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"}                          ,
+            \ { '=~': '\.$'            , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)" , "ignoreCompletionMode":1}
+            \ { '=~': '/'              , 'feedkeys': "\<C-x>\<C-f>"                           , "ignoreCompletionMode":1} ,
         \ ]})
     endif
 
     autocmd FileType javascript,java call sacp#enableForThisBuffer({ "matches": [
-        \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
-        \ { '=~': '\.$'            , 'feedkeys': "\<C-x>\<C-o>"  , "ignoreCompletionMode":1} ,
-        \ { '=~': '/'              , 'feedkeys': "\<C-x>\<C-f>"  , "ignoreCompletionMode":1} ,
+        \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"}                          ,
+        \ { '=~': '\.$'            , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)" , "ignoreCompletionMode":1}
+        \ { '=~': '/'              , 'feedkeys': "\<C-x>\<C-f>"                           , "ignoreCompletionMode":1} ,
     \ ]})
 
     autocmd BufNewFile,BufRead,BufEnter *.cpp,*.hpp call sacp#enableForThisBuffer({ "matches": [
         \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
-        \ { '=~': '\.$'            , 'feedkeys': "\<C-x>\<C-o>"  , "ignoreCompletionMode":1} ,
-        \ { '=~': '::$'            , 'feedkeys': "\<C-x>\<C-o>"} ,
-        \ { '=~': '->$'            , 'feedkeys': "\<C-x>\<C-o>"} ,
+        \ { '=~': '\.$'            , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)" , "ignoreCompletionMode":1}
+        \ { '=~': '->$'            , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)" , "ignoreCompletionMode":1}
+        \ { '=~': '::$'            , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)" , "ignoreCompletionMode":1}
         \ { '=~': '/'              , 'feedkeys': "\<C-x>\<C-f>"  , "ignoreCompletionMode":1} ,
     \ ]})
 
     autocmd BufNewFile,BufRead,BufEnter *.c,*.h call sacp#enableForThisBuffer({ "matches": [
         \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
-        \ { '=~': '\.$'            , 'feedkeys': "\<C-x>\<C-o>"  , "ignoreCompletionMode":1} ,
-        \ { '=~': '->$'            , 'feedkeys': "\<C-x>\<C-o>"} ,
+        \ { '=~': '\.$'            , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)" , "ignoreCompletionMode":1}
+        \ { '=~': '->$'            , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)" , "ignoreCompletionMode":1}
         \ { '=~': '/'              , 'feedkeys': "\<C-x>\<C-f>"  , "ignoreCompletionMode":1} ,
     \ ]})
 endif
@@ -731,18 +731,26 @@ endif
 " IndentLine {{{
 
 if &runtimepath =~ 'indentLine'
-    " Show indentation lines
+    " Show indentation lines for space indented code
+    " If you use code tab indention you can set this
+    " set list lcs=tab:\┊\
+
     nnoremap tdi :IndentLinesToggle<CR>
-    let g:indentLine_enabled = 1
-    let g:indentLine_char    = '┊'
-
-    " TODO set visual lines only in source files
-    " augroup VisualIndent
-    "     autocmd!
-    "     autocmd FileType text autocmd BufReadPre IndentLinesDisable
-    "     autocmd FileType * autocmd BufReadPre IndentLinesEnable
-    " augroup END
-
+    let g:indentLine_char            = '┊'
+    let g:indentLine_color_gui       = '#DDC188'
+    let g:indentLine_color_term      = 214
+    let g:indentLine_enabled         = 1
+    let g:indentLine_setColors       = 1
+    let g:indentLine_fileTypeExclude = [
+        \     'text',
+        \     'conf',
+        \     'markdown',
+        \ ]
+    let g:indentLine_bufNameExclude = [
+        \     '*.org',
+        \     'COMMIT_EDITMSG',
+        \     'NERD_tree.*',
+        \ ]
 endif
 
 " }}} EndIndentLine
@@ -752,8 +760,8 @@ endif
 if &runtimepath =~ 'vim-autoformat'
     noremap <F9> :Autoformat<CR>
     vnoremap <F9> :Autoformat<CR>gv
-    autocmd! BufWritePost * Autoformat
-    autocmd FileType markdown,vim,tex,python,make,asm,conf let b:autoformat_autoindent=0
+    autocmd! BufWritePre * Autoformat
+    autocmd FileType markdown,vim,text,tex,python,make,asm,conf let b:autoformat_autoindent=0
 endif
 
 " }}} EndAutoFormat
