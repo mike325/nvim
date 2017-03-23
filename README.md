@@ -22,7 +22,6 @@
                                            .`                                 `/
 ```
 
-
 This repo have mi personal Vim/Neovim settings that I have been collecting for a while, feel free to change
 anything to fit your needs or suggest me something that you think could be useful.
 
@@ -60,7 +59,7 @@ I have personally test this configurations in the following environment:
 * Windows 8.1
     * Cygwin
         - Vim 8.0.94
-    * Git bash (some problems loading python modules)
+    * Git bash (without python modules)
         - Vim 8.0.27
     * Gvim 8.0 64 bits
 
@@ -97,15 +96,16 @@ Once you have cloned the repo just run `:PlugInstall` inside Vim/Neovim to compl
 
 Included plugins:
 - Default plugins
-    * [Vim-colorschemes](https://github.com/flazz/vim-colorschemes)
-    * [neoSolarized](https://github.com/icymind/NeoSolarized)
+    * [Vim-monokai](https://github.com/sickill/vim-monokai)
+    * [Jellybeans.vim](https://github.com/nanotech/jellybeans.vim)
+    * [Vim-gotham](https://github.com/whatyouhide/vim-gotham)
+    * [Onedark.vim](https://github.com/joshdick/onedark.vim)
     * [Gruvbox](https://github.com/morhetz/gruvbox)
     * [DelimitMate](https://github.com/Raimondi/delimitMate)
     * [Nerdtree](https://github.com/scrooloose/nerdtree)
     * [Nerdcommenter](https://github.com/scrooloose/nerdcommenter)
     * [Vim-airline](https://github.com/vim-airline/vim-airline)
     * [Vim-airline-themes](https://github.com/vim-airline/vim-airline-themes)
-    * [Vim-airline-clock](https://github.com/enricobacis/vim-airline-clock)
     * [Vim-gitgutter](https://github.com/airblade/vim-gitgutter)
     * [Vim-fugitive](https://github.com/tpope/vim-fugitive)
     * [Committia.vim](https://github.com/rhysd/committia.vim)
@@ -134,6 +134,9 @@ Included plugins:
     * [Vimtex](https://github.com/lervag/vimtex)
     * [Vim-windowswap](https://github.com/wesQ3/vim-windowswap)
 
+- If is running on unix system
+    * [Vim-eunuch](https://github.com/tpope/vim-eunuch)
+
 - If go is install
     * [Vim-go](https://github.com/fatih/vim-go)
 
@@ -158,7 +161,10 @@ Included plugins:
         * [Deoplete-ternjs](https://github.com/carlitux/deoplete-ternjs)
         * [Vim-javacomplete2](https://github.com/artur-shaik/vim-javacomplete2)
 
-    - If Deoplete could not be installed
+    - If Deoplete could not be installed and Neovim or vim 8 is running
+        * [completor.vim](https://github.com/maralla/completor.vim)
+
+    - If neither Deoplete nor Completor could been installed
         * [YouCompleteMe](https://github.com/Valloric/YouCompleteMe)
         * [Ycm-generator](https://github.com/rdnetto/ycm-generator)
 

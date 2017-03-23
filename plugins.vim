@@ -1,6 +1,6 @@
 " ############################################################################
 "
-"                               Plugin configuraitions
+"                            Plugin configurations
 "
 "                                     -`
 "                     ...            .o+`
@@ -23,49 +23,106 @@
 "                   .`                                 `/
 " ############################################################################
 
-" ################ BufferBye settings #################
-" better behave buffer deletion
+" LazyLoad {{{
+
+" Better behave buffer deletion
 nnoremap <leader>d :Bdelete!<CR>
 
-" ################ EasyMotions Settings #################
+" CtrlP {{{
+
+nnoremap <C-b> :CtrlPBuffer<CR>
+nnoremap <C-p> :CtrlP<CR>
+let g:ctrlp_match_window = 'bottom,order:ttb,min:1,max:30,results:50'
+let g:ctrlp_map = '<C-p>'
+let g:ctrlp_working_path_mode = 'ra'
+let g:ctrlp_custom_ignore = {
+            \ 'dir':  '\v[\/]\.(git|hg|svn)$',
+            \ 'file': '\v\.(exe|bin|o|so|dll|pyc|zip|sw|swp)$',
+            \ }
+
+if has("win32") || has("win64")
+    let g:ctrlp_user_command = {
+        \   'types': {
+        \       1: ['.git', 'cd %s && git ls-files -co --exclude-standard']
+        \   },
+        \   'fallback': 'find %s -type f',
+        \ }
+else
+    let g:ctrlp_user_command = {
+        \   'types': {
+        \       1: ['.git', 'cd %s && git ls-files -co --exclude-standard']
+        \   },
+        \   'fallback': 'dir %s /-n /b /s /a-d',
+        \ }
+endif
+
+" }}} EndCtrlP
+
+" NERDTree {{{
+
+" Ignore files in NERDTree
+let NERDTreeIgnore              = ['\.pyc$', '\~$', '\.sw$', '\.swp$']
+let NERDTreeShowBookmarks       = 1
+
+" If you don't have unicode, uncomment the following lines
+" let NERDTreeDirArrowExpandable  = '+'
+" let NERDTreeDirArrowCollapsible = '~'
+
+nnoremap T :NERDTreeToggle<CR>
+nnoremap <F3> :NERDTreeToggle<CR>
+imap <F3> <Esc><F3>
+vmap <F3> <Esc><F3>
+
+" Enable line numbers
+let NERDTreeShowLineNumbers=1
+" Make sure relative line numbers are used
+autocmd FileType nerdtree setlocal relativenumber
+
+" }}} EndNERDTree
+
+" }}} EndLazyLoad
+
+" EasyMotions {{{
 " Temporally removed
-"
-" if &runtimepath =~ 'vim-easymotion'
-"     " Disable default mappings
-"     let g:EasyMotion_do_mapping = 0
-"     " Turn on ignore case
-"     let g:EasyMotion_smartcase = 1
-"
-"     " z{char} to move to {char}
-"     " search a character in the current buffer
-"     nmap \ <Plug>(easymotion-bd-f)
-"     vmap \ <Plug>(easymotion-bd-f)
-"     " search a character in the current layout
-"     nmap <leader>\ <Plug>(easymotion-overwin-f)
-"     vmap <leader>\ <Plug>(easymotion-overwin-f)
-"
-"     " repeat the last motion
-"     nmap <leader>. <Plug>(easymotion-repeat)
-"     vmap <leader>. <Plug>(easymotion-repeat)
-"     " repeat the next match of the current last motion
-"     nmap <leader>, <Plug>(easymotion-next)
-"     vmap <leader>, <Plug>(easymotion-next)
-"     " repeat the prev match of the current last motion
-"     nmap <leader>; <Plug>(easymotion-prev)
-"     vmap <leader>; <Plug>(easymotion-prev)
-" endif
 
-" ################ Sessions settings #################
-" Session management
-" Auto save on exit
-let g:session_autosave = 'no'
-" Don't ask for load last session
-let g:session_autoload = 'no'
+if &runtimepath =~ 'vim-easymotion'
+    " Disable default mappings
+    let g:EasyMotion_do_mapping = 0
+    " Turn on ignore case
+    let g:EasyMotion_smartcase = 1
 
-let g:session_directory = g:os_editor.'sessions'
+    " z{char} to move to {char}
+    " search a character in the current buffer
+    nmap \ <Plug>(easymotion-bd-f)
+    vmap \ <Plug>(easymotion-bd-f)
+    " search a character in the current layout
+    nmap <leader>\ <Plug>(easymotion-overwin-f)
+    vmap <leader>\ <Plug>(easymotion-overwin-f)
+
+    " repeat the last motion
+    nmap <leader>. <Plug>(easymotion-repeat)
+    vmap <leader>. <Plug>(easymotion-repeat)
+    " repeat the next match of the current last motion
+    nmap <leader>, <Plug>(easymotion-next)
+    vmap <leader>, <Plug>(easymotion-next)
+    " repeat the prev match of the current last motion
+    nmap <leader>; <Plug>(easymotion-prev)
+    vmap <leader>; <Plug>(easymotion-prev)
+endif
+
+" }}} EndEasyMotions
+
+" Sessions {{{
 
 if &runtimepath =~ 'vim-session'
-    " nnoremap <leader>d :DeleteSession
+    " Session management
+    " Auto save on exit
+    let g:session_autosave = 'no'
+    " Don't ask for load last session
+    let g:session_autoload = 'no'
+
+    let g:session_directory = g:os_editor.'sessions'
+
     " Quick open session
     nnoremap <leader>o :OpenSession
     " Save current files in a session
@@ -78,16 +135,9 @@ if &runtimepath =~ 'vim-session'
     nnoremap <leader><leader>d :DeleteSession<CR>
 endif
 
-" ################ CtrlP settings #################
-nnoremap <C-b> :CtrlPBuffer<CR>
-nnoremap <C-p> :CtrlP<CR>
-let g:ctrlp_match_window = 'bottom,order:ttb,min:1,max:30,results:50'
-let g:ctrlp_map = '<C-p>'
-let g:ctrlp_working_path_mode = 'ra'
-let g:ctrlp_custom_ignore = {
-            \ 'dir':  '\v[\/]\.(git|hg|svn)$',
-            \ 'file': '\v\.(exe|bin|o|so|dll|pyc|zip|sw|swp)$',
-            \ }
+" }}} EndSessions
+
+" Grepper {{{
 
 if &runtimepath =~ 'vim-grepper'
     " let g:grepper.tools = ['ag', 'ack', 'git', 'grep', 'findstr' ]
@@ -98,7 +148,10 @@ if &runtimepath =~ 'vim-grepper'
     xmap gs  <plug>(GrepperOperator)
 endif
 
-" ################ NerdCommenter  #################
+" }}} EndGrepper
+
+" NerdCommenter {{{
+
 if &runtimepath =~ 'nerdcommenter'
     let g:NERDCompactSexyComs        = 0      " Use compact syntax for prettified multi-line comments
     let g:NERDSpaceDelims            = 1      " Add spaces after comment delimiters by default
@@ -113,30 +166,41 @@ if &runtimepath =~ 'nerdcommenter'
         \ }
 endif
 
-" ################# Themes #################
+" }}} EndNerdCommenter
 
-" colorscheme railscasts
-if &runtimepath =~ 'vim-colorschemes'
+" Themes {{{
+
+if &runtimepath =~ 'gruvbox'
     try
         colorscheme gruvbox
     catch
         echo 'Please run :PlugInstall to complete the installation or remove "colorscheme gruvbox"'
     endtry
 
-    nnoremap csm :colorscheme Monokai<CR>:AirlineTheme molokai<CR>
-    nnoremap cso :colorscheme onedark<CR>:AirlineTheme solarized<CR>
-    nnoremap csr :colorscheme railscasts<CR>:AirlineTheme molokai<CR>
-    nnoremap csg :colorscheme gruvbox<CR>:AirlineTheme gruvbox<CR>
-
     let g:gruvbox_contrast_dark = 'hard'
+    nnoremap csg :colorscheme gruvbox<CR>:AirlineTheme gruvbox<CR>
 endif
 
-if &runtimepath =~ 'NeoSolarized'
-    let g:neosolarized_visibility = "high"
-    nnoremap csn :colorscheme NeoSolarized<CR>:AirlineTheme solarized<CR>
+if &runtimepath =~ 'vim-monokai'
+    nnoremap csm :colorscheme monokai<CR>:AirlineTheme molokai<CR>
 endif
 
-" ################ Status bar Airline #################
+if &runtimepath =~ 'jellybeans.vim'
+    nnoremap csj :colorscheme jellybeans<CR>:AirlineTheme solarized<CR>
+endif
+
+if &runtimepath =~ 'onedark'
+    nnoremap cso :colorscheme onedark<CR>:AirlineTheme solarized<CR>
+endif
+
+if &runtimepath =~ 'vim-gotham'
+    " b for batman
+    nnoremap csb :colorscheme gotham<CR>:AirlineTheme gotham<CR>
+endif
+
+" }}} EndThemes
+
+" Airline {{{
 
 if &runtimepath =~ 'vim-airline'
     let g:airline#extensions#tabline#enabled           = 1
@@ -159,15 +223,22 @@ if &runtimepath =~ 'vim-airline-themes'
     let g:airline_theme = 'gruvbox'
 endif
 
-" ################# Snnipets and completion #################
+" }}} EndAirline
 
-" ################ SnipMate #################
+" Snippets and completion {{{
+
+" SnipMate {{{
+
 if &runtimepath =~ 'vim-snipmate'
+    nmap <C-k> <Plug>snipMateNextOrTrigger
     imap <C-k> <Plug>snipMateNextOrTrigger
     smap <C-k> <Plug>snipMateNextOrTrigger
 endif
 
-" ################ UltiSnips #################
+" }}} EndSnipMate
+
+" UltiSnips {{{
+
 if &runtimepath =~ 'ultisnips'
     let g:UltiSnipsSnippetDirectories=["UltiSnips"]
 
@@ -180,19 +251,37 @@ if &runtimepath =~ 'ultisnips'
     let g:UltiSnipsJumpBackwardTrigger = "<C-b>"
 endif
 
-" ################ Jedi complete #################
-if  &runtimepath =~ 'jedi-vim'
-    let g:jedi#popup_on_dot = 1
-    let g:jedi#popup_select_first = 1
-    let g:jedi#completions_command = "<C-c>"
-    let g:jedi#goto_command = "<leader>g"
-    let g:jedi#goto_assignments_command = "<leader>a"
-    let g:jedi#goto_definitions_command = "<leader>D"
-    let g:jedi#documentation_command = "K"
-    let g:jedi#usages_command = "<leader>u"
-    let g:jedi#rename_command = "<leader>r"
+" }}} EndUltiSnips
+
+" JavaComplete {{{
+
+if &runtimepath =~ 'vim-javacomplete2'
+    nnoremap <leader>si <Plug>(JavaComplete-Imports-AddSmart)
+    nnoremap <leader>mi <Plug>(JavaComplete-Imports-AddMissing)
 endif
 
+" }}} EndJavaComplete
+
+
+" Jedi {{{
+
+if  &runtimepath =~ 'jedi-vim'
+    autocmd FileType python let b:jedi#popup_on_dot = 1
+    autocmd FileType python let b:jedi#popup_select_first = 1
+    autocmd FileType python let b:jedi#completions_command = "<C-c>"
+    autocmd FileType python let b:jedi#goto_command = "<leader>g"
+    autocmd FileType python let b:jedi#goto_assignments_command = "<leader>a"
+    autocmd FileType python let b:jedi#goto_definitions_command = "<leader>D"
+    autocmd FileType python let b:jedi#documentation_command = "K"
+    autocmd FileType python let b:jedi#usages_command = "<leader>u"
+    autocmd FileType python let b:jedi#rename_command = "<leader>r"
+endif
+
+" }}} EndJedi
+
+" SimpleAutoComplPop {{{
+
+" TODO path completion should be improve
 if &runtimepath =~ 'SimpleAutoComplPop'
     autocmd FileType * call sacp#enableForThisBuffer({ "matches": [
         \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
@@ -201,7 +290,7 @@ if &runtimepath =~ 'SimpleAutoComplPop'
 
     autocmd FileType go call sacp#enableForThisBuffer({ "matches": [
         \ { '=~': '\v[a-zA-Z]{2}$'   , 'feedkeys': "\<C-x>\<C-n>"} ,
-        \ { '=~': '\.$'              , 'feedkeys': "\<C-x>\<C-o>"  , "ignoreCompletionMode":1} ,
+        \ { '=~': '\.$'              , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)", "ignoreCompletionMode":1},
         \ { '=~': '/'                , 'feedkeys': "\<C-x>\<C-f>"  , "ignoreCompletionMode":1} ,
     \ ]})
 
@@ -213,33 +302,37 @@ if &runtimepath =~ 'SimpleAutoComplPop'
         \ ]})
     else
         autocmd FileType python call sacp#enableForThisBuffer({ "matches": [
-            \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
-            \ { '=~': '\.$'            , 'feedkeys': "\<C-x>\<C-o>"  , "ignoreCompletionMode":1} ,
-            \ { '=~': '/'              , 'feedkeys': "\<C-x>\<C-f>"  , "ignoreCompletionMode":1} ,
+            \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"}                          ,
+            \ { '=~': '\.$'            , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)" , "ignoreCompletionMode":1},
+            \ { '=~': '/'              , 'feedkeys': "\<C-x>\<C-f>"                           , "ignoreCompletionMode":1} ,
         \ ]})
     endif
 
     autocmd FileType javascript,java call sacp#enableForThisBuffer({ "matches": [
-        \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
-        \ { '=~': '\.$'            , 'feedkeys': "\<C-x>\<C-o>"  , "ignoreCompletionMode":1} ,
-        \ { '=~': '/'              , 'feedkeys': "\<C-x>\<C-f>"  , "ignoreCompletionMode":1} ,
+        \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"}                          ,
+        \ { '=~': '\.$'            , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)" , "ignoreCompletionMode":1},
+        \ { '=~': '/'              , 'feedkeys': "\<C-x>\<C-f>"                           , "ignoreCompletionMode":1} ,
     \ ]})
 
     autocmd BufNewFile,BufRead,BufEnter *.cpp,*.hpp call sacp#enableForThisBuffer({ "matches": [
         \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
-        \ { '=~': '\.$'            , 'feedkeys': "\<C-x>\<C-o>"  , "ignoreCompletionMode":1} ,
-        \ { '=~': '::$'            , 'feedkeys': "\<C-x>\<C-o>"} ,
-        \ { '=~': '->$'            , 'feedkeys': "\<C-x>\<C-o>"} ,
+        \ { '=~': '\.$'            , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)" , "ignoreCompletionMode":1},
+        \ { '=~': '->$'            , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)" , "ignoreCompletionMode":1},
+        \ { '=~': '::$'            , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)" , "ignoreCompletionMode":1},
         \ { '=~': '/'              , 'feedkeys': "\<C-x>\<C-f>"  , "ignoreCompletionMode":1} ,
     \ ]})
 
     autocmd BufNewFile,BufRead,BufEnter *.c,*.h call sacp#enableForThisBuffer({ "matches": [
         \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
-        \ { '=~': '\.$'            , 'feedkeys': "\<C-x>\<C-o>"  , "ignoreCompletionMode":1} ,
-        \ { '=~': '->$'            , 'feedkeys': "\<C-x>\<C-o>"} ,
+        \ { '=~': '\.$'            , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)" , "ignoreCompletionMode":1},
+        \ { '=~': '->$'            , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)" , "ignoreCompletionMode":1},
         \ { '=~': '/'              , 'feedkeys': "\<C-x>\<C-f>"  , "ignoreCompletionMode":1} ,
     \ ]})
 endif
+
+" }}} SimpleAutoComplPop
+
+" Neocomplete {{{
 
 if &runtimepath =~ 'neocomplete.vim'
     "Note: This option must set it in .vimrc(_vimrc).  NOT IN .gvimrc(_gvimrc)!
@@ -307,6 +400,10 @@ if &runtimepath =~ 'neocomplete.vim'
     endif
 endif
 
+" }}} EndNeocomplete
+
+" Deoplete {{{
+
 if &runtimepath =~ 'deoplete.nvim'
     let g:deoplete#enable_at_startup = 1
 
@@ -335,6 +432,10 @@ if &runtimepath =~ 'deoplete.nvim'
                 \'[^. \t0-9]\.\w*',
                 \]
 
+    let g:deoplete#omni#input_patterns.javascript = [
+                \'[^. \t0-9]\.\w*',
+                \]
+
     let g:deoplete#omni#input_patterns.c = [
                 \'[^. \t0-9]\.\w*',
                 \'[^. \t0-9]\->\w*',
@@ -355,8 +456,18 @@ if &runtimepath =~ 'deoplete.nvim'
                 \'[^. \t0-9]\.\w*',
                 \]
 
-    " let g:deoplete#sources._ = ['buffer']
     " let g:deoplete#sources._ = ['buffer', 'member', 'file', 'tags', 'ultisnips']
+    let g:deoplete#sources={}
+    let g:deoplete#sources._    = ['buffer', 'member', 'file', 'ultisnips']
+
+    let g:deoplete#sources.vim        = ['buffer', 'member', 'file', 'ultisnips']
+    let g:deoplete#sources.c          = ['buffer', 'member', 'file', 'omni', 'ultisnips']
+    let g:deoplete#sources.cpp        = ['buffer', 'member', 'file', 'omni', 'ultisnips']
+    let g:deoplete#sources.go         = ['buffer', 'member', 'file', 'omni', 'ultisnips']
+    let g:deoplete#sources.java       = ['buffer', 'member', 'file', 'omni', 'ultisnips']
+    let g:deoplete#sources.python     = ['buffer', 'member', 'file', 'omni', 'ultisnips']
+    let g:deoplete#sources.javascript = ['buffer', 'member', 'file', 'omni', 'ultisnips']
+    let g:deoplete#sources.ruby       = ['buffer', 'member', 'file', 'ultisnips']
 
     " if !exists('g:deoplete#omni#input_patterns')
     "     let g:deoplete#omni#input_patterns = {}
@@ -364,11 +475,6 @@ if &runtimepath =~ 'deoplete.nvim'
 
     autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
     call deoplete#custom#set('ultisnips', 'matchers', ['matcher_full_fuzzy'])
-endif
-
-if &runtimepath =~ 'vim-javacomplete2'
-    nnoremap <leader>si <Plug>(JavaComplete-Imports-AddSmart)
-    nnoremap <leader>mi <Plug>(JavaComplete-Imports-AddMissing)
 endif
 
 if &runtimepath =~ 'deoplete-jedi'
@@ -390,6 +496,11 @@ if &runtimepath =~ 'deoplete-go'
     let g:deoplete#sources#go#use_cache   = 1
     let g:deoplete#sources#go#package_dot = 1
 endif
+
+" }}} EndDeoplete
+
+
+" YouCompleteMe {{{
 
 if &runtimepath =~ 'YouCompleteMe'
     let g:ycm_complete_in_comments                      = 1
@@ -424,9 +535,52 @@ if &runtimepath =~ 'YouCompleteMe'
     "       \}
 endif
 
-" ################# Syntax check #################
+" }}} EndYouCompleteMe
+
+
+" Completor {{{
+
+if &runtimepath =~ 'completor.vim'
+    inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+    inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+    inoremap <expr> <cr> pumvisible() ? "\<C-y>\<cr>" : "\<cr>"
+endif
+
+" }}} EndCompletor
+
+" }}} End Snippets and completion
+
+" Syntax check {{{
+
+" Neomake {{{
 if &runtimepath =~ "neomake"
-    autocmd BufWrite * Neomake
+    " TODO Config the proper makers for the languages I use
+    augroup Checkers
+        autocmd!
+        autocmd BufWritePost * Neomake
+        " " npm install -g jsonlint
+        " autocmd BufWritePost *.json Neomake jsonlint
+        " " npm install -g typescript
+        " autocmd BufWritePost *.html Neomake tidy
+        " " gem install scss-lint
+        " autocmd BufWritePost *.scss Neomake sasslint
+        " " gem install mdl
+        " autocmd BufWritePost *.md Neomake mdl
+        " " ( apt-get install / yaourt -S / dnf install ) shellcheck
+        " autocmd BufWritePost *.sh Neomake shellcheck
+        " " pip3 install vim-vint
+        " autocmd BufWritePost *.vim Neomake vint
+    augroup end
+
+    let g:neomake_warning_sign = {
+        \ 'text': 'W',
+        \ 'texthl': 'WarningMsg',
+        \ }
+
+    let g:neomake_error_sign = {
+        \ 'text': 'E',
+        \ 'texthl': 'ErrorMsg',
+        \ }
 
     nnoremap <F6> :Neomake<CR>
     imap <F6> <ESC>:Neomake<CR>a
@@ -438,9 +592,13 @@ if &runtimepath =~ "neomake"
     imap <F8> <ESC>:lclose<CR>a
 endif
 
+" }}} EndNeomake
+
+" Syntastic {{{
+
 if &runtimepath =~ "syntastic"
     " set sessionoptions-=blank
-    " Set passive mode by default, can be changed with ts map
+    " Set passive mode by default, can be changed with tsc map
     let g:syntastic_mode_map = {
         \ "mode": "passive",
         \ "active_filetypes": ["python", "sh"],
@@ -451,7 +609,7 @@ if &runtimepath =~ "syntastic"
     set statusline+=%{SyntasticStatuslineFlag()}
     set statusline+=%*
 
-    nnoremap ts :SyntasticToggleMode<CR>
+    nnoremap tsc :SyntasticToggleMode<CR>
 
     let g:syntastic_always_populate_loc_list = 1
     let g:syntastic_auto_loc_list = 1
@@ -477,23 +635,12 @@ if &runtimepath =~ "syntastic"
     nnoremap <F8> :lclose<CR>
 endif
 
-" ################# NERDTree quick open/close #################
-" Lazy load must be out of if
-" Ignore files in NERDTree
-let NERDTreeIgnore              = ['\.pyc$', '\~$', '\.sw$', '\.swp$']
-let NERDTreeShowBookmarks       = 1
-" let NERDTreeShowHidden          = 1
+" }}} EndSyntastic
 
-" If you don't have unicode, uncomment the following lines
-" let NERDTreeDirArrowExpandable  = '+'
-" let NERDTreeDirArrowCollapsible = '~'
+" }}} End Syntax check
 
-nnoremap T :NERDTreeToggle<CR>
-nnoremap <F3> :NERDTreeToggle<CR>
-imap <F3> <Esc><F3>
-vmap <F3> <Esc><F3>
+" Tabularize {{{
 
-" ################ Alignment with Tabularize #################
 if &runtimepath =~ 'tabular'
     nnoremap <leader>t= :Tabularize /=<CR>
     vmap <leader>t= :Tabularize /=<CR>
@@ -511,21 +658,44 @@ if &runtimepath =~ 'tabular'
     vmap <leader>t* :Tabularize /*<CR>
 endif
 
-" ################ Fugitive #################
+" }}} EndTabularize
+
+" Git integrations {{{
+
+" Fugitive {{{
+
 if &runtimepath =~ 'vim-fugitive'
     nnoremap <leader>gs :Gstatus<CR>
     nnoremap <leader>gc :Gcommit<CR>
     nnoremap <leader>gd :Gdiff<CR>
-    " nnoremap <leader>gc :Gcommit<CR>
+    nnoremap <leader>gw :Gwrite<CR>
+    nnoremap <leader>gr :Gread<CR>
 endif
 
-" ################ GitGutter #################
+" }}} EndFugitive
+
+" GitGutter {{{
+
 if &runtimepath =~ 'vim-gitgutter'
     nnoremap tg :GitGutterToggle<CR>
     nnoremap tl :GitGutterLineHighlightsToggle<CR>
-endif
+    let g:gitgutter_map_keys = 0
 
-" ################ Signature #################
+    nmap [h <Plug>GitGutterPrevHunk
+    nmap ]h <Plug>GitGutterNextHunk
+
+    nmap <leader>ghs <Plug>GitGutterStageHunk
+    nmap <leader>ghu <Plug>GitGutterUndoHunk
+
+    omap ih <Plug>GitGutterTextObjectInnerPending
+    omap ah <Plug>GitGutterTextObjectOuterPending
+    xmap ih <Plug>GitGutterTextObjectInnerVisual
+    xmap ah <Plug>GitGutterTextObjectOuterVisual
+endif
+" }}} EndGitGutter
+
+" Signature {{{
+
 if &runtimepath =~ 'vim-signature'
     nnoremap <leader><leader>g :SignatureListGlobalMarks<CR>
     imap <C-s>g <ESC>:SignatureListGlobalMarks<CR>
@@ -536,7 +706,12 @@ if &runtimepath =~ 'vim-signature'
     nnoremap tS :SignatureToggleSigns<CR>
 endif
 
-" ################ TagsBar #################
+" }}} EndSignature
+
+" }}} End Git integrations
+
+" TagsBar {{{
+
 if &runtimepath =~ 'tagbar'
     nnoremap tt :TagbarToggle<CR>
     nnoremap <F1> :TagbarToggle<CR>
@@ -544,23 +719,53 @@ if &runtimepath =~ 'tagbar'
     vmap <F1> :TagbarToggle<CR>gv
 endif
 
-" ################ Move #################
+" }}} EndTagsBar
+
+" Move {{{
 if &runtimepath =~ 'vim-move'
     " Set Ctrl key as default. Commands <C-j> and <C-k>
     let g:move_key_modifier = 'C'
 endif
+" }}} EndMove
 
-" ################ indentLine #################
+" IndentLine {{{
+
 if &runtimepath =~ 'indentLine'
-    " Show indentation lines
+    " Show indentation lines for space indented code
+    " If you use code tab indention you can set this
+    " set list lcs=tab:\┊\
+
     nnoremap tdi :IndentLinesToggle<CR>
-    let g:indentLine_enabled = 0
-    let g:indentLine_char    = '┊'
+    let g:indentLine_char            = '┊'
+    let g:indentLine_color_gui       = '#DDC188'
+    let g:indentLine_color_term      = 214
+    let g:indentLine_enabled         = 1
+    let g:indentLine_fileTypeExclude = [
+        \     'text',
+        \     'conf',
+        \     'markdown',
+        \     'git',
+        \ ]
+
+    " TODO Check how to remove lines in neovim's terminal
+    let g:indentLine_bufNameExclude = [
+        \     '*.org',
+        \     'COMMIT_EDITMSG',
+        \     'NERD_tree.*',
+        \ ]
+
 endif
 
-" ################ AutoFormat #################
+" }}} EndIndentLine
+
+" AutoFormat {{{
+
 if &runtimepath =~ 'vim-autoformat'
     noremap <F9> :Autoformat<CR>
     vnoremap <F9> :Autoformat<CR>gv
-    autocmd FileType vim,tex,python,make,asm,conf let b:autoformat_autoindent=0
+    autocmd! BufWritePre * Autoformat
+    autocmd FileType gitcommit,markdown,vim,text,tex,python,make,asm,conf
+        \ let b:autoformat_autoindent=0
 endif
+
+" }}} EndAutoFormat
