@@ -740,20 +740,19 @@ if &runtimepath =~ 'indentLine'
     let g:indentLine_color_gui       = '#DDC188'
     let g:indentLine_color_term      = 214
     let g:indentLine_enabled         = 1
+    let g:indentLine_setColors       = 1
     let g:indentLine_fileTypeExclude = [
         \     'text',
         \     'conf',
         \     'markdown',
         \     'git',
         \ ]
-
     " TODO Check how to remove lines in neovim's terminal
     let g:indentLine_bufNameExclude = [
         \     '*.org',
         \     'COMMIT_EDITMSG',
         \     'NERD_tree.*',
         \ ]
-
 endif
 
 " }}} EndIndentLine
@@ -764,7 +763,7 @@ if &runtimepath =~ 'vim-autoformat'
     noremap <F9> :Autoformat<CR>
     vnoremap <F9> :Autoformat<CR>gv
     autocmd! BufWritePre * Autoformat
-    autocmd FileType gitcommit,markdown,vim,text,tex,python,make,asm,conf
+    autocmd FileType gitcommit,dosini,markdown,vim,text,tex,python,make,asm,conf
         \ let b:autoformat_autoindent=0
 endif
 
