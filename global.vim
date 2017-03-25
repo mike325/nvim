@@ -550,22 +550,68 @@ augroup end
 " }}} EndSpell
 
 " Skeletons {{{
+
+function! CMainOrFunc()
+
+    let b:file_name = expand('%:t:r')
+    let b:extension = expand('%:e')
+
+    if b:extension =~# "^cpp$"
+        if b:file_name =~# "^main$"
+            exec '0r '.fnameescape(g:os_editor.'skeletons/main.cpp')
+        else
+            exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.cpp')
+        endif
+    else
+        if b:file_name =~# "^main$"
+            exec '0r '.fnameescape(g:os_editor.'skeletons/main.c')
+        else
+            exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.c')
+        endif
+    endif
+
+endfunction
+
+function! CHeader()
+
+    let b:file_name = expand('%:t:r')
+    let b:extension = expand('%:e')
+
+    let b:upper_name = toupper(b:file_name)
+
+    if b:extension =~# "^cpp$"
+        exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.h')
+        exec '%s/NAME_HPP/'.b:upper_name.'_HPP/g'
+    else
+        exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.hpp')
+        exec '%s/NAME_H/'.b:upper_name.'_H/g'
+    endif
+
+endfunction
+
+function! JavaClass()
+    let b:file_name = expand('%:t:r')
+    let b:extension = expand('%:e')
+
+    exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.java')
+    exec '%s/NAME/'.b:file_name.'/e'
+endfunction
+
 augroup Skeletons
     autocmd!
     autocmd BufNewFile *.css  exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.css')
     autocmd BufNewFile *.html exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.html')
     autocmd BufNewFile *.md   exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.md')
-    autocmd BufNewFile *.js   exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.js')
-    autocmd BufNewFile *.xml  exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.xml')
     autocmd BufNewFile *.py   exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.py')
     autocmd BufNewFile *.go   exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.go')
     autocmd BufNewFile *.cs   exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.cs')
     autocmd BufNewFile *.php  exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.php')
-    autocmd BufNewFile *.java exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.java')
     autocmd BufNewFile *.sh   exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.sh')
-    autocmd BufNewFile *.cpp  exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.cpp')
-    autocmd BufNewFile *.hpp  exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.hpp')
-    autocmd BufNewFile *.c    exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.c')
-    autocmd BufNewFile *.h    exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.h')
+    autocmd BufNewFile *.java call JavaClass()
+    autocmd BufNewFile *.cpp  call CMainOrFunc()
+    autocmd BufNewFile *.hpp  call CHeader()
+    autocmd BufNewFile *.c    call CMainOrFunc()
+    autocmd BufNewFile *.h    call CHeader()
 augroup end
+" autocmd FileType * autocmd BufWritePre <buffer> call RemoveTrailingWhitespaces()
 " }}} EndSkeletons

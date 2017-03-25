@@ -1,5 +1,4 @@
-#ifndef NAME_HPP
-#define NAME_HPP
+#include <iostream>
 
 /*
  *                               -`
@@ -23,4 +22,8 @@
  *             .`                                 `/
  */
 
-#endif /* ifndef NAME_HPP */
+int main(int argc, char* argv[])
+{
+
+    return 0;
+}
