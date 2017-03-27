@@ -575,7 +575,7 @@ augroup end
 " }}} EndSpell
 
 " Skeletons {{{
-" TODO: Personalise more the templates
+" TODO: Improve personalization of the templates
 
 function! CMainOrFunc()
 
