@@ -163,6 +163,7 @@ if has("win32") || has("win64")
     execute 'set undodir='.fnameescape(g:os_editor.'tmp_dirs\undos')
     " execute 'set viminfo+=n'.fnameescape(g:os_editor.'tmp_dirs\viminfo')
 
+    " TODO make the windows method works as the Unix one
     if has("nvim")
         set viminfo+=n$USERPROFILE\\AppData\\Local\\nvim\\tmp_dirs\\viminfo
     else
