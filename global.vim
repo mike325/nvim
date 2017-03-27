@@ -283,8 +283,7 @@ if has('clipboard')
         set clipboard+=unnamedplus,unnamed
     endif
 elseif has("nvim")
-    " If system clipboard is not available, let me use selet the text and
-    " maually copy it
+    " If system clipboard is not available, disable the mouse selection
     set mouse=c
 endif
 
