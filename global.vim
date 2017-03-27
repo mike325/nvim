@@ -117,11 +117,15 @@ set nofoldenable      " dont fold by default
 set foldnestmax=10    " deepest fold is 10 levels
 " set foldlevel=1
 
-autocmd InsertEnter * :set norelativenumber
-autocmd InsertLeave * :set relativenumber
-
-augroup HelpNumbers
+" TODO make a funtion to save the state of the toggles
+augroup Numbers
     autocmd!
+    autocmd BufEnter * setlocal relativenumber
+    autocmd BufLeave * setlocal norelativenumber
+    autocmd InsertEnter * setlocal norelativenumber
+    autocmd InsertEnter * setlocal number
+    autocmd InsertLeave * setlocal relativenumber
+    autocmd InsertLeave * setlocal number
     autocmd FileType help setlocal number
     autocmd FileType help setlocal relativenumber
 augroup end
