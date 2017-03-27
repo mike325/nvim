@@ -145,9 +145,11 @@ Plug 'wesQ3/vim-windowswap'
 
 " Some useful text objects
 Plug 'kana/vim-textobj-user'
+
 " il inside the line (without leading and trailing spaces)
 " al around the line (with leading and trailing spaces)
 Plug 'kana/vim-textobj-line'
+
 " ic inside the comment (without leading and trailing spaces and
 "                        without comment characters)
 " iC inside the comment (with leading and trailing spaces and
@@ -258,7 +260,6 @@ if ( has("python") || has("python3") )
         let b:ycm_installed = 1
     endif
 
-
     if b:ycm_installed==0 && b:deoplete_installed==0 && b:completor==0
         " Completion for python without engines
         Plug 'davidhalter/jedi-vim'
@@ -297,3 +298,7 @@ execute 'source '.fnameescape(g:os_editor.'global.vim')
 
 " Load plugins configurations
 execute 'source '.fnameescape(g:os_editor.'plugins.vim')
+
+if filereadable(fnameescape(g:os_editor.'extras.vim'))
+    execute 'source '.fnameescape(g:os_editor.'extras.vim')
+endif

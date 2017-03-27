@@ -2,8 +2,9 @@ jedi
 flake8
 neovim
 pylint
-rope
 pydoc
 pyflakes
 pep8
 autopep8
+rope
+ropevim

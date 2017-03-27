@@ -31,10 +31,13 @@ set fileencoding=utf-8 " The encoding written to file.
 let mapleader=" "
 
 nnoremap , :
-vmap , :
+vnoremap , :
 
 " Similar behavior as C and D
-nmap Y y$
+nnoremap Y y$
+
+" Don't visual select the <CR> character
+vnoremap $ $h
 
 " Easy <ESC> insert mode
 imap jj <Esc>
@@ -76,12 +79,21 @@ set expandtab      " Use  spaces for indenting
 set smarttab       " Insert tabs on the start of a line according to
                    " shiftwidth, not tabstop
 
+if v:version > 704 || v:version == 704 && has('patch338') || has("nvim")
+    set breakindent " respect indentation when wrapping
+endif
+
 set shiftround     " Use multiple of shiftwidth when indenting with '<' and '>'
 set cursorline     " Turn on cursor line by default
 
-" cd to current file path
-" !! Removed to start using Tags file in projects
-" autocmd BufEnter * silent! lcd %:p:h
+"" Text formating
+set formatoptions+=r " auto insert comment with <Enter>...
+set formatoptions+=o " ...or o/O
+set formatoptions+=n " Recognize numbered lists
+
+if v:version > 703 || v:version == 703 && has('patch541') || has("nvim")
+   set formatoptions+=j " Delete comment when joining commented lines
+endif
 
 " Set path to look recursive in the current dir
 set path+=**
@@ -90,7 +102,10 @@ set path+=**
 set diffopt+=vertical
 
 " Disable sounds
-set visualbell
+set visualbell " visual bell instead of beeps, but...
+if !has('nvim')
+   set t_vb= " ...disable the visual effect :)
+endif
 
 set fileformats=unix,dos " File mode unix by default
 
@@ -102,10 +117,14 @@ set nofoldenable      " dont fold by default
 set foldnestmax=10    " deepest fold is 10 levels
 " set foldlevel=1
 
-" autocmd BufWinEnter *.c,*.h,*.cpp,*.hpp,*.java,*.go,*.js, *.sh setlocal foldmethod=syntax
-
 autocmd InsertEnter * :set norelativenumber
 autocmd InsertLeave * :set relativenumber
+
+augroup HelpNumbers
+    autocmd!
+    autocmd FileType help setlocal number
+    autocmd FileType help setlocal relativenumber
+augroup end
 
 if has("nvim")
     " Set modifiable to use easymotions
@@ -544,12 +563,15 @@ augroup Spells
     autocmd!
     autocmd FileType gitcommit setlocal spell
     autocmd FileType markdown setlocal spell
+    autocmd FileType tex setlocal spell
     autocmd FileType plaintex setlocal spell
     autocmd FileType text setlocal spell
+    autocmd FileType help setlocal nospell
 augroup end
 " }}} EndSpell
 
 " Skeletons {{{
+" TODO: Personalise more the templates
 
 function! CMainOrFunc()
 
@@ -613,5 +635,5 @@ augroup Skeletons
     autocmd BufNewFile *.c    call CMainOrFunc()
     autocmd BufNewFile *.h    call CHeader()
 augroup end
-" autocmd FileType * autocmd BufWritePre <buffer> call RemoveTrailingWhitespaces()
+
 " }}} EndSkeletons
