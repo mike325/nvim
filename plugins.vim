@@ -273,11 +273,11 @@ endif
 " Jedi {{{
 
 if  &runtimepath =~ 'jedi-vim'
-    let b:jedi#popup_select_first       = 0
-    let b:jedi#popup_on_dot             = 1
-    let b:jedi#completions_command      = "<C-c>"
-    let b:jedi#documentation_command    = "K"
-    let b:jedi#usages_command           = "<leader>u"
+    let g:jedi#popup_select_first       = 0
+    let g:jedi#popup_on_dot             = 0
+    let g:jedi#completions_command      = "<C-c>"
+    let g:jedi#documentation_command    = "K"
+    let g:jedi#usages_command           = "<leader>u"
 endif
 
 " }}} EndJedi
