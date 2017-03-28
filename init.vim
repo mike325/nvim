@@ -278,13 +278,12 @@ endif
 
 " completion without python completion engines ( ycm, deoplete or completer )
 if b:ycm_installed==0 && b:deoplete_installed==0 && b:completor==0
-    Plug 'ervandew/supertab'
-
     " Neovim does not support Lua plugins yet
     if has("lua") && !has("nvim")
         Plug 'Shougo/neocomplete.vim'
     else
-        Plug 'roxma/SimpleAutoComplPop'
+        Plug 'ervandew/supertab'
+        " Plug 'roxma/SimpleAutoComplPop'
     endif
 endif
 

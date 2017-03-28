@@ -160,24 +160,23 @@ set undofile " persistent undos - undo after you re-open the file
 if has("win32") || has("win64")
     execute 'set directory='.fnameescape(g:os_editor.'tmp_dirs\swap')
     execute 'set backupdir='.fnameescape(g:os_editor.'tmp_dirs\backup')
+    execute 'set backupdir='.fnameescape(g:os_editor.'tmp_dirs\backup')
     execute 'set undodir='.fnameescape(g:os_editor.'tmp_dirs\undos')
-    " execute 'set viminfo+=n'.fnameescape(g:os_editor.'tmp_dirs\viminfo')
+    set backupskip=\\tmp\\*,\\private\\tmp\\*,\\tmp_*\\*
 
     " TODO make the windows method works as the Unix one
+    " execute 'set viminfo+=n'.fnameescape(g:os_editor.'tmp_dirs\viminfo')
     if has("nvim")
         set viminfo+=n$USERPROFILE\\AppData\\Local\\nvim\\tmp_dirs\\viminfo
     else
         set viminfo+=n$USERPROFILE\\vimfiles\\tmp_dirs\\viminfo
     endif
-
-    let g:yankring_history_dir = g:os_editor.'tmp_dirs\yank'
 else
     execute 'set directory='.fnameescape(g:os_editor.'tmp_dirs/swap')
     execute 'set backupdir='.fnameescape(g:os_editor.'tmp_dirs/backup')
     execute 'set undodir='.fnameescape(g:os_editor.'tmp_dirs/undos')
     execute 'set viminfo+=n'.fnameescape(g:os_editor.'tmp_dirs/viminfo')
-
-    let g:yankring_history_dir = g:os_editor.'tmp_dirs/yank'
+    set backupskip=/tmp/*,/private/tmp/*,/tmp_*/*
 endif
 
 " If the dirs does't exists, create them

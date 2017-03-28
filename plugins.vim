@@ -301,8 +301,22 @@ endif
 
 " }}} EndJedi
 
-" SimpleAutoComplPop {{{
+" SuperTab {{{
+if &runtimepath =~ 'supertab'
+    let g:SuperTabDefaultCompletionType = "context"
+    let g:SuperTabContextDefaultCompletionType = "<c-p>"
+    let g:SuperTabCompletionContexts = ['s:ContextText', 's:extDiscover']
+    let g:SuperTabContextDiscoverDiscovery = ["&omnifunc:<c-x><c-o>"]
+    autocmd FileType *
+            \if &omnifunc != '' |
+            \   call SuperTabChain(&omnifunc, "<c-p>") |
+            \   call SuperTabSetDefaultCompletionType("<c-x><c-o>") |
+            \endif
+endif
+" }}} EndSuperTab
 
+" SimpleAutoComplPop {{{
+" TODO Plugin Temporally disable, is currently unmaintained
 " TODO path completion should be improve
 if &runtimepath =~ 'SimpleAutoComplPop'
     autocmd FileType * call sacp#enableForThisBuffer({ "matches": [
@@ -310,19 +324,11 @@ if &runtimepath =~ 'SimpleAutoComplPop'
         \ { '=~': '/$'             , 'feedkeys': "\<C-x>\<C-f>" , "ignoreCompletionMode":1} ,
     \ ]})
 
-      " This is because if python is active jedi will provide completion
-    if ( has("python") || has("python3") )
-        autocmd FileType python call sacp#enableForThisBuffer({ "matches": [
-            \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-p>" , "ignoreCompletionMode":1} ,
-            \ { '=~': '/$'             , 'feedkeys': "\<C-x>\<C-f>" , "ignoreCompletionMode":1} ,
-        \ ]})
-    else
-        autocmd FileType python call sacp#enableForThisBuffer({ "matches": [
-            \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-p>"                           , "ignoreCompletionMode":1} ,
-            \ { '=~': '\.$'            , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)" , "ignoreCompletionMode":1} ,
-            \ { '=~': '/$'             , 'feedkeys': "\<C-x>\<C-f>"                           , "ignoreCompletionMode":1} ,
-        \ ]})
-    endif
+    autocmd FileType python call sacp#enableForThisBuffer({ "matches": [
+        \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-p>"                           , "ignoreCompletionMode":1} ,
+        \ { '=~': '\.$'            , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)" , "ignoreCompletionMode":1} ,
+        \ { '=~': '/$'             , 'feedkeys': "\<C-x>\<C-f>"                           , "ignoreCompletionMode":1} ,
+    \ ]})
 
     autocmd FileType javascript,java,go call sacp#enableForThisBuffer({ "matches": [
         \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-p>"                           , "ignoreCompletionMode":1} ,
