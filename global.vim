@@ -160,6 +160,7 @@ set undofile " persistent undos - undo after you re-open the file
 if has("win32") || has("win64")
     execute 'set directory='.fnameescape(g:os_editor.'tmp_dirs\swap')
     execute 'set backupdir='.fnameescape(g:os_editor.'tmp_dirs\backup')
+    execute 'set backupdir='.fnameescape(g:os_editor.'tmp_dirs\backup')
     execute 'set undodir='.fnameescape(g:os_editor.'tmp_dirs\undos')
     set backupskip=\\tmp\\*,\\private\\tmp\\*,\\tmp_*\\*
 

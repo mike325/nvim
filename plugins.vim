@@ -777,14 +777,24 @@ endif
 " AutoFormat {{{
 
 if &runtimepath =~ 'vim-autoformat'
+    let g:auto_format = 1
+
+    function! CheckAutoFormat()
+        if g:auto_format == 1
+           exec "Autoformat"
+        endif
+    endfunction
+
     noremap <F9> :Autoformat<CR>
-    vnoremap <F9> :Autoformat<CR>gv
+
+    let g:formatter_yapf_style = 'pep8'
+
     augroup AutoFormat
         autocmd!
         autocmd FileType gitcommit,dosini,markdown,vim,text,tex,python,make,asm,conf
             \ let b:autoformat_autoindent=0
         autocmd BufNewFile,BufRead,BufEnter *.log let b:autoformat_autoindent=0
-        autocmd BufWritePre * Autoformat
+        autocmd BufWritePre * call CheckAutoFormat()
     augroup end
 endif
 
