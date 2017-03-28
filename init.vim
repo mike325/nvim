@@ -298,6 +298,7 @@ execute 'source '.fnameescape(g:os_editor.'global.vim')
 " Load plugins configurations
 execute 'source '.fnameescape(g:os_editor.'plugins.vim')
 
-if filereadable(fnameescape(g:os_editor.'extras.vim'))
+" Load especial host configurations
+if filereadable(expand(fnameescape(g:os_editor.'extras.vim')))
     execute 'source '.fnameescape(g:os_editor.'extras.vim')
 endif
