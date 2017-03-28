@@ -31,10 +31,13 @@ set fileencoding=utf-8 " The encoding written to file.
 let mapleader=" "
 
 nnoremap , :
-vmap , :
+vnoremap , :
 
 " Similar behavior as C and D
-nmap Y y$
+nnoremap Y y$
+
+" Don't visual select the <CR> character
+vnoremap $ $h
 
 " Easy <ESC> insert mode
 imap jj <Esc>
@@ -76,12 +79,21 @@ set expandtab      " Use  spaces for indenting
 set smarttab       " Insert tabs on the start of a line according to
                    " shiftwidth, not tabstop
 
+if v:version > 704 || v:version == 704 && has('patch338') || has("nvim")
+    set breakindent " respect indentation when wrapping
+endif
+
 set shiftround     " Use multiple of shiftwidth when indenting with '<' and '>'
 set cursorline     " Turn on cursor line by default
 
-" cd to current file path
-" !! Removed to start using Tags file in projects
-" autocmd BufEnter * silent! lcd %:p:h
+"" Text formating
+set formatoptions+=r " auto insert comment with <Enter>...
+set formatoptions+=o " ...or o/O
+set formatoptions+=n " Recognize numbered lists
+
+if v:version > 703 || v:version == 703 && has('patch541') || has("nvim")
+   set formatoptions+=j " Delete comment when joining commented lines
+endif
 
 " Set path to look recursive in the current dir
 set path+=**
@@ -90,7 +102,10 @@ set path+=**
 set diffopt+=vertical
 
 " Disable sounds
-set visualbell
+set visualbell " visual bell instead of beeps, but...
+if !has('nvim')
+   set t_vb= " ...disable the visual effect :)
+endif
 
 set fileformats=unix,dos " File mode unix by default
 
@@ -102,10 +117,19 @@ set nofoldenable      " dont fold by default
 set foldnestmax=10    " deepest fold is 10 levels
 " set foldlevel=1
 
-" autocmd BufWinEnter *.c,*.h,*.cpp,*.hpp,*.java,*.go,*.js, *.sh setlocal foldmethod=syntax
-
-autocmd InsertEnter * :set norelativenumber
-autocmd InsertLeave * :set relativenumber
+" TODO make a funtion to save the state of the toggles
+augroup Numbers
+    autocmd!
+    autocmd BufEnter * setlocal relativenumber
+    autocmd BufEnter * setlocal number
+    autocmd BufLeave * setlocal norelativenumber
+    autocmd InsertEnter * setlocal norelativenumber
+    autocmd InsertEnter * setlocal number
+    autocmd InsertLeave * setlocal relativenumber
+    autocmd InsertLeave * setlocal number
+    autocmd FileType help setlocal number
+    autocmd FileType help setlocal relativenumber
+augroup end
 
 if has("nvim")
     " Set modifiable to use easymotions
@@ -140,6 +164,7 @@ if has("win32") || has("win64")
     execute 'set undodir='.fnameescape(g:os_editor.'tmp_dirs\undos')
     " execute 'set viminfo+=n'.fnameescape(g:os_editor.'tmp_dirs\viminfo')
 
+    " TODO make the windows method works as the Unix one
     if has("nvim")
         set viminfo+=n$USERPROFILE\\AppData\\Local\\nvim\\tmp_dirs\\viminfo
     else
@@ -259,8 +284,7 @@ if has('clipboard')
         set clipboard+=unnamedplus,unnamed
     endif
 elseif has("nvim")
-    " If system clipboard is not available, let me use selet the text and
-    " maually copy it
+    " If system clipboard is not available, disable the mouse selection
     set mouse=c
 endif
 
@@ -544,30 +568,77 @@ augroup Spells
     autocmd!
     autocmd FileType gitcommit setlocal spell
     autocmd FileType markdown setlocal spell
+    autocmd FileType tex setlocal spell
     autocmd FileType plaintex setlocal spell
     autocmd FileType text setlocal spell
+    autocmd FileType help setlocal nospell
 augroup end
 " }}} EndSpell
 
 " Skeletons {{{
-" TODO  Finish all skeleton files and make different skeletons for
-"       other situations (classes, scripts, etc.)
+" TODO: Improve personalization of the templates
+
+function! CMainOrFunc()
+
+    let b:file_name = expand('%:t:r')
+    let b:extension = expand('%:e')
+
+    if b:extension =~# "^cpp$"
+        if b:file_name =~# "^main$"
+            exec '0r '.fnameescape(g:os_editor.'skeletons/main.cpp')
+        else
+            exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.cpp')
+        endif
+    else
+        if b:file_name =~# "^main$"
+            exec '0r '.fnameescape(g:os_editor.'skeletons/main.c')
+        else
+            exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.c')
+        endif
+    endif
+
+endfunction
+
+function! CHeader()
+
+    let b:file_name = expand('%:t:r')
+    let b:extension = expand('%:e')
+
+    let b:upper_name = toupper(b:file_name)
+
+    if b:extension =~# "^cpp$"
+        exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.h')
+        exec '%s/NAME_HPP/'.b:upper_name.'_HPP/g'
+    else
+        exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.hpp')
+        exec '%s/NAME_H/'.b:upper_name.'_H/g'
+    endif
+
+endfunction
+
+function! JavaClass()
+    let b:file_name = expand('%:t:r')
+    let b:extension = expand('%:e')
+
+    exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.java')
+    exec '%s/NAME/'.b:file_name.'/e'
+endfunction
+
 augroup Skeletons
     autocmd!
     autocmd BufNewFile *.css  exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.css')
     autocmd BufNewFile *.html exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.html')
     autocmd BufNewFile *.md   exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.md')
-    autocmd BufNewFile *.js   exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.js')
-    autocmd BufNewFile *.xml  exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.xml')
     autocmd BufNewFile *.py   exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.py')
     autocmd BufNewFile *.go   exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.go')
     autocmd BufNewFile *.cs   exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.cs')
     autocmd BufNewFile *.php  exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.php')
-    autocmd BufNewFile *.java exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.java')
     autocmd BufNewFile *.sh   exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.sh')
-    autocmd BufNewFile *.cpp  exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.cpp')
-    autocmd BufNewFile *.hpp  exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.hpp')
-    autocmd BufNewFile *.c    exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.c')
-    autocmd BufNewFile *.h    exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.h')
+    autocmd BufNewFile *.java call JavaClass()
+    autocmd BufNewFile *.cpp  call CMainOrFunc()
+    autocmd BufNewFile *.hpp  call CHeader()
+    autocmd BufNewFile *.c    call CMainOrFunc()
+    autocmd BufNewFile *.h    call CHeader()
 augroup end
+
 " }}} EndSkeletons

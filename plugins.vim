@@ -246,6 +246,13 @@ if &runtimepath =~ 'ultisnips'
         let g:UltiSnipsUsePythonVersion = 3
     endif
 
+    " TODO Make this crap work
+    let g:ulti_expand_or_jump_res = 0
+    function! Ulti_ExpandOrJump_and_getRes()
+        call UltiSnips#ExpandSnippetOrJump()
+        return g:ulti_expand_or_jump_res
+    endfunction
+
     let g:UltiSnipsExpandTrigger       = "<C-k>"
     let g:UltiSnipsJumpForwardTrigger  = "<C-f>"
     let g:UltiSnipsJumpBackwardTrigger = "<C-b>"
@@ -266,15 +273,30 @@ endif
 " Jedi {{{
 
 if  &runtimepath =~ 'jedi-vim'
-    autocmd FileType python let b:jedi#popup_on_dot = 1
-    autocmd FileType python let b:jedi#popup_select_first = 1
-    autocmd FileType python let b:jedi#completions_command = "<C-c>"
-    autocmd FileType python let b:jedi#goto_command = "<leader>g"
-    autocmd FileType python let b:jedi#goto_assignments_command = "<leader>a"
-    autocmd FileType python let b:jedi#goto_definitions_command = "<leader>D"
-    autocmd FileType python let b:jedi#documentation_command = "K"
-    autocmd FileType python let b:jedi#usages_command = "<leader>u"
-    autocmd FileType python let b:jedi#rename_command = "<leader>r"
+    let g:jedi#popup_select_first       = 0
+    let g:jedi#popup_on_dot             = 1
+    let g:jedi#completions_command      = "<C-c>"
+    let g:jedi#documentation_command    = "K"
+    let g:jedi#usages_command           = "<leader>u"
+endif
+
+" }}} EndJedi
+
+" Python-mode {{{
+
+if  &runtimepath =~ 'python-mode'
+    let g:pymode_rope                 = 0
+    let g:pymode_rope_lookup_project  = 0
+    let g:pymode_rope_complete_on_dot = 0
+    let pymode_lint_on_write          = 0
+    let pymode_lint_checkers          = ['flake8', 'pep8', 'mccabe']
+    let g:ropevim_autoimport_modules  = [
+        \   "os.*",
+        \   "sys.*",
+        \   "traceback",
+        \   "django.*",
+        \   "xml.etree",
+        \ ]
 endif
 
 " }}} EndJedi
@@ -284,49 +306,36 @@ endif
 " TODO path completion should be improve
 if &runtimepath =~ 'SimpleAutoComplPop'
     autocmd FileType * call sacp#enableForThisBuffer({ "matches": [
-        \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
-        \ { '=~': '/'              , 'feedkeys': "\<C-x>\<C-f>"  , "ignoreCompletionMode":1} ,
-    \ ]})
-
-    autocmd FileType go call sacp#enableForThisBuffer({ "matches": [
-        \ { '=~': '\v[a-zA-Z]{2}$'   , 'feedkeys': "\<C-x>\<C-n>"} ,
-        \ { '=~': '\.$'              , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)", "ignoreCompletionMode":1},
-        \ { '=~': '/'                , 'feedkeys': "\<C-x>\<C-f>"  , "ignoreCompletionMode":1} ,
+        \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-p>" , "ignoreCompletionMode":1} ,
+        \ { '=~': '/$'             , 'feedkeys': "\<C-x>\<C-f>" , "ignoreCompletionMode":1} ,
     \ ]})
 
       " This is because if python is active jedi will provide completion
     if ( has("python") || has("python3") )
         autocmd FileType python call sacp#enableForThisBuffer({ "matches": [
-            \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
-            \ { '=~': '/'              , 'feedkeys': "\<C-x>\<C-f>"  , "ignoreCompletionMode":1} ,
+            \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-p>" , "ignoreCompletionMode":1} ,
+            \ { '=~': '/$'             , 'feedkeys': "\<C-x>\<C-f>" , "ignoreCompletionMode":1} ,
         \ ]})
     else
         autocmd FileType python call sacp#enableForThisBuffer({ "matches": [
-            \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"}                          ,
-            \ { '=~': '\.$'            , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)" , "ignoreCompletionMode":1},
-            \ { '=~': '/'              , 'feedkeys': "\<C-x>\<C-f>"                           , "ignoreCompletionMode":1} ,
+            \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-p>"                           , "ignoreCompletionMode":1} ,
+            \ { '=~': '\.$'            , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)" , "ignoreCompletionMode":1} ,
+            \ { '=~': '/$'             , 'feedkeys': "\<C-x>\<C-f>"                           , "ignoreCompletionMode":1} ,
         \ ]})
     endif
 
-    autocmd FileType javascript,java call sacp#enableForThisBuffer({ "matches": [
-        \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"}                          ,
-        \ { '=~': '\.$'            , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)" , "ignoreCompletionMode":1},
-        \ { '=~': '/'              , 'feedkeys': "\<C-x>\<C-f>"                           , "ignoreCompletionMode":1} ,
+    autocmd FileType javascript,java,go call sacp#enableForThisBuffer({ "matches": [
+        \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-p>"                           , "ignoreCompletionMode":1} ,
+        \ { '=~': '\.$'            , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)" , "ignoreCompletionMode":1} ,
+        \ { '=~': '/$'             , 'feedkeys': "\<C-x>\<C-f>"                           , "ignoreCompletionMode":1} ,
     \ ]})
 
-    autocmd BufNewFile,BufRead,BufEnter *.cpp,*.hpp call sacp#enableForThisBuffer({ "matches": [
-        \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
-        \ { '=~': '\.$'            , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)" , "ignoreCompletionMode":1},
-        \ { '=~': '->$'            , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)" , "ignoreCompletionMode":1},
-        \ { '=~': '::$'            , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)" , "ignoreCompletionMode":1},
-        \ { '=~': '/'              , 'feedkeys': "\<C-x>\<C-f>"  , "ignoreCompletionMode":1} ,
-    \ ]})
-
-    autocmd BufNewFile,BufRead,BufEnter *.c,*.h call sacp#enableForThisBuffer({ "matches": [
-        \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-n>"} ,
-        \ { '=~': '\.$'            , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)" , "ignoreCompletionMode":1},
-        \ { '=~': '->$'            , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)" , "ignoreCompletionMode":1},
-        \ { '=~': '/'              , 'feedkeys': "\<C-x>\<C-f>"  , "ignoreCompletionMode":1} ,
+    autocmd BufNewFile,BufRead,BufEnter *.cpp,*.hpp,*.c,*.h call sacp#enableForThisBuffer({ "matches": [
+        \ { '=~': '\v[a-zA-Z]{2}$' , 'feedkeys': "\<C-x>\<C-p>"                             , "ignoreCompletionMode":1} ,
+        \ { '=~': '\.$'            , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)"   , "ignoreCompletionMode":1} ,
+        \ { '=~': '->$'            , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)"   , "ignoreCompletionMode":1} ,
+        \ { '=~': '::$'            , 'feedkeys': "\<Plug>(sacp_cache_fuzzy_omnicomplete)"   , "ignoreCompletionMode":1} ,
+        \ { '=~': '/$'             , 'feedkeys': "\<C-x>\<C-f>" , "ignoreCompletionMode":1} ,
     \ ]})
 endif
 
@@ -420,7 +429,7 @@ if &runtimepath =~ 'deoplete.nvim'
         return (pumvisible() ? "\<C-y>" : "" ) . "\<CR>"
     endfunction
 
-    inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+    " inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
     inoremap <expr><BS> deoplete#mappings#smart_close_popup()."\<C-h>"
     inoremap <expr><C-h> deoplete#mappings#smart_close_popup()."\<C-h>"
     inoremap <expr><C-y>  deoplete#mappings#smart_close_popup()
@@ -742,16 +751,18 @@ if &runtimepath =~ 'indentLine'
     let g:indentLine_enabled         = 1
     let g:indentLine_setColors       = 1
     let g:indentLine_fileTypeExclude = [
-        \     'text',
-        \     'conf',
-        \     'markdown',
-        \     'git',
+        \   'text',
+        \   'conf',
+        \   'markdown',
+        \   'git',
+        \   'help',
         \ ]
     " TODO Check how to remove lines in neovim's terminal
     let g:indentLine_bufNameExclude = [
-        \     '*.org',
-        \     'COMMIT_EDITMSG',
-        \     'NERD_tree.*',
+        \   '*.org',
+        \   '*.log',
+        \   'COMMIT_EDITMSG',
+        \   'NERD_tree.*',
         \ ]
 endif
 
@@ -762,9 +773,13 @@ endif
 if &runtimepath =~ 'vim-autoformat'
     noremap <F9> :Autoformat<CR>
     vnoremap <F9> :Autoformat<CR>gv
-    autocmd! BufWritePre * Autoformat
-    autocmd FileType gitcommit,dosini,markdown,vim,text,tex,python,make,asm,conf
-        \ let b:autoformat_autoindent=0
+    augroup AutoFormat
+        autocmd!
+        autocmd FileType gitcommit,dosini,markdown,vim,text,tex,python,make,asm,conf
+            \ let b:autoformat_autoindent=0
+        autocmd BufNewFile,BufRead,BufEnter *.log let b:autoformat_autoindent=0
+        autocmd BufWritePre * Autoformat
+    augroup end
 endif
 
 " }}} EndAutoFormat
