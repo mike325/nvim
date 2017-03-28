@@ -8,3 +8,4 @@ pep8
 autopep8
 rope
 ropevim
+yapf
