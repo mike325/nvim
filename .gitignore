@@ -2,3 +2,5 @@ tmp_dirs/
 sessions/
 .netrwhist
 plugged/
+*.ropeproject*
+extras.vim
