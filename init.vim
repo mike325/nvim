@@ -302,3 +302,12 @@ execute 'source '.fnameescape(g:os_editor.'plugins.vim')
 if filereadable(expand(fnameescape(g:os_editor.'extras.vim')))
     execute 'source '.fnameescape(g:os_editor.'extras.vim')
 endif
+
+" " Load project settings
+" function! GetLocalSettings()
+"     return fnameescape(getcwd().'/local.vim')
+" endfunction
+"
+" if filereadable(GetLocalSettings())
+"     execute 'source '.GetLocalSettings()
+" endif
