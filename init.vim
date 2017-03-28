@@ -113,9 +113,6 @@ Plug 'Yggdroot/indentLine'
 " Auto indention put command
 Plug 'sickill/vim-pasta'
 
-" Code Format tool
-Plug 'chiel92/vim-autoformat'
-
 " Easy change text
 " Plug 'AndrewRadev/switch.vim'
 
@@ -190,6 +187,9 @@ let b:ycm_installed = 0
 let b:deoplete_installed = 0
 let b:completor = 0
 if ( has("python") || has("python3") )
+    " Code Format tool
+    Plug 'chiel92/vim-autoformat'
+
     " Add python highlight, folding, virtualenv, etc
     Plug 'python-mode/python-mode'
 
