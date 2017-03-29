@@ -63,6 +63,17 @@ endif
 " Ignore files in NERDTree
 let g:NERDTreeIgnore              = ['\.pyc$', '\~$', '\.sw$', '\.swp$']
 let g:NERDTreeShowBookmarks       = 1
+let g:NERDTreeIndicatorMapCustom = {
+    \ "Modified"  : "✹",
+    \ "Staged"    : "✚",
+    \ "Untracked" : "✭",
+    \ "Renamed"   : "➜",
+    \ "Unmerged"  : "═",
+    \ "Deleted"   : "✖",
+    \ "Dirty"     : "✗",
+    \ "Clean"     : "✔︎",
+    \ "Unknown"   : "?"
+    \ }
 
 " If you don't have unicode, uncomment the following lines
 " let NERDTreeDirArrowExpandable  = '+'

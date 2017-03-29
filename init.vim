@@ -52,8 +52,9 @@ Plug 'joshdick/onedark.vim'
 " Auto Close ' " () [] {}
 Plug 'Raimondi/delimitMate'
 
-" File explorer, and
+" File explorer
 Plug 'scrooloose/nerdtree', { 'on': [ 'NERDTreeToggle' ] }
+Plug 'Xuyuanp/nerdtree-git-plugin', { 'on': [ 'NERDTreeToggle' ] }
 
 " Easy comments
 Plug 'scrooloose/nerdcommenter'
