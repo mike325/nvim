@@ -61,8 +61,8 @@ endif
 " NERDTree {{{
 
 " Ignore files in NERDTree
-let NERDTreeIgnore              = ['\.pyc$', '\~$', '\.sw$', '\.swp$']
-let NERDTreeShowBookmarks       = 1
+let g:NERDTreeIgnore              = ['\.pyc$', '\~$', '\.sw$', '\.swp$']
+let g:NERDTreeShowBookmarks       = 1
 
 " If you don't have unicode, uncomment the following lines
 " let NERDTreeDirArrowExpandable  = '+'
@@ -74,9 +74,12 @@ imap <F3> <Esc><F3>
 vmap <F3> <Esc><F3>
 
 " Enable line numbers
-let NERDTreeShowLineNumbers=1
+let g:NERDTreeShowLineNumbers=1
 " Make sure relative line numbers are used
-autocmd FileType nerdtree setlocal relativenumber
+augroup NERDNumbers
+    autocmd!
+    autocmd FileType nerdtree setlocal relativenumber
+augroup end
 
 " }}} EndNERDTree
 
@@ -288,8 +291,8 @@ if  &runtimepath =~ 'python-mode'
     let g:pymode_rope                 = 0
     let g:pymode_rope_lookup_project  = 0
     let g:pymode_rope_complete_on_dot = 0
-    let pymode_lint_on_write          = 0
-    let pymode_lint_checkers          = ['flake8', 'pep8', 'mccabe']
+    let g:pymode_lint_on_write        = 0
+    let g:pymode_lint_checkers        = ['flake8', 'pep8', 'mccabe']
     let g:ropevim_autoimport_modules  = [
         \   "os.*",
         \   "sys.*",
@@ -569,22 +572,23 @@ endif
 
 " Neomake {{{
 if &runtimepath =~ "neomake"
+    nnoremap <F6> :Neomake<CR>
+    nnoremap <F7> :lopen<CR>
+    nnoremap <F8> :lclose<CR>
+
     " TODO Config the proper makers for the languages I use
+    " JSON linter       : npm install -g jsonlint
+    " Typescript linter : npm install -g typescript
+    " SCSS linter       : gem install scss-lint
+    " Markdown linter   : gem install mdl
+    " Shell linter      : ( apt-get install / yaourt -S / dnf install ) shellcheck
+    " VimL linter       : pip install vim-vint enum34==1.0.4
+    " Python linter     : pip install flake8 pep8
+    " C/C++ linter      : ( apt-get install / yaourt -S / dnf install ) clang gcc g++
+    " Go linter         : ( apt-get install / yaourt -S / dnf install ) golang
     augroup Checkers
         autocmd!
         autocmd BufWritePost * Neomake
-        " " npm install -g jsonlint
-        " autocmd BufWritePost *.json Neomake jsonlint
-        " " npm install -g typescript
-        " autocmd BufWritePost *.html Neomake tidy
-        " " gem install scss-lint
-        " autocmd BufWritePost *.scss Neomake sasslint
-        " " gem install mdl
-        " autocmd BufWritePost *.md Neomake mdl
-        " " ( apt-get install / yaourt -S / dnf install ) shellcheck
-        " autocmd BufWritePost *.sh Neomake shellcheck
-        " " pip3 install vim-vint
-        " autocmd BufWritePost *.vim Neomake vint
     augroup end
 
     let g:neomake_warning_sign = {
@@ -597,14 +601,64 @@ if &runtimepath =~ "neomake"
         \ 'texthl': 'ErrorMsg',
         \ }
 
-    nnoremap <F6> :Neomake<CR>
-    imap <F6> <ESC>:Neomake<CR>a
+    let g:neomake_python_enabled_makers = ['flake8', 'pep8']
+    let g:neomake_vim_enabled_makers = ['vint']
+    let g:neomake_cpp_enabled_makers = ['clang', 'gcc']
+    let g:neomake_c_enabled_makers = ['clang', 'gcc']
 
-    nnoremap <F7> :lopen<CR>
-    imap <F7> <ESC>:lopen<CR>
+    " E501 is line length of 80 characters
+    let g:neomake_python_flake8_maker = {
+        \   'args': [
+        \       '--ignore=E501'
+        \],}
 
-    nnoremap <F8> :lclose<CR>
-    imap <F8> <ESC>:lclose<CR>a
+    let g:neomake_python_pep8_maker = {
+        \ 'args': [
+        \   '--max-line-length=100',
+        \   '--ignore=E501'
+        \],}
+
+    " The configuration scrips use Neovim commands
+    let g:neomake_vim_vint_maker = {
+        \ 'args': [
+        \   '--enable-neovim',
+        \   '-e'
+        \],}
+
+    let g:neomake_c_gcc_maker = {
+        \   'exe': 'gcc',
+        \   'args': [
+        \       '-Wall',
+        \       '-Wextra',
+        \       '-fsyntax-only'
+        \],}
+
+    let g:neomake_cpp_gcc_maker = {
+        \   'exe': 'g++',
+        \   'args': [
+        \      '-Wall',
+        \      '-Wextra',
+        \      '-Weverything',
+        \      '-Wno-sign-conversion',
+        \      '-fsyntax-only'
+        \],}
+
+    let g:neomake_c_clang_maker = {
+        \   'exe': 'clang',
+        \   'args': [
+        \       '-Wall',
+        \       '-Wextra',
+        \       '-Weverything',
+        \],}
+
+    let g:neomake_cpp_clang_maker = {
+        \   'exe': 'clang++',
+        \   'args': [
+        \      '-Wall',
+        \      '-Wextra',
+        \      '-Weverything',
+        \      '-Wno-sign-conversion'
+        \],}
 endif
 
 " }}} EndNeomake

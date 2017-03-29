@@ -1,8 +1,8 @@
+# pydoc
 jedi
 flake8
 neovim
 pylint
-# pydoc
 pyflakes
 pep8
 autopep8
@@ -10,3 +10,5 @@ rope
 ropevim
 yapf
 jsbeautifier
+enum34==1.0.4
+vim-vint
