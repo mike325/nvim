@@ -113,9 +113,6 @@ Plug 'Yggdroot/indentLine'
 " Auto indention put command
 Plug 'sickill/vim-pasta'
 
-" Code Format tool
-Plug 'chiel92/vim-autoformat'
-
 " Easy change text
 " Plug 'AndrewRadev/switch.vim'
 
@@ -190,6 +187,11 @@ let b:ycm_installed = 0
 let b:deoplete_installed = 0
 let b:completor = 0
 if ( has("python") || has("python3") )
+    " Code Format tool
+    Plug 'chiel92/vim-autoformat'
+    " TODO Check this fork, No +python required
+    " Plug 'umitkablan/vim-auf'
+
     " Add python highlight, folding, virtualenv, etc
     Plug 'python-mode/python-mode'
 
@@ -298,7 +300,7 @@ execute 'source '.fnameescape(g:os_editor.'global.vim')
 " Load plugins configurations
 execute 'source '.fnameescape(g:os_editor.'plugins.vim')
 
-" Load especial host configurations
+" Load special host configurations
 if filereadable(expand(fnameescape(g:os_editor.'extras.vim')))
     execute 'source '.fnameescape(g:os_editor.'extras.vim')
 endif

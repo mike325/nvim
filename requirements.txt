@@ -2,9 +2,11 @@ jedi
 flake8
 neovim
 pylint
-pydoc
+# pydoc
 pyflakes
 pep8
 autopep8
 rope
 ropevim
+yapf
+jsbeautifier

@@ -788,6 +788,7 @@ if &runtimepath =~ 'vim-autoformat'
     noremap <F9> :Autoformat<CR>
 
     let g:formatter_yapf_style = 'pep8'
+    let g:formatters_python = ['yapf']
 
     augroup AutoFormat
         autocmd!
