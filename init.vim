@@ -189,6 +189,8 @@ let b:completor = 0
 if ( has("python") || has("python3") )
     " Code Format tool
     Plug 'chiel92/vim-autoformat'
+    " TODO Check this fork, No +python required
+    " Plug 'umitkablan/vim-auf'
 
     " Add python highlight, folding, virtualenv, etc
     Plug 'python-mode/python-mode'
