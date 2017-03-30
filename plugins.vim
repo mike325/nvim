@@ -273,13 +273,18 @@ if &runtimepath =~ 'ultisnips'
     endfunction
 
     let g:ulti_jump_forwards_res = 0
-    function! <SID>NextSnippet()
+    function! NextSnippetOrReturn()
         let snippet = UltiSnips#JumpForwards()
         if g:ulti_jump_forwards_res > 0
             return snippet
         else
             return "\<CR>"
         endif
+    endfunction
+
+    function! NextSnippetOrNothing()
+        call UltiSnips#JumpForwards()
+        " return g:ulti_jump_forwards_res
     endfunction
 
     let g:UltiSnipsExpandTrigger       = "<C-k>"
@@ -393,16 +398,14 @@ if &runtimepath =~ 'neocomplete.vim'
         let g:neocomplete#keyword_patterns = {}
     endif
 
-    imap <silent> <CR> <C-r>=<SID>acceptCompletion()<CR>
-    function! s:acceptCompletion()
-        return (pumvisible() ? "\<C-y>" : "" ) . "\<CR>"
-    endfunction
-
     if &runtimepath =~ 'ultisnips'
-        " let g:UltiSnipsExpandTrigger = "<nop>"
         inoremap <expr><TAB> pumvisible() ? "<C-R>=<SID>ExpandSnippetOrComplete()<CR>" : "\<TAB>"
+        inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<C-R>=NextSnippetOrReturn()\<CR>"
+        nnoremap <silent><CR>  :<C-R>=NextSnippetOrNothing()<CR>
+        " vnoremap <CR> <ESC>:<C-R>=NextSnippetOrNothing() ? '': 'gv'<CR><CR>
     else
         inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
+        inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<CR>"
     endif
 
     inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : ""
@@ -447,16 +450,14 @@ if &runtimepath =~ 'deoplete.nvim'
     let g:deoplete#sources#syntax#min_keyword_length = 1
     let g:deoplete#lock_buffer_name_pattern = '\*ku\*'
 
-    imap <silent> <CR> <C-r>=<SID>acceptCompletion()<CR>
-    function! s:acceptCompletion()
-        return (pumvisible() ? "\<C-y>" : "" ) . "\<CR>"
-    endfunction
-
     if &runtimepath =~ 'ultisnips'
-        " let g:UltiSnipsExpandTrigger = "<nop>"
         inoremap <expr><TAB> pumvisible() ? "<C-R>=<SID>ExpandSnippetOrComplete()<CR>" : "\<TAB>"
+        inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<C-R>=NextSnippetOrReturn()\<CR>"
+        nnoremap <silent><CR>  :<C-R>=NextSnippetOrNothing()<CR>
+        " vnoremap <CR> <ESC>:<C-R>=NextSnippetOrNothing() ? '': 'gv'<CR><CR>
     else
         inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
+        inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<CR>"
     endif
 
     inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : ""
@@ -567,10 +568,13 @@ if &runtimepath =~ 'YouCompleteMe'
     let g:ycm_key_list_previous_completion = ['<C-p>', '<Up>']
 
     if &runtimepath =~ 'ultisnips'
-        " let g:UltiSnipsExpandTrigger = "<nop>"
         inoremap <expr><TAB> pumvisible() ? "<C-R>=<SID>ExpandSnippetOrComplete()<CR>" : "\<TAB>"
+        inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<C-R>=NextSnippetOrReturn()\<CR>"
+        nnoremap <silent><CR>  :<C-R>=NextSnippetOrNothing()<CR>
+        " vnoremap <CR> <ESC>:<C-R>=NextSnippetOrNothing() ? '': 'gv'<CR><CR>
     else
         inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
+        inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<CR>"
     endif
 
     " In case there are other completion plugins
@@ -591,14 +595,16 @@ endif
 
 if &runtimepath =~ 'completor.vim'
     if &runtimepath =~ 'ultisnips'
-        " let g:UltiSnipsExpandTrigger = "<nop>"
         inoremap <expr><TAB> pumvisible() ? "<C-R>=<SID>ExpandSnippetOrComplete()<CR>" : "\<TAB>"
+        inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<C-R>=NextSnippetOrReturn()\<CR>"
+        nnoremap <silent><CR>  :<C-R>=NextSnippetOrNothing()<CR>
+        " vnoremap <CR> <ESC>:<C-R>=NextSnippetOrNothing() ? '': 'gv'<CR><CR>
     else
         inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
+        inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<CR>"
     endif
 
     inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : ""
-    inoremap <expr><CR> pumvisible() ? "\<C-y>\<CR>" : "\<CR>"
 endif
 
 " }}} EndCompletor
