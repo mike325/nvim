@@ -591,9 +591,15 @@ endif
 " Completor {{{
 
 if &runtimepath =~ 'completor.vim'
-    inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
-    inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-    inoremap <expr> <cr> pumvisible() ? "\<C-y>\<cr>" : "\<cr>"
+    if &runtimepath =~ 'ultisnips'
+        " let g:UltiSnipsExpandTrigger = "<nop>"
+        inoremap <expr><TAB> pumvisible() ? "<C-R>=<SID>ExpandSnippetOrReturn()<CR>" : "\<TAB>"
+    else
+        inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
+    endif
+
+    inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : ""
+    inoremap <expr><CR> pumvisible() ? "\<C-y>\<CR>" : "\<CR>"
 endif
 
 " }}} EndCompletor
