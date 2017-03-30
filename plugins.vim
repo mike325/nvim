@@ -260,11 +260,26 @@ if &runtimepath =~ 'ultisnips'
         let g:UltiSnipsUsePythonVersion = 3
     endif
 
-    " TODO Make this crap work
     let g:ulti_expand_or_jump_res = 0
-    function! Ulti_ExpandOrJump_and_getRes()
-        call UltiSnips#ExpandSnippetOrJump()
-        return g:ulti_expand_or_jump_res
+    let g:ulti_expand_res = 0
+    function! <SID>ExpandSnippetOrReturn()
+        let snippet = UltiSnips#ExpandSnippet()
+        " return snippet
+        if g:ulti_expand_res > 0
+            return snippet
+        else
+            return "\<C-n>"
+        endif
+    endfunction
+
+    let g:ulti_jump_forwards_res = 0
+    function! <SID>NextSnippet()
+        let snippet = UltiSnips#JumpForwards()
+        if g:ulti_jump_forwards_res > 0
+            return snippet
+        else
+            return "\<CR>"
+        endif
     endfunction
 
     let g:UltiSnipsExpandTrigger       = "<C-k>"
@@ -383,7 +398,13 @@ if &runtimepath =~ 'neocomplete.vim'
         return (pumvisible() ? "\<C-y>" : "" ) . "\<CR>"
     endfunction
 
-    inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+    if &runtimepath =~ 'ultisnips'
+        " let g:UltiSnipsExpandTrigger = "<nop>"
+        inoremap <expr><TAB> pumvisible() ? "<C-R>=<SID>ExpandSnippetOrReturn()<CR>" : "\<TAB>"
+    else
+        inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
+    endif
+
     inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : ""
     inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
     inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
@@ -432,7 +453,13 @@ if &runtimepath =~ 'deoplete.nvim'
         return (pumvisible() ? "\<C-y>" : "" ) . "\<CR>"
     endfunction
 
-    inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+    if &runtimepath =~ 'ultisnips'
+        " let g:UltiSnipsExpandTrigger = "<nop>"
+        inoremap <expr><TAB> pumvisible() ? "<C-R>=<SID>ExpandSnippetOrReturn()<CR>" : "\<TAB>"
+    else
+        inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
+    endif
+
     inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : ""
     inoremap <expr><BS> deoplete#mappings#smart_close_popup()."\<C-h>"
     inoremap <expr><C-h> deoplete#mappings#smart_close_popup()."\<C-h>"
