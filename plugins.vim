@@ -638,8 +638,18 @@ if &runtimepath =~ "neomake"
         \ 'texthl': 'ErrorMsg',
         \ }
 
+    if executable("vint")
+        let g:neomake_vim_enabled_makers = ['vint']
+
+        " The configuration scrips use Neovim commands
+        let g:neomake_vim_vint_maker = {
+            \ 'args': [
+            \   '--enable-neovim',
+            \   '-e'
+            \],}
+    endif
+
     let g:neomake_python_enabled_makers = ['flake8', 'pep8']
-    let g:neomake_vim_enabled_makers = ['vint']
     let g:neomake_cpp_enabled_makers = ['clang', 'gcc']
     let g:neomake_c_enabled_makers = ['clang', 'gcc']
 
@@ -653,13 +663,6 @@ if &runtimepath =~ "neomake"
         \ 'args': [
         \   '--max-line-length=100',
         \   '--ignore=E501'
-        \],}
-
-    " The configuration scrips use Neovim commands
-    let g:neomake_vim_vint_maker = {
-        \ 'args': [
-        \   '--enable-neovim',
-        \   '-e'
         \],}
 
     let g:neomake_c_gcc_maker = {
