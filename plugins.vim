@@ -564,6 +564,16 @@ if &runtimepath =~ 'YouCompleteMe'
     nnoremap <leader>gi :YcmCompleter GoToInclude<CR>
     nnoremap <leader>gt :YcmCompleter GetType<CR>
 
+    let g:ycm_key_list_select_completion = ['<C-n>', '<Down>']
+    let g:ycm_key_list_previous_completion = ['<C-p>', '<Up>']
+
+    if &runtimepath =~ 'ultisnips'
+        " let g:UltiSnipsExpandTrigger = "<nop>"
+        inoremap <expr><TAB> pumvisible() ? "<C-R>=<SID>ExpandSnippetOrReturn()<CR>" : "\<TAB>"
+    else
+        inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
+    endif
+
     " In case there are other completion plugins
     " let g:ycm_filetype_blacklist = {
     "       \ 'tagbar' : 1,
