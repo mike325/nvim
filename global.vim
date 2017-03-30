@@ -253,6 +253,9 @@ nnoremap <F2> :update<CR>
 vmap <F2> <Esc><F2>gv
 imap <F2> <Esc><F2>a
 
+autocmd BufReadPost quickfix nnoremap <buffer> <CR> <CR>
+autocmd BufReadPost location nnoremap <buffer> <CR> <CR>
+
 " For systems without F's keys (ex. android)
 nmap <leader>w :update<CR>
 
