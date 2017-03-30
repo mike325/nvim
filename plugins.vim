@@ -285,6 +285,7 @@ if &runtimepath =~ 'ultisnips'
     function! NextSnippetOrNothing()
         call UltiSnips#JumpForwards()
         " return g:ulti_jump_forwards_res
+        return ""
     endfunction
 
     let g:UltiSnipsExpandTrigger       = "<C-k>"
