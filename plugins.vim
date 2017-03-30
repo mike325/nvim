@@ -430,7 +430,6 @@ if &runtimepath =~ 'neocomplete.vim'
     " endif
 
     autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
-    call neocomplete#custom#set('ultisnips', 'matchers', ['matcher_full_fuzzy'])
 endif
 
 " }}} EndNeocomplete
