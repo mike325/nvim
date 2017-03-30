@@ -878,10 +878,10 @@ endif
 " AutoFormat {{{
 
 if &runtimepath =~ 'vim-autoformat'
-    let g:auto_format = 1
+    let b:auto_format = 1
 
     function! CheckAutoFormat()
-        if g:auto_format == 1
+        if b:auto_format == 1
            exec "Autoformat"
         endif
     endfunction
@@ -893,6 +893,7 @@ if &runtimepath =~ 'vim-autoformat'
 
     augroup AutoFormat
         autocmd!
+        autocmd FileType * let b:auto_format = 1
         autocmd FileType gitcommit,dosini,markdown,vim,text,tex,python,make,asm,conf
             \ let b:autoformat_autoindent=0
         autocmd BufNewFile,BufRead,BufEnter *.log let b:autoformat_autoindent=0
