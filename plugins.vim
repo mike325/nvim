@@ -262,7 +262,7 @@ if &runtimepath =~ 'ultisnips'
 
     let g:ulti_expand_or_jump_res = 0
     let g:ulti_expand_res = 0
-    function! <SID>ExpandSnippetOrReturn()
+    function! <SID>ExpandSnippetOrComplete()
         let snippet = UltiSnips#ExpandSnippet()
         " return snippet
         if g:ulti_expand_res > 0
@@ -400,7 +400,7 @@ if &runtimepath =~ 'neocomplete.vim'
 
     if &runtimepath =~ 'ultisnips'
         " let g:UltiSnipsExpandTrigger = "<nop>"
-        inoremap <expr><TAB> pumvisible() ? "<C-R>=<SID>ExpandSnippetOrReturn()<CR>" : "\<TAB>"
+        inoremap <expr><TAB> pumvisible() ? "<C-R>=<SID>ExpandSnippetOrComplete()<CR>" : "\<TAB>"
     else
         inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
     endif
@@ -454,7 +454,7 @@ if &runtimepath =~ 'deoplete.nvim'
 
     if &runtimepath =~ 'ultisnips'
         " let g:UltiSnipsExpandTrigger = "<nop>"
-        inoremap <expr><TAB> pumvisible() ? "<C-R>=<SID>ExpandSnippetOrReturn()<CR>" : "\<TAB>"
+        inoremap <expr><TAB> pumvisible() ? "<C-R>=<SID>ExpandSnippetOrComplete()<CR>" : "\<TAB>"
     else
         inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
     endif
@@ -568,7 +568,7 @@ if &runtimepath =~ 'YouCompleteMe'
 
     if &runtimepath =~ 'ultisnips'
         " let g:UltiSnipsExpandTrigger = "<nop>"
-        inoremap <expr><TAB> pumvisible() ? "<C-R>=<SID>ExpandSnippetOrReturn()<CR>" : "\<TAB>"
+        inoremap <expr><TAB> pumvisible() ? "<C-R>=<SID>ExpandSnippetOrComplete()<CR>" : "\<TAB>"
     else
         inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
     endif
@@ -592,7 +592,7 @@ endif
 if &runtimepath =~ 'completor.vim'
     if &runtimepath =~ 'ultisnips'
         " let g:UltiSnipsExpandTrigger = "<nop>"
-        inoremap <expr><TAB> pumvisible() ? "<C-R>=<SID>ExpandSnippetOrReturn()<CR>" : "\<TAB>"
+        inoremap <expr><TAB> pumvisible() ? "<C-R>=<SID>ExpandSnippetOrComplete()<CR>" : "\<TAB>"
     else
         inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
     endif
