@@ -297,11 +297,11 @@ call plug#end()
 
 filetype plugin indent on
 
-" Load plugins configurations
-execute 'source '.fnameescape(g:os_editor.'plugins.vim')
-
 " Load general configurations (key mappings and autocommands)
 execute 'source '.fnameescape(g:os_editor.'global.vim')
+"
+" Load plugins configurations
+execute 'source '.fnameescape(g:os_editor.'plugins.vim')
 
 " Load special host configurations
 if filereadable(expand(fnameescape(g:os_editor.'extras.vim')))
