@@ -207,13 +207,14 @@ if ( has("python") || has("python3") )
         if a:info.status == 'installed' || a:info.force
             " !./install.py --all
             if executable('go') && executable("tern")
-                !./install.py --gocode-completer --tern-completer --clang-completer
+                " !./install.py --gocode-completer --tern-completer --clang-completer
+                !./install.py --gocode-completer --tern-completer
             elseif executable("tern")
-                !./install.py --tern-completer --clang-completer
+                !./install.py --tern-completer
             elseif executable('go')
-                !./install.py --gocode-completer --clang-completer
+                !./install.py --gocode-completer
             else
-                !./install.py --clang-completer
+                !./install.py
             endif
         endif
     endfunction
