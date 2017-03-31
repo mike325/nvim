@@ -261,10 +261,12 @@ if &runtimepath =~ 'ultisnips'
     endif
 
     let g:ulti_expand_or_jump_res = 0
+    let g:ulti_jump_backwards_res = 0
+    let g:ulti_jump_forwards_res = 0
     let g:ulti_expand_res = 0
+
     function! <SID>ExpandSnippetOrComplete()
         let snippet = UltiSnips#ExpandSnippet()
-        " return snippet
         if g:ulti_expand_res > 0
             return snippet
         else
@@ -272,8 +274,16 @@ if &runtimepath =~ 'ultisnips'
         endif
     endfunction
 
-    let g:ulti_jump_forwards_res = 0
     function! NextSnippetOrReturn()
+        let snippet = UltiSnips#JumpForwards()
+        if g:ulti_jump_forwards_res > 0
+            return snippet
+        else
+            return "\<CR>"
+        endif
+    endfunction
+
+    function! PrevSnippetOrReturn()
         let snippet = UltiSnips#JumpForwards()
         if g:ulti_jump_forwards_res > 0
             return snippet
@@ -284,13 +294,15 @@ if &runtimepath =~ 'ultisnips'
 
     function! NextSnippetOrNothing()
         call UltiSnips#JumpForwards()
-        " return g:ulti_jump_forwards_res
         return ""
     endfunction
 
-    let g:UltiSnipsExpandTrigger       = "<C-k>"
-    let g:UltiSnipsJumpForwardTrigger  = "<C-f>"
-    let g:UltiSnipsJumpBackwardTrigger = "<C-b>"
+    function! PrevSnippetOrNothing()
+        call UltiSnips#JumpBackwards()
+        return ""
+    endfunction
+
+    let g:UltiSnipsExpandTrigger       = "<C-l>"
 endif
 
 " }}} EndUltiSnips
@@ -598,7 +610,8 @@ if &runtimepath =~ 'completor.vim'
     if &runtimepath =~ 'ultisnips'
         inoremap <expr><TAB> pumvisible() ? "<C-R>=<SID>ExpandSnippetOrComplete()<CR>" : "\<TAB>"
         inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<C-R>=NextSnippetOrReturn()\<CR>"
-        nnoremap <silent><CR>  :<C-R>=NextSnippetOrNothing()<CR>
+        nnoremap <silent><CR> :<C-R>=NextSnippetOrNothing()<CR>
+        " nnoremap <silent><S-TAB> :<C-R>=PrevSnippetOrNothing()<CR>
         " vnoremap <CR> <ESC>:<C-R>=NextSnippetOrNothing() ? '': 'gv'<CR><CR>
     else
         inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"

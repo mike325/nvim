@@ -262,6 +262,7 @@ augroup localCR
     autocmd!
     autocmd BufReadPost quickfix nnoremap <buffer> <CR> <CR>
     autocmd BufReadPost location nnoremap <buffer> <CR> <CR>
+    autocmd CmdwinEnter * nnoremap <CR> <CR>
 augroup end
 
 " For systems without F's keys (ex. android)
@@ -635,19 +636,19 @@ endfunction
 
 augroup Skeletons
     autocmd!
-    autocmd BufNewFile *.css  exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.css')
-    autocmd BufNewFile *.html exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.html')
-    autocmd BufNewFile *.md   exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.md')
-    autocmd BufNewFile *.py   exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.py')
-    autocmd BufNewFile *.go   exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.go')
-    autocmd BufNewFile *.cs   exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.cs')
-    autocmd BufNewFile *.php  exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.php')
-    autocmd BufNewFile *.sh   exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.sh')
-    autocmd BufNewFile *.java call JavaClass()
-    autocmd BufNewFile *.cpp  call CMainOrFunc()
-    autocmd BufNewFile *.hpp  call CHeader()
-    autocmd BufNewFile *.c    call CMainOrFunc()
-    autocmd BufNewFile *.h    call CHeader()
+    autocmd BufNewFile *.css  silent! exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.css')
+    autocmd BufNewFile *.html silent! exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.html')
+    autocmd BufNewFile *.md   silent! exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.md')
+    autocmd BufNewFile *.py   silent! exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.py')
+    autocmd BufNewFile *.go   silent! exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.go')
+    autocmd BufNewFile *.cs   silent! exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.cs')
+    autocmd BufNewFile *.php  silent! exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.php')
+    autocmd BufNewFile *.sh   silent! exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.sh')
+    autocmd BufNewFile *.java silent! call JavaClass()
+    autocmd BufNewFile *.cpp  silent! call CMainOrFunc()
+    autocmd BufNewFile *.hpp  silent! call CHeader()
+    autocmd BufNewFile *.c    silent! call CMainOrFunc()
+    autocmd BufNewFile *.h    silent! call CHeader()
 augroup end
 
 " }}} EndSkeletons
