@@ -63,6 +63,17 @@ endif
 " Ignore files in NERDTree
 let g:NERDTreeIgnore              = ['\.pyc$', '\~$', '\.sw$', '\.swp$']
 let g:NERDTreeShowBookmarks       = 1
+let g:NERDTreeIndicatorMapCustom = {
+    \ "Modified"  : "✹",
+    \ "Staged"    : "✚",
+    \ "Untracked" : "✭",
+    \ "Renamed"   : "➜",
+    \ "Unmerged"  : "═",
+    \ "Deleted"   : "✖",
+    \ "Dirty"     : "✗",
+    \ "Clean"     : "✔︎",
+    \ "Unknown"   : "?"
+    \ }
 
 " If you don't have unicode, uncomment the following lines
 " let NERDTreeDirArrowExpandable  = '+'
@@ -232,10 +243,26 @@ endif
 
 " SnipMate {{{
 
+" TODO make SnipMate mappings behave as UltiSnips ones
 if &runtimepath =~ 'vim-snipmate'
-    nmap <C-k> <Plug>snipMateNextOrTrigger
-    imap <C-k> <Plug>snipMateNextOrTrigger
-    smap <C-k> <Plug>snipMateNextOrTrigger
+    function! <SID>ExpandSnippetOrComplete()
+    endfunction
+
+    function! NextSnippetOrReturn()
+    endfunction
+
+    function! PrevSnippetOrReturn()
+    endfunction
+
+    function! NextSnippetOrNothing()
+        return ""
+    endfunction
+
+    function! PrevSnippetOrNothing()
+    endfunction
+
+    nnoremap <C-k> <Plug>snipMateNextOrTrigger
+    inoremap <C-k> <Plug>snipMateNextOrTrigger
 endif
 
 " }}} EndSnipMate
@@ -249,16 +276,49 @@ if &runtimepath =~ 'ultisnips'
         let g:UltiSnipsUsePythonVersion = 3
     endif
 
-    " TODO Make this crap work
     let g:ulti_expand_or_jump_res = 0
-    function! Ulti_ExpandOrJump_and_getRes()
-        call UltiSnips#ExpandSnippetOrJump()
-        return g:ulti_expand_or_jump_res
+    let g:ulti_jump_backwards_res = 0
+    let g:ulti_jump_forwards_res = 0
+    let g:ulti_expand_res = 0
+
+    function! <SID>ExpandSnippetOrComplete()
+        let snippet = UltiSnips#ExpandSnippet()
+        if g:ulti_expand_res > 0
+            return snippet
+        else
+            return "\<C-n>"
+        endif
     endfunction
 
-    let g:UltiSnipsExpandTrigger       = "<C-k>"
-    let g:UltiSnipsJumpForwardTrigger  = "<C-f>"
-    let g:UltiSnipsJumpBackwardTrigger = "<C-b>"
+    function! NextSnippetOrReturn()
+        let snippet = UltiSnips#JumpForwards()
+        if g:ulti_jump_forwards_res > 0
+            return snippet
+        else
+            return "\<CR>"
+        endif
+    endfunction
+
+    function! PrevSnippetOrReturn()
+        let snippet = UltiSnips#JumpForwards()
+        if g:ulti_jump_forwards_res > 0
+            return snippet
+        else
+            return "\<CR>"
+        endif
+    endfunction
+
+    function! NextSnippetOrNothing()
+        call UltiSnips#JumpForwards()
+        return ""
+    endfunction
+
+    function! PrevSnippetOrNothing()
+        call UltiSnips#JumpBackwards()
+        return ""
+    endfunction
+
+    let g:UltiSnipsExpandTrigger       = "<C-l>"
 endif
 
 " }}} EndUltiSnips
@@ -350,72 +410,95 @@ endif
 
 " }}} SimpleAutoComplPop
 
+" Neocomplcache {{{
+
+if &runtimepath =~ 'neocomplcache.vim'
+    " Use neocomplcache.
+    let g:neocomplcache_enable_at_startup = 1
+
+    " Use smartcase.
+    let g:neocomplcache_enable_smart_case = 1
+
+    " Set minimum syntax keyword length.
+    let g:neocomplcache_min_syntax_length = 1
+    let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
+
+    let g:neocomplcache#omni#input_patterns = get(g:,'neocomplcache#omni#input_patterns',{})
+
+    if &runtimepath =~ 'ultisnips'
+        inoremap <expr><TAB> pumvisible() ? "<C-R>=<SID>ExpandSnippetOrComplete()<CR>" : "\<TAB>"
+        inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<C-R>=NextSnippetOrReturn()\<CR>"
+        nnoremap <silent><CR>  :<C-R>=NextSnippetOrNothing()<CR>
+        " vnoremap <CR> <ESC>:<C-R>=NextSnippetOrNothing() ? '': 'gv'<CR><CR>
+    else
+        inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
+        inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<CR>"
+    endif
+
+    inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : ""
+
+    inoremap <expr><BS> neocomplcache#smart_close_popup()."\<C-h>"
+    inoremap <expr><C-h> neocomplcache#smart_close_popup()."\<C-h>"
+    inoremap <expr><C-y>  neocomplcache#smart_close_popup()
+    inoremap <expr><C-e>  neocomplcache#cancel_popup()
+
+    autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
+endif
+
+" }}} EndNeocomplcache
+
 " Neocomplete {{{
 
 if &runtimepath =~ 'neocomplete.vim'
-    "Note: This option must set it in .vimrc(_vimrc).  NOT IN .gvimrc(_gvimrc)!
-    " Disable AutoComplPop.
-    let g:acp_enableAtStartup = 1
-    " Use neocomplete.
     let g:neocomplete#enable_at_startup = 1
+
     " Use smartcase.
     let g:neocomplete#enable_smart_case = 1
+    let g:neocomplete#enable_refresh_always = 1
+
     " Set minimum syntax keyword length.
-    let g:neocomplete#sources#syntax#min_keyword_length = 3
+    let g:neocomplete#sources#syntax#min_keyword_length = 1
     let g:neocomplete#lock_buffer_name_pattern = '\*ku\*'
 
-    " Define dictionary.
-    " let g:neocomplete#sources#dictionary#dictionaries = {
-    "     \ 'default' : '',
-    "     \ 'vimshell' : $HOME.'/.vimshell_hist',
-    "     \ 'scheme' : $HOME.'/.gosh_completions'
-    "         \ }
-
-    " Define keyword.
     if !exists('g:neocomplete#keyword_patterns')
         let g:neocomplete#keyword_patterns = {}
     endif
-    let g:neocomplete#keyword_patterns['default'] = '\h\w*'
 
-    " Plugin key-mappings.
-    inoremap <expr><C-g>     neocomplete#undo_completion()
-    inoremap <expr><C-l>     neocomplete#complete_common_string()
+    if &runtimepath =~ 'ultisnips'
+        inoremap <expr><TAB> pumvisible() ? "<C-R>=<SID>ExpandSnippetOrComplete()<CR>" : "\<TAB>"
+        inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<C-R>=NextSnippetOrReturn()\<CR>"
+        nnoremap <silent><CR>  :<C-R>=NextSnippetOrNothing()<CR>
+        " vnoremap <CR> <ESC>:<C-R>=NextSnippetOrNothing() ? '': 'gv'<CR><CR>
+    else
+        inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
+        inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<CR>"
+    endif
 
-    " Recommended key-mappings.
-    " <CR>: close popup and save indent.
-    inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
-    function! s:my_cr_function()
-        return neocomplete#close_popup() . "\<CR>"
-        " For no inserting <CR> key.
-        "return pumvisible() ? neocomplete#close_popup() : "\<CR>"
-    endfunction
-    " <TAB>: completion.
-    inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
-    " <C-h>, <BS>: close popup and delete backword char.
+    inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : ""
+    inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
     inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
-    inoremap <expr><C-y>  neocomplete#close_popup()
+    inoremap <expr><C-y>  neocomplete#mappings#smart_close_popup()
     inoremap <expr><C-e>  neocomplete#cancel_popup()
 
-    " Close popup by <Space>.
-    " inoremap <expr><Space> pumvisible() ? neocomplete#close_popup() : "\<Space>"
+    let g:neocomplete#omni#input_patterns = get(g:,'neocomplete#omni#input_patterns',{})
 
-    "let g:neocomplete#enable_cursor_hold_i = 1
-    " Or set this.
-    "let g:neocomplete#enable_insert_char_pre = 1
+    let g:neocomplete#sources={}
+    let g:neocomplete#sources._    = ['buffer', 'member', 'file', 'ultisnips']
 
-    " AutoComplPop like behavior.
-    " let g:neocomplete#enable_auto_select = 1
+    let g:neocomplete#sources.vim        = ['buffer', 'member', 'file', 'ultisnips']
+    let g:neocomplete#sources.c          = ['buffer', 'member', 'file', 'omni', 'ultisnips']
+    let g:neocomplete#sources.cpp        = ['buffer', 'member', 'file', 'omni', 'ultisnips']
+    let g:neocomplete#sources.go         = ['buffer', 'member', 'file', 'omni', 'ultisnips']
+    let g:neocomplete#sources.java       = ['buffer', 'member', 'file', 'omni', 'ultisnips']
+    let g:neocomplete#sources.python     = ['buffer', 'member', 'file', 'omni', 'ultisnips']
+    let g:neocomplete#sources.javascript = ['buffer', 'member', 'file', 'omni', 'ultisnips']
+    let g:neocomplete#sources.ruby       = ['buffer', 'member', 'file', 'ultisnips']
 
-    " Shell like behavior(not recommended).
-    "set completeopt+=longest
-    "let g:neocomplete#enable_auto_select = 1
-    "let g:neocomplete#disable_auto_complete = 1
-    "inoremap <expr><TAB>  pumvisible() ? "\<Down>" : "\<C-x>\<C-u>"
+    " if !exists('g:neocomplete#sources#omni#input_patterns')
+    "     let g:neocomplete#sources#omni#input_patterns = {}
+    " endif
 
-    " Enable heavy omni completion.
-    if !exists('g:neocomplete#sources#omni#input_patterns')
-        let g:neocomplete#sources#omni#input_patterns = {}
-    endif
+    autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
 endif
 
 " }}} EndNeocomplete
@@ -433,12 +516,17 @@ if &runtimepath =~ 'deoplete.nvim'
     let g:deoplete#sources#syntax#min_keyword_length = 1
     let g:deoplete#lock_buffer_name_pattern = '\*ku\*'
 
-    imap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
-    function! s:my_cr_function()
-        return (pumvisible() ? "\<C-y>" : "" ) . "\<CR>"
-    endfunction
+    if &runtimepath =~ 'ultisnips'
+        inoremap <expr><TAB> pumvisible() ? "<C-R>=<SID>ExpandSnippetOrComplete()<CR>" : "\<TAB>"
+        inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<C-R>=NextSnippetOrReturn()\<CR>"
+        nnoremap <silent><CR>  :<C-R>=NextSnippetOrNothing()<CR>
+        " vnoremap <CR> <ESC>:<C-R>=NextSnippetOrNothing() ? '': 'gv'<CR><CR>
+    else
+        inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
+        inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<CR>"
+    endif
 
-    " inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+    inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : ""
     inoremap <expr><BS> deoplete#mappings#smart_close_popup()."\<C-h>"
     inoremap <expr><C-h> deoplete#mappings#smart_close_popup()."\<C-h>"
     inoremap <expr><C-y>  deoplete#mappings#smart_close_popup()
@@ -542,6 +630,19 @@ if &runtimepath =~ 'YouCompleteMe'
     nnoremap <leader>gi :YcmCompleter GoToInclude<CR>
     nnoremap <leader>gt :YcmCompleter GetType<CR>
 
+    let g:ycm_key_list_select_completion = ['<C-n>', '<Down>']
+    let g:ycm_key_list_previous_completion = ['<C-p>', '<Up>']
+
+    if &runtimepath =~ 'ultisnips'
+        inoremap <expr><TAB> pumvisible() ? "<C-R>=<SID>ExpandSnippetOrComplete()<CR>" : "\<TAB>"
+        inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<C-R>=NextSnippetOrReturn()\<CR>"
+        nnoremap <silent><CR>  :<C-R>=NextSnippetOrNothing()<CR>
+        " vnoremap <CR> <ESC>:<C-R>=NextSnippetOrNothing() ? '': 'gv'<CR><CR>
+    else
+        inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
+        inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<CR>"
+    endif
+
     " In case there are other completion plugins
     " let g:ycm_filetype_blacklist = {
     "       \ 'tagbar' : 1,
@@ -559,9 +660,18 @@ endif
 " Completor {{{
 
 if &runtimepath =~ 'completor.vim'
-    inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
-    inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-    inoremap <expr> <cr> pumvisible() ? "\<C-y>\<cr>" : "\<cr>"
+    if &runtimepath =~ 'ultisnips'
+        inoremap <expr><TAB> pumvisible() ? "<C-R>=<SID>ExpandSnippetOrComplete()<CR>" : "\<TAB>"
+        inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<C-R>=NextSnippetOrReturn()\<CR>"
+        nnoremap <silent><CR> :<C-R>=NextSnippetOrNothing()<CR>
+        " nnoremap <silent><S-TAB> :<C-R>=PrevSnippetOrNothing()<CR>
+        " vnoremap <CR> <ESC>:<C-R>=NextSnippetOrNothing() ? '': 'gv'<CR><CR>
+    else
+        inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
+        inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<CR>"
+    endif
+
+    inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : ""
 endif
 
 " }}} EndCompletor
@@ -601,8 +711,18 @@ if &runtimepath =~ "neomake"
         \ 'texthl': 'ErrorMsg',
         \ }
 
+    if executable("vint")
+        let g:neomake_vim_enabled_makers = ['vint']
+
+        " The configuration scrips use Neovim commands
+        let g:neomake_vim_vint_maker = {
+            \ 'args': [
+            \   '--enable-neovim',
+            \   '-e'
+            \],}
+    endif
+
     let g:neomake_python_enabled_makers = ['flake8', 'pep8']
-    let g:neomake_vim_enabled_makers = ['vint']
     let g:neomake_cpp_enabled_makers = ['clang', 'gcc']
     let g:neomake_c_enabled_makers = ['clang', 'gcc']
 
@@ -616,13 +736,6 @@ if &runtimepath =~ "neomake"
         \ 'args': [
         \   '--max-line-length=100',
         \   '--ignore=E501'
-        \],}
-
-    " The configuration scrips use Neovim commands
-    let g:neomake_vim_vint_maker = {
-        \ 'args': [
-        \   '--enable-neovim',
-        \   '-e'
         \],}
 
     let g:neomake_c_gcc_maker = {
@@ -831,10 +944,10 @@ endif
 " AutoFormat {{{
 
 if &runtimepath =~ 'vim-autoformat'
-    let g:auto_format = 1
+    let b:auto_format = 1
 
     function! CheckAutoFormat()
-        if g:auto_format == 1
+        if b:auto_format == 1
            exec "Autoformat"
         endif
     endfunction
@@ -846,6 +959,7 @@ if &runtimepath =~ 'vim-autoformat'
 
     augroup AutoFormat
         autocmd!
+        autocmd FileType * let b:auto_format = 1
         autocmd FileType gitcommit,dosini,markdown,vim,text,tex,python,make,asm,conf
             \ let b:autoformat_autoindent=0
         autocmd BufNewFile,BufRead,BufEnter *.log let b:autoformat_autoindent=0

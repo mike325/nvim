@@ -86,6 +86,23 @@ endif
 set shiftround     " Use multiple of shiftwidth when indenting with '<' and '>'
 set cursorline     " Turn on cursor line by default
 
+" Allow backgrounding buffers without writing them, and remember marks/undo
+" for backgrounded buffers, Normally I like to keep unsave just the files that
+" I'm currently using, this allow me to quit(q!) without worries
+" set hidden
+
+" Auto-reload buffers when file changed on disk, Some times I like to keep the
+" changes to save them in some registers
+" set autoread
+
+
+" Show invisible characters
+" set list
+
+" Indicator chars
+" set listchars=tab:▸\ ,trail:•,extends:❯,precedes:❮
+" set showbreak=↪\
+
 "" Text formating
 set formatoptions+=r " auto insert comment with <Enter>...
 set formatoptions+=o " ...or o/O
@@ -94,6 +111,9 @@ set formatoptions+=n " Recognize numbered lists
 if v:version > 703 || v:version == 703 && has('patch541') || has("nvim")
    set formatoptions+=j " Delete comment when joining commented lines
 endif
+
+" Use only 1 space after "." when joining lines, not 2
+set nojoinspaces
 
 " Set path to look recursive in the current dir
 set path+=**
@@ -252,6 +272,13 @@ vnoremap <S-tab> <gv
 nnoremap <F2> :update<CR>
 vmap <F2> <Esc><F2>gv
 imap <F2> <Esc><F2>a
+
+augroup localCR
+    autocmd!
+    autocmd BufReadPost quickfix nnoremap <buffer> <CR> <CR>
+    autocmd BufReadPost quickfix nnoremap <buffer> q :q!<CR>
+    autocmd CmdwinEnter * nnoremap <CR> <CR>
+augroup end
 
 " For systems without F's keys (ex. android)
 nmap <leader>w :update<CR>
@@ -624,19 +651,19 @@ endfunction
 
 augroup Skeletons
     autocmd!
-    autocmd BufNewFile *.css  exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.css')
-    autocmd BufNewFile *.html exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.html')
-    autocmd BufNewFile *.md   exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.md')
-    autocmd BufNewFile *.py   exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.py')
-    autocmd BufNewFile *.go   exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.go')
-    autocmd BufNewFile *.cs   exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.cs')
-    autocmd BufNewFile *.php  exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.php')
-    autocmd BufNewFile *.sh   exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.sh')
-    autocmd BufNewFile *.java call JavaClass()
-    autocmd BufNewFile *.cpp  call CMainOrFunc()
-    autocmd BufNewFile *.hpp  call CHeader()
-    autocmd BufNewFile *.c    call CMainOrFunc()
-    autocmd BufNewFile *.h    call CHeader()
+    autocmd BufNewFile *.css  silent! exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.css')
+    autocmd BufNewFile *.html silent! exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.html')
+    autocmd BufNewFile *.md   silent! exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.md')
+    autocmd BufNewFile *.py   silent! exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.py')
+    autocmd BufNewFile *.go   silent! exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.go')
+    autocmd BufNewFile *.cs   silent! exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.cs')
+    autocmd BufNewFile *.php  silent! exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.php')
+    autocmd BufNewFile *.sh   silent! exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.sh')
+    autocmd BufNewFile *.java silent! call JavaClass()
+    autocmd BufNewFile *.cpp  silent! call CMainOrFunc()
+    autocmd BufNewFile *.hpp  silent! call CHeader()
+    autocmd BufNewFile *.c    silent! call CMainOrFunc()
+    autocmd BufNewFile *.h    silent! call CHeader()
 augroup end
 
 " }}} EndSkeletons

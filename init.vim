@@ -52,8 +52,9 @@ Plug 'joshdick/onedark.vim'
 " Auto Close ' " () [] {}
 Plug 'Raimondi/delimitMate'
 
-" File explorer, and
+" File explorer
 Plug 'scrooloose/nerdtree', { 'on': [ 'NERDTreeToggle' ] }
+Plug 'Xuyuanp/nerdtree-git-plugin', { 'on': [ 'NERDTreeToggle' ] }
 
 " Easy comments
 Plug 'scrooloose/nerdcommenter'
@@ -206,13 +207,14 @@ if ( has("python") || has("python3") )
         if a:info.status == 'installed' || a:info.force
             " !./install.py --all
             if executable('go') && executable("tern")
-                !./install.py --gocode-completer --tern-completer --clang-completer
+                " !./install.py --gocode-completer --tern-completer --clang-completer
+                !./install.py --gocode-completer --tern-completer
             elseif executable("tern")
-                !./install.py --tern-completer --clang-completer
+                !./install.py --tern-completer
             elseif executable('go')
-                !./install.py --gocode-completer --clang-completer
+                !./install.py --gocode-completer
             else
-                !./install.py --clang-completer
+                !./install.py
             endif
         endif
     endfunction
@@ -284,7 +286,8 @@ if b:ycm_installed==0 && b:deoplete_installed==0 && b:completor==0
     if has("lua") && !has("nvim")
         Plug 'Shougo/neocomplete.vim'
     else
-        Plug 'ervandew/supertab'
+        Plug 'Shougo/neocomplcache.vim'
+        " Plug 'ervandew/supertab'
         " Plug 'roxma/SimpleAutoComplPop'
     endif
 endif
@@ -296,7 +299,7 @@ filetype plugin indent on
 
 " Load general configurations (key mappings and autocommands)
 execute 'source '.fnameescape(g:os_editor.'global.vim')
-
+"
 " Load plugins configurations
 execute 'source '.fnameescape(g:os_editor.'plugins.vim')
 
