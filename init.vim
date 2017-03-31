@@ -286,7 +286,8 @@ if b:ycm_installed==0 && b:deoplete_installed==0 && b:completor==0
     if has("lua") && !has("nvim")
         Plug 'Shougo/neocomplete.vim'
     else
-        Plug 'ervandew/supertab'
+        Plugin 'Shougo/neocomplcache.vim'
+        " Plug 'ervandew/supertab'
         " Plug 'roxma/SimpleAutoComplPop'
     endif
 endif

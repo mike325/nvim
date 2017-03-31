@@ -410,6 +410,43 @@ endif
 
 " }}} SimpleAutoComplPop
 
+" Neocomplcache {{{
+
+if &runtimepath =~ 'neocomplcache.vim'
+    " Use neocomplcache.
+    let g:neocomplcache_enable_at_startup = 1
+
+    " Use smartcase.
+    let g:neocomplcache_enable_smart_case = 1
+
+    " Set minimum syntax keyword length.
+    let g:neocomplcache_min_syntax_length = 1
+    let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
+
+    let g:neocomplcache#omni#input_patterns = get(g:,'neocomplcache#omni#input_patterns',{})
+
+    if &runtimepath =~ 'ultisnips'
+        inoremap <expr><TAB> pumvisible() ? "<C-R>=<SID>ExpandSnippetOrComplete()<CR>" : "\<TAB>"
+        inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<C-R>=NextSnippetOrReturn()\<CR>"
+        nnoremap <silent><CR>  :<C-R>=NextSnippetOrNothing()<CR>
+        " vnoremap <CR> <ESC>:<C-R>=NextSnippetOrNothing() ? '': 'gv'<CR><CR>
+    else
+        inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
+        inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<CR>"
+    endif
+
+    inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : ""
+
+    inoremap <expr><BS> neocomplcache#smart_close_popup()."\<C-h>"
+    inoremap <expr><C-h> neocomplcache#smart_close_popup()."\<C-h>"
+    inoremap <expr><C-y>  neocomplcache#smart_close_popup()
+    inoremap <expr><C-e>  neocomplcache#cancel_popup()
+
+    autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
+endif
+
+" }}} EndNeocomplcache
+
 " Neocomplete {{{
 
 if &runtimepath =~ 'neocomplete.vim'
