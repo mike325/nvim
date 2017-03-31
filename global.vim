@@ -86,6 +86,11 @@ endif
 set shiftround     " Use multiple of shiftwidth when indenting with '<' and '>'
 set cursorline     " Turn on cursor line by default
 
+" Allow backgrounding buffers without writing them, and remember marks/undo
+" for backgrounded buffers, Normally I like to keep unsave just the files that
+" I'm currently using, this allow me to quit(q!) without worries
+" set hidden
+
 "" Text formating
 set formatoptions+=r " auto insert comment with <Enter>...
 set formatoptions+=o " ...or o/O
@@ -253,8 +258,11 @@ nnoremap <F2> :update<CR>
 vmap <F2> <Esc><F2>gv
 imap <F2> <Esc><F2>a
 
-autocmd BufReadPost quickfix nnoremap <buffer> <CR> <CR>
-autocmd BufReadPost location nnoremap <buffer> <CR> <CR>
+augroup localCR
+    autocmd!
+    autocmd BufReadPost quickfix nnoremap <buffer> <CR> <CR>
+    autocmd BufReadPost location nnoremap <buffer> <CR> <CR>
+augroup end
 
 " For systems without F's keys (ex. android)
 nmap <leader>w :update<CR>
