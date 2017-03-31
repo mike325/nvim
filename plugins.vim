@@ -243,10 +243,26 @@ endif
 
 " SnipMate {{{
 
+" TODO make SnipMate mappings behave as UltiSnips ones
 if &runtimepath =~ 'vim-snipmate'
-    nmap <C-k> <Plug>snipMateNextOrTrigger
-    imap <C-k> <Plug>snipMateNextOrTrigger
-    smap <C-k> <Plug>snipMateNextOrTrigger
+    function! <SID>ExpandSnippetOrComplete()
+    endfunction
+
+    function! NextSnippetOrReturn()
+    endfunction
+
+    function! PrevSnippetOrReturn()
+    endfunction
+
+    function! NextSnippetOrNothing()
+        return ""
+    endfunction
+
+    function! PrevSnippetOrNothing()
+    endfunction
+
+    nnoremap <C-k> <Plug>snipMateNextOrTrigger
+    inoremap <C-k> <Plug>snipMateNextOrTrigger
 endif
 
 " }}} EndSnipMate
