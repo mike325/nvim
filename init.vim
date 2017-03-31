@@ -192,6 +192,8 @@ if ( has("python") || has("python3") )
     Plug 'chiel92/vim-autoformat'
     " TODO Check this fork, No +python required
     " Plug 'umitkablan/vim-auf'
+    " TODO Check google's own formatter
+    " Plug 'google/vim-codefmt'
 
     " Add python highlight, folding, virtualenv, etc
     Plug 'python-mode/python-mode'
