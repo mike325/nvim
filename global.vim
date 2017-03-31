@@ -91,6 +91,18 @@ set cursorline     " Turn on cursor line by default
 " I'm currently using, this allow me to quit(q!) without worries
 " set hidden
 
+" Auto-reload buffers when file changed on disk, Some times I like to keep the
+" changes to save them in some registers
+" set autoread
+
+
+" Show invisible characters
+" set list
+
+" Indicator chars
+" set listchars=tab:▸\ ,trail:•,extends:❯,precedes:❮
+" set showbreak=↪\
+
 "" Text formating
 set formatoptions+=r " auto insert comment with <Enter>...
 set formatoptions+=o " ...or o/O
@@ -99,6 +111,9 @@ set formatoptions+=n " Recognize numbered lists
 if v:version > 703 || v:version == 703 && has('patch541') || has("nvim")
    set formatoptions+=j " Delete comment when joining commented lines
 endif
+
+" Use only 1 space after "." when joining lines, not 2
+set nojoinspaces
 
 " Set path to look recursive in the current dir
 set path+=**
