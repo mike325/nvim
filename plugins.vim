@@ -81,8 +81,8 @@ let g:NERDTreeIndicatorMapCustom = {
 
 nnoremap T :NERDTreeToggle<CR>
 nnoremap <F3> :NERDTreeToggle<CR>
-imap <F3> <Esc><F3>
-vmap <F3> <Esc><F3>
+inoremap <F3> <Esc><F3>
+vnoremap <F3> <Esc><F3>
 
 " Enable line numbers
 let g:NERDTreeShowLineNumbers=1
@@ -564,16 +564,16 @@ if &runtimepath =~ 'deoplete.nvim'
 
     " let g:deoplete#sources._ = ['buffer', 'member', 'file', 'tags', 'ultisnips']
     let g:deoplete#sources={}
-    let g:deoplete#sources._    = ['buffer', 'member', 'file', 'ultisnips']
+    let g:deoplete#sources._    = ['buffer', 'member', 'file', 'tags', 'ultisnips']
 
-    let g:deoplete#sources.vim        = ['buffer', 'member', 'file', 'ultisnips']
-    let g:deoplete#sources.c          = ['buffer', 'member', 'file', 'omni', 'ultisnips']
-    let g:deoplete#sources.cpp        = ['buffer', 'member', 'file', 'omni', 'ultisnips']
-    let g:deoplete#sources.go         = ['buffer', 'member', 'file', 'omni', 'ultisnips']
-    let g:deoplete#sources.java       = ['buffer', 'member', 'file', 'omni', 'ultisnips']
-    let g:deoplete#sources.python     = ['buffer', 'member', 'file', 'omni', 'ultisnips']
-    let g:deoplete#sources.javascript = ['buffer', 'member', 'file', 'omni', 'ultisnips']
-    let g:deoplete#sources.ruby       = ['buffer', 'member', 'file', 'ultisnips']
+    let g:deoplete#sources.vim        = ['buffer', 'member', 'file', 'tags', 'omni', 'ultisnips']
+    let g:deoplete#sources.c          = ['buffer', 'member', 'file', 'tags', 'omni', 'ultisnips']
+    let g:deoplete#sources.cpp        = ['buffer', 'member', 'file', 'tags', 'omni', 'ultisnips']
+    let g:deoplete#sources.go         = ['buffer', 'member', 'file', 'tags', 'omni', 'ultisnips']
+    let g:deoplete#sources.java       = ['buffer', 'member', 'file', 'tags', 'omni', 'ultisnips']
+    let g:deoplete#sources.python     = ['buffer', 'member', 'file', 'tags', 'omni', 'ultisnips']
+    let g:deoplete#sources.javascript = ['buffer', 'member', 'file', 'tags', 'omni', 'ultisnips']
+    let g:deoplete#sources.ruby       = ['buffer', 'member', 'file', 'tags', 'omni', 'ultisnips']
 
     " if !exists('g:deoplete#omni#input_patterns')
     "     let g:deoplete#omni#input_patterns = {}
