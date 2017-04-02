@@ -158,6 +158,9 @@ Plug 'kana/vim-textobj-line'
 "                        with comment characters)
 Plug 'glts/vim-textobj-comment'
 
+" Indentation objects
+Plug 'michaeljsmith/vim-indent-object'
+
 if has("unix")
     Plug 'tpope/vim-eunuch'
 endif
@@ -235,7 +238,10 @@ if ( has("python") || has("python3") )
 
         " C/C++ completion base on clang compiler
         if executable("clang")
-            Plug 'zchee/deoplete-clang'
+            " Plug 'zchee/deoplete-clang'
+
+            " A bit faster C/C++ completion
+            Plug 'tweekmonster/deoplete-clang2'
         endif
 
         " Go completion
