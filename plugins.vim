@@ -154,8 +154,31 @@ endif
 " Grepper {{{
 
 if &runtimepath =~ 'vim-grepper'
-    " let g:grepper.tools = ['ag', 'ack', 'git', 'grep', 'findstr' ]
+
+    let g:grepper.tools =
+      \ ['ag', 'ack', 'git', 'grep', 'findstr', 'rg', 'pt', 'sift']
+
     " let g:grepper.highlight = 1
+    " let g:grepper.rg.grepprg .= ' --smart-case'
+
+    let g:grepper.dir = 'repo,cwd'
+
+    let g:grepper.grep = {
+        \ 'grepprg':    'grep -nIi',
+        \ 'grepformat': '%f:%l:%m',
+        \ 'escape':     '\^$.*[]',
+        \ }
+
+    let g:grepper.git = {
+        \ 'grepprg':    'git grep -nIi --exclude-standard',
+        \ 'grepformat': '%f:%l:%m',
+        \ 'escape':     '\^$.*[]',
+        \ }
+
+    " command! Todo :Grepper
+    "       \ -noprompt
+    "       \ -tool git
+    "       \ -grepprg git grep -nIi '\(TODO\|FIXME\)'
 
     " Motions for grepper command
     nmap gs  <plug>(GrepperOperator)
