@@ -672,6 +672,11 @@ if &runtimepath =~ 'completor.vim'
     endif
 
     inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : ""
+
+    let g:completor_min_chars = 1
+
+    let g:completor_java_omni_trigger = '([\w-]+|@[\w-]*|[\w-]+.[\w-]+)$'
+    let g:completor_css_omni_trigger = '([\w-]+|@[\w-]*|[\w-]+:\s*[\w-]*)$'
 endif
 
 " }}} EndCompletor
