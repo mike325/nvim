@@ -158,6 +158,9 @@ Plug 'kana/vim-textobj-line'
 "                        with comment characters)
 Plug 'glts/vim-textobj-comment'
 
+" Text object to manipulate XML/HTLM attributes
+Plug 'whatyouhide/vim-textobj-xmlattr'
+
 " Indentation objects
 Plug 'michaeljsmith/vim-indent-object'
 
