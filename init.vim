@@ -121,22 +121,22 @@ Plug 'sickill/vim-pasta'
 Plug 'mhinz/vim-grepper'
 
 " Improve Dockerfiles syntax highlight
-Plug 'ekalinin/Dockerfile.vim'
+Plug 'ekalinin/Dockerfile.vim', { 'for', 'Dockerfile' }
 
 " Improve json syntax highlight
-Plug 'elzr/vim-json'
+Plug 'elzr/vim-json', { 'for', 'json' }
 
 " Improve Lua syntax
-Plug 'tbastos/vim-lua'
+Plug 'tbastos/vim-lua', { 'for', 'lua' }
 
 " Improve cpp syntax highlight
-Plug 'octol/vim-cpp-enhanced-highlight'
+Plug 'octol/vim-cpp-enhanced-highlight', { 'for', 'cpp' }
 
 " Add Qml syntax highlight
-Plug 'peterhoeg/vim-qml'
+Plug 'peterhoeg/vim-qml', { 'for', 'qml' }
 
 " Latex plugin
-Plug 'lervag/vimtex'
+Plug 'lervag/vimtex', { 'for', 'tex' }
 
 " Change buffer position in the current layout
 Plug 'wesQ3/vim-windowswap'
@@ -167,7 +167,7 @@ endif
 
 if executable("go")
     " Go development
-    Plug 'fatih/vim-go'
+    Plug 'fatih/vim-go', { 'for', 'go' }
 endif
 
 if !has("nvim")
@@ -199,7 +199,7 @@ if ( has("python") || has("python3") )
     " Plug 'google/vim-codefmt'
 
     " Add python highlight, folding, virtualenv, etc
-    Plug 'python-mode/python-mode'
+    Plug 'python-mode/python-mode', { 'for', 'python' }
 
     " Snippets engine
     Plug 'SirVer/ultisnips'
@@ -226,7 +226,7 @@ if ( has("python") || has("python3") )
 
     if has("nvim") || ( v:version >= 800 ) || ( v:version == 704 )
         " Only works with JDK8!!!
-        Plug 'artur-shaik/vim-javacomplete2'
+        Plug 'artur-shaik/vim-javacomplete2', { 'for', 'java' }
     endif
 
     " Awesome Async completion engine for Neovim
