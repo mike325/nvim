@@ -155,6 +155,7 @@ endif
 
 if &runtimepath =~ 'vim-grepper'
 
+    let g:grepper = {}            " initialize g:grepper with empty dictionary
     let g:grepper.tools =
       \ ['ag', 'ack', 'git', 'grep', 'findstr', 'rg', 'pt', 'sift']
 
