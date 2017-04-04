@@ -177,24 +177,32 @@ endif
 set backup   " make backup files
 set undofile " persistent undos - undo after you re-open the file
 
+" NeoVim ShaDa file, cannot be the same as the viminfo file as the formats have
+" been changed.
 if has("nvim")
     " Remember things between sessions
-    " '    - remember marks for n previous files
-    " <    - save n lines for each register
-    " :    - remember n items in command-line history
-    " %    - remember the buffer list (if vim started without a file arg)
-    " n    - set name of (n)viminfo file
-    " /    - save n entries from the searc history
-    set shada=!,'100,<250,:50,/100,s10,h
+    " '     - remember marks for n previous files
+    " <     - save n lines for each register
+    " :     - remember n items in command-line history
+    " %     - remember the buffer list (if vim started without a file arg)
+    " n     - set name of (n)viminfo file
+    " /     - save n entries from the searc history
+    " "     -
+    " s     -
+    " h     -
+    set shada=!,'100,\"100,<250,:50,/100,s10,h
 else
     " Remember things between sessions
-    " '    - remember marks for n previous files
-    " <    - save n lines for each register
-    " :    - remember n items in command-line history
-    " %    - remember the buffer list (if vim started without a file arg)
-    " n    - set name of (n)viminfo file
-    " /    - save n entries from the searc history
-    set viminfo=!,'100,<250,:50,/100,s10,h
+    " '     - remember marks for n previous files
+    " <     - save n lines for each register
+    " :     - remember n items in command-line history
+    " %     - remember the buffer list (if vim started without a file arg)
+    " n     - set name of (n)viminfo file
+    " /     - save n entries from the searc history
+    " "     -
+    " s     -
+    " h     -
+    set viminfo=!,'100,\"100,<250,:50,/100,s10,h
 endif
 
 if has("win32") || has("win64")
