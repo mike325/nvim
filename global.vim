@@ -48,6 +48,9 @@ if !has("nvim")
     set nocompatible
 endif
 
+set titlestring=%t\ (%f)
+set title          " Set window title
+set laststatus=2   " don't combine status line with command line
 set lazyredraw     " Don't draw when a macro is being executed
 set splitright     " Split on the right size
 set nowrap         " By default don't wrap the lines
@@ -103,14 +106,15 @@ set cursorline     " Turn on cursor line by default
 " set listchars=tab:▸\ ,trail:•,extends:❯,precedes:❮
 " set showbreak=↪\
 
-"" Text formating
-set formatoptions+=r " auto insert comment with <Enter>...
+" Text formating
+set formatoptions+=r " Auto insert comment with <Enter>...
 set formatoptions+=o " ...or o/O
+set formatoptions+=c " Autowrap comments using textwidth
+set formatoptions+=l " Do not wrap lines that have been longer when starting insert mode already
+set formatoptions+=q " Allow formatting of comments with "gq".
+set formatoptions+=t " Auto-wrap text using textwidth
 set formatoptions+=n " Recognize numbered lists
-
-if v:version > 703 || v:version == 703 && has('patch541') || has("nvim")
-   set formatoptions+=j " Delete comment when joining commented lines
-endif
+set formatoptions+=j " Delete comment character when joining commented lines
 
 " Use only 1 space after "." when joining lines, not 2
 set nojoinspaces

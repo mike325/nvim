@@ -245,9 +245,15 @@ if &runtimepath =~ 'vim-airline'
     let g:airline#extensions#tabline#show_close_button = 0
     let g:airline#extensions#tabline#show_splits       = 0
 
-    " let g:airline#extensions#tabline#show_tab_nr = 0
     " Powerline fonts, check https://github.com/powerline/fonts.git for more
     " info
+    " unicode symbols
+    " let g:airline#extensions#branch#symbol = '⎇ '
+    " let g:airline#extensions#whitespace#symbol = 'Ξ'
+    " let g:airline_left_sep = '▶'
+    " let g:airline_right_sep = '◀'
+    " let g:airline_linecolumn_prefix = '␊ '
+    " let g:airline_paste_symbol = 'ρ'
     let g:airline_powerline_fonts = 1
 endif
 
