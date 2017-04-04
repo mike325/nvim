@@ -156,8 +156,7 @@ endif
 if &runtimepath =~ 'vim-grepper'
 
     let g:grepper = {}            " initialize g:grepper with empty dictionary
-    let g:grepper.tools =
-      \ ['ag', 'ack', 'git', 'grep', 'findstr', 'rg', 'pt', 'sift']
+    let g:grepper.tools = ['ag', 'git', 'ack', 'grep', 'findstr']
 
     " let g:grepper.highlight = 1
     " let g:grepper.rg.grepprg .= ' --smart-case'
@@ -176,10 +175,7 @@ if &runtimepath =~ 'vim-grepper'
         \ 'escape':     '\^$.*[]',
         \ }
 
-    " command! Todo :Grepper
-    "       \ -noprompt
-    "       \ -tool git
-    "       \ -grepprg git grep -nIi '\(TODO\|FIXME\)'
+    command! Todo :Grepper -tool git -query '\(TODO\|FIXME\)'
 
     " Motions for grepper command
     nmap gs  <plug>(GrepperOperator)
