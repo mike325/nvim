@@ -194,7 +194,7 @@ else
     " %    - remember the buffer list (if vim started without a file arg)
     " n    - set name of (n)viminfo file
     " /    - save n entries from the searc history
-    set viminfo=!,'100,<250,:50,/100,h
+    set viminfo=!,'100,<250,:50,/100,s10,h
 endif
 
 if has("win32") || has("win64")
