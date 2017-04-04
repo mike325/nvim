@@ -316,6 +316,11 @@ if &runtimepath =~ 'ultisnips'
         endif
     endfunction
 
+    function! CheckSnippetExpantion()
+        call UltiSnips#JumpForwards()
+        return g:ulti_jump_forwards_res
+    endfunction
+
     function! NextSnippetOrReturn()
         let snippet = UltiSnips#JumpForwards()
         if g:ulti_jump_forwards_res > 0
@@ -453,7 +458,7 @@ if &runtimepath =~ 'neocomplcache.vim'
 
     if &runtimepath =~ 'ultisnips'
         inoremap <expr><TAB> pumvisible() ? "<C-R>=<SID>ExpandSnippetOrComplete()<CR>" : "\<TAB>"
-        inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<C-R>=NextSnippetOrReturn()\<CR>"
+        inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<C-R>=CheckSnippetExpantion() ? '' : delimitMate#ExpandReturn()\<CR>"
         nnoremap <silent><CR>  :<C-R>=NextSnippetOrNothing()<CR>
         " vnoremap <CR> <ESC>:<C-R>=NextSnippetOrNothing() ? '': 'gv'<CR><CR>
     else
@@ -492,7 +497,7 @@ if &runtimepath =~ 'neocomplete.vim'
 
     if &runtimepath =~ 'ultisnips'
         inoremap <expr><TAB> pumvisible() ? "<C-R>=<SID>ExpandSnippetOrComplete()<CR>" : "\<TAB>"
-        inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<C-R>=NextSnippetOrReturn()\<CR>"
+        inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<C-R>=CheckSnippetExpantion() ? '' : delimitMate#ExpandReturn()\<CR>"
         nnoremap <silent><CR>  :<C-R>=NextSnippetOrNothing()<CR>
         " vnoremap <CR> <ESC>:<C-R>=NextSnippetOrNothing() ? '': 'gv'<CR><CR>
     else
@@ -544,7 +549,7 @@ if &runtimepath =~ 'deoplete.nvim'
 
     if &runtimepath =~ 'ultisnips'
         inoremap <expr><TAB> pumvisible() ? "<C-R>=<SID>ExpandSnippetOrComplete()<CR>" : "\<TAB>"
-        inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<C-R>=NextSnippetOrReturn()\<CR>"
+        inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<C-R>=CheckSnippetExpantion() ? '' : delimitMate#ExpandReturn()\<CR>"
         nnoremap <silent><CR>  :<C-R>=NextSnippetOrNothing()<CR>
         " vnoremap <CR> <ESC>:<C-R>=NextSnippetOrNothing() ? '': 'gv'<CR><CR>
     else
@@ -688,7 +693,7 @@ endif
 if &runtimepath =~ 'completor.vim'
     if &runtimepath =~ 'ultisnips'
         inoremap <expr><TAB> pumvisible() ? "<C-R>=<SID>ExpandSnippetOrComplete()<CR>" : "\<TAB>"
-        inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<C-R>=NextSnippetOrReturn()\<CR>"
+        inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<C-R>=CheckSnippetExpantion() ? '' : delimitMate#ExpandReturn()\<CR>"
         nnoremap <silent><CR> :<C-R>=NextSnippetOrNothing()<CR>
         " nnoremap <silent><S-TAB> :<C-R>=PrevSnippetOrNothing()<CR>
         " vnoremap <CR> <ESC>:<C-R>=NextSnippetOrNothing() ? '': 'gv'<CR><CR>
