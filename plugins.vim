@@ -164,7 +164,7 @@ if &runtimepath =~ 'vim-grepper'
     let g:grepper.dir = 'repo,cwd'
 
     let g:grepper.grep = {
-        \ 'grepprg':    'grep -nIi',
+        \ 'grepprg':    'grep -nrIi',
         \ 'grepformat': '%f:%l:%m',
         \ 'escape':     '\^$.*[]',
         \ }
