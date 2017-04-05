@@ -342,9 +342,10 @@ if &runtimepath =~ 'ultisnips'
             return "\<C-p>"
         else
             call UltiSnips#JumpBackwards()
-            if g:ulti_jump_backwards_res == 0
+            if g:ulti_jump_backwards_res > 0
                 return ""
             endif
+            return ""
         endif
     endfunction
 
@@ -469,12 +470,12 @@ if &runtimepath =~ 'neocomplcache.vim'
     if &runtimepath =~ 'ultisnips'
         inoremap <silent><TAB> <C-R>=<SID>ExpandSnippetOrComplete()<CR>
         inoremap <silent><CR>  <C-R>=NextSnippetOrReturn()<CR>
+        inoremap <silent><S-TAB> <C-R>=PrevSnippetOrNothing()<CR>
     else
         inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
         inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<CR>"
+        inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : ""
     endif
-
-    inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : ""
 
     inoremap <expr><BS> neocomplcache#smart_close_popup()."\<C-h>"
     inoremap <expr><C-h> neocomplcache#smart_close_popup()."\<C-h>"
@@ -506,12 +507,13 @@ if &runtimepath =~ 'neocomplete.vim'
     if &runtimepath =~ 'ultisnips'
         inoremap <silent><TAB> <C-R>=<SID>ExpandSnippetOrComplete()<CR>
         inoremap <silent><CR>  <C-R>=NextSnippetOrReturn()<CR>
+        inoremap <silent><S-TAB> <C-R>=PrevSnippetOrNothing()<CR>
     else
         inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
         inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<CR>"
+        inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : ""
     endif
 
-    inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : ""
     inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
     inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
     inoremap <expr><C-y>  neocomplete#mappings#smart_close_popup()
@@ -556,12 +558,13 @@ if &runtimepath =~ 'deoplete.nvim'
     if &runtimepath =~ 'ultisnips'
         inoremap <silent><TAB> <C-R>=<SID>ExpandSnippetOrComplete()<CR>
         inoremap <silent><CR>  <C-R>=NextSnippetOrReturn()<CR>
+        inoremap <silent><S-TAB> <C-R>=PrevSnippetOrNothing()<CR>
     else
         inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
         inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<CR>"
+        inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : ""
     endif
 
-    inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : ""
     inoremap <expr><BS> deoplete#mappings#smart_close_popup()."\<C-h>"
     inoremap <expr><C-h> deoplete#mappings#smart_close_popup()."\<C-h>"
     inoremap <expr><C-y>  deoplete#mappings#smart_close_popup()
@@ -671,9 +674,11 @@ if &runtimepath =~ 'YouCompleteMe'
     if &runtimepath =~ 'ultisnips'
         inoremap <silent><TAB> <C-R>=<SID>ExpandSnippetOrComplete()<CR>
         inoremap <silent><CR>  <C-R>=NextSnippetOrReturn()<CR>
+        inoremap <silent><S-TAB> <C-R>=PrevSnippetOrNothing()<CR>
     else
         inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
         inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<CR>"
+        inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : ""
     endif
 
     " In case there are other completion plugins
@@ -693,15 +698,16 @@ endif
 " Completor {{{
 
 if &runtimepath =~ 'completor.vim'
+
     if &runtimepath =~ 'ultisnips'
         inoremap <silent><TAB> <C-R>=<SID>ExpandSnippetOrComplete()<CR>
         inoremap <silent><CR>  <C-R>=NextSnippetOrReturn()<CR>
+        inoremap <silent><S-TAB> <C-R>=PrevSnippetOrNothing()<CR>
     else
         inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
         inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<CR>"
+        inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : ""
     endif
-
-    inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : ""
 
     let g:completor_min_chars = 1
 
