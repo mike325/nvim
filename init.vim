@@ -66,10 +66,19 @@ Plug 'enricobacis/vim-airline-clock'
 
 " Git integrations
 Plug 'airblade/vim-gitgutter'
-Plug 'tpope/vim-fugitive'
 Plug 'gregsexton/gitv'
 Plug 'rhysd/committia.vim'
+Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-git'
+
+" Surround motions
+Plug 'tpope/vim-surround'
+
+" Better substitution, improve abbreviations and coercion
+Plug 'tpope/vim-abolish'
+
+" Auto insert 'end' keywords in some languages
+" Plugin 'tpope/vim-endwise'
 
 " Easy alignment
 Plug 'godlygeek/tabular'
@@ -77,8 +86,8 @@ Plug 'godlygeek/tabular'
 " Better motions
 Plug 'easymotion/vim-easymotion'
 
-" Surround motions
-Plug 'tpope/vim-surround'
+" Map repeat key . for plugins
+Plug 'tpope/vim-repeat'
 
 " Better buffer deletions
 Plug 'moll/vim-bbye', { 'on': [ 'Bdelete' ] }
@@ -101,12 +110,6 @@ Plug 'honza/vim-snippets'
 
 " Move with indentation
 Plug 'matze/vim-move'
-
-" Better substitution, improve abbreviations and coercion
-Plug 'tpope/vim-abolish'
-
-" Map repeat key . for plugins
-Plug 'tpope/vim-repeat'
 
 " Display indention
 Plug 'Yggdroot/indentLine'
