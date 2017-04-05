@@ -78,7 +78,7 @@ Plug 'tpope/vim-surround'
 Plug 'tpope/vim-abolish'
 
 " Auto insert 'end' keywords in some languages
-" Plugin 'tpope/vim-endwise'
+Plugin 'tpope/vim-endwise'
 
 " Easy alignment
 Plug 'godlygeek/tabular'

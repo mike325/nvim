@@ -310,40 +310,41 @@ if &runtimepath =~ 'ultisnips'
     function! <SID>ExpandSnippetOrComplete()
         call UltiSnips#ExpandSnippet()
         if g:ulti_expand_res == 0
-          if pumvisible()
-            return "\<C-n>"
-          else
-            call UltiSnips#JumpForwards()
-            if g:ulti_jump_forwards_res == 0
-              return "\<TAB>"
+            if pumvisible()
+                return "\<C-n>"
+            else
+                call UltiSnips#JumpForwards()
+                if g:ulti_jump_forwards_res == 0
+                    return "\<TAB>"
+                endif
             endif
-          endif
         endif
         return ""
     endfunction
 
     function! NextSnippetOrReturn()
-        if pumvisible()
-            return "\<C-y>"
-        else
-            if delimitMate#WithinEmptyPair() > 0
+        call UltiSnips#ExpandSnippetOrJump()
+        if g:ulti_expand_or_jump_res == 0
+            if pumvisible()
+                return "\<C-y>"
+            elseif delimitMate#WithinEmptyPair() > 0
                 return delimitMate#ExpandReturn()
             else
-                call UltiSnips#JumpForwards()
-                if g:ulti_jump_forwards_res == 0
-                    return "\<CR>"
-                endif
+                return "\<CR>"
             endif
+        else
             return ""
         endif
     endfunction
 
-    function! PrevSnippetOrReturn()
-        let snippet = UltiSnips#JumpForwards()
-        if g:ulti_jump_forwards_res > 0
-            return snippet
+    function! PrevSnippetOrNothing()
+        if pumvisible()
+            return "\<C-p>"
         else
-            return "\<CR>"
+            call UltiSnips#JumpBackwards()
+            if g:ulti_jump_backwards_res == 0
+                return ""
+            endif
         endif
     endfunction
 
