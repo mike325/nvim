@@ -363,6 +363,17 @@ endif
 
 " }}} EndJavaComplete
 
+" Vimtext {{{
+if &runtimepath =~ "vimtext"
+    " let g:vimtex_enabled = 1
+    let g:vimtex_fold_enabled = 1
+    let g:vimtex_imaps_leader = '`'
+    let g:vimtex_mappings_enabled = 1
+    let g:vimtex_motion_enabled = 1
+    let g:vimtex_text_obj_enabled = 1
+    let g:tex_flavor = 'latex'
+endif
+" EndVimtext }}}
 
 " Jedi {{{
 

@@ -136,7 +136,7 @@ Plug 'octol/vim-cpp-enhanced-highlight', { 'for': 'cpp' }
 Plug 'peterhoeg/vim-qml', { 'for': 'qml' }
 
 " Latex plugin
-Plug 'lervag/vimtex', { 'for': 'tex' }
+Plug 'lervag/vimtex'
 
 " Change buffer position in the current layout
 Plug 'wesQ3/vim-windowswap'
