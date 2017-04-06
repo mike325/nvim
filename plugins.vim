@@ -47,18 +47,18 @@ let g:ctrlp_custom_ignore       = {
 
 if has("win32") || has("win64")
     let g:ctrlp_user_command = {
-        \   'types': {
-        \       1: ['.git', 'cd %s && git ls-files -co --exclude-standard']
-        \   },
-        \   'fallback': 'find %s -type f',
-        \ }
+                \   'types': {
+                \       1: ['.git', 'cd %s && git ls-files -co --exclude-standard']
+                \   },
+                \   'fallback': 'dir %s /-n /b /s /a-d',
+                \ }
 else
     let g:ctrlp_user_command = {
-        \   'types': {
-        \       1: ['.git', 'cd %s && git ls-files -co --exclude-standard']
-        \   },
-        \   'fallback': 'dir %s /-n /b /s /a-d',
-        \ }
+                \   'types': {
+                \       1: ['.git', 'cd %s && git ls-files -co --exclude-standard']
+                \   },
+                \   'fallback': 'find %s -type f',
+                \ }
 endif
 
 " }}} EndCtrlP
