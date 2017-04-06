@@ -200,6 +200,9 @@ let b:ycm_installed = 0
 let b:deoplete_installed = 0
 let b:completor = 0
 if ( has("python") || has("python3") )
+    " Faster matcher for ctrlp
+    Plug 'FelikZ/ctrlp-py-matcher'
+
     " Code Format tool
     Plug 'chiel92/vim-autoformat'
     " TODO Check this fork, No +python required

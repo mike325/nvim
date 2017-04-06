@@ -211,6 +211,10 @@ if has("nvim")
     tnoremap <Esc> <C-\><C-n>
 endif
 
+if executable("ag")
+    set grepprg=ag\ --nogroup\ --nocolor
+endif
+
 " }}} EndBasicImprovements
 
 " VimFiles {{{
