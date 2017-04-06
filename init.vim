@@ -202,6 +202,8 @@ let b:completor = 0
 if ( has("python") || has("python3") )
     " Faster matcher for ctrlp
     Plug 'FelikZ/ctrlp-py-matcher'
+    " The fastes matcher (as far as I know) but way more complicated to setup
+    " Plug 'nixprime/cpsm'
 
     " Code Format tool
     Plug 'chiel92/vim-autoformat'
