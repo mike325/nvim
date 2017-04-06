@@ -30,8 +30,9 @@ nnoremap <leader>d :Bdelete!<CR>
 
 " CtrlP {{{
 
+nnoremap <C-p> :CtrlP<CR>
 nnoremap <C-b> :CtrlPBuffer<CR>
-nnoremap <C-m> :CtrlPMRUFiles<CR>
+nnoremap <C-u> :CtrlPMRUFiles<CR>
 
 let g:ctrlp_map = '<C-p>'
 let g:ctrlp_cmd = 'CtrlP'
@@ -41,7 +42,7 @@ let g:ctrlp_cmd = 'CtrlP'
 let g:ctrlp_clear_cache_on_exit = 0
 let g:ctrlp_follow_symlinks     = 1
 let g:ctrlp_mruf_case_sensitive = 1
-let g:ctrlp_lazy_update         = 350
+" let g:ctrlp_lazy_update         = 350
 let g:ctrlp_match_window        = 'bottom,order:ttb,min:1,max:30,results:50'
 let g:ctrlp_working_path_mode   = 'ra'
 let g:ctrlp_custom_ignore       = {
@@ -49,8 +50,7 @@ let g:ctrlp_custom_ignore       = {
             \ 'file': '\v\.(exe|bin|o|so|dll|pyc|zip|sw|swp)$',
             \ }
 
- if &runtimepath =~ 'ctrlp-py-matcher'
-    echo 'In order to use pymatcher plugin, you need +python compiled vim'
+ if &runtimepath =~ 'ctrlp-py-matcher' && has("python")
     let g:ctrlp_match_func = { 'match': 'pymatcher#PyMatch' }
 
     " Set no file limit, we are building a big project
