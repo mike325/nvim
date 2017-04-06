@@ -40,9 +40,9 @@ let g:ctrlp_cmd = 'CtrlP'
 " Do not clear filenames cache, to improve CtrlP startup
 " You can manualy clear it by <F5>
 let g:ctrlp_clear_cache_on_exit = 0
+let g:ctrlp_by_filename         = 0
 let g:ctrlp_follow_symlinks     = 1
 let g:ctrlp_mruf_case_sensitive = 1
-" let g:ctrlp_lazy_update         = 350
 let g:ctrlp_match_window        = 'bottom,order:ttb,min:1,max:30,results:50'
 let g:ctrlp_working_path_mode   = 'ra'
 let g:ctrlp_custom_ignore       = {
@@ -55,6 +55,7 @@ let g:ctrlp_custom_ignore       = {
 
     " Set no file limit, we are building a big project
     let g:ctrlp_max_files = 0
+    " let g:ctrlp_lazy_update         = 350
 endif
 
 " If ag is available use it as filename list generator instead of 'find'
