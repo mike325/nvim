@@ -31,11 +31,16 @@ nnoremap <leader>d :Bdelete!<CR>
 " CtrlP {{{
 
 nnoremap <C-b> :CtrlPBuffer<CR>
-nnoremap <C-p> :CtrlP<CR>
-let g:ctrlp_match_window = 'bottom,order:ttb,min:1,max:30,results:50'
+nnoremap <C-m> :CtrlPMRUFiles<CR>
+
 let g:ctrlp_map = '<C-p>'
-let g:ctrlp_working_path_mode = 'ra'
-let g:ctrlp_custom_ignore = {
+let g:ctrlp_cmd = 'CtrlP'
+
+let g:ctrlp_follow_symlinks     = 1
+let g:ctrlp_mruf_case_sensitive = 1
+let g:ctrlp_match_window        = 'bottom,order:ttb,min:1,max:30,results:50'
+let g:ctrlp_working_path_mode   = 'ra'
+let g:ctrlp_custom_ignore       = {
             \ 'dir':  '\v[\/]\.(git|hg|svn)$',
             \ 'file': '\v\.(exe|bin|o|so|dll|pyc|zip|sw|swp)$',
             \ }
@@ -155,13 +160,14 @@ endif
 
 if &runtimepath =~ 'vim-grepper'
 
-    let g:grepper = {}            " initialize g:grepper with empty dictionary
+    let g:grepper       = {}    " initialize g:grepper with empty dictionary
+    let g:grepper.jump  = 0
     let g:grepper.tools = ['ag', 'git', 'ack', 'grep', 'findstr']
+    let g:grepper.dir   = 'repo,cwd'
 
     " let g:grepper.highlight = 1
     " let g:grepper.rg.grepprg .= ' --smart-case'
 
-    let g:grepper.dir = 'repo,cwd'
 
     let g:grepper.grep = {
         \ 'grepprg':    'grep -nrIi',
@@ -926,8 +932,17 @@ endif
 
 " Move {{{
 if &runtimepath =~ 'vim-move'
-    " Set Ctrl key as default. Commands <C-j> and <C-k>
-    let g:move_key_modifier = 'C'
+    " Manual map the functions to overlap any posible confilct
+    " let g:move_key_modifier = 'C'
+    let g:move_map_keys = 0
+
+    " Set Ctrl key as default. Commands <C-j> and <C-k> to move stuf
+    vmap <C-j> <Plug>MoveBlockDown
+    vmap <C-k> <Plug>MoveBlockUp
+
+    nmap <C-j> <Plug>MoveLineDown
+    nmap <C-k> <Plug>MoveLineUp
+    " nmap <>     <Plug>MoveBlockHalfPageDown
 endif
 " }}} EndMove
 

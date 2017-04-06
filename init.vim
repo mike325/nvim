@@ -96,7 +96,7 @@ Plug 'moll/vim-bbye', { 'on': [ 'Bdelete' ] }
 Plug 'kshenoy/vim-signature'
 
 " Search files, buffers, etc
-Plug 'ctrlpvim/ctrlp.vim', { 'on': [ 'CtrlPBuffer', 'CtrlP' ] }
+Plug 'ctrlpvim/ctrlp.vim', { 'on': [ 'CtrlPBuffer', 'CtrlP', 'CtrlPMRUFiles'] }
 
 " Better sessions management
 Plug 'xolox/vim-misc'
