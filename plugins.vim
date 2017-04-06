@@ -271,22 +271,6 @@ endif
 
 " TODO make SnipMate mappings behave as UltiSnips ones
 if &runtimepath =~ 'vim-snipmate'
-    function! <SID>ExpandSnippetOrComplete()
-    endfunction
-
-    function! NextSnippetOrReturn()
-    endfunction
-
-    function! PrevSnippetOrReturn()
-    endfunction
-
-    function! NextSnippetOrNothing()
-        return ""
-    endfunction
-
-    function! PrevSnippetOrNothing()
-    endfunction
-
     nnoremap <C-k> <Plug>snipMateNextOrTrigger
     inoremap <C-k> <Plug>snipMateNextOrTrigger
 endif
@@ -323,18 +307,27 @@ if &runtimepath =~ 'ultisnips'
     endfunction
 
     function! NextSnippetOrReturn()
-        call UltiSnips#ExpandSnippetOrJump()
-        if g:ulti_expand_or_jump_res == 0
+        call UltiSnips#ExpandSnippet()
+        if g:ulti_expand_res == 0
             if pumvisible()
                 return "\<C-y>"
-            elseif delimitMate#WithinEmptyPair() > 0
-                return delimitMate#ExpandReturn()
             else
-                return "\<CR>"
+                if &runtimepath =~ "delimitMate" && delimitMate#WithinEmptyPair()
+                    return delimitMate#ExpandReturn()
+                else
+                    call UltiSnips#JumpForwards()
+                    if g:ulti_jump_forwards_res == 0
+                        return "\<CR>"
+                    endif
+                endif
             endif
-        else
-            return ""
         endif
+        return ""
+    endfunction
+
+    function! NextSnippetOrNothing()
+        call UltiSnips#JumpForwards()
+        return g:ulti_jump_forwards_res
     endfunction
 
     function! PrevSnippetOrNothing()
@@ -342,9 +335,6 @@ if &runtimepath =~ 'ultisnips'
             return "\<C-p>"
         else
             call UltiSnips#JumpBackwards()
-            if g:ulti_jump_backwards_res > 0
-                return ""
-            endif
             return ""
         endif
     endfunction
@@ -477,10 +467,10 @@ if &runtimepath =~ 'neocomplcache.vim'
         inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : ""
     endif
 
-    inoremap <expr><BS> neocomplcache#smart_close_popup()."\<C-h>"
-    inoremap <expr><C-h> neocomplcache#smart_close_popup()."\<C-h>"
-    inoremap <expr><C-y>  neocomplcache#smart_close_popup()
-    inoremap <expr><C-e>  neocomplcache#cancel_popup()
+    " inoremap <expr><BS> neocomplcache#smart_close_popup()."\<C-h>"
+    " inoremap <expr><C-h> neocomplcache#smart_close_popup()."\<C-h>"
+    " inoremap <expr><C-y>  neocomplcache#smart_close_popup()
+    " inoremap <expr><C-e>  neocomplcache#cancel_popup()
 
     autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
 endif
@@ -514,10 +504,10 @@ if &runtimepath =~ 'neocomplete.vim'
         inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : ""
     endif
 
-    inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
-    inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
-    inoremap <expr><C-y>  neocomplete#mappings#smart_close_popup()
-    inoremap <expr><C-e>  neocomplete#cancel_popup()
+    " inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
+    " inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
+    " inoremap <expr><C-y>  neocomplete#mappings#smart_close_popup()
+    " inoremap <expr><C-e>  neocomplete#cancel_popup()
 
     let g:neocomplete#omni#input_patterns = get(g:,'neocomplete#omni#input_patterns',{})
 
@@ -565,20 +555,17 @@ if &runtimepath =~ 'deoplete.nvim'
         inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : ""
     endif
 
-    inoremap <expr><BS> deoplete#mappings#smart_close_popup()."\<C-h>"
-    inoremap <expr><C-h> deoplete#mappings#smart_close_popup()."\<C-h>"
-    inoremap <expr><C-y>  deoplete#mappings#smart_close_popup()
-    inoremap <expr><C-e>  deoplete#cancel_popup()
+    " inoremap <expr><BS> deoplete#mappings#smart_close_popup()."\<C-h>"
+    " inoremap <expr><C-h> deoplete#mappings#smart_close_popup()."\<C-h>"
+    " inoremap <expr><C-y>  deoplete#mappings#smart_close_popup()
+    " inoremap <expr><C-e>  deoplete#cancel_popup()
 
     let g:deoplete#omni#input_patterns = get(g:,'deoplete#omni#input_patterns',{})
 
-    let g:deoplete#omni#input_patterns.java = [
-                \'[^. \t0-9]\.\w*',
-                \]
-
-    let g:deoplete#omni#input_patterns.javascript = [
-                \'[^. \t0-9]\.\w*',
-                \]
+    let g:deoplete#omni#input_patterns.java = ['[^. \t0-9]\.\w*']
+    let g:deoplete#omni#input_patterns.javascript = ['[^. \t0-9]\.\w*']
+    let g:deoplete#omni#input_patterns.python = ['[^. \t0-9]\.\w*']
+    let g:deoplete#omni#input_patterns.go = ['[^. \t0-9]\.\w*']
 
     let g:deoplete#omni#input_patterns.c = [
                 \'[^. \t0-9]\.\w*',
@@ -590,14 +577,6 @@ if &runtimepath =~ 'deoplete.nvim'
                 \'[^. \t0-9]\.\w*',
                 \'[^. \t0-9]\->\w*',
                 \'[^. \t0-9]\::\w*',
-                \]
-
-    let g:deoplete#omni#input_patterns.python = [
-                \'[^. \t0-9]\.\w*',
-                \]
-
-    let g:deoplete#omni#input_patterns.go = [
-                \'[^. \t0-9]\.\w*',
                 \]
 
     " let g:deoplete#sources._ = ['buffer', 'member', 'file', 'tags', 'ultisnips']
@@ -915,6 +894,7 @@ if &runtimepath =~ 'vim-gitgutter'
     xmap ih <Plug>GitGutterTextObjectInnerVisual
     xmap ah <Plug>GitGutterTextObjectOuterVisual
 endif
+
 " }}} EndGitGutter
 
 " Signature {{{

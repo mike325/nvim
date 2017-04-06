@@ -23,6 +23,44 @@
 "                   .`                                 `/
 " ############################################################################
 
+" Since global.vim is about default vim settings, it could be use as a
+" stand alone vimrc/init.vim, just uncomment the following paragraph
+
+" " I use this later in global.vim
+" let g:os_editor = ""
+"
+" " Specify a directory for plugins
+" if has("nvim")
+"     if has("win32") || has("win64")
+"         let g:os_editor = '~\AppData\Local\nvim\'
+"     else
+"         let g:os_editor = '~/.config/nvim/'
+"     endif
+" elseif has("win32") || has("win64")
+"     let g:os_editor = '~\vimfiles\'
+" else
+"     let g:os_editor = '~/.vim/'
+" endif
+"
+" filetype plugin indent on
+"
+" " Load plugins configurations
+" execute 'source '.fnameescape(g:os_editor.'plugins.vim')
+"
+" " Load special host configurations
+" if filereadable(expand(fnameescape(g:os_editor.'extras.vim')))
+"     execute 'source '.fnameescape(g:os_editor.'extras.vim')
+" endif
+" filetype plugin indent on
+"
+" " Load plugins configurations
+" execute 'source '.fnameescape(g:os_editor.'plugins.vim')
+"
+" " Load special host configurations
+" if filereadable(expand(fnameescape(g:os_editor.'extras.vim')))
+"     execute 'source '.fnameescape(g:os_editor.'extras.vim')
+" endif
+
 " BasicImprovements {{{
 
 set encoding=utf-8     " The encoding displayed.
@@ -181,32 +219,23 @@ endif
 set backup   " make backup files
 set undofile " persistent undos - undo after you re-open the file
 
-" NeoVim ShaDa file, cannot be the same as the viminfo file as the formats have
-" been changed.
+" Remember things between sessions
+" !        + When included, save and restore global variables that start
+"            with an uppercase letter, and don't contain a lowercase letter.
+" 'n       + Marks will be remembered for the last 'n' files you edited.
+" <n       + Contents of registers (up to 'n' lines each) will be remembered.
+" sn       + Items with contents occupying more then 'n' KiB are skipped.
+" :n       + Save 'n' Command-line history entries
+" n/info   + The name of the file to use is "/info".
+" no /     + Since '/' is not specified, the default will be used, that is,
+"            save all of the search history, and also the previous search and
+"            substitute patterns.
+" no %     + The buffer list will not be saved nor read back.
+" no h     + 'hlsearch' highlighting will be restored.
 if has("nvim")
-    " Remember things between sessions
-    " '     - remember marks for n previous files
-    " <     - save n lines for each register
-    " :     - remember n items in command-line history
-    " %     - remember the buffer list (if vim started without a file arg)
-    " n     - set name of (n)viminfo file
-    " /     - save n entries from the searc history
-    " "     -
-    " s     -
-    " h     -
-    set shada=!,'100,\"100,<250,:50,/100,s10,h
+    set shada=!,'100,<500,:500,s100
 else
-    " Remember things between sessions
-    " '     - remember marks for n previous files
-    " <     - save n lines for each register
-    " :     - remember n items in command-line history
-    " %     - remember the buffer list (if vim started without a file arg)
-    " n     - set name of (n)viminfo file
-    " /     - save n entries from the searc history
-    " "     -
-    " s     -
-    " h     -
-    set viminfo=!,'100,\"100,<250,:50,/100,s10,h
+    set viminfo=!,'100,<500,:500,s100
 endif
 
 if has("win32") || has("win64")
@@ -216,6 +245,8 @@ if has("win32") || has("win64")
     execute 'set undodir='.fnameescape(g:os_editor.'tmp_dirs\undos')
     set backupskip=\\tmp\\*,\\private\\tmp\\*,\\tmp_*\\*
 
+    " NeoVim ShaDa file, cannot be the same as the viminfo file as the formats have
+    " been changed.
     if has("nvim")
         set shada+=n$USERPROFILE\\AppData\\Local\\nvim\\nviminfo
     else
@@ -252,15 +283,15 @@ endif
 " GUISettings {{{
 
 if has("gui_running")
-    set guioptions-=m  "no menu
-    set guioptions-=T  "no toolbar
-    set guioptions-=L  "remove left-hand scroll bar in vsplit
-    set guioptions-=l  "remove left-hand scroll bar
-    set guioptions-=r  "remove right-hand scroll bar
-    set guioptions-=R  "remove right-hand scroll bar vsplit
-    set guioptions-=b  "remove bottom scroll bar
+    set guioptions-=m  " no menu
+    set guioptions-=T  " no toolbar
+    set guioptions-=L  " remove left-hand scroll bar in vsplit
+    set guioptions-=l  " remove left-hand scroll bar
+    set guioptions-=r  " remove right-hand scroll bar
+    set guioptions-=R  " remove right-hand scroll bar vsplit
+    set guioptions-=b  " remove bottom scroll bar
 
-    " Windoes gVim fonts
+    " Windows gVim fonts
     if has("win32") || has("win64")
         set guifont=DejaVu_Sans_Mono_for_Powerline:h11,DejaVu_Sans_Mono:h11
     endif
@@ -287,7 +318,7 @@ endfunction
 autocmd FileType * autocmd BufWritePre <buffer> call RemoveTrailingWhitespaces()
 
 " Specially helpful for html and xml
-autocmd FileType xml,html,vim autocmd BufReadPre <buffer> set matchpairs+=<:>
+autocmd FileType xml,html,vim autocmd BufReadPre <buffer> setlocal matchpairs+=<:>
 
 " Add lines in normal mode without enter in insert mode
 nnoremap <C-o> O<Esc>

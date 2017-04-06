@@ -141,6 +141,9 @@ Plug 'peterhoeg/vim-qml', { 'for': 'qml' }
 " Latex plugin
 Plug 'lervag/vimtex'
 
+" Enhanced Markdown syntax
+Plug 'plasticboy/vim-markdown'
+
 " Change buffer position in the current layout
 Plug 'wesQ3/vim-windowswap'
 
