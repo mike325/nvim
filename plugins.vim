@@ -32,7 +32,7 @@ nnoremap <leader>d :Bdelete!<CR>
 
 nnoremap <C-p> :CtrlP<CR>
 nnoremap <C-b> :CtrlPBuffer<CR>
-nnoremap <C-u> :CtrlPMRUFiles<CR>
+nnoremap <C-f> :CtrlPMRUFiles<CR>
 
 let g:ctrlp_map = '<C-p>'
 let g:ctrlp_cmd = 'CtrlP'
