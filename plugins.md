@@ -169,6 +169,10 @@ Ex.
 * `dac` delete the comment under the cursor, the content and the characters
 * `cic` changes the content within the comment
 
+#### Vim-textobj-xmlattr
+Comment text object uses textobj-user to operate over the the attributes of
+HTML/XML tags
+
 #### Vim-indent-object
 Indent text ( object does not depend on textobj plugin ) allow you to operate
 on the indent level, it is extreme useful for languages that does not define
@@ -352,6 +356,7 @@ call deoplete#custom#set('ultisnips', 'matchers', ['matcher_full_fuzzy'])
 #### vim-misc
 #### vim-session
 #### ctrlp.vim
+#### ctrlp-py-matcher
 
 ## Visual improvements
 ---

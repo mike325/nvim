@@ -64,7 +64,7 @@ if executable("ag")
         \   'types': {
         \       1: ['.git', 'cd %s && git ls-files -co --exclude-standard']
         \   },
-        \   'fallback': 'ag %s -S -l --nocolor --nogroup --hidden --ignore .ropeproject --ignore .git --ignore .svn --ignore .hg -g ""',
+        \   'fallback': 'ag %s -U -S -l --nocolor --nogroup --hidden --ignore .ropeproject --ignore .git --ignore .svn --ignore .hg -g ""',
         \ }
 elseif has("win32") || has("win64")
     let g:ctrlp_user_command = {
@@ -182,16 +182,23 @@ endif
 if &runtimepath =~ 'vim-grepper'
 
     let g:grepper       = {}    " initialize g:grepper with empty dictionary
-    let g:grepper.jump  = 0
-    let g:grepper.tools = ['ag', 'git', 'ack', 'grep', 'findstr']
+    let g:grepper.jump  = 1
+    let g:grepper.open  = 1
+    let g:grepper.tools = ['git', 'ag', 'ack', 'grep', 'findstr']
     let g:grepper.dir   = 'repo,cwd'
 
     " let g:grepper.highlight = 1
     " let g:grepper.rg.grepprg .= ' --smart-case'
 
+    let g:grepper.ag = {
+        \ 'grepprg':    'ag -S -U --hidden --ignore .ropeproject --ignore .git --ignore .svn --ignore .hg --vimgrep',
+        \ 'grepformat': '%f:%l:%c:%m,%f:%l:%m',
+        \ 'escape':     '\^$.*+?()[]{}|',
+        \ }
 
     let g:grepper.grep = {
-        \ 'grepprg':    'grep -nrIi',
+        \ 'grepprg':    'grep -RIni $*',
+        \ 'grepprgbuf': 'grep -HIni -- $* $.',
         \ 'grepformat': '%f:%l:%m',
         \ 'escape':     '\^$.*[]',
         \ }
@@ -202,7 +209,14 @@ if &runtimepath =~ 'vim-grepper'
         \ 'escape':     '\^$.*[]',
         \ }
 
-    command! Todo :Grepper -tool git -query '\(TODO\|FIXME\)'
+    let g:grepper.findstr = {
+        \ 'grepprg': 'findstr -rspnc:$* *',
+        \ 'grepprgbuf': 'findstr -rpnc:$* $.',
+        \ 'grepformat': '%f:%l:%m',
+        \ 'wordanchors': ['\<', '\>'],
+        \ }
+
+    command! Todo :Grepper -query '\(TODO\|FIXME\)'
 
     " Motions for grepper command
     nmap gs  <plug>(GrepperOperator)

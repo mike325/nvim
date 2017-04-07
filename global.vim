@@ -212,7 +212,7 @@ if has("nvim")
 endif
 
 if executable("ag")
-    set grepprg=ag\ --nogroup\ --nocolor
+    set grepprg=ag\ --nogroup\ --nocolor\ -U
 endif
 
 " }}} EndBasicImprovements
@@ -235,11 +235,11 @@ set undofile " persistent undos - undo after you re-open the file
 "            save all of the search history, and also the previous search and
 "            substitute patterns.
 " no %     + The buffer list will not be saved nor read back.
-" no h     + 'hlsearch' highlighting will be restored.
+" h        + 'hlsearch' highlighting will not be restored.
 if has("nvim")
-    set shada=!,'100,<500,:500,s100
+    set shada=!,'100,<500,:500,s100,h
 else
-    set viminfo=!,'100,<500,:500,s100
+    set viminfo=!,'100,<500,:500,s100,h
 endif
 
 if has("win32") || has("win64")
