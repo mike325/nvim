@@ -216,6 +216,8 @@ if &runtimepath =~ 'vim-grepper'
         \ 'wordanchors': ['\<', '\>'],
         \ }
 
+    nnoremap <C-g> :Grepper -query<Space>
+
     command! Todo :Grepper -query '\(TODO\|FIXME\)'
 
     " Motions for grepper command

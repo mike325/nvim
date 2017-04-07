@@ -182,14 +182,11 @@ set foldnestmax=10    " deepest fold is 10 levels
 " TODO make a funtion to save the state of the toggles
 augroup Numbers
     autocmd!
-    autocmd BufEnter * setlocal relativenumber
-    autocmd BufLeave * setlocal norelativenumber
-    autocmd InsertEnter * setlocal norelativenumber
-    autocmd InsertEnter * setlocal number
-    autocmd InsertLeave * setlocal relativenumber
-    autocmd InsertLeave * setlocal number
-    autocmd FileType help setlocal number
-    autocmd FileType help setlocal relativenumber
+    autocmd WinEnter * setlocal relativenumber number
+    autocmd WinLeave * setlocal norelativenumber number
+    autocmd InsertEnter * setlocal norelativenumber number
+    autocmd InsertLeave * setlocal relativenumber number
+    autocmd FileType help setlocal number relativenumber
 augroup end
 
 if has("nvim")
