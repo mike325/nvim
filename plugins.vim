@@ -64,7 +64,7 @@ if executable("ag")
         \   'types': {
         \       1: ['.git', 'cd %s && git ls-files -co --exclude-standard']
         \   },
-        \   'fallback': 'ag %s -S -l --nocolor --nogroup --hidden --ignore .git --ignore .svn --ignore .hg --ignore .DS_Store --ignore "**/*.pyc" -g ""',
+        \   'fallback': 'ag %s -S -l --nocolor --nogroup --hidden --ignore .ropeproject --ignore .git --ignore .svn --ignore .hg -g ""',
         \ }
 elseif has("win32") || has("win64")
     let g:ctrlp_user_command = {
@@ -78,7 +78,7 @@ else
         \   'types': {
         \       1: ['.git', 'cd %s && git ls-files -co --exclude-standard']
         \   },
-        \   'fallback': 'find %s -type f',
+        \   'fallback': 'find %s -type f -readable',
         \ }
 endif
 
