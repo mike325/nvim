@@ -197,7 +197,7 @@ if &runtimepath =~ 'vim-grepper'
         \ }
 
     let g:grepper.grep = {
-        \ 'grepprg':    'grep -RIni $*',
+        \ 'grepprg':    'grep --exclude-dir .git --exclude-dir .svn --exclude-dir .ropeprojectt -RIni $*',
         \ 'grepprgbuf': 'grep -HIni -- $* $.',
         \ 'grepformat': '%f:%l:%m',
         \ 'escape':     '\^$.*[]',
