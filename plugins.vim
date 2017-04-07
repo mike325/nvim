@@ -182,7 +182,7 @@ endif
 if &runtimepath =~ 'vim-grepper'
 
     let g:grepper       = {}    " initialize g:grepper with empty dictionary
-    let g:grepper.jump  = 1
+    let g:grepper.jump  = 0
     let g:grepper.open  = 1
     let g:grepper.tools = ['git', 'ag', 'ack', 'grep', 'findstr']
     let g:grepper.dir   = 'repo,cwd'
@@ -916,6 +916,14 @@ if &runtimepath =~ 'vim-fugitive'
 endif
 
 " }}} EndFugitive
+
+" Gitv {{{
+
+if &runtimepath =~ 'gitv'
+    nnoremap <leader>gv :Gitv<CR>
+endif
+
+" }}} EndGitv
 
 " GitGutter {{{
 
