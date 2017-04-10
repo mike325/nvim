@@ -78,7 +78,7 @@ else
         \   'types': {
         \       1: ['.git', 'cd %s && git ls-files -co --exclude-standard']
         \   },
-        \   'fallback': 'find %s -type f -readable',
+        \   'fallback': 'find %s -type f \( -iname "*" ! -iname "*.pyc" ! -iname "*.a" ! -iname "*.o" ! -iwholename "*.hg*" ! -iwholename "*.git*" \) -readable',
         \ }
 endif
 
@@ -191,20 +191,20 @@ if &runtimepath =~ 'vim-grepper'
     " let g:grepper.rg.grepprg .= ' --smart-case'
 
     let g:grepper.ag = {
-        \ 'grepprg':    'ag -S -U --hidden --ignore .ropeproject --ignore .git --ignore .svn --ignore .hg --vimgrep',
+        \ 'grepprg':    'ag -S -U --hidden --ignore .ropeproject --ignore .svn --ignore .hg --vimgrep',
         \ 'grepformat': '%f:%l:%c:%m,%f:%l:%m',
         \ 'escape':     '\^$.*+?()[]{}|',
         \ }
 
     let g:grepper.grep = {
-        \ 'grepprg':    'grep --exclude-dir .git --exclude-dir .svn --exclude-dir .ropeprojectt -RIni $*',
-        \ 'grepprgbuf': 'grep -HIni -- $* $.',
+        \ 'grepprg':    'grep --exclude-dir .svn --exclude-dir .ropeproject -RIni $*',
+        \ 'grepprgbuf': 'grep -HIn -- $* $.',
         \ 'grepformat': '%f:%l:%m',
         \ 'escape':     '\^$.*[]',
         \ }
 
     let g:grepper.git = {
-        \ 'grepprg':    'git grep -nIi',
+        \ 'grepprg':    'git grep -nI',
         \ 'grepformat': '%f:%l:%m',
         \ 'escape':     '\^$.*[]',
         \ }
