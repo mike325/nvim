@@ -169,7 +169,7 @@ Plug 'glts/vim-textobj-comment'
 Plug 'whatyouhide/vim-textobj-xmlattr'
 
 " Text objects to operate columns
-Plug 'coderifous/textobj-word-column.vim'
+" Plug 'coderifous/textobj-word-column.vim'
 
 " Indentation objects
 Plug 'michaeljsmith/vim-indent-object'
