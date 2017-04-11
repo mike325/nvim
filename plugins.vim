@@ -498,25 +498,66 @@ if &runtimepath =~ 'neocomplcache.vim'
     let g:neocomplcache_enable_smart_case = 1
 
     " Set minimum syntax keyword length.
-    let g:neocomplcache_min_syntax_length = 1
-    let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
+    let g:neocomplcache_fuzzy_completion_start_length = 1
+    let g:neocomplcache_enable_fuzzy_completion       = 1
+    let g:neocomplcache_enable_camel_case_completion  = 1
+    let g:neocomplcache_min_syntax_length             = 1
+    let g:neocomplcache_auto_completion_start_length  = 1
+    let g:neocomplcache_lock_buffer_name_pattern      = '\*ku\*'
 
-    let g:neocomplcache#omni#input_patterns = get(g:,'neocomplcache#omni#input_patterns',{})
+    let g:neocomplcache_omni_patterns = get(g:,'neocomplcache_omni_patterns',{})
 
     if &runtimepath =~ 'ultisnips'
-        inoremap <silent><TAB> <C-R>=<SID>ExpandSnippetOrComplete()<CR>
-        inoremap <silent><CR>  <C-R>=NextSnippetOrReturn()<CR>
-        inoremap <silent><S-TAB> <C-R>=PrevSnippetOrNothing()<CR>
+    ┊   inoremap <silent><TAB> <C-R>=<SID>ExpandSnippetOrComplete()<CR>
+    ┊   inoremap <silent><CR>  <C-R>=NextSnippetOrReturn()<CR>
+    ┊   inoremap <silent><S-TAB> <C-R>=PrevSnippetOrNothing()<CR>
     else
-        inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
-        inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<CR>"
-        inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : ""
+    ┊   inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
+    ┊   inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<CR>"
+    ┊   inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : ""
     endif
 
     " inoremap <expr><BS> neocomplcache#smart_close_popup()."\<C-h>"
     " inoremap <expr><C-h> neocomplcache#smart_close_popup()."\<C-h>"
     " inoremap <expr><C-y>  neocomplcache#smart_close_popup()
     " inoremap <expr><C-e>  neocomplcache#cancel_popup()
+
+    let g:neocomplcache_omni_patterns.java = ['[^. \t0-9]\.\w*']
+    let g:neocomplcache_omni_patterns.javascript = ['[^. \t0-9]\.\w*']
+    let g:neocomplcache_omni_patterns.python = ['[^. \t0-9]\.\w*']
+    let g:neocomplcache_omni_patterns.go = ['[^. \t0-9]\.\w*']
+
+    let g:neocomplcache_omni_patterns.c = [
+    ┊   ┊   ┊   \'[^. \t0-9]\.\w*',
+    ┊   ┊   ┊   \'[^. \t0-9]\->\w*',
+    ┊   ┊   ┊   \'[^. \t0-9]\::\w*',
+    ┊   ┊   ┊   \]
+
+    let g:neocomplcache_omni_patterns.cpp = [
+    ┊   ┊   ┊   \'[^. \t0-9]\.\w*',
+    ┊   ┊   ┊   \'[^. \t0-9]\->\w*',
+    ┊   ┊   ┊   \'[^. \t0-9]\::\w*',
+    ┊   ┊   ┊   \]
+    let g:neocomplcache_filename_include_exts = get(g:,'neocomplcache_filename_include_exts',{})
+    let g:neocomplcache_filename_include_exts.cpp = ['', 'h', 'hpp', 'hxx']
+    let g:neocomplcache_filename_include_exts.c = ['', 'h']
+
+    let g:neocomplcache_delimiter_patterns = get(g:,'neocomplcache_delimiter_patterns',{})
+    let g:neocomplcache_delimiter_patterns.vim = ['#']
+    let g:neocomplcache_delimiter_patterns.cpp = ['::']
+
+    let g:neocomplcache_sources_list   = get(g:,'neocomplcache_delimiter_patterns',{})
+    let g:neocomplcache_sources_list._ =
+    ┊   \ ['buffer_complete', 'member_complete', 'filename_complete', 'tags_complete']
+
+    let g:neocomplcache_delimiter_patterns.c       =
+    ┊   \ ['buffer_complete', 'member_complete', 'filename_complete', 'tags_complete', 'omni_complete']
+    let g:neocomplcache_delimiter_patterns.cpp     =
+    ┊   \ ['buffer_complete', 'member_complete', 'filename_complete', 'tags_complete', 'omni_complete']
+    let g:neocomplcache_delimiter_patterns.python  =
+    ┊   \ ['buffer_complete', 'member_complete', 'filename_complete', 'tags_complete', 'omni_complete']
+    let g:neocomplcache_delimiter_patterns.java    =
+    ┊   \ ['buffer_complete', 'member_complete', 'filename_complete', 'tags_complete', 'omni_complete']
 
     autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
 endif
