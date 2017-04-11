@@ -522,22 +522,10 @@ if &runtimepath =~ 'neocomplcache.vim'
     " inoremap <expr><C-y>  neocomplcache#smart_close_popup()
     " inoremap <expr><C-e>  neocomplcache#cancel_popup()
 
-    let g:neocomplcache_omni_patterns.java = ['[^. \t0-9]\.\w*']
-    let g:neocomplcache_omni_patterns.javascript = ['[^. \t0-9]\.\w*']
-    let g:neocomplcache_omni_patterns.python = ['[^. \t0-9]\.\w*']
-    let g:neocomplcache_omni_patterns.go = ['[^. \t0-9]\.\w*']
+    let g:neocomplcache_omni_patterns.python = '[^.[:digit:] *\t]\%(\.\)'
+    let g:neocomplcache_omni_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
+    let g:neocomplcache_omni_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
 
-    let g:neocomplcache_omni_patterns.c = [
-    ┊   ┊   ┊   \'[^. \t0-9]\.\w*',
-    ┊   ┊   ┊   \'[^. \t0-9]\->\w*',
-    ┊   ┊   ┊   \'[^. \t0-9]\::\w*',
-    ┊   ┊   ┊   \]
-
-    let g:neocomplcache_omni_patterns.cpp = [
-    ┊   ┊   ┊   \'[^. \t0-9]\.\w*',
-    ┊   ┊   ┊   \'[^. \t0-9]\->\w*',
-    ┊   ┊   ┊   \'[^. \t0-9]\::\w*',
-    ┊   ┊   ┊   \]
     let g:neocomplcache_filename_include_exts = get(g:,'neocomplcache_filename_include_exts',{})
     let g:neocomplcache_filename_include_exts.cpp = ['', 'h', 'hpp', 'hxx']
     let g:neocomplcache_filename_include_exts.c = ['', 'h']
@@ -547,17 +535,12 @@ if &runtimepath =~ 'neocomplcache.vim'
     let g:neocomplcache_delimiter_patterns.cpp = ['::']
 
     let g:neocomplcache_sources_list   = get(g:,'neocomplcache_delimiter_patterns',{})
-    let g:neocomplcache_sources_list._ =
-    ┊   \ ['buffer_complete', 'member_complete', 'filename_complete', 'tags_complete']
+    let g:neocomplcache_sources_list._ = ['omni_complete', 'syntax_complete', 'member_complete', 'filename_complete', 'tags_complete', 'buffer_complete']
 
-    let g:neocomplcache_delimiter_patterns.c       =
-    ┊   \ ['buffer_complete', 'member_complete', 'filename_complete', 'tags_complete', 'omni_complete']
-    let g:neocomplcache_delimiter_patterns.cpp     =
-    ┊   \ ['buffer_complete', 'member_complete', 'filename_complete', 'tags_complete', 'omni_complete']
-    let g:neocomplcache_delimiter_patterns.python  =
-    ┊   \ ['buffer_complete', 'member_complete', 'filename_complete', 'tags_complete', 'omni_complete']
-    let g:neocomplcache_delimiter_patterns.java    =
-    ┊   \ ['buffer_complete', 'member_complete', 'filename_complete', 'tags_complete', 'omni_complete']
+    let g:neocomplcache_sources_list.c = ['omni_complete', 'syntax_complete', 'member_complete', 'filename_complete', 'tags_complete', 'buffer_complete']
+    let g:neocomplcache_sources_list.cpp = ['omni_complete', 'syntax_complete', 'member_complete', 'filename_complete', 'tags_complete', 'buffer_complete']
+    let g:neocomplcache_sources_list.java = ['omni_complete', 'syntax_complete', 'member_complete', 'filename_complete', 'tags_complete', 'buffer_complete']
+    let g:neocomplcache_sources_list.python = ['omni_complete', 'syntax_complete', 'member_complete', 'filename_complete', 'tags_complete', 'buffer_complete']
 
     autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
 endif
@@ -653,6 +636,7 @@ if &runtimepath =~ 'deoplete.nvim'
     let g:deoplete#omni#input_patterns.javascript = ['[^. \t0-9]\.\w*']
     let g:deoplete#omni#input_patterns.python = ['[^. \t0-9]\.\w*']
     let g:deoplete#omni#input_patterns.go = ['[^. \t0-9]\.\w*']
+    let g:deoplete#omni#input_patterns.ruby = ['[^. *\t]\.\w*', '[a-zA-Z_]\w*::']
 
     let g:deoplete#omni#input_patterns.c = [
                 \'[^. \t0-9]\.\w*',
