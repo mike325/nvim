@@ -4,3 +4,5 @@ sessions/
 plugged/
 *.ropeproject*
 extras.vim
+nviminfo
+viminfo

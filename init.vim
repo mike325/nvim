@@ -66,10 +66,19 @@ Plug 'enricobacis/vim-airline-clock'
 
 " Git integrations
 Plug 'airblade/vim-gitgutter'
-Plug 'tpope/vim-fugitive'
 Plug 'gregsexton/gitv'
 Plug 'rhysd/committia.vim'
+Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-git'
+
+" Surround motions
+Plug 'tpope/vim-surround'
+
+" Better substitution, improve abbreviations and coercion
+Plug 'tpope/vim-abolish'
+
+" Auto insert 'end' keywords in some languages
+Plug 'tpope/vim-endwise'
 
 " Easy alignment
 Plug 'godlygeek/tabular'
@@ -77,8 +86,8 @@ Plug 'godlygeek/tabular'
 " Better motions
 Plug 'easymotion/vim-easymotion'
 
-" Surround motions
-Plug 'tpope/vim-surround'
+" Map repeat key . for plugins
+Plug 'tpope/vim-repeat'
 
 " Better buffer deletions
 Plug 'moll/vim-bbye', { 'on': [ 'Bdelete' ] }
@@ -87,7 +96,8 @@ Plug 'moll/vim-bbye', { 'on': [ 'Bdelete' ] }
 Plug 'kshenoy/vim-signature'
 
 " Search files, buffers, etc
-Plug 'ctrlpvim/ctrlp.vim', { 'on': [ 'CtrlPBuffer', 'CtrlP' ] }
+Plug 'ctrlpvim/ctrlp.vim', { 'on': [ 'CtrlPBuffer', 'CtrlP', 'CtrlPMRUFiles'] }
+" Plug 'tacahiroy/ctrlp-funky'
 
 " Better sessions management
 Plug 'xolox/vim-misc'
@@ -102,12 +112,6 @@ Plug 'honza/vim-snippets'
 " Move with indentation
 Plug 'matze/vim-move'
 
-" Better substitution, improve abbreviations and coercion
-Plug 'tpope/vim-abolish'
-
-" Map repeat key . for plugins
-Plug 'tpope/vim-repeat'
-
 " Display indention
 Plug 'Yggdroot/indentLine'
 
@@ -121,22 +125,25 @@ Plug 'sickill/vim-pasta'
 Plug 'mhinz/vim-grepper'
 
 " Improve Dockerfiles syntax highlight
-Plug 'ekalinin/Dockerfile.vim'
+Plug 'ekalinin/Dockerfile.vim', { 'for': 'Dockerfile' }
 
 " Improve json syntax highlight
-Plug 'elzr/vim-json'
+Plug 'elzr/vim-json', { 'for': 'json' }
 
 " Improve Lua syntax
-Plug 'tbastos/vim-lua'
+Plug 'tbastos/vim-lua', { 'for': 'lua' }
 
 " Improve cpp syntax highlight
-Plug 'octol/vim-cpp-enhanced-highlight'
+Plug 'octol/vim-cpp-enhanced-highlight', { 'for': 'cpp' }
 
 " Add Qml syntax highlight
-Plug 'peterhoeg/vim-qml'
+Plug 'peterhoeg/vim-qml', { 'for': 'qml' }
 
 " Latex plugin
 Plug 'lervag/vimtex'
+
+" Enhanced Markdown syntax
+Plug 'plasticboy/vim-markdown'
 
 " Change buffer position in the current layout
 Plug 'wesQ3/vim-windowswap'
@@ -158,13 +165,22 @@ Plug 'kana/vim-textobj-line'
 "                        with comment characters)
 Plug 'glts/vim-textobj-comment'
 
+" Text object to manipulate XML/HTLM attributes
+Plug 'whatyouhide/vim-textobj-xmlattr'
+
+" Text objects to operate columns; has conflicts with vim-textobj-comment
+" Plug 'coderifous/textobj-word-column.vim'
+
+" Indentation objects
+Plug 'michaeljsmith/vim-indent-object'
+
 if has("unix")
     Plug 'tpope/vim-eunuch'
 endif
 
 if executable("go")
     " Go development
-    Plug 'fatih/vim-go'
+    Plug 'fatih/vim-go', { 'for': 'go' }
 endif
 
 if !has("nvim")
@@ -188,13 +204,20 @@ let b:ycm_installed = 0
 let b:deoplete_installed = 0
 let b:completor = 0
 if ( has("python") || has("python3") )
+    " Faster matcher for ctrlp
+    Plug 'FelikZ/ctrlp-py-matcher'
+    " The fastes matcher (as far as I know) but way more complicated to setup
+    " Plug 'nixprime/cpsm'
+
     " Code Format tool
     Plug 'chiel92/vim-autoformat'
     " TODO Check this fork, No +python required
     " Plug 'umitkablan/vim-auf'
+    " TODO Check google's own formatter
+    " Plug 'google/vim-codefmt'
 
     " Add python highlight, folding, virtualenv, etc
-    Plug 'python-mode/python-mode'
+    Plug 'python-mode/python-mode', { 'for': 'python' }
 
     " Snippets engine
     Plug 'SirVer/ultisnips'
@@ -221,7 +244,7 @@ if ( has("python") || has("python3") )
 
     if has("nvim") || ( v:version >= 800 ) || ( v:version == 704 )
         " Only works with JDK8!!!
-        Plug 'artur-shaik/vim-javacomplete2'
+        Plug 'artur-shaik/vim-javacomplete2', { 'for': 'java' }
     endif
 
     " Awesome Async completion engine for Neovim
@@ -234,6 +257,9 @@ if ( has("python") || has("python3") )
         " C/C++ completion base on clang compiler
         if executable("clang")
             Plug 'zchee/deoplete-clang'
+
+            " A bit faster C/C++ completion; I haven't test it
+            " Plug 'tweekmonster/deoplete-clang2'
         endif
 
         " Go completion

@@ -23,6 +23,44 @@
 "                   .`                                 `/
 " ############################################################################
 
+" Since global.vim is about default vim settings, it could be use as a
+" stand alone vimrc/init.vim, just uncomment the following paragraph
+
+" " I use this later in global.vim
+" let g:os_editor = ""
+"
+" " Specify a directory for plugins
+" if has("nvim")
+"     if has("win32") || has("win64")
+"         let g:os_editor = '~\AppData\Local\nvim\'
+"     else
+"         let g:os_editor = '~/.config/nvim/'
+"     endif
+" elseif has("win32") || has("win64")
+"     let g:os_editor = '~\vimfiles\'
+" else
+"     let g:os_editor = '~/.vim/'
+" endif
+"
+" filetype plugin indent on
+"
+" " Load plugins configurations
+" execute 'source '.fnameescape(g:os_editor.'plugins.vim')
+"
+" " Load special host configurations
+" if filereadable(expand(fnameescape(g:os_editor.'extras.vim')))
+"     execute 'source '.fnameescape(g:os_editor.'extras.vim')
+" endif
+" filetype plugin indent on
+"
+" " Load plugins configurations
+" execute 'source '.fnameescape(g:os_editor.'plugins.vim')
+"
+" " Load special host configurations
+" if filereadable(expand(fnameescape(g:os_editor.'extras.vim')))
+"     execute 'source '.fnameescape(g:os_editor.'extras.vim')
+" endif
+
 " BasicImprovements {{{
 
 set encoding=utf-8     " The encoding displayed.
@@ -48,6 +86,9 @@ if !has("nvim")
     set nocompatible
 endif
 
+set titlestring=%t\ (%f)
+set title          " Set window title
+set laststatus=2   " don't combine status line with command line
 set lazyredraw     " Don't draw when a macro is being executed
 set splitright     " Split on the right size
 set nowrap         " By default don't wrap the lines
@@ -95,7 +136,6 @@ set cursorline     " Turn on cursor line by default
 " changes to save them in some registers
 " set autoread
 
-
 " Show invisible characters
 " set list
 
@@ -103,14 +143,17 @@ set cursorline     " Turn on cursor line by default
 " set listchars=tab:▸\ ,trail:•,extends:❯,precedes:❮
 " set showbreak=↪\
 
-"" Text formating
-set formatoptions+=r " auto insert comment with <Enter>...
+" Text formating
+set formatoptions+=r " Auto insert comment with <Enter>...
 set formatoptions+=o " ...or o/O
+set formatoptions+=c " Autowrap comments using textwidth
+set formatoptions+=l " Do not wrap lines that have been longer when starting insert mode already
+set formatoptions+=t " Auto-wrap text using textwidth
 set formatoptions+=n " Recognize numbered lists
+set formatoptions+=j " Delete comment character when joining commented lines
 
-if v:version > 703 || v:version == 703 && has('patch541') || has("nvim")
-   set formatoptions+=j " Delete comment when joining commented lines
-endif
+" Use only 1 space after "." when joining lines, not 2
+set nojoinspaces
 
 " Use only 1 space after "." when joining lines, not 2
 set nojoinspaces
@@ -140,14 +183,11 @@ set foldnestmax=10    " deepest fold is 10 levels
 " TODO make a funtion to save the state of the toggles
 augroup Numbers
     autocmd!
-    autocmd BufEnter * setlocal relativenumber
-    autocmd BufLeave * setlocal norelativenumber
-    autocmd InsertEnter * setlocal norelativenumber
-    autocmd InsertEnter * setlocal number
-    autocmd InsertLeave * setlocal relativenumber
-    autocmd InsertLeave * setlocal number
-    autocmd FileType help setlocal number
-    autocmd FileType help setlocal relativenumber
+    autocmd WinEnter * setlocal relativenumber number
+    autocmd WinLeave * setlocal norelativenumber number
+    autocmd InsertEnter * setlocal norelativenumber number
+    autocmd InsertLeave * setlocal relativenumber number
+    autocmd FileType help setlocal number relativenumber
 augroup end
 
 if has("nvim")
@@ -169,6 +209,10 @@ if has("nvim")
     tnoremap <Esc> <C-\><C-n>
 endif
 
+if executable("ag")
+    set grepprg=ag\ --nogroup\ --nocolor\ -U
+endif
+
 " }}} EndBasicImprovements
 
 " VimFiles {{{
@@ -177,6 +221,25 @@ endif
 set backup   " make backup files
 set undofile " persistent undos - undo after you re-open the file
 
+" Remember things between sessions
+" !        + When included, save and restore global variables that start
+"            with an uppercase letter, and don't contain a lowercase letter.
+" 'n       + Marks will be remembered for the last 'n' files you edited.
+" <n       + Contents of registers (up to 'n' lines each) will be remembered.
+" sn       + Items with contents occupying more then 'n' KiB are skipped.
+" :n       + Save 'n' Command-line history entries
+" n/info   + The name of the file to use is "/info".
+" no /     + Since '/' is not specified, the default will be used, that is,
+"            save all of the search history, and also the previous search and
+"            substitute patterns.
+" no %     + The buffer list will not be saved nor read back.
+" h        + 'hlsearch' highlighting will not be restored.
+if has("nvim")
+    set shada=!,'100,<500,:500,s100,h
+else
+    set viminfo=!,'100,<500,:500,s100,h
+endif
+
 if has("win32") || has("win64")
     execute 'set directory='.fnameescape(g:os_editor.'tmp_dirs\swap')
     execute 'set backupdir='.fnameescape(g:os_editor.'tmp_dirs\backup')
@@ -184,19 +247,24 @@ if has("win32") || has("win64")
     execute 'set undodir='.fnameescape(g:os_editor.'tmp_dirs\undos')
     set backupskip=\\tmp\\*,\\private\\tmp\\*,\\tmp_*\\*
 
-    " TODO make the windows method works as the Unix one
-    " execute 'set viminfo+=n'.fnameescape(g:os_editor.'tmp_dirs\viminfo')
+    " NeoVim ShaDa file, cannot be the same as the viminfo file as the formats have
+    " been changed.
     if has("nvim")
-        set viminfo+=n$USERPROFILE\\AppData\\Local\\nvim\\tmp_dirs\\viminfo
+        set shada+=n$USERPROFILE\\AppData\\Local\\nvim\\nviminfo
     else
-        set viminfo+=n$USERPROFILE\\vimfiles\\tmp_dirs\\viminfo
+        set viminfo+=n$USERPROFILE\\vimfiles\\viminfo
     endif
 else
     execute 'set directory='.fnameescape(g:os_editor.'tmp_dirs/swap')
     execute 'set backupdir='.fnameescape(g:os_editor.'tmp_dirs/backup')
     execute 'set undodir='.fnameescape(g:os_editor.'tmp_dirs/undos')
-    execute 'set viminfo+=n'.fnameescape(g:os_editor.'tmp_dirs/viminfo')
     set backupskip=/tmp/*,/private/tmp/*,/tmp_*/*
+
+    if has("nvim")
+        execute 'set shada+=n'.fnameescape(g:os_editor.'nviminfo')
+    else
+        execute 'set viminfo+=n'.fnameescape(g:os_editor.'viminfo')
+    endif
 endif
 
 " If the dirs does't exists, create them
@@ -217,15 +285,15 @@ endif
 " GUISettings {{{
 
 if has("gui_running")
-    set guioptions-=m  "no menu
-    set guioptions-=T  "no toolbar
-    set guioptions-=L  "remove left-hand scroll bar in vsplit
-    set guioptions-=l  "remove left-hand scroll bar
-    set guioptions-=r  "remove right-hand scroll bar
-    set guioptions-=R  "remove right-hand scroll bar vsplit
-    set guioptions-=b  "remove bottom scroll bar
+    set guioptions-=m  " no menu
+    set guioptions-=T  " no toolbar
+    set guioptions-=L  " remove left-hand scroll bar in vsplit
+    set guioptions-=l  " remove left-hand scroll bar
+    set guioptions-=r  " remove right-hand scroll bar
+    set guioptions-=R  " remove right-hand scroll bar vsplit
+    set guioptions-=b  " remove bottom scroll bar
 
-    " Windoes gVim fonts
+    " Windows gVim fonts
     if has("win32") || has("win64")
         set guifont=DejaVu_Sans_Mono_for_Powerline:h11,DejaVu_Sans_Mono:h11
     endif
@@ -252,7 +320,7 @@ endfunction
 autocmd FileType * autocmd BufWritePre <buffer> call RemoveTrailingWhitespaces()
 
 " Specially helpful for html and xml
-autocmd FileType xml,html,vim autocmd BufReadPre <buffer> set matchpairs+=<:>
+autocmd FileType xml,html,vim autocmd BufReadPre <buffer> setlocal matchpairs+=<:>
 
 " Add lines in normal mode without enter in insert mode
 nnoremap <C-o> O<Esc>
