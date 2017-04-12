@@ -74,6 +74,9 @@ elseif has("win32") || has("win64")
         \   },
         \   'fallback': 'dir %s /-n /b /s /a-d',
         \ }
+
+        " Actually I don't use Windows that much so, if someone comes with
+        " something better I will definitely use it
 else
     let g:ctrlp_user_command = {
         \   'types': {

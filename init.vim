@@ -97,7 +97,7 @@ Plug 'kshenoy/vim-signature'
 
 " Search files, buffers, etc
 Plug 'ctrlpvim/ctrlp.vim', { 'on': [ 'CtrlPBuffer', 'CtrlP', 'CtrlPMRUFiles'] }
-Plug 'tacahiroy/ctrlp-funky'
+" Plug 'tacahiroy/ctrlp-funky'
 
 " Better sessions management
 Plug 'xolox/vim-misc'
@@ -168,11 +168,20 @@ Plug 'glts/vim-textobj-comment'
 " Text object to manipulate XML/HTLM attributes
 Plug 'whatyouhide/vim-textobj-xmlattr'
 
+" Text object to manipulate the entire buffer
+Plug 'kana/vim-textobj-entire'
+
 " Text objects to operate columns
 " Plug 'coderifous/textobj-word-column.vim'
 
 " Indentation objects
 Plug 'michaeljsmith/vim-indent-object'
+
+" Simple Join/Split operators
+Plug 'AndrewRadev/splitjoin.vim'
+
+" Expand visual regions
+" Plug 'terryma/vim-expand-region'
 
 if has("unix")
     Plug 'tpope/vim-eunuch'
