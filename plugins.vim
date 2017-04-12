@@ -129,8 +129,28 @@ augroup end
 
 " }}} EndLazyLoad
 
+
+" Vim-expand-region {{{
+
+if &runtimepath =~ "vim-expand-region"
+    let g:expand_region_text_objects = {
+        \ 'iw'  :0,
+        \ 'iW'  :0,
+        \ 'i"'  :0,
+        \ 'i''' :0,
+        \ 'i]'  :1,
+        \ 'i)'  :1,
+        \ 'i}'  :1,
+        \ 'il'  :0,
+        \ 'ip'  :0,
+        \ 'ii'  :0,
+        \ 'ie'  :0,
+    \ }
+endif
+
+" }}} EndVim-expand-region
+
 " EasyMotions {{{
-" Temporally removed
 
 if &runtimepath =~ 'vim-easymotion'
     " Disable default mappings
@@ -317,6 +337,8 @@ endif
 
 " Snippets and completion {{{
 
+" DelimitMate {{{
+
 if &runtimepath =~ "delimitMate"
     function! HandleEmptyPairs()
         if pumvisible()
@@ -325,6 +347,8 @@ if &runtimepath =~ "delimitMate"
         return delimitMate#ExpandReturn()
     endfunction
 endif
+
+" }}} EndDelimitMate
 
 " SnipMate {{{
 

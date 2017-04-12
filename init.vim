@@ -181,7 +181,7 @@ Plug 'michaeljsmith/vim-indent-object'
 Plug 'AndrewRadev/splitjoin.vim'
 
 " Expand visual regions
-" Plug 'terryma/vim-expand-region'
+Plug 'terryma/vim-expand-region'
 
 if has("unix")
     Plug 'tpope/vim-eunuch'
