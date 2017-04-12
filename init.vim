@@ -151,18 +151,10 @@ Plug 'wesQ3/vim-windowswap'
 " Some useful text objects
 Plug 'kana/vim-textobj-user'
 
-" il inside the line (without leading and trailing spaces)
-" al around the line (with leading and trailing spaces)
+" Text object to manipulate text within lines
 Plug 'kana/vim-textobj-line'
 
-" ic inside the comment (without leading and trailing spaces and
-"                        without comment characters)
-" iC inside the comment (with leading and trailing spaces and
-"                        without comment characters)
-" ac around the comment (without leading and trailing spaces and
-"                        with comment characters)
-" aC around the comment (with leading and trailing spaces and
-"                        with comment characters)
+" Text object to manipulate text within comments
 Plug 'glts/vim-textobj-comment'
 
 " Text object to manipulate XML/HTLM attributes
