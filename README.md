@@ -54,11 +54,11 @@ git clone --recursive https://github.com/mike325/.vim.git ~/vimfiles
 cp ~/vimfiles/init.vim ~/_vimrc
 ```
 
-If you are using [Neovim](https://neovim.io/) you just need to move the repo
+If you are using [Neovim](https://neovim.io/) you just need to link the repo
 to `~/.config/nvim`
 
 ```sh
-mv ~/.vim ~/.config/nvim
+ln -s $HOME/.vim $HOME/.config/nvim
 ```
 
 or just clone it there
