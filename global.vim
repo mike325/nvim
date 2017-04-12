@@ -308,9 +308,14 @@ nnoremap <leader><leader>e :echo expand("%")<CR>
 
 " TODO To be improve
 function! RemoveTrailingWhitespaces()
+    " Sometimes we don't want to remove spaces
+    if &buftype =~? 'nofile\|help\|quickfix\|bin\|hex' || &filetype ==? ''
+        return
+    endif
+
     "Save last cursor position
     let savepos = getpos('.')
-    %s/\s\+$//e
+    silent! exec '%s/\s\+$//e'
     call setpos('.', savepos)
 endfunction
 
