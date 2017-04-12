@@ -143,7 +143,8 @@ if &runtimepath =~ "vim-expand-region"
         \ 'i}'  :1,
         \ 'il'  :0,
         \ 'ip'  :0,
-        \ 'ii'  :0,
+        \ 'ii'  :1,
+        \ 'ai'  :0,
         \ 'ie'  :0,
     \ }
 endif
@@ -354,7 +355,7 @@ endif
 
 " TODO make SnipMate mappings behave as UltiSnips ones
 if &runtimepath =~ 'vim-snipmate'
-    nnoremap <C-k> <Plug>snipMateNextOrTrigger
+    " nnoremap <C-k> <Plug>snipMateNextOrTrigger
     inoremap <C-k> <Plug>snipMateNextOrTrigger
 endif
 
