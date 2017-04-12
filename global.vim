@@ -19,8 +19,9 @@
 "                       /ossssssss/   8a   +sssslb
 "                     `/ossssso+/:-        -:/+ossss'.-
 "                    `+sso+:-`                 `.-/+oso:
-"                   `++:.                           `-/+/
+"                   `++:.  github.com/mike325/.vim  `-/+/
 "                   .`                                 `/
+"
 " ############################################################################
 
 " Since global.vim is about default vim settings, it could be use as a
