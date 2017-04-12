@@ -1,9 +1,3 @@
-    ███╗   ███╗██╗██╗  ██╗███████╗    ██████╗  █████╗
-    ████╗ ████║██║██║ ██╔╝██╔════╝   ██╔═══██╗██╔══██╗
-    ██╔████╔██║██║█████╔╝ █████╗     ████████║███████║
-    ██║╚██╔╝██║██║██╔═██╗ ██╔══╝     ██╔═══██║██╔══██║
-    ██║ ╚═╝ ██║██║██║  ██╗███████╗   ╚██████╔╝██║  ██║
-    ╚═╝     ╚═╝╚═╝╚═╝  ╚═╝╚══════╝    ╚═════╝ ╚═╝  ╚═╝
 ---
 
 This repo have mi personal Vim/Neovim settings that I have been collecting
@@ -18,39 +12,25 @@ This settings require Vim >= 7.4 or Neovim >= 0.17,
 
 I have personally tested this configurations in the following environment:
 
-* Linux
-    * Debian 8/8.5 jessie
-        - Vim 7.4.143
+| Linux            | Terminal vim | gVim     | Terminal Neovim |
+|------------------|--------------|----------|-----------------|
+| Ubuntu 14.04     | v7.4.52      | N/A      | v0.17           |
+| Ubuntu 16.04     | v7.4.52      | N/A      | v0.17           |
+| Debian 8/8.5     | v7.4.143     | N/A      | v0.17           |
+| SUSE 11          | v8.0.104     | N/A      | v0.17           |
+| ArchLinux        | v8.0.427     | N/A      | v0.17           |
 
-    * Ubuntu 14.04 trusty
-        - Vim 7.4.52
-        - Neovim 0.17
+| Android          | Terminal vim | gVim     | Terminal Neovim |
+|------------------|--------------|----------|-----------------|
+| Marshmallow      | v8.0.104     | N/A      | v0.2-dev        |
+| Nougat           | v8.0.104     | N/A      | v0.2-dev        |
 
-    * SUSE Linux Enterprise Server 11
-        - Vim 8.0.104
+| Windows 8.1      | Terminal vim | gVim     | Terminal Neovim |
+|------------------|--------------|----------|-----------------|
+| Cywing           | v7.4.143     | N/A      | N/A             |
+| Git bash (msys)  | v7.4.143     | N/A      | N/A             |
+| Native (64 bits) | N/A          | v8.0.398 | N/A             |
 
-    * openSUSE 13.2
-        - Vim 8.0.104
-
-    * Archlinux
-        - Vim 8.0.427
-        - Neovim 0.17
-
-* Android (In my nexus 6 via Termux)
-    * Marshmallow 6.0/6.1
-        - Vim 8.0.0104 (without python modules)
-        - Neovim 0.2-dev (without python modules)
-
-    * Nougat 7.0
-        - Vim 8.0.0104 (without python modules)
-        - Neovim 0.2-dev (without python modules)
-
-* Windows 8.1
-    * Cygwin
-        - Vim 8.0.94
-    * Git bash (some problems loading python modules)
-        - Vim 8.0.27
-    * gVim 8.0 64 bits
 
 **Note**: I have not use this settings on a Mac, because I don't have one, feel
 free to use my vim files and tell me if they worked for you.
@@ -60,16 +40,16 @@ free to use my vim files and tell me if they worked for you.
 
 You can test my settings by cloning this repo into your `$HOME`
 
-```
-git clone --recursive https://git.prodeveloper.me/mike/.vim.git ~/.vim
+```sh
+git clone --recursive https://github.com/mike325/.vim.git ~/.vim
 
 ln -s ~/.vim/init.vim ~/.vimrc
 ```
 
 If you are using gVim in Windows you may want to use the following procedure:
 (inside git bash)
-```
-git clone --recursive https://git.prodeveloper.me/mike/.vim.git ~/vimfiles
+```sh
+git clone --recursive https://github.com/mike325/.vim.git ~/vimfiles
 
 cp ~/vimfiles/init.vim ~/_vimrc
 ```
@@ -77,21 +57,29 @@ cp ~/vimfiles/init.vim ~/_vimrc
 If you are using [Neovim](https://neovim.io/) you just need to move the repo
 to `~/.config/nvim`
 
-    mv ~/.vim ~/.config/nvim
+```sh
+mv ~/.vim ~/.config/nvim
+```
 
 or just clone it there
 
-    git clone --recursive https://git.prodeveloper.me/mike/.vim.git ~/.config/nvim
+```sh
+git clone --recursive https://github.com/mike325/.vim.git ~/.config/nvim
+```
 
 To use Neovim in Windows (highly unstable and not well tested) clone the repo
 in the following location
 
-    git clone --recursive https://git.prodeveloper.me/mike/.vim.git ~/AppData/Local/nvim/
-
+```sh
+git clone --recursive https://github.com/mike325/.vim.git ~/AppData/Local/nvim/
+```
 Once you have cloned the repo just run `:PlugInstall` inside Vim/Neovim to
-complete the installation process.
+complete the installation process or start (n)vim as `vim +PlugInstall`
 
 If you want to deactivate some plugins just comment its line in the init.vim, ex.
-`" Plug 'majutsushi/tagbar'`. And run `:PlugClean` to delete the plugin.
+`" Plug 'majutsushi/tagbar'`, since most of the plugins settings are load only when
+they are in the vim's runtimepath it will be deactivated in the next start;
+you also want you remove the plugin's folder just run `:PlugClean` after you restart
+(n)vim.
 
 Feel free to change anything to fit your needs!
