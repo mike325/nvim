@@ -19,8 +19,9 @@
 "                       /ossssssss/   8a   +sssslb
 "                     `/ossssso+/:-        -:/+ossss'.-
 "                    `+sso+:-`                 `.-/+oso:
-"                   `++:.                           `-/+/
+"                   `++:.  github.com/mike325/.vim  `-/+/
 "                   .`                                 `/
+"
 " ############################################################################
 
 " LazyLoad {{{
@@ -67,6 +68,8 @@ if executable("ag")
         \   'fallback': 'ag %s -U -S -l --nocolor --nogroup --hidden --ignore .ropeproject --ignore .git --ignore .svn --ignore .hg -g ""',
         \ }
 elseif has("win32") || has("win64")
+    " Actually I don't use Windows that much so, if someone comes with
+    " something better I will definitely use it
     let g:ctrlp_user_command = {
         \   'types': {
         \       1: ['.git', 'cd %s && git ls-files -co --exclude-standard']
@@ -125,8 +128,29 @@ augroup end
 
 " }}} EndLazyLoad
 
+
+" Vim-expand-region {{{
+
+" TODO improve expanding regions for common file types
+if &runtimepath =~ "vim-expand-region"
+    let g:expand_region_text_objects = {
+        \ 'iw'  :0,
+        \ 'iW'  :0,
+        \ 'i"'  :0,
+        \ 'i''' :0,
+        \ 'i]'  :1,
+        \ 'i)'  :1,
+        \ 'il'  :0,
+        \ 'ii'  :1,
+        \ 'ip'  :0,
+        \ 'i}'  :1,
+        \ 'ie'  :0,
+    \ }
+endif
+
+" }}} EndVim-expand-region
+
 " EasyMotions {{{
-" Temporally removed
 
 if &runtimepath =~ 'vim-easymotion'
     " Disable default mappings
@@ -313,12 +337,25 @@ endif
 
 " Snippets and completion {{{
 
+" DelimitMate {{{
+
+if &runtimepath =~ "delimitMate"
+    function! HandleEmptyPairs()
+        if pumvisible()
+            return "\<C-y>"
+        endif
+        return delimitMate#ExpandReturn()
+    endfunction
+endif
+
+" }}} EndDelimitMate
+
 " SnipMate {{{
 
 " TODO make SnipMate mappings behave as UltiSnips ones
 if &runtimepath =~ 'vim-snipmate'
-    nnoremap <C-k> <Plug>snipMateNextOrTrigger
-    inoremap <C-k> <Plug>snipMateNextOrTrigger
+    " nnoremap <C-k> <Plug>snipMateNextOrTrigger
+    " inoremap <C-k> <Plug>snipMateNextOrTrigger
 endif
 
 " }}} EndSnipMate
@@ -386,6 +423,21 @@ if &runtimepath =~ 'ultisnips'
     endfunction
 
     let g:UltiSnipsExpandTrigger       = "<C-l>"
+
+    inoremap <silent><TAB> <C-R>=<SID>ExpandSnippetOrComplete()<CR>
+    inoremap <silent><CR>  <C-R>=NextSnippetOrReturn()<CR>
+    inoremap <silent><S-TAB> <C-R>=PrevSnippetOrNothing()<CR>
+
+else
+    inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
+    inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : ""
+
+    if &runtimepath =~ "delimitMate"
+        inoremap <silent><CR>  <C-R>=HandleEmptyPairs()<CR>
+    else
+        inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<CR>"
+    endif
+
 endif
 
 " }}} EndUltiSnips
@@ -498,25 +550,39 @@ if &runtimepath =~ 'neocomplcache.vim'
     let g:neocomplcache_enable_smart_case = 1
 
     " Set minimum syntax keyword length.
-    let g:neocomplcache_min_syntax_length = 1
-    let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
+    let g:neocomplcache_fuzzy_completion_start_length = 1
+    let g:neocomplcache_enable_fuzzy_completion       = 1
+    let g:neocomplcache_enable_camel_case_completion  = 1
+    let g:neocomplcache_min_syntax_length             = 1
+    let g:neocomplcache_auto_completion_start_length  = 1
+    let g:neocomplcache_lock_buffer_name_pattern      = '\*ku\*'
 
-    let g:neocomplcache#omni#input_patterns = get(g:,'neocomplcache#omni#input_patterns',{})
-
-    if &runtimepath =~ 'ultisnips'
-        inoremap <silent><TAB> <C-R>=<SID>ExpandSnippetOrComplete()<CR>
-        inoremap <silent><CR>  <C-R>=NextSnippetOrReturn()<CR>
-        inoremap <silent><S-TAB> <C-R>=PrevSnippetOrNothing()<CR>
-    else
-        inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
-        inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<CR>"
-        inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : ""
-    endif
+    let g:neocomplcache_omni_patterns = get(g:,'neocomplcache_omni_patterns',{})
 
     " inoremap <expr><BS> neocomplcache#smart_close_popup()."\<C-h>"
     " inoremap <expr><C-h> neocomplcache#smart_close_popup()."\<C-h>"
     " inoremap <expr><C-y>  neocomplcache#smart_close_popup()
     " inoremap <expr><C-e>  neocomplcache#cancel_popup()
+
+    let g:neocomplcache_omni_patterns.python = '[^.[:digit:] *\t]\%(\.\)'
+    let g:neocomplcache_omni_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
+    let g:neocomplcache_omni_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
+
+    let g:neocomplcache_filename_include_exts = get(g:,'neocomplcache_filename_include_exts',{})
+    let g:neocomplcache_filename_include_exts.cpp = ['', 'h', 'hpp', 'hxx']
+    let g:neocomplcache_filename_include_exts.c = ['', 'h']
+
+    let g:neocomplcache_delimiter_patterns = get(g:,'neocomplcache_delimiter_patterns',{})
+    let g:neocomplcache_delimiter_patterns.vim = ['#']
+    let g:neocomplcache_delimiter_patterns.cpp = ['::']
+
+    let g:neocomplcache_sources_list   = get(g:,'neocomplcache_delimiter_patterns',{})
+    let g:neocomplcache_sources_list._ = ['omni_complete', 'syntax_complete', 'member_complete', 'filename_complete', 'tags_complete', 'buffer_complete']
+
+    let g:neocomplcache_sources_list.c = ['omni_complete', 'syntax_complete', 'member_complete', 'filename_complete', 'tags_complete', 'buffer_complete']
+    let g:neocomplcache_sources_list.cpp = ['omni_complete', 'syntax_complete', 'member_complete', 'filename_complete', 'tags_complete', 'buffer_complete']
+    let g:neocomplcache_sources_list.java = ['omni_complete', 'syntax_complete', 'member_complete', 'filename_complete', 'tags_complete', 'buffer_complete']
+    let g:neocomplcache_sources_list.python = ['omni_complete', 'syntax_complete', 'member_complete', 'filename_complete', 'tags_complete', 'buffer_complete']
 
     autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
 endif
@@ -538,16 +604,6 @@ if &runtimepath =~ 'neocomplete.vim'
 
     if !exists('g:neocomplete#keyword_patterns')
         let g:neocomplete#keyword_patterns = {}
-    endif
-
-    if &runtimepath =~ 'ultisnips'
-        inoremap <silent><TAB> <C-R>=<SID>ExpandSnippetOrComplete()<CR>
-        inoremap <silent><CR>  <C-R>=NextSnippetOrReturn()<CR>
-        inoremap <silent><S-TAB> <C-R>=PrevSnippetOrNothing()<CR>
-    else
-        inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
-        inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<CR>"
-        inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : ""
     endif
 
     " inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
@@ -591,16 +647,6 @@ if &runtimepath =~ 'deoplete.nvim'
     let g:deoplete#sources#syntax#min_keyword_length = 1
     let g:deoplete#lock_buffer_name_pattern = '\*ku\*'
 
-    if &runtimepath =~ 'ultisnips'
-        inoremap <silent><TAB> <C-R>=<SID>ExpandSnippetOrComplete()<CR>
-        inoremap <silent><CR>  <C-R>=NextSnippetOrReturn()<CR>
-        inoremap <silent><S-TAB> <C-R>=PrevSnippetOrNothing()<CR>
-    else
-        inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
-        inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<CR>"
-        inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : ""
-    endif
-
     " inoremap <expr><BS> deoplete#mappings#smart_close_popup()."\<C-h>"
     " inoremap <expr><C-h> deoplete#mappings#smart_close_popup()."\<C-h>"
     " inoremap <expr><C-y>  deoplete#mappings#smart_close_popup()
@@ -612,6 +658,7 @@ if &runtimepath =~ 'deoplete.nvim'
     let g:deoplete#omni#input_patterns.javascript = ['[^. \t0-9]\.\w*']
     let g:deoplete#omni#input_patterns.python = ['[^. \t0-9]\.\w*']
     let g:deoplete#omni#input_patterns.go = ['[^. \t0-9]\.\w*']
+    let g:deoplete#omni#input_patterns.ruby = ['[^. *\t]\.\w*', '[a-zA-Z_]\w*::']
 
     let g:deoplete#omni#input_patterns.c = [
                 \'[^. \t0-9]\.\w*',
@@ -696,16 +743,6 @@ if &runtimepath =~ 'YouCompleteMe'
     let g:ycm_key_list_select_completion = ['<C-n>', '<Down>']
     let g:ycm_key_list_previous_completion = ['<C-p>', '<Up>']
 
-    if &runtimepath =~ 'ultisnips'
-        inoremap <silent><TAB> <C-R>=<SID>ExpandSnippetOrComplete()<CR>
-        inoremap <silent><CR>  <C-R>=NextSnippetOrReturn()<CR>
-        inoremap <silent><S-TAB> <C-R>=PrevSnippetOrNothing()<CR>
-    else
-        inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
-        inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<CR>"
-        inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : ""
-    endif
-
     " In case there are other completion plugins
     " let g:ycm_filetype_blacklist = {
     "       \ 'tagbar' : 1,
@@ -723,16 +760,6 @@ endif
 " Completor {{{
 
 if &runtimepath =~ 'completor.vim'
-    if &runtimepath =~ 'ultisnips'
-        inoremap <silent><TAB> <C-R>=<SID>ExpandSnippetOrComplete()<CR>
-        inoremap <silent><CR>  <C-R>=NextSnippetOrReturn()<CR>
-        inoremap <silent><S-TAB> <C-R>=PrevSnippetOrNothing()<CR>
-    else
-        inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
-        inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<CR>"
-        inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : ""
-    endif
-
     let g:completor_min_chars = 1
 
     let g:completor_java_omni_trigger = '([\w-]+|@[\w-]*|[\w-]+.[\w-]+)$'
@@ -1026,8 +1053,9 @@ endif
 
 " AutoFormat {{{
 
+let b:auto_format = 1
+
 if &runtimepath =~ 'vim-autoformat'
-    let b:auto_format = 1
 
     function! CheckAutoFormat()
         if b:auto_format == 1

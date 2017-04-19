@@ -19,8 +19,9 @@
 "                       /ossssssss/   8a   +sssslb
 "                     `/ossssso+/:-        -:/+ossss'.-
 "                    `+sso+:-`                 `.-/+oso:
-"                   `++:.                           `-/+/
+"                   `++:.  github.com/mike325/.vim  `-/+/
 "                   .`                                 `/
+"
 " ############################################################################
 
 " Since global.vim is about default vim settings, it could be use as a
@@ -148,12 +149,10 @@ set formatoptions+=r " Auto insert comment with <Enter>...
 set formatoptions+=o " ...or o/O
 set formatoptions+=c " Autowrap comments using textwidth
 set formatoptions+=l " Do not wrap lines that have been longer when starting insert mode already
+set formatoptions+=q " Allow formatting of comments with "gq".
 set formatoptions+=t " Auto-wrap text using textwidth
 set formatoptions+=n " Recognize numbered lists
 set formatoptions+=j " Delete comment character when joining commented lines
-
-" Use only 1 space after "." when joining lines, not 2
-set nojoinspaces
 
 " Use only 1 space after "." when joining lines, not 2
 set nojoinspaces
@@ -212,6 +211,11 @@ endif
 if executable("ag")
     set grepprg=ag\ --nogroup\ --nocolor\ -U
 endif
+
+" Set small sidescroll in log plaintext files
+augroup SideScroll
+    autocmd WinEnter *.log,*.txt setlocal sidescroll=1
+augroup end
 
 " }}} EndBasicImprovements
 
@@ -309,9 +313,14 @@ nnoremap <leader><leader>e :echo expand("%")<CR>
 
 " TODO To be improve
 function! RemoveTrailingWhitespaces()
+    " Sometimes we don't want to remove spaces
+    if &buftype =~? 'nofile\|help\|quickfix\|bin\|hex' || &filetype ==? ''
+        return
+    endif
+
     "Save last cursor position
     let savepos = getpos('.')
-    %s/\s\+$//e
+    silent! exec '%s/\s\+$//e'
     call setpos('.', savepos)
 endfunction
 

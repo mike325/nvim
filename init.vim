@@ -19,7 +19,7 @@
 "                       /ossssssss/   8a   +sssslb
 "                     `/ossssso+/:-        -:/+ossss'.-
 "                    `+sso+:-`                 `.-/+oso:
-"                   `++:.                           `-/+/
+"                   `++:.  github.com/mike325/.vim  `-/+/
 "                   .`                                 `/
 "
 " ############################################################################
@@ -151,28 +151,29 @@ Plug 'wesQ3/vim-windowswap'
 " Some useful text objects
 Plug 'kana/vim-textobj-user'
 
-" il inside the line (without leading and trailing spaces)
-" al around the line (with leading and trailing spaces)
+" Text object to manipulate text within lines
 Plug 'kana/vim-textobj-line'
 
-" ic inside the comment (without leading and trailing spaces and
-"                        without comment characters)
-" iC inside the comment (with leading and trailing spaces and
-"                        without comment characters)
-" ac around the comment (without leading and trailing spaces and
-"                        with comment characters)
-" aC around the comment (with leading and trailing spaces and
-"                        with comment characters)
+" Text object to manipulate comments
 Plug 'glts/vim-textobj-comment'
 
 " Text object to manipulate XML/HTLM attributes
 Plug 'whatyouhide/vim-textobj-xmlattr'
+
+" Text object to manipulate the entire buffer
+Plug 'kana/vim-textobj-entire'
 
 " Text objects to operate columns; has conflicts with vim-textobj-comment
 " Plug 'coderifous/textobj-word-column.vim'
 
 " Indentation objects
 Plug 'michaeljsmith/vim-indent-object'
+
+" Simple Join/Split operators
+Plug 'AndrewRadev/splitjoin.vim'
+
+" Expand visual regions
+Plug 'terryma/vim-expand-region'
 
 if has("unix")
     Plug 'tpope/vim-eunuch'
@@ -204,8 +205,26 @@ let b:ycm_installed = 0
 let b:deoplete_installed = 0
 let b:completor = 0
 if ( has("python") || has("python3") )
+    function! BuildCtrlPMatcher(info)
+        " info is a dictionary with 3 fields
+        " - name:   name of the plugin
+        " - status: 'installed', 'updated', or 'unchanged'
+        " - force:  set on PlugInstall! or PlugUpdate!
+        if a:info.status == 'installed' || a:info.force
+            if ( has("win32") || has("win64") ) && executable("gcc")
+                !./install_windows.bat
+            else
+                !./install.sh
+            endif
+        endif
+    endfunction
+
     " Faster matcher for ctrlp
     Plug 'FelikZ/ctrlp-py-matcher'
+
+    " Fast and 'easy' to compile C CtrlP matcher
+    " Plug 'JazzCore/ctrlp-cmatcher', { 'do': function('BuildCtrlPMatcher') }
+
     " The fastes matcher (as far as I know) but way more complicated to setup
     " Plug 'nixprime/cpsm'
 
@@ -222,30 +241,24 @@ if ( has("python") || has("python3") )
     " Snippets engine
     Plug 'SirVer/ultisnips'
 
-    function! BuildYCM(info)
-        " info is a dictionary with 3 fields
-        " - name:   name of the plugin
-        " - status: 'installed', 'updated', or 'unchanged'
-        " - force:  set on PlugInstall! or PlugUpdate!
-        if a:info.status == 'installed' || a:info.force
-            " !./install.py --all
-            if executable('go') && executable("tern")
-                " !./install.py --gocode-completer --tern-completer --clang-completer
-                !./install.py --gocode-completer --tern-completer
-            elseif executable("tern")
-                !./install.py --tern-completer
-            elseif executable('go')
-                !./install.py --gocode-completer
-            else
-                !./install.py
-            endif
-        endif
-    endfunction
 
     if has("nvim") || ( v:version >= 800 ) || ( v:version == 704 )
         " Only works with JDK8!!!
         Plug 'artur-shaik/vim-javacomplete2', { 'for': 'java' }
     endif
+
+
+    function! BuildOmniSharp(info)
+        if a:info.status == 'installed' || a:info.force
+            if ( has("win32") || has("win64") )
+                !cd server && msbuild
+            else
+                !cd server && xbuild
+            endif
+        endif
+    endfunction
+
+    " Plug 'OmniSharp/omnisharp-vim', { 'do': function('BuildOmniSharp') }
 
     " Awesome Async completion engine for Neovim
     if ( has("nvim") && has("python3") )
@@ -256,6 +269,7 @@ if ( has("python") || has("python3") )
 
         " C/C++ completion base on clang compiler
         if executable("clang")
+
             Plug 'zchee/deoplete-clang'
 
             " A bit faster C/C++ completion; I haven't test it
@@ -280,7 +294,24 @@ if ( has("python") || has("python3") )
         Plug 'maralla/completor.vim'
         let b:completor = 1
     elseif (has("unix") || ((has("win32") || has("win64")) && executable("msbuild"))) &&
-                \ has("nvim") || ( v:version >= 800 ) || ( v:version == 704 && has("patch143"))
+        \  (has("nvim") || (v:version >= 800) || (v:version == 704 && has("patch143")) )
+
+        function! BuildYCM(info)
+            if a:info.status == 'installed' || a:info.force
+                " !./install.py --all
+                " !./install.py --gocode-completer --tern-completer --clang-completer --omnisharp-completer
+                if executable('go') && executable("tern")
+                    !./install.py --gocode-completer --tern-completer
+                elseif executable("tern")
+                    !./install.py --tern-completer
+                elseif executable('go')
+                    !./install.py --gocode-completer
+                else
+                    !./install.py
+                endif
+            endif
+        endfunction
+
         " Install ycm if Neovim/vim 8/Vim 7.143 is running on unix or
         " If it is running on windows with Neovim/Vim 8/Vim 7.143 and ms C compiler
         Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') }
