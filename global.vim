@@ -213,6 +213,11 @@ if executable("ag")
     set grepprg=ag\ --nogroup\ --nocolor\ -U
 endif
 
+" Set small sidescroll in log plaintext files
+augroup SideScroll
+    autocmd WinEnter *.log,*.txt setlocal sidescroll=1
+augroup end
+
 " }}} EndBasicImprovements
 
 " VimFiles {{{

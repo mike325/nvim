@@ -1055,8 +1055,9 @@ endif
 
 " AutoFormat {{{
 
+let b:auto_format = 1
+
 if &runtimepath =~ 'vim-autoformat'
-    let b:auto_format = 1
 
     function! CheckAutoFormat()
         if b:auto_format == 1
