@@ -68,15 +68,14 @@ if executable("ag")
         \   'fallback': 'ag %s -U -S -l --nocolor --nogroup --hidden --ignore .ropeproject --ignore .git --ignore .svn --ignore .hg -g ""',
         \ }
 elseif has("win32") || has("win64")
+    " Actually I don't use Windows that much so, if someone comes with
+    " something better I will definitely use it
     let g:ctrlp_user_command = {
         \   'types': {
         \       1: ['.git', 'cd %s && git ls-files -co --exclude-standard']
         \   },
         \   'fallback': 'dir %s /-n /b /s /a-d',
         \ }
-
-        " Actually I don't use Windows that much so, if someone comes with
-        " something better I will definitely use it
 else
     let g:ctrlp_user_command = {
         \   'types': {
@@ -356,7 +355,7 @@ endif
 " TODO make SnipMate mappings behave as UltiSnips ones
 if &runtimepath =~ 'vim-snipmate'
     " nnoremap <C-k> <Plug>snipMateNextOrTrigger
-    inoremap <C-k> <Plug>snipMateNextOrTrigger
+    " inoremap <C-k> <Plug>snipMateNextOrTrigger
 endif
 
 " }}} EndSnipMate
@@ -434,10 +433,11 @@ else
     inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : ""
 
     if &runtimepath =~ "delimitMate"
-        inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<CR>"
-    else
         inoremap <silent><CR>  <C-R>=HandleEmptyPairs()<CR>
+    else
+        inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<CR>"
     endif
+
 endif
 
 " }}} EndUltiSnips
@@ -558,7 +558,6 @@ if &runtimepath =~ 'neocomplcache.vim'
     let g:neocomplcache_lock_buffer_name_pattern      = '\*ku\*'
 
     let g:neocomplcache_omni_patterns = get(g:,'neocomplcache_omni_patterns',{})
-
 
     " inoremap <expr><BS> neocomplcache#smart_close_popup()."\<C-h>"
     " inoremap <expr><C-h> neocomplcache#smart_close_popup()."\<C-h>"
@@ -761,7 +760,6 @@ endif
 " Completor {{{
 
 if &runtimepath =~ 'completor.vim'
-
     let g:completor_min_chars = 1
 
     let g:completor_java_omni_trigger = '([\w-]+|@[\w-]*|[\w-]+.[\w-]+)$'
