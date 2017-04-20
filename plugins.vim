@@ -243,7 +243,13 @@ if &runtimepath =~ 'vim-grepper'
         \ 'wordanchors': ['\<', '\>'],
         \ }
 
-    nnoremap <C-g> :Grepper -query<Space>
+    if executable("ag")
+        nnoremap <C-g> :GrepperAg<CR>
+    elseif has("win32") || has("win64")
+        nnoremap <C-g> :GrepperFindstr<CR>
+    else
+        nnoremap <C-g> :GrepperGrep<CR>
+    endif
 
     command! Todo :Grepper -query '\(TODO\|FIXME\)'
 
