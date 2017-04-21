@@ -634,34 +634,34 @@ endif
 
 " SetSyntax {{{
 augroup filetypedetect
-    autocmd BufNewFile,BufRead .tmux.conf*,tmux.conf* set filetype=tmux
-    autocmd BufNewFile,BufRead .nginx.conf*,nginx.conf* set filetype=nginx
-    autocmd BufRead,BufNewFile *.in,*.simics,*.si,*.sle set filetype=conf
-    autocmd BufRead,BufNewFile *.bash* set filetype=sh
+    autocmd BufNewFile,BufRead .tmux.conf*,tmux.conf*   setlocal filetype=tmux
+    autocmd BufNewFile,BufRead .nginx.conf*,nginx.conf* setlocal filetype=nginx
+    autocmd BufRead,BufNewFile *.in,*.simics,*.si,*.sle setlocal filetype=conf
+    autocmd BufRead,BufNewFile *.bash*                  setlocal filetype=sh
 augroup end
 
 " }}} EndSetSyntax
 
 " Omnicomplete {{{
-" *currently no all functions work
 
 " Default omnicomplete func
 set omnifunc=syntaxcomplete#Complete
 
+" *currently no all functions work
 augroup omnifuncs
     autocmd!
-    autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+    autocmd FileType css           setlocal omnifunc=csscomplete#CompleteCSS
     autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-    autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-    autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-    autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-    autocmd FileType go setlocal omnifunc=go#complete#Complete
-    autocmd FileType cs setlocal omnifunc=OmniSharp#Complete
-    autocmd FileType php setlocal omnifunc=phpcomplete#CompletePHP
-    autocmd FileType java setlocal omnifunc=javacomplete#Complete
+    autocmd FileType javascript    setlocal omnifunc=javascriptcomplete#CompleteJS
+    autocmd FileType xml           setlocal omnifunc=xmlcomplete#CompleteTags
+    autocmd FileType python        setlocal omnifunc=pythoncomplete#Complete
+    autocmd FileType go            setlocal omnifunc=go#complete#Complete
+    autocmd FileType cs            setlocal omnifunc=OmniSharp#Complete
+    autocmd FileType php           setlocal omnifunc=phpcomplete#CompletePHP
+    autocmd FileType java          setlocal omnifunc=javacomplete#Complete
 
     autocmd BufNewFile,BufRead,BufEnter *.cpp,*.hpp setlocal omnifunc=omni#cpp#complete#Main
-    autocmd BufNewFile,BufRead,BufEnter *.c,*.h setlocal omnifunc=ccomplete#Complete
+    autocmd BufNewFile,BufRead,BufEnter *.c,*.h     setlocal omnifunc=ccomplete#Complete
 augroup end
 
 " }}} EndOmnicomplete
@@ -732,6 +732,8 @@ augroup Skeletons
     autocmd BufNewFile *.css  silent! exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.css')
     autocmd BufNewFile *.html silent! exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.html')
     autocmd BufNewFile *.md   silent! exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.md')
+    autocmd BufNewFile *.js   silent! exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.js')
+    autocmd BufNewFile *.xml  silent! exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.xml')
     autocmd BufNewFile *.py   silent! exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.py')
     autocmd BufNewFile *.go   silent! exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.go')
     autocmd BufNewFile *.cs   silent! exec '0r '.fnameescape(g:os_editor.'skeletons/skeleton.cs')
