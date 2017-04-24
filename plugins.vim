@@ -218,13 +218,13 @@ if &runtimepath =~ 'vim-grepper'
     " let g:grepper.rg.grepprg .= ' --smart-case'
 
     let g:grepper.ag = {
-        \ 'grepprg':    'ag -S -U --hidden --ignore .ropeproject --ignore .svn --ignore .hg --vimgrep',
+        \ 'grepprg':    'ag -S -U --hidden --ignore .ropeproject --ignore .git --ignore .svn --ignore .hg --vimgrep',
         \ 'grepformat': '%f:%l:%c:%m,%f:%l:%m',
         \ 'escape':     '\^$.*+?()[]{}|',
         \ }
 
     let g:grepper.grep = {
-        \ 'grepprg':    'grep --exclude-dir .svn --exclude-dir .ropeproject -RIni $*',
+        \ 'grepprg':    'grep --exclude-dir .svn --exclude-dir .git --exclude-dir .ropeproject -RIn $*',
         \ 'grepprgbuf': 'grep -HIn -- $* $.',
         \ 'grepformat': '%f:%l:%m',
         \ 'escape':     '\^$.*[]',
