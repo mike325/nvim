@@ -1059,11 +1059,11 @@ endif
 
 " AutoFormat {{{
 
-let b:auto_format = 1
-
 if &runtimepath =~ 'vim-autoformat'
 
     function! CheckAutoFormat()
+        let b:auto_format = get(b:,'auto_format',1)
+
         if b:auto_format == 1
            exec "Autoformat"
         endif
@@ -1076,7 +1076,6 @@ if &runtimepath =~ 'vim-autoformat'
 
     augroup AutoFormat
         autocmd!
-        autocmd FileType * let b:auto_format = 1
         autocmd FileType vim,python let b:autoformat_autoindent=0
         autocmd FileType css        silent! call CheckAutoFormat()
         autocmd FileType html       silent! call CheckAutoFormat()
