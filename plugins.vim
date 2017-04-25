@@ -1077,20 +1077,20 @@ if &runtimepath =~ 'vim-autoformat'
     augroup AutoFormat
         autocmd!
         autocmd FileType vim,python let b:autoformat_autoindent=0
-        autocmd FileType css        silent! call CheckAutoFormat()
-        autocmd FileType html       silent! call CheckAutoFormat()
-        autocmd FileType markdown   silent! call CheckAutoFormat()
-        autocmd FileType javascript silent! call CheckAutoFormat()
-        autocmd FileType xml        silent! call CheckAutoFormat()
-        autocmd FileType python     silent! call CheckAutoFormat()
-        autocmd FileType go         silent! call CheckAutoFormat()
-        autocmd FileType cs         silent! call CheckAutoFormat()
-        autocmd FileType php        silent! call CheckAutoFormat()
-        autocmd FileType sh         silent! call CheckAutoFormat()
-        autocmd FileType vim        silent! call CheckAutoFormat()
-        autocmd FileType java       silent! call CheckAutoFormat()
-        autocmd FileType cpp        silent! call CheckAutoFormat()
-        autocmd FileType c          silent! call CheckAutoFormat()
+        autocmd FileType css        autocmd BufWritePre silent! call CheckAutoFormat()
+        autocmd FileType html       autocmd BufWritePre silent! call CheckAutoFormat()
+        autocmd FileType markdown   autocmd BufWritePre silent! call CheckAutoFormat()
+        autocmd FileType javascript autocmd BufWritePre silent! call CheckAutoFormat()
+        autocmd FileType xml        autocmd BufWritePre silent! call CheckAutoFormat()
+        autocmd FileType python     autocmd BufWritePre silent! call CheckAutoFormat()
+        autocmd FileType go         autocmd BufWritePre silent! call CheckAutoFormat()
+        autocmd FileType cs         autocmd BufWritePre silent! call CheckAutoFormat()
+        autocmd FileType php        autocmd BufWritePre silent! call CheckAutoFormat()
+        autocmd FileType sh         autocmd BufWritePre silent! call CheckAutoFormat()
+        autocmd FileType vim        autocmd BufWritePre silent! call CheckAutoFormat()
+        autocmd FileType java       autocmd BufWritePre silent! call CheckAutoFormat()
+        autocmd FileType cpp        autocmd BufWritePre silent! call CheckAutoFormat()
+        autocmd FileType c          autocmd BufWritePre silent! call CheckAutoFormat()
     augroup end
 endif
 
