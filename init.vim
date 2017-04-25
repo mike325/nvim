@@ -269,10 +269,11 @@ if ( has("python") || has("python3") )
 
         " C/C++ completion base on clang compiler
         if executable("clang")
+            Plug 'zchee/deoplete-clang'
             " Plug 'zchee/deoplete-clang'
 
             " A bit faster C/C++ completion
-            Plug 'tweekmonster/deoplete-clang2'
+            " Plug 'tweekmonster/deoplete-clang2'
         endif
 
         " Go completion

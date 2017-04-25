@@ -217,6 +217,7 @@ if &runtimepath =~ 'vim-grepper'
     " let g:grepper.highlight = 1
     " let g:grepper.rg.grepprg .= ' --smart-case'
 
+    " Since I normally Ag and grep
     let g:grepper.ag = {
         \ 'grepprg':    'ag -S -U --hidden --ignore .ropeproject --ignore .git --ignore .svn --ignore .hg --vimgrep',
         \ 'grepformat': '%f:%l:%c:%m,%f:%l:%m',
@@ -224,7 +225,7 @@ if &runtimepath =~ 'vim-grepper'
         \ }
 
     let g:grepper.grep = {
-        \ 'grepprg':    'grep --exclude-dir .svn --exclude-dir .git --exclude-dir .ropeproject -RIn $*',
+        \ 'grepprg':    'grep --exclude-dir .svn --exclude-dir .git --exclude-dir .ropeproject -RIni $*',
         \ 'grepprgbuf': 'grep -HIn -- $* $.',
         \ 'grepformat': '%f:%l:%m',
         \ 'escape':     '\^$.*[]',
@@ -243,13 +244,8 @@ if &runtimepath =~ 'vim-grepper'
         \ 'wordanchors': ['\<', '\>'],
         \ }
 
-    if executable("ag")
-        nnoremap <C-g> :GrepperAg<CR>
-    elseif has("win32") || has("win64")
-        nnoremap <C-g> :GrepperFindstr<CR>
-    else
-        nnoremap <C-g> :GrepperGrep<CR>
-    endif
+    " You can use <TAB> to change the current grep tool
+    nnoremap <C-g> :Grepper<CR>
 
     command! Todo :Grepper -query '\(TODO\|FIXME\)'
 
