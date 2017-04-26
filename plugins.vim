@@ -45,7 +45,7 @@ let g:ctrlp_by_filename         = 1
 let g:ctrlp_follow_symlinks     = 1
 let g:ctrlp_mruf_case_sensitive = 1
 let g:ctrlp_match_window        = 'bottom,order:ttb,min:1,max:30,results:50'
-let g:ctrlp_working_path_mode   = 'ra'
+let g:ctrlp_working_path_mode   = 'wa'
 let g:ctrlp_custom_ignore       = {
             \ 'dir':  '\v[\/]\.(git|hg|svn)$',
             \ 'file': '\v\.(exe|bin|o|so|dll|pyc|zip|sw|swp)$',
