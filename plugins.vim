@@ -81,7 +81,7 @@ else
         \   'types': {
         \       1: ['.git', 'cd %s && git ls-files -co --exclude-standard']
         \   },
-        \   'fallback': 'find %s -type f \( -iname "*" ! -iname "*.pyc" ! -iname "*.a" ! -iname "*.o" ! -iwholename "*.hg*" ! -iwholename "*.git*" \) -readable',
+        \   'fallback': 'find %s -type f \( -iname "*" ! -iname "*.pyc" ! -iname "*.a" ! -iname "*.o" ! -iwholename "*.hg*" ! -iwholename "*.git*" ! -iwholename "*.svn*"\) -readable',
         \ }
 endif
 
