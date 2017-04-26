@@ -154,7 +154,7 @@ Plug 'kana/vim-textobj-user'
 " Text object to manipulate text within lines
 Plug 'kana/vim-textobj-line'
 
-" Text object to manipulate comments
+" Text object to manipulate text within comments
 Plug 'glts/vim-textobj-comment'
 
 " Text object to manipulate XML/HTLM attributes
@@ -163,7 +163,7 @@ Plug 'whatyouhide/vim-textobj-xmlattr'
 " Text object to manipulate the entire buffer
 Plug 'kana/vim-textobj-entire'
 
-" Text objects to operate columns; has conflicts with vim-textobj-comment
+" Text objects to operate columns
 " Plug 'coderifous/textobj-word-column.vim'
 
 " Indentation objects
@@ -230,8 +230,10 @@ if ( has("python") || has("python3") )
 
     " Code Format tool
     Plug 'chiel92/vim-autoformat'
+
     " TODO Check this fork, No +python required
     " Plug 'umitkablan/vim-auf'
+
     " TODO Check google's own formatter
     " Plug 'google/vim-codefmt'
 
@@ -269,10 +271,10 @@ if ( has("python") || has("python3") )
 
         " C/C++ completion base on clang compiler
         if executable("clang")
-
             Plug 'zchee/deoplete-clang'
+            " Plug 'zchee/deoplete-clang'
 
-            " A bit faster C/C++ completion; I haven't test it
+            " A bit faster C/C++ completion
             " Plug 'tweekmonster/deoplete-clang2'
         endif
 

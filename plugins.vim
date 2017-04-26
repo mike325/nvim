@@ -45,7 +45,7 @@ let g:ctrlp_by_filename         = 1
 let g:ctrlp_follow_symlinks     = 1
 let g:ctrlp_mruf_case_sensitive = 1
 let g:ctrlp_match_window        = 'bottom,order:ttb,min:1,max:30,results:50'
-let g:ctrlp_working_path_mode   = 'ra'
+let g:ctrlp_working_path_mode   = 'wa'
 let g:ctrlp_custom_ignore       = {
             \ 'dir':  '\v[\/]\.(git|hg|svn)$',
             \ 'file': '\v\.(exe|bin|o|so|dll|pyc|zip|sw|swp)$',
@@ -81,7 +81,7 @@ else
         \   'types': {
         \       1: ['.git', 'cd %s && git ls-files -co --exclude-standard']
         \   },
-        \   'fallback': 'find %s -type f \( -iname "*" ! -iname "*.pyc" ! -iname "*.a" ! -iname "*.o" ! -iwholename "*.hg*" ! -iwholename "*.git*" \) -readable',
+        \   'fallback': 'find %s -type f \( -iname "*" ! -iname "*.pyc" ! -iname "*.a" ! -iname "*.o" ! -iwholename "*.hg*" ! -iwholename "*.git*" ! -iwholename "*.svn*" \) -readable',
         \ }
 endif
 
@@ -217,14 +217,15 @@ if &runtimepath =~ 'vim-grepper'
     " let g:grepper.highlight = 1
     " let g:grepper.rg.grepprg .= ' --smart-case'
 
+    " Since I normally Ag and grep
     let g:grepper.ag = {
-        \ 'grepprg':    'ag -S -U --hidden --ignore .ropeproject --ignore .svn --ignore .hg --vimgrep',
+        \ 'grepprg':    'ag -S -U --hidden --ignore .ropeproject --ignore .git --ignore .svn --ignore .hg --vimgrep',
         \ 'grepformat': '%f:%l:%c:%m,%f:%l:%m',
         \ 'escape':     '\^$.*+?()[]{}|',
         \ }
 
     let g:grepper.grep = {
-        \ 'grepprg':    'grep --exclude-dir .svn --exclude-dir .ropeproject -RIni $*',
+        \ 'grepprg':    'grep --exclude-dir .svn --exclude-dir .git --exclude-dir .ropeproject -RIni $*',
         \ 'grepprgbuf': 'grep -HIn -- $* $.',
         \ 'grepformat': '%f:%l:%m',
         \ 'escape':     '\^$.*[]',
@@ -243,7 +244,8 @@ if &runtimepath =~ 'vim-grepper'
         \ 'wordanchors': ['\<', '\>'],
         \ }
 
-    nnoremap <C-g> :Grepper -query<Space>
+    " You can use <TAB> to change the current grep tool
+    nnoremap <C-g> :Grepper<CR>
 
     command! Todo :Grepper -query '\(TODO\|FIXME\)'
 
@@ -1053,11 +1055,11 @@ endif
 
 " AutoFormat {{{
 
-let b:auto_format = 1
-
 if &runtimepath =~ 'vim-autoformat'
 
     function! CheckAutoFormat()
+        let b:auto_format = get(b:,'auto_format',1)
+
         if b:auto_format == 1
            exec "Autoformat"
         endif
@@ -1070,11 +1072,21 @@ if &runtimepath =~ 'vim-autoformat'
 
     augroup AutoFormat
         autocmd!
-        autocmd FileType * let b:auto_format = 1
-        autocmd FileType gitcommit,dosini,markdown,vim,text,tex,python,make,asm,conf
-            \ let b:autoformat_autoindent=0
-        autocmd BufNewFile,BufRead,BufEnter *.log let b:autoformat_autoindent=0
-        autocmd BufWritePre * call CheckAutoFormat()
+        autocmd FileType vim,python let b:autoformat_autoindent=0
+        autocmd FileType css        autocmd BufWritePre silent! call CheckAutoFormat()
+        autocmd FileType html       autocmd BufWritePre silent! call CheckAutoFormat()
+        autocmd FileType markdown   autocmd BufWritePre silent! call CheckAutoFormat()
+        autocmd FileType javascript autocmd BufWritePre silent! call CheckAutoFormat()
+        autocmd FileType xml        autocmd BufWritePre silent! call CheckAutoFormat()
+        autocmd FileType python     autocmd BufWritePre silent! call CheckAutoFormat()
+        autocmd FileType go         autocmd BufWritePre silent! call CheckAutoFormat()
+        autocmd FileType cs         autocmd BufWritePre silent! call CheckAutoFormat()
+        autocmd FileType php        autocmd BufWritePre silent! call CheckAutoFormat()
+        autocmd FileType sh         autocmd BufWritePre silent! call CheckAutoFormat()
+        autocmd FileType vim        autocmd BufWritePre silent! call CheckAutoFormat()
+        autocmd FileType java       autocmd BufWritePre silent! call CheckAutoFormat()
+        autocmd FileType cpp        autocmd BufWritePre silent! call CheckAutoFormat()
+        autocmd FileType c          autocmd BufWritePre silent! call CheckAutoFormat()
     augroup end
 endif
 
