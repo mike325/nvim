@@ -137,7 +137,6 @@ set cursorline     " Turn on cursor line by default
 " changes to save them in some registers
 " set autoread
 
-
 " Show invisible characters
 " set list
 
