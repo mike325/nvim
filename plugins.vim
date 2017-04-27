@@ -232,7 +232,7 @@ if &runtimepath =~ 'vim-grepper'
         \ }
 
     let g:grepper.git = {
-        \ 'grepprg':    'git grep -nI'
+        \ 'grepprg':    'git grep -nIi'
         \ 'grepformat': '%f:%l:%m',
         \ 'escape':     '\^$.*[]',
         \ }
@@ -267,7 +267,6 @@ if &runtimepath =~ 'nerdcommenter'
     let g:NERDDefaultAlign           = 'left' " Align line-wise comment delimiters flush left instead
                                               " of following code indentation
     let g:NERDCustomDelimiters = {
-        \ 'dosini': { 'left': '#', 'leftAlt': ';' },
         \ 'python': { 'left': '#', 'leftAlt': '"""', 'rightAlt': '"""' }
         \ }
 endif
