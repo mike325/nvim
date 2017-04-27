@@ -217,7 +217,8 @@ if &runtimepath =~ 'vim-grepper'
     " let g:grepper.highlight = 1
     " let g:grepper.rg.grepprg .= ' --smart-case'
 
-    " Since I normally Ag and grep
+    " I like to keep Ag and grep as a ignore case searchers (smart case for Ag)
+    " and git as a project search without ignore case
     let g:grepper.ag = {
         \ 'grepprg':    'ag -S -U --hidden --ignore .ropeproject --ignore .git --ignore .svn --ignore .hg --vimgrep',
         \ 'grepformat': '%f:%l:%c:%m,%f:%l:%m',
@@ -232,7 +233,7 @@ if &runtimepath =~ 'vim-grepper'
         \ }
 
     let g:grepper.git = {
-        \ 'grepprg':    'git grep -nIi',
+        \ 'grepprg':    'git grep -nI',
         \ 'grepformat': '%f:%l:%m',
         \ 'escape':     '\^$.*[]',
         \ }
