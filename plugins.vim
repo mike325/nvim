@@ -232,7 +232,7 @@ if &runtimepath =~ 'vim-grepper'
         \ }
 
     let g:grepper.git = {
-        \ 'grepprg':    'git grep -nIi'
+        \ 'grepprg':    'git grep -nIi',
         \ 'grepformat': '%f:%l:%m',
         \ 'escape':     '\^$.*[]',
         \ }
