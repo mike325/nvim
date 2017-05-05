@@ -217,7 +217,8 @@ if &runtimepath =~ 'vim-grepper'
     " let g:grepper.highlight = 1
     " let g:grepper.rg.grepprg .= ' --smart-case'
 
-    " Since I normally Ag and grep
+    " I like to keep Ag and grep as a ignore case searchers (smart case for Ag)
+    " and git as a case sensitive project searcher
     let g:grepper.ag = {
         \ 'grepprg':    'ag -S -U --hidden --ignore .ropeproject --ignore .git --ignore .svn --ignore .hg --vimgrep',
         \ 'grepformat': '%f:%l:%c:%m,%f:%l:%m',
@@ -267,7 +268,6 @@ if &runtimepath =~ 'nerdcommenter'
     let g:NERDDefaultAlign           = 'left' " Align line-wise comment delimiters flush left instead
                                               " of following code indentation
     let g:NERDCustomDelimiters = {
-        \ 'dosini': { 'left': '#', 'leftAlt': ';' },
         \ 'python': { 'left': '#', 'leftAlt': '"""', 'rightAlt': '"""' }
         \ }
 endif
