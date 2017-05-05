@@ -353,7 +353,7 @@ imap <F2> <Esc><F2>a
 augroup localCR
     autocmd!
     autocmd BufReadPost quickfix nnoremap <buffer> <CR> <CR>
-    autocmd BufReadPost quickfix nnoremap <buffer> q :q!<CR>
+    autocmd BufReadPost quickfix nnoremap <silent> <buffer> q :cclose<CR>
     autocmd CmdwinEnter * nnoremap <CR> <CR>
 augroup end
 
