@@ -426,9 +426,11 @@ if &runtimepath =~ 'ultisnips'
 
     let g:UltiSnipsExpandTrigger       = "<C-l>"
 
-    inoremap <silent><TAB> <C-R>=<SID>ExpandSnippetOrComplete()<CR>
-    inoremap <silent><CR>  <C-R>=NextSnippetOrReturn()<CR>
-    inoremap <silent><S-TAB> <C-R>=PrevSnippetOrNothing()<CR>
+    " inoremap <silent><TAB>   <C-R>=<SID>ExpandSnippetOrComplete()<CR>
+    " inoremap <silent><S-TAB> <C-R>=PrevSnippetOrNothing()<CR>
+    inoremap <expr><TAB>     pumvisible() ? "\<C-n>" : "\<TAB>"
+    inoremap <expr><S-TAB>   pumvisible() ? "\<C-p>" : ""
+    inoremap <silent><CR>    <C-R>=NextSnippetOrReturn()<CR>
 
 else
     inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
