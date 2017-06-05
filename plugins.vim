@@ -268,7 +268,9 @@ if &runtimepath =~ 'nerdcommenter'
     let g:NERDDefaultAlign           = 'left' " Align line-wise comment delimiters flush left instead
                                               " of following code indentation
     let g:NERDCustomDelimiters = {
-        \ 'python': { 'left': '#', 'leftAlt': '"""', 'rightAlt': '"""' }
+        \ 'python': { 'left': '#', 'leftAlt': '"""', 'rightAlt': '"""' },
+        \ 'c': { 'left': '//', 'leftAlt': '/**', 'rightAlt': '*/' },
+        \ 'cpp': { 'left': '//', 'leftAlt': '/**', 'rightAlt': '*/' }
         \ }
 endif
 
