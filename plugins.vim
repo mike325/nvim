@@ -41,7 +41,7 @@ let g:ctrlp_cmd = 'CtrlP'
 " Do not clear filenames cache, to improve CtrlP startup
 " You can manualy clear it by <F5>
 let g:ctrlp_clear_cache_on_exit = 0
-let g:ctrlp_by_filename         = 0
+let g:ctrlp_by_filename         = 1
 let g:ctrlp_follow_symlinks     = 1
 let g:ctrlp_mruf_case_sensitive = 1
 let g:ctrlp_match_window        = 'bottom,order:ttb,min:1,max:30,results:50'

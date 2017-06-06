@@ -145,6 +145,9 @@ Plug 'lervag/vimtex'
 " Enhanced Markdown syntax
 Plug 'plasticboy/vim-markdown'
 
+" Simics syntax highlight
+Plug 'bjoernd/vim-syntax-simics'
+
 " Change buffer position in the current layout
 Plug 'wesQ3/vim-windowswap'
 
