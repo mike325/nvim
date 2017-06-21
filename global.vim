@@ -121,7 +121,7 @@ set expandtab      " Use  spaces for indenting
 set smarttab       " Insert tabs on the start of a line according to
                    " shiftwidth, not tabstop
 
-if has("nvim") || ( :version > 704 || (v:version == 704 && has('patch338')))
+if has("nvim") || ( v:version > 704 || (v:version == 704 && has('patch338')))
     set breakindent " respect indentation when wrapping
 endif
 
