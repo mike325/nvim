@@ -48,6 +48,27 @@ Plug 'sickill/vim-monokai'
 Plug 'nanotech/jellybeans.vim'
 Plug 'whatyouhide/vim-gotham'
 Plug 'joshdick/onedark.vim'
+"
+" Improve Dockerfiles syntax highlight
+Plug 'ekalinin/Dockerfile.vim', { 'for': 'Dockerfile' }
+
+" Improve json syntax highlight
+Plug 'elzr/vim-json', { 'for': 'json' }
+
+" Improve Lua syntax
+Plug 'tbastos/vim-lua', { 'for': 'lua' }
+
+" Improve cpp syntax highlight
+Plug 'octol/vim-cpp-enhanced-highlight', { 'for': 'cpp' }
+
+" Add Qml syntax highlight
+Plug 'peterhoeg/vim-qml', { 'for': 'qml' }
+
+" Enhanced Markdown syntax
+Plug 'plasticboy/vim-markdown'
+
+" Simics syntax highlight
+Plug 'bjoernd/vim-syntax-simics', { 'for': 'simics' }
 
 " Auto Close ' " () [] {}
 Plug 'Raimondi/delimitMate'
@@ -57,19 +78,11 @@ Plug 'scrooloose/nerdtree', { 'on': [ 'NERDTreeToggle' ] }
 Plug 'Xuyuanp/nerdtree-git-plugin', { 'on': [ 'NERDTreeToggle' ] }
 
 " Easy comments
+" TODO check other comment plugins with motions
 Plug 'scrooloose/nerdcommenter'
 
-" Status bar and some themes
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
-Plug 'enricobacis/vim-airline-clock'
-
-" Git integrations
 Plug 'airblade/vim-gitgutter'
-Plug 'gregsexton/gitv'
 Plug 'rhysd/committia.vim'
-Plug 'tpope/vim-fugitive'
-Plug 'tpope/vim-git'
 
 " Surround motions
 Plug 'tpope/vim-surround'
@@ -82,9 +95,6 @@ Plug 'tpope/vim-endwise'
 
 " Easy alignment
 Plug 'godlygeek/tabular'
-
-" Better motions
-Plug 'easymotion/vim-easymotion'
 
 " Map repeat key . for plugins
 Plug 'tpope/vim-repeat'
@@ -112,71 +122,65 @@ Plug 'honza/vim-snippets'
 " Move with indentation
 Plug 'matze/vim-move'
 
-" Display indention
-Plug 'Yggdroot/indentLine'
-
-" Auto indention put command
-Plug 'sickill/vim-pasta'
-
 " Easy change text
 " Plug 'AndrewRadev/switch.vim'
 
 " Search into files
 Plug 'mhinz/vim-grepper'
 
-" Improve Dockerfiles syntax highlight
-Plug 'ekalinin/Dockerfile.vim', { 'for': 'Dockerfile' }
-
-" Improve json syntax highlight
-Plug 'elzr/vim-json', { 'for': 'json' }
-
-" Improve Lua syntax
-Plug 'tbastos/vim-lua', { 'for': 'lua' }
-
-" Improve cpp syntax highlight
-Plug 'octol/vim-cpp-enhanced-highlight', { 'for': 'cpp' }
-
-" Add Qml syntax highlight
-Plug 'peterhoeg/vim-qml', { 'for': 'qml' }
-
-" Latex plugin
-Plug 'lervag/vimtex'
-
-" Enhanced Markdown syntax
-Plug 'plasticboy/vim-markdown'
-
-" Simics syntax highlight
-Plug 'bjoernd/vim-syntax-simics'
-
-" Change buffer position in the current layout
-Plug 'wesQ3/vim-windowswap'
-
-" Some useful text objects
-Plug 'kana/vim-textobj-user'
-
-" Text object to manipulate text within lines
-Plug 'kana/vim-textobj-line'
-
-" Text object to manipulate text within comments
-Plug 'glts/vim-textobj-comment'
-
-" Text object to manipulate XML/HTLM attributes
-Plug 'whatyouhide/vim-textobj-xmlattr'
-
-" Text object to manipulate the entire buffer
-Plug 'kana/vim-textobj-entire'
-
-" Text objects to operate columns
-" Plug 'coderifous/textobj-word-column.vim'
-
-" Indentation objects
-Plug 'michaeljsmith/vim-indent-object'
-
 " Simple Join/Split operators
 Plug 'AndrewRadev/splitjoin.vim'
 
 " Expand visual regions
 Plug 'terryma/vim-expand-region'
+
+" Status bar and some themes
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'enricobacis/vim-airline-clock'
+
+" Git integrations
+Plug 'tpope/vim-fugitive'
+Plug 'gregsexton/gitv'
+
+" Better motions
+Plug 'easymotion/vim-easymotion'
+
+" Display indention
+Plug 'Yggdroot/indentLine'
+
+" Change buffer position in the current layout
+Plug 'wesQ3/vim-windowswap'
+
+" Sometimes I need to use an old version of vim ...
+if (has("nvim") || (v:version >= 704))
+    " Auto indention put command
+    Plug 'sickill/vim-pasta'
+
+    " Some useful text objects
+    Plug 'kana/vim-textobj-user'
+
+    " Text object to manipulate text within lines
+    Plug 'kana/vim-textobj-line'
+
+    " Text object to manipulate text within comments
+    Plug 'glts/vim-textobj-comment'
+
+    " Text object to manipulate XML/HTLM attributes
+    Plug 'whatyouhide/vim-textobj-xmlattr'
+
+    " Text object to manipulate the entire buffer
+    Plug 'kana/vim-textobj-entire'
+
+    " Text objects to operate columns
+    " Plug 'coderifous/textobj-word-column.vim'
+
+    " Indentation objects
+    Plug 'michaeljsmith/vim-indent-object'
+
+    " Latex plugin
+    Plug 'lervag/vimtex'
+endif
 
 if has("unix")
     Plug 'tpope/vim-eunuch'
@@ -231,23 +235,13 @@ if ( has("python") || has("python3") )
     " The fastes matcher (as far as I know) but way more complicated to setup
     " Plug 'nixprime/cpsm'
 
-    " Code Format tool
-    Plug 'chiel92/vim-autoformat'
-
     " TODO Check this fork, No +python required
     " Plug 'umitkablan/vim-auf'
 
     " TODO Check google's own formatter
     " Plug 'google/vim-codefmt'
 
-    " Add python highlight, folding, virtualenv, etc
-    Plug 'python-mode/python-mode', { 'for': 'python' }
-
-    " Snippets engine
-    Plug 'SirVer/ultisnips'
-
-
-    if has("nvim") || ( v:version >= 800 ) || ( v:version == 704 )
+    if has("nvim") || ( v:version >= 800 ) || ( v:version >= 704 )
         " Only works with JDK8!!!
         Plug 'artur-shaik/vim-javacomplete2', { 'for': 'java' }
     endif
@@ -326,6 +320,17 @@ if ( has("python") || has("python3") )
         let b:ycm_installed = 1
     endif
 
+    " Add python highlight, folding, virtualenv, etc
+    Plug 'python-mode/python-mode', { 'for': 'python' }
+
+    if (has("nvim") || (v:version >= 704))
+        " Code Format tool
+        Plug 'chiel92/vim-autoformat'
+
+        " Snippets engine
+        Plug 'SirVer/ultisnips'
+    endif
+
     if b:ycm_installed==0 && b:deoplete_installed==0 && b:completor==0
         " Completion for python without engines
         Plug 'davidhalter/jedi-vim'
@@ -345,9 +350,9 @@ endif
 " completion without python completion engines ( ycm, deoplete or completer )
 if b:ycm_installed==0 && b:deoplete_installed==0 && b:completor==0
     " Neovim does not support Lua plugins yet
-    if has("lua") && !has("nvim")
+    if has("lua") && !has("nvim") && (v:version >= 704)
         Plug 'Shougo/neocomplete.vim'
-    else
+    elseif (v:version >= 703) || has("nvim")
         Plug 'Shougo/neocomplcache.vim'
         " Plug 'ervandew/supertab'
         " Plug 'roxma/SimpleAutoComplPop'

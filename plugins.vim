@@ -344,6 +344,12 @@ endif
 " DelimitMate {{{
 
 if &runtimepath =~ "delimitMate"
+    " let delimitMate_matchpairs = "(:),[:],{:},<:>"
+    " au FileType vim,html let b:delimitMate_matchpairs = "(:),[:],{:},<:>"
+
+    " let delimitMate_expand_space = 1
+    " au FileType tcl let b:delimitMate_expand_space = 1
+
     function! HandleEmptyPairs()
         if pumvisible()
             return "\<C-y>"
@@ -590,7 +596,10 @@ if &runtimepath =~ 'neocomplcache.vim'
     let g:neocomplcache_sources_list.java = ['omni_complete', 'syntax_complete', 'member_complete', 'filename_complete', 'tags_complete', 'buffer_complete']
     let g:neocomplcache_sources_list.python = ['omni_complete', 'syntax_complete', 'member_complete', 'filename_complete', 'tags_complete', 'buffer_complete']
 
-    autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
+    " Syntax seems to cause some problems in old Vim's versions ( <= 703 )
+    if has("nvim") || (v:version >= 704)
+        autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
+    endif
 endif
 
 " }}} EndNeocomplcache

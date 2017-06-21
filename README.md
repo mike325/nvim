@@ -7,18 +7,18 @@ something that you think could be useful.
 Since I use Vim in quite different environments my settings tries to get
 the same behavior, as much as possible, for most of the cases.
 
-This settings require Vim >= 7.4 or Neovim >= 0.17,
+This settings require Vim >= 7.4* or Neovim >= 0.17,
 **python** and **lua** support are optional **but** highly recommend!
 
 I have personally tested this configurations in the following environment:
 
-| Linux            | Terminal vim | gVim     | Terminal Neovim |
-|------------------|--------------|----------|-----------------|
-| Ubuntu 14.04     | v7.4.52      | N/A      | v0.17           |
-| Ubuntu 16.04     | v7.4.52      | N/A      | v0.17           |
-| Debian 8/8.5     | v7.4.143     | N/A      | v0.17           |
-| SUSE 11          | v8.0.104     | N/A      | v0.17           |
-| ArchLinux        | v8.0.427     | N/A      | v0.17           |
+| Linux            | Terminal vim       | gVim     | Terminal Neovim |
+|------------------|--------------------|----------|-----------------|
+| Ubuntu 14.04     | v7.4.52            | N/A      | v0.17           |
+| Ubuntu 16.04     | v7.4.52            | N/A      | v0.17           |
+| Debian 8/8.5     | v7.4.143           | N/A      | v0.17           |
+| SUSE 11          | v8.0.104 and v7.3* | N/A      | v0.17           |
+| ArchLinux        | v8.0.427           | N/A      | v0.17           |
 
 | Android          | Terminal vim | gVim     | Terminal Neovim |
 |------------------|--------------|----------|-----------------|
@@ -32,7 +32,10 @@ I have personally tested this configurations in the following environment:
 | Native (64 bits) | N/A          | v8.0.398 | N/A             |
 
 
-**Note**: I have not use this settings on a Mac, because I don't have one, feel
+**Note**: Even though I have made some limited test with Vim 7.3 they have been
+mostly simple editions, the recommend Vim version is still 7.4 or Neovim 0.17
+
+**Note 2**: I have not use this settings on a Mac, because I don't have one, feel
 free to use my vim files and tell me if they worked for you.
 
 ## Install

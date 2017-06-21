@@ -121,7 +121,7 @@ set expandtab      " Use  spaces for indenting
 set smarttab       " Insert tabs on the start of a line according to
                    " shiftwidth, not tabstop
 
-if v:version > 704 || v:version == 704 && has('patch338') || has("nvim")
+if has("nvim") || ( :version > 704 || (v:version == 704 && has('patch338')))
     set breakindent " respect indentation when wrapping
 endif
 
@@ -145,14 +145,16 @@ set cursorline     " Turn on cursor line by default
 " set showbreak=↪\
 
 " Text formating
-set formatoptions+=r " Auto insert comment with <Enter>...
-set formatoptions+=o " ...or o/O
-set formatoptions+=c " Autowrap comments using textwidth
-set formatoptions+=l " Do not wrap lines that have been longer when starting insert mode already
-set formatoptions+=q " Allow formatting of comments with "gq".
-set formatoptions+=t " Auto-wrap text using textwidth
-set formatoptions+=n " Recognize numbered lists
-set formatoptions+=j " Delete comment character when joining commented lines
+if has("nvim") || (v:version >= 704)
+    set formatoptions+=r " Auto insert comment with <Enter>...
+    set formatoptions+=o " ...or o/O
+    set formatoptions+=c " Autowrap comments using textwidth
+    set formatoptions+=l " Do not wrap lines that have been longer when starting insert mode already
+    set formatoptions+=q " Allow formatting of comments with "gq".
+    set formatoptions+=t " Auto-wrap text using textwidth
+    set formatoptions+=n " Recognize numbered lists
+    set formatoptions+=j " Delete comment character when joining commented lines
+endi
 
 " Use only 1 space after "." when joining lines, not 2
 set nojoinspaces
