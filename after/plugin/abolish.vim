@@ -14,6 +14,7 @@ try
     Abolish aibbreviation{s} abbreviation{s}
     Abolish identation indentation
     Abolish aligment aliment
+    Abolish posible possible
 catch
     echo 'Please run :PlugInstall to complete the installation or remove "Abolish Completions"'
 endtry
