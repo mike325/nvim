@@ -636,10 +636,10 @@ endif
 
 " SetSyntax {{{
 augroup filetypedetect
-    autocmd BufNewFile,BufRead .tmux.conf*,tmux.conf*   setlocal filetype=tmux
-    autocmd BufNewFile,BufRead .nginx.conf*,nginx.conf* setlocal filetype=nginx
-    autocmd BufRead,BufNewFile *.in,*.si,*.sle setlocal filetype=conf
-    autocmd BufRead,BufNewFile *.bash*                  setlocal filetype=sh
+    autocmd BufRead,BufNewFile gitconfig                        setlocal filetype=gitconfig
+    autocmd BufRead,BufNewFile *.bash*                          setlocal filetype=sh
+    autocmd BufRead,BufNewFile *.in,*.si,*.sle                  setlocal filetype=conf
+    autocmd BufNewFile,BufRead *.nginx.conf*,nginx.conf,*.nginx setlocal filetype=nginx
 augroup end
 
 " }}} EndSetSyntax
