@@ -253,8 +253,7 @@ if has("win32") || has("win64")
     execute 'set undodir='.fnameescape(g:os_editor.'tmp_dirs\undos')
     set backupskip=\\tmp\\*,\\private\\tmp\\*,\\tmp_*\\*
 
-    " NeoVim ShaDa file, cannot be the same as the viminfo file as the formats have
-    " been changed.
+    " NeoVim ShaDa file, cannot be the same as the viminfo file as the formats have changed.
     if has("nvim")
         set shada+=n$USERPROFILE\\AppData\\Local\\nvim\\nviminfo
     else
