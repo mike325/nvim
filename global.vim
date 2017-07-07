@@ -107,6 +107,8 @@ set ignorecase " ignore case
 if (has("nvim"))
     " Live substitute preview
     set inccommand=split
+    " Actually I'm not sure if this exists in Vim7/8
+    set numberwidth=1
 endif
 
 " Indenting stuff
@@ -132,6 +134,7 @@ set cursorline     " Turn on cursor line by default
 " for backgrounded buffers, Normally I like to keep unsave just the files that
 " I'm currently using, this allow me to quit(q!) without worries
 " set hidden
+
 
 " Auto-reload buffers when file changed on disk, Some times I like to keep the
 " changes to save them in some registers
@@ -386,6 +389,10 @@ if has('clipboard')
     if !has("nvim") || ( executable('pbcopy') || executable('xclip') ||
                 \ executable('xsel') || executable("lemonade") )
         set clipboard+=unnamedplus,unnamed
+    elseif has("nvim") && ( has("win32") || has("win64") )
+        " TODO: Need to check for GUI in new neovim-qt
+        set clipboard+=unnamedplus,unnamed
+        set mouse=a
     endif
 elseif has("nvim")
     " If system clipboard is not available, disable the mouse selection
