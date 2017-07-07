@@ -628,10 +628,11 @@ nnoremap td :<C-R>=&diff ? 'diffoff' : 'diffthis'<CR><CR>
 "  TerminalColors {{{
 set background=dark
 
-if (has("nvim"))
-    " Neovim colors stuff
-    let $NVIM_TUI_ENABLE_TRUE_COLOR=1
-endif
+" Deprecated in favor of termguicolors
+" if (has("nvim"))
+"     " Neovim colors stuff
+"     let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+" endif
 
 if has("termguicolors")
     " set terminal colors
