@@ -292,19 +292,14 @@ endif
 
 " GUISettings {{{
 
-if has("gui_running")
-    set guioptions-=m  " no menu
-    set guioptions-=T  " no toolbar
-    set guioptions-=L  " remove left-hand scroll bar in vsplit
-    set guioptions-=l  " remove left-hand scroll bar
-    set guioptions-=r  " remove right-hand scroll bar
-    set guioptions-=R  " remove right-hand scroll bar vsplit
-    set guioptions-=b  " remove bottom scroll bar
+" All other settings GUI settings are in ginit.vim file
+" which is sourced after initial settings
 
-    " Windows gVim fonts
-    if has("win32") || has("win64")
-        set guifont=DejaVu_Sans_Mono_for_Powerline:h11,DejaVu_Sans_Mono:h11
-    endif
+set background=dark
+
+if has("termguicolors")
+    " set terminal colors
+    set termguicolors
 endif
 
 " }}} EndGUISettings
@@ -624,22 +619,6 @@ nnoremap tsm :setlocal spelllang=es_mx<Bar>set spelllang?<CR>
 nnoremap td :<C-R>=&diff ? 'diffoff' : 'diffthis'<CR><CR>
 
 " }}} EndToggles
-
-"  TerminalColors {{{
-set background=dark
-
-" Deprecated in favor of termguicolors
-" if (has("nvim"))
-"     " Neovim colors stuff
-"     let $NVIM_TUI_ENABLE_TRUE_COLOR=1
-" endif
-
-if has("termguicolors")
-    " set terminal colors
-    set termguicolors
-endif
-
-"  }}} EndTerminalColors
 
 " SetSyntax {{{
 augroup filetypedetect
