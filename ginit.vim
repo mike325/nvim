@@ -29,18 +29,20 @@
 "
 " Since Windows Gui is Neovim-qt (also available in Linux and MacOS), gVim options doesn't work
 " For more info check https://github.com/equalsraf/neovim-qt
-" FIX: Currently this not fully work in Windows
+"
+" FIX: Currently this not fully work in Windows with different screens
+" resolutions
 if has('nvim') && exists('g:GuiLoaded')
     function! NeovimGuiSetup()
         GuiLinespace 1
         call GuiWindowMaximized(1)
         GuiFont DejaVu Sans Mono for Powerline:h11
     endfunction
-
-    augroup neovimguiattached
-        autocmd!
-        autocmd VimEnter silent! call NeovimGuiSetup()
-    augroup end
+    " call NeovimGuiSetup()
+    " augroup neovimguiattached
+    "     autocmd!
+    "     autocmd VimEnter * call NeovimGuiSetup()
+    " augroup end
 
 elseif has("gui_running")
     set guioptions-=m  " no menu
