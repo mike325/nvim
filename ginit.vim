@@ -38,6 +38,9 @@ if has('nvim') && exists('g:GuiLoaded')
         call GuiWindowMaximized(1)
         GuiFont DejaVu Sans Mono for Powerline:h11
     endfunction
+
+    GuiLinespace 1
+    call GuiWindowMaximized(1)
     " call NeovimGuiSetup()
     " augroup neovimguiattached
     "     autocmd!

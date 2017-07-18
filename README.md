@@ -12,24 +12,24 @@ This settings require Vim >= 7.4* or Neovim >= 0.17,
 
 I have personally tested this configurations in the following environment:
 
-| Linux            | Terminal vim       | gVim     | Terminal Neovim |
-|------------------|--------------------|----------|-----------------|
-| Ubuntu 14.04     | v7.4.52            | N/A      | v0.17           |
-| Ubuntu 16.04     | v7.4.52            | N/A      | v0.17           |
-| Debian 8/8.5     | v7.4.143           | N/A      | v0.17           |
-| SUSE 11          | v8.0.104 and v7.3* | N/A      | v0.17           |
-| ArchLinux        | v8.0.427           | N/A      | v0.17           |
+| Linux            | Terminal vim   | gVim     | Terminal Neovim |
+|------------------|----------------|----------|-----------------|
+| Ubuntu 14.04     | v7.4.52        | N/A      | v0.2.0/v0.17    |
+| Ubuntu 16.04     | v7.4.52        | N/A      | v0.2.0/v0.17    |
+| Debian 8/8.5     | v7.4.143       | N/A      | v0.2.0/v0.17    |
+| SUSE 11          | v8.0.104/v7.3* | N/A      | v0.2.0/v0.17    |
+| ArchLinux        | v8.0.427       | N/A      | v0.2.0/v0.17    |
 
 | Android          | Terminal vim | gVim     | Terminal Neovim |
 |------------------|--------------|----------|-----------------|
 | Marshmallow      | v8.0.104     | N/A      | v0.2-dev        |
 | Nougat           | v8.0.104     | N/A      | v0.2-dev        |
 
-| Windows 8.1      | Terminal vim | gVim     | Terminal Neovim |
-|------------------|--------------|----------|-----------------|
-| Cywing           | v7.4.143     | N/A      | N/A             |
-| Git bash (msys)  | v7.4.143     | N/A      | N/A             |
-| Native (64 bits) | N/A          | v8.0.398 | N/A             |
+| Windows 8.1      | Terminal vim   | gVim     | Terminal Neovim | Neovim-qt |
+|------------------|----------------|----------|-----------------|-----------|
+| Cywing           | v8.0/v7.4.143  | N/A      | N/A             | N/A       |
+| Git bash (msys)  | v8.0/v7.4.143  | N/A      | N/A             | N/A       |
+| Native (64 bits) | N/A            | v8.0.398 | N/A             | v0.2.0    |
 
 
 **Note**: Even though I have made some limited test with Vim 7.3 they have been
