@@ -47,7 +47,7 @@ let g:ctrlp_mruf_case_sensitive = 1
 let g:ctrlp_match_window        = 'bottom,order:ttb,min:1,max:30,results:50'
 let g:ctrlp_working_path_mode   = 'ra'
 
-let g:ctrlp_cache_dir = g:parent_dir . '/.cache/ctrlp'
+let g:ctrlp_cache_dir = g:parent_dir . 'cache/ctrlp'
 
  if &runtimepath =~ 'ctrlp-py-matcher' && has("python")
     let g:ctrlp_match_func = { 'match': 'pymatcher#PyMatch' }

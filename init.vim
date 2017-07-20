@@ -73,7 +73,7 @@ function! s:SetIgnorePatterns()
 
     for [ l:ignore_type, l:ignore_list ] in items(g:ignores)
         " I don't want to ignore logs here
-        if l:ignore_type == "logs"
+        if l:ignore_type == "logs" || l:ignore_type == "bin"
             continue
         endif
 
