@@ -24,194 +24,249 @@
 "
 " ############################################################################
 
-" I use this later in global.vim
-let g:os_editor = ""
+let g:base_path = ""
 
-" Specify a directory for plugins
+" Location of the plugins
 if has("nvim")
     if has("win32") || has("win64")
-        let g:os_editor = '~\AppData\Local\nvim\'
+        let g:base_path = substitute( expand($USERPROFILE), "\\", "/", "g" ) . '/AppData/Local/nvim/'
     else
-        let g:os_editor = '~/.config/nvim/'
+        let g:base_path = expand($HOME) . '/.config/nvim/'
     endif
 elseif has("win32") || has("win64")
-    let g:os_editor = '~\vimfiles\'
+    let g:base_path =  substitute( expand($USERPROFILE), "\\", "/", "g" ) . '/vimfiles/'
 else
-    let g:os_editor = '~/.vim/'
+    let g:base_path = expand($HOME) . '/.vim/'
 endif
 
-call plug#begin(g:os_editor.'plugged')
+" Better compatibility with Unix paths in DOS systems
+if exists("+shellslash")
+    set shellslash
+endif
 
-" Colorschemes for vim
+function! s:SetIgnorePatterns()
+    " Files and dirs we want to ignore in searches and plugins
+    " The *.  and */patter/* will be add in the add after
+    if !exists("g:ignores")
+        let g:ignores = {
+                    \   "bin": [ "bin", "exe", "dat",],
+                    \   "vcs": [ "hg", "svn", "git",],
+                    \   "compile" : ["obj", "class", "pyc", "o", "dll", "a", "moc",],
+                    \   "tmp_dir": [ "trash", "tmp", "__pycache__", "resources", "ropeproject"],
+                    \   "tmp_file" : ["swp", "bk", "~",],
+                    \   "docs": ["docx", "doc", "xls", "xlsx", "odt", "ppt", "pptx", "pdf",],
+                    \   "logs": ["log",],
+                    \   "compress": ["zip", "tar", "rar", "7z",],
+                    \   "full_name_files": ["tags", "cscope"],
+                    \}
+    endif
+
+    if !exists( "g:ignore_patterns" )
+        let g:ignore_patterns = {
+                    \   "git" : "",
+                    \   "ag" : "",
+                    \   "find" : "",
+                    \   "grep" : "",
+                    \   "dir" : "",
+                    \}
+    endif
+
+    for [ l:ignore_type, l:ignore_list ] in items(g:ignores)
+        " I don't want to ignore logs here
+        if l:ignore_type == "logs"
+            continue
+        endif
+
+        for l:item in l:ignore_list
+            let l:ignore_pattern = ""
+
+            if l:ignore_type == "vcs"
+                let l:ignore_pattern = "." . l:item . "/*"
+            elseif l:ignore_type == "tmp_dir"
+                " Add both versions, normal and hidden
+                let l:ignore_pattern = l:item . "/*"
+            elseif l:ignore_type != "full_name_files"
+                let l:ignore_pattern = "*." . l:item
+            else
+                let l:ignore_pattern = l:item
+            endif
+
+            let g:ignore_patterns.git   .= ' -x "' . l:ignore_pattern . '" '
+            let g:ignore_patterns.ag    .= ' --ignore "' . l:ignore_pattern . '" '
+            let g:ignore_patterns.find  .= ' ! -iwholename "' . l:ignore_pattern . '" '
+
+            if l:ignore_type == "vcs" || l:ignore_type == "tmp_dir"
+                let g:ignore_patterns.grep  .= ' --exclude-dir "' . l:ignore_pattern . '" '
+            else
+                let g:ignore_patterns.grep  .= ' --exclude "' . l:ignore_pattern . '" '
+            endif
+            " TODO: Make this crap work in Windows
+            " let g:ignore_patterns.dir  .= ' '
+
+            " Hidden version
+            if l:ignore_type == "tmp_dir"
+                let l:ignore_pattern = "." . l:item . "/*"
+
+                let g:ignore_patterns.git   .= ' -x "' . l:ignore_pattern . '" '
+                let g:ignore_patterns.ag    .= ' --ignore "' . l:ignore_pattern . '" '
+                let g:ignore_patterns.find  .= ' ! -iwholename "' . l:ignore_pattern . '" '
+                let g:ignore_patterns.grep  .= ' --exclude-dir "' . l:ignore_pattern . '" '
+                " TODO: Make this crap work in Windows
+                " let g:ignore_patterns.dir  .= ' '
+            endif
+        endfor
+    endfor
+endfunction
+
+function! s:InitConfigs()
+    " Hidden path in `g:base_path` with all generated files
+    if !exists("g:parent_dir")
+        let g:parent_dir = g:base_path . ".resources/"
+    endif
+
+    if !exists("g:dirpaths")
+        let g:dirpaths = {
+                    \   "backup" : "backupdir",
+                    \   "swap" : "directory",
+                    \   "undo" : "undodir",
+                    \   "cache" : "",
+                    \   "sessions" : "",
+                    \}
+    endif
+
+    " Better backup, swap and undos storage
+    set backup   " make backup files
+    set undofile " persistent undos - undo after you re-open the file
+
+    " Config all
+    for [l:dirname, l:dir_setting] in items(g:dirpaths)
+        if exists("*mkdir")
+            if !isdirectory(fnameescape( g:parent_dir . l:dirname ))
+                call mkdir(fnameescape( g:parent_dir . l:dirname ), "p")
+            endif
+
+            if l:dir_setting != ""
+                execute "set " . l:dir_setting . "=" . fnameescape(g:parent_dir . l:dirname)
+            endif
+        else
+            echom "The current dir " . fnameescape(g:parent_dir . l:dirname) . " could not be created"
+        endif
+
+    endfor
+
+    " Set system ignores and skips
+    for [ l:ignore_type, l:ignore_list ] in items(g:ignores)
+        " I don't want to ignore vcs here
+        if l:ignore_type == "vcs"
+            continue
+        endif
+
+        for l:item in l:ignore_list
+
+            if l:ignore_type == "tmp_dir"
+                " Add both versions, normal and hidden
+                let l:item = "*/" . l:item . "/*,*/." . l:item . "/*"
+            elseif l:ignore_type != "full_name_files"
+                let l:item = "*." . l:item
+            endif
+
+            " I don't want to ignore logs but I don't want backup them
+            if l:ignore_type != "logs"
+                execute "set wildignore+=" . fnameescape(l:item)
+            endif
+
+            execute "set backupskip+=" . fnameescape(l:item)
+        endfor
+    endfor
+
+    let l:persistent_settings = "viminfo"
+    if has("nvim")
+        let l:persistent_settings = "shada"
+    endif
+
+    " Remember things between sessions
+    " !        + When included, save and restore global variables that start
+    "            with an uppercase letter, and don't contain a lowercase letter.
+    " 'n       + Marks will be remembered for the last 'n' files you edited.
+    " <n       + Contents of registers (up to 'n' lines each) will be remembered.
+    " sn       + Items with contents occupying more then 'n' KiB are skipped.
+    " :n       + Save 'n' Command-line history entries
+    " n/info   + The name of the file to use is "/info".
+    " no /     + Since '/' is not specified, the default will be used, that is,
+    "            save all of the search history, and also the previous search and
+    "            substitute patterns.
+    " no %     + The buffer list will not be saved nor read back.
+    " h        + 'hlsearch' highlighting will not be restored.
+    execute "set " . l:persistent_settings . "=!,'100,<500,:500,s100,h"
+    execute "set " . l:persistent_settings . "+=n" . fnameescape(g:parent_dir . l:persistent_settings)
+endfunction
+
+call s:SetIgnorePatterns()
+call s:InitConfigs()
+
+call plug#begin(g:base_path.'plugged')
+
+" ####### Colorschemes {{{
+
 Plug 'morhetz/gruvbox'
 Plug 'sickill/vim-monokai'
 Plug 'nanotech/jellybeans.vim'
 Plug 'whatyouhide/vim-gotham'
 Plug 'joshdick/onedark.vim'
-"
-" Improve Dockerfiles syntax highlight
+
+" }}} END Colorschemes
+
+" ####### Syntax {{{
+
 Plug 'ekalinin/Dockerfile.vim', { 'for': 'Dockerfile' }
-
-" Improve json syntax highlight
 Plug 'elzr/vim-json', { 'for': 'json' }
-
-" Improve Lua syntax
 Plug 'tbastos/vim-lua', { 'for': 'lua' }
-
-" Improve cpp syntax highlight
 Plug 'octol/vim-cpp-enhanced-highlight', { 'for': 'cpp' }
-
-" Add Qml syntax highlight
 Plug 'peterhoeg/vim-qml', { 'for': 'qml' }
-
-" Enhanced Markdown syntax
 Plug 'plasticboy/vim-markdown'
-
-" Simics syntax highlight
 Plug 'bjoernd/vim-syntax-simics', { 'for': 'simics' }
 
-" Auto Close ' " () [] {}
-Plug 'Raimondi/delimitMate'
+" }}} END Syntax
 
-" File explorer
+" ####### Project base {{{
+
 Plug 'scrooloose/nerdtree', { 'on': [ 'NERDTreeToggle' ] }
 Plug 'Xuyuanp/nerdtree-git-plugin', { 'on': [ 'NERDTreeToggle' ] }
-
-" Easy comments
-" TODO check other comment plugins with motions
-Plug 'scrooloose/nerdcommenter'
-
-Plug 'airblade/vim-gitgutter'
-Plug 'rhysd/committia.vim'
-
-" Surround motions
-Plug 'tpope/vim-surround'
-
-" Better substitution, improve abbreviations and coercion
-Plug 'tpope/vim-abolish'
-
-" Auto insert 'end' keywords in some languages
-Plug 'tpope/vim-endwise'
-
-" Easy alignment
-Plug 'godlygeek/tabular'
-
-" Map repeat key . for plugins
-Plug 'tpope/vim-repeat'
-
-" Better buffer deletions
-Plug 'moll/vim-bbye', { 'on': [ 'Bdelete' ] }
-
-" Visual marks
-Plug 'kshenoy/vim-signature'
-
-" Search files, buffers, etc
-Plug 'ctrlpvim/ctrlp.vim', { 'on': [ 'CtrlPBuffer', 'CtrlP', 'CtrlPMRUFiles'] }
-" Plug 'tacahiroy/ctrlp-funky'
-
-" Better sessions management
+Plug 'mhinz/vim-grepper'
 Plug 'xolox/vim-misc'
 Plug 'xolox/vim-session'
-
-" Auto convert bin files
-Plug 'fidian/hexmode'
-
-" Collection of snippets
-Plug 'honza/vim-snippets'
-
-" Move with indentation
-Plug 'matze/vim-move'
-
-" Easy change text
-" Plug 'AndrewRadev/switch.vim'
-
-" Search into files
-Plug 'mhinz/vim-grepper'
-
-" Simple Join/Split operators
-Plug 'AndrewRadev/splitjoin.vim'
-
-" Expand visual regions
-Plug 'terryma/vim-expand-region'
-
-" Status bar and some themes
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
-Plug 'enricobacis/vim-airline-clock'
-
-" Git integrations
-Plug 'tpope/vim-fugitive'
-Plug 'gregsexton/gitv'
-
-" Better motions
-Plug 'easymotion/vim-easymotion'
-
-" Display indention
-Plug 'Yggdroot/indentLine'
-
-" Change buffer position in the current layout
-Plug 'wesQ3/vim-windowswap'
-
-" Sometimes I need to use an old version of vim ...
-if (has("nvim") || (v:version >= 704))
-    " Auto indention put command
-    Plug 'sickill/vim-pasta'
-
-    " Some useful text objects
-    Plug 'kana/vim-textobj-user'
-
-    " Text object to manipulate text within lines
-    Plug 'kana/vim-textobj-line'
-
-    " Text object to manipulate text within comments
-    Plug 'glts/vim-textobj-comment'
-
-    " Text object to manipulate XML/HTLM attributes
-    Plug 'whatyouhide/vim-textobj-xmlattr'
-
-    " Text object to manipulate the entire buffer
-    Plug 'kana/vim-textobj-entire'
-
-    " Text objects to operate columns
-    " Plug 'coderifous/textobj-word-column.vim'
-
-    " Indentation objects
-    Plug 'michaeljsmith/vim-indent-object'
-
-    " Latex plugin
-    Plug 'lervag/vimtex'
-endif
-
-if has("unix")
-    Plug 'tpope/vim-eunuch'
-endif
-
-if executable("go")
-    " Go development
-    Plug 'fatih/vim-go', { 'for': 'go' }
-endif
-
-if !has("nvim")
-    " Basic settings
-    Plug 'tpope/vim-sensible'
-endif
 
 if executable("ctags")
     " Simple view of Tags using ctags
     Plug 'majutsushi/tagbar'
 endif
 
-let b:neomake_installed = 0
-if has("nvim") || ( v:version >= 800 )
-    " Async Syntax's check
-    Plug 'neomake/neomake'
-    let b:neomake_installed = 1
+" Syntax check
+if has("python") || has("pyhton3")
+    if has("nvim") || ( v:version >= 800 )
+        Plug 'neomake/neomake'
+    else
+        Plug 'vim-syntastic/syntastic'
+    endif
 endif
 
-let b:ycm_installed = 0
-let b:deoplete_installed = 0
-let b:completor = 0
-if ( has("python") || has("python3") )
+" Autoformat tools
+" TODO Check this fork, No +python required
+" Plug 'umitkablan/vim-auf'
+" TODO Check google's own formatter
+" Plug 'google/vim-codefmt'
+if (has("nvim") || (v:version >= 704))
+    " Code Format tool
+    Plug 'chiel92/vim-autoformat'
+endif
+
+" Easy alignment
+Plug 'godlygeek/tabular'
+
+Plug 'ctrlpvim/ctrlp.vim', { 'on': [ 'CtrlPBuffer', 'CtrlP', 'CtrlPMRUFiles'] }
+" Plug 'tacahiroy/ctrlp-funky'
+
+if has("python") || has("pyhton3")
     function! BuildCtrlPMatcher(info)
         " info is a dictionary with 3 fields
         " - name:   name of the plugin
@@ -235,11 +290,45 @@ if ( has("python") || has("python3") )
     " The fastes matcher (as far as I know) but way more complicated to setup
     " Plug 'nixprime/cpsm'
 
-    " TODO Check this fork, No +python required
-    " Plug 'umitkablan/vim-auf'
+endif
 
-    " TODO Check google's own formatter
-    " Plug 'google/vim-codefmt'
+" }}} END Project base
+
+" ####### Git integration {{{
+
+Plug 'airblade/vim-gitgutter'
+Plug 'rhysd/committia.vim'
+Plug 'tpope/vim-fugitive'
+Plug 'gregsexton/gitv'
+
+" }}} END Git integration
+
+" ####### Status bar {{{
+
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'enricobacis/vim-airline-clock'
+
+" }}} END Status bar
+
+" ####### Completions {{{
+
+Plug 'Raimondi/delimitMate'
+Plug 'tpope/vim-abolish'
+Plug 'honza/vim-snippets'
+
+if (has("python") || has("python3")) && (has("nvim") || (v:version >= 704))
+    Plug 'SirVer/ultisnips'
+else
+    Plug 'MarcWeber/vim-addon-mw-utils'
+    Plug 'tomtom/tlib_vim'
+    Plug 'garbas/vim-snipmate'
+endif
+
+let b:ycm_installed = 0
+let b:deoplete_installed = 0
+let b:completor = 0
+if ( has("python") || has("python3") )
 
     if has("nvim") || ( v:version >= 800 ) || ( v:version >= 704 )
         " Only works with JDK8!!!
@@ -320,31 +409,12 @@ if ( has("python") || has("python3") )
         let b:ycm_installed = 1
     endif
 
-    " Add python highlight, folding, virtualenv, etc
-    Plug 'python-mode/python-mode', { 'for': 'python' }
-
-    if (has("nvim") || (v:version >= 704))
-        " Code Format tool
-        Plug 'chiel92/vim-autoformat'
-
-        " Snippets engine
-        Plug 'SirVer/ultisnips'
-    endif
 
     if b:ycm_installed==0 && b:deoplete_installed==0 && b:completor==0
         " Completion for python without engines
         Plug 'davidhalter/jedi-vim'
     endif
 
-    if b:neomake_installed==0
-        " Synchronous Syntax check
-        Plug 'vim-syntastic/syntastic'
-    endif
-else
-" Snippets without python interface
-    Plug 'MarcWeber/vim-addon-mw-utils'
-    Plug 'tomtom/tlib_vim'
-    Plug 'garbas/vim-snipmate'
 endif
 
 " completion without python completion engines ( ycm, deoplete or completer )
@@ -359,18 +429,105 @@ if b:ycm_installed==0 && b:deoplete_installed==0 && b:completor==0
     endif
 endif
 
+" }}} END Completions
+
+" ####### Languages {{{
+
+Plug 'tpope/vim-endwise'
+Plug 'fidian/hexmode'
+
+if (has("nvim") || (v:version >= 704))
+    Plug 'lervag/vimtex'
+endif
+
+if executable("go")
+    Plug 'fatih/vim-go', { 'for': 'go' }
+endif
+
+if has("python") || has("python3")
+    Plug 'python-mode/python-mode', { 'for': 'python' }
+endif
+
+" Easy comments
+" TODO check other comment plugins with motions
+Plug 'scrooloose/nerdcommenter'
+
+" }}} END Languages
+
+" ####### Text objects, Motions and Text manipulation {{{
+
+if (has("nvim") || (v:version >= 704))
+    Plug 'sickill/vim-pasta'
+    Plug 'kana/vim-textobj-user'
+    Plug 'kana/vim-textobj-line'
+    Plug 'glts/vim-textobj-comment'
+    Plug 'whatyouhide/vim-textobj-xmlattr'
+    Plug 'kana/vim-textobj-entire'
+    Plug 'michaeljsmith/vim-indent-object'
+    " Plug 'coderifous/textobj-word-column.vim'
+endif
+
+" Better motions
+Plug 'easymotion/vim-easymotion'
+
+" Surround motions
+Plug 'tpope/vim-surround'
+
+" Map repeat key . for plugins
+Plug 'tpope/vim-repeat'
+
+" }}} END Text objects, Motions and Text manipulation
+
+" ####### Misc {{{
+
+" Better buffer deletions
+Plug 'moll/vim-bbye', { 'on': [ 'Bdelete' ] }
+
+" Visual marks
+Plug 'kshenoy/vim-signature'
+
+" Move with indentation
+Plug 'matze/vim-move'
+
+" Easy change text
+" Plug 'AndrewRadev/switch.vim'
+
+" Simple Join/Split operators
+Plug 'AndrewRadev/splitjoin.vim'
+
+" Expand visual regions
+Plug 'terryma/vim-expand-region'
+
+" Display indention
+Plug 'Yggdroot/indentLine'
+
+" Change buffer position in the current layout
+Plug 'wesQ3/vim-windowswap'
+
+" Unix commands
+if has("unix")
+    Plug 'tpope/vim-eunuch'
+endif
+
+" Better defaults for Vim
+if !has("nvim")
+    Plug 'tpope/vim-sensible'
+endif
+
+" }}} END Misc
+
 " Initialize plugin system
 call plug#end()
 
 filetype plugin indent on
 
 " Load general configurations (key mappings and autocommands)
-execute 'source '.fnameescape(g:os_editor.'global.vim')
+" execute 'source '.fnameescape(g:base_path.'global.vim')
 "
 " Load plugins configurations
-execute 'source '.fnameescape(g:os_editor.'plugins.vim')
+" execute 'source '.fnameescape(g:base_path.'plugins.vim')
 
 " Load special host configurations
-if filereadable(expand(fnameescape(g:os_editor.'extras.vim')))
-    execute 'source '.fnameescape(g:os_editor.'extras.vim')
-endif
+" if filereadable(expand(fnameescape(g:base_path.'extras.vim')))
+"     execute 'source '.fnameescape(g:base_path.'extras.vim')
+" endif

@@ -2,7 +2,9 @@ tmp_dirs/
 sessions/
 .netrwhist
 plugged/
-*.ropeproject*
+.ropeproject*
 extras.vim
 nviminfo
+shada
 viminfo
+.resources/*

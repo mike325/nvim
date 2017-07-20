@@ -66,6 +66,14 @@ if has("termguicolors")
     set termguicolors
 endif
 
+" Color columns
+if exists('+colorcolumn')
+    " This works but it tends to slowdown vim with big files
+    " let &colorcolumn="80,".join(range(120,999),",")
+    " Visual ruler
+    let &colorcolumn="80"
+endif
+
 " Clipboard {{{
 if has('clipboard')
     if !has("nvim") || ( executable('pbcopy') || executable('xclip') ||
@@ -80,6 +88,8 @@ elseif has("nvim")
     " If system clipboard is not available, disable the mouse selection
     set mouse=c
 endif
+
+let g:netrw_liststyle=3
 
 set background=dark
 
