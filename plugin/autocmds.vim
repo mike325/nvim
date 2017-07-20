@@ -128,15 +128,15 @@ function! CMainOrFunc()
 
     if b:extension =~# "^cpp$"
         if b:file_name =~# "^main$"
-            exec '0r '.fnameescape(g:base_path.'skeletons/main.cpp')
+            exec '0r '.fnameescape(g:parent_dir.'skeletons/main.cpp')
         else
-            exec '0r '.fnameescape(g:base_path.'skeletons/skeleton.cpp')
+            exec '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.cpp')
         endif
     else
         if b:file_name =~# "^main$"
-            exec '0r '.fnameescape(g:base_path.'skeletons/main.c')
+            exec '0r '.fnameescape(g:parent_dir.'skeletons/main.c')
         else
-            exec '0r '.fnameescape(g:base_path.'skeletons/skeleton.c')
+            exec '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.c')
         endif
     endif
 
@@ -149,11 +149,11 @@ function! CHeader()
 
     let b:upper_name = toupper(b:file_name)
 
-    if b:extension =~# "^cpp$"
-        exec '0r '.fnameescape(g:base_path.'skeletons/skeleton.h')
+    if b:extension =~# "^hpp$"
+        exec '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.hpp')
         exec '%s/NAME_HPP/'.b:upper_name.'_HPP/g'
     else
-        exec '0r '.fnameescape(g:base_path.'skeletons/skeleton.hpp')
+        exec '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.h')
         exec '%s/NAME_H/'.b:upper_name.'_H/g'
     endif
 
@@ -163,22 +163,22 @@ function! JavaClass()
     let b:file_name = expand('%:t:r')
     let b:extension = expand('%:e')
 
-    exec '0r '.fnameescape(g:base_path.'skeletons/skeleton.java')
+    exec '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.java')
     exec '%s/NAME/'.b:file_name.'/e'
 endfunction
 
 augroup Skeletons
     autocmd!
-    autocmd BufNewFile *.css  silent! exec '0r '.fnameescape(g:base_path.'skeletons/skeleton.css')
-    autocmd BufNewFile *.html silent! exec '0r '.fnameescape(g:base_path.'skeletons/skeleton.html')
-    autocmd BufNewFile *.md   silent! exec '0r '.fnameescape(g:base_path.'skeletons/skeleton.md')
-    autocmd BufNewFile *.js   silent! exec '0r '.fnameescape(g:base_path.'skeletons/skeleton.js')
-    autocmd BufNewFile *.xml  silent! exec '0r '.fnameescape(g:base_path.'skeletons/skeleton.xml')
-    autocmd BufNewFile *.py   silent! exec '0r '.fnameescape(g:base_path.'skeletons/skeleton.py')
-    autocmd BufNewFile *.go   silent! exec '0r '.fnameescape(g:base_path.'skeletons/skeleton.go')
-    autocmd BufNewFile *.cs   silent! exec '0r '.fnameescape(g:base_path.'skeletons/skeleton.cs')
-    autocmd BufNewFile *.php  silent! exec '0r '.fnameescape(g:base_path.'skeletons/skeleton.php')
-    autocmd BufNewFile *.sh   silent! exec '0r '.fnameescape(g:base_path.'skeletons/skeleton.sh')
+    autocmd BufNewFile *.css  silent! exec '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.css')
+    autocmd BufNewFile *.html silent! exec '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.html')
+    autocmd BufNewFile *.md   silent! exec '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.md')
+    autocmd BufNewFile *.js   silent! exec '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.js')
+    autocmd BufNewFile *.xml  silent! exec '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.xml')
+    autocmd BufNewFile *.py   silent! exec '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.py')
+    autocmd BufNewFile *.go   silent! exec '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.go')
+    autocmd BufNewFile *.cs   silent! exec '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.cs')
+    autocmd BufNewFile *.php  silent! exec '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.php')
+    autocmd BufNewFile *.sh   silent! exec '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.sh')
     autocmd BufNewFile *.java silent! call JavaClass()
     autocmd BufNewFile *.cpp  silent! call CMainOrFunc()
     autocmd BufNewFile *.hpp  silent! call CHeader()

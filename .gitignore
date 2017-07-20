@@ -7,4 +7,8 @@ extras.vim
 nviminfo
 shada
 viminfo
-.resources/*
+.resources/cache/*
+.resources/sessions/*
+.resources/swap/*
+.resources/undo/*
+.resources/backup/*
