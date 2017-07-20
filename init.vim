@@ -53,7 +53,7 @@ function! s:SetIgnorePatterns()
                     \   "vcs": [ "hg", "svn", "git",],
                     \   "compile" : ["obj", "class", "pyc", "o", "dll", "a", "moc",],
                     \   "tmp_dir": [ "trash", "tmp", "__pycache__", "resources", "ropeproject"],
-                    \   "tmp_file" : ["swp", "bk", "~",],
+                    \   "tmp_file" : ["swp", "bk",],
                     \   "docs": ["docx", "doc", "xls", "xlsx", "odt", "ppt", "pptx", "pdf",],
                     \   "logs": ["log",],
                     \   "compress": ["zip", "tar", "rar", "7z",],
