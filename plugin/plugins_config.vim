@@ -251,7 +251,7 @@ if &runtimepath =~ 'vim-session'
     " Don't ask for load last session
     let g:session_autoload = 'no'
 
-    let g:session_directory = g:base_path.'sessions'
+    let g:session_directory = g:parent_dir.'sessions'
 
     " Quick open session
     nnoremap <leader>o :OpenSession
