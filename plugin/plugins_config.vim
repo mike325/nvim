@@ -546,6 +546,7 @@ if  &runtimepath =~ 'jedi-vim'
     let g:jedi#completions_command      = "<C-c>"
     let g:jedi#documentation_command    = "K"
     let g:jedi#usages_command           = "<leader>u"
+    let g:jedi#goto_command             = "<leader>g"
 endif
 
 " }}} EndJedi
