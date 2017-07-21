@@ -504,6 +504,9 @@ Plug 'Yggdroot/indentLine'
 " Change buffer position in the current layout
 Plug 'wesQ3/vim-windowswap'
 
+" Handy stuff to navigate
+Plug 'tpope/vim-unimpaired'
+
 " Unix commands
 if has("unix")
     Plug 'tpope/vim-eunuch'

@@ -48,11 +48,7 @@ imap jj <Esc>
 " Echo the relative path and of the file
 nnoremap <leader><leader>e :echo expand("%")<CR>
 
-" Add lines in normal mode without enter in insert mode
-nnoremap <C-o> O<Esc>
-nmap Q o<Esc>
-
-" Remove stuff in normal/visul mode without change any register
+" Remove stuff in normal/visual mode without change any register
 nnoremap <BS> "_
 vnoremap <BS> "_
 
@@ -62,11 +58,7 @@ nnoremap <S-tab> <<
 vnoremap <tab> >gv
 vnoremap <S-tab> <gv
 
-" nnoremap <F2> :update<CR>
-" vmap <F2> <Esc><F2>gv
-" imap <F2> <Esc><F2>a
-
-" For systems without F's keys (ex. android)
+" For systems without F's keys (ex. Android)
 nmap <leader>w :update<CR>
 
 " Close buffer/Editor
@@ -74,9 +66,6 @@ nnoremap <leader>q :q!<CR>
 
 " easy dump bin files into hex
 nnoremap <leader>x :%!xxd<CR>
-
-" Native explorer
-" nnoremap E :Explore<CR>
 
 " TabBufferManagement {{{
 
@@ -113,27 +102,6 @@ nnoremap <leader><leader>n :tabnew<CR>
 nnoremap <leader>c :tabclose<CR>
 
 " }}} EndTabBufferManagement
-
-" Toggles {{{ May be repleace by unpaired tpope plugin
-"
-" nnoremap tn :set number!<Bar>set number?<CR>
-" nnoremap tr :set relativenumber!<Bar>set relativenumber?<CR>
-"
-" nnoremap th :set hlsearch!<Bar>set hlsearch?<CR>
-" nnoremap ti :set ignorecase!<Bar>set ignorecase?<CR>
-"
-" nnoremap tw :set wrap!<Bar>set wrap?<CR>
-"
-" nnoremap tcl :set cursorline!<Bar>set cursorline?<CR>
-" nnoremap tcc :set cursorcolumn!<Bar>set cursorcolumn?<CR>
-"
-" nnoremap tss :setlocal spell!<Bar>set spell?<CR>
-" nnoremap tse :setlocal spelllang=en_us<Bar>set spelllang?<CR>
-" nnoremap tsm :setlocal spelllang=es_mx<Bar>set spelllang?<CR>
-"
-" nnoremap td :<C-R>=&diff ? 'diffoff' : 'diffthis'<CR><CR>
-"
-" }}} EndToggles
 
 if has("nvim")
     " Better splits
