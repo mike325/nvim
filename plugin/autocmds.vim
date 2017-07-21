@@ -34,8 +34,8 @@ let g:autocmds_loaded = 1
 " TODO make a function to save the state of the toggles
 augroup Numbers
     autocmd!
-    autocmd WinEnter * setlocal relativenumber number
-    autocmd WinLeave * setlocal norelativenumber number
+    autocmd WinEnter *    setlocal relativenumber number
+    autocmd WinLeave *    setlocal norelativenumber number
     autocmd InsertEnter * setlocal norelativenumber number
     autocmd InsertLeave * setlocal relativenumber number
     autocmd FileType help setlocal number relativenumber
@@ -46,19 +46,26 @@ if has("nvim")
     " autocmd TermOpen * setlocal modifiable
 
     " I like to see the numbers in the terminal
-    autocmd TermOpen * setlocal relativenumber
-    autocmd TermOpen * setlocal number
+    augroup TerminalAutocmds
+        autocmd!
+        autocmd TermOpen * setlocal relativenumber
+        autocmd TermOpen * setlocal number
+    augroup end
 endif
 
 " Set small sidescroll in log plaintext files
 augroup SideScroll
-    autocmd WinEnter *.log,*.txt setlocal sidescroll=1
+    autocmd!
+    autocmd BufNewFile,BufRead,BufEnter *.log,*.txt setlocal sidescroll=1
 augroup end
 
 " TODO To be improve
 function! RemoveTrailingWhitespaces()
     " Sometimes we don't want to remove spaces
-    if &buftype =~? 'nofile\|help\|quickfix\|bin\|hex' || &filetype ==? ''
+    let l:buftypes = 'nofile\|help\|quickfix\|terminal'
+    let l:filetypes = 'bin\|hex\|log'
+
+    if &buftype =~? l:buftypes || &filetype ==? l:filetypes
         return
     endif
 
@@ -69,20 +76,27 @@ function! RemoveTrailingWhitespaces()
 endfunction
 
 " Trim whitespace in selected files
-autocmd FileType * autocmd BufWritePre <buffer> call RemoveTrailingWhitespaces()
+augroup CleanFile
+    autocmd!
+    autocmd FileType * autocmd BufWritePre <buffer> call RemoveTrailingWhitespaces()
+augroup end
 
 " Specially helpful for html and xml
-autocmd FileType xml,html,vim autocmd BufReadPre <buffer> setlocal matchpairs+=<:>
+augroup MatchChars
+    autocmd!
+    autocmd FileType xml,html,vim autocmd BufReadPre <buffer> setlocal matchpairs+=<:>
+augroup end
 
 augroup localCR
     autocmd!
     autocmd BufReadPost quickfix nnoremap <buffer> <CR> <CR>
     autocmd BufReadPost quickfix nnoremap <silent> <buffer> q :q!<CR>
-    autocmd FileType help nnoremap <silent> <buffer> q :q!<CR>
-    autocmd CmdwinEnter * nnoremap <CR> <CR>
+    autocmd FileType help        nnoremap <silent> <buffer> q :q!<CR>
+    autocmd CmdwinEnter *        nnoremap <CR> <CR>
 augroup end
 
-augroup filetypedetect
+augroup FileTypeDetect
+    autocmd!
     autocmd BufRead,BufNewFile gitconfig                        setlocal filetype=gitconfig
     autocmd BufRead,BufNewFile *.bash*                          setlocal filetype=sh
     autocmd BufRead,BufNewFile *.in,*.si,*.sle                  setlocal filetype=conf
@@ -110,11 +124,11 @@ augroup end
 augroup Spells
     autocmd!
     autocmd FileType gitcommit setlocal spell
-    autocmd FileType markdown setlocal spell
-    autocmd FileType tex setlocal spell
-    autocmd FileType plaintex setlocal spell
-    autocmd FileType text setlocal spell
-    autocmd FileType help setlocal nospell
+    autocmd FileType markdown  setlocal spell
+    autocmd FileType tex       setlocal spell
+    autocmd FileType plaintex  setlocal spell
+    autocmd FileType text      setlocal spell
+    autocmd FileType help      setlocal nospell
 augroup end
 " }}} EndSpell
 
