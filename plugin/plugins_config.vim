@@ -131,8 +131,12 @@ if exists("*mkdir")
     if !isdirectory(fnameescape(g:parent_dir . 'cache/NERDTree/'))
         call mkdir(fnameescape(g:parent_dir . 'cache/NERDTree/'), "p")
     endif
+endif
+
+if ( !isdirectory(fnameescape(g:parent_dir . 'cache/NERDTree/')) ) && exists("g:parent_dir")
     let g:NERDTreeBookmarksFile = g:parent_dir . 'cache/NERDTree/Bookmarks'
 endif
+
 let g:NERDTreeRespectWildIgnore  = 1
 let g:NERDTreeShowBookmarks      = 1
 let g:NERDTreeIndicatorMapCustom = {
@@ -659,6 +663,16 @@ if &runtimepath =~ 'neocomplcache.vim'
     let g:neocomplcache_sources_list.cpp = ['omni_complete', 'syntax_complete', 'member_complete', 'filename_complete', 'tags_complete', 'buffer_complete']
     let g:neocomplcache_sources_list.java = ['omni_complete', 'syntax_complete', 'member_complete', 'filename_complete', 'tags_complete', 'buffer_complete']
     let g:neocomplcache_sources_list.python = ['omni_complete', 'syntax_complete', 'member_complete', 'filename_complete', 'tags_complete', 'buffer_complete']
+
+    if exists("*mkdir")
+        if !isdirectory(fnameescape(g:parent_dir . 'cache/neocomplcache/'))
+            call mkdir(fnameescape(g:parent_dir . 'cache/neocomplcache/'), "p")
+        endif
+    endif
+
+    if ( !isdirectory(fnameescape(g:parent_dir . 'cache/neocomplcache/')) ) && exists("g:parent_dir")
+        let g:neocomplcache_temporary_dir = g.parent_dir . 'cache/neocomplcache/'
+    endif
 
     " Syntax seems to cause some problems in old Vim's versions ( <= 703 )
     if has("nvim") || (v:version >= 704)
