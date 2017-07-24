@@ -56,12 +56,13 @@ function! s:SetIgnorePatterns() " Create Ignore rules {{{
                     \   "bin": [ "bin", "exe", "dat",],
                     \   "vcs": [ "hg", "svn", "git",],
                     \   "compile" : ["obj", "class", "pyc", "o", "dll", "a", "moc",],
-                    \   "tmp_dir": [ "trash", "tmp", "__pycache__", "resources", "ropeproject"],
+                    \   "tmp_dirs": [ "trash", "tmp", "__pycache__", "ropeproject"],
+                    \   "vim_dirs": [ "backup", "swap", "sessions", "cache", "undos",],
                     \   "tmp_file" : ["swp", "bk",],
                     \   "docs": ["docx", "doc", "xls", "xlsx", "odt", "ppt", "pptx", "pdf",],
                     \   "logs": ["log",],
                     \   "compress": ["zip", "tar", "rar", "7z",],
-                    \   "full_name_files": ["tags", "cscope"],
+                    \   "full_name_files": ["tags", "cscope", "shada", "viminfo", ],
                     \}
     endif
 
@@ -86,8 +87,7 @@ function! s:SetIgnorePatterns() " Create Ignore rules {{{
 
             if l:ignore_type == "vcs"
                 let l:ignore_pattern = "." . l:item . "/*"
-            elseif l:ignore_type == "tmp_dir"
-                " Add both versions, normal and hidden
+            elseif l:ignore_type =~? "_dirs"
                 let l:ignore_pattern = l:item . "/*"
             elseif l:ignore_type != "full_name_files"
                 let l:ignore_pattern = "*." . l:item
@@ -99,7 +99,7 @@ function! s:SetIgnorePatterns() " Create Ignore rules {{{
             let g:ignore_patterns.ag    .= ' --ignore "' . l:ignore_pattern . '" '
             let g:ignore_patterns.find  .= ' ! -iwholename "' . l:ignore_pattern . '" '
 
-            if l:ignore_type == "vcs" || l:ignore_type == "tmp_dir"
+            if l:ignore_type == "vcs" || l:ignore_type =~? "_dirs"
                 let g:ignore_patterns.grep  .= ' --exclude-dir "' . l:ignore_pattern . '" '
             else
                 let g:ignore_patterns.grep  .= ' --exclude "' . l:ignore_pattern . '" '
@@ -107,8 +107,8 @@ function! s:SetIgnorePatterns() " Create Ignore rules {{{
             " TODO: Make this crap work in Windows
             " let g:ignore_patterns.dir  .= ' '
 
-            " Hidden version
-            if l:ignore_type == "tmp_dir"
+            " Add both versions, normal and hidden versions
+            if l:ignore_type =~? "_dirs"
                 let l:ignore_pattern = "." . l:item . "/*"
 
                 let g:ignore_patterns.git   .= ' -x "' . l:ignore_pattern . '" '
@@ -167,7 +167,7 @@ function! s:InitConfigs() " Vim's InitConfig {{{
 
         for l:item in l:ignore_list
 
-            if l:ignore_type == "tmp_dir"
+            if l:ignore_type =~? "_dirs"
                 " Add both versions, normal and hidden
                 let l:item = "*/" . l:item . "/*,*/." . l:item . "/*"
             elseif l:ignore_type != "full_name_files"
