@@ -133,7 +133,7 @@ if exists("*mkdir")
     endif
 endif
 
-if ( !isdirectory(fnameescape(g:parent_dir . 'cache/NERDTree/')) ) && exists("g:parent_dir")
+if ( isdirectory(fnameescape(g:parent_dir . 'cache/NERDTree/')) ) && exists("g:parent_dir")
     let g:NERDTreeBookmarksFile = g:parent_dir . 'cache/NERDTree/Bookmarks'
 endif
 
@@ -670,8 +670,8 @@ if &runtimepath =~ 'neocomplcache.vim'
         endif
     endif
 
-    if ( !isdirectory(fnameescape(g:parent_dir . 'cache/neocomplcache/')) ) && exists("g:parent_dir")
-        let g:neocomplcache_temporary_dir = g.parent_dir . 'cache/neocomplcache/'
+    if ( isdirectory(fnameescape(g:parent_dir . 'cache/neocomplcache/')) ) && exists("g:parent_dir")
+        let g:neocomplcache_temporary_dir = g:parent_dir . 'cache/neocomplcache/'
     endif
 
     " Syntax seems to cause some problems in old Vim's versions ( <= 703 )
