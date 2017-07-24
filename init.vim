@@ -24,9 +24,11 @@
 "
 " ############################################################################
 
+
+" Improve compatibility between Unix and DOS platfomrs {{{
+
 let g:base_path = ""
 
-" Location of the plugins
 if has("nvim")
     if has("win32") || has("win64")
         let g:base_path = substitute( expand($USERPROFILE), "\\", "/", "g" ) . '/AppData/Local/nvim/'
@@ -44,7 +46,9 @@ if exists("+shellslash")
     set shellslash
 endif
 
-function! s:SetIgnorePatterns()
+" }}} END Improve compatibility between Unix and DOS platfomrs
+
+function! s:SetIgnorePatterns() " Create Ignore rules {{{
     " Files and dirs we want to ignore in searches and plugins
     " The *.  and */patter/* will be add in the add after
     if !exists("g:ignores")
@@ -116,9 +120,9 @@ function! s:SetIgnorePatterns()
             endif
         endfor
     endfor
-endfunction
+endfunction " }}} END Create Ignore rules
 
-function! s:InitConfigs()
+function! s:InitConfigs() " Vim's InitConfig {{{
     " Hidden path in `g:base_path` with all generated files
     if !exists("g:parent_dir")
         let g:parent_dir = g:base_path . ".resources/"
@@ -199,7 +203,9 @@ function! s:InitConfigs()
     " h        + 'hlsearch' highlighting will not be restored.
     execute "set " . l:persistent_settings . "=!,'100,<500,:500,s100,h"
     execute "set " . l:persistent_settings . "+=n" . fnameescape(g:parent_dir . l:persistent_settings)
-endfunction
+endfunction " }}} END Vim's InitConfig
+
+" Initialize plugins {{{
 
 call s:SetIgnorePatterns()
 call s:InitConfigs()
@@ -328,7 +334,7 @@ endif
 let b:ycm_installed = 0
 let b:deoplete_installed = 0
 let b:completor = 0
-if ( has("python") || has("python3") )
+if ( has("python") || has("python3") ) " Python base completions {{{
 
     if has("nvim") || ( v:version >= 800 ) || ( v:version >= 704 )
         " Only works with JDK8!!!
@@ -415,7 +421,7 @@ if ( has("python") || has("python3") )
         Plug 'davidhalter/jedi-vim'
     endif
 
-endif
+endif " }}} END Python base completions
 
 " completion without python completion engines ( ycm, deoplete or completer )
 if b:ycm_installed==0 && b:deoplete_installed==0 && b:completor==0
@@ -523,6 +529,8 @@ endif
 call plug#end()
 
 filetype plugin indent on
+
+" }}} END Initialize plugins
 
 " Load general configurations (key mappings and autocommands)
 " execute 'source '.fnameescape(g:base_path.'global.vim')
