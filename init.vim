@@ -513,6 +513,11 @@ Plug 'wesQ3/vim-windowswap'
 " Handy stuff to navigate
 Plug 'tpope/vim-unimpaired'
 
+" Visualize undo tree
+if has("python") || has("python3")
+    Plug 'sjl/gundo.vim'
+endif
+
 " Unix commands
 if has("unix")
     Plug 'tpope/vim-eunuch'
