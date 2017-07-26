@@ -62,7 +62,7 @@ function! s:SetIgnorePatterns() " Create Ignore rules {{{
                     \   "docs": ["docx", "doc", "xls", "xlsx", "odt", "ppt", "pptx", "pdf",],
                     \   "logs": ["log",],
                     \   "compress": ["zip", "tar", "rar", "7z",],
-                    \   "full_name_files": ["tags", "cscope", "shada", "viminfo", ],
+                    \   "full_name_files": ["tags", "cscope", "shada", "viminfo", "COMMIT_EDITMSG"],
                     \}
     endif
 
