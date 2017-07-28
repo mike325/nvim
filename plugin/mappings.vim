@@ -75,7 +75,8 @@ nnoremap <leader>n :bn<CR>
 " Prev buffer
 nnoremap <leader>p :bp<CR>
 
-nnoremap <C-x> <C-w><C-w>
+" Hate Ex mode
+nnoremap Q o<ESC>
 
 " Buffer movement
 nmap <leader>h <C-w>h
@@ -97,9 +98,7 @@ nnoremap <leader>8 8gt
 nnoremap <leader>9 9gt
 
 nnoremap <leader>0 :tablast<CR>
-nnoremap <leader>N :tabNext<CR>
 nnoremap <leader><leader>n :tabnew<CR>
-nnoremap <leader>c :tabclose<CR>
 
 " }}} EndTabBufferManagement
 
