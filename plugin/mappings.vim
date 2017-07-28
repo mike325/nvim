@@ -39,8 +39,11 @@ vnoremap , :
 " Similar behavior as C and D
 nnoremap Y y$
 
-" Don't visual select the <CR> character
+" Don't visual select the return character
 vnoremap $ $h
+
+" Avoid Ex mode
+nnoremap Q o<Esc>
 
 " Easy <ESC> insert mode
 imap jj <Esc>
@@ -58,6 +61,9 @@ nnoremap <S-tab> <<
 vnoremap <tab> >gv
 vnoremap <S-tab> <gv
 
+" Magic sane regex searches
+nnoremap g/ /\v
+
 " For systems without F's keys (ex. Android)
 nmap <leader>w :update<CR>
 
@@ -74,9 +80,6 @@ nnoremap <leader>n :bn<CR>
 
 " Prev buffer
 nnoremap <leader>p :bp<CR>
-
-" Hate Ex mode
-nnoremap Q o<ESC>
 
 " Buffer movement
 nmap <leader>h <C-w>h

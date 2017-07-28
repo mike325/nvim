@@ -120,6 +120,40 @@ function! s:SetIgnorePatterns() " Create Ignore rules {{{
             endif
         endfor
     endfor
+
+    " Clean settings before assign the ignore stuff, just lazy stuff
+    execute "set wildignore="
+    execute "set backupskip="
+
+    " Set system ignores and skips
+    for [ l:ignore_type, l:ignore_list ] in items(g:ignores)
+        " I don't want to ignore vcs here
+        if l:ignore_type == "vcs"
+            continue
+        endif
+
+        for l:item in l:ignore_list
+            let l:ignore_pattern = ""
+
+            if l:ignore_type =~? "_dirs"
+                " Add both versions, normal and hidden
+                let l:ignore_pattern = "*/" . l:item . "/*,*/." . l:item . "/*"
+            elseif l:ignore_type != "full_name_files"
+                let l:ignore_pattern = "*." . l:item
+            else
+                let l:ignore_pattern = l:item
+            endif
+
+            " I don't want to ignore logs or sessions files but I don't want
+            " to backup them
+            if l:ignore_type != "logs" && l:item != "sessions"
+                execute "set wildignore+=" . fnameescape(l:ignore_pattern)
+            endif
+
+            execute "set backupskip+=" . fnameescape(l:ignore_pattern)
+        endfor
+    endfor
+
 endfunction " }}} END Create Ignore rules
 
 function! s:InitConfigs() " Vim's InitConfig {{{
@@ -153,34 +187,8 @@ function! s:InitConfigs() " Vim's InitConfig {{{
                 execute "set " . l:dir_setting . "=" . fnameescape(g:parent_dir . l:dirname)
             endif
         else
-            echom "The current dir " . fnameescape(g:parent_dir . l:dirname) . " could not be created"
+            echoerr "The current dir " . fnameescape(g:parent_dir . l:dirname) . " could not be created"
         endif
-
-    endfor
-
-    " Set system ignores and skips
-    for [ l:ignore_type, l:ignore_list ] in items(g:ignores)
-        " I don't want to ignore vcs here
-        if l:ignore_type == "vcs"
-            continue
-        endif
-
-        for l:item in l:ignore_list
-
-            if l:ignore_type =~? "_dirs"
-                " Add both versions, normal and hidden
-                let l:item = "*/" . l:item . "/*,*/." . l:item . "/*"
-            elseif l:ignore_type != "full_name_files"
-                let l:item = "*." . l:item
-            endif
-
-            " I don't want to ignore logs but I don't want backup them
-            if l:ignore_type != "logs"
-                execute "set wildignore+=" . fnameescape(l:item)
-            endif
-
-            execute "set backupskip+=" . fnameescape(l:item)
-        endfor
     endfor
 
     let l:persistent_settings = "viminfo"
