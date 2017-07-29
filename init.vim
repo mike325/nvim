@@ -97,12 +97,13 @@ function! s:SetIgnorePatterns() " Create Ignore rules {{{
 
             let g:ignore_patterns.git   .= ' -x "' . l:ignore_pattern . '" '
             let g:ignore_patterns.ag    .= ' --ignore "' . l:ignore_pattern . '" '
-            let g:ignore_patterns.find  .= ' ! -iwholename "' . l:ignore_pattern . '" '
 
             if l:ignore_type == "vcs" || l:ignore_type =~? "_dirs"
                 let g:ignore_patterns.grep  .= ' --exclude-dir "' . l:ignore_pattern . '" '
+                let g:ignore_patterns.find  .= ' ! -path "*/' . l:ignore_pattern . '" '
             else
                 let g:ignore_patterns.grep  .= ' --exclude "' . l:ignore_pattern . '" '
+                let g:ignore_patterns.find  .= ' ! -iname "' . l:ignore_pattern . '" '
             endif
             " TODO: Make this crap work in Windows
             " let g:ignore_patterns.dir  .= ' '
@@ -113,7 +114,7 @@ function! s:SetIgnorePatterns() " Create Ignore rules {{{
 
                 let g:ignore_patterns.git   .= ' -x "' . l:ignore_pattern . '" '
                 let g:ignore_patterns.ag    .= ' --ignore "' . l:ignore_pattern . '" '
-                let g:ignore_patterns.find  .= ' ! -iwholename "' . l:ignore_pattern . '" '
+                let g:ignore_patterns.find  .= ' ! -path "*/' . l:ignore_pattern . '" '
                 let g:ignore_patterns.grep  .= ' --exclude-dir "' . l:ignore_pattern . '" '
                 " TODO: Make this crap work in Windows
                 " let g:ignore_patterns.dir  .= ' '

@@ -78,7 +78,7 @@ else
         \   'types': {
         \       1: ['.git', 'cd %s && git ls-files -co --exclude-standard' . g:ignore_patterns.git ]
         \   },
-        \   'fallback': 'find %s -type f \( -iname "*" ' . g:ignore_patterns.find . ' \) -readable',
+        \   'fallback': 'find %s -type f -iname "*" ' . g:ignore_patterns.find ,
         \ }
 endif
 " NOTE: This only works if g:ctrlp_user_command is not set
