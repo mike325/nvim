@@ -10,5 +10,4 @@ rope
 ropevim
 yapf
 jsbeautifier
-enum34==1.0.4
 vim-vint
