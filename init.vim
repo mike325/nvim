@@ -219,6 +219,8 @@ endfunction " }}} END Vim's InitConfig
 call s:SetIgnorePatterns()
 call s:InitConfigs()
 
+let mapleader="\<Space>"
+
 call plug#begin(g:base_path.'plugged')
 
 " ####### Colorschemes {{{
@@ -391,11 +393,6 @@ if ( has("python") || has("python3") ) " Python base completions {{{
 
         let b:deoplete_installed = 1
 
-    elseif ( v:version >= 800 ) || has("nvim")
-        " Test new completion Async framework that require python and vim 8 or
-        " Neovim (without python3)
-        Plug 'maralla/completor.vim'
-        let b:completor = 1
     elseif (has("unix") || ((has("win32") || has("win64")) && executable("msbuild"))) &&
         \  (has("nvim") || (v:version >= 800) || (v:version == 704 && has("patch143")) )
 
@@ -404,13 +401,13 @@ if ( has("python") || has("python3") ) " Python base completions {{{
                 " !./install.py --all
                 " !./install.py --gocode-completer --tern-completer --clang-completer --omnisharp-completer
                 if executable('go') && executable("tern")
-                    !./install.py --gocode-completer --tern-completer
+                    !./install.py --gocode-completer --tern-completer --clang-completer
                 elseif executable("tern")
-                    !./install.py --tern-completer
+                    !./install.py --tern-completer --clang-completer
                 elseif executable('go')
-                    !./install.py --gocode-completer
+                    !./install.py --gocode-completer --clang-completer
                 else
-                    !./install.py
+                    !./install.py --clang-completer
                 endif
             endif
         endfunction
@@ -422,6 +419,11 @@ if ( has("python") || has("python3") ) " Python base completions {{{
         " C/C++ project generator
         Plug 'rdnetto/ycm-generator', { 'branch': 'stable' }
         let b:ycm_installed = 1
+    elseif ( v:version >= 800 ) || has("nvim")
+        " Test new completion Async framework that require python and vim 8 or
+        " Neovim (without python3)
+        Plug 'maralla/completor.vim'
+        let b:completor = 1
     endif
 
 

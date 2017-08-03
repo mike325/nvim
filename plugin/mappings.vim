@@ -31,8 +31,6 @@ endif
 
 let g:mappings_loaded = 1
 
-let mapleader=" "
-
 nnoremap , :
 vnoremap , :
 

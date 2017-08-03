@@ -346,11 +346,7 @@ endif
 " Themes {{{
 
 if &runtimepath =~ 'gruvbox'
-    try
-        colorscheme gruvbox
-    catch
-        echo 'Please run :PlugInstall to complete the installation or remove "colorscheme gruvbox"'
-    endtry
+    silent! colorscheme gruvbox
 
     let g:gruvbox_contrast_dark = 'hard'
     nnoremap csg :colorscheme gruvbox<CR>:AirlineTheme gruvbox<CR>

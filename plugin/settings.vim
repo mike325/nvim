@@ -75,19 +75,47 @@ if exists('+colorcolumn')
 endif
 
 " Clipboard {{{
-if has('clipboard')
-    if !has("nvim") || ( executable('pbcopy') || executable('xclip') ||
-                \ executable('xsel') || executable("lemonade") )
-        set clipboard+=unnamedplus,unnamed
-    elseif has("nvim") && ( has("win32") || has("win64") )
-        " TODO: Need to check for GUI in new neovim-qt
-        set clipboard+=unnamedplus,unnamed
-        set mouse=a
-    endif
-elseif has("nvim")
-    " If system clipboard is not available, disable the mouse selection
-    set mouse=c
+" Set the defaults, which we may change depending where we run (Neo)vim
+
+" Disable mouse at all
+if has('mouse')
+    set mouse=
 endif
+
+" Remove system clipboard
+if has('clipboard')
+    set clipboard=
+endif
+
+" If we are running in a SSH connection or don't have 'clipboard' we just
+" can't use the system clipboard
+if empty($SSH_CONNECTION) && has('clipboard')
+    " if we are running gVim or running Neovim from Windows (aka neovim-qt)
+    " We reactivate the everything
+    if has('gui_running') || (( has('win32') || has('win64') ) && has('nvim'))
+        set clipboard=unnamedplus,unnamed
+        if has('mouse')
+            set mouse=a
+        endif
+    elseif has('nvim')
+        " Neovim in unix require external programs to use system's clipboard
+        " NOTE: we don't dare to run Neovim from window's cmd/powershell
+        if ( executable('pbcopy') || executable('xclip') || executable('xsel') || executable("lemonade") )
+            set clipboard+=unnamedplus,unnamed
+            if has('mouse')
+                set mouse=a
+            endif
+        endif
+    else
+        " We assume that Vim's magic clipboard will work (hopefully, not warranty)
+        set clipboard+=unnamedplus,unnamed
+        if has('mouse')
+            set mouse=a
+        endif
+    endif
+endif
+
+" }}} END Clipboard
 
 let g:netrw_liststyle=3
 
