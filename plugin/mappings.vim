@@ -50,17 +50,22 @@ imap jj <Esc>
 nnoremap <leader><leader>e :echo expand("%")<CR>
 
 " Remove stuff in normal/visual mode without change any register
-nnoremap <BS> "_
-vnoremap <BS> "_
+" TODO: May use this in UltiSnips
+" nnoremap <BS> "_
+" vnoremap <BS> "_
 
 " Easy indentation in normal mode
 nnoremap <tab> >>
 nnoremap <S-tab> <<
-vnoremap <tab> >gv
-vnoremap <S-tab> <gv
+
+" TODO: May use this in UltiSnips
+" vnoremap <tab> >gv
+" vnoremap <S-tab> <gv
 
 " Magic sane regex searches
 nnoremap g/ /\v
+" Fucking Spanish keyboard
+nnoremap ¿ `
 
 " For systems without F's keys (ex. Android)
 nmap <leader>w :update<CR>

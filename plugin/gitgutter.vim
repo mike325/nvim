@@ -1,0 +1,46 @@
+" ############################################################################
+"
+"                            Git gutter settings
+"
+"                                     -`
+"                     ...            .o+`
+"                  .+++s+   .h`.    `ooo/
+"                 `+++%++  .h+++   `+oooo:
+"                 +++o+++ .hhs++. `+oooooo:
+"                 +s%%so%.hohhoo'  'oooooo+:
+"                 `+ooohs+h+sh++`/:  ++oooo+:
+"                  hh+o+hoso+h+`/++++.+++++++:
+"                   `+h+++h.+ `/++++++++++++++:
+"                            `/+++ooooooooooooo/`
+"                           ./ooosssso++osssssso+`
+"                          .oossssso-````/osssss::`
+"                         -osssssso.      :ssss``to.
+"                        :osssssss/  Mike  osssl   +
+"                       /ossssssss/   8a   +sssslb
+"                     `/ossssso+/:-        -:/+ossss'.-
+"                    `+sso+:-`                 `.-/+oso:
+"                   `++:.  github.com/mike325/.vim  `-/+/
+"                   .`                                 `/
+"
+" ############################################################################
+
+if !exists('g:plugs["vim-gitgutter"]')
+    finish
+endif
+
+let g:gitgutter_map_keys = 0
+
+" TODO: Improve this mappings, maybe use unimpaired's principles
+nnoremap tg :GitGutterToggle<CR>
+nnoremap tl :GitGutterLineHighlightsToggle<CR>
+
+nmap [h <Plug>GitGutterPrevHunk
+nmap ]h <Plug>GitGutterNextHunk
+
+nmap <leader>ghs <Plug>GitGutterStageHunk
+nmap <leader>ghu <Plug>GitGutterUndoHunk
+
+omap ih <Plug>GitGutterTextObjectInnerPending
+omap ah <Plug>GitGutterTextObjectOuterPending
+xmap ih <Plug>GitGutterTextObjectInnerVisual
+xmap ah <Plug>GitGutterTextObjectOuterVisual

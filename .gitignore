@@ -5,8 +5,8 @@ plugged/
 .ropeproject*
 extras.vim
 nviminfo
-shada
-viminfo
+shada*
+viminfo*
 .resources/cache/*
 .resources/sessions/*
 .resources/swap/*
