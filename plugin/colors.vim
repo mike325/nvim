@@ -30,6 +30,8 @@ endif
 silent! colorscheme gruvbox
 
 let g:gruvbox_contrast_dark = 'hard'
+" TODO: improve key mappings
+
 " nnoremap csg :colorscheme gruvbox<CR>:AirlineTheme gruvbox<CR>
 
 " if &runtimepath =~ 'vim-monokai'

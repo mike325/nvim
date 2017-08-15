@@ -1,6 +1,6 @@
 " HEADER {{{
 "
-"                             Small improvements
+"                            Autocmds settings
 "
 "                                     -`
 "                     ...            .o+`

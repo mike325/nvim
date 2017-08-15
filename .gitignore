@@ -1,12 +1,10 @@
-tmp_dirs/
-sessions/
 .netrwhist
-plugged/
-.ropeproject*
-extras.vim
-nviminfo
 shada*
 viminfo*
+nviminfo
+extras.vim
+plugged/
+.ropeproject/*
 .resources/cache/*
 .resources/sessions/*
 .resources/swap/*

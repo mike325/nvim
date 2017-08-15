@@ -1,6 +1,6 @@
 " HEADER {{{
 "
-"                             Small improvements
+"                               Mapping settings
 "
 "                                     -`
 "                     ...            .o+`

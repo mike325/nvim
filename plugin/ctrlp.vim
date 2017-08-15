@@ -1,6 +1,6 @@
 " ############################################################################
 "
-"                                YCM settings
+"                                CtrlP settings
 "
 "                                     -`
 "                     ...            .o+`
@@ -44,6 +44,10 @@ let g:ctrlp_mruf_case_sensitive = 1
 let g:ctrlp_match_window        = 'bottom,order:ttb,min:1,max:30,results:50'
 let g:ctrlp_working_path_mode   = 'ra'
 
+
+let g:ctrlp_funky_multi_buffers = 1
+let g:ctrlp_funky_sort_by_mru   = 1
+
 let g:ctrlp_cache_dir = g:parent_dir . 'cache/ctrlp'
 
  if &runtimepath =~ 'ctrlp-py-matcher' && has("python")
@@ -59,7 +63,7 @@ if executable("ag")
         \   'types': {
         \       1: ['.git', 'cd %s && git ls-files -co --exclude-standard' . g:ignore_patterns.git ]
         \   },
-        \   'fallback': 'ag %s -S -l --nocolor --nogroup --hidden '. g:ignore_patterns.ag . '-g ""',
+        \   'fallback': 'ag %s -U -S -l --nocolor --nogroup --hidden '. g:ignore_patterns.ag . '-g ""',
         \ }
 elseif has("win32") || has("win64")
     " Actually I don't use Windows that much, so if someone comes with
@@ -78,6 +82,7 @@ else
         \   'fallback': 'find %s -type f -iname "*" ' . g:ignore_patterns.find ,
         \ }
 endif
+
 " NOTE: This only works if g:ctrlp_user_command is not set
 " let g:ctrlp_custom_ignore = {
 "             \ 'file': '\v\.(',
@@ -109,6 +114,3 @@ endif
 "
 " let g:ctrlp_custom_ignore.file = substitute(g:ctrlp_custom_ignore.file, "|$", "", "") . ')$'
 " let g:ctrlp_custom_ignore.dir  = substitute(g:ctrlp_custom_ignore.dir, "|$", "", "") . ')$'
-
-let g:ctrlp_funky_multi_buffers = 1
-let g:ctrlp_funky_sort_by_mru   = 1

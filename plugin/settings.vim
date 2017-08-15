@@ -1,6 +1,6 @@
 " HEADER {{{
 "
-"                             Small improvements
+"                           Config default settings
 "
 "                                     -`
 "                     ...            .o+`
