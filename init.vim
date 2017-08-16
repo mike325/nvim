@@ -384,9 +384,14 @@ if ( has("python") || has("python3") ) " Python base completions {{{
         endif
 
         " Go completion
+        " TODO: Check Go completion in Windows
         if executable("go") && executable("make")
             Plug 'zchee/deoplete-go', { 'do': 'make'}
         endif
+
+        " if executable("php")
+        "     Plug 'padawan-php/deoplete-padawan', { 'do': 'composer install' }
+        " endif
 
         " JavaScript completion
         if executable("tern")

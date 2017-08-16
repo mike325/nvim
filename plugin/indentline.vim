@@ -39,12 +39,17 @@ let g:indentLine_color_gui       = '#DDC188'
 let g:indentLine_color_term      = 214
 let g:indentLine_enabled         = 1
 let g:indentLine_setColors       = 1
+
+" let g:indentLine_fileType = [
+"             \
+"             \]
+
 let g:indentLine_fileTypeExclude = [
     \   'text',
     \   'conf',
     \   'markdown',
-    \   'git',
     \   'help',
+    \   '',
     \ ]
 
 let g:indentLine_bufNameExclude = [

@@ -83,7 +83,7 @@ augroup CloseMenu
     autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
 augroup end
 
-call deoplete#custom#set('ultisnips', 'matchers', ['matcher_full_fuzzy'])
+" call deoplete#custom#set('ultisnips', 'matchers', ['matcher_full_fuzzy'])
 
 if exists('g:plugs["deoplete-jedi"]')
     let g:deoplete#sources#jedi#enable_cache   = 1
@@ -121,8 +121,9 @@ if exists('g:plugs["neoinclude.vim"]')
 endif
 
 if exists('g:plugs["deoplete-go"]')
-    let g:deoplete#sources#go             = 'vim-go'
-    let g:deoplete#sources#go#sort_class  = ['package', 'func', 'type', 'var', 'const']
-    let g:deoplete#sources#go#use_cache   = 1
-    let g:deoplete#sources#go#package_dot = 1
+    let g:deoplete#sources#go                   = 'vim-go'
+    let g:deoplete#sources#go#cgo#libclang_path = '/usr/lib/libclang.so'
+    let g:deoplete#sources#go#sort_class        = ['package', 'func', 'type', 'var', 'const']
+    let g:deoplete#sources#go#use_cache         = 1
+    let g:deoplete#sources#go#package_dot       = 1
 endif
