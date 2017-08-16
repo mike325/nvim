@@ -31,6 +31,7 @@ endif
 " Show indentation lines for space indented code
 " If you use code tab indention you can set this
 " set list lcs=tab:\┊\
+" Check plugin/settings.vim for more details
 
 nnoremap tdi :IndentLinesToggle<CR>
 let g:indentLine_char            = '┊'
@@ -46,10 +47,10 @@ let g:indentLine_fileTypeExclude = [
     \   'help',
     \ ]
 
-" TODO Check how to remove lines in neovim's terminal
 let g:indentLine_bufNameExclude = [
     \   '*.org',
     \   '*.log',
     \   'COMMIT_EDITMSG',
     \   'NERD_tree.*',
+    \   'term://*',
     \ ]
