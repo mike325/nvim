@@ -53,8 +53,10 @@ if has("nvim") || (v:version >= 704)
     set formatoptions+=j " Delete comment character when joining commented lines
 endi
 
-if has("nvim") || ( v:version > 704 || (v:version == 704 && has('patch338')))
+if exists('+breakindent')
     set breakindent " respect indentation when wrapping
+    " set showbreak=\\\\\
+    set showbreak=↪\
 endif
 
 if executable("ag")
@@ -87,15 +89,16 @@ if has('clipboard')
     set clipboard=
 endif
 
-" If we are running in a SSH connection or don't have 'clipboard' we just
-" can't use the system clipboard
+" Don't use the system's clipboard whenever we run in SSH session or we don't
+" have 'clipboard' option available
 if empty($SSH_CONNECTION) && has('clipboard')
     " if we are running gVim or running Neovim from Windows (aka neovim-qt)
     " We reactivate the everything
     if has('gui_running') || (( has('win32') || has('win64') ) && has('nvim'))
         set clipboard=unnamedplus,unnamed
         if has('mouse')
-            set mouse=a
+            set mouse=a    " We have mouse support, so we use it
+            set mousehide  " Hide mouse when typing text
         endif
     elseif has('nvim')
         " Neovim in unix require external programs to use system's clipboard
@@ -103,14 +106,16 @@ if empty($SSH_CONNECTION) && has('clipboard')
         if ( executable('pbcopy') || executable('xclip') || executable('xsel') || executable("lemonade") )
             set clipboard+=unnamedplus,unnamed
             if has('mouse')
-                set mouse=a
+                set mouse=a    " We have mouse support, so we use it
+                set mousehide  " Hide mouse when typing text
             endif
         endif
     else
         " We assume that Vim's magic clipboard will work (hopefully, not warranty)
         set clipboard+=unnamedplus,unnamed
         if has('mouse')
-            set mouse=a
+            set mouse=a    " We have mouse support, so we use it
+            set mousehide  " Hide mouse when typing text
         endif
     endif
 endif
@@ -120,6 +125,8 @@ endif
 let g:netrw_liststyle=3
 
 set background=dark
+
+set backspace=indent,eol,start " Use full backspace power
 
 set encoding=utf-8     " The encoding displayed.
 set fileencoding=utf-8 " The encoding written to file.
@@ -136,10 +143,19 @@ set relativenumber " Show line numbers in motions friendly way
 set syntax=on      " add syntax highlighting
 set ruler
 
+" Improve perfomance by just highlighting the first 200 chars
+set synmaxcol=200
+
 " Search settings
-set hlsearch   " highlight search terms
-set incsearch  " show search matches as you type
-set ignorecase " ignore case
+set hlsearch       " highlight search terms
+set incsearch      " show search matches as you type
+" set gdefault     " Always do global substitutes
+
+if exists("+infercase")
+    set infercase      " Smart casing when completing
+else
+    set ignorecase     " ignore case
+endif
 
 " Indenting stuff
 set autoindent
@@ -148,7 +164,7 @@ set copyindent
 set softtabstop=4  " makes the spaces feel like real tabs
 set tabstop=4      " 1 tab = 4 spaces
 set shiftwidth=4   " Same for autoindenting
-set expandtab      " Use  spaces for indenting
+set expandtab      " Use spaces for indenting, tabs are evil
 
 set smarttab       " Insert tabs on the start of a line according to
                    " shiftwidth, not tabstop
@@ -161,16 +177,18 @@ set cursorline     " Turn on cursor line by default
 " I'm currently using, this allow me to quit(q!) without worries
 " set hidden
 
-" Auto-reload buffers when file changed on disk, Some times I like to keep the
-" changes to save them in some registers
-" set autoread
+" set autoread   " Auto-reload buffers when file changed on disk
+" set autowrite  " Write files when navigating with :next/:previous
 
 " Show invisible characters
-" set list
+set list
+" set listchars=tab:\┊\ ,trail:•,extends:❯,precedes:❮
+" I like to have different chars for spaces and tabs (see IndentLine plugin)
+set listchars=tab:▸\ ,trail:•,extends:❯,precedes:❮
 
-" Indicator chars
-" set listchars=tab:▸\ ,trail:•,extends:❯,precedes:❮
-" set showbreak=↪\
+" Enable <TAB> completion in command mode
+set wildmenu
+set wildmode=full
 
 " Use only 1 space after "." when joining lines, not 2
 set nojoinspaces
@@ -181,7 +199,8 @@ set path+=**
 " Set vertical diff
 set diffopt+=vertical
 
-set visualbell " visual bell instead of beeps, but...
+set belloff=all " Bells are annoying
+set visualbell  " Visual bell instead of beeps, but...
 
 set fileformats=unix,dos " File mode unix by default
 
@@ -189,8 +208,8 @@ set fileformats=unix,dos " File mode unix by default
 set omnifunc=syntaxcomplete#Complete
 
 " Folding settings
-set foldmethod=indent " fold based on indent
 set nofoldenable      " dont fold by default
+set foldmethod=indent " fold based on indent
 set foldnestmax=10    " deepest fold is 10 levels
 " set foldlevel=1
 
