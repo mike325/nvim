@@ -53,6 +53,11 @@ if has("nvim") || (v:version >= 704)
     set formatoptions+=j " Delete comment character when joining commented lines
 endi
 
+if has("nvim") && executable("nvr")
+    " Add Neovim remote utility, this allow us to open buffers from the :terminal cmd
+    let $VISUAL = 'nvr -cc split --remote-wait'
+endif
+
 if exists('+breakindent')
     set breakindent " respect indentation when wrapping
     " set showbreak=\\\\\
@@ -149,12 +154,11 @@ set synmaxcol=200
 " Search settings
 set hlsearch       " highlight search terms
 set incsearch      " show search matches as you type
+set ignorecase     " ignore case
 " set gdefault     " Always do global substitutes
 
 if exists("+infercase")
     set infercase      " Smart casing when completing
-else
-    set ignorecase     " ignore case
 endif
 
 " Indenting stuff

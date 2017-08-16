@@ -483,6 +483,7 @@ if (has("nvim") || (v:version >= 704))
     Plug 'whatyouhide/vim-textobj-xmlattr'
     Plug 'kana/vim-textobj-entire'
     Plug 'michaeljsmith/vim-indent-object'
+    Plug 'jceb/vim-textobj-uri'
     " Plug 'coderifous/textobj-word-column.vim'
 endif
 
@@ -525,6 +526,9 @@ Plug 'wesQ3/vim-windowswap'
 
 " Handy stuff to navigate
 Plug 'tpope/vim-unimpaired'
+
+" TODO: check characters display
+" Plug 'dodie/vim-disapprove-deep-indentation'
 
 " Visualize undo tree
 if has("python") || has("python3")

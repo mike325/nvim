@@ -11,3 +11,4 @@ ropevim
 yapf
 jsbeautifier
 vim-vint
+neovim-remote
