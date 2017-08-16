@@ -235,13 +235,13 @@ Plug 'joshdick/onedark.vim'
 
 " ####### Syntax {{{
 
-Plug 'ekalinin/Dockerfile.vim', { 'for': 'Dockerfile' }
-Plug 'elzr/vim-json', { 'for': 'json' }
-Plug 'tbastos/vim-lua', { 'for': 'lua' }
-Plug 'octol/vim-cpp-enhanced-highlight', { 'for': 'cpp' }
-Plug 'peterhoeg/vim-qml', { 'for': 'qml' }
+Plug 'ekalinin/Dockerfile.vim'
+Plug 'elzr/vim-json'
+Plug 'tbastos/vim-lua'
+Plug 'octol/vim-cpp-enhanced-highlight'
+Plug 'peterhoeg/vim-qml'
 Plug 'plasticboy/vim-markdown'
-Plug 'bjoernd/vim-syntax-simics', { 'for': 'simics' }
+Plug 'bjoernd/vim-syntax-simics'
 
 " }}} END Syntax
 
@@ -349,7 +349,7 @@ if ( has("python") || has("python3") ) " Python base completions {{{
 
     if has("nvim") || ( v:version >= 800 ) || ( v:version >= 704 )
         " Only works with JDK8!!!
-        Plug 'artur-shaik/vim-javacomplete2', { 'for': 'java' }
+        Plug 'artur-shaik/vim-javacomplete2'
     endif
 
 
@@ -458,11 +458,11 @@ if (has("nvim") || (v:version >= 704))
 endif
 
 if executable("go")
-    Plug 'fatih/vim-go', { 'for': 'go' }
+    Plug 'fatih/vim-go'
 endif
 
 if has("python") || has("python3")
-    Plug 'python-mode/python-mode', { 'for': 'python' }
+    Plug 'python-mode/python-mode'
 endif
 
 " Easy comments
