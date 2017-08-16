@@ -34,11 +34,11 @@ let g:autocmds_loaded = 1
 " TODO make a function to save the state of the toggles
 augroup Numbers
     autocmd!
+    autocmd FileType help setlocal relativenumber number
     autocmd WinEnter *    setlocal relativenumber number
     autocmd WinLeave *    setlocal norelativenumber number
-    autocmd InsertEnter * setlocal norelativenumber number
     autocmd InsertLeave * setlocal relativenumber number
-    autocmd FileType help setlocal number relativenumber
+    autocmd InsertEnter * setlocal norelativenumber number
 augroup end
 
 if has("nvim")
@@ -48,10 +48,22 @@ if has("nvim")
     " I like to see the numbers in the terminal
     augroup TerminalAutocmds
         autocmd!
-        autocmd TermOpen * setlocal relativenumber
-        autocmd TermOpen * setlocal number
+        autocmd TermOpen * setlocal relativenumber number
     augroup end
 endif
+
+" Auto resize all windows
+augroup AutoResize
+    autocmd!
+    autocmd VimResized * wincmd =
+augroup end
+
+" TODO: check this in the future
+" augroup autoSaveAndRead
+"     autocmd!
+"     autocmd TextChanged,InsertLeave,FocusLost * silent! wall
+"     autocmd CursorHold * silent! checktime
+" augroup end
 
 " Set small sidescroll in log plaintext files
 augroup SideScroll
@@ -65,7 +77,7 @@ function! RemoveTrailingWhitespaces()
     let l:buftypes = 'nofile\|help\|quickfix\|terminal'
     let l:filetypes = 'bin\|hex\|log'
 
-    if &buftype =~? l:buftypes || &filetype ==? l:filetypes
+    if &buftype =~? l:buftypes || &filetype ==? l:filetypes || &filetype ==? ''
         return
     endif
 
@@ -123,12 +135,13 @@ augroup end
 " Spell {{{
 augroup Spells
     autocmd!
-    autocmd FileType gitcommit setlocal spell
-    autocmd FileType markdown  setlocal spell
-    autocmd FileType tex       setlocal spell
-    autocmd FileType plaintex  setlocal spell
-    autocmd FileType text      setlocal spell
-    autocmd FileType help      setlocal nospell
+    autocmd FileType help                     setlocal nospell
+    autocmd FileType gitcommit                setlocal spell complete+=kspell
+    autocmd FileType markdown                 setlocal spell complete+=kspell
+    autocmd FileType tex                      setlocal spell complete+=kspell
+    autocmd FileType plaintex                 setlocal spell complete+=kspell
+    autocmd FileType text                     setlocal spell complete+=kspell
+    autocmd BufNewFile,BufRead,BufEnter *.org setlocal spell complete+=kspell
 augroup end
 " }}} EndSpell
 
