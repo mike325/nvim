@@ -386,7 +386,13 @@ if ( has("python") || has("python3") ) " Python base completions {{{
         " Go completion
         " TODO: Check Go completion in Windows
         if executable("go") && executable("make")
-            Plug 'zchee/deoplete-go', { 'do': 'make'}
+
+            function! GoCompletion(info)
+                !go get -u github.com/nsf/gocode
+                make
+            endfunction
+
+            Plug 'zchee/deoplete-go', { 'do':function('GoCompletion')}
         endif
 
         " if executable("php")
