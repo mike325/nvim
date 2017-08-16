@@ -46,24 +46,38 @@ nnoremap Q o<Esc>
 " Easy <ESC> insert mode
 imap jj <Esc>
 
-" Echo the relative path and of the file
-nnoremap <leader><leader>e :echo expand("%")<CR>
+" Move vertically by visual line unless preceded by a count. If a movement is
+" greater than 5 then automatically add to the jumplist.
+nnoremap <expr> j v:count ? (v:count > 5 ? "m'" . v:count : '') . 'j' : 'gj'
+nnoremap <expr> k v:count ? (v:count > 5 ? "m'" . v:count : '') . 'k' : 'gk'
 
-" Remove stuff in normal/visual mode without change any register
+" NOTE: Removed mapping to use jump list
+" nnoremap <tab> >>
+" nnoremap <S-tab> <<
+
 " TODO: May use this in UltiSnips
+" Remove stuff in normal/visual mode without change any register
 " nnoremap <BS> "_
 " vnoremap <BS> "_
-
-" Easy indentation in normal mode
-nnoremap <tab> >>
-nnoremap <S-tab> <<
-
-" TODO: May use this in UltiSnips
 " vnoremap <tab> >gv
 " vnoremap <S-tab> <gv
 
-" Magic sane regex searches
+" Echo the relative path and of the file
+nnoremap <leader><leader>e :echo expand("%")<CR>
+
+" Very Magic sane regex searches
 nnoremap g/ /\v
+
+" Center searches results
+nnoremap * *zz
+nnoremap # #zz
+nnoremap n nzz
+nnoremap N Nzz
+
+" Change word under cursor and dot repeat
+nnoremap c* *Ncgn
+nnoremap c# #NcgN
+
 " Fucking Spanish keyboard
 nnoremap ¿ `
 
