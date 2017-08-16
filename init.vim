@@ -377,7 +377,7 @@ if ( has("python") || has("python3") ) " Python base completions {{{
         " C/C++ completion base on clang compiler
         if executable("clang")
             Plug 'zchee/deoplete-clang'
-            " Plug 'zchee/deoplete-clang'
+            Plug 'Shougo/neoinclude.vim'
 
             " A bit faster C/C++ completion
             " Plug 'tweekmonster/deoplete-clang2'

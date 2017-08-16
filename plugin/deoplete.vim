@@ -94,8 +94,30 @@ if exists('g:plugs["deoplete-clang"]')
     " Set posible locations in linux
     " /usr/lib/libclang.so
     " /usr/lib/clang
+    let g:deoplete#sources#clang#sort_algo     = 'priority'
     let g:deoplete#sources#clang#libclang_path = '/usr/lib/libclang.so'
     let g:deoplete#sources#clang#clang_header  = '/usr/lib/clang'
+    let g:deoplete#sources#clang#std           = {
+                \ 'c'      : 'c11',
+                \ 'cpp'    : 'c++14',
+                \ 'objc'   : 'c11',
+                \ 'objcpp' : 'c++1z'
+                \}
+    " TODO: customize general flags, Clang also support Project flags with '.clang' file
+    " let g:deoplete#sources#clang#flags = [
+    "             \ "-x", "c++",
+    "             \ "-I", "/usr/include",
+    "             \]
+endif
+
+if exists('g:plugs["neoinclude.vim"]')
+
+    if !exists('g:neoinclude#exts')
+        let g:neoinclude#exts = {}
+    endif
+
+    let g:neoinclude#exts.cpp = ['', 'h', 'hpp', 'hxx']
+    let g:neoinclude#exts.c   = ['', 'h']
 endif
 
 if exists('g:plugs["deoplete-go"]')
