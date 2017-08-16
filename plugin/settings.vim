@@ -55,7 +55,8 @@ endi
 
 if has("nvim") && executable("nvr")
     " Add Neovim remote utility, this allow us to open buffers from the :terminal cmd
-    let $VISUAL = 'nvr -cc split --remote-wait'
+    let $tnvr = 'nvr --remote-tab-silent'
+    let $snvr = 'nvr -cc vsplit --remote-silent'
 endif
 
 if exists('+breakindent')
