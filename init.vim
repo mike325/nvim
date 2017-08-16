@@ -60,6 +60,8 @@ function! s:SetIgnorePatterns() " Create Ignore rules {{{
                     \   "vim_dirs": [ "backup", "swap", "sessions", "cache", "undos",],
                     \   "tmp_file" : ["swp", "bk",],
                     \   "docs": ["docx", "doc", "xls", "xlsx", "odt", "ppt", "pptx", "pdf",],
+                    \   "image": ["jpg", "jpeg", "png", "gif", "raw"],
+                    \   "video": ["mp4", "mpeg", "avi", "mkv", "3gp"],
                     \   "logs": ["log",],
                     \   "compress": ["zip", "tar", "rar", "7z",],
                     \   "full_name_files": ["tags", "cscope", "shada", "viminfo", "COMMIT_EDITMSG"],
