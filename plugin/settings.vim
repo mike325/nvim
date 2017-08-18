@@ -204,7 +204,9 @@ set path+=**
 " Set vertical diff
 set diffopt+=vertical
 
-set belloff=all " Bells are annoying
+if exists("+belloff")
+    set belloff=all " Bells are annoying
+endif
 set visualbell  " Visual bell instead of beeps, but...
 
 set fileformats=unix,dos " File mode unix by default

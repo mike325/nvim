@@ -315,7 +315,8 @@ endif
 
 " ####### Git integration {{{
 
-Plug 'airblade/vim-gitgutter'
+" Plug 'airblade/vim-gitgutter'
+Plug 'mhinz/vim-signify'
 Plug 'rhysd/committia.vim'
 Plug 'tpope/vim-fugitive'
 Plug 'gregsexton/gitv'
@@ -407,21 +408,23 @@ if ( has("python") || has("python3") ) " Python base completions {{{
         let b:deoplete_installed = 1
 
     elseif (has("unix") || ((has("win32") || has("win64")) && executable("msbuild"))) &&
-        \  (has("nvim") || (v:version >= 800) || (v:version == 704 && has("patch143")) )
+        \  (has("nvim") || (v:version >= 800) || (v:version == 704 && has("patch1578")) )
 
         function! BuildYCM(info)
             if a:info.status == 'installed' || a:info.force
                 " !./install.py --all
                 " !./install.py --gocode-completer --tern-completer --clang-completer --omnisharp-completer
-                if executable('go') && executable("tern")
-                    !./install.py --gocode-completer --tern-completer --clang-completer
-                elseif executable("tern")
-                    !./install.py --tern-completer --clang-completer
-                elseif executable('go')
-                    !./install.py --gocode-completer --clang-completer
-                else
-                    !./install.py --clang-completer
+                let l:code_completion = " --clang-completer"
+                if executable('go')
+                    let l:code_completion .= " --gocode-completer"
+                elseif executable("npm")
+                    let l:code_completion .= " --tern-completer"
+                elseif executable("mono")
+                    let l:code_completion .= " --omnisharp-completer"
                 endif
+
+                execute "!./install.py" . l:code_completion
+
             endif
         endfunction
 

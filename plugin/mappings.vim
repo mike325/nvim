@@ -53,7 +53,7 @@ nnoremap <expr> k v:count ? (v:count > 5 ? "m'" . v:count : '') . 'k' : 'gk'
 
 " NOTE: Removed mapping to use jump list
 " nnoremap <tab> >>
-" nnoremap <S-tab> <<
+nnoremap <S-tab> <C-o>
 
 " TODO: May use this in UltiSnips
 " Remove stuff in normal/visual mode without change any register
