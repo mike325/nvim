@@ -350,12 +350,6 @@ let b:deoplete_installed = 0
 let b:completor = 0
 if ( has("python") || has("python3") ) " Python base completions {{{
 
-    if has("nvim") || ( v:version >= 800 ) || ( v:version >= 704 )
-        " Only works with JDK8!!!
-        Plug 'artur-shaik/vim-javacomplete2'
-    endif
-
-
     function! BuildOmniSharp(info)
         if a:info.status == 'installed' || a:info.force
             if ( has("win32") || has("win64") )
@@ -378,7 +372,7 @@ if ( has("python") || has("python3") ) " Python base completions {{{
         " C/C++ completion base on clang compiler
         if executable("clang")
             Plug 'zchee/deoplete-clang'
-            Plug 'Shougo/neoinclude.vim'
+            " Plug 'Shougo/neoinclude.vim'
 
             " A bit faster C/C++ completion
             " Plug 'tweekmonster/deoplete-clang2'
@@ -440,6 +434,12 @@ if ( has("python") || has("python3") ) " Python base completions {{{
         " Neovim (without python3)
         Plug 'maralla/completor.vim'
         let b:completor = 1
+    endif
+
+    if ( has("nvim") || ( v:version >= 800 ) || ( v:version >= 704 ) ) &&
+        \ ( b:ycm_installed==1 || b:deoplete_installed==1 )
+        " Only works with JDK8!!!
+        Plug 'artur-shaik/vim-javacomplete2'
     endif
 
 
