@@ -56,14 +56,18 @@ if executable("ctags")
 endif
 
 nnoremap <F5> :YcmForceCompileAndDiagnostics<CR>
-inoremap <F5> :YcmForceCompileAndDiagnostics<CR>
 
-nnoremap <leader>F :YcmCompleter FixIt<CR>
-nnoremap <leader>gr :YcmCompleter GoToReferences<CR>
-nnoremap <leader>gg :YcmCompleter GoTo<CR>
-nnoremap <leader>gp :YcmCompleter GetParent<CR>
-nnoremap <leader>gi :YcmCompleter GoToInclude<CR>
-nnoremap <leader>gt :YcmCompleter GetType<CR>
+augroup YCMGoTo
+    autocmd!
+    autocmd FileType c,cpp,python,go nnoremap <buffer> <c-]> :YcmCompleter GoTo<CR>
+augroup end
+
+" nnoremap <leader>F :YcmCompleter FixIt<CR>
+" nnoremap <leader>gr :YcmCompleter GoToReferences<CR>
+" nnoremap <leader>gg :YcmCompleter GoTo<CR>
+" nnoremap <leader>gp :YcmCompleter GetParent<CR>
+" nnoremap <leader>gi :YcmCompleter GoToInclude<CR>
+" nnoremap <leader>gt :YcmCompleter GetType<CR>
 
 let g:ycm_key_list_select_completion   = ['<C-n>', '<Down>']
 let g:ycm_key_list_previous_completion = ['<C-p>', '<Up>']

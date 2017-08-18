@@ -14,6 +14,7 @@ silent! Abolish aibbreviation{s} abbreviation{s}
 silent! Abolish identation indentation
 silent! Abolish aligment aliment
 silent! Abolish posible possible
+silent! Abolish imrpove improve
 
 silent! Abolish {despa,sepe}rat{e,es,ed,ing,ely,ion,ions,or} {despe,sepa}rat{}
 silent! Abolish {,in}consistant{,ly}                         {}consistent{}
