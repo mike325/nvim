@@ -72,9 +72,9 @@ nnoremap g/ /\v
 " Credits to https://amp.reddit.com/r/vim/comments/4jy1mh/slightly_more_subltle_n_and_n_behavior/
 function! s:nice_next(cmd)
     let view = winsaveview()
-    execute "normal! " . a:cmd
+    execute "silent! normal! " . a:cmd
     if view.topline != winsaveview().topline
-        normal! zz
+        silent! normal! zz
     endif
 endfunction
 

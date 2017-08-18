@@ -32,15 +32,15 @@ endif
 " nnoremap <F7> :lopen<CR>
 " nnoremap <F8> :lclose<CR>
 
-let g:neomake_warning_sign = {
-    \ 'text': 'W',
-    \ 'texthl': 'WarningMsg',
-    \ }
-
-let g:neomake_error_sign = {
-    \ 'text': 'E',
-    \ 'texthl': 'ErrorMsg',
-    \ }
+" let g:neomake_warning_sign = {
+"     \ 'text': 'W',
+"     \ 'texthl': 'WarningMsg',
+"     \ }
+"
+" let g:neomake_error_sign = {
+"     \ 'text': 'E',
+"     \ 'texthl': 'ErrorMsg',
+"     \ }
 
 if executable("vint")
     let g:neomake_vim_enabled_makers = ['vint']
@@ -56,7 +56,11 @@ endif
 let g:neomake_python_enabled_makers = ['flake8', 'pep8']
 let g:neomake_cpp_enabled_makers = ['clang', 'gcc']
 let g:neomake_c_enabled_makers = ['clang', 'gcc']
+" let g:neomake_go_enabled_makers = ['golint', 'govet']
 
+" let g:neomake_go_golint_maker = {
+"     \   'exe': 'golint',
+"     \}
 
 " E501 is line length of 80 characters
 let g:neomake_python_flake8_maker = {
@@ -114,7 +118,7 @@ let g:neomake_cpp_clang_maker = {
     \       '-o ', b:outpath,
     \],}
 
-" TODO Config the proper makers for the languages I use
+" TODO Config the proper makers for more languages
 " JSON linter       : npm install -g jsonlint
 " Typescript linter : npm install -g typescript
 " SCSS linter       : gem install --user-install scss-lint

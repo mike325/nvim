@@ -72,8 +72,11 @@ augroup end
 let g:ycm_key_list_select_completion   = ['<C-n>', '<Down>']
 let g:ycm_key_list_previous_completion = ['<C-p>', '<Up>']
 
-let g:ycm_error_symbol   = 'E'
-let g:ycm_warning_symbol = 'W'
+" let g:ycm_error_symbol   = 'E'
+" let g:ycm_warning_symbol = 'W'
+
+let g:ycm_error_symbol   = '✖'
+let g:ycm_warning_symbol = '⚠'
 
 " let g:ycm_extra_conf_globlist   = ['~/.vim/*']
 if filereadable(fnameescape(getcwd() . "/.git/ycm_extra_conf.py"))
