@@ -244,6 +244,7 @@ Plug 'octol/vim-cpp-enhanced-highlight'
 Plug 'peterhoeg/vim-qml'
 Plug 'plasticboy/vim-markdown'
 Plug 'bjoernd/vim-syntax-simics'
+Plug 'kurayama/systemd-vim-syntax'
 
 " }}} END Syntax
 
@@ -383,7 +384,9 @@ if ( has("python") || has("python3") ) " Python base completions {{{
         if executable("go") && executable("make")
 
             function! GoCompletion(info)
-                !go get -u github.com/nsf/gocode
+                if !executable("gocode")
+                    !go get -u github.com/nsf/gocode
+                endif
                 make
             endfunction
 
