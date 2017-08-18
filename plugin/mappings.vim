@@ -142,3 +142,6 @@ if has("nvim")
     " Use ESC to exit terminal mode
     tnoremap <Esc> <C-\><C-n>
 endif
+
+" Small wrapper around copen cmd
+command! Copen :botright copen 10
