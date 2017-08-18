@@ -69,10 +69,19 @@ nnoremap <leader><leader>e :echo expand("%")<CR>
 nnoremap g/ /\v
 
 " Center searches results
-nnoremap * *zz
-nnoremap # #zz
-nnoremap n nzz
-nnoremap N Nzz
+" Credits to https://amp.reddit.com/r/vim/comments/4jy1mh/slightly_more_subltle_n_and_n_behavior/
+function! s:nice_next(cmd)
+    let view = winsaveview()
+    execute "normal! " . a:cmd
+    if view.topline != winsaveview().topline
+        normal! zz
+    endif
+endfunction
+
+" nnoremap * *zz
+" nnoremap # #zz
+nnoremap <silent> n :call <SID>nice_next('n')<cr>
+nnoremap <silent> N :call <SID>nice_next('N')<cr>
 
 " Change word under cursor and dot repeat
 nnoremap c* *Ncgn

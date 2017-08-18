@@ -1,3 +1,5 @@
+*.o
+*.out
 .netrwhist
 shada*
 viminfo*

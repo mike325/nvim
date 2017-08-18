@@ -70,11 +70,17 @@ let g:neomake_python_pep8_maker = {
     \   '--ignore=E501'
     \],}
 
+let b:outpath = "/tmp/neomake.out"
+if has("win32") || has("win64")
+    let b:outpath = "C:/Temp/neomake"
+endif
+
 let g:neomake_c_gcc_maker = {
     \   'exe': 'gcc',
     \   'args': [
     \       '-Wall',
     \       '-Wextra',
+    \       '-o ', b:outpath,
     \],}
 
 let g:neomake_c_clang_maker = {
@@ -84,6 +90,7 @@ let g:neomake_c_clang_maker = {
     \       '-Wextra',
     \       '-Weverything',
     \       '-Wno-missing-prototypes',
+    \       '-o ', b:outpath,
     \],}
 
 let g:neomake_cpp_gcc_maker = {
@@ -92,6 +99,7 @@ let g:neomake_cpp_gcc_maker = {
     \      '-std=c++11',
     \      '-Wall',
     \      '-Wextra',
+    \       '-o ', b:outpath,
     \],}
 
 let g:neomake_cpp_clang_maker = {
@@ -103,6 +111,7 @@ let g:neomake_cpp_clang_maker = {
     \      '-Weverything',
     \      '-Wno-c++98-compat',
     \      '-Wno-missing-prototypes',
+    \       '-o ', b:outpath,
     \],}
 
 " TODO Config the proper makers for the languages I use
