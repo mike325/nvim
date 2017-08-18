@@ -144,4 +144,8 @@ if has("nvim")
 endif
 
 " Small wrapper around copen cmd
-command! Copen :botright copen 10
+function! s:OpenQuickfix(size)
+    execute "botright copen " . a:size
+endfunction
+
+command! -nargs=? Copen call s:OpenQuickfix(<q-args>)
