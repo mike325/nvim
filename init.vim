@@ -545,6 +545,9 @@ Plug 'wesQ3/vim-windowswap'
 " Handy stuff to navigate
 Plug 'tpope/vim-unimpaired'
 
+" Show parameters of the current function
+Plug 'Shougo/echodoc.vim'
+
 " TODO: check characters display
 " Plug 'dodie/vim-disapprove-deep-indentation'
 

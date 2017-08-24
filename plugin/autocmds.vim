@@ -41,6 +41,15 @@ augroup Numbers
     autocmd InsertEnter * setlocal norelativenumber number
 augroup end
 
+" We don't need Vim's temp files here
+augroup DisableTemps
+    autocmd!
+    autocmd BufReadPre gitcommit setlocal nobackup
+    autocmd BufReadPre *.log     setlocal noswapfile nobackup
+    autocmd BufReadPre *.txt     setlocal noswapfile nobackup
+    autocmd BufReadPre /tmp/*    setlocal noswapfile nobackup noundofile
+augroup end
+
 if has("nvim")
     " Set modifiable to use easymotions
     " autocmd TermOpen * setlocal modifiable

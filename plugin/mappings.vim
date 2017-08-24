@@ -43,6 +43,9 @@ vnoremap $ $h
 " Avoid Ex mode
 nnoremap Q o<Esc>
 
+" Preserve cursor position when joining lines
+nnoremap J mzJ`z:delmarks<space>z<CR>
+
 " Easy <ESC> insert mode
 imap jj <Esc>
 

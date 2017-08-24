@@ -215,8 +215,13 @@ set fileformats=unix,dos " File mode unix by default
 set omnifunc=syntaxcomplete#Complete
 
 " Folding settings
-set nofoldenable      " dont fold by default
+set nofoldenable      " don't fold by default
 set foldmethod=indent " fold based on indent
 set foldnestmax=10    " deepest fold is 10 levels
 " set foldlevel=1
 
+set history=1000    " keep 1000 lines of command line history
+set undolevels=1000 " Set the number the undos per file
+
+" We already have the statusline, we don't need this
+set noshowmode
