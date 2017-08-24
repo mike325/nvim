@@ -109,10 +109,10 @@ augroup end
 
 augroup FileTypeDetect
     autocmd!
-    autocmd BufRead,BufNewFile gitconfig                        setlocal filetype=gitconfig
-    autocmd BufRead,BufNewFile *.bash*                          setlocal filetype=sh
-    autocmd BufRead,BufNewFile *.in,*.si,*.sle                  setlocal filetype=conf
-    autocmd BufNewFile,BufRead *.nginx.conf*,nginx.conf,*.nginx setlocal filetype=nginx
+    autocmd BufRead,BufNewFile gitconfig          setlocal filetype=gitconfig
+    autocmd BufRead,BufNewFile *.bash*            setlocal filetype=sh
+    autocmd BufRead,BufNewFile *.in,*.si,*.sle    setlocal filetype=conf
+    autocmd BufNewFile,BufReadPre /*/nginx/*.conf setlocal filetype=nginx
 augroup end
 
 " *currently no all functions work

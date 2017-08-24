@@ -245,6 +245,7 @@ Plug 'peterhoeg/vim-qml'
 Plug 'plasticboy/vim-markdown'
 Plug 'bjoernd/vim-syntax-simics'
 Plug 'kurayama/systemd-vim-syntax'
+Plug 'evanmiller/nginx-vim-syntax'
 
 " }}} END Syntax
 
