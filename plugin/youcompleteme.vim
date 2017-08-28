@@ -57,10 +57,21 @@ endif
 
 nnoremap <F5> :YcmForceCompileAndDiagnostics<CR>
 
+function! s:SwitchIncludeSource()
+    " We mark the current file with S to fast switch with 'S or `S and 'I or `I
+    execute "mark S"
+    execute "YcmCompleter GoToInclude"
+    execute "mark I"
+endfunction
+
 augroup YCMGoTo
     autocmd!
-    autocmd FileType c,cpp,python,go nnoremap <buffer> <c-]> :YcmCompleter GoTo<CR>
+    autocmd FileType c,cpp           nnoremap <buffer> <leader>i :YcmCompleter GoToInclude<CR>
+    autocmd FileType c,cpp           command! -buffer Include call s:SwitchIncludeSource()
+    autocmd FileType c,cpp,python,go nnoremap <buffer> <c-}> :YcmCompleter GoTo<CR>
 augroup end
+
+
 
 " nnoremap <leader>F :YcmCompleter FixIt<CR>
 " nnoremap <leader>gr :YcmCompleter GoToReferences<CR>

@@ -60,5 +60,9 @@ elseif has("gui_running")
     " TODO: Add Linux gui fonts (I don't use gVim in Linux, but may be useful)
     if has("win32") || has("win64")
         set guifont=DejaVu_Sans_Mono_for_Powerline:h11,DejaVu_Sans_Mono:h11
+    else
+        " Make shift-insert work like in Xterm
+        map <S-Insert> <MiddleMouse>
+        map! <S-Insert> <MiddleMouse>
     endif
 endif

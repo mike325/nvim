@@ -127,6 +127,7 @@ function! s:SetIgnorePatterns() " Create Ignore rules {{{
     " Clean settings before assign the ignore stuff, just lazy stuff
     execute "set wildignore="
     execute "set backupskip="
+    " set suffixes=.bak,~,.swp,.o,.info,.aux,.log,.dvi,.bbl,.blg,.brf,.cb,.ind,.idx,.ilg,.inx,.out,.toc,.png,.jpg
 
     " Set system ignores and skips
     for [ l:ignore_type, l:ignore_list ] in items(g:ignores)
@@ -365,7 +366,35 @@ if ( has("python") || has("python3") ) " Python base completions {{{
     " Plug 'OmniSharp/omnisharp-vim', { 'do': function('BuildOmniSharp') }
 
     " Awesome Async completion engine for Neovim
-    if ( has("nvim") && has("python3") )
+    if (has("unix") || ((has("win32") || has("win64")) && executable("msbuild"))) &&
+        \  (has("nvim") || (v:version >= 800) || (v:version == 704 && has("patch1578")) )
+
+        function! BuildYCM(info)
+            if a:info.status == 'installed' || a:info.force
+                " !./install.py --all
+                " !./install.py --gocode-completer --tern-completer --clang-completer --omnisharp-completer
+                let l:code_completion = " --clang-completer"
+                if executable('go')
+                    let l:code_completion .= " --gocode-completer"
+                elseif executable("npm")
+                    let l:code_completion .= " --tern-completer"
+                elseif executable("mono")
+                    let l:code_completion .= " --omnisharp-completer"
+                endif
+
+                execute "!./install.py" . l:code_completion
+
+            endif
+        endfunction
+
+        " Install ycm if Neovim/vim 8/Vim 7.143 is running on unix or
+        " If it is running on windows with Neovim/Vim 8/Vim 7.143 and ms C compiler
+        Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') }
+
+        " C/C++ project generator
+        Plug 'rdnetto/ycm-generator', { 'branch': 'stable' }
+        let b:ycm_installed = 1
+    elseif ( has("nvim") && has("python3") )
         Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 
         " Python completion
@@ -405,34 +434,6 @@ if ( has("python") || has("python3") ) " Python base completions {{{
 
         let b:deoplete_installed = 1
 
-    elseif (has("unix") || ((has("win32") || has("win64")) && executable("msbuild"))) &&
-        \  (has("nvim") || (v:version >= 800) || (v:version == 704 && has("patch1578")) )
-
-        function! BuildYCM(info)
-            if a:info.status == 'installed' || a:info.force
-                " !./install.py --all
-                " !./install.py --gocode-completer --tern-completer --clang-completer --omnisharp-completer
-                let l:code_completion = " --clang-completer"
-                if executable('go')
-                    let l:code_completion .= " --gocode-completer"
-                elseif executable("npm")
-                    let l:code_completion .= " --tern-completer"
-                elseif executable("mono")
-                    let l:code_completion .= " --omnisharp-completer"
-                endif
-
-                execute "!./install.py" . l:code_completion
-
-            endif
-        endfunction
-
-        " Install ycm if Neovim/vim 8/Vim 7.143 is running on unix or
-        " If it is running on windows with Neovim/Vim 8/Vim 7.143 and ms C compiler
-        Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') }
-
-        " C/C++ project generator
-        Plug 'rdnetto/ycm-generator', { 'branch': 'stable' }
-        let b:ycm_installed = 1
     elseif ( v:version >= 800 ) || has("nvim")
         " Test new completion Async framework that require python and vim 8 or
         " Neovim (without python3)
