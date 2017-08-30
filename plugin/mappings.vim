@@ -89,6 +89,9 @@ nnoremap <silent> N :call <SID>nice_next('N')<cr>
 " Change word under cursor and dot repeat
 nnoremap c* *Ncgn
 nnoremap c# #NcgN
+nnoremap cg* g*Ncgn
+nnoremap cg# g#NcgN
+xnoremap <silent> c y/<C-r>"<CR>Ncgn
 
 " Fucking Spanish keyboard
 nnoremap ¿ `
