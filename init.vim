@@ -416,7 +416,11 @@ if ( has("python") || has("python3") ) " Python base completions {{{
 
             function! GoCompletion(info)
                 if !executable("gocode")
-                    !go get -u github.com/nsf/gocode
+                    if has("win32") || has("win64")
+                        !go get -u -ldflags -H=windowsgui github.com/nsf/gocode
+                    else
+                        !go get -u github.com/nsf/gocode
+                    endif
                 endif
                 make
             endfunction
