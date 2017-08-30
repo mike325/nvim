@@ -1,6 +1,6 @@
 " ############################################################################
 "
-"                            Signature  settings
+"                              Signify settings
 "
 "                                     -`
 "                     ...            .o+`
@@ -24,14 +24,20 @@
 "
 " ############################################################################
 
-if !exists('g:plugs["vim-signature"]')
+if !exists('g:plugs["vim-signify"]')
     finish
 endif
 
-" nnoremap <leader><leader>g :SignatureListGlobalMarks<CR>
-" inoremap <C-s>g <ESC>:SignatureListGlobalMarks<CR>
+let g:signify_cursorhold_insert     = 1
+let g:signify_cursorhold_normal     = 1
+let g:signify_update_on_bufenter    = 0
 
-" nnoremap <leader><leader>b :SignatureListBufferMarks<CR>
-" inoremap <C-s>b <ESC>:SignatureListBufferMarks<CR>
+nmap ]h <plug>(signify-next-hunk)
+nmap [h <plug>(signify-prev-hunk)
+" nmap ]h 9999<leader>gj
+" nmap ]h 9999<leader>gk
 
-" nnoremap tS :SignatureToggleSigns<CR>
+omap ih <plug>(signify-motion-inner-pending)
+xmap ih <plug>(signify-motion-inner-visual)
+omap ah <plug>(signify-motion-outer-pending)
+xmap ah <plug>(signify-motion-outer-visual)

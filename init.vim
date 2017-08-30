@@ -255,8 +255,9 @@ Plug 'evanmiller/nginx-vim-syntax'
 Plug 'scrooloose/nerdtree', { 'on': [ 'NERDTreeToggle' ] }
 Plug 'Xuyuanp/nerdtree-git-plugin', { 'on': [ 'NERDTreeToggle' ] }
 Plug 'mhinz/vim-grepper'
-Plug 'xolox/vim-misc'
+
 Plug 'xolox/vim-session'
+Plug 'xolox/vim-misc'
 
 if executable("ctags")
     " Simple view of Tags using ctags
@@ -503,8 +504,13 @@ if (has("nvim") || (v:version >= 704))
     Plug 'kana/vim-textobj-entire'
     Plug 'michaeljsmith/vim-indent-object'
     Plug 'jceb/vim-textobj-uri'
+    " Conflict with Comment text object
+    " TODO: Solve this crap in the future
     " Plug 'coderifous/textobj-word-column.vim'
 endif
+
+" JSON text objects
+Plug 'tpope/vim-jdaddy'
 
 " Better motions
 Plug 'easymotion/vim-easymotion'
