@@ -50,12 +50,18 @@ let g:ctrlp_funky_sort_by_mru   = 1
 
 let g:ctrlp_cache_dir = g:parent_dir . 'cache/ctrlp'
 
- if &runtimepath =~ 'ctrlp-py-matcher' && has("python")
+if exists('g:plugs["ctrlp-cmatcher"]')
+    let g:ctrlp_match_func = {'match' : 'matcher#cmatch' }
+
+    " Set no file limit, we are building a big project
+    let g:ctrlp_max_files   = 0
+    " let g:ctrlp_lazy_update = 350
+elseif exists('g:plugs["ctrlp-py-matcher"]')
     let g:ctrlp_match_func = { 'match': 'pymatcher#PyMatch' }
 
     " Set no file limit, we are building a big project
-    let g:ctrlp_max_files = 0
-    " let g:ctrlp_lazy_update         = 350
+    let g:ctrlp_max_files   = 0
+    " let g:ctrlp_lazy_update = 350
 endif
 
 if executable("ag")

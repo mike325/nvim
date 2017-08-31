@@ -296,19 +296,19 @@ if has("python") || has("pyhton3")
         " - status: 'installed', 'updated', or 'unchanged'
         " - force:  set on PlugInstall! or PlugUpdate!
         if a:info.status == 'installed' || a:info.force
-            if ( has("win32") || has("win64") ) && executable("gcc")
+            if ( has("win32") || has("win64") ) && ( executable("gcc") || executable("clang") )
                 !./install_windows.bat
-            else
+            elseif executable("gcc") || executable("clang")
                 !./install.sh
             endif
         endif
     endfunction
 
     " Faster matcher for ctrlp
-    Plug 'FelikZ/ctrlp-py-matcher'
+    " Plug 'FelikZ/ctrlp-py-matcher'
 
     " Fast and 'easy' to compile C CtrlP matcher
-    " Plug 'JazzCore/ctrlp-cmatcher', { 'do': function('BuildCtrlPMatcher') }
+    Plug 'JazzCore/ctrlp-cmatcher', { 'do': function('BuildCtrlPMatcher') }
 
     " The fastes matcher (as far as I know) but way more complicated to setup
     " Plug 'nixprime/cpsm'
