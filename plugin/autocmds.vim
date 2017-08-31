@@ -44,10 +44,10 @@ augroup end
 " We don't need Vim's temp files here
 augroup DisableTemps
     autocmd!
-    autocmd BufReadPre gitcommit setlocal nobackup
-    autocmd BufReadPre *.log     setlocal noswapfile nobackup
-    autocmd BufReadPre *.txt     setlocal noswapfile nobackup
-    autocmd BufReadPre /tmp/*    setlocal noswapfile nobackup noundofile
+    autocmd BufNewFile,BufRead,BufEnter gitcommit setlocal noswapfile nobackup
+    autocmd BufNewFile,BufRead,BufEnter *.log     setlocal noswapfile nobackup
+    autocmd BufNewFile,BufRead,BufEnter *.txt     setlocal noswapfile nobackup
+    autocmd BufNewFile,BufRead,BufEnter /tmp/*    setlocal noswapfile nobackup noundofile
 augroup end
 
 if has("nvim")
@@ -136,9 +136,32 @@ augroup omnifuncs
     autocmd FileType cs            setlocal omnifunc=OmniSharp#Complete
     autocmd FileType php           setlocal omnifunc=phpcomplete#CompletePHP
     autocmd FileType java          setlocal omnifunc=javacomplete#Complete
+    autocmd FileType cpp           setlocal omnifunc=omni#cpp#complete#Main
+    autocmd FileType c             setlocal omnifunc=ccomplete#Complete
+augroup end
 
-    autocmd BufNewFile,BufRead,BufEnter *.cpp,*.hpp setlocal omnifunc=omni#cpp#complete#Main
-    autocmd BufNewFile,BufRead,BufEnter *.c,*.h     setlocal omnifunc=ccomplete#Complete
+augroup IndentSettings
+    autocmd!
+    autocmd FileType java setlocal cindent
+    autocmd FileType cpp  setlocal cindent
+    autocmd FileType c    setlocal cindent
+augroup end
+
+augroup TabSettings
+    autocmd!
+    autocmd FileType make setlocal noexpandtab
+augroup end
+
+augroup FoldSettings
+    autocmd!
+    autocmd FileType javascript setlocal foldmethod=syntax
+    autocmd FileType java       setlocal foldmethod=syntax
+    autocmd FileType cpp        setlocal foldmethod=syntax
+    autocmd FileType c          setlocal foldmethod=syntax
+    autocmd FileType go         setlocal foldmethod=syntax
+    autocmd FileType python     setlocal foldmethod=indent
+    autocmd FileType vim        setlocal foldmethod=indent " May change this for foldmarker
+    autocmd FileType markdown   setlocal foldmethod=indent
 augroup end
 
 " Spell {{{
@@ -156,6 +179,7 @@ augroup end
 
 " Skeletons {{{
 " TODO: Improve personalization of the templates
+" TODO: Create custom cmd
 
 function! CMainOrFunc()
 
