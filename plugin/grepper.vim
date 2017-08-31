@@ -28,11 +28,15 @@ if !exists('g:plugs["vim-grepper"]')
     finish
 endif
 
-let g:grepper       = {}    " initialize g:grepper with empty dictionary
-let g:grepper.jump  = 0
-let g:grepper.open  = 1
-let g:grepper.tools = ['git', 'ag', 'ack', 'grep', 'findstr']
-let g:grepper.dir   = 'repo,cwd'
+let g:grepper               = {}    " initialize g:grepper with empty dictionary
+let g:grepper.open          = 1
+let g:grepper.jump          = 0
+let g:grepper.switch        = 0
+let g:grepper.highlight     = 1
+let g:grepper.simple_prompt = 1
+let g:grepper.tools         = ['git', 'ag', 'ack', 'grep', 'findstr'] " may add rg
+" let g:grepper.repo          = ['.git', '.hg', '.svn'] " This is already the default
+let g:grepper.dir           = 'repo,filecwd'
 
 " let g:grepper.highlight = 1
 " let g:grepper.rg.grepprg .= ' --smart-case'
@@ -40,13 +44,13 @@ let g:grepper.dir   = 'repo,cwd'
 " I like to keep Ag and grep as a ignore case searchers (smart case for Ag)
 " and git as a case sensitive project searcher
 let g:grepper.ag = {
-    \ 'grepprg':    'ag -S -U --hidden --ignore .ropeproject --ignore .git --ignore .svn --ignore .hg --vimgrep',
+    \ 'grepprg':    'ag -S -U --hidden --vimgrep' . g:ignore_patterns.ag,
     \ 'grepformat': '%f:%l:%c:%m,%f:%l:%m',
     \ 'escape':     '\^$.*+?()[]{}|',
     \ }
 
 let g:grepper.grep = {
-    \ 'grepprg':    'grep --exclude-dir .svn --exclude-dir .git --exclude-dir .ropeproject -RIni $*',
+    \ 'grepprg':    'grep -RIn '. g:ignore_patterns.grep .' $*',
     \ 'grepprgbuf': 'grep -HIn -- $* $.',
     \ 'grepformat': '%f:%l:%m',
     \ 'escape':     '\^$.*[]',
