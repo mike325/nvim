@@ -44,7 +44,7 @@ let g:grepper.dir           = 'repo,filecwd'
 " I like to keep Ag and grep as a ignore case searchers (smart case for Ag)
 " and git as a case sensitive project searcher
 let g:grepper.ag = {
-    \ 'grepprg':    'ag -S -U --hidden --vimgrep' . g:ignore_patterns.ag,
+    \ 'grepprg':    'ag -S -U --hidden ' . g:ignore_patterns.ag,
     \ 'grepformat': '%f:%l:%c:%m,%f:%l:%m',
     \ 'escape':     '\^$.*+?()[]{}|',
     \ }

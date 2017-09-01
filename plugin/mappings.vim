@@ -89,7 +89,7 @@ nnoremap <silent> N :call <SID>nice_next('N')<cr>
 " https://github.com/alexlafroscia/dotfiles/blob/master/nvim/init.vim
 " -- Smart indent when entering insert mode with i on empty lines --------------
 function! IndentWithI()
-    if len(getline('.')) == 0 && &buftype !~? 'terminal'
+    if len(getline('.')) == 0 && getline('.') != getline('$') && &buftype !~? 'terminal'
         return "\"_ddO"
     else
         return "i"
