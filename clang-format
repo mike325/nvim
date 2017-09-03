@@ -1,0 +1,18 @@
+﻿---
+BasedOnStyle: WebKit
+AlignAfterOpenBracket: DontAlign
+AlignConsecutiveAssignments: 'true'
+AlignConsecutiveDeclarations: 'false'
+AlignTrailingComments: 'true'
+AllowShortFunctionsOnASingleLine: All
+AllowShortIfStatementsOnASingleLine: 'true'
+AllowShortLoopsOnASingleLine: 'true'
+AlwaysBreakBeforeMultilineStrings: 'true'
+BreakStringLiterals: 'true'
+Cpp11BracedListStyle: 'true'
+IndentCaseLabels: 'true'
+SortIncludes: 'true'
+Standard: Cpp11
+UseTab: Never
+
+...
