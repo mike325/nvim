@@ -224,363 +224,367 @@ call s:InitConfigs()
 
 let mapleader="\<Space>"
 
-call plug#begin(g:base_path.'plugged')
+if !exists('g:minimal')
 
-" ####### Colorschemes {{{
+    call plug#begin(g:base_path.'plugged')
 
-Plug 'morhetz/gruvbox'
-Plug 'sickill/vim-monokai'
-Plug 'nanotech/jellybeans.vim'
-Plug 'whatyouhide/vim-gotham'
-Plug 'joshdick/onedark.vim'
+    " ####### Colorschemes {{{
 
-" }}} END Colorschemes
+    Plug 'morhetz/gruvbox'
+    Plug 'sickill/vim-monokai'
+    Plug 'nanotech/jellybeans.vim'
+    Plug 'whatyouhide/vim-gotham'
+    Plug 'joshdick/onedark.vim'
 
-" ####### Syntax {{{
+    " }}} END Colorschemes
 
-Plug 'ekalinin/Dockerfile.vim'
-Plug 'elzr/vim-json'
-Plug 'tbastos/vim-lua'
-Plug 'octol/vim-cpp-enhanced-highlight'
-Plug 'peterhoeg/vim-qml'
-Plug 'plasticboy/vim-markdown'
-Plug 'bjoernd/vim-syntax-simics'
-Plug 'kurayama/systemd-vim-syntax'
-Plug 'evanmiller/nginx-vim-syntax'
+    " ####### Syntax {{{
 
-" }}} END Syntax
+    Plug 'ekalinin/Dockerfile.vim'
+    Plug 'elzr/vim-json'
+    Plug 'tbastos/vim-lua'
+    Plug 'octol/vim-cpp-enhanced-highlight'
+    Plug 'peterhoeg/vim-qml'
+    Plug 'plasticboy/vim-markdown'
+    Plug 'bjoernd/vim-syntax-simics'
+    Plug 'kurayama/systemd-vim-syntax'
+    Plug 'evanmiller/nginx-vim-syntax'
 
-" ####### Project base {{{
+    " }}} END Syntax
 
-Plug 'scrooloose/nerdtree', { 'on': [ 'NERDTreeToggle' ] }
-Plug 'Xuyuanp/nerdtree-git-plugin', { 'on': [ 'NERDTreeToggle' ] }
-Plug 'mhinz/vim-grepper'
+    " ####### Project base {{{
 
-Plug 'xolox/vim-session'
-Plug 'xolox/vim-misc'
+    Plug 'scrooloose/nerdtree', { 'on': [ 'NERDTreeToggle' ] }
+    Plug 'Xuyuanp/nerdtree-git-plugin', { 'on': [ 'NERDTreeToggle' ] }
+    Plug 'mhinz/vim-grepper'
 
-if executable("ctags")
-    " Simple view of Tags using ctags
-    Plug 'majutsushi/tagbar'
-endif
+    Plug 'xolox/vim-session'
+    Plug 'xolox/vim-misc'
 
-" Syntax check
-if has("python") || has("pyhton3")
-    if has("nvim") || ( v:version >= 800 )
-        Plug 'neomake/neomake'
-    else
-        Plug 'vim-syntastic/syntastic'
+    if executable("ctags")
+        " Simple view of Tags using ctags
+        Plug 'majutsushi/tagbar'
     endif
-endif
 
-" Autoformat tools
-" TODO Check this fork, No +python required
-" Plug 'umitkablan/vim-auf'
-" TODO Check google's own formatter
-" Plug 'google/vim-codefmt'
-if (has("nvim") || (v:version >= 704))
-    " Code Format tool
-    Plug 'chiel92/vim-autoformat'
-endif
-
-" Easy alignment
-Plug 'godlygeek/tabular'
-
-Plug 'ctrlpvim/ctrlp.vim', { 'on': [ 'CtrlPBuffer', 'CtrlP', 'CtrlPMRUFiles'] }
-" Plug 'tacahiroy/ctrlp-funky'
-
-if has("python") || has("pyhton3")
-    function! BuildCtrlPMatcher(info)
-        " info is a dictionary with 3 fields
-        " - name:   name of the plugin
-        " - status: 'installed', 'updated', or 'unchanged'
-        " - force:  set on PlugInstall! or PlugUpdate!
-        if a:info.status == 'installed' || a:info.force
-            if ( has("win32") || has("win64") ) && ( executable("gcc") || executable("clang") )
-                !./install_windows.bat
-            elseif executable("gcc") || executable("clang")
-                !./install.sh
-            endif
+    " Syntax check
+    if has("python") || has("pyhton3")
+        if has("nvim") || ( v:version >= 800 )
+            Plug 'neomake/neomake'
+        else
+            Plug 'vim-syntastic/syntastic'
         endif
-    endfunction
+    endif
 
-    " Faster matcher for ctrlp
-    " Plug 'FelikZ/ctrlp-py-matcher'
+    " Autoformat tools
+    " TODO Check this fork, No +python required
+    " Plug 'umitkablan/vim-auf'
+    " TODO Check google's own formatter
+    " Plug 'google/vim-codefmt'
+    if (has("nvim") || (v:version >= 704))
+        " Code Format tool
+        Plug 'chiel92/vim-autoformat'
+    endif
 
-    " Fast and 'easy' to compile C CtrlP matcher
-    Plug 'JazzCore/ctrlp-cmatcher', { 'do': function('BuildCtrlPMatcher') }
+    " Easy alignment
+    Plug 'godlygeek/tabular'
 
-    " The fastes matcher (as far as I know) but way more complicated to setup
-    " Plug 'nixprime/cpsm'
+    Plug 'ctrlpvim/ctrlp.vim', { 'on': [ 'CtrlPBuffer', 'CtrlP', 'CtrlPMRUFiles'] }
+    " Plug 'tacahiroy/ctrlp-funky'
 
-endif
-
-" }}} END Project base
-
-" ####### Git integration {{{
-
-" Plug 'airblade/vim-gitgutter'
-Plug 'mhinz/vim-signify'
-Plug 'rhysd/committia.vim'
-Plug 'tpope/vim-fugitive'
-Plug 'gregsexton/gitv'
-
-" }}} END Git integration
-
-" ####### Status bar {{{
-
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
-Plug 'enricobacis/vim-airline-clock'
-
-" }}} END Status bar
-
-" ####### Completions {{{
-
-Plug 'Raimondi/delimitMate'
-Plug 'tpope/vim-abolish'
-Plug 'honza/vim-snippets'
-
-if (has("python") || has("python3")) && (has("nvim") || (v:version >= 704))
-    Plug 'SirVer/ultisnips'
-else
-    Plug 'MarcWeber/vim-addon-mw-utils'
-    Plug 'tomtom/tlib_vim'
-    Plug 'garbas/vim-snipmate'
-endif
-
-let b:ycm_installed = 0
-let b:deoplete_installed = 0
-let b:completor = 0
-if ( has("python") || has("python3") ) " Python base completions {{{
-
-    function! BuildOmniSharp(info)
-        if a:info.status == 'installed' || a:info.force
-            if ( has("win32") || has("win64") )
-                !cd server && msbuild
-            else
-                !cd server && xbuild
-            endif
-        endif
-    endfunction
-
-    " Plug 'OmniSharp/omnisharp-vim', { 'do': function('BuildOmniSharp') }
-
-    " Awesome Async completion engine for Neovim
-    if (has("unix") || ((has("win32") || has("win64")) && executable("msbuild"))) &&
-        \  (has("nvim") || (v:version >= 800) || (v:version == 704 && has("patch1578")) )
-
-        function! BuildYCM(info)
+    if has("python") || has("pyhton3")
+        function! BuildCtrlPMatcher(info)
+            " info is a dictionary with 3 fields
+            " - name:   name of the plugin
+            " - status: 'installed', 'updated', or 'unchanged'
+            " - force:  set on PlugInstall! or PlugUpdate!
             if a:info.status == 'installed' || a:info.force
-                " !./install.py --all
-                " !./install.py --gocode-completer --tern-completer --clang-completer --omnisharp-completer
-                let l:code_completion = " --clang-completer"
-                if executable('go')
-                    let l:code_completion .= " --gocode-completer"
-                elseif executable("npm")
-                    let l:code_completion .= " --tern-completer"
-                elseif executable("mono")
-                    let l:code_completion .= " --omnisharp-completer"
+                if ( has("win32") || has("win64") ) && ( executable("gcc") || executable("clang") )
+                    !./install_windows.bat
+                elseif executable("gcc") || executable("clang")
+                    !./install.sh
                 endif
-
-                execute "!./install.py" . l:code_completion
-
             endif
         endfunction
 
-        " Install ycm if Neovim/vim 8/Vim 7.143 is running on unix or
-        " If it is running on windows with Neovim/Vim 8/Vim 7.143 and ms C compiler
-        Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') }
+        " Faster matcher for ctrlp
+        " Plug 'FelikZ/ctrlp-py-matcher'
 
-        " C/C++ project generator
-        Plug 'rdnetto/ycm-generator', { 'branch': 'stable' }
-        let b:ycm_installed = 1
-    elseif ( has("nvim") && has("python3") )
-        Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+        " Fast and 'easy' to compile C CtrlP matcher
+        Plug 'JazzCore/ctrlp-cmatcher', { 'do': function('BuildCtrlPMatcher') }
 
-        " Python completion
-        Plug 'zchee/deoplete-jedi'
+        " The fastes matcher (as far as I know) but way more complicated to setup
+        " Plug 'nixprime/cpsm'
 
-        " C/C++ completion base on clang compiler
-        if executable("clang")
-            Plug 'zchee/deoplete-clang'
-            " Plug 'Shougo/neoinclude.vim'
+    endif
 
-            " A bit faster C/C++ completion
-            " Plug 'tweekmonster/deoplete-clang2'
-        endif
+    " }}} END Project base
 
-        " Go completion
-        " TODO: Check Go completion in Windows
-        if executable("go") && executable("make")
+    " ####### Git integration {{{
 
-            function! GoCompletion(info)
-                if !executable("gocode")
-                    if has("win32") || has("win64")
-                        !go get -u -ldflags -H=windowsgui github.com/nsf/gocode
-                    else
-                        !go get -u github.com/nsf/gocode
-                    endif
+    " Plug 'airblade/vim-gitgutter'
+    Plug 'mhinz/vim-signify'
+    Plug 'rhysd/committia.vim'
+    Plug 'tpope/vim-fugitive'
+    Plug 'gregsexton/gitv'
+
+    " }}} END Git integration
+
+    " ####### Status bar {{{
+
+    Plug 'vim-airline/vim-airline'
+    Plug 'vim-airline/vim-airline-themes'
+    Plug 'enricobacis/vim-airline-clock'
+
+    " }}} END Status bar
+
+    " ####### Completions {{{
+
+    Plug 'Raimondi/delimitMate'
+    Plug 'tpope/vim-abolish'
+    Plug 'honza/vim-snippets'
+
+    if (has("python") || has("python3")) && (has("nvim") || (v:version >= 704))
+        Plug 'SirVer/ultisnips'
+    else
+        Plug 'MarcWeber/vim-addon-mw-utils'
+        Plug 'tomtom/tlib_vim'
+        Plug 'garbas/vim-snipmate'
+    endif
+
+    let b:ycm_installed = 0
+    let b:deoplete_installed = 0
+    let b:completor = 0
+    if ( has("python") || has("python3") ) " Python base completions {{{
+
+        function! BuildOmniSharp(info)
+            if a:info.status == 'installed' || a:info.force
+                if ( has("win32") || has("win64") )
+                    !cd server && msbuild
+                else
+                    !cd server && xbuild
                 endif
-                make
+            endif
+        endfunction
+
+        " Plug 'OmniSharp/omnisharp-vim', { 'do': function('BuildOmniSharp') }
+
+        " Awesome Async completion engine for Neovim
+        if (has("unix") || ((has("win32") || has("win64")) && executable("msbuild"))) &&
+                    \  (has("nvim") || (v:version >= 800) || (v:version == 704 && has("patch1578")) )
+
+            function! BuildYCM(info)
+                if a:info.status == 'installed' || a:info.force
+                    " !./install.py --all
+                    " !./install.py --gocode-completer --tern-completer --clang-completer --omnisharp-completer
+                    let l:code_completion = " --clang-completer"
+                    if executable('go')
+                        let l:code_completion .= " --gocode-completer"
+                    elseif executable("npm")
+                        let l:code_completion .= " --tern-completer"
+                    elseif executable("mono")
+                        let l:code_completion .= " --omnisharp-completer"
+                    endif
+
+                    execute "!./install.py" . l:code_completion
+
+                endif
             endfunction
 
-            Plug 'zchee/deoplete-go', { 'do':function('GoCompletion')}
+            " Install ycm if Neovim/vim 8/Vim 7.143 is running on unix or
+            " If it is running on windows with Neovim/Vim 8/Vim 7.143 and ms C compiler
+            Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') }
+
+            " C/C++ project generator
+            Plug 'rdnetto/ycm-generator', { 'branch': 'stable' }
+            let b:ycm_installed = 1
+        elseif ( has("nvim") && has("python3") )
+            Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+
+            " Python completion
+            Plug 'zchee/deoplete-jedi'
+
+            " C/C++ completion base on clang compiler
+            if executable("clang")
+                Plug 'zchee/deoplete-clang'
+                " Plug 'Shougo/neoinclude.vim'
+
+                " A bit faster C/C++ completion
+                " Plug 'tweekmonster/deoplete-clang2'
+            endif
+
+            " Go completion
+            " TODO: Check Go completion in Windows
+            if executable("go") && executable("make")
+
+                function! GoCompletion(info)
+                    if !executable("gocode")
+                        if has("win32") || has("win64")
+                            !go get -u -ldflags -H=windowsgui github.com/nsf/gocode
+                        else
+                            !go get -u github.com/nsf/gocode
+                        endif
+                    endif
+                    make
+                endfunction
+
+                Plug 'zchee/deoplete-go', { 'do':function('GoCompletion')}
+            endif
+
+            " if executable("php")
+            "     Plug 'padawan-php/deoplete-padawan', { 'do': 'composer install' }
+            " endif
+
+            " JavaScript completion
+            if executable("tern")
+                Plug 'carlitux/deoplete-ternjs'
+            endif
+
+            let b:deoplete_installed = 1
+
+        elseif ( v:version >= 800 ) || has("nvim")
+            " Test new completion Async framework that require python and vim 8 or
+            " Neovim (without python3)
+            Plug 'maralla/completor.vim'
+            let b:completor = 1
         endif
 
-        " if executable("php")
-        "     Plug 'padawan-php/deoplete-padawan', { 'do': 'composer install' }
-        " endif
-
-        " JavaScript completion
-        if executable("tern")
-            Plug 'carlitux/deoplete-ternjs'
+        if ( has("nvim") || ( v:version >= 800 ) || ( v:version >= 704 ) ) &&
+                    \ ( b:ycm_installed==1 || b:deoplete_installed==1 )
+            " Only works with JDK8!!!
+            Plug 'artur-shaik/vim-javacomplete2'
         endif
 
-        let b:deoplete_installed = 1
 
-    elseif ( v:version >= 800 ) || has("nvim")
-        " Test new completion Async framework that require python and vim 8 or
-        " Neovim (without python3)
-        Plug 'maralla/completor.vim'
-        let b:completor = 1
-    endif
+        if b:ycm_installed==0 && b:deoplete_installed==0 && b:completor==0
+            " Completion for python without engines
+            Plug 'davidhalter/jedi-vim'
+        endif
 
-    if ( has("nvim") || ( v:version >= 800 ) || ( v:version >= 704 ) ) &&
-        \ ( b:ycm_installed==1 || b:deoplete_installed==1 )
-        " Only works with JDK8!!!
-        Plug 'artur-shaik/vim-javacomplete2'
-    endif
+    endif " }}} END Python base completions
 
-
+    " completion without python completion engines ( ycm, deoplete or completer )
     if b:ycm_installed==0 && b:deoplete_installed==0 && b:completor==0
-        " Completion for python without engines
-        Plug 'davidhalter/jedi-vim'
+        " Neovim does not support Lua plugins yet
+        if has("lua") && !has("nvim") && (v:version >= 704)
+            Plug 'Shougo/neocomplete.vim'
+        elseif (v:version >= 703) || has("nvim")
+            Plug 'Shougo/neocomplcache.vim'
+            " Plug 'ervandew/supertab'
+            " Plug 'roxma/SimpleAutoComplPop'
+        endif
     endif
 
-endif " }}} END Python base completions
+    " }}} END Completions
 
-" completion without python completion engines ( ycm, deoplete or completer )
-if b:ycm_installed==0 && b:deoplete_installed==0 && b:completor==0
-    " Neovim does not support Lua plugins yet
-    if has("lua") && !has("nvim") && (v:version >= 704)
-        Plug 'Shougo/neocomplete.vim'
-    elseif (v:version >= 703) || has("nvim")
-        Plug 'Shougo/neocomplcache.vim'
-        " Plug 'ervandew/supertab'
-        " Plug 'roxma/SimpleAutoComplPop'
+    " ####### Languages {{{
+
+    Plug 'tpope/vim-endwise'
+    Plug 'fidian/hexmode'
+
+    if (has("nvim") || (v:version >= 704))
+        Plug 'lervag/vimtex'
     endif
+
+    if executable("go")
+        Plug 'fatih/vim-go'
+    endif
+
+    if has("python") || has("python3")
+        Plug 'python-mode/python-mode'
+    endif
+
+    " Easy comments
+    " TODO check other comment plugins with motions
+    Plug 'scrooloose/nerdcommenter'
+
+    " }}} END Languages
+
+    " ####### Text objects, Motions and Text manipulation {{{
+
+    if (has("nvim") || (v:version >= 704))
+        Plug 'sickill/vim-pasta'
+        Plug 'kana/vim-textobj-user'
+        Plug 'kana/vim-textobj-line'
+        Plug 'glts/vim-textobj-comment'
+        Plug 'whatyouhide/vim-textobj-xmlattr'
+        Plug 'kana/vim-textobj-entire'
+        Plug 'michaeljsmith/vim-indent-object'
+        Plug 'jceb/vim-textobj-uri'
+        " Conflict with Comment text object
+        " TODO: Solve this crap in the future
+        " Plug 'coderifous/textobj-word-column.vim'
+    endif
+
+    " JSON text objects
+    Plug 'tpope/vim-jdaddy'
+
+    " Better motions
+    Plug 'easymotion/vim-easymotion'
+
+    " Surround motions
+    Plug 'tpope/vim-surround'
+
+    " Map repeat key . for plugins
+    Plug 'tpope/vim-repeat'
+
+    " }}} END Text objects, Motions and Text manipulation
+
+    " ####### Misc {{{
+
+    " Better buffer deletions
+    Plug 'moll/vim-bbye', { 'on': [ 'Bdelete' ] }
+
+    " Visual marks
+    Plug 'kshenoy/vim-signature'
+
+    " Move with indentation
+    Plug 'matze/vim-move'
+
+    " Easy change text
+    " Plug 'AndrewRadev/switch.vim'
+
+    " Simple Join/Split operators
+    Plug 'AndrewRadev/splitjoin.vim'
+
+    " Expand visual regions
+    Plug 'terryma/vim-expand-region'
+
+    " Display indention
+    Plug 'Yggdroot/indentLine'
+
+    " Change buffer position in the current layout
+    Plug 'wesQ3/vim-windowswap'
+
+    " Handy stuff to navigate
+    Plug 'tpope/vim-unimpaired'
+
+    " Show parameters of the current function
+    Plug 'Shougo/echodoc.vim'
+
+    " TODO: check characters display
+    " Plug 'dodie/vim-disapprove-deep-indentation'
+
+    " Visualize undo tree
+    if has("python") || has("python3")
+        Plug 'sjl/gundo.vim'
+    endif
+
+    " Unix commands
+    if has("unix")
+        Plug 'tpope/vim-eunuch'
+    endif
+
+    " Better defaults for Vim
+    if !has("nvim")
+        Plug 'tpope/vim-sensible'
+    endif
+
+    " }}} END Misc
+
+    " Initialize plugin system
+    call plug#end()
+
 endif
-
-" }}} END Completions
-
-" ####### Languages {{{
-
-Plug 'tpope/vim-endwise'
-Plug 'fidian/hexmode'
-
-if (has("nvim") || (v:version >= 704))
-    Plug 'lervag/vimtex'
-endif
-
-if executable("go")
-    Plug 'fatih/vim-go'
-endif
-
-if has("python") || has("python3")
-    Plug 'python-mode/python-mode'
-endif
-
-" Easy comments
-" TODO check other comment plugins with motions
-Plug 'scrooloose/nerdcommenter'
-
-" }}} END Languages
-
-" ####### Text objects, Motions and Text manipulation {{{
-
-if (has("nvim") || (v:version >= 704))
-    Plug 'sickill/vim-pasta'
-    Plug 'kana/vim-textobj-user'
-    Plug 'kana/vim-textobj-line'
-    Plug 'glts/vim-textobj-comment'
-    Plug 'whatyouhide/vim-textobj-xmlattr'
-    Plug 'kana/vim-textobj-entire'
-    Plug 'michaeljsmith/vim-indent-object'
-    Plug 'jceb/vim-textobj-uri'
-    " Conflict with Comment text object
-    " TODO: Solve this crap in the future
-    " Plug 'coderifous/textobj-word-column.vim'
-endif
-
-" JSON text objects
-Plug 'tpope/vim-jdaddy'
-
-" Better motions
-Plug 'easymotion/vim-easymotion'
-
-" Surround motions
-Plug 'tpope/vim-surround'
-
-" Map repeat key . for plugins
-Plug 'tpope/vim-repeat'
-
-" }}} END Text objects, Motions and Text manipulation
-
-" ####### Misc {{{
-
-" Better buffer deletions
-Plug 'moll/vim-bbye', { 'on': [ 'Bdelete' ] }
-
-" Visual marks
-Plug 'kshenoy/vim-signature'
-
-" Move with indentation
-Plug 'matze/vim-move'
-
-" Easy change text
-" Plug 'AndrewRadev/switch.vim'
-
-" Simple Join/Split operators
-Plug 'AndrewRadev/splitjoin.vim'
-
-" Expand visual regions
-Plug 'terryma/vim-expand-region'
-
-" Display indention
-Plug 'Yggdroot/indentLine'
-
-" Change buffer position in the current layout
-Plug 'wesQ3/vim-windowswap'
-
-" Handy stuff to navigate
-Plug 'tpope/vim-unimpaired'
-
-" Show parameters of the current function
-Plug 'Shougo/echodoc.vim'
-
-" TODO: check characters display
-" Plug 'dodie/vim-disapprove-deep-indentation'
-
-" Visualize undo tree
-if has("python") || has("python3")
-    Plug 'sjl/gundo.vim'
-endif
-
-" Unix commands
-if has("unix")
-    Plug 'tpope/vim-eunuch'
-endif
-
-" Better defaults for Vim
-if !has("nvim")
-    Plug 'tpope/vim-sensible'
-endif
-
-" }}} END Misc
-
-" Initialize plugin system
-call plug#end()
 
 filetype plugin indent on
 
