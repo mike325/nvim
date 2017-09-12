@@ -68,7 +68,7 @@ augroup AutoResize
 augroup end
 
 " TODO: check this in the future
-" augroup autoSaveAndRead
+" augroup AutoSaveAndRead
 "     autocmd!
 "     autocmd TextChanged,InsertLeave,FocusLost * silent! wall
 "     autocmd CursorHold * silent! checktime
@@ -108,11 +108,16 @@ augroup MatchChars
     autocmd FileType xml,html,vim autocmd BufReadPre <buffer> setlocal matchpairs+=<:>
 augroup end
 
-augroup localCR
+augroup QuickQuit
+    autocmd!
+    autocmd BufReadPost quickfix nnoremap <silent> <buffer> q :q!<CR>
+    autocmd FileType netrw       nnoremap <silent> <buffer> q :q!<CR>
+    autocmd FileType help        nnoremap <silent> <buffer> q :q!<CR>
+augroup end
+
+augroup LocalCR
     autocmd!
     autocmd BufReadPost quickfix nnoremap <buffer> <CR> <CR>
-    autocmd BufReadPost quickfix nnoremap <silent> <buffer> q :q!<CR>
-    autocmd FileType help        nnoremap <silent> <buffer> q :q!<CR>
     autocmd CmdwinEnter *        nnoremap <CR> <CR>
 augroup end
 

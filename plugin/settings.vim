@@ -182,8 +182,9 @@ set cursorline     " Turn on cursor line by default
 " I'm currently using, this allow me to quit(q!) without worries
 " set hidden
 
-" set autoread   " Auto-reload buffers when file changed on disk
-" set autowrite  " Write files when navigating with :next/:previous
+set autoread     " Auto-reload buffers when file changed on disk
+set autowrite    " Write files when navigating with :next/:previous
+set autowriteall " Write files when exit vim
 
 " Show invisible characters
 set list
