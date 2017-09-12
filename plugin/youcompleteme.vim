@@ -66,9 +66,10 @@ endfunction
 
 augroup YCMGoTo
     autocmd!
-    autocmd FileType c,cpp           nnoremap <buffer> <leader>i :YcmCompleter GoToInclude<CR>
-    autocmd FileType c,cpp           command! -buffer Include call s:SwitchIncludeSource()
-    autocmd FileType c,cpp,python,go nnoremap <buffer> <c-}> :YcmCompleter GoTo<CR>
+    autocmd FileType c,cpp              nnoremap <buffer> <leader>i :YcmCompleter GoToInclude<CR>
+    autocmd FileType c,cpp              command! -buffer Include :YcmCompleter GoToInclude
+    autocmd FileType c,cpp,python,go,cs command! -buffer Definition :YcmCompleter GoToDefinition
+    autocmd FileType c,cpp,python,go,cs command! -buffer Declaration :YcmCompleter GoToDeclaration
 augroup end
 
 
