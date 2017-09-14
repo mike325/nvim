@@ -62,8 +62,8 @@ nnoremap <S-tab> <C-o>
 " Remove stuff in normal/visual mode without change any register
 " nnoremap <BS> "_
 " vnoremap <BS> "_
-" vnoremap <tab> >gv
-" vnoremap <S-tab> <gv
+vnoremap <tab> >gv
+vnoremap <S-tab> <gv
 
 " Echo the relative path and of the file
 nnoremap <leader><leader>e :echo expand("%")<CR>

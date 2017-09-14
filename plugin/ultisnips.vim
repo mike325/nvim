@@ -45,26 +45,16 @@ let g:ulti_jump_backwards_res = 0
 let g:ulti_jump_forwards_res  = 0
 let g:ulti_expand_res         = 0
 
-function! <SID>ExpandSnippetOrComplete()
-    call UltiSnips#ExpandSnippet()
-    if g:ulti_expand_res == 0
-        if pumvisible()
-            return "\<C-n>"
-        else
-            call UltiSnips#JumpForwards()
-            if g:ulti_jump_forwards_res == 0
-                return "\<TAB>"
-            endif
-        endif
-    endif
-    return ""
-endfunction
-
 function! NextSnippetOrReturn()
     call UltiSnips#ExpandSnippet()
     if g:ulti_expand_res == 0
         if pumvisible()
-            return "\<C-y>"
+            if exists('g:plugs["YouCompleteMe"]')
+                call feedkeys("\<C-y>")
+                return ""
+            else
+                return "\<C-y>"
+            endif
         else
             if exists('g:plugs["delimitMate"]') && delimitMate#WithinEmptyPair()
                 return delimitMate#ExpandReturn()
@@ -79,18 +69,25 @@ function! NextSnippetOrReturn()
     return ""
 endfunction
 
-function! NextSnippetOrNothing()
+function! NextSnippet()
+    if pumvisible()
+        return "\<C-n>"
+    endif
+
     call UltiSnips#JumpForwards()
-    return g:ulti_jump_forwards_res
+    if g:ulti_jump_forwards_res == 0
+        return "\<TAB>"
+    endif
+
+    return ""
 endfunction
 
 function! PrevSnippetOrNothing()
     if pumvisible()
         return "\<C-p>"
-    else
-        call UltiSnips#JumpBackwards()
-        return ""
     endif
+    call UltiSnips#JumpBackwards()
+    return ""
 endfunction
 
 let g:UltiSnipsExpandTrigger       = "<C-e>"
@@ -98,7 +95,7 @@ let g:UltiSnipsExpandTrigger       = "<C-e>"
 " TODO: Improve TAB and S-TAB mappings
 " inoremap <silent><TAB>   <C-R>=<SID>ExpandSnippetOrComplete()<CR>
 " inoremap <silent><S-TAB> <C-R>=PrevSnippetOrNothing()<CR>
-inoremap <expr><TAB>     pumvisible() ? "\<C-n>" : "\<TAB>"
-inoremap <expr><S-TAB>   pumvisible() ? "\<C-p>" : ""
+inoremap <silent><TAB>     <C-R>=NextSnippet()<CR>
+inoremap <silent><S-TAB>   <C-R>=PrevSnippetOrNothing()<CR>
 inoremap <silent><CR>    <C-R>=NextSnippetOrReturn()<CR>
-
+xnoremap <silent><CR>    :call UltiSnips#SaveLastVisualSelection()<CR>gvs
