@@ -55,7 +55,7 @@ if executable("ctags")
     let g:ycm_collect_identifiers_from_tags_files = 1
 endif
 
-nnoremap <F5> :YcmForceCompileAndDiagnostics<CR>
+" nnoremap <F5> :YcmForceCompileAndDiagnostics<CR>
 
 function! s:SwitchIncludeSource()
     " We mark the current file with S to fast switch with 'S or `S and 'I or `I
@@ -71,8 +71,6 @@ augroup YCMGoTo
     autocmd FileType c,cpp,python,go,cs command! -buffer Definition :YcmCompleter GoToDefinition
     autocmd FileType c,cpp,python,go,cs command! -buffer Declaration :YcmCompleter GoToDeclaration
 augroup end
-
-
 
 " nnoremap <leader>F :YcmCompleter FixIt<CR>
 " nnoremap <leader>gr :YcmCompleter GoToReferences<CR>

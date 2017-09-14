@@ -28,8 +28,8 @@ if !exists('g:plugs["vim-autoformat"]')
     finish
 endif
 
-nnoremap <F9> :Autoformat<CR>
-vnoremap <F9> :Autoformat<CR>
+" nnoremap <F9> :Autoformat<CR>
+" vnoremap <F9> :Autoformat<CR>
 
 let g:autoformat_autoindent             = 1
 let g:autoformat_retab                  = 0

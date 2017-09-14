@@ -96,5 +96,5 @@ endif
 " let NERDTreeDirArrowExpandable  = '+'
 " let NERDTreeDirArrowCollapsible = '~'
 
-nnoremap <F3> :NERDTreeToggle<CR>
+" nnoremap <F3> :NERDTreeToggle<CR>
 " nnoremap T :NERDTreeToggle<CR>
