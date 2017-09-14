@@ -291,26 +291,28 @@ if !exists('g:minimal')
     Plug 'ctrlpvim/ctrlp.vim', { 'on': [ 'CtrlPBuffer', 'CtrlP', 'CtrlPMRUFiles'] }
     " Plug 'tacahiroy/ctrlp-funky'
 
-    if has("python") || has("pyhton3")
+    if has("python") || has("python3")
         function! BuildCtrlPMatcher(info)
             " info is a dictionary with 3 fields
             " - name:   name of the plugin
             " - status: 'installed', 'updated', or 'unchanged'
             " - force:  set on PlugInstall! or PlugUpdate!
             if a:info.status == 'installed' || a:info.force
-                if ( has("win32") || has("win64") ) && ( executable("gcc") || executable("clang") )
+                if ( has("win32") || has("win64") )
                     !./install_windows.bat
-                elseif executable("gcc") || executable("clang")
+                else
                     !./install.sh
                 endif
             endif
         endfunction
 
-        " Faster matcher for ctrlp
-        " Plug 'FelikZ/ctrlp-py-matcher'
-
         " Fast and 'easy' to compile C CtrlP matcher
-        Plug 'JazzCore/ctrlp-cmatcher', { 'do': function('BuildCtrlPMatcher') }
+        if executable("gcc") || executable("clang")
+            Plug 'JazzCore/ctrlp-cmatcher', { 'do': function('BuildCtrlPMatcher') }
+        else
+            " Fast matcher for ctrlp
+            Plug 'FelikZ/ctrlp-py-matcher'
+        endif
 
         " The fastes matcher (as far as I know) but way more complicated to setup
         " Plug 'nixprime/cpsm'
