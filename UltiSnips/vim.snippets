@@ -45,3 +45,11 @@ endsnippet
 snippet ex "execute cmd"
 execute '${0:${VISUAL:viml cmd}}'
 endsnippet
+
+snippet try "try ... catch ... endtry"
+try
+	${1:${VISUAL:" Statements}}
+catch $2
+	$0
+endtry
+endsnippet

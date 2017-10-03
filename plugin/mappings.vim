@@ -170,3 +170,8 @@ function! s:OpenQuickfix(size)
 endfunction
 
 command! -nargs=? Copen call s:OpenQuickfix(<q-args>)
+
+command! NumbersToggle set number! number?
+command! RelativeNumbersToggle set relativenumber! relativenumber?
+command! HlSearchToggle set hlsearch! hlsearch?
+command! SpellToggle set spell! spell?
