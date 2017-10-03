@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import with_statement
+from __future__ import division
 import os
 import os.path
 import logging
@@ -37,15 +41,25 @@ BASE_FLAGS = [
     '-Wall',
     '-Wextra',
     '-Werror',
+    '-Weverything',
+    '-Wno-missing-prototypes',
     '-Wno-long-long',
     '-Wno-variadic-macros',
     '-fexceptions',
     '-ferror-limit=10000',
     '-DNDEBUG',
-    '-std=c++11',
-    '-xc++',
+    # '-Wno-c++98-compat',
+    # '-std=c++11',
+    # '-xc++',
+]
+
+LINUX_INCLUDES = [
     '-I/usr/lib/',
     '-I/usr/include/'
+]
+
+WINDOWS_INCLUDES = [
+    # TODO
 ]
 
 SOURCE_EXTENSIONS = [
@@ -73,6 +87,12 @@ HEADER_DIRECTORIES = [
     'include'
 ]
 
+if os.name == 'nt':
+    BASE_FLAGS += WINDOWS_INCLUDES
+else:
+    BASE_FLAGS += LINUX_INCLUDES
+
+
 def IsHeaderFile(filename):
     extension = os.path.splitext(filename)[1]
     return extension in HEADER_EXTENSIONS
@@ -91,7 +111,8 @@ def FindNearest(path, target, build_folder):
     if(build_folder):
         candidate = os.path.join(parent, build_folder, target)
         if(os.path.isfile(candidate) or os.path.isdir(candidate)):
-            logging.info("Found nearest " + target + " in build folder at " + candidate)
+            logging.info("Found nearest " + target +
+                         " in build folder at " + candidate)
             return candidate
 
     return FindNearest(parent, target, build_folder)
@@ -100,10 +121,12 @@ def FindNearest(path, target, build_folder):
 def FlagsForClangComplete(root):
     try:
         clang_complete_path = FindNearest(root, '.clang_complete')
-        clang_complete_flags = open(clang_complete_path, 'r').read().splitlines()
+        clang_complete_flags = open(
+            clang_complete_path, 'r').read().splitlines()
 
         clang_complete_path = FindNearest(root, '.clang')
-        clang_complete_flags += open(clang_complete_path, 'r').read().splitlines()
+        clang_complete_flags += open(clang_complete_path,
+                                     'r').read().splitlines()
         return clang_complete_flags
     except:
         return None
