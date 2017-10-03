@@ -1,0 +1,70 @@
+priority 1
+
+#############################################################################
+#
+#                            Override vim-snippets file
+#
+#                                    -`
+#                    ...            .o+`
+#                 .+++s+   .h`.    `ooo/
+#                `+++%++  .h+++   `+oooo:
+#                +++o+++ .hhs++. `+oooooo:
+#                +s%%so%.hohhoo'  'oooooo+:
+#                `+ooohs+h+sh++`/:  ++oooo+:
+#                 hh+o+hoso+h+`/++++.+++++++:
+#                  `+h+++h.+ `/++++++++++++++:
+#                           `/+++ooooooooooooo/`
+#                          ./ooosssso++osssssso+`
+#                         .oossssso-````/osssss::`
+#                        -osssssso.      :ssss``to.
+#                       :osssssss/  Mike  osssl   +
+#                      /ossssssss/   8a   +sssslb
+#                    `/ossssso+/:-        -:/+ossss'.-
+#                   `+sso+:-`                 `.-/+oso:
+#                  `++:.  github.com/mike325/.vim  `-/+/
+#                  .`                                 `/
+#
+#############################################################################
+
+snippet if "if ... then (if)"
+if [[ ${1:condition} ]]; then
+	${0:${VISUAL:#statements}}
+fi
+endsnippet
+
+snippet until "until ... (done)"
+until [[ ${1:condition} ]]; do
+	${0:${VISUAL:#statements}}
+done
+endsnippet
+
+snippet while "while ... (done)"
+while [[ ${1:condition} ]]; do
+	${0:${VISUAL:#statements}}
+done
+endsnippet
+
+snippet case "case .. esac (case)"
+case ${1:word} in
+	${2:pattern} )
+		${0:${VISUAL:#statements}}
+		;;
+esac
+endsnippet
+
+snippet elif "elif .. (elif)"
+elif [[ ${1:condition} ]]; then
+	${0:${VISUAL:#statements}}
+endsnippet
+
+snippet for "for ... done (for)"
+for (( i = 0; i < ${1:10}; i++ )); do
+	${0:${VISUAL:#statements}}
+done
+endsnippet
+
+snippet forin "for ... in ... done (forin)"
+for ${1:i}${2/.+/ in /}${2:words}; do
+	${0:${VISUAL:#statements}}
+done
+endsnippet

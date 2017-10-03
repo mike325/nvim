@@ -1,6 +1,6 @@
 " ############################################################################
 "
-"                              Delimate settings
+"                              DelimitMate settings
 "
 "                                     -`
 "                     ...            .o+`
@@ -25,28 +25,19 @@
 " ############################################################################
 
 if !exists('g:plugs["delimitMate"]')
-    if !exists('g:plugs["ultisnips"]')
-        inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<CR>"
-    endif
     finish
 endif
+
+" function! BetterBackspace()
+" endfunction
+
+let g:delimitMate_expand_space = 1
 
 " let delimitMate_matchpairs = "(:),[:],{:},<:>"
 " au FileType vim,html let b:delimitMate_matchpairs = "(:),[:],{:},<:>"
 
+silent! iunmap <BS>
+silent! imap <unique> <buffer> <BS> <Plug>delimitMateBS
+
 " let delimitMate_expand_space = 1
 " au FileType tcl let b:delimitMate_expand_space = 1
-
-if !exists('g:plugs["ultisnips"]')
-    function! HandleEmptyPairs()
-        if pumvisible()
-            return "\<C-y>"
-        endif
-
-        return delimitMate#ExpandReturn()
-    endfunction
-
-    inoremap <silent><CR>  <C-R>=HandleEmptyPairs()<CR>
-
-    finish
-endif

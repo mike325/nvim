@@ -28,6 +28,22 @@ if !exists('g:plugs["ultisnips"]')
     inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
     inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : ""
 
+    function! NextSnippetOrReturn()
+        if pumvisible()
+            if exists('g:plugs["YouCompleteMe"]')
+                call feedkeys("\<C-y>")
+                return ""
+            else
+                return "\<C-y>"
+            endif
+        elseif exists('g:plugs["delimitMate"]') && delimitMate#WithinEmptyPair()
+            return delimitMate#ExpandReturn()
+        endif
+        return "\<CR>"
+    endfunction
+
+    inoremap <silent><CR>    <C-R>=NextSnippetOrReturn()<CR>
+
     finish
 endif
 
@@ -35,6 +51,8 @@ endif
 let g:UltiSnipsEditSplit          = "context"
 let g:UltiSnipsSnippetsDir        = g:base_path . "UltiSnips"
 let g:UltiSnipsSnippetDirectories = ["UltiSnips"]
+let g:UltiSnipsExpandTrigger      = "<C-e>"
+
 
 if has('python3')
     let g:UltiSnipsUsePythonVersion = 3
@@ -89,8 +107,6 @@ function! PrevSnippetOrNothing()
     call UltiSnips#JumpBackwards()
     return ""
 endfunction
-
-let g:UltiSnipsExpandTrigger       = "<C-e>"
 
 " TODO: Improve TAB and S-TAB mappings
 " inoremap <silent><TAB>   <C-R>=<SID>ExpandSnippetOrComplete()<CR>

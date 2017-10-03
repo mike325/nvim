@@ -139,15 +139,18 @@ set fileencoding=utf-8 " The encoding written to file.
 
 set titlestring=%t\ (%f)
 set title          " Set window title
-set laststatus=2   " don't combine status line with command line
+set laststatus=2   " Always show the status line
 set lazyredraw     " Don't draw when a macro is being executed
 set splitright     " Split on the right size
 set nowrap         " By default don't wrap the lines
 set showmatch      " Show matching parenthesis
 set number         " Show line numbers
 set relativenumber " Show line numbers in motions friendly way
-set syntax=on      " add syntax highlighting
 set ruler
+
+if exists("+syntax")
+    syntax enable      " Switch on syntax highlighting
+endif
 
 " Improve perfomance by just highlighting the first 200 chars
 set synmaxcol=200

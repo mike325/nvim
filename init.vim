@@ -224,6 +224,12 @@ call s:InitConfigs()
 
 let mapleader="\<Space>"
 
+" If there are no plugins available and we don't have git
+" fallback to minimal mode
+if !executable("git") && !isdirectory(fnameescape(g:base_path.'plugged'))
+    let g:minimal = 1
+endif
+
 if !exists('g:minimal')
 
     call plug#begin(g:base_path.'plugged')
@@ -254,7 +260,7 @@ if !exists('g:minimal')
 
     " ####### Project base {{{
 
-    Plug 'scrooloose/nerdtree', { 'on': [ 'NERDTreeToggle' ] }
+    Plug 'scrooloose/nerdtree', { 'on': [ 'NERDTree', 'NERDTreeToggle' ] }
     Plug 'Xuyuanp/nerdtree-git-plugin', { 'on': [ 'NERDTreeToggle' ] }
     Plug 'mhinz/vim-grepper'
 

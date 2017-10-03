@@ -74,6 +74,11 @@ augroup end
 "     autocmd CursorHold * silent! checktime
 " augroup end
 
+augroup LastEditPosition
+    autocmd!
+    autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+augroup end
+
 " Set small sidescroll in log plaintext files
 augroup SideScroll
     autocmd!
@@ -92,8 +97,13 @@ function! RemoveTrailingWhitespaces()
 
     "Save last cursor position
     let savepos = getpos('.')
-    silent! exec '%s/\s\+$//e'
+    " Save last search query
+    let old_query = getreg('/')
+
+    silent! execute '%s/\s\+$//e'
+
     call setpos('.', savepos)
+    call setreg('/', old_query)
 endfunction
 
 " Trim whitespace in selected files
@@ -193,15 +203,15 @@ function! CMainOrFunc()
 
     if b:extension =~# "^cpp$"
         if b:file_name =~# "^main$"
-            exec '0r '.fnameescape(g:parent_dir.'skeletons/main.cpp')
+            execute '0r '.fnameescape(g:parent_dir.'skeletons/main.cpp')
         else
-            exec '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.cpp')
+            execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.cpp')
         endif
     else
         if b:file_name =~# "^main$"
-            exec '0r '.fnameescape(g:parent_dir.'skeletons/main.c')
+            execute '0r '.fnameescape(g:parent_dir.'skeletons/main.c')
         else
-            exec '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.c')
+            execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.c')
         endif
     endif
 
@@ -215,11 +225,11 @@ function! CHeader()
     let b:upper_name = toupper(b:file_name)
 
     if b:extension =~# "^hpp$"
-        exec '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.hpp')
-        exec '%s/NAME_HPP/'.b:upper_name.'_HPP/g'
+        execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.hpp')
+        execute '%s/NAME_HPP/'.b:upper_name.'_HPP/g'
     else
-        exec '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.h')
-        exec '%s/NAME_H/'.b:upper_name.'_H/g'
+        execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.h')
+        execute '%s/NAME_H/'.b:upper_name.'_H/g'
     endif
 
 endfunction
@@ -228,22 +238,22 @@ function! JavaClass()
     let b:file_name = expand('%:t:r')
     let b:extension = expand('%:e')
 
-    exec '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.java')
-    exec '%s/NAME/'.b:file_name.'/e'
+    execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.java')
+    execute '%s/NAME/'.b:file_name.'/e'
 endfunction
 
 augroup Skeletons
     autocmd!
-    autocmd BufNewFile *.css  silent! exec '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.css')
-    autocmd BufNewFile *.html silent! exec '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.html')
-    autocmd BufNewFile *.md   silent! exec '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.md')
-    autocmd BufNewFile *.js   silent! exec '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.js')
-    autocmd BufNewFile *.xml  silent! exec '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.xml')
-    autocmd BufNewFile *.py   silent! exec '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.py')
-    autocmd BufNewFile *.go   silent! exec '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.go')
-    autocmd BufNewFile *.cs   silent! exec '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.cs')
-    autocmd BufNewFile *.php  silent! exec '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.php')
-    autocmd BufNewFile *.sh   silent! exec '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.sh')
+    autocmd BufNewFile *.css  silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.css')
+    autocmd BufNewFile *.html silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.html')
+    autocmd BufNewFile *.md   silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.md')
+    autocmd BufNewFile *.js   silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.js')
+    autocmd BufNewFile *.xml  silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.xml')
+    autocmd BufNewFile *.py   silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.py')
+    autocmd BufNewFile *.go   silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.go')
+    autocmd BufNewFile *.cs   silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.cs')
+    autocmd BufNewFile *.php  silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.php')
+    autocmd BufNewFile *.sh   silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.sh')
     autocmd BufNewFile *.java silent! call JavaClass()
     autocmd BufNewFile *.cpp  silent! call CMainOrFunc()
     autocmd BufNewFile *.hpp  silent! call CHeader()

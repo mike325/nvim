@@ -51,11 +51,36 @@ let g:ycm_key_detailed_diagnostics                  = '<leader>D'
 "             \ 'mail' : 1
 " \}
 
+let g:ycm_key_list_select_completion   = ['<C-n>', '<Down>']
+let g:ycm_key_list_previous_completion = ['<C-p>', '<Up>']
+" let g:ycm_key_list_stop_completion     = ['<C-y>', '<CR>']
+
+" let g:ycm_error_symbol   = 'E'
+" let g:ycm_warning_symbol = 'W'
+
+let g:ycm_error_symbol   = '✖'
+let g:ycm_warning_symbol = '⚠'
+
+" let g:ycm_extra_conf_globlist   = ['~/.vim/*']
+if filereadable(fnameescape(getcwd() . "/.git/ycm_extra_conf.py"))
+    let g:ycm_global_ycm_extra_conf = fnameescape(getcwd() . "/.git/ycm_extra_conf.py")
+elseif filereadable(fnameescape(g:base_path . "ycm_extra_conf.py"))
+    let g:ycm_global_ycm_extra_conf = fnameescape(g:base_path . "ycm_extra_conf.py")
+endif
+
 if executable("ctags")
     let g:ycm_collect_identifiers_from_tags_files = 1
 endif
 
-" nnoremap <F5> :YcmForceCompileAndDiagnostics<CR>
+" In case there are other completion plugins
+" let g:ycm_filetype_blacklist = {
+"       \ 'tagbar' : 1,
+"       \}
+
+" In case there are other completion plugins
+" let g:ycm_filetype_specific_completion_to_disable = {
+"       \ 'gitcommit': 1
+"       \}
 
 function! s:SwitchIncludeSource()
     " We mark the current file with S to fast switch with 'S or `S and 'I or `I
@@ -79,29 +104,5 @@ augroup end
 " nnoremap <leader>gi :YcmCompleter GoToInclude<CR>
 " nnoremap <leader>gt :YcmCompleter GetType<CR>
 
-let g:ycm_key_list_select_completion   = ['<C-n>', '<Down>']
-let g:ycm_key_list_previous_completion = ['<C-p>', '<Up>']
-" let g:ycm_key_list_stop_completion     = ['<C-y>', '<CR>']
+" nnoremap <F5> :YcmForceCompileAndDiagnostics<CR>
 
-" let g:ycm_error_symbol   = 'E'
-" let g:ycm_warning_symbol = 'W'
-
-let g:ycm_error_symbol   = '✖'
-let g:ycm_warning_symbol = '⚠'
-
-" let g:ycm_extra_conf_globlist   = ['~/.vim/*']
-if filereadable(fnameescape(getcwd() . "/.git/ycm_extra_conf.py"))
-    let g:ycm_global_ycm_extra_conf = fnameescape(getcwd() . "/.git/ycm_extra_conf.py")
-elseif filereadable(fnameescape(g:base_path . "ycm_extra_conf.py"))
-    let g:ycm_global_ycm_extra_conf = fnameescape(g:base_path . "ycm_extra_conf.py")
-endif
-
-" In case there are other completion plugins
-" let g:ycm_filetype_blacklist = {
-"       \ 'tagbar' : 1,
-"       \}
-
-" In case there are other completion plugins
-" let g:ycm_filetype_specific_completion_to_disable = {
-"       \ 'gitcommit': 1
-"       \}
