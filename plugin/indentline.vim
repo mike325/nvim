@@ -33,8 +33,14 @@ endif
 " set list lcs=tab:\┊\
 " Check plugin/settings.vim for more details
 
-nnoremap tdi :IndentLinesToggle<CR>
-let g:indentLine_char            = '┊'
+" nnoremap tdi :IndentLinesToggle<CR>
+
+if empty($NO_COOL_FONTS)
+    let g:indentLine_char            = '┊'
+else
+    let g:indentLine_char            = ':'
+endif
+
 let g:indentLine_color_gui       = '#DDC188'
 let g:indentLine_color_term      = 214
 let g:indentLine_enabled         = 1

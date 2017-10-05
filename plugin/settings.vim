@@ -196,9 +196,14 @@ set autowriteall " Write files when exit vim
 
 " Show invisible characters
 set list
-" set listchars=tab:\┊\ ,trail:•,extends:❯,precedes:❮
-" I like to have different chars for spaces and tabs (see IndentLine plugin)
-set listchars=tab:▸\ ,trail:•,extends:❯,precedes:❮
+
+if empty($NO_COOL_FONTS)
+    " set listchars=tab:\┊\ ,trail:•,extends:❯,precedes:❮
+    " I like to have different chars for spaces and tabs (see IndentLine plugin)
+    set listchars=tab:▸\ ,trail:•,extends:❯,precedes:❮
+else
+    set listchars=tab:>\ ,trail:•,extends:$,precedes:$
+endif
 
 " Enable <TAB> completion in command mode
 set wildmenu

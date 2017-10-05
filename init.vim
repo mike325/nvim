@@ -321,7 +321,7 @@ if !exists('g:minimal')
         endfunction
 
         " Fast and 'easy' to compile C CtrlP matcher
-        if executable("gcc") || executable("clang")
+        if ( executable("gcc") || executable("clang") ) && empty($NO_PYTHON_DEV)
             Plug 'JazzCore/ctrlp-cmatcher', { 'do': function('BuildCtrlPMatcher') }
         else
             " Fast matcher for ctrlp
@@ -373,115 +373,120 @@ if !exists('g:minimal')
     let b:ycm_installed = 0
     let b:deoplete_installed = 0
     let b:completor = 0
-    if ( has("python") || has("python3") ) " Python base completions {{{
 
-        function! BuildOmniSharp(info)
-            if a:info.status == 'installed' || a:info.force
-                if ( has("win32") || has("win64") )
-                    !cd server && msbuild
-                else
-                    !cd server && xbuild
-                endif
-            endif
-        endfunction
+    " This env var allow us to know if the python version has the dev libs
+    if !empty($NO_PYTHON_DEV)
+        if ( has("python") || has("python3") ) " Python base completions {{{
 
-        " Plug 'OmniSharp/omnisharp-vim', { 'do': function('BuildOmniSharp') }
-
-        " Awesome Async completion engine for Neovim
-        if (has("unix") || ((has("win32") || has("win64")) && executable("msbuild"))) &&
-                    \  (has("nvim") || (v:version >= 800) || (v:version == 704 && has("patch1578")) )
-
-            function! BuildYCM(info)
+            function! BuildOmniSharp(info)
                 if a:info.status == 'installed' || a:info.force
-                    " !./install.py --all
-                    " !./install.py --gocode-completer --tern-completer --clang-completer --omnisharp-completer
-                    let l:code_completion = " --clang-completer"
-                    if executable('go')
-                        let l:code_completion .= " --gocode-completer"
-                    elseif executable("npm")
-                        let l:code_completion .= " --tern-completer"
-                    elseif executable("mono")
-                        let l:code_completion .= " --omnisharp-completer"
+                    if ( has("win32") || has("win64") )
+                        !cd server && msbuild
+                    else
+                        !cd server && xbuild
                     endif
-
-                    execute "!./install.py" . l:code_completion
-
                 endif
             endfunction
 
-            " Install ycm if Neovim/vim 8/Vim 7.143 is running on unix or
-            " If it is running on windows with Neovim/Vim 8/Vim 7.143 and ms C compiler
-            Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') }
+            " Plug 'OmniSharp/omnisharp-vim', { 'do': function('BuildOmniSharp') }
 
-            " C/C++ project generator
-            Plug 'rdnetto/ycm-generator', { 'branch': 'stable' }
-            let b:ycm_installed = 1
-        elseif ( has("nvim") && has("python3") )
-            Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+            " Awesome Async completion engine for Neovim
+            if (( has("unix") && ( executable("gcc")  || executable("clang") )) ||
+                        \  ((has("win32") || has("win64")) && executable("msbuild"))) &&
+                        \  (has("nvim") || (v:version >= 800) || (v:version == 704 && has("patch1578")) )
 
-            " Python completion
-            Plug 'zchee/deoplete-jedi'
-
-            " C/C++ completion base on clang compiler
-            if executable("clang")
-                Plug 'zchee/deoplete-clang'
-                " Plug 'Shougo/neoinclude.vim'
-
-                " A bit faster C/C++ completion
-                " Plug 'tweekmonster/deoplete-clang2'
-            endif
-
-            " Go completion
-            " TODO: Check Go completion in Windows
-            if executable("go") && executable("make")
-
-                function! GoCompletion(info)
-                    if !executable("gocode")
-                        if has("win32") || has("win64")
-                            !go get -u -ldflags -H=windowsgui github.com/nsf/gocode
-                        else
-                            !go get -u github.com/nsf/gocode
+                function! BuildYCM(info)
+                    if a:info.status == 'installed' || a:info.force
+                        " !./install.py --all
+                        " !./install.py --gocode-completer --tern-completer --clang-completer --omnisharp-completer
+                        let l:code_completion = " --clang-completer"
+                        if executable('go')
+                            let l:code_completion .= " --gocode-completer"
+                        elseif executable("npm")
+                            let l:code_completion .= " --tern-completer"
+                        elseif executable("mono")
+                            let l:code_completion .= " --omnisharp-completer"
                         endif
+
+                        execute "!./install.py" . l:code_completion
+
                     endif
-                    make
                 endfunction
 
-                Plug 'zchee/deoplete-go', { 'do':function('GoCompletion')}
+                " Install ycm if Neovim/vim 8/Vim 7.143 is running on unix or
+                " If it is running on windows with Neovim/Vim 8/Vim 7.143 and ms C compiler
+                " Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') }
+
+                " C/C++ project generator
+                " Plug 'rdnetto/ycm-generator', { 'branch': 'stable' }
+                " let b:ycm_installed = 1
+            elseif ( has("nvim") && has("python3") )
+                Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+
+                " Python completion
+                Plug 'zchee/deoplete-jedi'
+
+                " C/C++ completion base on clang compiler
+                if executable("clang")
+                    Plug 'zchee/deoplete-clang'
+                    " Plug 'Shougo/neoinclude.vim'
+
+                    " A bit faster C/C++ completion
+                    " Plug 'tweekmonster/deoplete-clang2'
+                endif
+
+                " Go completion
+                " TODO: Check Go completion in Windows
+                if executable("go") && executable("make")
+
+                    function! GoCompletion(info)
+                        if !executable("gocode")
+                            if has("win32") || has("win64")
+                                !go get -u -ldflags -H=windowsgui github.com/nsf/gocode
+                            else
+                                !go get -u github.com/nsf/gocode
+                            endif
+                        endif
+                        make
+                    endfunction
+
+                    Plug 'zchee/deoplete-go', { 'do':function('GoCompletion')}
+                endif
+
+                " if executable("php")
+                "     Plug 'padawan-php/deoplete-padawan', { 'do': 'composer install' }
+                " endif
+
+                " JavaScript completion
+                if executable("tern")
+                    Plug 'carlitux/deoplete-ternjs'
+                endif
+
+                let b:deoplete_installed = 1
+
+            elseif ( v:version >= 800 ) || has("nvim")
+                " Test new completion Async framework that require python and vim 8 or
+                " Neovim (without python3)
+                Plug 'maralla/completor.vim'
+                let b:completor = 1
             endif
 
-            " if executable("php")
-            "     Plug 'padawan-php/deoplete-padawan', { 'do': 'composer install' }
-            " endif
-
-            " JavaScript completion
-            if executable("tern")
-                Plug 'carlitux/deoplete-ternjs'
+            if ( has("nvim") || ( v:version >= 800 ) || ( v:version >= 704 ) ) &&
+                        \ ( b:ycm_installed==1 || b:deoplete_installed==1 )
+                " Only works with JDK8!!!
+                Plug 'artur-shaik/vim-javacomplete2'
             endif
 
-            let b:deoplete_installed = 1
 
-        elseif ( v:version >= 800 ) || has("nvim")
-            " Test new completion Async framework that require python and vim 8 or
-            " Neovim (without python3)
-            Plug 'maralla/completor.vim'
-            let b:completor = 1
-        endif
+            if b:ycm_installed==0 && b:deoplete_installed==0
+                " Completion for python without engines
+                Plug 'davidhalter/jedi-vim'
 
-        if ( has("nvim") || ( v:version >= 800 ) || ( v:version >= 704 ) ) &&
-                    \ ( b:ycm_installed==1 || b:deoplete_installed==1 )
-            " Only works with JDK8!!!
-            Plug 'artur-shaik/vim-javacomplete2'
-        endif
+                " Plug 'Rip-Rip/clang_complete'
+            endif
 
-
-        if b:ycm_installed==0 && b:deoplete_installed==0
-            " Completion for python without engines
-            Plug 'davidhalter/jedi-vim'
-
-            " Plug 'Rip-Rip/clang_complete'
-        endif
-
-    endif " }}} END Python base completions
+        endif " }}} END Python base completions
+    endif
 
     " Vim clang does not require python
     if b:ycm_installed==0 && b:deoplete_installed==0
@@ -494,9 +499,9 @@ if !exists('g:minimal')
         if has("lua") && !has("nvim") && (v:version >= 704)
             Plug 'Shougo/neocomplete.vim'
         elseif (v:version >= 703) || has("nvim")
-            Plug 'Shougo/neocomplcache.vim'
-            " Plug 'ervandew/supertab'
-            " Plug 'roxma/SimpleAutoComplPop'
+            " Plug 'Shougo/neocomplcache.vim'
+            Plug 'roxma/SimpleAutoComplPop'
+            Plug 'ervandew/supertab'
         endif
     endif
 

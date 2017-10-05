@@ -58,7 +58,7 @@ let g:neocomplcache_filename_include_exts.cpp = ['', 'h', 'hpp', 'hxx']
 let g:neocomplcache_filename_include_exts.c = ['', 'h']
 
 let g:neocomplcache_delimiter_patterns = get(g:,'neocomplcache_delimiter_patterns',{})
-let g:neocomplcache_delimiter_patterns.vim = ['#']
+" let g:neocomplcache_delimiter_patterns.vim = ['#']
 let g:neocomplcache_delimiter_patterns.cpp = ['::']
 
 let g:neocomplcache_sources_list   = get(g:,'neocomplcache_delimiter_patterns',{})
