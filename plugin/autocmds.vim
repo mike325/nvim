@@ -31,15 +31,17 @@ endif
 
 let g:autocmds_loaded = 1
 
-" TODO make a function to save the state of the toggles
-augroup Numbers
-    autocmd!
-    autocmd FileType help setlocal relativenumber number
-    autocmd WinEnter *    setlocal relativenumber number
-    autocmd WinLeave *    setlocal norelativenumber number
-    autocmd InsertLeave * setlocal relativenumber number
-    autocmd InsertEnter * setlocal norelativenumber number
-augroup end
+if v:version > 702
+    " TODO make a function to save the state of the toggles
+    augroup Numbers
+        autocmd!
+        autocmd FileType help setlocal relativenumber number
+        autocmd WinEnter *    setlocal relativenumber number
+        autocmd WinLeave *    setlocal norelativenumber number
+        autocmd InsertLeave * setlocal relativenumber number
+        autocmd InsertEnter * setlocal norelativenumber number
+    augroup end
+endif
 
 " We don't need Vim's temp files here
 augroup DisableTemps

@@ -192,7 +192,7 @@ function! s:InitConfigs() " Vim's InitConfig {{{
                 call mkdir(fnameescape( g:parent_dir . l:dirname ), "p")
             endif
 
-            if l:dir_setting != ""
+            if l:dir_setting != "" && exists("+" . l:dir_setting)
                 execute "set " . l:dir_setting . "=" . fnameescape(g:parent_dir . l:dirname)
             endif
         else
@@ -346,7 +346,7 @@ if !exists('g:minimal')
     " ####### Status bar {{{
 
     " Vim airline is available for >= Vim 7.4
-    if v:version < 703 || has("nvim")
+    if v:version > 703 || has("nvim")
         Plug 'vim-airline/vim-airline'
         Plug 'vim-airline/vim-airline-themes'
         Plug 'enricobacis/vim-airline-clock'

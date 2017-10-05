@@ -24,6 +24,9 @@
 "
 " }}} END HEADER
 
+" TODO: Implement a function to activate just the settings that are in the
+" current Vim instance
+
 " We just want to source this file once
 if exists("g:settings_loaded") && g:settings_loaded
     finish
@@ -145,7 +148,9 @@ set splitright     " Split on the right size
 set nowrap         " By default don't wrap the lines
 set showmatch      " Show matching parenthesis
 set number         " Show line numbers
-set relativenumber " Show line numbers in motions friendly way
+if exists("+relativenumber")
+    set relativenumber " Show line numbers in motions friendly way
+endif
 set ruler
 
 if exists("+syntax")
