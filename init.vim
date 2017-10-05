@@ -375,7 +375,7 @@ if !exists('g:minimal')
     let b:completor = 0
 
     " This env var allow us to know if the python version has the dev libs
-    if !empty($NO_PYTHON_DEV)
+    if empty($NO_PYTHON_DEV)
         if ( has("python") || has("python3") ) " Python base completions {{{
 
             function! BuildOmniSharp(info)
@@ -415,11 +415,11 @@ if !exists('g:minimal')
 
                 " Install ycm if Neovim/vim 8/Vim 7.143 is running on unix or
                 " If it is running on windows with Neovim/Vim 8/Vim 7.143 and ms C compiler
-                " Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') }
+                Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') }
 
                 " C/C++ project generator
-                " Plug 'rdnetto/ycm-generator', { 'branch': 'stable' }
-                " let b:ycm_installed = 1
+                Plug 'rdnetto/ycm-generator', { 'branch': 'stable' }
+                let b:ycm_installed = 1
             elseif ( has("nvim") && has("python3") )
                 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 
