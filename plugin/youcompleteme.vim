@@ -91,10 +91,13 @@ endfunction
 
 augroup YCMGoTo
     autocmd!
-    autocmd FileType c,cpp              nnoremap <buffer> <leader>i :YcmCompleter GoToInclude<CR>
-    autocmd FileType c,cpp              command! -buffer Include :YcmCompleter GoToInclude
-    autocmd FileType c,cpp,python,go,cs command! -buffer Definition :YcmCompleter GoToDefinition
-    autocmd FileType c,cpp,python,go,cs command! -buffer Declaration :YcmCompleter GoToDeclaration
+    autocmd FileType c,cpp                                          nnoremap <buffer> <leader>i :YcmCompleter GoToInclude<CR>
+    autocmd FileType c,cpp,objc,objcpp                              command! -buffer Include :YcmCompleter GoToInclude
+    autocmd FileType c,cpp,cs                                       command! -buffer FixIt :YcmCompleter FixIt
+    autocmd FileType c,cpp,python,go,cs,objc,objcpp,rust            command! -buffer Declaration :YcmCompleter GoToDeclaration
+    autocmd FileType c,cpp,python,go,cs,objc,objcpp,rust,javascript command! -buffer Definition :YcmCompleter GoToDefinition
+    autocmd FileType javascript,python,typescript                   command! -buffer References :YcmCompleter GoToReferences
+    autocmd FileType cs                                             command! -buffer Implementation :YcmCompleter GoToImplementationElseDeclaration
 augroup end
 
 " nnoremap <leader>F :YcmCompleter FixIt<CR>

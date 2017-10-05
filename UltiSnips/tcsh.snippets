@@ -27,56 +27,46 @@ priority 1
 #############################################################################
 
 snippet if "if ... then (if)"
-if [[ ${1:condition} ]]; then
+if ( ${1:condition} ) then
 	${0:${VISUAL:#statements}}
-fi
-endsnippet
-
-snippet until "until ... (done)"
-until [[ ${1:condition} ]]; do
-	${0:${VISUAL:#statements}}
-done
+endif
 endsnippet
 
 snippet while "while ... (done)"
-while [[ ${1:condition} ]]; do
+while ( ${1:condition} ) do
 	${0:${VISUAL:#statements}}
 done
 endsnippet
 
-snippet case "case .. esac (case)"
-case ${1:word} in
-	${2:pattern} )
+snippet case "case .. esac"
+switch (${1:condition})
+	case "${2:pattern}":
 		${0:${VISUAL:#statements}}
-		;;
-esac
+		breaksw
+endsw
 endsnippet
 
-snippet elif "elif .. (elif)"
-elif [[ ${1:condition} ]]; then
+snippet elif "else if ..."
+else if ( ${1:condition} ) then
 	${0:${VISUAL:#statements}}
 endsnippet
 
-snippet for "for ... done (for)"
-for (( i = 0; i < ${1:10}; i++ )); do
+snippet for "foreach ... end"
+foreach i (${1:sequence})
 	${0:${VISUAL:#statements}}
-done
+end
 endsnippet
 
-snippet forin "for ... in ... done (forin)"
-for ${1:i}${2/.+/ in /}${2:words}; do
+snippet while "while ... end"
+while (${1:condition})
 	${0:${VISUAL:#statements}}
-done
-endsnippet
-
-snippet var "Create variable"
-export ${1:name}="$0"
-endsnippet
-
-snippet exp "Create variable"
-export ${1:name}="$0"
+end
 endsnippet
 
 snippet al "alias"
-alias ${1:name}="$0"
+alias ${1:name} $0
+endsnippet
+
+snippet var "Create variable"
+setenv ${1:name} $0
 endsnippet

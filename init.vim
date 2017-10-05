@@ -36,7 +36,12 @@ if has("nvim")
         let g:base_path = expand($HOME) . '/.config/nvim/'
     endif
 elseif has("win32") || has("win64")
-    let g:base_path =  substitute( expand($USERPROFILE), "\\", "/", "g" ) . '/vimfiles/'
+    " if $USERPROFILE and ~ expansions are different, then gVim may be running as portable
+    if  substitute( expand($USERPROFILE), "\\", "/", "g" ) == substitute( expand("~"), "\\", "/", "g" )
+        let g:base_path =  substitute( expand($USERPROFILE), "\\", "/", "g" ) . '/vimfiles/'
+    else
+        let g:base_path =  substitute( expand("~"), "\\", "/", "g" ) . '/vimfiles/'
+    endif
 else
     let g:base_path = expand($HOME) . '/.vim/'
 endif
@@ -250,11 +255,12 @@ if !exists('g:minimal')
     Plug 'elzr/vim-json'
     Plug 'tbastos/vim-lua'
     Plug 'octol/vim-cpp-enhanced-highlight'
+    Plug 'blackb1rd/ifdef-highlighting'
     Plug 'peterhoeg/vim-qml'
     Plug 'plasticboy/vim-markdown'
     Plug 'bjoernd/vim-syntax-simics'
     Plug 'kurayama/systemd-vim-syntax'
-    Plug 'evanmiller/nginx-vim-syntax'
+    " Plug 'evanmiller/nginx-vim-syntax'
 
     " }}} END Syntax
 
@@ -339,9 +345,12 @@ if !exists('g:minimal')
 
     " ####### Status bar {{{
 
-    Plug 'vim-airline/vim-airline'
-    Plug 'vim-airline/vim-airline-themes'
-    Plug 'enricobacis/vim-airline-clock'
+    " Vim airline is available for >= Vim 7.4
+    if v:version < 703 || has("nvim")
+        Plug 'vim-airline/vim-airline'
+        Plug 'vim-airline/vim-airline-themes'
+        Plug 'enricobacis/vim-airline-clock'
+    endif
 
     " }}} END Status bar
 
@@ -463,12 +472,19 @@ if !exists('g:minimal')
         endif
 
 
-        if b:ycm_installed==0 && b:deoplete_installed==0 && b:completor==0
+        if b:ycm_installed==0 && b:deoplete_installed==0
             " Completion for python without engines
             Plug 'davidhalter/jedi-vim'
+
+            " Plug 'Rip-Rip/clang_complete'
         endif
 
     endif " }}} END Python base completions
+
+    " Vim clang does not require python
+    if b:ycm_installed==0 && b:deoplete_installed==0
+        Plug 'justmao945/vim-clang'
+    endif
 
     " completion without python completion engines ( ycm, deoplete or completer )
     if b:ycm_installed==0 && b:deoplete_installed==0 && b:completor==0

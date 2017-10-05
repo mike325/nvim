@@ -65,6 +65,9 @@ elseif exists('g:plugs["ctrlp-py-matcher"]')
 endif
 
 if executable("ag")
+    " Since we have Ag and Git we can clean cache on exit
+    let g:ctrlp_clear_cache_on_exit = 1
+
     let g:ctrlp_user_command = {
         \   'types': {
         \       1: ['.git', 'cd %s && git ls-files -co --exclude-standard' . g:ignore_patterns.git ]
