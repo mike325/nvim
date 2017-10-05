@@ -183,7 +183,9 @@ function! s:InitConfigs() " Vim's InitConfig {{{
 
     " Better backup, swap and undos storage
     set backup   " make backup files
-    set undofile " persistent undos - undo after you re-open the file
+    if exists("+undofile")
+        set undofile " persistent undos - undo after you re-open the file
+    endif
 
     " Config all
     for [l:dirname, l:dir_setting] in items(g:dirpaths)
