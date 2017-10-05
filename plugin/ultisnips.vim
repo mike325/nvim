@@ -114,4 +114,4 @@ endfunction
 inoremap <silent><TAB>     <C-R>=NextSnippet()<CR>
 inoremap <silent><S-TAB>   <C-R>=PrevSnippetOrNothing()<CR>
 inoremap <silent><CR>    <C-R>=NextSnippetOrReturn()<CR>
-xnoremap <silent><CR>    :call UltiSnips#SaveLastVisualSelection()<CR>gvs
+xnoremap <silent><CR>    :call UltiSnips#SaveLastVisualSelection()<CR>gv"_s
