@@ -171,7 +171,11 @@ endfunction
 
 command! -nargs=? Copen call s:OpenQuickfix(<q-args>)
 
+if exists("+relativenumber")
+    command! RelativeNumbersToggle set relativenumber! relativenumber?
+endif
+
+command! CursorLineToggle set cursorline! cursorline?
 command! NumbersToggle set number! number?
-command! RelativeNumbersToggle set relativenumber! relativenumber?
 command! HlSearchToggle set hlsearch! hlsearch?
 command! SpellToggle set spell! spell?
