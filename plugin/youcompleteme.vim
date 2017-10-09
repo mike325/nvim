@@ -35,21 +35,6 @@ let g:ycm_autoclose_preview_window_after_completion = 1
 let g:ycm_autoclose_preview_window_after_insertion  = 1
 let g:ycm_key_detailed_diagnostics                  = '<leader>D'
 
-" let g:ycm_filetype_blacklist    = {
-"             \ 'vim' : 1,
-"             \ 'tagbar' : 1,
-"             \ 'qf' : 1,
-"             \ 'notes' : 1,
-"             \ 'markdown' : 1,
-"             \ 'md' : 1,
-"             \ 'unite' : 1,
-"             \ 'text' : 1,
-"             \ 'vimwiki' : 1,
-"             \ 'pandoc' : 1,
-"             \ 'infolog' : 1,
-"             \ 'objc' : 1,
-"             \ 'mail' : 1
-" \}
 
 let g:ycm_key_list_select_completion   = ['<C-n>', '<Down>']
 let g:ycm_key_list_previous_completion = ['<C-p>', '<Up>']
@@ -62,7 +47,12 @@ let g:ycm_error_symbol   = '✖'
 let g:ycm_warning_symbol = '⚠'
 
 " let g:ycm_extra_conf_globlist   = ['~/.vim/*']
-if filereadable(fnameescape(getcwd() . "/.git/ycm_extra_conf.py"))
+if exists('g:plugs["vim-fugitive"]')
+    let g:ycm_global_ycm_extra_conf =  fugitive#extract_git_dir("%") . "/ycm_extra_conf.py"
+    if g:ycm_global_ycm_extra_conf =# ''
+        let g:ycm_global_ycm_extra_conf = fnameescape(g:base_path . "ycm_extra_conf.py")
+    endif
+elseif filereadable(fnameescape(getcwd() . "/.git/ycm_extra_conf.py"))
     let g:ycm_global_ycm_extra_conf = fnameescape(getcwd() . "/.git/ycm_extra_conf.py")
 elseif filereadable(fnameescape(g:base_path . "ycm_extra_conf.py"))
     let g:ycm_global_ycm_extra_conf = fnameescape(g:base_path . "ycm_extra_conf.py")
@@ -73,14 +63,23 @@ if executable("ctags")
 endif
 
 " In case there are other completion plugins
-" let g:ycm_filetype_blacklist = {
-"       \ 'tagbar' : 1,
-"       \}
+let g:ycm_filetype_specific_completion_to_disable = {}
 
 " In case there are other completion plugins
-" let g:ycm_filetype_specific_completion_to_disable = {
-"       \ 'gitcommit': 1
-"       \}
+let g:ycm_filetype_blacklist    = {
+        \ 'tagbar' : 1,
+        \ 'qf' : 1,
+        \ 'notes' : 1,
+        \ 'markdown' : 1,
+        \ 'md' : 1,
+        \ 'unite' : 1,
+        \ 'text' : 1,
+        \ 'vimwiki' : 1,
+        \ 'pandoc' : 1,
+        \ 'infolog' : 1,
+        \ 'objc' : 1,
+        \ 'mail' : 1
+\}
 
 function! s:SwitchIncludeSource()
     " We mark the current file with S to fast switch with 'S or `S and 'I or `I
