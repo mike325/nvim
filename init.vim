@@ -262,7 +262,8 @@ if !exists('g:minimal')
     Plug 'plasticboy/vim-markdown'
     Plug 'bjoernd/vim-syntax-simics'
     Plug 'kurayama/systemd-vim-syntax'
-    " Plug 'evanmiller/nginx-vim-syntax'
+    " Plug 'mike325/nginx-vim-syntax'
+    Plug 'chr4/nginx.vim'
 
     " }}} END Syntax
 
