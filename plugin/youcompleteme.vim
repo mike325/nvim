@@ -47,12 +47,12 @@ let g:ycm_error_symbol   = '✖'
 let g:ycm_warning_symbol = '⚠'
 
 " let g:ycm_extra_conf_globlist   = ['~/.vim/*']
-if exists('g:plugs["vim-fugitive"]')
-    let g:ycm_global_ycm_extra_conf =  fugitive#extract_git_dir("%") . "/ycm_extra_conf.py"
-    if g:ycm_global_ycm_extra_conf =# ''
-        let g:ycm_global_ycm_extra_conf = fnameescape(g:base_path . "ycm_extra_conf.py")
-    endif
-elseif filereadable(fnameescape(getcwd() . "/.git/ycm_extra_conf.py"))
+" if exists('g:plugs["vim-fugitive"]')
+"     let g:ycm_global_ycm_extra_conf =  fugitive#extract_git_dir(expand('%:p')) . "/ycm_extra_conf.py"
+"     if g:ycm_global_ycm_extra_conf ==# ''
+"         let g:ycm_global_ycm_extra_conf = fnameescape(g:base_path . "ycm_extra_conf.py")
+"     endif
+if filereadable(fnameescape(getcwd() . "/.git/ycm_extra_conf.py"))
     let g:ycm_global_ycm_extra_conf = fnameescape(getcwd() . "/.git/ycm_extra_conf.py")
 elseif filereadable(fnameescape(g:base_path . "ycm_extra_conf.py"))
     let g:ycm_global_ycm_extra_conf = fnameescape(g:base_path . "ycm_extra_conf.py")

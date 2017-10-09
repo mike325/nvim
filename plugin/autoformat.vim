@@ -51,21 +51,28 @@ if !has("autocmd")
     finish
 endif
 
+function! AutoFormatFile()
+    let b:auto_format = get(b:,'auto_format',0)
+    if b:auto_format == 1
+        silent! execute 'Autoformat'
+    endif
+endfunction
+
 augroup AutoFormat
     autocmd!
     autocmd FileType vim let b:autoformat_autoindent=0
 
-    autocmd FileType vim        autocmd BufWritePre <buffer> silent! Autoformat
-    autocmd FileType css        autocmd BufWritePre <buffer> silent! Autoformat
-    autocmd FileType markdown   autocmd BufWritePre <buffer> silent! Autoformat
-    autocmd FileType html       autocmd BufWritePre <buffer> silent! Autoformat
-    autocmd FileType javascript autocmd BufWritePre <buffer> silent! Autoformat
-    autocmd FileType xml        autocmd BufWritePre <buffer> silent! Autoformat
-    autocmd FileType python     autocmd BufWritePre <buffer> silent! Autoformat
-    autocmd FileType go         autocmd BufWritePre <buffer> silent! Autoformat
-    autocmd FileType cs         autocmd BufWritePre <buffer> silent! Autoformat
-    autocmd FileType php        autocmd BufWritePre <buffer> silent! Autoformat
-    autocmd FileType java       autocmd BufWritePre <buffer> silent! Autoformat
-    autocmd FileType c          autocmd BufWritePre <buffer> silent! Autoformat
-    autocmd FileType cpp        autocmd BufWritePre <buffer> silent! Autoformat
+    autocmd FileType vim        autocmd BufWritePre <buffer> silent! call AutoFormatFile()
+    autocmd FileType css        autocmd BufWritePre <buffer> silent! call AutoFormatFile()
+    autocmd FileType markdown   autocmd BufWritePre <buffer> silent! call AutoFormatFile()
+    autocmd FileType html       autocmd BufWritePre <buffer> silent! call AutoFormatFile()
+    autocmd FileType javascript autocmd BufWritePre <buffer> silent! call AutoFormatFile()
+    autocmd FileType xml        autocmd BufWritePre <buffer> silent! call AutoFormatFile()
+    autocmd FileType python     autocmd BufWritePre <buffer> silent! call AutoFormatFile()
+    autocmd FileType go         autocmd BufWritePre <buffer> silent! call AutoFormatFile()
+    autocmd FileType cs         autocmd BufWritePre <buffer> silent! call AutoFormatFile()
+    autocmd FileType php        autocmd BufWritePre <buffer> silent! call AutoFormatFile()
+    autocmd FileType java       autocmd BufWritePre <buffer> silent! call AutoFormatFile()
+    autocmd FileType c          autocmd BufWritePre <buffer> silent! call AutoFormatFile()
+    autocmd FileType cpp        autocmd BufWritePre <buffer> silent! call AutoFormatFile()
 augroup end
