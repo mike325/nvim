@@ -521,10 +521,6 @@ if !exists('g:minimal')
         Plug 'fatih/vim-go'
     endif
 
-    if has("python") || has("python3")
-        Plug 'python-mode/python-mode'
-    endif
-
     " Easy comments
     " TODO check other comment plugins with motions
     Plug 'scrooloose/nerdcommenter'
