@@ -269,8 +269,9 @@ if !exists('g:minimal')
 
     " ####### Project base {{{
 
-    Plug 'scrooloose/nerdtree', { 'on': [ 'NERDTree', 'NERDTreeToggle' ] }
-    Plug 'Xuyuanp/nerdtree-git-plugin', { 'on': [ 'NERDTreeToggle' ] }
+    " Plug 'scrooloose/nerdtree', { 'on': [ 'NERDTree', 'NERDTreeToggle' ] }
+    " Plug 'Xuyuanp/nerdtree-git-plugin', { 'on': [ 'NERDTreeToggle' ] }
+    Plug 'tpope/vim-vinegar'
     Plug 'mhinz/vim-grepper'
 
     Plug 'xolox/vim-session'
