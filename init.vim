@@ -402,11 +402,16 @@ if !exists('g:minimal')
                         " !./install.py --all
                         " !./install.py --gocode-completer --tern-completer --clang-completer --omnisharp-completer
                         let l:code_completion = " --clang-completer"
-                        if executable('go')
+
+                        if executable('go') && (!empty($GOROOT))
                             let l:code_completion .= " --gocode-completer"
-                        elseif executable("npm")
+                        endif
+
+                        if executable("npm")
                             let l:code_completion .= " --tern-completer"
-                        elseif executable("mono")
+                        endif
+
+                        if executable("mono")
                             let l:code_completion .= " --omnisharp-completer"
                         endif
 
