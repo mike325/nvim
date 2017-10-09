@@ -92,9 +92,10 @@ if !exists("g:NERDTreeIgnore") || len(g:NERDTreeIgnore) == 0
 endif
 
 
-" If you don't have unicode, uncomment the following lines
-" let NERDTreeDirArrowExpandable  = '+'
-" let NERDTreeDirArrowCollapsible = '~'
+if !empty($NO_COOL_FONTS)
+    let NERDTreeDirArrowExpandable  = '+'
+    let NERDTreeDirArrowCollapsible = '~'
+endif
 
 " nnoremap <F3> :NERDTreeToggle<CR>
 " nnoremap T :NERDTreeToggle<CR>
