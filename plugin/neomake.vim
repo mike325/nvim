@@ -32,15 +32,25 @@ endif
 " nnoremap <F7> :lopen<CR>
 " nnoremap <F8> :lclose<CR>
 
-" let g:neomake_warning_sign = {
-"     \ 'text': 'W',
-"     \ 'texthl': 'WarningMsg',
-"     \ }
-"
-" let g:neomake_error_sign = {
-"     \ 'text': 'E',
-"     \ 'texthl': 'ErrorMsg',
-"     \ }
+" let g:neomake_message_sign = {
+"     \   'text': '➤',
+"     \   'texthl': 'NeomakeMessageSign',
+"     \}
+" let g:neomake_info_sign = {'text': 'ℹ', 'texthl': 'NeomakeInfoSign'}
+
+if !empty($NO_COOL_FONTS)
+    let g:neomake_warning_sign = {
+        \ 'text': 'W',
+        \ 'texthl': 'WarningMsg',
+        \ }
+
+    let g:neomake_error_sign = {
+        \ 'text': 'E',
+        \ 'texthl': 'ErrorMsg',
+        \ }
+endif
+
+let g:neomake_open_list = 2
 
 if executable("vint")
     let g:neomake_vim_enabled_makers = ['vint']
@@ -53,70 +63,93 @@ if executable("vint")
         \],}
 endif
 
-let g:neomake_python_enabled_makers = ['flake8', 'pep8']
-let g:neomake_cpp_enabled_makers = ['clang', 'gcc']
-let g:neomake_c_enabled_makers = ['clang', 'gcc']
-" let g:neomake_go_enabled_makers = ['golint', 'govet']
+let g:neomake_python_enabled_makers = get(g:,'neomake_python_enabled_makers',[])
 
-" let g:neomake_go_golint_maker = {
-"     \   'exe': 'golint',
-"     \}
+if executable("flake8")
+    let g:neomake_python_enabled_makers += ['flake8']
 
-" E501 is line length of 80 characters
-let g:neomake_python_flake8_maker = {
-    \   'args': [
-    \       '--ignore=E501'
-    \],}
+    " E501 is line length of 80 characters
+    let g:neomake_python_flake8_maker = {
+        \   'args': [
+        \       '--ignore=E501'
+        \],}
 
-let g:neomake_python_pep8_maker = {
-    \ 'args': [
-    \   '--max-line-length=100',
-    \   '--ignore=E501'
-    \],}
+endif
+
+if executable("pep8")
+    let g:neomake_python_enabled_makers += ['pep8']
+
+    let g:neomake_python_pep8_maker = {
+        \ 'args': [
+        \   '--max-line-length=100',
+        \   '--ignore=E501'
+        \],}
+endif
 
 let b:outpath = "/tmp/neomake.out"
 if has("win32") || has("win64")
     let b:outpath = "C:/Temp/neomake"
 endif
 
-let g:neomake_c_gcc_maker = {
-    \   'exe': 'gcc',
-    \   'args': [
-    \       '-Wall',
-    \       '-Wextra',
-    \       '-o', b:outpath,
-    \],}
+let g:neomake_c_enabled_makers = get(g:,'neomake_c_enabled_makers',[])
 
-let g:neomake_c_clang_maker = {
-    \   'exe': 'clang',
-    \   'args': [
-    \       '-Wall',
-    \       '-Wextra',
-    \       '-Weverything',
-    \       '-Wno-missing-prototypes',
-    \       '-o', b:outpath,
-    \],}
+if executable("gcc")
+    let g:neomake_c_enabled_makers += ["gcc"]
 
-let g:neomake_cpp_gcc_maker = {
-    \   'exe': 'g++',
-    \   'args': [
-    \      '-std=c++11',
-    \      '-Wall',
-    \      '-Wextra',
-    \       '-o', b:outpath,
-    \],}
+    let g:neomake_c_gcc_maker = {
+        \   'exe': 'gcc',
+        \   'args': [
+        \       '-Wall',
+        \       '-Wextra',
+        \       '-o', b:outpath,
+        \],}
 
-let g:neomake_cpp_clang_maker = {
-    \   'exe': 'clang++',
-    \   'args': [
-    \      '-std=c++11',
-    \      '-Wall',
-    \      '-Wextra',
-    \      '-Weverything',
-    \      '-Wno-c++98-compat',
-    \      '-Wno-missing-prototypes',
-    \       '-o', b:outpath,
-    \],}
+endif
+
+if executable("clang")
+    let g:neomake_c_enabled_makers += ["clang"]
+
+    let g:neomake_c_clang_maker = {
+        \   'exe': 'clang',
+        \   'args': [
+        \       '-Wall',
+        \       '-Wextra',
+        \       '-Weverything',
+        \       '-Wno-missing-prototypes',
+        \       '-o', b:outpath,
+        \],}
+endif
+
+let g:neomake_cpp_enabled_makers = get(g:,'neomake_cpp_enabled_makers',[])
+
+if executable("g++")
+    let g:neomake_cpp_enabled_makers += ["gcc"]
+
+    let g:neomake_cpp_gcc_maker = {
+        \   'exe': 'g++',
+        \   'args': [
+        \      '-std=c++11',
+        \      '-Wall',
+        \      '-Wextra',
+        \       '-o', b:outpath,
+        \],}
+endif
+
+if executable("clang++")
+    let g:neomake_cpp_enabled_makers += ["clang"]
+
+    let g:neomake_cpp_clang_maker = {
+        \   'exe': 'clang++',
+        \   'args': [
+        \      '-std=c++11',
+        \      '-Wall',
+        \      '-Wextra',
+        \      '-Weverything',
+        \      '-Wno-c++98-compat',
+        \      '-Wno-missing-prototypes',
+        \       '-o', b:outpath,
+        \],}
+endif
 
 " TODO Config the proper makers for more languages
 " JSON linter       : npm install -g jsonlint
@@ -128,11 +161,14 @@ let g:neomake_cpp_clang_maker = {
 " Python linter     : pip install --user flake8 pep8
 " C/C++ linter      : ( apt-get install / yaourt -S / dnf install ) clang gcc g++
 " Go linter         : ( apt-get install / yaourt -S / dnf install ) golang
-if !has("autocmd")
-    finish
-endif
 
-augroup Checkers
-    autocmd!
-    autocmd BufWritePost * Neomake
-augroup end
+" Trigger neomake right after save a file or after 1s after leaving insert mode
+" available options:
+"       TextChanged
+"       InsertLeave
+"       BufWritePost
+"       BufWinEnter
+call neomake#configure#automake({
+    \ 'InsertLeave': {},
+    \ 'BufWritePost': {'delay': 0},
+    \ }, 1000)

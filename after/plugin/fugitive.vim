@@ -26,14 +26,18 @@
 
 " TODO: put all git dependent file configs here
 
-if !exists('g:plugs["YouCompleteMe"]')
-    finish
-endif
+if exists('g:plugs["YouCompleteMe"]')
+    function! SetExtraConf()
+        let g:ycm_global_ycm_extra_conf =  fugitive#extract_git_dir(expand('%:p'))
 
-let g:ycm_global_ycm_extra_conf =  fugitive#extract_git_dir(expand('%:p'))
+        if g:ycm_global_ycm_extra_conf ==# ''
+            let g:ycm_global_ycm_extra_conf = fnameescape(g:base_path . "ycm_extra_conf.py")
+        else
+            let g:ycm_global_ycm_extra_conf .=  "/ycm_extra_conf.py"
+        endif
+    endfunction
 
-if g:ycm_global_ycm_extra_conf ==# ''
-    let g:ycm_global_ycm_extra_conf = fnameescape(g:base_path . "ycm_extra_conf.py")
-else
-    let g:ycm_global_ycm_extra_conf .=  "/ycm_extra_conf.py"
+    call SetExtraConf()
+
+    command! UpdateYCMConf call SetExtraConf()
 endif

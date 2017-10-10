@@ -1,4 +1,5 @@
 # pydoc
+# neovim-remote
 jedi
 flake8
 neovim
@@ -11,4 +12,3 @@ ropevim
 yapf
 jsbeautifier
 vim-vint
-neovim-remote
