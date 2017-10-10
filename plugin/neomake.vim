@@ -168,7 +168,11 @@ endif
 "       InsertLeave
 "       BufWritePost
 "       BufWinEnter
-call neomake#configure#automake({
-    \ 'InsertLeave': {},
-    \ 'BufWritePost': {'delay': 0},
-    \ }, 1000)
+try
+    call neomake#configure#automake({
+        \ 'InsertLeave': {},
+        \ 'BufWritePost': {'delay': 0},
+        \ }, 1000)
+catch E117
+    echomsg "Please run :PlugInstall to get Neomake plugin"
+endtry
