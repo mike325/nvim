@@ -257,7 +257,6 @@ if !exists('g:minimal')
     Plug 'elzr/vim-json'
     Plug 'tbastos/vim-lua'
     Plug 'octol/vim-cpp-enhanced-highlight'
-    Plug 'blackb1rd/ifdef-highlighting'
     Plug 'peterhoeg/vim-qml'
     Plug 'plasticboy/vim-markdown'
     Plug 'bjoernd/vim-syntax-simics'

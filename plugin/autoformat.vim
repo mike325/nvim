@@ -61,7 +61,6 @@ endfunction
 augroup AutoFormat
     autocmd!
     autocmd FileType vim let b:autoformat_autoindent=0
-
     autocmd FileType vim        autocmd BufWritePre <buffer> silent! call AutoFormatFile()
     autocmd FileType css        autocmd BufWritePre <buffer> silent! call AutoFormatFile()
     autocmd FileType markdown   autocmd BufWritePre <buffer> silent! call AutoFormatFile()

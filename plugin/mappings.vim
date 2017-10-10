@@ -175,6 +175,17 @@ if exists("+relativenumber")
     command! RelativeNumbersToggle set relativenumber! relativenumber?
 endif
 
+if exists("+mouse")
+    function! s:ToggleMouse()
+        if &mouse == ''
+            execute 'set mouse=a'
+        else
+            execute 'set mouse='
+        endif
+    endfunction
+    command! MouseToggle call s:ToggleMouse()
+endif
+
 command! CursorLineToggle set cursorline! cursorline?
 command! NumbersToggle set number! number?
 command! HlSearchToggle set hlsearch! hlsearch?

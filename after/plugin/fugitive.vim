@@ -41,3 +41,13 @@ if exists('g:plugs["YouCompleteMe"]')
 
     command! UpdateYCMConf call SetExtraConf()
 endif
+
+if exists('g:plugs["neomake"]')
+    " Set project specific makers
+
+    let g:new_project_makers =  fugitive#extract_git_dir(expand('%:p'))
+
+    if g:new_project_makers !=# '' && filereadable(g:new_project_makers . "/makers.vim")
+        execute 'source '. g:new_project_makers . '/makers.vim'
+    endif
+endif
