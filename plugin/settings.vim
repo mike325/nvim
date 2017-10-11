@@ -237,5 +237,7 @@ set foldnestmax=10    " deepest fold is 10 levels
 set history=1000    " keep 1000 lines of command line history
 set undolevels=1000 " Set the number the undos per file
 
-" We already have the statusline, we don't need this
-set noshowmode
+if !exists('g:minimal')
+    " We already have the statusline, we don't need this
+    set noshowmode
+endif
