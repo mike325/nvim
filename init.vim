@@ -507,7 +507,12 @@ if !exists('g:minimal')
         elseif (v:version >= 703) || has("nvim")
             " Plug 'Shougo/neocomplcache.vim'
             Plug 'roxma/SimpleAutoComplPop'
-            Plug 'ervandew/supertab'
+
+            " Supertab install issue
+            " https://github.com/ervandew/supertab/issues/185
+            if !has("nvim") && (v:version < 800)
+                Plug 'ervandew/supertab'
+            endif
         endif
     endif
 
