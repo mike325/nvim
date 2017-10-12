@@ -25,24 +25,26 @@
 " ############################################################################
 
 if !exists('g:plugs["ultisnips"]')
-    inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
-    inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : ""
+    if !exists('g:plugs["vim-snipmate"]')
+        inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
+        inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : ""
 
-    function! NextSnippetOrReturn()
-        if pumvisible()
-            if exists('g:plugs["YouCompleteMe"]')
-                call feedkeys("\<C-y>")
-                return ""
-            else
-                return "\<C-y>"
+        function! NextSnippetOrReturn()
+            if pumvisible()
+                if exists('g:plugs["YouCompleteMe"]')
+                    call feedkeys("\<C-y>")
+                    return ""
+                else
+                    return "\<C-y>"
+                endif
+            elseif exists('g:plugs["delimitMate"]') && delimitMate#WithinEmptyPair()
+                return delimitMate#ExpandReturn()
             endif
-        elseif exists('g:plugs["delimitMate"]') && delimitMate#WithinEmptyPair()
-            return delimitMate#ExpandReturn()
-        endif
-        return "\<CR>"
-    endfunction
+            return "\<CR>"
+        endfunction
 
-    inoremap <silent><CR>    <C-R>=NextSnippetOrReturn()<CR>
+        inoremap <silent><CR>    <C-R>=NextSnippetOrReturn()<CR>
+    endif
 
     finish
 endif
