@@ -83,22 +83,33 @@ let g:ycm_filetype_blacklist    = {
         \ 'mail' : 1
 \}
 
-function! s:SwitchIncludeSource()
-    " We mark the current file with S to fast switch with 'S or `S and 'I or `I
-    execute "mark S"
-    execute "YcmCompleter GoToInclude"
-    execute "mark I"
+function! s:SplitYCM(split_type, ycm_cmd)
+    execute a:split_type
+    execute a:ycm_cmd
 endfunction
 
 augroup YCMGoTo
     autocmd!
     autocmd FileType c,cpp                                          nnoremap <buffer> <leader>i :YcmCompleter GoToInclude<CR>
-    autocmd FileType c,cpp,objc,objcpp                              command! -buffer Include :YcmCompleter GoToInclude
     autocmd FileType c,cpp,cs                                       command! -buffer FixIt :YcmCompleter FixIt
+
+    autocmd FileType c,cpp,objc,objcpp                              command! -buffer Include :YcmCompleter GoToInclude
     autocmd FileType c,cpp,python,go,cs,objc,objcpp,rust            command! -buffer Declaration :YcmCompleter GoToDeclaration
     autocmd FileType c,cpp,python,go,cs,objc,objcpp,rust,javascript command! -buffer Definition :YcmCompleter GoToDefinition
     autocmd FileType javascript,python,typescript                   command! -buffer References :YcmCompleter GoToReferences
     autocmd FileType cs                                             command! -buffer Implementation :YcmCompleter GoToImplementationElseDeclaration
+
+    autocmd FileType c,cpp,objc,objcpp                              command! -buffer IncludeVSplit        :call s:SplitYCM("vsplit", "YcmCompleter GoToInclude")
+    autocmd FileType c,cpp,python,go,cs,objc,objcpp,rust            command! -buffer DeclarationVSplit    :call s:SplitYCM("vsplit", "YcmCompleter GoToDeclaration")
+    autocmd FileType c,cpp,python,go,cs,objc,objcpp,rust,javascript command! -buffer DefinitionVSplit     :call s:SplitYCM("vsplit", "YcmCompleter GoToDefinition")
+    autocmd FileType javascript,python,typescript                   command! -buffer ReferencesVSplit     :call s:SplitYCM("vsplit", "YcmCompleter GoToReferences")
+    autocmd FileType cs                                             command! -buffer ImplementationVSplit :call s:SplitYCM("vsplit", "YcmCompleter GoToImplementationElseDeclaration")
+
+    autocmd FileType c,cpp,objc,objcpp                              command! -buffer IncludeSplit        :call s:SplitYCM("split", "YcmCompleter GoToInclude")
+    autocmd FileType c,cpp,python,go,cs,objc,objcpp,rust            command! -buffer DeclarationSplit    :call s:SplitYCM("split", "YcmCompleter GoToDeclaration")
+    autocmd FileType c,cpp,python,go,cs,objc,objcpp,rust,javascript command! -buffer DefinitionSplit     :call s:SplitYCM("split", "YcmCompleter GoToDefinition")
+    autocmd FileType javascript,python,typescript                   command! -buffer ReferencesSplit     :call s:SplitYCM("split", "YcmCompleter GoToReferences")
+    autocmd FileType cs                                             command! -buffer ImplementationSplit :call s:SplitYCM("split", "YcmCompleter GoToImplementationElseDeclaration")
 augroup end
 
 " nnoremap <leader>F :YcmCompleter FixIt<CR>
