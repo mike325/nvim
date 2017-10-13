@@ -31,10 +31,20 @@ endif
 " Session management
 " Auto save on exit
 let g:session_autosave = 'no'
+
+" Save sessions every 5 minutes
+let g:session_autosave_periodic = 5
+
+" Silent autosave messages
+let g:session_autosave_silent = 1
+
 " Don't ask for load last session
 let g:session_autoload = 'no'
 
 let g:session_directory = g:parent_dir.'sessions'
+
+" Disable all session locking - I know what I'm doing :-).
+let g:session_lock_enabled = 0
 
 " Quick open session
 nnoremap <leader>o :OpenSession
@@ -46,4 +56,3 @@ nnoremap <leader><leader>c :SaveSession<CR>:CloseSession!<CR>
 nnoremap <leader><leader>s :SaveSession<CR>
 " Quick delete session
 nnoremap <leader><leader>d :DeleteSession<CR>
-
