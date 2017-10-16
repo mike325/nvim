@@ -138,7 +138,9 @@ set background=dark
 set backspace=indent,eol,start " Use full backspace power
 
 set encoding=utf-8     " The encoding displayed.
-set fileencoding=utf-8 " The encoding written to file.
+
+" This is set in every file in BufReadPre autocmd
+" set fileencoding=utf-8 " The encoding written to file.
 
 set titlestring=%t\ (%f)
 set title          " Set window title

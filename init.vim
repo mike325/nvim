@@ -303,7 +303,7 @@ if !exists('g:minimal')
     " Easy alignment
     Plug 'godlygeek/tabular'
 
-    Plug 'ctrlpvim/ctrlp.vim', { 'on': [ 'CtrlPBuffer', 'CtrlP', 'CtrlPMRUFiles'] }
+    Plug 'ctrlpvim/ctrlp.vim'
     " Plug 'tacahiroy/ctrlp-funky'
 
     if has("python") || has("python3")

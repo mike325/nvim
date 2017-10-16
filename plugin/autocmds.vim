@@ -31,6 +31,12 @@ endif
 
 let g:autocmds_loaded = 1
 
+" Allow to use Vim as Pager
+augroup Modifiable
+    autocmd!
+    autocmd BufReadPre * if &modifiable == 1 | setlocal fileencoding=utf-8 | endif
+augroup end
+
 if v:version > 702
     " TODO make a function to save the state of the toggles
     augroup Numbers

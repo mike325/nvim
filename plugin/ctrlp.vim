@@ -28,21 +28,32 @@ if !exists('g:plugs["ctrlp.vim"]')
     finish
 endif
 
-nnoremap <C-p> :CtrlP<CR>
-nnoremap <C-b> :CtrlPBuffer<CR>
-nnoremap <C-f> :CtrlPMRUFiles<CR>
-
 let g:ctrlp_map = '<C-p>'
 let g:ctrlp_cmd = 'CtrlP'
 
+nnoremap <C-b> :CtrlPBuffer<CR>
+nnoremap <C-f> :CtrlPMRUFiles<CR>
+
+" :CtrlPRTS
+" :CtrlPMixed
+
+let g:ctrlp_extensions = ['quickfix', 'undo', 'line', 'changes', 'mixed']
+
 " Do not clear filenames cache, to improve CtrlP startup
 " You can manualy clear it by <F5>
+
 let g:ctrlp_clear_cache_on_exit = 0
 let g:ctrlp_by_filename         = 1
 let g:ctrlp_follow_symlinks     = 1
 let g:ctrlp_mruf_case_sensitive = 1
+let g:ctrlp_show_hidden         = 1
+
+" CtrlP's windows settings
 let g:ctrlp_match_window        = 'bottom,order:ttb,min:1,max:30,results:50'
+" Search files in the current repo or in the file's dir
 let g:ctrlp_working_path_mode   = 'ra'
+" Opens files in the current windows, whether or not they had been opened in others windows
+let g:ctrlp_switch_buffer       = 'et'
 
 
 let g:ctrlp_funky_multi_buffers = 1
