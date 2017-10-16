@@ -131,8 +131,6 @@ endif
 
 " }}} END Clipboard
 
-let g:netrw_liststyle=3
-
 set background=dark
 
 set backspace=indent,eol,start " Use full backspace power

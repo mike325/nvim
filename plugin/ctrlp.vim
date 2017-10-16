@@ -33,6 +33,8 @@ let g:ctrlp_cmd = 'CtrlP'
 
 nnoremap <C-b> :CtrlPBuffer<CR>
 nnoremap <C-f> :CtrlPMRUFiles<CR>
+nnoremap <C-q> :CtrlPQuickfix<CR>
+" nnoremap <C-m> :CtrlPMixed<CR>
 
 " :CtrlPRTS
 " :CtrlPMixed

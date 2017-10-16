@@ -28,8 +28,8 @@ if !exists('g:plugs["vim-grepper"]')
     finish
 endif
 
-let g:grepper               = {}    " initialize g:grepper with empty dictionary
-let g:grepper.open          = 1
+let g:grepper               = {} " initialize g:grepper with empty dictionary
+let g:grepper.open          = 0  " We now use CtrlP plugin to look for the matches inside quickfix
 let g:grepper.jump          = 0
 let g:grepper.switch        = 0
 let g:grepper.highlight     = 1
