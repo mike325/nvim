@@ -28,6 +28,8 @@ if !exists('g:plugs["nerdtree"]')
     finish
 endif
 
+nnoremap - :NERDTreeToggle<CR>
+
 " Enable line numbers
 let g:NERDTreeShowLineNumbers=1
 " Make sure relative line numbers are used

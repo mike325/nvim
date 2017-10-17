@@ -268,9 +268,14 @@ if !exists('g:minimal')
 
     " ####### Project base {{{
 
-    " Plug 'scrooloose/nerdtree', { 'on': [ 'NERDTree', 'NERDTreeToggle' ] }
-    " Plug 'Xuyuanp/nerdtree-git-plugin', { 'on': [ 'NERDTreeToggle' ] }
-    Plug 'tpope/vim-vinegar'
+    " Have some problmes with vinager in windows
+    if has("win32") || has("win64")
+        Plug 'scrooloose/nerdtree', { 'on': [ 'NERDTree', 'NERDTreeToggle' ] }
+        Plug 'Xuyuanp/nerdtree-git-plugin', { 'on': [ 'NERDTreeToggle' ] }
+    else
+        Plug 'tpope/vim-vinegar'
+    endif
+
     Plug 'mhinz/vim-grepper'
 
     Plug 'xolox/vim-session'
