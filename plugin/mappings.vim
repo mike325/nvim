@@ -186,7 +186,7 @@ if exists("+mouse")
     command! MouseToggle call s:ToggleMouse()
 endif
 
-command! CursorLineToggle set cursorline! cursorline?
-command! NumbersToggle set number! number?
-command! HlSearchToggle set hlsearch! hlsearch?
-command! SpellToggle set spell! spell?
+command! CursorLineToggle setlocal cursorline! cursorline?
+command! NumbersToggle setlocal number! number?
+command! HlSearchToggle setlocal hlsearch! hlsearch?
+command! SpellToggle setlocal spell! spell?

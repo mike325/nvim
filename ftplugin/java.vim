@@ -1,6 +1,6 @@
-" ############################################################################
+" HEADER {{{
 "
-"                               YCM extra settings
+"                               Java settings
 "
 "                                     -`
 "                     ...            .o+`
@@ -22,22 +22,8 @@
 "                   `++:.  github.com/mike325/.vim  `-/+/
 "                   .`                                 `/
 "
-" ############################################################################
+" }}} END HEADER
 
-" TODO: put all git dependent file configs here
-
-if exists('g:plugs["neomake"]')
-    try
-        " Set project specific makers
-
-        let g:new_project_makers =  fugitive#extract_git_dir(expand('%:p'))
-
-        if g:new_project_makers !=# '' && filereadable(g:new_project_makers . "/makers.vim")
-            execute 'source '. g:new_project_makers . '/makers.vim'
-        endif
-
-        command! ProjectMaker execute 'source '. g:new_project_makers . '/makers.vim'
-    catch E117
-        echomsg "Fugitive is not install, Please run :PlugInstall to get Fugitive plugin"
-    endtry
-endif
+" Since we removed the Indent autocmd we need this shit in here
+setlocal cindent
+setlocal foldmethod=syntax

@@ -163,13 +163,6 @@ augroup omnifuncs
     autocmd FileType c             setlocal omnifunc=ccomplete#Complete
 augroup end
 
-augroup IndentSettings
-    autocmd!
-    autocmd FileType java setlocal cindent
-    autocmd FileType cpp  setlocal cindent
-    autocmd FileType c    setlocal cindent
-augroup end
-
 augroup TabSettings
     autocmd!
     autocmd FileType make setlocal noexpandtab
@@ -178,9 +171,6 @@ augroup end
 augroup FoldSettings
     autocmd!
     autocmd FileType javascript setlocal foldmethod=syntax
-    autocmd FileType java       setlocal foldmethod=syntax
-    autocmd FileType cpp        setlocal foldmethod=syntax
-    autocmd FileType c          setlocal foldmethod=syntax
     autocmd FileType go         setlocal foldmethod=syntax
     autocmd FileType python     setlocal foldmethod=indent
     autocmd FileType vim        setlocal foldmethod=indent " May change this for foldmarker

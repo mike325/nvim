@@ -99,6 +99,8 @@ augroup YCMGoTo
     autocmd FileType javascript,python,typescript                   command! -buffer References :YcmCompleter GoToReferences
     autocmd FileType cs                                             command! -buffer Implementation :YcmCompleter GoToImplementationElseDeclaration
 
+    autocmd FileType c,cpp,objc,objcpp,javascript                   command! -buffer Type :YcmCompleter GetType
+
     autocmd FileType c,cpp,objc,objcpp                              command! -buffer IncludeVSplit        :call s:SplitYCM("vsplit", "YcmCompleter GoToInclude")
     autocmd FileType c,cpp,python,go,cs,objc,objcpp,rust            command! -buffer DeclarationVSplit    :call s:SplitYCM("vsplit", "YcmCompleter GoToDeclaration")
     autocmd FileType c,cpp,python,go,cs,objc,objcpp,rust,javascript command! -buffer DefinitionVSplit     :call s:SplitYCM("vsplit", "YcmCompleter GoToDefinition")
