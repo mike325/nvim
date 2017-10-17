@@ -319,7 +319,7 @@ if !exists('g:minimal')
             " - force:  set on PlugInstall! or PlugUpdate!
             if a:info.status == 'installed' || a:info.force
                 if ( has("win32") || has("win64") )
-                    !./install_windows.bat
+                    !powershell ./install_windows.bat
                 else
                     !./install.sh
                 endif
