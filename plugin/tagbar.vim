@@ -36,8 +36,13 @@ let g:tagbar_case_insensitive = 1
 let g:tagbar_show_visibility  = 1
 let g:tagbar_expand           = 1
 
-let g:tagbar_iconchars = ['▶', '▼']  " (default on Linux and Mac OS X)
-" let g:tagbar_iconchars = ['+', '-']   " (default on Windows)
+if empty($NO_COOL_FONTS)
+    let g:tagbar_iconchars = ['▶', '▼']  " (default on Linux and Mac OS X)
+else
+    let g:tagbar_iconchars = ['+', '-']   " (default on Windows)
+endif
+
+nnoremap _ :TagbarToggle<CR>
 
 " 0: Don't show any line numbers.
 " 1: Show absolute line numbers.
