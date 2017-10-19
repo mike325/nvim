@@ -30,13 +30,15 @@ if exists('g:plugs["neomake"]')
     try
         " Set project specific makers
 
-        let g:new_project_makers =  fugitive#extract_git_dir(expand('%:p'))
+        function! s:GetProjectMakers()
+            let g:new_project_makers =  fugitive#extract_git_dir(expand('%:p'))
 
-        if g:new_project_makers !=# '' && filereadable(g:new_project_makers . "/makers.vim")
-            execute 'source '. g:new_project_makers . '/makers.vim'
-        endif
+            if g:new_project_makers !=# '' && filereadable(g:new_project_makers . "/makers.vim")
+                execute 'source '. g:new_project_makers . '/makers.vim'
+            endif
+        endfunction
 
-        command! ProjectMaker execute 'source '. g:new_project_makers . '/makers.vim'
+        command! UpdateProjectMaker call s:GetProjectMakers()
     catch E117
         echomsg "Fugitive is not install, Please run :PlugInstall to get Fugitive plugin"
     endtry
@@ -45,18 +47,21 @@ endif
 if exists('g:plugs["YouCompleteMe"]')
     try
         function! SetExtraConf()
-            let g:ycm_global_ycm_extra_conf =  fugitive#extract_git_dir(expand('%:p'))
+            let g:ycm_global_ycm_extra_conf =  fugitive#extract_git_dir(expand('%:p:h'))
 
-            if g:ycm_global_ycm_extra_conf ==# ''
-                let g:ycm_global_ycm_extra_conf = fnameescape(g:base_path . "ycm_extra_conf.py")
-            else
+            if g:ycm_global_ycm_extra_conf !=# '' && filereadable(g:ycm_global_ycm_extra_conf . "/ycm_extra_conf.py")
                 let g:ycm_global_ycm_extra_conf .=  "/ycm_extra_conf.py"
+                echomsg "Updated ycm extra config to " . g:ycm_global_ycm_extra_conf
+            else
+                let g:ycm_global_ycm_extra_conf = fnameescape(g:base_path . "ycm_extra_conf.py")
+                echomsg "Using default ycm extra config"
             endif
         endfunction
 
         call SetExtraConf()
 
         command! UpdateYCMConf call SetExtraConf()
+        command! OpenYCMConf execute "find " . g:ycm_global_ycm_extra_conf
     catch E117
         echomsg "Fugitive is not install, Please run :PlugInstall to get Fugitive plugin"
     endtry
