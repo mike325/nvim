@@ -312,22 +312,26 @@ if !exists('g:minimal')
     " Plug 'tacahiroy/ctrlp-funky'
 
     if has("python") || has("python3")
-        function! BuildCtrlPMatcher(info)
-            " info is a dictionary with 3 fields
-            " - name:   name of the plugin
-            " - status: 'installed', 'updated', or 'unchanged'
-            " - force:  set on PlugInstall! or PlugUpdate!
-            if a:info.status == 'installed' || a:info.force
-                if ( has("win32") || has("win64") )
-                    !powershell ./install_windows.bat
-                else
-                    !./install.sh
-                endif
-            endif
-        endfunction
 
         " Fast and 'easy' to compile C CtrlP matcher
+        " Windows seems to have a lot of problems (Tested with mingw, windows 10, Neovim 0.2 and Neovim-qt)
         if ( executable("gcc") || executable("clang") ) && empty($NO_PYTHON_DEV)
+            function! BuildCtrlPMatcher(info)
+                " info is a dictionary with 3 fields
+                " - name:   name of the plugin
+                " - status: 'installed', 'updated', or 'unchanged'
+                " - force:  set on PlugInstall! or PlugUpdate!
+                if a:info.status == 'installed' || a:info.force
+                    if ( has('win32') || has("win64")) && &shell =~ 'powershell'
+                        !./install_windows.bat
+                    elseif ( has('win32') || has("win64")) && &shell =~ 'cmd'
+                        !powershell.exe -NoLogo -NoProfile -NonInteractive -ExecutionPolicy RemoteSigned ./install_windows.bat
+                    else
+                        !./install.sh
+                    endif
+                endif
+            endfunction
+
             Plug 'JazzCore/ctrlp-cmatcher', { 'do': function('BuildCtrlPMatcher') }
         else
             " Fast matcher for ctrlp
@@ -419,14 +423,23 @@ if !exists('g:minimal')
                             let l:code_completion .= " --omnisharp-completer"
                         endif
 
-                        execute "!./install.py" . l:code_completion
+                        if ( has("win32") || has("win64") )
+                            execute "! python ./install.py" . l:code_completion
+                        else
+                            execute "!./install.py" . l:code_completion
+                        endif
 
                     endif
                 endfunction
 
                 " Install ycm if Neovim/vim 8/Vim 7.143 is running on unix or
                 " If it is running on windows with Neovim/Vim 8/Vim 7.143 and ms C compiler
-                Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') }
+                if has("win32") || has("win64")
+                    " Don't fucking update YCM in Windows
+                    Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') , 'frozen' : 1,}
+                else
+                    Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') }
+                endif
 
                 " C/C++ project generator
                 Plug 'rdnetto/ycm-generator', { 'branch': 'stable' }
@@ -573,6 +586,17 @@ if !exists('g:minimal')
     " }}} END Text objects, Motions and Text manipulation
 
     " ####### Misc {{{
+
+    " Since Neovim's terminal support in windows is still sort of buggy
+    " Use dispatch to use instead of fugitive's "Git" commands
+    "       Ex:
+    " Instead:  :Git stash save "Random name"
+    " Run:      :Ddispatch git stash save "Random name"
+    "
+    " Also useful to get the console output in Vim (since :terminal is not enable yet)
+    if !has("nvim") || (has("win32") || has("win64"))
+        Plug 'tpope/vim-dispatch'
+    endif
 
     " Better buffer deletions
     Plug 'moll/vim-bbye', { 'on': [ 'Bdelete' ] }
