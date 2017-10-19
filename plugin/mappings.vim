@@ -190,3 +190,5 @@ command! CursorLineToggle setlocal cursorline! cursorline?
 command! NumbersToggle setlocal number! number?
 command! HlSearchToggle setlocal hlsearch! hlsearch?
 command! SpellToggle setlocal spell! spell?
+
+command! ScrollBindToggle setlocal scrollbind! scrollbind?
