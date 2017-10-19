@@ -94,7 +94,10 @@ if !exists("g:NERDTreeIgnore") || len(g:NERDTreeIgnore) == 0
 endif
 
 
-if !empty($NO_COOL_FONTS)
+if empty($NO_COOL_FONTS)
+    let NERDTreeDirArrowExpandable  = '▶'
+    let NERDTreeDirArrowCollapsible = '▼'
+else
     let NERDTreeDirArrowExpandable  = '+'
     let NERDTreeDirArrowCollapsible = '~'
 endif
