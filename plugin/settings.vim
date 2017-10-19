@@ -69,7 +69,7 @@ if exists('+breakindent')
 endif
 
 if executable("ag")
-    set grepprg=ag\ --nogroup\ --nocolor\ -U
+    let &grepprg='ag --nogroup --nocolor -U --vimgrep'
 endif
 
 if has("termguicolors")
