@@ -80,3 +80,9 @@ endsnippet
 snippet al "alias"
 alias ${1:name}="$0"
 endsnippet
+
+snippet fun "shell funtion"
+function ${1:function_name}() {
+	${0:${VISUAL:#statements}}
+}
+endsnippet
