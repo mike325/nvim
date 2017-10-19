@@ -110,6 +110,9 @@ function! RemoveTrailingWhitespaces()
 
     silent! execute '%s/\s\+$//e'
 
+    " Yep some times I accidentally copy this from ssh terminals
+    silent! execute '%s/┊/ /eg'
+
     call setpos('.', savepos)
     call setreg('/', old_query)
 endfunction
