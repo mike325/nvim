@@ -77,32 +77,21 @@ elseif exists('g:plugs["ctrlp-py-matcher"]')
     " let g:ctrlp_lazy_update = 350
 endif
 
+let g:ctrlp_user_command = {
+    \   'types': {
+    \       1: ['.git', 'cd %s && git ls-files -co --exclude-standard' . g:ignore_patterns.git ]
+    \   },
+    \   'fallback': 'find %s -type f -iname "*" ' . g:ignore_patterns.find ,
+    \ }
+
 if executable("ag")
     " Since we have Ag and Git we can clean cache on exit
     let g:ctrlp_clear_cache_on_exit = 1
-
-    let g:ctrlp_user_command = {
-        \   'types': {
-        \       1: ['.git', 'cd %s && git ls-files -co --exclude-standard' . g:ignore_patterns.git ]
-        \   },
-        \   'fallback': 'ag %s -U -S -l --nocolor --nogroup --hidden '. g:ignore_patterns.ag . '-g ""',
-        \ }
+    let g:ctrlp_user_command.fallback = 'ag %s -U -S -l --nocolor --nogroup --hidden '. g:ignore_patterns.ag . '-g ""'
 elseif has("win32") || has("win64")
     " Actually I don't use Windows that much, so if someone comes with
     " something better I will definitely use it
-    let g:ctrlp_user_command = {
-        \   'types': {
-        \       1: ['.git', 'cd %s && git ls-files -co --exclude-standard' . g:ignore_patterns.git ]
-        \   },
-        \   'fallback': 'dir %s /-n /b /s /a-d',
-        \ }
-else
-    let g:ctrlp_user_command = {
-        \   'types': {
-        \       1: ['.git', 'cd %s && git ls-files -co --exclude-standard' . g:ignore_patterns.git ]
-        \   },
-        \   'fallback': 'find %s -type f -iname "*" ' . g:ignore_patterns.find ,
-        \ }
+    let g:ctrlp_user_command.fallback =  'dir %s /-n /b /s /a-d'
 endif
 
 " NOTE: This only works if g:ctrlp_user_command is not set
