@@ -53,7 +53,6 @@ endif
 augroup DisableTemps
     autocmd!
     autocmd BufNewFile,BufRead,BufEnter gitcommit setlocal noswapfile nobackup
-    autocmd BufNewFile,BufRead,BufEnter *.log     setlocal noswapfile nobackup
     autocmd BufNewFile,BufRead,BufEnter *.txt     setlocal noswapfile nobackup
     autocmd BufNewFile,BufRead,BufEnter /tmp/*    setlocal noswapfile nobackup noundofile
 augroup end
@@ -90,11 +89,11 @@ augroup end
 " Set small sidescroll in log plaintext files
 augroup SideScroll
     autocmd!
-    autocmd BufNewFile,BufRead,BufEnter *.log,*.txt setlocal sidescroll=1
+    autocmd BufNewFile,BufRead,BufEnter *.txt setlocal sidescroll=1
 augroup end
 
 " TODO To be improve
-function! RemoveTrailingWhitespaces()
+function! s:CleanFIle()
     " Sometimes we don't want to remove spaces
     let l:buftypes = 'nofile\|help\|quickfix\|terminal'
     let l:filetypes = 'bin\|hex\|log'
@@ -108,10 +107,11 @@ function! RemoveTrailingWhitespaces()
     " Save last search query
     let old_query = getreg('/')
 
+    " Cleaning line endings
     silent! execute '%s/\s\+$//e'
 
-    " Yep some times I accidentally copy this from ssh terminals
-    silent! execute '%s/┊/ /eg'
+    " Yep I some times I copy this things form the terminal
+    silent! execute '%s/\(\s\+\)┊/\1 /ge'
 
     call setpos('.', savepos)
     call setreg('/', old_query)
@@ -120,7 +120,7 @@ endfunction
 " Trim whitespace in selected files
 augroup CleanFile
     autocmd!
-    autocmd FileType * autocmd BufWritePre <buffer> call RemoveTrailingWhitespaces()
+    autocmd FileType * autocmd BufWritePre <buffer> call s:CleanFIle()
 augroup end
 
 " Specially helpful for html and xml

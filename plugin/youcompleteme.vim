@@ -69,6 +69,7 @@ let g:ycm_filetype_specific_completion_to_disable = {}
 
 " In case there are other completion plugins
 let g:ycm_filetype_blacklist    = {
+        \ 'log' : 1,
         \ 'tagbar' : 1,
         \ 'qf' : 1,
         \ 'notes' : 1,

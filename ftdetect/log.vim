@@ -1,6 +1,6 @@
-" ############################################################################
+" HEADER {{{
 "
-"                              Signify settings
+"                               Autodetect log files
 "
 "                                     -`
 "                     ...            .o+`
@@ -22,31 +22,20 @@
 "                   `++:.  github.com/mike325/.vim  `-/+/
 "                   .`                                 `/
 "
-" ############################################################################
+" }}} END HEADER
 
-if !exists('g:plugs["vim-signify"]')
-    finish
-endif
+function! s:CheckSize()
+    let b:size = getfsize(expand("%"))
+    " If the size of the file is bigger than ~50MB
+    " lets consider it as a log
+    if b:size > 52428800
+        return 1
+    endif
+    return 0
+endfunction
 
-let g:signify_cursorhold_insert     = 1
-let g:signify_cursorhold_normal     = 1
-let g:signify_update_on_bufenter    = 0
-
-
-let g:signify_skip_filetype = {
-            \    'log': 1,
-            \ }
-
-let g:signify_skip_filename_pattern = [
-            \   '*.log',
-            \ ]
-
-nmap ]h <plug>(signify-next-hunk)
-nmap [h <plug>(signify-prev-hunk)
-" nmap ]h 9999<leader>gj
-" nmap ]h 9999<leader>gk
-
-omap ih <plug>(signify-motion-inner-pending)
-xmap ih <plug>(signify-motion-inner-visual)
-omap ah <plug>(signify-motion-outer-pending)
-xmap ah <plug>(signify-motion-outer-visual)
+augroup LogFiles
+    autocmd!
+    autocmd BufNewFile,BufReadPre *.log set filetype=log
+    autocmd BufNewFile,BufReadPre *.txt if(s:CheckSize()) | set filetype=log | endif
+augroup end

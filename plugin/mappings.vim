@@ -37,7 +37,7 @@ vnoremap , :
 " Similar behavior as C and D
 nnoremap Y y$
 
-" Don't visual select the return character
+" Don't visual/select the return character
 vnoremap $ $h
 
 " Avoid Ex mode
@@ -58,10 +58,6 @@ nnoremap <expr> k v:count ? (v:count > 5 ? "m'" . v:count : '') . 'k' : 'gk'
 " nnoremap <tab> >>
 nnoremap <S-tab> <C-o>
 
-" TODO: May use this in UltiSnips
-" Remove stuff in normal/visual mode without change any register
-" nnoremap <BS> "_
-" vnoremap <BS> "_
 vnoremap > >gv
 vnoremap < <gv
 
@@ -75,7 +71,7 @@ nnoremap g/ /\v
 
 " Center searches results
 " Credits to https://amp.reddit.com/r/vim/comments/4jy1mh/slightly_more_subltle_n_and_n_behavior/
-function! s:nice_next(cmd)
+function! s:NiceNext(cmd)
     let view = winsaveview()
     execute "silent! normal! " . a:cmd
     if view.topline != winsaveview().topline
@@ -85,12 +81,12 @@ endfunction
 
 " nnoremap * *zz
 " nnoremap # #zz
-nnoremap <silent> n :call <SID>nice_next('n')<cr>
-nnoremap <silent> N :call <SID>nice_next('N')<cr>
+nnoremap <silent> n :call <SID>NiceNext('n')<cr>
+nnoremap <silent> N :call <SID>NiceNext('N')<cr>
 
 " https://github.com/alexlafroscia/dotfiles/blob/master/nvim/init.vim
 " -- Smart indent when entering insert mode with i on empty lines --------------
-function! IndentWithI()
+function! s:IndentWithI()
     if len(getline('.')) == 0 && getline('.') != getline('$') && &buftype !~? 'terminal'
         return "\"_ddO"
     else
@@ -98,14 +94,14 @@ function! IndentWithI()
     endif
 endfunction
 
-nnoremap <expr> i IndentWithI()
+nnoremap <expr> i s:IndentWithI()
 
 " Change word under cursor and dot repeat
 nnoremap c* *Ncgn
 nnoremap c# #NcgN
 nnoremap cg* g*Ncgn
 nnoremap cg# g#NcgN
-xnoremap <silent> c y/<C-r>"<CR>Ncgn
+xnoremap <silent> c "cy/\<<C-r>c\><CR>Ncgn
 
 " Fucking Spanish keyboard
 nnoremap ¿ `
