@@ -35,3 +35,4 @@ setlocal noautoindent
 setlocal nocindent
 
 setlocal readonly
+setlocal nomodifiable
