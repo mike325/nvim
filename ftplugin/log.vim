@@ -33,3 +33,5 @@ setlocal nosmarttab
 setlocal nocopyindent
 setlocal noautoindent
 setlocal nocindent
+
+setlocal readonly

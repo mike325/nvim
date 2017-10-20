@@ -92,6 +92,23 @@ augroup SideScroll
     autocmd BufNewFile,BufRead,BufEnter *.txt setlocal sidescroll=1
 augroup end
 
+
+function! CheckSize()
+    let b:size = getfsize(expand("%"))
+    " If the size of the file is bigger than ~20MB
+    " lets consider it as a log
+    if b:size > 20971520
+        return 1
+    endif
+    return 0
+endfunction
+
+augroup LogFiles
+    autocmd!
+    autocmd BufNewFile,BufReadPre,BufRead *.log set filetype=log
+    autocmd BufNewFile,BufReadPre,BufRead *.txt if ( CheckSize() == 1 ) | set filetype=log | endif
+augroup end
+
 " TODO To be improve
 function! s:CleanFIle()
     " Sometimes we don't want to remove spaces

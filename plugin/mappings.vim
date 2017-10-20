@@ -86,7 +86,7 @@ nnoremap <silent> N :call <SID>NiceNext('N')<cr>
 
 " https://github.com/alexlafroscia/dotfiles/blob/master/nvim/init.vim
 " -- Smart indent when entering insert mode with i on empty lines --------------
-function! s:IndentWithI()
+function! IndentWithI()
     if len(getline('.')) == 0 && getline('.') != getline('$') && &buftype !~? 'terminal'
         return "\"_ddO"
     else
@@ -94,7 +94,7 @@ function! s:IndentWithI()
     endif
 endfunction
 
-nnoremap <expr> i s:IndentWithI()
+nnoremap <expr> i IndentWithI()
 
 " Change word under cursor and dot repeat
 nnoremap c* *Ncgn
