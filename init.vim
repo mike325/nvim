@@ -306,7 +306,10 @@ if !exists('g:minimal')
     endif
 
     " Easy alignment
-    Plug 'godlygeek/tabular'
+    " Plug 'godlygeek/tabular'
+
+    " Easy alignment with motions and text objects
+    Plug 'tommcdo/vim-lion'
 
     Plug 'ctrlpvim/ctrlp.vim'
     " Plug 'tacahiroy/ctrlp-funky'
@@ -314,15 +317,16 @@ if !exists('g:minimal')
     if has("python") || has("python3")
 
         " Fast and 'easy' to compile C CtrlP matcher
-        " Windows seems to have a lot of problems (Tested with mingw, windows 10, Neovim 0.2 and Neovim-qt)
         if ( executable("gcc") || executable("clang") ) && empty($NO_PYTHON_DEV)
+            \  && ! ( has('win32') || has("win64") )
+            " Windows seems to have a lot of problems (Tested with windows 10, Neovim 0.2 and Neovim-qt)
             function! BuildCtrlPMatcher(info)
                 " info is a dictionary with 3 fields
                 " - name:   name of the plugin
                 " - status: 'installed', 'updated', or 'unchanged'
                 " - force:  set on PlugInstall! or PlugUpdate!
                 if a:info.status == 'installed' || a:info.force
-                    if ( has('win32') || has("win64")) && &shell =~ 'powershell'
+                    if ( has('win32') || has("win64") ) && &shell =~ 'powershell'
                         !./install_windows.bat
                     elseif ( has('win32') || has("win64")) && &shell =~ 'cmd'
                         !powershell.exe -NoLogo -NoProfile -NonInteractive -ExecutionPolicy RemoteSigned ./install_windows.bat
