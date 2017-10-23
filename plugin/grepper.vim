@@ -69,6 +69,13 @@ let g:grepper.findstr = {
     \ 'wordanchors': ['\<', '\>'],
     \ }
 
+" Windows cannot handle double quotes inside single quotes without escaping
+if ( has("win32") || has("win64") )
+    let g:grepper.ag.escape   = '\^$.*+?()[]{}|"'
+    let g:grepper.grep.escape = '\^$.*[]"'
+    let g:grepper.git.escape  = '\^$.*[]"'
+endif
+
 " You can use <TAB> to change the current grep tool
 nnoremap <C-g> :Grepper<CR>
 

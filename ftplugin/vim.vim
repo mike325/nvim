@@ -1,6 +1,6 @@
 " HEADER {{{
 "
-"                               C++ settings
+"                                  Vim settings
 "
 "                                     -`
 "                     ...            .o+`
@@ -24,5 +24,5 @@
 "
 " }}} END HEADER
 
-setlocal cindent
-setlocal foldmethod=syntax
+" Get help with 'K' key
+setlocal keywordprg=:help
