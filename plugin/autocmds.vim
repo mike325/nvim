@@ -130,6 +130,10 @@ function! s:CleanFIle()
     " Yep I some times I copy this things form the terminal
     silent! execute '%s/\(\s\+\)┊/\1 /ge'
 
+    if &fileformat == 'unix'
+        silent! execute '%s/\r$//ge'
+    endif
+
     call setpos('.', savepos)
     call setreg('/', old_query)
 endfunction
