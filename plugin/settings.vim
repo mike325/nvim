@@ -69,7 +69,7 @@ if exists('+breakindent')
 endif
 
 if executable("ag")
-    let &grepprg='ag --nogroup --nocolor -U '.g:ignore_patterns.grep.' --vimgrep'
+    let &grepprg='ag --nogroup --nocolor -U '.g:ignore_patterns.ag .' --vimgrep'
 elseif executable("grep")
     let &grepprg='grep -I '.g:ignore_patterns.grep . ' '
 endif
