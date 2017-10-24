@@ -50,7 +50,11 @@ if !empty($NO_COOL_FONTS)
         \ }
 endif
 
-let g:neomake_open_list = 2
+" Show location list and keep the cursor in the buffer
+" let g:neomake_open_list = 2
+
+" Don't show the location list, silently run Neomake
+let g:neomake_open_list = 0
 
 if executable("vint")
     let g:neomake_vim_enabled_makers = ['vint']

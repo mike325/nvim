@@ -26,23 +26,31 @@
 
 " TODO: put all git dependent file configs here
 
-if exists('g:plugs["neomake"]')
-    try
-        " Set project specific makers
+try
+    " Set project specific config
+    function! s:GetProjectConfigs()
+        let g:project_config =  fugitive#extract_git_dir(expand('%:p'))
 
-        function! s:GetProjectMakers()
-            let g:new_project_makers =  fugitive#extract_git_dir(expand('%:p'))
+        if g:project_config !=# '' && filereadable(g:project_config . "/project.vim")
+            execute 'source '. g:project_config . '/project.vim'
+        else
+            echomsg "Using default YCM config file"
+        endif
+    endfunction
 
-            if g:new_project_makers !=# '' && filereadable(g:new_project_makers . "/makers.vim")
-                execute 'source '. g:new_project_makers . '/makers.vim'
-            endif
-        endfunction
+    function! s:FindProjectConfig()
+        if g:project_config !=# '' && filereadable(g:project_config . "/project.vim")
+            execute "find " . g:project_config . '/project.vim'
+        else
+            echomsg "There's no project file"
+        endif
+    endfunction
 
-        command! UpdateProjectMaker call s:GetProjectMakers()
-    catch E117
-        echomsg "Fugitive is not install, Please run :PlugInstall to get Fugitive plugin"
-    endtry
-endif
+    command! UpdateProjectConfig call s:GetProjectConfigs()
+    command! OpenProjectConfig call s:FindProjectConfig()
+catch E117
+    echomsg "Fugitive is not install, Please run :PlugInstall to get Fugitive plugin"
+endtry
 
 if exists('g:plugs["YouCompleteMe"]')
     try
@@ -51,10 +59,15 @@ if exists('g:plugs["YouCompleteMe"]')
 
             if g:ycm_global_ycm_extra_conf !=# '' && filereadable(g:ycm_global_ycm_extra_conf . "/ycm_extra_conf.py")
                 let g:ycm_global_ycm_extra_conf .=  "/ycm_extra_conf.py"
-                echomsg "Updated ycm extra config to " . g:ycm_global_ycm_extra_conf
+
+                if has('nvim') && exists('g:GuiLoaded')
+                    echomsg "Updated ycm extra config to " . g:ycm_global_ycm_extra_conf
+                endif
             else
                 let g:ycm_global_ycm_extra_conf = fnameescape(g:base_path . "ycm_extra_conf.py")
-                echomsg "Using default ycm extra config"
+                if has('nvim') && exists('g:GuiLoaded')
+                    echomsg "Using default ycm extra config"
+                endif
             endif
         endfunction
 
