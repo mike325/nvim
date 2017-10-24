@@ -79,5 +79,8 @@ try
 
 catch E185
     " We don't have our cool color schemes
-    colorscheme desert
+    colorscheme industry
+
+    " Default colorschemes have underlined cursorline, so we deactivate it
+    set nocursorline
 endtry

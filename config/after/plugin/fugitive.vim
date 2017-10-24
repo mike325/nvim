@@ -34,7 +34,7 @@ try
         if g:project_config !=# '' && filereadable(g:project_config . "/project.vim")
             execute 'source '. g:project_config . '/project.vim'
         else
-            echomsg "Using default YCM config file"
+            echomsg "There's no project file"
         endif
     endfunction
 

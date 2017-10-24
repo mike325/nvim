@@ -81,8 +81,11 @@ endif
 
 " Color columns
 if exists('+colorcolumn')
+    " NOTE: May reactivate this since big files are consider logs and
+    "       automatically deactivate this
     " This works but it tends to slowdown vim with big files
     " let &colorcolumn="80,".join(range(120,999),",")
+
     " Visual ruler
     let &colorcolumn="80"
 endif

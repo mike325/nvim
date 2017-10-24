@@ -36,3 +36,6 @@ setlocal nocindent
 
 setlocal readonly
 setlocal nomodifiable
+
+" Disable colorcolumn
+setlocal colorcolumn=
