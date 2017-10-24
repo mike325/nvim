@@ -31,8 +31,9 @@
 try
 
     " silent! colorscheme gruvbox
-    colorscheme gruvbox
+    " colorscheme gruvbox
     " colorscheme monokai
+    colorscheme onedark
 
     let g:gruvbox_contrast_dark        = 'hard'
     let g:gruvbox_contrast_light       = "hard"

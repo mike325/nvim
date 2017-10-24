@@ -241,6 +241,8 @@ if !exists('g:minimal')
 
     call plug#begin(g:base_path.'plugged')
 
+    Plug fnameescape(g:base_path.'config')
+
     " ####### Colorschemes {{{
 
     Plug 'morhetz/gruvbox'
@@ -660,14 +662,3 @@ endif
 filetype plugin indent on
 
 " }}} END Initialize plugins
-
-" Load general configurations (key mappings and autocommands)
-" execute 'source '.fnameescape(g:base_path.'global.vim')
-"
-" Load plugins configurations
-" execute 'source '.fnameescape(g:base_path.'plugins.vim')
-
-" Load special host configurations
-" if filereadable(expand(fnameescape(g:base_path.'extras.vim')))
-"     execute 'source '.fnameescape(g:base_path.'extras.vim')
-" endif

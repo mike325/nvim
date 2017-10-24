@@ -25,7 +25,6 @@
 " ############################################################################
 
 if !exists('g:plugs["vim-bbye"]')
-    nnoremap <leader>d :bdelete!<CR>
     finish
 endif
 
