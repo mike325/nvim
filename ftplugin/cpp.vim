@@ -26,3 +26,13 @@
 
 setlocal cindent
 setlocal foldmethod=syntax
+
+if executable("cppman")
+    " Unfortunally Neovim works just with less as $PAGER
+    if has("nvim") && ($PAGER == "less")
+        setlocal keywordprg=:term\ cppman
+    elseif !has("nvim")
+        " Vim works well as $PAGER with cppman
+        setlocal keywordprg=cppman
+    endif
+endif
