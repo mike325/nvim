@@ -160,13 +160,6 @@ if has("nvim")
     tnoremap <Esc> <C-\><C-n>
 endif
 
-" Small wrapper around copen cmd
-function! s:OpenQuickfix(size)
-    execute "botright copen " . a:size
-endfunction
-
-command! -nargs=? Copen call s:OpenQuickfix(<q-args>)
-
 if exists("+relativenumber")
     command! RelativeNumbersToggle set relativenumber! relativenumber?
 endif
@@ -190,6 +183,14 @@ command! WrapToggle setlocal wrap! wrap?
 
 command! ScrollBindToggle setlocal scrollbind! scrollbind?
 
+" Small wrapper around copen cmd
+function! s:OpenQuickfix(size)
+    execute "botright copen " . a:size
+endfunction
+
+" Avoid dispatch command conflicw
+" QuickfixOpen
+command! -nargs=? Qopen call s:OpenQuickfix(<q-args>)
 
 " ####### Fallback Plugin mapping {{{
 if !exists('g:plugs["ultisnips"]') && !exists('g:plugs["vim-snipmate"]')
