@@ -270,8 +270,7 @@ if !exists('g:minimal')
     Plug 'plasticboy/vim-markdown'
     Plug 'bjoernd/vim-syntax-simics'
     Plug 'kurayama/systemd-vim-syntax'
-    " Plug 'mike325/nginx-vim-syntax'
-    Plug 'chr4/nginx.vim'
+    Plug 'mhinz/vim-nginx'
 
     " }}} END Syntax
 
@@ -554,10 +553,6 @@ if !exists('g:minimal')
     Plug 'tpope/vim-endwise'
     Plug 'fidian/hexmode'
 
-    if (has("nvim") || (v:version >= 704))
-        Plug 'lervag/vimtex'
-    endif
-
     if executable("go")
         Plug 'fatih/vim-go'
     endif
@@ -565,6 +560,10 @@ if !exists('g:minimal')
     " Easy comments
     " TODO check other comment plugins with motions
     Plug 'scrooloose/nerdcommenter'
+
+    " if (has("nvim") || (v:version >= 704))
+    "     Plug 'lervag/vimtex'
+    " endif
 
     " }}} END Languages
 
@@ -658,6 +657,12 @@ if !exists('g:minimal')
     if !has("nvim")
         Plug 'tpope/vim-sensible'
     endif
+
+    " Automatically clears search highlight when cursor is moved
+    Plug 'junegunn/vim-slash'
+
+    " Print the number of the available buffer matches
+    Plug 'henrik/vim-indexed-search'
 
     " }}} END Misc
 

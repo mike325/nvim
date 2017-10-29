@@ -69,21 +69,6 @@ nnoremap <leader><leader>e :echo expand("%")<CR>
 " Very Magic sane regex searches
 nnoremap g/ /\v
 
-" Center searches results
-" Credits to https://amp.reddit.com/r/vim/comments/4jy1mh/slightly_more_subltle_n_and_n_behavior/
-function! s:NiceNext(cmd)
-    let view = winsaveview()
-    execute "silent! normal! " . a:cmd
-    if view.topline != winsaveview().topline
-        silent! normal! zz
-    endif
-endfunction
-
-" nnoremap * *zz
-" nnoremap # #zz
-nnoremap <silent> n :call <SID>NiceNext('n')<cr>
-nnoremap <silent> N :call <SID>NiceNext('N')<cr>
-
 " https://github.com/alexlafroscia/dotfiles/blob/master/nvim/init.vim
 " -- Smart indent when entering insert mode with i on empty lines --------------
 function! IndentWithI()
@@ -216,6 +201,25 @@ endif
 
 if !exists('g:plugs["vim-bbye"]')
     nnoremap <leader>d :bdelete!<CR>
+endif
+
+if !exists('g:plugs["vim-indexed-search"]')
+    " TODO: Integrate center next into vim-slash
+
+    " Center searches results
+    " Credits to https://amp.reddit.com/r/vim/comments/4jy1mh/slightly_more_subltle_n_and_n_behavior/
+    function! s:NiceNext(cmd)
+        let view = winsaveview()
+        execute "silent! normal! " . a:cmd
+        if view.topline != winsaveview().topline
+            silent! normal! zz
+        endif
+    endfunction
+
+    " nnoremap * *zz
+    " nnoremap # #zz
+    nnoremap <silent> n :call <SID>NiceNext('n')<cr>
+    nnoremap <silent> N :call <SID>NiceNext('N')<cr>
 endif
 
 " }}} END Fallback Plugin mapping
