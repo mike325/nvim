@@ -83,7 +83,10 @@ augroup end
 
 augroup LastEditPosition
     autocmd!
-    autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+    autocmd BufReadPost *
+                \   if line("'\"") > 1 && line("'\"") <= line("$") && &ft != "gitcommit" |
+                \       exe "normal! g'\""                                               |
+                \   endif
 augroup end
 
 " Set small sidescroll in log plaintext files
