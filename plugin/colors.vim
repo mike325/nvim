@@ -79,7 +79,8 @@ try
 
 catch E185
     " We don't have our cool color schemes
-    colorscheme industry
+    " colorscheme industry
+    colorscheme torte
 
     " Default colorschemes have underlined cursorline, so we deactivate it
     set nocursorline

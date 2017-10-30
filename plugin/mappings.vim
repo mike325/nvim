@@ -103,11 +103,11 @@ nnoremap <leader>x :%!xxd<CR>
 
 " TabBufferManagement {{{
 
+" NOTE: Remove in favor of unimpaired plugin  [b and ]b
 " Next buffer
-nnoremap <leader>n :bn<CR>
-
+" nnoremap <leader>n :bn<CR>
 " Prev buffer
-nnoremap <leader>p :bp<CR>
+" nnoremap <leader>p :bp<CR>
 
 " Buffer movement
 nmap <leader>h <C-w>h
@@ -220,6 +220,23 @@ if !exists('g:plugs["vim-indexed-search"]')
     " nnoremap # #zz
     nnoremap <silent> n :call <SID>NiceNext('n')<cr>
     nnoremap <silent> N :call <SID>NiceNext('N')<cr>
+endif
+
+if !exists('g:plugs["vim-unimpaired"]')
+    nnoremap [Q :cfirst<CR>
+    nnoremap ]Q :clast<CR>
+    nnoremap ]q :cnext<CR>
+    nnoremap [q :cprevious<CR>
+
+    nnoremap [l :lprevious<CR>
+    nnoremap ]l :lnext<CR>
+    nnoremap [L :lfirst<CR>
+    nnoremap ]L :llast<CR>
+
+    nnoremap [B :bfirst<cr>
+    nnoremap ]B :blast<cr>
+    nnoremap [b :bprevious<cr>
+    nnoremap ]b :bnext<cr>
 endif
 
 " }}} END Fallback Plugin mapping
