@@ -86,7 +86,7 @@ nnoremap c* *Ncgn
 nnoremap c# #NcgN
 nnoremap cg* g*Ncgn
 nnoremap cg# g#NcgN
-xnoremap <silent> c "cy/\<<C-r>c\><CR>Ncgn
+xnoremap <silent> c "cy/<C-r>c<CR>Ncgn
 
 " Fucking Spanish keyboard
 nnoremap ¿ `
