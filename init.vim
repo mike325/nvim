@@ -554,7 +554,7 @@ if !exists('g:minimal')
     Plug 'tpope/vim-endwise'
     Plug 'fidian/hexmode'
 
-    if executable("go")
+    if executable("go") && ( v:version >= 704 || has("nvim") )
         Plug 'fatih/vim-go'
     endif
 
