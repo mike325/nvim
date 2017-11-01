@@ -55,7 +55,8 @@ endif
 " needs to be changed to the shell most plugins expect on windows.
 " This does not change &shell inside cygwin or msys vim.
 if ( has("win32") || has("win64") || has("win16") ) && &shell =~# 'bash'
-  set shell=$COMSPEC " sets shell to correct path for cmd.exe
+  " set shell=$COMSPEC " sets shell to correct path for cmd.exe
+  set shell=cmd.exe  " sets shell to correct path for cmd.exe
 endif
 
 " }}} END Improve compatibility between Unix and DOS platfomrs

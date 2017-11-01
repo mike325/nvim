@@ -24,29 +24,33 @@
 "
 " ############################################################################
 
-" This file could/should be linked/copied as .gvimrc in gVim configurations
+" This file could/should be linked/copied as .gvimrc for gVim configurations
 " same way as init.vim must be ALWAYS linked/copied as .vimrc in $HOME
 "
 " Since Windows Gui is Neovim-qt (also available in Linux and MacOS), gVim options doesn't work
 " For more info check https://github.com/equalsraf/neovim-qt
 "
-" FIX: Currently this not fully work in Windows with different screens
+" FIX: Currently this does not fully work in Windows with different screens
 " resolutions
 if has('nvim') && exists('g:GuiLoaded')
-    function! NeovimGuiSetup()
-        GuiLinespace 1
-        call GuiWindowMaximized(1)
-        GuiFont Monospace:h11
+    function! s:NeovimGuiFont(size)
+        if empty(a:size)
+            let a:size = "10"
+        endif
+
+        if empty($NO_COOL_FONTS)
+            execute 'GuiFont! DejaVu Sans Mono for Powerline:h' . a:size
+        else
+            execute 'GuiFont! Monospace:h' . a:size
+        endif
     endfunction
 
     GuiLinespace 1
     call GuiWindowMaximized(1)
-    GuiFont Monospace:h11
-    " call NeovimGuiSetup()
-    " augroup neovimguiattached
-    "     autocmd!
-    "     autocmd VimEnter * call NeovimGuiSetup()
-    " augroup end
+    call GuiMousehide(1)
+    call s:NeovimGuiFont(10)
+
+    command! -nargs=? Font call s:NeovimGuiFont(<q-args>)
 
 elseif has("gui_running")
     set guioptions-=m  " no menu
