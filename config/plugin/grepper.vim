@@ -70,7 +70,7 @@ let g:grepper.findstr = {
     \ }
 
 " Windows cannot handle double quotes inside single quotes without escaping
-if ( has("win32") || has("win64") )
+if WINDOWS()
     let g:grepper.ag.escape   = '\^$.*+?()[]{}|"'
     let g:grepper.grep.escape = '\^$.*[]"'
     let g:grepper.git.escape  = '\^$.*[]"'

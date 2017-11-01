@@ -91,7 +91,7 @@ if executable("pep8")
 endif
 
 let b:outpath = "/tmp/neomake.out"
-if has("win32") || has("win64")
+if WINDOWS()
     let b:outpath = "C:/Temp/neomake"
 endif
 

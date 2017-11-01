@@ -108,7 +108,7 @@ endif
 if empty($SSH_CONNECTION) && has('clipboard')
     " if we are running gVim or running Neovim from Windows (aka neovim-qt)
     " We reactivate the everything
-    if has('gui_running') || (( has('win32') || has('win64') ) && has('nvim'))
+    if has('gui_running') || (WINDOWS() && has('nvim'))
         set clipboard=unnamedplus,unnamed
         if has('mouse')
             set mouse=a    " We have mouse support, so we use it

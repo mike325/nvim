@@ -27,15 +27,20 @@
 
 " Improve compatibility between Unix and DOS platfomrs {{{
 
+
+function! WINDOWS()
+    return ( has("win16") || has("win32") || has("win64"))
+endfunction
+
 let g:base_path = ""
 
 if has("nvim")
-    if has("win32") || has("win64")
+    if WINDOWS()
         let g:base_path = substitute( expand($USERPROFILE), "\\", "/", "g" ) . '/AppData/Local/nvim/'
     else
         let g:base_path = expand($HOME) . '/.config/nvim/'
     endif
-elseif has("win32") || has("win64")
+elseif WINDOWS()
     " if $USERPROFILE and ~ expansions are different, then gVim may be running as portable
     if  substitute( expand($USERPROFILE), "\\", "/", "g" ) == substitute( expand("~"), "\\", "/", "g" )
         let g:base_path =  substitute( expand($USERPROFILE), "\\", "/", "g" ) . '/vimfiles/'
@@ -54,9 +59,8 @@ endif
 " On windows, if gvim.exe or nvim-qt are executed from cygwin bash shell, the shell
 " needs to be changed to the shell most plugins expect on windows.
 " This does not change &shell inside cygwin or msys vim.
-if ( has("win32") || has("win64") || has("win16") ) && &shell =~# 'bash'
-  " set shell=$COMSPEC " sets shell to correct path for cmd.exe
-  set shell=cmd.exe  " sets shell to correct path for cmd.exe
+if WINDOWS() && &shell =~# 'bash'
+  set shell=cmd.exe " sets shell to correct path for cmd.exe
 endif
 
 " }}} END Improve compatibility between Unix and DOS platfomrs
@@ -278,7 +282,7 @@ if !exists('g:minimal')
     " ####### Project base {{{
 
     " Have some problmes with vinager in windows
-    if has("win32") || has("win64")
+    if WINDOWS()
         Plug 'scrooloose/nerdtree', { 'on': [ 'NERDTree', 'NERDTreeToggle' ] }
         Plug 'Xuyuanp/nerdtree-git-plugin', { 'on': [ 'NERDTreeToggle' ] }
     else
@@ -327,7 +331,7 @@ if !exists('g:minimal')
 
         " Fast and 'easy' to compile C CtrlP matcher
         if ( executable("gcc") || executable("clang") ) && empty($NO_PYTHON_DEV)
-            \  && ! ( has('win32') || has("win64") )
+            \  && ! WINDOWS()
             " Windows seems to have a lot of problems (Tested with windows 10, Neovim 0.2 and Neovim-qt)
             function! BuildCtrlPMatcher(info)
                 " info is a dictionary with 3 fields
@@ -335,9 +339,9 @@ if !exists('g:minimal')
                 " - status: 'installed', 'updated', or 'unchanged'
                 " - force:  set on PlugInstall! or PlugUpdate!
                 if a:info.status == 'installed' || a:info.force
-                    if ( has('win32') || has("win64") ) && &shell =~ 'powershell'
+                    if WINDOWS() && &shell =~ 'powershell'
                         !./install_windows.bat
-                    elseif ( has('win32') || has("win64")) && &shell =~ 'cmd'
+                    elseif WINDOWS() && &shell =~ 'cmd'
                         !powershell.exe -NoLogo -NoProfile -NonInteractive -ExecutionPolicy RemoteSigned ./install_windows.bat
                     else
                         !./install.sh
@@ -403,7 +407,7 @@ if !exists('g:minimal')
 
             function! BuildOmniSharp(info)
                 if a:info.status == 'installed' || a:info.force
-                    if ( has("win32") || has("win64") )
+                    if WINDOWS()
                         !cd server && msbuild
                     else
                         !cd server && xbuild
@@ -415,7 +419,7 @@ if !exists('g:minimal')
 
             " Awesome Async completion engine for Neovim
             if (( has("unix") && ( executable("gcc")  || executable("clang") )) ||
-                        \  ((has("win32") || has("win64")) && executable("msbuild"))) &&
+                        \  (WINDOWS() && executable("msbuild"))) &&
                         \  (has("nvim") || (v:version >= 800) || (v:version == 704 && has("patch1578")) )
 
                 function! BuildYCM(info)
@@ -436,8 +440,8 @@ if !exists('g:minimal')
                             let l:code_completion .= " --omnisharp-completer"
                         endif
 
-                        if ( has("win32") || has("win64") )
-                            execute "! python ./install.py" . l:code_completion
+                        if WINDOWS()
+                            execute "!python ./install.py" . l:code_completion
                         else
                             execute "!./install.py" . l:code_completion
                         endif
@@ -447,7 +451,7 @@ if !exists('g:minimal')
 
                 " Install ycm if Neovim/vim 8/Vim 7.143 is running on unix or
                 " If it is running on windows with Neovim/Vim 8/Vim 7.143 and ms C compiler
-                if has("win32") || has("win64")
+                if WINDOWS()
                     " Don't fucking update YCM in Windows
                     Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') , 'frozen' : 1,}
                 else
@@ -478,7 +482,7 @@ if !exists('g:minimal')
 
                     function! GoCompletion(info)
                         if !executable("gocode")
-                            if has("win32") || has("win64")
+                            if WINDOWS()
                                 !go get -u -ldflags -H=windowsgui github.com/nsf/gocode
                             else
                                 !go get -u github.com/nsf/gocode
@@ -607,7 +611,7 @@ if !exists('g:minimal')
     " Run:      :Ddispatch git stash save "Random name"
     "
     " Also useful to get the console output in Vim (since :terminal is not enable yet)
-    if !has("nvim") || (has("win32") || has("win64"))
+    if !has("nvim") || WINDOWS()
         Plug 'tpope/vim-dispatch'
     endif
 
