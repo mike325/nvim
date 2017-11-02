@@ -34,14 +34,16 @@
 " resolutions
 if has('nvim') && exists('g:GuiLoaded')
     function! s:NeovimGuiFont(size)
-        if empty(a:size)
-            let a:size = "10"
+        let l:font_size = "10"
+
+        if !empty(a:size)
+            let l:font_size = a:size
         endif
 
         if empty($NO_COOL_FONTS)
-            execute 'GuiFont! DejaVu Sans Mono for Powerline:h' . a:size
+            execute 'GuiFont! DejaVu Sans Mono for Powerline:h' . l:font_size
         else
-            execute 'GuiFont! Monospace:h' . a:size
+            execute 'GuiFont! Monospace:h' . l:font_size
         endif
     endfunction
 
