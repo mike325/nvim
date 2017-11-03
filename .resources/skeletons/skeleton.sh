@@ -21,6 +21,8 @@
 #            `++:.                           `-/+/
 #            .`                                 `/
 
+_VERBOSE=0
+
 _NAME="$0"
 _NAME="${_NAME##*/}"
 
@@ -70,40 +72,55 @@ function help_user() {
 }
 
 function __parse_args() {
+    if [[ $# -lt 2 ]]; then
+        echo ""
+    fi
+
     local arg="$1"
     local name="$2"
 
-    local pattern="^--$name[=][a-zA-Z0-9./]+$"
+    local pattern="^--$name[=][a-zA-Z0-9._-/~]+$"
+
     if [[ ! -z "$3" ]]; then
         local pattern="^--$name[=]$3$"
     fi
 
     if [[ $arg =~ $pattern ]]; then
         local left_side="${arg#*=}"
-        echo "$left_side"
+        echo "${left_side/#\~/$HOME}"
     else
         echo "$arg"
     fi
 }
 
 function warn_msg() {
-    WARN_MESSAGE="$1"
-    printf "[!]     ---- Warning!!! %s \n" "$WARN_MESSAGE"
+    local warn_message="$1"
+    printf "[!]     ---- Warning!!! %s \n" "$warn_message"
 }
 
 function error_msg() {
-    ERROR_MESSAGE="$1"
-    printf "[X]     ---- Error!!!   %s \n" "$ERROR_MESSAGE" 1>&2
+    local error_message="$1"
+    printf "[X]     ---- Error!!!   %s \n" "$error_message" 1>&2
 }
 
 function status_msg() {
-    STATUS_MESSAGGE="$1"
-    printf "[*]     ---- %s \n" "$STATUS_MESSAGGE"
+    local status_message="$1"
+    printf "[*]     ---- %s \n" "$status_message"
+}
+
+function verbose_msg() {
+    if [[ $_VERBOSE -eq 1 ]]; then
+        local debug_message="$1"
+        printf "[+]     ---- Debug!!!   %s \n" "$debug_message"
+    fi
 }
 
 while [[ $# -gt 0 ]]; do
     key="$1"
     case "$key" in
+        --verbose)
+            _VERBOSE=1
+            ;;
         -h|--help)
             help_user
             exit 0
