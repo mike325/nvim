@@ -558,13 +558,14 @@ if !exists('g:minimal')
     Plug 'tpope/vim-endwise'
     Plug 'fidian/hexmode'
 
-    if executable("go") && ( v:version >= 704 || has("nvim") )
+    if executable("go") && ( ( v:version >= 704 && has("patch1689") ) || has("nvim") )
         Plug 'fatih/vim-go'
     endif
 
     " Easy comments
     " TODO check other comment plugins with motions
-    Plug 'scrooloose/nerdcommenter'
+    Plug 'tomtom/tcomment_vim'
+    " Plug 'scrooloose/nerdcommenter'
 
     " if (has("nvim") || (v:version >= 704))
     "     Plug 'lervag/vimtex'
