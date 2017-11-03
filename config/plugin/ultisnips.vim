@@ -29,11 +29,11 @@ if !exists('g:plugs["ultisnips"]')
 endif
 
 
-let g:UltiSnipsEditSplit          = "context"
-let g:UltiSnipsSnippetsDir        = g:base_path . "config/UltiSnips"
-let g:UltiSnipsSnippetDirectories = ["UltiSnips"]
-let g:UltiSnipsExpandTrigger      = "<C-e>"
-
+let g:UltiSnipsEditSplit                = "context"
+let g:UltiSnipsSnippetsDir              = g:base_path . "config/UltiSnips"
+let g:UltiSnipsSnippetDirectories       = ["UltiSnips"]
+let g:UltiSnipsExpandTrigger            = "<C-e>"
+let g:UltiSnipsRemoveSelectModeMappings = 0
 
 if has('python3')
     let g:UltiSnipsUsePythonVersion = 3

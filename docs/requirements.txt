@@ -12,3 +12,6 @@ ropevim
 yapf
 jsbeautifier
 vim-vint
+mistune
+psutil
+setproctitle

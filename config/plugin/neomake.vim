@@ -155,6 +155,19 @@ if executable("clang++")
         \],}
 endif
 
+if executable("shellcheck")
+    let g:neomake_sh_enabled_makers = get(g:,'neomake_sh_enabled_makers',[])
+
+    let g:neomake_sh_enabled_makers += ["shellcheck"]
+
+    let g:neomake_sh_shellcheck_maker = {
+        \   'exe': 'shellcheck',
+        \   'args': [
+        \      '-f', 'gcc',
+        \      '-e', '1117',
+        \],}
+endif
+
 " TODO Config the proper makers for more languages
 " JSON linter       : npm install -g jsonlint
 " Typescript linter : npm install -g typescript
