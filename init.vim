@@ -32,6 +32,18 @@ function! WINDOWS()
     return ( has("win16") || has("win32") || has("win64"))
 endfunction
 
+function! PYTHON(version)
+    if a:version == "any"
+        return (has("python") || has("python3"))
+    endif
+    " Check an specific version of python (empty==2)
+    return (has("python".a:version))
+endfunction
+
+function! ASYNC()
+    return (has("nvim") || (v:version == 800 || (v:version == 704 && has("patch1689")))) ? 1 : 0
+endfunction
+
 let g:base_path = ""
 
 if has("nvim")
@@ -267,15 +279,15 @@ if !exists('g:minimal')
 
     " ####### Syntax {{{
 
-    Plug 'ekalinin/Dockerfile.vim'
-    Plug 'elzr/vim-json'
-    Plug 'tbastos/vim-lua'
-    Plug 'octol/vim-cpp-enhanced-highlight'
-    Plug 'peterhoeg/vim-qml'
-    Plug 'plasticboy/vim-markdown'
-    Plug 'bjoernd/vim-syntax-simics'
-    Plug 'kurayama/systemd-vim-syntax'
-    Plug 'mhinz/vim-nginx'
+    Plug 'ekalinin/Dockerfile.vim', {'for': 'dockerfile'}
+    Plug 'elzr/vim-json', {'for': 'json'}
+    Plug 'tbastos/vim-lua', {'for': 'lua'}
+    Plug 'octol/vim-cpp-enhanced-highlight', {'for': 'cpp'}
+    Plug 'peterhoeg/vim-qml', {'for': 'qml'}
+    Plug 'plasticboy/vim-markdown', {'for': 'markdown'}
+    Plug 'bjoernd/vim-syntax-simics', {'for': 'simics'}
+    Plug 'kurayama/systemd-vim-syntax', {'for': 'systemd'}
+    Plug 'mhinz/vim-nginx', {'for': 'nginx'}
 
     " }}} END Syntax
 
@@ -291,17 +303,17 @@ if !exists('g:minimal')
 
     Plug 'mhinz/vim-grepper'
 
-    Plug 'xolox/vim-session'
     Plug 'xolox/vim-misc'
+    Plug 'xolox/vim-session', {'on': ['OpenSession', 'SaveSession', 'DeleteSession']}
 
     if executable("ctags")
         " Simple view of Tags using ctags
-        Plug 'majutsushi/tagbar'
+        Plug 'majutsushi/tagbar', {'on': ['Tagbar', 'TagbarToggle', 'TagbarOpen']}
     endif
 
     " Syntax check
-    if has("python") || has("pyhton3")
-        if has("nvim") || ( v:version >= 800 )
+    if PYTHON("any")
+        if ASYNC()
             Plug 'neomake/neomake'
         else
             Plug 'vim-syntastic/syntastic'
@@ -315,7 +327,7 @@ if !exists('g:minimal')
     " Plug 'google/vim-codefmt'
     if (has("nvim") || (v:version >= 704))
         " Code Format tool
-        Plug 'chiel92/vim-autoformat'
+        Plug 'chiel92/vim-autoformat', {'on': ['Autoformat']}
     endif
 
     " Easy alignment
@@ -327,7 +339,7 @@ if !exists('g:minimal')
     Plug 'ctrlpvim/ctrlp.vim'
     " Plug 'tacahiroy/ctrlp-funky'
 
-    if has("python") || has("python3")
+    if PYTHON("any")
 
         " Fast and 'easy' to compile C CtrlP matcher
         if ( executable("gcc") || executable("clang") ) && empty($NO_PYTHON_DEV)
@@ -349,7 +361,7 @@ if !exists('g:minimal')
                 endif
             endfunction
 
-            Plug 'JazzCore/ctrlp-cmatcher', { 'do': function('BuildCtrlPMatcher') }
+            Plug 'JazzCore/ctrlp-cmatcher', { 'do': function('BuildCtrlPMatcher')}
         else
             " Fast matcher for ctrlp
             Plug 'FelikZ/ctrlp-py-matcher'
@@ -368,7 +380,7 @@ if !exists('g:minimal')
     Plug 'mhinz/vim-signify'
     Plug 'rhysd/committia.vim'
     Plug 'tpope/vim-fugitive'
-    Plug 'gregsexton/gitv'
+    Plug 'gregsexton/gitv', {'on': ['Gitv']}
 
     " }}} END Git integration
 
@@ -389,7 +401,7 @@ if !exists('g:minimal')
     Plug 'tpope/vim-abolish'
     Plug 'honza/vim-snippets'
 
-    if (has("python") || has("python3")) && (has("nvim") || (v:version >= 704))
+    if PYTHON("any") && (has("nvim") || (v:version >= 704))
         Plug 'SirVer/ultisnips'
     else
         Plug 'MarcWeber/vim-addon-mw-utils'
@@ -403,7 +415,7 @@ if !exists('g:minimal')
 
     " This env var allow us to know if the python version has the dev libs
     if empty($NO_PYTHON_DEV)
-        if ( has("python") || has("python3") ) " Python base completions {{{
+        if PYTHON("any") " Python base completions {{{
 
             function! BuildOmniSharp(info)
                 if a:info.status == 'installed' || a:info.force
@@ -418,9 +430,8 @@ if !exists('g:minimal')
             " Plug 'OmniSharp/omnisharp-vim', { 'do': function('BuildOmniSharp') }
 
             " Awesome Async completion engine for Neovim
-            if (( has("unix") && ( executable("gcc")  || executable("clang") )) ||
-                        \  (WINDOWS() && executable("msbuild"))) &&
-                        \  (has("nvim") || (v:version >= 800) || (v:version == 704 && has("patch1578")) )
+            if ASYNC() && (( has("unix") && ( executable("gcc")  || executable("clang") )) ||
+                        \ (WINDOWS() && executable("msbuild")))
 
                 function! BuildYCM(info)
                     if a:info.status == 'installed' || a:info.force
@@ -461,7 +472,7 @@ if !exists('g:minimal')
                 " C/C++ project generator
                 Plug 'rdnetto/ycm-generator', { 'branch': 'stable' }
                 let b:ycm_installed = 1
-            elseif ( has("nvim") && has("python3") )
+            elseif ( has("nvim") && PYTHON("3") )
                 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 
                 " Python completion
@@ -505,7 +516,7 @@ if !exists('g:minimal')
 
                 let b:deoplete_installed = 1
 
-            elseif ( v:version >= 800 ) || has("nvim")
+            elseif ASYNC()
                 " Test new completion Async framework that require python and vim 8 or
                 " Neovim (without python3)
                 Plug 'maralla/completor.vim'
@@ -558,7 +569,7 @@ if !exists('g:minimal')
     Plug 'tpope/vim-endwise'
     Plug 'fidian/hexmode'
 
-    if executable("go") && ( ( v:version >= 704 && has("patch1689") ) || has("nvim") )
+    if executable("go") && ASYNC()
         Plug 'fatih/vim-go'
     endif
 
@@ -577,13 +588,14 @@ if !exists('g:minimal')
 
     if (has("nvim") || (v:version >= 704))
         Plug 'sickill/vim-pasta'
+
         Plug 'kana/vim-textobj-user'
         Plug 'kana/vim-textobj-line'
-        Plug 'glts/vim-textobj-comment'
-        Plug 'whatyouhide/vim-textobj-xmlattr'
         Plug 'kana/vim-textobj-entire'
         Plug 'michaeljsmith/vim-indent-object'
-        Plug 'jceb/vim-textobj-uri'
+        " Plug 'jceb/vim-textobj-uri'
+        " Plug 'glts/vim-textobj-comment'
+        " Plug 'whatyouhide/vim-textobj-xmlattr'
         " Conflict with Comment text object
         " TODO: Solve this crap in the future
         " Plug 'coderifous/textobj-word-column.vim'
@@ -632,7 +644,7 @@ if !exists('g:minimal')
     Plug 'AndrewRadev/splitjoin.vim'
 
     " Expand visual regions
-    Plug 'terryma/vim-expand-region'
+    " Plug 'terryma/vim-expand-region'
 
     " Display indention
     Plug 'Yggdroot/indentLine'
@@ -650,8 +662,8 @@ if !exists('g:minimal')
     " Plug 'dodie/vim-disapprove-deep-indentation'
 
     " Visualize undo tree
-    if has("python") || has("python3")
-        Plug 'sjl/gundo.vim'
+    if PYTHON("any")
+        Plug 'sjl/gundo.vim', {'on': ['GundoShow', 'GundoToggle']}
     endif
 
     " Unix commands
