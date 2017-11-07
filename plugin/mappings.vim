@@ -168,6 +168,8 @@ command! WrapToggle setlocal wrap! wrap?
 
 command! ScrollBindToggle setlocal scrollbind! scrollbind?
 
+command! PasteToggle setlocal paste! paste?
+
 " Small wrapper around copen cmd
 function! s:OpenQuickfix(size)
     execute "botright copen " . a:size
