@@ -153,8 +153,10 @@ if exists("+mouse")
     function! s:ToggleMouse()
         if &mouse == ''
             execute 'set mouse=a'
+            echo "mouse"
         else
             execute 'set mouse='
+            echo "nomouse"
         endif
     endfunction
     command! MouseToggle call s:ToggleMouse()
