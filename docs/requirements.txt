@@ -1,11 +1,12 @@
 # pydoc
 # neovim-remote
+# setproctitle
 jedi
 flake8
 neovim
 pylint
 pyflakes
-pep8
+pycodestyle
 autopep8
 rope
 ropevim
@@ -14,4 +15,3 @@ jsbeautifier
 vim-vint
 mistune
 psutil
-setproctitle

@@ -69,21 +69,10 @@ endif
 
 let g:neomake_python_enabled_makers = get(g:,'neomake_python_enabled_makers',[])
 
-if executable("flake8")
-    let g:neomake_python_enabled_makers += ['flake8']
+if executable("pycodestyle")
+    let g:neomake_python_enabled_makers += ['pycodestyle']
 
-    " E501 is line length of 80 characters
-    let g:neomake_python_flake8_maker = {
-        \   'args': [
-        \       '--ignore=E501'
-        \],}
-
-endif
-
-if executable("pep8")
-    let g:neomake_python_enabled_makers += ['pep8']
-
-    let g:neomake_python_pep8_maker = {
+    let g:neomake_python_pycodestyle_maker = {
         \ 'args': [
         \   '--max-line-length=100',
         \   '--ignore=E501'
@@ -175,7 +164,7 @@ endif
 " Markdown linter   : gem install --user-install mdl
 " Shell linter      : ( apt-get install / yaourt -S / dnf install ) shellcheck
 " VimL linter       : pip install --user vim-vint
-" Python linter     : pip install --user flake8 pep8
+" Python linter     : pip install --user pycodestyle
 " C/C++ linter      : ( apt-get install / yaourt -S / dnf install ) clang gcc g++
 " Go linter         : ( apt-get install / yaourt -S / dnf install ) golang
 

@@ -40,6 +40,7 @@ function! PYTHON(version)
     return (has("python".a:version))
 endfunction
 
+" Check whether or not (n)vim have async support
 function! ASYNC()
     return (has("nvim") || (v:version == 800 || (v:version == 704 && has("patch1689")))) ? 1 : 0
 endfunction
@@ -342,8 +343,7 @@ if !exists('g:minimal')
     if PYTHON("any")
 
         " Fast and 'easy' to compile C CtrlP matcher
-        if ( executable("gcc") || executable("clang") ) && empty($NO_PYTHON_DEV)
-            \  && ! WINDOWS()
+        if (executable("gcc") || executable("clang")) && empty($NO_PYTHON_DEV) && !WINDOWS()
             " Windows seems to have a lot of problems (Tested with windows 10, Neovim 0.2 and Neovim-qt)
             function! BuildCtrlPMatcher(info)
                 " info is a dictionary with 3 fields
@@ -388,9 +388,11 @@ if !exists('g:minimal')
 
     " Vim airline is available for >= Vim 7.4
     if v:version > 703 || has("nvim")
+        " TODO: Airline seems to take 2/3 of the startuptime
+        "       May look to lighter alternatives
         Plug 'vim-airline/vim-airline'
         Plug 'vim-airline/vim-airline-themes'
-        Plug 'enricobacis/vim-airline-clock'
+        " Plug 'enricobacis/vim-airline-clock'
     endif
 
     " }}} END Status bar
@@ -523,11 +525,11 @@ if !exists('g:minimal')
                 let b:completor = 1
             endif
 
-            if ( has("nvim") || ( v:version >= 800 ) || ( v:version >= 704 ) ) &&
-                        \ ( b:ycm_installed==1 || b:deoplete_installed==1 )
-                " Only works with JDK8!!!
-                Plug 'artur-shaik/vim-javacomplete2'
-            endif
+            " if ( has("nvim") || ( v:version >= 800 ) || ( v:version >= 704 ) ) &&
+            "             \ ( b:ycm_installed==1 || b:deoplete_installed==1 )
+            "     " Only works with JDK8!!!
+            "     Plug 'artur-shaik/vim-javacomplete2'
+            " endif
 
 
             if b:ycm_installed==0 && b:deoplete_installed==0
@@ -635,7 +637,8 @@ if !exists('g:minimal')
     Plug 'kshenoy/vim-signature'
 
     " Move with indentation
-    Plug 'matze/vim-move'
+    " NOTE: Deprecated in favor of unimpaired plugin
+    " Plug 'matze/vim-move'
 
     " Easy change text
     " Plug 'AndrewRadev/switch.vim'
