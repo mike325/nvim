@@ -38,8 +38,8 @@ let g:EasyMotion_smartcase = 1
 nmap \ <Plug>(easymotion-bd-f)
 vmap \ <Plug>(easymotion-bd-f)
 " search a character in the current layout
-nmap <leader>\ <Plug>(easymotion-overwin-f)
-vmap <leader>\ <Plug>(easymotion-overwin-f)
+nmap g\ <Plug>(easymotion-overwin-f)
+vmap g\ <Plug>(easymotion-overwin-f)
 
 " repeat the last motion
 nmap <leader>. <Plug>(easymotion-repeat)
