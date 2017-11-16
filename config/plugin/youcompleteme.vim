@@ -54,11 +54,12 @@ endif
 "     if g:ycm_global_ycm_extra_conf ==# ''
 "         let g:ycm_global_ycm_extra_conf = fnameescape(g:base_path . "ycm_extra_conf.py")
 "     endif
-if filereadable(fnameescape(getcwd() . "/.git/ycm_extra_conf.py"))
-    let g:ycm_global_ycm_extra_conf = fnameescape(getcwd() . "/.git/ycm_extra_conf.py")
-elseif filereadable(fnameescape(g:base_path . "ycm_extra_conf.py"))
-    let g:ycm_global_ycm_extra_conf = fnameescape(g:base_path . "ycm_extra_conf.py")
-endif
+
+" if filereadable(fnameescape(getcwd() . "/.git/ycm_extra_conf.py"))
+"     let g:ycm_global_ycm_extra_conf = fnameescape(getcwd() . "/.git/ycm_extra_conf.py")
+" elseif filereadable(fnameescape(g:base_path . "ycm_extra_conf.py"))
+"     let g:ycm_global_ycm_extra_conf = fnameescape(g:base_path . "ycm_extra_conf.py")
+" endif
 
 if executable("ctags")
     let g:ycm_collect_identifiers_from_tags_files = 1
