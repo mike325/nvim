@@ -33,16 +33,12 @@ try
 
         if g:project_config !=# '' && filereadable(g:project_config . "/project.vim")
             execute 'source '. g:project_config . '/project.vim'
-        elseif has('nvim') && exists('g:GuiLoaded')
-            echomsg "There's no project file"
         endif
     endfunction
 
     function! s:FindProjectConfig()
         if g:project_config !=# '' && filereadable(g:project_config . "/project.vim")
             execute "find " . g:project_config . '/project.vim'
-        elseif has('nvim') && exists('g:GuiLoaded')
-            echomsg "There's no project file"
         endif
     endfunction
 
@@ -51,7 +47,8 @@ try
     command! UpdateProjectConfig call s:SetProjectConfigs()
     command! OpenProjectConfig call s:FindProjectConfig()
 catch E117
-    echomsg "Fugitive is not install, Please run :PlugInstall to get Fugitive plugin"
+    " TODO: Display errors/status in the start screen
+    " Just a placeholder
 endtry
 
 if exists('g:plugs["YouCompleteMe"]')
@@ -62,22 +59,14 @@ if exists('g:plugs["YouCompleteMe"]')
             if g:ycm_global_ycm_extra_conf !=# '' && filereadable(g:ycm_global_ycm_extra_conf . "/ycm_extra_conf.py")
                 let g:ycm_global_ycm_extra_conf .=  "/ycm_extra_conf.py"
 
-                if has('nvim') && exists('g:GuiLoaded')
-                    echomsg "Updated ycm extra config to " . g:ycm_global_ycm_extra_conf
-                endif
             else
                 let g:ycm_global_ycm_extra_conf = fnameescape(g:base_path . "ycm_extra_conf.py")
-                if has('nvim') && exists('g:GuiLoaded')
-                    echomsg "Using default ycm extra config"
-                endif
             endif
         endfunction
 
         function! s:FindExtraConfig()
             if g:ycm_global_ycm_extra_conf !=# '' && filereadable(g:ycm_global_ycm_extra_conf . "/project.vim")
                 execute "find " . g:ycm_global_ycm_extra_conf
-            elseif has('nvim') && exists('g:GuiLoaded')
-                echomsg "Can't find the ycm extra config file"
             endif
         endfunction
 
@@ -86,6 +75,7 @@ if exists('g:plugs["YouCompleteMe"]')
         command! UpdateYCMConf call s:SetExtraConf()
         command! OpenYCMConf call s:FindExtraConfig()
     catch E117
-        echomsg "Fugitive is not install, Please run :PlugInstall to get Fugitive plugin"
+        " TODO: Display errors/status in the start screen
+        " Just a placeholder
     endtry
 endif

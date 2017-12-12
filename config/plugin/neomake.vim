@@ -180,5 +180,7 @@ try
         \ 'BufWritePost': {'delay': 0},
         \ }, 1000)
 catch E117
-    echomsg "Please run :PlugInstall to get Neomake plugin"
+    " echomsg "Please run :PlugInstall to get Neomake plugin"
+    " TODO: Display errors/status in the start screen
+    " Just a placeholder
 endtry

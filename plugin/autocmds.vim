@@ -65,6 +65,7 @@ if has("nvim")
     augroup TerminalAutocmds
         autocmd!
         autocmd TermOpen * setlocal relativenumber number
+        autocmd TermOpen * startinsert
     augroup end
 endif
 

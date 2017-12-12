@@ -223,7 +223,9 @@ function! s:InitConfigs() " Vim's InitConfig {{{
                 execute "set " . l:dir_setting . "=" . fnameescape(g:parent_dir . l:dirname)
             endif
         else
-            echoerr "The current dir " . fnameescape(g:parent_dir . l:dirname) . " could not be created"
+            " echoerr "The current dir " . fnameescape(g:parent_dir . l:dirname) . " could not be created"
+            " TODO: Display errors/status in the start screen
+            " Just a placeholder
         endif
     endfor
 
