@@ -37,7 +37,9 @@ let g:delimitMate_expand_space = 1
 " au FileType vim,html let b:delimitMate_matchpairs = "(:),[:],{:},<:>"
 
 " iunmap <BS>
-imap <silent> <BS> <Plug>delimitMateBS
+if exists("*delimitMate#BS")
+    imap <silent> <BS> <Plug>delimitMateBS
+endif
 
 " let delimitMate_expand_space = 1
 " au FileType tcl let b:delimitMate_expand_space = 1
