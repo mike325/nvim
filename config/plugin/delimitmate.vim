@@ -36,8 +36,8 @@ let g:delimitMate_expand_space = 1
 " let delimitMate_matchpairs = "(:),[:],{:},<:>"
 " au FileType vim,html let b:delimitMate_matchpairs = "(:),[:],{:},<:>"
 
-silent! iunmap <BS>
-silent! imap <unique> <buffer> <BS> <Plug>delimitMateBS
+" iunmap <BS>
+imap <silent> <BS> <Plug>delimitMateBS
 
 " let delimitMate_expand_space = 1
 " au FileType tcl let b:delimitMate_expand_space = 1

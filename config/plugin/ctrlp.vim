@@ -53,7 +53,7 @@ let g:ctrlp_show_hidden         = 1
 " CtrlP's windows settings
 let g:ctrlp_match_window        = 'bottom,order:ttb,min:1,max:30,results:50'
 " Search files in the current repo or in the file's dir
-let g:ctrlp_working_path_mode   = 'ra'
+let g:ctrlp_working_path_mode   = 'rw'
 " Opens files in the current windows, whether or not they had been opened in others windows
 let g:ctrlp_switch_buffer       = 'et'
 

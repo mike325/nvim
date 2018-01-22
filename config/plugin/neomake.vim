@@ -79,6 +79,16 @@ if executable("pycodestyle")
         \],}
 endif
 
+if executable("flake8")
+    let g:neomake_python_enabled_makers += ['flake8']
+
+    let g:neomake_python_flake8_maker = {
+        \ 'args': [
+        \   '--max-line-length=100',
+        \   '--ignore=E501'
+        \],}
+endif
+
 let b:outpath = "/tmp/neomake.out"
 if WINDOWS()
     let b:outpath = "C:/Temp/neomake"
