@@ -545,8 +545,10 @@ if !exists('g:minimal')
     endif
 
     " Vim clang does not require python
-    if b:ycm_installed==0 && b:deoplete_installed==0
-        Plug 'justmao945/vim-clang'
+    if executable("clang")
+        if b:ycm_installed==0 && b:deoplete_installed==0
+            Plug 'justmao945/vim-clang'
+        endif
     endif
 
     " completion without python completion engines ( ycm, deoplete or completer )
