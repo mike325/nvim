@@ -12,3 +12,4 @@ plugged/
 .resources/swap/*
 .resources/undo/*
 .resources/backup/*
+/rplugin.vim

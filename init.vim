@@ -33,11 +33,14 @@ function! WINDOWS()
 endfunction
 
 function! PYTHON(version)
-    if a:version == "any"
+    if a:version == "any" || a:version == ""
         return (has("python") || has("python3"))
+    elseif a:version == "3"
+        return has("python3")
+    elseif a:version == "2"
+        return has("python")
     endif
     " Check an specific version of python (empty==2)
-    return (has("python".a:version))
 endfunction
 
 " Check whether or not (n)vim have async support
@@ -250,6 +253,39 @@ function! s:InitConfigs() " Vim's InitConfig {{{
     execute "set " . l:persistent_settings . "=!,'100,<500,:500,s100,h"
     execute "set " . l:persistent_settings . "+=n" . fnameescape(g:parent_dir . l:persistent_settings)
 endfunction " }}} END Vim's InitConfig
+
+
+if WINDOWS()
+    function! s:python_setup(version)
+        let l:candidates = [
+                    \ 'c:/python'.a:version,
+                    \ 'c:/python/'.a:version,
+                    \ 'c:/python/python'.a:version,
+                    \ 'c:/python_'.a:version,
+                    \ 'c:/python/python_'.a:version,
+                    \]
+        for pydir in l:candidates
+            if isdirectory(fnameescape(pydir))
+                return pydir
+            endif
+        endfor
+        return ""
+    endfunction
+
+    if s:python_setup("27") != ""
+        if exists("g:loaded_python_provider")
+            unlet g:loaded_python_provider
+        endif
+        let g:python_host_prog = s:python_setup("27") . '/python'
+    endif
+
+    if s:python_setup("36") != ""
+        if exists("g:loaded_python3_provider")
+            unlet g:loaded_python3_provider
+        endif
+        let g:python3_host_prog = s:python_setup("36") . '/python'
+    endif
+endif
 
 " Initialize plugins {{{
 
