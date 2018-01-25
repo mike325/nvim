@@ -300,6 +300,7 @@ if !executable("git") && !isdirectory(fnameescape(g:base_path.'plugged'))
     let g:minimal = 1
 endif
 
+" TODO: Should minimal include lightweight tpope's plugins ?
 if !exists('g:minimal')
 
     call plug#begin(g:base_path.'plugged')
@@ -348,6 +349,11 @@ if !exists('g:minimal')
     if executable("ctags")
         " Simple view of Tags using ctags
         Plug 'majutsushi/tagbar', {'on': ['Tagbar', 'TagbarToggle', 'TagbarOpen']}
+    endif
+
+    if executable("gtags") && has("cscope")
+        " Great tag management
+        Plug 'jsfaint/gen_tags.vim'
     endif
 
     " Syntax check

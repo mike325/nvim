@@ -69,9 +69,9 @@ if exists('+breakindent')
 endif
 
 if executable("ag")
-    let &grepprg='ag --nogroup --nocolor -U '.g:ignore_patterns.ag .' --vimgrep'
+    let &grepprg='ag --nogroup --nocolor -U '.g:ignore_patterns.ag . ' '
 elseif executable("grep")
-    let &grepprg='grep -I '.g:ignore_patterns.grep . ' '
+    let &grepprg='grep --with-filename -n -I '.g:ignore_patterns.grep . ' '
 endif
 
 if has("termguicolors")
