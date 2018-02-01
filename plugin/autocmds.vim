@@ -175,21 +175,22 @@ augroup FileTypeDetect
     autocmd BufNewFile,BufReadPre /*/nginx/*.conf setlocal filetype=nginx
 augroup end
 
-" *currently no all functions work
-augroup omnifuncs
-    autocmd!
-    autocmd FileType css           setlocal omnifunc=csscomplete#CompleteCSS
-    autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-    autocmd FileType javascript    setlocal omnifunc=javascriptcomplete#CompleteJS
-    autocmd FileType xml           setlocal omnifunc=xmlcomplete#CompleteTags
-    autocmd FileType python        setlocal omnifunc=pythoncomplete#Complete
-    autocmd FileType go            setlocal omnifunc=go#complete#Complete
-    autocmd FileType cs            setlocal omnifunc=OmniSharp#Complete
-    autocmd FileType php           setlocal omnifunc=phpcomplete#CompletePHP
-    autocmd FileType java          setlocal omnifunc=javacomplete#Complete
-    autocmd FileType cpp           setlocal omnifunc=omni#cpp#complete#Main
-    autocmd FileType c             setlocal omnifunc=ccomplete#Complete
-augroup end
+if exists("g:minimal")
+    " *currently no all functions work
+    augroup omnifuncs
+        autocmd!
+        autocmd FileType css           setlocal omnifunc=csscomplete#CompleteCSS
+        autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+        autocmd FileType javascript    setlocal omnifunc=javascriptcomplete#CompleteJS
+        autocmd FileType xml           setlocal omnifunc=xmlcomplete#CompleteTags
+        autocmd FileType python        setlocal omnifunc=pythoncomplete#Complete
+        autocmd FileType go            setlocal omnifunc=go#complete#Complete
+        autocmd FileType cs            setlocal omnifunc=OmniSharp#Complete
+        autocmd FileType php           setlocal omnifunc=phpcomplete#CompletePHP
+        autocmd FileType java          setlocal omnifunc=javacomplete#Complete
+        autocmd FileType c             setlocal omnifunc=ccomplete#Complete
+    augroup end
+endif
 
 augroup TabSettings
     autocmd!
@@ -222,26 +223,6 @@ augroup end
 " TODO: Improve personalization of the templates
 " TODO: Create custom cmd
 
-function! CMainOrFunc()
-
-    let b:file_name = expand('%:t:r')
-    let b:extension = expand('%:e')
-
-    if b:extension =~# "^cpp$"
-        if b:file_name =~# "^main$"
-            execute '0r '.fnameescape(g:parent_dir.'skeletons/main.cpp')
-        else
-            execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.cpp')
-        endif
-    else
-        if b:file_name =~# "^main$"
-            execute '0r '.fnameescape(g:parent_dir.'skeletons/main.c')
-        else
-            execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.c')
-        endif
-    endif
-
-endfunction
 
 function! CHeader()
 
@@ -260,11 +241,41 @@ function! CHeader()
 
 endfunction
 
-function! JavaClass()
+function! CMainOrFunc()
+
     let b:file_name = expand('%:t:r')
     let b:extension = expand('%:e')
 
-    execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.java')
+    if b:extension =~# "^cpp$"
+        if b:file_name =~# "^main$"
+            let b:skeleton = fnameescape(g:parent_dir.'skeletons/main.cpp')
+        else
+            let b:skeleton = fnameescape(g:parent_dir.'skeletons/skeleton.cpp')
+        endif
+    elseif b:extension =~# "^c"
+        if b:file_name =~# "^main$"
+            let b:skeleton = fnameescape(g:parent_dir.'skeletons/main.c')
+        else
+            let b:skeleton = fnameescape(g:parent_dir.'skeletons/skeleton.c')
+        endif
+    elseif b:extension =~# "^go"
+        if b:file_name =~# "^main$"
+            let b:skeleton = fnameescape(g:parent_dir.'skeletons/main.go')
+        else
+            let b:skeleton = fnameescape(g:parent_dir.'skeletons/skeleton.go')
+        endif
+    endif
+
+    execute '0r '.b:skeleton
+    execute '%s/NAME/'.b:file_name.'/e'
+
+endfunction
+
+function! FileName(file)
+    let b:file_name = expand('%:t:r')
+    let b:extension = expand('%:e')
+
+    execute '0r '.fnameescape(g:parent_dir.'skeletons/'.a:file)
     execute '%s/NAME/'.b:file_name.'/e'
 endfunction
 
@@ -276,11 +287,11 @@ augroup Skeletons
     autocmd BufNewFile *.js   silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.js')
     autocmd BufNewFile *.xml  silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.xml')
     autocmd BufNewFile *.py   silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.py')
-    autocmd BufNewFile *.go   silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.go')
     autocmd BufNewFile *.cs   silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.cs')
     autocmd BufNewFile *.php  silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.php')
     autocmd BufNewFile *.sh   silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.sh')
-    autocmd BufNewFile *.java silent! call JavaClass()
+    autocmd BufNewFile *.java silent! call FileName('skeleton.java')
+    autocmd BufNewFile *.go   silent! call CMainOrFunc()
     autocmd BufNewFile *.cpp  silent! call CMainOrFunc()
     autocmd BufNewFile *.hpp  silent! call CHeader()
     autocmd BufNewFile *.c    silent! call CMainOrFunc()

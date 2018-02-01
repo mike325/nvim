@@ -301,6 +301,7 @@ if !executable("git") && !isdirectory(fnameescape(g:base_path.'plugged'))
 endif
 
 " TODO: Should minimal include lightweight tpope's plugins ?
+" TODO: Check for $TERM before load some configurations
 if !exists('g:minimal')
 
     call plug#begin(g:base_path.'plugged')
@@ -476,7 +477,59 @@ if !exists('g:minimal')
             " Plug 'OmniSharp/omnisharp-vim', { 'do': function('BuildOmniSharp') }
 
             " Awesome Async completion engine for Neovim
-            if ASYNC() && (( has("unix") && ( executable("gcc")  || executable("clang") )) ||
+            if ASYNC() && PYTHON("3")
+
+                " TODO: There's no package check
+                if !has("nvim")
+                    Plug 'roxma/nvim-yarp'
+                    Plug 'roxma/vim-hug-neovim-rpc'
+                endif
+
+                Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+
+                " Python completion
+                Plug 'zchee/deoplete-jedi'
+                Plug 'Shougo/neco-vim'
+
+                " C/C++ completion base on clang compiler
+                if executable("clang")
+                    Plug 'zchee/deoplete-clang'
+                    " Plug 'Shougo/neoinclude.vim'
+
+                    " A bit faster C/C++ completion
+                    " Plug 'tweekmonster/deoplete-clang2'
+                endif
+
+                " Go completion
+                " TODO: Check Go completion in Windows
+                if executable("go") && executable("make")
+
+                    function! GoCompletion(info)
+                        if !executable("gocode")
+                            if WINDOWS()
+                                !go get -u -ldflags -H=windowsgui github.com/nsf/gocode
+                            else
+                                !go get -u github.com/nsf/gocode
+                            endif
+                        endif
+                        make
+                    endfunction
+
+                    Plug 'zchee/deoplete-go', { 'do':function('GoCompletion')}
+                endif
+
+                " if executable("php")
+                "     Plug 'padawan-php/deoplete-padawan', { 'do': 'composer install' }
+                " endif
+
+                " JavaScript completion
+                if executable("tern")
+                    Plug 'carlitux/deoplete-ternjs'
+                endif
+
+                let b:deoplete_installed = 1
+
+            elseif ASYNC() && (( has("unix") && ( executable("gcc")  || executable("clang") )) ||
                         \ (WINDOWS() && executable("msbuild")))
 
                 function! BuildYCM(info)
@@ -518,50 +571,6 @@ if !exists('g:minimal')
                 " C/C++ project generator
                 Plug 'rdnetto/ycm-generator', { 'branch': 'stable' }
                 let b:ycm_installed = 1
-            elseif ( has("nvim") && PYTHON("3") )
-                Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-
-                " Python completion
-                Plug 'zchee/deoplete-jedi'
-
-                " C/C++ completion base on clang compiler
-                if executable("clang")
-                    Plug 'zchee/deoplete-clang'
-                    " Plug 'Shougo/neoinclude.vim'
-
-                    " A bit faster C/C++ completion
-                    " Plug 'tweekmonster/deoplete-clang2'
-                endif
-
-                " Go completion
-                " TODO: Check Go completion in Windows
-                if executable("go") && executable("make")
-
-                    function! GoCompletion(info)
-                        if !executable("gocode")
-                            if WINDOWS()
-                                !go get -u -ldflags -H=windowsgui github.com/nsf/gocode
-                            else
-                                !go get -u github.com/nsf/gocode
-                            endif
-                        endif
-                        make
-                    endfunction
-
-                    Plug 'zchee/deoplete-go', { 'do':function('GoCompletion')}
-                endif
-
-                " if executable("php")
-                "     Plug 'padawan-php/deoplete-padawan', { 'do': 'composer install' }
-                " endif
-
-                " JavaScript completion
-                if executable("tern")
-                    Plug 'carlitux/deoplete-ternjs'
-                endif
-
-                let b:deoplete_installed = 1
-
             elseif ASYNC()
                 " Test new completion Async framework that require python and vim 8 or
                 " Neovim (without python3)
@@ -665,16 +674,16 @@ if !exists('g:minimal')
 
     " ####### Misc {{{
 
-    " Since Neovim's terminal support in windows is still sort of buggy
-    " Use dispatch to use instead of fugitive's "Git" commands
-    "       Ex:
-    " Instead:  :Git stash save "Random name"
-    " Run:      :Ddispatch git stash save "Random name"
-    "
-    " Also useful to get the console output in Vim (since :terminal is not enable yet)
-    if !has("nvim") || WINDOWS()
-        Plug 'tpope/vim-dispatch'
-    endif
+    " " Since Neovim's terminal support in windows is still sort of buggy
+    " " Use dispatch to use instead of fugitive's "Git" commands
+    " "       Ex:
+    " " Instead:  :Git stash save "Random name"
+    " " Run:      :Ddispatch git stash save "Random name"
+    " "
+    " " Also useful to get the console output in Vim (since :terminal is not enable yet)
+    " if !has("nvim") || WINDOWS()
+    "     Plug 'tpope/vim-dispatch'
+    " endif
 
     " Better buffer deletions
     Plug 'moll/vim-bbye', { 'on': [ 'Bdelete' ] }

@@ -33,9 +33,9 @@ _SCRIPT_PATH="${_SCRIPT_PATH%/*}"
 if hash realpath 2>/dev/null; then
     _SCRIPT_PATH=$(realpath "$_SCRIPT_PATH")
 else
-    pushd "$_SCRIPT_PATH" > /dev/null
+    pushd "$_SCRIPT_PATH" 1> /dev/null || exit 1
     _SCRIPT_PATH="$(pwd -P)"
-    popd > /dev/null
+    popd 1> /dev/null || exit 1
 fi
 
 # _DEFAULT_SHELL="${SHELL##*/}"
@@ -65,6 +65,9 @@ function help_user() {
     echo "      $_NAME [OPTIONAL]"
     echo ""
     echo "      Optional Flags"
+    echo ""
+    echo "          -v, --verbose"
+    echo "              Enable debug messages"
     echo ""
     echo "          -h, --help"
     echo "              Display help, if you are seeing this, that means that you already know it (nice)"
@@ -118,7 +121,7 @@ function verbose_msg() {
 while [[ $# -gt 0 ]]; do
     key="$1"
     case "$key" in
-        --verbose)
+        -v|--verbose)
             _VERBOSE=1
             ;;
         -h|--help)
