@@ -128,8 +128,14 @@ while [[ $# -gt 0 ]]; do
             help_user
             exit 0
             ;;
+        *)
+            error_msg "Unknown argument $1"
+            help_user
+            exit 1
+            ;;
     esac
     shift
 done
 
 
+exit 0
