@@ -101,7 +101,7 @@ function! CheckSize()
     let b:size = getfsize(expand("%"))
     " If the size of the file is bigger than ~20MB
     " lets consider it as a log
-    if b:size > 20971520
+    if b:size > 5242880
         return 1
     endif
     return 0
@@ -110,6 +110,7 @@ endfunction
 augroup LogFiles
     autocmd!
     autocmd BufNewFile,BufReadPre,BufRead *.log set filetype=log
+    autocmd BufNewFile,BufReadPre,BufRead *.rdl set filetype=log
     autocmd BufNewFile,BufReadPre,BufRead *.txt if ( CheckSize() == 1 ) | set filetype=log | endif
 augroup end
 

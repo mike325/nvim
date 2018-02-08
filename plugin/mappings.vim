@@ -162,6 +162,10 @@ if exists("+mouse")
     command! MouseToggle call s:ToggleMouse()
 endif
 
+function! s:SetFileData(action, type)
+    execute "setlocal " . a:action . "=" . a:type
+endfunction
+
 command! CursorLineToggle setlocal cursorline! cursorline?
 command! NumbersToggle setlocal number! number?
 command! HlSearchToggle setlocal hlsearch! hlsearch?
@@ -171,6 +175,10 @@ command! WrapToggle setlocal wrap! wrap?
 command! ScrollBindToggle setlocal scrollbind! scrollbind?
 
 command! PasteToggle setlocal paste! paste?
+command! ModifiableToggle setlocal modifiable! modifiable?
+
+command! -nargs=? FileType call s:SetFileData("filetype", <q-args>)
+command! -nargs=? FileFormat call s:SetFileData("fileformat", <q-args>)
 
 " Small wrapper around copen cmd
 function! s:OpenQuickfix(size)

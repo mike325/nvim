@@ -39,3 +39,5 @@ setlocal nomodifiable
 
 " Disable colorcolumn
 setlocal colorcolumn=
+
+setlocal nocursorline
