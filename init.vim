@@ -349,7 +349,7 @@ if !exists('g:minimal')
 
     Plug 'ctrlpvim/ctrlp.vim'
     if has("unix") && executable("git")
-        Plug 'asoncodes/ctrlp-modified.vim'
+        Plug 'jasoncodes/ctrlp-modified.vim'
     endif
     " Plug 'tacahiroy/ctrlp-funky'
 
