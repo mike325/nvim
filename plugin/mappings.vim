@@ -166,19 +166,34 @@ function! s:SetFileData(action, type)
     execute "setlocal " . a:action . "=" . a:type
 endfunction
 
-command! CursorLineToggle setlocal cursorline! cursorline?
-command! NumbersToggle setlocal number! number?
-command! HlSearchToggle setlocal hlsearch! hlsearch?
-command! SpellToggle setlocal spell! spell?
-command! WrapToggle setlocal wrap! wrap?
-
-command! ScrollBindToggle setlocal scrollbind! scrollbind?
-
-command! PasteToggle setlocal paste! paste?
 command! ModifiableToggle setlocal modifiable! modifiable?
+command! CursorLineToggle setlocal cursorline! cursorline?
+command! ScrollBindToggle setlocal scrollbind! scrollbind?
+command! HlSearchToggle   setlocal hlsearch! hlsearch?
+command! NumbersToggle    setlocal number! number?
+command! PasteToggle      setlocal paste! paste?
+command! SpellToggle      setlocal spell! spell?
+command! WrapToggle       setlocal wrap! wrap?
 
 command! -nargs=? FileType call s:SetFileData("filetype", <q-args>)
 command! -nargs=? FileFormat call s:SetFileData("fileformat", <q-args>)
+
+" Use in autocmds.vim
+if !exists("b:trim")
+    let b:trim = 1
+endif
+
+function! s:Trim()
+    if !exists("b:trim") || b:trim != 1
+        let b:trim = 1
+    else
+        let b:trim = 0
+    endif
+
+    return 0
+endfunction
+
+command! TrimToggle call s:Trim()
 
 " Small wrapper around copen cmd
 function! s:OpenQuickfix(size)

@@ -37,7 +37,7 @@ augroup Modifiable
     autocmd BufReadPre * if &modifiable == 1 | setlocal fileencoding=utf-8 | endif
 augroup end
 
-if v:version > 702
+if has("nvim") || v:version > 702
     " TODO make a function to save the state of the toggles
     augroup Numbers
         autocmd!
@@ -90,18 +90,11 @@ augroup LastEditPosition
                 \   endif
 augroup end
 
-" Set small sidescroll in log plaintext files
-augroup SideScroll
-    autocmd!
-    autocmd BufNewFile,BufRead,BufEnter *.txt setlocal sidescroll=1
-augroup end
-
-
 function! CheckSize()
-    let b:size = getfsize(expand("%"))
-    " If the size of the file is bigger than ~20MB
+    let l:size = getfsize(expand("%"))
+    " If the size of the file is bigger than ~5MB
     " lets consider it as a log
-    if b:size > 5242880
+    if l:size > 5242880
         return 1
     endif
     return 0
@@ -120,14 +113,19 @@ function! s:CleanFIle()
     let l:buftypes = 'nofile\|help\|quickfix\|terminal'
     let l:filetypes = 'bin\|hex\|log'
 
-    if &buftype =~? l:buftypes || &filetype ==? l:filetypes || &filetype ==? ''
+    " b:trim toggle command defined in mappings.vim
+    if !exists("b:trim")
+        let b:trim = 1
+    endif
+
+    if b:trim != 1 || &buftype =~? l:buftypes || &filetype ==? l:filetypes || &filetype ==? ''
         return
     endif
 
     "Save last cursor position
-    let savepos = getpos('.')
+    let l:savepos = getpos('.')
     " Save last search query
-    let old_query = getreg('/')
+    let l:oldquery = getreg('/')
 
     " Cleaning line endings
     silent! execute '%s/\s\+$//e'
@@ -139,8 +137,8 @@ function! s:CleanFIle()
         silent! execute '%s/\r$//ge'
     endif
 
-    call setpos('.', savepos)
-    call setreg('/', old_query)
+    call setpos('.', l:savepos)
+    call setreg('/', l:oldquery)
 endfunction
 
 " Trim whitespace in selected files
@@ -224,60 +222,59 @@ augroup end
 " TODO: Improve personalization of the templates
 " TODO: Create custom cmd
 
-
 function! CHeader()
 
-    let b:file_name = expand('%:t:r')
-    let b:extension = expand('%:e')
+    let l:file_name = expand('%:t:r')
+    let l:extension = expand('%:e')
 
-    let b:upper_name = toupper(b:file_name)
+    let l:upper_name = toupper(l:file_name)
 
-    if b:extension =~# "^hpp$"
+    if l:extension =~# "^hpp$"
         execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.hpp')
-        execute '%s/NAME_HPP/'.b:upper_name.'_HPP/g'
+        execute '%s/NAME_HPP/'.l:upper_name.'_HPP/g'
     else
         execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.h')
-        execute '%s/NAME_H/'.b:upper_name.'_H/g'
+        execute '%s/NAME_H/'.l:upper_name.'_H/g'
     endif
 
 endfunction
 
 function! CMainOrFunc()
 
-    let b:file_name = expand('%:t:r')
-    let b:extension = expand('%:e')
+    let l:file_name = expand('%:t:r')
+    let l:extension = expand('%:e')
 
-    if b:extension =~# "^cpp$"
-        if b:file_name =~# "^main$"
-            let b:skeleton = fnameescape(g:parent_dir.'skeletons/main.cpp')
+    if l:extension =~# "^cpp$"
+        if l:file_name =~# "^main$"
+            let l:skeleton = fnameescape(g:parent_dir.'skeletons/main.cpp')
         else
-            let b:skeleton = fnameescape(g:parent_dir.'skeletons/skeleton.cpp')
+            let l:skeleton = fnameescape(g:parent_dir.'skeletons/skeleton.cpp')
         endif
-    elseif b:extension =~# "^c"
-        if b:file_name =~# "^main$"
-            let b:skeleton = fnameescape(g:parent_dir.'skeletons/main.c')
+    elseif l:extension =~# "^c"
+        if l:file_name =~# "^main$"
+            let l:skeleton = fnameescape(g:parent_dir.'skeletons/main.c')
         else
-            let b:skeleton = fnameescape(g:parent_dir.'skeletons/skeleton.c')
+            let l:skeleton = fnameescape(g:parent_dir.'skeletons/skeleton.c')
         endif
-    elseif b:extension =~# "^go"
-        if b:file_name =~# "^main$"
-            let b:skeleton = fnameescape(g:parent_dir.'skeletons/main.go')
+    elseif l:extension =~# "^go"
+        if l:file_name =~# "^main$"
+            let l:skeleton = fnameescape(g:parent_dir.'skeletons/main.go')
         else
-            let b:skeleton = fnameescape(g:parent_dir.'skeletons/skeleton.go')
+            let l:skeleton = fnameescape(g:parent_dir.'skeletons/skeleton.go')
         endif
     endif
 
-    execute '0r '.b:skeleton
-    execute '%s/NAME/'.b:file_name.'/e'
+    execute '0r '.l:skeleton
+    execute '%s/NAME/'.l:file_name.'/e'
 
 endfunction
 
 function! FileName(file)
-    let b:file_name = expand('%:t:r')
-    let b:extension = expand('%:e')
+    let l:file_name = expand('%:t:r')
+    let l:extension = expand('%:e')
 
     execute '0r '.fnameescape(g:parent_dir.'skeletons/'.a:file)
-    execute '%s/NAME/'.b:file_name.'/e'
+    execute '%s/NAME/'.l:file_name.'/e'
 endfunction
 
 augroup Skeletons

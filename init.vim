@@ -334,18 +334,32 @@ if !exists('g:minimal')
 
     " ####### Project base {{{
 
-    " Have some problmes with vinager in windows
-    if WINDOWS()
-        Plug 'scrooloose/nerdtree', { 'on': [ 'NERDTree', 'NERDTreeToggle' ] }
-        Plug 'Xuyuanp/nerdtree-git-plugin', { 'on': [ 'NERDTreeToggle' ] }
-    else
-        Plug 'tpope/vim-vinegar'
-    endif
+    Plug 'tpope/vim-projectionist'
 
     Plug 'mhinz/vim-grepper'
 
     Plug 'xolox/vim-misc'
     Plug 'xolox/vim-session', {'on': ['OpenSession', 'SaveSession', 'DeleteSession']}
+
+    " Easy alignment
+    " Plug 'godlygeek/tabular'
+
+    " Easy alignment with motions and text objects
+    Plug 'tommcdo/vim-lion'
+
+    Plug 'ctrlpvim/ctrlp.vim'
+    if has("unix") && executable("git")
+        Plug 'asoncodes/ctrlp-modified.vim'
+    endif
+    " Plug 'tacahiroy/ctrlp-funky'
+
+    " Have some problmes with vinager in windows
+    if WINDOWS()
+        Plug 'scrooloose/nerdtree', { 'on': [ 'NERDTree', 'NERDTreeToggle' ] }
+        " Plug 'Xuyuanp/nerdtree-git-plugin', { 'on': [ 'NERDTreeToggle' ] }
+    else
+        Plug 'tpope/vim-vinegar'
+    endif
 
     if executable("ctags")
         " Simple view of Tags using ctags
@@ -375,15 +389,6 @@ if !exists('g:minimal')
         " Code Format tool
         Plug 'chiel92/vim-autoformat', {'on': ['Autoformat']}
     endif
-
-    " Easy alignment
-    " Plug 'godlygeek/tabular'
-
-    " Easy alignment with motions and text objects
-    Plug 'tommcdo/vim-lion'
-
-    Plug 'ctrlpvim/ctrlp.vim'
-    " Plug 'tacahiroy/ctrlp-funky'
 
     if PYTHON("any")
 
@@ -423,10 +428,12 @@ if !exists('g:minimal')
 
     " Plug 'airblade/vim-gitgutter'
     Plug 'mhinz/vim-signify'
-    Plug 'rhysd/committia.vim'
-    Plug 'tpope/vim-fugitive'
-    Plug 'gregsexton/gitv', {'on': ['Gitv']}
 
+    if executable("git")
+        Plug 'tpope/vim-fugitive'
+        Plug 'gregsexton/gitv', {'on': ['Gitv']}
+        Plug 'rhysd/committia.vim'
+    endif
     " }}} END Git integration
 
     " ####### Status bar {{{
@@ -674,22 +681,26 @@ if !exists('g:minimal')
 
     " ####### Misc {{{
 
-    " " Since Neovim's terminal support in windows is still sort of buggy
-    " " Use dispatch to use instead of fugitive's "Git" commands
-    " "       Ex:
-    " " Instead:  :Git stash save "Random name"
-    " " Run:      :Ddispatch git stash save "Random name"
-    " "
-    " " Also useful to get the console output in Vim (since :terminal is not enable yet)
-    " if !has("nvim") || WINDOWS()
-    "     Plug 'tpope/vim-dispatch'
-    " endif
+    " Useful to get the console output in Vim (since :terminal is not enable yet)
+    if !has("nvim") && !exists("+term") && !exists("+terminal")
+        Plug 'tpope/vim-dispatch'
+    endif
+
+    " Visualize undo tree
+    if PYTHON("any")
+        Plug 'sjl/gundo.vim', {'on': ['GundoShow', 'GundoToggle']}
+    endif
+
+    " Unix commands
+    if has("unix")
+        Plug 'tpope/vim-eunuch'
+    endif
 
     " Better buffer deletions
     Plug 'moll/vim-bbye', { 'on': [ 'Bdelete' ] }
 
     " Visual marks
-    Plug 'kshenoy/vim-signature'
+    " Plug 'kshenoy/vim-signature'
 
     " Move with indentation
     " NOTE: Deprecated in favor of unimpaired plugin
@@ -719,20 +730,8 @@ if !exists('g:minimal')
     " TODO: check characters display
     " Plug 'dodie/vim-disapprove-deep-indentation'
 
-    " Visualize undo tree
-    if PYTHON("any")
-        Plug 'sjl/gundo.vim', {'on': ['GundoShow', 'GundoToggle']}
-    endif
-
-    " Unix commands
-    if has("unix")
-        Plug 'tpope/vim-eunuch'
-    endif
-
     " Better defaults for Vim
-    if !has("nvim")
-        Plug 'tpope/vim-sensible'
-    endif
+    Plug 'tpope/vim-sensible'
 
     " Automatically clears search highlight when cursor is moved
     Plug 'junegunn/vim-slash'
@@ -745,6 +744,12 @@ if !exists('g:minimal')
     " Initialize plugin system
     call plug#end()
 
+else
+    if !has("nvim") && v:version >= 800
+        packadd! matchit
+    elseif !exists('g:loaded_matchit') && findfile('plugin/matchit.vim', &rtp) ==# ''
+        runtime! macros/matchit.vim
+    endif
 endif
 
 filetype plugin indent on
