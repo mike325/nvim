@@ -492,7 +492,13 @@ if !exists('g:minimal')
                     Plug 'roxma/vim-hug-neovim-rpc'
                 endif
 
-                Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+                function! DeopletePostSetup(info)
+                    if has("nvim")
+                        UpdateRemotePlugins
+                    endif
+                endfunction
+
+                Plug 'Shougo/deoplete.nvim', { 'do': function('DeopletePostSetup')}
 
                 " Python completion
                 Plug 'zchee/deoplete-jedi'
