@@ -17,4 +17,7 @@
     "spell/*.add": {
         "type": "Spells"
     },
+    ".resources/skeletons/*": {
+        "type": "Skeletons"
+    },
 }
