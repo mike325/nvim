@@ -1,0 +1,20 @@
+{
+    "plugin/*.vim": {
+        "type": "plugin"
+    },
+    "config/plugin/*.vim": {
+        "type": "ConfigPlugin"
+    },
+    "config/after/plugin/*.vim": {
+        "type": "ConfigAfterPlugin"
+    },
+    "config/UltiSnips/*.snippets": {
+        "type": "UltiSnips"
+    },
+    "after/plugin/*.vim": {
+        "type": "After"
+    },
+    "spell/*.add": {
+        "type": "Spells"
+    },
+}

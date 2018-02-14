@@ -81,12 +81,14 @@ endfunction
 
 nnoremap <expr> i IndentWithI()
 
-" Change word under cursor and dot repeat
-nnoremap c* *Ncgn
-nnoremap c# #NcgN
-nnoremap cg* g*Ncgn
-nnoremap cg# g#NcgN
-xnoremap <silent> c "cy/<C-r>c<CR>Ncgn
+if has("nvim") || v:version >= 704
+    " Change word under cursor and dot repeat
+    nnoremap c* *Ncgn
+    nnoremap c# #NcgN
+    nnoremap cg* g*Ncgn
+    nnoremap cg# g#NcgN
+    xnoremap <silent> c "cy/<C-r>c<CR>Ncgn
+endif
 
 " Fucking Spanish keyboard
 nnoremap ¿ `
