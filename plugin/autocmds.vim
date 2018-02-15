@@ -279,21 +279,22 @@ endfunction
 
 augroup Skeletons
     autocmd!
-    autocmd BufNewFile *.css  silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.css')
-    autocmd BufNewFile *.html silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.html')
-    autocmd BufNewFile *.md   silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.md')
-    autocmd BufNewFile *.js   silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.js')
-    autocmd BufNewFile *.xml  silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.xml')
-    autocmd BufNewFile *.py   silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.py')
-    autocmd BufNewFile *.cs   silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.cs')
-    autocmd BufNewFile *.php  silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.php')
-    autocmd BufNewFile *.sh   silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.sh')
-    autocmd BufNewFile *.java silent! call FileName('skeleton.java')
-    autocmd BufNewFile *.go   silent! call CMainOrFunc()
-    autocmd BufNewFile *.cpp  silent! call CMainOrFunc()
-    autocmd BufNewFile *.hpp  silent! call CHeader()
-    autocmd BufNewFile *.c    silent! call CMainOrFunc()
-    autocmd BufNewFile *.h    silent! call CHeader()
+    autocmd BufNewFile .projections.json silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/projections.json')
+    autocmd BufNewFile *.css             silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.css')
+    autocmd BufNewFile *.html            silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.html')
+    autocmd BufNewFile *.md              silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.md')
+    autocmd BufNewFile *.js              silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.js')
+    autocmd BufNewFile *.xml             silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.xml')
+    autocmd BufNewFile *.py              silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.py')
+    autocmd BufNewFile *.cs              silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.cs')
+    autocmd BufNewFile *.php             silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.php')
+    autocmd BufNewFile *.sh              silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.sh')
+    autocmd BufNewFile *.java            silent! call FileName('skeleton.java')
+    autocmd BufNewFile *.go              silent! call CMainOrFunc()
+    autocmd BufNewFile *.cpp             silent! call CMainOrFunc()
+    autocmd BufNewFile *.hpp             silent! call CHeader()
+    autocmd BufNewFile *.c               silent! call CMainOrFunc()
+    autocmd BufNewFile *.h               silent! call CHeader()
 augroup end
 
 " }}} EndSkeletons
