@@ -484,13 +484,13 @@ if !exists('g:minimal')
             " Plug 'OmniSharp/omnisharp-vim', { 'do': function('BuildOmniSharp') }
 
             " Awesome Async completion engine for Neovim
-            if ASYNC() && PYTHON("3")
+            if has("nvim") && PYTHON("3")
 
                 " TODO: There's no package check
-                if !has("nvim")
-                    Plug 'roxma/nvim-yarp'
-                    Plug 'roxma/vim-hug-neovim-rpc'
-                endif
+                " if !has("nvim")
+                "     Plug 'roxma/nvim-yarp'
+                "     Plug 'roxma/vim-hug-neovim-rpc'
+                " endif
 
                 function! DeopletePostSetup(info)
                     if has("nvim")
