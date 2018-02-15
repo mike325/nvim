@@ -1,6 +1,18 @@
 {
+    ".projections.json": {
+        "type": "Projections"
+    },
+    "init.vim": {
+        "type": "Init"
+    },
+    "ycm_extra_conf.py": {
+        "type": "YCM"
+    },
+    "clang-format": {
+        "type": "Formart"
+    },
     "plugin/*.vim": {
-        "type": "plugin"
+        "type": "Plugin"
     },
     "config/plugin/*.vim": {
         "type": "ConfigPlugin"
