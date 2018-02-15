@@ -3,7 +3,12 @@
         "type": "Projections"
     },
     "init.vim": {
-        "type": "Init"
+        "type": "Init",
+        "alternate": "ginit.vim",
+    },
+    "ginit.vim": {
+        "type": "Ginit",
+        "alternate": "init.vim",
     },
     "ycm_extra_conf.py": {
         "type": "YCM"
@@ -13,6 +18,9 @@
     },
     "plugin/*.vim": {
         "type": "Plugin"
+    },
+    "ftplugin/*.vim": {
+        "type": "Ftplugin"
     },
     "config/plugin/*.vim": {
         "type": "ConfigPlugin"
