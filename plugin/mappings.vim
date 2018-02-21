@@ -188,8 +188,10 @@ endif
 function! s:Trim()
     if !exists("b:trim") || b:trim != 1
         let b:trim = 1
+        echomsg " Trim"
     else
         let b:trim = 0
+        echomsg " NoTrim"
     endif
 
     return 0
