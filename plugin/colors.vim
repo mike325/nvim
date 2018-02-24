@@ -30,10 +30,6 @@
 
 try
 
-    " silent! colorscheme gruvbox
-    " colorscheme gruvbox
-    " colorscheme monokai
-    colorscheme onedark
 
     let g:gruvbox_contrast_dark        = 'hard'
     let g:gruvbox_contrast_light       = "hard"
@@ -56,26 +52,11 @@ try
     " let g:gruvbox_italicize_comments   = 1
     " let g:gruvbox_hls_cursor="orange"
 
-    " TODO: improve key mappings
-
-    " nnoremap csg :colorscheme gruvbox<CR>:AirlineTheme gruvbox<CR>
-
-    " if &runtimepath =~ 'vim-monokai'
-    "     nnoremap csm :colorscheme monokai<CR>:AirlineTheme molokai<CR>
-    " endif
-    "
-    " if &runtimepath =~ 'jellybeans.vim'
-    "     nnoremap csj :colorscheme jellybeans<CR>:AirlineTheme solarized<CR>
-    " endif
-    "
-    " if &runtimepath =~ 'onedark'
-    "     nnoremap cso :colorscheme onedark<CR>:AirlineTheme solarized<CR>
-    " endif
-    "
-    " if &runtimepath =~ 'vim-gotham'
-    "     " b for batman
-    "     nnoremap csb :colorscheme gotham<CR>:AirlineTheme gotham<CR>
-    " endif
+    " silent! colorscheme gruvbox
+    " colorscheme gruvbox
+    " colorscheme monokai
+    " colorscheme onedark
+    colorscheme ayu
 
 catch E185
     " We don't have our cool color schemes

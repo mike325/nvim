@@ -315,6 +315,7 @@ if !exists('g:minimal')
     Plug 'nanotech/jellybeans.vim'
     Plug 'whatyouhide/vim-gotham'
     Plug 'joshdick/onedark.vim'
+    Plug 'ayu-theme/ayu-vim'
 
     " }}} END Colorschemes
 
