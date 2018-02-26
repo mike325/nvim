@@ -42,7 +42,7 @@ if has("nvim")
     set numberwidth=1
 else
     set ttyfast
-    set t_vb= " ...disable the visual effect :)
+    set t_vb= " ...disable the visual effect
 endif
 
 if has("nvim") || (v:version >= 704)

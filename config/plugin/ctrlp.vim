@@ -35,9 +35,9 @@ nnoremap <C-b> :CtrlPBuffer<CR>
 nnoremap <C-f> :CtrlPMRUFiles<CR>
 nnoremap <C-q> :CtrlPQuickfix<CR>
 
-if exists('g:plugs["ctrlp-modified.vim"]')
-    nnoremap <C-x> :CtrlPModified<CR>
-endif
+" if exists('g:plugs["ctrlp-modified.vim"]')
+"     nnoremap <C-x> :CtrlPModified<CR>
+" endif
 
 " :CtrlPRTS
 " :CtrlPMixed
