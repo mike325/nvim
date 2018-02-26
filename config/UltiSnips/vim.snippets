@@ -54,6 +54,21 @@ catch $2
 endtry
 endsnippet
 
-snippet pl "Plug plugin"
+snippet pl "Plug 'plugin'"
 Plug '$0'
+endsnippet
+
+snippet gpl "if !exists(plugin)"
+if !exists('g:plugs["${1:${VISUAL:NAME}}"]')
+	finish
+endif
+$0
+endsnippet
+
+snippet au "autogroup ... autogroup end"
+augroup ${1:AU_NAME}
+	autocmd!
+	autocmd FileType `!p snip.rv = snip.ft` $2
+augroup end
+$0
 endsnippet

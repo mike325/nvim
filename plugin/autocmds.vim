@@ -290,6 +290,7 @@ augroup Skeletons
     autocmd BufNewFile *.php             silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.php')
     autocmd BufNewFile *.sh              silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.sh')
     autocmd BufNewFile *.java            silent! call FileName('skeleton.java')
+    autocmd BufNewFile *.vim             silent! call FileName('skeleton.vim')
     autocmd BufNewFile *.go              silent! call CMainOrFunc()
     autocmd BufNewFile *.cpp             silent! call CMainOrFunc()
     autocmd BufNewFile *.hpp             silent! call CHeader()

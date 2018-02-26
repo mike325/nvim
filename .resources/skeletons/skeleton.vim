@@ -1,6 +1,6 @@
 " ############################################################################
 "
-"                              DelimitMate settings
+"                               NAME Setttings
 "
 "                                     -`
 "                     ...            .o+`
@@ -24,28 +24,3 @@
 "
 " ############################################################################
 
-if !exists('g:plugs["delimitMate"]')
-    finish
-endif
-
-" function! BetterBackspace()
-" endfunction
-
-let g:delimitMate_expand_space = 1
-
-" let delimitMate_matchpairs = "(:),[:],{:},<:>"
-" au FileType vim,html let b:delimitMate_matchpairs = "(:),[:],{:},<:>"
-
-" iunmap <BS>
-if exists("*delimitMate#BS")
-    imap <silent> <BS> <Plug>delimitMateBS
-endif
-
-augroup DelimitMaters
-    autocmd!
-    autocmd FileType vim,html let b:delimitMate_matchpairs = "(:),[:],{:},<:>"
-    autocmd FileType text let b:delimitMate_matchpairs = "(:),[:],{:},¿:?,¡:!"
-augroup end
-
-" let delimitMate_expand_space = 1
-" au FileType tcl let b:delimitMate_expand_space = 1

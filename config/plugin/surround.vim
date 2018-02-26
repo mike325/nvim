@@ -1,6 +1,6 @@
 " ############################################################################
 "
-"                              DelimitMate settings
+"                               Surround Setttings
 "
 "                                     -`
 "                     ...            .o+`
@@ -24,28 +24,16 @@
 "
 " ############################################################################
 
-if !exists('g:plugs["delimitMate"]')
+
+if !exists('g:plugs["vim-surround"]')
     finish
 endif
 
-" function! BetterBackspace()
-" endfunction
-
-let g:delimitMate_expand_space = 1
-
-" let delimitMate_matchpairs = "(:),[:],{:},<:>"
-" au FileType vim,html let b:delimitMate_matchpairs = "(:),[:],{:},<:>"
-
-" iunmap <BS>
-if exists("*delimitMate#BS")
-    imap <silent> <BS> <Plug>delimitMateBS
-endif
-
-augroup DelimitMaters
+augroup Surrounders
     autocmd!
-    autocmd FileType vim,html let b:delimitMate_matchpairs = "(:),[:],{:},<:>"
-    autocmd FileType text let b:delimitMate_matchpairs = "(:),[:],{:},¿:?,¡:!"
+    autocmd FileType text let b:surround_63 = '¿ \r ?'
+    autocmd FileType text let b:surround_168 = '¿ \r ?'
+    autocmd FileType text let b:surround_173 = '¡ \r !'
+    autocmd FileType text let b:surround_33 = '¡ \r !'
 augroup end
 
-" let delimitMate_expand_space = 1
-" au FileType tcl let b:delimitMate_expand_space = 1
