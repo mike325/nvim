@@ -199,6 +199,13 @@ endfunction
 
 command! TrimToggle call s:Trim()
 
+function! s:SpellLang(lang)
+    execute "set spelllang=".a:lang
+    execute "set spelllang?"
+endfunction
+
+command! -nargs=? SpellLang call s:SpellLang(<q-args>)
+
 " Small wrapper around copen cmd
 function! s:OpenQuickfix(size)
     execute "botright copen " . a:size
