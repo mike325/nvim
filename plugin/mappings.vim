@@ -92,6 +92,7 @@ endif
 
 " Fucking Spanish keyboard
 nnoremap ¿ `
+nnoremap ¿¿ ``
 nnoremap ¡ ^
 
 " For systems without F's keys (ex. Android)
