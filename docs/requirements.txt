@@ -1,9 +1,6 @@
-# pydoc
-# neovim-remote
-# setproctitle
+# Python development
 jedi
 flake8
-neovim
 pylint
 pyflakes
 pycodestyle
@@ -11,7 +8,18 @@ autopep8
 rope
 ropevim
 yapf
+virtualenv
+python-language-server
+mccabe
+# pydoc
+
+# JS development
 jsbeautifier
-vim-vint
 mistune
 psutil
+
+# (Neo)vim stuff
+neovim
+# NOTE: sometimes vint cause some problems in python2
+vim-vint
+neovim-remote

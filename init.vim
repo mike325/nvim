@@ -367,10 +367,10 @@ if !exists('g:minimal')
         Plug 'majutsushi/tagbar', {'on': ['Tagbar', 'TagbarToggle', 'TagbarOpen']}
     endif
 
-    if executable("gtags") && has("cscope")
-        " Great tag management
-        Plug 'jsfaint/gen_tags.vim'
-    endif
+    " if executable("gtags") && has("cscope")
+    "     " Great tag management
+    "     Plug 'jsfaint/gen_tags.vim'
+    " endif
 
     " Syntax check
     if PYTHON("any")
@@ -381,15 +381,22 @@ if !exists('g:minimal')
         endif
     endif
 
-    " Autoformat tools
-    " TODO Check this fork, No +python required
-    " Plug 'umitkablan/vim-auf'
-    " TODO Check google's own formatter
-    " Plug 'google/vim-codefmt'
-    if (has("nvim") || (v:version >= 704))
-        " Code Format tool
-        Plug 'chiel92/vim-autoformat', {'on': ['Autoformat']}
-    endif
+    " DEPRECATED: Autoformat plugin has an annoying bug that remove user's marks
+    "             Since I heavily relay in this feature for code navigation I
+    "             decided to start using Vim's native format option 'formatprg'
+    "             in ftplugin dir
+    "
+    "             I may reactivate it if the bug is fix
+    "
+    " " Autoformat tools
+    " " TODO Check this fork, No +python required
+    " " Plug 'umitkablan/vim-auf'
+    " " TODO Check google's own formatter
+    " " Plug 'google/vim-codefmt'
+    " if (has("nvim") || (v:version >= 704))
+    "     " Code Format tool
+    "     Plug 'chiel92/vim-autoformat', {'on': ['Autoformat']}
+    " endif
 
     if PYTHON("any")
 

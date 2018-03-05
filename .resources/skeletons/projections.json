@@ -2,4 +2,7 @@
     ".projections.json": {
         "type": "Projections"
     },
+    ".gitignore": {
+        "type": "GitIgnore"
+    }
 }

@@ -2,19 +2,22 @@
     ".projections.json": {
         "type": "Projections"
     },
+    ".gitignore": {
+        "type": "GitIgnore"
+    },
     "init.vim": {
         "type": "Init",
-        "alternate": "ginit.vim",
+        "alternate": "ginit.vim"
     },
     "ginit.vim": {
         "type": "Ginit",
-        "alternate": "init.vim",
+        "alternate": "init.vim"
     },
     "ycm_extra_conf.py": {
         "type": "YCM"
     },
     "clang-format": {
-        "type": "Formart"
+        "type": "ClangFormat"
     },
     "plugin/*.vim": {
         "type": "Plugin"
@@ -39,5 +42,5 @@
     },
     ".resources/skeletons/*": {
         "type": "Skeletons"
-    },
+    }
 }

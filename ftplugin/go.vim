@@ -1,6 +1,6 @@
-" HEADER {{{
+" ############################################################################
 "
-"                               C++ settings
+"                               go Setttings
 "
 "                                     -`
 "                     ...            .o+`
@@ -22,23 +22,11 @@
 "                   `++:.  github.com/mike325/.vim  `-/+/
 "                   .`                                 `/
 "
-" }}} END HEADER
+" ############################################################################
 
-setlocal cindent
-setlocal foldmethod=syntax
-
-if executable("cppman")
-    " Unfortunally Neovim works just with less as $PAGER
-    if has("nvim") && ($PAGER == "less")
-        setlocal keywordprg=:term\ cppman
-    elseif !has("nvim")
-        " Vim works well as $PAGER with cppman
-        setlocal keywordprg=cppman
-    endif
-endif
 
 if exists("+formatprg")
-    if executable("clang-format")
-        setlocal formatprg=clang-format
+    if executable("gofmt")
+        setlocal formatprg=gofmt
     endif
 endif
