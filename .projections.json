@@ -5,6 +5,12 @@
     ".gitignore": {
         "type": "GitIgnore"
     },
+    "README.md": {
+        "type": "Readme"
+    },
+    "LICENSE": {
+        "type": "License"
+    },
     "init.vim": {
         "type": "Init",
         "alternate": "ginit.vim"

@@ -342,6 +342,10 @@ if !exists('g:minimal')
     Plug 'xolox/vim-misc'
     Plug 'xolox/vim-session', {'on': ['OpenSession', 'SaveSession', 'DeleteSession']}
 
+
+    " Project standardize file settings
+    Plug 'editorconfig/editorconfig-vim'
+
     " Easy alignment
     " Plug 'godlygeek/tabular'
 
@@ -695,26 +699,11 @@ if !exists('g:minimal')
 
     " ####### Misc {{{
 
-    " Useful to get the console output in Vim (since :terminal is not enable yet)
-    if !has("nvim") && !exists("+term") && !exists("+terminal")
-        Plug 'tpope/vim-dispatch'
-    endif
-
-    " Visualize undo tree
-    if PYTHON("any")
-        Plug 'sjl/gundo.vim', {'on': ['GundoShow', 'GundoToggle']}
-    endif
-
-    " Unix commands
-    if has("unix")
-        Plug 'tpope/vim-eunuch'
-    endif
-
     " Better buffer deletions
     Plug 'moll/vim-bbye', { 'on': [ 'Bdelete' ] }
 
     " Visual marks
-    " Plug 'kshenoy/vim-signature'
+    Plug 'kshenoy/vim-signature'
 
     " Move with indentation
     " NOTE: Deprecated in favor of unimpaired plugin
@@ -752,6 +741,22 @@ if !exists('g:minimal')
 
     " Print the number of the available buffer matches
     Plug 'henrik/vim-indexed-search'
+
+    " Useful to get the console output in Vim (since :terminal is not enable yet)
+    if !has("nvim") && !exists("+term") && !exists("+terminal")
+        Plug 'tpope/vim-dispatch'
+    endif
+
+    " Visualize undo tree
+    if PYTHON("any")
+        Plug 'sjl/gundo.vim', {'on': ['GundoShow', 'GundoToggle']}
+    endif
+
+    " Unix commands
+    if has("unix")
+        Plug 'tpope/vim-eunuch'
+    endif
+
 
     " }}} END Misc
 
