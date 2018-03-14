@@ -164,6 +164,8 @@ if executable("shellcheck")
         \   'args': [
         \      '-f', 'gcc',
         \      '-e', '1117',
+        \      '-x',
+        \      '-a',
         \],}
 endif
 
