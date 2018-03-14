@@ -83,6 +83,8 @@ augroup CloseMenu
     autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
 augroup end
 
+" call deoplete#enable_logging('DEBUG', fnameescape(g:base_path . '/deoplete.log'))
+
 " call deoplete#custom#set('ultisnips', 'matchers', ['matcher_full_fuzzy'])
 
 if exists('g:plugs["deoplete-jedi"]')
@@ -91,23 +93,43 @@ if exists('g:plugs["deoplete-jedi"]')
 endif
 
 if exists('g:plugs["deoplete-clang"]')
-    " Set posible locations in linux
-    " /usr/lib/libclang.so
-    " /usr/lib/clang
-    let g:deoplete#sources#clang#sort_algo     = 'priority'
-    let g:deoplete#sources#clang#libclang_path = '/usr/lib/libclang.so'
-    let g:deoplete#sources#clang#clang_header  = '/usr/lib/clang'
-    let g:deoplete#sources#clang#std           = {
-                \ 'c'      : 'c11',
-                \ 'cpp'    : 'c++14',
-                \ 'objc'   : 'c11',
-                \ 'objcpp' : 'c++1z'
+    if !exists('g:deoplete#sources')
+        let g:deoplete#sources = {}
+    endif
+
+    let g:deoplete#sources.cpp = ['clang']
+
+    " call deoplete#custom#source('clang', 'debug_enabled', 1)
+
+    let g:deoplete#sources#clang#sort_algo = 'priority'
+
+    " NOTE:
+    " g:deoplete#sources#clang#libclang_path: Must be the path to the dynamic clang library
+    " g:deoplete#sources#clang#clang_header : Must be the folder with the clang headers
+    " FIXME: this doesn't work yet
+    " ISSUE: https://github.com/zchee/deoplete-clang/issues/57
+    if WINDOWS()
+        " let g:deoplete#sources#clang#libclang_path = fnameescape('c:/Program Files/LLVM/bin/libclang.dll')
+        " let g:deoplete#sources#clang#clang_header  = fnameescape('c:/Program Files/LLVM/lib/clang/')
+    else
+        let g:deoplete#sources#clang#libclang_path = '/usr/lib/libclang.so'
+        let g:deoplete#sources#clang#clang_header  = '/usr/lib/clang'
+    endif
+
+    let g:deoplete#sources#clang#std = {
+                \    'c'      : 'c11',
+                \    'cpp'    : 'c++14',
+                \    'objc'   : 'c11',
+                \    'objcpp' : 'c++1z'
                 \}
-    " TODO: customize general flags, Clang also support Project flags with '.clang' file
-    " let g:deoplete#sources#clang#flags = [
-    "             \ "-x", "c++",
-    "             \ "-I", "/usr/include",
-    "             \]
+
+elseif exists('g:plugs["deoplete-clang2"]')
+    let g:deoplete#sources#clang#std = {
+                \    'c'      : 'c11',
+                \    'cpp'    : 'c++14',
+                \    'objc'   : 'c11',
+                \    'objcpp' : 'c++1z'
+                \ }
 endif
 
 if exists('g:plugs["neoinclude.vim"]')
@@ -116,8 +138,8 @@ if exists('g:plugs["neoinclude.vim"]')
         let g:neoinclude#exts = {}
     endif
 
-    let g:neoinclude#exts.cpp = ['', 'h', 'hpp', 'hxx']
     let g:neoinclude#exts.c   = ['', 'h']
+    let g:neoinclude#exts.cpp = ['', 'h', 'hpp', 'hxx']
 endif
 
 if exists('g:plugs["deoplete-go"]')

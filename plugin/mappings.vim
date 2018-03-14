@@ -96,7 +96,7 @@ nnoremap ¿¿ ``
 nnoremap ¡ ^
 
 " For systems without F's keys (ex. Android)
-nmap <leader>w :update<CR>
+nnoremap <leader>w :update<CR>
 
 " Close buffer/Editor
 nnoremap <leader>q :q!<CR>
@@ -113,10 +113,10 @@ nnoremap <leader>x :%!xxd<CR>
 " nnoremap <leader>p :bp<CR>
 
 " Buffer movement
-nmap <leader>h <C-w>h
-nmap <leader>j <C-w>j
-nmap <leader>k <C-w>k
-nmap <leader>l <C-w>l
+nnoremap <leader>h <C-w>h
+nnoremap <leader>j <C-w>j
+nnoremap <leader>k <C-w>k
+nnoremap <leader>l <C-w>l
 
 " Equally resize buffer splits
 nnoremap <leader>e <C-w>=
@@ -130,9 +130,19 @@ nnoremap <leader>6 6gt
 nnoremap <leader>7 7gt
 nnoremap <leader>8 8gt
 nnoremap <leader>9 9gt
-
 nnoremap <leader>0 :tablast<CR>
 nnoremap <leader><leader>n :tabnew<CR>
+
+vnoremap <leader>1 <ESC>1gt
+vnoremap <leader>2 <ESC>2gt
+vnoremap <leader>3 <ESC>3gt
+vnoremap <leader>4 <ESC>4gt
+vnoremap <leader>5 <ESC>5gt
+vnoremap <leader>6 <ESC>6gt
+vnoremap <leader>7 <ESC>7gt
+vnoremap <leader>8 <ESC>8gt
+vnoremap <leader>9 <ESC>9gt
+vnoremap <leader>0 <ESC>:tablast<CR>
 
 " }}} EndTabBufferManagement
 
@@ -143,6 +153,15 @@ if has("nvim")
 
     " Better terminal access
     nnoremap <A-t> :terminal<CR>
+    if WINDOWS()
+        " NOTE: clear (and cmd cls) doesn't work in the latest Neovim's terminal
+        " Spawns a bash session inside cmd
+        if filereadable("c:/Program\ Files/Git/bin/bash.exe")
+            command! Terminal terminal "c:/Program Files/Git/bin/bash.exe"
+        elseif filereadable("c:/Program Files (x86)/Git/bin/bash.exe")
+            command! Terminal terminal "c:/Program Files (x86)/Git/bin/bash.exe"
+        endif
+    endif
 
     " Use ESC to exit terminal mode
     tnoremap <Esc> <C-\><C-n>
@@ -165,10 +184,6 @@ if exists("+mouse")
     command! MouseToggle call s:ToggleMouse()
 endif
 
-function! s:SetFileData(action, type)
-    execute "setlocal " . a:action . "=" . a:type
-endfunction
-
 command! ModifiableToggle setlocal modifiable! modifiable?
 command! CursorLineToggle setlocal cursorline! cursorline?
 command! ScrollBindToggle setlocal scrollbind! scrollbind?
@@ -178,8 +193,60 @@ command! PasteToggle      setlocal paste! paste?
 command! SpellToggle      setlocal spell! spell?
 command! WrapToggle       setlocal wrap! wrap?
 
-command! -nargs=? FileType call s:SetFileData("filetype", <q-args>)
-command! -nargs=? FileFormat call s:SetFileData("fileformat", <q-args>)
+function! s:SetFileData(action, type, default)
+    let l:param = a:type
+    if a:type == ""
+        let l:param = a:default
+    endif
+    execute "setlocal " . a:action . "=" . l:param
+endfunction
+
+function! s:Filter(list, arg)
+    let l:filter = filter(a:list, 'v:val =~ a:arg')
+    return map(l:filter, 'fnameescape(v:val)')
+endfunction
+
+function! s:Formats(ArgLead, CmdLine, CursorPos)
+    return s:Filter(["unix", "dos", "mac"], a:ArgLead)
+endfunction
+
+function! s:Types(ArgLead, CmdLine, CursorPos)
+    let l:names =  [
+                \ "c",
+                \ "cmake",
+                \ "cpp",
+                \ "cs",
+                \ "csh",
+                \ "css",
+                \ "dosini",
+                \ "go",
+                \ "html",
+                \ "java",
+                \ "javascript",
+                \ "json",
+                \ "log",
+                \ "lua",
+                \ "make",
+                \ "markdown",
+                \ "php",
+                \ "python",
+                \ "ruby",
+                \ "rust",
+                \ "sh",
+                \ "simics",
+                \ "tex",
+                \ "text",
+                \ "vim",
+                \ "xml",
+                \ "yml",
+                \ "zsh"
+            \ ]
+    return s:Filter(l:names, a:ArgLead)
+endfunction
+
+" Yes I'm quite lazy to type the cmds
+command! -nargs=? -complete=customlist,s:Types FileType call s:SetFileData("filetype", <q-args>, "text")
+command! -nargs=? -complete=customlist,s:Formats FileFormat call s:SetFileData("fileformat", <q-args>, "unix")
 
 " Use in autocmds.vim
 if !exists("b:trim")
@@ -201,11 +268,19 @@ endfunction
 command! TrimToggle call s:Trim()
 
 function! s:SpellLang(lang)
-    execute "set spelllang=".a:lang
+    let l:spell = a:lang
+    if a:lang == ""
+        let l:spell = "en"
+    endif
+    execute "set spelllang=".l:spell
     execute "set spelllang?"
 endfunction
 
-command! -nargs=? SpellLang call s:SpellLang(<q-args>)
+function! s:Spells(ArgLead, CmdLine, CursorPos)
+    return ["en", "es"]
+endfunction
+
+command! -nargs=? -complete=customlist,s:Spells SpellLang call s:SpellLang(<q-args>)
 
 " Small wrapper around copen cmd
 function! s:OpenQuickfix(size)

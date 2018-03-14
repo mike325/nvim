@@ -35,7 +35,7 @@
         "type": "ConfigPlugin"
     },
     "config/after/plugin/*.vim": {
-        "type": "ConfigAfterPlugin"
+        "type": "ConfigPluginAfter"
     },
     "config/UltiSnips/*.snippets": {
         "type": "UltiSnips"

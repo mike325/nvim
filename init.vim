@@ -255,7 +255,7 @@ function! s:InitConfigs() " Vim's InitConfig {{{
 endfunction " }}} END Vim's InitConfig
 
 
-if WINDOWS()
+if WINDOWS() && has("nvim")
     function! s:python_setup(version)
         let l:candidates = [
                     \ 'c:/python'.a:version,
@@ -518,11 +518,14 @@ if !exists('g:minimal')
 
                 " C/C++ completion base on clang compiler
                 if executable("clang")
-                    Plug 'zchee/deoplete-clang'
-                    " Plug 'Shougo/neoinclude.vim'
-
-                    " A bit faster C/C++ completion
-                    " Plug 'tweekmonster/deoplete-clang2'
+                    if WINDOWS()
+                        " A bit faster C/C++ completion
+                        Plug 'tweekmonster/deoplete-clang2'
+                    else
+                        " NOTE: Doesn't support windows
+                        Plug 'zchee/deoplete-clang'
+                        " Plug 'Shougo/neoinclude.vim'
+                    endif
                 endif
 
                 " Go completion
@@ -673,8 +676,8 @@ if !exists('g:minimal')
 
         Plug 'kana/vim-textobj-user'
         Plug 'kana/vim-textobj-line'
-        Plug 'kana/vim-textobj-entire'
         Plug 'michaeljsmith/vim-indent-object'
+        " Plug 'kana/vim-textobj-entire'
         " Plug 'jceb/vim-textobj-uri'
         " Plug 'glts/vim-textobj-comment'
         " Plug 'whatyouhide/vim-textobj-xmlattr'
