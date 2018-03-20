@@ -41,11 +41,11 @@ if has("nvim") || v:version > 702
     " TODO make a function to save the state of the toggles
     augroup Numbers
         autocmd!
-        autocmd FileType help setlocal relativenumber number
-        autocmd WinEnter *    setlocal relativenumber number
-        autocmd WinLeave *    setlocal norelativenumber number
-        autocmd InsertLeave * setlocal relativenumber number
-        autocmd InsertEnter * setlocal norelativenumber number
+        autocmd FileType help  setlocal relativenumber number
+        autocmd WinEnter *     setlocal relativenumber number
+        autocmd WinLeave *     setlocal norelativenumber number
+        autocmd InsertLeave *  setlocal relativenumber number
+        autocmd InsertEnter *  setlocal norelativenumber number
     augroup end
 endif
 
@@ -91,13 +91,9 @@ augroup LastEditPosition
 augroup end
 
 function! CheckSize()
-    let l:size = getfsize(expand("%"))
     " If the size of the file is bigger than ~5MB
     " lets consider it as a log
-    if l:size > 5242880
-        return 1
-    endif
-    return 0
+    return ( getfsize(expand("%")) > 5242880 ) ? 1 : 0
 endfunction
 
 augroup LogFiles
@@ -150,13 +146,12 @@ augroup end
 " Specially helpful for html and xml
 augroup MatchChars
     autocmd!
-    autocmd FileType xml,html,vim autocmd BufReadPre <buffer> setlocal matchpairs+=<:>
+    autocmd FileType xml,html autocmd BufReadPre <buffer> setlocal matchpairs+=<:>
 augroup end
 
 augroup QuickQuit
     autocmd!
     autocmd BufReadPost quickfix nnoremap <silent> <buffer> q :q!<CR>
-    autocmd FileType netrw       nnoremap <silent> <buffer> q :q!<CR>
     autocmd FileType help        nnoremap <silent> <buffer> q :q!<CR>
 augroup end
 
@@ -187,6 +182,7 @@ if exists("g:minimal")
         autocmd FileType cs            setlocal omnifunc=OmniSharp#Complete
         autocmd FileType php           setlocal omnifunc=phpcomplete#CompletePHP
         autocmd FileType java          setlocal omnifunc=javacomplete#Complete
+        autocmd FileType cpp           setlocal omnifunc=ccomplete#Complete
         autocmd FileType c             setlocal omnifunc=ccomplete#Complete
     augroup end
 endif

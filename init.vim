@@ -27,11 +27,12 @@
 
 " Improve compatibility between Unix and DOS platfomrs {{{
 
-
+" Windows wrapper
 function! WINDOWS()
     return ( has("win16") || has("win32") || has("win64"))
 endfunction
 
+" Check an specific version of python (empty==2)
 function! PYTHON(version)
     if a:version == "any" || a:version == ""
         return (has("python") || has("python3"))
@@ -40,20 +41,20 @@ function! PYTHON(version)
     elseif a:version == "2"
         return has("python")
     endif
-    " Check an specific version of python (empty==2)
 endfunction
 
-" Check whether or not (n)vim have async support
+" Check whether or not we have async support
 function! ASYNC()
     return (has("nvim") || (v:version == 800 || (v:version == 704 && has("patch1689")))) ? 1 : 0
 endfunction
 
+" Set the default work dir
 let g:base_path = ""
-
 if has("nvim")
     if WINDOWS()
         let g:base_path = substitute( expand($USERPROFILE), "\\", "/", "g" ) . '/AppData/Local/nvim/'
     else
+        " TODO: Check $XDG_DATA_HOME
         let g:base_path = expand($HOME) . '/.config/nvim/'
     endif
 elseif WINDOWS()
@@ -83,7 +84,7 @@ endif
 
 function! s:SetIgnorePatterns() " Create Ignore rules {{{
     " Files and dirs we want to ignore in searches and plugins
-    " The *.  and */patter/* will be add in the add after
+    " The *.  and */patter/* will be add after
     if !exists("g:ignores")
         let g:ignores = {
                     \   "bin": [ "bin", "exe", "dat",],
@@ -232,10 +233,7 @@ function! s:InitConfigs() " Vim's InitConfig {{{
         endif
     endfor
 
-    let l:persistent_settings = "viminfo"
-    if has("nvim")
-        let l:persistent_settings = "shada"
-    endif
+    let l:persistent_settings = (has("nvim")) ? "shada" : "viminfo"
 
     " Remember things between sessions
     " !        + When included, save and restore global variables that start
@@ -564,6 +562,8 @@ if !exists('g:minimal')
                     if a:info.status == 'installed' || a:info.force
                         " !./install.py --all
                         " !./install.py --gocode-completer --tern-completer --clang-completer --omnisharp-completer
+
+                        " Since YCM download libclang there's no need to have clang install
                         let l:code_completion = " --clang-completer"
 
                         if executable('go') && (!empty($GOROOT))
@@ -676,13 +676,16 @@ if !exists('g:minimal')
 
         Plug 'kana/vim-textobj-user'
         Plug 'kana/vim-textobj-line'
+        Plug 'glts/vim-textobj-comment'
         Plug 'michaeljsmith/vim-indent-object'
-        " Plug 'kana/vim-textobj-entire'
         " Plug 'jceb/vim-textobj-uri'
-        " Plug 'glts/vim-textobj-comment'
         " Plug 'whatyouhide/vim-textobj-xmlattr'
-        " Conflict with Comment text object
-        " TODO: Solve this crap in the future
+
+        " NOTE: cool text object BUT my fat fingers keep presing 'w' instead of 'e'
+        "       so I delete the whole file
+        " Plug 'kana/vim-textobj-entire'
+
+        " TODO: Solve conflict with comment plugin
         " Plug 'coderifous/textobj-word-column.vim'
     endif
 

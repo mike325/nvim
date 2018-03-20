@@ -26,3 +26,5 @@
 
 " Get help with 'K' key
 setlocal keywordprg=:help
+setlocal iskeyword+=:
+setlocal matchpairs+=<:>

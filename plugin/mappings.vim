@@ -40,14 +40,17 @@ nnoremap Y y$
 " Don't visual/select the return character
 vnoremap $ $h
 
-" Avoid Ex mode
+" Avoid defualt Ex mode
 nnoremap Q o<Esc>
+nnoremap <leader>Q Q
 
 " Preserve cursor position when joining lines
 nnoremap J mzJ`z:delmarks<space>z<CR>
 
-" Easy <ESC> insert mode
+" Better <ESC> mappings
 imap jj <Esc>
+nnoremap <BS> <ESC>
+vnoremap <BS> <ESC>
 
 " Move vertically by visual line unless preceded by a count. If a movement is
 " greater than 5 then automatically add to the jumplist.
@@ -61,8 +64,6 @@ nnoremap <S-tab> <C-o>
 vnoremap > >gv
 vnoremap < <gv
 
-vnoremap <BS> <ESC>
-
 " Echo the relative path and of the file
 nnoremap <leader><leader>e :echo expand("%")<CR>
 
@@ -72,7 +73,7 @@ nnoremap g/ /\v
 " https://github.com/alexlafroscia/dotfiles/blob/master/nvim/init.vim
 " -- Smart indent when entering insert mode with i on empty lines --------------
 function! IndentWithI()
-    if len(getline('.')) == 0 && getline('.') != getline('$') && &buftype !~? 'terminal'
+    if len(getline('.')) == 0 && line('.') != line('$') && &buftype !~? 'terminal'
         return "\"_ddO"
     else
         return "i"
@@ -94,6 +95,9 @@ endif
 nnoremap ¿ `
 nnoremap ¿¿ ``
 nnoremap ¡ ^
+
+" Move to previous file
+nnoremap <leader>p <C-^>
 
 " For systems without F's keys (ex. Android)
 nnoremap <leader>w :update<CR>
@@ -184,6 +188,25 @@ if exists("+mouse")
     command! MouseToggle call s:ToggleMouse()
 endif
 
+" Remove buffers
+"
+" 'BufferKill'   will remove all hidden buffers
+" 'BufferKill!'  will remove all unloaded buffers
+"
+" CREDITS: https://vimrcfu.com/snippet/154
+function! s:BufferKill(bang)
+    let l:count = 0
+    for b in range(1, bufnr('$'))
+        if bufexists(b) && (!buflisted(b) || (a:bang && !bufloaded(b)))
+            execute 'bwipeout '.b
+            let l:count += 1
+        endif
+    endfor
+    echo 'Deleted ' . l:count . ' buffers'
+endfunction
+
+command! -bang BufferKill call s:BufferKill(<bang>0)
+
 command! ModifiableToggle setlocal modifiable! modifiable?
 command! CursorLineToggle setlocal cursorline! cursorline?
 command! ScrollBindToggle setlocal scrollbind! scrollbind?
@@ -194,10 +217,7 @@ command! SpellToggle      setlocal spell! spell?
 command! WrapToggle       setlocal wrap! wrap?
 
 function! s:SetFileData(action, type, default)
-    let l:param = a:type
-    if a:type == ""
-        let l:param = a:default
-    endif
+    let l:param = (a:type == "") ? a:default : a:type
     execute "setlocal " . a:action . "=" . l:param
 endfunction
 
@@ -268,10 +288,7 @@ endfunction
 command! TrimToggle call s:Trim()
 
 function! s:SpellLang(lang)
-    let l:spell = a:lang
-    if a:lang == ""
-        let l:spell = "en"
-    endif
+    let l:spell = (a:lang == "") ?  "en" : a:lang
     execute "set spelllang=".l:spell
     execute "set spelllang?"
 endfunction
@@ -321,7 +338,7 @@ if !exists('g:plugs["vim-indexed-search"]')
     " TODO: Integrate center next into vim-slash
 
     " Center searches results
-    " Credits to https://amp.reddit.com/r/vim/comments/4jy1mh/slightly_more_subltle_n_and_n_behavior/
+    " CREDITS: https://amp.reddit.com/r/vim/comments/4jy1mh/slightly_more_subltle_n_and_n_behavior/
     function! s:NiceNext(cmd)
         let view = winsaveview()
         execute "silent! normal! " . a:cmd
