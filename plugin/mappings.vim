@@ -190,11 +190,11 @@ endif
 
 " Remove buffers
 "
-" 'BufferKill'   will remove all hidden buffers
-" 'BufferKill!'  will remove all unloaded buffers
+" 'Buffkill'   will remove all hidden buffers
+" 'Buffkill!'  will remove all unloaded buffers
 "
 " CREDITS: https://vimrcfu.com/snippet/154
-function! s:BufferKill(bang)
+function! s:BuffKill(bang)
     let l:count = 0
     for b in range(1, bufnr('$'))
         if bufexists(b) && (!buflisted(b) || (a:bang && !bufloaded(b)))
@@ -205,7 +205,23 @@ function! s:BufferKill(bang)
     echo 'Deleted ' . l:count . ' buffers'
 endfunction
 
-command! -bang BufferKill call s:BufferKill(<bang>0)
+" Clean buffer list
+"
+" 'BuffClean'   will unload all non active buffers
+" 'BuffClean!'  will remove all unloaded buffers
+function! s:BuffClean(bang)
+    let l:count = 0
+    for b in range(1, bufnr('$'))
+        if bufexists(b) && ( (a:bang && !buflisted(b)) || (!a:bang && !bufloaded(b) && buflisted(b)) )
+            execute ( (a:bang) ? 'bwipeout ' : 'bdelete! ' ) . b
+            let l:count += 1
+        endif
+    endfor
+    echo 'Deleted ' . l:count . ' buffers'
+endfunction
+
+command! -bang Buffkill call s:BufferKill(<bang>0)
+command! -bang BuffClean call s:BuffClean(<bang>0)
 
 command! ModifiableToggle setlocal modifiable! modifiable?
 command! CursorLineToggle setlocal cursorline! cursorline?

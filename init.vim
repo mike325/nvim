@@ -711,6 +711,9 @@ if !exists('g:minimal')
     " Visual marks
     Plug 'kshenoy/vim-signature'
 
+    " Override default [i,]i,[I,]I,[d,]d,[D,]D to load the results in the quickfix
+    Plug 'romainl/vim-qlist'
+
     " Move with indentation
     " NOTE: Deprecated in favor of unimpaired plugin
     " Plug 'matze/vim-move'
