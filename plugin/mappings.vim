@@ -190,11 +190,11 @@ endif
 
 " Remove buffers
 "
-" 'Buffkill'   will remove all hidden buffers
-" 'Buffkill!'  will remove all unloaded buffers
+" 'Bufkill'   will remove all hidden buffers
+" 'Bufkill!'  will remove all unloaded buffers
 "
 " CREDITS: https://vimrcfu.com/snippet/154
-function! s:BuffKill(bang)
+function! s:Bufkill(bang)
     let l:count = 0
     for b in range(1, bufnr('$'))
         if bufexists(b) && (!buflisted(b) || (a:bang && !bufloaded(b)))
@@ -207,9 +207,9 @@ endfunction
 
 " Clean buffer list
 "
-" 'BuffClean'   will unload all non active buffers
-" 'BuffClean!'  will remove all unloaded buffers
-function! s:BuffClean(bang)
+" 'BufClean'   will unload all non active buffers
+" 'BufClean!'  will remove all unloaded buffers
+function! s:BufClean(bang)
     let l:count = 0
     for b in range(1, bufnr('$'))
         if bufexists(b) && ( (a:bang && !buflisted(b)) || (!a:bang && !bufloaded(b) && buflisted(b)) )
@@ -220,8 +220,8 @@ function! s:BuffClean(bang)
     echo 'Deleted ' . l:count . ' buffers'
 endfunction
 
-command! -bang Buffkill call s:BufferKill(<bang>0)
-command! -bang BuffClean call s:BuffClean(<bang>0)
+command! -bang Bufkill call s:BufKill(<bang>0)
+command! -bang BufClean call s:BufClean(<bang>0)
 
 command! ModifiableToggle setlocal modifiable! modifiable?
 command! CursorLineToggle setlocal cursorline! cursorline?
@@ -231,6 +231,7 @@ command! NumbersToggle    setlocal number! number?
 command! PasteToggle      setlocal paste! paste?
 command! SpellToggle      setlocal spell! spell?
 command! WrapToggle       setlocal wrap! wrap?
+command! VerboseToggle    let &verbose=!&verbose | echo "Verbose " . &verbose
 
 function! s:SetFileData(action, type, default)
     let l:param = (a:type == "") ? a:default : a:type
@@ -246,42 +247,8 @@ function! s:Formats(ArgLead, CmdLine, CursorPos)
     return s:Filter(["unix", "dos", "mac"], a:ArgLead)
 endfunction
 
-function! s:Types(ArgLead, CmdLine, CursorPos)
-    let l:names =  [
-                \ "c",
-                \ "cmake",
-                \ "cpp",
-                \ "cs",
-                \ "csh",
-                \ "css",
-                \ "dosini",
-                \ "go",
-                \ "html",
-                \ "java",
-                \ "javascript",
-                \ "json",
-                \ "log",
-                \ "lua",
-                \ "make",
-                \ "markdown",
-                \ "php",
-                \ "python",
-                \ "ruby",
-                \ "rust",
-                \ "sh",
-                \ "simics",
-                \ "tex",
-                \ "text",
-                \ "vim",
-                \ "xml",
-                \ "yml",
-                \ "zsh"
-            \ ]
-    return s:Filter(l:names, a:ArgLead)
-endfunction
-
 " Yes I'm quite lazy to type the cmds
-command! -nargs=? -complete=customlist,s:Types FileType call s:SetFileData("filetype", <q-args>, "text")
+command! -nargs=? -complete=filetype FileType call s:SetFileData("filetype", <q-args>, "text")
 command! -nargs=? -complete=customlist,s:Formats FileFormat call s:SetFileData("fileformat", <q-args>, "unix")
 
 " Use in autocmds.vim
@@ -303,26 +270,20 @@ endfunction
 
 command! TrimToggle call s:Trim()
 
-function! s:SpellLang(lang)
-    let l:spell = (a:lang == "") ?  "en" : a:lang
-    execute "set spelllang=".l:spell
-    execute "set spelllang?"
-endfunction
-
 function! s:Spells(ArgLead, CmdLine, CursorPos)
     return ["en", "es"]
 endfunction
 
-command! -nargs=? -complete=customlist,s:Spells SpellLang call s:SpellLang(<q-args>)
-
-" Small wrapper around copen cmd
-function! s:OpenQuickfix(size)
-    execute "botright copen " . a:size
-endfunction
+command! -nargs=? -complete=customlist,s:Spells SpellLang
+            \ let s:spell = (empty(<q-args>)) ?  "en" : expand(<q-args>) |
+            \ execute "set spelllang=".s:spell |
+            \ execute "set spelllang?" |
+            \ unlet s:spell
 
 " Avoid dispatch command conflicw
 " QuickfixOpen
-command! -nargs=? Qopen call s:OpenQuickfix(<q-args>)
+command! -nargs=? Qopen
+            \ execute "botright copen " . expand(<q-args>)
 
 " ####### Fallback Plugin mapping {{{
 if !exists('g:plugs["ultisnips"]') && !exists('g:plugs["vim-snipmate"]')
@@ -384,6 +345,60 @@ if !exists('g:plugs["vim-unimpaired"]')
     nnoremap ]B :blast<cr>
     nnoremap [b :bprevious<cr>
     nnoremap ]b :bnext<cr>
+endif
+
+if !exists('g:plugs["vim-vinegar"]') && !exists('g:plugs["nerdtree"]')
+    nnoremap - :Explore<CR>
+endif
+
+if !exists('g:plugs["vim-eunuch"]')
+    " command! -bang -nargs=1 -complete=file Move
+    "             \
+
+    " command! -bang -nargs=1 -complete=file Rename
+    "             \
+
+    command! -bang -nargs=1 -complete=dir Mkdir
+                \ let s:bang = empty(<bang>0) ? 0 : 1 |
+                \ let s:target = expand(<q-args>) |
+                \ if exists("*mkdir") |
+                \   call mkdir(fnameescape(s:dir), (s:bang) ? "p" : "") |
+                \ else |
+                \   echoerr "Failed to create dir '" . s:dir . "' mkdir is not available" |
+                \ endif |
+                \ unlet s:bang |
+                \ unlet s:dir
+
+    command! -bang -nargs=? -complete=file Remove
+                \ let s:bang = empty(<bang>0) ? 0 : 1 |
+                \ let s:target = fnamemodify(empty(<q-args>) ? expand("%") : expand(<q-args>), ":p") |
+                \ if filereadable(s:target) || bufloaded(s:target) |
+                \   if filereadable(s:target) |
+                \       if delete(s:target) == -1 |
+                \           echoerr "Failed to delete the file '" . s:target . "'" |
+                \       endif |
+                \   endif |
+                \   if bufloaded(s:target) |
+                \       let s:cmd = (s:bang) ? "bwipeout! " : "bdelete! " |
+                \       try |
+                \           execute s:cmd . s:target |
+                \       catch /E94/ |
+                \           echoer "Failed to delete/wipe '" . s:target . "'" |
+                \       finally |
+                \           unlet s:cmd |
+                \       endtry |
+                \   endif |
+                \ elseif isdirectory(s:target) |
+                \   let s:flag = (s:bang) ? "rf" : "d" |
+                \   if delete(s:target, s:flag) == -1 |
+                \       echoerr "Failed to remove '" . s:target . "'" |
+                \   endif |
+                \   unlet s:flag |
+                \ else |
+                \   echoerr "Failed to remove '" . s:target . "'" |
+                \ endif |
+                \ unlet s:bang |
+                \ unlet s:target
 endif
 
 " }}} END Fallback Plugin mapping

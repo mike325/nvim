@@ -46,6 +46,7 @@ let g:grepper.simple_prompt = 1
 let g:grepper.tools         = [] " may add rg
 let g:grepper.repo          = ['.git', '.hg', '.svn'] " This is already the default
 let g:grepper.dir           = 'repo,filecwd'
+let g:grepper.prompt_quote  = 0
 
 let g:grepper.operator               = {}
 let g:grepper.operator.open          = 0 " We now use CtrlP plugin to look for the matches inside quickfix
@@ -56,6 +57,7 @@ let g:grepper.operator.simple_prompt = 1
 let g:grepper.operator.tools         = [] " may add rg
 let g:grepper.operator.repo          = ['.git', '.hg', '.svn'] " This is already the default
 let g:grepper.operator.dir           = 'repo,filecwd'
+let g:grepper.operator.prompt_quote  = 0
 
 " let g:grepper.highlight = 1
 " let g:grepper.rg.grepprg .= ' --smart-case'
@@ -64,15 +66,16 @@ let g:grepper.operator.dir           = 'repo,filecwd'
 
 if executable("git")
     let g:grepper.tools += ['git']
+    " I like to search ignore case when greppper is call from <C-g>
     let g:grepper.git = {
-        \ 'grepprg':    'git grep -nI',
+        \ 'grepprg':    'git grep -inI',
         \ 'grepformat': '%f:%l:%m',
         \ 'escape':     '\^$.*[]',
         \ }
 
     let g:grepper.operator.tools += ['git']
     let g:grepper.operator.git = {
-        \ 'grepprg':    'git grep -nI',
+        \ 'grepprg':    'git grep -nwI',
         \ 'grepformat': '%f:%l:%m',
         \ 'escape':     '\^$.*[]',
         \ }
@@ -99,7 +102,7 @@ endif
 if executable("grep")
     let g:grepper.tools += ['grep']
     let g:grepper.grep = {
-        \ 'grepprg':    'grep -RIn '. g:ignore_patterns.grep .' $*',
+        \ 'grepprg':    'grep -iRIn '. g:ignore_patterns.grep .' $*',
         \ 'grepprgbuf': 'grep -HIn -- $* $.',
         \ 'grepformat': '%f:%l:%m',
         \ 'escape':     '\^$.*[]',
@@ -107,7 +110,7 @@ if executable("grep")
 
     let g:grepper.operator.tools += ['grep']
     let g:grepper.operator.grep = {
-        \ 'grepprg':    'grep -RIn '. g:ignore_patterns.grep .' $*',
+        \ 'grepprg':    'grep -oRIn '. g:ignore_patterns.grep .' $*',
         \ 'grepprgbuf': 'grep -HIn -- $* $.',
         \ 'grepformat': '%f:%l:%m',
         \ 'escape':     '\^$.*[]',
@@ -133,20 +136,21 @@ if executable("findstr")
         \ }
 endif
 
+" FIXME: Crappy windows settings
 " Windows cannot handle double quotes inside single quotes without escaping
-if WINDOWS()
-    if executable("ag")
-        let g:grepper.ag.escape   = '\^$.*+?()[]{}|"'
-        let g:grepper.operator.ag.escape   = '\^$.*+?()[]{}|"'
-    endif
-
-    if executable("grep")
-        let g:grepper.grep.escape = '\^$.*[]"'
-        let g:grepper.operator.grep.escape = '\^$.*[]"'
-    endif
-
-    if executable("git")
-        let g:grepper.git.escape  = '\^$.*[]"'
-        let g:grepper.operator.git.escape  = '\^$.*[]"'
-    endif
-endif
+" if WINDOWS()
+"     if executable("ag")
+"         let g:grepper.ag.escape += "'\""
+"         let g:grepper.operator.ag.escape += "'\""
+"     endif
+"
+"     if executable("grep")
+"         let g:grepper.grep.escape += "'\""
+"         let g:grepper.operator.grep.escape += "'\""
+"     endif
+"
+"     if executable("git")
+"         let g:grepper.git.escape += "'\""
+"         let g:grepper.operator.git.escape += "'\""
+"     endif
+" endif

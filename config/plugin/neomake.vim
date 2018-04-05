@@ -187,10 +187,16 @@ endif
 "       BufWritePost
 "       BufWinEnter
 try
-    call neomake#configure#automake({
-        \ 'InsertLeave': {},
-        \ 'BufWritePost': {'delay': 0},
-        \ }, 1000)
+    if WINDOWS()
+        call neomake#configure#automake({
+            \ 'BufWritePost': {'delay': 5000},
+            \ }, 1000)
+    else
+        call neomake#configure#automake({
+            \ 'InsertLeave': {},
+            \ 'BufWritePost': {'delay': 0},
+            \ }, 1000)
+    endif
 catch E117
     " echomsg "Please run :PlugInstall to get Neomake plugin"
     " TODO: Display errors/status in the start screen

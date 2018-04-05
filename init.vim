@@ -304,7 +304,13 @@ if !exists('g:minimal')
 
     call plug#begin(g:base_path.'plugged')
 
-    Plug fnameescape(g:base_path.'config')
+    if isdirectory(fnameescape(g:base_path.'config'))
+        Plug fnameescape(g:base_path.'config')
+    endif
+
+    if isdirectory(fnameescape(g:base_path.'host'))
+        Plug fnameescape(g:base_path.'host')
+    endif
 
     " ####### Colorschemes {{{
 
@@ -324,7 +330,8 @@ if !exists('g:minimal')
     Plug 'tbastos/vim-lua', {'for': 'lua'}
     Plug 'octol/vim-cpp-enhanced-highlight', {'for': 'cpp'}
     Plug 'peterhoeg/vim-qml', {'for': 'qml'}
-    Plug 'plasticboy/vim-markdown', {'for': 'markdown'}
+    " Plug 'plasticboy/vim-markdown', {'for': 'markdown'}
+    Plug 'tpope/vim-markdown', {'for': 'markdown'}
     Plug 'bjoernd/vim-syntax-simics', {'for': 'simics'}
     Plug 'kurayama/systemd-vim-syntax', {'for': 'systemd'}
     Plug 'mhinz/vim-nginx', {'for': 'nginx'}
@@ -335,7 +342,7 @@ if !exists('g:minimal')
 
     Plug 'tpope/vim-projectionist'
 
-    Plug 'mhinz/vim-grepper'
+    Plug 'mhinz/vim-grepper', { 'on': ['Grepper', '<plug>(GrepperOperator)'] }
 
     Plug 'xolox/vim-misc'
     Plug 'xolox/vim-session', {'on': ['OpenSession', 'SaveSession', 'DeleteSession']}
@@ -357,11 +364,11 @@ if !exists('g:minimal')
     " Plug 'tacahiroy/ctrlp-funky'
 
     " Have some problmes with vinager in windows
-    if WINDOWS()
-        Plug 'scrooloose/nerdtree', { 'on': [ 'NERDTree', 'NERDTreeToggle' ] }
-        " Plug 'Xuyuanp/nerdtree-git-plugin', { 'on': [ 'NERDTreeToggle' ] }
-    else
+    if !WINDOWS()
         Plug 'tpope/vim-vinegar'
+    " else
+    "     Plug 'scrooloose/nerdtree', { 'on': [ 'NERDTree', 'NERDTreeToggle' ] }
+    "     " Plug 'Xuyuanp/nerdtree-git-plugin', { 'on': [ 'NERDTreeToggle' ] }
     endif
 
     if executable("ctags")
