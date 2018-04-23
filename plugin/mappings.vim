@@ -360,7 +360,7 @@ if !exists('g:plugs["vim-eunuch"]')
 
     command! -bang -nargs=1 -complete=dir Mkdir
                 \ let s:bang = empty(<bang>0) ? 0 : 1 |
-                \ let s:target = expand(<q-args>) |
+                \ let s:dir = expand(<q-args>) |
                 \ if exists("*mkdir") |
                 \   call mkdir(fnameescape(s:dir), (s:bang) ? "p" : "") |
                 \ else |
