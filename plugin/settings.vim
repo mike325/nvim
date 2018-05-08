@@ -235,9 +235,10 @@ set omnifunc=syntaxcomplete#Complete
 
 " Folding settings
 set nofoldenable      " don't fold by default
-set foldmethod=indent " fold based on indent
-set foldnestmax=10    " deepest fold is 10 levels
-" set foldlevel=1
+set foldmethod=syntax " fold based on syntax
+set foldlevel=99      " Autoclose fold levels greater than 99
+set foldcolumn=2
+" set foldnestmax=10    " deepest fold is 10 levels
 
 set history=1000    " keep 1000 lines of command line history
 set undolevels=1000 " Set the number the undos per file

@@ -41,3 +41,6 @@ setlocal nomodifiable
 setlocal colorcolumn=
 
 setlocal nocursorline
+
+" Disable the fold column
+setlocal foldcolumn=0

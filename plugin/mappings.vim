@@ -40,12 +40,12 @@ nnoremap Y y$
 " Don't visual/select the return character
 vnoremap $ $h
 
-" Avoid defualt Ex mode
+" Avoid default Ex mode
 nnoremap Q o<Esc>
 nnoremap <leader>Q Q
 
 " Preserve cursor position when joining lines
-nnoremap J mzJ`z:delmarks<space>z<CR>
+nnoremap J m`J``
 
 " Better <ESC> mappings
 imap jj <Esc>
@@ -57,8 +57,7 @@ vnoremap <BS> <ESC>
 nnoremap <expr> j v:count ? (v:count > 5 ? "m'" . v:count : '') . 'j' : 'gj'
 nnoremap <expr> k v:count ? (v:count > 5 ? "m'" . v:count : '') . 'k' : 'gk'
 
-" NOTE: Removed mapping to use jump list
-" nnoremap <tab> >>
+" Jump to the previous mark, as <TAB>
 nnoremap <S-tab> <C-o>
 
 vnoremap > >gv
@@ -70,8 +69,8 @@ nnoremap <leader><leader>e :echo expand("%")<CR>
 " Very Magic sane regex searches
 nnoremap g/ /\v
 
-" https://github.com/alexlafroscia/dotfiles/blob/master/nvim/init.vim
-" -- Smart indent when entering insert mode with i on empty lines --------------
+" CREDITS: https://github.com/alexlafroscia/dotfiles/blob/master/nvim/init.vim
+" Smart indent when entering insert mode with i on empty lines
 function! IndentWithI()
     if len(getline('.')) == 0 && line('.') != line('$') && &buftype !~? 'terminal'
         return "\"_ddO"
@@ -190,11 +189,11 @@ endif
 
 " Remove buffers
 "
-" 'Bufkill'   will remove all hidden buffers
-" 'Bufkill!'  will remove all unloaded buffers
+" BufKill   will remove all hidden buffers
+" BufKill!  will remove all unloaded buffers
 "
 " CREDITS: https://vimrcfu.com/snippet/154
-function! s:Bufkill(bang)
+function! s:BufKill(bang)
     let l:count = 0
     for b in range(1, bufnr('$'))
         if bufexists(b) && (!buflisted(b) || (a:bang && !bufloaded(b)))
@@ -207,8 +206,8 @@ endfunction
 
 " Clean buffer list
 "
-" 'BufClean'   will unload all non active buffers
-" 'BufClean!'  will remove all unloaded buffers
+" BufClean   will unload all non active buffers
+" BufClean!  will remove all unloaded buffers
 function! s:BufClean(bang)
     let l:count = 0
     for b in range(1, bufnr('$'))
@@ -220,7 +219,7 @@ function! s:BufClean(bang)
     echo 'Deleted ' . l:count . ' buffers'
 endfunction
 
-command! -bang Bufkill call s:BufKill(<bang>0)
+command! -bang BufKill call s:BufKill(<bang>0)
 command! -bang BufClean call s:BufClean(<bang>0)
 
 command! ModifiableToggle setlocal modifiable! modifiable?
@@ -280,10 +279,38 @@ command! -nargs=? -complete=customlist,s:Spells SpellLang
             \ execute "set spelllang?" |
             \ unlet s:spell
 
-" Avoid dispatch command conflicw
+" Avoid dispatch command conflict
 " QuickfixOpen
 command! -nargs=? Qopen
             \ execute "botright copen " . expand(<q-args>)
+
+" function! s:Scratch(bang, args, range)
+"     let s:bang = a:bang
+"     if !exists("s:target") || a:bang
+"         if bufexists(s:target) || filereadable(s:target)
+"             Remove! expand( s:target )
+"         endif
+"
+"         let s:args = expand(a:args)
+"         if isdirectory(s:args)
+"
+"         endif
+"         let s:target = fnamemodify(empty(a:args) ? expand($TMPDIR . "/scratch.vim") : expand(a:args), ":p")
+"         let s:target = ( fnamemodify(expand( s:target ), ":e") != "vim") ? s:target . ".vim" : s:target
+"         unlet s:args
+"     endif
+"     topleft 18sp expand(s:target)
+"     unlet s:bang
+" endfunction
+
+command! -bang -complete=dir -nargs=? Scratch
+
+" function! s:FindProjectRoot()
+"     " Statement
+" endfunction
+
+" command -nargs=1 -bang -bar -range=0 -complete=custom,s:SubComplete S
+"       \ :exec s:subvert_dispatcher(<bang>0,<line1>,<line2>,<count>,<q-args>)
 
 " ####### Fallback Plugin mapping {{{
 if !exists('g:plugs["ultisnips"]') && !exists('g:plugs["vim-snipmate"]')
@@ -350,6 +377,11 @@ endif
 if !exists('g:plugs["vim-vinegar"]') && !exists('g:plugs["nerdtree"]')
     nnoremap - :Explore<CR>
 endif
+
+" if !exists('g:plugs["vim-grepper"]')
+"     onoremap igc
+"     xnoremap igc
+" endif
 
 if !exists('g:plugs["vim-eunuch"]')
     " command! -bang -nargs=1 -complete=file Move
