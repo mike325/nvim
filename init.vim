@@ -752,6 +752,9 @@ if !exists('g:minimal')
     " Better defaults for Vim
     Plug 'tpope/vim-sensible'
 
+    " Improve Path searching
+    Plug 'tpope/vim-apathy'
+
     " Automatically clears search highlight when cursor is moved
     Plug 'junegunn/vim-slash'
 
