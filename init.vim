@@ -253,35 +253,45 @@ function! s:InitConfigs() " Vim's InitConfig {{{
 endfunction " }}} END Vim's InitConfig
 
 
-if WINDOWS() && has("nvim")
-    function! s:python_setup(version)
-        let l:candidates = [
-                    \ 'c:/python'.a:version,
-                    \ 'c:/python/'.a:version,
-                    \ 'c:/python/python'.a:version,
-                    \ 'c:/python_'.a:version,
-                    \ 'c:/python/python_'.a:version,
-                    \]
-        for pydir in l:candidates
-            if isdirectory(fnameescape(pydir))
-                return pydir
-            endif
-        endfor
+if ASYNC()
+    function! s:python_setup(major, minor)
+        if WINDOWS()
+            let l:candidates = [
+                        \ 'c:/python'.a:major.a:minor,
+                        \ 'c:/python/'.a:major.a:minor,
+                        \ 'c:/python/python'.a:major.a:minor,
+                        \ 'c:/python_'.a:major.a:minor,
+                        \ 'c:/python/python_'.a:major.a:minor,
+                        \]
+            for pydir in l:candidates
+                if isdirectory(fnameescape(pydir))
+                    return pydir
+                endif
+            endfor
+        elseif executable("python".a:major.".".a:minor)
+            return "python".a:major.".".a:minor
+        endif
         return ""
     endfunction
 
-    if s:python_setup("27") != ""
+    if s:python_setup("2", "7") != ""
         if exists("g:loaded_python_provider")
             unlet g:loaded_python_provider
         endif
-        let g:python_host_prog = s:python_setup("27") . '/python'
+        let g:python_host_prog = s:python_setup("2", "7")
+        if WINDOWS()
+            let g:python_host_prog .=  '/python'
+        endif
     endif
 
-    if s:python_setup("36") != ""
+    if s:python_setup("3", "6") != ""
         if exists("g:loaded_python3_provider")
             unlet g:loaded_python3_provider
         endif
-        let g:python3_host_prog = s:python_setup("36") . '/python'
+        let g:python3_host_prog = s:python_setup("3", "6")
+        if WINDOWS()
+            let g:python3_host_prog .=  '/python'
+        endif
     endif
 endif
 
