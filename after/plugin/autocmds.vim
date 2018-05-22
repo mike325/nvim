@@ -64,8 +64,8 @@ if has("nvim")
     " I like to see the numbers in the terminal
     augroup TerminalAutocmds
         autocmd!
-        autocmd TermOpen * setlocal relativenumber number
-        autocmd TermOpen * startinsert
+        autocmd TermOpen * setlocal relativenumber number nocursorline
+        " autocmd TermOpen * startinsert
     augroup end
 endif
 
