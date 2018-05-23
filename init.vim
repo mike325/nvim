@@ -511,13 +511,13 @@ if !exists('g:minimal')
             " Plug 'OmniSharp/omnisharp-vim', { 'do': function('BuildOmniSharp') }
 
             " Awesome Async completion engine for Neovim
-            if has("nvim") && PYTHON("3")
+            if ASYNC() && PYTHON("3")
 
                 " TODO: There's no package check
-                " if !has("nvim")
-                "     Plug 'roxma/nvim-yarp'
-                "     Plug 'roxma/vim-hug-neovim-rpc'
-                " endif
+                if !has("nvim")
+                    Plug 'roxma/nvim-yarp'
+                    Plug 'roxma/vim-hug-neovim-rpc'
+                endif
 
                 function! DeopletePostSetup(info)
                     if has("nvim")
@@ -594,6 +594,15 @@ if !exists('g:minimal')
                         if executable("mono")
                             let l:code_completion .= " --omnisharp-completer"
                         endif
+
+                        if executable("npm")
+                            let l:code_completion .= " --js-completer"
+                        endif
+
+                        " TODO: Test java completer
+                        " if executable("javac")
+                        "     let l:code_completion .= " --java-completer"
+                        " endif
 
                         if WINDOWS()
                             execute "!python ./install.py" . l:code_completion
@@ -770,6 +779,9 @@ if !exists('g:minimal')
 
     " Print the number of the available buffer matches
     Plug 'henrik/vim-indexed-search'
+
+    " Database management
+    Plug 'tpope/vim-dadbod'
 
     " Useful to get the console output in Vim (since :terminal is not enable yet)
     if !has("nvim") && !exists("+term") && !exists("+terminal")

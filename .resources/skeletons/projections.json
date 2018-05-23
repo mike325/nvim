@@ -1,14 +1,27 @@
 {
+
     ".projections.json": {
         "type": "Projections"
     },
     ".gitignore": {
-        "type": "GitIgnore"
+        "type": "Gitignore"
+    },
+    ".git/hooks/*": {
+        "type": "GitHooks"
+    },
+    ".git/config": {
+        "type": "Git"
+    },
+    ".git/info/*": {
+        "type": "Git"
     },
     "README.md": {
         "type": "Readme"
     },
     "LICENSE": {
         "type": "License"
+    },
+    "clang-format": {
+        "type": "ClangFormat"
     }
 }

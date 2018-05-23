@@ -52,6 +52,13 @@ imap jj <Esc>
 nnoremap <BS> <ESC>
 vnoremap <BS> <ESC>
 
+" Turn diff off when closiong other windows
+nnoremap <silent> <C-w><C-o> :diffoff!<bar>only<cr>
+nnoremap <silent> <C-w>o :diffoff!<bar>only<cr>
+
+" Seems like a good idea, may activate it later
+" nnoremap <expr> q &diff ? ":diffoff!\<bar>only\<cr>" : "q"
+
 " Move vertically by visual line unless preceded by a count. If a movement is
 " greater than 5 then automatically add to the jumplist.
 nnoremap <expr> j v:count ? (v:count > 5 ? "m'" . v:count : '') . 'j' : 'gj'

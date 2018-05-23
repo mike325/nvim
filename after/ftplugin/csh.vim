@@ -39,31 +39,34 @@ function! GetCshFold()
     endif
 
     " " End of while/for statement
-    " if line =~? '\v^\s*done\s*$'
-    "     return 's1'
-    " endif
-    " " Start of while/for statement
-    " if line =~? '\v^\s*(while|for).*(;\s*do)?$'
-    "     return 'a1'
-    " endif
-    "
+    if line =~? '\v^\s*end\s*$'
+        return 's1'
+    endif
+
+    " " Start of while/foreach statement
+    if line =~? '\v^\s*(while|foreach).*'
+        return 'a1'
+    endif
+
     " " End of case statement
     " if line =~? '\v^\s*esac\s*$'
     "     return 's1'
     " endif
+
     " " Start of case statement
     " if line =~? '\v^\s*case.*(\s*in)$'
     "     return 'a1'
     " endif
-    "
-    " " End of function statement
-    " if line =~? '\v^\s*\}$'
-    "     return 's1'
-    " endif
-    " " Start of function statement
-    " if line =~? '\v^\s*(function\s+)?\S+\(\) \{'
-    "     return 'a1'
-    " endif
+
+    " End of function statement
+    if line =~? '\v^\s*\}$'
+        return 's1'
+    endif
+
+    " Start of function statement
+    if line =~? '\v^\s*(function\s+)?\S+\(\) \{'
+        return 'a1'
+    endif
 
     " Default
     return '='
