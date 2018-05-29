@@ -45,7 +45,7 @@ endfunction
 
 " Check whether or not we have async support
 function! ASYNC()
-    return (has("nvim") || (v:version == 800 || (v:version == 704 && has("patch1689")))) ? 1 : 0
+    return (has("nvim") || (v:version >= 800 || (v:version == 704 && has("patch1689")) && (has("job") && has("timers")))) ? 1 : 0
 endfunction
 
 " Set the default work dir
@@ -511,13 +511,15 @@ if !exists('g:minimal')
             " Plug 'OmniSharp/omnisharp-vim', { 'do': function('BuildOmniSharp') }
 
             " Awesome Async completion engine for Neovim
-            if ASYNC() && PYTHON("3")
+            " if ASYNC() && PYTHON("3")
+            if has("nvim") && PYTHON("3")
 
-                " TODO: There's no package check
-                if !has("nvim")
-                    Plug 'roxma/nvim-yarp'
-                    Plug 'roxma/vim-hug-neovim-rpc'
-                endif
+                " " TODO: There's no package check
+                " if !has("nvim")
+                "     Plug 'roxma/nvim-yarp'
+                "     Plug 'roxma/vim-hug-neovim-rpc'
+                "     set pyxversion=3
+                " endif
 
                 function! DeopletePostSetup(info)
                     if has("nvim")
@@ -566,7 +568,7 @@ if !exists('g:minimal')
                 " endif
 
                 " JavaScript completion
-                if executable("tern")
+                if executable("ternjs")
                     Plug 'carlitux/deoplete-ternjs'
                 endif
 
