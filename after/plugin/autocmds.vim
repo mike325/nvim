@@ -109,11 +109,6 @@ function! s:CleanFIle()
     let l:buftypes = 'nofile\|help\|quickfix\|terminal'
     let l:filetypes = 'bin\|hex\|log'
 
-    " b:trim toggle command defined in mappings.vim
-    if !exists("b:trim")
-        let b:trim = 1
-    endif
-
     if b:trim != 1 || &buftype =~? l:buftypes || &filetype ==? l:filetypes || &filetype ==? ''
         return
     endif
@@ -124,14 +119,18 @@ function! s:CleanFIle()
     let l:oldquery = getreg('/')
 
     " Cleaning line endings
-    silent! execute '%s/\s\+$//e'
+    execute '%s/\s\+$//e'
+    call histdel("search", -1)
 
     " Yep I some times I copy this things form the terminal
     silent! execute '%s/\(\s\+\)┊/\1 /ge'
+    call histdel("search", -1)
 
     if &fileformat == 'unix'
         silent! execute '%s/\r$//ge'
+        call histdel("search", -1)
     endif
+
 
     call setpos('.', l:savepos)
     call setreg('/', l:oldquery)
@@ -140,7 +139,8 @@ endfunction
 " Trim whitespace in selected files
 augroup CleanFile
     autocmd!
-    autocmd FileType * autocmd BufWritePre <buffer> call s:CleanFIle()
+    autocmd BufNew,BufRead  * if !exists("b:trim") | let b:trim = 1 | endif
+    autocmd FileType        * autocmd BufWritePre <buffer> call s:CleanFIle()
 augroup end
 
 " Specially helpful for html and xml
@@ -151,8 +151,8 @@ augroup end
 
 augroup QuickQuit
     autocmd!
-    autocmd BufReadPost quickfix nnoremap <silent> <buffer> q :q!<CR>
-    autocmd FileType help        nnoremap <silent> <buffer> q :q!<CR>
+    autocmd BufReadPost quickfix  nnoremap <silent> <buffer> q :q!<CR>
+    autocmd FileType    help      nnoremap <silent> <buffer> q :q!<CR>
 augroup end
 
 augroup LocalCR

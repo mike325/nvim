@@ -257,13 +257,9 @@ endfunction
 command! -nargs=? -complete=filetype FileType call s:SetFileData("filetype", <q-args>, "text")
 command! -nargs=? -complete=customlist,s:Formats FileFormat call s:SetFileData("fileformat", <q-args>, "unix")
 
-" Use in autocmds.vim
-if !exists("b:trim")
-    let b:trim = 1
-endif
-
 function! s:Trim()
-    if !exists("b:trim") || b:trim != 1
+    " Since default is to trim, the first call is to deactivate trim
+    if b:trim == 0
         let b:trim = 1
         echomsg " Trim"
     else
