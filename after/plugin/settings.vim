@@ -56,6 +56,11 @@ if has("nvim") || (v:version >= 704)
     set formatoptions+=j " Delete comment character when joining commented lines
 endi
 
+" Vim terminal settins
+if !has("nvim")
+    set t_Co=255
+endif
+
 if has("nvim") && executable("nvr")
     " Add Neovim remote utility, this allow us to open buffers from the :terminal cmd
     let $tnvr = 'nvr --remote-tab-silent'
