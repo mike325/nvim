@@ -139,8 +139,8 @@ endfunction
 " Trim whitespace in selected files
 augroup CleanFile
     autocmd!
-    autocmd BufNew,BufRead  * if !exists("b:trim") | let b:trim = 1 | endif
-    autocmd FileType        * autocmd BufWritePre <buffer> call s:CleanFIle()
+    autocmd BufNewFile,BufReadPre * if !exists("b:trim") | let b:trim = 1 | endif
+    autocmd FileType              * autocmd BufWritePre <buffer> call s:CleanFIle()
 augroup end
 
 " Specially helpful for html and xml
