@@ -310,7 +310,7 @@ endif
 
 " TODO: Should minimal include lightweight tpope's plugins ?
 " TODO: Check for $TERM before load some configurations
-if !exists('g:minimal')
+if !exists('g:minimal') && exists("*plug#begin")
 
     call plug#begin(g:base_path.'plugged')
 

@@ -98,9 +98,9 @@ endfunction
 
 augroup LogFiles
     autocmd!
-    autocmd BufNewFile,BufReadPre,BufRead *.log set filetype=log
-    autocmd BufNewFile,BufReadPre,BufRead *.rdl set filetype=log
-    autocmd BufNewFile,BufReadPre,BufRead *.txt if ( CheckSize() == 1 ) | set filetype=log | endif
+    autocmd BufNewFile,BufReadPre,BufEnter *.log set filetype=log
+    autocmd BufNewFile,BufReadPre,BufEnter *.rdl set filetype=log
+    autocmd BufNewFile,BufReadPre,BufEnter *.txt if ( CheckSize() == 1 ) | set filetype=log | endif
 augroup end
 
 " TODO To be improve
@@ -139,8 +139,8 @@ endfunction
 " Trim whitespace in selected files
 augroup CleanFile
     autocmd!
-    autocmd BufNewFile,BufReadPre * if !exists("b:trim") | let b:trim = 1 | endif
-    autocmd FileType              * autocmd BufWritePre <buffer> call s:CleanFIle()
+    autocmd BufNewFile,BufRead,BufEnter * if !exists("b:trim") | let b:trim = 1 | endif
+    autocmd FileType                    * autocmd BufWritePre <buffer> call s:CleanFIle()
 augroup end
 
 " Specially helpful for html and xml
