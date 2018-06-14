@@ -187,11 +187,13 @@ endif
 "       BufWritePost
 "       BufWinEnter
 
-call neomake#configure#automake({
-    \ 'InsertLeave': {},
-    \ 'BufWritePost': {'delay': 0},
-    \ }, 1000)
+if exists("*neomake#configure#automake")
+    call neomake#configure#automake({
+        \ 'InsertLeave': {},
+        \ 'BufWritePost': {'delay': 0},
+        \ }, 1000)
 
+endif
 " try
 "     if WINDOWS()
 "         call neomake#configure#automake({
