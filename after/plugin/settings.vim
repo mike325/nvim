@@ -242,7 +242,7 @@ set omnifunc=syntaxcomplete#Complete
 set nofoldenable      " don't fold by default
 set foldmethod=syntax " fold based on syntax
 set foldlevel=99      " Autoclose fold levels greater than 99
-set foldcolumn=2
+set foldcolumn=0
 " set foldnestmax=10    " deepest fold is 10 levels
 
 set history=1000    " keep 1000 lines of command line history
