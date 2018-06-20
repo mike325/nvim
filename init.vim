@@ -700,7 +700,7 @@ if !exists('g:minimal')
     " ####### Text objects, Motions and Text manipulation {{{
 
     if (has("nvim") || (v:version >= 704))
-        Plug 'sickill/vim-pasta'
+        " Plug 'sickill/vim-pasta'
 
         Plug 'kana/vim-textobj-user'
         Plug 'kana/vim-textobj-line'
