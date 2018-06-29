@@ -73,10 +73,13 @@ if exists('+breakindent')
     set showbreak=↪\
 endif
 
+" TODO: create a simple operator in mapping.vim file to do quick searches
 if executable("ag")
-    let &grepprg='ag --nogroup --nocolor -U '.g:ignore_patterns.ag . ' '
+    let &grepprg='ag --nogroup --nocolor -U ' . g:ignore_patterns.ag . ' '
 elseif executable("grep")
-    let &grepprg='grep --with-filename -n -I '.g:ignore_patterns.grep . ' '
+    let &grepprg='grep --with-filename -n -I ' . g:ignore_patterns.grep . ' '
+elseif executable("findstr")
+    let &grepprg='findstr ' . g:ignore_patterns.findstr . ' '
 endif
 
 if has("termguicolors")

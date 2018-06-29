@@ -49,6 +49,9 @@
     "config/UltiSnips/*.snippets": {
         "type": "UltiSnips"
     },
+    "after/autoload/*.vim": {
+        "type": "AfterAutoload"
+    },
     "after/plugin/*.vim": {
         "type": "AfterPlugin"
     },

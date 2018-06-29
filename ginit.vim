@@ -32,16 +32,22 @@
 "
 " FIX: Currently this does not fully work in Windows with different screens
 " resolutions
+
+" Make shift-insert work like in Xterm
+" NOTE: please use 'p' instead of this hack
+imap <S-Insert> <MiddleMouse>
+
 if has('nvim') && exists('g:GuiLoaded')
     function! s:NeovimGuiFont(size)
-        let l:font_size = "10"
-
-        if !empty(a:size)
-            let l:font_size = a:size
-        endif
+        let l:font_size = ( empty(a:size) ) ? "10" : a:size
 
         if empty($NO_COOL_FONTS)
-            execute 'GuiFont! DejaVu Sans Mono for Powerline:h' . l:font_size
+            try
+                execute 'GuiFont! DejaVu Sans Mono for Powerline:h' . l:font_size
+                " execute 'GuiFont! DsjasknkjanljdnjwejaVu Sans Mono for Powerline:h' . l:font_size
+            catch
+                execute 'GuiFont! Monospace:h' . l:font_size
+            endtry
         else
             execute 'GuiFont! Monospace:h' . l:font_size
         endif
@@ -67,9 +73,5 @@ elseif has("gui_running")
     " TODO: Add Linux gui fonts (I don't use gVim in Linux, but may be useful)
     if WINDOWS()
         set guifont=DejaVu_Sans_Mono_for_Powerline:h11,DejaVu_Sans_Mono:h11
-    else
-        " Make shift-insert work like in Xterm
-        map <S-Insert> <MiddleMouse>
-        map! <S-Insert> <MiddleMouse>
     endif
 endif

@@ -104,7 +104,7 @@ augroup LogFiles
 augroup end
 
 " TODO To be improve
-function! s:CleanFIle()
+function! s:CleanFile()
     " Sometimes we don't want to remove spaces
     let l:buftypes = 'nofile\|help\|quickfix\|terminal'
     let l:filetypes = 'bin\|hex\|log'
@@ -131,6 +131,12 @@ function! s:CleanFIle()
         call histdel("search", -1)
     endif
 
+    " Config dosini files must trim leading spaces
+    if &filetype == 'dosini'
+        silent! execute '%s/^\s\+//e'
+        call histdel("search", -1)
+    endif
+
 
     call setpos('.', l:savepos)
     call setreg('/', l:oldquery)
@@ -140,7 +146,7 @@ endfunction
 augroup CleanFile
     autocmd!
     autocmd BufNewFile,BufRead,BufEnter * if !exists("b:trim") | let b:trim = 1 | endif
-    autocmd FileType                    * autocmd BufWritePre <buffer> call s:CleanFIle()
+    autocmd FileType                    * autocmd BufWritePre <buffer> call s:CleanFile()
 augroup end
 
 " Specially helpful for html and xml

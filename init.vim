@@ -109,6 +109,7 @@ function! s:SetIgnorePatterns() " Create Ignore rules {{{
                     \   "find" : "",
                     \   "grep" : "",
                     \   "dir" : "",
+                    \   "findstr" : "",
                     \}
     endif
 
@@ -131,8 +132,9 @@ function! s:SetIgnorePatterns() " Create Ignore rules {{{
                 let l:ignore_pattern = l:item
             endif
 
-            let g:ignore_patterns.git   .= ' -x "' . l:ignore_pattern . '" '
-            let g:ignore_patterns.ag    .= ' --ignore "' . l:ignore_pattern . '" '
+            let g:ignore_patterns.git     .= ' -x "' . l:ignore_pattern . '" '
+            let g:ignore_patterns.ag      .= ' --ignore "' . l:ignore_pattern . '" '
+            " let g:ignore_patterns.findstr .= ' /c:' . substitute(l:ignore_pattern, "\(\/\|\*\)", "" ,"g") . ' '
 
             if l:ignore_type == "vcs" || l:ignore_type =~? "_dirs"
                 let g:ignore_patterns.grep  .= ' --exclude-dir "' . l:ignore_pattern . '" '
@@ -153,6 +155,7 @@ function! s:SetIgnorePatterns() " Create Ignore rules {{{
                 let g:ignore_patterns.find  .= ' ! -path "*/' . l:ignore_pattern . '" '
                 let g:ignore_patterns.grep  .= ' --exclude-dir "' . l:ignore_pattern . '" '
                 " TODO: Make this crap work in Windows
+                " let g:ignore_patterns.findstr .= ' /c: "' . l:ignore_pattern . '" '
                 " let g:ignore_patterns.dir  .= ' '
             endif
         endfor
@@ -400,7 +403,7 @@ if !exists('g:minimal')
         endif
     endif
 
-    " DEPRECATED: Autoformat plugin has an annoying bug that remove user's marks
+    " DEPRECATED: Autoformat plugin has an annoying bug that remove user's marks.
     "             Since I heavily relay in this feature for code navigation I
     "             decided to start using Vim's native format option 'formatprg'
     "             in ftplugin dir
@@ -418,20 +421,13 @@ if !exists('g:minimal')
     " endif
 
     if PYTHON("any")
-
         " Fast and 'easy' to compile C CtrlP matcher
         if (executable("gcc") || executable("clang")) && empty($NO_PYTHON_DEV) && !WINDOWS()
-            " Windows seems to have a lot of problems (Tested with windows 10, Neovim 0.2 and Neovim-qt)
+            " Windows must have vsbuild compiler to work, temporally disabled
             function! BuildCtrlPMatcher(info)
-                " info is a dictionary with 3 fields
-                " - name:   name of the plugin
-                " - status: 'installed', 'updated', or 'unchanged'
-                " - force:  set on PlugInstall! or PlugUpdate!
                 if a:info.status == 'installed' || a:info.force
-                    if WINDOWS() && &shell =~ 'powershell'
+                    if WINDOWS()
                         !./install_windows.bat
-                    elseif WINDOWS() && &shell =~ 'cmd'
-                        !powershell.exe -NoLogo -NoProfile -NonInteractive -ExecutionPolicy RemoteSigned ./install_windows.bat
                     else
                         !./install.sh
                     endif
@@ -710,8 +706,8 @@ if !exists('g:minimal')
         " Plug 'whatyouhide/vim-textobj-xmlattr'
 
         " NOTE: cool text object BUT my fat fingers keep presing 'w' instead of 'e'
-        "       so I delete the whole file
-        " Plug 'kana/vim-textobj-entire'
+        "       useful with formatprg
+        Plug 'kana/vim-textobj-entire'
 
         " TODO: Solve conflict with comment plugin
         " Plug 'coderifous/textobj-word-column.vim'

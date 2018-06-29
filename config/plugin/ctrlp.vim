@@ -44,6 +44,7 @@ nnoremap <C-q> :CtrlPQuickfix<CR>
 
 let g:ctrlp_extensions = ['quickfix', 'undo', 'line', 'changes', 'mixed']
 
+" TODO: check if with fugitive whether or not we are in a git repo to set clear cache
 let g:ctrlp_clear_cache_on_exit = 0
 let g:ctrlp_by_filename         = 1
 let g:ctrlp_follow_symlinks     = 1
@@ -86,10 +87,9 @@ if executable("ag")
     " This var is set on Vim Startup, New Session open and dir changed
     let g:ctrlp_clear_cache_on_exit = 1
     let g:ctrlp_user_command.fallback = 'ag %s -U -S -l --nocolor --nogroup --hidden '. g:ignore_patterns.ag . '-g ""'
-elseif has("win32") || has("win64")
-    " Actually I don't use Windows that much, so if someone comes with
-    " something better I will definitely use it
-    let g:ctrlp_user_command.fallback =  'dir %s /-n /b /s /a-d'
+elseif (has("win32") || has("win64")) && !executable("find")
+    " TODO: Find a way to distinguish between cywing find and Windows find
+    let g:ctrlp_user_command.fallback =  'dir %s /-n /b /s /a-d | findstr /v /c:.git /c:.svn /c:.exe /c:.pyc'
 endif
 
 " augroup CtrlPCache
