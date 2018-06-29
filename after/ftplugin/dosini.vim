@@ -26,5 +26,5 @@
 
 if executable("sed")
     " dosini config files must not have spaces at the beginning of the line
-    setlocal formatprg=sed\ --regexp-extended\ 's/^\s+//'
+    setlocal formatprg=sed\ --regexp-extended\ \"s/^\\s+//\"
 endif
