@@ -131,7 +131,7 @@ if executable("g++")
     let g:neomake_cpp_gcc_maker = {
         \   'exe': 'g++',
         \   'args': [
-        \      '-std=c++11',
+        \      '-std=c++17',
         \      '-Wall',
         \      '-Wextra',
         \       '-o', b:outpath,
@@ -144,7 +144,7 @@ if executable("clang++")
     let g:neomake_cpp_clang_maker = {
         \   'exe': 'clang++',
         \   'args': [
-        \      '-std=c++11',
+        \      '-std=c++17',
         \      '-Wall',
         \      '-Wextra',
         \      '-Weverything',
@@ -180,33 +180,21 @@ endif
 " C/C++ linter      : ( apt-get install / yaourt -S / dnf install ) clang gcc g++
 " Go linter         : ( apt-get install / yaourt -S / dnf install ) golang
 
-" Trigger neomake right after save a file or after 1s after leaving insert mode
-" available options:
-"       TextChanged
-"       InsertLeave
-"       BufWritePost
-"       BufWinEnter
-
-if exists("*neomake#configure#automake")
+" Noemake had been loaded
+try
+    " Trigger neomake right after save a file or after 1s after leaving insert mode
+    " available options:
+    "       TextChanged
+    "       InsertLeave
+    "       BufWritePost
+    "       BufWinEnter
     call neomake#configure#automake({
         \ 'InsertLeave': {},
         \ 'BufWritePost': {'delay': 0},
         \ }, 1000)
-
-endif
-" try
-"     if WINDOWS()
-"         call neomake#configure#automake({
-"             \ 'BufWritePost': {'delay': 5000},
-"             \ }, 1000)
-"     else
-"         call neomake#configure#automake({
-"             \ 'InsertLeave': {},
-"             \ 'BufWritePost': {'delay': 0},
-"             \ }, 1000)
-"     endif
-" catch E117
-"     " echomsg "Please run :PlugInstall to get Neomake plugin"
-"     " TODO: Display errors/status in the start screen
-"     " Just a placeholder
-" endtry
+catch E117
+    " Neovim-qt can't output messages while it's starting
+    if !GUI()
+        echoerr "Neomake is not ready"
+    endif
+endtry

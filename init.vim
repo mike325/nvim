@@ -29,7 +29,7 @@
 
 " Windows wrapper
 function! WINDOWS()
-    return ( has("win16") || has("win32") || has("win64"))
+    return (has("win16") || has("win32") || has("win64"))
 endfunction
 
 " Check an specific version of python (empty==2)
@@ -46,6 +46,10 @@ endfunction
 " Check whether or not we have async support
 function! ASYNC()
     return (has("nvim") || (v:version >= 800 || (v:version == 704 && has("patch1689")) && (has("job") && has("timers")))) ? 1 : 0
+endfunction
+
+function! GUI()
+    return (has('nvim') && exists('g:GuiLoaded')) || (!has("nvim") && has("gui_running"))
 endfunction
 
 " Set the default work dir
@@ -423,7 +427,7 @@ if !exists('g:minimal')
     if PYTHON("any")
         " Fast and 'easy' to compile C CtrlP matcher
         if (executable("gcc") || executable("clang")) && empty($NO_PYTHON_DEV) && !WINDOWS()
-            " Windows must have vsbuild compiler to work, temporally disabled
+            " Windows must have msbuild compiler to work, temporally disabled
             function! BuildCtrlPMatcher(info)
                 if a:info.status == 'installed' || a:info.force
                     if WINDOWS()
@@ -508,7 +512,7 @@ if !exists('g:minimal')
 
             " Awesome Async completion engine for Neovim
             " if ASYNC() && PYTHON("3")
-            if has("nvim") && PYTHON("3")
+            if has("nvim") && PYTHON("3") && empty($YCM)
 
                 " " TODO: There's no package check
                 " if !has("nvim")
@@ -593,26 +597,32 @@ if !exists('g:minimal')
                             let l:code_completion .= " --omnisharp-completer"
                         endif
 
+                        if executable("racer")
+                            let l:code_completion .= " --rust-completer"
+                        endif
+
                         if executable("npm")
                             let l:code_completion .= " --js-completer"
                         endif
 
                         " TODO: Test java completer
+                        "       JDK8 must be installed
                         " if executable("javac")
                         "     let l:code_completion .= " --java-completer"
                         " endif
 
                         if WINDOWS()
-                            execute "!python ./install.py" . l:code_completion
+                            execute "!python ./install.py " . l:code_completion
+                        elseif executable("python3")
+                            " Force python3
+                            execute "!python3 ./install.py " . l:code_completion
                         else
-                            execute "!./install.py" . l:code_completion
+                            execute "!./install.py " . l:code_completion
                         endif
 
                     endif
                 endfunction
 
-                " Install ycm if Neovim/vim 8/Vim 7.143 is running on unix or
-                " If it is running on windows with Neovim/Vim 8/Vim 7.143 and ms C compiler
                 if WINDOWS()
                     " Don't fucking update YCM in Windows
                     Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') , 'frozen' : 1,}
@@ -681,6 +691,10 @@ if !exists('g:minimal')
     if executable("go") && ASYNC()
         Plug 'fatih/vim-go'
     endif
+
+    " if executable("luac") || executable("lualint")
+    Plug 'xolox/vim-lua-ftplugin'
+    " endif
 
     " Easy comments
     " TODO check other comment plugins with motions

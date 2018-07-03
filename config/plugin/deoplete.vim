@@ -43,24 +43,17 @@ let g:deoplete#lock_buffer_name_pattern = '\*ku\*'
 " inoremap <expr><C-y>  deoplete#mappings#smart_close_popup()
 " inoremap <expr><C-e>  deoplete#cancel_popup()
 
+let g:deoplete#omni#functions      = get(g:,'g:deoplete#omni#functions',{})
 let g:deoplete#omni#input_patterns = get(g:,'deoplete#omni#input_patterns',{})
 
-let g:deoplete#omni#input_patterns.java = ['[^. *\t0-9]\.\w*']
-let g:deoplete#omni#input_patterns.javascript = ['[^. *\t0-9]\.\w*']
-let g:deoplete#omni#input_patterns.python = ['[^. *\t0-9]\.\w*']
-let g:deoplete#omni#input_patterns.go = ['[^. *\t0-9]\.\w*']
-let g:deoplete#omni#input_patterns.ruby = ['[^. *\t0-9]\.\w*']
-
-let g:deoplete#omni#input_patterns.c = [
-            \'[^. *\t0-9]\.\w*',
-            \'[^. *\t0-9]\->\w*',
-            \]
-
-let g:deoplete#omni#input_patterns.cpp = [
-            \'[^. *\t0-9]\.\w*',
-            \'[^. *\t0-9]\->\w*',
-            \'[^. *\t0-9]\::\w*',
-            \]
+let g:deoplete#omni#input_patterns.java       = '\w+|[^. *\t0-9].\w*'
+let g:deoplete#omni#input_patterns.javascript = '\w+|[^. *\t0-9].\w*'
+let g:deoplete#omni#input_patterns.python     = '\w+|[^. *\t0-9].\w*'
+let g:deoplete#omni#input_patterns.go         = '\w+|[^. *\t0-9].\w*'
+let g:deoplete#omni#input_patterns.ruby       = '\w+|[^. *\t0-9].\w*'
+let g:deoplete#omni#input_patterns.lua        = '\w+|[^. *\t0-9](.:)\w*'
+let g:deoplete#omni#input_patterns.c          = '\w+|[^. *\t0-9](.|->)\w*'
+let g:deoplete#omni#input_patterns.cpp        = '\w+|[^. *\t0-9](.|->|::)\w*'
 
 let g:deoplete#sources={}
 " let g:deoplete#sources._ = ['buffer', 'member', 'file', 'tags', 'ultisnips']
@@ -87,9 +80,20 @@ augroup end
 
 " call deoplete#custom#set('ultisnips', 'matchers', ['matcher_full_fuzzy'])
 
+if exists('g:plugs["vim-lua-ftplugin"]') && (executable("luac") || executable("lualint") || exists("g:lua_compiler_name"))
+    let g:lua_check_syntax               = 0
+    let g:lua_complete_omni              = 1
+    let g:lua_complete_dynamic           = 0
+    let g:lua_define_completion_mappings = 0
+
+    let g:deoplete#omni#functions.lua = 'xolox#lua#omnifunc'
+endif
+
 if exists('g:plugs["deoplete-jedi"]')
     let g:deoplete#sources#jedi#enable_cache   = 1
     let g:deoplete#sources#jedi#show_docstring = 1
+else
+    let g:deoplete#omni#functions.python = 'pythoncomplete#Complete'
 endif
 
 if exists('g:plugs["deoplete-clang"]')

@@ -47,8 +47,10 @@ try
     command! UpdateProjectConfig call s:SetProjectConfigs()
     command! OpenProjectConfig call s:FindProjectConfig()
 catch E117
-    " TODO: Display errors/status in the start screen
-    " Just a placeholder
+    " TODO: Display errors/status in the start screen for GUI clients
+    if !GUI()
+        echoerr "We could't set extra project configs, may be because fuigitive is not ready"
+    endif
 endtry
 
 if exists('g:plugs["YouCompleteMe"]')
@@ -75,7 +77,21 @@ if exists('g:plugs["YouCompleteMe"]')
         command! UpdateYCMConf call s:SetExtraConf()
         command! OpenYCMConf call s:FindExtraConfig()
     catch E117
-        " TODO: Display errors/status in the start screen
-        " Just a placeholder
+        " TODO: Display errors/status in the start screen for GUI clients
+        if !GUI()
+            echoerr "We could't set extra project configs, may be because fuigitive is not ready"
+        endif
     endtry
+endif
+
+if exists('g:plugs["ctrlp.vim"]')
+
+   augroup CtrlPCache
+       autocmd!
+       if has("nvim")
+           autocmd DirChanged * let g:ctrlp_clear_cache_on_exit = ( fugitive#extract_git_dir(expand('%:p:h')) ) ?  1 : (g:ctrlp_user_command.fallback =~# "^ag ")
+       endif
+       autocmd SessionLoadPost * let g:ctrlp_clear_cache_on_exit = ( fugitive#extract_git_dir(expand('%:p:h')) ) ?  1 : (g:ctrlp_user_command.fallback =~# "^ag ")
+   augroup end
+
 endif
