@@ -42,9 +42,9 @@ snippet sil "Silent command"
 silent! ${0:${VISUAL:cmd}}
 endsnippet
 
-snippet ex "execute cmd"
-execute '${0:${VISUAL:viml cmd}}'
-endsnippet
+# snippet ex "execute cmd"
+# execute '${0:${VISUAL:viml cmd}}'
+# endsnippet
 
 snippet try "try ... catch ... endtry"
 try
@@ -58,7 +58,7 @@ snippet pl "Plug 'plugin'"
 Plug '$0'
 endsnippet
 
-snippet gpl "if !exists(plugin)"
+snippet !ex "if !exists(plugin)"
 if !exists('g:plugs["${1:${VISUAL:NAME}}"]')
 	finish
 endif
@@ -72,3 +72,8 @@ augroup ${1:AU_NAME}
 augroup end
 $0
 endsnippet
+
+snippet ex "executable()"
+executable("${1:CMD}")$0
+endsnippet
+

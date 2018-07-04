@@ -1,6 +1,6 @@
 " ############################################################################
 "
-"                               windowswap.vim Setttings
+"                               youcompleteme Setttings
 "
 "                                     -`
 "                     ...            .o+`
@@ -24,11 +24,30 @@
 "
 " ############################################################################
 
-
-if !exists('g:plugs["vim-windowswap"]')
+if !exists('g:plugs["YouCompleteMe"]') || !exists('g:plugs["delimitMate"]')
     finish
 endif
 
-" This is an old deprecated mapping anyway
-silent! unmap <leader>pw
-silent! unmap <leader>yw
+function! YcmOnDeleteChar()
+    if pumvisible()
+        return "\<C-y>"
+    endif
+    return ""
+endfunction
+
+function! s:FixYCMBs()
+    imap <BS> <C-R>=YcmOnDeleteChar()<CR><Plug>delimitMateBS
+    imap <C-h> <C-R>=YcmOnDeleteChar()<CR><Plug>delimitMateBS
+endfunction
+
+" Hack around
+" https://github.com/Valloric/YouCompleteMe/issues/2696
+if has( 'vim_starting' )
+    augroup BsHack
+        autocmd!
+        autocmd VimEnter * call s:FixYCMBs()
+    augroup END
+else
+    call s:FixYCMBs()
+endif
+

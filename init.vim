@@ -580,36 +580,37 @@ if !exists('g:minimal')
                 function! BuildYCM(info)
                     if a:info.status == 'installed' || a:info.force
                         " !./install.py --all
-                        " !./install.py --gocode-completer --tern-completer --clang-completer --omnisharp-completer
 
                         " Since YCM download libclang there's no need to have clang install
+                        " FIX: ArchLinux users should run this first
+                        "      $ sudo ln -s /lib64/libtinfo.so.6.0 /lib64/libtinfo.so.5
+                        " https://github.com/Valloric/YouCompleteMe/issues/778#issuecomment-211452969
                         let l:code_completion = " --clang-completer"
 
                         if executable('go') && (!empty($GOROOT))
                             let l:code_completion .= " --gocode-completer"
                         endif
 
-                        if executable("npm")
-                            let l:code_completion .= " --tern-completer"
-                        endif
-
                         if executable("mono")
                             let l:code_completion .= " --omnisharp-completer"
                         endif
 
-                        if executable("racer")
+                        if executable("racer") && executable("cargo")
                             let l:code_completion .= " --rust-completer"
                         endif
 
-                        if executable("npm")
+                        if executable("npm") && executable("node")
                             let l:code_completion .= " --js-completer"
                         endif
 
-                        " TODO: Test java completer
-                        "       JDK8 must be installed
-                        " if executable("javac")
-                        "     let l:code_completion .= " --java-completer"
-                        " endif
+                        " TODO: Can't test in windows
+                        if !WINDOWS() && executable("java")
+                            " JDK8 must be installed
+                            let l:java = system("java -version")
+                            if l:java =~# "^java.*\"1\.8.*\""
+                                let l:code_completion .= " --java-completer"
+                            endif
+                        endif
 
                         if WINDOWS()
                             execute "!python ./install.py " . l:code_completion

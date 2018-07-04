@@ -4,9 +4,14 @@ from __future__ import unicode_literals
 from __future__ import print_function
 from __future__ import with_statement
 from __future__ import division
+
+# from distutils.sysconfig import get_python_inc
+
 import os
 import os.path
 import logging
+import ycm_core
+
 # import fnmatch
 # import ycm_core
 # import re
@@ -36,7 +41,6 @@ __header__ = """
             .`                                 `/
 """
 
-
 BASE_FLAGS = [
     '-Wall',
     '-Wextra',
@@ -50,7 +54,8 @@ BASE_FLAGS = [
     '-DNDEBUG',
     # '-Wno-c++98-compat',
     # '-std=c++11',
-    # '-xc++',
+    '-x',
+    'c++',
 ]
 
 LINUX_INCLUDES = [
@@ -62,30 +67,28 @@ WINDOWS_INCLUDES = [
     # TODO
 ]
 
-SOURCE_EXTENSIONS = [
-    '.cpp',
-    '.cxx',
-    '.cc',
-    '.c',
-    '.m',
-    '.mm'
-]
+SOURCE_EXTENSIONS = ['.cpp', '.cxx', '.cc', '.c', '.m', '.mm', '.s']
+HEADER_EXTENSIONS = ['.h', '.hxx', '.hpp', '.hh']
+SOURCE_DIRECTORIES = ['src', 'lib']
+HEADER_DIRECTORIES = ['include']
+DIR_OF_THIS_SCRIPT = os.path.abspath(os.path.dirname(__file__))
 
-SOURCE_DIRECTORIES = [
-    'src',
-    'lib'
-]
+# Set this to the absolute path to the folder (NOT the file!) containing the
+# compile_commands.json file to use that instead of 'flags'. See here for
+# more details: http://clang.llvm.org/docs/JSONCompilationDatabase.html
+#
+# You can get CMake to generate this file for you by adding:
+#   set( CMAKE_EXPORT_COMPILE_COMMANDS 1 )
+# to your CMakeLists.txt file.
+#
+# Most projects will NOT need to set this to anything; you can just change the
+# 'flags' list of compilation flags. Notice that YCM itself uses that approach.
+compilation_database_folder = ''
 
-HEADER_EXTENSIONS = [
-    '.h',
-    '.hxx',
-    '.hpp',
-    '.hh'
-]
-
-HEADER_DIRECTORIES = [
-    'include'
-]
+if os.path.exists(compilation_database_folder):
+    database = ycm_core.CompilationDatabase(compilation_database_folder)
+else:
+    database = None
 
 if os.name == 'nt':
     BASE_FLAGS += WINDOWS_INCLUDES
@@ -98,21 +101,30 @@ def IsHeaderFile(filename):
     return extension in HEADER_EXTENSIONS
 
 
+def FindCorrespondingSourceFile(filename):
+    if IsHeaderFile(filename):
+        basename = os.path.splitext(filename)[0]
+        for extension in SOURCE_EXTENSIONS:
+            replacement_file = basename + extension
+        if os.path.exists(replacement_file):
+            return replacement_file
+    return filename
+
+
 def FindNearest(path, target, build_folder):
     candidate = os.path.join(path, target)
-    if(os.path.isfile(candidate) or os.path.isdir(candidate)):
-        logging.info("Found nearest " + target + " at " + candidate)
+    if os.path.isfile(candidate) or os.path.isdir(candidate):
+        logging.info("Found nearest {0} at {1}".format(target, candidate))
         return candidate
 
-    parent = os.path.dirname(os.path.abspath(path))
-    if(parent == path):
+    parent = os.path.dirname(os.path.realpath(path))
+    if (parent == path):
         raise RuntimeError("Could not find " + target)
 
-    if(build_folder):
+    if (build_folder):
         candidate = os.path.join(parent, build_folder, target)
-        if(os.path.isfile(candidate) or os.path.isdir(candidate)):
-            logging.info("Found nearest " + target +
-                         " in build folder at " + candidate)
+        if os.path.isfile(candidate) or os.path.isdir(candidate):
+            logging.info("Found nearest {0} in build folder at {1}".format(target, candidate))
             return candidate
 
     return FindNearest(parent, target, build_folder)
@@ -120,13 +132,14 @@ def FindNearest(path, target, build_folder):
 
 def FlagsForClangComplete(root):
     try:
-        clang_complete_path = FindNearest(root, '.clang_complete')
-        clang_complete_flags = open(
-            clang_complete_path, 'r').read().splitlines()
+        clang_complete_path = FindNearest(root, '.clang_complete', None)
+        with open(clang_complete_path, 'r') as flags:
+            clang_complete_flags = flags.read().splitlines()
 
-        clang_complete_path = FindNearest(root, '.clang')
-        clang_complete_flags += open(clang_complete_path,
-                                     'r').read().splitlines()
+        clang_complete_path = FindNearest(root, '.clang', None)
+        with open(clang_complete_path, 'r') as flags:
+            clang_complete_flags += flags.read().splitlines()
+
         return clang_complete_flags
     except:
         return None
@@ -138,23 +151,47 @@ def FlagsForInclude(root):
         flags = []
         for dirroot, dirnames, filenames in os.walk(include_path):
             for dir_path in dirnames:
-                real_path = os.path.join(dirroot, dir_path)
-                flags = flags + ["-I" + real_path]
+                real_path = os.path.realpath(os.path.join(dirroot, dir_path))
+                flags += ["-I" + real_path]
         return flags
     except:
         return None
 
 
-def FlagsForFile(filename):
-    root = os.path.realpath(filename)
-    final_flags = BASE_FLAGS
-    clang_flags = FlagsForClangComplete(root)
-    if clang_flags:
-        final_flags = final_flags + clang_flags
-    include_flags = FlagsForInclude(root)
-    if include_flags:
-        final_flags = final_flags + include_flags
+def FlagsForFile(filename, **kwargs):
+    # If the file is a header, try to find the corresponding source file and
+    # retrieve its flags from the compilation database if using one. This is
+    # necessary since compilation databases don't have entries for header files.
+    # In addition, use this source file as the translation unit. This makes it
+    # possible to jump from a declaration in the header file to its definition in
+    # the corresponding source file.
+    filename = FindCorrespondingSourceFile(filename)
+
+    if not database:
+        root = os.path.realpath(filename)
+        final_flags = BASE_FLAGS
+        clang_flags = FlagsForClangComplete(root)
+        if clang_flags:
+            final_flags += clang_flags
+        include_flags = FlagsForInclude(root)
+        if include_flags:
+            final_flags += include_flags
+        return {
+            'flags': final_flags,
+            'do_cache': True
+            'override_filename': filename
+        }
+
+    compilation_info = database.GetCompilationInfoForFile(filename)
+    if not compilation_info.compiler_flags_:
+        return None
+
+    # Bear in mind that compilation_info.compiler_flags_ does NOT return a
+    # python list, but a "list-like" StringVec object.
+    final_flags = list(compilation_info.compiler_flags_)
     return {
         'flags': final_flags,
+        'include_paths_relative_to_dir': compilation_info.compiler_working_dir_,
+        'override_filename': filename
         'do_cache': True
     }

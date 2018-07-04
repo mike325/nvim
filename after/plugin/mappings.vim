@@ -306,7 +306,7 @@ command! -nargs=? Qopen
 "     unlet s:bang
 " endfunction
 
-command! -bang -complete=dir -nargs=? Scratch
+" command! -bang -complete=dir -nargs=? Scratch
 
 " function! s:FindProjectRoot()
 "     " Statement
