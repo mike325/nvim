@@ -49,17 +49,11 @@ else
 endif
 
 " let g:ycm_extra_conf_globlist   = ['~/.vim/*']
-" if exists('g:plugs["vim-fugitive"]')
-"     let g:ycm_global_ycm_extra_conf =  fugitive#extract_git_dir(expand('%:p')) . "/ycm_extra_conf.py"
-"     if g:ycm_global_ycm_extra_conf ==# ''
-"         let g:ycm_global_ycm_extra_conf = fnameescape(g:base_path . "ycm_extra_conf.py")
-"     endif
 
-" if filereadable(fnameescape(getcwd() . "/.git/ycm_extra_conf.py"))
-"     let g:ycm_global_ycm_extra_conf = fnameescape(getcwd() . "/.git/ycm_extra_conf.py")
-" elseif filereadable(fnameescape(g:base_path . "ycm_extra_conf.py"))
-"     let g:ycm_global_ycm_extra_conf = fnameescape(g:base_path . "ycm_extra_conf.py")
-" endif
+" Set fallback ycm config file
+if filereadable(fnameescape(g:base_path . "ycm_extra_conf.py"))
+    let g:ycm_global_ycm_extra_conf = fnameescape(g:base_path . "ycm_extra_conf.py")
+endif
 
 if executable("ctags")
     let g:ycm_collect_identifiers_from_tags_files = 1
@@ -70,6 +64,9 @@ let g:ycm_filetype_specific_completion_to_disable = {}
 
 " Don't ask fro confirmation
 let g:ycm_confirm_extra_conf = 0
+
+" Get Language syntax identifiers
+let g:ycm_seed_identifiers_with_syntax = 1
 
 " In case there are other completion plugins
 let g:ycm_filetype_blacklist    = {
