@@ -68,6 +68,9 @@ endif
 " In case there are other completion plugins
 let g:ycm_filetype_specific_completion_to_disable = {}
 
+" Don't ask fro confirmation
+let g:ycm_confirm_extra_conf = 0
+
 " In case there are other completion plugins
 let g:ycm_filetype_blacklist    = {
         \ 'log' : 1,

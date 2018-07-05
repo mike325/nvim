@@ -158,14 +158,14 @@ def FlagsForInclude(root):
         return None
 
 
-# def Settings(**kwargs):
-#     language = kwargs['language']
-#     if language == 'python':
-#         return {
-#             'interpreter_path': '~/project/virtual_env/bin/python',
-#             'sys_path': ['~/project/third_party/module']
-#         }
-#     return {}
+def Settings(**kwargs):
+    language = kwargs['language']
+    if language == 'python':
+        return {
+            'interpreter_path': '~/project/virtual_env/bin/python',
+            'sys_path': ['~/project/third_party/module']
+        }
+    return {}
 
 
 def FlagsForFile(filename, **kwargs):
@@ -188,7 +188,7 @@ def FlagsForFile(filename, **kwargs):
             final_flags += include_flags
         return {
             'flags': final_flags,
-            'do_cache': True,
+            'do_cache': True
             'override_filename': filename
         }
 
@@ -202,6 +202,6 @@ def FlagsForFile(filename, **kwargs):
     return {
         'flags': final_flags,
         'include_paths_relative_to_dir': compilation_info.compiler_working_dir_,
-        'override_filename': filename,
+        'override_filename': filename
         'do_cache': True
     }
