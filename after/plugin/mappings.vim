@@ -32,13 +32,13 @@ endif
 let g:mappings_loaded = 1
 
 nnoremap , :
-vnoremap , :
+xnoremap , :
 
 " Similar behavior as C and D
 nnoremap Y y$
 
 " Don't visual/select the return character
-vnoremap $ $h
+xnoremap $ $h
 
 " Avoid default Ex mode
 nnoremap Q o<Esc>
@@ -50,7 +50,8 @@ nnoremap J m`J``
 " Better <ESC> mappings
 imap jj <Esc>
 nnoremap <BS> <ESC>
-vnoremap <BS> <ESC>
+
+xnoremap <BS> <ESC>
 
 " Turn diff off when closiong other windows
 nnoremap <silent> <C-w><C-o> :diffoff!<bar>only<cr>
@@ -67,8 +68,8 @@ nnoremap <expr> k v:count ? (v:count > 5 ? "m'" . v:count : '') . 'k' : 'gk'
 " Jump to the previous mark, as <TAB>
 nnoremap <S-tab> <C-o>
 
-vnoremap > >gv
-vnoremap < <gv
+xnoremap > >gv
+xnoremap < <gv
 
 " Echo the relative path and of the file
 nnoremap <leader><leader>e :echo expand("%")<CR>
@@ -143,16 +144,16 @@ nnoremap <leader>9 9gt
 nnoremap <leader>0 :tablast<CR>
 nnoremap <leader><leader>n :tabnew<CR>
 
-vnoremap <leader>1 <ESC>1gt
-vnoremap <leader>2 <ESC>2gt
-vnoremap <leader>3 <ESC>3gt
-vnoremap <leader>4 <ESC>4gt
-vnoremap <leader>5 <ESC>5gt
-vnoremap <leader>6 <ESC>6gt
-vnoremap <leader>7 <ESC>7gt
-vnoremap <leader>8 <ESC>8gt
-vnoremap <leader>9 <ESC>9gt
-vnoremap <leader>0 <ESC>:tablast<CR>
+xnoremap <leader>1 <ESC>1gt
+xnoremap <leader>2 <ESC>2gt
+xnoremap <leader>3 <ESC>3gt
+xnoremap <leader>4 <ESC>4gt
+xnoremap <leader>5 <ESC>5gt
+xnoremap <leader>6 <ESC>6gt
+xnoremap <leader>7 <ESC>7gt
+xnoremap <leader>8 <ESC>8gt
+xnoremap <leader>9 <ESC>9gt
+xnoremap <leader>0 <ESC>:tablast<CR>
 
 " }}} EndTabBufferManagement
 

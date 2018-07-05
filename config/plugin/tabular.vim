@@ -29,16 +29,16 @@ if !exists('g:plugs["tabular"]')
 endif
 
 nnoremap <leader>t= :Tabularize /=<CR>
-vnoremap <leader>t= :Tabularize /=<CR>
+xnoremap <leader>t= :Tabularize /=<CR>
 
 nnoremap <leader>t: :Tabularize /:<CR>
-vnoremap <leader>t: :Tabularize /:<CR>
+xnoremap <leader>t: :Tabularize /:<CR>
 
 nnoremap <leader>t" :Tabularize /"<CR>
-vnoremap <leader>t" :Tabularize /"<CR>
+xnoremap <leader>t" :Tabularize /"<CR>
 
 nnoremap <leader>t# :Tabularize /#<CR>
-vnoremap <leader>t# :Tabularize /#<CR>
+xnoremap <leader>t# :Tabularize /#<CR>
 
 nnoremap <leader>t* :Tabularize /*<CR>
-vnoremap <leader>t* :Tabularize /*<CR>
+xnoremap <leader>t* :Tabularize /*<CR>
