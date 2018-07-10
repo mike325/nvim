@@ -85,6 +85,12 @@ let g:ycm_filetype_blacklist    = {
         \ 'mail' : 1
 \}
 
+if executable("python3")
+    let g:ycm_python_binary_path = "python3"
+else
+    let g:ycm_python_binary_path = "python"
+endif
+
 function! s:SplitYCM(split_type, ycm_cmd)
     execute a:split_type
     execute a:ycm_cmd
@@ -96,6 +102,7 @@ augroup YCMGoTo
     autocmd FileType c,cpp,cs                                       command! -buffer FixIt :YcmCompleter FixIt
 
     autocmd FileType c,cpp,objc,objcpp                              command! -buffer Include :YcmCompleter GoToInclude
+    autocmd FileType c,cpp,objc,objcpp                              command! -buffer Parent :YcmCompleter GetParent
     autocmd FileType c,cpp,python,go,cs,objc,objcpp,rust            command! -buffer Declaration :YcmCompleter GoToDeclaration
     autocmd FileType c,cpp,python,go,cs,objc,objcpp,rust,javascript command! -buffer Definition :YcmCompleter GoToDefinition
     autocmd FileType javascript,python,typescript                   command! -buffer References :YcmCompleter GoToReferences
@@ -115,13 +122,4 @@ augroup YCMGoTo
     autocmd FileType javascript,python,typescript                   command! -buffer ReferencesSplit     :call s:SplitYCM("split", "YcmCompleter GoToReferences")
     autocmd FileType cs                                             command! -buffer ImplementationSplit :call s:SplitYCM("split", "YcmCompleter GoToImplementationElseDeclaration")
 augroup end
-
-" nnoremap <leader>F :YcmCompleter FixIt<CR>
-" nnoremap <leader>gr :YcmCompleter GoToReferences<CR>
-" nnoremap <leader>gg :YcmCompleter GoTo<CR>
-" nnoremap <leader>gp :YcmCompleter GetParent<CR>
-" nnoremap <leader>gi :YcmCompleter GoToInclude<CR>
-" nnoremap <leader>gt :YcmCompleter GetType<CR>
-
-" nnoremap <F5> :YcmForceCompileAndDiagnostics<CR>
 

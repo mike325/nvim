@@ -175,7 +175,8 @@ if has("nvim")
     endif
 
     " Use ESC to exit terminal mode
-    tnoremap <Esc> <C-\><C-n>
+    " tnoremap <esc> <C-\><C-n>
+    tnoremap jj <C-\><C-n>
 endif
 
 if exists("+relativenumber")

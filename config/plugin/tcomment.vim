@@ -1,6 +1,6 @@
 " ############################################################################
 "
-"                         textobj-comment.vim Setttings
+"                               tcomment Setttings
 "
 "                                     -`
 "                     ...            .o+`
@@ -24,10 +24,13 @@
 "
 " ############################################################################
 
-if !exists('g:plugs["vim-textobj-comment"]')
+if !exists('g:plugs["tcomment_vim"]')
     finish
 endif
 
-" Restore default comment object 'ic' and 'ac'
-" tcomment_vim overrides it and doesn't work so well
-silent! execute 'TextobjCommentDefaultKeyMappings!'
+if !exists('g:plugs["NAME"]')
+    finish
+endif
+
+
+

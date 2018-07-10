@@ -90,19 +90,6 @@ augroup LastEditPosition
                 \   endif
 augroup end
 
-function! CheckSize()
-    " If the size of the file is bigger than ~5MB
-    " lets consider it as a log
-    return ( getfsize(expand("%")) > 5242880 ) ? 1 : 0
-endfunction
-
-augroup LogFiles
-    autocmd!
-    autocmd BufNewFile,BufReadPre,BufEnter *.log set filetype=log
-    autocmd BufNewFile,BufReadPre,BufEnter *.rdl set filetype=log
-    autocmd BufNewFile,BufReadPre,BufEnter *.txt if ( CheckSize() == 1 ) | set filetype=log | endif
-augroup end
-
 " TODO To be improve
 function! s:CleanFile()
     " Sometimes we don't want to remove spaces
@@ -281,23 +268,24 @@ endfunction
 
 augroup Skeletons
     autocmd!
-    autocmd BufNewFile .projections.json silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/projections.json')
-    autocmd BufNewFile *.css             silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.css')
-    autocmd BufNewFile *.html            silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.html')
-    autocmd BufNewFile *.md              silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.md')
-    autocmd BufNewFile *.js              silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.js')
-    autocmd BufNewFile *.xml             silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.xml')
-    autocmd BufNewFile *.py              silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.py')
-    autocmd BufNewFile *.cs              silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.cs')
-    autocmd BufNewFile *.php             silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.php')
-    autocmd BufNewFile *.sh              silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.sh')
-    autocmd BufNewFile *.java            silent! call FileName('skeleton.java')
-    autocmd BufNewFile *.vim             silent! call FileName('skeleton.vim')
-    autocmd BufNewFile *.go              silent! call CMainOrFunc()
-    autocmd BufNewFile *.cpp             silent! call CMainOrFunc()
-    autocmd BufNewFile *.hpp             silent! call CHeader()
-    autocmd BufNewFile *.c               silent! call CMainOrFunc()
-    autocmd BufNewFile *.h               silent! call CHeader()
+    autocmd BufNewFile .projections.json  silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/projections.json')
+    " autocmd BufNewFile .ycm_extra_conf.py silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/ycm_extra_conf.py')
+    autocmd BufNewFile *.css              silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.css')
+    autocmd BufNewFile *.html             silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.html')
+    autocmd BufNewFile *.md               silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.md')
+    autocmd BufNewFile *.js               silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.js')
+    autocmd BufNewFile *.xml              silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.xml')
+    autocmd BufNewFile *.py               silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.py')
+    autocmd BufNewFile *.cs               silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.cs')
+    autocmd BufNewFile *.php              silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.php')
+    autocmd BufNewFile *.sh               silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.sh')
+    autocmd BufNewFile *.java             silent! call FileName('skeleton.java')
+    autocmd BufNewFile *.vim              silent! call FileName('skeleton.vim')
+    autocmd BufNewFile *.go               silent! call CMainOrFunc()
+    autocmd BufNewFile *.cpp              silent! call CMainOrFunc()
+    autocmd BufNewFile *.hpp              silent! call CHeader()
+    autocmd BufNewFile *.c                silent! call CMainOrFunc()
+    autocmd BufNewFile *.h                silent! call CHeader()
 augroup end
 
 " }}} EndSkeletons

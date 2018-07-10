@@ -1,6 +1,6 @@
 " ############################################################################
 "
-"                         textobj-comment.vim Setttings
+"                               log Setttings
 "
 "                                     -`
 "                     ...            .o+`
@@ -24,10 +24,14 @@
 "
 " ############################################################################
 
-if !exists('g:plugs["vim-textobj-comment"]')
-    finish
-endif
+function! CheckSize()
+    " If the size of the file is bigger than ~5MB
+    " lets consider it as a log
+    return ( getfsize(expand("%")) > 5242880 ) ? 1 : 0
+endfunction
 
-" Restore default comment object 'ic' and 'ac'
-" tcomment_vim overrides it and doesn't work so well
-silent! execute 'TextobjCommentDefaultKeyMappings!'
+
+autocmd BufNewFile,BufReadPre,BufEnter *.log set filetype=log
+autocmd BufNewFile,BufReadPre,BufEnter *.rdl set filetype=log
+autocmd BufNewFile,BufReadPre,BufEnter *.txt if ( CheckSize() == 1 ) | set filetype=log | endif
+

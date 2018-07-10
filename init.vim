@@ -319,7 +319,18 @@ endif
 " TODO: Check for $TERM before load some configurations
 if !exists('g:minimal')
 
-    call plug#begin(g:base_path.'plugged')
+    try
+        call plug#begin(g:base_path.'plugged')
+    catch E117
+        " Fallback if we fail to init Plug
+        if !has("nvim") && v:version >= 800
+            packadd! matchit
+        elseif !exists('g:loaded_matchit') && findfile('plugin/matchit.vim', &rtp) ==# ''
+            runtime! macros/matchit.vim
+        endif
+        filetype plugin indent on
+        finish
+    endtry
 
     if isdirectory(fnameescape(g:base_path.'config'))
         Plug fnameescape(g:base_path.'config')
@@ -494,6 +505,10 @@ if !exists('g:minimal')
     let b:deoplete_installed = 0
     let b:completor = 0
 
+    function! YCMCommon()
+        return (executable("cmake") && executable("7z"))
+    endfunction
+
     " This env var allow us to know if the python version has the dev libs
     if empty($NO_PYTHON_DEV)
         if PYTHON("any") " Python base completions {{{
@@ -574,7 +589,7 @@ if !exists('g:minimal')
 
                 let b:deoplete_installed = 1
 
-            elseif ASYNC() && (( has("unix") && ( executable("gcc")  || executable("clang") )) ||
+            elseif ASYNC() && YCMCommon() && (( has("unix") && ( executable("gcc")  || executable("clang") )) ||
                         \ (WINDOWS() && executable("msbuild")))
 
                 function! BuildYCM(info)
@@ -583,7 +598,8 @@ if !exists('g:minimal')
 
                         " Since YCM download libclang there's no need to have clang install
                         " FIX: ArchLinux users should run this first
-                        "      $ sudo ln -s /lib64/libtinfo.so.6.0 /lib64/libtinfo.so.5
+                        "  ~# sudo ln -s /lib64/libtinfo.so.6.0 /lib64/libtinfo.so.5
+                        "       or use --system-clang
                         " https://github.com/Valloric/YouCompleteMe/issues/778#issuecomment-211452969
                         let l:code_completion = " --clang-completer"
 
