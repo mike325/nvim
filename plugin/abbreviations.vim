@@ -56,9 +56,12 @@ iabbrev identation    indentation
 iabbrev aligment      aliment
 iabbrev posible       possible
 iabbrev imrpove       improve
+iabbrev imrpvoe       improve
 iabbrev reproducable  reproducible
 iabbrev retreive      retrieve
 iabbrev compeletly    completely
+iabbrev abbrevation   abbreviation
+iabbrev abbrevations  abbreviations
 
 iabbrev Avalible      Available
 iabbrev Avalibility   Availability
@@ -85,9 +88,12 @@ iabbrev Identation    Indentation
 iabbrev Aligment      Aliment
 iabbrev Posible       Possible
 iabbrev Imrpove       Improve
+iabbrev Imrpvoe       Improve
 iabbrev Reproducable  Reproducible
 iabbrev Retreive      Retrieve
 iabbrev Compeletly    Completely
+iabbrev Abbrevation   Abbreviation
+iabbrev Abbrevations  Abbreviations
 
 iabbrev AVALIBLE      AVAILABLE
 iabbrev AVALIBILITY   AVAILABILITY
@@ -114,6 +120,9 @@ iabbrev IDENTATION    INDENTATION
 iabbrev ALIGMENT      ALIMENT
 iabbrev POSIBLE       POSSIBLE
 iabbrev IMRPOVE       IMPROVE
+iabbrev IMRPVOE       IMPROVE
 iabbrev REPRODUCABLE  REPRODUCIBLE
 iabbrev RETREIVE      RETRIEVE
 iabbrev COMPELETLY    COMPLETELY
+iabbrev ABBREVATION   ABBREVIATION
+iabbrev ABBREVATIONS  ABBREVIATIONS

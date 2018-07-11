@@ -43,11 +43,12 @@ Abolish aibbreviation{s} abbreviation{s}
 Abolish identation       indentation
 Abolish aligment         aliment
 Abolish posible          possible
-Abolish imrpove          improve
+Abolish imr{pov,pvo}e    improve
 Abolish abbrevations     abbreviations
 Abolish reproducable     reproducible
 Abolish retreive         retrieve
 Abolish compeletly       completely
+Abolish abbrevation{s}   abbreviations
 
 Abolish {despa,sepe}rat{e,es,ed,ing,ely,ion,ions,or} {despe,sepa}rat{}
 Abolish {,in}consistant{,ly}                         {}consistent{}
