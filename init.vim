@@ -261,45 +261,62 @@ endfunction " }}} END Vim's InitConfig
 
 
 if ASYNC()
-    function! s:python_setup(major, minor)
-        if WINDOWS()
-            let l:candidates = [
-                        \ 'c:/python'.a:major.a:minor,
-                        \ 'c:/python/'.a:major.a:minor,
-                        \ 'c:/python/python'.a:major.a:minor,
-                        \ 'c:/python_'.a:major.a:minor,
-                        \ 'c:/python/python_'.a:major.a:minor,
-                        \]
-            for pydir in l:candidates
-                if isdirectory(fnameescape(pydir))
-                    return pydir
-                endif
-            endfor
-        elseif executable("python".a:major.".".a:minor)
-            return "python".a:major.".".a:minor
-        endif
-        return ""
-    endfunction
+    if WINDOWS()
+        function! s:python_setup(major, minor)
+            if WINDOWS()
+                let l:candidates = [
+                            \ 'c:/python'.a:major.a:minor,
+                            \ 'c:/python/'.a:major.a:minor,
+                            \ 'c:/python/python'.a:major.a:minor,
+                            \ 'c:/python_'.a:major.a:minor,
+                            \ 'c:/python/python_'.a:major.a:minor,
+                            \]
+                for pydir in l:candidates
+                    if isdirectory(fnameescape(pydir))
+                        return pydir
+                    endif
+                endfor
+            elseif executable("python".a:major.".".a:minor)
+                return "python".a:major.".".a:minor
+            endif
+            return ""
+        endfunction
 
-    if s:python_setup("2", "7") != ""
-        if exists("g:loaded_python_provider")
-            unlet g:loaded_python_provider
+        if s:python_setup("2", "7") != ""
+            if exists("g:loaded_python_provider")
+                unlet g:loaded_python_provider
+            endif
+            let g:python_host_prog = s:python_setup("2", "7")
+            if WINDOWS()
+                let g:python_host_prog .=  '/python'
+            endif
         endif
-        let g:python_host_prog = s:python_setup("2", "7")
-        if WINDOWS()
-            let g:python_host_prog .=  '/python'
+
+        if s:python_setup("3", "6") != ""
+            if exists("g:loaded_python3_provider")
+                unlet g:loaded_python3_provider
+            endif
+            let g:python3_host_prog = s:python_setup("3", "6")
+            if WINDOWS()
+                let g:python3_host_prog .=  '/python'
+            endif
+        endif
+    else
+        if executable("python2")
+            if exists("g:loaded_python_provider")
+                unlet g:loaded_python_provider
+            endif
+            let g:python_host_prog =  'python2'
+        endif
+
+        if executable("python3")
+            if exists("g:loaded_python3_provider")
+                unlet g:loaded_python3_provider
+            endif
+            let g:python3_host_prog =  'python3'
         endif
     endif
 
-    if s:python_setup("3", "6") != ""
-        if exists("g:loaded_python3_provider")
-            unlet g:loaded_python3_provider
-        endif
-        let g:python3_host_prog = s:python_setup("3", "6")
-        if WINDOWS()
-            let g:python3_host_prog .=  '/python'
-        endif
-    endif
 endif
 
 " Initialize plugins {{{
