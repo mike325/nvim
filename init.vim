@@ -505,10 +505,6 @@ if !exists('g:minimal')
     let b:deoplete_installed = 0
     let b:completor = 0
 
-    function! YCMCommon()
-        return (executable("cmake") && executable("7z"))
-    endfunction
-
     " This env var allow us to know if the python version has the dev libs
     if empty($NO_PYTHON_DEV)
         if PYTHON("any") " Python base completions {{{
@@ -589,8 +585,8 @@ if !exists('g:minimal')
 
                 let b:deoplete_installed = 1
 
-            elseif ASYNC() && YCMCommon() && (( has("unix") && ( executable("gcc")  || executable("clang") )) ||
-                        \ (WINDOWS() && executable("msbuild")))
+            elseif ASYNC() && executable("cmake") && (( has("unix") && ( executable("gcc")  || executable("clang") )) ||
+                        \ (WINDOWS() && executable("msbuild") && executable("7z")))
 
                 function! BuildYCM(info)
                     if a:info.status == 'installed' || a:info.force

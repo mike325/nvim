@@ -27,6 +27,7 @@
 try
     Abolish avalib{ility,le} availab{ility, le}
     Abolish seting{s}        setting{s}
+    Abolish settign{s}       setting{s}
     Abolish gti              git
     Abolish subtitution{s}   substitution{s}
     Abolish flase            false
@@ -66,6 +67,8 @@ catch E492
     iabbrev avalibility   availability
     iabbrev seting        setting
     iabbrev setings       settings
+    iabbrev settign       setting
+    iabbrev settigns      settings
     iabbrev gti           git
     iabbrev subtitution   substitution
     iabbrev subtitution   substitutions
@@ -93,6 +96,8 @@ catch E492
     iabbrev Abbrevations  Abbreviations
     iabbrev Seting        Setting
     iabbrev Setings       Settings
+    iabbrev Settign       Setting
+    iabbrev Settigns      Settings
     iabbrev Gti           Git
     iabbrev Subtitution   Substitution
     iabbrev Subtitution   Substitutions
@@ -120,6 +125,8 @@ catch E492
     iabbrev AVALIBILITY   AVAILABILITY
     iabbrev SETING        SETTING
     iabbrev SETINGS       SETTINGS
+    iabbrev SETTIGN       SETTING
+    iabbrev SETTIGNS      SETTINGS
     iabbrev GTI           GIT
     iabbrev SUBTITUTION   SUBSTITUTION
     iabbrev SUBTITUTION   SUBSTITUTIONS

@@ -27,10 +27,3 @@
 if !exists('g:plugs["tcomment_vim"]')
     finish
 endif
-
-if !exists('g:plugs["NAME"]')
-    finish
-endif
-
-
-

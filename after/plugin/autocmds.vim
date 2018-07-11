@@ -269,7 +269,6 @@ endfunction
 augroup Skeletons
     autocmd!
     autocmd BufNewFile .projections.json  silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/projections.json')
-    " autocmd BufNewFile .ycm_extra_conf.py silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/ycm_extra_conf.py')
     autocmd BufNewFile *.css              silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.css')
     autocmd BufNewFile *.html             silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.html')
     autocmd BufNewFile *.md               silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.md')

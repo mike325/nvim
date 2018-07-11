@@ -24,10 +24,12 @@
 "
 " ############################################################################
 
-
 if !exists('g:plugs["vim-windowswap"]')
     finish
 endif
+
+let g:windowswap_map_keys = 0
+nnoremap <silent> <leader><leader>w :call WindowSwap#EasyWindowSwap()<CR>
 
 " This is an old deprecated mapping anyway
 silent! unmap <leader>pw

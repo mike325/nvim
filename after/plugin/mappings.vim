@@ -100,8 +100,11 @@ endif
 
 " Fucking Spanish keyboard
 nnoremap ¿ `
+xnoremap ¿ `
 nnoremap ¿¿ ``
+xnoremap ¿¿ ``
 nnoremap ¡ ^
+xnoremap ¡ ^
 
 " Move to previous file
 nnoremap <leader>p <C-^>
@@ -157,13 +160,21 @@ xnoremap <leader>0 <ESC>:tablast<CR>
 
 " }}} EndTabBufferManagement
 
-if has("nvim")
-    " Better splits
-    nnoremap <A-s> <C-w>s
-    nnoremap <A-v> <C-w>v
+if has("nvim") || has("terminal")
+    tnoremap <esc> <C-\><C-n>
 
-    " Better terminal access
-    nnoremap <A-t> :terminal<CR>
+    if has("nvim")
+        " Better splits
+        nnoremap <A-s> <C-w>s
+        nnoremap <A-v> <C-w>v
+
+        " Better terminal access
+        nnoremap <A-t> :terminal<CR>
+
+        " Use ESC to exit terminal mode
+        " tnoremap jj <C-\><C-n>
+    endif
+
     if WINDOWS()
         " NOTE: clear (and cmd cls) doesn't work in the latest Neovim's terminal
         " Spawns a bash session inside cmd
@@ -173,10 +184,6 @@ if has("nvim")
             command! Terminal terminal "c:/Program Files (x86)/Git/bin/bash.exe"
         endif
     endif
-
-    " Use ESC to exit terminal mode
-    " tnoremap <esc> <C-\><C-n>
-    tnoremap jj <C-\><C-n>
 endif
 
 if exists("+relativenumber")
