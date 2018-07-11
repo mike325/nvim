@@ -248,23 +248,26 @@ command! SpellToggle      setlocal spell! spell?
 command! WrapToggle       setlocal wrap! wrap?
 command! VerboseToggle    let &verbose=!&verbose | echo "Verbose " . &verbose
 
-function! s:SetFileData(action, type, default)
-    let l:param = (a:type == "") ? a:default : a:type
-    execute "setlocal " . a:action . "=" . l:param
-endfunction
 
-function! s:Filter(list, arg)
-    let l:filter = filter(a:list, 'v:val =~ a:arg')
-    return map(l:filter, 'fnameescape(v:val)')
-endfunction
+if has("nvim") || v:version >= 704
+    function! s:SetFileData(action, type, default)
+        let l:param = (a:type == "") ? a:default : a:type
+        execute "setlocal " . a:action . "=" . l:param
+    endfunction
 
-function! s:Formats(ArgLead, CmdLine, CursorPos)
-    return s:Filter(["unix", "dos", "mac"], a:ArgLead)
-endfunction
+    function! s:Filter(list, arg)
+        let l:filter = filter(a:list, 'v:val =~ a:arg')
+        return map(l:filter, 'fnameescape(v:val)')
+    endfunction
 
-" Yes I'm quite lazy to type the cmds
-command! -nargs=? -complete=filetype FileType call s:SetFileData("filetype", <q-args>, "text")
-command! -nargs=? -complete=customlist,s:Formats FileFormat call s:SetFileData("fileformat", <q-args>, "unix")
+    function! s:Formats(ArgLead, CmdLine, CursorPos)
+        return s:Filter(["unix", "dos", "mac"], a:ArgLead)
+    endfunction
+
+    " Yes I'm quite lazy to type the cmds
+    command! -nargs=? -complete=filetype FileType call s:SetFileData("filetype", <q-args>, "text")
+    command! -nargs=? -complete=customlist,s:Formats FileFormat call s:SetFileData("fileformat", <q-args>, "unix")
+endif
 
 function! s:Trim()
     " Since default is to trim, the first call is to deactivate trim

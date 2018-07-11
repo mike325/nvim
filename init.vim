@@ -338,7 +338,7 @@ if !exists('g:minimal')
 
     try
         call plug#begin(g:base_path.'plugged')
-    catch E117
+    catch
         " Fallback if we fail to init Plug
         if !has("nvim") && v:version >= 800
             packadd! matchit

@@ -158,11 +158,12 @@ augroup end
 
 augroup FileTypeDetect
     autocmd!
-    autocmd FileType diff autocmd BufReadPost <buffer> setlocal filetype=git
-    autocmd BufRead,BufNewFile gitconfig,*.git/config  setlocal filetype=gitconfig
-    autocmd BufRead,BufNewFile *.bash*                 setlocal filetype=sh
-    autocmd BufRead,BufNewFile *.in,*.si,*.sle         setlocal filetype=conf
-    autocmd BufNewFile,BufReadPre /*/nginx/*.conf      setlocal filetype=nginx
+    autocmd FileType man                              setlocal bufhidden=delete readonly nomodifiable
+    autocmd FileType git                              setlocal bufhidden=delete
+    autocmd BufRead,BufNewFile gitconfig,*.git/config setlocal filetype=gitconfig
+    autocmd BufRead,BufNewFile *.bash*                setlocal filetype=sh
+    autocmd BufRead,BufNewFile *.in,*.si,*.sle        setlocal filetype=conf
+    autocmd BufNewFile,BufReadPre /*/nginx/*.conf     setlocal filetype=nginx
 augroup end
 
 " if exists("g:minimal")
@@ -191,6 +192,7 @@ augroup end
 augroup FoldSettings
     autocmd!
     autocmd FileType javascript setlocal foldmethod=syntax
+    autocmd FileType git        setlocal foldmethod=syntax
     autocmd FileType go         setlocal foldmethod=syntax
     autocmd FileType python     setlocal foldmethod=indent
     autocmd FileType vim        setlocal foldmethod=indent " May change this for foldmarker
