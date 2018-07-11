@@ -377,7 +377,7 @@ if !exists('g:minimal')
 
 
     " Project standardize file settings
-    Plug 'editorconfig/editorconfig-vim'
+    " Plug 'editorconfig/editorconfig-vim'
 
     " Easy alignment
     " Plug 'godlygeek/tabular'
@@ -399,10 +399,10 @@ if !exists('g:minimal')
     "     " Plug 'Xuyuanp/nerdtree-git-plugin', { 'on': [ 'NERDTreeToggle' ] }
     endif
 
-    if executable("ctags")
-        " Simple view of Tags using ctags
-        Plug 'majutsushi/tagbar', {'on': ['Tagbar', 'TagbarToggle', 'TagbarOpen']}
-    endif
+    " if executable("ctags")
+    "     " Simple view of Tags using ctags
+    "     Plug 'majutsushi/tagbar', {'on': ['Tagbar', 'TagbarToggle', 'TagbarOpen']}
+    " endif
 
     " if executable("gtags") && has("cscope")
     "     " Great tag management
@@ -469,8 +469,8 @@ if !exists('g:minimal')
 
     if executable("git")
         Plug 'tpope/vim-fugitive'
-        Plug 'gregsexton/gitv', {'on': ['Gitv']}
         Plug 'rhysd/committia.vim'
+        Plug 'gregsexton/gitv', {'on': ['Gitv']}
     endif
     " }}} END Git integration
 
@@ -509,15 +509,15 @@ if !exists('g:minimal')
     if empty($NO_PYTHON_DEV)
         if PYTHON("any") " Python base completions {{{
 
-            function! BuildOmniSharp(info)
-                if a:info.status == 'installed' || a:info.force
-                    if WINDOWS()
-                        !cd server && msbuild
-                    else
-                        !cd server && xbuild
-                    endif
-                endif
-            endfunction
+            " function! BuildOmniSharp(info)
+            "     if a:info.status == 'installed' || a:info.force
+            "         if WINDOWS()
+            "             !cd server && msbuild
+            "         else
+            "             !cd server && xbuild
+            "         endif
+            "     endif
+            " endfunction
 
             " Plug 'OmniSharp/omnisharp-vim', { 'do': function('BuildOmniSharp') }
 
@@ -699,7 +699,7 @@ if !exists('g:minimal')
     " ####### Languages {{{
 
     Plug 'tpope/vim-endwise'
-    Plug 'fidian/hexmode'
+    " Plug 'fidian/hexmode'
 
     if executable("go") && ASYNC()
         Plug 'fatih/vim-go'
@@ -773,7 +773,7 @@ if !exists('g:minimal')
     " Plug 'AndrewRadev/switch.vim'
 
     " Simple Join/Split operators
-    Plug 'AndrewRadev/splitjoin.vim'
+    " Plug 'AndrewRadev/splitjoin.vim'
 
     " Expand visual regions
     " Plug 'terryma/vim-expand-region'
@@ -809,14 +809,14 @@ if !exists('g:minimal')
     Plug 'tpope/vim-dadbod'
 
     " Useful to get the console output in Vim (since :terminal is not enable yet)
-    if !has("nvim") && !exists("+term") && !exists("+terminal")
+    if !ASYNC() && !exists("+terminal")
         Plug 'tpope/vim-dispatch'
     endif
 
-    " Visualize undo tree
-    if PYTHON("any")
-        Plug 'sjl/gundo.vim', {'on': ['GundoShow', 'GundoToggle']}
-    endif
+    " " Visualize undo tree
+    " if PYTHON("any")
+    "     Plug 'sjl/gundo.vim', {'on': ['GundoShow', 'GundoToggle']}
+    " endif
 
     " Unix commands
     if has("unix")
