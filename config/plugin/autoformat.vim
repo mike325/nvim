@@ -24,7 +24,7 @@
 "
 " ############################################################################
 
-if !exists('g:plugs["vim-autoformat"]')
+if !exists('g:plugs["vim-autoformat"]') || !has("autocmd")
     finish
 endif
 
@@ -46,10 +46,6 @@ let g:autoformat_remove_trailing_spaces = 0
 
 " let g:formatters_go   = ['gofmt']
 " let g:formatdef_gofmt = ''
-
-if !has("autocmd")
-    finish
-endif
 
 function! AutoFormatFile()
     let b:auto_format = get(b:,'auto_format',0)

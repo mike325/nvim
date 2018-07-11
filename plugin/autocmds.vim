@@ -41,21 +41,25 @@ if has("nvim") || v:version > 702
     " TODO make a function to save the state of the toggles
     augroup Numbers
         autocmd!
-        autocmd FileType help  setlocal relativenumber number
-        autocmd WinEnter *     setlocal relativenumber number
-        autocmd WinLeave *     setlocal norelativenumber number
-        autocmd InsertLeave *  setlocal relativenumber number
-        autocmd InsertEnter *  setlocal norelativenumber number
+        autocmd FileType    help setlocal relativenumber number
+        autocmd FileType    man  setlocal relativenumber number
+        autocmd WinEnter    *    setlocal relativenumber number
+        autocmd WinLeave    *    setlocal norelativenumber number
+        autocmd InsertLeave *    setlocal relativenumber number
+        autocmd InsertEnter *    setlocal norelativenumber number
     augroup end
 endif
 
 " We don't need Vim's temp files here
 augroup DisableTemps
     autocmd!
-    autocmd BufNewFile,BufRead,BufEnter __committia_diff__ setlocal noswapfile nobackup
-    autocmd BufNewFile,BufRead,BufEnter gitcommit          setlocal noswapfile nobackup
-    autocmd BufNewFile,BufRead,BufEnter *.txt              setlocal noswapfile nobackup
-    autocmd BufNewFile,BufRead,BufEnter /tmp/*             setlocal noswapfile nobackup noundofile
+    autocmd FileType                       git                setlocal noswapfile nobackup noundofile
+    autocmd BufNewFile,BufReadPre,BufEnter __committia_diff__ setlocal noswapfile nobackup
+    autocmd BufNewFile,BufReadPre,BufEnter man://*            setlocal noswapfile nobackup noundofile
+    autocmd BufNewFile,BufReadPre,BufEnter term://*           setlocal noswapfile nobackup noundofile
+    autocmd BufNewFile,BufReadPre,BufEnter /tmp/*             setlocal noswapfile nobackup noundofile
+    autocmd BufNewFile,BufReadPre,BufEnter gitcommit          setlocal noswapfile nobackup
+    autocmd BufNewFile,BufReadPre,BufEnter *.txt              setlocal noswapfile nobackup
 augroup end
 
 
@@ -96,7 +100,7 @@ augroup end
 function! s:CleanFile()
     " Sometimes we don't want to remove spaces
     let l:buftypes = 'nofile\|help\|quickfix\|terminal'
-    let l:filetypes = 'bin\|hex\|log'
+    let l:filetypes = 'bin\|hex\|log\|git\|man\|terminal'
 
     if b:trim != 1 || &buftype =~? l:buftypes || &filetype ==? l:filetypes || &filetype ==? ''
         return
@@ -146,8 +150,11 @@ augroup end
 
 augroup QuickQuit
     autocmd!
-    autocmd BufReadPost quickfix  nnoremap <silent> <buffer> q :q!<CR>
-    autocmd FileType    help      nnoremap <silent> <buffer> q :q!<CR>
+    autocmd BufReadPost                    quickfix nnoremap <silent> <buffer> q :q!<CR>
+    autocmd FileType                       help     nnoremap <silent> <buffer> q :q!<CR>
+    autocmd FileType                       git      nnoremap <silent> <buffer> q :q!<CR>
+    autocmd FileType                       man      nnoremap <silent> <buffer> q :q!<CR>
+    autocmd BufNewFile,BufReadPre,BufEnter term://* nnoremap <silent> <buffer> q :q!<CR>
 augroup end
 
 augroup LocalCR
@@ -159,7 +166,7 @@ augroup end
 augroup FileTypeDetect
     autocmd!
     autocmd FileType man                              setlocal bufhidden=delete readonly nomodifiable
-    autocmd FileType git                              setlocal bufhidden=delete
+    autocmd FileType git,gitcommit                    setlocal bufhidden=delete
     autocmd BufRead,BufNewFile gitconfig,*.git/config setlocal filetype=gitconfig
     autocmd BufRead,BufNewFile *.bash*                setlocal filetype=sh
     autocmd BufRead,BufNewFile *.in,*.si,*.sle        setlocal filetype=conf

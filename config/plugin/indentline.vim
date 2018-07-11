@@ -55,13 +55,17 @@ let g:indentLine_fileTypeExclude = [
     \   'conf',
     \   'markdown',
     \   'help',
+    \   'man',
+    \   'git',
     \   '',
     \ ]
 
 let g:indentLine_bufNameExclude = [
+    \   '',
     \   '*.org',
     \   '*.log',
     \   'COMMIT_EDITMSG',
     \   'NERD_tree.*',
     \   'term://*',
+    \   'man://*',
     \ ]

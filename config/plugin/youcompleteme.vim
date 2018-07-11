@@ -82,7 +82,9 @@ let g:ycm_filetype_blacklist    = {
         \ 'pandoc' : 1,
         \ 'infolog' : 1,
         \ 'objc' : 1,
-        \ 'mail' : 1
+        \ 'mail' : 1,
+        \ 'git' : 1,
+        \ 'man' : 1,
 \}
 
 if executable("python3")
