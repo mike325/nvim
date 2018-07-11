@@ -52,10 +52,12 @@ endif
 " We don't need Vim's temp files here
 augroup DisableTemps
     autocmd!
-    autocmd BufNewFile,BufRead,BufEnter gitcommit setlocal noswapfile nobackup
-    autocmd BufNewFile,BufRead,BufEnter *.txt     setlocal noswapfile nobackup
-    autocmd BufNewFile,BufRead,BufEnter /tmp/*    setlocal noswapfile nobackup noundofile
+    autocmd BufNewFile,BufRead,BufEnter __committia_diff__ setlocal noswapfile nobackup
+    autocmd BufNewFile,BufRead,BufEnter gitcommit          setlocal noswapfile nobackup
+    autocmd BufNewFile,BufRead,BufEnter *.txt              setlocal noswapfile nobackup
+    autocmd BufNewFile,BufRead,BufEnter /tmp/*             setlocal noswapfile nobackup noundofile
 augroup end
+
 
 if has("nvim")
     " Set modifiable to use easymotions
@@ -156,10 +158,11 @@ augroup end
 
 augroup FileTypeDetect
     autocmd!
-    autocmd BufRead,BufNewFile gitconfig,*.git/config setlocal filetype=gitconfig
-    autocmd BufRead,BufNewFile *.bash*                setlocal filetype=sh
-    autocmd BufRead,BufNewFile *.in,*.si,*.sle        setlocal filetype=conf
-    autocmd BufNewFile,BufReadPre /*/nginx/*.conf     setlocal filetype=nginx
+    autocmd FileType diff autocmd BufReadPost <buffer> setlocal filetype=git
+    autocmd BufRead,BufNewFile gitconfig,*.git/config  setlocal filetype=gitconfig
+    autocmd BufRead,BufNewFile *.bash*                 setlocal filetype=sh
+    autocmd BufRead,BufNewFile *.in,*.si,*.sle         setlocal filetype=conf
+    autocmd BufNewFile,BufReadPre /*/nginx/*.conf      setlocal filetype=nginx
 augroup end
 
 " if exists("g:minimal")
@@ -198,12 +201,12 @@ augroup end
 augroup Spells
     autocmd!
     autocmd FileType help                     setlocal nospell
-    autocmd FileType gitcommit                setlocal spell complete+=kspell
-    autocmd FileType markdown                 setlocal spell complete+=kspell
-    autocmd FileType tex                      setlocal spell complete+=kspell
-    autocmd FileType plaintex                 setlocal spell complete+=kspell
-    autocmd FileType text                     setlocal spell complete+=kspell
-    autocmd BufNewFile,BufRead,BufEnter *.org setlocal spell complete+=kspell
+    autocmd FileType gitcommit                setlocal spell complete+=k,kspell " Add spell completion
+    autocmd FileType markdown                 setlocal spell complete+=k,kspell " Add spell completion
+    autocmd FileType tex                      setlocal spell complete+=k,kspell " Add spell completion
+    autocmd FileType plaintex                 setlocal spell complete+=k,kspell " Add spell completion
+    autocmd FileType text                     setlocal spell complete+=k,kspell " Add spell completion
+    autocmd BufNewFile,BufRead,BufEnter *.org setlocal spell complete+=k,kspell " Add spell completion
 augroup end
 " }}} EndSpell
 

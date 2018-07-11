@@ -243,6 +243,15 @@ set fileformats=unix,dos " File mode unix by default
 " Default omnicomplete func
 set omnifunc=syntaxcomplete#Complete
 
+" Provide completion from
+"   - The curretn buffer
+"   - Buffers in other windows
+"   - Buffers in the buffer list
+"   - Current and include files
+"   - Current and include files for defined name or macros
+"   - Tag files
+set complete=.,w,b,u,t,d,i
+
 " Folding settings
 set nofoldenable      " don't fold by default
 set foldmethod=syntax " fold based on syntax
