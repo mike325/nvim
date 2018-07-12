@@ -56,7 +56,6 @@ augroup DisableTemps
     autocmd FileType                       git                setlocal noswapfile nobackup noundofile
     autocmd BufNewFile,BufReadPre,BufEnter __committia_diff__ setlocal noswapfile nobackup
     autocmd BufNewFile,BufReadPre,BufEnter man://*            setlocal noswapfile nobackup noundofile
-    autocmd BufNewFile,BufReadPre,BufEnter term://*           setlocal noswapfile nobackup noundofile
     autocmd BufNewFile,BufReadPre,BufEnter /tmp/*             setlocal noswapfile nobackup noundofile
     autocmd BufNewFile,BufReadPre,BufEnter gitcommit          setlocal noswapfile nobackup
     autocmd BufNewFile,BufReadPre,BufEnter *.txt              setlocal noswapfile nobackup
@@ -71,7 +70,7 @@ if has("nvim")
     augroup TerminalAutocmds
         autocmd!
         autocmd TermOpen * setlocal relativenumber number nocursorline
-        " autocmd TermOpen * startinsert
+        autocmd TermOpen * setlocal noswapfile nobackup noundofile
     augroup end
 endif
 
@@ -150,11 +149,13 @@ augroup end
 
 augroup QuickQuit
     autocmd!
-    autocmd BufReadPost                    quickfix nnoremap <silent> <buffer> q :q!<CR>
-    autocmd FileType                       help     nnoremap <silent> <buffer> q :q!<CR>
-    autocmd FileType                       git      nnoremap <silent> <buffer> q :q!<CR>
-    autocmd FileType                       man      nnoremap <silent> <buffer> q :q!<CR>
-    autocmd BufNewFile,BufReadPre,BufEnter term://* nnoremap <silent> <buffer> q :q!<CR>
+    autocmd BufReadPost quickfix nnoremap <silent> <buffer> q :q!<CR>
+    autocmd FileType    help     nnoremap <silent> <buffer> q :q!<CR>
+    autocmd FileType    git      nnoremap <silent> <buffer> q :q!<CR>
+    autocmd FileType    man      nnoremap <silent> <buffer> q :q!<CR>
+    if has("nvim")
+        autocmd TermOpen    *        nnoremap <silent> <buffer> q :q!<CR>
+    endif
 augroup end
 
 augroup LocalCR
