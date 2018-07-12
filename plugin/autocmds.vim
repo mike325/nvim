@@ -165,13 +165,20 @@ augroup end
 
 augroup FileTypeDetect
     autocmd!
-    autocmd FileType man                              setlocal bufhidden=delete readonly nomodifiable
-    autocmd FileType git,gitcommit                    setlocal bufhidden=delete
-    autocmd BufRead,BufNewFile gitconfig,*.git/config setlocal filetype=gitconfig
-    autocmd BufRead,BufNewFile *.bash*                setlocal filetype=sh
-    autocmd BufRead,BufNewFile *.in,*.si,*.sle        setlocal filetype=conf
-    autocmd BufNewFile,BufReadPre /*/nginx/*.conf     setlocal filetype=nginx
+    autocmd BufRead,BufNewFile    gitconfig,*.git/config setlocal filetype=gitconfig
+    autocmd BufRead,BufNewFile    *.bash*                setlocal filetype=sh
+    autocmd BufRead,BufNewFile    *.in,*.si,*.sle        setlocal filetype=conf
+    autocmd BufNewFile,BufReadPre /*/nginx/*.conf        setlocal filetype=nginx
 augroup end
+
+augroup HideSettigns
+    autocmd!
+    autocmd FileType man       setlocal bufhidden=delete readonly nomodifiable
+    autocmd FileType git       setlocal bufhidden=hide nomodifiable
+    " autocmd FileType git       autocmd BufLeave <buffer> call execute("bdelete!", "silent!")
+    autocmd FileType gitcommit setlocal bufhidden=delete
+augroup end
+
 
 " if exists("g:minimal")
 "     " *currently no all functions work

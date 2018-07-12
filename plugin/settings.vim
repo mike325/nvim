@@ -200,10 +200,8 @@ set smarttab       " Insert tabs on the start of a line according to
 set shiftround     " Use multiple of shiftwidth when indenting with '<' and '>'
 set cursorline     " Turn on cursor line by default
 
-" Allow backgrounding buffers without writing them, and remember marks/undo
-" for backgrounded buffers, Normally I like to keep unsave just the files that
-" I'm currently using, this allow me to quit(q!) without worries
-" set hidden
+" Allow to send unsaved buffers to the backgroud
+set hidden
 
 set autoread     " Auto-reload buffers when file changed on disk
 set autowrite    " Write files when navigating with :next/:previous
