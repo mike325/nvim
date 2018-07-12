@@ -174,10 +174,10 @@ augroup end
 
 augroup HideSettigns
     autocmd!
-    autocmd FileType man       setlocal bufhidden=delete readonly nomodifiable
+    autocmd FileType man       setlocal bufhidden=delete nomodifiable
     autocmd FileType git       setlocal bufhidden=hide nomodifiable
     " autocmd FileType git       autocmd BufLeave <buffer> call execute("bdelete!", "silent!")
-    autocmd FileType gitcommit setlocal bufhidden=delete
+    autocmd FileType gitcommit setlocal bufhidden=delete noreadonly modifiable
 augroup end
 
 
