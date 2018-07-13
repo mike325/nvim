@@ -1,3 +1,5 @@
+" set encoding=utf-8     " The encoding displayed.
+scriptencoding "utf-8"
 " HEADER {{{
 "
 "                           Config default settings
@@ -28,14 +30,14 @@
 " current Vim instance
 
 " We just want to source this file once
-if exists("g:settings_loaded") && g:settings_loaded
+if exists('g:settings_loaded') && g:settings_loaded
     finish
 endif
 
 let g:settings_loaded = 1
 
 " Disable some vi compatibility
-if has("nvim")
+if has('nvim')
     " Live substitute preview
     set inccommand=split
     " Actually I'm not sure if this exists in Vim7/8
@@ -45,7 +47,7 @@ else
     set t_vb= " ...disable the visual effect
 endif
 
-if has("nvim") || (v:version >= 704)
+if has('nvim') || (v:version >= 704)
     set formatoptions+=r " Auto insert comment with <Enter>...
     set formatoptions+=o " ...or o/O
     set formatoptions+=c " Autowrap comments using textwidth
@@ -57,11 +59,11 @@ if has("nvim") || (v:version >= 704)
 endi
 
 " Vim terminal settins
-if !has("nvim")
+if !has('nvim')
     set t_Co=255
 endif
 
-if has("nvim") && executable("nvr")
+if has('nvim') && executable('nvr')
     " Add Neovim remote utility, this allow us to open buffers from the :terminal cmd
     let $nvr = 'nvr --remote-silent'
     let $tnvr = 'nvr --remote-tab-silent'
@@ -76,15 +78,15 @@ if exists('+breakindent')
 endif
 
 " TODO: create a simple operator in mapping.vim file to do quick searches
-if executable("ag")
+if executable('ag')
     let &grepprg='ag --nogroup --nocolor -U ' . g:ignore_patterns.ag . ' '
-elseif executable("grep")
+elseif executable('grep')
     let &grepprg='grep --with-filename -n -I ' . g:ignore_patterns.grep . ' '
-elseif executable("findstr")
+elseif executable('findstr')
     let &grepprg='findstr ' . g:ignore_patterns.findstr . ' '
 endif
 
-if has("termguicolors")
+if has('termguicolors')
     " set terminal colors
     set termguicolors
 endif
@@ -97,7 +99,7 @@ if exists('+colorcolumn')
     " let &colorcolumn="80,".join(range(120,999),",")
 
     " Visual ruler
-    let &colorcolumn="80"
+    let &colorcolumn='80'
 endif
 
 " Clipboard {{{
@@ -121,25 +123,25 @@ if empty($SSH_CONNECTION) && has('clipboard')
     if has('gui_running') || (WINDOWS() && has('nvim'))
         set clipboard=unnamedplus,unnamed
         if has('mouse')
-            set mouse=a    " We have mouse support, so we use it
-            set mousehide  " Hide mouse when typing text
+            set mouse=a    ' We have mouse support, so we use it
+            set mousehide  ' Hide mouse when typing text
         endif
     elseif has('nvim')
         " Neovim in unix require external programs to use system's clipboard
         " NOTE: we don't dare to run Neovim from window's cmd/powershell
-        if ( executable('pbcopy') || executable('xclip') || executable('xsel') || executable("lemonade") )
+        if ( executable('pbcopy') || executable('xclip') || executable('xsel') || executable('lemonade') )
             set clipboard+=unnamedplus,unnamed
             if has('mouse')
-                set mouse=a    " We have mouse support, so we use it
-                set mousehide  " Hide mouse when typing text
+                set mouse=a    ' We have mouse support, so we use it
+                set mousehide  ' Hide mouse when typing text
             endif
         endif
     else
         " We assume that Vim's magic clipboard will work (hopefully, not warranty)
         set clipboard+=unnamedplus,unnamed
         if has('mouse')
-            set mouse=a    " We have mouse support, so we use it
-            set mousehide  " Hide mouse when typing text
+            set mouse=a    ' We have mouse support, so we use it
+            set mousehide  ' Hide mouse when typing text
         endif
     endif
 endif
@@ -150,7 +152,6 @@ set background=dark
 
 set backspace=indent,eol,start " Use full backspace power
 
-set encoding=utf-8     " The encoding displayed.
 
 " This is set in every file in BufReadPre autocmd
 " set fileencoding=utf-8 " The encoding written to file.
@@ -163,12 +164,12 @@ set splitright     " Split on the right size
 set nowrap         " By default don't wrap the lines
 set showmatch      " Show matching parenthesis
 set number         " Show line numbers
-if exists("+relativenumber")
+if exists('+relativenumber')
     set relativenumber " Show line numbers in motions friendly way
 endif
 set ruler
 
-if exists("+syntax")
+if exists('+syntax')
     syntax enable      " Switch on syntax highlighting
 endif
 
@@ -181,7 +182,7 @@ set incsearch      " show search matches as you type
 set ignorecase     " ignore case
 " set gdefault     " Always do global substitutes
 
-if exists("+infercase")
+if exists('+infercase')
     set infercase      " Smart casing when completing
 endif
 
@@ -231,7 +232,7 @@ set path+=**
 " Set vertical diff
 set diffopt+=vertical
 
-if exists("+belloff")
+if exists('+belloff')
     set belloff=all " Bells are annoying
 endif
 set visualbell  " Visual bell instead of beeps, but...
@@ -265,10 +266,11 @@ if !exists('g:minimal') && exists('g:plugs["vim-airline"]')
     set noshowmode
 endif
 
-if exists("+virtualedit")
+if exists('+virtualedit')
     " Allow virtual editing in Visual block mode.
     set virtualedit=block
 endif
 
 " Allow lua omni completion
 let g:lua_complete_omni = 1
+" scriptencoding

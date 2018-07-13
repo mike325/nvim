@@ -1,3 +1,4 @@
+scriptencoding "uft-8"
 " HEADER {{{
 "
 "                            Autocmds settings
@@ -25,7 +26,7 @@
 " }}} END HEADER
 
 " We just want to source this file once and if we have autocmd available
-if !has("autocmd") || ( exists("g:autocmds_loaded") && g:autocmds_loaded )
+if !has('autocmd') || ( exists('g:autocmds_loaded') && g:autocmds_loaded )
     finish
 endif
 
@@ -37,7 +38,7 @@ augroup Modifiable
     autocmd BufReadPre * if &modifiable == 1 | setlocal fileencoding=utf-8 | endif
 augroup end
 
-if has("nvim") || v:version > 702
+if has('nvim') || v:version > 702
     " TODO make a function to save the state of the toggles
     augroup Numbers
         autocmd!
@@ -61,7 +62,7 @@ augroup DisableTemps
 augroup end
 
 
-if has("nvim")
+if has('nvim')
     " Set modifiable to use easymotions
     " autocmd TermOpen * setlocal modifiable
 
@@ -111,21 +112,21 @@ function! s:CleanFile()
 
     " Cleaning line endings
     execute '%s/\s\+$//e'
-    call histdel("search", -1)
+    call histdel('search', -1)
 
     " Yep I some times I copy this things form the terminal
     silent! execute '%s/\(\s\+\)┊/\1 /ge'
-    call histdel("search", -1)
+    call histdel('search', -1)
 
-    if &fileformat == 'unix'
+    if &fileformat ==# 'unix'
         silent! execute '%s/\r$//ge'
-        call histdel("search", -1)
+        call histdel('search', -1)
     endif
 
     " Config dosini files must trim leading spaces
-    if &filetype == 'dosini'
+    if &filetype ==# 'dosini'
         silent! execute '%s/^\s\+//e'
-        call histdel("search", -1)
+        call histdel('search', -1)
     endif
 
 
@@ -136,7 +137,7 @@ endfunction
 " Trim whitespace in selected files
 augroup CleanFile
     autocmd!
-    autocmd BufNewFile,BufRead,BufEnter * if !exists("b:trim") | let b:trim = 1 | endif
+    autocmd BufNewFile,BufRead,BufEnter * if !exists('b:trim') | let b:trim = 1 | endif
     autocmd FileType                    * autocmd BufWritePre <buffer> call s:CleanFile()
 augroup end
 
@@ -152,7 +153,7 @@ augroup QuickQuit
     autocmd FileType    help     nnoremap <silent> <buffer> q :q!<CR>
     autocmd FileType    git      nnoremap <silent> <buffer> q :q!<CR>
     autocmd FileType    man      nnoremap <silent> <buffer> q :q!<CR>
-    if has("nvim")
+    if has('nvim')
         autocmd TermOpen    *        nnoremap <silent> <buffer> q :q!<CR>
     endif
 augroup end
@@ -237,7 +238,7 @@ function! CHeader()
 
     let l:upper_name = toupper(l:file_name)
 
-    if l:extension =~# "^hpp$"
+    if l:extension =~# '^hpp$'
         execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.hpp')
         execute '%s/NAME_HPP/'.l:upper_name.'_HPP/g'
     else
@@ -252,20 +253,20 @@ function! CMainOrFunc()
     let l:file_name = expand('%:t:r')
     let l:extension = expand('%:e')
 
-    if l:extension =~# "^cpp$"
-        if l:file_name =~# "^main$"
+    if l:extension =~# '^cpp$'
+        if l:file_name =~# '^main$'
             let l:skeleton = fnameescape(g:parent_dir.'skeletons/main.cpp')
         else
             let l:skeleton = fnameescape(g:parent_dir.'skeletons/skeleton.cpp')
         endif
-    elseif l:extension =~# "^c"
-        if l:file_name =~# "^main$"
+    elseif l:extension =~# '^c'
+        if l:file_name =~# '^main$'
             let l:skeleton = fnameescape(g:parent_dir.'skeletons/main.c')
         else
             let l:skeleton = fnameescape(g:parent_dir.'skeletons/skeleton.c')
         endif
-    elseif l:extension =~# "^go"
-        if l:file_name =~# "^main$"
+    elseif l:extension =~# '^go'
+        if l:file_name =~# '^main$'
             let l:skeleton = fnameescape(g:parent_dir.'skeletons/main.go')
         else
             let l:skeleton = fnameescape(g:parent_dir.'skeletons/skeleton.go')

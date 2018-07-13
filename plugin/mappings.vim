@@ -1,3 +1,4 @@
+scriptencoding "uft-8"
 " HEADER {{{
 "
 "                               Mapping settings
@@ -25,7 +26,7 @@
 " }}} END HEADER
 
 " We just want to source this file once
-if exists("g:mappings_loaded") && g:mappings_loaded
+if exists('g:mappings_loaded') && g:mappings_loaded
     finish
 endif
 
@@ -81,15 +82,15 @@ nnoremap g/ /\v
 " Smart indent when entering insert mode with i on empty lines
 function! IndentWithI()
     if len(getline('.')) == 0 && line('.') != line('$') && &buftype !~? 'terminal'
-        return "\"_ddO"
+        return '"_ddO'
     else
-        return "i"
+        return 'i'
     endif
 endfunction
 
 nnoremap <expr> i IndentWithI()
 
-if has("nvim") || v:version >= 704
+if has('nvim') || v:version >= 704
     " Change word under cursor and dot repeat
     nnoremap c* *Ncgn
     nnoremap c# #NcgN
@@ -170,10 +171,10 @@ cnoremap <c-p> <up>
 
 " }}} EndTabBufferManagement
 
-if has("nvim") || has("terminal")
+if has('nvim") || has("terminal')
     tnoremap <esc> <C-\><C-n>
 
-    if has("nvim")
+    if has('nvim')
         " Better splits
         nnoremap <A-s> <C-w>s
         nnoremap <A-v> <C-w>v
@@ -188,26 +189,26 @@ if has("nvim") || has("terminal")
     if WINDOWS()
         " NOTE: clear (and cmd cls) doesn't work in the latest Neovim's terminal
         " Spawns a bash session inside cmd
-        if filereadable("c:/Program\ Files/Git/bin/bash.exe")
-            command! Terminal terminal "c:/Program Files/Git/bin/bash.exe"
-        elseif filereadable("c:/Program Files (x86)/Git/bin/bash.exe")
-            command! Terminal terminal "c:/Program Files (x86)/Git/bin/bash.exe"
+        if filereadable('c:/Program Files/Git/bin/bash.exe')
+            command! Terminal terminal 'c:/Program Files/Git/bin/bash.exe'
+        elseif filereadable('c:/Program Files (x86)/Git/bin/bash.exe')
+            command! Terminal terminal 'c:/Program Files (x86)/Git/bin/bash.exe'
         endif
     endif
 endif
 
-if exists("+relativenumber")
+if exists('+relativenumber')
     command! RelativeNumbersToggle set relativenumber! relativenumber?
 endif
 
-if exists("+mouse")
+if exists('+mouse')
     function! s:ToggleMouse()
-        if &mouse == ''
+        if &mouse ==# ''
             execute 'set mouse=a'
-            echo "mouse"
+            echo 'mouse'
         else
             execute 'set mouse='
-            echo "nomouse"
+            echo 'nomouse'
         endif
     endfunction
     command! MouseToggle call s:ToggleMouse()
@@ -259,10 +260,10 @@ command! WrapToggle       setlocal wrap! wrap?
 command! VerboseToggle    let &verbose=!&verbose | echo "Verbose " . &verbose
 
 
-if has("nvim") || v:version >= 704
+if has('nvim') || v:version >= 704
     function! s:SetFileData(action, type, default)
-        let l:param = (a:type == "") ? a:default : a:type
-        execute "setlocal " . a:action . "=" . l:param
+        let l:param = (a:type ==# '') ? a:default : a:type
+        execute 'setlocal ' . a:action . '=' . l:param
     endfunction
 
     function! s:Filter(list, arg)
@@ -271,22 +272,22 @@ if has("nvim") || v:version >= 704
     endfunction
 
     function! s:Formats(ArgLead, CmdLine, CursorPos)
-        return s:Filter(["unix", "dos", "mac"], a:ArgLead)
+        return s:Filter(['unix', 'dos', 'mac'], a:ArgLead)
     endfunction
 
     " Yes I'm quite lazy to type the cmds
-    command! -nargs=? -complete=filetype FileType call s:SetFileData("filetype", <q-args>, "text")
-    command! -nargs=? -complete=customlist,s:Formats FileFormat call s:SetFileData("fileformat", <q-args>, "unix")
+    command! -nargs=? -complete=filetype FileType call s:SetFileData('filetype', <q-args>, 'text')
+    command! -nargs=? -complete=customlist,s:Formats FileFormat call s:SetFileData('fileformat', <q-args>, 'unix')
 endif
 
 function! s:Trim()
     " Since default is to trim, the first call is to deactivate trim
     if b:trim == 0
         let b:trim = 1
-        echomsg " Trim"
+        echomsg ' Trim'
     else
         let b:trim = 0
-        echomsg " NoTrim"
+        echomsg ' NoTrim'
     endif
 
     return 0
@@ -295,23 +296,23 @@ endfunction
 command! TrimToggle call s:Trim()
 
 function! s:Spells(ArgLead, CmdLine, CursorPos)
-    return ["en", "es"]
+    return ['en', 'es']
 endfunction
 
 command! -nargs=? -complete=customlist,s:Spells SpellLang
-            \ let s:spell = (empty(<q-args>)) ?  "en" : expand(<q-args>) |
-            \ execute "set spelllang=".s:spell |
-            \ execute "set spelllang?" |
+            \ let s:spell = (empty(<q-args>)) ?  'en' : expand(<q-args>) |
+            \ execute 'set spelllang='.s:spell |
+            \ execute 'set spelllang?' |
             \ unlet s:spell
 
 " Avoid dispatch command conflict
 " QuickfixOpen
 command! -nargs=? Qopen
-            \ execute "botright copen " . expand(<q-args>)
+            \ execute 'botright copen ' . expand(<q-args>)
 
 " function! s:Scratch(bang, args, range)
 "     let s:bang = a:bang
-"     if !exists("s:target") || a:bang
+"     if !exists('s:target') || a:bang
 "         if bufexists(s:target) || filereadable(s:target)
 "             Remove! expand( s:target )
 "         endif
@@ -346,14 +347,14 @@ if !exists('g:plugs["ultisnips"]') && !exists('g:plugs["vim-snipmate"]')
         if pumvisible()
             if exists('g:plugs["YouCompleteMe"]')
                 call feedkeys("\<C-y>")
-                return ""
+                return ''
             else
-                return "\<C-y>"
+                return '\<C-y>'
             endif
         elseif exists('g:plugs["delimitMate"]') && delimitMate#WithinEmptyPair()
             return delimitMate#ExpandReturn()
         endif
-        return "\<CR>"
+        return '\<CR>'
     endfunction
 
     inoremap <silent><CR>    <C-R>=NextSnippetOrReturn()<CR>
@@ -370,7 +371,7 @@ if !exists('g:plugs["vim-indexed-search"]')
     " CREDITS: https://amp.reddit.com/r/vim/comments/4jy1mh/slightly_more_subltle_n_and_n_behavior/
     function! s:NiceNext(cmd)
         let view = winsaveview()
-        execute "silent! normal! " . a:cmd
+        execute 'silent! normal! ' . a:cmd
         if view.topline != winsaveview().topline
             silent! normal! zz
         endif
@@ -418,7 +419,7 @@ if !exists('g:plugs["vim-eunuch"]')
     command! -bang -nargs=1 -complete=dir Mkdir
                 \ let s:bang = empty(<bang>0) ? 0 : 1 |
                 \ let s:dir = expand(<q-args>) |
-                \ if exists("*mkdir") |
+                \ if exists('*mkdir') |
                 \   call mkdir(fnameescape(s:dir), (s:bang) ? "p" : "") |
                 \ else |
                 \   echoerr "Failed to create dir '" . s:dir . "' mkdir is not available" |
