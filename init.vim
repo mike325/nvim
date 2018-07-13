@@ -840,6 +840,9 @@ if !exists('g:minimal')
         Plug 'tpope/vim-eunuch'
     endif
 
+    if has("nvim")
+        Plug 'vigemus/iron.nvim', { 'do': ':UpdateRemotePlugins' }
+    endif
 
     " }}} END Misc
 

@@ -1,3 +1,5 @@
+scriptencoding "utf-8"
+
 " ############################################################################
 "
 "                                YCM settings
@@ -51,11 +53,13 @@ endif
 " let g:ycm_extra_conf_globlist   = ['~/.vim/*']
 
 " Set fallback ycm config file
-if filereadable(fnameescape(g:base_path . "ycm_extra_conf.py"))
-    let g:ycm_global_ycm_extra_conf = fnameescape(g:base_path . "ycm_extra_conf.py")
+if filereadable(fnameescape(g:base_path.'host/ycm_extra_conf.py'))
+    let g:ycm_global_ycm_extra_conf = fnameescape(g:base_path.'host/ycm_extra_conf.py')
+elseif filereadable(fnameescape(g:base_path . 'ycm_extra_conf.py'))
+    let g:ycm_global_ycm_extra_conf = fnameescape(g:base_path . 'ycm_extra_conf.py')
 endif
 
-if executable("ctags")
+if executable('ctags')
     let g:ycm_collect_identifiers_from_tags_files = 1
 endif
 
@@ -87,10 +91,10 @@ let g:ycm_filetype_blacklist    = {
         \ 'man' : 1,
 \}
 
-if executable("python3")
-    let g:ycm_python_binary_path = "python3"
+if executable('python3')
+    let g:ycm_python_binary_path = 'python3'
 else
-    let g:ycm_python_binary_path = "python"
+    let g:ycm_python_binary_path = 'python'
 endif
 
 function! s:SplitYCM(split_type, ycm_cmd)
@@ -124,4 +128,3 @@ augroup YCMGoTo
     autocmd FileType javascript,python,typescript                   command! -buffer ReferencesSplit     :call s:SplitYCM("split", "YcmCompleter GoToReferences")
     autocmd FileType cs                                             command! -buffer ImplementationSplit :call s:SplitYCM("split", "YcmCompleter GoToImplementationElseDeclaration")
 augroup end
-

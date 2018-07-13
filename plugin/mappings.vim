@@ -171,7 +171,7 @@ cnoremap <c-p> <up>
 
 " }}} EndTabBufferManagement
 
-if has('nvim") || has("terminal')
+if has('nvim') || has('terminal')
     tnoremap <esc> <C-\><C-n>
 
     if has('nvim')
