@@ -123,8 +123,8 @@ if empty($SSH_CONNECTION) && has('clipboard')
     if has('gui_running') || (WINDOWS() && has('nvim'))
         set clipboard=unnamedplus,unnamed
         if has('mouse')
-            set mouse=a    ' We have mouse support, so we use it
-            set mousehide  ' Hide mouse when typing text
+            set mouse=a    " We have mouse support, so we use it
+            set mousehide  " Hide mouse when typing text
         endif
     elseif has('nvim')
         " Neovim in unix require external programs to use system's clipboard
@@ -132,16 +132,16 @@ if empty($SSH_CONNECTION) && has('clipboard')
         if ( executable('pbcopy') || executable('xclip') || executable('xsel') || executable('lemonade') )
             set clipboard+=unnamedplus,unnamed
             if has('mouse')
-                set mouse=a    ' We have mouse support, so we use it
-                set mousehide  ' Hide mouse when typing text
+                set mouse=a    " We have mouse support, so we use it
+                set mousehide  " Hide mouse when typing text
             endif
         endif
     else
         " We assume that Vim's magic clipboard will work (hopefully, not warranty)
         set clipboard+=unnamedplus,unnamed
         if has('mouse')
-            set mouse=a    ' We have mouse support, so we use it
-            set mousehide  ' Hide mouse when typing text
+            set mouse=a    " We have mouse support, so we use it
+            set mousehide  " Hide mouse when typing text
         endif
     endif
 endif
@@ -245,7 +245,7 @@ set omnifunc=syntaxcomplete#Complete
 " Provide completion from
 "   - The curretn buffer
 "   - Buffers in other windows
-"   - Buffers in the buffer list
+g   - Buffers in the buffer list
 "   - Current and include files
 "   - Current and include files for defined name or macros
 "   - Tag files
