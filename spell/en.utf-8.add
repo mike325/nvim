@@ -81,3 +81,5 @@ vim
 certbot
 plasmashell
 systemd
+filetype
+diff

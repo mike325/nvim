@@ -264,3 +264,11 @@ if !exists('g:minimal') && exists('g:plugs["vim-airline"]')
     " We already have the statusline, we don't need this
     set noshowmode
 endif
+
+if exists("+virtualedit")
+    " Allow virtual editing in Visual block mode.
+    set virtualedit=block
+endif
+
+" Allow lua omni completion
+let g:lua_complete_omni = 1
