@@ -245,7 +245,7 @@ set omnifunc=syntaxcomplete#Complete
 " Provide completion from
 "   - The curretn buffer
 "   - Buffers in other windows
-g   - Buffers in the buffer list
+"   - Buffers in the buffer list
 "   - Current and include files
 "   - Current and include files for defined name or macros
 "   - Tag files
