@@ -78,3 +78,10 @@ setlocal foldexpr=GetBashFold()
 " Since '$' is part of the variables, lets treat it as part of the word
 setlocal iskeyword+=$
 let g:is_bash = 1
+
+
+if executable("shellcheck")
+    setlocal makeprg=shellcheck\ -f\ gcc\ -e\ 1117\ -x\ -a\ %
+    let &efm='%f:%l:%c: %trror: %m [SC%n],' . '%f:%l:%c: %tarning: %m [SC%n],' . '%f:%l:%c: %tote: %m [SC%n]'
+endif
+

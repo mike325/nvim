@@ -78,6 +78,5 @@ setlocal foldexpr=GetCshFold()
 
 " }}}
 
-
 " Since '$' is part of the variables, lets treat it as part of the word
 setlocal iskeyword+=$

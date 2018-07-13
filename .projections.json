@@ -38,7 +38,7 @@
         "type": "Plugin"
     },
     "ftplugin/*.vim": {
-        "type": "Ftplugin"
+        "type": "FtPlugin"
     },
     "ftdetect/*.vim": {
         "type": "FtDetect"
