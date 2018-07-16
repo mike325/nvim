@@ -22,3 +22,6 @@ plugged/
 .resources/swap/*
 .resources/undo/*
 .resources/backup/*
+
+tags
+TAGS

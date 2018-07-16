@@ -76,7 +76,7 @@ endif
 
 let g:ctrlp_user_command = {
     \   'types': {
-    \       1: ['.git', 'cd %s && git ls-files -co --exclude-standard' . g:ignore_patterns.git ]
+    \       1: ['.git', 'cd %s && git ls-files -co --exclude-standard' ]
     \   },
     \   'fallback': 'find %s -type f -iname "*" ' . g:ignore_patterns.find ,
     \ }

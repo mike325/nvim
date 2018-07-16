@@ -56,6 +56,7 @@ endfunction
 
 " Set the default work dir
 let g:base_path = ''
+let g:home = WINDOWS() ? expand($USERPROFILE) : expand($HOME)
 if has('nvim')
     if WINDOWS()
         let g:base_path = substitute( expand($USERPROFILE), "\\", "/", "g" ) . '/AppData/Local/nvim/'
@@ -91,62 +92,64 @@ endif
 function! s:SetIgnorePatterns() " Create Ignore rules {{{
     " Files and dirs we want to ignore in searches and plugins
     " The *.  and */patter/* will be add after
-    if !exists('g:ignores')
-        let g:ignores = {
-                    \   'bin': [ 'bin', 'exe', 'dat',],
-                    \   'vcs': [ 'hg', 'svn', 'git',],
-                    \   'compile' : ['obj', 'class', 'pyc', 'o', 'dll', 'a', 'moc',],
-                    \   'tmp_dirs': [ 'trash', 'tmp', '__pycache__', 'ropeproject'],
-                    \   'vim_dirs': [ 'backup', 'swap', 'sessions', 'cache', 'undos',],
-                    \   'tmp_file' : ['swp', 'bk',],
-                    \   'docs': ['docx', 'doc', 'xls', 'xlsx', 'odt', 'ppt', 'pptx', 'pdf',],
-                    \   'image': ['jpg', 'jpeg', 'png', 'gif', 'raw'],
-                    \   'video': ['mp4', 'mpeg', 'avi', 'mkv', '3gp'],
-                    \   'logs': ['log',],
-                    \   'compress': ['zip', 'tar', 'rar', '7z',],
-                    \   'full_name_files': ['tags', 'cscope', 'shada', 'viminfo', 'COMMIT_EDITMSG'],
-                    \}
+
+    let g:ignore_patterns = {
+                \   'git' : '',
+                \   'ag' : '',
+                \   'find' : '',
+                \   'grep' : '',
+                \   'dir' : '',
+                \   'findstr' : '',
+                \}
+
+    let g:ignores = {
+                \   'bin': [ 'exe', 'dat',],
+                \   'vcs': [ 'hg', 'svn', 'git',],
+                \   'compile' : ['obj', 'class', 'pyc', 'o', 'dll', 'a', 'moc',],
+                \   'tmp_dirs': [ 'trash', 'tmp', '__pycache__', 'ropeproject'],
+                \   'vim_dirs': [ 'backup', 'swap', 'sessions', 'cache', 'undos',],
+                \   'tmp_file' : ['swp', 'bk',],
+                \   'docs': ['docx', 'doc', 'xls', 'xlsx', 'odt', 'ppt', 'pptx', 'pdf',],
+                \   'image': ['jpg', 'jpeg', 'png', 'gif', 'raw'],
+                \   'video': ['mp4', 'mpeg', 'avi', 'mkv', '3gp'],
+                \   'logs': ['log',],
+                \   'compress': ['zip', 'tar', 'rar', '7z',],
+                \   'full_name_files': ['tags', 'cscope', 'shada', 'viminfo', 'COMMIT_EDITMSG'],
+                \}
+
+    if filereadable(g:home . '.git/ignore')
+        let g:ignore_patterns.grep .= ' --exclude-from=' . g:home . '.git/ignore '
+        let g:ignore_patterns.ag .= ' --path-to-ignore ' . g:home . '.git/ignore '
     endif
 
-    if !exists( 'g:ignore_patterns' )
-        let g:ignore_patterns = {
-                    \   'git' : '',
-                    \   'ag' : '',
-                    \   'find' : '',
-                    \   'grep' : '',
-                    \   'dir' : '',
-                    \   'findstr' : '',
-                    \}
-    endif
+    for  l:element in g:ignores.vcs
+        let g:ignore_patterns.grep .= ' --exclude-dir="*.' . l:element . '" '
+    endfor
 
     for [ l:ignore_type, l:ignore_list ] in items(g:ignores)
         " I don't want to ignore logs here
-        if l:ignore_type == "logs" || l:ignore_type == "bin"
+        if l:ignore_type == 'logs' || l:ignore_type == 'bin'
             continue
         endif
 
         for l:item in l:ignore_list
-            let l:ignore_pattern = ""
+            let l:ignore_pattern = ''
 
-            if l:ignore_type == "vcs"
-                let l:ignore_pattern = "." . l:item . "/*"
-            elseif l:ignore_type =~? "_dirs"
-                let l:ignore_pattern = l:item . "/*"
-            elseif l:ignore_type != "full_name_files"
-                let l:ignore_pattern = "*." . l:item
+            if l:ignore_type == 'vcs'
+                let l:ignore_pattern = '.' . l:item . '/*'
+            elseif l:ignore_type =~? '_dirs'
+                let l:ignore_pattern = l:item . '/*'
+            elseif l:ignore_type != 'full_name_files'
+                let l:ignore_pattern = '*.' . l:item
             else
                 let l:ignore_pattern = l:item
             endif
 
-            let g:ignore_patterns.git     .= ' -x "' . l:ignore_pattern . '" '
-            let g:ignore_patterns.ag      .= ' --ignore "' . l:ignore_pattern . '" '
             " let g:ignore_patterns.findstr .= ' /c:' . substitute(l:ignore_pattern, "\(\/\|\*\)", "" ,"g") . ' '
 
-            if l:ignore_type == "vcs" || l:ignore_type =~? "_dirs"
-                let g:ignore_patterns.grep  .= ' --exclude-dir "' . l:ignore_pattern . '" '
+            if l:ignore_type == 'vcs' || l:ignore_type =~? '_dirs'
                 let g:ignore_patterns.find  .= ' ! -path "*/' . l:ignore_pattern . '" '
             else
-                let g:ignore_patterns.grep  .= ' --exclude "' . l:ignore_pattern . '" '
                 let g:ignore_patterns.find  .= ' ! -iname "' . l:ignore_pattern . '" '
             endif
             " TODO: Make this crap work in Windows
@@ -156,10 +159,7 @@ function! s:SetIgnorePatterns() " Create Ignore rules {{{
             if l:ignore_type =~? "_dirs"
                 let l:ignore_pattern = "." . l:item . "/*"
 
-                let g:ignore_patterns.git   .= ' -x "' . l:ignore_pattern . '" '
-                let g:ignore_patterns.ag    .= ' --ignore "' . l:ignore_pattern . '" '
                 let g:ignore_patterns.find  .= ' ! -path "*/' . l:ignore_pattern . '" '
-                let g:ignore_patterns.grep  .= ' --exclude-dir "' . l:ignore_pattern . '" '
                 " TODO: Make this crap work in Windows
                 " let g:ignore_patterns.findstr .= ' /c: "' . l:ignore_pattern . '" '
                 " let g:ignore_patterns.dir  .= ' '

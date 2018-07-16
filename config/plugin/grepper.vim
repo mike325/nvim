@@ -86,14 +86,14 @@ endif
 if executable("ag")
     let g:grepper.tools += ['ag']
     let g:grepper.ag = {
-        \ 'grepprg':    'ag -S -U --hidden ' . g:ignore_patterns.ag,
+        \ 'grepprg':    'ag -S --hidden ' . g:ignore_patterns.ag,
         \ 'grepformat': '%f:%l:%c:%m,%f:%l:%m',
         \ 'escape':     '\^$.*+?()[]{}|',
         \ }
 
     let g:grepper.operator.tools += ['ag']
     let g:grepper.operator.ag = {
-        \ 'grepprg':    'ag -S -U --hidden ' . g:ignore_patterns.ag,
+        \ 'grepprg':    'ag -S --hidden ' . g:ignore_patterns.ag,
         \ 'grepformat': '%f:%l:%c:%m,%f:%l:%m',
         \ 'escape':     '\^$.*+?()[]{}|',
         \ }
