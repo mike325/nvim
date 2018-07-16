@@ -349,12 +349,12 @@ if !exists('g:plugs["ultisnips"]') && !exists('g:plugs["vim-snipmate"]')
                 call feedkeys("\<C-y>")
                 return ''
             else
-                return '\<C-y>'
+                return "\<C-y>"
             endif
         elseif exists('g:plugs["delimitMate"]') && delimitMate#WithinEmptyPair()
             return delimitMate#ExpandReturn()
         endif
-        return '\<CR>'
+        return "\<CR>"
     endfunction
 
     inoremap <silent><CR>    <C-R>=NextSnippetOrReturn()<CR>
