@@ -26,7 +26,7 @@
 
 " TODO: put all git dependent file configs here
 
-if !exists('g:plugs["vim-fugitive"]') || !exists('fugitive#extract_git_dir')
+if !exists('g:plugs["vim-fugitive"]')
     finish
 endif
 
@@ -74,34 +74,3 @@ catch E117
         echoerr "We could't set extra project configs, may be because fuigitive is not ready"
     endif
 endtry
-
-" if exists('g:plugs["YouCompleteMe"]')
-"     try
-"         function! s:SetExtraConf()
-"             let g:ycm_global_ycm_extra_conf =  fugitive#extract_git_dir(expand('%:p:h'))
-"
-"             if g:ycm_global_ycm_extra_conf !=# '' && filereadable(g:ycm_global_ycm_extra_conf . "/ycm_extra_conf.py")
-"                 let g:ycm_global_ycm_extra_conf .=  "/ycm_extra_conf.py"
-"
-"             else
-"                 let g:ycm_global_ycm_extra_conf = fnameescape(g:base_path . "ycm_extra_conf.py")
-"             endif
-"         endfunction
-"
-"         function! s:FindExtraConfig()
-"             if g:ycm_global_ycm_extra_conf !=# '' && filereadable(g:ycm_global_ycm_extra_conf . "/project.vim")
-"                 execute "find " . g:ycm_global_ycm_extra_conf
-"             endif
-"         endfunction
-"
-"         call s:SetExtraConf()
-"
-"         command! UpdateYCMConf call s:SetExtraConf()
-"         command! OpenYCMConf call s:FindExtraConfig()
-"     catch E117
-"         " TODO: Display errors/status in the start screen for GUI clients
-"         if !GUI()
-"             echoerr "We could't set extra project configs, may be because fuigitive is not ready"
-"         endif
-"     endtry
-" endif
