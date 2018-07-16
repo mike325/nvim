@@ -26,7 +26,7 @@
 
 " TODO: put all git dependent file configs here
 
-if !exists('g:plugs["vim-fugitive"]')
+if !exists('g:plugs["vim-fugitive"]') || !exists('fugitive#extract_git_dir')
     finish
 endif
 

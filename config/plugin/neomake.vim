@@ -194,7 +194,10 @@ try
         \ }, 1000)
 catch E117
     " Neovim-qt can't output messages while it's starting
-    if !GUI()
-        echoerr "Neomake is not ready"
-    endif
+    " if !GUI()
+    "     augroup ErrorMessages
+    "         autocmd!
+    "         autocmd VimEnter * echoerr "Neomake is not installed"
+    "     augroup end
+    " endif
 endtry

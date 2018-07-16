@@ -29,32 +29,34 @@
 
 " Windows wrapper
 function! WINDOWS()
-    return (has("win16") || has("win32") || has("win64"))
+    return (has('win16') || has('win32') || has('win64'))
 endfunction
 
 " Check an specific version of python (empty==2)
 function! PYTHON(version)
-    if a:version == "any" || a:version == ""
-        return (has("python") || has("python3"))
-    elseif a:version == "3"
-        return has("python3")
-    elseif a:version == "2"
-        return has("python")
+    if a:version == 'any' || a:version == ''
+        return (has('python') || has('python3'))
+    elseif a:version == '3'
+        return has('python3')
+    elseif a:version == '2'
+        return has('python')
     endif
 endfunction
 
 " Check whether or not we have async support
 function! ASYNC()
-    return (has("nvim") || (v:version >= 800 || (v:version == 704 && has("patch1689")) && (has("job") && has("timers")))) ? 1 : 0
+    return (has('nvim') || ((v:version >= 800 && has('patch-8.0.0027')) ||
+                         \  (v:version == 704 && has('patch1689')) &&
+                         \ (has('job') && has('timers') && has('channel')))) ? 1 : 0
 endfunction
 
 function! GUI()
-    return (has('nvim') && exists('g:GuiLoaded')) || (!has("nvim") && has("gui_running"))
+    return (has('nvim') && exists('g:GuiLoaded')) || (!has('nvim') && has('gui_running'))
 endfunction
 
 " Set the default work dir
-let g:base_path = ""
-if has("nvim")
+let g:base_path = ''
+if has('nvim')
     if WINDOWS()
         let g:base_path = substitute( expand($USERPROFILE), "\\", "/", "g" ) . '/AppData/Local/nvim/'
     else
@@ -73,14 +75,14 @@ else
 endif
 
 " Better compatibility with Unix paths in DOS systems
-if exists("+shellslash")
+if exists('+shellslash')
     set shellslash
 endif
 
 " On windows, if gvim.exe or nvim-qt are executed from cygwin bash shell, the shell
 " needs to be changed to the shell most plugins expect on windows.
 " This does not change &shell inside cygwin or msys vim.
-if WINDOWS() && &shell =~# 'bash'
+if WINDOWS()
   set shell=cmd.exe " sets shell to correct path for cmd.exe
 endif
 
@@ -89,31 +91,31 @@ endif
 function! s:SetIgnorePatterns() " Create Ignore rules {{{
     " Files and dirs we want to ignore in searches and plugins
     " The *.  and */patter/* will be add after
-    if !exists("g:ignores")
+    if !exists('g:ignores')
         let g:ignores = {
-                    \   "bin": [ "bin", "exe", "dat",],
-                    \   "vcs": [ "hg", "svn", "git",],
-                    \   "compile" : ["obj", "class", "pyc", "o", "dll", "a", "moc",],
-                    \   "tmp_dirs": [ "trash", "tmp", "__pycache__", "ropeproject"],
-                    \   "vim_dirs": [ "backup", "swap", "sessions", "cache", "undos",],
-                    \   "tmp_file" : ["swp", "bk",],
-                    \   "docs": ["docx", "doc", "xls", "xlsx", "odt", "ppt", "pptx", "pdf",],
-                    \   "image": ["jpg", "jpeg", "png", "gif", "raw"],
-                    \   "video": ["mp4", "mpeg", "avi", "mkv", "3gp"],
-                    \   "logs": ["log",],
-                    \   "compress": ["zip", "tar", "rar", "7z",],
-                    \   "full_name_files": ["tags", "cscope", "shada", "viminfo", "COMMIT_EDITMSG"],
+                    \   'bin': [ 'bin', 'exe', 'dat',],
+                    \   'vcs': [ 'hg', 'svn', 'git',],
+                    \   'compile' : ['obj', 'class', 'pyc', 'o', 'dll', 'a', 'moc',],
+                    \   'tmp_dirs': [ 'trash', 'tmp', '__pycache__', 'ropeproject'],
+                    \   'vim_dirs': [ 'backup', 'swap', 'sessions', 'cache', 'undos',],
+                    \   'tmp_file' : ['swp', 'bk',],
+                    \   'docs': ['docx', 'doc', 'xls', 'xlsx', 'odt', 'ppt', 'pptx', 'pdf',],
+                    \   'image': ['jpg', 'jpeg', 'png', 'gif', 'raw'],
+                    \   'video': ['mp4', 'mpeg', 'avi', 'mkv', '3gp'],
+                    \   'logs': ['log',],
+                    \   'compress': ['zip', 'tar', 'rar', '7z',],
+                    \   'full_name_files': ['tags', 'cscope', 'shada', 'viminfo', 'COMMIT_EDITMSG'],
                     \}
     endif
 
-    if !exists( "g:ignore_patterns" )
+    if !exists( 'g:ignore_patterns' )
         let g:ignore_patterns = {
-                    \   "git" : "",
-                    \   "ag" : "",
-                    \   "find" : "",
-                    \   "grep" : "",
-                    \   "dir" : "",
-                    \   "findstr" : "",
+                    \   'git' : '',
+                    \   'ag' : '',
+                    \   'find' : '',
+                    \   'grep' : '',
+                    \   'dir' : '',
+                    \   'findstr' : '',
                     \}
     endif
 
@@ -166,8 +168,8 @@ function! s:SetIgnorePatterns() " Create Ignore rules {{{
     endfor
 
     " Clean settings before assign the ignore stuff, just lazy stuff
-    execute "set wildignore="
-    execute "set backupskip="
+    execute 'set wildignore='
+    execute 'set backupskip='
     " set suffixes=.bak,~,.swp,.o,.info,.aux,.log,.dvi,.bbl,.blg,.brf,.cb,.ind,.idx,.ilg,.inx,.out,.toc,.png,.jpg
 
     " Set system ignores and skips
@@ -191,11 +193,11 @@ function! s:SetIgnorePatterns() " Create Ignore rules {{{
 
             " I don't want to ignore logs or sessions files but I don't want
             " to backup them
-            if l:ignore_type != "logs" && l:item != "sessions"
-                execute "set wildignore+=" . fnameescape(l:ignore_pattern)
+            if l:ignore_type != 'logs' && l:item != 'sessions'
+                execute 'set wildignore+=' . fnameescape(l:ignore_pattern)
             endif
 
-            execute "set backupskip+=" . fnameescape(l:ignore_pattern)
+            execute 'set backupskip+=' . fnameescape(l:ignore_pattern)
         endfor
     endfor
 
@@ -203,17 +205,17 @@ endfunction " }}} END Create Ignore rules
 
 function! s:InitConfigs() " Vim's InitConfig {{{
     " Hidden path in `g:base_path` with all generated files
-    if !exists("g:parent_dir")
-        let g:parent_dir = g:base_path . ".resources/"
+    if !exists('g:parent_dir')
+        let g:parent_dir = g:base_path . '.resources/'
     endif
 
-    if !exists("g:dirpaths")
+    if !exists('g:dirpaths')
         let g:dirpaths = {
-                    \   "backup" : "backupdir",
-                    \   "swap" : "directory",
-                    \   "undo" : "undodir",
-                    \   "cache" : "",
-                    \   "sessions" : "",
+                    \   'backup' : 'backupdir',
+                    \   'swap' : 'directory',
+                    \   'undo' : 'undodir',
+                    \   'cache' : '',
+                    \   'sessions' : '',
                     \}
     endif
 
@@ -225,13 +227,13 @@ function! s:InitConfigs() " Vim's InitConfig {{{
 
     " Config all
     for [l:dirname, l:dir_setting] in items(g:dirpaths)
-        if exists("*mkdir")
+        if exists('*mkdir')
             if !isdirectory(fnameescape( g:parent_dir . l:dirname ))
-                call mkdir(fnameescape( g:parent_dir . l:dirname ), "p")
+                call mkdir(fnameescape( g:parent_dir . l:dirname ), 'p')
             endif
 
-            if l:dir_setting != "" && exists("+" . l:dir_setting)
-                execute "set " . l:dir_setting . "=" . fnameescape(g:parent_dir . l:dirname)
+            if l:dir_setting != '' && exists('+' . l:dir_setting)
+                execute 'set ' . l:dir_setting . '=' . fnameescape(g:parent_dir . l:dirname)
             endif
         else
             " echoerr "The current dir " . fnameescape(g:parent_dir . l:dirname) . " could not be created"
@@ -276,41 +278,41 @@ if ASYNC()
                         return pydir
                     endif
                 endfor
-            elseif executable("python".a:major.".".a:minor)
-                return "python".a:major.".".a:minor
+            elseif executable('python'.a:major.'.'.a:minor)
+                return 'python'.a:major.'.'.a:minor
             endif
-            return ""
+            return ''
         endfunction
 
-        if s:python_setup("2", "7") != ""
-            if exists("g:loaded_python_provider")
+        if s:python_setup('2', '7') != ''
+            if exists('g:loaded_python_provider')
                 unlet g:loaded_python_provider
             endif
-            let g:python_host_prog = s:python_setup("2", "7")
+            let g:python_host_prog = s:python_setup('2', '7')
             if WINDOWS()
                 let g:python_host_prog .=  '/python'
             endif
         endif
 
-        if s:python_setup("3", "6") != ""
-            if exists("g:loaded_python3_provider")
+        if s:python_setup('3', '6') != ''
+            if exists('g:loaded_python3_provider')
                 unlet g:loaded_python3_provider
             endif
-            let g:python3_host_prog = s:python_setup("3", "6")
+            let g:python3_host_prog = s:python_setup('3', '6')
             if WINDOWS()
                 let g:python3_host_prog .=  '/python'
             endif
         endif
     else
-        if executable("python2")
-            if exists("g:loaded_python_provider")
+        if executable('python2')
+            if exists('g:loaded_python_provider')
                 unlet g:loaded_python_provider
             endif
             let g:python_host_prog =  'python2'
         endif
 
-        if executable("python3")
-            if exists("g:loaded_python3_provider")
+        if executable('python3')
+            if exists('g:loaded_python3_provider')
                 unlet g:loaded_python3_provider
             endif
             let g:python3_host_prog =  'python3'
@@ -328,7 +330,7 @@ let mapleader="\<Space>"
 
 " If there are no plugins available and we don't have git
 " fallback to minimal mode
-if !executable("git") && !isdirectory(fnameescape(g:base_path.'plugged'))
+if !executable('git') && !isdirectory(fnameescape(g:base_path.'plugged'))
     let g:minimal = 1
 endif
 
@@ -340,7 +342,7 @@ if !exists('g:minimal')
         call plug#begin(g:base_path.'plugged')
     catch
         " Fallback if we fail to init Plug
-        if !has("nvim") && v:version >= 800
+        if !has('nvim') && v:version >= 800
             packadd! matchit
         elseif !exists('g:loaded_matchit') && findfile('plugin/matchit.vim', &rtp) ==# ''
             runtime! macros/matchit.vim
