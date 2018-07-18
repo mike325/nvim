@@ -64,18 +64,18 @@ let g:grepper.operator.prompt_quote  = 0
 
 " let g:grepper.tools = ['git', 'ag', 'ack', 'grep', 'findstr'] " may add rg
 
-if executable("git")
+if executable('git')
     let g:grepper.tools += ['git']
     " I like to search ignore case when greppper is call from <C-g>
     let g:grepper.git = {
-        \ 'grepprg':    'git grep -inI',
+        \ 'grepprg':    'git grep --no-color -Ini ',
         \ 'grepformat': '%f:%l:%m',
         \ 'escape':     '\^$.*[]',
         \ }
 
     let g:grepper.operator.tools += ['git']
     let g:grepper.operator.git = {
-        \ 'grepprg':    'git grep -nwI',
+        \ 'grepprg':    'git grep --no-color -Inw ',
         \ 'grepformat': '%f:%l:%m',
         \ 'escape':     '\^$.*[]',
         \ }
@@ -83,26 +83,26 @@ endif
 
 " I like to keep Ag and grep as a ignore case searchers (smart case for Ag)
 " and git as a case sensitive project searcher
-if executable("ag")
+if executable('ag')
     let g:grepper.tools += ['ag']
     let g:grepper.ag = {
-        \ 'grepprg':    'ag -S --hidden ' . g:ignore_patterns.ag,
+        \ 'grepprg':    'ag --nogroup --nocolor --hidden -S ' . g:ignore_patterns.ag,
         \ 'grepformat': '%f:%l:%c:%m,%f:%l:%m',
         \ 'escape':     '\^$.*+?()[]{}|',
         \ }
 
     let g:grepper.operator.tools += ['ag']
     let g:grepper.operator.ag = {
-        \ 'grepprg':    'ag -S --hidden ' . g:ignore_patterns.ag,
+        \ 'grepprg':    'ag --nogroup --nocolor --hidden ' . g:ignore_patterns.ag,
         \ 'grepformat': '%f:%l:%c:%m,%f:%l:%m',
         \ 'escape':     '\^$.*+?()[]{}|',
         \ }
 endif
 
-if executable("grep")
+if executable('grep')
     let g:grepper.tools += ['grep']
     let g:grepper.grep = {
-        \ 'grepprg':    'grep -iRIn '. g:ignore_patterns.grep .' $*',
+        \ 'grepprg': 'grep --color=never -iHRIn '. g:ignore_patterns.grep .' $*',
         \ 'grepprgbuf': 'grep -HIn -- $* $.',
         \ 'grepformat': '%f:%l:%m',
         \ 'escape':     '\^$.*[]',
@@ -110,7 +110,7 @@ if executable("grep")
 
     let g:grepper.operator.tools += ['grep']
     let g:grepper.operator.grep = {
-        \ 'grepprg':    'grep -oRIn '. g:ignore_patterns.grep .' $*',
+        \ 'grepprg':    'grep -oHRIn '. g:ignore_patterns.grep .' $*',
         \ 'grepprgbuf': 'grep -HIn -- $* $.',
         \ 'grepformat': '%f:%l:%m',
         \ 'escape':     '\^$.*[]',
@@ -118,7 +118,7 @@ if executable("grep")
 endif
 
 
-if executable("findstr")
+if executable('findstr')
     let g:grepper.tools += ['findstr']
     let g:grepper.findstr = {
         \ 'grepprg': 'findstr -rspnc:$* *',
@@ -139,17 +139,17 @@ endif
 " FIXME: Crappy windows settings
 " Windows cannot handle double quotes inside single quotes without escaping
 " if WINDOWS()
-"     if executable("ag")
+"     if executable('ag')
 "         let g:grepper.ag.escape += "'\""
 "         let g:grepper.operator.ag.escape += "'\""
 "     endif
 "
-"     if executable("grep")
+"     if executable('grep')
 "         let g:grepper.grep.escape += "'\""
 "         let g:grepper.operator.grep.escape += "'\""
 "     endif
 "
-"     if executable("git")
+"     if executable('git')
 "         let g:grepper.git.escape += "'\""
 "         let g:grepper.operator.git.escape += "'\""
 "     endif

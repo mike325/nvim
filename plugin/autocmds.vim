@@ -353,12 +353,12 @@ function! s:SetProjectConfigs()
             endif
         else
             if executable('git')
-                let &grepprg='git grep -nI'
+                let &grepprg='git grep --no-color -In'
             else
                 if executable('ag')
-                    let &grepprg='ag --nogroup --nocolor ' . g:ignore_patterns.ag . ' '
+                    let &grepprg='ag --nogroup --nocolor --hidden ' . g:ignore_patterns.ag . ' '
                 elseif executable('grep')
-                    let &grepprg='grep --with-filename -n -I ' . g:ignore_patterns.grep . ' '
+                    let &grepprg='grep --color=never -HIn ' . g:ignore_patterns.grep . ' '
                 elseif executable('findstr')
                     let &grepprg='findstr ' . g:ignore_patterns.findstr . ' '
                 endif
@@ -379,9 +379,9 @@ function! s:SetProjectConfigs()
             endif
         else
             if executable('ag')
-                let &grepprg='ag --nogroup --nocolor ' . g:ignore_patterns.ag . ' '
+                let &grepprg='ag --nogroup --nocolor --hidden ' . g:ignore_patterns.ag . ' '
             elseif executable('grep')
-                let &grepprg='grep --with-filename -n -I ' . g:ignore_patterns.grep . ' '
+                let &grepprg='grep -HIn --color=never ' . g:ignore_patterns.grep . ' '
             elseif executable('findstr')
                 let &grepprg='findstr ' . g:ignore_patterns.findstr . ' '
             endif

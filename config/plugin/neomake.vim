@@ -1,3 +1,4 @@
+scriptencoding 'utf-8'
 " ############################################################################
 "
 "                               Neomake settings
@@ -56,20 +57,22 @@ endif
 " Don't show the location list, silently run Neomake
 let g:neomake_open_list = 0
 
-if executable("vint")
+if executable('vint')
     let g:neomake_vim_enabled_makers = ['vint']
 
     " The configuration scrips use Neovim commands
     let g:neomake_vim_vint_maker = {
+        \ 'errorformat': '%f:%l:%c: %trror: %m,%f:%l:%c: %tarning: %m,%f:%l:%c: %tote: %m',
         \ 'args': [
+        \   '-f',
+        \   '{file_path}:{line_number}:{column_number}: {severity}: {description} (see {reference})',
         \   '--enable-neovim',
-        \   '-e'
         \],}
 endif
 
 let g:neomake_python_enabled_makers = get(g:,'neomake_python_enabled_makers',[])
 
-if executable("pycodestyle")
+if executable('pycodestyle')
     let g:neomake_python_enabled_makers += ['pycodestyle']
 
     let g:neomake_python_pycodestyle_maker = {
@@ -79,7 +82,7 @@ if executable("pycodestyle")
         \],}
 endif
 
-if executable("flake8")
+if executable('flake8')
     let g:neomake_python_enabled_makers += ['flake8']
 
     let g:neomake_python_flake8_maker = {
@@ -89,15 +92,15 @@ if executable("flake8")
         \],}
 endif
 
-let b:outpath = "/tmp/neomake.out"
+let b:outpath = '/tmp/neomake.out'
 if WINDOWS()
-    let b:outpath = "C:/Temp/neomake"
+    let b:outpath = 'C:/Temp/neomake'
 endif
 
 let g:neomake_c_enabled_makers = get(g:,'neomake_c_enabled_makers',[])
 
-if executable("gcc")
-    let g:neomake_c_enabled_makers += ["gcc"]
+if executable('gcc')
+    let g:neomake_c_enabled_makers += ['gcc']
 
     let g:neomake_c_gcc_maker = {
         \   'exe': 'gcc',
@@ -109,8 +112,8 @@ if executable("gcc")
 
 endif
 
-if executable("clang")
-    let g:neomake_c_enabled_makers += ["clang"]
+if executable('clang')
+    let g:neomake_c_enabled_makers += ['clang']
 
     let g:neomake_c_clang_maker = {
         \   'exe': 'clang',
@@ -125,8 +128,8 @@ endif
 
 let g:neomake_cpp_enabled_makers = get(g:,'neomake_cpp_enabled_makers',[])
 
-if executable("g++")
-    let g:neomake_cpp_enabled_makers += ["gcc"]
+if executable('g++')
+    let g:neomake_cpp_enabled_makers += ['gcc']
 
     let g:neomake_cpp_gcc_maker = {
         \   'exe': 'g++',
@@ -138,8 +141,8 @@ if executable("g++")
         \],}
 endif
 
-if executable("clang++")
-    let g:neomake_cpp_enabled_makers += ["clang"]
+if executable('clang++')
+    let g:neomake_cpp_enabled_makers += ['clang']
 
     let g:neomake_cpp_clang_maker = {
         \   'exe': 'clang++',
@@ -154,13 +157,14 @@ if executable("clang++")
         \],}
 endif
 
-if executable("shellcheck")
+if executable('shellcheck')
     let g:neomake_sh_enabled_makers = get(g:,'neomake_sh_enabled_makers',[])
 
-    let g:neomake_sh_enabled_makers += ["shellcheck"]
+    let g:neomake_sh_enabled_makers += ['shellcheck']
 
     let g:neomake_sh_shellcheck_maker = {
         \   'exe': 'shellcheck',
+        \   'errorformat':'%f:%l:%c: %trror: %m [SC%n],%f:%l:%c: %tarning: %m [SC%n],%f:%l:%c: %tote: %m [SC%n]',
         \   'args': [
         \      '-f', 'gcc',
         \      '-e', '1117',
