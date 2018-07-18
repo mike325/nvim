@@ -198,7 +198,11 @@ set smarttab       " Insert tabs on the start of a line according to
                    " shiftwidth, not tabstop
 
 set shiftround     " Use multiple of shiftwidth when indenting with '<' and '>'
-set cursorline     " Turn on cursor line by default
+if !exists('g:minimal')
+    set cursorline     " Turn on cursor line by default
+else
+    set nocursorline   " Turn off cursor line by default
+endif
 
 " Allow to send unsaved buffers to the backgroud
 set hidden

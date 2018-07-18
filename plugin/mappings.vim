@@ -473,4 +473,22 @@ if !exists('g:plugs["vim-eunuch"]')
                 \ unlet s:target
 endif
 
+if !exists('g:plugs["vim-fugitive"]')
+    command! -nargs=+ Git execute('!git ' . <q-args>)
+    command! -nargs=* Gstatus execute('!git status ' . <q-args>)
+    if has('nvim') || has('terminal')
+        command! -nargs=* Gcommit execute('terminal git commit ' . <q-args>)
+        nnoremap <leader>gw :Gwrite<CR>
+    endif
+    command! -nargs=* Gwrite  execute('!git add ' . expand("%") . ' ' .<q-args>)
+    command! -bang Gread execute('!git reset HEAD ' . expand("%") . ' && git checkout -- ' . expand("%")) |
+                \ let s:bang = empty(<bang>0) ? '' : '!' |
+                \ execute('edit'.s:bang) |
+                \ unlet s:bang
+
+    nnoremap <leader>gs :Gstatus<CR>
+    nnoremap <leader>gc :Gcommit<CR>
+    nnoremap <leader>gr :Gread<CR>
+endif
+
 " }}} END Fallback Plugin mapping
