@@ -479,12 +479,14 @@ if !exists('g:plugs["vim-fugitive"]')
     if has('nvim') || has('terminal')
         command! -nargs=* Gcommit execute('terminal git commit ' . <q-args>)
         nnoremap <leader>gw :Gwrite<CR>
+        command! -nargs=* Gpush  execute('terminal git push ' .<q-args>)
     endif
     command! -nargs=* Gwrite  execute('!git add ' . expand("%") . ' ' .<q-args>)
     command! -bang Gread execute('!git reset HEAD ' . expand("%") . ' && git checkout -- ' . expand("%")) |
                 \ let s:bang = empty(<bang>0) ? '' : '!' |
                 \ execute('edit'.s:bang) |
                 \ unlet s:bang
+
 
     nnoremap <leader>gs :Gstatus<CR>
     nnoremap <leader>gc :Gcommit<CR>
