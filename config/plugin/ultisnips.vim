@@ -29,10 +29,10 @@ if !exists('g:plugs["ultisnips"]')
 endif
 
 
-let g:UltiSnipsEditSplit                = "context"
-let g:UltiSnipsSnippetsDir              = g:base_path . "config/UltiSnips"
-let g:UltiSnipsSnippetDirectories       = ["UltiSnips"]
-let g:UltiSnipsExpandTrigger            = "<C-e>"
+let g:UltiSnipsEditSplit                = 'context'
+let g:UltiSnipsSnippetsDir              = g:base_path . 'config/UltiSnips'
+let g:UltiSnipsSnippetDirectories       = [g:base_path . 'config/UltiSnips', 'UltiSnips']
+let g:UltiSnipsExpandTrigger            = '<C-e>'
 " Remove all select mappigns in expanded snip
 " let g:UltiSnipsRemoveSelectModeMappings = 0
 
@@ -51,7 +51,7 @@ function! NextSnippetOrReturn()
         if pumvisible()
             if exists('g:plugs["YouCompleteMe"]')
                 call feedkeys("\<C-y>")
-                return ""
+                return ''
             else
                 return "\<C-y>"
             endif
@@ -66,7 +66,7 @@ function! NextSnippetOrReturn()
             endif
         endif
     endif
-    return ""
+    return ''
 endfunction
 
 function! NextSnippet()
@@ -79,7 +79,7 @@ function! NextSnippet()
         return "\<TAB>"
     endif
 
-    return ""
+    return ''
 endfunction
 
 function! PrevSnippetOrNothing()
@@ -87,13 +87,13 @@ function! PrevSnippetOrNothing()
         return "\<C-p>"
     endif
     call UltiSnips#JumpBackwards()
-    return ""
+    return ''
 endfunction
 
 " TODO: Improve TAB and S-TAB mappings
 " inoremap <silent><TAB>   <C-R>=<SID>ExpandSnippetOrComplete()<CR>
 " inoremap <silent><S-TAB> <C-R>=PrevSnippetOrNothing()<CR>
-inoremap <silent><TAB>     <C-R>=NextSnippet()<CR>
-inoremap <silent><S-TAB>   <C-R>=PrevSnippetOrNothing()<CR>
-inoremap <silent><CR>    <C-R>=NextSnippetOrReturn()<CR>
-xnoremap <silent><CR>    :call UltiSnips#SaveLastVisualSelection()<CR>gv"_s
+inoremap <silent><TAB>    <C-R>=NextSnippet()<CR>
+inoremap <silent><S-TAB>  <C-R>=PrevSnippetOrNothing()<CR>
+inoremap <silent><CR>     <C-R>=NextSnippetOrReturn()<CR>
+xnoremap <silent><CR>     :call UltiSnips#SaveLastVisualSelection()<CR>gv"_s

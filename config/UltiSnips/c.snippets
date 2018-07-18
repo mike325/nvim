@@ -26,34 +26,39 @@ priority 5
 #
 #############################################################################
 
-snippet def "#define ..."
+snippet fun "function definition" b
+${1:void} ${2:function}(${3:params}) {
+	${0:${VISUAL}}
+}
+endsnippet
+
+snippet #def "#define ..." b
 #define $1
 endsnippet
 
-snippet #ifndef "#ifndef ... #endif"
+snippet #ifnd "#ifndef ... #endif" b
 #ifndef ${1:DEFINE}
 ${0:${VISUAL}}
 #endif /* ifndef $1 */
 endsnippet
 
-snippet #ifdef "#ifdef ... #endif"
+snippet #ifd "#ifdef ... #endif" b
 #ifdef ${1:DEFINE}
 ${0:${VISUAL}}
 #endif /* ifdef $1 */
 endsnippet
 
-snippet #if "#if defined() ... #endif"
+snippet #if "#if defined() ... #endif" b
 #if defined(${1:DEFINE})
 ${0:${VISUAL}}
 #endif /* defined($1) */
 endsnippet
 
-snippet mark "#pragma mark (mark)"
+snippet mark "#pragma mark (mark)" b
 #if 0
 ${1:#pragma mark -
 }#pragma mark $2
 #endif
-
 $0
 endsnippet
 

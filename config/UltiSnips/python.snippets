@@ -26,6 +26,11 @@ priority 5
 #
 #############################################################################
 
+snippet ifin "if word in iterator: ...."
+if ${1:word} in ${2:iterator}:
+	${0:${VISUAL:pass}}
+endsnippet
+
 snippet raise "raise Exception(...)"
 raise Exception($0)
 endsnippet

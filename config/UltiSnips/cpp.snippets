@@ -1,3 +1,5 @@
+extends c
+
 priority 5
 
 #############################################################################
@@ -26,51 +28,3 @@ priority 5
 #
 #############################################################################
 
-snippet #def "#define ..."
-#define $1
-endsnippet
-
-snippet #ifndef "#ifndef ... #endif"
-#ifndef ${1:DEFINE}
-${0:${VISUAL}}
-#endif /* ifndef $1 */
-endsnippet
-
-snippet #ifdef "#ifdef ... #endif"
-#ifdef ${1:DEFINE}
-${0:${VISUAL}}
-#endif /* ifdef $1 */
-endsnippet
-
-snippet #if "#if defined() ... #endif"
-#if defined(${1:DEFINE})
-${0:${VISUAL}}
-#endif /* defined($1) */
-endsnippet
-
-snippet mark "#pragma mark (mark)"
-#if 0
-${1:#pragma mark -
-}#pragma mark $2
-#endif
-
-$0
-endsnippet
-
-snippet once "Include header once only guard"
-#ifndef ${1:`!p
-if not snip.c:
-	import random, string
-	name = re.sub(r'[^A-Za-z0-9]+','_', snip.fn).upper()
-	rand = ''.join(random.sample(string.ascii_letters+string.digits, 8))
-	snip.rv = ('%s_%s' % (name,rand)).upper()
-else:
-	snip.rv = snip.c`}
-#define $1
-
-${VISUAL}$0
-
-#endif /* end of include guard: $1 */
-endsnippet
-
-# vim:ft=snippets:
