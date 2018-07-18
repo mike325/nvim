@@ -75,16 +75,15 @@ else
     let g:base_path = expand($HOME) . '/.vim/'
 endif
 
-" Better compatibility with Unix paths in DOS systems
-if exists('+shellslash')
-    set shellslash
-endif
-
 " On windows, if gvim.exe or nvim-qt are executed from cygwin bash shell, the shell
 " needs to be changed to the shell most plugins expect on windows.
 " This does not change &shell inside cygwin or msys vim.
 if WINDOWS()
-  set shell=cmd.exe " sets shell to correct path for cmd.exe
+    set shell=cmd.exe " sets shell to correct path for cmd.exe
+    " Better compatibility with Unix paths in DOS systems
+    if exists('+shellslash')
+        set shellslash
+    endif
 endif
 
 " }}} END Improve compatibility between Unix and DOS platfomrs
@@ -117,9 +116,9 @@ function! s:SetIgnorePatterns() " Create Ignore rules {{{
                 \   'full_name_files': ['tags', 'cscope', 'shada', 'viminfo', 'COMMIT_EDITMSG'],
                 \}
 
-    if filereadable(g:home . '.git/ignore')
-        let g:ignore_patterns.grep .= ' --exclude-from=' . g:home . '.git/ignore '
-        let g:ignore_patterns.ag .= ' --path-to-ignore ' . g:home . '.git/ignore '
+    if filereadable(g:home . '/.config/git/ignore')
+        let g:ignore_patterns.grep .= ' --exclude-from=' . g:home . '/.config/git/ignore'
+        let g:ignore_patterns.ag .= ' --path-to-ignore ' . g:home . '/.config/git/ignore'
     endif
 
     for  l:element in g:ignores.vcs
@@ -263,68 +262,62 @@ endfunction " }}} END Vim's InitConfig
 
 
 if ASYNC()
-    if WINDOWS()
-        function! s:python_setup(major, minor)
-            if WINDOWS()
-                let l:candidates = [
-                            \ 'c:/python'.a:major.a:minor,
-                            \ 'c:/python/'.a:major.a:minor,
-                            \ 'c:/python/python'.a:major.a:minor,
-                            \ 'c:/python_'.a:major.a:minor,
-                            \ 'c:/python/python_'.a:major.a:minor,
-                            \]
-                for pydir in l:candidates
-                    if isdirectory(fnameescape(pydir))
-                        return pydir
-                    endif
-                endfor
-            elseif executable('python'.a:major.'.'.a:minor)
-                return 'python'.a:major.'.'.a:minor
-            endif
-            return ''
-        endfunction
-
-        if s:python_setup('2', '7') != ''
-            if exists('g:loaded_python_provider')
-                unlet g:loaded_python_provider
-            endif
-            let g:python_host_prog = s:python_setup('2', '7')
-            if WINDOWS()
-                let g:python_host_prog .=  '/python'
-            endif
+    function! s:python_setup(python)
+        let l:major = a:python[0]
+        let l:minor = a:python[1]
+        " let l:patch = l:python[2]
+        if WINDOWS()
+            let l:candidates = [
+                        \ 'c:/python'.l:major.l:minor,
+                        \ 'c:/python/'.l:major.l:minor,
+                        \ 'c:/python/python'.l:major.l:minor,
+                        \ 'c:/python_'.l:major.l:minor,
+                        \ 'c:/python/python_'.l:major.l:minor,
+                        \]
+            for pydir in l:candidates
+                if isdirectory(fnameescape(pydir))
+                    return pydir
+                endif
+            endfor
+        elseif executable('python'.l:major.'.'.l:minor)
+            return 'python'.l:major.'.'.l:minor
         endif
+        return ''
+    endfunction
 
-        if s:python_setup('3', '6') != ''
-            if exists('g:loaded_python3_provider')
-                unlet g:loaded_python3_provider
-            endif
-            let g:python3_host_prog = s:python_setup('3', '6')
-            if WINDOWS()
-                let g:python3_host_prog .=  '/python'
-            endif
+    let s:python = ['2', '7']
+    if s:python_setup(s:python) != ''
+        if exists('g:loaded_python_provider')
+            unlet g:loaded_python_provider
         endif
-    else
-        if executable('python2')
-            if exists('g:loaded_python_provider')
-                unlet g:loaded_python_provider
-            endif
-            let g:python_host_prog =  'python2'
+        let g:python_host_prog = s:python_setup(s:python)
+        if WINDOWS()
+            let g:python_host_prog .=  '/python'
         endif
+    endif
 
-        if executable('python3')
-            if exists('g:loaded_python3_provider')
-                unlet g:loaded_python3_provider
-            endif
-            let g:python3_host_prog =  'python3'
+    let s:python = ['3', '5']
+    if s:python_setup(s:python) != ''
+        if exists('g:loaded_python3_provider')
+            unlet g:loaded_python3_provider
+        endif
+        let g:python3_host_prog = s:python_setup(s:python)
+        if WINDOWS()
+            let g:python3_host_prog .=  '/python'
         endif
     endif
 
 endif
 
+
 " Initialize plugins {{{
 
-call s:SetIgnorePatterns()
-call s:InitConfigs()
+try
+    call s:SetIgnorePatterns()
+    call s:InitConfigs()
+catch E117
+    " TODO:
+endtry
 
 let mapleader="\<Space>"
 

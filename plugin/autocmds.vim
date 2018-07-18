@@ -307,4 +307,94 @@ augroup Skeletons
     autocmd BufNewFile *.h                silent! call CHeader()
 augroup end
 
+function! s:FindProjectRoot(file)
+    if exists('g:plugs["vim-fugitive"]')
+        return fugitive#extract_git_dir(expand('%:p'))
+    else
+        let l:file = fnamemodify(a:file, ':h')
+        let l:root = ''
+        for l:dir in ['.git', '.svn', '.hg']
+            let l:root = finddir(l:dir, l:file.';')
+            if !empty(l:root)
+                let l:project_root = ( l:root  ==# l:dir ) ? getcwd() . l:root : l:root
+                let l:project_root = fnamemodify(l:project_root, ':h')
+                return l:project_root
+            endif
+        endfor
+    endif
+    return ''
+endfunction
+
+function! s:SetProjectConfigs()
+    let g:project_root =  s:FindProjectRoot(expand('%:p'))
+    if g:project_root !=# ''
+        let g:project_root = fnamemodify(g:project_root, ':h')
+
+        if filereadable(g:project_root . '/project.vim')
+            execute 'source '. g:project_root . '/project.vim'
+        endif
+
+        if exists('g:plugs["ctrlp"]')
+            let g:ctrlp_clear_cache_on_exit = 1
+        endif
+
+        if exists('g:plugs["vim-grepper"]')
+            if executable('git')
+                let g:grepper.tools = ['git']
+            else
+                let g:grepper.tools = []
+            endif
+
+            if executable('ag')
+                let g:grepper.tools += ['ag']
+            endif
+            if executable('grep')
+                let g:grepper.tools += ['grep']
+            endif
+        else
+            if executable('git')
+                let &grepprg='git grep -nI'
+            else
+                if executable('ag')
+                    let &grepprg='ag --nogroup --nocolor ' . g:ignore_patterns.ag . ' '
+                elseif executable('grep')
+                    let &grepprg='grep --with-filename -n -I ' . g:ignore_patterns.grep . ' '
+                elseif executable('findstr')
+                    let &grepprg='findstr ' . g:ignore_patterns.findstr . ' '
+                endif
+            endif
+        endif
+    else
+        if exists('g:plugs["ctrlp"]')
+            let g:ctrlp_clear_cache_on_exit = (g:ctrlp_user_command.fallback =~# "^ag ")
+        endif
+        if exists('g:plugs["vim-grepper"]')
+            let g:grepper.tools = []
+
+            if executable('ag')
+                let g:grepper.tools += ['ag']
+            endif
+            if executable('grep')
+                let g:grepper.tools += ['grep']
+            endif
+        else
+            if executable('ag')
+                let &grepprg='ag --nogroup --nocolor ' . g:ignore_patterns.ag . ' '
+            elseif executable('grep')
+                let &grepprg='grep --with-filename -n -I ' . g:ignore_patterns.grep . ' '
+            elseif executable('findstr')
+                let &grepprg='findstr ' . g:ignore_patterns.findstr . ' '
+            endif
+        endif
+    endif
+endfunction
+
+augroup ProjectConfig
+    autocmd!
+    if has("nvim")
+        autocmd DirChanged * call s:SetProjectConfigs()
+    endif
+    autocmd VimEnter,SessionLoadPost * call s:SetProjectConfigs()
+augroup end
+
 " }}} EndSkeletons

@@ -159,12 +159,6 @@ xnoremap <leader>8 <ESC>8gt
 xnoremap <leader>9 <ESC>9gt
 xnoremap <leader>0 <ESC>:tablast<CR>
 
-" Test remap arrow keys
-nnoremap <left>  <c-w><
-nnoremap <right> <c-w>>
-nnoremap <up>    <c-w>+
-nnoremap <down>  <c-w>-
-
 " Use C-p and C-n to move in command's history
 cnoremap <c-n> <down>
 cnoremap <c-p> <up>
@@ -245,6 +239,26 @@ function! s:BufClean(bang)
     endfor
     echo 'Deleted ' . l:count . ' buffers'
 endfunction
+
+let s:arrows = -1
+
+" Test remap arrow keys
+function! s:ToggleArrows()
+    let s:arrows = s:arrows * -1
+    if s:arrows == 1
+        nnoremap <left>  <c-w><
+        nnoremap <right> <c-w>>
+        nnoremap <up>    <c-w>+
+        nnoremap <down>  <c-w>-
+    else
+        unmap <left>
+        unmap <right>
+        unmap <up>
+        unmap <down>
+    endif
+endfunction
+
+command! ArrowsToggle call s:ToggleArrows()
 
 command! -bang BufKill call s:BufKill(<bang>0)
 command! -bang BufClean call s:BufClean(<bang>0)
