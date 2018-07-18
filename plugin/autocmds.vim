@@ -366,7 +366,7 @@ function! s:SetProjectConfigs()
         endif
     else
         if exists('g:plugs["ctrlp"]')
-            let g:ctrlp_clear_cache_on_exit = (g:ctrlp_user_command.fallback =~# "^ag ")
+            let g:ctrlp_clear_cache_on_exit = (g:ctrlp_user_command.fallback =~# '^ag ')
         endif
         if exists('g:plugs["vim-grepper"]')
             let g:grepper.tools = []
@@ -391,7 +391,7 @@ endfunction
 
 augroup ProjectConfig
     autocmd!
-    if has("nvim")
+    if has('nvim')
         autocmd DirChanged * call s:SetProjectConfigs()
     endif
     autocmd VimEnter,SessionLoadPost * call s:SetProjectConfigs()

@@ -31,10 +31,10 @@
 set background=dark
 
 let g:gruvbox_contrast_dark        = 'hard'
-let g:gruvbox_contrast_light       = "hard"
-let g:gruvbox_sign_column          = "dark0"
-let g:gruvbox_color_column         = "dark0"
-let g:gruvbox_vert_split           = "dark0"
+let g:gruvbox_contrast_light       = 'hard'
+let g:gruvbox_sign_column          = 'dark0'
+let g:gruvbox_color_column         = 'dark0'
+let g:gruvbox_vert_split           = 'dark0'
 let g:gruvbox_bold                 = 1
 let g:gruvbox_underline            = 1
 let g:gruvbox_undercurl            = 1
@@ -51,7 +51,7 @@ try
 
     " let g:gruvbox_italic               = 1
     " let g:gruvbox_italicize_comments   = 1
-    " let g:gruvbox_hls_cursor="orange"
+    " let g:gruvbox_hls_cursor='orange'
 
     " silent! colorscheme gruvbox
     " colorscheme gruvbox
