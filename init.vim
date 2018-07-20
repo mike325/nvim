@@ -54,6 +54,14 @@ function! GUI()
     return (has('nvim') && exists('g:GuiLoaded')) || (!has('nvim') && has('gui_running'))
 endfunction
 
+if WINDOWS()
+    set shell=cmd.exe " sets shell to correct path for cmd.exe
+    " Better compatibility with Unix paths in DOS systems
+    if exists('+shellslash')
+        set shellslash
+    endif
+endif
+
 " Set the default work dir
 let g:base_path = ''
 let g:home = ''
@@ -77,17 +85,6 @@ elseif WINDOWS()
 else
     let g:base_path = expand($HOME) . '/.vim/'
     let g:home = expand($HOME)
-endif
-
-" On windows, if gvim.exe or nvim-qt are executed from cygwin bash shell, the shell
-" needs to be changed to the shell most plugins expect on windows.
-" This does not change &shell inside cygwin or msys vim.
-if WINDOWS()
-    set shell=cmd.exe " sets shell to correct path for cmd.exe
-    " Better compatibility with Unix paths in DOS systems
-    if exists('+shellslash')
-        set shellslash
-    endif
 endif
 
 " }}} END Improve compatibility between Unix and DOS platfomrs
@@ -300,16 +297,19 @@ if ASYNC()
         endif
     endif
 
-    let s:python = ['3', '5']
-    if s:python_setup(s:python) !=# ''
-        if exists('g:loaded_python3_provider')
-            unlet g:loaded_python3_provider
+    for s:minor in ['8', '7', '6', '5', '4']
+        let s:python = ['3', s:minor]
+        if s:python_setup(s:python) !=# ''
+            if exists('g:loaded_python3_provider')
+                unlet g:loaded_python3_provider
+            endif
+            let g:python3_host_prog = s:python_setup(s:python)
+            if WINDOWS()
+                let g:python3_host_prog .=  '/python'
+            endif
+            break
         endif
-        let g:python3_host_prog = s:python_setup(s:python)
-        if WINDOWS()
-            let g:python3_host_prog .=  '/python'
-        endif
-    endif
+    endfor
 
 endif
 
@@ -401,12 +401,6 @@ if !exists('g:minimal')
     " Easy alignment with motions and text objects
     Plug 'tommcdo/vim-lion'
 
-    Plug 'ctrlpvim/ctrlp.vim'
-    if has('unix') && executable('git')
-        Plug 'jasoncodes/ctrlp-modified.vim'
-    endif
-    " Plug 'tacahiroy/ctrlp-funky'
-
     " Have some problmes with vinager in windows
     if !WINDOWS()
         Plug 'tpope/vim-vinegar'
@@ -434,22 +428,10 @@ if !exists('g:minimal')
         endif
     endif
 
-    " DEPRECATED: Autoformat plugin has an annoying bug that remove user's marks.
-    "             Since I heavily relay in this feature for code navigation I
-    "             decided to start using Vim's native format option 'formatprg'
-    "             in ftplugin dir
-    "
-    "             I may reactivate it if the bug is fix
-    "
-    " " Autoformat tools
-    " " TODO Check this fork, No +python required
-    " " Plug 'umitkablan/vim-auf'
-    " " TODO Check google's own formatter
-    " " Plug 'google/vim-codefmt'
-    " if (has('nvim') || (v:version >= 704))
-    "     " Code Format tool
-    "     Plug 'chiel92/vim-autoformat', {'on': ['Autoformat']}
-    " endif
+    Plug 'ctrlpvim/ctrlp.vim'
+    if has('unix') && executable('git')
+        Plug 'jasoncodes/ctrlp-modified.vim'
+    endif
 
     if PYTHON('any')
         " Fast and 'easy' to compile C CtrlP matcher
@@ -517,9 +499,9 @@ if !exists('g:minimal')
         Plug 'garbas/vim-snipmate'
     endif
 
-    let b:ycm_installed = 0
-    let b:deoplete_installed = 0
-    let b:completor = 0
+    let s:ycm_installed = 0
+    let s:deoplete_installed = 0
+    let s:completor = 0
 
     " This env var allow us to know if the python version has the dev libs
     if empty($NO_PYTHON_DEV)
@@ -599,7 +581,7 @@ if !exists('g:minimal')
                     Plug 'carlitux/deoplete-ternjs'
                 endif
 
-                let b:deoplete_installed = 1
+                let s:deoplete_installed = 1
 
             elseif ASYNC() && executable('cmake') && (( has('unix') && ( executable('gcc')  || executable('clang') )) ||
                         \ (WINDOWS() && executable('msbuild') && executable('7z')))
@@ -661,22 +643,21 @@ if !exists('g:minimal')
 
                 " C/C++ project generator
                 Plug 'rdnetto/ycm-generator', { 'branch': 'stable' }
-                let b:ycm_installed = 1
+                let s:ycm_installed = 1
             elseif ASYNC()
                 " Test new completion Async framework that require python and vim 8 or
                 " Neovim (without python3)
                 Plug 'maralla/completor.vim'
-                let b:completor = 1
+                let s:completor = 1
             endif
 
             " if ( has('nvim') || ( v:version >= 800 ) || ( v:version >= 704 ) ) &&
-            "             \ ( b:ycm_installed==1 || b:deoplete_installed==1 )
+            "             \ ( s:ycm_installed==1 || s:deoplete_installed==1 )
             "     " Only works with JDK8!!!
             "     Plug 'artur-shaik/vim-javacomplete2'
             " endif
 
-
-            if b:ycm_installed==0 && b:deoplete_installed==0
+            if s:ycm_installed==0 && s:deoplete_installed==0
                 " Completion for python without engines
                 Plug 'davidhalter/jedi-vim'
 
@@ -687,14 +668,12 @@ if !exists('g:minimal')
     endif
 
     " Vim clang does not require python
-    if executable('clang')
-        if b:ycm_installed==0 && b:deoplete_installed==0
-            Plug 'justmao945/vim-clang'
-        endif
+    if executable('clang') && s:ycm_installed==0 && s:deoplete_installed==0
+        Plug 'justmao945/vim-clang'
     endif
 
     " completion without python completion engines ( ycm, deoplete or completer )
-    if b:ycm_installed==0 && b:deoplete_installed==0 && b:completor==0
+    if s:ycm_installed==0 && s:deoplete_installed==0 && s:completor==0
         " Neovim does not support Lua plugins yet
         if has('lua') && !has('nvim') && (v:version >= 704)
             Plug 'Shougo/neocomplete.vim'
