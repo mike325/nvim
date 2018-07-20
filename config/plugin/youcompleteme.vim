@@ -91,10 +91,10 @@ let g:ycm_filetype_blacklist    = {
         \ 'man' : 1,
 \}
 
-if executable('python3')
-    let g:ycm_python_binary_path = 'python3'
+if exists('g:python3_host_prog')
+    let g:ycm_python_binary_path = g:python3_host_prog
 else
-    let g:ycm_python_binary_path = 'python'
+    let g:ycm_python_binary_path = g:python2_host_prog
 endif
 
 function! s:SplitYCM(split_type, ycm_cmd)
