@@ -309,15 +309,14 @@ augroup end
 
 function! s:FindProjectRoot(file)
     if exists('g:plugs["vim-fugitive"]')
-        return fugitive#extract_git_dir(expand('%:p'))
+        return fugitive#extract_git_dir(fnamemodify(a:file, ':p'))
     else
-        let l:file = fnamemodify(a:file, ':h')
+        let l:cwd = fnamemodify(a:file, ':h')
         let l:root = ''
         for l:dir in ['.git', '.svn', '.hg']
-            let l:root = finddir(l:dir, l:file.';')
+            let l:root = finddir(l:dir, l:cwd.';')
             if !empty(l:root)
-                let l:project_root = ( l:root  ==# l:dir ) ? getcwd() . l:root : l:root
-                let l:project_root = fnamemodify(l:project_root, ':h')
+                let l:project_root = fnamemodify(l:dir, ':p:h')
                 return l:project_root
             endif
         endfor
@@ -365,6 +364,7 @@ function! s:SetProjectConfigs()
             endif
         endif
     else
+        let g:project_root = fnamemodify(getcwd(), ':p')
         if exists('g:plugs["ctrlp"]')
             let g:ctrlp_clear_cache_on_exit = (g:ctrlp_user_command.fallback =~# '^ag ')
         endif
