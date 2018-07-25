@@ -1,4 +1,7 @@
 {
+    "project.vim": {
+        "type": "Project"
+    },
     ".projections.json": {
         "type": "Projections"
     },

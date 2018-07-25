@@ -307,13 +307,21 @@ augroup Skeletons
     autocmd BufNewFile *.h                silent! call CHeader()
 augroup end
 
+" TODO: Add support for git worktrees
 function! s:FindProjectRoot(file)
+    let l:root = ''
+    let l:markers = ['.git', '.svn', '.hg']
+
     if exists('g:plugs["vim-fugitive"]')
-        return fugitive#extract_git_dir(fnamemodify(a:file, ':p'))
-    else
+        let l:root = fugitive#extract_git_dir(fnamemodify(a:file, ':p'))
+        if empty(l:root)
+            let l:markers = ['.svn', '.hg']
+        endif
+    endif
+
+    if empty(l:root)
         let l:cwd = fnamemodify(a:file, ':h')
-        let l:root = ''
-        for l:dir in ['.git', '.svn', '.hg']
+        for l:dir in l:markers
             let l:root = finddir(l:dir, l:cwd.';')
             if !empty(l:root)
                 let l:project_root = fnamemodify(l:dir, ':p:h')
@@ -321,16 +329,34 @@ function! s:FindProjectRoot(file)
             endif
         endfor
     endif
-    return ''
+
+    return l:root
 endfunction
 
 function! s:SetProjectConfigs()
     let g:project_root =  s:FindProjectRoot(expand('%:p'))
-    if g:project_root !=# ''
+    if !empty(g:project_root)
         let g:project_root = fnamemodify(g:project_root, ':h')
 
         if filereadable(g:project_root . '/project.vim')
-            execute 'source '. g:project_root . '/project.vim'
+            try
+                execute 'source '. g:project_root . '/project.vim'
+            catch /.*/
+                if !GUI()
+                    echoerr 'There were errors with the project file in ' . g:project_root . '/project.vim'
+                endif
+            endtry
+        endif
+
+        if exists('g:plugs["ultisnips"]')
+            command! UltiSnipsDir call mkdir(g:project_root . '/UltiSnips', 'p')
+
+            let g:UltiSnipsSnippetsDir        = g:project_root . '/UltiSnips'
+            let g:UltiSnipsSnippetDirectories = [
+                        \   g:project_root . '/UltiSnips',
+                        \   g:base_path . 'config/UltiSnips',
+                        \   'UltiSnips'
+                        \]
         endif
 
         if exists('g:plugs["ctrlp"]')
@@ -365,9 +391,27 @@ function! s:SetProjectConfigs()
         endif
     else
         let g:project_root = fnamemodify(getcwd(), ':p')
+
+        if filereadable(g:project_root . '/project.vim')
+            try
+                execute 'source '. g:project_root . '/project.vim'
+            catch /.*/
+                if !GUI()
+                    echoerr 'There were errors with the project file in ' . g:project_root . '/project.vim'
+                endif
+            endtry
+        endif
+
+        if exists('g:plugs["ultisnips"]')
+            silent! delcommand UltiSnipsDir
+            let g:UltiSnipsSnippetsDir        = g:base_path . 'config/UltiSnips'
+            let g:UltiSnipsSnippetDirectories = [g:base_path . 'config/UltiSnips', 'UltiSnips']
+        endif
+
         if exists('g:plugs["ctrlp"]')
             let g:ctrlp_clear_cache_on_exit = (g:ctrlp_user_command.fallback =~# '^ag ')
         endif
+
         if exists('g:plugs["vim-grepper"]')
             let g:grepper.tools = []
 
