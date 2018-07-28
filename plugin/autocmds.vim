@@ -307,6 +307,8 @@ augroup Skeletons
     autocmd BufNewFile *.h                silent! call CHeader()
 augroup end
 
+" }}} EndSkeletons
+
 " TODO: Add support for git worktrees
 function! s:FindProjectRoot(file)
     let l:root = ''
@@ -441,4 +443,3 @@ augroup ProjectConfig
     autocmd VimEnter,SessionLoadPost * call s:SetProjectConfigs()
 augroup end
 
-" }}} EndSkeletons

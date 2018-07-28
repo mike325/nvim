@@ -77,6 +77,7 @@ nnoremap <leader><leader>e :echo expand("%")<CR>
 
 " Very Magic sane regex searches
 nnoremap g/ /\v
+nnoremap gs :%s/\v
 
 " CREDITS: https://github.com/alexlafroscia/dotfiles/blob/master/nvim/init.vim
 " Smart indent when entering insert mode with i on empty lines
@@ -324,6 +325,17 @@ command! -nargs=? -complete=customlist,s:Spells SpellLang
 command! -nargs=? Qopen
             \ execute 'botright copen ' . expand(<q-args>)
 
+if executable('svn')
+    command! -nargs=* SVNstatus execute('!git status ' . <q-args>)
+    command! -complete=file -nargs=+ SVN execute('!svn ' . <q-args>)
+    command! -complete=file -nargs=* SVNupdate execute('!svn update ' . <q-args>)
+    command! -complete=file -bang SVNread execute('!svn revert ' . expand("%")) |
+                \ let s:bang = empty(<bang>0) ? '' : '!' |
+                \ execute('edit'.s:bang) |
+                \ unlet s:bang
+
+endif
+
 " function! s:Scratch(bang, args, range)
 "     let s:bang = a:bang
 "     if !exists('s:target') || a:bang
@@ -473,21 +485,45 @@ if !exists('g:plugs["vim-eunuch"]')
                 \ unlet s:target
 endif
 
-if !exists('g:plugs["vim-fugitive"]')
-    command! -nargs=+ Git execute('!git ' . <q-args>)
-    command! -nargs=* Gstatus execute('!git status ' . <q-args>)
-    if has('nvim') || has('terminal')
-        command! -nargs=* Gcommit execute('terminal git commit ' . <q-args>)
-        nnoremap <leader>gw :Gwrite<CR>
-        command! -nargs=* Gpush  execute('terminal git push ' .<q-args>)
+if !exists('g:plugs["vim-fugitive"]') && executable('git')
+    " TODO: Git pull command
+    if has('nvim')
+        command! -nargs=+ Git execute('botright 20split term://git ' . <q-args>)
+        command! -nargs=* Gstatus execute('botright 20split term://git status ' . <q-args>)
+        command! -nargs=* Gcommit execute('botright 20split term://git commit ' . <q-args>)
+        command! -nargs=* Gpush  execute('botright 20split term://git push ' .<q-args>)
+        command! -nargs=* Gpull  execute('!git pull ' .<q-args>)
+        command! -nargs=* Gwrite  execute('!git add ' . expand("%") . ' ' .<q-args>)
+        command! -bang Gread execute('!git reset HEAD ' . expand("%") . ' && git checkout -- ' . expand("%")) |
+                    \ let s:bang = empty(<bang>0) ? '' : '!' |
+                    \ execute('edit'.s:bang) |
+                    \ unlet s:bang
+    elseif has('terminal')
+        command! -nargs=+ Git call term_start('git ' . <q-args>)
+        command! -nargs=* Gstatus call term_start('git status ' . <q-args>)
+        command! -nargs=* Gcommit call term_start('git commit ' . <q-args>)
+        command! -nargs=* Gpush  call term_start('git push ' .<q-args>)
+        command! -nargs=* Gpull  call term_start('git pull ' .<q-args>)
+        command! -nargs=* Gwrite  call term_start('git add ' . expand("%") . ' ' .<q-args>)
+        command! -bang Gread call term_start('git reset HEAD ' . expand("%") . ' && git checkout -- ' . expand("%")) |
+                    \ let s:bang = empty(<bang>0) ? '' : '!' |
+                    \ execute('edit'.s:bang) |
+                    \ unlet s:bang
+    else
+        command! -nargs=+ Git botright 10split gitcmd | 0,$delete | 0read '!git ' . <q-args>
+        command! -nargs=* Gstatus botright 10split gitcmd | 0,$delete | 0read '!git status ' . <q-args>
+        command! -nargs=* Gcommit botright 10split gitcmd | 0,$delete | 0read '!git commit ' . <q-args>
+        command! -nargs=* Gpush  botright 10split gitcmd | 0,$delete | 0read '!git push ' .<q-args>
+        command! -nargs=* Gpull  botright 10split gitcmd | 0,$delete | 0read '!git pull ' .<q-args>
+        command! -nargs=* Gwrite  botright 10split gitcmd | 0,$delete | 0read '!git add ' . expand("%" . ' ' .<q-args>)
+        command! -bang Gread botright 10split gitcmd | 0,$delete | 0read '!git reset HEAD ' . expand("%" . ' && git checkout -- ' . expand("%")) |
+                    \ let s:bang = empty(<bang>0) ? '' : '!' |
+                    \ execute('edit'.s:bang) |
+                    \ unlet s:bang
     endif
-    command! -nargs=* Gwrite  execute('!git add ' . expand("%") . ' ' .<q-args>)
-    command! -bang Gread execute('!git reset HEAD ' . expand("%") . ' && git checkout -- ' . expand("%")) |
-                \ let s:bang = empty(<bang>0) ? '' : '!' |
-                \ execute('edit'.s:bang) |
-                \ unlet s:bang
 
 
+    nnoremap <leader>gw :Gwrite<CR>
     nnoremap <leader>gs :Gstatus<CR>
     nnoremap <leader>gc :Gcommit<CR>
     nnoremap <leader>gr :Gread<CR>
