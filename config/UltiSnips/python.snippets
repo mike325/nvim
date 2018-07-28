@@ -34,3 +34,20 @@ endsnippet
 snippet raise "raise Exception(...)"
 raise Exception($0)
 endsnippet
+
+snippet elif "elif condition:"
+elif ${1:condition}:
+	${2:${VISUAL:pass}}
+endsnippet
+
+snippet todo "TODO:"
+# TODO: $1
+endsnippet
+
+snippet fix "FIX:"
+# FIX: $1
+endsnippet
+
+snippet note "NOTE:"
+# NOTE: $1
+endsnippet
