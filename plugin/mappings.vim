@@ -498,22 +498,18 @@ if !exists('g:plugs["vim-fugitive"]') && executable('git')
                     \ let s:bang = empty(<bang>0) ? '' : '!' |
                     \ execute('edit'.s:bang) |
                     \ unlet s:bang
-    elseif has('terminal')
-        command! -nargs=+ Git call term_start('git ' . <q-args>, {'term_rows': 20})
-        command! -nargs=* Gstatus call term_start('git status ' . <q-args>, {'term_rows': 20})
-        command! -nargs=* Gcommit execute('!git commit ' . <q-args>)
-        command! -nargs=* Gpush  call term_start('git push ' .<q-args>, {'term_rows': 20})
-        command! -nargs=* Gpull  execute('!git pull ' .<q-args>)
-        command! -nargs=* Gwrite  execute('!git add ' . expand("%") . ' ' .<q-args>)
-        command! -bang Gread execute('!git reset HEAD ' . expand("%") . ' && git checkout -- ' . expand("%")) |
-                    \ let s:bang = empty(<bang>0) ? '' : '!' |
-                    \ execute('edit'.s:bang) |
-                    \ unlet s:bang
     else
-        command! -nargs=+ Git botright 10split gitcmd | 0,$delete | 0read '!git ' . <q-args>
-        command! -nargs=* Gstatus botright 10split gitcmd | 0,$delete | 0read '!git status ' . <q-args>
-        command! -nargs=* Gcommit botright 10split gitcmd | 0,$delete | 0read '!git commit ' . <q-args>
-        command! -nargs=* Gpush  botright 10split gitcmd | 0,$delete | 0read '!git push ' .<q-args>
+        if has('terminal')
+            command! -nargs=+ Git call term_start('git ' . <q-args>, {'term_rows': 20})
+            command! -nargs=* Gstatus call term_start('git status ' . <q-args>, {'term_rows': 20})
+            command! -nargs=* Gpush  call term_start('git push ' .<q-args>, {'term_rows': 20})
+        else
+            command! -nargs=+ Git botright 10split gitcmd | 0,$delete | 0read '!git ' . <q-args>
+            command! -nargs=* Gstatus botright 10split gitcmd | 0,$delete | 0read '!git status ' . <q-args>
+            command! -nargs=* Gpush  botright 10split gitcmd | 0,$delete | 0read '!git push ' .<q-args>
+        endif
+
+        command! -nargs=* Gcommit execute('!git commit ' . <q-args>)
         command! -nargs=* Gpull  execute('!git pull ' .<q-args>)
         command! -nargs=* Gwrite  execute('!git add ' . expand("%") . ' ' .<q-args>)
         command! -bang Gread execute('!git reset HEAD ' . expand("%") . ' && git checkout -- ' . expand("%")) |
