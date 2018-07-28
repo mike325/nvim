@@ -63,7 +63,13 @@ if !has('nvim')
     set t_Co=255
 endif
 
-if has('nvim') && executable('nvr')
+if has('nvim') && WINDOWS() && executable('nvr')
+    let $EDITOR='nvr --remote-wait-silent'
+    let $GIT_PAGER="nvr -cc 'setlocal modifiable' -c 'setlocal ft=git  nomodifiable' --remote-tab -"
+elseif has('nvim') && WINDOWS()
+    let $EDITOR='nvim'
+    let $GIT_PAGER="nvim --cmd 'let g:minimal=0' --cmd 'setlocal modifiable noswapfile nobackup noundofile' -c 'setlocal ft=git  nomodifiable' - "
+elseif has('nvim') && executable('nvr')
     " Add Neovim remote utility, this allow us to open buffers from the :terminal cmd
     let $nvr = 'nvr --remote-silent'
     let $tnvr = 'nvr --remote-tab-silent'
@@ -159,7 +165,8 @@ set titlestring=%t\ (%f)
 set title          " Set window title
 set laststatus=2   " Always show the status line
 set lazyredraw     " Don't draw when a macro is being executed
-set splitright     " Split on the right size
+set splitright     " Split on the right the current buffer
+set splitbelow     " Split on the below the current buffer
 set nowrap         " By default don't wrap the lines
 set showmatch      " Show matching parenthesis
 set number         " Show line numbers
