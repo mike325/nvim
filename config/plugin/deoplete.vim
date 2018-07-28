@@ -96,7 +96,7 @@ else
     let g:deoplete#omni#functions.python = 'pythoncomplete#Complete'
 endif
 
-if exists('g:plugs["deoplete-clang"]')
+if exists('g:plugs["deoplete-clang"]') || exists('g:plugs["deoplete-clang2"]')
     if !exists('g:deoplete#sources')
         let g:deoplete#sources = {}
     endif
@@ -113,8 +113,8 @@ if exists('g:plugs["deoplete-clang"]')
     " FIXME: this doesn't work yet
     " ISSUE: https://github.com/zchee/deoplete-clang/issues/57
     if WINDOWS()
-        " let g:deoplete#sources#clang#libclang_path = fnameescape('c:/Program Files/LLVM/bin/libclang.dll')
-        " let g:deoplete#sources#clang#clang_header  = fnameescape('c:/Program Files/LLVM/lib/clang/')
+        let g:deoplete#sources#clang#libclang_path = fnameescape('c:/Program Files/LLVM/bin/libclang.dll')
+        let g:deoplete#sources#clang#clang_header  = fnameescape('c:/Program Files/LLVM/lib/clang/')
     else
         let g:deoplete#sources#clang#libclang_path = '/usr/lib/libclang.so'
         let g:deoplete#sources#clang#clang_header  = '/usr/lib/clang'
@@ -126,14 +126,6 @@ if exists('g:plugs["deoplete-clang"]')
                 \    'objc'   : 'c11',
                 \    'objcpp' : 'c++1z'
                 \}
-
-elseif exists('g:plugs["deoplete-clang2"]')
-    let g:deoplete#sources#clang#std = {
-                \    'c'      : 'c11',
-                \    'cpp'    : 'c++14',
-                \    'objc'   : 'c11',
-                \    'objcpp' : 'c++1z'
-                \ }
 endif
 
 if exists('g:plugs["neoinclude.vim"]')
