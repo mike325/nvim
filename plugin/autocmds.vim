@@ -437,7 +437,7 @@ endfunction
 
 augroup ProjectConfig
     autocmd!
-    if has('nvim')
+    if has('nvim-0.2')
         autocmd DirChanged * call s:SetProjectConfigs()
     endif
     autocmd VimEnter,SessionLoadPost * call s:SetProjectConfigs()
