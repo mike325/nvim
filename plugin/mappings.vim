@@ -77,7 +77,7 @@ nnoremap <leader><leader>e :echo expand("%")<CR>
 
 " Very Magic sane regex searches
 nnoremap g/ /\v
-nnoremap gs :%s/\v
+" nnoremap gs :%s/\v
 
 " CREDITS: https://github.com/alexlafroscia/dotfiles/blob/master/nvim/init.vim
 " Smart indent when entering insert mode with i on empty lines
@@ -184,10 +184,10 @@ if has('nvim') || has('terminal')
     if WINDOWS()
         " NOTE: clear (and cmd cls) doesn't work in the latest Neovim's terminal
         " Spawns a bash session inside cmd
-        if filereadable('c:/Program Files/Git/bin/bash.exe')
-            command! Terminal terminal 'c:/Program Files/Git/bin/bash.exe'
-        elseif filereadable('c:/Program Files (x86)/Git/bin/bash.exe')
-            command! Terminal terminal 'c:/Program Files (x86)/Git/bin/bash.exe'
+        if has('nvim')
+            command! -nargs=? Terminal execute('botright 20split term://powershell -noexit -executionpolicy bypass -File ' . g:home . '/.config/shell/alias/alias.ps1' . <q-args>)
+        elseif has('terminal')
+            command! -nargs=? Terminal call term_start('powershell -noexit -executionpolicy bypass -File ' . g:home . '/.config/shell/alias/alias.ps1' .  . <q-args>, {'term_rows': 20})
         endif
     endif
 endif
@@ -322,11 +322,20 @@ command! -nargs=? -complete=customlist,s:Spells SpellLang
 
 " Avoid dispatch command conflict
 " QuickfixOpen
-command! -nargs=? Qopen
-            \ execute 'botright copen ' . expand(<q-args>)
+command! -nargs=? Qopen execute 'botright copen ' . expand(<q-args>)
+
+if PYTHON('any')
+    if has('nvim')
+        command! -nargs=? Python execute('botright 20split term://'. g:python_host_prog . <q-args>)
+        command! -nargs=? Python3 execute('botright 20split term://'. g:python3_host_prog . <q-args>)
+    elseif has('terminal')
+        command! -nargs=? Python call term_start(g:python_host_prog . <q-args>, {'term_rows': 20})
+        command! -nargs=? Python3 call term_start(g:python3_host_prog . <q-args>, {'term_rows': 20})
+    endif
+endif
 
 if executable('svn')
-    command! -nargs=* SVNstatus execute('!git status ' . <q-args>)
+    command! -nargs=* SVNstatus execute('!svn status ' . <q-args>)
     command! -complete=file -nargs=+ SVN execute('!svn ' . <q-args>)
     command! -complete=file -nargs=* SVNupdate execute('!svn update ' . <q-args>)
     command! -complete=file -bang SVNread execute('!svn revert ' . expand("%")) |

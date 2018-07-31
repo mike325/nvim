@@ -65,10 +65,12 @@ endif
 
 if has('nvim') && WINDOWS() && executable('nvr')
     let $EDITOR='nvr --remote-wait-silent'
+    let $SVN_EDITOR='nvr --remote-wait-silent '
     let $GIT_PAGER="nvr -cc 'setlocal modifiable' -c 'setlocal ft=git  nomodifiable' --remote-tab -"
-elseif has('nvim') && WINDOWS()
-    let $EDITOR='nvim'
+elseif has('nvim') && WINDOWS() && executable('nvim')
+    let $EDITOR="nvim --cmd 'let g:minimal=0' - "
     let $GIT_PAGER="nvim --cmd 'let g:minimal=0' --cmd 'setlocal modifiable noswapfile nobackup noundofile' -c 'setlocal ft=git  nomodifiable' - "
+    let $SVN_EDITOR="nvim --cmd 'let g:minimal=0' - "
 elseif has('nvim') && executable('nvr')
     " Add Neovim remote utility, this allow us to open buffers from the :terminal cmd
     let $nvr = 'nvr --remote-silent'
