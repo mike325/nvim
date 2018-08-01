@@ -625,7 +625,7 @@ if !exists('g:minimal')
                         if WINDOWS()
                             execute '!python ./install.py ' . l:code_completion
                         elseif executable('python3')
-                            ' Force python3
+                            " Force python3
                             execute '!python3 ./install.py ' . l:code_completion
                         else
                             execute '!./install.py ' . l:code_completion
