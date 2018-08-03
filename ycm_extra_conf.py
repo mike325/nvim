@@ -11,38 +11,7 @@ import os
 import os.path as p
 import sys
 import logging
-try:
-    import ycm_core
-
-    # Set this to the absolute path to the folder (NOT the file!) containing the
-    # compile_commands.json file to use that instead of 'flags'. See here for
-    # more details: http://clang.llvm.org/docs/JSONCompilationDatabase.html
-    #
-    # You can get CMake to generate this file for you by adding:
-    #   set( CMAKE_EXPORT_COMPILE_COMMANDS 1 )
-    # to your CMakeLists.txt file.
-    #
-    # Most projects will NOT need to set this to anything; you can just change the
-    # 'flags' list of compilation flags. Notice that YCM itself uses that approach.
-
-    # NOTE: Any compilation database path could be hardcode here (for project specific stuff)
-    compilation_database_folder = ''
-    cwd = p.realpath(p.curdir)
-    root = '/'
-
-    while cwd != root and compilation_database_folder != '':
-        fileList = [filename for filename in os.listdir(cwd) if p.isfile(p.join(cwd, filename))]
-        if 'compile_commands.json' in fileList:
-            compilation_database_folder = p.realpath(cwd)
-        cwd = p.relpath(p.join(cwd, '..'))
-
-    database = None
-    if p.exists(compilation_database_folder):
-        database = ycm_core.CompilationDatabase(compilation_database_folder)
-except ImportError:
-
-    compilation_database_folder = ''
-    database = None
+import ycm_core
 
 __header__ = """
                               -`
@@ -230,6 +199,7 @@ def Settings(**kwargs):
     """
     language = kwargs['language'] if 'language' in kwargs else ''
     if language == 'cfamily':
+
         # If the file is a header, try to find the corresponding source file and
         # retrieve its flags from the compilation database if using one. This is
         # necessary since compilation databases don't have entries for header files.
@@ -348,3 +318,36 @@ def FlagsForFile(filename, **kwargs):
 
         return Settings(filename=filename, language=language, *kwargs)
     return Settings(filename=filename, *kwargs)
+
+
+if __name__ == "__main__":
+    raise Exception("This script is imported by YCM and it can't run by its own")
+else:
+    # Set this to the absolute path to the folder (NOT the file!) containing the
+    # compile_commands.json file to use that instead of 'flags'. See here for
+    # more details: http://clang.llvm.org/docs/JSONCompilationDatabase.html
+    #
+    # You can get CMake to generate this file for you by adding:
+    #   set( CMAKE_EXPORT_COMPILE_COMMANDS 1 )
+    # to your CMakeLists.txt file.
+    #
+    # Most projects will NOT need to set this to anything; you can just change the
+    # 'flags' list of compilation flags. Notice that YCM itself uses that approach.
+
+    # NOTE: Any compilation database path could be hardcode here (for project specific stuff)
+    compilation_database_folder = ''
+    cwd = p.realpath(p.curdir)
+    root = '/'
+    database = None
+
+    # logging.info('Working dir {0}'.format(cwd))
+    while cwd != root:
+        fileList = [filename for filename in os.listdir(cwd) if p.isfile(p.join(cwd, filename))]
+        # logging.info('Files in {0}: {1}'.format(cwd, ','.join(fileList)))
+        if 'compile_commands.json' in fileList:
+            logging.info('Using database in {}'.format(cwd))
+            compilation_database_folder = p.realpath(cwd)
+            # logging.info('Updating Compilation databse info')
+            database = ycm_core.CompilationDatabase(compilation_database_folder)
+            break
+        cwd = p.relpath(p.join(cwd, '..'))
