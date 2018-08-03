@@ -80,7 +80,7 @@ augroup end
 
 " call deoplete#custom#set('ultisnips', 'matchers', ['matcher_full_fuzzy'])
 
-if exists('g:plugs["vim-lua-ftplugin"]') && (executable("luac") || executable("lualint") || exists("g:lua_compiler_name"))
+if exists('g:plugs["vim-lua-ftplugin"]') && (executable('luac') || executable('lualint') || exists('g:lua_compiler_name'))
     let g:lua_check_syntax               = 0
     let g:lua_complete_omni              = 1
     let g:lua_complete_dynamic           = 0

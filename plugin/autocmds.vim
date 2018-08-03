@@ -365,6 +365,16 @@ function! s:SetProjectConfigs()
             let g:ctrlp_clear_cache_on_exit = 1
         endif
 
+        if exists('g:plugs["deoplete.nvim"]') && ( exists('g:plugs["deoplete-clang"]') || exists('g:plugs["deoplete-clang2"]') )
+            if filereadable(g:project_root . '/compile_commands.json')
+                let g:deoplete#sources#clang#clang_complete_database = g:project_root
+            else
+                if exists('g:deoplete#sources#clang#clang_complete_database')
+                    unlet g:deoplete#sources#clang#clang_complete_database
+                endif
+            endif
+        endif
+
         if exists('g:plugs["vim-grepper"]')
             if executable('git')
                 let g:grepper.tools = ['git']
@@ -412,6 +422,16 @@ function! s:SetProjectConfigs()
 
         if exists('g:plugs["ctrlp"]')
             let g:ctrlp_clear_cache_on_exit = (g:ctrlp_user_command.fallback =~# '^ag ')
+        endif
+
+        if exists('g:plugs["deoplete.nvim"]') && ( exists('g:plugs["deoplete-clang"]') || exists('g:plugs["deoplete-clang2"]') )
+            if filereadable(g:project_root . '/compile_commands.json')
+                let g:deoplete#sources#clang#clang_complete_database = g:project_root
+            else
+                if exists('g:deoplete#sources#clang#clang_complete_database')
+                    unlet g:deoplete#sources#clang#clang_complete_database
+                endif
+            endif
         endif
 
         if exists('g:plugs["vim-grepper"]')
