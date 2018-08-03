@@ -136,7 +136,7 @@ if empty($SSH_CONNECTION) && has('clipboard')
     elseif has('nvim')
         " Neovim in unix require external programs to use system's clipboard
         " NOTE: we don't dare to run Neovim from window's cmd/powershell
-        if ( executable('pbcopy') || executable('xclip') || executable('xsel') || executable('lemonade') )
+        if ( executable('pbcopy') || executable('xclip') || executable('xsel') || executable('lemonade') || executable('win32yank') )
             set clipboard+=unnamedplus,unnamed
             if has('mouse')
                 set mouse=a    " We have mouse support, so we use it

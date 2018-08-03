@@ -536,10 +536,21 @@ if !exists('g:minimal')
                     endif
                 endfunction
 
-                Plug 'Shougo/deoplete.nvim', { 'do': function('DeopletePostSetup')}
+                " FIXME: Some versions of debian ship neovim 0.1.7 which doesn't work
+                "        with latest versions of deoplete
+                if has('nvim-0.2')
+                    Plug 'Shougo/deoplete.nvim', { 'do': function('DeopletePostSetup')}
+                else
+                    Plug 'Shougo/deoplete.nvim', { 'tag': '2.0', 'do': function('DeopletePostSetup'), 'frozen' : 1}
+                endif
 
                 " Python completion
-                Plug 'zchee/deoplete-jedi'
+                if has('nvim-0.2')
+                    Plug 'zchee/deoplete-jedi'
+                else
+                    Plug 'zchee/deoplete-jedi', {'commit': '3f510b467baded4279c52147e98f840b53324a8b', 'frozen': 1}
+                endif
+
                 Plug 'Shougo/neco-vim'
 
                 " C/C++ completion base on clang compiler
