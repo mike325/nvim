@@ -24,4 +24,4 @@
 "
 " ############################################################################
 
-autocmd BufRead,BufNewFile *.h  setfiletype c
+autocmd BufNewFile,BufReadPre,BufEnter *.h  set filetype=c

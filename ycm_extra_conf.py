@@ -14,29 +14,37 @@ import logging
 try:
     import ycm_core
 
-# Set this to the absolute path to the folder (NOT the file!) containing the
-# compile_commands.json file to use that instead of 'flags'. See here for
-# more details: http://clang.llvm.org/docs/JSONCompilationDatabase.html
-#
-# You can get CMake to generate this file for you by adding:
-#   set( CMAKE_EXPORT_COMPILE_COMMANDS 1 )
-# to your CMakeLists.txt file.
-#
-# Most projects will NOT need to set this to anything; you can just change the
-# 'flags' list of compilation flags. Notice that YCM itself uses that approach.
+    # Set this to the absolute path to the folder (NOT the file!) containing the
+    # compile_commands.json file to use that instead of 'flags'. See here for
+    # more details: http://clang.llvm.org/docs/JSONCompilationDatabase.html
+    #
+    # You can get CMake to generate this file for you by adding:
+    #   set( CMAKE_EXPORT_COMPILE_COMMANDS 1 )
+    # to your CMakeLists.txt file.
+    #
+    # Most projects will NOT need to set this to anything; you can just change the
+    # 'flags' list of compilation flags. Notice that YCM itself uses that approach.
+
+    # NOTE: Any compilation database path could be hardcode here (for project specific stuff)
     compilation_database_folder = ''
+    cwd = p.realpath(p.curdir)
+    root = '/'
+
+    while cwd != root and compilation_database_folder != '':
+        fileList = [filename for filename in os.listdir(cwd) if p.isfile(p.join(cwd, filename))]
+        if 'compile_commands.json' in fileList:
+            compilation_database_folder = p.realpath(cwd)
+        cwd = p.relpath(p.join(cwd, '..'))
 
     database = None
     if p.exists(compilation_database_folder):
         database = ycm_core.CompilationDatabase(compilation_database_folder)
 except ImportError:
+
     compilation_database_folder = ''
     database = None
 
 __header__ = """
-
-    Credits to https://jonasdevlieghere.com/a-better-youcompleteme-config/
-
                               -`
               ...            .o+`
            .+++s+   .h`.    `ooo/
@@ -84,10 +92,30 @@ WINDOWS_INCLUDES = [
     # TODO
 ]
 
-SOURCE_EXTENSIONS = ['.cpp', '.cxx', '.cc', '.c', '.m', '.mm', '.s']
-HEADER_EXTENSIONS = ['.h', '.hxx', '.hpp', '.hh']
-SOURCE_DIRECTORIES = ['src', 'lib']
-HEADER_DIRECTORIES = ['include']
+SOURCE_EXTENSIONS = [
+    '.cpp',
+    '.cxx',
+    '.cc',
+    '.c',
+    '.s',
+]
+
+SOURCE_DIRECTORIES = [
+    'src',
+    'lib'
+]
+
+HEADER_EXTENSIONS = [
+    '.h',
+    '.hxx',
+    '.hpp',
+    '.hh'
+]
+
+HEADER_DIRECTORIES = [
+    'include'
+]
+
 DIR_OF_THIS_SCRIPT = p.abspath(p.dirname(__file__))
 
 if os.name == 'nt':
@@ -159,6 +187,47 @@ def FlagsForInclude(root):
 
 
 def Settings(**kwargs):
+    """ Resolve compilation flags for every C Family files or interpreter and path for python files
+
+    :kwargs: Dict, Has all data from YCM
+        - language: filetype
+            + cfamily: C/C++/ObjectiveC/ObjectiveC++
+            + python: python files
+            + No other language is supported so far
+        - filename: The file name of the current file
+        - Any other data sent from Neovim/Vim
+
+    For C Family files
+        :returns: Dict, the return dictionary should have one or more of the following keys
+            - flags:
+                (Mandatory) List
+                    The complete compiler flags for the current file
+            - include_paths_relative_to_dir:
+                (Optional) Str
+                    Directory to which the include paths in the list are relative
+                Default: ycmd working directory
+            - override_filename:
+                (Optional) Str
+                    The filename to parse as the translation unit for the given filename
+            - do_cache:
+                (Optional) Boolean
+                    Indicate whether or not the result of this call should be cached
+                    for this filename
+                Default: True
+            - flags_ready:
+                (Optional) Boolean
+                    Indicates that the flags are ready to use
+                Default: True
+
+    For Python files
+        :returns: Dict, the return dictionary should have one or more of the following keys
+            - interpreter_path:
+                (Mandatory) str
+                    The full path of the python interpreter
+            - sys_path:
+                (Optional) list
+                    The list of directories to pre-append to the system path
+    """
     language = kwargs['language'] if 'language' in kwargs else ''
     if language == 'cfamily':
         # If the file is a header, try to find the corresponding source file and
@@ -241,14 +310,13 @@ def Settings(**kwargs):
 # Use Settings instead
 # https://github.com/Valloric/ycmd/commit/66030cd94299114ae316796f3cad181cac8a007c
 def FlagsForFile(filename, **kwargs):
-    """ DEPRECATED
+    """ DEPRECATED in favor of 'Settings' function
 
     Resolve compilation flags for every C/C++ files
 
     :filename: Str, The abspath of the current file
     :kwargs: Dict, Has all extra data passed from (n)vim instance like client_data
-    :returns: Dict, the resturn dictionary should have one or more of the folloing
-                    keys
+    :returns: Dict, the resturn dictionary should have one or more of the folloing keys
         - flags:
             (Mandatory) List
                 The complete compiler flags for the current file
@@ -270,14 +338,13 @@ def FlagsForFile(filename, **kwargs):
             Default: True
 
     """
+    if 'language' not in kwargs:
+        extension = p.splitext(filename)[1]
+        language = ''
+        if extension in SOURCE_EXTENSIONS or extension in HEADER_EXTENSIONS:
+            language = 'cfamily'
+        elif extension == 'py':
+            language = 'python'
 
-    extension = p.splitext(filename)[1]
-    if extension in HEADER_EXTENSIONS or extension in SOURCE_EXTENSIONS:
-        language = kwargs.get("language", "cfamily")
-    else:
-        language = kwargs.get("language", "")
-
-    if "client_data" in kwargs:
-        return Settings(filename=filename, language=language, client_data=kwargs["client_data"])
-
-    return Settings(filename=filename, language=language)
+        return Settings(filename=filename, language=language, *kwargs)
+    return Settings(filename=filename, *kwargs)
