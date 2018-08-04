@@ -35,7 +35,7 @@ if executable('cquery')
     let g:LanguageClient_serverCommands.cpp = g:LanguageClient_serverCommands.c
 endif
 
-if executable('pysl')
+if executable('pyls')
     let g:LanguageClient_serverCommands.python = ['pyls']
 endif
 
