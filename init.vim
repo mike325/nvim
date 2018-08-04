@@ -544,26 +544,46 @@ if !exists('g:minimal')
                     Plug 'Shougo/deoplete.nvim', { 'tag': '2.0', 'do': function('DeopletePostSetup'), 'frozen' : 1}
                 endif
 
-                " Python completion
-                if has('nvim-0.2')
-                    Plug 'zchee/deoplete-jedi'
-                else
-                    Plug 'zchee/deoplete-jedi', {'commit': '3f510b467baded4279c52147e98f840b53324a8b', 'frozen': 1}
-                endif
-
                 Plug 'Shougo/neco-vim'
 
-                " C/C++ completion base on clang compiler
-                if executable('clang')
-                    if WINDOWS()
-                        " A bit faster C/C++ completion
-                        Plug 'tweekmonster/deoplete-clang2'
+                if executable('cquery') || executable('pyls')
+                    function! GetLanguageClient(info)
+                        if WINDOWS()
+                            execute '!powershell install.ps1'
+                        else
+                            execute '!./install.sh'
+                        endif
+                    endfunction
+                    if has('nvim-0.2')
+                        Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do': function('GetLanguageClient')}
                     else
-                        " NOTE: Doesn't support windows
-                        Plug 'zchee/deoplete-clang'
-                        " Plug 'Shougo/neoinclude.vim'
+                        Plug 'autozimu/LanguageClient-neovim', {'tag': '0.1.66', 'do': function('GetLanguageClient'), 'frozen': 1}
                     endif
                 endif
+
+                if !executable('cquery')
+                    " C/C++ completion base on clang compiler
+                    if executable('clang')
+                        if WINDOWS()
+                            " A bit faster C/C++ completion
+                            Plug 'tweekmonster/deoplete-clang2'
+                        else
+                            " NOTE: Doesn't support windows
+                            Plug 'zchee/deoplete-clang'
+                            " Plug 'Shougo/neoinclude.vim'
+                        endif
+                    endif
+                endif
+
+                if !executable('pysl')
+                    " Python completion
+                    if has('nvim-0.2')
+                        Plug 'zchee/deoplete-jedi'
+                    else
+                        Plug 'zchee/deoplete-jedi', {'commit': '3f510b467baded4279c52147e98f840b53324a8b', 'frozen': 1}
+                    endif
+                endif
+
 
                 " Go completion
                 " TODO: Check Go completion in Windows
@@ -658,6 +678,17 @@ if !exists('g:minimal')
             elseif ASYNC()
                 " Test new completion Async framework that require python and vim 8 or
                 " Neovim (without python3)
+                if executable('cquery') || executable('pyls')
+                    function! GetLanguageClient(info)
+                        if WINDOWS()
+                            execute '!powershell install.ps1'
+                        else
+                            execute '!./install.sh'
+                        endif
+                    endfunction
+                    Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do': function('GetLanguageClient')}
+                endif
+
                 Plug 'maralla/completor.vim'
                 let s:completor = 1
             endif
