@@ -36,7 +36,7 @@ let g:LanguageClient_diagnosticsList = 'Location'
 
 
 if executable('cquery')
-    let g:LanguageClient_serverCommands.c = ['cquery', '--log-file=/tmp/cq.log', '--init={"cacheDirectory":"' . g:home . '/.cache/cquery ", "completion": {"filterAndSort": false}}']
+    let g:LanguageClient_serverCommands.c = ['cquery', '--log-file=/tmp/cq.log', '--init={"cacheDirectory":"' . g:home . '/.cache/cquery", "completion": {"filterAndSort": false}}']
     let g:LanguageClient_serverCommands.cpp = g:LanguageClient_serverCommands.c
 endif
 
