@@ -149,10 +149,11 @@ augroup end
 
 augroup QuickQuit
     autocmd!
-    autocmd BufReadPost quickfix nnoremap <silent> <buffer> q :q!<CR>
-    autocmd FileType    help     nnoremap <silent> <buffer> q :q!<CR>
-    autocmd FileType    git      nnoremap <silent> <buffer> q :q!<CR>
-    autocmd FileType    man      nnoremap <silent> <buffer> q :q!<CR>
+    autocmd BufEnter,BufReadPost quickfix           nnoremap <silent> <buffer> q :q!<CR>
+    autocmd BufEnter,BufReadPost __LanguageClient__ nnoremap <silent> <buffer> q :q!<CR>
+    autocmd FileType             help               nnoremap <silent> <buffer> q :q!<CR>
+    autocmd FileType             git                nnoremap <silent> <buffer> q :q!<CR>
+    autocmd FileType             man                nnoremap <silent> <buffer> q :q!<CR>
     if has('nvim')
         autocmd TermOpen    *        nnoremap <silent> <buffer> q :q!<CR>
     endif
