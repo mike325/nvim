@@ -53,14 +53,14 @@ if executable('pyls') || executable('cquery')
             autocmd FileType c,cpp command! -buffer Definition call LanguageClient#textDocument_definition()
             autocmd FileType c,cpp command! -buffer Implementation call LanguageClient#textDocument_implementation()
             autocmd FileType c,cpp command! -buffer Hover call LanguageClient#textDocument_hover()
-            autocmd FileType c,cpp command! -buffer Rename call LanguageClient#textDocument_rename()
+            autocmd FileType c,cpp command! -buffer RenameSymbol call LanguageClient#textDocument_rename()
         endif
         if executable('pyls')
             autocmd FileType python command! -buffer References call LanguageClient#textDocument_references()
             autocmd FileType python command! -buffer Definition call LanguageClient#textDocument_definition()
-            autocmd FileType python command! -buffer Implementation call LanguageClient#textDocument_implementation()
+            " autocmd FileType python command! -buffer Implementation call LanguageClient#textDocument_implementation()
             autocmd FileType python command! -buffer Hover call LanguageClient#textDocument_hover()
-            autocmd FileType python command! -buffer Rename call LanguageClient#textDocument_rename()
+            autocmd FileType python command! -buffer RenameSymbol call LanguageClient#textDocument_rename()
         endif
     augroup end
 endif
