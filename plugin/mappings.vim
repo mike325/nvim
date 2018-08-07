@@ -326,11 +326,11 @@ command! -nargs=? Qopen execute 'botright copen ' . expand(<q-args>)
 
 if PYTHON('any')
     if has('nvim')
-        command! -nargs=? Python execute('botright 20split term://'. g:python_host_prog . <q-args>)
-        command! -nargs=? Python3 execute('botright 20split term://'. g:python3_host_prog . <q-args>)
+        command! -complete=file -nargs=* Python execute('botright 20split term://'. g:python_host_prog . ' ' . <q-args>)
+        command! -complete=file -nargs=* Python3 execute('botright 20split term://'. g:python3_host_prog . ' ' . <q-args>)
     elseif has('terminal')
-        command! -nargs=? Python call term_start(g:python_host_prog . <q-args>, {'term_rows': 20})
-        command! -nargs=? Python3 call term_start(g:python3_host_prog . <q-args>, {'term_rows': 20})
+        command! -complete=file -nargs=* Python call term_start(g:python_host_prog . ' ' . <q-args>, {'term_rows': 20})
+        command! -complete=file -nargs=* Python3 call term_start(g:python3_host_prog . ' ' . <q-args>, {'term_rows': 20})
     endif
 endif
 
