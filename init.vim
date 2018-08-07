@@ -380,6 +380,8 @@ if !exists('g:minimal')
     Plug 'kurayama/systemd-vim-syntax', {'for': 'systemd'}
     Plug 'mhinz/vim-nginx', {'for': 'nginx'}
 
+    Plug 'PProvost/vim-ps1'
+
     " }}} END Syntax
 
     " ####### Project base {{{
@@ -549,7 +551,7 @@ if !exists('g:minimal')
                 if executable('cquery') || executable('pyls')
                     function! GetLanguageClient(info)
                         if WINDOWS()
-                            execute '!powershell install.ps1'
+                            execute '!powershell -executionpolicy bypass -File ./install.ps1'
                         else
                             execute '!./install.sh'
                         endif
