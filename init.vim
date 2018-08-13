@@ -521,6 +521,16 @@ if !exists('g:minimal')
 
             " Plug 'OmniSharp/omnisharp-vim', { 'do': function('BuildOmniSharp') }
 
+            if ( ASYNC() && empty($YCM) ) && ( executable('cquery') || executable('pyls') )
+                function! GetLanguageClient(info)
+                    if WINDOWS()
+                        execute '!powershell -executionpolicy bypass -File ./install.ps1'
+                    else
+                        execute '!./install.sh'
+                    endif
+                endfunction
+            endif
+
             " Awesome Async completion engine for Neovim
             " if ASYNC() && PYTHON('3')
             if has('nvim') && PYTHON('3') && empty($YCM)
@@ -549,16 +559,10 @@ if !exists('g:minimal')
                 Plug 'Shougo/neco-vim'
 
                 if executable('cquery') || executable('pyls')
-                    function! GetLanguageClient(info)
-                        if WINDOWS()
-                            execute '!powershell -executionpolicy bypass -File ./install.ps1'
-                        else
-                            execute '!./install.sh'
-                        endif
-                    endfunction
                     if has('nvim-0.2')
                         Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do': function('GetLanguageClient')}
                     else
+                        " FIXME: Not fully working with neovim < 0.2.0
                         Plug 'autozimu/LanguageClient-neovim', {'tag': '0.1.66', 'do': function('GetLanguageClient'), 'frozen': 1}
                     endif
                 endif
@@ -681,13 +685,6 @@ if !exists('g:minimal')
                 " Test new completion Async framework that require python and vim 8 or
                 " Neovim (without python3)
                 if executable('cquery') || executable('pyls')
-                    function! GetLanguageClient(info)
-                        if WINDOWS()
-                            execute '!powershell install.ps1'
-                        else
-                            execute '!./install.sh'
-                        endif
-                    endfunction
                     Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do': function('GetLanguageClient')}
                 endif
 
