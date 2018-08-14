@@ -169,18 +169,6 @@ cnoremap <c-p> <up>
 if has('nvim') || has('terminal')
     tnoremap <esc> <C-\><C-n>
 
-    if has('nvim')
-        " Better splits
-        nnoremap <A-s> <C-w>s
-        nnoremap <A-v> <C-w>v
-
-        " Better terminal access
-        nnoremap <A-t> :terminal<CR>
-
-        " Use ESC to exit terminal mode
-        " tnoremap jj <C-\><C-n>
-    endif
-
     if WINDOWS()
         " NOTE: clear (and cmd cls) doesn't work in the latest Neovim's terminal
         " Spawns a bash session inside cmd
@@ -189,6 +177,33 @@ if has('nvim') || has('terminal')
         elseif has('terminal')
             command! -nargs=? Terminal call term_start('powershell -noexit -executionpolicy bypass -File ' . g:home . '/.config/shell/alias/alias.ps1' .  . <q-args>, {'term_rows': 20})
         endif
+    elseif executable('zsh')
+        if has('nvim')
+            command! -nargs=? Terminal execute('botright 20split term://zsh ' . <q-args>)
+        elseif has('terminal')
+            command! -nargs=? Terminal call term_start('zsh ' . <q-args>, {'term_rows': 20})
+        endif
+    elseif executable('bash')
+        if has('nvim')
+            command! -nargs=? Terminal execute('botright 20split term://bash ' . <q-args>)
+        elseif has('terminal')
+            command! -nargs=? Terminal call term_start('bash ' . <q-args>, {'term_rows': 20})
+        endif
+    elseif !empty($SHELL)
+        if has('nvim')
+            command! -nargs=? Terminal execute('botright 20split term:// ' . fnamemodify(expand($SHELL), ':h') . ' ' . <q-args>)
+        elseif has('terminal')
+            command! -nargs=? Terminal call term_start(expand($SHELL) . ' ' . <q-args>, {'term_rows': 20})
+        endif
+    endif
+
+    if has('nvim')
+        " Better splits
+        nnoremap <A-s> <C-w>s
+        nnoremap <A-v> <C-w>v
+
+        " Better terminal access
+        nnoremap <A-t> :Terminal<CR>
     endif
 endif
 

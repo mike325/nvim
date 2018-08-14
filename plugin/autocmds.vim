@@ -377,17 +377,25 @@ function! s:SetProjectConfigs()
         endif
 
         if exists('g:plugs["vim-grepper"]')
+            let g:grepper.tools = []
+            let g:grepper.operator.tools = []
+
             if executable('git')
-                let g:grepper.tools = ['git']
-            else
-                let g:grepper.tools = []
+                let g:grepper.tools += ['git']
+                let g:grepper.operator.tools += ['git']
             endif
 
             if executable('ag')
                 let g:grepper.tools += ['ag']
+                let g:grepper.operator.tools += ['ag']
             endif
             if executable('grep')
                 let g:grepper.tools += ['grep']
+                let g:grepper.operator.tools += ['grep']
+            endif
+            if executable('findstr')
+                let g:grepper.tools += ['findstr']
+                let g:grepper.operator.tools += ['findstr']
             endif
         else
             if executable('git')
@@ -437,12 +445,19 @@ function! s:SetProjectConfigs()
 
         if exists('g:plugs["vim-grepper"]')
             let g:grepper.tools = []
+            let g:grepper.operator.tools = []
 
             if executable('ag')
                 let g:grepper.tools += ['ag']
+                let g:grepper.operator.tools += ['ag']
             endif
             if executable('grep')
                 let g:grepper.tools += ['grep']
+                let g:grepper.operator.tools += ['grep']
+            endif
+            if executable('findstr')
+                let g:grepper.tools += ['findstr']
+                let g:grepper.operator.tools += ['findstr']
             endif
         else
             if executable('ag')
