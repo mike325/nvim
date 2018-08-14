@@ -128,7 +128,7 @@ if exists('g:plugs["deoplete-clang"]') || exists('g:plugs["deoplete-clang2"]')
 
     " NOTE:
     " g:deoplete#sources#clang#libclang_path: Must be the path to the dynamic clang library
-    " g:deoplete#sources#clang#clang_header : Must be the folder with the clang headers
+    " g:deoplete#sources#clang#clang_header : Must be thefolder with the clang headers
     " FIXME: this doesn't work yet
     " ISSUE: https://github.com/zchee/deoplete-clang/issues/57
     if WINDOWS()

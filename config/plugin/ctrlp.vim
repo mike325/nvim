@@ -87,9 +87,14 @@ if executable("ag")
     " This var is set on Vim Startup, New Session open and dir changed
     let g:ctrlp_clear_cache_on_exit = 1
     let g:ctrlp_user_command.fallback = 'ag %s -U -S -l --nocolor --nogroup --hidden '. g:ignore_patterns.ag . ' -g ""'
-elseif (has("win32") || has("win64")) && !executable("find")
-    " TODO: Find a way to distinguish between cywing find and Windows find
-    let g:ctrlp_user_command.fallback =  'dir %s /-n /b /s /a-d | findstr /v /c:.git /c:.svn /c:.exe /c:.pyc'
+elseif WINDOWS()
+    " NOTE: If neovim-qt is launch fron git-bash/cywing find command will be the
+    "       unix varian, if it's launch from a non unix enviroment then find will be the one in windows
+    let s:windows_find = system('find --help')
+    if v:shell_error != 0
+        let g:ctrlp_user_command.fallback =  'dir %s /-n /b /s /a-d | findstr /v /c:.git /c:.svn /c:.exe /c:.pyc /c:.log /c:tags /c:TAGS'
+    endif
+    unlet s:windows_find
 endif
 
 " augroup CtrlPCache
