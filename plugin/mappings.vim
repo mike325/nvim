@@ -349,13 +349,19 @@ endfunction
 command! PythonFix call s:PythonFix()
 
 if PYTHON('any')
-    if has('nvim')
-        command! -complete=file -nargs=* Python execute('botright 20split term://'. g:python_host_prog . ' ' . <q-args>)
-        command! -complete=file -nargs=* Python3 execute('botright 20split term://'. g:python3_host_prog . ' ' . <q-args>)
-    elseif has('terminal')
-        command! -complete=file -nargs=* Python call term_start(g:python_host_prog . ' ' . <q-args>, {'term_rows': 20})
-        command! -complete=file -nargs=* Python3 call term_start(g:python3_host_prog . ' ' . <q-args>, {'term_rows': 20})
-    endif
+    function! s:Python(version, args)
+        let l:version = ( a:version  == 3 ) ? g:python3_host_prog : g:python_host_prog
+
+        if has('nvim')
+            execute 'botright 20split term://'. l:version . ' ' . a:args
+        elseif has('terminal')
+            call term_start(l:version. ' ' . a:args, {'term_rows': 20})
+            wincmd J
+        endif
+
+    endfunction
+    command! -complete=file -nargs=* Python call s:PythonFix(2, <q-args>)
+    command! -complete=file -nargs=* Python3 call s:PythonFix(3, <q-args>)
 endif
 
 if executable('svn')
