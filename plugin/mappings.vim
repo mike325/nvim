@@ -333,21 +333,6 @@ command! -nargs=? -complete=customlist,s:Spells SpellLang
 " QuickfixOpen
 command! -nargs=? Qopen execute 'botright copen ' . expand(<q-args>)
 
-function! s:PythonFix()
-    silent! execute '%s/==\(\s\+\)\(None\|True\|False\)/is\1\2/g'
-    call histdel('search', -1)
-    silent! execute '%s/!=\(\s\+\)\(None\|True\|False\)/is not\1\2/g'
-    call histdel('search', -1)
-    silent! execute '%s/\(if\s\+\)\(not\s\+\)\{0,1}\(.*\)\.has_key(\(.*\))/\1\4 \2in \3'
-    call histdel('search', -1)
-    silent! execute '%s/\s\+$//e'
-    call histdel('search', -1)
-    silent! execute '%s/^\(\s\+\)\?#\([^ #!]\)/\1# \2/e'
-    call histdel('search', -1)
-endfunction
-
-command! PythonFix call s:PythonFix()
-
 if PYTHON('any')
     function! s:Python(version, args)
         let l:version = ( a:version  == 3 ) ? g:python3_host_prog : g:python_host_prog
@@ -360,8 +345,8 @@ if PYTHON('any')
         endif
 
     endfunction
-    command! -complete=file -nargs=* Python call s:PythonFix(2, <q-args>)
-    command! -complete=file -nargs=* Python3 call s:PythonFix(3, <q-args>)
+    command! -complete=file -nargs=* Python call s:Python(2, <q-args>)
+    command! -complete=file -nargs=* Python3 call s:Python(3, <q-args>)
 endif
 
 if executable('svn')
