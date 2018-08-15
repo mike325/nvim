@@ -176,6 +176,7 @@ if has('nvim') || has('terminal')
                 execute 'botright 20split term://powershell -noexit -executionpolicy bypass ' . l:file . a:cmd
             else
                 call term_start('powershell -noexit -executionpolicy bypass ' . l:file . a:cmd, {'term_rows': 20})
+                wincmd J
             endif
         else
             let l:shell = (executable('zsh')) ? 'zsh' : (executable('bash')) ? 'bash' : fnamemodify(expand($SHELL), ':h')
@@ -183,6 +184,7 @@ if has('nvim') || has('terminal')
                 execute 'botright 20split term://' . l:shell . ' ' . a:cmd
             else
                 call term_start(l:shell . a:cmd, {'term_rows': 20})
+                wincmd J
             endif
         endif
     endfunction
