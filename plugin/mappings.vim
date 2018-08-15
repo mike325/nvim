@@ -169,33 +169,25 @@ cnoremap <c-p> <up>
 if has('nvim') || has('terminal')
     tnoremap <esc> <C-\><C-n>
 
-    if WINDOWS()
-        " NOTE: clear (and cmd cls) doesn't work in the latest Neovim's terminal
-        " Spawns a bash session inside cmd
-        if has('nvim')
-            command! -nargs=? Terminal execute('botright 20split term://powershell -noexit -executionpolicy bypass -File ' . g:home . '/.config/shell/alias/alias.ps1' . <q-args>)
-        elseif has('terminal')
-            command! -nargs=? Terminal call term_start('powershell -noexit -executionpolicy bypass -File ' . g:home . '/.config/shell/alias/alias.ps1' .  . <q-args>, {'term_rows': 20})
+    function! s:Terminal(cmd)
+        if WINDOWS()
+            let l:file = ( filereadable(g:home . '/.config/shell/alias/alias.ps1') ) ? ' -File ' . g:home . '/.config/shell/alias/alias.ps1 ' : ' '
+            if has('nvim')
+                execute 'botright 20split term://powershell -noexit -executionpolicy bypass ' . l:file . a:cmd
+            else
+                call term_start('powershell -noexit -executionpolicy bypass ' . l:file . a:cmd, {'term_rows': 20})
+            endif
+        else
+            let l:shell = (executable('zsh')) ? 'zsh' : (executable('bash')) ? 'bash' : fnamemodify(expand($SHELL), ':h')
+            if has('nvim')
+                execute 'botright 20split term://' . l:shell . ' ' . a:cmd
+            else
+                call term_start(l:shell . a:cmd, {'term_rows': 20})
+            endif
         endif
-    elseif executable('zsh')
-        if has('nvim')
-            command! -nargs=? Terminal execute('botright 20split term://zsh ' . <q-args>)
-        elseif has('terminal')
-            command! -nargs=? Terminal call term_start('zsh ' . <q-args>, {'term_rows': 20})
-        endif
-    elseif executable('bash')
-        if has('nvim')
-            command! -nargs=? Terminal execute('botright 20split term://bash ' . <q-args>)
-        elseif has('terminal')
-            command! -nargs=? Terminal call term_start('bash ' . <q-args>, {'term_rows': 20})
-        endif
-    elseif !empty($SHELL)
-        if has('nvim')
-            command! -nargs=? Terminal execute('botright 20split term:// ' . fnamemodify(expand($SHELL), ':h') . ' ' . <q-args>)
-        elseif has('terminal')
-            command! -nargs=? Terminal call term_start(expand($SHELL) . ' ' . <q-args>, {'term_rows': 20})
-        endif
-    endif
+    endfunction
+
+    command! -nargs=? Terminal call s:Terminal(<q-args>)
 
     if has('nvim')
         " Better splits
@@ -226,8 +218,8 @@ endif
 
 " Remove buffers
 "
-" BufKill   will remove all hidden buffers
-" BufKill!  will remove all unloaded buffers
+" BufKill  will wipe all hidden buffers
+" BufKill! will wipe all unloaded buffers
 "
 " CREDITS: https://vimrcfu.com/snippet/154
 function! s:BufKill(bang)
@@ -243,8 +235,8 @@ endfunction
 
 " Clean buffer list
 "
-" BufClean   will unload all non active buffers
-" BufClean!  will remove all unloaded buffers
+" BufClean  will delete all non active buffers
+" BufClean! will wipe all non active buffers
 function! s:BufClean(bang)
     let l:count = 0
     for b in range(1, bufnr('$'))
@@ -338,6 +330,21 @@ command! -nargs=? -complete=customlist,s:Spells SpellLang
 " Avoid dispatch command conflict
 " QuickfixOpen
 command! -nargs=? Qopen execute 'botright copen ' . expand(<q-args>)
+
+function! s:PythonFix()
+    silent! execute '%s/==\(\s\+\)\(None\|True\|False\)/is\1\2/g'
+    call histdel('search', -1)
+    silent! execute '%s/!=\(\s\+\)\(None\|True\|False\)/is not\1\2/g'
+    call histdel('search', -1)
+    silent! execute '%s/\(if\s\+\)\(not\s\+\)\{0,1}\(.*\)\.has_key(\(.*\))/\1\4 \2in \3'
+    call histdel('search', -1)
+    silent! execute '%s/\s\+$//e'
+    call histdel('search', -1)
+    silent! execute '%s/^\(\s\+\)\?#\([^ #!]\)/\1# \2/e'
+    call histdel('search', -1)
+endfunction
+
+command! PythonFix call s:PythonFix()
 
 if PYTHON('any')
     if has('nvim')
