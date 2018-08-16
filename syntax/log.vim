@@ -24,7 +24,7 @@
 "
 " ############################################################################
 
-if exists("b:current_syntax")
+if exists('b:current_syntax')
   finish
 endif
 
@@ -38,7 +38,7 @@ syn match LogPass       /\(^\([[:blank:]]\+\)\?\zs\cpass\(ed\)\?\ze:\?[[:blank:]
 syn match LogOk         /\(^\([[:blank:]]\+\)\?\zs\c\(ok\|Ok\|OK\)\ze\([[:blank:]]\)\?\(:\)\?[[:blank:]]\+\)\|\([[:blank:]]\+\zs\c\(ok\|Ok\|OK\)\ze\([[:blank:]]\)\?:\)/
 syn match LogHex        /\([[:blank:]]\+\|:\)\zs0x[[:xdigit:]]\+\ze[[:blank:]]\+/
 syn match LogBool       /\(\([[:blank:]]\+\|:\)\zs\c\(true\|false\)\ze[[:blank:]]\+\)\|\(\([[:blank:]]\+\|:\)\zs\c\(true\|false\)\ze\([[:blank:]]\+\)\?$\)/ " true/false as value
-" syn match LogKeyword /[[:blank:]]\+\(\c\h[a-zA-Z0-9_]\+\)[[:blank:]]\?:[[:blank:]]*/
+syn match LogKeyword    /[[:blank:]]\+\(\c\h[a-zA-Z0-9_]\+\)[[:blank:]]\?:[[:blank:]]*/
 
 hi LogError ctermfg=Red    ctermbg=0 guifg=Red    guibg=0
 hi LogPass  ctermfg=Green  ctermbg=0 guifg=Green  guibg=0
@@ -50,8 +50,8 @@ hi link LogError LogFail
 hi link LogError LogException
 hi link LogPass  LogOk
 
-hi LogHex     ctermfg=Magenta      ctermbg=0 guifg=Magenta     guibg=0
-hi LogBool    ctermfg=DarkMagenta  ctermbg=0 guifg=DarkMagenta guibg=0
-" hi LogKeyword ctermfg=White        ctermbg=0 guifg=White       guibg=0
+hi LogHex               ctermfg=Magenta      ctermbg=0 guifg=Magenta     guibg=0
+hi LogBool              ctermfg=DarkMagenta  ctermbg=0 guifg=DarkMagenta guibg=0
+hi LogKeyword term=bold ctermfg=White        ctermbg=0 guifg=White       guibg=0
 
-let b:current_syntax = "log"
+let b:current_syntax = 'log'
