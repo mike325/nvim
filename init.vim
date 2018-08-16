@@ -629,7 +629,7 @@ if !exists('g:minimal')
 
                         " Since YCM download libclang there's no need to have clang install
                         " FIX: ArchLinux users should run this first
-                        "  ~# sudo ln -s /lib64/libtinfo.so.6.0 /lib64/libtinfo.so.5
+                        "  # sudo ln -s /lib64/libtinfo.so.6 /lib64/libtinfo.so.5
                         "       or use --system-clang
                         " https://github.com/Valloric/YouCompleteMe/issues/778#issuecomment-211452969
                         let l:code_completion = ' --clang-completer'
