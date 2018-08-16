@@ -43,6 +43,9 @@
     "ftplugin/*.vim": {
         "type": "FtPlugin"
     },
+    "syntax/*.vim": {
+        "type": "Syntax"
+    },
     "ftdetect/*.vim": {
         "type": "FtDetect"
     },

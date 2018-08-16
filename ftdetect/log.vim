@@ -31,7 +31,6 @@ function! CheckSize()
 endfunction
 
 
-autocmd BufNewFile,BufReadPre,BufEnter *.log set filetype=log
-autocmd BufNewFile,BufReadPre,BufEnter *.rdl set filetype=log
+autocmd BufNewFile,BufReadPre,BufEnter *.log,*.rpt,*.rdl set filetype=log
 autocmd BufNewFile,BufReadPre,BufEnter *.txt if ( CheckSize() == 1 ) | set filetype=log | endif
 
