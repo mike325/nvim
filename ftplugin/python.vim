@@ -55,6 +55,8 @@ function! s:PythonFix()
     call histdel('search', -1)
     silent! execute '%s/^\(\s\+\)\?#\([^ #!]\)/\1# \2/e'
     call histdel('search', -1)
+    silent! execute '%s/\(except\):/\1 Exception:/e'
+    call histdel('search', -1)
 endfunction
 
 command! -buffer PythonFix call s:PythonFix()

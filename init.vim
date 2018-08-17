@@ -844,6 +844,9 @@ if !exists('g:minimal')
     " Database management
     Plug 'tpope/vim-dadbod'
 
+    " Create a new buffer narrowed with the visual selected area
+    Plug 'chrisbra/NrrwRgn'
+
     " Useful to get the console output in Vim (since :terminal is not enable yet)
     if !ASYNC() && !exists('+terminal')
         Plug 'tpope/vim-dispatch'
