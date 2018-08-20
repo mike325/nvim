@@ -72,24 +72,23 @@ endif
 
 let g:neomake_python_enabled_makers = get(g:,'neomake_python_enabled_makers',[])
 
-if executable('pycodestyle')
-    let g:neomake_python_enabled_makers += ['pycodestyle']
-
-    let g:neomake_python_pycodestyle_maker = {
-        \ 'args': [
-        \   '--max-line-length=100',
-        \   '--ignore=E501'
-        \],}
-endif
-
 if executable('flake8')
     let g:neomake_python_enabled_makers += ['flake8']
 
     let g:neomake_python_flake8_maker = {
         \ 'args': [
-        \   '--max-line-length=100',
-        \   '--ignore=E501'
+        \   '--max-line-length=120',
+        \   '--ignore=E121,E123,E126,E226,E24,E704,W503,W504,H233,E228,E701,E226,E251,E501,E221,E203'
         \],}
+elseif executable('pycodestyle')
+    let g:neomake_python_enabled_makers += ['pycodestyle']
+
+    let g:neomake_python_pycodestyle_maker = {
+        \ 'args': [
+        \   '--max-line-length=120',
+        \   '--ignore=E121,E123,E126,E226,E24,E704,W503,W504,H233,E228,E701,E226,E251,E501,E221,E203'
+        \],}
+
 endif
 
 let b:outpath = '/tmp/neomake.out'
