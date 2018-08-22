@@ -24,6 +24,7 @@
 "
 " ############################################################################
 
+setlocal foldmethod=indent
 
 if exists('+formatprg')
     if executable('yapf')
@@ -44,19 +45,37 @@ else
     setlocal efm=%C\ %.%#,%A\ \ File\ \"%f\"\\,\ line\ %l%.%#,%Z%[%^\ ]%\\@=%m
 endif
 
+
+function! s:PythonReplace(pattern)
+    silent! execute a:pattern
+    call histdel('search', -1)
+endfunction
+
 function! s:PythonFix()
-    silent! execute '%s/==\(\s\+\)\(None\|True\|False\)/is\1\2/g'
-    call histdel('search', -1)
-    silent! execute '%s/!=\(\s\+\)\(None\|True\|False\)/is not\1\2/g'
-    call histdel('search', -1)
-    silent! execute '%s/\(if\s\+\)\(not\s\+\)\{0,1}\(.*\)\.has_key(\(.*\))/\1\4 \2in \3'
-    call histdel('search', -1)
-    silent! execute '%s/\s\+$//e'
-    call histdel('search', -1)
-    silent! execute '%s/^\(\s\+\)\?#\([^ #!]\)/\1# \2/e'
-    call histdel('search', -1)
-    silent! execute '%s/\(except\):/\1 Exception:/e'
-    call histdel('search', -1)
+    normal! m`
+
+    execute 'retab'
+
+    let l:patterns = [
+    \   '%s/==\(\s\+\)\(None\|True\|False\)/is\1\2/g',
+    \   '%s/!=\(\s\+\)\(None\|True\|False\)/is not\1\2/g',
+    \   '%s/\(if\s\+\)\(not\s\+\)\{0,1}\(.*\)\.has_key(\(.*\))/\1\4 \2in \3',
+    \   '%s/^\(\s\+\)\?#\([^ #!]\)/\1# \2/e',
+    \   '%s/\(except\):/\1 Exception:/e',
+    \   '%s/\(except\s\+[[:alpha:]]\+\s*\),\(\s*\)\([[:alpha:]]\+\):/\1\2as \3:/e',
+    \   '%s/^\(\s*\)\(if\|for\|while\)\(.*\):\s*\(return\|continue\|break\)$/\1\2\3:\r\1    \4/e',
+    \   '%s/\(print\)\s\+\("\|' . "'" . '\)\(.*\)\2/\1(\2\3\2)/e',
+    \   '%s/\(print\)\s\+\([[:alnum:]]\)\(.*\)/\1(\2\3)/e',
+    \   '%s/,\([[:alnum:]]\)/, \1/g',
+    \   '%s/^\([^#].*\)(\s\+/\1(/g',
+    \   '%s/^\([^#].*\)\([^[:space:]]\)\s\+)/\1\2)/g'
+    \]
+
+    for l:pattern in l:patterns
+        call s:PythonReplace(l:pattern)
+    endfor
+
+    normal! ``
 endfunction
 
 command! -buffer PythonFix call s:PythonFix()

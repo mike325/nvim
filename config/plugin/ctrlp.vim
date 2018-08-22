@@ -54,7 +54,7 @@ let g:ctrlp_show_hidden         = 1
 " CtrlP's windows settings
 let g:ctrlp_match_window        = 'bottom,order:ttb,min:1,max:30,results:50'
 " Search files in the current repo or in the file's dir
-let g:ctrlp_working_path_mode   = 'rw'
+let g:ctrlp_working_path_mode   = 'ra'
 " Opens files in the current windows, whether or not they had been opened in others windows
 let g:ctrlp_switch_buffer       = 'et'
 
@@ -92,7 +92,7 @@ elseif WINDOWS()
     "       unix varian, if it's launch from a non unix enviroment then find will be the one in windows
     let s:windows_find = system('find --help')
     if v:shell_error != 0
-        let g:ctrlp_user_command.fallback =  'dir %s /-n /b /s /a-d | findstr /v /c:.git /c:.svn /c:.exe /c:.pyc /c:.log /c:tags /c:TAGS'
+        let g:ctrlp_user_command.fallback =  'dir %s /-n /b /s /a-d | findstr /v /c:.git /c:.svn /c:.exe /c:.pyc /c:.log'
     endif
     unlet s:windows_find
 endif

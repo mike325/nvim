@@ -42,8 +42,6 @@ if has('nvim') || v:version > 702
     " TODO make a function to save the state of the toggles
     augroup Numbers
         autocmd!
-        autocmd FileType    help setlocal relativenumber number
-        autocmd FileType    man  setlocal relativenumber number
         autocmd WinEnter    *    setlocal relativenumber number
         autocmd WinLeave    *    setlocal norelativenumber number
         autocmd InsertLeave *    setlocal relativenumber number
@@ -54,11 +52,7 @@ endif
 " We don't need Vim's temp files here
 augroup DisableTemps
     autocmd!
-    autocmd FileType                        git                setlocal noswapfile nobackup noundofile
-    autocmd BufNewFile,BufReadPre,BufEnter  man://*            setlocal noswapfile nobackup noundofile
-    autocmd BufNewFile,BufReadPre,BufEnter  /tmp/*             setlocal noswapfile nobackup noundofile
-    autocmd BufNewFile,BufReadPre,BufEnter  gitcommit          setlocal noswapfile nobackup
-    autocmd BufNewFile,BufReadPre,BufEnter  *.txt              setlocal noswapfile nobackup
+    autocmd BufNewFile,BufReadPre,BufEnter /tmp/* setlocal noswapfile nobackup noundofile
 augroup end
 
 
@@ -138,7 +132,7 @@ endfunction
 augroup CleanFile
     autocmd!
     autocmd BufNewFile,BufRead,BufEnter * if !exists('b:trim') | let b:trim = 1 | endif
-    autocmd FileType                    * autocmd BufWritePre <buffer> call s:CleanFile()
+    autocmd BufWritePre                 * call s:CleanFile()
 augroup end
 
 " Specially helpful for html and xml
@@ -149,11 +143,7 @@ augroup end
 
 augroup QuickQuit
     autocmd!
-    autocmd BufEnter,BufReadPost quickfix           nnoremap <silent> <buffer> q :q!<CR>
     autocmd BufEnter,BufReadPost __LanguageClient__ nnoremap <silent> <buffer> q :q!<CR>
-    autocmd FileType             help               nnoremap <silent> <buffer> q :q!<CR>
-    autocmd FileType             git                nnoremap <silent> <buffer> q :q!<CR>
-    autocmd FileType             man                nnoremap <silent> <buffer> q :q!<CR>
     if has('nvim')
         autocmd TermOpen    *        nnoremap <silent> <buffer> q :q!<CR>
     endif
@@ -161,26 +151,14 @@ augroup end
 
 augroup LocalCR
     autocmd!
-    autocmd BufReadPost quickfix nnoremap <buffer> <CR> <CR>
-    autocmd CmdwinEnter *        nnoremap <CR> <CR>
+    autocmd CmdwinEnter * nnoremap <CR> <CR>
 augroup end
 
 augroup FileTypeDetect
     autocmd!
-    autocmd BufRead,BufNewFile             gitconfig,*.git/config setlocal filetype=gitconfig
-    autocmd BufRead,BufNewFile             *.bash*                setlocal filetype=sh
-    autocmd BufRead,BufNewFile             *.in,*.si,*.sle        setlocal filetype=conf
-    autocmd BufNewFile,BufReadPre          /*/nginx/*.conf        setlocal filetype=nginx
+    autocmd BufRead,BufNewFile    *.bash*         setlocal filetype=sh
+    autocmd BufNewFile,BufReadPre /*/nginx/*.conf setlocal filetype=nginx
 augroup end
-
-augroup HideSettigns
-    autocmd!
-    autocmd FileType man       setlocal bufhidden=delete nomodifiable
-    autocmd FileType git       setlocal bufhidden=hide
-    " autocmd FileType git       autocmd BufLeave <buffer> call execute("bdelete!", "silent!")
-    autocmd FileType gitcommit setlocal bufhidden=delete noreadonly modifiable
-augroup end
-
 
 " if exists("g:minimal")
 "     " *currently no all functions work
@@ -200,31 +178,11 @@ augroup end
 "     augroup end
 " endif
 
-augroup TabSettings
-    autocmd!
-    autocmd FileType make setlocal noexpandtab
-augroup end
-
-augroup FoldSettings
-    autocmd!
-    autocmd FileType javascript setlocal foldmethod=syntax
-    autocmd FileType git        setlocal foldmethod=syntax
-    autocmd FileType go         setlocal foldmethod=syntax
-    autocmd FileType python     setlocal foldmethod=indent
-    autocmd FileType vim        setlocal foldmethod=indent " May change this for foldmarker
-    autocmd FileType markdown   setlocal foldmethod=indent
-augroup end
-
 " Spell {{{
 augroup Spells
     autocmd!
-    autocmd FileType help                     setlocal nospell
-    autocmd FileType gitcommit                setlocal spell complete+=k,kspell " Add spell completion
-    autocmd FileType markdown                 setlocal spell complete+=k,kspell " Add spell completion
-    autocmd FileType tex                      setlocal spell complete+=k,kspell " Add spell completion
-    autocmd FileType plaintex                 setlocal spell complete+=k,kspell " Add spell completion
-    autocmd FileType text                     setlocal spell complete+=k,kspell " Add spell completion
-    autocmd BufNewFile,BufRead,BufEnter *.org setlocal spell complete+=k,kspell " Add spell completion
+    autocmd FileType                    tex      setlocal spell complete+=k,kspell " Add spell completion
+    autocmd BufNewFile,BufRead,BufEnter *.org    setlocal spell complete+=k,kspell " Add spell completion
 augroup end
 " }}} EndSpell
 
@@ -478,4 +436,3 @@ augroup ProjectConfig
     endif
     autocmd VimEnter,SessionLoadPost * call s:SetProjectConfigs()
 augroup end
-

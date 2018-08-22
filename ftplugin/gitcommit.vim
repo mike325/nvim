@@ -1,6 +1,6 @@
-" HEADER {{{
+" ############################################################################
 "
-"                                  Vim settings
+"                               gitcommit Setttings
 "
 "                                     -`
 "                     ...            .o+`
@@ -22,17 +22,15 @@
 "                   `++:.  github.com/mike325/.vim  `-/+/
 "                   .`                                 `/
 "
-" }}} END HEADER
-
-" Get help with 'K' key
-setlocal foldmethod=indent " May change this for foldmarker
-setlocal keywordprg=:help
-setlocal matchpairs+=<:>
-" setlocal iskeyword+=:
-
-if executable('vint')
-    setlocal makeprg=vint\ -f\ \"{file_path}:{line_number}:{column_number}:\ {severity}:\ {description}\ (see\ {reference})\"\ --enable-neovim\ %
-    let &efm='%f:%l:%c: %trror: %m,%f:%l:%c: %tarning: %m,%f:%l:%c: %tote: %m'
-endif
+" ############################################################################
 
 
+setlocal bufhidden=delete
+setlocal noreadonly
+
+setlocal modifiable
+setlocal nobackup
+setlocal noswapfile
+
+setlocal spell
+setlocal complete+=k,kspell " Add spell completion

@@ -98,3 +98,6 @@ lifecycles
 apps
 Dalvik
 categorizado
+autocmds
+ctrlp
+ftplugin

@@ -1,6 +1,6 @@
-" HEADER {{{
+" ############################################################################
 "
-"                                  Vim settings
+"                               man Setttings
 "
 "                                     -`
 "                     ...            .o+`
@@ -22,17 +22,17 @@
 "                   `++:.  github.com/mike325/.vim  `-/+/
 "                   .`                                 `/
 "
-" }}} END HEADER
+" ############################################################################
 
-" Get help with 'K' key
-setlocal foldmethod=indent " May change this for foldmarker
-setlocal keywordprg=:help
-setlocal matchpairs+=<:>
-" setlocal iskeyword+=:
+" setlocal foldmethod=syntax
+setlocal bufhidden=delete
+setlocal nomodifiable
 
-if executable('vint')
-    setlocal makeprg=vint\ -f\ \"{file_path}:{line_number}:{column_number}:\ {severity}:\ {description}\ (see\ {reference})\"\ --enable-neovim\ %
-    let &efm='%f:%l:%c: %trror: %m,%f:%l:%c: %tarning: %m,%f:%l:%c: %tote: %m'
-endif
+setlocal nobackup
+setlocal noswapfile
+setlocal noundofile
 
+setlocal number
+setlocal relativenumber
 
+nnoremap <silent> <buffer> q :q!<CR>
