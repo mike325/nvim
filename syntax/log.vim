@@ -38,20 +38,29 @@ syn match LogPass       /\(^\([[:blank:]]\+\)\?\zs\cpass\(ed\)\?\ze[:-]\?[[:blan
 syn match LogOk         /\(^\([[:blank:]]\+\)\?\zs\c\(ok\|Ok\|OK\)\ze\([[:blank:]]\)\?[:-]\?[[:blank:]]\+\)\|\([[:blank:]]\+\zs\c\(ok\|Ok\|OK\)\ze\([[:blank:]]\)\?[:-]\)/
 syn match LogHex        /\([[:blank:]]\+\|:\)\zs0x[[:xdigit:]]\+\ze[[:blank:]]\+/
 syn match LogBool       /\(\([[:blank:]]\+\|:\)\zs\c\(true\|false\)\ze[[:blank:]]\+\)\|\(\([[:blank:]]\+\|:\)\zs\c\(true\|false\)\ze\([[:blank:]]\+\)\?$\)/ " true/false as value
-syn match LogKeyword    /[[:blank:]]\+\(\c\h[a-zA-Z0-9_]\+\)[[:blank:]]\?:[[:blank:]]*/
 
-hi LogError ctermfg=Red    ctermbg=0 guifg=Red    guibg=0
-hi LogPass  ctermfg=Green  ctermbg=0 guifg=Green  guibg=0
-hi LogWarn  ctermfg=Brown  ctermbg=0 guifg=Brown  guibg=0
-hi LogInfo  ctermfg=Yellow ctermbg=0 guifg=Yellow guibg=0
-hi LogDebug ctermfg=Cyan   ctermbg=0 guifg=Cyan   guibg=0
+syn match LogURL        /[[:blank:]]\+\zs\(http\(s\)\?\|ftp\(s\)\?\):\/\/[^[:blank:]]\+\ze/
+" syn match LogURL        /\zs\(http\(s\)\?\|ftp\(s\)\?\):\/\/.*\ze/
+
+syn match LogKeyword    /[[:blank:]]\+\zs\(\h[[:alnum:]_]\+\)\ze\([[:blank:]]*\)\?\([:=]\)/
+syn match LogKeyvalue   /\([:=]\)[[:blank:]]*\zs\([^[:blank:]=:\\]\+\|\(['"]\).*\3\|[[:alnum:]]\+(.*)\|[[:alpha:]]:.*\)\ze$/
+
+
+hi LogError ctermfg=Red    ctermbg=0 guifg=Red
+hi LogPass  ctermfg=Green  ctermbg=0 guifg=Green
+hi LogWarn  ctermfg=Brown  ctermbg=0 guifg=Brown
+hi LogInfo  ctermfg=Yellow ctermbg=0 guifg=Yellow
+hi LogDebug ctermfg=Cyan   ctermbg=0 guifg=Cyan
 
 hi link LogError LogFail
 hi link LogError LogException
 hi link LogPass  LogOk
 
-hi LogHex               ctermfg=Magenta      ctermbg=0 guifg=Magenta     guibg=0
-hi LogBool              ctermfg=DarkMagenta  ctermbg=0 guifg=DarkMagenta guibg=0
-hi LogKeyword term=bold ctermfg=White        ctermbg=0 guifg=White       guibg=0
+hi LogURL   term=bold ctermfg=Cyan         ctermbg=0 guifg=Cyan
+hi LogHex             ctermfg=Magenta      ctermbg=0 guifg=Magenta
+hi LogBool            ctermfg=DarkMagenta  ctermbg=0 guifg=DarkMagenta
+
+hi link LogKeyword  LogURL
+hi link LogKeyvalue LogHex
 
 let b:current_syntax = 'log'
