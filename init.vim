@@ -269,8 +269,10 @@ if ASYNC()
         " let l:patch = l:python[2]
         if WINDOWS()
             let l:candidates = [
+                        \ 'c:/python'.l:major.l:minor. 'amd64',
                         \ 'c:/python'.l:major.l:minor,
                         \ 'c:/python/'.l:major.l:minor,
+                        \ 'c:/python/'.l:major.l:minor. 'amd64',
                         \ 'c:/python/python'.l:major.l:minor,
                         \ 'c:/python_'.l:major.l:minor,
                         \ 'c:/python/python_'.l:major.l:minor,
@@ -521,7 +523,7 @@ if !exists('g:minimal')
 
             " Plug 'OmniSharp/omnisharp-vim', { 'do': function('BuildOmniSharp') }
 
-            if ( ASYNC() && empty($YCM) ) && ( executable('cquery') || executable('pyls') )
+            if ( ASYNC() && empty($YCM) ) && ( ( executable('cquery') || executable('clangd') ) || executable('pyls') )
                 function! GetLanguageClient(info)
                     if WINDOWS()
                         execute '!powershell -executionpolicy bypass -File ./install.ps1'
@@ -558,7 +560,7 @@ if !exists('g:minimal')
 
                 Plug 'Shougo/neco-vim'
 
-                if executable('cquery') || executable('pyls')
+                if ( executable('cquery') || executable('clangd') ) || executable('pyls')
                     if has('nvim-0.2')
                         Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do': function('GetLanguageClient')}
                     else
@@ -567,7 +569,7 @@ if !exists('g:minimal')
                     endif
                 endif
 
-                if !executable('cquery')
+                if !( executable('cquery') || executable('clangd') )
                     " C/C++ completion base on clang compiler
                     if executable('clang')
                         if WINDOWS()
@@ -621,7 +623,7 @@ if !exists('g:minimal')
                 let s:deoplete_installed = 1
 
             elseif ASYNC() && executable('cmake') && (( has('unix') && ( executable('gcc')  || executable('clang') )) ||
-                        \ (WINDOWS() && executable('msbuild') && executable('7z')))
+                        \ (WINDOWS() && executable('msbuild')))
 
                 function! BuildYCM(info)
                     if a:info.status ==# 'installed' || a:info.force
@@ -660,10 +662,10 @@ if !exists('g:minimal')
                         endif
 
                         if WINDOWS()
-                            execute '!python ./install.py ' . l:code_completion
+                            execute '!' . g:python3_host_prog . ' ./install.py ' . l:code_completion
                         elseif executable('python3')
                             " Force python3
-                            execute '!python3 ./install.py ' . l:code_completion
+                            execute '!' . g:python3_host_prog . ' ./install.py ' . l:code_completion
                         else
                             execute '!./install.py ' . l:code_completion
                         endif
@@ -684,7 +686,7 @@ if !exists('g:minimal')
             elseif ASYNC()
                 " Test new completion Async framework that require python and vim 8 or
                 " Neovim (without python3)
-                if executable('cquery') || executable('pyls')
+                if ( executable('cquery') || executable('clangd') ) || executable('pyls')
                     Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do': function('GetLanguageClient')}
                 endif
 

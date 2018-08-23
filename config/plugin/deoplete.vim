@@ -92,9 +92,9 @@ augroup end
 
 if exists('g:plugs["LanguageClient-neovim"]')
     try
-        call deoplete#custom#source('LanguageClient', 'min_pattern_length',  1)
+        call deoplete#custom#source('LanguageClient', 'min_pattern_length',  2)
     catch
-        let g:deoplete#sources#LanguageClient#min_pattern_length = 1
+        let g:deoplete#sources#LanguageClient#min_pattern_length = 2
     endtry
 endif
 

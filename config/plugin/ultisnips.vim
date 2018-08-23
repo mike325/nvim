@@ -36,7 +36,7 @@ let g:UltiSnipsExpandTrigger            = '<C-e>'
 " Remove all select mappigns in expanded snip
 " let g:UltiSnipsRemoveSelectModeMappings = 0
 
-if has('python3')
+if PYTHON('3')
     let g:UltiSnipsUsePythonVersion = 3
 endif
 
