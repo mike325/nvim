@@ -56,7 +56,7 @@ elseif executable('clangd')
 endif
 
 if executable('pyls')
-    let g:LanguageClient_serverCommands.python = ['pyls']
+    let g:LanguageClient_serverCommands.python = ['pyls', '--log-file=' . s:log_dir . '/pyls.log']
 endif
 
 if executable('pyls') || ( executable('cquery') || executable('clangd') )

@@ -673,12 +673,7 @@ if !exists('g:minimal')
                     endif
                 endfunction
 
-                if WINDOWS()
-                    " Don't fucking update YCM in Windows
-                    Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') , 'frozen' : 1,}
-                else
-                    Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') }
-                endif
+                Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') }
 
                 " C/C++ project generator
                 Plug 'rdnetto/ycm-generator', { 'branch': 'stable' }
