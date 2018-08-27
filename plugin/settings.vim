@@ -63,15 +63,7 @@ if !has('nvim')
     set t_Co=255
 endif
 
-if has('nvim') && WINDOWS() && executable('nvr')
-    let $EDITOR='nvr --remote-wait-silent'
-    let $SVN_EDITOR='nvr --remote-wait-silent '
-    let $GIT_PAGER="nvr -cc 'setlocal modifiable' -c 'setlocal ft=git  nomodifiable' --remote-tab -"
-elseif has('nvim') && WINDOWS() && executable('nvim')
-    let $EDITOR="nvim --cmd 'let g:minimal=0' - "
-    let $GIT_PAGER="nvim --cmd 'let g:minimal=0' --cmd 'setlocal modifiable noswapfile nobackup noundofile' -c 'setlocal ft=git  nomodifiable' - "
-    let $SVN_EDITOR="nvim --cmd 'let g:minimal=0' - "
-elseif has('nvim') && executable('nvr')
+if has('nvim') && executable('nvr')
     " Add Neovim remote utility, this allow us to open buffers from the :terminal cmd
     let $nvr = 'nvr --remote-silent'
     let $tnvr = 'nvr --remote-tab-silent'
@@ -122,8 +114,8 @@ if has('clipboard')
     set clipboard=
 endif
 
-" Don't use the system's clipboard whenever we run in SSH session or we don't
-" have 'clipboard' option available
+" Don't use the system's clipboard whenever we run in SSH session or we don't have 'clipboard' option available
+" NOTE: Windows terminal doesn't have mouse support, so this wont have effect for vim/neovim TUI
 if empty($SSH_CONNECTION) && has('clipboard')
     " if we are running gVim or running Neovim from Windows (aka neovim-qt)
     " We reactivate the everything
@@ -135,7 +127,6 @@ if empty($SSH_CONNECTION) && has('clipboard')
         endif
     elseif has('nvim')
         " Neovim in unix require external programs to use system's clipboard
-        " NOTE: we don't dare to run Neovim from window's cmd/powershell
         if ( executable('pbcopy') || executable('xclip') || executable('xsel') || executable('lemonade') || executable('win32yank') )
             set clipboard+=unnamedplus,unnamed
             if has('mouse')
