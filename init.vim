@@ -55,7 +55,19 @@ function! GUI()
 endfunction
 
 if WINDOWS()
-    set shell=cmd.exe " sets shell to correct path for cmd.exe
+    " On windows, if gvim.exe or nvim-qt are executed from cygwin, the shell
+    " needs to be set to cmd since most plugins expect it for windows.
+    set shell=cmd.exe
+
+    " set shell=powershell.exe\ -NoLogo\ -NoProfile\ -NonInteractive\ -ExecutionPolicy\ RemoteSigned
+    " " if shellcmdflag starts with '-' then tempname() uses forward slashes, see
+    " " https://groups.google.com/forum/#!topic/vim_dev/vTR05EZyfE0
+    " set shellcmdflag=-Command
+    " set shellquote="
+    " set shellxquote=(
+    " let &shellpipe='| Out-File -Encoding UTF8 %s'
+    " let &shellredir='| Out-File -Encoding UTF8 %s'
+
     " Better compatibility with Unix paths in DOS systems
     if exists('+shellslash')
         set shellslash
