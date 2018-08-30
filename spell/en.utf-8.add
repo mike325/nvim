@@ -102,3 +102,8 @@ autocmds
 ctrlp
 ftplugin
 powershell
+Denite
+denite
+grepper
+UltiSnips
+esc
