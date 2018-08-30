@@ -324,6 +324,18 @@ function! s:SetProjectConfigs()
             let g:ctrlp_clear_cache_on_exit = 1
         endif
 
+        if exists('g:plugs["projectile.nvim"]')
+            if executable('git')
+                let g:projectile#search_prog = 'git grep'
+            elseif executable('ag')
+                let g:projectile#search_prog = 'ag'
+            elseif has('unix')
+                let g:projectile#search_prog = 'grep'
+            elseif WINDOWS() && !executable('grep')
+                let g:projectile#search_prog = 'findstr '
+            endif
+        endif
+
         if exists('g:plugs["deoplete.nvim"]') && ( exists('g:plugs["deoplete-clang"]') || exists('g:plugs["deoplete-clang2"]') )
             if filereadable(g:project_root . '/compile_commands.json')
                 let g:deoplete#sources#clang#clang_complete_database = g:project_root
@@ -389,6 +401,16 @@ function! s:SetProjectConfigs()
 
         if exists('g:plugs["ctrlp"]')
             let g:ctrlp_clear_cache_on_exit = (g:ctrlp_user_command.fallback =~# '^ag ')
+        endif
+
+        if exists('g:plugs["projectile.nvim"]')
+            if executable('ag')
+                let g:projectile#search_prog = 'ag'
+            elseif has('unix')
+                let g:projectile#search_prog = 'grep'
+            elseif WINDOWS() && !executable('grep')
+                let g:projectile#search_prog = 'findstr '
+            endif
         endif
 
         if exists('g:plugs["deoplete.nvim"]') && ( exists('g:plugs["deoplete-clang"]') || exists('g:plugs["deoplete-clang2"]') )

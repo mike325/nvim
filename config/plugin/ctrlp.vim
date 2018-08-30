@@ -81,7 +81,7 @@ let g:ctrlp_user_command = {
     \   'fallback': 'find %s -type f -iname "*" ' . g:ignore_patterns.find ,
     \ }
 
-if executable("ag")
+if executable('ag')
     " Do not clear filenames cache, to improve CtrlP startup
     " You can manualy clear it by <F5>
     " This var is set on Vim Startup, New Session open and dir changed

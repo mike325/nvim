@@ -50,9 +50,16 @@ nnoremap J m`J``
 
 " Better <ESC> mappings
 imap jj <Esc>
-nnoremap <BS> <ESC>
 
+nnoremap <BS> <ESC>
 xnoremap <BS> <ESC>
+
+" We assume that if we are running neovim from windows without GUI we are
+" running from cmd or powershell, windows terminal send <C-h> when backspace is press
+if has('nvim') && WINDOWS() && !GUI()
+    nnoremap <C-h> <ESC>
+    xnoremap <C-h> <ESC>
+endif
 
 " Turn diff off when closiong other windows
 nnoremap <silent> <C-w><C-o> :diffoff!<bar>only<cr>

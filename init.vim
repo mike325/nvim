@@ -370,6 +370,13 @@ if !exists('g:minimal')
         Plug fnameescape(g:base_path.'host')
     endif
 
+    function! RemotePlugins(info)
+        if has('nvim')
+            UpdateRemotePlugins
+        endif
+    endfunction
+
+
     " ####### Colorschemes {{{
 
     Plug 'morhetz/gruvbox'
@@ -396,13 +403,15 @@ if !exists('g:minimal')
 
     Plug 'PProvost/vim-ps1'
 
+    if has('nvim')
+        Plug 'numirias/semshi', {'do': function('RemotePlugins')}
+    endif
+
     " }}} END Syntax
 
     " ####### Project base {{{
 
     Plug 'tpope/vim-projectionist'
-
-    Plug 'mhinz/vim-grepper', { 'on': ['Grepper', '<plug>(GrepperOperator)'] }
 
     Plug 'xolox/vim-misc'
     Plug 'xolox/vim-session', {'on': ['OpenSession', 'SaveSession', 'DeleteSession']}
@@ -444,34 +453,42 @@ if !exists('g:minimal')
         endif
     endif
 
-    Plug 'ctrlpvim/ctrlp.vim'
-    if has('unix') && executable('git')
-        Plug 'jasoncodes/ctrlp-modified.vim'
-    endif
+    if has('nvim') && PYTHON('3')
+        Plug 'Shougo/denite.nvim'
+        Plug 'chemzqm/denite-git'
+        Plug 'dunstontc/projectile.nvim'
+    else
+        Plug 'mhinz/vim-grepper', { 'on': ['Grepper', '<plug>(GrepperOperator)'] }
 
-    if PYTHON('any')
-        " Fast and 'easy' to compile C CtrlP matcher
-        if (executable('gcc') || executable('clang')) && empty($NO_PYTHON_DEV) && !WINDOWS()
-            " Windows must have msbuild compiler to work, temporally disabled
-            function! BuildCtrlPMatcher(info)
-                if a:info.status ==# 'installed' || a:info.force
-                    if WINDOWS()
-                        !./install_windows.bat
-                    else
-                        !./install.sh
-                    endif
-                endif
-            endfunction
-
-            Plug 'JazzCore/ctrlp-cmatcher', { 'do': function('BuildCtrlPMatcher')}
-        else
-            " Fast matcher for ctrlp
-            Plug 'FelikZ/ctrlp-py-matcher'
+        Plug 'ctrlpvim/ctrlp.vim'
+        if has('unix') && executable('git')
+            Plug 'jasoncodes/ctrlp-modified.vim'
         endif
 
-        " The fastes matcher (as far as I know) but way more complicated to setup
-        " Plug 'nixprime/cpsm'
+        if PYTHON('any')
+            " Fast and 'easy' to compile C CtrlP matcher
+            if (executable('gcc') || executable('clang')) && empty($NO_PYTHON_DEV) && !WINDOWS()
+                " Windows must have msbuild compiler to work, temporally disabled
+                function! BuildCtrlPMatcher(info)
+                    if a:info.status ==# 'installed' || a:info.force
+                        if WINDOWS()
+                            !./install_windows.bat
+                        else
+                            !./install.sh
+                        endif
+                    endif
+                endfunction
 
+                Plug 'JazzCore/ctrlp-cmatcher', { 'do': function('BuildCtrlPMatcher')}
+            else
+                " Fast matcher for ctrlp
+                Plug 'FelikZ/ctrlp-py-matcher'
+            endif
+
+            " The fastes matcher (as far as I know) but way more complicated to setup
+            " Plug 'nixprime/cpsm'
+
+        endif
     endif
 
     " }}} END Project base
@@ -542,6 +559,7 @@ if !exists('g:minimal')
                     else
                         execute '!./install.sh'
                     endif
+                    call RemotePlugins(a:info)
                 endfunction
             endif
 
@@ -556,18 +574,12 @@ if !exists('g:minimal')
                 "     set pyxversion=3
                 " endif
 
-                function! DeopletePostSetup(info)
-                    if has('nvim')
-                        UpdateRemotePlugins
-                    endif
-                endfunction
-
                 " FIXME: Some versions of debian ship neovim 0.1.7 which doesn't work
                 "        with latest versions of deoplete
                 if has('nvim-0.2')
-                    Plug 'Shougo/deoplete.nvim', { 'do': function('DeopletePostSetup')}
+                    Plug 'Shougo/deoplete.nvim', { 'do': function('RemotePlugins')}
                 else
-                    Plug 'Shougo/deoplete.nvim', { 'tag': '2.0', 'do': function('DeopletePostSetup'), 'frozen' : 1}
+                    Plug 'Shougo/deoplete.nvim', { 'tag': '2.0', 'do': function('RemotePlugins'), 'frozen' : 1}
                 endif
 
                 Plug 'Shougo/neco-vim'
@@ -871,9 +883,12 @@ if !exists('g:minimal')
         Plug 'tpope/vim-eunuch'
     endif
 
-    if has('nvim')
-        Plug 'vigemus/iron.nvim', { 'do': ':UpdateRemotePlugins' }
-    endif
+    " TODO: find out why some times this launch Exceptions with UpdateRemotePlugins
+    " if has('nvim')
+    "     " Python version
+    "     " Plug 'vigemus/iron.nvim', { 'do': function('RemotePlugins') }
+    "     Plug 'vigemus/iron.nvim', { 'branch': 'lua/replace' }
+    " endif
 
     " }}} END Misc
 

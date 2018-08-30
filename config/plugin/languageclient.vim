@@ -59,35 +59,40 @@ if executable('pyls')
     let g:LanguageClient_serverCommands.python = ['pyls', '--log-file=' . s:log_dir . '/pyls.log']
 endif
 
-if executable('pyls') || ( executable('cquery') || executable('clangd') )
-    augroup LanguageCmds
-        autocmd!
-        if executable('cquery')
-            autocmd FileType c,cpp command! -buffer Callers call LanguageClient#cquery_callers()
-            autocmd FileType c,cpp command! -buffer References call LanguageClient#textDocument_references()
-            autocmd FileType c,cpp command! -buffer Definition call LanguageClient#textDocument_definition()
-            autocmd FileType c,cpp command! -buffer Implementation call LanguageClient#textDocument_implementation()
-            autocmd FileType c,cpp command! -buffer Hover call LanguageClient#textDocument_hover()
-            autocmd FileType c,cpp command! -buffer RenameSymbol call LanguageClient#textDocument_rename()
-        elseif executable('clangd')
-            autocmd FileType c,cpp command! -buffer References call LanguageClient#textDocument_references()
-            autocmd FileType c,cpp command! -buffer Definition call LanguageClient#textDocument_definition()
-            autocmd FileType c,cpp command! -buffer Implementation call LanguageClient#textDocument_implementation()
-            autocmd FileType c,cpp command! -buffer Hover call LanguageClient#textDocument_hover()
-            autocmd FileType c,cpp command! -buffer RenameSymbol call LanguageClient#textDocument_rename()
-        endif
-        if executable('pyls')
-            autocmd FileType python command! -buffer References call LanguageClient#textDocument_references()
-            autocmd FileType python command! -buffer Definition call LanguageClient#textDocument_definition()
-            " autocmd FileType python command! -buffer Implementation call LanguageClient#textDocument_implementation()
-            autocmd FileType python command! -buffer Hover call LanguageClient#textDocument_hover()
-            autocmd FileType python command! -buffer RenameSymbol call LanguageClient#textDocument_rename()
-        endif
-        if executable('pyls') || ( executable('cquery') || executable('clangd') )
-            " autocmd FileType python,c,cpp autocmd CursorHold                                <buffer> call LanguageClient#textDocument_hover()
-            " autocmd FileType python,c,cpp autocmd InsertEnter,CursorMoved,TermOpen,BufLeave <buffer> pclose
-            autocmd FileType python,c,cpp command! -buffer WorkspaceSymbols call LanguageClient#workspace_symbol()
-            autocmd FileType python,c,cpp command! -buffer DocumentSymbols call LanguageClient#textDocument_documentSymbol()
-        endif
-    augroup end
+function! s:Rename(name)
+    if !empty(a:name)
+        call LanguageClient#textDocument_rename({'newName': a:name})
+    else
+        call LanguageClient#textDocument_rename()
+    endif
+endfunction
+
+augroup LanguageCmds
+    autocmd!
+    if executable('cquery')
+        autocmd FileType c,cpp command! -buffer Callers call LanguageClient#cquery_callers()
+    endif
+    " autocmd FileType python,c,cpp autocmd CursorHold                                <buffer> call LanguageClient#textDocument_hover()
+    " autocmd FileType python,c,cpp autocmd InsertEnter,CursorMoved,TermOpen,BufLeave <buffer> pclose
+    autocmd FileType python,c,cpp command! -buffer References call LanguageClient#textDocument_references()
+    autocmd FileType python,c,cpp command! -buffer WorkspaceSymbols call LanguageClient#workspace_symbol()
+    autocmd FileType python,c,cpp command! -buffer DocumentSymbols call LanguageClient#textDocument_documentSymbol()
+    autocmd FileType python,c,cpp command! -nargs=? -buffer RenameSymbol call s:Rename(<q-args>)
+    autocmd FileType python,c,cpp command! -buffer Definition call LanguageClient#textDocument_definition()
+    autocmd FileType python,c,cpp command! -buffer Hover call LanguageClient#textDocument_hover()
+augroup end
+
+if exists('g:plugs["vim-abolish"]')
+
+    " " Rename - rn => rename
+    " noremap <leader>rn :call LanguageClient#textDocument_rename()<CR>
+
+    " " Rename - rc => rename camelCase
+    noremap <leader>rc :call LanguageClient#textDocument_rename({'newName': Abolish.camelcase(expand('<cword>'))})<CR>
+
+    " " Rename - rs => rename snake_case
+    noremap <leader>rs :call LanguageClient#textDocument_rename({'newName': Abolish.snakecase(expand('<cword>'))})<CR>
+
+    " " Rename - ru => rename UPPERCASE
+    noremap <leader>ru :call LanguageClient#textDocument_rename({'newName': Abolish.uppercase(expand('<cword>'))})<CR>
 endif
