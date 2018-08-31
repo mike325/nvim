@@ -393,15 +393,15 @@ if !exists('g:minimal')
     Plug 'ekalinin/Dockerfile.vim', {'for': 'dockerfile'}
     Plug 'elzr/vim-json', {'for': 'json'}
     Plug 'tbastos/vim-lua', {'for': 'lua'}
-    Plug 'octol/vim-cpp-enhanced-highlight', {'for': 'cpp'}
     Plug 'peterhoeg/vim-qml', {'for': 'qml'}
-    " Plug 'plasticboy/vim-markdown', {'for': 'markdown'}
     Plug 'tpope/vim-markdown', {'for': 'markdown'}
     Plug 'bjoernd/vim-syntax-simics', {'for': 'simics'}
     Plug 'kurayama/systemd-vim-syntax', {'for': 'systemd'}
     Plug 'mhinz/vim-nginx', {'for': 'nginx'}
-
     Plug 'PProvost/vim-ps1'
+    Plug 'octol/vim-cpp-enhanced-highlight', {'for': 'cpp'}
+    " Plug 'plasticboy/vim-markdown', {'for': 'markdown'}
+
 
     if has('nvim')
         Plug 'numirias/semshi', {'do': function('RemotePlugins')}
@@ -698,6 +698,7 @@ if !exists('g:minimal')
                 endfunction
 
                 Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') }
+                " Plug 'davits/DyeVim'
 
                 " C/C++ project generator
                 Plug 'rdnetto/ycm-generator', { 'branch': 'stable' }
