@@ -277,3 +277,8 @@ endif
 " Allow lua omni completion
 let g:lua_complete_omni = 1
 " scriptencoding
+
+set sessionoptions=buffers,curdir,folds,globals,localoptions,options,resize,tabpages,winpos,winsize
+if WINDOWS()
+    let &sessionoptions.=',slash,unix'
+endif
