@@ -355,6 +355,10 @@ function! s:SetProjectConfigs()
                 let g:grepper.operator.tools += ['git']
             endif
 
+            if executable('rg')
+                let g:grepper.tools += ['rg']
+                let g:grepper.operator.tools += ['rg']
+            endif
             if executable('ag')
                 let g:grepper.tools += ['ag']
                 let g:grepper.operator.tools += ['ag']
@@ -370,14 +374,14 @@ function! s:SetProjectConfigs()
         else
             if executable('git')
                 let &grepprg='git grep --no-color -In'
-            else
-                if executable('ag')
-                    let &grepprg='ag --nogroup --nocolor --hidden ' . g:ignore_patterns.ag . ' '
-                elseif executable('grep')
-                    let &grepprg='grep --color=never -HIn ' . g:ignore_patterns.grep . ' '
-                elseif executable('findstr')
-                    let &grepprg='findstr ' . g:ignore_patterns.findstr . ' '
-                endif
+            elseif executable('rg')
+                let &grepprg='rg -S --color never -H --no-search-zip --trim --vimgrep '
+            elseif executable('ag')
+                let &grepprg='ag --nogroup --nocolor --hidden ' . g:ignore_patterns.ag . ' '
+            elseif executable('grep')
+                let &grepprg='grep -HIn --color=never ' . g:ignore_patterns.grep . ' '
+            elseif executable('findstr')
+                let &grepprg='findstr ' . g:ignore_patterns.findstr . ' '
             endif
         endif
     else
@@ -427,6 +431,10 @@ function! s:SetProjectConfigs()
             let g:grepper.tools = []
             let g:grepper.operator.tools = []
 
+            if executable('rg')
+                let g:grepper.tools += ['rg']
+                let g:grepper.operator.tools += ['rg']
+            endif
             if executable('ag')
                 let g:grepper.tools += ['ag']
                 let g:grepper.operator.tools += ['ag']
@@ -440,8 +448,10 @@ function! s:SetProjectConfigs()
                 let g:grepper.operator.tools += ['findstr']
             endif
         else
-            if executable('ag')
-                let &grepprg='ag --nogroup --nocolor --hidden ' . g:ignore_patterns.ag . ' '
+            if executable('rg')
+                let &grepprg='rg -S -n --color never -H --no-search-zip --hidden --trim --vimgrep '
+            elseif executable('ag')
+                let &grepprg='ag -S -l --nogroup --nocolor --hidden ' . g:ignore_patterns.ag . ' '
             elseif executable('grep')
                 let &grepprg='grep -HIn --color=never ' . g:ignore_patterns.grep . ' '
             elseif executable('findstr')

@@ -43,7 +43,7 @@ let g:grepper.jump          = 0
 let g:grepper.switch        = 0
 let g:grepper.highlight     = 1
 let g:grepper.simple_prompt = 1
-let g:grepper.tools         = [] " may add rg
+let g:grepper.tools         = []
 let g:grepper.repo          = ['.git', '.hg', '.svn'] " This is already the default
 let g:grepper.dir           = 'repo,filecwd'
 let g:grepper.prompt_quote  = 0
@@ -54,15 +54,10 @@ let g:grepper.operator.jump          = 0
 let g:grepper.operator.switch        = 0
 let g:grepper.operator.highlight     = 1
 let g:grepper.operator.simple_prompt = 1
-let g:grepper.operator.tools         = [] " may add rg
+let g:grepper.operator.tools         = []
 let g:grepper.operator.repo          = ['.git', '.hg', '.svn'] " This is already the default
 let g:grepper.operator.dir           = 'repo,filecwd'
 let g:grepper.operator.prompt_quote  = 0
-
-" let g:grepper.highlight = 1
-" let g:grepper.rg.grepprg .= ' --smart-case'
-
-" let g:grepper.tools = ['git', 'ag', 'ack', 'grep', 'findstr'] " may add rg
 
 if executable('git')
     let g:grepper.tools += ['git']
@@ -81,19 +76,33 @@ if executable('git')
         \ }
 endif
 
-" I like to keep Ag and grep as a ignore case searchers (smart case for Ag)
-" and git as a case sensitive project searcher
+if executable('rg')
+    let g:grepper.tools += ['rg']
+    let g:grepper.rg = {
+        \ 'grepprg':    'rg -S -n --color never -H --no-search-zip --hidden --trim --vimgrep ',
+        \ 'grepformat': '%f:%l:%c:%m,%f:%l:%m',
+        \ 'escape':     '\^$.*+?()[]{}|',
+        \ }
+
+    let g:grepper.operator.tools += ['rg']
+    let g:grepper.operator.rg = {
+        \ 'grepprg':    'rg -S -n --color never -H --no-search-zip --hidden --trim --vimgrep ',
+        \ 'grepformat': '%f:%l:%c:%m,%f:%l:%m',
+        \ 'escape':     '\^$.*+?()[]{}|',
+        \ }
+endif
+
 if executable('ag')
     let g:grepper.tools += ['ag']
     let g:grepper.ag = {
-        \ 'grepprg':    'ag --nogroup --nocolor --hidden -S ' . g:ignore_patterns.ag,
+        \ 'grepprg':    'ag -l --nogroup --nocolor --hidden -S ' . g:ignore_patterns.ag,
         \ 'grepformat': '%f:%l:%c:%m,%f:%l:%m',
         \ 'escape':     '\^$.*+?()[]{}|',
         \ }
 
     let g:grepper.operator.tools += ['ag']
     let g:grepper.operator.ag = {
-        \ 'grepprg':    'ag --nogroup --nocolor --hidden ' . g:ignore_patterns.ag,
+        \ 'grepprg':    'ag -l --nogroup --nocolor --hidden ' . g:ignore_patterns.ag,
         \ 'grepformat': '%f:%l:%c:%m,%f:%l:%m',
         \ 'escape':     '\^$.*+?()[]{}|',
         \ }

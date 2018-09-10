@@ -28,11 +28,21 @@ if !exists('g:plugs["denite.nvim"]')
     finish
 endif
 
-if executable('ag')
+if executable('rg')
+    call denite#custom#var('file/rec', 'command', ['rg', '-n', '--no-search-zip', '-H', '--color', 'never', '--hidden', '--trim', '--files'])
+
+    call denite#custom#var('grep', 'command', ['rg'])
+    call denite#custom#var('grep', 'default_opts', ['-S', '-n', '--color', 'never', '-H', '--no-search-zip', '--hidden', '--trim', '--vimgrep'])
+    call denite#custom#var('grep', 'recursive_opts', [])
+    call denite#custom#var('grep', 'pattern_opt', [])
+    call denite#custom#var('grep', 'separator', ['--'])
+    call denite#custom#var('grep', 'final_opts', [])
+
+elseif executable('ag')
     call denite#custom#var('file/rec', 'command', ['ag', '-S', '-l', '--nocolor', '--nogroup', '--hidden', g:ignore_patterns.ag, '-g', ''])
 
     call denite#custom#var('grep', 'command', ['ag'])
-    call denite#custom#var('grep', 'default_opts', ['-S', '--nocolor', '--nogroup', '--hidden'])
+    call denite#custom#var('grep', 'default_opts', ['-S', '--nocolor', '--nogroup', '--hidden', '--vimgrep'])
     call denite#custom#var('grep', 'recursive_opts', [])
     call denite#custom#var('grep', 'pattern_opt', [])
     call denite#custom#var('grep', 'separator', ['--'])
@@ -40,6 +50,7 @@ if executable('ag')
 
 elseif has('unix')
     call denite#custom#var('file/rec', 'command', ['find', '-type', 'f', '-iname', '*', g:ignore_patterns.find])
+
 elseif WINDOWS()
     let s:ignore = &wildignore . ',.git,.hg,.svn'
     call denite#custom#var('file/rec', 'command', ['scantree.py', '--ignore', s:ignore])

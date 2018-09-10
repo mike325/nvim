@@ -108,6 +108,7 @@ function! s:SetIgnorePatterns() " Create Ignore rules {{{
     let g:ignore_patterns = {
                 \   'git' : '',
                 \   'ag' : '',
+                \   'rg' : '',
                 \   'find' : '',
                 \   'grep' : '',
                 \   'dir' : '',
@@ -131,7 +132,10 @@ function! s:SetIgnorePatterns() " Create Ignore rules {{{
 
     if filereadable(g:home . '/.config/git/ignore')
         let g:ignore_patterns.grep .= ' --exclude-from=' . g:home . '/.config/git/ignore'
+        " TODO: Check if ag checks for global ignores
         let g:ignore_patterns.ag .= ' --path-to-ignore ' . g:home . '/.config/git/ignore'
+        " ripgrep already check for common global ignores
+        " let g:ignore_patterns.rg .= ' --ignore ' . g:home . '/.config/git/ignore'
     endif
 
     for  l:element in g:ignores.vcs

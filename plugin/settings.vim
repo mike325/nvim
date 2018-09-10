@@ -77,8 +77,10 @@ if exists('+breakindent')
     set showbreak=↪\
 endif
 
-if executable('ag')
-    let &grepprg='ag --nogroup --nocolor --hidden ' . g:ignore_patterns.ag . ' '
+if executable('rg')
+    let &grepprg='rg -S -n --color never -H --hidden --no-search-zip --trim --vimgrep '
+elseif executable('ag')
+    let &grepprg='ag -S -l --nogroup --nocolor --hidden ' . g:ignore_patterns.ag . ' '
 elseif executable('grep')
     let &grepprg='grep -HIn --color=never ' . g:ignore_patterns.grep . ' '
 elseif executable('findstr')

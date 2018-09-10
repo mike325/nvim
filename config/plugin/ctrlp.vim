@@ -81,12 +81,15 @@ let g:ctrlp_user_command = {
     \   'fallback': 'find %s -type f -iname "*" ' . g:ignore_patterns.find ,
     \ }
 
-if executable('ag')
-    " Do not clear filenames cache, to improve CtrlP startup
-    " You can manualy clear it by <F5>
-    " This var is set on Vim Startup, New Session open and dir changed
+" Do not clear filenames cache, to improve CtrlP startup
+" You can manualy clear it by <F5>
+" This var is set on Vim Startup, New Session open and dir changed
+if executable('rg')
     let g:ctrlp_clear_cache_on_exit = 1
-    let g:ctrlp_user_command.fallback = 'ag %s -U -S -l --nocolor --nogroup --hidden '. g:ignore_patterns.ag . ' -g ""'
+    let g:ctrlp_user_command.fallback = 'rg -n --color never -H --no-search-zip --hidden --trim --files'
+elseif executable('ag')
+    let g:ctrlp_clear_cache_on_exit = 1
+    let g:ctrlp_user_command.fallback = 'ag %s -S -l --nocolor --nogroup --hidden '. g:ignore_patterns.ag . ' -g ""'
 elseif WINDOWS()
     " NOTE: If neovim-qt is launch fron git-bash/cywing find command will be the
     "       unix varian, if it's launch from a non unix enviroment then find will be the one in windows
