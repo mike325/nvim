@@ -39,7 +39,7 @@ if executable('rg')
     call denite#custom#var('grep', 'final_opts', [])
 
 elseif executable('ag')
-    call denite#custom#var('file/rec', 'command', ['ag', '-S', '-l', '--nocolor', '--nogroup', '--hidden', g:ignore_patterns.ag, '-g', ''])
+    call denite#custom#var('file/rec', 'command', ['ag', '-l', '--nocolor', '--nogroup', '--hidden', g:ignore_patterns.ag, '-g', ''])
 
     call denite#custom#var('grep', 'command', ['ag'])
     call denite#custom#var('grep', 'default_opts', ['-S', '--nocolor', '--nogroup', '--hidden', '--vimgrep'])

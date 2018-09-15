@@ -89,10 +89,10 @@ if executable('rg')
     let g:ctrlp_user_command.fallback = 'rg -n --color never -H --no-search-zip --hidden --trim --files'
 elseif executable('ag')
     let g:ctrlp_clear_cache_on_exit = 1
-    let g:ctrlp_user_command.fallback = 'ag %s -S -l --nocolor --nogroup --hidden '. g:ignore_patterns.ag . ' -g ""'
+    let g:ctrlp_user_command.fallback = 'ag %s -l --nocolor --nogroup --hidden '. g:ignore_patterns.ag . ' -g ""'
 elseif WINDOWS()
-    " NOTE: If neovim-qt is launch fron git-bash/cywing find command will be the
-    "       unix varian, if it's launch from a non unix enviroment then find will be the one in windows
+    " NOTE: If neovim-qt is launch fron git-bash/cywing find command will be the unix,
+    "       if it's launch from a non unix enviroment then find will be the one in windows
     let s:windows_find = system('find --help')
     if v:shell_error != 0
         let g:ctrlp_user_command.fallback =  'dir %s /-n /b /s /a-d | findstr /v /c:.git /c:.svn /c:.exe /c:.pyc /c:.log'

@@ -63,14 +63,14 @@ if executable('git')
     let g:grepper.tools += ['git']
     " I like to search ignore case when greppper is call from <C-g>
     let g:grepper.git = {
-        \ 'grepprg':    'git grep --no-color -Ini ',
+        \ 'grepprg':    GrepTool('git', 'grepprg') . '-i ',
         \ 'grepformat': '%f:%l:%m',
         \ 'escape':     '\^$.*[]',
         \ }
 
     let g:grepper.operator.tools += ['git']
     let g:grepper.operator.git = {
-        \ 'grepprg':    'git grep --no-color -Inw ',
+        \ 'grepprg':    GrepTool('git', 'grepprg') . '-w ',
         \ 'grepformat': '%f:%l:%m',
         \ 'escape':     '\^$.*[]',
         \ }
@@ -79,14 +79,14 @@ endif
 if executable('rg')
     let g:grepper.tools += ['rg']
     let g:grepper.rg = {
-        \ 'grepprg':    'rg -S -n --color never -H --no-search-zip --hidden --trim --vimgrep ',
+        \ 'grepprg':    GrepTool('rg', 'grepprg') ,
         \ 'grepformat': '%f:%l:%c:%m,%f:%l:%m',
         \ 'escape':     '\^$.*+?()[]{}|',
         \ }
 
     let g:grepper.operator.tools += ['rg']
     let g:grepper.operator.rg = {
-        \ 'grepprg':    'rg -S -n --color never -H --no-search-zip --hidden --trim --vimgrep ',
+        \ 'grepprg':    GrepTool('rg', 'grepprg'),
         \ 'grepformat': '%f:%l:%c:%m,%f:%l:%m',
         \ 'escape':     '\^$.*+?()[]{}|',
         \ }
@@ -95,14 +95,14 @@ endif
 if executable('ag')
     let g:grepper.tools += ['ag']
     let g:grepper.ag = {
-        \ 'grepprg':    'ag -l --nogroup --nocolor --hidden -S ' . g:ignore_patterns.ag,
+        \ 'grepprg':    GrepTool('ag', 'grepprg'),
         \ 'grepformat': '%f:%l:%c:%m,%f:%l:%m',
         \ 'escape':     '\^$.*+?()[]{}|',
         \ }
 
     let g:grepper.operator.tools += ['ag']
     let g:grepper.operator.ag = {
-        \ 'grepprg':    'ag -l --nogroup --nocolor --hidden ' . g:ignore_patterns.ag,
+        \ 'grepprg':    GrepTool('ag', 'grepprg'),
         \ 'grepformat': '%f:%l:%c:%m,%f:%l:%m',
         \ 'escape':     '\^$.*+?()[]{}|',
         \ }
@@ -111,7 +111,7 @@ endif
 if executable('grep')
     let g:grepper.tools += ['grep']
     let g:grepper.grep = {
-        \ 'grepprg': 'grep --color=never -iHRIn '. g:ignore_patterns.grep .' $*',
+        \ 'grepprg':    GrepTool('grep', 'grepprg') . ' $*',
         \ 'grepprgbuf': 'grep -HIn -- $* $.',
         \ 'grepformat': '%f:%l:%m',
         \ 'escape':     '\^$.*[]',
@@ -119,7 +119,7 @@ if executable('grep')
 
     let g:grepper.operator.tools += ['grep']
     let g:grepper.operator.grep = {
-        \ 'grepprg':    'grep -oHRIn '. g:ignore_patterns.grep .' $*',
+        \ 'grepprg':    GrepTool('grep', 'grepprg') .' $*',
         \ 'grepprgbuf': 'grep -HIn -- $* $.',
         \ 'grepformat': '%f:%l:%m',
         \ 'escape':     '\^$.*[]',
@@ -138,7 +138,7 @@ if executable('findstr')
 
     let g:grepper.operator.tools += ['findstr']
     let g:grepper.operator.findstr = {
-        \ 'grepprg': 'findstr -rspnc:$* *',
+        \ 'grepprg': GrepTool('findstr', 'grepprg') . '/c:$* *',
         \ 'grepprgbuf': 'findstr -rpnc:$* $.',
         \ 'grepformat': '%f:%l:%m',
         \ 'wordanchors': ['\<', '\>'],

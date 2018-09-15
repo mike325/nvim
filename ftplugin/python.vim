@@ -46,8 +46,8 @@ else
 endif
 
 
-function! s:PythonReplace(pattern)
-    silent! execute a:pattern
+function! s:PythonReplace(pattern) abort
+    execute a:pattern
     call histdel('search', -1)
 endfunction
 
@@ -56,23 +56,41 @@ function! s:PythonFix()
 
     execute 'retab'
 
+    let l:scout = "'"
+    let l:dcout = '"'
+
     let l:patterns = [
     \   '%s/==\(\s\+\)\(None\|True\|False\)/is\1\2/g',
     \   '%s/!=\(\s\+\)\(None\|True\|False\)/is not\1\2/g',
     \   '%s/\(if\s\+\)\(not\s\+\)\{0,1}\(.*\)\.has_key(\(.*\))/\1\4 \2in \3',
     \   '%s/^\(\s\+\)\?#\([^ #!]\)/\1# \2/e',
     \   '%s/\(except\):/\1 Exception:/e',
-    \   '%s/\(except\s\+[[:alnum:]_.()]\+\s*\),\(\s*[[:alnum:]_]\+:\)/\1 as \2/e',
-    \   '%s/^\([^#].*\)\(\s*\)\(if\|for\|while\)\(.*\):\s*\(return\|continue\|break\)$/\1\2\3:\r\1    \4/e',
+    \   '%s/\(except\s\+[[:alnum:]_.()]\+\)\s*,\s*\([[:alnum:]_]\+:\)/\1 as \2/e',
+    \   '%s/^\([^#].*\)\(\s*\)\(if\|for\|while\)\(.*\):\s*\(return\|continue\|break\)$/\1\2\3\4:\r\1    \5/e',
     \   '%s/\(print\)\s\+\("\|' . "'" . '\)\(.*\)\2/\1(\2\3\2)/e',
     \   '%s/\(print\)\s\+\([[:alnum:]]\)\(.*\)/\1(\2\3)/e',
     \   '%s/,\([[:alnum:]]\)/, \1/g',
     \   '%s/^\([^#][^[:space:]]\+\)(\s\+\([[:alnum:]]\+\)\s\+)/\1(\2)/g',
+    \   '%s/^\(\s*def\)\s\+\([[:alnum:]]\+\)\s*(\(.*\{-}=.*\{-}\)*)\s\+:/\1 \2(\3):/g',
     \]
+    " \   '%s/[[:alnum:]_' . l:scout . l:dcout . ']\zs\(+\|-\|\/\|<<\|>>\|\(<\|>\|=\|!\|+\|-\|\/\|*\)=\)\ze[[:alnum:]_' . l:scout . l:dcout . ']/ \1 /g',
 
     for l:pattern in l:patterns
-        call s:PythonReplace(l:pattern)
+        silent! call s:PythonReplace(l:pattern)
     endfor
+
+    " try
+    "     while 1
+    "         let l:patterns = [
+    "         \   '%s/^\s*def\s\+[[:alnum:]_]\+\s*(\zs\(.\{-}\)\s\+=\s\+\(.\{-}\)\(,\?\)\ze/\1=\2\3/g',
+    "         \]
+    "
+    "         for l:pattern in l:patterns
+    "             call s:PythonReplace(l:pattern)
+    "         endfor
+    "     endwhile
+    " catch E486
+    " endtry
 
     normal! ``
 endfunction

@@ -78,13 +78,13 @@ if exists('+breakindent')
 endif
 
 if executable('rg')
-    let &grepprg='rg -S -n --color never -H --hidden --no-search-zip --trim --vimgrep '
+    let &grepprg=GrepTool('rg', 'grepprg')
 elseif executable('ag')
-    let &grepprg='ag -S -l --nogroup --nocolor --hidden ' . g:ignore_patterns.ag . ' '
+    let &grepprg=GrepTool('ag', 'grepprg')
 elseif executable('grep')
-    let &grepprg='grep -HIn --color=never ' . g:ignore_patterns.grep . ' '
+    let &grepprg=GrepTool('grep', 'grepprg')
 elseif executable('findstr')
-    let &grepprg='findstr ' . g:ignore_patterns.findstr . ' '
+    let &grepprg=GrepTool('findstr', 'grepprg')
 endif
 
 if has('termguicolors')

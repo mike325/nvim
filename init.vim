@@ -101,35 +101,10 @@ endif
 
 " }}} END Improve compatibility between Unix and DOS platfomrs
 
+
 function! s:SetIgnorePatterns() " Create Ignore rules {{{
     " Files and dirs we want to ignore in searches and plugins
     " The *.  and */patter/* will be add after
-
-    let g:ignore_patterns = {
-                \   'git' : '',
-                \   'ag' : '',
-                \   'rg' : '',
-                \   'find' : '',
-                \   'grep' : '',
-                \   'dir' : '',
-                \   'findstr' : '',
-                \}
-
-    let g:ignores = {
-                \   'bin': [ 'exe', 'dat',],
-                \   'vcs': [ 'hg', 'svn', 'git',],
-                \   'compile' : ['obj', 'class', 'pyc', 'o', 'dll', 'a', 'moc',],
-                \   'tmp_dirs': [ 'trash', 'tmp', '__pycache__', 'ropeproject'],
-                \   'vim_dirs': [ 'backup', 'swap', 'sessions', 'cache', 'undos',],
-                \   'tmp_file' : ['swp', 'bk',],
-                \   'docs': ['docx', 'doc', 'xls', 'xlsx', 'odt', 'ppt', 'pptx', 'pdf',],
-                \   'image': ['jpg', 'jpeg', 'png', 'gif', 'raw'],
-                \   'video': ['mp4', 'mpeg', 'avi', 'mkv', '3gp'],
-                \   'logs': ['log',],
-                \   'compress': ['zip', 'tar', 'rar', '7z',],
-                \   'full_name_files': ['tags', 'cscope', 'shada', 'viminfo', 'COMMIT_EDITMSG'],
-                \}
-
     if filereadable(g:home . '/.config/git/ignore')
         let g:ignore_patterns.grep .= ' --exclude-from=' . g:home . '/.config/git/ignore'
         " TODO: Check if ag checks for global ignores
@@ -334,12 +309,69 @@ endif
 
 " Initialize plugins {{{
 
+let g:ignore_patterns = {
+            \   'git' : '',
+            \   'ag' : '',
+            \   'rg' : '',
+            \   'find' : '',
+            \   'grep' : '',
+            \   'dir' : '',
+            \   'findstr' : '',
+            \}
+
+let g:ignores = {
+            \   'bin': [ 'exe', 'dat',],
+            \   'vcs': [ 'hg', 'svn', 'git',],
+            \   'compile' : ['obj', 'class', 'pyc', 'o', 'dll', 'a', 'moc',],
+            \   'tmp_dirs': [ 'trash', 'tmp', '__pycache__', 'ropeproject'],
+            \   'vim_dirs': [ 'backup', 'swap', 'sessions', 'cache', 'undos',],
+            \   'tmp_file' : ['swp', 'bk',],
+            \   'docs': ['docx', 'doc', 'xls', 'xlsx', 'odt', 'ppt', 'pptx', 'pdf',],
+            \   'image': ['jpg', 'jpeg', 'png', 'gif', 'raw'],
+            \   'video': ['mp4', 'mpeg', 'avi', 'mkv', '3gp'],
+            \   'logs': ['log',],
+            \   'compress': ['zip', 'tar', 'rar', '7z',],
+            \   'full_name_files': ['tags', 'cscope', 'shada', 'viminfo', 'COMMIT_EDITMSG'],
+            \}
+
+
 try
     call s:SetIgnorePatterns()
     call s:InitConfigs()
 catch E117
     " TODO:
 endtry
+
+let g:grep = {
+    \   'git' : {
+    \       'grepprg': 'git grep --no-color -In ',
+    \       'files': 'git ls-files -co --exclude-standard',
+    \       'grepformat': '%f:%l:%m'
+    \    },
+    \   'rg' : {
+    \       'grepprg':  'rg -S -n --color never -H --no-search-zip --trim --vimgrep ',
+    \       'files': 'rg --with-filename --color never --no-search-zip --hidden --trim --files',
+    \       'grepformat': '%f:%l:%c:%m,%f:%l:%m'
+    \   },
+    \   'ag' : {
+    \       'grepprg': 'ag -S -l --nogroup --nocolor --hidden --vimgrep ' . g:ignore_patterns.ag . ' ',
+    \       'files': 'ag -l --nocolor --nogroup --hidden '. g:ignore_patterns.ag . ' -g ""',
+    \       'grepformat': '%f:%l:%c:%m,%f:%l:%m'
+    \   },
+    \   'grep' : {
+    \       'grepprg': 'grep -HRIn --color=never ' . g:ignore_patterns.grep . ' ',
+    \       'grepformat': '%f:%l:%m'
+    \   },
+    \   'findstr' : {
+    \       'grepprg': 'findstr -rspn ' . g:ignore_patterns.findstr . ' ',
+    \       'grepformat': '%f:%l:%m'
+    \   },
+    \}
+
+" Small wrap to avoid change code all over the repo
+function! GrepTool(tool, properity) abort
+    return g:grep[a:tool][a:properity]
+endfunction
 
 let mapleader="\<Space>"
 

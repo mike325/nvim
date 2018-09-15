@@ -79,6 +79,9 @@ nnoremap <S-tab> <C-o>
 xnoremap > >gv
 xnoremap < <gv
 
+" I prefer to jump directly to the file line
+" nnoremap gf gF
+
 " Echo the relative path and of the file
 nnoremap <leader><leader>e :echo expand("%")<CR>
 
@@ -555,5 +558,22 @@ if !exists('g:plugs["vim-fugitive"]') && executable('git')
     nnoremap <leader>gc :Gcommit<CR>
     nnoremap <leader>gr :Gread<CR>
 endif
+
+" if !exists('g:plugs["denite.nvim"]') && !exists('g:plugs["vim-grepper"]')
+"     nnoremap gs :set operatorfunc=GrepOperator<cr>g@
+"     vnoremap gs :<c-u>call GrepOperator(visualmode())<cr>
+"
+"     function! GrepOperator(type)
+"         if a:type ==# 'v'
+"             normal! `<v`>y
+"         elseif a:type ==# 'char'
+"             normal! `[v`]y
+"         else
+"             return
+"         endif
+"
+"         silent execute 'grep -nIR ' . shellescape(@@) . ' .'
+"     endfunction
+" endif
 
 " }}} END Fallback Plugin mapping
