@@ -179,7 +179,7 @@ cnoremap <c-p> <up>
 if has('nvim') || has('terminal')
     tnoremap <esc> <C-\><C-n>
 
-    function! s:Terminal(cmd)
+    function! s:Terminal(cmd) abort
         if WINDOWS()
             let l:file = ( filereadable(g:home . '/.config/shell/alias/alias.ps1') ) ? ' -File ' . g:home . '/.config/shell/alias/alias.ps1 ' : ' '
             if has('nvim')
@@ -197,6 +197,7 @@ if has('nvim') || has('terminal')
                 wincmd J
             endif
         endif
+        startinsert
     endfunction
 
     command! -nargs=? Terminal call s:Terminal(<q-args>)

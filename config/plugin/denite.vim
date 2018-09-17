@@ -49,7 +49,7 @@ elseif executable('ag')
     call denite#custom#var('grep', 'final_opts', [])
 
 elseif has('unix')
-    call denite#custom#var('file/rec', 'command', ['find', '-type', 'f', '-iname', '*', g:ignore_patterns.find])
+    call denite#custom#var('file/rec', 'command', ['find', '.', '-type', 'f', '-iname', '*', g:ignore_patterns.find])
 
 elseif WINDOWS()
     let s:ignore = &wildignore . ',.git,.hg,.svn'
@@ -70,7 +70,9 @@ endif
 if executable('git')
     call denite#custom#alias('source', 'file/rec/git', 'file/rec')
     call denite#custom#var('file/rec/git', 'command', ['git', 'ls-files', '-co', '--exclude-standard'])
-    nnoremap <silent> <C-p> :<C-u>Denite <C-r>=finddir('.git', ';') != '' ? 'file/rec/git' : 'file/rec'<CR><CR>
+
+    nnoremap <silent> <C-p>  :<C-u>Denite <C-r>=finddir('.git', ';') != '' ? 'file/rec/git' : '-resume file/rec'<CR><CR>
+    nnoremap <silent> g<C-p> :<C-u>Denite <C-r>=finddir('.git', ';') != '' ? 'file/rec/git' : 'file/rec'<CR><CR>
 
     call denite#custom#alias('source', 'grep/git', 'grep')
     call denite#custom#var('grep/git', 'command', ['git', '--no-pager', 'grep'])
@@ -80,12 +82,22 @@ if executable('git')
     call denite#custom#var('grep/git', 'separator', [])
     call denite#custom#var('grep/git', 'final_opts', [])
 
-    nnoremap <silent> <C-g> :<C-u>Denite <C-r>=finddir('.git', ';') != '' ? 'grep/git' : 'grep'<CR><CR>
+    nnoremap <silent> <C-g>  :<C-u>Denite <C-r>=finddir('.git', ';') != '' ? '-resume grep/git' : '-resume grep'<CR><CR>
+    nnoremap <silent> g<C-g> :<C-u>Denite <C-r>=finddir('.git', ';') != '' ? 'grep/git' : 'grep'<CR><CR>
 
 else
-    nnoremap <silent> <C-p> :<C-u>Denite file/rec<CR>
-    nnoremap <silent> <C-g> :<C-u>Denite grep<CR>
+    nnoremap <silent> g<C-p> :<C-u>Denite file/rec<CR>
+    nnoremap <silent> <C-p>  :<C-u>Denite -resume file/rec<CR>
+    nnoremap <silent> <C-g>  :<C-u>Denite -resume -no-empty grep<CR>
+    nnoremap <silent> g<C-g> :<C-u>Denite -no-empty grep<CR>
 endif
+
+" Default mappigns search for macros, but tags are already faster and more accurate
+nnoremap ]d :Denite -resume -cursor-pos=+1 -immediately<CR>
+nnoremap [d :Denite -resume -cursor-pos=-1 -immediately<CR>
+
+nnoremap [D :Denite -resume -cursor-pos=0 -immediately<CR>
+nnoremap ]D :Denite -resume -cursor-pos=$ -immediately<CR>
 
 " Change matchers.
 " call denite#custom#source('file/rec', 'matchers', ['matcher/cpsm'])
@@ -138,3 +150,9 @@ call denite#custom#map(
         \ '<denite:do_action:reset>',
         \ 'noremap'
         \)
+
+call denite#custom#map(
+    \ 'normal',
+    \ '<C-a>',
+    \ '<denite:multiple_mappings:denite:toggle_select_all,denite:do_action:quickfix>',
+    \ 'noremap')

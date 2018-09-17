@@ -161,7 +161,7 @@ set title          " Set window title
 set laststatus=2   " Always show the status line
 set lazyredraw     " Don't draw when a macro is being executed
 set splitright     " Split on the right the current buffer
-set splitbelow     " Split on the below the current buffer
+set nosplitbelow   " Split on the below the current buffer
 set nowrap         " By default don't wrap the lines
 set showmatch      " Show matching parenthesis
 set number         " Show line numbers
