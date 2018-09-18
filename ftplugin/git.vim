@@ -24,7 +24,7 @@
 "
 " ############################################################################
 
-setlocal bufhidden=hide
+" setlocal bufhidden=hide
 setlocal foldmethod=syntax
 
 setlocal nobackup
