@@ -28,29 +28,21 @@ if !exists('g:plugs["denite.nvim"]')
     finish
 endif
 
-if executable('rg')
-    call denite#custom#var('file/rec', 'command', ['rg', '-n', '--no-search-zip', '-H', '--color', 'never', '--hidden', '--trim', '--files'])
+if executable('rg') || executable('ag')
+    let s:tool = executable('rg') ? 'rg' : 'ag'
+    call denite#custom#var('file/rec', 'command', split(FileListTool(s:tool)))
 
-    call denite#custom#var('grep', 'command', ['rg'])
-    call denite#custom#var('grep', 'default_opts', ['-S', '-n', '--color', 'never', '-H', '--no-search-zip', '--hidden', '--trim', '--vimgrep'])
+    call denite#custom#var('grep', 'command', split(GrepTool(s:tool, 'grepprg'))[0:0])
+    call denite#custom#var('grep', 'default_opts', split(GrepTool(s:tool, 'grepprg'))[1:])
     call denite#custom#var('grep', 'recursive_opts', [])
     call denite#custom#var('grep', 'pattern_opt', [])
     call denite#custom#var('grep', 'separator', ['--'])
     call denite#custom#var('grep', 'final_opts', [])
 
-elseif executable('ag')
-    call denite#custom#var('file/rec', 'command', ['ag', '-l', '--nocolor', '--nogroup', '--hidden', g:ignore_patterns.ag, '-g', ''])
-
-    call denite#custom#var('grep', 'command', ['ag'])
-    call denite#custom#var('grep', 'default_opts', ['-S', '--nocolor', '--nogroup', '--hidden', '--vimgrep'])
-    call denite#custom#var('grep', 'recursive_opts', [])
-    call denite#custom#var('grep', 'pattern_opt', [])
-    call denite#custom#var('grep', 'separator', ['--'])
-    call denite#custom#var('grep', 'final_opts', [])
+    unlet s:tool
 
 elseif has('unix')
     call denite#custom#var('file/rec', 'command', ['find', '.', '-type', 'f', '-iname', '*', g:ignore_patterns.find])
-
 elseif WINDOWS()
     let s:ignore = &wildignore . ',.git,.hg,.svn'
     call denite#custom#var('file/rec', 'command', ['scantree.py', '--ignore', s:ignore])
@@ -69,14 +61,14 @@ endif
 
 if executable('git')
     call denite#custom#alias('source', 'file/rec/git', 'file/rec')
-    call denite#custom#var('file/rec/git', 'command', ['git', 'ls-files', '-co', '--exclude-standard'])
+    call denite#custom#var('file/rec/git', 'command', split(FileListTool('git')))
 
     nnoremap <silent> <C-p>  :<C-u>Denite <C-r>=finddir('.git', ';') != '' ? 'file/rec/git' : '-resume file/rec'<CR><CR>
     nnoremap <silent> g<C-p> :<C-u>Denite <C-r>=finddir('.git', ';') != '' ? 'file/rec/git' : 'file/rec'<CR><CR>
 
     call denite#custom#alias('source', 'grep/git', 'grep')
-    call denite#custom#var('grep/git', 'command', ['git', '--no-pager', 'grep'])
-    call denite#custom#var('grep/git', 'default_opts', ['--no-color', '-I', '-n', '-H'])
+    call denite#custom#var('grep/git', 'command', split(GrepTool('git', 'grepprg'))[0:2])
+    call denite#custom#var('grep/git', 'default_opts', split(GrepTool('git',  'grepprg'))[3:])
     call denite#custom#var('grep/git', 'recursive_opts', [])
     call denite#custom#var('grep/git', 'pattern_opt', [])
     call denite#custom#var('grep/git', 'separator', [])

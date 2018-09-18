@@ -343,19 +343,16 @@ catch E117
 endtry
 
 let g:grep = {
-    \   'git' : {
-    \       'grepprg': 'git grep --no-color -In ',
-    \       'files': 'git ls-files -co --exclude-standard',
+    \   'git': {
+    \       'grepprg': 'git --no-pager grep --no-color -In ',
     \       'grepformat': '%f:%l:%m'
     \    },
     \   'rg' : {
     \       'grepprg':  'rg -S -n --color never -H --no-search-zip --trim --vimgrep ',
-    \       'files': 'rg --with-filename --color never --no-search-zip --hidden --trim --files',
     \       'grepformat': '%f:%l:%c:%m,%f:%l:%m'
     \   },
     \   'ag' : {
     \       'grepprg': 'ag -S -l --nogroup --nocolor --hidden --vimgrep ' . g:ignore_patterns.ag . ' ',
-    \       'files': 'ag -l --nocolor --nogroup --hidden '. g:ignore_patterns.ag . ' -g ""',
     \       'grepformat': '%f:%l:%c:%m,%f:%l:%m'
     \   },
     \   'grep' : {
@@ -368,10 +365,24 @@ let g:grep = {
     \   },
     \}
 
+" TODO: Missing Default OS specific fallbacks
+let g:file_list = {
+    \   'git': 'git --no-pager ls-files -co --exclude-standard',
+    \   'rg' : 'rg --with-filename --color never --no-search-zip --hidden --trim --files',
+    \   'ag' : 'ag -l --nocolor --nogroup --hidden '. g:ignore_patterns.ag . ' -g ""',
+    \}
+
+
 " Small wrap to avoid change code all over the repo
 function! GrepTool(tool, properity) abort
     return g:grep[a:tool][a:properity]
 endfunction
+
+" Just like GrepTool but for listing files
+function! FileListTool(tool) abort
+    return g:file_list[a:tool]
+endfunction
+
 
 let mapleader="\<Space>"
 
