@@ -446,12 +446,12 @@ if !exists('g:minimal')
     Plug 'kurayama/systemd-vim-syntax', {'for': 'systemd'}
     Plug 'mhinz/vim-nginx', {'for': 'nginx'}
     Plug 'PProvost/vim-ps1'
-    Plug 'octol/vim-cpp-enhanced-highlight', {'for': ['cpp', 'c']}
-    " Plug 'plasticboy/vim-markdown', {'for': 'markdown'}
-
 
     if has('nvim')
         Plug 'numirias/semshi', {'do': function('RemotePlugins')}
+        Plug 'blahgeek/neovim-colorcoder', {'do': function('RemotePlugins')}
+    else
+        Plug 'octol/vim-cpp-enhanced-highlight', {'for': ['cpp', 'c']}
     endif
 
     " }}} END Syntax

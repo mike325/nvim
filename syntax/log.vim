@@ -28,10 +28,10 @@ if exists('b:current_syntax')
   finish
 endif
 
-syn match LogError      /\(^\([[:blank:]]\+\)\?\zs\([[:alpha:]]*\)\?\cerr\(or\)\?\ze[:-]\?[[:blank:]]\+\)\|\([[:blank:]]\+\zs\([[:alpha:]]*\)\?\cerr\(or\)\?\ze[[:blank:]]\?[:-]\)/
+syn match LogError      /\(^\([[:blank:]]\+\)\?\zs\([[:alpha:]]*\)\?\cerr\(or\)\?\ze[!:-]\?[[:blank:]]\+\)\|\([[:blank:]]\+\zs\([[:alpha:]]*\)\?\cerr\(or\)\?\ze[[:blank:]]\?[!:-]\)/
 syn match LogFail       /\(^\([[:blank:]]\+\)\?\zs\cfail\(ed\)\?\ze[:-]\?[[:blank:]]\+\)\|\([[:blank:]]\+\zs\cfail\(ed\)\?\ze[[:blank:]]\?[:-]\)/
 syn match LogException  /\(^\([[:blank:]]\+\)\?\zs\cexception\ze[:-]\?[[:blank:]]\+\)\|\([[:blank:]]\+\zs\cexception\ze[[:blank:]]\?[:-]\)/
-syn match LogWarn       /\(^\([[:blank:]]\+\)\?\zs\cwarn\(ing\)\?\ze[:-]\?[[:blank:]]\+\)\|\([[:blank:]]\+\zs\cwarn\(ing\)\?\ze[[:blank:]]\?[:-]\)/
+syn match LogWarn       /\(^\([[:blank:]]\+\)\?\zs\cwarn\(ing\)\?\ze[!:-]\?[[:blank:]]\+\)\|\([[:blank:]]\+\zs\cwarn\(ing\)\?\ze[[:blank:]]\?[!:-]\)/
 syn match LogInfo       /\(^\([[:blank:]]\+\)\?\zs\cinfo\(rmation\)\?\ze[:-]\?[[:blank:]]\+\)\|\([[:blank:]]\+\zs\cinfo\(rmation\)\?\ze[[:blank:]]\?[:-]\)/
 syn match LogDebug      /\(^\([[:blank:]]\+\)\?\zs\cdebug\ze[:-]\?[[:blank:]]\+\)\|\([[:blank:]]\+\zs\cdebug\ze[[:blank:]]\?[:-]\)/
 syn match LogPass       /\(^\([[:blank:]]\+\)\?\zs\cpass\(ed\)\?\ze[:-]\?[[:blank:]]\+\)\|\([[:blank:]]\+\zs\cpass\(ed\)\?\ze[[:blank:]]\?[:-]\)/
