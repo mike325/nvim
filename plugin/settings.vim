@@ -278,7 +278,9 @@ endif
 
 " Allow lua omni completion
 let g:lua_complete_omni = 1
-" scriptencoding
+
+" Always prefer latex over plantext for *.tex files
+let g:tex_flavor = 'latex'
 
 set sessionoptions=buffers,curdir,folds,globals,localoptions,options,resize,tabpages,winpos,winsize
 if WINDOWS()

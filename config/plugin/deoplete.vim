@@ -77,9 +77,9 @@ let g:deoplete#sources = get(g:,'deoplete#sources',{})
 " let g:deoplete#sources.javascript = ['buffer', 'member', 'file', 'tags', 'omni', 'ultisnips']
 " let g:deoplete#sources.ruby       = ['buffer', 'member', 'file', 'tags', 'omni', 'ultisnips']
 
-" if !exists('g:deoplete#omni#input_patterns')
-"     let g:deoplete#omni#input_patterns = {}
-" endif
+if !exists('g:deoplete#omni#input_patterns')
+    let g:deoplete#omni#input_patterns = {}
+endif
 
 augroup CloseMenu
     autocmd!
@@ -184,3 +184,12 @@ if exists('g:plugs["deoplete-go"]')
     let g:deoplete#sources#go#use_cache         = 1
     let g:deoplete#sources#go#package_dot       = 1
 endif
+
+
+if exists('g:plugs["vimtex"]')
+    if !exists('g:deoplete#omni#input_patterns')
+        let g:deoplete#omni#input_patterns = {}
+    endif
+    let g:deoplete#omni#input_patterns.tex = g:vimtex#re#deoplete
+endif
+

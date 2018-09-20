@@ -97,6 +97,15 @@ else
     let g:ycm_python_binary_path = g:python2_host_prog
 endif
 
+if !exists('g:ycm_semantic_triggers')
+    let g:ycm_semantic_triggers = {}
+endif
+
+if exists('g:plugs["vimtex"]')
+    let g:ycm_semantic_triggers.tex = g:vimtex#re#youcompleteme
+endif
+
+
 function! s:SplitYCM(split_type, ycm_cmd)
     execute a:split_type
     execute a:ycm_cmd

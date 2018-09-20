@@ -468,3 +468,8 @@ augroup ProjectConfig
     endif
     autocmd VimEnter,SessionLoadPost * call s:SetProjectConfigs()
 augroup end
+
+augroup LaTex
+    autocmd!
+    autocmd FileType tex let b:vimtex_main = 'main.tex'
+augroup end

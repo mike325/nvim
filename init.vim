@@ -819,9 +819,14 @@ if !exists('g:minimal')
     Plug 'tomtom/tcomment_vim'
     " Plug 'scrooloose/nerdcommenter'
 
-    " if (has('nvim') || (v:version >= 704))
-    "     Plug 'lervag/vimtex'
-    " endif
+    if (has('nvim') || (v:version >= 704)) && (executable('tex'))
+        Plug 'lervag/vimtex'
+
+        if !has('nvim') && empty(v:servername) && exists('*remote_startserver')
+            call remote_startserver('VIM')
+        endif
+
+    endif
 
     " }}} END Languages
 

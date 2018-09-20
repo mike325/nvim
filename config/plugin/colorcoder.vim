@@ -34,5 +34,4 @@ let g:colorcoder_enable_filetypes = [
             \    'lua',
             \    'sh',
             \    'zsh',
-            \    'vim',
             \ ]
