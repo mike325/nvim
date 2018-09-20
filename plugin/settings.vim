@@ -56,7 +56,7 @@ if has('nvim') || (v:version >= 704)
     set formatoptions+=t " Auto-wrap text using textwidth
     set formatoptions+=n " Recognize numbered lists
     set formatoptions+=j " Delete comment character when joining commented lines
-endi
+endif
 
 " Vim terminal settins
 if !has('nvim')

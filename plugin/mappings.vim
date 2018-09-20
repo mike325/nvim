@@ -502,7 +502,7 @@ if !exists('g:plugs["vim-eunuch"]')
                 \       try |
                 \           execute s:cmd . s:target |
                 \       catch /E94/ |
-                \           echoer "Failed to delete/wipe '" . s:target . "'" |
+                \           echoerr "Failed to delete/wipe '" . s:target . "'" |
                 \       finally |
                 \           unlet s:cmd |
                 \       endtry |
