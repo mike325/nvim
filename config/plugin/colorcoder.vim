@@ -32,6 +32,4 @@ let g:colorcoder_enable_filetypes = [
             \    'c',
             \    'cpp',
             \    'lua',
-            \    'sh',
-            \    'zsh',
             \ ]

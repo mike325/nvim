@@ -59,12 +59,17 @@ elseif WINDOWS()
 
 endif
 
+function! DeniteBuffer(prefix)
+    let l:name = fnamemodify(fnamemodify(getcwd(), ':r'), ':t')
+    return (empty(a:prefix) ? l:name : a:prefix . l:name)
+endfunction
+
 if executable('git')
     call denite#custom#alias('source', 'file/rec/git', 'file/rec')
     call denite#custom#var('file/rec/git', 'command', split(FileListTool('git')))
 
-    nnoremap <silent> <C-p>  :<C-u>Denite <C-r>=finddir('.git', ';') != '' ? 'file/rec/git' : '-resume file/rec'<CR><CR>
-    nnoremap <silent> g<C-p> :<C-u>Denite <C-r>=finddir('.git', ';') != '' ? 'file/rec/git' : 'file/rec'<CR><CR>
+    nnoremap <silent> <C-p>  :<C-u>Denite -buffer-name=<C-r>=DeniteBuffer('files_')<CR> <C-r>=finddir('.git', ';') != '' ? '-resume file/rec/git' : '-resume file/rec'<CR><CR>
+    nnoremap <silent> g<C-p> :<C-u>Denite -buffer-name=<C-r>=DeniteBuffer('files_')<CR> <C-r>=finddir('.git', ';') != '' ? 'file/rec/git' : 'file/rec'<CR><CR>
 
     call denite#custom#alias('source', 'grep/git', 'grep')
     call denite#custom#var('grep/git', 'command', split(GrepTool('git', 'grepprg'))[0:2])
@@ -74,22 +79,22 @@ if executable('git')
     call denite#custom#var('grep/git', 'separator', [])
     call denite#custom#var('grep/git', 'final_opts', [])
 
-    nnoremap <silent> <C-g>  :<C-u>Denite <C-r>=finddir('.git', ';') != '' ? '-resume grep/git' : '-resume grep'<CR><CR>
-    nnoremap <silent> g<C-g> :<C-u>Denite <C-r>=finddir('.git', ';') != '' ? 'grep/git' : 'grep'<CR><CR>
+    nnoremap <silent> <C-g>  :<C-u>Denite -buffer-name=<C-r>=DeniteBuffer('grep_')<CR> <C-r>=finddir('.git', ';') != '' ? 'grep/git' : 'grep'<CR><CR>
+    nnoremap <silent> g<C-g> :<C-u>Denite -buffer-name=<C-r>=DeniteBuffer('grep_')<CR> <C-r>=finddir('.git', ';') != '' ? '-resume grep/git' : '-resume grep'<CR><CR>
 
 else
-    nnoremap <silent> g<C-p> :<C-u>Denite file/rec<CR>
-    nnoremap <silent> <C-p>  :<C-u>Denite -resume file/rec<CR>
-    nnoremap <silent> <C-g>  :<C-u>Denite -resume -no-empty grep<CR>
-    nnoremap <silent> g<C-g> :<C-u>Denite -no-empty grep<CR>
+    nnoremap <silent> g<C-p> :<C-u>Denite -buffer-name=<C-r>=DeniteBuffer('files_')<CR> file/rec<CR>
+    nnoremap <silent> <C-p>  :<C-u>Denite -buffer-name=<C-r>=DeniteBuffer('files_')<CR> -resume file/rec<CR>
+    nnoremap <silent> <C-g>  :<C-u>Denite -buffer-name=<C-r>=DeniteBuffer('grep_')<CR> -resume -no-empty grep<CR>
+    nnoremap <silent> g<C-g> :<C-u>Denite -buffer-name=<C-r>=DeniteBuffer('grep_')<CR> -no-empty grep<CR>
 endif
 
 " Default mappigns search for macros, but tags are already faster and more accurate
-nnoremap ]d :Denite -resume -cursor-pos=+1 -immediately<CR>
-nnoremap [d :Denite -resume -cursor-pos=-1 -immediately<CR>
+nnoremap ]d :<C-u>Denite -buffer-name=<C-r>=DeniteBuffer('grep_')<CR> -resume -cursor-pos=+1 -immediately<CR>
+nnoremap [d :<C-u>Denite -buffer-name=<C-r>=DeniteBuffer('grep_')<CR> -resume -cursor-pos=-1 -immediately<CR>
 
-nnoremap [D :Denite -resume -cursor-pos=0 -immediately<CR>
-nnoremap ]D :Denite -resume -cursor-pos=$ -immediately<CR>
+nnoremap [D :<C-u>Denite -buffer-name=<C-r>=DeniteBuffer('grep_')<CR> -resume -cursor-pos=0 -immediately<CR>
+nnoremap ]D :<C-u>Denite -buffer-name=<C-r>=DeniteBuffer('grep_')<CR> -resume -cursor-pos=$ -immediately<CR>
 
 " Change matchers.
 " call denite#custom#source('file/rec', 'matchers', ['matcher/cpsm'])

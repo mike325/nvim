@@ -38,7 +38,7 @@ endif
 if empty($NO_COOL_FONTS)
     let g:indentLine_char            = '┊'
 else
-    let g:indentLine_char            = ':'
+    let g:indentLine_char            = '│'
 endif
 
 let g:indentLine_color_gui       = '#DDC188'
