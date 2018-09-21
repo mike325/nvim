@@ -106,7 +106,6 @@ if exists('g:plugs["vim-lua-ftplugin"]') && (executable('luac') || executable('l
 
     let g:deoplete#omni#functions     = get(g:, 'g:deoplete#omni#functions', {})
     let g:deoplete#omni#functions.lua = 'xolox#lua#omnifunc'
-
 endif
 
 if exists('g:plugs["deoplete-jedi"]')

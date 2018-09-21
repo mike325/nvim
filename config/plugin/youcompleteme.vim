@@ -94,7 +94,7 @@ let g:ycm_filetype_blacklist    = {
 if exists('g:python3_host_prog')
     let g:ycm_python_binary_path = g:python3_host_prog
 else
-    let g:ycm_python_binary_path = g:python2_host_prog
+    let g:ycm_python_binary_path = g:python_host_prog
 endif
 
 if !exists('g:ycm_semantic_triggers')
