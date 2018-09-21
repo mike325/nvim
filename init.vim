@@ -547,7 +547,8 @@ if !exists('g:minimal')
 
     if executable('git')
         Plug 'tpope/vim-fugitive'
-        Plug 'rhysd/committia.vim'
+        Plug 'jreybert/vimagit'
+        " Plug 'rhysd/committia.vim'
         Plug 'gregsexton/gitv', {'on': ['Gitv']}
     endif
     " }}} END Git integration
