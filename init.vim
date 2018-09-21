@@ -547,7 +547,7 @@ if !exists('g:minimal')
 
     if executable('git')
         Plug 'tpope/vim-fugitive'
-        Plug 'jreybert/vimagit'
+        Plug 'jreybert/vimagit', {'on', ['Magit', 'MagitOnly']}
         " Plug 'rhysd/committia.vim'
         Plug 'gregsexton/gitv', {'on': ['Gitv']}
     endif
