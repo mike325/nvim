@@ -105,6 +105,14 @@ if exists('g:plugs["vimtex"]')
     let g:ycm_semantic_triggers.tex = g:vimtex#re#youcompleteme
 endif
 
+let g:ycm_server_log_level      = 'debug'
+let g:ycm_server_use_vim_stdout = 1
+
+let g:ycm_cache_omnifunc = 1
+
+if exists('g:plugs["ultisnips"]')
+    let g:ycm_use_ultisnips_completer = 1
+endif
 
 function! s:SplitYCM(split_type, ycm_cmd)
     execute a:split_type
