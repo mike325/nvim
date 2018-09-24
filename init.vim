@@ -352,7 +352,7 @@ let g:grep = {
     \       'grepformat': '%f:%l:%c:%m,%f:%l:%m'
     \   },
     \   'ag' : {
-    \       'grepprg': 'ag -S -l --nogroup --nocolor --hidden --vimgrep ' . g:ignore_patterns.ag . ' ',
+    \       'grepprg': 'ag -S -l --follow --nogroup --nocolor --hidden --vimgrep ' . g:ignore_patterns.ag . ' ',
     \       'grepformat': '%f:%l:%c:%m,%f:%l:%m'
     \   },
     \   'grep' : {
@@ -369,7 +369,7 @@ let g:grep = {
 let g:file_list = {
     \   'git': 'git --no-pager ls-files -co --exclude-standard',
     \   'rg' : 'rg --with-filename --color never --no-search-zip --hidden --trim --files',
-    \   'ag' : 'ag -l --nocolor --nogroup --hidden '. g:ignore_patterns.ag . ' -g ""',
+    \   'ag' : 'ag -l --follow --nocolor --nogroup --hidden '. g:ignore_patterns.ag . ' -g ""',
     \}
 
 
@@ -502,8 +502,8 @@ if !exists('g:minimal')
 
     if has('nvim') && PYTHON('3')
         Plug 'Shougo/denite.nvim'
-        Plug 'chemzqm/denite-git'
         Plug 'dunstontc/projectile.nvim'
+        " Plug 'chemzqm/denite-git'
     else
         Plug 'mhinz/vim-grepper', { 'on': ['Grepper', '<plug>(GrepperOperator)'] }
 

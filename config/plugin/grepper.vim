@@ -63,14 +63,14 @@ if executable('git')
     let g:grepper.tools += ['git']
     " I like to search ignore case when greppper is call from <C-g>
     let g:grepper.git = {
-        \ 'grepprg':    GrepTool('git', 'grepprg') . '-i ',
+        \ 'grepprg':    GrepTool('git', 'grepprg') . ' -i ',
         \ 'grepformat': '%f:%l:%m',
         \ 'escape':     '\^$.*[]',
         \ }
 
     let g:grepper.operator.tools += ['git']
     let g:grepper.operator.git = {
-        \ 'grepprg':    GrepTool('git', 'grepprg') . '-w ',
+        \ 'grepprg':    GrepTool('git', 'grepprg') . ' -w ',
         \ 'grepformat': '%f:%l:%m',
         \ 'escape':     '\^$.*[]',
         \ }

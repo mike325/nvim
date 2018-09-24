@@ -68,8 +68,7 @@ if executable('git')
     call denite#custom#alias('source', 'file/rec/git', 'file/rec')
     call denite#custom#var('file/rec/git', 'command', split(FileListTool('git')))
 
-    nnoremap <silent> <C-p>  :<C-u>Denite -buffer-name=<C-r>=DeniteBuffer('files_')<CR> <C-r>=finddir('.git', ';') != '' ? '-resume file/rec/git' : '-resume file/rec'<CR><CR>
-    nnoremap <silent> g<C-p> :<C-u>Denite -buffer-name=<C-r>=DeniteBuffer('files_')<CR> <C-r>=finddir('.git', ';') != '' ? 'file/rec/git' : 'file/rec'<CR><CR>
+    call denite#custom#source('git/file/rec', 'sorters', ['sorter/sublime'])
 
     call denite#custom#alias('source', 'grep/git', 'grep')
     call denite#custom#var('grep/git', 'command', split(GrepTool('git', 'grepprg'))[0:2])
@@ -79,14 +78,20 @@ if executable('git')
     call denite#custom#var('grep/git', 'separator', [])
     call denite#custom#var('grep/git', 'final_opts', [])
 
-    nnoremap <silent> <C-g>  :<C-u>Denite -buffer-name=<C-r>=DeniteBuffer('grep_')<CR> <C-r>=finddir('.git', ';') != '' ? 'grep/git' : 'grep'<CR><CR>
-    nnoremap <silent> g<C-g> :<C-u>Denite -buffer-name=<C-r>=DeniteBuffer('grep_')<CR> <C-r>=finddir('.git', ';') != '' ? '-resume grep/git' : '-resume grep'<CR><CR>
+    call denite#custom#source('git/grep', 'sorters', ['sorter/sublime'])
+
+    nnoremap <silent> <C-p>  :<C-u>Denite -prompt='Files >' -buffer-name=<C-r>=DeniteBuffer('files_')<CR> <C-r>=finddir('.git', ';') != '' ? '-resume file/rec/git' : '-resume file/rec'<CR><CR>
+    nnoremap <silent> g<C-p> :<C-u>Denite -prompt='Files >' -buffer-name=<C-r>=DeniteBuffer('files_')<CR> <C-r>=finddir('.git', ';') != '' ? 'file/rec/git' : 'file/rec'<CR><CR>
+
+    nnoremap <silent> <C-g>  :<C-u>Denite -prompt='Grep >' -buffer-name=<C-r>=DeniteBuffer('grep_')<CR> <C-r>=finddir('.git', ';') != '' ? 'grep/git' : 'grep'<CR><CR>
+    nnoremap <silent> g<C-g> :<C-u>Denite -prompt='Grep >' -buffer-name=<C-r>=DeniteBuffer('grep_')<CR> <C-r>=finddir('.git', ';') != '' ? '-resume grep/git' : '-resume grep'<CR><CR>
 
 else
-    nnoremap <silent> g<C-p> :<C-u>Denite -buffer-name=<C-r>=DeniteBuffer('files_')<CR> file/rec<CR>
-    nnoremap <silent> <C-p>  :<C-u>Denite -buffer-name=<C-r>=DeniteBuffer('files_')<CR> -resume file/rec<CR>
-    nnoremap <silent> <C-g>  :<C-u>Denite -buffer-name=<C-r>=DeniteBuffer('grep_')<CR> -resume -no-empty grep<CR>
-    nnoremap <silent> g<C-g> :<C-u>Denite -buffer-name=<C-r>=DeniteBuffer('grep_')<CR> -no-empty grep<CR>
+    nnoremap <silent> g<C-p> :<C-u>Denite -prompt='Files >' -buffer-name=<C-r>=DeniteBuffer('files_')<CR> file/rec<CR>
+    nnoremap <silent> <C-p>  :<C-u>Denite -prompt='Files >' -buffer-name=<C-r>=DeniteBuffer('files_')<CR> -resume file/rec<CR>
+
+    nnoremap <silent> <C-g>  :<C-u>Denite -prompt='Grep >' -buffer-name=<C-r>=DeniteBuffer('grep_')<CR> -resume -no-empty grep<CR>
+    nnoremap <silent> g<C-g> :<C-u>Denite -prompt='Grep >' -buffer-name=<C-r>=DeniteBuffer('grep_')<CR> -no-empty grep<CR>
 endif
 
 " Default mappigns search for macros, but tags are already faster and more accurate
@@ -96,11 +101,16 @@ nnoremap [d :<C-u>Denite -buffer-name=<C-r>=DeniteBuffer('grep_')<CR> -resume -c
 nnoremap [D :<C-u>Denite -buffer-name=<C-r>=DeniteBuffer('grep_')<CR> -resume -cursor-pos=0 -immediately<CR>
 nnoremap ]D :<C-u>Denite -buffer-name=<C-r>=DeniteBuffer('grep_')<CR> -resume -cursor-pos=$ -immediately<CR>
 
+
+nnoremap <silent> <C-b> :<C-u>Denite -prompt='Buffers >' -buffer-name='Buffers' buffer<CR>
+call denite#custom#source('buffer', 'sorters', ['sorter/sublime'])
+
 " Change matchers.
 " call denite#custom#source('file/rec', 'matchers', ['matcher/cpsm'])
 
 " Change sorters.
 call denite#custom#source('file/rec', 'sorters', ['sorter/sublime'])
+call denite#custom#source('grep', 'sorters', ['sorter/sublime'])
 
 " Default
 " call denite#custom#source('file/rec', 'sorters', ['sorter/rank'])
@@ -153,3 +163,33 @@ call denite#custom#map(
     \ '<C-a>',
     \ '<denite:multiple_mappings:denite:toggle_select_all,denite:do_action:quickfix>',
     \ 'noremap')
+
+if exists('g:plugs["projectile.nvim"]')
+
+    let g:projectile#data_dir =  g:home . '/cache/projectile'
+
+    let g:projectile#enabled = 1
+
+    if has('nvim')
+        let g:projectile#directory_command = 'tcd '
+    else
+        let g:projectile#directory_command = 'cd '
+    endif
+
+
+    if executable('rg')
+        let g:projectile#search_prog = 'rg'
+    elseif executable('ag')
+        let g:projectile#search_prog = 'ag'
+    elseif WINDOWS() && !executable('grep')
+        let g:projectile#search_prog = 'findstr'
+    endif
+
+    let g:projectile#todo_terms =  [
+        \  'TODO',
+        \  'WARN',
+        \  'FIXME',
+        \  'HACK',
+        \  'NOTE',
+        \ ]
+endif

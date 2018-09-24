@@ -113,7 +113,7 @@ if exists('g:plugs["deoplete-jedi"]')
     let g:deoplete#sources#jedi#show_docstring = 1
 else
     let g:deoplete#omni#functions = get(g:, 'g:deoplete#omni#functions', {})
-    let g:deoplete#omni#functions.python = 'pythoncomplete#Complete'
+    " let g:deoplete#omni#functions.python = 'pythoncomplete#Complete'
 endif
 
 if exists('g:plugs["deoplete-clang"]') || exists('g:plugs["deoplete-clang2"]')
