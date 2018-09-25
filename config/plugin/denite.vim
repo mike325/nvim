@@ -83,15 +83,15 @@ if executable('git')
     nnoremap <silent> <C-p>  :<C-u>Denite -prompt='Files >' -buffer-name=<C-r>=DeniteBuffer('files_')<CR> <C-r>=finddir('.git', ';') != '' ? '-resume file/rec/git' : '-resume file/rec'<CR><CR>
     nnoremap <silent> g<C-p> :<C-u>Denite -prompt='Files >' -buffer-name=<C-r>=DeniteBuffer('files_')<CR> <C-r>=finddir('.git', ';') != '' ? 'file/rec/git' : 'file/rec'<CR><CR>
 
-    nnoremap <silent> <C-g>  :<C-u>Denite           -no-empty -prompt='Grep >' -buffer-name=<C-r>=DeniteBuffer('grep_')<CR> <C-r>=finddir('.git', ';') != '' ? 'grep/git' : 'grep'<CR><CR>
-    nnoremap <silent> g<C-g> :<C-u>DeniteCursorWord -no-empty -prompt='Grep >' -buffer-name=<C-r>=DeniteBuffer('grep_')<CR> <C-r>=finddir('.git', ';') != '' ? 'grep/git' : 'grep'<CR><CR>
+    nnoremap <silent> <C-g>  :<C-u>Denite -no-empty -prompt='Grep >' -buffer-name=<C-r>=DeniteBuffer('grep_')<CR> <C-r>=finddir('.git', ';') != '' ? 'grep/git' : 'grep'<CR><CR>
+    nnoremap <silent> g<C-g> :<C-u>Denite -no-empty -prompt='Grep >' -buffer-name=<C-r>=DeniteBuffer('grep_')<CR> <C-r>=finddir('.git', ';') != '' ? 'grep/git' : 'grep'<CR>:::<C-r>=expand('<cword>')<CR><CR>
 
 else
     nnoremap <silent> g<C-p> :<C-u>Denite -prompt='Files >' -buffer-name=<C-r>=DeniteBuffer('files_')<CR> file/rec<CR>
     nnoremap <silent> <C-p>  :<C-u>Denite -prompt='Files >' -buffer-name=<C-r>=DeniteBuffer('files_')<CR> -resume file/rec<CR>
 
     nnoremap <silent> <C-g>  :<C-u>Denite -prompt='Grep >' -buffer-name=<C-r>=DeniteBuffer('grep_')<CR> -no-empty grep<CR>
-    nnoremap <silent> g<C-g> :<C-u>DeniteCursorWord -prompt='Grep >' -buffer-name=<C-r>=DeniteBuffer('grep_')<CR> -no-empty grep<CR>
+    nnoremap <silent> g<C-g> :<C-u>Denite -prompt='Grep >' -buffer-name=<C-r>=DeniteBuffer('grep_')<CR> -no-empty grep:::<C-r>=expand('<cword>')<CR><CR>
 endif
 
 " Default mappigns search for macros, but tags are already faster and more accurate
