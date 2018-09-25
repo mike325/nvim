@@ -63,14 +63,14 @@ if executable('git')
     let g:grepper.tools += ['git']
     " I like to search ignore case when greppper is call from <C-g>
     let g:grepper.git = {
-        \ 'grepprg':    GrepTool('git', 'grepprg') . ' -i ',
+        \ 'grepprg':    GrepTool('git', 'grepprg'),
         \ 'grepformat': '%f:%l:%m',
         \ 'escape':     '\^$.*[]',
         \ }
 
     let g:grepper.operator.tools += ['git']
     let g:grepper.operator.git = {
-        \ 'grepprg':    GrepTool('git', 'grepprg') . ' -w ',
+        \ 'grepprg':    GrepTool('git', 'grepprg'),
         \ 'grepformat': '%f:%l:%m',
         \ 'escape':     '\^$.*[]',
         \ }
@@ -85,11 +85,7 @@ if executable('rg')
         \ }
 
     let g:grepper.operator.tools += ['rg']
-    let g:grepper.operator.rg = {
-        \ 'grepprg':    GrepTool('rg', 'grepprg'),
-        \ 'grepformat': '%f:%l:%c:%m,%f:%l:%m',
-        \ 'escape':     '\^$.*+?()[]{}|',
-        \ }
+    let g:grepper.operator.rg = g:grepper.rg
 endif
 
 if executable('ag')
@@ -101,29 +97,20 @@ if executable('ag')
         \ }
 
     let g:grepper.operator.tools += ['ag']
-    let g:grepper.operator.ag = {
-        \ 'grepprg':    GrepTool('ag', 'grepprg'),
-        \ 'grepformat': '%f:%l:%c:%m,%f:%l:%m',
-        \ 'escape':     '\^$.*+?()[]{}|',
-        \ }
+    let g:grepper.operator.ag = g:grepper.ag
 endif
 
 if executable('grep')
     let g:grepper.tools += ['grep']
     let g:grepper.grep = {
-        \ 'grepprg':    GrepTool('grep', 'grepprg') . ' $*',
-        \ 'grepprgbuf': 'grep -HIn -- $* $.',
+        \ 'grepprg':    GrepTool('grep', 'grepprg') . ' -r $*',
+        \ 'grepprgbuf': GrepTool('grep', 'grepprg') . ' -- $* $.',
         \ 'grepformat': '%f:%l:%m',
         \ 'escape':     '\^$.*[]',
         \ }
 
     let g:grepper.operator.tools += ['grep']
-    let g:grepper.operator.grep = {
-        \ 'grepprg':    GrepTool('grep', 'grepprg') .' $*',
-        \ 'grepprgbuf': 'grep -HIn -- $* $.',
-        \ 'grepformat': '%f:%l:%m',
-        \ 'escape':     '\^$.*[]',
-        \ }
+    let g:grepper.operator.grep = g:grepper.grep
 endif
 
 

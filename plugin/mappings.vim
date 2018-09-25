@@ -174,18 +174,26 @@ xnoremap <leader>0 <ESC>:tablast<CR>
 cnoremap <c-n> <down>
 cnoremap <c-p> <up>
 
+" Repeat last substitution
+nnoremap & :&&<CR>
+xnoremap & :&&<CR>
+
+" Swap 0 and ^, ^ is them most common line beginning for me
+nnoremap 0 ^
+nnoremap ^ 0
+
 " }}} EndTabBufferManagement
 
 if has('nvim') || has('terminal')
-    tnoremap <esc> <C-\><C-n>
+    tnoremap g<esc> <C-\><C-n>
+    " tnoremap <esc> <C-\><C-n>
 
     function! s:Terminal(cmd) abort
         if WINDOWS()
-            let l:file = ( filereadable(g:home . '/.config/shell/alias/alias.ps1') ) ? ' -File ' . g:home . '/.config/shell/alias/alias.ps1 ' : ' '
             if has('nvim')
-                execute 'botright 20split term://powershell -noexit -executionpolicy bypass ' . l:file . a:cmd
+                execute 'botright 20split term://powershell -noexit -executionpolicy bypass ' . a:cmd
             else
-                call term_start('powershell -noexit -executionpolicy bypass ' . l:file . a:cmd, {'term_rows': 20})
+                call term_start('powershell -noexit -executionpolicy bypass ' . a:cmd, {'term_rows': 20})
                 wincmd J
             endif
         else
