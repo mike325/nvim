@@ -34,7 +34,7 @@ if executable('rg') || executable('ag')
 
     call denite#custom#var('grep', 'command', split(GrepTool(s:tool, 'grepprg'))[0:0])
     call denite#custom#var('grep', 'default_opts', split(GrepTool(s:tool, 'grepprg'))[1:])
-    call denite#custom#var('grep', 'recursive_opts', [])
+    call denite#custom#var('grep', 'recursive_opts', ( s:tool ==# 'rg' ) ? ['--regexp'] : [])
     call denite#custom#var('grep', 'pattern_opt', [])
     call denite#custom#var('grep', 'separator', ['--'])
     call denite#custom#var('grep', 'final_opts', [])
@@ -43,6 +43,15 @@ if executable('rg') || executable('ag')
 
 elseif has('unix')
     call denite#custom#var('file/rec', 'command', ['find', '.', '-type', 'f', '-iname', '*', g:ignore_patterns.find])
+
+    call denite#custom#var('file/rec', 'command', split(FileListTool(s:tool)))
+
+    call denite#custom#var('grep', 'command', split(GrepTool('grep', 'grepprg'))[0:0])
+    call denite#custom#var('grep', 'default_opts', split(GrepTool(s:tool, 'grepprg'))[1:])
+    call denite#custom#var('grep', 'recursive_opts', ['-r'])
+    call denite#custom#var('grep', 'pattern_opt', ['-e'])
+    call denite#custom#var('grep', 'separator', ['--'])
+    call denite#custom#var('grep', 'final_opts', [])
 elseif WINDOWS()
     let s:ignore = &wildignore . ',.git,.hg,.svn'
     call denite#custom#var('file/rec', 'command', ['scantree.py', '--ignore', s:ignore])
@@ -83,15 +92,14 @@ if executable('git')
     nnoremap <silent> <C-p>  :<C-u>Denite -prompt='Files >' -buffer-name=<C-r>=DeniteBuffer('files_')<CR> <C-r>=finddir('.git', ';') != '' ? '-resume file/rec/git' : '-resume file/rec'<CR><CR>
     nnoremap <silent> g<C-p> :<C-u>Denite -prompt='Files >' -buffer-name=<C-r>=DeniteBuffer('files_')<CR> <C-r>=finddir('.git', ';') != '' ? 'file/rec/git' : 'file/rec'<CR><CR>
 
-    nnoremap <silent> <C-g>  :<C-u>Denite -no-empty -prompt='Grep >' -buffer-name=<C-r>=DeniteBuffer('grep_')<CR> <C-r>=finddir('.git', ';') != '' ? 'grep/git' : 'grep'<CR><CR>
-    nnoremap <silent> g<C-g> :<C-u>Denite -no-empty -prompt='Grep >' -buffer-name=<C-r>=DeniteBuffer('grep_')<CR> <C-r>=finddir('.git', ';') != '' ? 'grep/git' : 'grep'<CR>:::<C-r>=expand('<cword>')<CR><CR>
-
+    nnoremap <silent> <C-g>  :<C-u>Denite -mode=normal -no-empty -prompt='Grep >' -buffer-name=<C-r>=DeniteBuffer('grep_')<CR> <C-r>=finddir('.git', ';') != '' ? 'grep/git' : 'grep'<CR><CR>
+    nnoremap <silent> g<C-g> :<C-u>Denite -mode=normal -no-empty -prompt='Grep >' -buffer-name=<C-r>=DeniteBuffer('grep_')<CR> <C-r>=finddir('.git', ';') != '' ? 'grep/git' : 'grep'<CR>:::<C-r>=expand('<cword>')<CR><CR>
 else
     nnoremap <silent> g<C-p> :<C-u>Denite -prompt='Files >' -buffer-name=<C-r>=DeniteBuffer('files_')<CR> file/rec<CR>
     nnoremap <silent> <C-p>  :<C-u>Denite -prompt='Files >' -buffer-name=<C-r>=DeniteBuffer('files_')<CR> -resume file/rec<CR>
 
-    nnoremap <silent> <C-g>  :<C-u>Denite -prompt='Grep >' -buffer-name=<C-r>=DeniteBuffer('grep_')<CR> -no-empty grep<CR>
-    nnoremap <silent> g<C-g> :<C-u>Denite -prompt='Grep >' -buffer-name=<C-r>=DeniteBuffer('grep_')<CR> -no-empty grep:::<C-r>=expand('<cword>')<CR><CR>
+    nnoremap <silent> <C-g>  :<C-u>Denite -mode=normal -prompt='Grep >' -buffer-name=<C-r>=DeniteBuffer('grep_')<CR> -no-empty grep<CR>
+    nnoremap <silent> g<C-g> :<C-u>Denite -mode=normal -prompt='Grep >' -buffer-name=<C-r>=DeniteBuffer('grep_')<CR> -no-empty grep:::<C-r>=expand('<cword>')<CR><CR>
 endif
 
 " Default mappigns search for macros, but tags are already faster and more accurate
@@ -157,6 +165,12 @@ call denite#custom#map(
         \ '<denite:do_action:reset>',
         \ 'noremap'
         \)
+
+" call denite#custom#map(
+"     \ 'normal',
+"     \ '<C-a>',
+"     \ '<denite:multiple_mappings:denite:toggle_select_all,denite:do_action:quickfix>',
+"     \ 'noremap')
 
 call denite#custom#map(
     \ 'normal',

@@ -344,7 +344,7 @@ endtry
 
 let g:grep = {
     \   'git': {
-    \       'grepprg': 'git --no-pager grep --no-color -In ',
+    \       'grepprg': 'git --no-pager grep --no-color -Iin ',
     \       'grepformat': '%f:%l:%m'
     \    },
     \   'rg' : {
@@ -356,7 +356,7 @@ let g:grep = {
     \       'grepformat': '%f:%l:%c:%m,%f:%l:%m'
     \   },
     \   'grep' : {
-    \       'grepprg': 'grep -HRIn --color=never ' . g:ignore_patterns.grep . ' ',
+    \       'grepprg': 'grep -HiIn --color=never ' . g:ignore_patterns.grep . ' ',
     \       'grepformat': '%f:%l:%m'
     \   },
     \   'findstr' : {
