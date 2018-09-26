@@ -45,7 +45,7 @@ elseif has('unix')
     call denite#custom#var('file/rec', 'command', ['find', '.', '-type', 'f', '-iname', '*', g:ignore_patterns.find])
 
     call denite#custom#var('grep', 'command', split(GrepTool('grep', 'grepprg'))[0:0])
-    call denite#custom#var('grep', 'default_opts', split(GrepTool(s:tool, 'grepprg'))[1:])
+    call denite#custom#var('grep', 'default_opts', split(GrepTool('grep', 'grepprg'))[1:])
     call denite#custom#var('grep', 'recursive_opts', ['-r'])
     call denite#custom#var('grep', 'pattern_opt', ['-e'])
     call denite#custom#var('grep', 'separator', ['--'])
