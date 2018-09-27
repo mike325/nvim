@@ -63,6 +63,8 @@ try
     Abolish cal{a,e}nder{,s}                             cal{e}ndar{}
 catch E492
     if !GUI()
-        echoerr 'Abolish is not install, please run :Pluginstall'
+        augroup InitErrors
+            autocmd VimEnter * echoerr 'Abolish is not install, please run :Pluginstall'
+        augroup end
     endif
 endtry
