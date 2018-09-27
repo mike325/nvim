@@ -101,7 +101,7 @@ if !exists('g:ycm_semantic_triggers')
     let g:ycm_semantic_triggers = {}
 endif
 
-if exists('g:plugs["vimtex"]')
+if exists('g:plugs["vimtex"]') && exists('g:vimtex#re#youcompleteme')
     let g:ycm_semantic_triggers.tex = g:vimtex#re#youcompleteme
 endif
 
