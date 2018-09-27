@@ -29,6 +29,7 @@ if !exists('g:plugs["deoplete.nvim"]')
 endif
 
 let g:deoplete#enable_at_startup = 1
+let g:deoplete#sources#clang#libclang_path = g:libclang
 
 
 " Set minimum syntax keyword length.
@@ -119,33 +120,27 @@ endif
 if exists('g:plugs["deoplete-clang"]') || exists('g:plugs["deoplete-clang2"]')
     let g:deoplete#sources = get(g:,'deoplete#sources',{})
 
+    let g:deoplete#sources.c = ['clang']
     let g:deoplete#sources.cpp = ['clang']
 
     " call deoplete#custom#source('clang', 'debug_enabled', 1)
 
     let g:deoplete#sources#clang#sort_algo = 'priority'
 
-    " NOTE:
-    " g:deoplete#sources#clang#libclang_path: Must be the path to the dynamic clang library
-    " g:deoplete#sources#clang#clang_header : Must be thefolder with the clang headers
-    " FIXME: this doesn't work yet
-    " ISSUE: https://github.com/zchee/deoplete-clang/issues/57
-
     if WINDOWS()
-        if filereadable('c:/Program Files/LLVM/bin/libclang.dll')
-            let g:deoplete#sources#clang#libclang_path = 'c:/Program Files/LLVM/bin/libclang.dll'
-            let g:deoplete#sources#clang#clang_header  = 'c:/Program Files/LLVM/lib/clang/'
-        else
-            let g:deoplete#sources#clang#libclang_path = 'c:/Program Files(x86)/LLVM/bin/libclang.dll'
-            let g:deoplete#sources#clang#clang_header  = 'c:/Program Files(x86)/LLVM/lib/clang/'
+        if isdirectory(g:home . '/.local/lib/clang/')
+            let g:deoplete#sources#clang#clang_header = g:home . '/.local/lib/clang/'
+        elseif isdirectory('c:/Program Files/LLVM/lib/clang/')
+            let g:deoplete#sources#clang#clang_header = 'c:/Program Files/LLVM/lib/clang/'
+        elseif isdirectory('c:/Program Files(x86)/LLVM/lib/clang/')
+            let g:deoplete#sources#clang#clang_header = 'c:/Program Files(x86)/LLVM/lib/clang/'
         endif
     else
-        if filereadable(g:home . '/.local/lib/libclang.so')
-            let g:deoplete#sources#clang#libclang_path = g:home . '/.local/lib/libclang.so'
+        if isdirectory(g:home . '/.local/lib/clang/')
+            let g:deoplete#sources#clang#clang_header = g:home . '/.local/lib/clang/'
         else
-            let g:deoplete#sources#clang#libclang_path = '/usr/lib/libclang.so'
+            let g:deoplete#sources#clang#clang_header = '/usr/lib/clang/'
         endif
-        let g:deoplete#sources#clang#clang_header  = '/usr/lib/clang'
     endif
 
     let g:deoplete#sources#clang#std = {
@@ -165,20 +160,7 @@ endif
 
 if exists('g:plugs["deoplete-go"]')
     let g:deoplete#sources#go                   = 'vim-go'
-    if WINDOWS()
-        if filereadable('c:/Program Files/LLVM/bin/libclang.dll')
-            let g:deoplete#sources#go#cgo#libclang_path = 'c:/Program Files/LLVM/bin/libclang.dll'
-        else
-            let g:deoplete#sources#go#cgo#libclang_path = 'c:/Program Files(x86)/LLVM/bin/libclang.dll'
-        endif
-    else
-        if filereadable(g:home . '/.local/lib/libclang.so')
-            let g:deoplete#sources#go#cgo#libclang_path = g:home . '/.local/lib/libclang.so'
-        else
-            let g:deoplete#sources#go#cgo#libclang_path = '/usr/lib/libclang.so'
-        endif
-        let g:deoplete#sources#clang#clang_header  = '/usr/lib/clang'
-    endif
+    let g:deoplete#sources#go#cgo#libclang_path = g:libclang
     let g:deoplete#sources#go#sort_class        = ['package', 'func', 'type', 'var', 'const']
     let g:deoplete#sources#go#use_cache         = 1
     let g:deoplete#sources#go#package_dot       = 1

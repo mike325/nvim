@@ -286,3 +286,30 @@ set sessionoptions=buffers,curdir,folds,globals,localoptions,options,resize,tabp
 if WINDOWS()
     let &sessionoptions.=',slash,unix'
 endif
+
+let g:libclang = ''
+
+if WINDOWS()
+    if filereadable(g:home . '/.local/bin/libclang.dll')
+        let g:libclang = g:home . '/.local/bin/libclang.dll'
+    elseif exists('g:plugs["YouCompleteMe"]')
+        let g:libclang = g:base_path . 'plugged/YouCompleteMe/third_party/ycmd/libclang.dll'
+    elseif filereadable('c:/Program Files/LLVM/bin/libclang.dll')
+        let g:libclang = 'c:/Program Files/LLVM/bin/libclang.dll'
+    elseif filereadable('c:/Program Files(x86)/LLVM/bin/libclang.dll')
+        let g:libclang = 'c:/Program Files(x86)/LLVM/bin/libclang.dll'
+    endif
+else
+    if filereadable(g:home . '/.local/lib/libclang.so')
+        let g:libclang = g:home . '/.local/lib/libclang.so'
+    elseif exists('g:plugs["YouCompleteMe"]')
+        for s:version in ['7', '6', '5', '4', '3']
+            if filereadable(g:base_path . 'plugged/YouCompleteMe/third_party/ycmd/libclang.so.' . s:version)
+                let g:libclang = g:base_path . 'plugged/YouCompleteMe/third_party/ycmd/libclang.so.' . s:version
+                break
+            endif
+        endfor
+        silent! unlet s:version
+    endif
+    let g:libclang = !empty(g:libclang) ? g:libclang : filereadable('/usr/lib/libclang.so') ? '/usr/lib/libclang.so' : ''
+endif

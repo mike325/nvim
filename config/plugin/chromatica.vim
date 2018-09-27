@@ -28,18 +28,5 @@ if !exists('g:plugs["chromatica.nvim"]')
     finish
 endif
 
-let g:chromatica#enable_at_startup = 1
-
-if WINDOWS()
-    if filereadable('c:/Program Files/LLVM/bin/libclang.dll')
-        let g:chromatica#libclang_path = 'c:/Program Files/LLVM/bin/libclang.dll'
-    else
-        let g:chromatica#libclang_path = 'c:/Program Files(x86)/LLVM/bin/libclang.dll'
-    endif
-else
-    if filereadable(g:home . '/.local/lib/libclang.so')
-        let g:chromatica#libclang_path = g:home . '/.local/lib/libclang.so'
-    else
-        let g:chromatica#libclang_path = '/usr/lib/libclang.so'
-    endif
-endif
+let g:chromatica#libclang_path = g:libclang
+let g:chromatica#enable_at_startup = empty(g:libclang) ? 0 : 1
