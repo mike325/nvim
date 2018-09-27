@@ -273,7 +273,7 @@ function! s:FindProjectRoot(file)
     let l:root = ''
     let l:markers = ['.git', '.svn', '.hg']
 
-    if exists('g:plugs["vim-fugitive"]')
+    if exists('g:plugs["vim-fugitive"]') && exists('*fugitive#extract_git_dir')
         let l:root = fugitive#extract_git_dir(fnamemodify(a:file, ':p'))
         if empty(l:root)
             let l:markers = ['.svn', '.hg']
@@ -346,7 +346,8 @@ function! s:SetProjectConfigs()
             endif
         endif
 
-        if exists('g:plugs["vim-grepper"]')
+        " If we don't have grepper variable, we have not done :PlugInstall
+        if exists('g:plugs["vim-grepper"]') && exists('g:grepper')
             let g:grepper.tools = []
             let g:grepper.operator.tools = []
 
@@ -427,7 +428,8 @@ function! s:SetProjectConfigs()
             endif
         endif
 
-        if exists('g:plugs["vim-grepper"]')
+        " If we don't have grepper variable, we have not done :PlugInstall
+        if exists('g:plugs["vim-grepper"]') && exists('g:grepper')
             let g:grepper.tools = []
             let g:grepper.operator.tools = []
 
