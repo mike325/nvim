@@ -447,9 +447,14 @@ if !exists('g:minimal')
     Plug 'mhinz/vim-nginx', {'for': 'nginx'}
     Plug 'PProvost/vim-ps1'
 
-    if has('nvim')
+    if has('nvim') && PYTHON('3')
         Plug 'numirias/semshi', {'do': function('RemotePlugins')}
-        Plug 'blahgeek/neovim-colorcoder', {'do': function('RemotePlugins')}
+        " Plug 'blahgeek/neovim-colorcoder', {'do': function('RemotePlugins')}
+
+        " We assume that if there is a clang executable, then a clang lib should be installed
+        if executable('clang')
+            Plug 'arakashic/chromatica.nvim', {'do': function('RemotePlugins')}
+        endif
     else
         Plug 'octol/vim-cpp-enhanced-highlight', {'for': ['cpp', 'c']}
     endif

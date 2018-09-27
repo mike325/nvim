@@ -171,8 +171,8 @@ xnoremap <leader>9 <ESC>9gt
 xnoremap <leader>0 <ESC>:tablast<CR>
 
 " Use C-p and C-n to move in command's history
-cnoremap <c-n> <down>
-cnoremap <c-p> <up>
+cnoremap <C-n> <down>
+cnoremap <C-p> <up>
 
 " Repeat last substitution
 nnoremap & :&&<CR>
@@ -185,8 +185,7 @@ nnoremap ^ 0
 " }}} EndTabBufferManagement
 
 if has('nvim') || has('terminal')
-    tnoremap g<esc> <C-\><C-n>
-    " tnoremap <esc> <C-\><C-n>
+    tnoremap <ESC> <C-\><C-n>
 
     function! s:Terminal(cmd) abort
         if WINDOWS()

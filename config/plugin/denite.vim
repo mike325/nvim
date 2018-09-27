@@ -34,7 +34,7 @@ if executable('rg') || executable('ag')
 
     call denite#custom#var('grep', 'command', split(GrepTool(s:tool, 'grepprg'))[0:0])
     call denite#custom#var('grep', 'default_opts', split(GrepTool(s:tool, 'grepprg'))[1:])
-    call denite#custom#var('grep', 'recursive_opts', ( s:tool ==# 'rg' ) ? ['--regexp'] : [])
+    call denite#custom#var('grep', 'recursive_opts', [])
     call denite#custom#var('grep', 'pattern_opt', [])
     call denite#custom#var('grep', 'separator', ['--'])
     call denite#custom#var('grep', 'final_opts', [])
