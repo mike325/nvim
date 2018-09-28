@@ -87,7 +87,7 @@ if executable('git')
 
     call denite#custom#source('git/grep', 'sorters', ['sorter/sublime'])
 
-    nnoremap <silent> <C-p>  :<C-u>Denite -prompt='Files >' -buffer-name=<C-r>=DeniteBuffer('files_')<CR> <C-r>=finddir('.git', ';') != '' ? '-resume file/rec/git' : '-resume file/rec'<CR><CR>
+    nnoremap <silent> <C-p>  :<C-u>Denite -prompt='Files >' -buffer-name=<C-r>=DeniteBuffer('files_')<CR> <C-r>=finddir('.git', ';') != '' ? 'file/rec/git' : '-resume file/rec'<CR><CR>
     nnoremap <silent> g<C-p> :<C-u>Denite -prompt='Files >' -buffer-name=<C-r>=DeniteBuffer('files_')<CR> <C-r>=finddir('.git', ';') != '' ? 'file/rec/git' : 'file/rec'<CR><CR>
 
     nnoremap <silent> <C-g>  :<C-u>Denite -mode=normal -no-empty -prompt='Grep >' -buffer-name=<C-r>=DeniteBuffer('grep_')<CR> <C-r>=finddir('.git', ';') != '' ? 'grep/git' : 'grep'<CR><CR>
