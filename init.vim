@@ -503,7 +503,19 @@ if !exists('g:minimal')
     endif
 
     if has('nvim') && PYTHON('3')
+
+        function! Fruzzy(info)
+            if a:info.status ==# 'installed' || a:info.force
+                if WINDOWS()
+                    !./install.cmd
+                else
+                    !./install.sh
+                endif
+            endif
+        endfunction
+
         Plug 'Shougo/denite.nvim'
+        Plug 'raghur/fruzzy', {'do': function('Fruzzy')}
         Plug 'dunstontc/projectile.nvim'
         " Plug 'chemzqm/denite-git'
     else

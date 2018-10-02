@@ -75,8 +75,6 @@ if executable('git')
     call denite#custom#alias('source', 'file/rec/git', 'file/rec')
     call denite#custom#var('file/rec/git', 'command', split(FileListTool('git')))
 
-    call denite#custom#source('git/file/rec', 'sorters', ['sorter/sublime'])
-
     call denite#custom#alias('source', 'grep/git', 'grep')
     call denite#custom#var('grep/git', 'command', split(GrepTool('git', 'grepprg'))[0:2])
     call denite#custom#var('grep/git', 'default_opts', split(GrepTool('git',  'grepprg'))[3:])
@@ -84,8 +82,6 @@ if executable('git')
     call denite#custom#var('grep/git', 'pattern_opt', [])
     call denite#custom#var('grep/git', 'separator', [])
     call denite#custom#var('grep/git', 'final_opts', [])
-
-    call denite#custom#source('git/grep', 'sorters', ['sorter/sublime'])
 
     nnoremap <silent> <C-p>  :<C-u>Denite -highlight-matched-range=off -prompt='Files >' -buffer-name=<C-r>=DeniteBuffer('files_')<CR> <C-r>=finddir('.git', ';') != '' ? 'file/rec/git' : '-resume file/rec'<CR><CR>
     nnoremap <silent> g<C-p> :<C-u>Denite -highlight-matched-range=off -prompt='Files >' -buffer-name=<C-r>=DeniteBuffer('files_')<CR> <C-r>=finddir('.git', ';') != '' ? 'file/rec/git' : 'file/rec'<CR><CR>
@@ -109,17 +105,11 @@ nnoremap ]D :<C-u>Denite -buffer-name=<C-r>=DeniteBuffer('grep_')<CR> -resume -c
 
 
 nnoremap <silent> <C-b> :<C-u>Denite -prompt='Buffers >' -buffer-name='Buffers' buffer<CR>
-call denite#custom#source('buffer', 'sorters', ['sorter/sublime'])
 
-" Change matchers.
-" call denite#custom#source('file/rec', 'matchers', ['matcher/cpsm'])
-
-" Change sorters.
-call denite#custom#source('file/rec', 'sorters', ['sorter/sublime'])
-call denite#custom#source('grep', 'sorters', ['sorter/sublime'])
-
-" Default
-" call denite#custom#source('file/rec', 'sorters', ['sorter/rank'])
+if exists('g:plugs["fruzzy"]')
+    let g:fruzzy#usenative = 1
+    call denite#custom#source('_', 'matchers', ['matcher/fruzzy'])
+endif
 
 " Change default prompt
 call denite#custom#option('default', 'prompt', 'Mike >')
