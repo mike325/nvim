@@ -294,6 +294,10 @@ function! s:FindProjectRoot(file)
     return l:root
 endfunction
 
+function! s:IsGitRepo(root)
+    return (isdirectory(a:root . '/.git') || filereadable(a:root . '/.git'))
+endfunction
+
 function! s:SetProjectConfigs()
     let g:project_root =  s:FindProjectRoot(expand('%:p'))
     if !empty(g:project_root)
@@ -325,7 +329,7 @@ function! s:SetProjectConfigs()
         endif
 
         if exists('g:plugs["projectile.nvim"]')
-            if executable('git')
+            if executable('git') && s:IsGitRepo(g:project_root)
                 let g:projectile#search_prog = 'git grep'
             elseif executable('ag')
                 let g:projectile#search_prog = 'ag'
@@ -351,7 +355,7 @@ function! s:SetProjectConfigs()
             let g:grepper.tools = []
             let g:grepper.operator.tools = []
 
-            if executable('git')
+            if executable('git') && s:IsGitRepo(g:project_root)
                 let g:grepper.tools += ['git']
                 let g:grepper.operator.tools += ['git']
             endif
@@ -373,7 +377,7 @@ function! s:SetProjectConfigs()
                 let g:grepper.operator.tools += ['findstr']
             endif
         else
-            if executable('git')
+            if executable('git') && s:IsGitRepo(g:project_root)
                 let &grepprg=GrepTool('git', 'grepprg')
             elseif executable('rg')
                 let &grepprg=GrepTool('rg', 'grepprg')
