@@ -71,6 +71,13 @@ if has('nvim') && executable('nvr')
     let $snvr = 'nvr -cc split --remote-silent'
 endif
 
+if has('nvim')
+    let g:terminal_scrollback_buffer_size = 100000
+    if exists('+scrollback')
+        set scrollback=-1
+    endif
+endif
+
 if exists('+breakindent')
     set breakindent " respect indentation when wrapping
     " set showbreak=\\\\\
@@ -191,7 +198,7 @@ endif
 set autoindent
 set smartindent
 set copyindent
-set softtabstop=4  " makes the spaces feel like real tabs
+" set softtabstop=4  " makes the spaces feel like real tabs
 set tabstop=4      " 1 tab = 4 spaces
 set shiftwidth=4   " Same for autoindenting
 set expandtab      " Use spaces for indenting, tabs are evil
