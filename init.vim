@@ -614,7 +614,7 @@ if !exists('g:minimal')
 
             " Plug 'OmniSharp/omnisharp-vim', { 'do': function('BuildOmniSharp') }
 
-            if ( ASYNC() && empty($YCM) ) && ( ( executable('cquery') || executable('clangd') ) || executable('pyls') )
+            if ASYNC() && ( ( executable('cquery') || executable('clangd') ) || executable('pyls') )
                 function! GetLanguageClient(info)
                     if WINDOWS()
                         execute '!powershell -executionpolicy bypass -File ./install.ps1'
