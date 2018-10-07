@@ -506,10 +506,8 @@ if !exists('g:minimal')
 
         function! Fruzzy(info)
             if a:info.status ==# 'installed' || a:info.force
-                if WINDOWS()
-                    !./install.cmd
-                else
-                    !./install.sh
+                if exists('*fruzzy#install()')
+                    call fruzzy#install()
                 endif
             endif
         endfunction
