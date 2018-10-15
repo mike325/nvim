@@ -75,18 +75,33 @@ let g:neomake_python_enabled_makers = get(g:,'neomake_python_enabled_makers',[])
 if executable('flake8')
     let g:neomake_python_enabled_makers += ['flake8']
 
-    let g:neomake_python_flake8_maker = {
-        \ 'args': [
-        \   '--max-line-length=120',
-        \   '--ignore=E121,E123,E126,E226,E24,E704,W503,W504,H233,E228,E701,E226,E251,E501,E221,E203'
-        \],}
+    let s:config = WINDOWS() ? g:home . '/.flake8' : g:home . '/.config/flake8'
+
+    if filereadable(s:config)
+        let g:neomake_python_flake8_maker = {
+            \ 'args': [
+            \   '--max-line-length=120',
+            \   '--builtins=xrange,reload,long',
+            \   '--ignore=E121,E123,E126,E226,E24,E704,W503,W504,H233,E228,E701,E226,E251,E501,E221,E203,E27'
+            \],}
+    else
+        let g:neomake_python_flake8_maker = {
+            \ 'args': [
+            \   '--max-line-length=120',
+            \   '--builtins=xrange,reload,long',
+            \   '--ignore=E121,E123,E126,E226,E24,E704,W503,W504,H233,E228,E701,E226,E251,E501,E221,E203,E27'
+            \],}
+    endif
+
+    unlet s:config
+
 elseif executable('pycodestyle')
     let g:neomake_python_enabled_makers += ['pycodestyle']
 
     let g:neomake_python_pycodestyle_maker = {
         \ 'args': [
         \   '--max-line-length=120',
-        \   '--ignore=E121,E123,E126,E226,E24,E704,W503,W504,H233,E228,E701,E226,E251,E501,E221,E203'
+        \   '--ignore=E121,E123,E126,E226,E24,E704,W503,W504,H233,E228,E701,E226,E251,E501,E221,E203,E27'
         \],}
 
 endif
