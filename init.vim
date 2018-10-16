@@ -823,9 +823,9 @@ if !exists('g:minimal')
         Plug 'fatih/vim-go'
     endif
 
-    " if executable('luac") || executable("lualint')
-    Plug 'xolox/vim-lua-ftplugin'
-    " endif
+    if executable('luac") || executable("lualint')
+        Plug 'xolox/vim-lua-ftplugin'
+    endif
 
     " Easy comments
     " TODO check other comment plugins with motions
@@ -949,12 +949,9 @@ if !exists('g:minimal')
         Plug 'tpope/vim-eunuch'
     endif
 
-    " TODO: find out why some times this launch Exceptions with UpdateRemotePlugins
-    " if has('nvim')
-    "     " Python version
-    "     " Plug 'vigemus/iron.nvim', { 'do': function('RemotePlugins') }
-    "     Plug 'vigemus/iron.nvim', { 'branch': 'lua/replace' }
-    " endif
+    if has('nvim')
+        Plug 'mike325/iron.nvim', { 'branch': 'lua/replace' }
+    endif
 
     " }}} END Misc
 

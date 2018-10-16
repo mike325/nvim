@@ -351,22 +351,6 @@ command! -nargs=? -complete=customlist,s:Spells SpellLang
 " QuickfixOpen
 command! -nargs=? Qopen execute 'botright copen ' . expand(<q-args>)
 
-if PYTHON('any')
-    function! s:Python(version, args)
-        let l:version = ( a:version  == 3 ) ? g:python3_host_prog : g:python_host_prog
-
-        if has('nvim')
-            execute 'botright 20split term://'. l:version . ' ' . a:args
-        elseif has('terminal')
-            call term_start(l:version. ' ' . a:args, {'term_rows': 20})
-            wincmd J
-        endif
-
-    endfunction
-    command! -complete=file -nargs=* Python call s:Python(2, <q-args>)
-    command! -complete=file -nargs=* Python3 call s:Python(3, <q-args>)
-endif
-
 if executable('svn')
     command! -nargs=* SVNstatus execute('!svn status ' . <q-args>)
     command! -complete=file -nargs=+ SVN execute('!svn ' . <q-args>)
@@ -407,6 +391,24 @@ endif
 "       \ :exec s:subvert_dispatcher(<bang>0,<line1>,<line2>,<count>,<q-args>)
 
 " ####### Fallback Plugin mapping {{{
+
+if !exists('g:plugs["iron.nvim"]') && PYTHON('any')
+    function! s:Python(version, args)
+        let l:version = ( a:version  == 3 ) ? g:python3_host_prog : g:python_host_prog
+
+        if has('nvim')
+            execute 'botright 20split term://'. l:version . ' ' . a:args
+        elseif has('terminal')
+            call term_start(l:version. ' ' . a:args, {'term_rows': 20})
+            wincmd J
+        endif
+
+    endfunction
+
+    command! -complete=file -nargs=* Python call s:Python(2, <q-args>)
+    command! -complete=file -nargs=* Python3 call s:Python(3, <q-args>)
+endif
+
 if !exists('g:plugs["ultisnips"]') && !exists('g:plugs["vim-snipmate"]')
     inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
     inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : ""
