@@ -1,6 +1,6 @@
 " ############################################################################
 "
-"                               iron.vim Setttings
+"                               lua Setttings
 "
 "                                     -`
 "                     ...            .o+`
@@ -24,13 +24,8 @@
 "
 " ############################################################################
 
-if !exists('g:plugs["iron.nvim"]')
+if !has('nvim')
     finish
 endif
 
-let g:iron_repl_open_cmd = 'botright split'
-
-" FIXME: This seems to fail at loading time
-" if filereadable(g:base_path . '/lua/iron.lua')
-"     execute 'luafile ' . expand(g:base_path . '/lua/iron.lua')
-" endif
+" This are Neovim extentions and should not run in vainilla vim

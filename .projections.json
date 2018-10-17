@@ -37,6 +37,9 @@
         "type": "Ginit",
         "alternate": "init.vim"
     },
+    "lua/*.lua": {
+        "type": "Lua"
+    },
     "plugin/*.vim": {
         "type": "Plugin"
     },

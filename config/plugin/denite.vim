@@ -83,17 +83,17 @@ if executable('git')
     call denite#custom#var('grep/git', 'separator', [])
     call denite#custom#var('grep/git', 'final_opts', [])
 
-    nnoremap <silent> <C-p>  :<C-u>Denite -highlight-matched-range=off -prompt='Files >' -buffer-name=<C-r>=DeniteBuffer('files_')<CR> <C-r>=finddir('.git', ';') != '' ? 'file/rec/git' : '-resume file/rec'<CR><CR>
-    nnoremap <silent> g<C-p> :<C-u>Denite -highlight-matched-range=off -prompt='Files >' -buffer-name=<C-r>=DeniteBuffer('files_')<CR> <C-r>=finddir('.git', ';') != '' ? 'file/rec/git' : 'file/rec'<CR><CR>
+    nnoremap <silent> <C-p>  :<C-u>Denite -highlight-mode-insert=off -highlight-matched-range=off -prompt='Files >' -buffer-name=<C-r>=DeniteBuffer('files_')<CR> <C-r>=finddir('.git', ';') != '' ? 'file/rec/git' : '-resume file/rec'<CR><CR>
+    nnoremap <silent> g<C-p> :<C-u>Denite -highlight-mode-insert=off -highlight-matched-range=off -prompt='Files >' -buffer-name=<C-r>=DeniteBuffer('files_')<CR> <C-r>=finddir('.git', ';') != '' ? 'file/rec/git' : 'file/rec'<CR><CR>
 
-    nnoremap <silent> <C-g>  :<C-u>Denite -highlight-matched-range=off -mode=normal -no-empty -prompt='Grep >' -buffer-name=<C-r>=DeniteBuffer('grep_')<CR> <C-r>=finddir('.git', ';') != '' ? 'grep/git' : 'grep'<CR><CR>
-    nnoremap <silent> g<C-g> :<C-u>Denite -highlight-matched-range=off -mode=normal -no-empty -prompt='Grep >' -buffer-name=<C-r>=DeniteBuffer('grep_')<CR> <C-r>=finddir('.git', ';') != '' ? 'grep/git' : 'grep'<CR>:::<C-r>=expand('<cword>')<CR><CR>
+    nnoremap <silent> <C-g>  :<C-u>Denite -highlight-mode-insert=off -highlight-matched-range=off -mode=normal -no-empty -prompt='Grep >' -buffer-name=<C-r>=DeniteBuffer('grep_')<CR> <C-r>=finddir('.git', ';') != '' ? 'grep/git' : 'grep'<CR><CR>
+    nnoremap <silent> g<C-g> :<C-u>Denite -highlight-mode-insert=off -highlight-matched-range=off -mode=normal -no-empty -prompt='Grep >' -buffer-name=<C-r>=DeniteBuffer('grep_')<CR> <C-r>=finddir('.git', ';') != '' ? 'grep/git' : 'grep'<CR>:::<C-r>=expand('<cword>')<CR><CR>
 else
-    nnoremap <silent> g<C-p> :<C-u>Denite -highlight-matched-range=off -prompt='Files >' -buffer-name=<C-r>=DeniteBuffer('files_')<CR> file/rec<CR>
-    nnoremap <silent> <C-p>  :<C-u>Denite -highlight-matched-range=off -prompt='Files >' -buffer-name=<C-r>=DeniteBuffer('files_')<CR> -resume file/rec<CR>
+    nnoremap <silent> g<C-p> :<C-u>Denite -highlight-mode-insert=off -highlight-matched-range=off -prompt='Files >' -buffer-name=<C-r>=DeniteBuffer('files_')<CR> file/rec<CR>
+    nnoremap <silent> <C-p>  :<C-u>Denite -highlight-mode-insert=off -highlight-matched-range=off -prompt='Files >' -buffer-name=<C-r>=DeniteBuffer('files_')<CR> -resume file/rec<CR>
 
-    nnoremap <silent> <C-g>  :<C-u>Denite -highlight-matched-range=off -mode=normal -prompt='Grep >' -buffer-name=<C-r>=DeniteBuffer('grep_')<CR> -no-empty grep<CR>
-    nnoremap <silent> g<C-g> :<C-u>Denite -highlight-matched-range=off -mode=normal -prompt='Grep >' -buffer-name=<C-r>=DeniteBuffer('grep_')<CR> -no-empty grep:::<C-r>=expand('<cword>')<CR><CR>
+    nnoremap <silent> <C-g>  :<C-u>Denite -highlight-mode-insert=off -highlight-matched-range=off -mode=normal -prompt='Grep >' -buffer-name=<C-r>=DeniteBuffer('grep_')<CR> -no-empty grep<CR>
+    nnoremap <silent> g<C-g> :<C-u>Denite -highlight-mode-insert=off -highlight-matched-range=off -mode=normal -prompt='Grep >' -buffer-name=<C-r>=DeniteBuffer('grep_')<CR> -no-empty grep:::<C-r>=expand('<cword>')<CR><CR>
 endif
 
 " Default mappigns search for macros, but tags are already faster and more accurate

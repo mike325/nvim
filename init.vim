@@ -555,13 +555,18 @@ if !exists('g:minimal')
     " ####### Git integration {{{
 
     " Plug 'airblade/vim-gitgutter'
-    Plug 'mhinz/vim-signify'
+    if executable('git') || executable('hg') || executable('svn')
+        " These are the only VCS I care, if none is installed, then
+        " skip this plugin
+        Plug 'mhinz/vim-signify'
+    endif
 
     if executable('git')
         Plug 'tpope/vim-fugitive'
-        Plug 'jreybert/vimagit', {'on': ['Magit', 'MagitOnly']}
-        " Plug 'rhysd/committia.vim'
+        Plug 'sodapopcan/vim-twiggy', {'on': ['Twiggy']}
         Plug 'gregsexton/gitv', {'on': ['Gitv']}
+        Plug 'jreybert/vimagit', {'on': ['Magit', 'MagitOnly']}
+        Plug 'rhysd/committia.vim'
     endif
     " }}} END Git integration
 
