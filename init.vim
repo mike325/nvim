@@ -933,10 +933,10 @@ if !exists('g:minimal')
     Plug 'tpope/vim-dadbod', {'on': ['DB']}
 
     " Create a new buffer narrowed with the visual selected area
-    Plug 'chrisbra/NrrwRgn', {'on': ['NR', 'NarrowRegion', 'NW', 'NarrowWindow']}
+    " Plug 'chrisbra/NrrwRgn', {'on': ['NR', 'NarrowRegion', 'NW', 'NarrowWindow']}
 
     " Useful to get the console output in Vim (since :terminal is not enable yet)
-    if !ASYNC() && !exists('+terminal')
+    if !has('nvim') && !exists('+terminal')
         Plug 'tpope/vim-dispatch'
     endif
 
@@ -951,7 +951,7 @@ if !exists('g:minimal')
     endif
 
     if has('nvim')
-        Plug 'mike325/iron.nvim', { 'branch': 'lua/replace' }
+        Plug 'Vigemus/iron.nvim', { 'branch': 'lua/replace' }
     endif
 
     " }}} END Misc
