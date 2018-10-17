@@ -828,10 +828,6 @@ if !exists('g:minimal')
         Plug 'fatih/vim-go'
     endif
 
-    if executable('luac") || executable("lualint')
-        Plug 'xolox/vim-lua-ftplugin'
-    endif
-
     " Easy comments
     " TODO check other comment plugins with motions
     Plug 'tomtom/tcomment_vim'
@@ -934,10 +930,10 @@ if !exists('g:minimal')
     Plug 'henrik/vim-indexed-search'
 
     " Database management
-    Plug 'tpope/vim-dadbod'
+    Plug 'tpope/vim-dadbod', {'on': ['DB']}
 
     " Create a new buffer narrowed with the visual selected area
-    Plug 'chrisbra/NrrwRgn'
+    Plug 'chrisbra/NrrwRgn', {'on': ['NR', 'NarrowRegion', 'NW', 'NarrowWindow']}
 
     " Useful to get the console output in Vim (since :terminal is not enable yet)
     if !ASYNC() && !exists('+terminal')
