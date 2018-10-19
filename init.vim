@@ -619,6 +619,9 @@ if !exists('g:minimal')
 
             if ASYNC() && ( ( executable('cquery') || executable('clangd') ) || executable('pyls') )
                 function! GetLanguageClient(info)
+                    if exists(':LanguageClientStop') != 0
+                        LanguageClientStop
+                    endif
                     if WINDOWS()
                         execute '!powershell -executionpolicy bypass -File ./install.ps1'
                     else
@@ -649,7 +652,9 @@ if !exists('g:minimal')
 
                 Plug 'Shougo/neco-vim'
 
-                if ( executable('cquery') || executable('clangd') ) || executable('pyls')
+                " TODO: I had had some probles with pysl in windows, so let's
+                "       skip it until I can figure it out how to fix this
+                if ( executable('cquery') || executable('clangd') ) || ( executable('pyls') && !WINDOWS() )
                     if has('nvim-0.2')
                         Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do': function('GetLanguageClient')}
                     else
@@ -672,7 +677,7 @@ if !exists('g:minimal')
                     endif
                 endif
 
-                if !executable('pysl')
+                if !executable('pysl') || WINDOWS()
                     " Python completion
                     if has('nvim-0.2')
                         Plug 'zchee/deoplete-jedi'
