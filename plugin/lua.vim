@@ -28,4 +28,7 @@ if !has('nvim')
     finish
 endif
 
-" This are Neovim extentions and should not run in vainilla vim
+" Configure all lua plugins
+if filereadable(g:base_path . 'lua/config.lua')
+    execute 'luafile ' . expand(g:base_path . 'lua/config.lua')
+endif
