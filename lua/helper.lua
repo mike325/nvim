@@ -17,4 +17,10 @@ helper.os_name = function()
     return name
 end
 
+local nvimFuncWrapper = function(name, args) return nvim.nvim_call_function(name, {args}) end
+
+helper.has        = function(args) return nvimFuncWrapper('has', args) end
+helper.executable = function(args) return nvimFuncWrapper('executable', args) end
+helper.exepath    = function(args) return nvimFuncWrapper('exepath', args) end
+
 return helper
