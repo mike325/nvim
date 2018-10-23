@@ -40,6 +40,9 @@
     "lua/*.lua": {
         "type": "Lua"
     },
+    "lua/host/*.lua": {
+        "type": "LuaHost"
+    },
     "plugin/*.vim": {
         "type": "Plugin"
     },

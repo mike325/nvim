@@ -28,7 +28,7 @@ if !exists('g:plugs["vimagit"]')
     finish
 endif
 
-let g:magit_stage_hunk_mapping   = '-'
+let g:magit_stage_hunk_mapping   = 's'
 let g:magit_stage_file_mapping   = 'f'
 let g:magit_stage_line_mapping   = 'l'
 let g:magit_mark_line_mapping    = 'm'
