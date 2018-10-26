@@ -59,6 +59,9 @@ xnoremap <BS> <ESC>
 if has('nvim') && WINDOWS() && !GUI()
     nnoremap <C-h> <ESC>
     xnoremap <C-h> <ESC>
+
+    " We can't sent neovim to background in cmd or powershell
+    nnoremap <C-z> <nop>
 endif
 
 " Turn diff off when closiong other windows
