@@ -40,6 +40,9 @@
     "lua/*.lua": {
         "type": "Lua"
     },
+    "lua/helper/*.lua": {
+        "type": "LuaHelper"
+    },
     "lua/host/*.lua": {
         "type": "LuaHost"
     },

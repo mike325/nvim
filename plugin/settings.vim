@@ -81,7 +81,10 @@ endif
 if exists('+breakindent')
     set breakindent " respect indentation when wrapping
     " set showbreak=\\\\\
-    set showbreak=↪\
+    try
+        set showbreak=↪\
+    catch E595
+    endtry
 endif
 
 if executable('rg')
@@ -226,9 +229,13 @@ set list
 if empty($NO_COOL_FONTS)
     " set listchars=tab:\┊\ ,trail:•,extends:❯,precedes:❮
     " I like to have different chars for spaces and tabs (see IndentLine plugin)
-    set listchars=tab:▸\ ,trail:•,extends:❯,precedes:❮
+    try
+        set listchars=tab:▸\ ,trail:•,extends:❯,precedes:❮
+    catch E474
+        set listchars=tab:>\ ,trail:-,extends:$,precedes:$
+    endtry
 else
-    set listchars=tab:>\ ,trail:•,extends:$,precedes:$
+    set listchars=tab:>\ ,trail:-,extends:$,precedes:$
 endif
 
 " Enable <TAB> completion in command mode

@@ -42,8 +42,8 @@ nnoremap Y y$
 xnoremap $ $h
 
 " Avoid default Ex mode
+" Use gQ instead of plain Q, it has tab completion and more cool things
 nnoremap Q o<Esc>
-nnoremap <leader>Q Q
 
 " Preserve cursor position when joining lines
 nnoremap J m`J``
