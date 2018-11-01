@@ -34,6 +34,13 @@ nvim.realpath = function(path)
     return nvimFuncWrapper('fnamemodify', path, ':p')
 end
 
+nvim.globpath = function(path, expr)
+    path = path == '.' and getcwd() or path
+    local nosuf = false
+    local list = true
+    return nvimFuncWrapper('globpath', path, expr, nosuf, list)
+end
+
 nvim.finddir = function(name, path, count)
     path = path == '.' and getcwd() or path
     return nvimFuncWrapper('finddir', name, path, count)

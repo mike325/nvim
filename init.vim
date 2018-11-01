@@ -426,35 +426,33 @@ if !exists('g:minimal')
 
     " ####### Colorschemes {{{
 
-    Plug 'morhetz/gruvbox'
-    Plug 'sickill/vim-monokai'
-    Plug 'nanotech/jellybeans.vim'
-    Plug 'whatyouhide/vim-gotham'
-    Plug 'joshdick/onedark.vim'
+    " Plug 'morhetz/gruvbox'
+    " Plug 'sickill/vim-monokai'
+    " Plug 'nanotech/jellybeans.vim'
+    " Plug 'whatyouhide/vim-gotham'
+    " Plug 'joshdick/onedark.vim'
     Plug 'ayu-theme/ayu-vim'
 
     " }}} END Colorschemes
 
     " ####### Syntax {{{
 
-    Plug 'ekalinin/Dockerfile.vim', {'for': 'dockerfile'}
-    Plug 'elzr/vim-json', {'for': 'json'}
-    Plug 'tbastos/vim-lua', {'for': 'lua'}
-    Plug 'peterhoeg/vim-qml', {'for': 'qml'}
-    Plug 'tpope/vim-markdown', {'for': 'markdown'}
-    Plug 'bjoernd/vim-syntax-simics', {'for': 'simics'}
-    Plug 'kurayama/systemd-vim-syntax', {'for': 'systemd'}
-    Plug 'mhinz/vim-nginx', {'for': 'nginx'}
+    Plug 'elzr/vim-json'
+    Plug 'tbastos/vim-lua'
+    Plug 'peterhoeg/vim-qml'
+    Plug 'tpope/vim-markdown'
     Plug 'PProvost/vim-ps1'
+    " Plug 'ekalinin/Dockerfile.vim', {'for': 'dockerfile'}
+    " Plug 'bjoernd/vim-syntax-simics', {'for': 'simics'}
+    " Plug 'kurayama/systemd-vim-syntax', {'for': 'systemd'}
+    " Plug 'mhinz/vim-nginx', {'for': 'nginx'}
 
     if has('nvim') && PYTHON('3')
         Plug 'numirias/semshi', {'do': function('RemotePlugins')}
         " Plug 'blahgeek/neovim-colorcoder', {'do': function('RemotePlugins')}
-
-        Plug 'arakashic/chromatica.nvim', {'do': function('RemotePlugins')}
-    else
-        Plug 'octol/vim-cpp-enhanced-highlight', {'for': ['cpp', 'c']}
+        " Plug 'arakashic/chromatica.nvim', {'do': function('RemotePlugins')}
     endif
+    Plug 'octol/vim-cpp-enhanced-highlight'
 
     " }}} END Syntax
 
@@ -462,8 +460,8 @@ if !exists('g:minimal')
 
     Plug 'tpope/vim-projectionist'
 
-    Plug 'xolox/vim-misc'
-    Plug 'xolox/vim-session', {'on': ['OpenSession', 'SaveSession', 'DeleteSession']}
+    " Plug 'xolox/vim-misc'
+    " Plug 'xolox/vim-session', {'on': ['OpenSession', 'SaveSession', 'DeleteSession']}
 
 
     " Project standardize file settings
@@ -514,7 +512,7 @@ if !exists('g:minimal')
 
         Plug 'Shougo/denite.nvim'
         Plug 'raghur/fruzzy', {'do': function('Fruzzy')}
-        Plug 'dunstontc/projectile.nvim'
+        " Plug 'dunstontc/projectile.nvim'
         " Plug 'chemzqm/denite-git'
     else
         Plug 'mhinz/vim-grepper', { 'on': ['Grepper', '<plug>(GrepperOperator)'] }
@@ -563,10 +561,10 @@ if !exists('g:minimal')
 
     if executable('git')
         Plug 'tpope/vim-fugitive'
-        Plug 'sodapopcan/vim-twiggy', {'on': ['Twiggy']}
-        Plug 'gregsexton/gitv', {'on': ['Gitv']}
         Plug 'jreybert/vimagit', {'on': ['Magit', 'MagitOnly']}
-        Plug 'rhysd/committia.vim'
+        " Plug 'sodapopcan/vim-twiggy', {'on': ['Twiggy']}
+        " Plug 'gregsexton/gitv', {'on': ['Gitv']}
+        " Plug 'rhysd/committia.vim'
     endif
     " }}} END Git integration
 
@@ -805,7 +803,7 @@ if !exists('g:minimal')
         Plug 'justmao945/vim-clang'
     endif
 
-    " completion without python completion engines ( ycm, deoplete or completer )
+    " Completion without python completion engines ( ycm, deoplete or completer )
     if s:ycm_installed==0 && s:deoplete_installed==0 && s:completor==0
         " Neovim does not support Lua plugins yet
         if has('lua') && !has('nvim') && (v:version >= 704)
@@ -858,12 +856,12 @@ if !exists('g:minimal')
         Plug 'kana/vim-textobj-line'
         Plug 'glts/vim-textobj-comment'
         Plug 'michaeljsmith/vim-indent-object'
+        Plug 'kana/vim-textobj-entire'
         " Plug 'jceb/vim-textobj-uri'
         " Plug 'whatyouhide/vim-textobj-xmlattr'
 
         " NOTE: cool text object BUT my fat fingers keep presing 'w' instead of 'e'
         "       useful with formatprg
-        Plug 'kana/vim-textobj-entire'
 
         " TODO: Solve conflict with comment plugin
         " Plug 'coderifous/textobj-word-column.vim'
@@ -892,7 +890,7 @@ if !exists('g:minimal')
     Plug 'kshenoy/vim-signature'
 
     " Override default [i,]i,[I,]I,[d,]d,[D,]D to load the results in the quickfix
-    Plug 'romainl/vim-qlist'
+    " Plug 'romainl/vim-qlist'
 
     " Move with indentation
     " NOTE: Deprecated in favor of unimpaired plugin
@@ -911,13 +909,13 @@ if !exists('g:minimal')
     Plug 'Yggdroot/indentLine'
 
     " Change buffer position in the current layout
-    Plug 'wesQ3/vim-windowswap'
+    " Plug 'wesQ3/vim-windowswap'
 
     " Handy stuff to navigate
     Plug 'tpope/vim-unimpaired'
 
     " Show parameters of the current function
-    Plug 'Shougo/echodoc.vim'
+    " Plug 'Shougo/echodoc.vim'
 
     " TODO: check characters display
     " Plug 'dodie/vim-disapprove-deep-indentation'
