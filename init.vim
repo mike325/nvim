@@ -838,11 +838,6 @@ if !exists('g:minimal')
 
     if (has('nvim') || (v:version >= 704)) && (executable('tex'))
         Plug 'lervag/vimtex'
-
-        if !has('nvim') && empty(v:servername) && exists('*remote_startserver') && !WINDOWS() && empty($SSH_CONNECTION)
-            call remote_startserver('VIM')
-        endif
-
     endif
 
     " }}} END Languages

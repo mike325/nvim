@@ -62,6 +62,8 @@ iabbrev retreive      retrieve
 iabbrev compeletly    completely
 iabbrev abbrevation   abbreviation
 iabbrev abbrevations  abbreviations
+iabbrev hernandez     Hernández
+iabbrev fernandez     Fernández
 
 iabbrev Avalible      Available
 iabbrev Avalibility   Availability
@@ -94,6 +96,8 @@ iabbrev Retreive      Retrieve
 iabbrev Compeletly    Completely
 iabbrev Abbrevation   Abbreviation
 iabbrev Abbrevations  Abbreviations
+iabbrev Hernandez     Hernández
+iabbrev Fernandez     Fernández
 
 iabbrev AVALIBLE      AVAILABLE
 iabbrev AVALIBILITY   AVAILABILITY
@@ -126,3 +130,5 @@ iabbrev RETREIVE      RETRIEVE
 iabbrev COMPELETLY    COMPLETELY
 iabbrev ABBREVATION   ABBREVIATION
 iabbrev ABBREVATIONS  ABBREVIATIONS
+iabbrev HERNANDEZ     HERNÁNDEZ
+iabbrev FERNANDEZ     FERNÁNDEZ

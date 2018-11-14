@@ -1,0 +1,69 @@
+priority 0
+
+#############################################################################
+#
+#                           Override Tex file
+#
+#                                    -`
+#                    ...            .o+`
+#                 .+++s+   .h`.    `ooo/
+#                `+++%++  .h+++   `+oooo:
+#                +++o+++ .hhs++. `+oooooo:
+#                +s%%so%.hohhoo'  'oooooo+:
+#                `+ooohs+h+sh++`/:  ++oooo+:
+#                 hh+o+hoso+h+`/++++.+++++++:
+#                  `+h+++h.+ `/++++++++++++++:
+#                           `/+++ooooooooooooo/`
+#                          ./ooosssso++osssssso+`
+#                         .oossssso-````/osssss::`
+#                        -osssssso.      :ssss``to.
+#                       :osssssss/  Mike  osssl   +
+#                      /ossssssss/   8a   +sssslb
+#                    `/ossssso+/:-        -:/+ossss'.-
+#                   `+sso+:-`                 `.-/+oso:
+#                  `++:.  github.com/mike325/.vim  `-/+/
+#                  .`                                 `/
+#
+#############################################################################
+
+snippet %- "%% ----..."
+%% -----------------------------------------------------------------------------
+endsnippet
+
+snippet beg "\begin{} ... \end{}"
+\begin{$1}
+	$2
+\end{`!p snip.rv = t[1]`}
+$0
+endsnippet
+
+snippet inc "\include{}"
+\include{$1}
+endsnippet
+
+snippet pkg "\usepackage{}"
+\usepackage{$1}
+endsnippet
+
+snippet br "\pagebreak{}"
+\pagebreak{}
+$0
+endsnippet
+
+snippet spc "\vspace*{cm}"
+\vspace*{${1:1}cm}
+$0
+endsnippet
+
+snippet huge "{\huge ...}"
+{\huge $1}
+$0
+endsnippet
+
+snippet bib "\bibliography{} ... \bibliographystyle{}"
+\bibliography{$1}
+\bibliographystyle{${2:IEEEtran}}
+$0
+endsnippet
+
+

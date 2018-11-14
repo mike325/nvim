@@ -1,6 +1,6 @@
 " ############################################################################
 "
-"                                Vimtext settings
+"                               tex Setttings
 "
 "                                     -`
 "                     ...            .o+`
@@ -23,14 +23,11 @@
 "                   .`                                 `/
 "
 " ############################################################################
-if !exists('g:plugs["vimtext"]')
-    finish
+
+if !exists('g:plugs["vimtex"]')
+    " Credits to vimtex plugin
+    let &include='\v^\s*\%\s*!?\s*[tT][eE][xX]\s+[rR][oO][oO][tT]\s*\=\s*\zs.*\ze\s*$|\v^\s*%(\v\\%(input|include|subfile)\s*\{|\v\\%(sub)?%(import|%(input|include)from)\*?\{[^\}]*\}\{)\zs[^\}]*\ze\}?'
+    " let &includeexpr=''
 endif
 
-" let g:vimtex_enabled = 1
-let g:vimtex_fold_enabled = 1
-let g:vimtex_imaps_leader = '`'
-let g:vimtex_mappings_enabled = 1
-let g:vimtex_motion_enabled = 1
-let g:vimtex_text_obj_enabled = 1
-let g:tex_flavor = 'latex'
+setlocal wrapmargin=80

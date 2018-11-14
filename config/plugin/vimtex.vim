@@ -28,16 +28,33 @@ if !exists('g:plugs["vimtex"]')
     finish
 endif
 
-let g:vimtex_mappings_enabled = 0
-let g:vimtex_enabled = 1
-
 if executable('latexmk')
     let g:vimtex_compiler_method = 'latexmk'
 elseif executable('latexrun')
     let g:vimtex_compiler_method = 'latexrun'
 elseif executable('arara')
     let g:vimtex_compiler_method = 'arara'
+else
+    let g:vimtex_enabled = 0
+    finish
 endif
+
+if !has('nvim') && empty(v:servername) && exists('*remote_startserver') && !WINDOWS() && empty($SSH_CONNECTION)
+    call remote_startserver('VIM')
+elseif has('nvim') && executable('nvr')
+    let g:vimtex_compiler_progname = 'nvr'
+endif
+
+
+let g:vimtex_enabled = 1
+let g:vimtex_mappings_enabled = 0
+
+
+let g:vimtex_fold_enabled     = 1
+let g:vimtex_motion_enabled   = 1
+let g:vimtex_text_obj_enabled = 1
+let g:tex_flavor              = 'latex'
+" let g:vimtex_imaps_leader     = '`'
 
 " inoremap ]] <plug>(vimtex-delim-close)
 "

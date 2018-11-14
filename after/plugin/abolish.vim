@@ -29,6 +29,9 @@ if !exists('g:plugs["vim-abolish"]')
 endif
 
 try
+
+    " English
+
     Abolish avalib{ility,le} availab{ility, le}
     Abolish seting{s}        setting{s}
     Abolish settign{s}       setting{s}
@@ -61,6 +64,18 @@ try
     Abolish persistan{ce,t,tly}                          persisten{}
     Abolish {,ir}releven{ce,cy,t,tly}                    {}relevan{}
     Abolish cal{a,e}nder{,s}                             cal{e}ndar{}
+
+    " Spanish
+
+    Abolish {h,f}ernandez  {}ernández
+    Abolish television     televisión
+    Abolish analisis       análisis
+    Abolish electronico{s} electrónico{}
+    Abolish artifial       artificial
+    Abolish algorimos      algoritmos
+
+    Abolish {notifica,introdu,justifi,informa,modifica,sec,delimita}cion {}ción
+
 catch E492
     if !GUI()
         augroup InitErrors
