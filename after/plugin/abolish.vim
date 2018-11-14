@@ -68,13 +68,19 @@ try
     " Spanish
 
     Abolish {h,f}ernandez  {}ernández
-    Abolish television     televisión
     Abolish analisis       análisis
     Abolish electronico{s} electrónico{}
     Abolish artifial       artificial
     Abolish algorimos      algoritmos
+    Abolish conexion       conexión
+    Abolish disminicion    disminución
+    Abolish disminicion    disminución
+    Abolish p{r}odria{n}   podría{}
+    Abolish podria{n}      podría{}
+    Abolish autonomo       autónomo
 
-    Abolish {notifica,introdu,justifi,informa,modifica,sec,delimita}cion {}ción
+    Abolish {televi,explo}sion                                                                          {}sión
+    Abolish {disminu,interac,clasifica,crea,notifica,introdu,justifi,informa,modifica,sec,delimita}cion {}ción
 
 catch E492
     if !GUI()

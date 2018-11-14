@@ -167,10 +167,10 @@ if exists('g:plugs["deoplete-go"]')
 endif
 
 
-if exists('g:plugs["vimtex"]')
-    if !exists('g:deoplete#omni#input_patterns')
-        let g:deoplete#omni#input_patterns = {}
+try
+    if exists('g:plugs["vimtex"]') && exists("g:vimtex#re#deoplete")
+        let g:deoplete#omni#input_patterns.tex = g:vimtex#re#deoplete
     endif
-    let g:deoplete#omni#input_patterns.tex = g:vimtex#re#deoplete
-endif
-
+catch
+    "
+endtry
