@@ -564,7 +564,9 @@ if !exists('g:minimal')
         Plug 'jreybert/vimagit', {'on': ['Magit', 'MagitOnly']}
         " Plug 'sodapopcan/vim-twiggy', {'on': ['Twiggy']}
         " Plug 'gregsexton/gitv', {'on': ['Gitv']}
-        " Plug 'rhysd/committia.vim'
+        if !WINDOWS()
+            Plug 'rhysd/committia.vim'
+        endif
     endif
     " }}} END Git integration
 
@@ -882,7 +884,7 @@ if !exists('g:minimal')
     Plug 'moll/vim-bbye', { 'on': [ 'Bdelete' ] }
 
     " Visual marks
-    Plug 'kshenoy/vim-signature'
+    " Plug 'kshenoy/vim-signature'
 
     " Override default [i,]i,[I,]I,[d,]d,[D,]D to load the results in the quickfix
     " Plug 'romainl/vim-qlist'
@@ -933,16 +935,6 @@ if !exists('g:minimal')
     " Create a new buffer narrowed with the visual selected area
     " Plug 'chrisbra/NrrwRgn', {'on': ['NR', 'NarrowRegion', 'NW', 'NarrowWindow']}
 
-    " Useful to get the console output in Vim (since :terminal is not enable yet)
-    if !has('nvim') && !exists('+terminal')
-        Plug 'tpope/vim-dispatch'
-    endif
-
-    " " Visualize undo tree
-    " if PYTHON('any')
-    "     Plug 'sjl/gundo.vim', {'on': ['GundoShow', 'GundoToggle']}
-    " endif
-
     " Unix commands
     if has('unix')
         Plug 'tpope/vim-eunuch'
@@ -950,7 +942,15 @@ if !exists('g:minimal')
 
     if has('nvim')
         Plug 'Vigemus/iron.nvim', { 'branch': 'lua/replace' }
+    elseif !exists('+terminal')
+        " Useful to get the console output in Vim (since :terminal is not enable yet)
+        Plug 'tpope/vim-dispatch'
     endif
+
+    " " Visualize undo tree
+    " if PYTHON('any')
+    "     Plug 'sjl/gundo.vim', {'on': ['GundoShow', 'GundoToggle']}
+    " endif
 
     " }}} END Misc
 
