@@ -78,9 +78,10 @@ try
     Abolish p{r}odria{n}   podría{}
     Abolish podria{n}      podría{}
     Abolish autonomo       autónomo
+    Abolish codigo         código
 
-    Abolish {televi,explo}sion                                                                          {}sión
-    Abolish {disminu,interac,clasifica,crea,notifica,introdu,justifi,informa,modifica,sec,delimita}cion {}ción
+    Abolish {televi,explo}sion                                                                               {}sión
+    Abolish {reac,disminu,interac,clasifica,crea,notifica,introdu,justifi,informa,modifica,sec,delimita}cion {}ción
 
 catch E492
     if !GUI()
