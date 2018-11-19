@@ -71,7 +71,7 @@ try
     Abolish analisis       análisis
     Abolish electronico{s} electrónico{}
     Abolish artifial       artificial
-    Abolish algorimos      algoritmos
+    Abolish algorimo{s}    algoritmo{}
     Abolish conexion       conexión
     Abolish disminicion    disminución
     Abolish disminicion    disminución
@@ -80,8 +80,9 @@ try
     Abolish autonomo       autónomo
     Abolish codigo         código
 
-    Abolish {televi,explo}sion                                                                               {}sión
-    Abolish {reac,disminu,interac,clasifica,crea,notifica,introdu,justifi,informa,modifica,sec,delimita}cion {}ción
+    Abolish {televi,explo}sion                                                 {}sión
+    Abolish {reac,disminu,interac,clasifica,crea,notifica,introdu,justifi}cion {}ción
+    Abolish {obten,ora,emo,valora,utilizap,modifica,sec,delimita,informa}cion  {}ción
 
 catch E492
     if !GUI()
