@@ -397,6 +397,7 @@ endif
 if !exists('g:minimal')
 
     try
+        call execute('set rtp^=' . expand(g:base_path . '/plug/'))
         call plug#begin(g:base_path.'plugged')
     catch
         " Fallback if we fail to init Plug
