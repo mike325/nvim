@@ -30,10 +30,10 @@ endif
 
 if executable('rg') || executable('ag')
     let s:tool = executable('rg') ? 'rg' : 'ag'
-    call denite#custom#var('file/rec', 'command', split(FileListTool(s:tool)))
+    call denite#custom#var('file/rec', 'command', split(tools#filelist(s:tool)))
 
-    call denite#custom#var('grep', 'command', split(GrepTool(s:tool, 'grepprg'))[0:0])
-    call denite#custom#var('grep', 'default_opts', split(GrepTool(s:tool, 'grepprg'))[1:])
+    call denite#custom#var('grep', 'command', split(tools#grep(s:tool, 'grepprg'))[0:0])
+    call denite#custom#var('grep', 'default_opts', split(tools#grep(s:tool, 'grepprg'))[1:])
     call denite#custom#var('grep', 'recursive_opts', [])
     call denite#custom#var('grep', 'pattern_opt', [])
     call denite#custom#var('grep', 'separator', ['--'])
@@ -42,15 +42,15 @@ if executable('rg') || executable('ag')
     unlet s:tool
 
 elseif has('unix')
-    call denite#custom#var('file/rec', 'command', ['find', '.', '-type', 'f', '-iname', '*', g:ignore_patterns.find])
+    call denite#custom#var('file/rec', 'command', ['find', '.', '-type', 'f', '-iname', '*', tools#filelist('find')])
 
-    call denite#custom#var('grep', 'command', split(GrepTool('grep', 'grepprg'))[0:0])
-    call denite#custom#var('grep', 'default_opts', split(GrepTool('grep', 'grepprg'))[1:])
+    call denite#custom#var('grep', 'command', split(tools#grep('grep', 'grepprg'))[0:0])
+    call denite#custom#var('grep', 'default_opts', split(tools#grep('grep', 'grepprg'))[1:])
     call denite#custom#var('grep', 'recursive_opts', ['-r'])
     call denite#custom#var('grep', 'pattern_opt', ['-e'])
     call denite#custom#var('grep', 'separator', ['--'])
     call denite#custom#var('grep', 'final_opts', [])
-elseif WINDOWS()
+elseif os#name('windows')
     let s:ignore = &wildignore . ',.git,.hg,.svn'
     call denite#custom#var('file/rec', 'command', ['scantree.py', '--ignore', s:ignore])
     unlet s:ignore
@@ -73,11 +73,11 @@ endfunction
 
 if executable('git')
     call denite#custom#alias('source', 'file/rec/git', 'file/rec')
-    call denite#custom#var('file/rec/git', 'command', split(FileListTool('git')))
+    call denite#custom#var('file/rec/git', 'command', split(tools#filelist('git')))
 
     call denite#custom#alias('source', 'grep/git', 'grep')
-    call denite#custom#var('grep/git', 'command', split(GrepTool('git', 'grepprg'))[0:2])
-    call denite#custom#var('grep/git', 'default_opts', split(GrepTool('git',  'grepprg'))[3:])
+    call denite#custom#var('grep/git', 'command', split(tools#grep('git', 'grepprg'))[0:2])
+    call denite#custom#var('grep/git', 'default_opts', split(tools#grep('git',  'grepprg'))[3:])
     call denite#custom#var('grep/git', 'recursive_opts', [])
     call denite#custom#var('grep/git', 'pattern_opt', [])
     call denite#custom#var('grep/git', 'separator', [])
@@ -168,7 +168,7 @@ call denite#custom#map(
 
 if exists('g:plugs["projectile.nvim"]')
 
-    let g:projectile#data_dir =  g:home . '/cache/projectile'
+    let g:projectile#data_dir =  vars#home() . '/cache/projectile'
 
     let g:projectile#enabled = 1
 
@@ -183,7 +183,7 @@ if exists('g:plugs["projectile.nvim"]')
         let g:projectile#search_prog = 'rg'
     elseif executable('ag')
         let g:projectile#search_prog = 'ag'
-    elseif WINDOWS() && !executable('grep')
+    elseif os#name('windows') && !executable('grep')
         let g:projectile#search_prog = 'findstr'
     endif
 

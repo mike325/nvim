@@ -71,7 +71,7 @@ elseif has("gui_running")
 
     " Windows gVim fonts
     " TODO: Add Linux gui fonts (I don't use gVim in Linux, but may be useful)
-    if WINDOWS()
+    if os#name('windows')
         set guifont=DejaVu_Sans_Mono_for_Powerline:h11,DejaVu_Sans_Mono:h11
     endif
 endif

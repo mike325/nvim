@@ -1,6 +1,6 @@
 " ############################################################################
 "
-"                               log Setttings
+"                               has Setttings
 "
 "                                     -`
 "                     ...            .o+`
@@ -24,14 +24,41 @@
 "
 " ############################################################################
 
-function! CheckSize()
-    " If the size of the file is bigger than ~5MB
-    " lets consider it as a log
-    return ( getfsize(expand("%")) > 5242880 ) ? 1 : 0
+" Check an specific version of python (empty==2)
+function! has#python(...) abort
+
+    if !exists('g:python_host_prog') || !exists('g:python3_host_prog')
+        call setup#python()
+    endif
+
+    let l:version = (a:0 > 0) ? a:1 : 'any'
+
+    if l:version ==# 'any' || l:version ==# ''
+        return (has('python') || has('python3'))
+    elseif l:version ==# '3'
+        return has('python3')
+    elseif l:version ==# '2'
+        return has('python')
+    endif
+
+    return v:false
 endfunction
 
+" Check whether or not we have async support
+function! has#async() abort
+    let l:async = v:false
 
-autocmd BufNewFile,BufReadPre,BufEnter *.log set filetype=log
-autocmd BufNewFile,BufReadPre,BufEnter *.rdl set filetype=log
-autocmd BufNewFile,BufReadPre,BufEnter *.txt if ( CheckSize() == 1 ) | set filetype=log | endif
+    if has('nvim') || ( v:version >= 800 && has('patch-8.0.0027'))
+        let l:async = v:true
+    elseif v:version ==# 704 && has('patch1689')
+        let l:async = v:true
+    elseif has('job') && has('timers') && has('channel')
+        let l:async = v:true
+    endif
 
+    return l:async
+endfunction
+
+function! has#gui() abort
+    return (has('nvim') && exists('g:GuiLoaded')) || (!has('nvim') && has('gui_running'))
+endfunction

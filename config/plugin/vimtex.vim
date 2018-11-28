@@ -39,7 +39,7 @@ else
     finish
 endif
 
-if !has('nvim') && empty(v:servername) && exists('*remote_startserver') && !WINDOWS() && empty($SSH_CONNECTION)
+if !has('nvim') && empty(v:servername) && exists('*remote_startserver') && !os#name('windows') && empty($SSH_CONNECTION)
     call remote_startserver('VIM')
 elseif has('nvim') && executable('nvr')
     let g:vimtex_compiler_progname = 'nvr'

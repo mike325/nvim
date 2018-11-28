@@ -42,13 +42,8 @@ if exists('g:plugs["neomake"]')
     let g:LanguageClient_diagnosticsEnable = 0
 endif
 
-let s:log_dir = '/tmp'
-if WINDOWS()
-    let s:log_dir = 'c:/temp'
-endif
-
 if executable('cquery')
-    let g:LanguageClient_serverCommands.c = ['cquery', '--log-file=' . s:log_dir . '/cq.log', '--init={"cacheDirectory":"' . g:home . '/.cache/cquery", "completion": {"filterAndSort": false}}']
+    let g:LanguageClient_serverCommands.c = ['cquery', '--log-file=' . os#tmp('cq.log') , '--init={"cacheDirectory":"' . vars#home() . '/.cache/cquery", "completion": {"filterAndSort": false}}']
     let g:LanguageClient_serverCommands.cpp = g:LanguageClient_serverCommands.c
 elseif executable('clangd')
     let g:LanguageClient_serverCommands.c = ['clangd']
@@ -57,8 +52,8 @@ endif
 
 " TODO: I had had some probles with pysl in windows, so let's
 "       skip it until I can figure it out how to fix this
-if executable('pyls') && !WINDOWS()
-    let g:LanguageClient_serverCommands.python = ['pyls', '--log-file=' . s:log_dir . '/pyls.log']
+if executable('pyls') && !os#name('windows')
+    let g:LanguageClient_serverCommands.python = ['pyls', '--log-file=' . os#tmp('pyls.log')]
 endif
 
 function! s:Rename(name)
@@ -76,7 +71,7 @@ augroup LanguageCmds
     endif
     " autocmd FileType python,c,cpp autocmd CursorHold                                <buffer> call LanguageClient#textDocument_hover()
     " autocmd FileType python,c,cpp autocmd InsertEnter,CursorMoved,TermOpen,BufLeave <buffer> pclose
-    if !WINDOWS()
+    if !os#name('windows')
         autocmd FileType python,c,cpp command! -buffer References call LanguageClient#textDocument_references()
         if !exists('g:plugs["denite.nvim"]')
             autocmd FileType python,c,cpp command! -buffer WorkspaceSymbols call LanguageClient#workspace_symbol()
@@ -98,7 +93,7 @@ augroup LanguageCmds
         autocmd FileType c,cpp command! -buffer Hover call LanguageClient#textDocument_hover()
         autocmd FileType c,cpp command! -buffer Implementation call LanguageClient#textDocument_implementation()
     endif
-augroup end
+augroup END
 
 if exists('g:plugs["vim-abolish"]')
 

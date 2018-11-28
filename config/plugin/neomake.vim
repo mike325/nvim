@@ -75,13 +75,13 @@ let g:neomake_python_enabled_makers = get(g:,'neomake_python_enabled_makers',[])
 if executable('flake8')
     let g:neomake_python_enabled_makers += ['flake8']
 
-    let s:config = WINDOWS() ? g:home . '/.flake8' : g:home . '/.config/flake8'
+    let s:config = os#name('windows') ? vars#home() . '/.flake8' : vars#home() . '/.config/flake8'
 
     if filereadable(s:config)
         let g:neomake_python_flake8_maker = {
             \ 'args': [
             \   '--max-line-length=120',
-            \   '--builtins=xrange,reload,long',
+            \   '--builtins=xrange,reload,long,raw_input',
             \   '--ignore=E121,E123,E126,E226,E24,E704,W503,W504,H233,E228,E701,E226,E251,E501,E221,E203,E27'
             \],}
     else
@@ -106,11 +106,6 @@ elseif executable('pycodestyle')
 
 endif
 
-let b:outpath = '/tmp/neomake.out'
-if WINDOWS()
-    let b:outpath = 'C:/Temp/neomake'
-endif
-
 let g:neomake_c_enabled_makers = get(g:,'neomake_c_enabled_makers',[])
 
 if executable('gcc')
@@ -121,7 +116,7 @@ if executable('gcc')
         \   'args': [
         \       '-Wall',
         \       '-Wextra',
-        \       '-o', b:outpath,
+        \       '-o', os#tmp('neomake'),
         \],}
 
 endif
@@ -136,7 +131,7 @@ if executable('clang')
         \       '-Wextra',
         \       '-Weverything',
         \       '-Wno-missing-prototypes',
-        \       '-o', b:outpath,
+        \       '-o', os#tmp('neomake'),
         \],}
 endif
 
@@ -151,7 +146,7 @@ if executable('g++')
         \      '-std=c++17',
         \      '-Wall',
         \      '-Wextra',
-        \       '-o', b:outpath,
+        \       '-o', os#tmp('neomake'),
         \],}
 endif
 
@@ -167,7 +162,7 @@ if executable('clang++')
         \      '-Weverything',
         \      '-Wno-c++98-compat',
         \      '-Wno-missing-prototypes',
-        \       '-o', b:outpath,
+        \       '-o', os#tmp('neomake'),
         \],}
 endif
 
@@ -212,7 +207,7 @@ try
         \ }, 1000)
 catch E117
     " Neovim-qt can't output messages while it's starting
-    " if !GUI()
+    " if !has#gui()
     "     augroup ErrorMessages
     "         autocmd!
     "         autocmd VimEnter * echoerr "Neomake is not installed"

@@ -58,27 +58,25 @@ let g:ctrlp_working_path_mode   = 'ra'
 " Opens files in the current windows, whether or not they had been opened in others windows
 let g:ctrlp_switch_buffer       = 'et'
 
-let g:ctrlp_cache_dir = g:parent_dir . 'cache/ctrlp'
+let g:ctrlp_cache_dir = vars#basedir() . '/.resources/cache/ctrlp'
 
-if exists('g:plugs["ctrlp-cmatcher"]')
+let g:ctrlp_max_files = (exists('g:plugs["fruzzy"]')         ||
+                       \ exists('g:plugs["ctrlp-cmatcher"]') ||
+                       \ exists('g:plugs["ctrlp-py-matcher"]')) ? 0 : 1
+
+if exists('g:plugs["fruzzy"]')
+    let g:ctrlp_match_func = {'match': 'fruzzy#ctrlp#matcher'}
+elseif exists('g:plugs["ctrlp-cmatcher"]')
     let g:ctrlp_match_func = {'match' : 'matcher#cmatch' }
-
-    " Set no file limit, we are building a big project
-    let g:ctrlp_max_files   = 0
-    " let g:ctrlp_lazy_update = 350
 elseif exists('g:plugs["ctrlp-py-matcher"]')
     let g:ctrlp_match_func = { 'match': 'pymatcher#PyMatch' }
-
-    " Set no file limit, we are building a big project
-    let g:ctrlp_max_files   = 0
-    " let g:ctrlp_lazy_update = 350
 endif
 
 let g:ctrlp_user_command = {
     \   'types': {
-    \       1: ['.git', 'cd %s && ' . FileListTool('git') ]
+    \       1: ['.git', 'cd %s && ' . tools#filelist('git') ]
     \   },
-    \   'fallback': 'find %s -type f -iname "*" ' . g:ignore_patterns.find ,
+    \   'fallback': 'find %s -type f -iname "*" ' . vars#ignore_cmd('find') ,
     \ }
 
 " Do not clear filenames cache, to improve CtrlP startup
@@ -86,8 +84,8 @@ let g:ctrlp_user_command = {
 " This var is set on Vim Startup, New Session open and dir changed
 if executable('rg') || executable('ag')
     let g:ctrlp_clear_cache_on_exit = 1
-    let g:ctrlp_user_command.fallback = executable('rg') ? FileListTool('rg') :  FileListTool('ag')
-elseif WINDOWS()
+    let g:ctrlp_user_command.fallback = executable('rg') ? tools#filelist('rg') :  tools#filelist('ag')
+elseif os#name('windows')
     " NOTE: If neovim-qt is launch fron git-bash/cywing find command will be the unix,
     "       if it's launch from a non unix enviroment then find will be the one in windows
     let s:windows_find = system('find --help')

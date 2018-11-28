@@ -90,49 +90,12 @@ augroup LastEditPosition
 augroup end
 
 " TODO To be improve
-function! s:CleanFile()
-    " Sometimes we don't want to remove spaces
-    let l:buftypes = 'nofile\|help\|quickfix\|terminal'
-    let l:filetypes = 'bin\|hex\|log\|git\|man\|terminal'
-
-    if b:trim != 1 || &buftype =~? l:buftypes || &filetype ==? l:filetypes || &filetype ==? ''
-        return
-    endif
-
-    "Save last cursor position
-    let l:savepos = getpos('.')
-    " Save last search query
-    let l:oldquery = getreg('/')
-
-    " Cleaning line endings
-    execute '%s/\s\+$//e'
-    call histdel('search', -1)
-
-    " Yep I some times I copy this things form the terminal
-    silent! execute '%s/\(\s\+\)┊/\1 /ge'
-    call histdel('search', -1)
-
-    if &fileformat ==# 'unix'
-        silent! execute '%s/\r$//ge'
-        call histdel('search', -1)
-    endif
-
-    " Config dosini files must trim leading spaces
-    if &filetype ==# 'dosini'
-        silent! execute '%s/^\s\+//e'
-        call histdel('search', -1)
-    endif
-
-
-    call setpos('.', l:savepos)
-    call setreg('/', l:oldquery)
-endfunction
 
 " Trim whitespace in selected files
 augroup CleanFile
     autocmd!
     autocmd BufNewFile,BufRead,BufEnter * if !exists('b:trim') | let b:trim = 1 | endif
-    autocmd BufWritePre                 * call s:CleanFile()
+    autocmd BufWritePre                 * call autocmd#CleanFile()
 augroup end
 
 " Specially helpful for html and xml
@@ -190,289 +153,37 @@ augroup end
 " TODO: Improve personalization of the templates
 " TODO: Create custom cmd
 
-function! CHeader()
-
-    let l:file_name = expand('%:t:r')
-    let l:extension = expand('%:e')
-
-    let l:upper_name = toupper(l:file_name)
-
-    if l:extension =~# '^hpp$'
-        execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.hpp')
-        execute '%s/NAME_HPP/'.l:upper_name.'_HPP/g'
-    else
-        execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.h')
-        execute '%s/NAME_H/'.l:upper_name.'_H/g'
-    endif
-
-endfunction
-
-function! CMainOrFunc()
-
-    let l:file_name = expand('%:t:r')
-    let l:extension = expand('%:e')
-
-    if l:extension =~# '^cpp$'
-        if l:file_name =~# '^main$'
-            let l:skeleton = fnameescape(g:parent_dir.'skeletons/main.cpp')
-        else
-            let l:skeleton = fnameescape(g:parent_dir.'skeletons/skeleton.cpp')
-        endif
-    elseif l:extension =~# '^c'
-        if l:file_name =~# '^main$'
-            let l:skeleton = fnameescape(g:parent_dir.'skeletons/main.c')
-        else
-            let l:skeleton = fnameescape(g:parent_dir.'skeletons/skeleton.c')
-        endif
-    elseif l:extension =~# '^go'
-        if l:file_name =~# '^main$'
-            let l:skeleton = fnameescape(g:parent_dir.'skeletons/main.go')
-        else
-            let l:skeleton = fnameescape(g:parent_dir.'skeletons/skeleton.go')
-        endif
-    endif
-
-    execute '0r '.l:skeleton
-    execute '%s/NAME/'.l:file_name.'/e'
-
-endfunction
-
-function! FileName(file)
-    let l:file_name = expand('%:t:r')
-    let l:extension = expand('%:e')
-
-    execute '0r '.fnameescape(g:parent_dir.'skeletons/'.a:file)
-    execute '%s/NAME/'.l:file_name.'/e'
-endfunction
-
 augroup Skeletons
     autocmd!
-    autocmd BufNewFile .projections.json  silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/projections.json')
-    autocmd BufNewFile *.css              silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.css')
-    autocmd BufNewFile *.html             silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.html')
-    autocmd BufNewFile *.md               silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.md')
-    autocmd BufNewFile *.js               silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.js')
-    autocmd BufNewFile *.xml              silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.xml')
-    autocmd BufNewFile *.py               silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.py')
-    autocmd BufNewFile *.cs               silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.cs')
-    autocmd BufNewFile *.php              silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.php')
-    autocmd BufNewFile *.sh               silent! execute '0r '.fnameescape(g:parent_dir.'skeletons/skeleton.sh')
-    autocmd BufNewFile *.java             silent! call FileName('skeleton.java')
-    autocmd BufNewFile *.vim              silent! call FileName('skeleton.vim')
-    autocmd BufNewFile *.go               silent! call CMainOrFunc()
-    autocmd BufNewFile *.cpp              silent! call CMainOrFunc()
-    autocmd BufNewFile *.hpp              silent! call CHeader()
-    autocmd BufNewFile *.c                silent! call CMainOrFunc()
-    autocmd BufNewFile *.h                silent! call CHeader()
+    autocmd BufNewFile .projections.json  silent! execute '0r '.fnameescape(vars#basedir().'.resources/skeletons/projections.json')
+    autocmd BufNewFile *.css              silent! execute '0r '.fnameescape(vars#basedir().'.resources/skeletons/skeleton.css')
+    autocmd BufNewFile *.html             silent! execute '0r '.fnameescape(vars#basedir().'.resources/skeletons/skeleton.html')
+    autocmd BufNewFile *.md               silent! execute '0r '.fnameescape(vars#basedir().'.resources/skeletons/skeleton.md')
+    autocmd BufNewFile *.js               silent! execute '0r '.fnameescape(vars#basedir().'.resources/skeletons/skeleton.js')
+    autocmd BufNewFile *.xml              silent! execute '0r '.fnameescape(vars#basedir().'.resources/skeletons/skeleton.xml')
+    autocmd BufNewFile *.py               silent! execute '0r '.fnameescape(vars#basedir().'.resources/skeletons/skeleton.py')
+    autocmd BufNewFile *.cs               silent! execute '0r '.fnameescape(vars#basedir().'.resources/skeletons/skeleton.cs')
+    autocmd BufNewFile *.php              silent! execute '0r '.fnameescape(vars#basedir().'.resources/skeletons/skeleton.php')
+    autocmd BufNewFile *.sh               silent! execute '0r '.fnameescape(vars#basedir().'.resources/skeletons/skeleton.sh')
+    autocmd BufNewFile *.java             silent! call autocmd#FileName('skeleton.java')
+    autocmd BufNewFile *.vim              silent! call autocmd#FileName('skeleton.vim')
+    autocmd BufNewFile *.go               silent! call autocmd#CMainOrFunc()
+    autocmd BufNewFile *.cpp              silent! call autocmd#CMainOrFunc()
+    autocmd BufNewFile *.hpp              silent! call autocmd#CHeader()
+    autocmd BufNewFile *.c                silent! call autocmd#CMainOrFunc()
+    autocmd BufNewFile *.h                silent! call autocmd#CHeader()
 augroup end
 
 " }}} EndSkeletons
 
 " TODO: Add support for git worktrees
-function! s:FindProjectRoot(file)
-    let l:root = ''
-    let l:markers = ['.git', '.svn', '.hg']
-
-    if exists('g:plugs["vim-fugitive"]') && exists('*fugitive#extract_git_dir')
-        let l:root = fugitive#extract_git_dir(fnamemodify(a:file, ':p'))
-        if empty(l:root)
-            let l:markers = ['.svn', '.hg']
-        endif
-    endif
-
-    if empty(l:root)
-        let l:cwd = fnamemodify(a:file, ':h')
-        for l:dir in l:markers
-            let l:root = finddir(l:dir, l:cwd.';')
-            if !empty(l:root)
-                let l:project_root = fnamemodify(l:dir, ':p:h')
-                return l:project_root
-            endif
-        endfor
-    endif
-
-    return l:root
-endfunction
-
-function! s:IsGitRepo(root)
-    return (isdirectory(a:root . '/.git') || filereadable(a:root . '/.git'))
-endfunction
-
-function! s:SetProjectConfigs()
-    let g:project_root =  s:FindProjectRoot(expand('%:p'))
-    if !empty(g:project_root)
-        let g:project_root = fnamemodify(g:project_root, ':h')
-
-        if filereadable(g:project_root . '/project.vim')
-            try
-                execute 'source '. g:project_root . '/project.vim'
-            catch /.*/
-                if !GUI()
-                    echoerr 'There were errors with the project file in ' . g:project_root . '/project.vim'
-                endif
-            endtry
-        endif
-
-        if exists('g:plugs["ultisnips"]')
-            command! UltiSnipsDir call mkdir(g:project_root . '/UltiSnips', 'p')
-
-            let g:UltiSnipsSnippetsDir        = g:project_root . '/UltiSnips'
-            let g:UltiSnipsSnippetDirectories = [
-                        \   g:project_root . '/UltiSnips',
-                        \   g:base_path . 'config/UltiSnips',
-                        \   'UltiSnips'
-                        \]
-        endif
-
-        if exists('g:plugs["ctrlp"]')
-            let g:ctrlp_clear_cache_on_exit = 1
-        endif
-
-        if exists('g:plugs["projectile.nvim"]')
-            if executable('git') && s:IsGitRepo(g:project_root)
-                let g:projectile#search_prog = 'git grep'
-            elseif executable('ag')
-                let g:projectile#search_prog = 'ag'
-            elseif has('unix')
-                let g:projectile#search_prog = 'grep'
-            elseif WINDOWS() && !executable('grep')
-                let g:projectile#search_prog = 'findstr '
-            endif
-        endif
-
-        if exists('g:plugs["deoplete.nvim"]') && ( exists('g:plugs["deoplete-clang"]') || exists('g:plugs["deoplete-clang2"]') )
-            if filereadable(g:project_root . '/compile_commands.json')
-                let g:deoplete#sources#clang#clang_complete_database = g:project_root
-            else
-                if exists('g:deoplete#sources#clang#clang_complete_database')
-                    unlet g:deoplete#sources#clang#clang_complete_database
-                endif
-            endif
-        endif
-
-        " If we don't have grepper variable, we have not done :PlugInstall
-        if exists('g:plugs["vim-grepper"]') && exists('g:grepper')
-            let g:grepper.tools = []
-            let g:grepper.operator.tools = []
-
-            if executable('git') && s:IsGitRepo(g:project_root)
-                let g:grepper.tools += ['git']
-                let g:grepper.operator.tools += ['git']
-            endif
-
-            if executable('rg')
-                let g:grepper.tools += ['rg']
-                let g:grepper.operator.tools += ['rg']
-            endif
-            if executable('ag')
-                let g:grepper.tools += ['ag']
-                let g:grepper.operator.tools += ['ag']
-            endif
-            if executable('grep')
-                let g:grepper.tools += ['grep']
-                let g:grepper.operator.tools += ['grep']
-            endif
-            if executable('findstr')
-                let g:grepper.tools += ['findstr']
-                let g:grepper.operator.tools += ['findstr']
-            endif
-        else
-            if executable('git') && s:IsGitRepo(g:project_root)
-                let &grepprg=GrepTool('git', 'grepprg')
-            elseif executable('rg')
-                let &grepprg=GrepTool('rg', 'grepprg')
-            elseif executable('ag')
-                let &grepprg=GrepTool('ag', 'grepprg')
-            elseif executable('grep')
-                let &grepprg=GrepTool('grep', 'grepprg')
-            elseif executable('findstr')
-                let &grepprg=GrepTool('findstr', 'grepprg')
-            endif
-        endif
-    else
-        let g:project_root = fnamemodify(getcwd(), ':p')
-
-        if filereadable(g:project_root . '/project.vim')
-            try
-                execute 'source '. g:project_root . '/project.vim'
-            catch /.*/
-                if !GUI()
-                    echoerr 'There were errors with the project file in ' . g:project_root . '/project.vim'
-                endif
-            endtry
-        endif
-
-        if exists('g:plugs["ultisnips"]')
-            silent! delcommand UltiSnipsDir
-            let g:UltiSnipsSnippetsDir        = g:base_path . 'config/UltiSnips'
-            let g:UltiSnipsSnippetDirectories = [g:base_path . 'config/UltiSnips', 'UltiSnips']
-        endif
-
-        if exists('g:plugs["ctrlp"]')
-            let g:ctrlp_clear_cache_on_exit = (g:ctrlp_user_command.fallback =~# '^ag ')
-        endif
-
-        if exists('g:plugs["projectile.nvim"]')
-            if executable('ag')
-                let g:projectile#search_prog = 'ag'
-            elseif has('unix')
-                let g:projectile#search_prog = 'grep'
-            elseif WINDOWS() && !executable('grep')
-                let g:projectile#search_prog = 'findstr '
-            endif
-        endif
-
-        if exists('g:plugs["deoplete.nvim"]') && ( exists('g:plugs["deoplete-clang"]') || exists('g:plugs["deoplete-clang2"]') )
-            if filereadable(g:project_root . '/compile_commands.json')
-                let g:deoplete#sources#clang#clang_complete_database = g:project_root
-            else
-                if exists('g:deoplete#sources#clang#clang_complete_database')
-                    unlet g:deoplete#sources#clang#clang_complete_database
-                endif
-            endif
-        endif
-
-        " If we don't have grepper variable, we have not done :PlugInstall
-        if exists('g:plugs["vim-grepper"]') && exists('g:grepper')
-            let g:grepper.tools = []
-            let g:grepper.operator.tools = []
-
-            if executable('rg')
-                let g:grepper.tools += ['rg']
-                let g:grepper.operator.tools += ['rg']
-            endif
-            if executable('ag')
-                let g:grepper.tools += ['ag']
-                let g:grepper.operator.tools += ['ag']
-            endif
-            if executable('grep')
-                let g:grepper.tools += ['grep']
-                let g:grepper.operator.tools += ['grep']
-            endif
-            if executable('findstr')
-                let g:grepper.tools += ['findstr']
-                let g:grepper.operator.tools += ['findstr']
-            endif
-        else
-            if executable('rg')
-                let &grepprg=GrepTool('rg', 'grepprg')
-            elseif executable('ag')
-                let &grepprg=GrepTool('ag', 'grepprg')
-            elseif executable('grep')
-                let &grepprg=GrepTool('grep', 'grepprg')
-            elseif executable('findstr')
-                let &grepprg=GrepTool('findstr', 'grepprg')
-            endif
-        endif
-    endif
-endfunction
 
 augroup ProjectConfig
     autocmd!
     if has('nvim-0.2')
-        autocmd DirChanged * call s:SetProjectConfigs()
+        autocmd DirChanged * call autocmd#SetProjectConfigs()
     endif
-    autocmd VimEnter,SessionLoadPost * call s:SetProjectConfigs()
+    autocmd VimEnter,SessionLoadPost * call autocmd#SetProjectConfigs()
 augroup end
 
 augroup LaTex

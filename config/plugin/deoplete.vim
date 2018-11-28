@@ -42,10 +42,10 @@ try
     \   'min_keyword_length': 1,
     \ })
 catch
-    let g:deoplete#enable_refresh_always = 1
-    let g:deoplete#auto_complete_delay = 20
-    let g:deoplete#enable_smart_case = 1
+    let g:deoplete#enable_refresh_always             = 1
+    let g:deoplete#enable_smart_case                 = 1
     let g:deoplete#sources#syntax#min_keyword_length = 1
+    let g:deoplete#auto_complete_delay               = 20
 endtry
 
 " inoremap <expr><BS> deoplete#mappings#smart_close_popup()."\<C-h>"
@@ -127,17 +127,17 @@ if exists('g:plugs["deoplete-clang"]') || exists('g:plugs["deoplete-clang2"]')
 
     let g:deoplete#sources#clang#sort_algo = 'priority'
 
-    if WINDOWS()
-        if isdirectory(g:home . '/.local/lib/clang/')
-            let g:deoplete#sources#clang#clang_header = g:home . '/.local/lib/clang/'
+    if os#name('windows')
+        if isdirectory(vars#home() . '/.local/lib/clang/')
+            let g:deoplete#sources#clang#clang_header = vars#home() . '/.local/lib/clang/'
         elseif isdirectory('c:/Program Files/LLVM/lib/clang/')
             let g:deoplete#sources#clang#clang_header = 'c:/Program Files/LLVM/lib/clang/'
         elseif isdirectory('c:/Program Files(x86)/LLVM/lib/clang/')
             let g:deoplete#sources#clang#clang_header = 'c:/Program Files(x86)/LLVM/lib/clang/'
         endif
     else
-        if isdirectory(g:home . '/.local/lib/clang/')
-            let g:deoplete#sources#clang#clang_header = g:home . '/.local/lib/clang/'
+        if isdirectory(vars#home() . '/.local/lib/clang/')
+            let g:deoplete#sources#clang#clang_header = vars#home() . '/.local/lib/clang/'
         else
             let g:deoplete#sources#clang#clang_header = '/usr/lib/clang/'
         endif
@@ -168,7 +168,7 @@ endif
 
 
 try
-    if exists('g:plugs["vimtex"]') && exists("g:vimtex#re#deoplete")
+    if exists('g:plugs["vimtex"]') && exists('g:vimtex#re#deoplete')
         let g:deoplete#omni#input_patterns.tex = g:vimtex#re#deoplete
     endif
 catch

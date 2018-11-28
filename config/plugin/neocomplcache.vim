@@ -50,37 +50,35 @@ let g:neocomplcache_omni_patterns = get(g:,'neocomplcache_omni_patterns',{})
 " inoremap <expr><C-e>  neocomplcache#cancel_popup()
 
 let g:neocomplcache_omni_patterns.python = '[^.[:digit:] *\t]\%(\.\)'
-let g:neocomplcache_omni_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
-let g:neocomplcache_omni_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
+let g:neocomplcache_omni_patterns.c      = '[^.[:digit:] *\t]\%(\.\|->\)'
+let g:neocomplcache_omni_patterns.cpp    = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
 
-let g:neocomplcache_filename_include_exts = get(g:,'neocomplcache_filename_include_exts',{})
+let g:neocomplcache_filename_include_exts     = get(g:,'neocomplcache_filename_include_exts',{})
 let g:neocomplcache_filename_include_exts.cpp = ['', 'h', 'hpp', 'hxx']
-let g:neocomplcache_filename_include_exts.c = ['', 'h']
+let g:neocomplcache_filename_include_exts.c   = ['', 'h']
 
-let g:neocomplcache_delimiter_patterns = get(g:,'neocomplcache_delimiter_patterns',{})
+let g:neocomplcache_delimiter_patterns       = get(g:,'neocomplcache_delimiter_patterns',{})
 " let g:neocomplcache_delimiter_patterns.vim = ['#']
-let g:neocomplcache_delimiter_patterns.cpp = ['::']
+let g:neocomplcache_delimiter_patterns.cpp   = ['::']
 
-let g:neocomplcache_sources_list   = get(g:,'neocomplcache_delimiter_patterns',{})
+let g:neocomplcache_sources_list     = get(g:,'neocomplcache_delimiter_patterns',{})
 " let g:neocomplcache_sources_list._ = ['omni_complete', 'syntax_complete', 'member_complete', 'filename_complete', 'tags_complete', 'buffer_complete']
 
-" let g:neocomplcache_sources_list.c = ['omni_complete', 'syntax_complete', 'member_complete', 'filename_complete', 'tags_complete', 'buffer_complete']
-" let g:neocomplcache_sources_list.cpp = ['omni_complete', 'syntax_complete', 'member_complete', 'filename_complete', 'tags_complete', 'buffer_complete']
-" let g:neocomplcache_sources_list.java = ['omni_complete', 'syntax_complete', 'member_complete', 'filename_complete', 'tags_complete', 'buffer_complete']
+" let g:neocomplcache_sources_list.c      = ['omni_complete', 'syntax_complete', 'member_complete', 'filename_complete', 'tags_complete', 'buffer_complete']
+" let g:neocomplcache_sources_list.cpp    = ['omni_complete', 'syntax_complete', 'member_complete', 'filename_complete', 'tags_complete', 'buffer_complete']
+" let g:neocomplcache_sources_list.java   = ['omni_complete', 'syntax_complete', 'member_complete', 'filename_complete', 'tags_complete', 'buffer_complete']
 " let g:neocomplcache_sources_list.python = ['omni_complete', 'syntax_complete', 'member_complete', 'filename_complete', 'tags_complete', 'buffer_complete']
 
-if exists("*mkdir")
-    if !isdirectory(fnameescape(g:parent_dir . 'cache/neocomplcache/'))
-        call mkdir(fnameescape(g:parent_dir . 'cache/neocomplcache/'), "p")
+if exists('*mkdir')
+    if !isdirectory(fnameescape(vars#basedir() . '.resources/cache/neocomplcache/'))
+        call mkdir(fnameescape(vars#basedir() . '.resources/cache/neocomplcache/'), 'p')
     endif
 endif
 
-if ( isdirectory(fnameescape(g:parent_dir . 'cache/neocomplcache/')) ) && exists("g:parent_dir")
-    let g:neocomplcache_temporary_dir = g:parent_dir . 'cache/neocomplcache/'
-endif
+let g:neocomplcache_temporary_dir = vars#basedir() . '.resources/cache/neocomplcache/'
 
 " Syntax seems to cause some problems in old Vim's versions ( <= 703 )
-if ( has("nvim") || (v:version >= 704) ) && has("autocmd")
+if ( has('nvim') || (v:version >= 704) ) && has('autocmd')
     augroup CloseMenu
         autocmd!
         autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif

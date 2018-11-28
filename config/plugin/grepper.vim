@@ -63,14 +63,14 @@ if executable('git')
     let g:grepper.tools += ['git']
     " I like to search ignore case when greppper is call from <C-g>
     let g:grepper.git = {
-        \ 'grepprg':    GrepTool('git', 'grepprg'),
+        \ 'grepprg':    tools#grep('git', 'grepprg'),
         \ 'grepformat': '%f:%l:%m',
         \ 'escape':     '\^$.*[]',
         \ }
 
     let g:grepper.operator.tools += ['git']
     let g:grepper.operator.git = {
-        \ 'grepprg':    GrepTool('git', 'grepprg'),
+        \ 'grepprg':    tools#grep('git', 'grepprg'),
         \ 'grepformat': '%f:%l:%m',
         \ 'escape':     '\^$.*[]',
         \ }
@@ -79,7 +79,7 @@ endif
 if executable('rg')
     let g:grepper.tools += ['rg']
     let g:grepper.rg = {
-        \ 'grepprg':    GrepTool('rg', 'grepprg') ,
+        \ 'grepprg':    tools#grep('rg', 'grepprg') ,
         \ 'grepformat': '%f:%l:%c:%m,%f:%l:%m',
         \ 'escape':     '\^$.*+?()[]{}|',
         \ }
@@ -91,7 +91,7 @@ endif
 if executable('ag')
     let g:grepper.tools += ['ag']
     let g:grepper.ag = {
-        \ 'grepprg':    GrepTool('ag', 'grepprg'),
+        \ 'grepprg':    tools#grep('ag', 'grepprg'),
         \ 'grepformat': '%f:%l:%c:%m,%f:%l:%m',
         \ 'escape':     '\^$.*+?()[]{}|',
         \ }
@@ -103,8 +103,8 @@ endif
 if executable('grep')
     let g:grepper.tools += ['grep']
     let g:grepper.grep = {
-        \ 'grepprg':    GrepTool('grep', 'grepprg') . ' -r $*',
-        \ 'grepprgbuf': GrepTool('grep', 'grepprg') . ' -- $* $.',
+        \ 'grepprg':    tools#grep('grep', 'grepprg') . ' -r $*',
+        \ 'grepprgbuf': tools#grep('grep', 'grepprg') . ' -- $* $.',
         \ 'grepformat': '%f:%l:%m',
         \ 'escape':     '\^$.*[]',
         \ }
@@ -125,7 +125,7 @@ if executable('findstr')
 
     let g:grepper.operator.tools += ['findstr']
     let g:grepper.operator.findstr = {
-        \ 'grepprg': GrepTool('findstr', 'grepprg') . '/c:$* *',
+        \ 'grepprg': tools#grep('findstr', 'grepprg') . '/c:$* *',
         \ 'grepprgbuf': 'findstr -rpnc:$* $.',
         \ 'grepformat': '%f:%l:%m',
         \ 'wordanchors': ['\<', '\>'],
@@ -134,7 +134,7 @@ endif
 
 " FIXME: Crappy windows settings
 " Windows cannot handle double quotes inside single quotes without escaping
-" if WINDOWS()
+" if os#name('windows')
 "     if executable('ag')
 "         let g:grepper.ag.escape += "'\""
 "         let g:grepper.operator.ag.escape += "'\""

@@ -54,9 +54,9 @@ imap jj <Esc>
 nnoremap <BS> <ESC>
 xnoremap <BS> <ESC>
 
-" We assume that if we are running neovim from windows without GUI we are
+" We assume that if we are running neovim from windows without has#gui we are
 " running from cmd or powershell, windows terminal send <C-h> when backspace is press
-if has('nvim') && WINDOWS() && !GUI()
+if has('nvim') && os#name('windows') && !has#gui()
     nnoremap <C-h> <ESC>
     xnoremap <C-h> <ESC>
 
@@ -92,17 +92,7 @@ nnoremap <leader><leader>e :echo expand("%")<CR>
 nnoremap g/ /\v
 " nnoremap gs :%s/\v
 
-" CREDITS: https://github.com/alexlafroscia/dotfiles/blob/master/nvim/init.vim
-" Smart indent when entering insert mode with i on empty lines
-function! IndentWithI()
-    if len(getline('.')) == 0 && line('.') != line('$') && &buftype !~? 'terminal'
-        return '"_ddO'
-    else
-        return 'i'
-    endif
-endfunction
-
-nnoremap <expr> i IndentWithI()
+nnoremap <expr> i mappings#IndentWithI()
 
 if has('nvim') || v:version >= 704
     " Change word under cursor and dot repeat
@@ -190,27 +180,7 @@ nnoremap ^ 0
 if has('nvim') || has('terminal')
     tnoremap <ESC> <C-\><C-n>
 
-    function! s:Terminal(cmd) abort
-        if WINDOWS()
-            if has('nvim')
-                execute 'botright 20split term://powershell -noexit -executionpolicy bypass ' . a:cmd
-            else
-                call term_start('powershell -noexit -executionpolicy bypass ' . a:cmd, {'term_rows': 20})
-                wincmd J
-            endif
-        else
-            let l:shell = (executable('zsh')) ? 'zsh' : (executable('bash')) ? 'bash' : fnamemodify(expand($SHELL), ':h')
-            if has('nvim')
-                execute 'botright 20split term://' . l:shell . ' ' . a:cmd
-            else
-                call term_start(l:shell . a:cmd, {'term_rows': 20})
-                wincmd J
-            endif
-        endif
-        startinsert
-    endfunction
-
-    command! -nargs=? Terminal call s:Terminal(<q-args>)
+    command! -nargs=? Terminal call mappings#terminal(<q-args>)
 
     if has('nvim')
         " Better splits
@@ -227,72 +197,12 @@ if exists('+relativenumber')
 endif
 
 if exists('+mouse')
-    function! s:ToggleMouse()
-        if &mouse ==# ''
-            execute 'set mouse=a'
-            echo 'mouse'
-        else
-            execute 'set mouse='
-            echo 'nomouse'
-        endif
-    endfunction
-    command! MouseToggle call s:ToggleMouse()
+    command! MouseToggle call mappings#ToggleMouse()
 endif
 
-" Remove buffers
-"
-" BufKill  will wipe all hidden buffers
-" BufKill! will wipe all unloaded buffers
-"
-" CREDITS: https://vimrcfu.com/snippet/154
-function! s:BufKill(bang)
-    let l:count = 0
-    for b in range(1, bufnr('$'))
-        if bufexists(b) && (!buflisted(b) || (a:bang && !bufloaded(b)))
-            execute 'bwipeout '.b
-            let l:count += 1
-        endif
-    endfor
-    echo 'Deleted ' . l:count . ' buffers'
-endfunction
-
-" Clean buffer list
-"
-" BufClean  will delete all non active buffers
-" BufClean! will wipe all non active buffers
-function! s:BufClean(bang)
-    let l:count = 0
-    for b in range(1, bufnr('$'))
-        if bufexists(b) && ( (a:bang && !buflisted(b)) || (!a:bang && !bufloaded(b) && buflisted(b)) )
-            execute ( (a:bang) ? 'bwipeout ' : 'bdelete! ' ) . b
-            let l:count += 1
-        endif
-    endfor
-    echo 'Deleted ' . l:count . ' buffers'
-endfunction
-
-let s:arrows = -1
-
-" Test remap arrow keys
-function! s:ToggleArrows()
-    let s:arrows = s:arrows * -1
-    if s:arrows == 1
-        nnoremap <left>  <c-w><
-        nnoremap <right> <c-w>>
-        nnoremap <up>    <c-w>+
-        nnoremap <down>  <c-w>-
-    else
-        unmap <left>
-        unmap <right>
-        unmap <up>
-        unmap <down>
-    endif
-endfunction
-
-command! ArrowsToggle call s:ToggleArrows()
-
-command! -bang BufKill call s:BufKill(<bang>0)
-command! -bang BufClean call s:BufClean(<bang>0)
+command! ArrowsToggle call mappings#ToggleArrows()
+command! -bang BufKill call mappings#BufKill(<bang>0)
+command! -bang BufClean call mappings#BufClean(<bang>0)
 
 command! ModifiableToggle setlocal modifiable! modifiable?
 command! CursorLineToggle setlocal cursorline! cursorline?
@@ -306,43 +216,12 @@ command! VerboseToggle    let &verbose=!&verbose | echo "Verbose " . &verbose
 
 
 if has('nvim') || v:version >= 704
-    function! s:SetFileData(action, type, default)
-        let l:param = (a:type ==# '') ? a:default : a:type
-        execute 'setlocal ' . a:action . '=' . l:param
-    endfunction
-
-    function! s:Filter(list, arg)
-        let l:filter = filter(a:list, 'v:val =~ a:arg')
-        return map(l:filter, 'fnameescape(v:val)')
-    endfunction
-
-    function! s:Formats(ArgLead, CmdLine, CursorPos)
-        return s:Filter(['unix', 'dos', 'mac'], a:ArgLead)
-    endfunction
-
     " Yes I'm quite lazy to type the cmds
-    command! -nargs=? -complete=filetype FileType call s:SetFileData('filetype', <q-args>, 'text')
-    command! -nargs=? -complete=customlist,s:Formats FileFormat call s:SetFileData('fileformat', <q-args>, 'unix')
+    command! -nargs=? -complete=filetype FileType call mappings#SetFileData('filetype', <q-args>, 'text')
+    command! -nargs=? -complete=customlist,s:Formats FileFormat call mappings#SetFileData('fileformat', <q-args>, 'unix')
 endif
 
-function! s:Trim()
-    " Since default is to trim, the first call is to deactivate trim
-    if b:trim == 0
-        let b:trim = 1
-        echomsg ' Trim'
-    else
-        let b:trim = 0
-        echomsg ' NoTrim'
-    endif
-
-    return 0
-endfunction
-
-command! TrimToggle call s:Trim()
-
-function! s:Spells(ArgLead, CmdLine, CursorPos)
-    return ['en', 'es']
-endfunction
+command! TrimToggle call mappings#Trim()
 
 command! -nargs=? -complete=customlist,s:Spells SpellLang
             \ let s:spell = (empty(<q-args>)) ?  'en' : expand(<q-args>) |
@@ -395,42 +274,15 @@ endif
 
 " ####### Fallback Plugin mapping {{{
 
-if !exists('g:plugs["iron.nvim"]') && PYTHON('any')
-    function! s:Python(version, args)
-        let l:version = ( a:version  == 3 ) ? g:python3_host_prog : g:python_host_prog
-
-        if has('nvim')
-            execute 'botright 20split term://'. l:version . ' ' . a:args
-        elseif has('terminal')
-            call term_start(l:version. ' ' . a:args, {'term_rows': 20})
-            wincmd J
-        endif
-
-    endfunction
-
-    command! -complete=file -nargs=* Python call s:Python(2, <q-args>)
-    command! -complete=file -nargs=* Python3 call s:Python(3, <q-args>)
+if !exists('g:plugs["iron.nvim"]') && has#python()
+    command! -complete=file -nargs=* Python call mappings#Python(2, <q-args>)
+    command! -complete=file -nargs=* Python3 call mappings#Python(3, <q-args>)
 endif
 
 if !exists('g:plugs["ultisnips"]') && !exists('g:plugs["vim-snipmate"]')
     inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
     inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : ""
-
-    function! NextSnippetOrReturn()
-        if pumvisible()
-            if exists('g:plugs["YouCompleteMe"]')
-                call feedkeys("\<C-y>")
-                return ''
-            else
-                return "\<C-y>"
-            endif
-        elseif exists('g:plugs["delimitMate"]') && delimitMate#WithinEmptyPair()
-            return delimitMate#ExpandReturn()
-        endif
-        return "\<CR>"
-    endfunction
-
-    inoremap <silent><CR>    <C-R>=NextSnippetOrReturn()<CR>
+    inoremap <silent><CR>    <C-R>=mappings#NextSnippetOrReturn()<CR>
 endif
 
 if !exists('g:plugs["vim-bbye"]')
@@ -438,22 +290,10 @@ if !exists('g:plugs["vim-bbye"]')
 endif
 
 if !exists('g:plugs["vim-indexed-search"]')
-    " TODO: Integrate center next into vim-slash
-
-    " Center searches results
-    " CREDITS: https://amp.reddit.com/r/vim/comments/4jy1mh/slightly_more_subltle_n_and_n_behavior/
-    function! s:NiceNext(cmd)
-        let view = winsaveview()
-        execute 'silent! normal! ' . a:cmd
-        if view.topline != winsaveview().topline
-            silent! normal! zz
-        endif
-    endfunction
-
     " nnoremap * *zz
     " nnoremap # #zz
-    nnoremap <silent> n :call <SID>NiceNext('n')<cr>
-    nnoremap <silent> N :call <SID>NiceNext('N')<cr>
+    nnoremap <silent> n :call mappings#NiceNext('n')<cr>
+    nnoremap <silent> N :call mappings#NiceNext('N')<cr>
 endif
 
 if !exists('g:plugs["vim-unimpaired"]')

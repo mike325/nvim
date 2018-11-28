@@ -41,7 +41,7 @@ let g:session_autosave_silent = 1
 " Don't ask for load last session
 let g:session_autoload = 'no'
 
-let g:session_directory = g:parent_dir.'sessions'
+let g:session_directory = vars#basedir().'.resources/sessions'
 
 " Disable all session locking - I know what I'm doing :-).
 let g:session_lock_enabled = 0

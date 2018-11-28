@@ -32,9 +32,9 @@ let g:NERDCompactSexyComs        = 0      " Use compact syntax for prettified mu
 let g:NERDSpaceDelims            = 1      " Add spaces after comment delimiters by default
 let g:NERDTrimTrailingWhitespace = 1      " Enable trimming of trailing whitespace when uncommenting
 let g:NERDCommentEmptyLines      = 1      " Allow commenting and inverting empty lines
-                                            " (useful when commenting a region)
+                                          " (useful when commenting a region)
 let g:NERDDefaultAlign           = 'left' " Align line-wise comment delimiters flush left instead
-                                            " of following code indentation
+                                          " of following code indentation
 let g:NERDCustomDelimiters = {
     \ 'python': { 'left': '#', 'leftAlt': '"""', 'rightAlt': '"""' },
     \ 'c': { 'left': '//', 'leftAlt': '/**', 'rightAlt': '*/' },

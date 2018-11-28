@@ -1,6 +1,6 @@
 " ############################################################################
 "
-"                              Gen_Tags settings
+"                               nvim Setttings
 "
 "                                     -`
 "                     ...            .o+`
@@ -24,13 +24,17 @@
 "
 " ############################################################################
 
-if !exists('g:plugs["gen_tags.vim"]')
-    finish
-endif
+let s:load_remotes = 0
+
+augroup UpdateRemotes
+    autocmd!
+    autocmd VimEnter * if s:load_remotes == 1 | UpdateRemotePlugins | endif
+augroup end
+
+function! nvim#updateremoteplugins(info) abort
+    if has('nvim')
+        let s:load_remotes = 1
+    endif
+endfunction
 
 
-" If we have async enable then auto update tags
-if has#async()
-    let g:gen_tags#gtags_auto_gen = 1
-    let g:gen_tags#ctags_auto_gen = 1
-endif

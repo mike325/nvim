@@ -24,37 +24,11 @@
 "
 " ############################################################################
 
-
 " Improve compatibility between Unix and DOS platfomrs {{{
 
-" Windows wrapper
-function! WINDOWS()
-    return (has('win16') || has('win32') || has('win64'))
-endfunction
+let mapleader="\<Space>"
 
-" Check an specific version of python (empty==2)
-function! PYTHON(version)
-    if a:version ==# 'any' || a:version ==# ''
-        return (has('python') || has('python3'))
-    elseif a:version ==# '3'
-        return has('python3')
-    elseif a:version ==# '2'
-        return has('python')
-    endif
-endfunction
-
-" Check whether or not we have async support
-function! ASYNC()
-    return (has('nvim') || ((v:version >= 800 && has('patch-8.0.0027')) ||
-                         \  (v:version ==# 704 && has('patch1689')) &&
-                         \ (has('job') && has('timers') && has('channel')))) ? 1 : 0
-endfunction
-
-function! GUI()
-    return (has('nvim') && exists('g:GuiLoaded')) || (!has('nvim') && has('gui_running'))
-endfunction
-
-if WINDOWS()
+if os#name('windows')
     " On windows, if gvim.exe or nvim-qt are executed from cygwin, the shell
     " needs to be set to cmd since most plugins expect it for windows.
     set shell=cmd.exe
@@ -74,321 +48,13 @@ if WINDOWS()
     endif
 endif
 
-" Set the default work dir
-let g:base_path = ''
-let g:home = ''
-if has('nvim')
-    if WINDOWS()
-        let g:base_path = substitute( expand($USERPROFILE), '\', '/', 'g' ) . '/AppData/Local/nvim/'
-        let g:home = substitute( expand($USERPROFILE), '\', '/', 'g' )
-    else
-        " TODO: Check $XDG_DATA_HOME
-        let g:base_path = expand($HOME) . '/.config/nvim/'
-        let g:home = expand($HOME)
-    endif
-elseif WINDOWS()
-    " if $USERPROFILE and ~ expansions are different, then gVim may be running as portable
-    let g:home = substitute( expand($USERPROFILE), '\', '/', 'g' )
-    if  substitute( expand($USERPROFILE), '\', '/', 'g' ) ==# substitute( expand('~'), '\', '/', 'g' )
-        let g:base_path =  substitute( expand($USERPROFILE), '\', '/', 'g' ) . '/vimfiles/'
-    else
-        let g:base_path =  substitute( expand('~'), '\', '/', 'g' ) . '/vimfiles/'
-    endif
-else
-    let g:base_path = expand($HOME) . '/.vim/'
-    let g:home = expand($HOME)
-endif
-
 " }}} END Improve compatibility between Unix and DOS platfomrs
-
-
-function! s:SetIgnorePatterns() " Create Ignore rules {{{
-    " Files and dirs we want to ignore in searches and plugins
-    " The *.  and */patter/* will be add after
-    if filereadable(g:home . '/.config/git/ignore')
-        let g:ignore_patterns.grep .= ' --exclude-from=' . g:home . '/.config/git/ignore'
-        " TODO: Check if ag checks for global ignores
-        let g:ignore_patterns.ag .= ' --path-to-ignore ' . g:home . '/.config/git/ignore'
-        " ripgrep already check for common global ignores
-        " let g:ignore_patterns.rg .= ' --ignore ' . g:home . '/.config/git/ignore'
-    endif
-
-    for  l:element in g:ignores.vcs
-        let g:ignore_patterns.grep .= ' --exclude-dir="*.' . l:element . '" '
-    endfor
-
-    for [ l:ignore_type, l:ignore_list ] in items(g:ignores)
-        " I don't want to ignore logs here
-        if l:ignore_type ==# 'logs' || l:ignore_type ==# 'bin'
-            continue
-        endif
-
-        for l:item in l:ignore_list
-            let l:ignore_pattern = ''
-
-            if l:ignore_type ==# 'vcs'
-                let l:ignore_pattern = '.' . l:item . '/*'
-            elseif l:ignore_type =~? '_dirs'
-                let l:ignore_pattern = l:item . '/*'
-            elseif l:ignore_type !=# 'full_name_files'
-                let l:ignore_pattern = '*.' . l:item
-            else
-                let l:ignore_pattern = l:item
-            endif
-
-            " let g:ignore_patterns.findstr .= ' /c:' . substitute(l:ignore_pattern, "\(\/\|\*\)", "" ,"g") . ' '
-
-            if l:ignore_type ==# 'vcs' || l:ignore_type =~? '_dirs'
-                let g:ignore_patterns.find  .= ' ! -path "*/' . l:ignore_pattern . '" '
-            else
-                let g:ignore_patterns.find  .= ' ! -iname "' . l:ignore_pattern . '" '
-            endif
-            " TODO: Make this crap work in Windows
-            " let g:ignore_patterns.dir  .= ' '
-
-            " Add both versions, normal and hidden versions
-            if l:ignore_type =~? '_dirs'
-                let l:ignore_pattern = '.' . l:item . '/*'
-
-                let g:ignore_patterns.find  .= ' ! -path "*/' . l:ignore_pattern . '" '
-                " TODO: Make this crap work in Windows
-                " let g:ignore_patterns.findstr .= ' /c: "' . l:ignore_pattern . '" '
-                " let g:ignore_patterns.dir  .= ' '
-            endif
-        endfor
-    endfor
-
-    " Clean settings before assign the ignore stuff, just lazy stuff
-    execute 'set wildignore='
-    execute 'set backupskip='
-    " set suffixes=.bak,~,.swp,.o,.info,.aux,.log,.dvi,.bbl,.blg,.brf,.cb,.ind,.idx,.ilg,.inx,.out,.toc,.png,.jpg
-
-    " Set system ignores and skips
-    for [ l:ignore_type, l:ignore_list ] in items(g:ignores)
-        " I don't want to ignore vcs here
-        if l:ignore_type ==# 'vcs'
-            continue
-        endif
-
-        for l:item in l:ignore_list
-            let l:ignore_pattern = ''
-
-            if l:ignore_type =~? '_dirs'
-                " Add both versions, normal and hidden
-                let l:ignore_pattern = '*/' . l:item . '/*,*/.' . l:item . '/*'
-            elseif l:ignore_type !=# 'full_name_files'
-                let l:ignore_pattern = '*.' . l:item
-            else
-                let l:ignore_pattern = l:item
-            endif
-
-            " I don't want to ignore logs or sessions files but I don't want
-            " to backup them
-            if l:ignore_type !=# 'logs' && l:item !=# 'sessions'
-                execute 'set wildignore+=' . fnameescape(l:ignore_pattern)
-            endif
-
-            execute 'set backupskip+=' . fnameescape(l:ignore_pattern)
-        endfor
-    endfor
-
-endfunction " }}} END Create Ignore rules
-
-function! s:InitConfigs() " Vim's InitConfig {{{
-    " Hidden path in `g:base_path` with all generated files
-    if !exists('g:parent_dir')
-        let g:parent_dir = g:base_path . '.resources/'
-    endif
-
-    if !exists('g:dirpaths')
-        let g:dirpaths = {
-                    \   'backup' : 'backupdir',
-                    \   'swap' : 'directory',
-                    \   'undo' : 'undodir',
-                    \   'cache' : '',
-                    \   'sessions' : '',
-                    \}
-    endif
-
-    " Better backup, swap and undos storage
-    set backup   " make backup files
-    if exists('+undofile')
-        set undofile " persistent undos - undo after you re-open the file
-    endif
-
-    " Config all
-    for [l:dirname, l:dir_setting] in items(g:dirpaths)
-        if exists('*mkdir')
-            if !isdirectory(fnameescape( g:parent_dir . l:dirname ))
-                call mkdir(fnameescape( g:parent_dir . l:dirname ), 'p')
-            endif
-
-            if l:dir_setting !=# '' && exists('+' . l:dir_setting)
-                execute 'set ' . l:dir_setting . '=' . fnameescape(g:parent_dir . l:dirname)
-            endif
-        else
-            " echoerr "The current dir " . fnameescape(g:parent_dir . l:dirname) . " could not be created"
-            " TODO: Display errors/status in the start screen
-            " Just a placeholder
-        endif
-    endfor
-
-    let l:persistent_settings = (has('nvim')) ? 'shada' : 'viminfo'
-
-    " Remember things between sessions
-    " !        + When included, save and restore global variables that start
-    "            with an uppercase letter, and don't contain a lowercase letter.
-    " 'n       + Marks will be remembered for the last 'n' files you edited.
-    " <n       + Contents of registers (up to 'n' lines each) will be remembered.
-    " sn       + Items with contents occupying more then 'n' KiB are skipped.
-    " :n       + Save 'n' Command-line history entries
-    " n/info   + The name of the file to use is "/info".
-    " no /     + Since '/' is not specified, the default will be used, that is,
-    "            save all of the search history, and also the previous search and
-    "            substitute patterns.
-    " no %     + The buffer list will not be saved nor read back.
-    " h        + 'hlsearch' highlighting will not be restored.
-    execute 'set ' . l:persistent_settings . "=!,'100,<500,:500,s100,h"
-    execute 'set ' . l:persistent_settings . '+=n' . fnameescape(g:parent_dir . l:persistent_settings)
-endfunction " }}} END Vim's InitConfig
-
-
-if ASYNC()
-    function! s:python_setup(python)
-        let l:major = a:python[0]
-        let l:minor = a:python[1]
-        " let l:patch = l:python[2]
-        if WINDOWS()
-            let l:candidates = [
-                        \ 'c:/python'.l:major.l:minor. 'amd64',
-                        \ 'c:/python'.l:major.l:minor,
-                        \ 'c:/python/'.l:major.l:minor,
-                        \ 'c:/python/'.l:major.l:minor. 'amd64',
-                        \ 'c:/python/python'.l:major.l:minor,
-                        \ 'c:/python_'.l:major.l:minor,
-                        \ 'c:/python/python_'.l:major.l:minor,
-                        \]
-            for pydir in l:candidates
-                if isdirectory(fnameescape(pydir))
-                    return pydir
-                endif
-            endfor
-        elseif executable('python'.l:major.'.'.l:minor)
-            return 'python'.l:major.'.'.l:minor
-        endif
-        return ''
-    endfunction
-
-    let s:python = ['2', '7']
-    if s:python_setup(s:python) !=# ''
-        if exists('g:loaded_python_provider')
-            unlet g:loaded_python_provider
-        endif
-        let g:python_host_prog = s:python_setup(s:python)
-        if WINDOWS()
-            let g:python_host_prog .=  '/python'
-        endif
-    endif
-
-    for s:minor in ['8', '7', '6', '5', '4']
-        let s:python = ['3', s:minor]
-        if s:python_setup(s:python) !=# ''
-            if exists('g:loaded_python3_provider')
-                unlet g:loaded_python3_provider
-            endif
-            let g:python3_host_prog = s:python_setup(s:python)
-            if WINDOWS()
-                let g:python3_host_prog .=  '/python'
-            endif
-            break
-        endif
-    endfor
-
-endif
-
 
 " Initialize plugins {{{
 
-let g:ignore_patterns = {
-            \   'git' : '',
-            \   'ag' : '',
-            \   'rg' : '',
-            \   'find' : '',
-            \   'grep' : '',
-            \   'dir' : '',
-            \   'findstr' : '',
-            \}
-
-let g:ignores = {
-            \   'bin': [ 'exe', 'dat',],
-            \   'vcs': [ 'hg', 'svn', 'git',],
-            \   'compile' : ['obj', 'class', 'pyc', 'o', 'dll', 'a', 'moc',],
-            \   'tmp_dirs': [ 'trash', 'tmp', '__pycache__', 'ropeproject'],
-            \   'vim_dirs': [ 'backup', 'swap', 'sessions', 'cache', 'undos',],
-            \   'tmp_file' : ['swp', 'bk',],
-            \   'docs': ['docx', 'doc', 'xls', 'xlsx', 'odt', 'ppt', 'pptx', 'pdf',],
-            \   'image': ['jpg', 'jpeg', 'png', 'gif', 'raw'],
-            \   'video': ['mp4', 'mpeg', 'avi', 'mkv', '3gp'],
-            \   'logs': ['log',],
-            \   'compress': ['zip', 'tar', 'rar', '7z',],
-            \   'full_name_files': ['tags', 'cscope', 'shada', 'viminfo', 'COMMIT_EDITMSG'],
-            \}
-
-
-try
-    call s:SetIgnorePatterns()
-    call s:InitConfigs()
-catch E117
-    " TODO:
-endtry
-
-let g:grep = {
-    \   'git': {
-    \       'grepprg': 'git --no-pager grep --no-color -Iin ',
-    \       'grepformat': '%f:%l:%m'
-    \    },
-    \   'rg' : {
-    \       'grepprg':  'rg -S -n --color never -H --no-search-zip --trim --vimgrep ',
-    \       'grepformat': '%f:%l:%c:%m,%f:%l:%m'
-    \   },
-    \   'ag' : {
-    \       'grepprg': 'ag -S -l --follow --nogroup --nocolor --hidden --vimgrep ' . g:ignore_patterns.ag . ' ',
-    \       'grepformat': '%f:%l:%c:%m,%f:%l:%m'
-    \   },
-    \   'grep' : {
-    \       'grepprg': 'grep -HiIn --color=never ' . g:ignore_patterns.grep . ' ',
-    \       'grepformat': '%f:%l:%m'
-    \   },
-    \   'findstr' : {
-    \       'grepprg': 'findstr -rspn ' . g:ignore_patterns.findstr . ' ',
-    \       'grepformat': '%f:%l:%m'
-    \   },
-    \}
-
-" TODO: Missing Default OS specific fallbacks
-let g:file_list = {
-    \   'git': 'git --no-pager ls-files -co --exclude-standard',
-    \   'rg' : 'rg --with-filename --color never --no-search-zip --hidden --trim --files',
-    \   'ag' : 'ag -l --follow --nocolor --nogroup --hidden '. g:ignore_patterns.ag . ' -g ""',
-    \}
-
-
-" Small wrap to avoid change code all over the repo
-function! GrepTool(tool, properity) abort
-    return g:grep[a:tool][a:properity]
-endfunction
-
-" Just like GrepTool but for listing files
-function! FileListTool(tool) abort
-    return g:file_list[a:tool]
-endfunction
-
-
-let mapleader="\<Space>"
-
 " If there are no plugins available and we don't have git
 " fallback to minimal mode
-if !executable('git') && !isdirectory(fnameescape(g:base_path.'plugged'))
+if !executable('git') && !isdirectory(fnameescape(vars#basedir().'plugged'))
     let g:minimal = 1
 endif
 
@@ -396,9 +62,11 @@ endif
 " TODO: Check for $TERM before load some configurations
 if !exists('g:minimal')
 
+    execute 'set runtimepath^=' . expand(vars#basedir() . '/plug/')
+
     try
-        call execute('set rtp^=' . expand(g:base_path . '/plug/'))
-        call plug#begin(g:base_path.'plugged')
+        call execute('set rtp^=' . expand(vars#basedir() . '/plug/'))
+        call plug#begin(vars#basedir().'plugged')
     catch
         " Fallback if we fail to init Plug
         if !has('nvim') && v:version >= 800
@@ -410,20 +78,13 @@ if !exists('g:minimal')
         finish
     endtry
 
-    if isdirectory(fnameescape(g:base_path.'config'))
-        Plug fnameescape(g:base_path.'config')
+    if isdirectory(fnameescape(vars#basedir().'config'))
+        Plug fnameescape(vars#basedir().'config')
     endif
 
-    if isdirectory(fnameescape(g:base_path.'host'))
-        Plug fnameescape(g:base_path.'host')
+    if isdirectory(fnameescape(vars#basedir().'host'))
+        Plug fnameescape(vars#basedir().'host')
     endif
-
-    function! RemotePlugins(info)
-        if has('nvim')
-            UpdateRemotePlugins
-        endif
-    endfunction
-
 
     " ####### Colorschemes {{{
 
@@ -448,11 +109,12 @@ if !exists('g:minimal')
     " Plug 'kurayama/systemd-vim-syntax', {'for': 'systemd'}
     " Plug 'mhinz/vim-nginx', {'for': 'nginx'}
 
-    if has('nvim') && PYTHON('3')
-        Plug 'numirias/semshi', {'do': function('RemotePlugins')}
-        " Plug 'blahgeek/neovim-colorcoder', {'do': function('RemotePlugins')}
-        " Plug 'arakashic/chromatica.nvim', {'do': function('RemotePlugins')}
+    if has('nvim') && has#python('3')
+        Plug 'numirias/semshi', {'do': ':UpdateRemotePlugins'}
+        " Plug 'blahgeek/neovim-colorcoder', {'do': ':UpdateRemotePlugins'}
+        " Plug 'arakashic/chromatica.nvim', {'do': ':UpdateRemotePlugins'}
     endif
+
     Plug 'octol/vim-cpp-enhanced-highlight'
 
     " }}} END Syntax
@@ -475,7 +137,7 @@ if !exists('g:minimal')
     Plug 'tommcdo/vim-lion'
 
     " Have some problmes with vinager in windows
-    if !WINDOWS()
+    if !os#name('windows')
         Plug 'tpope/vim-vinegar'
     " else
     "     Plug 'scrooloose/nerdtree', { 'on': [ 'NERDTree', 'NERDTreeToggle' ] }
@@ -493,51 +155,38 @@ if !exists('g:minimal')
     " endif
 
     " Syntax check
-    if PYTHON('any')
-        if ASYNC()
+    if has#python()
+        if has#async()
             Plug 'neomake/neomake'
         else
             Plug 'vim-syntastic/syntastic'
         endif
     endif
 
-    if has('nvim') && PYTHON('3')
-
-        function! Fruzzy(info)
-            if a:info.status ==# 'installed' || a:info.force
-                if exists('*fruzzy#install()')
-                    call fruzzy#install()
-                endif
-            endif
-        endfunction
+    if has('nvim') && has#python('3')
 
         Plug 'Shougo/denite.nvim'
-        Plug 'raghur/fruzzy', {'do': function('Fruzzy')}
+        Plug 'raghur/fruzzy', {'do': { -> fruzzy#install()}} " TODO: check how this work
         " Plug 'dunstontc/projectile.nvim'
         " Plug 'chemzqm/denite-git'
     else
         Plug 'mhinz/vim-grepper', { 'on': ['Grepper', '<plug>(GrepperOperator)'] }
 
         Plug 'ctrlpvim/ctrlp.vim'
-        if has('unix') && executable('git')
+
+        if os#name('unix') && executable('git')
             Plug 'jasoncodes/ctrlp-modified.vim'
         endif
 
-        if PYTHON('any')
-            " Fast and 'easy' to compile C CtrlP matcher
-            if (executable('gcc') || executable('clang')) && empty($NO_PYTHON_DEV) && !WINDOWS()
-                " Windows must have msbuild compiler to work, temporally disabled
-                function! BuildCtrlPMatcher(info)
-                    if a:info.status ==# 'installed' || a:info.force
-                        if WINDOWS()
-                            !./install_windows.bat
-                        else
-                            !./install.sh
-                        endif
-                    endif
-                endfunction
+        if has#python('3')
 
-                Plug 'JazzCore/ctrlp-cmatcher', { 'do': function('BuildCtrlPMatcher')}
+            Plug 'raghur/fruzzy', {'do': { -> fruzzy#install()}} " TODO: check how this work
+
+        elseif has#python()
+            " Fast and 'easy' to compile C CtrlP matcher
+            if (executable('gcc') || executable('clang')) && empty($NO_PYTHON_DEV) && !os#name('windows')
+                " Windows must have msbuild compiler to work, temporally disabled
+                Plug 'JazzCore/ctrlp-cmatcher', { 'do': function('plugin#ctrlpmatcher')}
             else
                 " Fast matcher for ctrlp
                 Plug 'FelikZ/ctrlp-py-matcher'
@@ -545,7 +194,6 @@ if !exists('g:minimal')
 
             " The fastes matcher (as far as I know) but way more complicated to setup
             " Plug 'nixprime/cpsm'
-
         endif
     endif
 
@@ -565,7 +213,7 @@ if !exists('g:minimal')
         Plug 'jreybert/vimagit', {'on': ['Magit', 'MagitOnly']}
         " Plug 'sodapopcan/vim-twiggy', {'on': ['Twiggy']}
         " Plug 'gregsexton/gitv', {'on': ['Gitv']}
-        if !WINDOWS()
+        if !os#name('windows')
             Plug 'rhysd/committia.vim'
         endif
     endif
@@ -590,7 +238,7 @@ if !exists('g:minimal')
     Plug 'tpope/vim-abolish'
     Plug 'honza/vim-snippets'
 
-    if PYTHON('any') && (has('nvim') || (v:version >= 704))
+    if has#python() && (has('nvim') || (v:version >= 704))
         Plug 'SirVer/ultisnips'
     else
         Plug 'MarcWeber/vim-addon-mw-utils'
@@ -603,203 +251,117 @@ if !exists('g:minimal')
     let s:completor = 0
 
     " This env var allow us to know if the python version has the dev libs
-    if empty($NO_PYTHON_DEV)
-        if PYTHON('any') " Python base completions {{{
+    if empty($NO_PYTHON_DEV) && has#python() " Python base completions {{{
 
-            " function! BuildOmniSharp(info)
-            "     if a:info.status == 'installed' || a:info.force
-            "         if WINDOWS()
-            "             !cd server && msbuild
-            "         else
-            "             !cd server && xbuild
-            "         endif
-            "     endif
-            " endfunction
+        " Plug 'OmniSharp/omnisharp-vim', { 'do': function('plugin#omnisharp') }
 
-            " Plug 'OmniSharp/omnisharp-vim', { 'do': function('BuildOmniSharp') }
+        " Awesome has#async completion engine for Neovim
+        " if has#async() && has#python('3')
+        if has('nvim') && has#python('3') && empty($YCM)
 
-            if ASYNC() && ( ( executable('cquery') || executable('clangd') ) || executable('pyls') )
-                function! GetLanguageClient(info)
-                    if exists(':LanguageClientStop') != 0
-                        LanguageClientStop
-                    endif
-                    if WINDOWS()
-                        execute '!powershell -executionpolicy bypass -File ./install.ps1'
-                    else
-                        execute '!./install.sh'
-                    endif
-                    call RemotePlugins(a:info)
-                endfunction
-            endif
-
-            " Awesome Async completion engine for Neovim
-            " if ASYNC() && PYTHON('3')
-            if has('nvim') && PYTHON('3') && empty($YCM)
-
-                " " TODO: There's no package check
-                " if !has('nvim')
-                "     Plug 'roxma/nvim-yarp'
-                "     Plug 'roxma/vim-hug-neovim-rpc'
-                "     set pyxversion=3
-                " endif
-
-                " FIXME: Some versions of debian ship neovim 0.1.7 which doesn't work
-                "        with latest versions of deoplete
-                if has('nvim-0.2')
-                    Plug 'Shougo/deoplete.nvim', { 'do': function('RemotePlugins')}
-                else
-                    Plug 'Shougo/deoplete.nvim', { 'tag': '2.0', 'do': function('RemotePlugins'), 'frozen' : 1}
-                endif
-
-                Plug 'Shougo/neco-vim'
-
-                " TODO: I had had some probles with pysl in windows, so let's
-                "       skip it until I can figure it out how to fix this
-                if ( executable('cquery') || executable('clangd') ) || ( executable('pyls') && !WINDOWS() )
-                    if has('nvim-0.2')
-                        Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do': function('GetLanguageClient')}
-                    else
-                        " FIXME: Not fully working with neovim < 0.2.0
-                        Plug 'autozimu/LanguageClient-neovim', {'tag': '0.1.66', 'do': function('GetLanguageClient'), 'frozen': 1}
-                    endif
-                endif
-
-                if !( executable('cquery') || executable('clangd') )
-                    " C/C++ completion base on clang compiler
-                    if executable('clang')
-                        if WINDOWS()
-                            " A bit faster C/C++ completion
-                            Plug 'tweekmonster/deoplete-clang2'
-                        else
-                            " NOTE: Doesn't support windows
-                            Plug 'zchee/deoplete-clang'
-                            " Plug 'Shougo/neoinclude.vim'
-                        endif
-                    endif
-                endif
-
-                if !executable('pysl') || WINDOWS()
-                    " Python completion
-                    if has('nvim-0.2')
-                        Plug 'zchee/deoplete-jedi'
-                    else
-                        Plug 'zchee/deoplete-jedi', {'commit': '3f510b467baded4279c52147e98f840b53324a8b', 'frozen': 1}
-                    endif
-                endif
-
-
-                " Go completion
-                " TODO: Check Go completion in Windows
-                if executable('go') && executable('make')
-
-                    function! GoCompletion(info)
-                        if !executable('gocode')
-                            if WINDOWS()
-                                !go get -u -ldflags -H=windowsgui github.com/nsf/gocode
-                            else
-                                !go get -u github.com/nsf/gocode
-                            endif
-                        endif
-                        make
-                    endfunction
-
-                    Plug 'zchee/deoplete-go', { 'do':function('GoCompletion')}
-                endif
-
-                " if executable('php')
-                "     Plug 'padawan-php/deoplete-padawan', { 'do': 'composer install' }
-                " endif
-
-                " JavaScript completion
-                if executable('ternjs')
-                    Plug 'carlitux/deoplete-ternjs'
-                endif
-
-                let s:deoplete_installed = 1
-
-            elseif ASYNC() && executable('cmake') && (( has('unix') && ( executable('gcc')  || executable('clang') )) ||
-                        \ (WINDOWS() && executable('msbuild')))
-
-                function! BuildYCM(info)
-                    if a:info.status ==# 'installed' || a:info.force
-                        " !./install.py --all
-
-                        " Since YCM download libclang there's no need to have clang install
-                        " FIX: ArchLinux users should run this first
-                        "  # sudo ln -s /lib64/libtinfo.so.6 /lib64/libtinfo.so.5
-                        "       or use --system-clang
-                        " https://github.com/Valloric/YouCompleteMe/issues/778#issuecomment-211452969
-                        let l:code_completion = ' --clang-completer'
-
-                        if executable('go') && (!empty($GOROOT))
-                            let l:code_completion .= ' --gocode-completer'
-                        endif
-
-                        if executable('mono')
-                            let l:code_completion .= ' --omnisharp-completer'
-                        endif
-
-                        if executable('racer') && executable('cargo')
-                            let l:code_completion .= ' --rust-completer'
-                        endif
-
-                        if executable('npm') && executable('node')
-                            let l:code_completion .= ' --js-completer'
-                        endif
-
-                        " TODO: Can't test in windows
-                        if !WINDOWS() && executable('java')
-                            " JDK8 must be installed
-                            let l:java = system('java -version')
-                            if l:java =~# '^java.*"1\.8.*"'
-                                let l:code_completion .= ' --java-completer'
-                            endif
-                        endif
-
-                        if WINDOWS()
-                            execute '!' . g:python3_host_prog . ' ./install.py ' . l:code_completion
-                        elseif executable('python3')
-                            " Force python3
-                            execute '!' . g:python3_host_prog . ' ./install.py ' . l:code_completion
-                        else
-                            execute '!./install.py ' . l:code_completion
-                        endif
-
-                    endif
-                endfunction
-
-                Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') }
-                " Plug 'davits/DyeVim'
-
-                " C/C++ project generator
-                Plug 'rdnetto/ycm-generator', { 'branch': 'stable' }
-                let s:ycm_installed = 1
-            elseif ASYNC()
-                " Test new completion Async framework that require python and vim 8 or
-                " Neovim (without python3)
-                if ( executable('cquery') || executable('clangd') ) || executable('pyls')
-                    Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do': function('GetLanguageClient')}
-                endif
-
-                Plug 'maralla/completor.vim'
-                let s:completor = 1
-            endif
-
-            " if ( has('nvim') || ( v:version >= 800 ) || ( v:version >= 704 ) ) &&
-            "             \ ( s:ycm_installed==1 || s:deoplete_installed==1 )
-            "     " Only works with JDK8!!!
-            "     Plug 'artur-shaik/vim-javacomplete2'
+            " " TODO: There's no package check
+            " if !has('nvim')
+            "     Plug 'roxma/nvim-yarp'
+            "     Plug 'roxma/vim-hug-neovim-rpc'
+            "     set pyxversion=3
             " endif
 
-            if s:ycm_installed==0 && s:deoplete_installed==0
-                " Completion for python without engines
-                Plug 'davidhalter/jedi-vim'
-
-                " Plug 'Rip-Rip/clang_complete'
+            " FIXME: Some versions of debian ship neovim 0.1.7 which doesn't work
+            "        with latest versions of deoplete
+            if has('nvim-0.2')
+                Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins'}
+            else
+                Plug 'Shougo/deoplete.nvim', { 'tag': '2.0', 'do': ':UpdateRemotePlugins', 'frozen' : 1}
             endif
 
-        endif " }}} END Python base completions
-    endif
+            Plug 'Shougo/neco-vim'
+
+            " TODO: I had had some probles with pysl in windows, so let's
+            "       skip it until I can figure it out how to fix this
+            if plugin#CheckLanguageServer()
+                if has('nvim-0.2')
+                    Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do': function('plugin#InstallLanguageClient')}
+                else
+                    " FIXME: Not fully working with neovim < 0.2.0
+                    Plug 'autozimu/LanguageClient-neovim', {'tag': '0.1.66', 'do': function('plugin#InstallLanguageClient'), 'frozen': 1}
+                endif
+            endif
+
+            if !plugin#CheckLanguageServer('c')
+                " C/C++ completion base on clang compiler
+                if executable('clang')
+                    if os#name('windows')
+                        " A bit faster C/C++ completion
+                        Plug 'tweekmonster/deoplete-clang2'
+                    else
+                        " NOTE: Doesn't support windows
+                        Plug 'zchee/deoplete-clang'
+                        " Plug 'Shougo/neoinclude.vim'
+                    endif
+                endif
+            endif
+
+            if !plugin#CheckLanguageServer('python') || os#name('windows')
+                " Python completion
+                if has('nvim-0.2')
+                    Plug 'zchee/deoplete-jedi'
+                else
+                    Plug 'zchee/deoplete-jedi', {'commit': '3f510b467baded4279c52147e98f840b53324a8b', 'frozen': 1}
+                endif
+            endif
+
+
+            " Go completion
+            " TODO: Check Go completion in Windows
+            if !plugin#CheckLanguageServer('go') && executable('go') && executable('make')
+                Plug 'zchee/deoplete-go', { 'do':function('plugin#GetGoCompletion')}
+            endif
+
+            " if executable('php')
+            "     Plug 'padawan-php/deoplete-padawan', { 'do': 'composer install' }
+            " endif
+
+            " JavaScript completion
+            if executable('ternjs')
+                Plug 'carlitux/deoplete-ternjs'
+            endif
+
+            let s:deoplete_installed = 1
+
+        elseif has#async() && executable('cmake') && (( has('unix') && ( executable('gcc')  || executable('clang') )) ||
+                    \ (os#name('windows') && executable('msbuild')))
+
+            Plug 'Valloric/YouCompleteMe', { 'do': function('plugin#YCM') }
+            " Plug 'davits/DyeVim'
+
+            " C/C++ project generator
+            Plug 'rdnetto/ycm-generator', { 'branch': 'stable' }
+            let s:ycm_installed = 1
+        elseif has#async()
+            " Test new completion has#async framework that require python and vim 8 or
+            " Neovim (without python3)
+            if plugin#CheckLanguageServer('any')
+                Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do': function('plugin#InstallLanguageClient')}
+            endif
+
+            Plug 'maralla/completor.vim'
+            let s:completor = 1
+        endif
+
+        " if ( has('nvim') || ( v:version >= 800 ) || ( v:version >= 704 ) ) &&
+        "             \ ( s:ycm_installed==1 || s:deoplete_installed==1 )
+        "     " Only works with JDK8!!!
+        "     Plug 'artur-shaik/vim-javacomplete2'
+        " endif
+
+        if s:ycm_installed==0 && s:deoplete_installed==0
+            " Completion for python without engines
+            Plug 'davidhalter/jedi-vim'
+
+            " Plug 'Rip-Rip/clang_complete'
+        endif
+
+    endif " }}} END Python base completions
 
     " Vim clang does not require python
     if executable('clang') && s:ycm_installed==0 && s:deoplete_installed==0
@@ -830,7 +392,7 @@ if !exists('g:minimal')
     Plug 'tpope/vim-endwise'
     " Plug 'fidian/hexmode'
 
-    if executable('go') && ASYNC()
+    if executable('go') && has#async()
         Plug 'fatih/vim-go'
     endif
 
@@ -949,7 +511,7 @@ if !exists('g:minimal')
     endif
 
     " " Visualize undo tree
-    " if PYTHON('any')
+    " if has#python()
     "     Plug 'sjl/gundo.vim', {'on': ['GundoShow', 'GundoToggle']}
     " endif
 

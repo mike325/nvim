@@ -31,9 +31,9 @@ endif
 
 augroup Surrounders
     autocmd!
-    autocmd FileType text let b:surround_63 = '¿ \r ?'
-    autocmd FileType text let b:surround_168 = '¿ \r ?'
-    autocmd FileType text let b:surround_173 = '¡ \r !'
-    autocmd FileType text let b:surround_33 = '¡ \r !'
+    autocmd FileType gitcommit,latex,text,org let b:surround_63 = '¿ \r ?'
+    autocmd FileType gitcommit,latex,text,org let b:surround_168 = '¿ \r ?'
+    autocmd FileType gitcommit,latex,text,org let b:surround_173 = '¡ \r !'
+    autocmd FileType gitcommit,latex,text,org let b:surround_33 = '¡ \r !'
 augroup end
 

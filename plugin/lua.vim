@@ -29,6 +29,6 @@ if !has('nvim')
 endif
 
 " Configure all lua plugins
-if filereadable(g:base_path . 'lua/config.lua')
-    execute 'luafile ' . expand(g:base_path . 'lua/config.lua')
+if filereadable(vars#basedir() . 'lua/config.lua')
+    execute 'luafile ' . expand(vars#basedir() . 'lua/config.lua')
 endif

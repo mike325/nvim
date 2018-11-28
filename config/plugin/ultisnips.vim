@@ -30,13 +30,13 @@ endif
 
 
 let g:UltiSnipsEditSplit                = 'context'
-let g:UltiSnipsSnippetsDir              = g:base_path . 'config/UltiSnips'
-let g:UltiSnipsSnippetDirectories       = [g:base_path . 'config/UltiSnips', 'UltiSnips']
+let g:UltiSnipsSnippetsDir              = vars#basedir() . 'config/UltiSnips'
+let g:UltiSnipsSnippetDirectories       = [vars#basedir() . 'config/UltiSnips', 'UltiSnips']
 let g:UltiSnipsExpandTrigger            = '<C-e>'
 " Remove all select mappigns in expanded snip
 " let g:UltiSnipsRemoveSelectModeMappings = 0
 
-if PYTHON('3')
+if has#python('3')
     let g:UltiSnipsUsePythonVersion = 3
 endif
 

@@ -53,10 +53,10 @@ endif
 " let g:ycm_extra_conf_globlist   = ['~/.vim/*']
 
 " Set fallback ycm config file
-if filereadable(fnameescape(g:base_path.'host/ycm_extra_conf.py'))
-    let g:ycm_global_ycm_extra_conf = fnameescape(g:base_path.'host/ycm_extra_conf.py')
-elseif filereadable(fnameescape(g:base_path . 'ycm_extra_conf.py'))
-    let g:ycm_global_ycm_extra_conf = fnameescape(g:base_path . 'ycm_extra_conf.py')
+if filereadable(fnameescape(vars#basedir().'host/ycm_extra_conf.py'))
+    let g:ycm_global_ycm_extra_conf = fnameescape(vars#basedir().'host/ycm_extra_conf.py')
+elseif filereadable(fnameescape(vars#basedir() . 'ycm_extra_conf.py'))
+    let g:ycm_global_ycm_extra_conf = fnameescape(vars#basedir() . 'ycm_extra_conf.py')
 endif
 
 if executable('ctags')

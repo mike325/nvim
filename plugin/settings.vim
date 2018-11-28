@@ -36,6 +36,12 @@ endif
 
 let g:settings_loaded = 1
 
+" Allow lua omni completion
+let g:lua_complete_omni = 1
+
+" Always prefer latex over plantext for *.tex files
+let g:tex_flavor = 'latex'
+
 " Disable some vi compatibility
 if has('nvim')
     " Live substitute preview
@@ -88,13 +94,13 @@ if exists('+breakindent')
 endif
 
 if executable('rg')
-    let &grepprg=GrepTool('rg', 'grepprg')
+    let &grepprg = tools#grep('rg', 'grepprg')
 elseif executable('ag')
-    let &grepprg=GrepTool('ag', 'grepprg')
+    let &grepprg = tools#grep('ag', 'grepprg')
 elseif executable('grep')
-    let &grepprg=GrepTool('grep', 'grepprg')
+    let &grepprg = tools#grep('grep', 'grepprg')
 elseif executable('findstr')
-    let &grepprg=GrepTool('findstr', 'grepprg')
+    let &grepprg = tools#grep('findstr', 'grepprg')
 endif
 
 if has('termguicolors')
@@ -131,7 +137,7 @@ endif
 if empty($SSH_CONNECTION) && has('clipboard')
     " if we are running gVim or running Neovim from Windows (aka neovim-qt)
     " We reactivate the everything
-    if has('gui_running') || (WINDOWS() && has('nvim'))
+    if has#gui() || (os#name('windows') && has('nvim'))
         set clipboard=unnamedplus,unnamed
         if has('mouse')
             set mouse=a    " We have mouse support, so we use it
@@ -290,40 +296,7 @@ if exists('+virtualedit')
     set virtualedit=block
 endif
 
-" Allow lua omni completion
-let g:lua_complete_omni = 1
-
-" Always prefer latex over plantext for *.tex files
-let g:tex_flavor = 'latex'
-
 set sessionoptions=buffers,curdir,folds,globals,localoptions,options,resize,tabpages,winpos,winsize
-if WINDOWS()
+if os#name('windows')
     let &sessionoptions.=',slash,unix'
-endif
-
-let g:libclang = ''
-
-if WINDOWS()
-    if filereadable(g:home . '/.local/bin/libclang.dll')
-        let g:libclang = g:home . '/.local/bin/libclang.dll'
-    elseif exists('g:plugs["YouCompleteMe"]')
-        let g:libclang = g:base_path . 'plugged/YouCompleteMe/third_party/ycmd/libclang.dll'
-    elseif filereadable('c:/Program Files/LLVM/bin/libclang.dll')
-        let g:libclang = 'c:/Program Files/LLVM/bin/libclang.dll'
-    elseif filereadable('c:/Program Files(x86)/LLVM/bin/libclang.dll')
-        let g:libclang = 'c:/Program Files(x86)/LLVM/bin/libclang.dll'
-    endif
-else
-    if filereadable(g:home . '/.local/lib/libclang.so')
-        let g:libclang = g:home . '/.local/lib/libclang.so'
-    elseif exists('g:plugs["YouCompleteMe"]')
-        for s:version in ['7', '6', '5', '4', '3']
-            if filereadable(g:base_path . 'plugged/YouCompleteMe/third_party/ycmd/libclang.so.' . s:version)
-                let g:libclang = g:base_path . 'plugged/YouCompleteMe/third_party/ycmd/libclang.so.' . s:version
-                break
-            endif
-        endfor
-        silent! unlet s:version
-    endif
-    let g:libclang = !empty(g:libclang) ? g:libclang : filereadable('/usr/lib/libclang.so') ? '/usr/lib/libclang.so' : ''
 endif
