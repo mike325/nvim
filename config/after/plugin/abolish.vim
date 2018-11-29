@@ -85,7 +85,7 @@ try
     Abolish {obten,ora,emo,valora,utilizap,modifica,sec,delimita,informa}cion  {}ción
 
 catch E492
-    if !GUI()
+    if !has#gui()
         augroup InitErrors
             autocmd VimEnter * echoerr 'Abolish is not install, please run :Pluginstall'
         augroup end

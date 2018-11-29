@@ -24,9 +24,14 @@
 "
 " ############################################################################
 
-if !exists('g:plugs["denite.nvim"]')
+if !exists('g:plugs["denite.nvim"]') || !exists(':Denite') " If we don't have Denite cmd, then we haven't use :PlugInstall
     finish
 endif
+
+function! DeniteBuffer(prefix)
+    let l:name = fnamemodify(fnamemodify(getcwd(), ':r'), ':t')
+    return (empty(a:prefix) ? l:name : a:prefix . l:name)
+endfunction
 
 if executable('rg') || executable('ag')
     let s:tool = executable('rg') ? 'rg' : 'ag'
@@ -65,11 +70,6 @@ elseif os#name('windows')
     endif
 
 endif
-
-function! DeniteBuffer(prefix)
-    let l:name = fnamemodify(fnamemodify(getcwd(), ':r'), ':t')
-    return (empty(a:prefix) ? l:name : a:prefix . l:name)
-endfunction
 
 if executable('git')
     call denite#custom#alias('source', 'file/rec/git', 'file/rec')
