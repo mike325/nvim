@@ -24,9 +24,16 @@
 "
 " ############################################################################
 
-if !exists('g:plugs["denite.nvim"]') || !exists(':Denite') " If we don't have Denite cmd, then we haven't use :PlugInstall
+if !exists('g:plugs["denite.nvim"]')
     finish
 endif
+
+try
+    " Change default prompt
+    call denite#custom#option('default', 'prompt', 'Mike >')
+catch E117
+    finish
+endtry
 
 function! DeniteBuffer(prefix)
     let l:name = fnamemodify(fnamemodify(getcwd(), ':r'), ':t')
@@ -110,9 +117,6 @@ if exists('g:plugs["fruzzy"]')
     let g:fruzzy#usenative = 1
     call denite#custom#source('_', 'matchers', ['matcher/fruzzy'])
 endif
-
-" Change default prompt
-call denite#custom#option('default', 'prompt', 'Mike >')
 
 " Change ignore_globs
 " call denite#custom#filter('matcher/ignore_globs', 'ignore_globs',
