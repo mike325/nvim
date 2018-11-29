@@ -29,7 +29,6 @@ if !exists('g:plugs["deoplete.nvim"]')
 endif
 
 let g:deoplete#enable_at_startup = 1
-let g:deoplete#sources#clang#libclang_path = g:libclang
 
 
 " Set minimum syntax keyword length.
@@ -118,6 +117,8 @@ else
 endif
 
 if exists('g:plugs["deoplete-clang"]') || exists('g:plugs["deoplete-clang2"]')
+    let g:deoplete#sources#clang#libclang_path = vars#libclang()
+
     let g:deoplete#sources = get(g:,'deoplete#sources',{})
 
     let g:deoplete#sources.c = ['clang']
@@ -160,7 +161,7 @@ endif
 
 if exists('g:plugs["deoplete-go"]')
     let g:deoplete#sources#go                   = 'vim-go'
-    let g:deoplete#sources#go#cgo#libclang_path = g:libclang
+    let g:deoplete#sources#go#cgo#libclang_path = vars#libclang()
     let g:deoplete#sources#go#sort_class        = ['package', 'func', 'type', 'var', 'const']
     let g:deoplete#sources#go#use_cache         = 1
     let g:deoplete#sources#go#package_dot       = 1
