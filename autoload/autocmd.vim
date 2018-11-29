@@ -314,4 +314,5 @@ function! autocmd#SetProjectConfigs() abort
             endif
         endif
     endif
+    return l:project_root
 endfunction
