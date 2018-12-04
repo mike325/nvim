@@ -279,12 +279,10 @@ if !exists('g:minimal')
             " TODO: I had had some probles with pysl in windows, so let's
             "       skip it until I can figure it out how to fix this
             if plugin#CheckLanguageServer()
-                if has('nvim-0.2')
-                    Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do': function('plugin#InstallLanguageClient')}
-                else
-                    " FIXME: Not fully working with neovim < 0.2.0
-                    Plug 'autozimu/LanguageClient-neovim', {'tag': '0.1.66', 'do': function('plugin#InstallLanguageClient'), 'frozen': 1}
-                endif
+                let s:branch =  has('nvim-0.2') ? {'branch': 'next', 'do': function('plugin#InstallLanguageClient')} :
+                                                \ {'tag': '0.1.66', 'do': function('plugin#InstallLanguageClient'), 'frozen': 1}
+                                                " FIXME: Not fully working with neovim < 0.2.0
+                Plug 'autozimu/LanguageClient-neovim', s:branch
             endif
 
             if !plugin#CheckLanguageServer('c')
@@ -301,7 +299,7 @@ if !exists('g:minimal')
                 endif
             endif
 
-            if !plugin#CheckLanguageServer('python') || os#name('windows')
+            if !plugin#CheckLanguageServer('python')
                 " Python completion
                 if has('nvim-0.2')
                     Plug 'zchee/deoplete-jedi'
@@ -313,7 +311,7 @@ if !exists('g:minimal')
 
             " Go completion
             " TODO: Check Go completion in Windows
-            if !plugin#CheckLanguageServer('go') && executable('go') && executable('make')
+            if !plugin#CheckLanguageServer('go') && executable('make')
                 Plug 'zchee/deoplete-go', { 'do':function('plugin#GetGoCompletion')}
             endif
 

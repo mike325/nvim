@@ -51,20 +51,33 @@ endfunction
 " endfunction
 
 function! plugin#CheckLanguageServer(...) abort
-    let l:langservers = {
-    \   'python': ['pyls'],
-    \   'c'     : ['cquery', 'clangd'],
-    \   'cpp'   : ['cquery', 'clangd'],
-    \   'go'    : ['go-langerver'],
-    \ }
+    let l:lang = (a:0 > 0) ? a:1 : ''
 
-    for [l:language, l:servers] in  items(l:langservers)
-        for l:server in l:servers
-            if executable(l:server)
-                return v:true
-            endif
+    let l:langservers = {
+            \   'python': ['pyls'],
+            \   'c'     : ['cquery', 'clangd'],
+            \   'cpp'   : ['cquery', 'clangd'],
+            \   'go'    : ['go-langerver'],
+            \ }
+
+    if empty(l:lang)
+        for [l:language, l:servers] in  items(l:langservers)
+            for l:server in l:servers
+                if executable(l:server)
+                    return v:true
+                endif
+            endfor
         endfor
-    endfor
+    else
+        let l:servers = get(l:langservers, l:lang, '')
+        if !empty(l:servers)
+            for l:server in l:servers
+                if executable(l:server)
+                    return v:true
+                endif
+            endfor
+        endif
+    endif
 
     return v:false
 endfunction

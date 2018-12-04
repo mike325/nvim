@@ -43,17 +43,22 @@ if exists('g:plugs["neomake"]')
 endif
 
 if executable('cquery')
-    let g:LanguageClient_serverCommands.c = ['cquery', '--log-file=' . os#tmp('cq.log') , '--init={"cacheDirectory":"' . vars#home() . '/.cache/cquery", "completion": {"filterAndSort": false}}']
-    let g:LanguageClient_serverCommands.cpp = g:LanguageClient_serverCommands.c
+    let g:LanguageClient_serverCommands.c = ['cquery',
+                                           \ '--log-file=' . os#tmp('cq.log'),
+                                           \ '--init={"cacheDirectory":"' . vars#home() . '/.cache/cquery", "completion": {"filterAndSort": false}}']
 elseif executable('clangd')
     let g:LanguageClient_serverCommands.c = ['clangd']
+endif
+
+if exists('g:LanguageClient_serverCommands.c')
     let g:LanguageClient_serverCommands.cpp = g:LanguageClient_serverCommands.c
 endif
 
 " TODO: I had had some probles with pysl in windows, so let's
 "       skip it until I can figure it out how to fix this
-if executable('pyls') && !os#name('windows')
-    let g:LanguageClient_serverCommands.python = ['pyls', '--log-file=' . os#tmp('pyls.log')]
+if executable('pyls') " && !os#name('windows')
+    let g:LanguageClient_serverCommands.python = ['pyls',
+                                                \ '--log-file=' . os#tmp('pyls.log')]
 endif
 
 function! s:Rename(name)
@@ -78,7 +83,7 @@ augroup LanguageCmds
             autocmd FileType python,c,cpp command! -buffer DocumentSymbols call LanguageClient#textDocument_documentSymbol()
         else
             autocmd FileType python,c,cpp command! -buffer WorkspaceSymbols Denite -highlight-mode-insert=off -highlight-matched-range=off -prompt='WorkSymbols >'     -buffer-name=DeniteBuffer('worksym_') workspaceSymbol
-            autocmd FileType python,c,cpp command! -buffer DocumentSymbols  Denite -highlight-mode-insert=off -highlight-matched-range=off -prompt='DocumentSymbols >' -buffer-name=DeniteBuffer('docsym_') documentSymbol
+            autocmd FileType python,c,cpp command! -buffer DocumentSymbols  Denite -highlight-mode-insert=off -highlight-matched-range=off -prompt='DocumentSymbols >' -buffer-name=DeniteBuffer('docsym_')  documentSymbol
         endif
         autocmd FileType python,c,cpp command! -nargs=? -buffer RenameSymbol call s:Rename(<q-args>)
         autocmd FileType python,c,cpp command! -buffer Definition call LanguageClient#textDocument_definition()
@@ -93,7 +98,7 @@ augroup LanguageCmds
         autocmd FileType c,cpp command! -buffer Hover call LanguageClient#textDocument_hover()
         autocmd FileType c,cpp command! -buffer Implementation call LanguageClient#textDocument_implementation()
     endif
-augroup END
+augroup end
 
 if exists('g:plugs["vim-abolish"]')
 
