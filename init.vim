@@ -279,10 +279,11 @@ if !exists('g:minimal')
             " TODO: I had had some probles with pysl in windows, so let's
             "       skip it until I can figure it out how to fix this
             if plugin#CheckLanguageServer()
-                let s:branch =  has('nvim-0.2') ? {'branch': 'next', 'do': function('plugin#InstallLanguageClient')} :
+                let g:branch =  has('nvim-0.2') ? {'branch': 'next', 'do': function('plugin#InstallLanguageClient')} :
                                                 \ {'tag': '0.1.66', 'do': function('plugin#InstallLanguageClient'), 'frozen': 1}
                                                 " FIXME: Not fully working with neovim < 0.2.0
-                Plug 'autozimu/LanguageClient-neovim', s:branch
+                Plug 'autozimu/LanguageClient-neovim', g:branch
+                unlet g:branch
             endif
 
             if !plugin#CheckLanguageServer('c')
@@ -516,6 +517,11 @@ if !exists('g:minimal')
     " }}} END Misc
 
     " Initialize plugin system
+
+    unlet s:ycm_installed
+    unlet s:deoplete_installed
+    unlet s:completor
+
     call plug#end()
 
 else
