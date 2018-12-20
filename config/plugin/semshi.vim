@@ -28,4 +28,9 @@ if !exists('g:plugs["semshi"]')
     finish
 endif
 
-let g:semshi#error_sign = v:false
+let $SEMSHI_LOG_FILE = os#tmp('semshi.log')
+let $SEMSHI_LOG_LEVEL = 'DEBUG'
+
+let g:semshi#active                       = v:true
+let g:semshi#simplify_markup              = v:true
+let g:semshi#no_default_builtin_highlight = v:true
