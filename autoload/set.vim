@@ -39,7 +39,7 @@ function! set#ignorepatterns() abort " Create Ignore rules {{{
         " let g:ignore_patterns.rg .= ' --ignore ' . g:home . '/.config/git/ignore'
     endif
 
-    for  l:element in g:ignores.vcs
+    for l:element in g:ignores.vcs
         let g:ignore_patterns.grep .= ' --exclude-dir="*.' . l:element . '" '
     endfor
 

@@ -503,7 +503,7 @@ if !exists('g:minimal')
     endif
 
     if has('nvim')
-        Plug 'Vigemus/iron.nvim', { 'branch': 'lua/replace' }
+        Plug 'Vigemus/iron.nvim'
     elseif !exists('+terminal')
         " Useful to get the console output in Vim (since :terminal is not enable yet)
         Plug 'tpope/vim-dispatch'

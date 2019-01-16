@@ -60,10 +60,28 @@ snippet huge "{\huge ...}"
 $0
 endsnippet
 
-snippet bib "\bibliography{} ... \bibliographystyle{}"
-\bibliography{$1}
-\bibliographystyle{${2:IEEEtran}}
-$0
+# snippet bib "\bibliography{} ... \bibliographystyle{}"
+# \bibliography{$1}
+# \bibliographystyle{${2:IEEEtran}}
+# $0
+# endsnippet
+
+snippet list "\begin{itemize}...\end{itemize}"
+\begin{itemize}
+	\item ${1:Item}
+\end{itemize}
 endsnippet
 
+snippet figure "\begin{figure}...\end{figure}"
+\begin{figure}[ht]
+	\begin{center}
+		\includegraphics[height=6cm]{${1:image.jpg}}
+		\caption{${2:Caption}}
+	\end{center}
+\end{figure}
+endsnippet
 
+snippet bib "\bibitem{NAME}"
+\bibitem{${1:id}}
+	$0
+endsnippet

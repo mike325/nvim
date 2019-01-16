@@ -223,11 +223,11 @@ endif
 
 command! TrimToggle call mappings#Trim()
 
-command! -nargs=? -complete=customlist,s:Spells SpellLang
+command! -nargs=? -complete=customlist,tools#spells SpellLang
             \ let s:spell = (empty(<q-args>)) ?  'en' : expand(<q-args>) |
-            \ execute 'set spelllang='.s:spell |
-            \ execute 'set spelllang?' |
+            \ call tools#spelllangs(s:spell) |
             \ unlet s:spell
+            " \ execute 'set spelllang?' |
 
 " Avoid dispatch command conflict
 " QuickfixOpen

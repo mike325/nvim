@@ -184,6 +184,7 @@ augroup ProjectConfig
         autocmd DirChanged * call autocmd#SetProjectConfigs()
     endif
     autocmd VimEnter,SessionLoadPost * call autocmd#SetProjectConfigs()
+    autocmd VimEnter * call tools#abolish('en')
 augroup end
 
 augroup LaTex
