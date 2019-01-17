@@ -31,8 +31,9 @@ function! s:PythonProviders(python) abort
     let l:minor = a:python[1]
     " let l:patch = l:python[2]
 
-    if os#name() ==# 'windows'
+    if os#name('windows')
         let l:candidates = [
+                    \ 'c:/tools/python'.l:major,
                     \ 'c:/python'.l:major.l:minor. 'amd64',
                     \ 'c:/python'.l:major.l:minor,
                     \ 'c:/python/'.l:major.l:minor,
@@ -64,7 +65,7 @@ function! setup#python() abort
             unlet g:loaded_python_provider
         endif
         let g:python_host_prog = s:PythonProviders(s:python)
-        if os#name() ==# 'windows'
+        if os#name('windows')
             let g:python_host_prog .=  '/python'
         endif
     endif
@@ -76,7 +77,7 @@ function! setup#python() abort
                 unlet g:loaded_python3_provider
             endif
             let g:python3_host_prog = s:PythonProviders(s:python)
-            if os#name() ==# 'windows'
+            if os#name('windows')
                 let g:python3_host_prog .=  '/python'
             endif
             break
