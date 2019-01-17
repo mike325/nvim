@@ -57,6 +57,7 @@ function! plugin#CheckLanguageServer(...) abort
             \   'python': ['pyls'],
             \   'c'     : ['cquery', 'clangd'],
             \   'cpp'   : ['cquery', 'clangd'],
+            \   'sh'    : ['bash-language-server'],
             \   'go'    : ['go-langerver'],
             \ }
 
