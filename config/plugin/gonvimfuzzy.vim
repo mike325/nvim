@@ -1,6 +1,6 @@
 " ############################################################################
 "
-"                           chromatica Setttings
+"                               gonvimfuzzy Setttings
 "
 "                                     -`
 "                     ...            .o+`
@@ -24,9 +24,10 @@
 "
 " ############################################################################
 
-if !exists('g:plugs["chromatica.nvim"]')
+
+if !exists('g:gonvim_running') || !exists('g:plugs["gonvim-fuzzy"]')
     finish
 endif
 
-let g:chromatica#libclang_path     = vars#libclang()
-let g:chromatica#enable_at_startup = empty(vars#libclang()) ? 0 : 1
+nnoremap <C-p> :GonvimFuzzyFiles<CR>
+nnoremap <C-b> :GonvimFuzzyBuffers<CR>

@@ -49,7 +49,7 @@ let s:greplist = {
 
 let s:filelist = {
             \   'git': 'git --no-pager ls-files -co --exclude-standard',
-            \   'rg' : 'rg --with-filename --color never --no-search-zip --hidden --trim --files',
+            \   'rg' : 'rg --line-number --column --with-filename --color never --no-search-zip --hidden --trim --files',
             \   'ag' : 'ag -l --follow --nocolor --nogroup --hidden '. vars#ignore_cmd('ag') . ' -g ""',
             \}
 

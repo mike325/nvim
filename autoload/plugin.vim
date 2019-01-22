@@ -32,7 +32,7 @@ endfunction
 
 function! plugin#ctrlpmatcher(info) abort
     if a:info.status ==# 'installed' || a:info.force
-        if os#name() ==# 'windows'
+        if os#name('windows')
             !./install_windows.bat
         else
             !./install.sh
@@ -42,7 +42,7 @@ endfunction
 
 " function! plugin#omnisharp(info)
 "     if a:info.status == 'installed' || a:info.force
-"         if os#name() ==# 'windows'
+"         if os#name('windows')
 "             !cd server && msbuild
 "         else
 "             !cd server && xbuild
@@ -84,7 +84,7 @@ function! plugin#CheckLanguageServer(...) abort
 endfunction
 
 function! plugin#InstallLanguageClient(info) abort
-    if os#name() ==# 'windows'
+    if os#name('windows')
         execute '!powershell -executionpolicy bypass -File ./install.ps1'
     else
         execute '!./install.sh'
@@ -95,7 +95,7 @@ endfunction
 
 function! plugin#GetGoCompletion(info) abort
     if !executable('gocode')
-        if os#name() ==# 'windows'
+        if os#name('windows')
             !go get -u -ldflags -H=windowsgui github.com/nsf/gocode
         else
             !go get -u github.com/nsf/gocode
@@ -115,6 +115,13 @@ function! plugin#YCM(info) abort
         " https://github.com/Valloric/YouCompleteMe/issues/778#issuecomment-211452969
         let l:code_completion = ' --clang-completer'
 
+        " if executable('clangd')
+        "     let l:clangd = system('clangd --version')
+        "     if l:clangd =~# 'clangd version [7-9]\(\.[0-9]\(\.[0-9]\)\?\)\?.*'
+        "         let l:code_completion .= ' --clangd-completer'
+        "     endif
+        " endif
+
         if executable('go') && (!empty($GOROOT))
             let l:code_completion .= ' --gocode-completer'
         endif
@@ -132,7 +139,7 @@ function! plugin#YCM(info) abort
         endif
 
         " TODO: Can't test in windows
-        if !os#name() ==# 'windows' && executable('java')
+        if !os#name('windows') && executable('java')
             " JDK8 must be installed
             let l:java = system('java -version')
             if l:java =~# '^java.*"1\.8.*"'
@@ -143,7 +150,7 @@ function! plugin#YCM(info) abort
         let l:python = (exists('g:python3_host_prog')) ? g:python3_host_prog : g:python_host_prog
 
         execute '!' . l:python . ' ./install.py ' . l:code_completion
-        " if os#name() ==# 'windows'
+        " if os#name('windows')
         "     execute '!' . l:python . ' ./install.py ' . l:code_completion
         " elseif executable('python3')
         "     " Force python3

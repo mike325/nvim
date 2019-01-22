@@ -172,19 +172,34 @@ set backspace=indent,eol,start " Use full backspace power
 " This is set in every file in BufReadPre autocmd
 " set fileencoding=utf-8 " The encoding written to file.
 
-set titlestring=%t\ (%f)
-set title          " Set window title
-set laststatus=2   " Always show the status line
+if exists('g:gonvim_running')
+    " Use Gonvim UI instead of vim native UII
+
+    " set laststatus=0
+    set noshowmode
+    set noruler
+
+    if exists('g:plugs["gonvim-fuzzy"]')
+        let g:gonvim_fuzzy_ag_cmd = tools#grep('rg', 'grepprg')
+    endif
+
+else
+    set laststatus=2   " Always show the status line
+    set ruler
+    set titlestring=%t\ (%f)
+    set title          " Set window title
+endif
+
 set lazyredraw     " Don't draw when a macro is being executed
 set splitright     " Split on the right the current buffer
 set nosplitbelow   " Split on the below the current buffer
 set nowrap         " By default don't wrap the lines
 set showmatch      " Show matching parenthesis
 set number         " Show line numbers
+
 if exists('+relativenumber')
     set relativenumber " Show line numbers in motions friendly way
 endif
-set ruler
 
 if exists('+syntax')
     syntax enable      " Switch on syntax highlighting

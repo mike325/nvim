@@ -104,6 +104,7 @@ if !exists('g:minimal')
     Plug 'peterhoeg/vim-qml'
     Plug 'tpope/vim-markdown'
     Plug 'PProvost/vim-ps1'
+    Plug 'cespare/vim-toml'
     " Plug 'ekalinin/Dockerfile.vim', {'for': 'dockerfile'}
     " Plug 'bjoernd/vim-syntax-simics', {'for': 'simics'}
     " Plug 'kurayama/systemd-vim-syntax', {'for': 'systemd'}
@@ -118,6 +119,12 @@ if !exists('g:minimal')
     Plug 'octol/vim-cpp-enhanced-highlight'
 
     " }}} END Syntax
+
+    " ####### GUI settings {{{
+    if exists('g:gonvim_running')
+        Plug 'akiyosi/gonvim-fuzzy'
+    endif
+    " }}} END GUI settings
 
     " ####### Project base {{{
 
@@ -163,13 +170,13 @@ if !exists('g:minimal')
         endif
     endif
 
-    if has('nvim') && has#python('3')
+    if has('nvim') && has#python('3') && !exists('g:gonvim_running')
 
         Plug 'Shougo/denite.nvim'
         Plug 'raghur/fruzzy', {'do': { -> fruzzy#install()}} " TODO: check how this work
         " Plug 'dunstontc/projectile.nvim'
         " Plug 'chemzqm/denite-git'
-    else
+    elseif !exists('g:gonvim_running')
         Plug 'mhinz/vim-grepper', { 'on': ['Grepper', '<plug>(GrepperOperator)'] }
 
         Plug 'ctrlpvim/ctrlp.vim'

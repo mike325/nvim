@@ -238,6 +238,22 @@ function! autocmd#SetProjectConfigs() abort
                 let &grepprg = tools#grep('findstr', 'grepprg')
             endif
         endif
+
+        if exists('g:plugs["gonvim-fuzzy"]')
+            if executable('git') && autocmd#IsGitRepo(l:project_root)
+                let g:gonvim_fuzzy_ag_cmd = tools#grep('git', 'grepprg')
+            elseif executable('rg')
+                let g:gonvim_fuzzy_ag_cmd = tools#grep('rg', 'grepprg')
+            elseif executable('ag')
+                let g:gonvim_fuzzy_ag_cmd = tools#grep('ag', 'grepprg')
+            elseif executable('grep')
+                let g:gonvim_fuzzy_ag_cmd = tools#grep('grep', 'grepprg')
+            elseif executable('findstr')
+                let g:gonvim_fuzzy_ag_cmd = tools#grep('findstr', 'grepprg')
+            endif
+        endif
+
+
     else
         let l:project_root = fnamemodify(getcwd(), ':p')
 
@@ -313,6 +329,19 @@ function! autocmd#SetProjectConfigs() abort
                 let &grepprg = tools#grep('findstr', 'grepprg')
             endif
         endif
+
+        if exists('g:plugs["gonvim-fuzzy"]')
+            if executable('rg')
+                let g:gonvim_fuzzy_ag_cmd = tools#grep('rg', 'grepprg')
+            elseif executable('ag')
+                let g:gonvim_fuzzy_ag_cmd = tools#grep('ag', 'grepprg')
+            elseif executable('grep')
+                let g:gonvim_fuzzy_ag_cmd = tools#grep('grep', 'grepprg')
+            elseif executable('findstr')
+                let g:gonvim_fuzzy_ag_cmd = tools#grep('findstr', 'grepprg')
+            endif
+        endif
+
     endif
     return l:project_root
 endfunction
