@@ -85,6 +85,9 @@
     "spell/*.add": {
         "type": "Spells"
     },
+    "settings.toml": {
+        "type": "Gonvim"
+    },
     ".resources/skeletons/*": {
         "type": "Skeletons"
     }

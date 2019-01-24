@@ -105,10 +105,10 @@ if !exists('g:minimal')
     Plug 'tpope/vim-markdown'
     Plug 'PProvost/vim-ps1'
     Plug 'cespare/vim-toml'
-    " Plug 'ekalinin/Dockerfile.vim', {'for': 'dockerfile'}
-    " Plug 'bjoernd/vim-syntax-simics', {'for': 'simics'}
-    " Plug 'kurayama/systemd-vim-syntax', {'for': 'systemd'}
-    " Plug 'mhinz/vim-nginx', {'for': 'nginx'}
+    Plug 'ekalinin/Dockerfile.vim'
+    Plug 'bjoernd/vim-syntax-simics'
+    Plug 'kurayama/systemd-vim-syntax'
+    Plug 'mhinz/vim-nginx'
 
     if has('nvim') && has#python('3')
         Plug 'numirias/semshi', {'do': ':UpdateRemotePlugins'}

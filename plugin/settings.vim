@@ -39,7 +39,7 @@ let g:settings_loaded = 1
 " Allow lua omni completion
 let g:lua_complete_omni = 1
 
-" Always prefer latex over plantext for *.tex files
+" Always prefer latex over plain text for *.tex files
 let g:tex_flavor = 'latex'
 
 " Disable some vi compatibility
@@ -64,7 +64,7 @@ if has('nvim') || (v:version >= 704)
     set formatoptions+=j " Delete comment character when joining commented lines
 endif
 
-" Vim terminal settins
+" Vim terminal settings
 if !has('nvim')
     set t_Co=255
 endif
@@ -93,6 +93,7 @@ if exists('+breakindent')
     endtry
 endif
 
+" This is adjusted inside autocmd.vim to use git according to the dir changes events
 if executable('rg')
     let &grepprg = tools#grep('rg', 'grepprg')
 elseif executable('ag')
@@ -116,13 +117,14 @@ if exists('+colorcolumn')
     " let &colorcolumn="80,".join(range(120,999),",")
 
     " Visual ruler
-    let &colorcolumn='80'
+    set colorcolumn=80
 endif
 
 " Clipboard {{{
 " Set the defaults, which we may change depending where we run (Neo)vim
 
 " Disable mouse at all
+" This can be re-enable wit MouseToggle cmd
 if has('mouse')
     set mouse=
 endif
@@ -168,12 +170,8 @@ set background=dark
 
 set backspace=indent,eol,start " Use full backspace power
 
-
-" This is set in every file in BufReadPre autocmd
-" set fileencoding=utf-8 " The encoding written to file.
-
 if exists('g:gonvim_running')
-    " Use Gonvim UI instead of vim native UII
+    " Use Gonvim UI instead of (Neo)vim native GUI/TUI
 
     " set laststatus=0
     set noshowmode
@@ -205,8 +203,8 @@ if exists('+syntax')
     syntax enable      " Switch on syntax highlighting
 endif
 
-" Improve perfomance by just highlighting the first 200 chars
-set synmaxcol=200
+" Improve performance by just highlighting the first 256 chars
+set synmaxcol=256
 
 " Search settings
 set hlsearch       " highlight search terms
@@ -231,6 +229,7 @@ set smarttab       " Insert tabs on the start of a line according to
                    " shiftwidth, not tabstop
 
 set shiftround     " Use multiple of shiftwidth when indenting with '<' and '>'
+
 if !exists('g:minimal')
     set cursorline     " Turn on cursor line by default
 else
@@ -242,7 +241,7 @@ set hidden
 
 set autoread     " Auto-reload buffers when file changed on disk
 set autowrite    " Write files when navigating with :next/:previous
-set autowriteall " Write files when exit vim
+set autowriteall " Write files when exit (Neo)vim
 
 " Show invisible characters
 set list

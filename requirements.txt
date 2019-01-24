@@ -19,7 +19,7 @@ mistune
 psutil
 
 # (Neo)vim stuff
-neovim
+pynvim
 # NOTE: sometimes vint cause some problems in python2
 vim-vint
 neovim-remote

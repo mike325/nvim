@@ -1,0 +1,69 @@
+[Editor]
+# Editor minimum width (>= 800)
+# Width = 800
+# Editor minimum height (>= 600)
+# Height = 600
+# Editor font-family, font-size, linespace.
+FontFamily = "DejaVu Sans Mono for Powerline"
+FontSize = 10
+Linespace = 0
+# Gonvim copy the yank text to clipboad
+Clipboard = true
+# Editor cursor blink
+CursorBlink = false
+# Disable IME in Normal mode
+DisableImeInNormal = false
+# load vimscript after setting of g:gonvim_running=1
+GinitVim = '''
+set guifont=DejaVu_Sans_Mono_for_Powerline:h10,DejaVu_Sans_Mono:h10
+'''
+# start fullscreen
+StartFullscreen = false
+
+[Statusline]
+Visible = false
+# textLabel / icon / background / none
+# ModeIndicatorType = "textLabel"
+# Color setting per vim-modes, if you want to change
+# NormalModeColor = "#3cabeb"
+# CommandModeColor = "#5285b8"
+# InsertModeColor = "#2abcb4"
+# ReplaceModeColor = "#ff8c0a"
+# VisualModeColor = "#9932cc"
+# TerminalModeColor = "#778899"
+
+[Tabline]
+Visible = false
+
+[Lint]
+Visible = false
+
+[ScrollBar]
+Visible = false
+
+[ActivityBar]
+Visible = true
+DropShadow = false
+
+[MiniMap]
+Visible = false
+
+[SideBar]
+Visible = false
+# DropShadow = false
+# Width = 300
+# AccentColor = "#5596ea"
+
+[Workspace]
+# name: directoryname
+# full: /path/to/directoryname
+# minimum: /p/t/directoryname
+PathStyle = "minimum"
+# Restore session-information that was ended without being saved
+RestoreSession = false
+# File open command in gonvim file explorer
+FileExplorerOpenCmd = ":tabnew"
+
+# [Dein]
+# # toml file path for dein.vim
+# TomlFile = '/root/.config/nvim/dein.toml'

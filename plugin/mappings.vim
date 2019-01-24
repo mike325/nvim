@@ -125,12 +125,6 @@ nnoremap <leader>x :%!xxd<CR>
 
 " TabBufferManagement {{{
 
-" NOTE: Remove in favor of unimpaired plugin  [b and ]b
-" Next buffer
-" nnoremap <leader>n :bn<CR>
-" Prev buffer
-" nnoremap <leader>p :bp<CR>
-
 " Buffer movement
 nnoremap <leader>h <C-w>h
 nnoremap <leader>j <C-w>j

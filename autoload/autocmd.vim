@@ -63,63 +63,38 @@ function! autocmd#CleanFile() abort
     call setreg('/', l:oldquery)
 endfunction
 
-function! autocmd#CHeader() abort
+function! autocmd#FileName(...) abort
 
     let l:file_name = expand('%:t:r')
     let l:extension = expand('%:e')
 
-    let l:upper_name = toupper(l:file_name)
+    let l:template = (a:0 > 0) ? a:1 : ''
 
-    if l:extension =~# '^hpp$'
-        execute '0r '.fnameescape(vars#basedir().'.resources/skeletons/skeleton.hpp')
-        execute '%s/NAME_HPP/'.l:upper_name.'_HPP/g'
+    let l:skeletons_path = vars#basedir().'.resources/skeletons/'
+
+    if !empty(l:template)
+        let l:skeleton = fnameescape(l:skeletons_path . l:template)
     else
-        execute '0r '.fnameescape(vars#basedir().'.resources/skeletons/skeleton.h')
-        execute '%s/NAME_H/'.l:upper_name.'_H/g'
-    endif
-
-endfunction
-
-function! autocmd#CMainOrFunc() abort
-
-    let l:file_name = expand('%:t:r')
-    let l:extension = expand('%:e')
-
-    if l:extension =~# '^cpp$'
-        if l:file_name =~# '^main$'
-            let l:skeleton = fnameescape(vars#basedir().'.resources/skeletons/main.cpp')
-        else
-            let l:skeleton = fnameescape(vars#basedir().'.resources/skeletons/skeleton.cpp')
-        endif
-    elseif l:extension =~# '^c'
-        if l:file_name =~# '^main$'
-            let l:skeleton = fnameescape(vars#basedir().'.resources/skeletons/main.c')
-        else
-            let l:skeleton = fnameescape(vars#basedir().'.resources/skeletons/skeleton.c')
-        endif
-    elseif l:extension =~# '^go'
-        if l:file_name =~# '^main$'
-            let l:skeleton = fnameescape(vars#basedir().'.resources/skeletons/main.go')
-        else
-            let l:skeleton = fnameescape(vars#basedir().'.resources/skeletons/skeleton.go')
+        let l:skeleton = fnameescape(l:skeletons_path . '/skeleton.' . l:extension)
+        if l:file_name =~# '^main$' && filereadable(fnameescape(l:skeletons_path . l:file_name . '.' . l:extension))
+            let l:skeleton = fnameescape(l:skeletons_path . l:file_name . '.' . l:extension)
         endif
     endif
 
-    execute '0r '.l:skeleton
-    execute '%s/NAME/'.l:file_name.'/e'
+    if filereadable(l:skeleton)
+        execute '0r '. l:skeleton
+        silent! execute '%s/\<NAME\>/'.l:file_name.'/e'
+        call histdel('search', -1)
+        silent! execute '%s/\<NAME\ze_H\(PP\)\?\>/\U'.l:file_name.'/g'
+        call histdel('search', -1)
+        execute 'bwipeout! #'
+    endif
 
-endfunction
-
-function! autocmd#FileName(file) abort
-    let l:file_name = expand('%:t:r')
-    let l:extension = expand('%:e')
-
-    execute '0r '.fnameescape(vars#basedir().'.resources/skeletons/'.a:file)
-    execute '%s/NAME/'.l:file_name.'/e'
 endfunction
 
 function! autocmd#FindProjectRoot(file) abort
     let l:root = ''
+    let l:project_root = ''
     let l:markers = ['.git', '.svn', '.hg']
 
     if exists('g:plugs["vim-fugitive"]') && exists('*fugitive#extract_git_dir')
@@ -135,12 +110,12 @@ function! autocmd#FindProjectRoot(file) abort
             let l:root = finddir(l:dir, l:cwd.';')
             if !empty(l:root)
                 let l:project_root = fnamemodify(l:dir, ':p:h')
-                return l:project_root
+                break
             endif
         endfor
     endif
 
-    return l:root
+    return l:project_root
 endfunction
 
 function! autocmd#IsGitRepo(root) abort
