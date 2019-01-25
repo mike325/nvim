@@ -24,6 +24,32 @@
 "
 " ############################################################################
 
+" Extracted from tpop's Fugitive plugin
+function! tools#GitVersion(...) abort
+    if !executable('git')
+        return v:false
+    endif
+
+    let l:version = matchstr(system('git --version'), "\\S\\+\\ze\n")
+
+    if !a:0
+        return l:version
+    endif
+
+    let l:components = split(l:version, '\D\+')
+
+    for i in range(len(a:000))
+        if a:000[i] > +get(l:components, i)
+            return 0
+        elseif a:000[i] < +get(l:components, i)
+            return 1
+        endif
+    endfor
+
+    return a:000[i] ==# get(l:components, i)
+
+endfunction
+
 let s:greplist = {
             \   'git': {
             \       'grepprg': 'git --no-pager grep --no-color -Iin ',
@@ -46,6 +72,11 @@ let s:greplist = {
             \       'grepformat': '%f:%l:%m'
             \   },
             \}
+
+if tools#GitVersion(2, 19)
+    let s:greplist.git.grepprg    = 'git --no-pager grep --no-color --column -Iin '
+    let s:greplist.git.grepformat = '%f:%l:%c:%m,%f:%l:%m'
+endif
 
 let s:filelist = {
             \   'git': 'git --no-pager ls-files -co --exclude-standard',

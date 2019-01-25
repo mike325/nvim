@@ -93,27 +93,20 @@ function! autocmd#FileName(...) abort
 endfunction
 
 function! autocmd#FindProjectRoot(file) abort
-    let l:root = ''
     let l:project_root = ''
     let l:markers = ['.git', '.svn', '.hg']
 
-    if exists('g:plugs["vim-fugitive"]') && exists('*fugitive#extract_git_dir')
-        let l:root = fugitive#extract_git_dir(fnamemodify(a:file, ':p'))
-        if empty(l:root)
-            let l:markers = ['.svn', '.hg']
+    for l:marker in l:markers
+        let l:dir = fnamemodify(fnamemodify(a:file, ':h'), ':p')
+        let l:project_root = finddir(l:marker, l:dir.';')
+        if l:marker =~# '\.git' && empty(l:project_root)
+            let l:project_root = findfile(l:marker, l:dir.';')
         endif
-    endif
-
-    if empty(l:root)
-        let l:cwd = fnamemodify(a:file, ':h')
-        for l:dir in l:markers
-            let l:root = finddir(l:dir, l:cwd.';')
-            if !empty(l:root)
-                let l:project_root = fnamemodify(l:dir, ':p:h')
-                break
-            endif
-        endfor
-    endif
+        if !empty(l:project_root)
+            let l:project_root = fnamemodify(l:project_root, ':p:h:h')
+            break
+        endif
+    endfor
 
     return l:project_root
 endfunction
@@ -124,8 +117,10 @@ endfunction
 
 function! autocmd#SetProjectConfigs() abort
     let l:project_root =  autocmd#FindProjectRoot(expand('%:p'))
+
     if !empty(l:project_root)
-        let l:project_root = fnamemodify(l:project_root, ':h')
+        " let l:project_root = fnamemodify(l:project_root, ':h')
+        let l:is_git = autocmd#IsGitRepo(l:project_root)
 
         if filereadable(l:project_root . '/project.vim')
             try
@@ -153,7 +148,7 @@ function! autocmd#SetProjectConfigs() abort
         endif
 
         if exists('g:plugs["projectile.nvim"]')
-            if executable('git') && autocmd#IsGitRepo(l:project_root)
+            if executable('git') && l:is_git
                 let g:projectile#search_prog = 'git grep'
             elseif executable('ag')
                 let g:projectile#search_prog = 'ag'
@@ -179,7 +174,7 @@ function! autocmd#SetProjectConfigs() abort
             let g:grepper.tools = []
             let g:grepper.operator.tools = []
 
-            if executable('git') && autocmd#IsGitRepo(l:project_root)
+            if executable('git') && l:is_git
                 let g:grepper.tools += ['git']
                 let g:grepper.operator.tools += ['git']
             endif
@@ -201,7 +196,7 @@ function! autocmd#SetProjectConfigs() abort
                 let g:grepper.operator.tools += ['findstr']
             endif
         else
-            if executable('git') && autocmd#IsGitRepo(l:project_root)
+            if executable('git') && l:is_git
                 let &grepprg = tools#grep('git', 'grepprg')
             elseif executable('rg')
                 let &grepprg = tools#grep('rg', 'grepprg')
@@ -215,7 +210,7 @@ function! autocmd#SetProjectConfigs() abort
         endif
 
         if exists('g:plugs["gonvim-fuzzy"]')
-            if executable('git') && autocmd#IsGitRepo(l:project_root)
+            if executable('git') && l:is_git
                 let g:gonvim_fuzzy_ag_cmd = tools#grep('git', 'grepprg')
             elseif executable('rg')
                 let g:gonvim_fuzzy_ag_cmd = tools#grep('rg', 'grepprg')
