@@ -91,12 +91,16 @@ function! vars#ignores_patterns() abort
 endfunction
 
 function! vars#basedir() abort
-    call s:setupdirs()
+    if empty(s:basedir)
+        call s:setupdirs()
+    endif
     return s:basedir
 endfunction
 
 function! vars#home() abort
-    call s:setupdirs()
+    if empty(s:homedir)
+        call s:setupdirs()
+    endif
     return s:homedir
 endfunction
 

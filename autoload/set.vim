@@ -121,41 +121,40 @@ function! set#ignorepatterns() abort " Create Ignore rules {{{
 endfunction " }}} END Create Ignore rules
 
 function! set#initconfigs() abort " Vim's InitConfig {{{
-    " Hidden path in `g:base_path` with all generated files
-    if !exists('g:parent_dir')
-        let g:parent_dir = g:base_path . '.resources/'
+    " Hidden path in `vars#basedir()` with all generated files
+    if !exists('*mkdir')
+        return
     endif
 
-    if !exists('g:dirpaths')
-        let g:dirpaths = {
-                    \   'backup' : 'backupdir',
-                    \   'swap' : 'directory',
-                    \   'undo' : 'undodir',
-                    \   'cache' : '',
-                    \   'sessions' : '',
-                    \}
+    let l:parent_dir = vars#basedir() . 'data/'
+
+    if !isdirectory(l:parent_dir)
+        call mkdir(fnameescape(l:parent_dir), 'p')
     endif
+
+    let l:dirpaths = {
+            \   'backup' : 'backupdir',
+            \   'swap' : 'directory',
+            \   'undo' : 'undodir',
+            \   'cache' : '',
+            \   'sessions' : '',
+            \}
 
     " Better backup, swap and undos storage
     set backup   " make backup files
+
     if exists('+undofile')
         set undofile " persistent undos - undo after you re-open the file
     endif
 
     " Config all
-    for [l:dirname, l:dir_setting] in items(g:dirpaths)
-        if exists('*mkdir')
-            if !isdirectory(fnameescape( g:parent_dir . l:dirname ))
-                call mkdir(fnameescape( g:parent_dir . l:dirname ), 'p')
-            endif
+    for [l:dirname, l:dir_setting] in items(l:dirpaths)
+        if !isdirectory(fnameescape( l:parent_dir . l:dirname ))
+            call mkdir(fnameescape( l:parent_dir . l:dirname ), 'p')
+        endif
 
-            if l:dir_setting !=# '' && exists('+' . l:dir_setting)
-                execute 'set ' . l:dir_setting . '=' . fnameescape(g:parent_dir . l:dirname)
-            endif
-        else
-            " echoerr "The current dir " . fnameescape(g:parent_dir . l:dirname) . " could not be created"
-            " TODO: Display errors/status in the start screen
-            " Just a placeholder
+        if l:dir_setting !=# '' && exists('+' . l:dir_setting)
+            execute 'set ' . l:dir_setting . '=' . fnameescape(l:parent_dir . l:dirname)
         endif
     endfor
 
@@ -175,5 +174,5 @@ function! set#initconfigs() abort " Vim's InitConfig {{{
     " no %     + The buffer list will not be saved nor read back.
     " h        + 'hlsearch' highlighting will not be restored.
     execute 'set ' . l:persistent_settings . "=!,'100,<500,:500,s100,h"
-    execute 'set ' . l:persistent_settings . '+=n' . fnameescape(g:parent_dir . l:persistent_settings)
+    execute 'set ' . l:persistent_settings . '+=n' . fnameescape(l:parent_dir . l:persistent_settings)
 endfunction " }}} END Vim's InitConfig

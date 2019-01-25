@@ -60,6 +60,17 @@ endif
 
 " TODO: Should minimal include lightweight tpope's plugins ?
 " TODO: Check for $TERM before load some configurations
+
+try
+    call set#initconfigs()
+catch
+    " Don't raise and error yet
+    augroup InitErrors
+        autocmd!
+        autocmd VimEnter * echoerr 'Errors found in set#initconfigs function'
+    augroup end
+endtry
+
 if !exists('g:minimal')
 
     execute 'set runtimepath^=' . expand(vars#basedir() . '/plug/')

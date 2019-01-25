@@ -70,7 +70,7 @@ function! autocmd#FileName(...) abort
 
     let l:template = (a:0 > 0) ? a:1 : ''
 
-    let l:skeletons_path = vars#basedir().'.resources/skeletons/'
+    let l:skeletons_path = vars#basedir(). '/skeletons/'
 
     if !empty(l:template)
         let l:skeleton = fnameescape(l:skeletons_path . l:template)

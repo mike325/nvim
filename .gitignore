@@ -17,11 +17,12 @@ plugged/
 /host/
 
 .ropeproject/*
-.resources/cache/*
-.resources/sessions/*
-.resources/swap/*
-.resources/undo/*
-.resources/backup/*
+
+data/cache/*
+data/sessions/*
+data/swap/*
+data/undo/*
+data/backup/*
 
 tags
 TAGS
