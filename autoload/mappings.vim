@@ -132,11 +132,11 @@ endif
 
 function! mappings#Trim() abort
     " Since default is to trim, the first call is to deactivate trim
-    if b:trim == 0
-        let b:trim = 1
+    if l:b:trim == 0
+        let l:b:trim = 1
         echomsg ' Trim'
     else
-        let b:trim = 0
+        let l:b:trim = 0
         echomsg ' NoTrim'
     endif
 
@@ -165,9 +165,9 @@ endfunction
 " CREDITS: https://vimrcfu.com/snippet/154
 function! mappings#BufKill(bang) abort
     let l:count = 0
-    for b in range(1, bufnr('$'))
-        if bufexists(b) && (!buflisted(b) || (a:bang && !bufloaded(b)))
-            execute 'bwipeout '.b
+    for l:b in range(1, bufnr('$'))
+        if bufexists(l:b) && (!buflisted(l:b) || (a:bang && !bufloaded(l:b)))
+            execute 'bwipeout '.l:b
             let l:count += 1
         endif
     endfor
@@ -180,9 +180,9 @@ endfunction
 " BufClean! will wipe all non active buffers
 function! mappings#BufClean(bang) abort
     let l:count = 0
-    for b in range(1, bufnr('$'))
-        if bufexists(b) && ( (a:bang && !buflisted(b)) || (!a:bang && !bufloaded(b) && buflisted(b)) )
-            execute ( (a:bang) ? 'bwipeout ' : 'bdelete! ' ) . b
+    for l:b in range(1, bufnr('$'))
+        if bufexists(l:b) && ( (a:bang && !buflisted(l:b)) || (!a:bang && !bufloaded(l:b) && buflisted(l:b)) )
+            execute ( (a:bang) ? 'bwipeout ' : 'bdelete! ' ) . l:b
             let l:count += 1
         endif
     endfor

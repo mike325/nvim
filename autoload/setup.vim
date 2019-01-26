@@ -42,9 +42,9 @@ function! s:PythonProviders(python) abort
                     \ 'c:/python_'.l:major.l:minor,
                     \ 'c:/python/python_'.l:major.l:minor,
                     \]
-        for pydir in l:candidates
-            if isdirectory(fnameescape(pydir))
-                return pydir
+        for l:pydir in l:candidates
+            if isdirectory(fnameescape(l:pydir))
+                return l:pydir
             endif
         endfor
     elseif executable('python'.l:major.'.'.l:minor)

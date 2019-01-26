@@ -27,41 +27,41 @@
 " CREDITS: https://github.com/demophoon/bash-fold-expr {{{
 " LICENSE: MIT
 function! GetBashFold()
-    let line = getline(v:lnum)
+    let l:line = getline(v:lnum)
 
     " End of if statement
-    if line =~? '\v^\s*fi\s*$'
+    if l:line =~? '\v^\s*fi\s*$'
         return 's1'
     endif
     " Start of if statement
-    if line =~? '\v^\s*if.*(;\s*then)?$'
+    if l:line =~? '\v^\s*if.*(;\s*then)?$'
         return 'a1'
     endif
 
     " End of while/for statement
-    if line =~? '\v^\s*done\s*$'
+    if l:line =~? '\v^\s*done\s*$'
         return 's1'
     endif
     " Start of while/for statement
-    if line =~? '\v^\s*(while|for).*(;\s*do)?$'
+    if l:line =~? '\v^\s*(while|for).*(;\s*do)?$'
         return 'a1'
     endif
 
     " End of case statement
-    if line =~? '\v^\s*esac\s*$'
+    if l:line =~? '\v^\s*esac\s*$'
         return 's1'
     endif
     " Start of case statement
-    if line =~? '\v^\s*case.*(\s*in)$'
+    if l:line =~? '\v^\s*case.*(\s*in)$'
         return 'a1'
     endif
 
     " End of function statement
-    if line =~? '\v^\s*\}$'
+    if l:line =~? '\v^\s*\}$'
         return 's1'
     endif
     " Start of function statement
-    if line =~? '\v^\s*(function\s+)?\S+\(\) \{'
+    if l:line =~? '\v^\s*(function\s+)?\S+\(\) \{'
         return 'a1'
     endif
 

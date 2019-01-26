@@ -38,15 +38,15 @@ function! tools#GitVersion(...) abort
 
     let l:components = split(l:version, '\D\+')
 
-    for i in range(len(a:000))
-        if a:000[i] > +get(l:components, i)
+    for l:i in range(len(a:000))
+        if a:000[l:i] > +get(l:components, l:i)
             return 0
-        elseif a:000[i] < +get(l:components, i)
+        elseif a:000[l:i] < +get(l:components, l:i)
             return 1
         endif
     endfor
 
-    return a:000[i] ==# get(l:components, i)
+    return a:000[l:i] ==# get(l:components, l:i)
 
 endfunction
 

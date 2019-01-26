@@ -26,7 +26,7 @@
 
 " Improve compatibility between Unix and DOS platfomrs {{{
 
-let mapleader="\<Space>"
+let g:mapleader="\<Space>"
 
 if os#name('windows')
     " On windows, if gvim.exe or nvim-qt are executed from cygwin, the shell
