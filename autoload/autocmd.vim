@@ -65,27 +65,46 @@ endfunction
 
 function! autocmd#FileName(...) abort
 
-    let l:file_name = expand('%:t:r')
+    let l:filename = expand('%:t:r')
     let l:extension = expand('%:e')
 
+    let l:skeleton = ''
     let l:template = (a:0 > 0) ? a:1 : ''
 
     let l:skeletons_path = vars#basedir(). '/skeletons/'
 
+    let l:known_names = {
+                \ 'py': [ 'ycm_extra_conf' ],
+                \ 'json': [ 'projections' ],
+                \ 'c': [ 'main' ],
+                \ 'cpp': [ 'main' ],
+                \ }
+
     if !empty(l:template)
         let l:skeleton = fnameescape(l:skeletons_path . l:template)
     else
-        let l:skeleton = fnameescape(l:skeletons_path . '/skeleton.' . l:extension)
-        if l:file_name =~# '^main$' && filereadable(fnameescape(l:skeletons_path . l:file_name . '.' . l:extension))
-            let l:skeleton = fnameescape(l:skeletons_path . l:file_name . '.' . l:extension)
+
+        if get(l:known_names, l:extension, []) != []
+            let l:names = l:known_names[l:extension]
+            for l:name in l:names
+                if l:filename =~? l:name && filereadable(fnameescape(l:skeletons_path . l:name . '.' . l:extension))
+                    let l:skeleton = fnameescape(l:skeletons_path . l:name . '.' . l:extension)
+                    break
+                endif
+            endfor
         endif
+
+        if empty(l:skeleton)
+            let l:skeleton = fnameescape(l:skeletons_path . '/skeleton.' . l:extension)
+        endif
+
     endif
 
     if filereadable(l:skeleton)
         execute '0r '. l:skeleton
-        silent! execute '%s/\<NAME\>/'.l:file_name.'/e'
+        silent! execute '%s/\<NAME\>/'.l:filename.'/e'
         call histdel('search', -1)
-        silent! execute '%s/\<NAME\ze_H\(PP\)\?\>/\U'.l:file_name.'/g'
+        silent! execute '%s/\<NAME\ze_H\(PP\)\?\>/\U'.l:filename.'/g'
         call histdel('search', -1)
         execute 'bwipeout! #'
     endif

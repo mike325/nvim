@@ -21,5 +21,6 @@ psutil
 # (Neo)vim stuff
 pynvim
 # NOTE: sometimes vint cause some problems in python2
+# NOTE1: to use vim-vint in windows, use --dev
 vim-vint
 neovim-remote

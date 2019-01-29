@@ -27,5 +27,18 @@
 setlocal nobackup
 setlocal noswapfile
 
-setlocal spell
-setlocal complete+=k,kspell " Add spell completion
+function! s:requireSpell()
+    let l:file_name = expand('%:t:r')
+
+    if l:file_name !~# '^\(requirements\)$'
+        return v:true
+    endif
+
+    return v:false
+
+endfunction
+
+if s:requireSpell()
+    setlocal spell
+    setlocal complete+=k,kspell " Add spell completion
+endif

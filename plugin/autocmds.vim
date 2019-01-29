@@ -155,23 +155,7 @@ augroup end
 
 augroup Skeletons
     autocmd!
-    autocmd BufNewFile .projections.json silent! call autocmd#FileName('projections.json')
-    autocmd BufNewFile *.css             silent! call autocmd#FileName()
-    autocmd BufNewFile *.html            silent! call autocmd#FileName()
-    autocmd BufNewFile *.md              silent! call autocmd#FileName()
-    autocmd BufNewFile *.js              silent! call autocmd#FileName()
-    autocmd BufNewFile *.xml             silent! call autocmd#FileName()
-    autocmd BufNewFile *.py              silent! call autocmd#FileName()
-    autocmd BufNewFile *.cs              silent! call autocmd#FileName()
-    autocmd BufNewFile *.php             silent! call autocmd#FileName()
-    autocmd BufNewFile *.sh              silent! call autocmd#FileName()
-    autocmd BufNewFile *.java            silent! call autocmd#FileName()
-    autocmd BufNewFile *.vim             silent! call autocmd#FileName()
-    autocmd BufNewFile *.go              silent! call autocmd#FileName()
-    autocmd BufNewFile *.cpp             silent! call autocmd#FileName()
-    autocmd BufNewFile *.c               silent! call autocmd#FileName()
-    autocmd BufNewFile *.hpp             silent! call autocmd#FileName()
-    autocmd BufNewFile *.h               silent! call autocmd#FileName()
+    autocmd BufNewFile * call autocmd#FileName()
 augroup end
 
 " }}} EndSkeletons

@@ -120,6 +120,7 @@ if !exists('g:minimal')
     Plug 'bjoernd/vim-syntax-simics'
     Plug 'kurayama/systemd-vim-syntax'
     Plug 'mhinz/vim-nginx'
+    Plug 'raimon49/requirements.txt.vim'
 
     if has('nvim') && has#python('3')
         Plug 'numirias/semshi', {'do': ':UpdateRemotePlugins'}
