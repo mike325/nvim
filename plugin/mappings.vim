@@ -225,7 +225,7 @@ command! -nargs=? -complete=customlist,tools#spells SpellLang
 
 " Avoid dispatch command conflict
 " QuickfixOpen
-command! -nargs=? Qopen execute 'botright copen ' . expand(<q-args>)
+command! -nargs=? Qopen execute((&splitbelow) ? 'botright' : 'topleft' ) . ' copen ' . expand(<q-args>)
 
 if executable('svn')
     command! -nargs=* SVNstatus execute('!svn status ' . <q-args>)
@@ -369,10 +369,10 @@ endif
 if !exists('g:plugs["vim-fugitive"]') && executable('git')
     " TODO: Git pull command
     if has('nvim')
-        command! -nargs=+ Git execute('botright 20split term://git ' . <q-args>)
-        command! -nargs=* Gstatus execute('botright 20split term://git status ' . <q-args>)
-        command! -nargs=* Gcommit execute('botright 20split term://git commit ' . <q-args>)
-        command! -nargs=* Gpush  execute('botright 20split term://git push ' .<q-args>)
+        command! -nargs=+ Git execute(((&splitbelow) ? 'botright' : 'topleft' ) . ' 20split term://git ' . <q-args>)
+        command! -nargs=* Gstatus execute(((&splitbelow) ? 'botright' : 'topleft' ) . ' 20split term://git status ' . <q-args>)
+        command! -nargs=* Gcommit execute(((&splitbelow) ? 'botright' : 'topleft' ) . ' 20split term://git commit ' . <q-args>)
+        command! -nargs=* Gpush  execute(((&splitbelow) ? 'botright' : 'topleft' ) . ' 20split term://git push ' .<q-args>)
         command! -nargs=* Gpull  execute('!git pull ' .<q-args>)
         command! -nargs=* Gwrite  execute('!git add ' . expand("%") . ' ' .<q-args>)
         command! -bang Gread execute('!git reset HEAD ' . expand("%") . ' && git checkout -- ' . expand("%")) |
@@ -385,9 +385,9 @@ if !exists('g:plugs["vim-fugitive"]') && executable('git')
             command! -nargs=* Gstatus call term_start('git status ' . <q-args>, {'term_rows': 20})
             command! -nargs=* Gpush  call term_start('git push ' .<q-args>, {'term_rows': 20})
         else
-            command! -nargs=+ Git botright 10split gitcmd | 0,$delete | 0read '!git ' . <q-args>
-            command! -nargs=* Gstatus botright 10split gitcmd | 0,$delete | 0read '!git status ' . <q-args>
-            command! -nargs=* Gpush  botright 10split gitcmd | 0,$delete | 0read '!git push ' .<q-args>
+            command! -nargs=+ Git     execute(((&splitbelow) ? 'botright' : 'topleft' ) . ' 20split gitcmd | 0,$delete | 0read !git ' . <q-args>)
+            command! -nargs=* Gstatus execute(((&splitbelow) ? 'botright' : 'topleft' ) . ' 20split gitcmd | 0,$delete | 0read !git status ' . <q-args>)
+            command! -nargs=* Gpush   execute(((&splitbelow) ? 'botright' : 'topleft' ) . ' 20split gitcmd | 0,$delete | 0read !git push ' .<q-args>)
         endif
 
         command! -nargs=* Gcommit execute('!git commit ' . <q-args>)

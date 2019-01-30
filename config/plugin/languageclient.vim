@@ -29,6 +29,7 @@ if !exists('g:plugs["LanguageClient-neovim"]')
 endif
 
 let g:LanguageClient_serverCommands = get(g:, 'LanguageClient_serverCommands', {})
+" let g:LanguageClient_loggingFile = os#tmp('languageclient.log')
 
 " let g:LanguageClient_trace           = 'messages'
 let g:LanguageClient_selectionUI     = 'Quickfix'

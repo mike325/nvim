@@ -37,9 +37,10 @@ if has('nvim') || has('terminal')
     endfunction
 
     function! mappings#terminal(cmd) abort
+        let l:split = (&splitbelow) ? 'botright' : 'topleft'
         if os#name('windows')
             if has('nvim')
-                execute 'botright 20split term://powershell -noexit -executionpolicy bypass ' . a:cmd
+                execute l:split . ' 20split term://powershell -noexit -executionpolicy bypass ' . a:cmd
             else
                 call term_start('powershell -noexit -executionpolicy bypass ' . a:cmd, {'term_rows': 20})
                 wincmd J
@@ -47,7 +48,7 @@ if has('nvim') || has('terminal')
         else
             let l:shell = s:getUnixShell()
             if has('nvim')
-                execute 'botright 20split term://' . l:shell . ' ' . a:cmd
+                execute l:split . ' 20split term://' . l:shell . ' ' . a:cmd
             else
                 call term_start(l:shell . a:cmd, {'term_rows': 20})
                 wincmd J
@@ -88,9 +89,10 @@ endif
 if !exists('g:plugs["iron.nvim"]') && has#python()
     function! mappings#Python(version, args) abort
         let l:version = ( a:version  == 3 ) ? g:python3_host_prog : g:python_host_prog
+        let l:split = (&splitbelow) ? 'botright' : 'topleft'
 
         if has('nvim')
-            execute 'botright 20split term://'. l:version . ' ' . a:args
+            execute l:split . ' 20split term://'. l:version . ' ' . a:args
         elseif has('terminal')
             call term_start(l:version. ' ' . a:args, {'term_rows': 20})
             wincmd J

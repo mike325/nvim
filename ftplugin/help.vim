@@ -31,4 +31,3 @@ setlocal relativenumber
 setlocal nospell
 
 nnoremap <silent> <buffer> q :q!<CR>
-
