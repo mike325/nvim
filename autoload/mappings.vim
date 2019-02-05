@@ -134,11 +134,11 @@ endif
 
 function! mappings#Trim() abort
     " Since default is to trim, the first call is to deactivate trim
-    if l:b:trim == 0
-        let l:b:trim = 1
+    if b:trim == 0
+        let b:trim = 1
         echomsg ' Trim'
     else
-        let l:b:trim = 0
+        let b:trim = 0
         echomsg ' NoTrim'
     endif
 
