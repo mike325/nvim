@@ -229,13 +229,14 @@ if !exists('g:minimal')
 
     if executable('git')
         Plug 'tpope/vim-fugitive'
-        Plug 'jreybert/vimagit', {'on': ['Magit', 'MagitOnly']}
+        " Plug 'jreybert/vimagit', {'on': ['Magit', 'MagitOnly']}
         " Plug 'sodapopcan/vim-twiggy', {'on': ['Twiggy']}
         " Plug 'gregsexton/gitv', {'on': ['Gitv']}
         if !os#name('windows')
             Plug 'rhysd/committia.vim'
         endif
     endif
+
     " }}} END Git integration
 
     " ####### Status bar {{{
