@@ -101,6 +101,7 @@ categorizado
 autocmds
 ctrlp
 ftplugin
+pdf
 powershell
 Denite
 denite
@@ -108,9 +109,15 @@ grepper
 UltiSnips
 esc
 fallbacks
+x86
 IPC
+PC
 PMC
 CSME
+ARM
+Harvard
+FPGA
+MCU
 Neomake
 lua
 API

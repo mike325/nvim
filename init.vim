@@ -73,10 +73,9 @@ endtry
 
 if !exists('g:minimal')
 
-    execute 'set runtimepath^=' . expand(vars#basedir() . '/plug/')
 
     try
-        call execute('set rtp^=' . expand(vars#basedir() . '/plug/'))
+        call execute('set runtimepath=' . &runtimepath . ',' . expand(vars#basedir() . '/plug/'))
         call plug#begin(vars#basedir().'plugged')
     catch
         " Fallback if we fail to init Plug
