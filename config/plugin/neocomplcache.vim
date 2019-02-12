@@ -70,12 +70,12 @@ let g:neocomplcache_sources_list     = get(g:,'neocomplcache_delimiter_patterns'
 " let g:neocomplcache_sources_list.python = ['omni_complete', 'syntax_complete', 'member_complete', 'filename_complete', 'tags_complete', 'buffer_complete']
 
 if exists('*mkdir')
-    if !isdirectory(fnameescape(vars#basedir() . '.resources/cache/neocomplcache/'))
-        call mkdir(fnameescape(vars#basedir() . '.resources/cache/neocomplcache/'), 'p')
+    if !isdirectory(fnameescape(os#cache() . '/neocomplcache/'))
+        call mkdir(fnameescape(os#cache() . '/neocomplcache/'), 'p')
     endif
 endif
 
-let g:neocomplcache_temporary_dir = vars#basedir() . '.resources/cache/neocomplcache/'
+let g:neocomplcache_temporary_dir = os#cache() .'/neocomplcache/'
 
 " Syntax seems to cause some problems in old Vim's versions ( <= 703 )
 if ( has('nvim') || (v:version >= 704) ) && has('autocmd')

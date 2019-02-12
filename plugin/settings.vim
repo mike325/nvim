@@ -43,11 +43,9 @@ let g:lua_complete_omni = 1
 let g:tex_flavor = 'latex'
 
 " Disable some vi compatibility
-if has('nvim')
+if has('nvim') && !exists('g:plugs["traces.vim"]')
     " Live substitute preview
     set inccommand=split
-    " Actually I'm not sure if this exists in Vim7/8
-    set numberwidth=1
 else
     set ttyfast
     set t_vb= " ...disable the visual effect
@@ -82,6 +80,10 @@ if has('nvim')
     if exists('+scrollback')
         set scrollback=-1
     endif
+endif
+
+if exists('+numberwidth')
+    set numberwidth=1
 endif
 
 if exists('+breakindent')
@@ -187,6 +189,8 @@ else
     set titlestring=%t\ (%f)
     set title          " Set window title
 endif
+
+set diffopt=internal,filler,vertical,iwhiteall,iwhiteeol,indent-heuristic,algorithm:patience
 
 set lazyredraw " Don't draw when a macro is being executed
 set splitright " Split on the right the current buffer

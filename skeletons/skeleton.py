@@ -57,7 +57,7 @@ def _parseArgs():
         action='store_true',
         help='Enable debug messages')
 
-    return parser
+    return parser.parse_args()
 
 
 def main():

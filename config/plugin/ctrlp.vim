@@ -58,7 +58,7 @@ let g:ctrlp_working_path_mode   = 'ra'
 " Opens files in the current windows, whether or not they had been opened in others windows
 let g:ctrlp_switch_buffer       = 'et'
 
-let g:ctrlp_cache_dir = vars#basedir() . '/.resources/cache/ctrlp'
+let g:ctrlp_cache_dir = os#cache() . '/ctrlp'
 
 let g:ctrlp_max_files = (exists('g:plugs["fruzzy"]')         ||
                        \ exists('g:plugs["ctrlp-cmatcher"]') ||

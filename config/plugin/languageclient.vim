@@ -52,7 +52,7 @@ if executable('cquery') || executable('clangd')
                                             \ ['clangd'] :
                                             \ ['cquery',
                                             \ '--log-file=' . os#tmp('cq.log'),
-                                            \ '--init={"cacheDirectory":"' . vars#home() . '/.cache/cquery", "completion": {"filterAndSort": false}}']
+                                            \ '--init={"cacheDirectory":"' . os#cache() . '/cquery", "completion": {"filterAndSort": false}}']
 
     let g:LanguageClient_serverCommands.cpp = g:LanguageClient_serverCommands.c
 

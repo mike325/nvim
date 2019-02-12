@@ -48,9 +48,9 @@ endfunction
 function! has#async() abort
     let l:async = v:false
 
-    if has('nvim') || ( v:version >= 800 && has('patch-8.0.0027'))
+    if has('nvim') || v:version > 800 || ( v:version == 800 && has('patch-8.0.0027') )
         let l:async = v:true
-    elseif v:version ==# 704 && has('patch1689')
+    elseif v:version ==# 704 && has('patch-7.4.1689')
         let l:async = v:true
     elseif has('job') && has('timers') && has('channel')
         let l:async = v:true

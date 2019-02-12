@@ -40,14 +40,20 @@ function! s:os_type(os) abort
     let l:is_type = v:false
     if a:os ==# 'windows' || a:os ==# 'win32'
         let l:is_type = (has('win16') || has('win32') || has('win64'))
+    elseif a:os ==# 'cygwin' || a:os =~# '^msys\(2\)\?$'
+        let l:is_type = (has('win32unix'))
     elseif a:os ==# 'mac' || a:os ==# 'macos'
-        let l:is_type = (has('macos'))
+        let l:is_type = (has('macos') || has('macunix'))
     elseif a:os ==# 'linux' || a:os ==# 'unix'
         let l:is_type = (has('unix'))
     endif
     return l:is_type
 endfunction
 
+
+function! os#cache() abort
+    return vars#home() . '/.cache'
+endfunction
 
 " Windows wrapper
 function! os#name(...) abort

@@ -40,13 +40,13 @@ augroup NERDNumbers
 augroup end
 
 if exists('*mkdir')
-    if !isdirectory(fnameescape(vars#basedir() . '.resources/cache/NERDTree/'))
-        call mkdir(fnameescape(vars#basedir() . '.resources/cache/NERDTree/'), 'p')
+    if !isdirectory(fnameescape(os#cache() . '/NERDTree/'))
+        call mkdir(fnameescape(os#cache() . '/NERDTree/'), 'p')
     endif
 endif
 
-if isdirectory(fnameescape(vars#basedir() . '.resources/cache/NERDTree/'))
-    let g:NERDTreeBookmarksFile = vars#basedir() . '.resources/cache/NERDTree/Bookmarks'
+if isdirectory(fnameescape(os#cache() . '/NERDTree/'))
+    let g:NERDTreeBookmarksFile = os#cache(). '/NERDTree/Bookmarks'
 endif
 
 let g:NERDTreeRespectWildIgnore  = 1
