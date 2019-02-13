@@ -136,6 +136,7 @@ endfunction
 
 function! autocmd#SetProjectConfigs() abort
     let l:project_root =  autocmd#FindProjectRoot(expand('%:p'))
+    let l:is_git = v:false
 
     if !empty(l:project_root)
         " let l:project_root = fnamemodify(l:project_root, ':h')
@@ -167,15 +168,7 @@ function! autocmd#SetProjectConfigs() abort
         endif
 
         if exists('g:plugs["projectile.nvim"]')
-            if executable('git') && l:is_git
-                let g:projectile#search_prog = 'git grep'
-            elseif executable('ag')
-                let g:projectile#search_prog = 'ag'
-            elseif has('unix')
-                let g:projectile#search_prog = 'grep'
-            elseif os#name('windows') && !executable('grep')
-                let g:projectile#search_prog = 'findstr '
-            endif
+            let g:projectile#search_prog = tools#select_grep(l:is_git)
         endif
 
         if exists('g:plugs["deoplete.nvim"]') && ( exists('g:plugs["deoplete-clang"]') || exists('g:plugs["deoplete-clang2"]') )
@@ -215,33 +208,13 @@ function! autocmd#SetProjectConfigs() abort
                 let g:grepper.operator.tools += ['findstr']
             endif
         else
-            if executable('git') && l:is_git
-                let &grepprg = tools#grep('git', 'grepprg')
-            elseif executable('rg')
-                let &grepprg = tools#grep('rg', 'grepprg')
-            elseif executable('ag')
-                let &grepprg = tools#grep('ag', 'grepprg')
-            elseif executable('grep')
-                let &grepprg = tools#grep('grep', 'grepprg')
-            elseif executable('findstr')
-                let &grepprg = tools#grep('findstr', 'grepprg')
-            endif
+            let &grepprg = tools#select_grep(l:is_git)
+            let &grepformat = tools#select_grep(l:is_git, 'grepformat')
         endif
 
         if exists('g:plugs["gonvim-fuzzy"]')
-            if executable('git') && l:is_git
-                let g:gonvim_fuzzy_ag_cmd = tools#grep('git', 'grepprg')
-            elseif executable('rg')
-                let g:gonvim_fuzzy_ag_cmd = tools#grep('rg', 'grepprg')
-            elseif executable('ag')
-                let g:gonvim_fuzzy_ag_cmd = tools#grep('ag', 'grepprg')
-            elseif executable('grep')
-                let g:gonvim_fuzzy_ag_cmd = tools#grep('grep', 'grepprg')
-            elseif executable('findstr')
-                let g:gonvim_fuzzy_ag_cmd = tools#grep('findstr', 'grepprg')
-            endif
+            let g:gonvim_fuzzy_ag_cmd = tools#select_grep(l:is_git)
         endif
-
 
     else
         let l:project_root = fnamemodify(getcwd(), ':p')
@@ -267,13 +240,7 @@ function! autocmd#SetProjectConfigs() abort
         endif
 
         if exists('g:plugs["projectile.nvim"]')
-            if executable('ag')
-                let g:projectile#search_prog = 'ag'
-            elseif has('unix')
-                let g:projectile#search_prog = 'grep'
-            elseif os#name() ==# 'windows' && !executable('grep')
-                let g:projectile#search_prog = 'findstr '
-            endif
+            let g:projectile#search_prog = tools#select_grep(l:is_git)
         endif
 
         if exists('g:plugs["deoplete.nvim"]') && ( exists('g:plugs["deoplete-clang"]') || exists('g:plugs["deoplete-clang2"]') )
@@ -308,27 +275,12 @@ function! autocmd#SetProjectConfigs() abort
                 let g:grepper.operator.tools += ['findstr']
             endif
         else
-            if executable('rg')
-                let &grepprg = tools#grep('rg', 'grepprg')
-            elseif executable('ag')
-                let &grepprg = tools#grep('ag', 'grepprg')
-            elseif executable('grep')
-                let &grepprg = tools#grep('grep', 'grepprg')
-            elseif executable('findstr')
-                let &grepprg = tools#grep('findstr', 'grepprg')
-            endif
+            let &grepprg = tools#select_grep(l:is_git)
+            let &grepformat = tools#select_grep(l:is_git, 'grepformat')
         endif
 
         if exists('g:plugs["gonvim-fuzzy"]')
-            if executable('rg')
-                let g:gonvim_fuzzy_ag_cmd = tools#grep('rg', 'grepprg')
-            elseif executable('ag')
-                let g:gonvim_fuzzy_ag_cmd = tools#grep('ag', 'grepprg')
-            elseif executable('grep')
-                let g:gonvim_fuzzy_ag_cmd = tools#grep('grep', 'grepprg')
-            elseif executable('findstr')
-                let g:gonvim_fuzzy_ag_cmd = tools#grep('findstr', 'grepprg')
-            endif
+            let g:gonvim_fuzzy_ag_cmd = tools#select_grep(l:is_git)
         endif
 
     endif

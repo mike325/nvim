@@ -98,12 +98,16 @@ endif
 " This is adjusted inside autocmd.vim to use git according to the dir changes events
 if executable('rg')
     let &grepprg = tools#grep('rg', 'grepprg')
+    let &grepformat = tools#grep('rg', 'grepformat')
 elseif executable('ag')
     let &grepprg = tools#grep('ag', 'grepprg')
+    let &grepformat = tools#grep('ag', 'grepformat')
 elseif executable('grep')
     let &grepprg = tools#grep('grep', 'grepprg')
+    let &grepformat = tools#grep('grep', 'grepformat')
 elseif executable('findstr')
     let &grepprg = tools#grep('findstr', 'grepprg')
+    let &grepformat = tools#grep('findstr', 'grepformat')
 endif
 
 if has('termguicolors')

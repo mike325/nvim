@@ -80,8 +80,7 @@ endif
 " TODO: I had had some probles with pysl in windows, so let's
 "       skip it until I can figure it out how to fix this
 if executable('pyls') " && !os#name('windows')
-    let g:LanguageClient_serverCommands.python = ['pyls',
-                                                \ '--log-file=' . os#tmp('pyls.log')]
+    let g:LanguageClient_serverCommands.python = ['pyls', '--log-file=' . os#tmp('pyls.log')]
     augroup LanguageCmds
         " autocmd FileType python autocmd CursorHold                                <buffer> call LanguageClient#textDocument_hover()
         " autocmd FileType python autocmd InsertEnter,CursorMoved,TermOpen,BufLeave <buffer> pclose

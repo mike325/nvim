@@ -52,6 +52,18 @@
     "plugin/*.vim": {
         "type": "Plugin"
     },
+    "rplugins/python3/*.py": {
+        "type": "RPython3"
+    },
+    "rplugins/python/*.py": {
+        "type": "RPython"
+    },
+    "python3/*.py": {
+        "type": "Python3"
+    },
+    "python/*.py": {
+        "type": "Python"
+    },
     "ftplugin/*.vim": {
         "type": "FtPlugin"
     },
@@ -60,6 +72,9 @@
     },
     "ftdetect/*.vim": {
         "type": "FtDetect"
+    },
+    "config/ftplugin/*.vim": {
+        "type": "ConfigFtplugin"
     },
     "config/autoload/*.vim": {
         "type": "ConfigAutoload"
@@ -88,7 +103,7 @@
     "settings.toml": {
         "type": "Gonvim"
     },
-    ".resources/skeletons/*": {
+    "skeletons/*": {
         "type": "Skeletons"
     }
 }

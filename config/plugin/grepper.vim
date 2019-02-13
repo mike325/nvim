@@ -64,14 +64,14 @@ if executable('git')
     " I like to search ignore case when greppper is call from <C-g>
     let g:grepper.git = {
         \ 'grepprg':    tools#grep('git', 'grepprg'),
-        \ 'grepformat': '%f:%l:%m',
+        \ 'grepformat': tools#grep('git', 'grepformat'),,
         \ 'escape':     '\^$.*[]',
         \ }
 
     let g:grepper.operator.tools += ['git']
     let g:grepper.operator.git = {
         \ 'grepprg':    tools#grep('git', 'grepprg'),
-        \ 'grepformat': '%f:%l:%m',
+        \ 'grepformat': tools#grep('git', 'grepformat'),
         \ 'escape':     '\^$.*[]',
         \ }
 endif
@@ -80,7 +80,7 @@ if executable('rg')
     let g:grepper.tools += ['rg']
     let g:grepper.rg = {
         \ 'grepprg':    tools#grep('rg', 'grepprg') ,
-        \ 'grepformat': '%f:%l:%c:%m,%f:%l:%m',
+        \ 'grepformat': tools#grep('rg', 'grepformat'),
         \ 'escape':     '\^$.*+?()[]{}|',
         \ }
 
@@ -92,7 +92,7 @@ if executable('ag')
     let g:grepper.tools += ['ag']
     let g:grepper.ag = {
         \ 'grepprg':    tools#grep('ag', 'grepprg'),
-        \ 'grepformat': '%f:%l:%c:%m,%f:%l:%m',
+        \ 'grepformat': tools#grep('ag', 'grepformat'),
         \ 'escape':     '\^$.*+?()[]{}|',
         \ }
 
@@ -105,7 +105,7 @@ if executable('grep')
     let g:grepper.grep = {
         \ 'grepprg':    tools#grep('grep', 'grepprg') . ' -r $*',
         \ 'grepprgbuf': tools#grep('grep', 'grepprg') . ' -- $* $.',
-        \ 'grepformat': '%f:%l:%m',
+        \ 'grepformat': tools#grep('grep', 'grepformat'),
         \ 'escape':     '\^$.*[]',
         \ }
 
@@ -119,7 +119,7 @@ if executable('findstr')
     let g:grepper.findstr = {
         \ 'grepprg': 'findstr -rspnc:$* *',
         \ 'grepprgbuf': 'findstr -rpnc:$* $.',
-        \ 'grepformat': '%f:%l:%m',
+        \ 'grepformat': tools#grep('findstr', 'grepformat'),
         \ 'wordanchors': ['\<', '\>'],
         \ }
 
@@ -127,7 +127,7 @@ if executable('findstr')
     let g:grepper.operator.findstr = {
         \ 'grepprg': tools#grep('findstr', 'grepprg') . '/c:$* *',
         \ 'grepprgbuf': 'findstr -rpnc:$* $.',
-        \ 'grepformat': '%f:%l:%m',
+        \ 'grepformat': tools#grep('findstr', 'grepformat'),
         \ 'wordanchors': ['\<', '\>'],
         \ }
 endif
