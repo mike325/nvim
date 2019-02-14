@@ -33,13 +33,13 @@ let s:work_wiki = {
                 \   'path': '~/Documents/VimWiki/work',
                 \   'syntax': 'markdown',
                 \   'ext': '.md',
-                \ },
+                \ }
 
 let s:personal_wiki = {
                 \   'path': '~/VimWiki/personal',
                 \   'syntax': 'markdown',
                 \   'ext': '.md',
-                \ },
+                \ }
 
 
 if os#name('windows')

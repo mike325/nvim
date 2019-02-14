@@ -54,7 +54,7 @@ if executable('rg') || executable('ag')
     unlet s:tool
 
 elseif has('unix')
-    call denite#custom#var('file/rec', 'command', ['find', '.', '-type', 'f', '-iname', '*', tools#filelist('find')])
+    call denite#custom#var('file/rec', 'command', ['find', '.', '-type', 'f', '-iname', '*'])
 
     call denite#custom#var('grep', 'command', split(tools#grep('grep', 'grepprg'))[0:0])
     call denite#custom#var('grep', 'default_opts', split(tools#grep('grep', 'grepprg'))[1:])

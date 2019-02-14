@@ -194,7 +194,9 @@ else
     set title          " Set window title
 endif
 
-set diffopt=internal,filler,vertical,iwhiteall,iwhiteeol,indent-heuristic,algorithm:patience
+if has('nvim-0.3.3')
+    set diffopt=internal,filler,vertical,iwhiteall,iwhiteeol,indent-heuristic,algorithm:patience
+endif
 
 set lazyredraw " Don't draw when a macro is being executed
 set splitright " Split on the right the current buffer
