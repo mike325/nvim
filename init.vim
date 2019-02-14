@@ -71,7 +71,7 @@ catch
     augroup end
 endtry
 
-if !exists('g:minimal') || g:minimal == 0
+if !exists('g:minimal') || g:minimal != 0
 
     try
         call execute('set runtimepath=' . &runtimepath . ',' . expand(vars#basedir() . '/plug/'))

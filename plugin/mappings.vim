@@ -385,9 +385,9 @@ if !exists('g:plugs["vim-fugitive"]') && executable('git')
                     \ unlet s:bang
     else
         if has('terminal')
-            command! -nargs=+ Git call term_start('git ' . <q-args>, {'term_rows': 20})
-            command! -nargs=* Gstatus call term_start('git status ' . <q-args>, {'term_rows': 20})
-            command! -nargs=* Gpush  call term_start('git push ' .<q-args>, {'term_rows': 20})
+            command! -nargs=+ Git     term_start('git ' . <q-args>, {'       term_rows': 20})
+            command! -nargs=* Gstatus term_start('git status ' . <q-args>, {'term_rows': 20})
+            command! -nargs=* Gpush   term_start('git push ' .<q-args>, {'   term_rows': 20})
         else
             command! -nargs=+ Git     execute(((&splitbelow) ? 'botright' : 'topleft' ) . ' 20split gitcmd | 0,$delete | 0read !git ' . <q-args>)
             command! -nargs=* Gstatus execute(((&splitbelow) ? 'botright' : 'topleft' ) . ' 20split gitcmd | 0,$delete | 0read !git status ' . <q-args>)

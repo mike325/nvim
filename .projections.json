@@ -73,6 +73,9 @@
     "ftdetect/*.vim": {
         "type": "FtDetect"
     },
+    "config/after/ftplugin/*.vim": {
+        "type": "ConfigAfterFtplugin"
+    },
     "config/ftplugin/*.vim": {
         "type": "ConfigFtplugin"
     },
