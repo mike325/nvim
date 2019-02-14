@@ -27,6 +27,10 @@
 " if !has#gui() " Terminals can't detect some special key combinations
 " endif
 
+nmap <buffer> gww <Plug>VimwikiIndex
+nmap <buffer> gws :VimwikiSearchTags<space>
+" nmap <buffer> <leader>gt :VimwikiGenerateTags<CR>
+
 if os#name('windows') && !has#gui()
     nmap <buffer> <CR> <Plug>VimwikiFollowLink
 
@@ -50,4 +54,5 @@ nmap <buffer> <C-k> <Plug>VimwikiPrevLink
 nmap <buffer> g= <Plug>VimwikiRemoveHeaderLevel
 
 
-nnoremap <buffer> <leader>gt :VimwikiTable<CR>
+nnoremap <buffer> gwt :VimwikiTable<CR>
+nnoremap <buffer> gwg :VimwikiGoto<space>

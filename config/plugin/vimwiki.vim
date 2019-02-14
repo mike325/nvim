@@ -30,15 +30,17 @@ endif
 
 
 let s:work_wiki = {
-                \   'path': '~/Documents/VimWiki/work',
-                \   'syntax': 'markdown',
-                \   'ext': '.md',
+                \ 'path'     : '~/Documents/VimWiki/work',
+                \ 'syntax'   : 'markdown',
+                \ 'ext'      : '.md',
+                \ 'auto_tags': 1,
                 \ }
 
 let s:personal_wiki = {
-                \   'path': '~/VimWiki/personal',
-                \   'syntax': 'markdown',
-                \   'ext': '.md',
+                \ 'path'     : '~/VimWiki/personal',
+                \ 'syntax'   : 'markdown',
+                \ 'ext'      : '.md',
+                \ 'auto_tags': 1,
                 \ }
 
 
