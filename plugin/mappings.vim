@@ -208,7 +208,6 @@ command! SpellToggle      setlocal spell! spell?
 command! WrapToggle       setlocal wrap! wrap?
 command! VerboseToggle    let &verbose=!&verbose | echo "Verbose " . &verbose
 
-
 if exists('g:gonvim_running')
     command! -nargs=* GonvimSettngs execute('edit ~/.gonvim/setting.toml')
 endif
@@ -230,6 +229,8 @@ command! -nargs=? -complete=customlist,tools#spells SpellLang
             \ call tools#spelllangs(s:spell) |
             \ unlet s:spell
             " \ execute 'set spelllang?' |
+
+command! -nargs=? ConncallLevel  call mappings#ConncallLevel(expand(<q-args>))
 
 " Avoid dispatch command conflict
 " QuickfixOpen

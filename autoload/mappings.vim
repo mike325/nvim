@@ -207,3 +207,7 @@ function! mappings#ToggleArrows() abort
     endif
 endfunction
 
+function! mappings#ConncallLevel(level) abort
+    let l:level = (!empty(a:level)) ? a:level : (&conceallevel > 0) ? 0 : 2
+    let &conceallevel = l:level
+endfunction
