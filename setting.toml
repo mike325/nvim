@@ -5,7 +5,7 @@
 # Height = 600
 # Editor font-family, font-size, linespace.
 FontFamily = "DejaVu Sans Mono for Powerline"
-FontSize = 11
+FontSize = 10
 Linespace = 0
 # Gonvim copy the yank text to clipboad
 Clipboard = true
@@ -15,7 +15,7 @@ CursorBlink = false
 DisableImeInNormal = false
 # load vimscript after setting of g:gonvim_running=1
 GinitVim = '''
-set guifont=DejaVu_Sans_Mono_for_Powerline:h10,DejaVu_Sans_Mono:h11
+set guifont=DejaVu_Sans_Mono_for_Powerline:h10,DejaVu_Sans_Mono:h10
 '''
 # start fullscreen
 StartFullscreen = false
@@ -33,7 +33,7 @@ Visible = false
 # TerminalModeColor = "#778899"
 
 [Tabline]
-Visible = false
+Visible = true
 
 [Lint]
 Visible = false
@@ -46,7 +46,7 @@ Visible = false
 DropShadow = false
 
 [MiniMap]
-Visible = false
+Visible = true
 
 [SideBar]
 Visible = false

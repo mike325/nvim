@@ -482,6 +482,8 @@ if !exists('g:minimal') || g:minimal != 0
     " Expand visual regions
     " Plug 'terryma/vim-expand-region'
 
+    Plug 'vimwiki/vimwiki'
+
     " Display indention
     Plug 'Yggdroot/indentLine'
 

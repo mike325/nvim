@@ -26,3 +26,5 @@ data/backup/*
 
 tags
 TAGS
+
+.*@neomake*
