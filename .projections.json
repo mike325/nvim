@@ -103,7 +103,7 @@
     "spell/*.add": {
         "type": "Spells"
     },
-    "settings.toml": {
+    "setting.toml": {
         "type": "Gonvim"
     },
     "skeletons/*": {

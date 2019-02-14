@@ -209,6 +209,10 @@ command! WrapToggle       setlocal wrap! wrap?
 command! VerboseToggle    let &verbose=!&verbose | echo "Verbose " . &verbose
 
 
+if exists('g:gonvim_running')
+    command! -nargs=* GonvimSettngs execute('edit ~/.gonvim/setting.toml')
+endif
+
 if has('nvim') || v:version >= 704
     " Yes I'm quite lazy to type the cmds
     function! s:Formats(...)
