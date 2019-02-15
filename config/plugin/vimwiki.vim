@@ -30,19 +30,19 @@ endif
 
 
 let s:work_wiki = {
-                \ 'path'     : '~/Documents/VimWiki/work',
+                \ 'path'     : '~/Documents/VimWiki/',
                 \ 'syntax'   : 'markdown',
                 \ 'ext'      : '.md',
                 \ 'auto_tags': 1,
                 \ }
 
 let s:personal_wiki = {
-                \ 'path'     : '~/VimWiki/personal',
+                \ 'path'     : '~/VimWiki/',
                 \ 'syntax'   : 'markdown',
                 \ 'ext'      : '.md',
                 \ 'auto_tags': 1,
                 \ }
-
+" let g:vimwiki_table_mappings = 0
 
 if os#name('windows')
     let g:vimwiki_list = [ s:work_wiki, s:personal_wiki ]
