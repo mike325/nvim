@@ -47,17 +47,18 @@ augroup LanguageCmds
     autocmd!
 augroup end
 
-if executable('cquery') || executable('clangd')
-    let g:LanguageClient_serverCommands.c = executable('clangd') ?
-                                            \ ['clangd'] :
-                                            \ ['cquery',
-                                            \ '--log-file=' . os#tmp('cq.log'),
-                                            \ '--init={"cacheDirectory":"' . os#cache() . '/cquery", "completion": {"filterAndSort": false}}']
+if executable('ccls') || executable('cquery') || executable('clangd')
+    let s:lsp_exe = executable('ccls') ? 'ccls' : 'cquery'
+    let g:LanguageClient_serverCommands.c = ( executable('ccls') || executable('cquery')) ?
+                                            \ [s:lsp_exe,
+                                            \ '--log-file=' . os#tmp(s:lsp_exe . '.log'),
+                                            \ '--init={"cacheDirectory":"' . os#cache() . '/' . s:lsp_exe . '", "completion": {"filterAndSort": false}}'] :
+                                            \ ['clangd']
 
     let g:LanguageClient_serverCommands.cpp = g:LanguageClient_serverCommands.c
 
     augroup LanguageCmds
-        if executable('cquery')
+        if ( executable('ccls') || executable('cquery') )
             autocmd FileType c,cpp command! -buffer Callers call LanguageClient#cquery_callers()
         endif
         " autocmd FileType c,cpp autocmd CursorHold                                <buffer> call LanguageClient#textDocument_hover()
@@ -74,6 +75,28 @@ if executable('cquery') || executable('clangd')
         autocmd FileType c,cpp command! -buffer Definition call LanguageClient#textDocument_definition()
         autocmd FileType c,cpp command! -buffer Hover call LanguageClient#textDocument_hover()
         autocmd FileType c,cpp command! -buffer Implementation call LanguageClient#textDocument_implementation()
+    augroup end
+endif
+
+if executable('ccls')
+    let g:LanguageClient_serverCommands.cuda = g:LanguageClient_serverCommands.c
+    let g:LanguageClient_serverCommands.objc = g:LanguageClient_serverCommands.c
+    augroup LanguageCmds
+        autocmd FileType cuda,objc command! -buffer Callers call LanguageClient#cquery_callers()
+        " autocmd FileType cuda,objc autocmd CursorHold                                <buffer> call LanguageClient#textDocument_hover()
+        " autocmd FileType cuda,objc autocmd InsertEnter,CursorMoved,TermOpen,BufLeave <buffer> pclose
+        autocmd FileType cuda,objc command! -buffer References call LanguageClient#textDocument_references()
+        if exists('g:plugs["denite.nvim"]')
+            autocmd FileType cuda,objc command! -buffer WorkspaceSymbols Denite -highlight-mode-insert=off -highlight-matched-range=off -prompt='WorkSymbols >'     -buffer-name=DeniteBuffer('worksym_') workspaceSymbol
+            autocmd FileType cuda,objc command! -buffer DocumentSymbols  Denite -highlight-mode-insert=off -highlight-matched-range=off -prompt='DocumentSymbols >' -buffer-name=DeniteBuffer('docsym_')  documentSymbol
+        else
+            autocmd FileType cuda,objc command! -buffer WorkspaceSymbols call LanguageClient#workspace_symbol()
+            autocmd FileType cuda,objc command! -buffer DocumentSymbols call LanguageClient#textDocument_documentSymbol()
+        endif
+        autocmd FileType cuda,objc command! -nargs=? -buffer RenameSymbol call s:Rename(<q-args>)
+        autocmd FileType cuda,objc command! -buffer Definition call LanguageClient#textDocument_definition()
+        autocmd FileType cuda,objc command! -buffer Hover call LanguageClient#textDocument_hover()
+        autocmd FileType cuda,objc command! -buffer Implementation call LanguageClient#textDocument_implementation()
     augroup end
 endif
 

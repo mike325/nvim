@@ -54,11 +54,13 @@ function! plugin#CheckLanguageServer(...) abort
     let l:lang = (a:0 > 0) ? a:1 : ''
 
     let l:langservers = {
-            \   'python': ['pyls'],
-            \   'c'     : ['cquery', 'clangd'],
-            \   'cpp'   : ['cquery', 'clangd'],
-            \   'sh'    : ['bash-language-server'],
-            \   'go'    : ['go-langerver'],
+            \ 'python': ['pyls'],
+            \ 'c'     : ['ccls', 'cquery', 'clangd'],
+            \ 'cpp'   : ['ccls', 'cquery', 'clangd'],
+            \ 'cuda'  : ['ccls'],
+            \ 'objc'  : ['ccls'],
+            \ 'sh'    : ['bash-language-server'],
+            \ 'go'    : ['go-langerver'],
             \ }
 
     if empty(l:lang)
