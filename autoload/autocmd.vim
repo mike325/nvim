@@ -153,14 +153,31 @@ function! autocmd#SetProjectConfigs() abort
         endif
 
         if exists('g:plugs["ultisnips"]')
-            command! UltiSnipsDir call mkdir(l:project_root . '/UltiSnips', 'p')
+            function! s:ChangeUltisnipsDir() abort
+                if isdirectory(l:project_root . '/UltiSnips')
+                    let g:UltiSnipsSnippetsDir        = l:project_root . '/UltiSnips'
+                    let g:UltiSnipsSnippetDirectories = [
+                                \   l:project_root . '/UltiSnips',
+                                \   vars#basedir() . 'config/UltiSnips',
+                                \   'UltiSnips',
+                                \]
+                else
+                    let g:UltiSnipsSnippetsDir        = vars#basedir() . 'config/UltiSnips'
+                    let g:UltiSnipsSnippetDirectories = [
+                                \   vars#basedir() . 'config/UltiSnips',
+                                \   'UltiSnips'
+                                \ ]
+                endif
+            endfunction
 
-            let g:UltiSnipsSnippetsDir        = l:project_root . '/UltiSnips'
-            let g:UltiSnipsSnippetDirectories = [
-                        \   l:project_root . '/UltiSnips',
-                        \   vars#basedir() . 'config/UltiSnips',
-                        \   'UltiSnips'
-                        \]
+            command! UltiSnipsDir call mkdir(l:project_root . '/UltiSnips', 'p') | call s:ChangeUltisnipsDir()
+
+            try
+                call s:ChangeUltisnipsDir()
+            catch
+                "
+            endtry
+
         endif
 
         if exists('g:plugs["ctrlp"]')

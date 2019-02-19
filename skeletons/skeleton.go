@@ -25,4 +25,3 @@ package NAME
 import (
 	"fmt"
 )
-
