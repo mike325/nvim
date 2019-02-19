@@ -33,6 +33,9 @@ if os#name('windows')
     " needs to be set to cmd since most plugins expect it for windows.
     set shell=cmd.exe
 
+    " set shell=powershell shellquote= shellpipe=\| shellredir=> shellxquote=
+    " set shellcmdflag=-NoLogo\ -NoProfile\ -ExecutionPolicy\ RemoteSigned\ -Command
+
     " set shell=powershell.exe\ -NoLogo\ -NoProfile\ -NonInteractive\ -ExecutionPolicy\ RemoteSigned
     " " if shellcmdflag starts with '-' then tempname() uses forward slashes, see
     " " https://groups.google.com/forum/#!topic/vim_dev/vTR05EZyfE0

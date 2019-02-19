@@ -59,6 +59,27 @@ nmap gwd <Plug>VimwikiDiaryIndex
 nmap gwn <Plug>VimwikiMakeDiaryNote
 nmap gwu <Plug>VimwikiUISelect
 
+function! VimwikiLinkHandler(link)
+    " Use Vim to open external files with the 'vfile:' scheme.  E.g.:
+    "   1) [[file:~/Code/PythonProject/abc123.py]]
+    "   2) [[file:./|Wiki Home]]
+    let l:link = a:link
+
+    if l:link !~# '^file:'
+        return 0
+    endif
+
+    let l:link_infos = vimwiki#base#resolve_link(l:link)
+
+    if l:link_infos.filename == ''
+        echomsg 'Vimwiki Error: Unable to resolve link!'
+        return 0
+    else
+        exe 'edit ' . fnameescape(l:link_infos.filename)
+        return 1
+    endif
+endfunction
+
 " nmap <Leader>dt <Plug>VimwikiTabMakeDiaryNote
 " nmap <Leader>dy <Plug>VimwikiMakeYesterdayDiaryNote
 " nmap <Leader>dm <Plug>VimwikiMakeTomorrowDiaryNote
