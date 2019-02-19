@@ -444,6 +444,9 @@ if !exists('g:minimal') || g:minimal != 0
         " Plug 'coderifous/textobj-word-column.vim'
     endif
 
+    " Register text substitution with motions
+    Plug 'vim-scripts/ReplaceWithRegister'
+
     " JSON text objects
     Plug 'tpope/vim-jdaddy'
 
