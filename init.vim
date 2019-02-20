@@ -333,7 +333,7 @@ if !exists('g:minimal') || g:minimal != 0
 
             " Go completion
             " TODO: Check Go completion in Windows
-            if !plugin#CheckLanguageServer('go') && executable('make')
+            if !plugin#CheckLanguageServer('go') && executable('make') && executable('go')
                 Plug 'zchee/deoplete-go', { 'do':function('plugin#GetGoCompletion')}
             endif
 
