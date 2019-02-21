@@ -37,7 +37,7 @@ let s:work_wiki = {
                 \ }
 
 let s:personal_wiki = {
-                \ 'path'     : '~/VimWiki/',
+                \ 'path'     : '~/notes/',
                 \ 'syntax'   : 'markdown',
                 \ 'ext'      : '.md',
                 \ 'auto_tags': 1,
