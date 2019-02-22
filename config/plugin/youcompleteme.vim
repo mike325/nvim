@@ -30,13 +30,14 @@ if !exists('g:plugs["YouCompleteMe"]')
     finish
 endif
 
+let g:ycm_auto_trigger                              = 1
+let g:ycm_min_num_of_chars_for_completion           = 1
 let g:ycm_complete_in_comments                      = 1
 let g:ycm_seed_identifiers_with_syntax              = 1
 let g:ycm_add_preview_to_completeopt                = 1
 let g:ycm_autoclose_preview_window_after_completion = 1
 let g:ycm_autoclose_preview_window_after_insertion  = 1
 let g:ycm_key_detailed_diagnostics                  = '<leader>D'
-
 
 let g:ycm_key_list_select_completion   = ['<C-n>', '<Down>']
 let g:ycm_key_list_previous_completion = ['<C-p>', '<Up>']
@@ -50,7 +51,19 @@ else
     let g:ycm_warning_symbol = '⚠'
 endif
 
-" let g:ycm_extra_conf_globlist   = ['~/.vim/*']
+let g:ycm_extra_conf_globlist   = [
+            \   '~/.vim/*',
+            \   '~/.config/nvim/*',
+            \   '~/AppData/nvim/*',
+            \ ]
+
+let g:ycm_python_interpreter_path = exists('g:python3_host_prog') ?  g:python3_host_prog : g:python_host_prog
+
+let g:ycm_python_interpreter_path = exepath(g:ycm_python_interpreter_path)
+
+let g:ycm_extra_conf_vim_data = [
+            \  'g:ycm_python_interpreter_path',
+            \]
 
 " Set fallback ycm config file
 if filereadable(fnameescape(vars#basedir().'host/ycm_extra_conf.py'))
@@ -77,25 +90,13 @@ let g:ycm_filetype_blacklist    = {
         \ 'log' : 1,
         \ 'tagbar' : 1,
         \ 'qf' : 1,
-        \ 'notes' : 1,
-        \ 'markdown' : 1,
-        \ 'md' : 1,
         \ 'unite' : 1,
-        \ 'text' : 1,
-        \ 'vimwiki' : 1,
         \ 'pandoc' : 1,
         \ 'infolog' : 1,
         \ 'objc' : 1,
         \ 'mail' : 1,
-        \ 'git' : 1,
         \ 'man' : 1,
 \}
-
-if exists('g:python3_host_prog')
-    let g:ycm_python_binary_path = g:python3_host_prog
-else
-    let g:ycm_python_binary_path = g:python_host_prog
-endif
 
 if !exists('g:ycm_semantic_triggers')
     let g:ycm_semantic_triggers = {}
@@ -105,14 +106,12 @@ if exists('g:plugs["vimtex"]') && exists('g:vimtex#re#youcompleteme')
     let g:ycm_semantic_triggers.tex = g:vimtex#re#youcompleteme
 endif
 
-let g:ycm_server_log_level      = 'debug'
-let g:ycm_server_use_vim_stdout = 1
+" let g:ycm_server_log_level      = 'debug'
+" let g:ycm_server_use_vim_stdout = 1
 
 let g:ycm_cache_omnifunc = 1
 
-if exists('g:plugs["ultisnips"]')
-    let g:ycm_use_ultisnips_completer = 1
-endif
+let g:ycm_use_ultisnips_completer = exists('g:plugs["ultisnips"]') ? 1 : 0
 
 function! s:SplitYCM(split_type, ycm_cmd)
     execute a:split_type

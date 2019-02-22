@@ -32,7 +32,7 @@ function! YcmOnDeleteChar()
     if pumvisible()
         return "\<C-y>"
     endif
-    return ""
+    return ''
 endfunction
 
 function! s:FixYCMBs()
@@ -50,4 +50,3 @@ if has( 'vim_starting' )
 else
     call s:FixYCMBs()
 endif
-
