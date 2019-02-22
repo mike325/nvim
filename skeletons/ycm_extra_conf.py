@@ -192,9 +192,10 @@ def FlagsForFile(filename, **kwargs):
     """
     settings = kwargs
     settings['filename'] = filename
-    settings['language'] = ''
 
     if 'language' not in settings:
+        settings['language'] = ''
+
         extension = p.splitext(settings['filename'])[1]
 
         if extension in SOURCE_EXTENSIONS or extension in HEADER_EXTENSIONS:
