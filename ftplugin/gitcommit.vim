@@ -24,7 +24,6 @@
 "
 " ############################################################################
 
-
 setlocal bufhidden=delete
 setlocal noreadonly
 

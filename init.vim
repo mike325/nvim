@@ -77,7 +77,7 @@ endtry
 if !exists('g:minimal') || g:minimal != 0
 
     try
-        call execute('set runtimepath=' . &runtimepath . ',' . expand(vars#basedir() . '/plug/'))
+        call execute('set runtimepath+=' . expand(vars#basedir() . 'plug/'))
         call plug#begin(vars#basedir().'plugged')
     catch
         " Fallback if we fail to init Plug
@@ -488,7 +488,13 @@ if !exists('g:minimal') || g:minimal != 0
     " Expand visual regions
     " Plug 'terryma/vim-expand-region'
 
-    Plug 'vimwiki/vimwiki'
+    if os#name('windows')
+        " NOTE: Urls doesn't work in master branch because vimwiki pass the wrong
+        "       variable
+        Plug 'vimwiki/vimwiki', {'branch': 'dev'}
+    else
+        Plug 'vimwiki/vimwiki'
+    endif
 
     " Display indention
     Plug 'Yggdroot/indentLine'

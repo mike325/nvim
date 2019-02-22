@@ -58,7 +58,6 @@ let g:ycm_extra_conf_globlist   = [
             \ ]
 
 let g:ycm_python_interpreter_path = exists('g:python3_host_prog') ?  g:python3_host_prog : g:python_host_prog
-
 let g:ycm_python_interpreter_path = exepath(g:ycm_python_interpreter_path)
 
 let g:ycm_extra_conf_vim_data = [

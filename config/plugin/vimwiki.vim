@@ -69,13 +69,18 @@ function! VimwikiLinkHandler(link)
         return 0
     endif
 
-    let l:link_infos = vimwiki#base#resolve_link(l:link)
+    let l:link = split(l:link, ':\ze[0-9]\+\(:[0-9\+\)\?')
+
+    let l:line   = (len(l:link) > 1) ? l:link[1] : 0
+    let l:column = (len(l:link) > 2) ? l:link[2] : 0
+
+    let l:link_infos = vimwiki#base#resolve_link(l:link[0])
 
     if l:link_infos.filename == ''
         echomsg 'Vimwiki Error: Unable to resolve link!'
         return 0
     else
-        exe 'edit ' . fnameescape(l:link_infos.filename)
+        exe 'edit ' . fnameescape(l:link_infos.filename) . ' | normal! ' . l:line . 'G' . l:column . '|'
         return 1
     endif
 endfunction

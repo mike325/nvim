@@ -115,29 +115,33 @@ function! plugin#YCM(info) abort
         "  # sudo ln -s /lib64/libtinfo.so.6 /lib64/libtinfo.so.5
         "       or use --system-clang
         " https://github.com/Valloric/YouCompleteMe/issues/778#issuecomment-211452969
-        let l:code_completion = ' --clang-completer'
+        let l:cmd = (exists('g:python3_host_prog')) ? [g:python3_host_prog] : [g:python_host_prog]
 
-        " if executable('clangd')
-        "     let l:clangd = system('clangd --version')
-        "     if l:clangd =~# 'clangd version [7-9]\(\.[0-9]\(\.[0-9]\)\?\)\?.*'
-        "         let l:code_completion .= ' --clangd-completer'
-        "     endif
-        " endif
+        let l:cmd += ['./install.py']
+
+        let l:cmd += ['--clang-completer']
+
+        if executable('clangd')
+            let l:clangd = system('clangd --version')
+            if l:clangd =~# 'clangd version [7-9]\(\.[0-9]\(\.[0-9]\)\?\)\?.*'
+                let l:cmd += ['--clangd-completer']
+            endif
+        endif
 
         if executable('go') && (!empty($GOROOT))
-            let l:code_completion .= ' --gocode-completer'
+            let l:cmd += ['--gocode-completer']
         endif
 
         if executable('mono')
-            let l:code_completion .= ' --omnisharp-completer'
+            let l:cmd += ['--omnisharp-completer']
         endif
 
         if executable('racer') && executable('cargo')
-            let l:code_completion .= ' --rust-completer'
+            let l:cmd += ['--rust-completer']
         endif
 
         if executable('npm') && executable('node')
-            let l:code_completion .= ' --js-completer'
+            let l:cmd += ['--js-completer']
         endif
 
         " TODO: Can't test in windows
@@ -145,20 +149,23 @@ function! plugin#YCM(info) abort
             " JDK8 must be installed
             let l:java = system('java -version')
             if l:java =~# '^java.*"1\.8.*"'
-                let l:code_completion .= ' --java-completer'
+                let l:cmd += ['--java-completer']
             endif
         endif
 
         let l:python = (exists('g:python3_host_prog')) ? g:python3_host_prog : g:python_host_prog
 
-        execute '!' . l:python . ' ./install.py ' . l:code_completion
+        echomsg 'CMD: ' . join(l:cmd, ' ')
+
+        execute ' ! ' join(l:cmd, ' ')
+
         " if os#name('windows')
-        "     execute '!' . l:python . ' ./install.py ' . l:code_completion
+        "     execute '!' . l:python . ' ./install.py ' . l:cmd
         " elseif executable('python3')
         "     " Force python3
-        "     execute '!' . l:python . ' ./install.py ' . l:code_completion
+        "     execute '!' . l:python . ' ./install.py ' . l:cmd
         " else
-        "     execute '!./install.py ' . l:code_completion
+        "     execute '!./install.py ' . l:cmd
         " endif
     endif
 endfunction

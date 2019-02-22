@@ -137,6 +137,7 @@ if exists('g:plugs["vim-abolish"]')
         \ 'acuardo'                                                             : 'acuerdo',
         \ 'carateristicas'                                                      : 'características',
         \ 'ademas'                                                              : 'además',
+        \ 'logic{as,o,os}'                                                      : 'lógic{}',
         \ '{h,f}ernandez'                                                       : '{}ernández',
         \ 'electronico{s}'                                                      : 'electrónico{}',
         \ 'algorimo{s}'                                                         : 'algoritmo{}',
@@ -148,7 +149,7 @@ if exists('g:plugs["vim-abolish"]')
         \ '{televi,explo}sion'                                                  : '{}sión',
         \ '{reac,disminu,interac,clasifica,crea,notifica,introduc,justifi}cion' : '{}ción',
         \ '{obten,ora,emo,valora,utilizap,modifica,sec,delimita,informa}cion'   : '{}ción',
-        \ '{administra,aplica,rala}cion'                                        : '{}ción',
+        \ '{administra,aplica,rala,aproxima}cion'                               : '{}ción',
         \ }
 endif
 
@@ -172,8 +173,9 @@ function! tools#select_grep(is_git, ...) abort
 endfunction
 
 " Small wrap to avoid change code all over the repo
-function! tools#grep(tool, properity) abort
-    return s:greplist[a:tool][a:properity]
+function! tools#grep(tool, ...) abort
+    let l:properity = (a:0 > 0) ? a:000[0] : 'grepprg'
+    return s:greplist[a:tool][l:properity]
 endfunction
 
 " Just like GrepTool but for listing files

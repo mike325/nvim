@@ -46,6 +46,9 @@
     "lua/host/*.lua": {
         "type": "LuaHost"
     },
+    "host/ycm_extra_conf.py": {
+        "type": "HostYCM"
+    },
     "autoload/*.vim": {
         "type": "Autoload"
     },

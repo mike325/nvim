@@ -94,46 +94,50 @@ def IsHeaderFile(filename):
     return extension in HEADER_EXTENSIONS
 
 
-def FindCorrespondingSourceFile( filename ):
-    if IsHeaderFile( filename ):
-        basename = p.splitext( filename )[ 0 ]
+def FindCorrespondingSourceFile(filename):
+    if IsHeaderFile(filename):
+        basename = p.splitext(filename)[0]
     for extension in SOURCE_EXTENSIONS:
         replacement_file = basename + extension
-        if p.exists( replacement_file ):
+        if p.exists(replacement_file):
             return replacement_file
     return filename
 
 
 def PathToPythonUsedDuringBuild():
     try:
-        filepath = p.join( DIR_OF_THIS_SCRIPT, 'python_version.txt' )
-        with open( filepath ) as f:
+        filepath = p.join(DIR_OF_THIS_SCRIPT, 'python_version.txt')
+        with open(filepath) as f:
             return f.read().strip()
         # We need to check for IOError for Python 2 and OSError for Python 3.
-    except ( IOError, OSError ):
+    except (IOError, OSError):
         return sys.executable
 
 
-def GetStandardLibraryIndexInSysPath( sys_path ):
-    for index, path in enumerate( sys_path ):
-        if p.isfile( p.join( path, 'os.py' ) ):
+def GetStandardLibraryIndexInSysPath(sys_path):
+    for index, path in enumerate(sys_path):
+        if p.isfile(p.join(path, 'os.py')):
             return index
-    raise RuntimeError( 'Could not find standard library path in Python path.' )
+    raise RuntimeError('Could not find standard library path in Python path.')
 
 
-def PythonSysPath( **kwargs ):
-    sys_path = kwargs[ 'sys_path' ]
+def PythonSysPath(**kwargs):
+    sys_path = kwargs['sys_path']
 
-    interpreter_path = kwargs[ 'interpreter_path' ]
-    major_version = subprocess.check_output( [
-        interpreter_path, '-c', 'import sys; print( sys.version_info[ 0 ] )' ]
-    ).rstrip().decode( 'utf8' )
+    home = 'HOME' if os.name != 'nt' else 'USERPROFILE'
+    home = os.environ[home].replace('\\', '/')
+
+    # interpreter_path = kwargs['interpreter_path']
+    # major_version = subprocess.check_output([
+    #     interpreter_path, '-c', 'import sys; print(sys.version_info[0])']
+    # ).rstrip().decode('utf8')
 
     return sys_path
 
-def Settings( **kwargs ):
-    language = kwargs[ 'language' ]
-    client_data = None if 'client_data' not in kwargs else kwargs[ 'client_data' ]
+
+def Settings(**kwargs):
+    language = kwargs['language']
+    client_data = None if 'client_data' not in kwargs else kwargs['client_data']
 
     if language == 'cfamily':
         # If the file is a header, try to find the corresponding source file and
@@ -142,7 +146,7 @@ def Settings( **kwargs ):
         # In addition, use this source file as the translation unit. This makes it
         # possible to jump from a declaration in the header file to its definition
         # in the corresponding source file.
-        filename = FindCorrespondingSourceFile( kwargs[ 'filename' ] )
+        filename = FindCorrespondingSourceFile(kwargs['filename'])
 
         if not database:
             return {
@@ -152,13 +156,13 @@ def Settings( **kwargs ):
                 'do_cache': True,
             }
 
-            compilation_info = database.GetCompilationInfoForFile( filename )
+            compilation_info = database.GetCompilationInfoForFile(filename)
         if not compilation_info.compiler_flags_:
             return {}
 
         # Bear in mind that compilation_info.compiler_flags_ does NOT return a
         # python list, but a "list-like" StringVec object.
-        final_flags = list( compilation_info.compiler_flags_ )
+        final_flags = list(compilation_info.compiler_flags_)
 
         return {
             'flags': final_flags,
@@ -178,6 +182,7 @@ def Settings( **kwargs ):
         }
 
     return {}
+
 
 def FlagsForFile(filename, **kwargs):
     """ DEPRECATED in favor of 'Settings' function
