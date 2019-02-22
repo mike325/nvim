@@ -119,14 +119,9 @@ function! plugin#YCM(info) abort
 
         let l:cmd += ['./install.py']
 
+        "  Both libclang and clangd are downloaded from the upstream, so they can always be install
         let l:cmd += ['--clang-completer']
-
-        if executable('clangd')
-            let l:clangd = system('clangd --version')
-            if l:clangd =~# 'clangd version [7-9]\(\.[0-9]\(\.[0-9]\)\?\)\?.*'
-                let l:cmd += ['--clangd-completer']
-            endif
-        endif
+        let l:cmd += ['--clangd-completer']
 
         if executable('go') && (!empty($GOROOT))
             let l:cmd += ['--gocode-completer']

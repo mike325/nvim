@@ -27,7 +27,7 @@
         "type": "ClangFormat"
     },
     "ycm_extra_conf.py": {
-        "type": "YCM"
+        "type": "ConfigYCM"
     },
     "init.vim": {
         "type": "Init",

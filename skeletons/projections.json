@@ -6,7 +6,7 @@
         "type": "UltiSnips"
     },
     ".ycm_extra_conf.py": {
-        "type": "YCM"
+        "type": "ConfigYCM"
     },
     ".projections.json": {
         "type": "Projections"

@@ -11,9 +11,13 @@ import os
 import os.path as p
 import sys
 import logging
-import ycm_core
-import subprocess
+import re
+try:
+    import ycm_core
+except ImportError:
+    logging.warn('No ycm_core module found')
 
+__DEBUG = True
 
 __header__ = """
                               -`
@@ -36,6 +40,7 @@ __header__ = """
             `++:.                           `-/+/
             .`                                 `/
 """
+
 
 BASE_FLAGS = [
     '-Wall',
@@ -83,11 +88,47 @@ if os.name == 'nt':
 else:
     BASE_FLAGS += LINUX_INCLUDES
 
-compilation_database_folder = ''
 
-database = None
-if p.exists(compilation_database_folder):
-    database = ycm_core.CompilationDatabase(compilation_database_folder)
+COMPILE_DB = [
+    'compile_commands.json',
+]
+
+
+def GetCompilationDatabase():
+    """TODO: Docstring for GetCompilationDatabase.
+    :returns: TODO
+
+    """
+    cwd = os.getcwd()
+    compilation_database_folder = ''
+    parent = p.abspath(p.join(cwd, '..'))
+
+    logging.info('CWD: {0}, Parent: {1}'.format(cwd, parent))
+
+    while cwd != parent:
+        files = os.listdir(cwd)
+        if 'compile_commands.json' in files:
+            compilation_database_folder = cwd
+            logging.info('Database found {0}'.format(compilation_database_folder))
+            break
+        cwd = parent
+        parent = p.abspath(p.join(cwd, '..'))
+        logging.info('CWD: {0}, Parent: {1}'.format(cwd, parent))
+
+    if compilation_database_folder == '':
+        logging.info('No compilation database found')
+
+    return compilation_database_folder
+
+
+def NormalizePath(path):
+    """TODO: Docstring for NormalizePath.
+
+    :path: TODO
+    :returns: TODO
+
+    """
+    return path if os.name != 'nt' else path.replace('\\', '/')
 
 
 def IsHeaderFile(filename):
@@ -98,10 +139,10 @@ def IsHeaderFile(filename):
 def FindCorrespondingSourceFile(filename):
     if IsHeaderFile(filename):
         basename = p.splitext(filename)[0]
-    for extension in SOURCE_EXTENSIONS:
-        replacement_file = basename + extension
-        if p.exists(replacement_file):
-            return replacement_file
+        for extension in SOURCE_EXTENSIONS:
+            replacement_file = basename + extension
+            if p.exists(replacement_file):
+                return replacement_file
     return filename
 
 
@@ -126,7 +167,7 @@ def PythonSysPath(**kwargs):
     sys_path = kwargs['sys_path']
 
     home = 'HOME' if os.name != 'nt' else 'USERPROFILE'
-    home = os.environ[home].replace('\\', '/')
+    home = NormalizePath(os.environ[home])
 
     # interpreter_path = kwargs['interpreter_path']
     # major_version = subprocess.check_output([
@@ -147,9 +188,12 @@ def Settings(**kwargs):
         # In addition, use this source file as the translation unit. This makes it
         # possible to jump from a declaration in the header file to its definition
         # in the corresponding source file.
+        logging.info('Looking for {0}'.format(kwargs['filename']))
         filename = FindCorrespondingSourceFile(kwargs['filename'])
+        logging.info('Got {0}'.format(filename))
 
         if not database:
+            logging.info('Database is empty, usging defualt flags')
             return {
                 'flags': BASE_FLAGS,
                 'include_paths_relative_to_dir': DIR_OF_THIS_SCRIPT,
@@ -157,8 +201,9 @@ def Settings(**kwargs):
                 'do_cache': True,
             }
 
-            compilation_info = database.GetCompilationInfoForFile(filename)
+        compilation_info = database.GetCompilationInfoForFile(filename)
         if not compilation_info.compiler_flags_:
+            logging.info('No flags for {0}'.format(filename))
             return {}
 
         # Bear in mind that compilation_info.compiler_flags_ does NOT return a
@@ -177,6 +222,8 @@ def Settings(**kwargs):
             pypath = client_data['g:ycm_python_interpreter_path']
         else:
             pypath = PathToPythonUsedDuringBuild()
+
+        logging.info('Using {0} as python interpeter'.format(pypath))
 
         return {
             'interpreter_path': pypath
@@ -204,3 +251,9 @@ def FlagsForFile(filename, **kwargs):
             settings['language'] = 'python'
 
     return Settings(**settings)
+
+
+database = None
+compilation_database_folder = GetCompilationDatabase()
+if p.exists(compilation_database_folder):
+    database = ycm_core.CompilationDatabase(compilation_database_folder)
