@@ -72,9 +72,9 @@ elseif filereadable(fnameescape(vars#basedir() . 'ycm_extra_conf.py'))
 endif
 
 " let g:ycm_clangd_binary_path = ''
-" let g:ycm_clangd_uses_ycmd_caching = 1
-" let g:ycm_clangd_args = []
 let g:ycm_use_clangd = 'Auto' " Clangd will be use if it's in third_party folder
+let g:ycm_clangd_args = ['-index']
+" let g:ycm_clangd_uses_ycmd_caching = 1
 
 if executable('ctags')
     let g:ycm_collect_identifiers_from_tags_files = 1

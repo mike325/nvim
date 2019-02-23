@@ -53,7 +53,7 @@ if executable('ccls') || executable('cquery') || executable('clangd')
                                             \ [s:lsp_exe,
                                             \ '--log-file=' . os#tmp(s:lsp_exe . '.log'),
                                             \ '--init={"cacheDirectory":"' . os#cache() . '/' . s:lsp_exe . '", "completion": {"filterAndSort": false}}'] :
-                                            \ ['clangd']
+                                            \ ['clangd', '-index']
 
     let g:LanguageClient_serverCommands.cpp = g:LanguageClient_serverCommands.c
 
