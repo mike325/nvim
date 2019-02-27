@@ -232,6 +232,9 @@ command! -nargs=? -complete=customlist,tools#spells SpellLang
 
 command! -nargs=? ConncallLevel  call mappings#ConncallLevel(expand(<q-args>))
 
+
+command! -nargs=1 -complete=customlist,tools#oldfiles Oldfiles edit <args>
+
 " Avoid dispatch command conflict
 " QuickfixOpen
 command! -nargs=? Qopen execute((&splitbelow) ? 'botright' : 'topleft' ) . ' copen ' . expand(<q-args>)

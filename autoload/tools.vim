@@ -201,6 +201,15 @@ function! tools#spelllangs(lang) abort
     execute 'set spelllang?'
 endfunction
 
-function! tools#spells(...) abort
+function! tools#spells(arglead, cmdline, cursorpos) abort
     return ['es', 'en']
+endfunction
+
+function! tools#oldfiles(arglead, cmdline, cursorpos) abort
+    let l:args = split(a:arglead, '\zs')
+    let l:pattern = '.*' . join(l:args, '') . '.*'
+    let l:candidates = filter(copy(v:oldfiles), 'v:val =~? "' . l:pattern . '"')
+    let l:pattern = '.*' . join(l:args, '.*') . '.*'
+    let l:candidates += filter(copy(v:oldfiles), 'v:val =~? "' . l:pattern . '"')
+    return uniq(l:candidates)
 endfunction
