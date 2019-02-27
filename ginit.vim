@@ -53,10 +53,29 @@ if has('nvim') && exists('g:GuiLoaded')
         endif
     endfunction
 
-    GuiLinespace 1
-    call GuiWindowMaximized(1)
-    call GuiMousehide(1)
-    call s:NeovimGuiFont(10)
+    if exists(':GuiLinespace') == 2
+        GuiLinespace 1
+    endif
+
+    if exists(':GuiPopupmenu') == 2
+        GuiPopupmenu 0
+    endif
+
+    if exists(':GuiTabline') == 2
+        GuiTabline 0
+    endif
+
+    if exists('*GuiWindowMaximized')
+        call GuiWindowMaximized(1)
+    endif
+
+    if exists('*GuiMousehide')
+        call GuiMousehide(1)
+    endif
+
+    if exists(':GuiFont') == 2
+        call s:NeovimGuiFont(10)
+    endif
 
     command! -nargs=? Font call s:NeovimGuiFont(<q-args>)
 

@@ -33,7 +33,7 @@ Visible = false
 # TerminalModeColor = "#778899"
 
 [Tabline]
-Visible = true
+Visible = false
 
 [Lint]
 Visible = false
