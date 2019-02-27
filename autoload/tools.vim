@@ -27,7 +27,7 @@
 " Extracted from tpop's Fugitive plugin
 function! tools#GitVersion(...) abort
     if !executable('git')
-        return v:false
+        return 0
     endif
 
     let l:version = matchstr(system('git --version'), "\\S\\+\\ze\n")

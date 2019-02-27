@@ -136,7 +136,7 @@ endfunction
 
 function! autocmd#SetProjectConfigs() abort
     let l:project_root =  autocmd#FindProjectRoot(expand('%:p'))
-    let l:is_git = v:false
+    let l:is_git = 0
 
     if !empty(l:project_root)
         " let l:project_root = fnamemodify(l:project_root, ':h')

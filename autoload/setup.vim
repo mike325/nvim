@@ -24,7 +24,7 @@
 "
 " ############################################################################
 
-let s:setup_done = v:false
+let s:setup_done = 0
 
 function! s:PythonProviders(python) abort
     let l:major = a:python[0]
@@ -84,6 +84,6 @@ function! setup#python() abort
         endif
     endfor
 
-    let s:setup_done = v:true
+    let s:setup_done = 1
 
 endfunction

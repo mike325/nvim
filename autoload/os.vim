@@ -37,7 +37,7 @@ function! s:os_get_type() abort
 endfunction
 
 function! s:os_type(os) abort
-    let l:is_type = v:false
+    let l:is_type = 0
     if a:os ==# 'windows' || a:os ==# 'win32'
         let l:is_type = (has('win16') || has('win32') || has('win64'))
     elseif a:os ==# 'cygwin' || a:os =~# '^msys\(2\)\?$'

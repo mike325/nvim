@@ -31,10 +31,10 @@ function! s:requireSpell()
     let l:file_name = expand('%:t:r')
 
     if l:file_name !~# '^\(requirements\)$'
-        return v:true
+        return 1
     endif
 
-    return v:false
+    return 0
 
 endfunction
 

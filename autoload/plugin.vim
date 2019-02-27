@@ -67,7 +67,7 @@ function! plugin#CheckLanguageServer(...) abort
         for [l:language, l:servers] in  items(l:langservers)
             for l:server in l:servers
                 if executable(l:server)
-                    return v:true
+                    return 1
                 endif
             endfor
         endfor
@@ -76,13 +76,13 @@ function! plugin#CheckLanguageServer(...) abort
         if !empty(l:servers)
             for l:server in l:servers
                 if executable(l:server)
-                    return v:true
+                    return 1
                 endif
             endfor
         endif
     endif
 
-    return v:false
+    return 0
 endfunction
 
 function! plugin#InstallLanguageClient(info) abort

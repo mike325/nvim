@@ -37,7 +37,7 @@ let g:deoplete#lock_buffer_name_pattern = '\*ku\*'
 try
     call deoplete#custom#option({
     \   'auto_complete_delay': 20,
-    \   'smart_case': v:true,
+    \   'smart_case': 1,
     \   'min_keyword_length': 1,
     \ })
 catch

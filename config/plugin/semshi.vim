@@ -31,9 +31,9 @@ endif
 let $SEMSHI_LOG_FILE = os#tmp('semshi.log')
 let $SEMSHI_LOG_LEVEL = 'DEBUG'
 
-let g:semshi#active                       = v:true
-let g:semshi#simplify_markup              = v:true
-let g:semshi#no_default_builtin_highlight = v:true
+let g:semshi#active                       = 1
+let g:semshi#simplify_markup              = 1
+let g:semshi#no_default_builtin_highlight = 1
 
 function! s:SemshiColorschemeFix() abort
     hi semshiLocal           ctermfg=209 guifg=#ff875f

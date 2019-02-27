@@ -34,6 +34,14 @@ let s:work_wiki = {
                 \ 'syntax'   : 'markdown',
                 \ 'ext'      : '.md',
                 \ 'auto_tags': 1,
+                \ 'nested_syntaxes': {
+                \       'ruby'  : 'ruby',
+                \       'python': 'python',
+                \       'c++'   : 'cpp',
+                \       'sh'    : 'sh',
+                \       'bash'  : 'sh' ,
+                \       'racket': 'racket'
+                \    },
                 \ }
 
 let s:personal_wiki = {
@@ -41,6 +49,14 @@ let s:personal_wiki = {
                 \ 'syntax'   : 'markdown',
                 \ 'ext'      : '.md',
                 \ 'auto_tags': 1,
+                \ 'nested_syntaxes': {
+                \       'ruby'  : 'ruby',
+                \       'python': 'python',
+                \       'c++'   : 'cpp',
+                \       'sh'    : 'sh',
+                \       'bash'  : 'sh' ,
+                \       'racket': 'racket'
+                \    },
                 \ }
 " let g:vimwiki_table_mappings = 0
 
@@ -52,6 +68,12 @@ endif
 
 unlet s:work_wiki
 unlet s:personal_wiki
+
+let g:vimwiki_ext2syntax = {
+            \   '.md': 'markdown',
+            \   '.mkd': 'markdown',
+            \   '.wiki': 'media'
+            \ }
 
 nmap gww <Plug>VimwikiIndex
 nmap gwt <Plug>VimwikiTabIndex
