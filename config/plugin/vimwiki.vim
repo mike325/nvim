@@ -30,7 +30,7 @@ endif
 
 
 let s:work_wiki = {
-                \ 'path'     : '~/Documents/VimWiki/',
+                \ 'path'     : (isdirectory(vars#home() . '/Documents/vimwiki/')) ? vars#home() . '/Documents/vimwiki/' : vars#home() . '/vimwiki/',
                 \ 'syntax'   : 'markdown',
                 \ 'ext'      : '.md',
                 \ 'auto_tags': 1,
