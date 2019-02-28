@@ -1,115 +1,45 @@
 {
-    "project.vim": {
-        "type": "Project"
-    },
-    ".projections.json": {
-        "type": "Projections"
-    },
-    ".gitignore": {
-        "type": "Gitignore"
-    },
-    ".git/hooks/*": {
-        "type": "GitHooks"
-    },
-    ".git/config": {
-        "type": "Git"
-    },
-    ".git/info/*": {
-        "type": "Git"
-    },
-    "README.md": {
-        "type": "Readme"
-    },
-    "LICENSE": {
-        "type": "License"
-    },
-    "clang-format": {
-        "type": "ClangFormat"
-    },
-    "ycm_extra_conf.py": {
-        "type": "ConfigYCM"
-    },
-    "init.vim": {
-        "type": "Init",
-        "alternate": "ginit.vim"
-    },
-    "ginit.vim": {
-        "type": "Ginit",
-        "alternate": "init.vim"
-    },
-    "lua/*.lua": {
-        "type": "Lua"
-    },
-    "lua/helper/*.lua": {
-        "type": "LuaHelper"
-    },
-    "lua/host/*.lua": {
-        "type": "LuaHost"
-    },
-    "host/ycm_extra_conf.py": {
-        "type": "HostYCM"
-    },
-    "autoload/*.vim": {
-        "type": "Autoload"
-    },
-    "plugin/*.vim": {
-        "type": "Plugin"
-    },
-    "rplugins/python3/*.py": {
-        "type": "RPython3"
-    },
-    "rplugins/python/*.py": {
-        "type": "RPython"
-    },
-    "python3/*.py": {
-        "type": "Python3"
-    },
-    "python/*.py": {
-        "type": "Python"
-    },
-    "ftplugin/*.vim": {
-        "type": "FtPlugin"
-    },
-    "syntax/*.vim": {
-        "type": "Syntax"
-    },
-    "ftdetect/*.vim": {
-        "type": "FtDetect"
-    },
-    "config/after/ftplugin/*.vim": {
-        "type": "ConfigAfterFtplugin"
-    },
-    "config/ftplugin/*.vim": {
-        "type": "ConfigFtplugin"
-    },
-    "config/autoload/*.vim": {
-        "type": "ConfigAutoload"
-    },
-    "config/plugin/*.vim": {
-        "type": "ConfigPlugin"
-    },
-    "config/after/plugin/*.vim": {
-        "type": "ConfigAfterPlugin"
-    },
-    "config/UltiSnips/*.snippets": {
-        "type": "UltiSnips"
-    },
-    "after/autoload/*.vim": {
-        "type": "AfterAutoload"
-    },
-    "after/plugin/*.vim": {
-        "type": "AfterPlugin"
-    },
-    "after/ftplugin/*.vim": {
-        "type": "AfterFtplugin"
-    },
-    "spell/*.add": {
-        "type": "Spells"
-    },
-    "setting.toml": {
-        "type": "Gonvim"
-    },
-    "skeletons/*": {
-        "type": "Skeletons"
-    }
+    "project.vim"                 : { "type": "Project" },
+    ".projections.json"           : { "type": "Projections" },
+    ".gitignore"                  : { "type": "Gitignore" },
+    ".git/hooks/*"                : { "type": "GitHooks" },
+    ".git/config"                 : { "type": "Git" },
+    ".git/info/*"                 : { "type": "Git" },
+    "README.md"                   : { "type": "Readme" },
+    "LICENSE"                     : { "type": "License" },
+    "clang-format"                : { "type": "ClangFormat" },
+    "ycm_extra_conf.py"           : { "type": "ConfigYCM" },
+    "init.vim"                    : { "type": "Init", "alternate" : "ginit.vim" },
+    "ginit.vim"                   : { "type": "Ginit", "alternate": "init.vim" },
+    "lua/*.lua"                   : { "type": "Lua" },
+    "lua/helper/*.lua"            : { "type": "LuaHelper" },
+    "lua/host/*.lua"              : { "type": "LuaHost" },
+    "host/ycm_extra_conf.py"      : { "type": "HostYCM" },
+    "rplugins/python3/*.py"       : { "type": "RPython3" },
+    "rplugins/python/*.py"        : { "type": "RPython" },
+    "python3/*.py"                : { "type": "Python3" },
+    "python/*.py"                 : { "type": "Python" },
+    "syntax/*.vim"                : { "type": "Syntax" },
+    "autoload/*.vim"              : { "type": "Autoload" },
+    "plugin/*.vim"                : { "type": "Plugin" },
+    "ftplugin/*.vim"              : { "type": "FtPlugin" },
+    "ftdetect/*.vim"              : { "type": "FtDetect" },
+    "after/plugin/*.vim"          : { "type": "AfterPlugin" },
+    "after/ftplugin/*.vim"        : { "type": "AfterFtplugin" },
+    "host/autoload/*.vim"         : { "type": "HostAutoload" },
+    "host/plugin/*.vim"           : { "type": "HostPlugin" },
+    "host/ftplugin/*.vim"         : { "type": "HostFtPlugin" },
+    "host/ftdetect/*.vim"         : { "type": "HostFtDetect" },
+    "host/after/plugin/*.vim"     : { "type": "HostAfterPlugin" },
+    "host/after/ftplugin/*.vim"   : { "type": "HostAfterFtplugin" },
+    "config/autoload/*.vim"       : { "type": "ConfigAutoload" },
+    "config/plugin/*.vim"         : { "type": "ConfigPlugin" },
+    "config/ftplugin/*.vim"       : { "type": "ConfigFtplugin" },
+    "config/after/plugin/*.vim"   : { "type": "ConfigAfterPlugin" },
+    "config/after/ftplugin/*.vim" : { "type": "ConfigAfterFtplugin" },
+    "config/UltiSnips/*.snippets" : { "type": "UltiSnips" },
+    "after/autoload/*.vim"        : { "type": "AfterAutoload" },
+    "spell/*.add"                 : { "type": "Spells" },
+    "setting.toml"                : { "type": "Gonvim" },
+    "skeletons/*"                 : { "type": "Skeletons" }
 }
