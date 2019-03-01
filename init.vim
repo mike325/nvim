@@ -258,6 +258,7 @@ if !exists('g:minimal') || g:minimal != 0
     Plug 'Raimondi/delimitMate'
     Plug 'tpope/vim-abolish'
     Plug 'honza/vim-snippets'
+    Plug 'Shougo/neco-vim'
 
     if has#python() && (has('nvim') || (v:version >= 704))
         Plug 'SirVer/ultisnips'
@@ -278,7 +279,16 @@ if !exists('g:minimal') || g:minimal != 0
 
         " Awesome has#async completion engine for Neovim
         " if has#async() && has#python('3')
-        if has('nvim') && has#python('3') && empty($YCM)
+        if !empty($YCM) && has#async() && executable('cmake') && (( has('unix') && ( executable('gcc')  || executable('clang') )) ||
+                    \ (os#name('windows') && executable('msbuild')))
+
+            Plug 'Valloric/YouCompleteMe', { 'do': function('plugin#YCM') }
+            " Plug 'davits/DyeVim'
+
+            " C/C++ project generator
+            " Plug 'rdnetto/ycm-generator', { 'branch': 'stable' }
+            let s:ycm_installed = 1
+        elseif has('nvim') && has#python('3')
 
             " " TODO: There's no package check
             " if !has('nvim')
@@ -294,8 +304,6 @@ if !exists('g:minimal') || g:minimal != 0
             else
                 Plug 'Shougo/deoplete.nvim', { 'tag': '2.0', 'do': ':UpdateRemotePlugins', 'frozen' : 1}
             endif
-
-            Plug 'Shougo/neco-vim'
 
             " TODO: I had had some probles with pysl in windows, so let's
             "       skip it until I can figure it out how to fix this
@@ -347,16 +355,6 @@ if !exists('g:minimal') || g:minimal != 0
             endif
 
             let s:deoplete_installed = 1
-
-        elseif has#async() && executable('cmake') && (( has('unix') && ( executable('gcc')  || executable('clang') )) ||
-                    \ (os#name('windows') && executable('msbuild')))
-
-            Plug 'Valloric/YouCompleteMe', { 'do': function('plugin#YCM') }
-            " Plug 'davits/DyeVim'
-
-            " C/C++ project generator
-            Plug 'rdnetto/ycm-generator', { 'branch': 'stable' }
-            let s:ycm_installed = 1
         elseif has#async()
             " Test new completion has#async framework that require python and vim 8 or
             " Neovim (without python3)

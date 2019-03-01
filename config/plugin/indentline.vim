@@ -41,6 +41,9 @@ else
     let g:indentLine_char            = '│'
 endif
 
+" Set the inline characters for each indent
+" let g:indentLine_char_list = ['|', '¦', '┆', '┊']
+
 let g:indentLine_color_gui       = '#DDC188'
 let g:indentLine_color_term      = 214
 let g:indentLine_enabled         = 1

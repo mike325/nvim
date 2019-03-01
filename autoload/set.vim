@@ -160,19 +160,6 @@ function! set#initconfigs() abort " Vim's InitConfig {{{
 
     let l:persistent_settings = (has('nvim')) ? 'shada' : 'viminfo'
 
-    " Remember things between sessions
-    " !        + When included, save and restore global variables that start
-    "            with an uppercase letter, and don't contain a lowercase letter.
-    " 'n       + Marks will be remembered for the last 'n' files you edited.
-    " <n       + Contents of registers (up to 'n' lines each) will be remembered.
-    " sn       + Items with contents occupying more then 'n' KiB are skipped.
-    " :n       + Save 'n' Command-line history entries
-    " n/info   + The name of the file to use is "/info".
-    " no /     + Since '/' is not specified, the default will be used, that is,
-    "            save all of the search history, and also the previous search and
-    "            substitute patterns.
-    " no %     + The buffer list will not be saved nor read back.
-    " h        + 'hlsearch' highlighting will not be restored.
-    execute 'set ' . l:persistent_settings . "=!,'100,<500,:500,s100,h"
+    execute 'set ' . l:persistent_settings . "=!,/1000,'1000,<1000,:1000,s10000,h"
     execute 'set ' . l:persistent_settings . '+=n' . fnameescape(l:parent_dir . l:persistent_settings)
 endfunction " }}} END Vim's InitConfig
