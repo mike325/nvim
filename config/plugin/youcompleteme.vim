@@ -90,7 +90,7 @@ let g:ycm_confirm_extra_conf = 0
 let g:ycm_seed_identifiers_with_syntax = 1
 
 " In case there are other completion plugins
-let g:ycm_filetype_blacklist    = {
+let g:ycm_filetype_blacklist = {
         \ 'log' : 1,
         \ 'tagbar' : 1,
         \ 'qf' : 1,
