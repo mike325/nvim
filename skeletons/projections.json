@@ -1,35 +1,12 @@
 {
-    "project.vim": {
-        "type": "Project"
-    },
-    "UltiSnips/*.snippets": {
-        "type": "UltiSnips"
-    },
-    ".ycm_extra_conf.py": {
-        "type": "ConfigYCM"
-    },
-    ".projections.json": {
-        "type": "Projections"
-    },
-    ".gitignore": {
-        "type": "Gitignore"
-    },
-    ".git/hooks/*": {
-        "type": "GitHooks"
-    },
-    ".git/config": {
-        "type": "Git"
-    },
-    ".git/info/*": {
-        "type": "Git"
-    },
-    "README.md": {
-        "type": "Readme"
-    },
-    "LICENSE": {
-        "type": "License"
-    },
-    "clang-format": {
-        "type": "ClangFormat"
-    }
+    "project.vim"          : { "type": "Project" },
+    ".projections.json"    : { "type": "Projections" },
+    ".gitignore"           : { "type": "Gitignore" },
+    ".git/hooks/*"         : { "type": "GitHooks" },
+    ".git/config"          : { "type": "Git" },
+    ".git/info/*"          : { "type": "Git" },
+    "README.md"            : { "type": "Readme" },
+    "LICENSE"              : { "type": "License" },
+    "clang-format"         : { "type": "ClangFormat" },
+    ".ycm_extra_conf.py"   : { "type": "ConfigYCM" }
 }

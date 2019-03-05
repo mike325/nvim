@@ -90,13 +90,9 @@ if !exists('g:minimal') || g:minimal != 0
         finish
     endtry
 
-    if isdirectory(fnameescape(vars#basedir().'config'))
-        Plug fnameescape(vars#basedir().'config')
-    endif
-
-    if isdirectory(fnameescape(vars#basedir().'host'))
-        Plug fnameescape(vars#basedir().'host')
-    endif
+    " if isdirectory(fnameescape(vars#basedir().'host'))
+    "     Plug fnameescape(vars#basedir().'host')
+    " endif
 
     " ####### Colorschemes {{{
 
@@ -206,7 +202,7 @@ if !exists('g:minimal') || g:minimal != 0
             " Fast and 'easy' to compile C CtrlP matcher
             if (executable('gcc') || executable('clang')) && empty($NO_PYTHON_DEV) && !os#name('windows')
                 " Windows must have msbuild compiler to work, temporally disabled
-                Plug 'JazzCore/ctrlp-cmatcher', { 'do': function('plugin#ctrlpmatcher')}
+                Plug 'JazzCore/ctrlp-cmatcher', { 'do': function('plugins#ctrlp_vim#installcmatcher')}
             else
                 " Fast matcher for ctrlp
                 Plug 'FelikZ/ctrlp-py-matcher'
@@ -282,7 +278,7 @@ if !exists('g:minimal') || g:minimal != 0
         if !empty($YCM) && has#async() && executable('cmake') && (( has('unix') && ( executable('gcc')  || executable('clang') )) ||
                     \ (os#name('windows') && executable('msbuild')))
 
-            Plug 'Valloric/YouCompleteMe', { 'do': function('plugin#YCM') }
+            Plug 'Valloric/YouCompleteMe', { 'do': function('plugins#youcompleteme#install') }
             " Plug 'davits/DyeVim'
 
             " C/C++ project generator
@@ -307,15 +303,15 @@ if !exists('g:minimal') || g:minimal != 0
 
             " TODO: I had had some probles with pysl in windows, so let's
             "       skip it until I can figure it out how to fix this
-            if plugin#CheckLanguageServer()
-                let g:branch =  has('nvim-0.2') ? {'branch': 'next', 'do': function('plugin#InstallLanguageClient')} :
-                                                \ {'tag': '0.1.66', 'do': function('plugin#InstallLanguageClient'), 'frozen': 1}
+            if tools#CheckLanguageServer()
+                let g:branch =  has('nvim-0.2') ? {'branch': 'next', 'do': function('plugins#languageclient_neovim#install')} :
+                                                \ {'tag': '0.1.66', 'do': function('plugins#languageclient_neovim#install'), 'frozen': 1}
                                                 " FIXME: Not fully working with neovim < 0.2.0
                 Plug 'autozimu/LanguageClient-neovim', g:branch
                 unlet g:branch
             endif
 
-            if !plugin#CheckLanguageServer('c')
+            if !tools#CheckLanguageServer('c')
                 " C/C++ completion base on clang compiler
                 if executable('clang')
                     if os#name('windows')
@@ -329,7 +325,7 @@ if !exists('g:minimal') || g:minimal != 0
                 endif
             endif
 
-            if !plugin#CheckLanguageServer('python')
+            if !tools#CheckLanguageServer('python')
                 " Python completion
                 if has('nvim-0.2')
                     Plug 'zchee/deoplete-jedi'
@@ -341,8 +337,8 @@ if !exists('g:minimal') || g:minimal != 0
 
             " Go completion
             " TODO: Check Go completion in Windows
-            if !plugin#CheckLanguageServer('go') && executable('make') && executable('go')
-                Plug 'zchee/deoplete-go', { 'do':function('plugin#GetGoCompletion')}
+            if !tools#CheckLanguageServer('go') && executable('make') && executable('go')
+                Plug 'zchee/deoplete-go', { 'do':function('plugins#deoplete_nvim#gocomletion')}
             endif
 
             " if executable('php')
@@ -358,8 +354,8 @@ if !exists('g:minimal') || g:minimal != 0
         elseif has#async()
             " Test new completion has#async framework that require python and vim 8 or
             " Neovim (without python3)
-            if plugin#CheckLanguageServer('any')
-                Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do': function('plugin#InstallLanguageClient')}
+            if tools#CheckLanguageServer('any')
+                Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do': function('plugins#languageclient_neovim#install')}
             endif
 
             Plug 'maralla/completor.vim'
@@ -554,6 +550,27 @@ if !exists('g:minimal') || g:minimal != 0
 
     call plug#end()
 
+    function s:Convert2settings(name)
+        let l:name = (a:name =~? '[\.\-]') ? substitute(a:name, '[\.\-]', '_', 'g') : a:name
+        let l:name = substitute(l:name, ".*", '\l\0', '')
+        return l:name
+    endfunction
+
+    for [s:name, s:data] in items(g:plugs)
+        " available keys
+        "   uri: URL of the repo
+        "   dir: Install dir
+        "   frozen: is it frozen? (0, 1)
+        "   branch: cloned branch
+        "   do: Post install function
+        "   on: CMD to source plugin
+        "   for: FT to source plugin
+        " execute 'call plugins#' . s:Convert2settings(s:name) . '#init(' . s:data . ')'
+        try
+            call plugins#{s:Convert2settings(s:name)}#init(s:data)
+        catch E117
+        endtry
+    endfor
 else
     if !has('nvim') && v:version >= 800
         packadd! matchit

@@ -45,49 +45,132 @@ function! tools#GitVersion(...) abort
             return 1
         endif
     endfor
-
     return a:000[l:i] ==# get(l:components, l:i)
-
 endfunction
 
-let s:greplist = {
-            \   'git': {
-            \       'grepprg': 'git --no-pager grep --no-color -Iin ',
-            \       'grepformat': '%f:%l:%m'
-            \    },
-            \   'rg' : {
-            \       'grepprg':  'rg -S -n --color never -H --no-search-zip --trim --vimgrep ',
-            \       'grepformat': '%f:%l:%c:%m,%f:%l:%m'
-            \   },
-            \   'ag' : {
-            \       'grepprg': 'ag -S -l --follow --nogroup --nocolor --hidden --vimgrep ' . vars#ignore_cmd('ag') . ' ',
-            \       'grepformat': '%f:%l:%c:%m,%f:%l:%m'
-            \   },
-            \   'grep' : {
-            \       'grepprg': 'grep -HiIn --color=never ' . vars#ignore_cmd('grep') . ' ',
-            \       'grepformat': '%f:%l:%m'
-            \   },
-            \   'findstr' : {
-            \       'grepprg': 'findstr -rspn ' . vars#ignore_cmd('findstr') . ' ',
-            \       'grepformat': '%f:%l:%m'
-            \   },
-            \}
+function! tools#CheckLanguageServer(...) abort
+    let l:lang = (a:0 > 0) ? a:1 : ''
 
-if tools#GitVersion(2, 19)
-    let s:greplist.git.grepprg    = 'git --no-pager grep --no-color --column -Iin '
-    let s:greplist.git.grepformat = '%f:%l:%c:%m,%f:%l:%m'
-endif
+    let l:langservers = {
+            \ 'python': ['pyls'],
+            \ 'c'     : ['ccls', 'cquery', 'clangd'],
+            \ 'cpp'   : ['ccls', 'cquery', 'clangd'],
+            \ 'cuda'  : ['ccls'],
+            \ 'objc'  : ['ccls'],
+            \ 'sh'    : ['bash-language-server'],
+            \ 'go'    : ['go-langerver'],
+            \ }
 
-let s:filelist = {
-            \   'git': 'git --no-pager ls-files -co --exclude-standard',
-            \   'rg' : 'rg --line-number --column --with-filename --color never --no-search-zip --hidden --trim --files',
-            \   'ag' : 'ag -l --follow --nocolor --nogroup --hidden '. vars#ignore_cmd('ag') . ' -g ""',
-            \}
+    if empty(l:lang)
+        for [l:language, l:servers] in  items(l:langservers)
+            for l:server in l:servers
+                if executable(l:server)
+                    return 1
+                endif
+            endfor
+        endfor
+    else
+        let l:servers = get(l:langservers, l:lang, '')
+        if !empty(l:servers)
+            for l:server in l:servers
+                if executable(l:server)
+                    return 1
+                endif
+            endfor
+        endif
+    endif
 
-if exists('g:plugs["vim-abolish"]')
-    let s:abolish_lang = {}
+    return 0
+endfunction
 
-    let s:abolish_lang['en'] = {
+" Small wrap to avoid change code all over the repo
+function! tools#grep(tool, ...) abort
+    let l:greplist = {
+                \   'git': {
+                \       'grepprg': 'git --no-pager grep --no-color -Iin ',
+                \       'grepformat': '%f:%l:%m'
+                \    },
+                \   'rg' : {
+                \       'grepprg':  'rg -S -n --color never -H --no-search-zip --trim --vimgrep ',
+                \       'grepformat': '%f:%l:%c:%m,%f:%l:%m'
+                \   },
+                \   'ag' : {
+                \       'grepprg': 'ag -S -l --follow --nogroup --nocolor --hidden --vimgrep ' . vars#ignore_cmd('ag') . ' ',
+                \       'grepformat': '%f:%l:%c:%m,%f:%l:%m'
+                \   },
+                \   'grep' : {
+                \       'grepprg': 'grep -HiIn --color=never ' . vars#ignore_cmd('grep') . ' ',
+                \       'grepformat': '%f:%l:%m'
+                \   },
+                \   'findstr' : {
+                \       'grepprg': 'findstr -rspn ' . vars#ignore_cmd('findstr') . ' ',
+                \       'grepformat': '%f:%l:%m'
+                \   },
+                \}
+
+    if tools#GitVersion(2, 19)
+        let l:greplist.git.grepprg    = 'git --no-pager grep --no-color --column -Iin '
+        let l:greplist.git.grepformat = '%f:%l:%c:%m,%f:%l:%m'
+    endif
+
+    let l:properity = (a:0 > 0) ? a:000[0] : 'grepprg'
+    return l:greplist[a:tool][l:properity]
+endfunction
+
+" Just like GrepTool but for listing files
+function! tools#filelist(tool) abort
+    let l:filelist = {
+                \ 'git'  : 'git --no-pager ls-files -co --exclude-standard',
+                \ 'fd'   : 'fd --hidden --follow --color never ',
+                \ 'rg'   : 'rg --line-number --column --with-filename --color never --no-search-zip --hidden --trim --files',
+                \ 'ag'   : 'ag -l --follow --nocolor --nogroup --hidden '. vars#ignore_cmd('ag') . ' -g ""',
+                \ 'find' : "find . -iname '*'",
+                \}
+
+    return l:filelist[a:tool]
+endfunction
+
+" Small wrap to avoid change code all over the repo
+function! tools#select_grep(is_git, ...) abort
+    let l:grepprg = ''
+    let l:properity = (a:0 > 0) ? a:000[0] : 'grepprg'
+    if executable('git') && a:is_git
+        let l:grepprg = tools#grep('git', l:properity)
+    elseif executable('rg')
+        let l:grepprg = tools#grep('rg', l:properity)
+    elseif executable('ag')
+        let l:grepprg = tools#grep('ag', l:properity)
+    elseif os#name('unix') || ( os#name('windows') && executable('grep'))
+        let l:grepprg = tools#grep('grep', l:properity)
+    elseif os#name('windows')
+        let l:grepprg = tools#grep('findstr', l:properity)
+    endif
+
+    return l:grepprg
+endfunction
+
+
+function! tools#select_filelist(is_git, ...) abort
+    let l:filelist = ''
+    if executable('git') && a:is_git
+        let l:filelist = tools#filelist('git')
+    elseif executable('fd')
+        let l:filelist = tools#filelist('fd')
+    elseif executable('rg')
+        let l:filelist = tools#filelist('rg')
+    elseif executable('ag')
+        let l:filelist = tools#filelist('ag')
+    elseif os#name('unix')
+        let l:filelist = tools#filelist('find')
+    endif
+
+    return l:filelist
+endfunction
+
+function! tools#abolish(lang) abort
+    let l:abolish_lang = {}
+
+    let l:abolish_lang['en'] = {
         \ 'flase'                                        : 'false',
         \ 'syntaxis'                                     : 'syntax',
         \ 'developement'                                 : 'development',
@@ -120,7 +203,7 @@ if exists('g:plugs["vim-abolish"]')
         \ 'cal{a,e}nder{,s}'                             : 'cal{e}ndar{}'
         \ }
 
-    let s:abolish_lang['es'] = {
+    let l:abolish_lang['es'] = {
         \ 'analisis'                                                            : 'análisis',
         \ 'artifial'                                                            : 'artificial',
         \ 'conexion'                                                            : 'conexión',
@@ -151,45 +234,12 @@ if exists('g:plugs["vim-abolish"]')
         \ '{obten,ora,emo,valora,utilizap,modifica,sec,delimita,informa}cion'   : '{}ción',
         \ '{administra,aplica,rala,aproxima}cion'                               : '{}ción',
         \ }
-endif
-
-" Small wrap to avoid change code all over the repo
-function! tools#select_grep(is_git, ...) abort
-    let l:grepprg = ''
-    let l:properity = (a:0 > 0) ? a:000[0] : 'grepprg'
-    if executable('git') && a:is_git
-        let l:grepprg = tools#grep('git', l:properity)
-    elseif executable('rg')
-        let l:grepprg = tools#grep('rg', l:properity)
-    elseif executable('ag')
-        let l:grepprg = tools#grep('ag', l:properity)
-    elseif has('unix') || ( os#name('windows') && executable('grep'))
-        let l:grepprg = tools#grep('grep', l:properity)
-    elseif os#name('windows')
-        let l:grepprg = tools#grep('findstr', l:properity)
-    endif
-
-    return l:grepprg
-endfunction
-
-" Small wrap to avoid change code all over the repo
-function! tools#grep(tool, ...) abort
-    let l:properity = (a:0 > 0) ? a:000[0] : 'grepprg'
-    return s:greplist[a:tool][l:properity]
-endfunction
-
-" Just like GrepTool but for listing files
-function! tools#filelist(tool) abort
-    return s:filelist[a:tool]
-endfunction
-
-function! tools#abolish(lang) abort
     let l:current = &spelllang
     if exists('g:plugs["vim-abolish"]') && l:current !=# a:lang
-        for [l:key, l:val] in items(s:abolish_lang[l:current])
+        for [l:key, l:val] in items(l:abolish_lang[l:current])
             execute 'Abolish -delete ' . l:key
         endfor
-        for [l:key, l:val] in items(s:abolish_lang[a:lang])
+        for [l:key, l:val] in items(l:abolish_lang[a:lang])
             execute 'Abolish ' . l:key . ' ' . l:val
         endfor
     endif

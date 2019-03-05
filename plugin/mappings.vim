@@ -250,34 +250,6 @@ if executable('svn')
 
 endif
 
-" function! s:Scratch(bang, args, range)
-"     let s:bang = a:bang
-"     if !exists('s:target') || a:bang
-"         if bufexists(s:target) || filereadable(s:target)
-"             Remove! expand( s:target )
-"         endif
-"
-"         let s:args = expand(a:args)
-"         if isdirectory(s:args)
-"
-"         endif
-"         let s:target = fnamemodify(empty(a:args) ? expand($TMPDIR . "/scratch.vim") : expand(a:args), ":p")
-"         let s:target = ( fnamemodify(expand( s:target ), ":e") != "vim") ? s:target . ".vim" : s:target
-"         unlet s:args
-"     endif
-"     topleft 18sp expand(s:target)
-"     unlet s:bang
-" endfunction
-
-" command! -bang -complete=dir -nargs=? Scratch
-
-" function! s:FindProjectRoot()
-"     " Statement
-" endfunction
-
-" command -nargs=1 -bang -bar -range=0 -complete=custom,s:SubComplete S
-"       \ :exec s:subvert_dispatcher(<bang>0,<line1>,<line2>,<count>,<q-args>)
-
 " ####### Fallback Plugin mapping {{{
 
 if !exists('g:plugs["iron.nvim"]') && has#python()
@@ -329,11 +301,27 @@ endif
 " endif
 
 if !exists('g:plugs["vim-eunuch"]')
-    " command! -bang -nargs=1 -complete=file Move
-    "             \
+    if exists('*rename')
+        command! -bang -nargs=1 -complete=file Move
+                    \ let s:name = expand(<q-args>) |
+                    \ let s:current = expand('%:p') |
+                    \ if (rename(s:current, s:name)) |
+                    \   execute 'edit ' . s:name |
+                    \   execute 'bwipeout! '.s:current |
+                    \ endif |
+                    \ unlet s:name |
+                    \ unlet s:current
 
-    " command! -bang -nargs=1 -complete=file Rename
-    "             \
+        command! -bang -nargs=1 -complete=file Rename
+                    \ let s:name = expand('%:p:h') . '/' . expand(<q-args>) |
+                    \ let s:current = expand('%:p') |
+                    \ if (rename(s:current, s:name)) |
+                    \   execute 'edit ' . s:name |
+                    \   execute 'bwipeout! '.s:current |
+                    \ endif |
+                    \ unlet s:name |
+                    \ unlet s:current
+    endif
 
     command! -bang -nargs=1 -complete=dir Mkdir
                 \ let s:bang = empty(<bang>0) ? 0 : 1 |
