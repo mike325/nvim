@@ -42,8 +42,8 @@ function! s:PythonProviders(python) abort
                     \ 'c:/python_'.l:major.l:minor,
                     \ 'c:/python/python_'.l:major.l:minor,
                     \]
-        for l:pydir in l:candidates
-            if isdirectory(fnameescape(l:pydir))
+        for l:pydir in l:candidates  " TODO:  changeme to filter
+            if isdirectory(fnameescape(l:pydir)) && system(l:pydir . '/python -c "import pynvim; print(True)"') =~# '^True'
                 return l:pydir
             endif
         endfor
@@ -70,7 +70,7 @@ function! setup#python() abort
         endif
     endif
 
-    for s:minor in ['8', '7', '6', '5', '4']
+    for s:minor in ['8', '7', '6', '5', '4']  " TODO:  changeme to filter
         let s:python = ['3', s:minor]
         if s:PythonProviders(s:python) !=# ''
             if exists('g:loaded_python3_provider')

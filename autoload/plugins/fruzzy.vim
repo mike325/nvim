@@ -32,3 +32,10 @@ function! plugins#fruzzy#install(info) abort
         call fruzzy#install()
     endif
 endfunction
+
+function! plugins#fruzzy#init(data) abort
+    if !exists('g:plugs["fruzzy"]]')
+        return -1
+    endif
+endfunction
+

@@ -552,7 +552,9 @@ if !exists('g:minimal') || g:minimal != 0
         return l:name
     endfunction
 
-    for [s:name, s:data] in items(g:plugs)
+    let s:available_configs = map(glob(vars#basedir() . '/autoload/plugins/*.vim', 0, 1, 0), 'fnamemodify(v:val, ":t:r")')
+
+    for [s:name, s:data] in items(filter(deepcopy(g:plugs), 'index(s:available_configs, s:Convert2settings(v:key), 0) != -1'))
         " available keys
         "   uri: URL of the repo
         "   dir: Install dir
@@ -561,11 +563,7 @@ if !exists('g:minimal') || g:minimal != 0
         "   do: Post install function
         "   on: CMD to source plugin
         "   for: FT to source plugin
-        " execute 'call plugins#' . s:Convert2settings(s:name) . '#init(' . s:data . ')'
-        try
-            call plugins#{s:Convert2settings(s:name)}#init(s:data)
-        catch E117
-        endtry
+        call plugins#{s:Convert2settings(s:name)}#init(s:data)
     endfor
 else
     if !has('nvim') && v:version >= 800

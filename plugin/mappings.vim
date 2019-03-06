@@ -232,9 +232,6 @@ command! -nargs=? -complete=customlist,tools#spells SpellLang
 
 command! -nargs=? ConncallLevel  call mappings#ConncallLevel(expand(<q-args>))
 
-
-command! -nargs=1 -complete=customlist,tools#oldfiles Oldfiles edit <args>
-
 " Avoid dispatch command conflict
 " QuickfixOpen
 command! -nargs=? Qopen execute((&splitbelow) ? 'botright' : 'topleft' ) . ' copen ' . expand(<q-args>)
@@ -251,6 +248,10 @@ if executable('svn')
 endif
 
 " ####### Fallback Plugin mapping {{{
+
+if !exists('g:plugs["denite.nvim"]')
+    command! -nargs=1 -complete=customlist,tools#oldfiles Oldfiles edit <args>
+endif
 
 if !exists('g:plugs["iron.nvim"]') && has#python()
     command! -complete=file -nargs=* Python call mappings#Python(2, <q-args>)

@@ -112,6 +112,8 @@ function! plugins#denite_nvim#init(data) abort
 
     nnoremap <silent> <C-b> :<C-u>Denite -prompt='Buffers >' -buffer-name='Buffers' buffer<CR>
 
+    command! Oldfiles Denite -prompt='Oldfiles >' -buffer-name='Oldfiles' file/old
+
     if exists('g:plugs["fruzzy"]')
         let g:fruzzy#usenative = 1
         call denite#custom#source('_', 'matchers', ['matcher/fruzzy'])

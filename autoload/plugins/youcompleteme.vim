@@ -103,8 +103,8 @@ function! plugins#youcompleteme#init(data) abort
         return -1
     endif
 
+    let g:ycm_min_num_of_chars_for_completion           = 2
     let g:ycm_auto_trigger                              = 1
-    let g:ycm_min_num_of_chars_for_completion           = 1
     let g:ycm_complete_in_comments                      = 1
     let g:ycm_seed_identifiers_with_syntax              = 1
     let g:ycm_add_preview_to_completeopt                = 1
