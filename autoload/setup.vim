@@ -47,7 +47,7 @@ function! s:PythonProviders(python) abort
                 return l:pydir
             endif
         endfor
-    elseif executable('python'.l:major.'.'.l:minor)
+    elseif executable('python'.l:major.'.'.l:minor) && system('python'.l:major.'.'.l:minor .' -c "import pynvim; print(True)"') =~# '^True'
         return 'python'.l:major.'.'.l:minor
     endif
     return ''
