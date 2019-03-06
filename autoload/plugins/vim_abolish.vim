@@ -25,19 +25,11 @@
 " ############################################################################
 
 function! plugins#vim_abolish#post() abort
-    if !exists('g:plugs["vim-abolish"]')
+    if !exists('g:plugs["vim-abolish"]') || exists(':Abolish') != 2
         return -1
     endif
 
-    try
-        Abolish gti git
-    catch E492
-        if !has#gui()
-            augroup InitErrors
-                autocmd VimEnter * echoerr 'Abolish is not install, please run :Pluginstall'
-            augroup end
-        endif
-    endtry
+    Abolish gti git
 endfunction
 
 function! plugins#vim_abolish#init(data) abort

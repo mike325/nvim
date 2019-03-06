@@ -235,7 +235,7 @@ function! tools#abolish(lang) abort
         \ '{administra,aplica,rala,aproxima}cion'                               : '{}ción',
         \ }
     let l:current = &spelllang
-    if exists('g:plugs["vim-abolish"]') && l:current !=# a:lang
+    if ( exists('g:plugs["vim-abolish"]') && exists(':Abolish') == 2) && l:current !=# a:lang
         for [l:key, l:val] in items(l:abolish_lang[l:current])
             execute 'Abolish -delete ' . l:key
         endfor

@@ -1,4 +1,3 @@
-" set encoding=utf-8     " The encoding displayed.
 scriptencoding "utf-8"
 " HEADER {{{
 "
@@ -30,11 +29,15 @@ scriptencoding "utf-8"
 " current Vim instance
 
 " We just want to source this file once
-if exists('g:settings_loaded') && g:settings_loaded
+if exists('g:settings_loaded')
     finish
 endif
 
-let g:settings_loaded = 1
+if has('nvim')
+    call nvim#init()
+else
+    call vim#init()
+endif
 
 " Allow lua omni completion
 let g:lua_complete_omni = 1
@@ -42,44 +45,8 @@ let g:lua_complete_omni = 1
 " Always prefer latex over plain text for *.tex files
 let g:tex_flavor = 'latex'
 
-" Disable some vi compatibility
-if has('nvim') && !exists('g:plugs["traces.vim"]')
-    " Live substitute preview
-    set inccommand=split
-else
-    set ttyfast
-    set t_vb= " ...disable the visual effect
-endif
-
-if has('nvim') || (v:version >= 704)
-    set formatoptions+=r " Auto insert comment with <Enter>...
-    set formatoptions+=o " ...or o/O
-    set formatoptions+=c " Autowrap comments using textwidth
-    set formatoptions+=l " Do not wrap lines that have been longer when starting insert mode already
-    set formatoptions+=q " Allow formatting of comments with "gq".
-    set formatoptions+=t " Auto-wrap text using textwidth
-    set formatoptions+=n " Recognize numbered lists
-    set formatoptions+=j " Delete comment character when joining commented lines
-endif
-
-" Vim terminal settings
-if !has('nvim')
-    set t_Co=255
-endif
-
-if has('nvim') && executable('nvr')
-    " Add Neovim remote utility, this allow us to open buffers from the :terminal cmd
-    let $nvr = 'nvr --remote-silent'
-    let $tnvr = 'nvr --remote-tab-silent'
-    let $vnvr = 'nvr -cc vsplit --remote-silent'
-    let $snvr = 'nvr -cc split --remote-silent'
-endif
-
-if has('nvim')
-    let g:terminal_scrollback_buffer_size = 100000
-    if exists('+scrollback')
-        set scrollback=-1
-    endif
+if exists('+scrollback')
+    set scrollback=-1
 endif
 
 if exists('+numberwidth')
@@ -95,25 +62,16 @@ if exists('+breakindent')
     endtry
 endif
 
-" This is adjusted inside autocmd.vim to use git according to the dir changes events
-if executable('rg')
-    let &grepprg = tools#grep('rg', 'grepprg')
-    let &grepformat = tools#grep('rg', 'grepformat')
-elseif executable('ag')
-    let &grepprg = tools#grep('ag', 'grepprg')
-    let &grepformat = tools#grep('ag', 'grepformat')
-elseif executable('grep')
-    let &grepprg = tools#grep('grep', 'grepprg')
-    let &grepformat = tools#grep('grep', 'grepformat')
-elseif executable('findstr')
-    let &grepprg = tools#grep('findstr', 'grepprg')
-    let &grepformat = tools#grep('findstr', 'grepformat')
-endif
-
 if has('termguicolors')
     " set terminal colors
     set termguicolors
 endif
+
+if exists('+virtualedit')
+    " Allow virtual editing in Visual block mode.
+    set virtualedit=block
+endif
+
 
 " Color columns
 if exists('+colorcolumn')
@@ -124,6 +82,18 @@ if exists('+colorcolumn')
 
     " Visual ruler
     set colorcolumn=80
+endif
+
+if exists('+relativenumber')
+    set relativenumber " Show line numbers in motions friendly way
+endif
+
+if exists('+syntax')
+    syntax enable      " Switch on syntax highlighting
+endif
+
+if exists('+infercase')
+    set infercase      " Smart casing when completing
 endif
 
 " Clipboard {{{
@@ -172,9 +142,16 @@ endif
 
 " }}} END Clipboard
 
-set background=dark
+" This is adjusted inside autocmd.vim to use git according to the dir changes events
+let &grepprg = tools#select_grep(0)
+let &grepformat = tools#select_grep(0, 'grepformat')
 
-set backspace=indent,eol,start " Use full backspace power
+if has('nvim') || v:version >= 704
+    set formatoptions+=r " Auto insert comment with <Enter>...
+    set formatoptions+=o " ...or o/O
+    set formatoptions+=l " Do not wrap lines that have been longer when starting insert mode already
+    set formatoptions+=n " Recognize numbered lists
+endif
 
 if exists('g:gonvim_running')
     " Use Gonvim UI instead of (Neo)vim native GUI/TUI
@@ -188,14 +165,8 @@ if exists('g:gonvim_running')
     endif
 
 else
-    set laststatus=2   " Always show the status line
-    set ruler
     set titlestring=%t\ (%f)
     set title          " Set window title
-endif
-
-if has('nvim-0.3.3')
-    set diffopt=internal,filler,vertical,iwhiteall,iwhiteeol,indent-heuristic,algorithm:patience
 endif
 
 set lazyredraw " Don't draw when a macro is being executed
@@ -205,38 +176,21 @@ set nowrap     " By default don't wrap the lines
 set showmatch  " Show matching parenthesis
 set number     " Show line numbers
 
-if exists('+relativenumber')
-    set relativenumber " Show line numbers in motions friendly way
-endif
-
-if exists('+syntax')
-    syntax enable      " Switch on syntax highlighting
-endif
-
 " Improve performance by just highlighting the first 256 chars
 set synmaxcol=256
 
 " Search settings
-set hlsearch       " highlight search terms
-set incsearch      " show search matches as you type
 set ignorecase     " ignore case
-" set gdefault     " Always do global substitutes
-
-if exists('+infercase')
-    set infercase      " Smart casing when completing
-endif
+set gdefault     " Always do global substitutes
 
 " Indenting stuff
-set autoindent
 set smartindent
 set copyindent
+
 " set softtabstop=4  " makes the spaces feel like real tabs
 set tabstop=4      " 1 tab = 4 spaces
 set shiftwidth=4   " Same for autoindenting
 set expandtab      " Use spaces for indenting, tabs are evil
-
-set smarttab       " Insert tabs on the start of a line according to
-                   " shiftwidth, not tabstop
 
 set shiftround     " Use multiple of shiftwidth when indenting with '<' and '>'
 
@@ -249,7 +203,6 @@ endif
 " Allow to send unsaved buffers to the backgroud
 set hidden
 
-set autoread     " Auto-reload buffers when file changed on disk
 set autowrite    " Write files when navigating with :next/:previous
 set autowriteall " Write files when exit (Neo)vim
 
@@ -269,7 +222,6 @@ else
 endif
 
 " Enable <TAB> completion in command mode
-set wildmenu
 set wildmode=full
 
 " Use only 1 space after "." when joining lines, not 2
@@ -281,24 +233,9 @@ set path+=**
 " Set vertical diff
 set diffopt+=vertical
 
-if exists('+belloff')
-    set belloff=all " Bells are annoying
-endif
 set visualbell  " Visual bell instead of beeps, but...
 
 set fileformats=unix,dos " File mode unix by default
-
-" Default omnicomplete func
-set omnifunc=syntaxcomplete#Complete
-
-" Provide completion from
-"   - The curretn buffer
-"   - Buffers in other windows
-"   - Buffers in the buffer list
-"   - Current and include files
-"   - Current and include files for defined name or macros
-"   - Tag files
-set complete=.,w,b,u,t,d,i
 
 " Folding settings
 set nofoldenable      " don't fold by default
@@ -307,17 +244,11 @@ set foldlevel=99      " Autoclose fold levels greater than 99
 set foldcolumn=0
 " set foldnestmax=10    " deepest fold is 10 levels
 
-set history=1000    " keep 1000 lines of command line history
-set undolevels=1000 " Set the number the undos per file
+set undolevels=10000 " Set the number the undos per file
 
 if !exists('g:minimal') && exists('g:plugs["vim-airline"]')
     " We already have the statusline, we don't need this
     set noshowmode
-endif
-
-if exists('+virtualedit')
-    " Allow virtual editing in Visual block mode.
-    set virtualedit=block
 endif
 
 set sessionoptions=buffers,curdir,folds,globals,localoptions,options,resize,tabpages,winpos,winsize

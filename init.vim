@@ -90,10 +90,6 @@ if !exists('g:minimal') || g:minimal != 0
         finish
     endtry
 
-    " if isdirectory(fnameescape(vars#basedir().'host'))
-    "     Plug fnameescape(vars#basedir().'host')
-    " endif
-
     " ####### Colorschemes {{{
 
     " Plug 'morhetz/gruvbox'
@@ -120,9 +116,9 @@ if !exists('g:minimal') || g:minimal != 0
     Plug 'raimon49/requirements.txt.vim'
 
     if has('nvim') && has#python('3')
-        Plug 'numirias/semshi', {'do': ':UpdateRemotePlugins'}
-        " Plug 'blahgeek/neovim-colorcoder', {'do': ':UpdateRemotePlugins'}
-        " Plug 'arakashic/chromatica.nvim', {'do': ':UpdateRemotePlugins'}
+        Plug 'numirias/semshi', {'do': ':silent! UpdateRemotePlugins'}
+        " Plug 'blahgeek/neovim-colorcoder', {'do': ':silent! UpdateRemotePlugins'}
+        " Plug 'arakashic/chromatica.nvim', {'do': ':silent! UpdateRemotePlugins'}
     endif
 
     Plug 'octol/vim-cpp-enhanced-highlight'
@@ -296,9 +292,9 @@ if !exists('g:minimal') || g:minimal != 0
             " FIXME: Some versions of debian ship neovim 0.1.7 which doesn't work
             "        with latest versions of deoplete
             if has('nvim-0.2')
-                Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins'}
+                Plug 'Shougo/deoplete.nvim', { 'do': ':silent! UpdateRemotePlugins'}
             else
-                Plug 'Shougo/deoplete.nvim', { 'tag': '2.0', 'do': ':UpdateRemotePlugins', 'frozen' : 1}
+                Plug 'Shougo/deoplete.nvim', { 'tag': '2.0', 'do': ':silent! UpdateRemotePlugins', 'frozen' : 1}
             endif
 
             " TODO: I had had some probles with pysl in windows, so let's
@@ -552,7 +548,7 @@ if !exists('g:minimal') || g:minimal != 0
 
     function s:Convert2settings(name)
         let l:name = (a:name =~? '[\.\-]') ? substitute(a:name, '[\.\-]', '_', 'g') : a:name
-        let l:name = substitute(l:name, ".*", '\l\0', '')
+        let l:name = substitute(l:name, '.*', '\l\0', '')
         return l:name
     endfunction
 

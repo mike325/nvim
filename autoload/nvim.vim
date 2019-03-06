@@ -24,12 +24,12 @@
 "
 " ############################################################################
 
-let s:load_remotes = 0
+" let s:load_remotes = 0
 
-augroup UpdateRemotes
-    autocmd!
-    autocmd VimEnter * if s:load_remotes == 1 | UpdateRemotePlugins | endif
-augroup end
+" augroup UpdateRemotes
+"     autocmd!
+"     autocmd VimEnter * if s:load_remotes == 1 | UpdateRemotePlugins | endif
+" augroup end
 
 function! nvim#updateremoteplugins(info) abort
     if has('nvim')
@@ -37,4 +37,28 @@ function! nvim#updateremoteplugins(info) abort
     endif
 endfunction
 
+function! nvim#init() abort
+    if !has('nvm')
+        return -1
+    endif
+    " Disable some vi compatibility
+    if !exists('g:plugs["traces.vim"]')
+        " Live substitute preview
+        set inccommand=split
+    endif
 
+    if executable('nvr')
+        " Add Neovim remote utility, this allow us to open buffers from the :terminal cmd
+        let $nvr = 'nvr --remote-silent'
+        let $tnvr = 'nvr --remote-tab-silent'
+        let $vnvr = 'nvr -cc vsplit --remote-silent'
+        let $snvr = 'nvr -cc split --remote-silent'
+    endif
+
+    let g:terminal_scrollback_buffer_size = 100000
+
+    if has('nvim-0.3.3')
+        set diffopt=internal,filler,vertical,iwhiteall,iwhiteeol,indent-heuristic,algorithm:patience
+    endif
+
+endfunction

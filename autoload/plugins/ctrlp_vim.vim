@@ -106,12 +106,4 @@ function! plugins#ctrlp_vim#init(data) abort
         unlet s:windows_find
     endif
 
-    " augroup CtrlPCache
-    "     autocmd!
-    "     autocmd VimEnter * call s:FindProjectRoot()
-    "     autocmd SessionLoadPost * call s:FindProjectRoot()
-    "     if has("nvim")
-    "         autocmd DirChanged * call s:FindProjectRoot()
-    "     endif
-    " augroup end
 endfunction
