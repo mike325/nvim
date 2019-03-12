@@ -181,7 +181,6 @@ set synmaxcol=256
 
 " Search settings
 set ignorecase     " ignore case
-set gdefault     " Always do global substitutes
 
 " Indenting stuff
 set smartindent
