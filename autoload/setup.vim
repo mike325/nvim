@@ -42,13 +42,23 @@ function! s:PythonProviders(python) abort
                     \ 'c:/python_'.l:major.l:minor,
                     \ 'c:/python/python_'.l:major.l:minor,
                     \]
+        let l:pynvim = {
+                    \ 'local': vars#home() . '/AppData/Roaming/Python'.l:major.l:minor.'/site-packages/pynvim',
+                    \ }
         for l:pydir in l:candidates  " TODO:  changeme to filter
-            if isdirectory(fnameescape(l:pydir)) && system(l:pydir . '/python -c "import pynvim; print(True)"') =~# '^True'
+            let l:pynvim['system'] = l:pydir . '/site-packages/pynvim'
+            if isdirectory(fnameescape(l:pydir)) && (isdirectory(l:pynvim['local']) || isdirectory(l:pynvim['system']))
                 return l:pydir
             endif
         endfor
-    elseif executable('python'.l:major.'.'.l:minor) && system('python'.l:major.'.'.l:minor .' -c "import pynvim; print(True)"') =~# '^True'
-        return 'python'.l:major.'.'.l:minor
+    else
+        let l:pynvim = {
+                    \ 'local': vars#home() . '/.local/lib/python'.l:major.'.'.l:minor.'/site-packages/pynvim',
+                    \ 'system': '/usr/lib/python'.l:major.'.'.l:minor.'/site-packages/pynvim',
+                    \ }
+        if executable('python'.l:major.'.'.l:minor) && (isdirectory(l:pynvim['local']) || isdirectory(l:pynvim['system']))
+            return 'python'.l:major.'.'.l:minor
+        endif
     endif
     return ''
 endfunction
