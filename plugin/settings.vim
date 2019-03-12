@@ -223,6 +223,8 @@ endif
 " Enable <TAB> completion in command mode
 set wildmode=full
 
+set backupcopy=yes
+
 " Use only 1 space after "." when joining lines, not 2
 set nojoinspaces
 

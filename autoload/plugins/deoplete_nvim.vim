@@ -58,7 +58,7 @@ function! plugins#deoplete_nvim#init(data) abort
         \   'smart_case': 1,
         \   'min_keyword_length': 1,
         \ })
-    catch
+    catch E117
         let g:deoplete#enable_refresh_always             = 1
         let g:deoplete#enable_smart_case                 = 1
         let g:deoplete#sources#syntax#min_keyword_length = 1
@@ -106,7 +106,7 @@ function! plugins#deoplete_nvim#init(data) abort
     if exists('g:plugs["LanguageClient-neovim"]')
         try
             call deoplete#custom#source('LanguageClient', 'min_pattern_length',  2)
-        catch
+        catch E117
             let g:deoplete#sources#LanguageClient#min_pattern_length = 2
         endtry
     endif

@@ -43,7 +43,7 @@ function! s:PythonProviders(python) abort
                     \ 'c:/python/python_'.l:major.l:minor,
                     \]
         let l:pynvim = {
-                    \ 'local': vars#home() . '/AppData/Roaming/Python'.l:major.l:minor.'/site-packages/pynvim',
+                    \ 'local': vars#home() . '/AppData/Roaming/Python/Python'.l:major.l:minor.'/site-packages/pynvim',
                     \ }
         for l:pydir in l:candidates  " TODO:  changeme to filter
             let l:pynvim['system'] = l:pydir . '/site-packages/pynvim'

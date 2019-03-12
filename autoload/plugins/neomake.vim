@@ -206,6 +206,7 @@ function! plugins#neomake#init(data) abort
             \ 'InsertLeave': {},
             \ 'BufWritePost': {'delay': 0},
             \ }, 1000)
+
     catch E117
         " Neovim-qt can't output messages while it's starting
         " if !has#gui()

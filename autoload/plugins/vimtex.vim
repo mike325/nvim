@@ -56,36 +56,4 @@ function! plugins#vimtex#init(data) abort
     let g:vimtex_text_obj_enabled = 1
     let g:tex_flavor              = 'latex'
     " let g:vimtex_imaps_leader     = '`'
-
-    " inoremap ]] <plug>(vimtex-delim-close)
-    "
-    " nnoremap %  <plug>(vimtex-%)
-    " nnoremap ]] <plug>(vimtex-]])
-    " nnoremap ][ <plug>(vimtex-][)
-    " nnoremap [] <plug>(vimtex-[])
-    " nnoremap [[ <plug>(vimtex-[[)
-    " nnoremap ]m <plug>(vimtex-]m)
-    " nnoremap ]M <plug>(vimtex-]M)
-    " nnoremap [m <plug>(vimtex-[m)
-    " nnoremap [M <plug>(vimtex-[M)
-    " nnoremap ]/ <plug>(vimtex-]/
-    " nnoremap ]* <plug>(vimtex-]star
-    " nnoremap [/ <plug>(vimtex-[/
-    " nnoremap [* <plug>(vimtex-[star
-    " nnoremap K  <plug>(vimtex-doc-package)
-    "
-    " vnoremap %  <plug>(vimtex-%)
-    " vnoremap ]] <plug>(vimtex-]])
-    " vnoremap ][ <plug>(vimtex-][)
-    " vnoremap [] <plug>(vimtex-[])
-    " vnoremap [[ <plug>(vimtex-[[)
-    " vnoremap ]m <plug>(vimtex-]m)
-    " vnoremap ]M <plug>(vimtex-]M)
-    " vnoremap [m <plug>(vimtex-[m)
-    " vnoremap [M <plug>(vimtex-[M)
-    " vnoremap ]/ <plug>(vimtex-]/
-    " vnoremap ]* <plug>(vimtex-]star
-    " vnoremap [/ <plug>(vimtex-[/
-    " vnoremap [* <plug>(vimtex-[star
-    " vnoremap K  <plug>(vimtex-doc-package)
 endfunction

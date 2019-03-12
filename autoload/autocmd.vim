@@ -153,11 +153,11 @@ function! autocmd#SetProjectConfigs() abort
         endif
 
         if exists('g:plugs["ultisnips"]')
-            function! s:ChangeUltisnipsDir() abort
-                if isdirectory(l:project_root . '/UltiSnips')
-                    let g:UltiSnipsSnippetsDir        = l:project_root . '/UltiSnips'
+            function! s:ChangeUltisnipsDir(project_root) abort
+                if isdirectory(a:project_root . '/UltiSnips')
+                    let g:UltiSnipsSnippetsDir        = a:project_root . '/UltiSnips'
                     let g:UltiSnipsSnippetDirectories = [
-                                \   l:project_root . '/UltiSnips',
+                                \   a:project_root . '/UltiSnips',
                                 \   vars#basedir() . 'config/UltiSnips',
                                 \   'UltiSnips',
                                 \]
@@ -173,8 +173,8 @@ function! autocmd#SetProjectConfigs() abort
             command! UltiSnipsDir call mkdir(l:project_root . '/UltiSnips', 'p') | call s:ChangeUltisnipsDir()
 
             try
-                call s:ChangeUltisnipsDir()
-            catch
+                call s:ChangeUltisnipsDir(l:project_root)
+            catch E117
                 "
             endtry
 

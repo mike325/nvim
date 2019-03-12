@@ -63,3 +63,13 @@ nmap <buffer> g= <Plug>VimwikiRemoveHeaderLevel
 
 nnoremap <buffer> gwt :VimwikiTable<CR>
 nnoremap <buffer> gwg :VimwikiGoto<space>
+
+nnoremap <buffer> <A-l> m`:VimwikiTableMoveColumnLeft<CR>``
+nnoremap <buffer> <A-h> m`:VimwikiTableMoveColumnRight<CR>``
+
+setlocal textwidth=80
+
+" Restore signify mappings
+if exists('g:plugs["vim-signify"]')
+    call plugins#vim_signify#init(0)
+endif

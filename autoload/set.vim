@@ -70,4 +70,52 @@ function! set#initconfigs() abort " Vim's InitConfig {{{
 
     execute 'set ' . l:persistent_settings . "=!,/1000,'1000,<1000,:1000,s10000,h"
     execute 'set ' . l:persistent_settings . '+=n' . fnameescape(l:parent_dir . l:persistent_settings)
+
+    let l:wildignores = [
+        \   '*.spl',
+        \   '*.aux',
+        \   '*.out',
+        \   '*.o',
+        \   '*.pyc',
+        \   '*.gz',
+        \   '*.pdf',
+        \   '*.sw',
+        \   '*.swp',
+        \   '*.swap',
+        \   '*.com',
+        \   '*.exe',
+        \   '*.so',
+        \   '*/cache/*',
+        \   '*/__pycache__/*',
+        \ ]
+
+    let l:no_backup = [
+        \   '.git/*',
+        \   '.svn/*',
+        \   '.xml',
+        \   '*.log',
+        \   '*.bin',
+        \   '*.7z',
+        \   '*.dmg',
+        \   '*.gz',
+        \   '*.iso',
+        \   '*.jar',
+        \   '*.rar',
+        \   '*.tar',
+        \   '*.zip',
+        \   'TAGS',
+        \   'tags',
+        \   'GTAGS',
+        \   'COMMIT_EDITMSG',
+        \]
+
+    if os#name('windows') && &shellslash
+        let l:wildignores += map(split(&backupskip, ','), 'substitute(v:val, "\\", "/", "g")')
+    else
+        let l:wildignores += split(&backupskip, ',')
+    endif
+
+    let &wildignore = join(l:wildignores, ',')
+    let &backupskip = join(l:wildignores + l:no_backup, ',')
+
 endfunction " }}} END Vim's InitConfig

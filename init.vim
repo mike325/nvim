@@ -66,7 +66,7 @@ endif
 
 try
     call set#initconfigs()
-catch
+catch E117
     " Don't raise and error yet
     augroup InitErrors
         autocmd!
@@ -79,7 +79,7 @@ if !exists('g:minimal') || g:minimal != 0
     try
         call execute('set runtimepath+=' . expand(vars#basedir() . 'plug/'))
         call plug#begin(vars#basedir().'plugged')
-    catch
+    catch E117
         " Fallback if we fail to init Plug
         if !has('nvim') && v:version >= 800
             packadd! matchit
@@ -96,7 +96,7 @@ if !exists('g:minimal') || g:minimal != 0
     " Plug 'sickill/vim-monokai'
     " Plug 'nanotech/jellybeans.vim'
     " Plug 'whatyouhide/vim-gotham'
-    " Plug 'joshdick/onedark.vim'
+    Plug 'joshdick/onedark.vim'
     Plug 'ayu-theme/ayu-vim'
 
     " }}} END Colorschemes
@@ -563,7 +563,8 @@ if !exists('g:minimal') || g:minimal != 0
         "   do: Post install function
         "   on: CMD to source plugin
         "   for: FT to source plugin
-        call plugins#{s:Convert2settings(s:name)}#init(s:data)
+        let s:func_name = s:Convert2settings(s:name)
+        call plugins#{s:func_name}#init(s:data)
     endfor
 else
     if !has('nvim') && v:version >= 800

@@ -81,10 +81,7 @@ function! plugins#youcompleteme#install(info) abort
             endif
         endif
 
-        let l:python = (exists('g:python3_host_prog')) ? g:python3_host_prog : g:python_host_prog
-
         echomsg 'CMD: ' . join(l:cmd, ' ')
-
         execute ' ! ' join(l:cmd, ' ')
 
         " if os#name('windows')
@@ -124,11 +121,7 @@ function! plugins#youcompleteme#init(data) abort
         let g:ycm_warning_symbol = '⚠'
     endif
 
-    let g:ycm_extra_conf_globlist   = [
-                \   '~/.vim/*',
-                \   '~/.config/nvim/*',
-                \   '~/AppData/nvim/*',
-                \ ]
+    let g:ycm_extra_conf_globlist   = ['~/.vim/*', '~/.config/nvim/*', '~/AppData/nvim/*']
 
     let g:ycm_python_interpreter_path = exists('g:python3_host_prog') ?  g:python3_host_prog : g:python_host_prog
     let g:ycm_python_interpreter_path = exepath(g:ycm_python_interpreter_path)
@@ -190,7 +183,7 @@ function! plugins#youcompleteme#init(data) abort
 
     let g:ycm_use_ultisnips_completer = exists('g:plugs["ultisnips"]') ? 1 : 0
 
-    function! s:SplitYCM(split_type, ycm_cmd)
+    function! s:SplitYCM(split_type, ycm_cmd) abort
         execute a:split_type
         execute a:ycm_cmd
     endfunction
@@ -234,5 +227,10 @@ function! plugins#youcompleteme#init(data) abort
             call plugins#youcompleteme#FixYCMBs()
         endif
     endif
+
+    try
+        call host#ycm#config()
+    catch E117
+    endtry
 
 endfunction

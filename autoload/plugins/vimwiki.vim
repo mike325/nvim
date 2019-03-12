@@ -60,6 +60,7 @@ function! plugins#vimwiki#init(data) abort
                     \ 'syntax'   : 'markdown',
                     \ 'ext'      : '.md',
                     \ 'auto_tags': 1,
+                    \ 'auto_toc': 1,
                     \ 'nested_syntaxes': {
                     \       'ruby'  : 'ruby',
                     \       'python': 'python',
@@ -75,6 +76,7 @@ function! plugins#vimwiki#init(data) abort
                     \ 'syntax'   : 'markdown',
                     \ 'ext'      : '.md',
                     \ 'auto_tags': 1,
+                    \ 'auto_toc': 1,
                     \ 'nested_syntaxes': {
                     \       'ruby'  : 'ruby',
                     \       'python': 'python',
