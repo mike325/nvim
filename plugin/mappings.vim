@@ -161,6 +161,8 @@ xnoremap <leader>0 <ESC>:tablast<CR>
 cnoremap <C-n> <down>
 cnoremap <C-p> <up>
 
+cnoremap <C-r><C-w> "<C-r>=escape(expand('<cword>'), '#')<CR>"
+
 " Repeat last substitution
 nnoremap & :&&<CR>
 xnoremap & :&&<CR>

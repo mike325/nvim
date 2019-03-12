@@ -236,8 +236,6 @@ if !exists('g:minimal') || g:minimal != 0
 
     " Vim airline is available for >= Vim 7.4
     if v:version > 703 || has('nvim')
-        " TODO: Airline seems to take 2/3 of the startuptime
-        "       May look to lighter alternatives
         Plug 'vim-airline/vim-airline'
         Plug 'vim-airline/vim-airline-themes'
         " Plug 'enricobacis/vim-airline-clock'
@@ -438,7 +436,7 @@ if !exists('g:minimal') || g:minimal != 0
     endif
 
     " Register text substitution with motions
-    Plug 'vim-scripts/ReplaceWithRegister'
+    " Plug 'vim-scripts/ReplaceWithRegister'
 
     " JSON text objects
     Plug 'tpope/vim-jdaddy'
@@ -455,6 +453,8 @@ if !exists('g:minimal') || g:minimal != 0
     " }}} END Text objects, Motions and Text manipulation
 
     " ####### Misc {{{
+
+    Plug 'tweekmonster/startuptime.vim', {'on': ['StartupTime']}
 
     " Better buffer deletions
     Plug 'moll/vim-bbye', { 'on': [ 'Bdelete' ] }
@@ -548,7 +548,7 @@ if !exists('g:minimal') || g:minimal != 0
 
     function s:Convert2settings(name)
         let l:name = (a:name =~? '[\.\-]') ? substitute(a:name, '[\.\-]', '_', 'g') : a:name
-        let l:name = substitute(l:name, '.*', '\l\0', '')
+        let l:name = substitute(l:name, '.', '\l\0', 'g')
         return l:name
     endfunction
 

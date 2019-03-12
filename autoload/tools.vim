@@ -25,13 +25,19 @@ scriptencoding uft-8
 "
 " ############################################################################
 
+let s:gitversion = ''
+let s:moderngit = -1
+
 " Extracted from tpop's Fugitive plugin
 function! tools#GitVersion(...) abort
     if !executable('git')
         return 0
     endif
 
-    let l:version = matchstr(system('git --version'), "\\S\\+\\ze\n")
+    if empty(s:gitversion)
+        let l:version = matchstr(system('git --version'), "\\S\\+\\ze\n")
+        let s:gitversion = l:version
+    endif
 
     if !a:0
         return l:version
@@ -88,7 +94,7 @@ endfunction
 function! tools#grep(tool, ...) abort
     let l:greplist = {
                 \   'git': {
-                \       'grepprg': 'git --no-pager grep --no-color -Iin ',
+                \       'grepprg': 'git --no-pager grep '.(s:moderngit == 1 ? '--column' : '').' --no-color -Iin ',
                 \       'grepformat': '%f:%l:%m'
                 \    },
                 \   'rg' : {
@@ -96,11 +102,11 @@ function! tools#grep(tool, ...) abort
                 \       'grepformat': '%f:%l:%c:%m,%f:%l:%m'
                 \   },
                 \   'ag' : {
-                \       'grepprg': 'ag -S -l --follow --nogroup --nocolor --hidden --vimgrep ' . vars#ignore_cmd('ag') . ' ',
+                \       'grepprg': 'ag -S -l --follow --nogroup --nocolor --hidden --vimgrep ',
                 \       'grepformat': '%f:%l:%c:%m,%f:%l:%m'
                 \   },
                 \   'grep' : {
-                \       'grepprg': 'grep -HiIn --color=never ' . vars#ignore_cmd('grep') . ' ',
+                \       'grepprg': 'grep -HiIn --color=never ',
                 \       'grepformat': '%f:%l:%m'
                 \   },
                 \   'findstr' : {
@@ -109,9 +115,13 @@ function! tools#grep(tool, ...) abort
                 \   },
                 \}
 
-    if tools#GitVersion(2, 19)
-        let l:greplist.git.grepprg    = 'git --no-pager grep --no-color --column -Iin '
-        let l:greplist.git.grepformat = '%f:%l:%c:%m,%f:%l:%m'
+    if s:moderngit == -1
+        let s:moderngit = 0
+        if tools#GitVersion(2, 19)
+            let l:greplist.git.grepprg    = 'git --no-pager grep --column --no-color -Iin '
+            let l:greplist.git.grepformat = '%f:%l:%c:%m,%f:%l:%m'
+            let s:moderngit = 1
+        endif
     endif
 
     let l:properity = (a:0 > 0) ? a:000[0] : 'grepprg'
@@ -124,7 +134,7 @@ function! tools#filelist(tool) abort
                 \ 'git'  : 'git --no-pager ls-files -co --exclude-standard',
                 \ 'fd'   : 'fd --hidden --follow --color never ',
                 \ 'rg'   : 'rg --line-number --column --with-filename --color never --no-search-zip --hidden --trim --files',
-                \ 'ag'   : 'ag -l --follow --nocolor --nogroup --hidden '. vars#ignore_cmd('ag') . ' -g ""',
+                \ 'ag'   : 'ag -l --follow --nocolor --nogroup --hidden -g ""',
                 \ 'find' : "find . -iname '*'",
                 \}
 
