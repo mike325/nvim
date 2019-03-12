@@ -35,9 +35,10 @@ function! tools#GitVersion(...) abort
     endif
 
     if empty(s:gitversion)
-        let l:version = matchstr(system('git --version'), "\\S\\+\\ze\n")
-        let s:gitversion = l:version
+        let s:gitversion = matchstr(system('git --version'), "\\S\\+\\ze\n")
     endif
+
+    let l:version = s:gitversion
 
     if !a:0
         return l:version
