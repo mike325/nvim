@@ -40,7 +40,7 @@ function! plugins#vimtex#init(data) abort
         finish
     endif
 
-    if !has('nvim') && has('clientserver') && empty(v:servername) && exists('*remote_startserver') && !(os#name('windows') || os#name('cygwin')) && empty($SSH_CONNECTION)
+    if !has('nvim') && exists('+clientserver') && empty(v:servername) && exists('*remote_startserver') && !(os#name('windows') || os#name('cygwin')) && empty($SSH_CONNECTION)
         call remote_startserver('VIM')
     elseif has('nvim') && executable('nvr')
         let g:vimtex_compiler_progname = 'nvr'

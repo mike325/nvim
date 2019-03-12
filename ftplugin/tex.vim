@@ -30,4 +30,8 @@ if !exists('g:plugs["vimtex"]')
     " let &includeexpr=''
 endif
 
+setlocal spell
+setlocal complete+=k,kspell " Add spell completion
+" setlocal foldmethod=indent
+
 setlocal wrapmargin=80
