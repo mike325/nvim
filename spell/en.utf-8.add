@@ -155,3 +155,12 @@ led
 script
 raspbian
 leds
+HECI
+HDD
+hostname
+MSI
+INTx
+intx
+NMI
+fTPM
+SMI
