@@ -253,7 +253,7 @@ function! autocmd#SetProjectConfigs() abort
         endif
 
         if exists('g:plugs["ctrlp"]')
-            let g:ctrlp_clear_cache_on_exit = (g:ctrlp_user_command.fallback =~# '^ag ')
+            let g:ctrlp_clear_cache_on_exit = (g:ctrlp_user_command.fallback =~# '^\(ag\|rg\|fd\) ')
         endif
 
         if exists('g:plugs["projectile.nvim"]')
