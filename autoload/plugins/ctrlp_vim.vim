@@ -40,7 +40,8 @@ function! plugins#ctrlp_vim#init(data) abort
     endif
 
     let g:ctrlp_map = '<C-p>'
-    let g:ctrlp_cmd = 'CtrlP'
+    " let g:ctrlp_cmd = 'CtrlP'
+    let g:ctrlp_cmd = 'exe "CtrlP".get(["", "Buffer", "MRU"], v:count)'
 
     nnoremap <C-b> :CtrlPBuffer<CR>
     nnoremap <C-f> :CtrlPMRUFiles<CR>
@@ -61,6 +62,7 @@ function! plugins#ctrlp_vim#init(data) abort
     let g:ctrlp_follow_symlinks     = 1
     let g:ctrlp_mruf_case_sensitive = 1
     let g:ctrlp_show_hidden         = 1
+    let g:ctrlp_max_history = &history
 
     " CtrlP's windows settings
     let g:ctrlp_match_window        = 'bottom,order:ttb,min:1,max:30,results:50'
@@ -72,8 +74,8 @@ function! plugins#ctrlp_vim#init(data) abort
     let g:ctrlp_cache_dir = os#cache() . '/ctrlp'
 
     let g:ctrlp_max_files = (exists('g:plugs["fruzzy"]')         ||
-                        \ exists('g:plugs["ctrlp-cmatcher"]') ||
-                        \ exists('g:plugs["ctrlp-py-matcher"]')) ? 0 : 1
+                           \ exists('g:plugs["ctrlp-cmatcher"]') ||
+                           \ exists('g:plugs["ctrlp-py-matcher"]')) ? 0 : 1
 
     if exists('g:plugs["fruzzy"]')
         let g:ctrlp_match_func = {'match': 'fruzzy#ctrlp#matcher'}
@@ -87,7 +89,7 @@ function! plugins#ctrlp_vim#init(data) abort
         \   'types': {
         \       1: ['.git', 'cd %s && ' . tools#filelist('git') ]
         \   },
-        \   'fallback': 'find %s -type f -iname "*" ' . vars#ignore_cmd('find') ,
+        \   'fallback': 'find %s -type f -iname "*" ',
         \ }
 
     " Do not clear filenames cache, to improve CtrlP startup

@@ -96,14 +96,14 @@ function! tools#grep(tool, ...) abort
     let l:greplist = {
                 \   'git': {
                 \       'grepprg': 'git --no-pager grep '.(s:moderngit == 1 ? '--column' : '').' --no-color -Iin ',
-                \       'grepformat': '%f:%l:%m'
+                \       'grepformat': (s:moderngit == 1) ? '%f:%l:%c:%m,%f:%l:%m' : '%f:%l:%m',
                 \    },
                 \   'rg' : {
                 \       'grepprg':  'rg -S -n --color never -H --no-search-zip --trim --vimgrep ',
                 \       'grepformat': '%f:%l:%c:%m,%f:%l:%m'
                 \   },
                 \   'ag' : {
-                \       'grepprg': 'ag -S -l --follow --nogroup --nocolor --hidden --vimgrep ',
+                \       'grepprg': 'ag -S --follow --nogroup --nocolor --hidden --vimgrep ',
                 \       'grepformat': '%f:%l:%c:%m,%f:%l:%m'
                 \   },
                 \   'grep' : {
