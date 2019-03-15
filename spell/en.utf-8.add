@@ -152,9 +152,13 @@ Python
 scripts
 GPIOs
 led
+leds
 script
 raspbian
 leds
+Raspberry
+info
+zigbee
 HECI
 HDD
 hostname
@@ -164,3 +168,4 @@ intx
 NMI
 fTPM
 SMI
+SMS
