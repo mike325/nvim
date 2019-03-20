@@ -21,6 +21,7 @@
     "syntax/*.vim"           : { "type": "Syntax" },
     "autoload/*.vim"         : { "type": "Autoload" },
     "autoload/host/*.vim"    : { "type": "HostAutoload" },
+    "plugin/host/*.vim"      : { "type": "HostPlugin" },
     "autoload/plugins/*.vim" : { "type": "PluginsAutoload" },
     "plugin/*.vim"           : { "type": "Plugin" },
     "ftplugin/*.vim"         : { "type": "FtPlugin" },

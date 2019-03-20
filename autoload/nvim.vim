@@ -38,7 +38,7 @@ function! nvim#updateremoteplugins(info) abort
 endfunction
 
 function! nvim#init() abort
-    if !has('nvm')
+    if !has('nvim')
         return -1
     endif
     " Disable some vi compatibility

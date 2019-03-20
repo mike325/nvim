@@ -39,10 +39,11 @@ if has('nvim') || has('terminal')
     function! mappings#terminal(cmd) abort
         let l:split = (&splitbelow) ? 'botright' : 'topleft'
         if os#name('windows')
+            let l:shell = (&shell =~? '^cmd\(\.exe\)\?$') ? 'powershell -noexit -executionpolicy bypass ' : &shell
             if has('nvim')
-                execute l:split . ' 20split term://powershell -noexit -executionpolicy bypass ' . a:cmd
+                execute l:split . ' 20split term://' . l:shell . ' ' . a:cmd
             else
-                call term_start('powershell -noexit -executionpolicy bypass ' . a:cmd, {'term_rows': 20})
+                call term_start(l:shell . a:cmd, {'term_rows': 20})
                 wincmd J
             endif
         else
