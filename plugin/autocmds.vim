@@ -175,3 +175,9 @@ augroup LaTex
     autocmd!
     autocmd FileType tex let b:vimtex_main = 'main.tex'
 augroup end
+
+augroup Wipe
+    autocmd!
+    autocmd BufEnter COMMIT_EDITMSG        setlocal bufhidden=wipe
+    autocmd BufEnter term://*,*/.git/index setlocal bufhidden=wipe
+augroup end
