@@ -29,26 +29,20 @@
 let g:mapleader="\<Space>"
 
 if os#name('windows')
-    " On windows, if gvim.exe or nvim-qt are executed from cygwin, the shell
-    " needs to be set to cmd since most plugins expect it for windows.
-    " set shell=cmd.exe
 
-    " set shell=powershell shellquote= shellpipe=\| shellredir=> shellxquote=
-    " set shellcmdflag=-NoLogo\ -NoProfile\ -ExecutionPolicy\ RemoteSigned\ -Command
-
-    set shell=powershell.exe
-    " set shell=powershell.exe\ -NoLogo\ -NoProfile\ -NonInteractive\ -ExecutionPolicy\ RemoteSigned
-    " " if shellcmdflag starts with '-' then tempname() uses forward slashes, see
-    " " https://groups.google.com/forum/#!topic/vim_dev/vTR05EZyfE0
-    " set shellcmdflag=-Command
-    set shellcmdflag=-NoLogo\ -NoProfile\ -ExecutionPolicy\ RemoteSigned\ -Command
-    set shellquote="
-    " set shellpipe=\|
-    " set shellredir=>
-    set shellxquote=
-    let &shellpipe='| Out-File -Encoding UTF8 %s'
-    let &shellredir='| Out-File -Encoding UTF8 %s'
-    " set shellxquote=(
+    if has('nvim')
+        set shell=powershell.exe
+        set shellcmdflag=-NoLogo\ -NoProfile\ -ExecutionPolicy\ RemoteSigned\ -Command
+        set shellxquote=
+        " set shellxquote=(
+        let &shellquote = ''
+        let &shellpipe  = has('nvim') ? '| Out-File -Encoding UTF8 %s' : '>'
+        let &shellredir = '| Out-File -Encoding UTF8 %s'
+    else
+        " On windows, if gvim.exe or nvim-qt are executed from cygwin, the shell
+        " needs to be set to cmd since most plugins expect it for windows.
+        set shell=cmd.exe
+    endif
 
     " Better compatibility with Unix paths in DOS systems
     if exists('+shellslash')

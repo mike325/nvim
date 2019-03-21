@@ -30,24 +30,32 @@ function! VimwikiLinkHandler(link)
     "   2) [[file:./|Wiki Home]]
     let l:link = a:link
 
-    if l:link !~# '^file:'
+    if l:link !~# '^file:' && (os#name('windows') && l:link !~# '^explorer:')
         return 0
     endif
 
-    let l:link = split(l:link, ':\ze[0-9]\+\(:[0-9\+\)\?')
+    if l:link =~# '^file:'
+        let l:link = split(l:link, ':\ze[0-9]\+\(:[0-9\+\)\?')
 
-    let l:line   = (len(l:link) > 1) ? l:link[1] : 0
-    let l:column = (len(l:link) > 2) ? l:link[2] : 0
+        let l:line   = (len(l:link) > 1) ? l:link[1] : 0
+        let l:column = (len(l:link) > 2) ? l:link[2] : 0
 
-    let l:link_infos = vimwiki#base#resolve_link(l:link[0])
+        let l:link_infos = vimwiki#base#resolve_link(l:link[0])
 
-    if l:link_infos.filename == ''
-        echomsg 'Vimwiki Error: Unable to resolve link!'
-        return 0
-    else
-        exe 'edit ' . fnameescape(l:link_infos.filename) . ' | normal! ' . l:line . 'G' . l:column . '|'
+        if l:link_infos.filename == ''
+            echomsg 'Vimwiki Error: Unable to resolve link!'
+            return 0
+        else
+            exe 'edit ' . fnameescape(l:link_infos.filename) . ' | normal! ' . l:line . 'G' . l:column . '|'
+            return 1
+        endif
+    elseif os#name('windows') && l:link =~# '^explorer:'
+        let l:link = tr(split(l:link, ':')[1], '/', '\')
+        silent! execute '!mkdir -Force ' . l:link
+        silent! execute '!explorer.exe ' . l:link
         return 1
     endif
+    return 0
 endfunction
 
 function! plugins#vimwiki#init(data) abort
