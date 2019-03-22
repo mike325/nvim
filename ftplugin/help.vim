@@ -24,6 +24,7 @@
 "
 " ############################################################################
 
+setlocal bufhidden=wipe
 
 setlocal number
 setlocal relativenumber
