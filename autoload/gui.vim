@@ -1,6 +1,6 @@
 " ############################################################################
 "
-"                              Git Fugitive settings
+"                               gui Setttings
 "
 "                                     -`
 "                     ...            .o+`
@@ -24,15 +24,22 @@
 "
 " ############################################################################
 
-function! plugins#vim_fugitive#init(data) abort
-    if !exists('g:plugs["vim-fugitive"]')
+function! gui#NeovimGuiFont(size)
+
+    if !has('nvim') || !exists('g:GuiLoaded')
         return -1
     endif
 
-    " nnoremap <silent> <leader>gs :Gstatus<CR>
-    " nnoremap <silent> <leader>gc :Gcommit<CR>
-    nnoremap <silent> <Leader>ga :Gcommit --amend --reset-author --no-edit<CR>
-    nnoremap <silent> <leader>gd :Gdiff<CR>
-    nnoremap <silent> <leader>gw :Gwrite<CR>
-    nnoremap <silent> <leader>gr :Gread<CR>
+    let l:font_size = ( empty(a:size) ) ? "10" : a:size
+
+    if empty($NO_COOL_FONTS)
+        try
+            execute 'GuiFont! DejaVu Sans Mono for Powerline:h' . l:font_size
+            " execute 'GuiFont! DsjasknkjanljdnjwejaVu Sans Mono for Powerline:h' . l:font_size
+        catch
+            execute 'GuiFont! Monospace:h' . l:font_size
+        endtry
+    else
+        execute 'GuiFont! Monospace:h' . l:font_size
+    endif
 endfunction

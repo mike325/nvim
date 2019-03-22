@@ -38,20 +38,6 @@
 imap <S-Insert> <MiddleMouse>
 
 if has('nvim') && exists('g:GuiLoaded')
-    function! s:NeovimGuiFont(size)
-        let l:font_size = ( empty(a:size) ) ? "10" : a:size
-
-        if empty($NO_COOL_FONTS)
-            try
-                execute 'GuiFont! DejaVu Sans Mono for Powerline:h' . l:font_size
-                " execute 'GuiFont! DsjasknkjanljdnjwejaVu Sans Mono for Powerline:h' . l:font_size
-            catch
-                execute 'GuiFont! Monospace:h' . l:font_size
-            endtry
-        else
-            execute 'GuiFont! Monospace:h' . l:font_size
-        endif
-    endfunction
 
     if exists(':GuiLinespace') == 2
         GuiLinespace 1
@@ -77,7 +63,7 @@ if has('nvim') && exists('g:GuiLoaded')
         call s:NeovimGuiFont(10)
     endif
 
-    command! -nargs=? Font call s:NeovimGuiFont(<q-args>)
+    command! -nargs=? Font call gui#NeovimGuiFont(<q-args>)
 
 elseif has("gui_running")
     set guioptions-=m  " no menu

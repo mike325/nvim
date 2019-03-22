@@ -1,6 +1,6 @@
 " ############################################################################
 "
-"                              Git Fugitive settings
+"                               vnc Setttings
 "
 "                                     -`
 "                     ...            .o+`
@@ -24,15 +24,9 @@
 "
 " ############################################################################
 
-function! plugins#vim_fugitive#init(data) abort
-    if !exists('g:plugs["vim-fugitive"]')
-        return -1
-    endif
+if !os#name('windows') || !has#async()
+    finish
+endif
 
-    " nnoremap <silent> <leader>gs :Gstatus<CR>
-    " nnoremap <silent> <leader>gc :Gcommit<CR>
-    nnoremap <silent> <Leader>ga :Gcommit --amend --reset-author --no-edit<CR>
-    nnoremap <silent> <leader>gd :Gdiff<CR>
-    nnoremap <silent> <leader>gw :Gwrite<CR>
-    nnoremap <silent> <leader>gr :Gread<CR>
-endfunction
+command! -bang -nargs=1 -complete=customlist,vnc#KnownHosts VNC call vnc#RunVNC(<q-args>, <bang>0)
+command! -nargs=1 -complete=customlist,vnc#VNCSessions VNCStop call vnc#StopVNC(<q-args>)

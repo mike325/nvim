@@ -31,6 +31,7 @@ let g:mapleader="\<Space>"
 if os#name('windows')
 
     if has('nvim')
+        " TODO: Fix Fugitive's commit and Plug commands"
         set shell=powershell.exe
         set shellcmdflag=-NoLogo\ -NoProfile\ -ExecutionPolicy\ RemoteSigned\ -Command
         set shellxquote=
@@ -39,8 +40,8 @@ if os#name('windows')
         let &shellpipe  = has('nvim') ? '| Out-File -Encoding UTF8 %s' : '>'
         let &shellredir = '| Out-File -Encoding UTF8 %s'
     else
-        " On windows, if gvim.exe or nvim-qt are executed from cygwin, the shell
-        " needs to be set to cmd since most plugins expect it for windows.
+        " I'm tired of trying to setup powershell for vim, Neovim seems to work
+        " a bit better but there are still some problmes
         set shell=cmd.exe
     endif
 

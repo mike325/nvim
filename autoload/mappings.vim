@@ -28,7 +28,7 @@ let s:arrows = -1
 
 if has('nvim') || has('terminal')
 
-    function! s:getUnixShell() abort
+    function! mappings#UnixShell() abort
         let l:shell = fnamemodify(expand($SHELL), ':t')
         if l:shell =~# '\(t\)\?csh'
             let l:shell = (executable('zsh')) ? 'zsh' : (executable('bash')) ? 'bash' : l:shell
@@ -47,7 +47,7 @@ if has('nvim') || has('terminal')
                 wincmd J
             endif
         else
-            let l:shell = s:getUnixShell()
+            let l:shell = mappings#UnixShell()
             if has('nvim')
                 execute l:split . ' 20split term://' . l:shell . ' ' . a:cmd
             else
