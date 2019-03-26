@@ -29,7 +29,14 @@ function! plugins#vim_abolish#post() abort
         return -1
     endif
 
-    Abolish gti git
+    let l:abolish {
+        \    'gti': 'git',
+        \ }
+
+    for [l:wrong, l:correct] in items(l:abolish)
+        execute 'Abolish ' . l:wrong . ' '  . l:correct
+    endfor
+
 endfunction
 
 function! plugins#vim_abolish#init(data) abort
