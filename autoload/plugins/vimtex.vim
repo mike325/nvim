@@ -37,7 +37,7 @@ function! plugins#vimtex#init(data) abort
         let g:vimtex_compiler_method = 'arara'
     else
         let g:vimtex_enabled = 0
-        finish
+        return -1
     endif
 
     if !has('nvim') && exists('+clientserver') && empty(v:servername) && exists('*remote_startserver') && !(os#name('windows') || os#name('cygwin')) && empty($SSH_CONNECTION)
