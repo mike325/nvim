@@ -82,16 +82,25 @@ function! vnc#RunVNC(hostname, bang) abort
     endif
 endfunction
 
-function! vnc#VNCSessions(arglead, cmdline, cursorpos)
-    return keys(s:vnc_jobs)
+function! vnc#VNCSessions(arglead, cmdline, cursorpos) abort
+    let l:candidates = keys(s:vnc_jobs)
+    if !empty(l:candidates)
+        let l:candidates = filter(copy(l:candidates), "v:val =~? join(split(a:arglead, '\zs'), '.*')")
+    endif
+    return l:candidates
 endfunction
 
-function! vnc#KnownHosts(arglead, cmdline, cursorpos)
+function! vnc#KnownHosts(arglead, cmdline, cursorpos) abort
+    let l:candidates = []
     try
         let l:hosts = keys(host#vnc#knownhosts())
     catch E117
         let l:hosts = []
     endtry
 
-    return l:hosts
+    if !empty(l:hosts)
+        let l:candidates = filter(l:hosts, "v:val =~? join(split(a:arglead, '\zs'), '.*')")
+    endif
+
+    return l:candidates
 endfunction
