@@ -178,6 +178,9 @@ augroup end
 
 augroup Wipe
     autocmd!
-    autocmd BufEnter COMMIT_EDITMSG        setlocal bufhidden=wipe
-    autocmd BufEnter term://*,*/.git/index setlocal bufhidden=wipe
+    if !has('nvim')
+        autocmd BufNew,BufEnter * if &buftype ==# 'terminal' | setlocal bufhidden=wipe | endif
+    endif
+    autocmd BufNew,BufEnter COMMIT_EDITMSG        setlocal bufhidden=wipe
+    autocmd BufNew,BufEnter term://*,*/.git/index setlocal bufhidden=wipe
 augroup end
