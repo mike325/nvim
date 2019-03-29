@@ -177,12 +177,7 @@ function! plugins#denite_nvim#init(data) abort
 
         let g:projectile#enabled = 1
 
-        if has('nvim')
-            let g:projectile#directory_command = 'tcd '
-        else
-            let g:projectile#directory_command = 'cd '
-        endif
-
+        let g:projectile#directory_command = has('nvim') ? 'tcd ' : 'cd '
 
         if executable('rg')
             let g:projectile#search_prog = 'rg'

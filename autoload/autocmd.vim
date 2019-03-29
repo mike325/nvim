@@ -224,10 +224,10 @@ function! autocmd#SetProjectConfigs() abort
                 let g:grepper.tools += ['findstr']
                 let g:grepper.operator.tools += ['findstr']
             endif
-        else
-            let &grepprg = tools#select_grep(l:is_git)
-            let &grepformat = tools#select_grep(l:is_git, 'grepformat')
         endif
+
+        let &grepprg    = tools#select_grep(l:is_git)
+        let &grepformat = tools#select_grep(l:is_git, 'grepformat')
 
         if exists('g:plugs["gonvim-fuzzy"]')
             let g:gonvim_fuzzy_ag_cmd = tools#select_grep(l:is_git)
@@ -291,10 +291,10 @@ function! autocmd#SetProjectConfigs() abort
                 let g:grepper.tools += ['findstr']
                 let g:grepper.operator.tools += ['findstr']
             endif
-        else
-            let &grepprg = tools#select_grep(l:is_git)
-            let &grepformat = tools#select_grep(l:is_git, 'grepformat')
         endif
+
+        let &grepprg = tools#select_grep(l:is_git)
+        let &grepformat = tools#select_grep(l:is_git, 'grepformat')
 
         if exists('g:plugs["gonvim-fuzzy"]')
             let g:gonvim_fuzzy_ag_cmd = tools#select_grep(l:is_git)
