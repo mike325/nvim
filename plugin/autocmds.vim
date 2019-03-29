@@ -56,15 +56,20 @@ augroup DisableTemps
 augroup end
 
 
-if has('nvim')
+if has('nvim') || has('terminal')
     " Set modifiable to use easymotions
     " autocmd TermOpen * setlocal modifiable
 
     " I like to see the numbers in the terminal
     augroup TerminalAutocmds
         autocmd!
-        autocmd TermOpen * setlocal relativenumber number nocursorline
-        autocmd TermOpen * setlocal noswapfile nobackup noundofile
+        if has('nvim')
+            autocmd TermOpen * setlocal relativenumber number nocursorline
+            autocmd TermOpen * setlocal noswapfile nobackup noundofile
+        else
+            autocmd TerminalOpen * setlocal relativenumber number nocursorline
+            autocmd TerminalOpen * setlocal noswapfile nobackup noundofile
+        endif
     augroup end
 endif
 
@@ -108,7 +113,9 @@ augroup QuickQuit
     autocmd!
     autocmd BufEnter,BufReadPost __LanguageClient__ nnoremap <silent> <buffer> q :q!<CR>
     if has('nvim')
-        autocmd TermOpen    *        nnoremap <silent> <buffer> q :q!<CR>
+        autocmd TermOpen * nnoremap <silent> <buffer> q :q!<CR>
+    else
+        autocmd TerminalOpen * nnoremap <silent> <buffer> q :q!<CR>
     endif
 augroup end
 
@@ -178,9 +185,11 @@ augroup end
 
 augroup Wipe
     autocmd!
-    if !has('nvim')
-        autocmd BufNew,BufEnter * if &buftype ==# 'terminal' | setlocal bufhidden=wipe | endif
+    if has('nvim')
+        autocmd TermOpen * setlocal bufhidden=wipe
+    else
+        autocmd TerminalOpen * setlocal bufhidden=wipe
     endif
-    autocmd BufNew,BufEnter COMMIT_EDITMSG        setlocal bufhidden=wipe
-    autocmd BufNew,BufEnter term://*,*/.git/index setlocal bufhidden=wipe
+    autocmd BufNew,BufEnter COMMIT_EDITMSG setlocal bufhidden=wipe
+    autocmd BufNew,BufEnter */.git/index   setlocal bufhidden=wipe
 augroup end
