@@ -64,6 +64,13 @@ if has('nvim') && os#name('windows') && !has#gui()
     nnoremap <C-z> <nop>
 endif
 
+inoremap <C-U> <C-G>u<C-U>
+
+" Use <C-L> to clear the highlighting of :set hlsearch.
+if maparg('<C-L>', 'n') ==# ''
+  nnoremap <silent> <C-L> :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-L>
+endif
+
 " Turn diff off when closiong other windows
 nnoremap <silent> <C-w><C-o> :diffoff!<bar>only<cr>
 nnoremap <silent> <C-w>o :diffoff!<bar>only<cr>

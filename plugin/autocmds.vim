@@ -130,24 +130,6 @@ augroup FileTypeDetect
     autocmd BufNewFile,BufReadPre /*/nginx/*.conf setlocal filetype=nginx
 augroup end
 
-" if exists("g:minimal")
-"     " *currently no all functions work
-"     augroup omnifuncs
-"         autocmd!
-"         autocmd FileType css           setlocal omnifunc=csscomplete#CompleteCSS
-"         autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-"         autocmd FileType javascript    setlocal omnifunc=javascriptcomplete#CompleteJS
-"         autocmd FileType xml           setlocal omnifunc=xmlcomplete#CompleteTags
-"         autocmd FileType python        setlocal omnifunc=pythoncomplete#Complete
-"         autocmd FileType go            setlocal omnifunc=go#complete#Complete
-"         autocmd FileType cs            setlocal omnifunc=OmniSharp#Complete
-"         autocmd FileType php           setlocal omnifunc=phpcomplete#CompletePHP
-"         autocmd FileType java          setlocal omnifunc=javacomplete#Complete
-"         autocmd FileType cpp           setlocal omnifunc=ccomplete#Complete
-"         autocmd FileType c             setlocal omnifunc=ccomplete#Complete
-"     augroup end
-" endif
-
 " Spell {{{
 augroup Spells
     autocmd!

@@ -105,25 +105,50 @@ if has('mouse')
     set mouse=
 endif
 
-" Remove system clipboard
-if has('clipboard')
-    set clipboard=
-endif
-
 " Don't use the system's clipboard whenever we run in SSH session or we don't have 'clipboard' option available
 " NOTE: Windows terminal doesn't have mouse support, so this wont have effect for vim/neovim TUI
 if empty($SSH_CONNECTION) && has('clipboard')
-    " if we are running gVim or running Neovim from Windows (aka neovim-qt)
-    " We reactivate the everything
-    if has#gui() || (os#name('windows') && has('nvim'))
-        set clipboard=unnamedplus,unnamed
-        if has('mouse')
-            set mouse=a    " We have mouse support, so we use it
-            set mousehide  " Hide mouse when typing text
-        endif
-    elseif has('nvim')
+    if has('nvim')
         " Neovim in unix require external programs to use system's clipboard
-        if ( executable('pbcopy') || executable('xclip') || executable('xsel') || executable('lemonade') || executable('win32yank') )
+        let s:copy = {}
+        let s:paste = {}
+        if os#name('windows') && executable('win32yank')
+
+            let s:copy['+'] = 'win32yank.exe -i --crlf'
+            let s:paste['+'] = 'win32yank.exe -o --lf'
+            let s:copy['*'] = s:copy['+']
+            let s:paste['*'] = s:paste['+']
+
+            let g:clipboard = {
+                        \   'name': 'myClipboard',
+                        \   'copy': s:copy,
+                        \   'paste': s:paste,
+                        \   'cache_enabled': 1,
+                        \ }
+        elseif !os#name('windows') && executable('xclip')
+            let s:copy['+'] = 'xclip -quiet -i -selection clipboard'
+            let s:paste['+'] = 'xclip -o -selection clipboard'
+            let s:copy['*'] = 'xclip -quiet -i -selection primary'
+            let s:paste['*'] = 'xclip -o -selection primary'
+            let g:clipboard = {
+                        \   'name': 'myClipboard',
+                        \   'copy': s:copy,
+                        \   'paste': s:paste,
+                        \   'cache_enabled': 1,
+                        \ }
+        elseif !os#name('windows') && executable('pbcopy')
+            let s:copy['+'] = 'pbcopy'
+            let s:paste['+'] = 'pbpaste'
+            let s:copy['*'] = s:copy['+']
+            let s:paste['*'] = s:paste['+']
+            let g:clipboard = {
+                        \   'name': 'myClipboard',
+                        \   'copy': s:copy,
+                        \   'paste': s:paste,
+                        \   'cache_enabled': 1,
+                        \ }
+        endif
+        if exists('g:clipboard')
             set clipboard+=unnamedplus,unnamed
             if has('mouse')
                 set mouse=a    " We have mouse support, so we use it
@@ -138,6 +163,9 @@ if empty($SSH_CONNECTION) && has('clipboard')
             set mousehide  " Hide mouse when typing text
         endif
     endif
+else
+    let g:clipboard = {}
+    set clipboard=
 endif
 
 " }}} END Clipboard
@@ -151,6 +179,7 @@ if has('nvim') || v:version >= 704
     set formatoptions+=o " ...or o/O
     set formatoptions+=l " Do not wrap lines that have been longer when starting insert mode already
     set formatoptions+=n " Recognize numbered lists
+    set formatoptions+=j " Delete comment character when joining commented lines
 endif
 
 if exists('g:gonvim_running')
@@ -168,6 +197,9 @@ else
     set titlestring=%t\ (%f)
     set title          " Set window title
 endif
+
+" Remove includes from completions
+set complete-=i
 
 set lazyredraw " Don't draw when a macro is being executed
 set splitright " Split on the right the current buffer
@@ -220,10 +252,25 @@ else
     set listchars=tab:>\ ,trail:-,extends:$,precedes:$
 endif
 
+if has('path_extra')
+    setglobal tags-=./tags tags-=./tags; tags^=./tags;
+endif
+
+if !&sidescrolloff
+    set sidescrolloff=5
+endif
+
+if !&scrolloff
+    set scrolloff=1
+endif
+
 " Enable <TAB> completion in command mode
+set wildmenu
 set wildmode=full
 
 set backupcopy=yes
+
+set display+=lastline
 
 " Use only 1 space after "." when joining lines, not 2
 set nojoinspaces

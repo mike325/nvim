@@ -502,7 +502,7 @@ if !exists('g:minimal') || g:minimal != 0
     " Plug 'dodie/vim-disapprove-deep-indentation'
 
     " Better defaults for Vim
-    Plug 'tpope/vim-sensible'
+    " Plug 'tpope/vim-sensible'
 
     " Improve Path searching
     Plug 'tpope/vim-apathy'
