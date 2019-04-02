@@ -46,9 +46,7 @@ function! plugins#denite_nvim#init(data) abort
     elseif executable('rg') || executable('ag')
         let l:tool = executable('rg') ? 'rg' : 'ag'
         call denite#custom#var('file/rec', 'command', split(tools#filelist(l:tool)))
-    elseif os#name('linux')
-        call denite#custom#var('file/rec', 'command', ['find', '.', '-type', 'f', '-iname', '*'])
-    elseif os#name('windows')
+    else
         let l:ignore = &wildignore . ',.git,.hg,.svn'
         call denite#custom#var('file/rec', 'command', ['scantree.py', '--ignore', l:ignore])
     endif
