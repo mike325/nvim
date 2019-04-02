@@ -47,7 +47,6 @@ function! vim#init() abort
     set incsearch
     set history=10000
     set langnoremap
-    set nolangremap
     set laststatus=2
     set nrformats=bin,hex
     set ruler
