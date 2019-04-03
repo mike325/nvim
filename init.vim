@@ -30,20 +30,9 @@ let g:mapleader="\<Space>"
 
 if os#name('windows')
 
-    if has('nvim')
-        " TODO: Fix Fugitive's commit and Plug commands"
-        set shell=powershell.exe
-        set shellcmdflag=-NoLogo\ -NoProfile\ -ExecutionPolicy\ RemoteSigned\ -Command
-        set shellxquote=
-        " set shellxquote=(
-        let &shellquote = ''
-        let &shellpipe  = has('nvim') ? '| Out-File -Encoding UTF8 %s' : '>'
-        let &shellredir = '| Out-File -Encoding UTF8 %s'
-    else
-        " I'm tired of trying to setup powershell for vim, Neovim seems to work
-        " a bit better but there are still some problmes
-        set shell=cmd.exe
-    endif
+    " I'm tired of trying to setup powershell as windows shell, so just gonna
+    " leave this for a while
+    set shell=cmd.exe
 
     " Better compatibility with Unix paths in DOS systems
     if exists('+shellslash')
