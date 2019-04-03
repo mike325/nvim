@@ -57,7 +57,7 @@ endif
 
 " If there are no plugins available and we don't have git
 " fallback to minimal mode
-if !executable('git') && !isdirectory(fnameescape(vars#basedir().'plugged'))
+if (!executable('git') && !isdirectory(fnameescape(vars#basedir().'plugged'))) || v:progname == 'vi'
     let g:minimal = 1
 endif
 
@@ -74,7 +74,7 @@ catch E117
     augroup end
 endtry
 
-if !exists('g:minimal') || g:minimal != 0
+if !exists('g:minimal') || g:minimal == 0
 
     try
         call execute('set runtimepath+=' . expand(vars#basedir() . 'plug/'))
