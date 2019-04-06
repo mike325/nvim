@@ -46,7 +46,7 @@ Visible = false
 DropShadow = false
 
 [MiniMap]
-Visible = true
+Visible = false
 
 [SideBar]
 Visible = false
