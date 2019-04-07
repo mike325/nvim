@@ -42,11 +42,25 @@ fi
 _CURRENT_SHELL="bash"
 _IS_WINDOWS=0
 
+if [ -z "$SHELL_PLATFORM" ]; then
+    export SHELL_PLATFORM='UNKNOWN'
+    case "$OSTYPE" in
+      *'linux'*   ) export SHELL_PLATFORM='LINUX' ;;
+      *'darwin'*  ) export SHELL_PLATFORM='OSX' ;;
+      *'freebsd'* ) export SHELL_PLATFORM='BSD' ;;
+      *'cygwin'*  ) export SHELL_PLATFORM='CYGWIN' ;;
+      *'msys'*    ) export SHELL_PLATFORM='MSYS' ;;
+    esac
+fi
+
 # Windows stuff
-if [[ $(uname --all) =~ MINGW ]]; then
-    _CURRENT_SHELL="$(ps | grep `echo $$` | awk '{ print $8 }')"
+if [[ $SHELL_PLATFORM == 'MSYS' ]] || [[ $SHELL_PLATFORM == 'CYGWIN' ]]; then
+    # Windows bash does not have pgrep by default
+    # shellcheck disable=SC2009
+    _CURRENT_SHELL="$(ps | grep $$ | awk '{ print $8 }')"
     _CURRENT_SHELL="${_CURRENT_SHELL##*/}"
     # Windows does not support links we will use cp instead
+    # shellcheck disable=SC2034
     _IS_WINDOWS=1
 else
     _CURRENT_SHELL="$(ps | head -2 | tail -n 1 | awk '{ print $4 }')"
@@ -82,10 +96,10 @@ function __parse_args() {
     local arg="$1"
     local name="$2"
 
-    local pattern="^--$name[=][a-zA-Z0-9._-/~]+$"
+    local pattern="^--${name}[=][a-zA-Z0-9._-/~]+$"
 
     if [[ ! -z "$3" ]]; then
-        local pattern="^--$name[=]$3$"
+        local pattern="^--${name}[=]$3$"
     fi
 
     if [[ $arg =~ $pattern ]]; then
