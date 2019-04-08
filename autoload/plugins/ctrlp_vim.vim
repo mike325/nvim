@@ -41,7 +41,7 @@ function! plugins#ctrlp_vim#init(data) abort
 
     let g:ctrlp_map = '<C-p>'
     " let g:ctrlp_cmd = 'CtrlP'
-    let g:ctrlp_cmd = 'exe "CtrlP".get(["", "Buffer", "MRU"], v:count)'
+    let g:ctrlp_cmd = 'exe "CtrlP".get(["", "MRU", "Buffer"], v:count)'
 
     nnoremap <C-b> :CtrlPBuffer<CR>
     nnoremap <C-f> :CtrlPMRUFiles<CR>

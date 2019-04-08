@@ -561,8 +561,12 @@ else
     elseif !exists('g:loaded_matchit') && findfile('plugin/matchit.vim', &rtp) ==# ''
         runtime! macros/matchit.vim
     endif
-endif
 
-filetype plugin indent on
+    filetype plugin indent on
+    if exists('+syntax')
+        syntax on      " Switch on syntax highlighting
+    endif
+
+endif
 
 " }}} END Initialize plugins

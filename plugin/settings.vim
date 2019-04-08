@@ -88,10 +88,6 @@ if exists('+relativenumber')
     set relativenumber " Show line numbers in motions friendly way
 endif
 
-if exists('+syntax')
-    syntax enable      " Switch on syntax highlighting
-endif
-
 if exists('+infercase')
     set infercase      " Smart casing when completing
 endif
