@@ -133,7 +133,7 @@ endfunction
 function! tools#filelist(tool) abort
     let l:filelist = {
                 \ 'git'  : 'git --no-pager ls-files -co --exclude-standard',
-                \ 'fd'   : 'fd --type f --hidden --follow --color never . .',
+                \ 'fd'   : 'fd -E ' . join(map(split(copy(&backupskip), ','), {key, val -> substitute(val, '.*', '"\0"', 'g') }), ' -E ' ) . ' --type f --hidden --follow --color never . .',
                 \ 'rg'   : 'rg --line-number --column --with-filename --color never --no-search-zip --hidden --trim --files',
                 \ 'ag'   : 'ag -l --follow --nocolor --nogroup --hidden -g ""',
                 \ 'find' : "find . -iname '*'",
