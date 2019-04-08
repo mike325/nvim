@@ -117,11 +117,6 @@ function! plugins#denite_nvim#init(data) abort
         call denite#custom#source('_', 'matchers', ['matcher/fruzzy'])
     endif
 
-    " Change ignore_globs
-    " call denite#custom#filter('matcher/ignore_globs', 'ignore_globs',
-    "         \ [ '.git/', '.ropeproject/', '__pycache__/',
-    "         \   'venv/', 'images/', '*.min.*', 'img/', 'fonts/'])
-
     call denite#custom#map(
             \ 'insert',
             \ '<C-j>',
