@@ -72,7 +72,7 @@ if !exists('g:minimal') || g:minimal == 0
             execute 'set runtimepath+=' . expand(vars#basedir() . 'plug/')
         endif
         call plug#begin(vars#basedir().'plugged')
-    catch E117
+    catch /E\(117\|492\)/
         " Fallback if we fail to init Plug
         if !has('nvim') && v:version >= 800
             packadd! matchit
