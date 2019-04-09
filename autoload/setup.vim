@@ -60,7 +60,7 @@ function! s:PythonProviders(python) abort
                         \ 'c:/python_'.l:major.l:minor,
                         \ 'c:/python/python_'.l:major.l:minor,
                         \]
-            for l:pydir in l:candidates  " TODO:  changeme to filter
+            for l:pydir in l:candidates
                 let l:pynvim['system'] = l:pydir . '/site-packages/pynvim'
                 if isdirectory(fnameescape(l:pydir)) && (isdirectory(l:pynvim['local']) || isdirectory(l:pynvim['system']))
                     return l:pydir . '/python'
@@ -98,7 +98,7 @@ function! setup#python() abort
         let g:python_host_prog = s:PythonProviders(s:python)
     endif
 
-    for s:minor in ['8', '7', '6', '5', '4']  " TODO:  changeme to filter
+    for s:minor in ['8', '7', '6', '5', '4']
         let s:python = ['3', s:minor]
         if s:PythonProviders(s:python) !=# ''
             if exists('g:loaded_python3_provider')

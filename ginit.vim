@@ -60,12 +60,12 @@ if has('nvim') && exists('g:GuiLoaded')
     endif
 
     if exists(':GuiFont') == 2
-        call s:NeovimGuiFont(10)
+        call gui#NeovimGuiFont(10)
     endif
 
     command! -nargs=? Font call gui#NeovimGuiFont(<q-args>)
 
-elseif has("gui_running")
+elseif has('gui_running')
     set guioptions-=m  " no menu
     set guioptions-=T  " no toolbar
     set guioptions-=L  " remove left-hand scroll bar in vsplit

@@ -25,9 +25,6 @@ scriptencoding "utf-8"
 "
 " }}} END HEADER
 
-" TODO: Implement a function to activate just the settings that are in the
-" current Vim instance
-
 " We just want to source this file once
 if exists('g:settings_loaded')
     finish

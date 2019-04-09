@@ -24,13 +24,13 @@
 "
 " ############################################################################
 
-function! gui#NeovimGuiFont(size)
+function! gui#NeovimGuiFont(size) abort
 
     if !has('nvim') || !exists('g:GuiLoaded')
         return -1
     endif
 
-    let l:font_size = ( empty(a:size) ) ? "10" : a:size
+    let l:font_size = ( empty(a:size) ) ? '10' : a:size
 
     if empty($NO_COOL_FONTS)
         try

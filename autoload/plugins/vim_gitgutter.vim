@@ -31,7 +31,6 @@ function! plugins#vim_gitgutter#init(data) abort
 
     let g:gitgutter_map_keys = 0
 
-    " TODO: Improve this mappings, maybe use unimpaired's principles
     nnoremap tg :GitGutterToggle<CR>
     nnoremap tl :GitGutterLineHighlightsToggle<CR>
 

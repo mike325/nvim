@@ -56,7 +56,6 @@ function! plugins#ctrlp_vim#init(data) abort
 
     let g:ctrlp_extensions = ['quickfix', 'undo', 'line', 'changes', 'mixed']
 
-    " TODO: check if with fugitive whether or not we are in a git repo to set clear cache
     let g:ctrlp_clear_cache_on_exit = 0
     let g:ctrlp_by_filename         = 1
     let g:ctrlp_follow_symlinks     = 1

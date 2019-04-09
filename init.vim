@@ -51,7 +51,6 @@ if (!executable('git') && !isdirectory(fnameescape(vars#basedir().'plugged'))) |
 endif
 
 " TODO: Should minimal include lightweight tpope's plugins ?
-" TODO: Check for $TERM before load some configurations
 
 try
     call set#initconfigs()
@@ -176,7 +175,7 @@ if !exists('g:minimal') || g:minimal == 0
     elseif has('nvim') && has#python('3')
 
         Plug 'Shougo/denite.nvim'
-        Plug 'raghur/fruzzy', {'do': { -> fruzzy#install()}} " TODO: check how this work
+        Plug 'raghur/fruzzy', {'do': { -> fruzzy#install()}}
         " Plug 'dunstontc/projectile.nvim'
         " Plug 'chemzqm/denite-git'
     else
@@ -190,7 +189,7 @@ if !exists('g:minimal') || g:minimal == 0
 
         if has#python('3')
 
-            Plug 'raghur/fruzzy', {'do': { -> fruzzy#install()}} " TODO: check how this work
+            Plug 'raghur/fruzzy', {'do': { -> fruzzy#install()}}
 
         elseif has#python()
             " Fast and 'easy' to compile C CtrlP matcher
@@ -285,8 +284,6 @@ if !exists('g:minimal') || g:minimal == 0
             "     set pyxversion=3
             " endif
 
-            " FIXME: Some versions of debian ship neovim 0.1.7 which doesn't work
-            "        with latest versions of deoplete
             if has('nvim-0.2')
                 Plug 'Shougo/deoplete.nvim', { 'do': ':silent! UpdateRemotePlugins'}
             else
@@ -298,7 +295,6 @@ if !exists('g:minimal') || g:minimal == 0
             if tools#CheckLanguageServer()
                 let g:branch =  has('nvim-0.2') ? {'branch': 'next', 'do': function('plugins#languageclient_neovim#install')} :
                                                 \ {'tag': '0.1.66', 'do': function('plugins#languageclient_neovim#install'), 'frozen': 1}
-                                                " FIXME: Not fully working with neovim < 0.2.0
                 Plug 'autozimu/LanguageClient-neovim', g:branch
                 unlet g:branch
             endif
@@ -328,7 +324,6 @@ if !exists('g:minimal') || g:minimal == 0
 
 
             " Go completion
-            " TODO: Check Go completion in Windows
             if !tools#CheckLanguageServer('go') && executable('make') && executable('go')
                 Plug 'zchee/deoplete-go', { 'do':function('plugins#deoplete_nvim#gocomletion')}
             endif

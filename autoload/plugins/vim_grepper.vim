@@ -133,22 +133,4 @@ function! plugins#vim_grepper#init(data) abort
             \ }
     endif
 
-    " FIXME: Crappy windows settings
-    " Windows cannot handle double quotes inside single quotes without escaping
-    " if os#name('windows')
-    "     if executable('ag')
-    "         let g:grepper.ag.escape += "'\""
-    "         let g:grepper.operator.ag.escape += "'\""
-    "     endif
-    "
-    "     if executable('grep')
-    "         let g:grepper.grep.escape += "'\""
-    "         let g:grepper.operator.grep.escape += "'\""
-    "     endif
-    "
-    "     if executable('git')
-    "         let g:grepper.git.escape += "'\""
-    "         let g:grepper.operator.git.escape += "'\""
-    "     endif
-    " endif
 endfunction

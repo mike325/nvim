@@ -90,9 +90,6 @@ function! plugins#ultisnips#init(data) abort
         return ''
     endfunction
 
-    " TODO: Improve TAB and S-TAB mappings
-    " inoremap <silent><TAB>   <C-R>=<SID>ExpandSnippetOrComplete()<CR>
-    " inoremap <silent><S-TAB> <C-R>=PrevSnippetOrNothing()<CR>
     inoremap <silent><TAB>    <C-R>=NextSnippet()<CR>
     inoremap <silent><S-TAB>  <C-R>=PrevSnippetOrNothing()<CR>
     inoremap <silent><CR>     <C-R>=plugins#ultisnips#nextsnippetorreturn()<CR>

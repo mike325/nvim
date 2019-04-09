@@ -79,13 +79,6 @@ augroup AutoResize
     autocmd VimResized * wincmd =
 augroup end
 
-" TODO: check this in the future
-" augroup AutoSaveAndRead
-"     autocmd!
-"     autocmd TextChanged,InsertLeave,FocusLost * silent! wall
-"     autocmd CursorHold * silent! checktime
-" augroup end
-
 augroup LastEditPosition
     autocmd!
     autocmd BufReadPost *
@@ -139,8 +132,6 @@ augroup end
 " }}} EndSpell
 
 " Skeletons {{{
-" TODO: Improve personalization of the templates
-" TODO: Create custom cmd
 
 augroup Skeletons
     autocmd!

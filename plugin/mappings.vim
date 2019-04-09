@@ -377,7 +377,6 @@ if !exists('g:plugs["vim-eunuch"]')
 endif
 
 if !exists('g:plugs["vim-fugitive"]') && executable('git')
-    " TODO: Git pull command
     if has('nvim')
         command! -nargs=+ Git execute(((&splitbelow) ? 'botright' : 'topleft' ) . ' 20split term://git ' . <q-args>)
         command! -nargs=* Gstatus execute(((&splitbelow) ? 'botright' : 'topleft' ) . ' 20split term://git status ' . <q-args>)

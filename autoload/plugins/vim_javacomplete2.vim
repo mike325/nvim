@@ -25,7 +25,6 @@
 " ############################################################################
 
 function! plugins#vim_javacomplete2#init(data) abort
-    " TODO: Configure this plugin to work as and IDE
     if !exists('g:plugs["vim-javacomplete2"]')
         return -1
     endif

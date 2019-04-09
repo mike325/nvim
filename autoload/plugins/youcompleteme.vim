@@ -72,7 +72,6 @@ function! plugins#youcompleteme#install(info) abort
             let l:cmd += ['--js-completer']
         endif
 
-        " TODO: Can't test in windows
         if !os#name('windows') && executable('java')
             " JDK8 must be installed
             let l:java = system('java -version')
