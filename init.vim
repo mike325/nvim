@@ -46,7 +46,7 @@ endif
 
 " If there are no plugins available and we don't have git
 " fallback to minimal mode
-if (!executable('git') && !isdirectory(fnameescape(vars#basedir().'plugged'))) || v:progname == 'vi'
+if (!executable('git') && !isdirectory(fnameescape(vars#basedir().'plugged'))) || v:progname ==# 'vi'
     let g:minimal = 1
 endif
 
