@@ -115,10 +115,6 @@ if !exists('g:minimal') || g:minimal == 0
     " }}} END Syntax
 
     " ####### GUI settings {{{
-    if exists('g:gonvim_running')
-        Plug 'akiyosi/gonvim-fuzzy'
-    endif
-    " }}} END GUI settings
 
     " ####### Project base {{{
 
@@ -164,13 +160,18 @@ if !exists('g:minimal') || g:minimal == 0
         endif
     endif
 
-    if has('nvim') && has#python('3') && !exists('g:gonvim_running')
+    if executable('fzf') && isdirectory(vars#home() . '/.fzf')
+        Plug 'junegunn/fzf', { 'dir': '~/.fzf'}
+        Plug 'junegunn/fzf.vim'
+    elseif exists('g:gonvim_running')
+        Plug 'akiyosi/gonvim-fuzzy'
+    elseif has('nvim') && has#python('3')
 
         Plug 'Shougo/denite.nvim'
         Plug 'raghur/fruzzy', {'do': { -> fruzzy#install()}} " TODO: check how this work
         " Plug 'dunstontc/projectile.nvim'
         " Plug 'chemzqm/denite-git'
-    elseif !exists('g:gonvim_running')
+    else
         Plug 'mhinz/vim-grepper', { 'on': ['Grepper', '<plug>(GrepperOperator)'] }
 
         Plug 'ctrlpvim/ctrlp.vim'
