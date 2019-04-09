@@ -33,10 +33,7 @@ function! plugins#fzf_vim#init(data) abort
     nnoremap <C-b> :Buffers<CR>
 
     " preview function use bash, so windows support
-    if !os#name('windows')
-        command! -bang -nargs=? -complete=dir Files
-            \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
-    elseif &shell =~# '\v^cmd(\.exe)'
+    if os#name('windows') && &shell =~# '\v^cmd(\.exe)'
         let $FZF_DEFAULT_COMMAND = '( git ls-tree -r --name-only HEAD || '.tools#select_filelist(0).' ) 2> nul'
         let $FZF_CTRL_T_COMMAND = $FZF_DEFAULT_COMMAND
         if executable('fd')
