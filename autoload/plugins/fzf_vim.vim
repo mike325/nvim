@@ -24,6 +24,20 @@
 "
 " ############################################################################
 
+" Took from https://www.reddit.com/r/vim/comments/a3e5q7/fzfvim_question_how_to_add_a_jumps_command/
+ function! plugins#fzf_vim#GetRegisters() abort
+    redir => cout
+    silent registers
+    redir END
+    return split(cout, "\n")[1:]
+endfunction
+
+function! plugins#fzf_vim#UseRegister(line) abort
+    let l:reg = getreg(a:line[1], 1, 1)
+    let l:reg_type = getregtype(a:line[1])
+    call setreg('"', l:reg, l:reg_type)
+endfunction
+
 function! plugins#fzf_vim#init(data) abort
     if  !exists('g:plugs["fzf"]') || !exists('g:plugs["fzf.vim"]')
         return -1
@@ -33,6 +47,10 @@ function! plugins#fzf_vim#init(data) abort
     nnoremap <C-b> :Buffers<CR>
 
     command! Oldfiles History
+
+    command! Registers call fzf#run(fzf#wrap({
+            \ 'source': plugins#fzf_vim#GetRegisters(),
+            \ 'sink': function('plugins#fzf_vim#UseRegister')}))
 
     " preview function use bash, so windows support
     if os#name('windows') && &shell =~# '\v^cmd(\.exe)'
