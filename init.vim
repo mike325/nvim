@@ -66,7 +66,11 @@ endtry
 if !exists('g:minimal') || g:minimal == 0
 
     try
-        call execute('set runtimepath+=' . expand(vars#basedir() . 'plug/'))
+        if exists('*execute')
+            call execute('set runtimepath+=' . expand(vars#basedir() . 'plug/'))
+        else
+            execute 'set runtimepath+=' . expand(vars#basedir() . 'plug/')
+        endif
         call plug#begin(vars#basedir().'plugged')
     catch E117
         " Fallback if we fail to init Plug
@@ -76,6 +80,9 @@ if !exists('g:minimal') || g:minimal == 0
             runtime! macros/matchit.vim
         endif
         filetype plugin indent on
+        if exists('+syntax')
+            syntax on      " Switch on syntax highlighting
+        endif
         finish
     endtry
 
@@ -160,6 +167,7 @@ if !exists('g:minimal') || g:minimal == 0
         endif
     endif
 
+    " TODO: Fugitive seems to break tcd, try to fix it
     if executable('fzf') && isdirectory(vars#home() . '/.fzf')
         Plug 'junegunn/fzf', { 'dir': '~/.fzf'}
         Plug 'junegunn/fzf.vim'

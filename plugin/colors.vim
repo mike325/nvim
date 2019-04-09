@@ -57,7 +57,11 @@ try
     " colorscheme gruvbox
     " colorscheme monokai
     " colorscheme onedark
-    colorscheme ayu
+    if has('nvim')
+        colorscheme ayu
+    else
+        colorscheme onedark
+    endif
 
 catch E185
     " We don't have our cool color schemes
