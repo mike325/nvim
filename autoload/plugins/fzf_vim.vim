@@ -32,6 +32,8 @@ function! plugins#fzf_vim#init(data) abort
     nnoremap <C-p> :Files<CR>
     nnoremap <C-b> :Buffers<CR>
 
+    command! Oldfiles History
+
     " preview function use bash, so windows support
     if os#name('windows') && &shell =~# '\v^cmd(\.exe)'
         let $FZF_DEFAULT_COMMAND = '( git ls-tree -r --name-only HEAD || '.tools#select_filelist(0).' ) 2> nul'

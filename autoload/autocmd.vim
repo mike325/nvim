@@ -135,19 +135,23 @@ function! autocmd#IsGitRepo(root) abort
 endfunction
 
 function! autocmd#SetProjectConfigs() abort
-    let l:project_root =  autocmd#FindProjectRoot(expand('%:p'))
+    if exists('b:project_root')
+        return b:project_root
+    endif
+
+    let b:project_root =  autocmd#FindProjectRoot(expand('%:p'))
     let l:is_git = 0
 
-    if !empty(l:project_root)
-        " let l:project_root = fnamemodify(l:project_root, ':h')
-        let l:is_git = autocmd#IsGitRepo(l:project_root)
+    if !empty(b:project_root)
+        " let b:project_root = fnamemodify(b:project_root, ':h')
+        let l:is_git = autocmd#IsGitRepo(b:project_root)
 
-        if filereadable(l:project_root . '/project.vim')
+        if filereadable(b:project_root . '/project.vim')
             try
-                execute 'source '. l:project_root . '/project.vim'
+                execute 'source '. b:project_root . '/project.vim'
             catch /.*/
                 if !has#gui()
-                    echoerr 'There were errors with the project file in ' . l:project_root . '/project.vim'
+                    echoerr 'There were errors with the project file in ' . b:project_root . '/project.vim'
                 endif
             endtry
         endif
@@ -170,10 +174,10 @@ function! autocmd#SetProjectConfigs() abort
                 endif
             endfunction
 
-            command! UltiSnipsDir call mkdir(l:project_root . '/UltiSnips', 'p') | call s:ChangeUltisnipsDir()
+            command! UltiSnipsDir call mkdir(b:project_root . '/UltiSnips', 'p') | call s:ChangeUltisnipsDir()
 
             try
-                call s:ChangeUltisnipsDir(l:project_root)
+                call s:ChangeUltisnipsDir(b:project_root)
             catch E117
                 "
             endtry
@@ -189,8 +193,8 @@ function! autocmd#SetProjectConfigs() abort
         endif
 
         if exists('g:plugs["deoplete.nvim"]') && ( exists('g:plugs["deoplete-clang"]') || exists('g:plugs["deoplete-clang2"]') )
-            if filereadable(l:project_root . '/compile_commands.json')
-                let g:deoplete#sources#clang#clang_complete_database = l:project_root
+            if filereadable(b:project_root . '/compile_commands.json')
+                let g:deoplete#sources#clang#clang_complete_database = b:project_root
             else
                 if exists('g:deoplete#sources#clang#clang_complete_database')
                     unlet g:deoplete#sources#clang#clang_complete_database
@@ -234,14 +238,14 @@ function! autocmd#SetProjectConfigs() abort
         endif
 
     else
-        let l:project_root = fnamemodify(getcwd(), ':p')
+        let b:project_root = fnamemodify(getcwd(), ':p')
 
-        if filereadable(l:project_root . '/project.vim')
+        if filereadable(b:project_root . '/project.vim')
             try
-                execute 'source '. l:project_root . '/project.vim'
+                execute 'source '. b:project_root . '/project.vim'
             catch /.*/
                 if !has#gui()
-                    echoerr 'There were errors with the project file in ' . l:project_root . '/project.vim'
+                    echoerr 'There were errors with the project file in ' . b:project_root . '/project.vim'
                 endif
             endtry
         endif
@@ -261,8 +265,8 @@ function! autocmd#SetProjectConfigs() abort
         endif
 
         if exists('g:plugs["deoplete.nvim"]') && ( exists('g:plugs["deoplete-clang"]') || exists('g:plugs["deoplete-clang2"]') )
-            if filereadable(l:project_root . '/compile_commands.json')
-                let g:deoplete#sources#clang#clang_complete_database = l:project_root
+            if filereadable(b:project_root . '/compile_commands.json')
+                let g:deoplete#sources#clang#clang_complete_database = b:project_root
             else
                 if exists('g:deoplete#sources#clang#clang_complete_database')
                     unlet g:deoplete#sources#clang#clang_complete_database
@@ -301,5 +305,5 @@ function! autocmd#SetProjectConfigs() abort
         endif
 
     endif
-    return l:project_root
+    return b:project_root
 endfunction
