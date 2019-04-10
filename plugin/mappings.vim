@@ -285,20 +285,22 @@ if !exists('g:plugs["vim-indexed-search"]')
 endif
 
 if !exists('g:plugs["vim-unimpaired"]')
-    nnoremap [Q :cfirst<CR>
-    nnoremap ]Q :clast<CR>
-    nnoremap ]q :cnext<CR>
-    nnoremap [q :cprevious<CR>
 
-    nnoremap [l :lprevious<CR>
-    nnoremap ]l :lnext<CR>
-    nnoremap [L :lfirst<CR>
-    nnoremap ]L :llast<CR>
+    nnoremap [Q  :<C-U>exe "".(v:count ? v:count : "")."cfirst"<CR>zvzz
+    nnoremap ]Q  :<C-U>exe "".(v:count ? v:count : "")."clast"<CR>zvzz
+    nnoremap [q  :<C-U>exe "".(v:count ? v:count : "")."cprevious"<CR>zvzz
+    nnoremap ]q  :<C-U>exe "".(v:count ? v:count : "")."cnext"<CR>zvzz
 
-    nnoremap [B :bfirst<cr>
-    nnoremap ]B :blast<cr>
-    nnoremap [b :bprevious<cr>
-    nnoremap ]b :bnext<cr>
+    nnoremap [L  :<C-U>exe "".(v:count ? v:count : "")."lfirst"<CR>zvzz
+    nnoremap ]L  :<C-U>exe "".(v:count ? v:count : "")."llast"<CR>zvzz
+    nnoremap [l  :<C-U>exe "".(v:count ? v:count : "")."lprevious"<CR>zvzz
+    nnoremap ]l  :<C-U>exe "".(v:count ? v:count : "")."lnext"<CR>zvzz
+
+    nnoremap [B :<C-U>exe "".(v:count ? v:count : "")."bfirst"<CR>
+    nnoremap ]B :<C-U>exe "".(v:count ? v:count : "")."blast"<CR>
+    nnoremap [b :<C-U>exe "".(v:count ? v:count : "")."bprevious"<CR>
+    nnoremap ]b :<C-U>exe "".(v:count ? v:count : "")."bnext"<CR>
+
 endif
 
 if !exists('g:plugs["vim-vinegar"]') && !exists('g:plugs["nerdtree"]')

@@ -24,7 +24,7 @@
 "
 " ############################################################################
 
-function! plugins#vim_unimpaired#post()
+function! plugins#vim_unimpaired#post() abort
     if !exists('g:plugs["vim-unimpaired"]')
         return -1
     endif
@@ -35,13 +35,23 @@ function! plugins#vim_unimpaired#post()
     noremap  <silent> <Plug>unimpairedMoveSelectionUp   :<C-U>call <SID>MoveSelectionUp(v:count1)<CR>
     noremap  <silent> <Plug>unimpairedMoveSelectionDown :<C-U>call <SID>MoveSelectionDown(v:count1)<CR>
 
+    nnoremap [Q  :<C-U>exe "".(v:count ? v:count : "")."cfirst"<CR>zvzz
+    nnoremap ]Q  :<C-U>exe "".(v:count ? v:count : "")."clast"<CR>zvzz
+    nnoremap [q  :<C-U>exe "".(v:count ? v:count : "")."cprevious"<CR>zvzz
+    nnoremap ]q  :<C-U>exe "".(v:count ? v:count : "")."cnext"<CR>zvzz
+
+    nnoremap [L  :<C-U>exe "".(v:count ? v:count : "")."lfirst"<CR>zvzz
+    nnoremap ]L  :<C-U>exe "".(v:count ? v:count : "")."llast"<CR>zvzz
+    nnoremap [l  :<C-U>exe "".(v:count ? v:count : "")."lprevious"<CR>zvzz
+    nnoremap ]l  :<C-U>exe "".(v:count ? v:count : "")."lnext"<CR>zvzz
+
     call s:map('n', '[e', '<Plug>unimpairedMoveUp')
     call s:map('n', ']e', '<Plug>unimpairedMoveDown')
     call s:map('x', '[e', '<Plug>unimpairedMoveSelectionUp')
     call s:map('x', ']e', '<Plug>unimpairedMoveSelectionDown')
 endfunction
 
-function! plugins#vim_unimpaired#init(data)
+function! plugins#vim_unimpaired#init(data) abort
     if !exists('g:plugs["vim-unimpaired"]')
         return -1
     endif
@@ -59,13 +69,13 @@ endfunction
 
 function! s:ExecMove(cmd) abort
     let old_fdm = &foldmethod
-    if old_fdm != 'manual'
+    if old_fdm !=# 'manual'
         let &foldmethod = 'manual'
     endif
     normal! m`
     silent! exe a:cmd
     norm! ``
-    if old_fdm != 'manual'
+    if old_fdm !=# 'manual'
         let &foldmethod = old_fdm
     endif
 endfunction
@@ -87,4 +97,3 @@ function! s:MoveSelectionDown(count) abort
     silent! normal! gv=
     silent! call repeat#set("\<Plug>unimpairedMoveSelectionDown", a:count)
 endfunction
-
