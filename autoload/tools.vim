@@ -193,6 +193,8 @@ function! tools#abolish(lang) abort
         \ 'reproducable'                                 : 'reproducible',
         \ 'retreive'                                     : 'retrieve',
         \ 'compeletly'                                   : 'completely',
+        \ 'movil'                                        : 'mobil',
+        \ 'pro{j,y}ect{o}'                               : 'project',
         \ 'imr{pov,pvo}e'                                : 'improve',
         \ 'enviroment{s}'                                : 'environment{s}',
         \ 'sustition{s}'                                 : 'substitution{s}',
@@ -232,6 +234,9 @@ function! tools#abolish(lang) abort
         \ 'acuardo'                                                             : 'acuerdo',
         \ 'carateristicas'                                                      : 'características',
         \ 'ademas'                                                              : 'además',
+        \ 'asi'                                                                 : 'así',
+        \ 'dia{,s}'                                                             : 'día{}',
+        \ 'pro{j,y}ect{o,}'                                                     : 'proyecto',
         \ 'logic{as,o,os}'                                                      : 'lógic{}',
         \ '{h,f}ernandez'                                                       : '{}ernández',
         \ 'electronico{s}'                                                      : 'electrónico{}',
@@ -241,10 +246,11 @@ function! tools#abolish(lang) abort
         \ 'metodologia{s}'                                                      : 'metodología{}',
         \ '{bibliogra}fia'                                                      : '{}fía',
         \ '{reflexi}on'                                                         : '{}ón',
+        \ 'mo{b,v}il'                                                           : 'móvil',
         \ '{televi,explo}sion'                                                  : '{}sión',
         \ '{reac,disminu,interac,clasifica,crea,notifica,introduc,justifi}cion' : '{}ción',
         \ '{obten,ora,emo,valora,utilizap,modifica,sec,delimita,informa}cion'   : '{}ción',
-        \ '{administra,aplica,rala,aproxima}cion'                               : '{}ción',
+        \ '{administra,aplica,rala,aproxima,programa}cion'                      : '{}ción',
         \ }
     let l:current = &spelllang
     if ( exists('g:plugs["vim-abolish"]') && exists(':Abolish') == 2) && l:current !=# a:lang
