@@ -26,11 +26,9 @@ scriptencoding "uft-8"
 " }}} END HEADER
 
 " We just want to source this file once
-if exists('g:mappings_loaded') && g:mappings_loaded
+if exists('g:mappings_loaded')
     finish
 endif
-
-let g:mappings_loaded = 1
 
 nnoremap , :
 xnoremap , :
@@ -233,7 +231,7 @@ endif
 
 command! TrimToggle call mappings#Trim()
 
-command! -nargs=? -complete=customlist,tools#spells SpellLang
+command! -nargs=? -complete=customlist,mappings#spells SpellLang
             \ let s:spell = (empty(<q-args>)) ?  'en' : expand(<q-args>) |
             \ call tools#spelllangs(s:spell) |
             \ unlet s:spell

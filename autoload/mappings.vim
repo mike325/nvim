@@ -146,9 +146,11 @@ function! mappings#Trim() abort
     return 0
 endfunction
 
-" function! mappings#Spells(ArgLead, CmdLine, CursorPos) abort
-"     return ['en', 'es']
-" endfunction
+function! mappings#spells(arglead, cmdline, cursorpos) abort
+    let l:candidates = split(glob(vars#basedir() . '/spell/*.utf-8.sug'), '\n')
+    let l:candidates = map(l:candidates, {key, val -> split(fnamemodify(val , ':t'), '\.')[0]})
+    return filter(copy(l:candidates), "v:val =~? join(split(a:arglead, '\zs'), '.*')")
+endfunction
 
 " CREDITS: https://github.com/alexlafroscia/dotfiles/blob/master/nvim/init.vim
 " Smart indent when entering insert mode with i on empty lines
