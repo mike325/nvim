@@ -248,12 +248,16 @@ function! tools#abolish(lang) abort
         \ }
     let l:current = &spelllang
     if ( exists('g:plugs["vim-abolish"]') && exists(':Abolish') == 2) && l:current !=# a:lang
-        for [l:key, l:val] in items(l:abolish_lang[l:current])
-            execute 'Abolish -delete ' . l:key
-        endfor
-        for [l:key, l:val] in items(l:abolish_lang[a:lang])
-            execute 'Abolish ' . l:key . ' ' . l:val
-        endfor
+        if exists('l:abolish_lang[l:current]')
+            for [l:key, l:val] in items(l:abolish_lang[l:current])
+                execute 'Abolish -delete ' . l:key
+            endfor
+        endif
+        if exists('l:abolish_lang[a:lang]')
+            for [l:key, l:val] in items(l:abolish_lang[a:lang])
+                execute 'Abolish ' . l:key . ' ' . l:val
+            endfor
+        endif
     endif
 endfunction
 
