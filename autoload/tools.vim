@@ -235,8 +235,10 @@ function! tools#abolish(lang) abort
         \ 'carateristicas'                                                      : 'características',
         \ 'ademas'                                                              : 'además',
         \ 'asi'                                                                 : 'así',
-        \ 'dia{,s}'                                                             : 'día{}',
-        \ 'pro{j,y}ect{o,}'                                                     : 'proyecto',
+        \ 'siguente'                                                            : 'siguiente',
+        \ 'automatico'                                                          : 'automático',
+        \ 'dia{s}'                                                             : 'día{}',
+        \ 'pro{j,y}ect{o}'                                                      : 'proyecto',
         \ 'logic{as,o,os}'                                                      : 'lógic{}',
         \ '{h,f}ernandez'                                                       : '{}ernández',
         \ 'electronico{s}'                                                      : 'electrónico{}',
@@ -250,8 +252,9 @@ function! tools#abolish(lang) abort
         \ '{televi,explo}sion'                                                  : '{}sión',
         \ '{reac,disminu,interac,clasifica,crea,notifica,introduc,justifi}cion' : '{}ción',
         \ '{obten,ora,emo,valora,utilizap,modifica,sec,delimita,informa}cion'   : '{}ción',
-        \ '{administra,aplica,rala,aproxima,programa}cion'                      : '{}ción',
+        \ '{fun,administra,aplica,rala,aproxima,programa}cion'                  : '{}ción',
         \ }
+
     let l:current = &spelllang
     if ( exists('g:plugs["vim-abolish"]') && exists(':Abolish') == 2) && l:current !=# a:lang
         if exists('l:abolish_lang[l:current]')
@@ -262,6 +265,25 @@ function! tools#abolish(lang) abort
         if exists('l:abolish_lang[a:lang]')
             for [l:key, l:val] in items(l:abolish_lang[a:lang])
                 execute 'Abolish ' . l:key . ' ' . l:val
+            endfor
+        endif
+    elseif l:current !=# a:lang
+        if exists('l:abolish_lang[l:current]')
+            for [l:key, l:val] in items(l:abolish_lang[l:current])
+                if l:key !~# '{|}'
+                    silent! execute 'iunabbrev ' . l:key
+                    silent! execute 'iunabbrev ' . substitute( l:key, '.*', '\U\0', 'g')
+                    silent! execute 'iunabbrev ' . substitute( l:key, '^.', '\U\0', 'g')
+                endif
+            endfor
+        endif
+        if exists('l:abolish_lang[a:lang]')
+            for [l:key, l:val] in items(l:abolish_lang[a:lang])
+                if l:key !~# '{|}'
+                    silent! execute 'iabbrev ' . l:key . ' ' . l:val
+                    silent! execute 'iabbrev ' . substitute( l:key, '.*', '\U\0', 'g') . ' ' . substitute( l:val, '.*', '\U\0', 'g')
+                    silent! execute 'iabbrev ' . substitute( l:key, '^.', '\U\0', 'g') . ' ' . substitute( l:val, '^.', '\U\0', 'g')
+                endif
             endfor
         endif
     endif
