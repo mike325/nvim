@@ -519,7 +519,7 @@ if !exists('g:minimal') || g:minimal == 0
 
     if has('nvim')
         Plug 'Vigemus/iron.nvim'
-    elseif !exists('+terminal')
+    elseif !has('+terminal')
         " Useful to get the console output in Vim (since :terminal is not enable yet)
         Plug 'tpope/vim-dispatch'
     endif
