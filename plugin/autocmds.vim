@@ -142,11 +142,13 @@ augroup end
 
 augroup ProjectConfig
     autocmd!
-    if has('nvim-0.2') || (v:version >= 801 || has('patch-8.0.1459'))
+    if has('nvim-0.2')
+        autocmd TabNew,DirChanged * call autocmd#SetProjectConfigs()
+    elseif (v:version >= 801 || has('patch-8.0.1459'))
         autocmd DirChanged * call autocmd#SetProjectConfigs()
     endif
-    autocmd TabEnter,TabNew,VimEnter,SessionLoadPost * call autocmd#SetProjectConfigs()
-    autocmd VimEnter *                 call tools#abolish('en')
+    autocmd TabEnter,VimEnter,SessionLoadPost * call autocmd#SetProjectConfigs()
+    autocmd VimEnter                          * call tools#abolish('en')
 augroup end
 
 augroup LaTex
