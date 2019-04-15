@@ -107,7 +107,7 @@ function! tools#grep(tool, ...) abort
                 \       'grepformat': '%f:%l:%c:%m,%f:%l:%m'
                 \   },
                 \   'grep' : {
-                \       'grepprg': 'grep -HiIn --color=never ',
+                \       'grepprg': 'grep -RHiIn --color=never ',
                 \       'grepformat': '%f:%l:%m'
                 \   },
                 \   'findstr' : {

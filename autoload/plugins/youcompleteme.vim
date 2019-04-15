@@ -26,14 +26,14 @@ scriptencoding "utf-8"
 "
 " ############################################################################
 
-function! plugins#youcompleteme#OnDeleteChar()
+function! plugins#youcompleteme#OnDeleteChar() abort
     if pumvisible()
         return "\<C-y>"
     endif
     return ''
 endfunction
 
-function! plugins#youcompleteme#FixYCMBs()
+function! plugins#youcompleteme#FixYCMBs() abort
     imap <BS> <C-R>=plugins#youcompleteme#OnDeleteChar()<CR><Plug>delimitMateBS
     imap <C-h> <C-R>=plugins#youcompleteme#OnDeleteChar()<CR><Plug>delimitMateBS
 endfunction
