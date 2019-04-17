@@ -76,5 +76,5 @@ setlocal foldexpr=GetZshFold()
 " }}}
 
 " Since '$' is part of the variables, lets treat it as part of the word
-setlocal iskeyword+=$
+" setlocal iskeyword+=$
 " let g:is_zsh = 1
