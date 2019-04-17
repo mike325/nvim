@@ -74,11 +74,11 @@ function! s:PythonProviders(python) abort
                     \ 'virtual': ''
                     \ }
         if executable('python'.l:major.'.'.l:minor) && (isdirectory(l:pynvim['local']) || isdirectory(l:pynvim['system']))
-            return 'python'.l:major.'.'.l:minor
+            return exepath('python'.l:major.'.'.l:minor)
         elseif executable('python'.l:major) && (isdirectory(l:pynvim['local']) || isdirectory(l:pynvim['system']))
-            return 'python'.l:major
+            return exepath('python'.l:major)
         elseif ( executable('python'.l:major.'.'.l:minor) || executable('python'.l:major) ) &&  isdirectory(l:pynvim['virtual'])
-            return executable('python'.l:major.'.'.l:minor) ? 'python'.l:major.'.'.l:minor : 'python'.l:major
+            return executable('python'.l:major.'.'.l:minor) ? exepath('python'.l:major.'.'.l:minor) : exepath('python'.l:major)
         endif
     endif
     return ''

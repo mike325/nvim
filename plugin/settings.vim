@@ -113,7 +113,7 @@ if empty($SSH_CONNECTION) && has('clipboard')
             let s:paste['*'] = s:paste['+']
 
             let g:clipboard = {
-                        \   'name': 'myClipboard',
+                        \   'name': 'win32yank',
                         \   'copy': s:copy,
                         \   'paste': s:paste,
                         \   'cache_enabled': 1,
@@ -124,7 +124,7 @@ if empty($SSH_CONNECTION) && has('clipboard')
             let s:copy['*'] = 'xclip -quiet -i -selection primary'
             let s:paste['*'] = 'xclip -o -selection primary'
             let g:clipboard = {
-                        \   'name': 'myClipboard',
+                        \   'name': 'xclip',
                         \   'copy': s:copy,
                         \   'paste': s:paste,
                         \   'cache_enabled': 1,
@@ -135,7 +135,7 @@ if empty($SSH_CONNECTION) && has('clipboard')
             let s:copy['*'] = s:copy['+']
             let s:paste['*'] = s:paste['+']
             let g:clipboard = {
-                        \   'name': 'myClipboard',
+                        \   'name': 'pbcopy',
                         \   'copy': s:copy,
                         \   'paste': s:paste,
                         \   'cache_enabled': 1,
