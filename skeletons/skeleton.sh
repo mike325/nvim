@@ -41,7 +41,6 @@ fi
 
 # _DEFAULT_SHELL="${SHELL##*/}"
 _CURRENT_SHELL="bash"
-_IS_WINDOWS=0
 
 if [ -z "$SHELL_PLATFORM" ]; then
     export SHELL_PLATFORM='UNKNOWN'
@@ -54,17 +53,18 @@ if [ -z "$SHELL_PLATFORM" ]; then
     esac
 fi
 
-# Windows stuff
-if [[ $SHELL_PLATFORM == 'MSYS' ]] || [[ $SHELL_PLATFORM == 'CYGWIN' ]]; then
-    # Windows bash does not have pgrep by default
-    # shellcheck disable=SC2009
-    _CURRENT_SHELL="$(ps | grep $$ | awk '{ print $8 }')"
-    _CURRENT_SHELL="${_CURRENT_SHELL##*/}"
-    # Windows does not support links we will use cp instead
-    # shellcheck disable=SC2034
-    _IS_WINDOWS=1
-else
-    _CURRENT_SHELL="$(ps | head -2 | tail -n 1 | awk '{ print $4 }')"
+function is_windows() {
+    if [[ $SHELL_PLATFORM == 'MSYS' ]] || [[ $SHELL_PLATFORM == 'CYGWIN' ]]; then
+        return 0
+    fi
+    return 1
+}
+
+# shellcheck disable=SC2009,SC2046
+_CURRENT_SHELL="$(ps | grep $$ | grep -Eo '(ba|z|tc|c)?sh')"
+_CURRENT_SHELL="${_CURRENT_SHELL##*/}"
+_CURRENT_SHELL="${_CURRENT_SHELL##*:}"
+if ! is_windows; then
     # Hack when using sudo
     if [[ $_CURRENT_SHELL == "sudo" ]] || [[ $_CURRENT_SHELL == "su" ]]; then
         _CURRENT_SHELL="$(ps | head -4 | tail -n 1 | awk '{ print $4 }')"
@@ -72,36 +72,47 @@ else
 fi
 
 # colors
+# shellcheck disable=SC2034
 black="\033[0;30m"
+# shellcheck disable=SC2034
 red="\033[0;31m"
+# shellcheck disable=SC2034
 green="\033[0;32m"
+# shellcheck disable=SC2034
 yellow="\033[0;33m"
+# shellcheck disable=SC2034
 blue="\033[0;34m"
+# shellcheck disable=SC2034
 purple="\033[0;35m"
+# shellcheck disable=SC2034
 cyan="\033[0;36m"
+# shellcheck disable=SC2034
 white="\033[0;37;1m"
+# shellcheck disable=SC2034
 orange="\033[0;91m"
+# shellcheck disable=SC2034
 normal="\033[0m"
+# shellcheck disable=SC2034
 reset_color="\033[39m"
 
 function help_user() {
-    echo ""
-    echo "  Description"
-    echo ""
-    echo "  Usage:"
-    echo "      $_NAME [OPTIONAL]"
-    echo ""
-    echo "      Optional Flags"
-    echo ""
-    echo "          --nocolor"
-    echo "              Disable color output"
-    echo ""
-    echo "          -v, --verbose"
-    echo "              Enable debug messages"
-    echo ""
-    echo "          -h, --help"
-    echo "              Display help, if you are seeing this, that means that you already know it (nice)"
-    echo ""
+    cat<<EOF
+Description
+
+Usage:
+    $_NAME [OPTIONAL]
+
+    Optional Flags
+
+        --nocolor
+            Disable color output
+
+        -v, --verbose
+            Enable debug messages
+
+        -h, --help
+            Display help, if you are seeing this, that means that you already know it (nice)
+EOF
 }
 
 function __parse_args() {
@@ -114,7 +125,7 @@ function __parse_args() {
 
     local pattern="^--${name}[=][a-zA-Z0-9._-/~]+$"
 
-    if [[ ! -z "$3" ]]; then
+    if [[ -n "$3" ]]; then
         local pattern="^--${name}[=]$3$"
     fi
 
