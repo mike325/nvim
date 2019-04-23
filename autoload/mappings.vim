@@ -89,13 +89,25 @@ endif
 
 if !exists('g:plugs["iron.nvim"]') && has#python()
     function! mappings#Python(version, args) abort
-        let l:version = ( a:version  == 3 ) ? g:python3_host_prog : g:python_host_prog
+
+        let l:python3 = exists('g:python3_host_prog') ? g:python3_host_prog : exepath('python3')
+        let l:python2 = exists('g:python_host_prog') ? g:python_host_prog : exepath('python2')
+
+        let l:version = ( a:version  == 3 ) ? l:python3 : l:python2
+        if empty(l:version)
+            echoerr 'Python' . a:version . ' is not available in the system'
+            return -1
+        endif
         let l:split = (&splitbelow) ? 'botright' : 'topleft'
 
         if has('nvim')
             execute l:split . ' 20split term://'. l:version . ' ' . a:args
         elseif has('terminal')
-            call term_start(l:version. ' ' . a:args, {'term_rows': 20})
+            if empty(a:args)
+                call term_start(l:version, {'term_rows': 20})
+            else
+                call term_start(l:version. ' ' . a:args, {'term_rows': 20})
+            endif
             wincmd J
         endif
 
