@@ -103,7 +103,7 @@ function! tools#grep(tool, ...) abort
                 \       'grepformat': '%f:%l:%c:%m,%f:%l:%m'
                 \   },
                 \   'ag' : {
-                \       'grepprg': 'ag -S --follow --nogroup --nocolor --hidden --vimgrep ',
+                \       'grepprg': 'ag -S --follow --nogroup --nocolor --hidden --vimgrep --ignore ' . join(map(split(copy(&backupskip), ','), {key, val -> substitute(val, '.*', '"\0"', 'g') }), ' --ignore ' ),
                 \       'grepformat': '%f:%l:%c:%m,%f:%l:%m'
                 \   },
                 \   'grep' : {
@@ -135,7 +135,7 @@ function! tools#filelist(tool) abort
                 \ 'git'  : 'git --no-pager ls-files -co --exclude-standard',
                 \ 'fd'   : 'fd -E ' . join(map(split(copy(&backupskip), ','), {key, val -> substitute(val, '.*', '"\0"', 'g') }), ' -E ' ) . ' --type f --hidden --follow --color never . .',
                 \ 'rg'   : 'rg --line-number --column --with-filename --color never --no-search-zip --hidden --trim --files',
-                \ 'ag'   : 'ag -l --follow --nocolor --nogroup --hidden -g ""',
+                \ 'ag'   : 'ag -l --follow --nocolor --nogroup --hidden --ignore ' . join(map(split(copy(&backupskip), ','), {key, val -> substitute(val, '.*', '"\0"', 'g') }), ' --ignore ' ) . '-g ""',
                 \ 'find' : "find . -iname '*'",
                 \}
 
