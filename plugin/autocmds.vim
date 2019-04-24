@@ -82,8 +82,8 @@ augroup end
 augroup LastEditPosition
     autocmd!
     autocmd BufReadPost *
-                \   if line("'\"") > 1 && line("'\"") <= line("$") && &ft != "gitcommit" |
-                \       exe "normal! g'\""                                               |
+                \   if line("'\"") > 1 && line("'\"") <= line("$") && &filetype !~# "\v(gitcommit|fugitive|git)" |
+                \       exe "normal! g'\""                                                                       |
                 \   endif
 augroup end
 
