@@ -284,20 +284,20 @@ endif
 
 if !exists('g:plugs["vim-unimpaired"]')
 
-    nnoremap [Q  :<C-U>exe "".(v:count ? v:count : "")."cfirst"<CR>zvzz
-    nnoremap ]Q  :<C-U>exe "".(v:count ? v:count : "")."clast"<CR>zvzz
-    nnoremap [q  :<C-U>exe "".(v:count ? v:count : "")."cprevious"<CR>zvzz
-    nnoremap ]q  :<C-U>exe "".(v:count ? v:count : "")."cnext"<CR>zvzz
+    nnoremap <silent> [Q  :<C-U>exe "".(v:count ? v:count : "")."cfirst"<CR>zvzz
+    nnoremap <silent> ]Q  :<C-U>exe "".(v:count ? v:count : "")."clast"<CR>zvzz
+    nnoremap <silent> [q  :<C-U>exe "".(v:count ? v:count : "")."cprevious"<CR>zvzz
+    nnoremap <silent> ]q  :<C-U>exe "".(v:count ? v:count : "")."cnext"<CR>zvzz
 
-    nnoremap [L  :<C-U>exe "".(v:count ? v:count : "")."lfirst"<CR>zvzz
-    nnoremap ]L  :<C-U>exe "".(v:count ? v:count : "")."llast"<CR>zvzz
-    nnoremap [l  :<C-U>exe "".(v:count ? v:count : "")."lprevious"<CR>zvzz
-    nnoremap ]l  :<C-U>exe "".(v:count ? v:count : "")."lnext"<CR>zvzz
+    nnoremap <silent> [L  :<C-U>exe "".(v:count ? v:count : "")."lfirst"<CR>zvzz
+    nnoremap <silent> ]L  :<C-U>exe "".(v:count ? v:count : "")."llast"<CR>zvzz
+    nnoremap <silent> [l  :<C-U>exe "".(v:count ? v:count : "")."lprevious"<CR>zvzz
+    nnoremap <silent> ]l  :<C-U>exe "".(v:count ? v:count : "")."lnext"<CR>zvzz
 
-    nnoremap [B :<C-U>exe "".(v:count ? v:count : "")."bfirst"<CR>
-    nnoremap ]B :<C-U>exe "".(v:count ? v:count : "")."blast"<CR>
-    nnoremap [b :<C-U>exe "".(v:count ? v:count : "")."bprevious"<CR>
-    nnoremap ]b :<C-U>exe "".(v:count ? v:count : "")."bnext"<CR>
+    nnoremap <silent> [B :<C-U>exe "".(v:count ? v:count : "")."bfirst"<CR>
+    nnoremap <silent> ]B :<C-U>exe "".(v:count ? v:count : "")."blast"<CR>
+    nnoremap <silent> [b :<C-U>exe "".(v:count ? v:count : "")."bprevious"<CR>
+    nnoremap <silent> ]b :<C-U>exe "".(v:count ? v:count : "")."bnext"<CR>
 
 endif
 
