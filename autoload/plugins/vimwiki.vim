@@ -30,7 +30,7 @@ function! VimwikiLinkHandler(link)
     "   2) [[file:./|Wiki Home]]
     let l:link = a:link
 
-    if l:link !~# '^file:' && (os#name('windows') && l:link !~# '^explorer:')
+    if l:link !~# '\v^(file|vnc):' && (os#name('windows') && l:link !~# '^explorer:')
         return 0
     endif
 
@@ -42,17 +42,21 @@ function! VimwikiLinkHandler(link)
 
         let l:link_infos = vimwiki#base#resolve_link(l:link[0])
 
-        if l:link_infos.filename == ''
+        if l:link_infos.filename ==# ''
             echomsg 'Vimwiki Error: Unable to resolve link!'
             return 0
         else
-            exe 'edit ' . fnameescape(l:link_infos.filename) . ' | normal! ' . l:line . 'G' . l:column . '|'
+            execute 'edit ' . fnameescape(l:link_infos.filename) . ' | normal! ' . l:line . 'G' . l:column . '|'
             return 1
         endif
     elseif os#name('windows') && l:link =~# '^explorer:'
         let l:link = tr(split(l:link, ':')[1], '/', '\')
         silent! execute '!mkdir -Force ' . l:link
         silent! execute '!explorer.exe ' . l:link
+        return 1
+    elseif l:link =~# '^vnc:'
+        let l:link = split(l:link, ':')[1]
+        execute 'VNC ' . l:link
         return 1
     endif
     return 0
