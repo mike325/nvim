@@ -135,13 +135,7 @@ function! autocmd#IsGitRepo(root) abort
 endfunction
 
 function! autocmd#SetProjectConfigs() abort
-    let b:old_cwd = get(b:, 'cwd', getcwd())
-    let b:cwd = getcwd()
-    if exists('b:project_root') && b:old_cwd ==# b:cwd
-        return b:project_root
-    endif
-
-    let b:project_root =  autocmd#FindProjectRoot(b:cwd)
+    let b:project_root =  autocmd#FindProjectRoot(getcwd())
     let l:is_git = 0
 
     if !empty(b:project_root)
