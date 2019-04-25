@@ -57,8 +57,4 @@ function! nvim#init() abort
 
     let g:terminal_scrollback_buffer_size = 100000
 
-    if has('nvim-0.3.3')
-        set diffopt=internal,filler,vertical,iwhiteall,iwhiteeol,indent-heuristic,algorithm:patience
-    endif
-
 endfunction

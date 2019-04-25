@@ -91,6 +91,35 @@ function! tools#CheckLanguageServer(...) abort
     return 0
 endfunction
 
+function! tools#ignores(tool) abort
+    let l:ignores = {
+                \ 'git-grep' : '',
+                \ 'git-ls'   : '',
+                \ 'fd'       : '',
+                \ 'find'     : '',
+                \ 'rg'       : '',
+                \ 'ag'       : '',
+                \ 'grep'     : '',
+                \ 'findstr'  : '',
+                \ }
+
+    let l:exludes = []
+
+    if has('nvim') || v:version >= 800 || has('patch-7.4.2044')
+        let l:exludes = map(split(copy(&backupskip), ','), {key, val -> substitute(val, '.*', '"\0"', 'g') })
+    endif
+
+    if !empty(l:exludes)
+        if executable('ag') && a:tool ==# 'ag'
+            let l:ignores['ag'] = ' --ignore ' . join(l:exludes, ' --ignore ' ) . ' '
+        elseif executable('fd') && a:tool ==# 'fd'
+            let l:ignores['fd'] = ' -E ' . join(l:exludes, ' -E ' ) . ' '
+        endif
+    endif
+
+    return (exists('l:ignores[a:tool]')) ? l:ignores[a:tool] : ''
+endfunction
+
 " Small wrap to avoid change code all over the repo
 function! tools#grep(tool, ...) abort
     let l:greplist = {
@@ -103,7 +132,7 @@ function! tools#grep(tool, ...) abort
                 \       'grepformat': '%f:%l:%c:%m,%f:%l:%m'
                 \   },
                 \   'ag' : {
-                \       'grepprg': 'ag -S --follow --nogroup --nocolor --hidden --vimgrep --ignore ' . join(map(split(copy(&backupskip), ','), {key, val -> substitute(val, '.*', '"\0"', 'g') }), ' --ignore ' ),
+                \       'grepprg': 'ag -S --follow --nogroup --nocolor --hidden --vimgrep '.tools#ignores('ag'),
                 \       'grepformat': '%f:%l:%c:%m,%f:%l:%m'
                 \   },
                 \   'grep' : {
@@ -111,7 +140,7 @@ function! tools#grep(tool, ...) abort
                 \       'grepformat': '%f:%l:%m'
                 \   },
                 \   'findstr' : {
-                \       'grepprg': 'findstr -rspn ' . vars#ignore_cmd('findstr') . ' ',
+                \       'grepprg': 'findstr -rspn ' . tools#ignores('findstr') . ' ',
                 \       'grepformat': '%f:%l:%m'
                 \   },
                 \}
@@ -133,9 +162,9 @@ endfunction
 function! tools#filelist(tool) abort
     let l:filelist = {
                 \ 'git'  : 'git --no-pager ls-files -co --exclude-standard',
-                \ 'fd'   : 'fd -E ' . join(map(split(copy(&backupskip), ','), {key, val -> substitute(val, '.*', '"\0"', 'g') }), ' -E ' ) . ' --type f --hidden --follow --color never . .',
+                \ 'fd'   : 'fd ' . tools#ignores('fd') . ' --type f --hidden --follow --color never . .',
                 \ 'rg'   : 'rg --line-number --column --with-filename --color never --no-search-zip --hidden --trim --files',
-                \ 'ag'   : 'ag -l --follow --nocolor --nogroup --hidden --ignore ' . join(map(split(copy(&backupskip), ','), {key, val -> substitute(val, '.*', '"\0"', 'g') }), ' --ignore ' ) . '-g ""',
+                \ 'ag'   : 'ag -l --follow --nocolor --nogroup --hidden ' . tools#ignores('ag'). '-g ""',
                 \ 'find' : "find . -iname '*'",
                 \}
 

@@ -36,6 +36,12 @@ else
     call vim#init()
 endif
 
+if has('nvim-0.3.3') || has('patch-8.1.0360')
+    set diffopt=internal,filler,vertical,iwhiteall,iwhiteeol,indent-heuristic,algorithm:patience
+else
+    set diffopt=filler,vertical,iwhite
+endif
+
 " Allow lua omni completion
 let g:lua_complete_omni = 1
 
@@ -270,9 +276,6 @@ set nojoinspaces
 
 " Set path to look recursive in the current dir
 set path+=**
-
-" Set vertical diff
-set diffopt+=vertical
 
 set visualbell  " Visual bell instead of beeps, but...
 
