@@ -24,7 +24,7 @@
 "
 " ############################################################################
 
-function! VimwikiLinkHandler(link)
+function! VimwikiLinkHandler(link) abort
     " Use Vim to open external files with the 'vfile:' scheme.  E.g.:
     "   1) [[file:~/Code/PythonProject/abc123.py]]
     "   2) [[file:./|Wiki Home]]
