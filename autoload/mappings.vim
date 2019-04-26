@@ -72,13 +72,8 @@ if exists('+mouse')
 endif
 
 if has('nvim') || v:version >= 704
-    function! s:Filter(list, arg) abort
-        let l:filter = filter(a:list, 'v:val =~ a:arg')
-        return map(l:filter, 'fnameescape(v:val)')
-    endfunction
-
-    function! s:Formats(ArgLead, CmdLine, CursorPos) abort
-        return s:Filter(['unix', 'dos', 'mac'], a:ArgLead)
+    function! mappings#format(arglead, cmdline, cursorpos) abort
+        return filter(['unix', 'dos', 'mac'], "v:val =~? join(split(a:arglead, '\zs'), '.*')")
     endfunction
 
     function! mappings#SetFileData(action, type, default) abort

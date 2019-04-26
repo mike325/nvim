@@ -220,13 +220,8 @@ if exists('g:gonvim_running')
 endif
 
 if has('nvim') || v:version >= 704
-    " Yes I'm quite lazy to type the cmds
-    function! s:Formats(...)
-        return ['unix', 'dos', 'mac']
-    endfunction
-
     command! -nargs=? -complete=filetype FileType call mappings#SetFileData('filetype', <q-args>, 'text')
-    command! -nargs=? -complete=customlist,s:Formats FileFormat call mappings#SetFileData('fileformat', <q-args>, 'unix')
+    command! -nargs=? -complete=customlist,mappings#format FileFormat call mappings#SetFileData('fileformat', <q-args>, 'unix')
 endif
 
 command! TrimToggle call mappings#Trim()
