@@ -35,14 +35,12 @@ nmap <buffer> gww <Plug>VimwikiIndex
 nmap <buffer> gws :VimwikiSearchTags<space>
 " nmap <buffer> <leader>gt :VimwikiGenerateTags<CR>
 
+nmap <buffer> <CR> <Plug>VimwikiFollowLink
+
 if os#name('windows') && !has#gui()
-    nmap <buffer> <CR> <Plug>VimwikiFollowLink
-
-    if has('nvim')
-        " Windows powershell/cmd uses <C-h> as backspace
-        nmap <buffer> <C-h> <Plug>VimwikiGoBackLink
-    endif
-
+    nmap <buffer> <C-h> <Plug>VimwikiGoBackLink
+else
+    nmap <buffer> <BS> <Plug>VimwikiGoBackLink
 endif
 
 " Terminals receive <c-i> as <TAB> so vim's mark jump is masked by default vimwiki map
