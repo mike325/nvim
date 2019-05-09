@@ -24,6 +24,7 @@
 "
 " ############################################################################
 
+" TODO: Improve completor settings
 function! plugins#completor_vim#init(data) abort
     if !exists('g:plugs["completor.vim"]')
         return -1

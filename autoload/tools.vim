@@ -105,7 +105,7 @@ function! tools#ignores(tool) abort
 
     let l:exludes = []
 
-    if has('nvim') || v:version >= 800 || has('patch-7.4.2044')
+    if has('nvim-0.2') || v:version >= 800 || has('patch-7.4.2044')
         let l:exludes = map(split(copy(&backupskip), ','), {key, val -> substitute(val, '.*', '"\0"', 'g') })
     endif
 

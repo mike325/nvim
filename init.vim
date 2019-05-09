@@ -279,7 +279,7 @@ if !exists('g:minimal') || g:minimal == 0
             " C/C++ project generator
             " Plug 'rdnetto/ycm-generator', { 'branch': 'stable' }
             let s:ycm_installed = 1
-        elseif has('nvim') && has#python('3')
+        elseif has('nvim-0.2.0') && has#python('3')
 
             " " TODO: There's no package check
             " if !has('nvim')
@@ -288,7 +288,7 @@ if !exists('g:minimal') || g:minimal == 0
             "     set pyxversion=3
             " endif
 
-            if has('nvim-0.2')
+            if has('nvim-0.3.0')
                 Plug 'Shougo/deoplete.nvim', { 'do': ':silent! UpdateRemotePlugins'}
             else
                 Plug 'Shougo/deoplete.nvim', { 'tag': '2.0', 'do': ':silent! UpdateRemotePlugins', 'frozen' : 1}
@@ -342,7 +342,7 @@ if !exists('g:minimal') || g:minimal == 0
             endif
 
             let s:deoplete_installed = 1
-        elseif has#async()
+        elseif has#async() && (has('nvim-0.2.0')) || !has('nvim')
             " Test new completion has#async framework that require python and vim 8 or
             " Neovim (without python3)
             if tools#CheckLanguageServer('any')

@@ -145,7 +145,7 @@ augroup ProjectConfig
     if  has('nvim-0.2') || v:version >= 801 || has('patch-8.0.1459')
         autocmd DirChanged * call autocmd#SetProjectConfigs()
     endif
-    if has('nvim') || v:version >= 800 || has('patch-7.4.2077')
+    if has('nvim-0.2') || v:version >= 800 || has('patch-7.4.2077')
         autocmd WinNew, * call autocmd#SetProjectConfigs()
     endif
     autocmd  WinEnter,VimEnter,SessionLoadPost * call autocmd#SetProjectConfigs()
