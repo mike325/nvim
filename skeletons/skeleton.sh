@@ -29,6 +29,7 @@ _ERR_COUNT=0
 
 _NAME="$0"
 _NAME="${_NAME##*/}"
+_LOG="${_NAME%%.*}.log"
 
 _SCRIPT_PATH="$0"
 
