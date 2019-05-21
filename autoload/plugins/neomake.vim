@@ -183,18 +183,6 @@ function! plugins#neomake#init(data) abort
             \],}
     endif
 
-    " TODO Config the proper makers for more languages
-    " JSON linter       : npm install -g jsonlint
-    " Typescript linter : npm install -g typescript
-    " SCSS linter       : gem install --user-install scss-lint
-    " Markdown linter   : gem install --user-install mdl
-    " Shell linter      : ( apt-get install / yaourt -S / dnf install ) shellcheck
-    " VimL linter       : pip install --user vim-vint
-    " Python linter     : pip install --user pycodestyle
-    " C/C++ linter      : ( apt-get install / yaourt -S / dnf install ) clang gcc g++
-    " Go linter         : ( apt-get install / yaourt -S / dnf install ) golang
-
-    " Noemake had been loaded
     try
         " Trigger neomake right after save a file or after 1s after leaving insert mode
         " available options:
@@ -208,12 +196,5 @@ function! plugins#neomake#init(data) abort
             \ }, 1000)
 
     catch E117
-        " Neovim-qt can't output messages while it's starting
-        " if !has#gui()
-        "     augroup ErrorMessages
-        "         autocmd!
-        "         autocmd VimEnter * echoerr "Neomake is not installed"
-        "     augroup end
-        " endif
     endtry
 endfunction
