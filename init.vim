@@ -171,7 +171,7 @@ if !exists('g:minimal') || g:minimal == 0
         if os#name('windows')  " install in windows by using choco install
             Plug 'junegunn/fzf', { 'dir': '~/.fzf'}
         else
-            Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all'}
+            Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all --no-update-rc'}
         endif
         Plug 'junegunn/fzf.vim'
     elseif exists('g:gonvim_running')
