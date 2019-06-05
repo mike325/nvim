@@ -54,7 +54,7 @@ function! plugins#fzf_vim#init(data) abort
 
     " preview function use bash, so windows support
     if os#name('windows') && &shell =~# '\v^cmd(\.exe)'
-        let $FZF_DEFAULT_COMMAND = '( git ls-tree -r --name-only HEAD || '.tools#select_filelist(0).' ) 2> nul'
+        let $FZF_DEFAULT_COMMAND = '( git --no-pager ls-files -co --exclude-standard || '.tools#select_filelist(0).' ) 2> nul'
         let $FZF_CTRL_T_COMMAND = $FZF_DEFAULT_COMMAND
         if executable('fd')
             let $FZF_ALT_C_COMMAND = 'fd -t d . $HOME'

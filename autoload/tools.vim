@@ -272,7 +272,6 @@ function! tools#abolish(lang) abort
         \ '{h,f}ernandez'                                                       : '{}ernández',
         \ 'electronico{s}'                                                      : 'electrónico{}',
         \ 'algorimo{s}'                                                         : 'algoritmo{}',
-        \ 'p{r}odria{n}'                                                        : 'podría{}',
         \ 'podria{n}'                                                           : 'podría{}',
         \ 'metodologia{s}'                                                      : 'metodología{}',
         \ '{bibliogra}fia'                                                      : '{}fía',
