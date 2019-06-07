@@ -66,6 +66,7 @@ function! tools#CheckLanguageServer(...) abort
             \ 'cuda'  : ['ccls'],
             \ 'objc'  : ['ccls'],
             \ 'sh'    : ['bash-language-server'],
+            \ 'bash'  : ['bash-language-server'],
             \ 'go'    : ['go-langerver'],
             \ }
 

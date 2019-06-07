@@ -110,6 +110,23 @@ function! plugins#languageclient_neovim#init(data) abort
         augroup end
     endif
 
+    if executable('bash-language-server')
+        let g:LanguageClient_serverCommands.sh = ['bash-language-server', 'start']
+        let g:LanguageClient_serverCommands.bash = g:LanguageClient_serverCommands.sh
+
+        augroup LanguageCmds
+            " autocmd FileType python autocmd CursorHold                                <buffer> call LanguageClient#textDocument_hover()
+            " autocmd FileType python autocmd InsertEnter,CursorMoved,TermOpen,BufLeave <buffer> pclose
+            " autocmd FileType sh,bash command! -buffer WorkspaceSymbols call LanguageClient#workspace_symbol()
+            autocmd FileType sh,bash command! -buffer References call LanguageClient#textDocument_references()
+            autocmd FileType sh,bash command! -buffer DocumentSymbols call LanguageClient#textDocument_documentSymbol()
+            autocmd FileType sh,bash command! -nargs=? -buffer RenameSymbol call s:Rename(<q-args>)
+            autocmd FileType sh,bash command! -buffer Definition call LanguageClient#textDocument_definition()
+            autocmd FileType sh,bash command! -buffer Hover call LanguageClient#textDocument_hover()
+            autocmd FileType sh,bash command! -buffer Implementation call LanguageClient#textDocument_implementation()
+        augroup end
+    endif
+
     " TODO: I had had some probles with pysl in windows, so let's
     "       skip it until I can figure it out how to fix this
     if executable('pyls') " && !os#name('windows')
@@ -127,7 +144,7 @@ function! plugins#languageclient_neovim#init(data) abort
         augroup end
     endif
 
-    function! s:Rename(name)
+    function! s:Rename(name) abort
         if !empty(a:name)
             call LanguageClient#textDocument_rename({'newName': a:name})
         else
