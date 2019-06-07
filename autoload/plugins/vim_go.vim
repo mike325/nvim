@@ -50,5 +50,11 @@ function! plugins#vim_go#init(data) abort
     if exists('g:plugs["YouCompleteMe"]')
         let g:go_def_mapping_enabled = 0
     endif
+
+    if executable('gopls')
+        let g:go_def_mode  = 'gopls'
+        let g:go_info_mode = 'gopls'
+    endif
+
 endfunction
 

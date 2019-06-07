@@ -337,7 +337,7 @@ if !exists('g:minimal') || g:minimal == 0
             " endif
 
             " JavaScript completion
-            if executable('ternjs')
+            if !tools#CheckLanguageServer('javascript') && executable('ternjs')
                 Plug 'carlitux/deoplete-ternjs'
             endif
 
