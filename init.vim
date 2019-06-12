@@ -279,7 +279,7 @@ if !exists('g:minimal') || g:minimal == 0
             " C/C++ project generator
             " Plug 'rdnetto/ycm-generator', { 'branch': 'stable' }
             let s:ycm_installed = 1
-        elseif has('nvim-0.2.0') && has#python('3')
+        elseif has('nvim-0.2.0') && has#python('3') " TODO: Check python version, deoplete supports 3.6.1+
 
             " " TODO: There's no package check
             " if !has('nvim')

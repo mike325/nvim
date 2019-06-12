@@ -96,7 +96,7 @@ function! plugins#ctrlp_vim#init(data) abort
     " This var is set on Vim Startup, New Session open and dir changed
     if executable('rg') || executable('ag') || executable('fd')
         let g:ctrlp_clear_cache_on_exit = 1
-        let g:ctrlp_user_command.fallback = executable('fd') ? tools#filelist('fd') : executable('rg') ? tools#filelist('rg') :  tools#filelist('ag')
+        let g:ctrlp_user_command.fallback = tools#select_filelist(0)
     elseif os#name('windows')
         " NOTE: If neovim-qt is launch fron git-bash/cywing find command will be the unix,
         "       if it's launch from a non unix enviroment then find will be the one in windows

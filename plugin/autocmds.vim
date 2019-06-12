@@ -164,6 +164,4 @@ augroup Wipe
     elseif has('terminal')
         autocmd TerminalOpen * setlocal bufhidden=wipe
     endif
-    autocmd BufNew,BufEnter COMMIT_EDITMSG setlocal bufhidden=wipe
-    autocmd BufNew,BufEnter */.git/index   setlocal bufhidden=wipe
 augroup end
