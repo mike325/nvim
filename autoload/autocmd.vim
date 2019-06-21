@@ -52,13 +52,6 @@ function! autocmd#CleanFile() abort
         call histdel('search', -1)
     endif
 
-    " Config dosini files must trim leading spaces
-    if &filetype ==# 'dosini'
-        silent! execute '%s/^\s\+//e'
-        call histdel('search', -1)
-    endif
-
-
     call setpos('.', l:savepos)
     call setreg('/', l:oldquery)
 endfunction
