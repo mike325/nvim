@@ -165,10 +165,8 @@ function! plugins#youcompleteme#init(data) abort
             \ 'objc' : 1,
             \ 'mail' : 1,
             \ 'man' : 1,
-            \ 'tagbar': 1,
             \ 'netrw': 1,
-            \ 'unite': 1,
-            \ 'denite': 1,
+            \ 'denite': 1
     \}
 
     if !exists('g:ycm_semantic_triggers')
