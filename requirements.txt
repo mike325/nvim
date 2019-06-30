@@ -1,26 +1,22 @@
 # Python development
-jedi
-flake8
-pylint
-pyflakes
-pycodestyle
-autopep8
-rope
-ropevim
-yapf
-virtualenv
-python-language-server
-mccabe
-# pydoc
+jedi>=0.13.2
+mypy==0.710
+flake8>=3.5.0
+flake8-mypy>=17.8.0
+yapf>=0.22.0
+mccabe>=0.6.1
+
+virtualenv>=16.0.0
+python-language-server>=0.21.5
 
 # JS development
-jsbeautifier
-mistune
-psutil
+jsbeautifier>=1.7.5
+mistune>=0.8.3
+psutil>=5.6.1
 
 # (Neo)vim stuff
-pynvim
+pynvim>=0.3.1
 # NOTE: sometimes vint cause some problems in python2
 # NOTE1: to use vim-vint in windows, use --dev
-vim-vint
-neovim-remote
+vim-vint>=0.3.19
+neovim-remote>=2.0.10

@@ -223,6 +223,9 @@ if !exists('g:minimal') || g:minimal == 0
 
     if executable('git')
         Plug 'tpope/vim-fugitive'
+        if executable('hub')
+            Plug 'tpope/vim-rhubarb'
+        endif
         " Plug 'jreybert/vimagit', {'on': ['Magit', 'MagitOnly']}
         " Plug 'sodapopcan/vim-twiggy', {'on': ['Twiggy']}
         " Plug 'gregsexton/gitv', {'on': ['Gitv']}
@@ -273,7 +276,7 @@ if !exists('g:minimal') || g:minimal == 0
         if !empty($YCM) && has#async() && executable('cmake') && (( has('unix') && ( executable('gcc')  || executable('clang') )) ||
                     \ (os#name('windows') && executable('msbuild')))
 
-            Plug 'Valloric/YouCompleteMe', { 'do': function('plugins#youcompleteme#install') }
+            Plug 'ycm-core/YouCompleteMe', { 'do': function('plugins#youcompleteme#install') }
             " Plug 'davits/DyeVim'
 
             " C/C++ project generator
