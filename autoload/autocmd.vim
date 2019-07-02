@@ -151,13 +151,13 @@ function! autocmd#SetProjectConfigs() abort
                     let g:UltiSnipsSnippetsDir        = a:project_root . '/UltiSnips'
                     let g:UltiSnipsSnippetDirectories = [
                                 \   a:project_root . '/UltiSnips',
-                                \   vars#basedir() . 'config/UltiSnips',
+                                \   vars#basedir() . '/config/UltiSnips',
                                 \   'UltiSnips',
                                 \]
                 else
-                    let g:UltiSnipsSnippetsDir        = vars#basedir() . 'config/UltiSnips'
+                    let g:UltiSnipsSnippetsDir        = vars#basedir() . '/config/UltiSnips'
                     let g:UltiSnipsSnippetDirectories = [
-                                \   vars#basedir() . 'config/UltiSnips',
+                                \   vars#basedir() . '/config/UltiSnips',
                                 \   'UltiSnips'
                                 \ ]
                 endif
@@ -241,8 +241,8 @@ function! autocmd#SetProjectConfigs() abort
 
         if exists('g:plugs["ultisnips"]')
             silent! delcommand UltiSnipsDir
-            let g:UltiSnipsSnippetsDir        = vars#basedir() . 'config/UltiSnips'
-            let g:UltiSnipsSnippetDirectories = [vars#basedir() . 'config/UltiSnips', 'UltiSnips']
+            let g:UltiSnipsSnippetsDir        = vars#basedir() . '/config/UltiSnips'
+            let g:UltiSnipsSnippetDirectories = [vars#basedir() . '/config/UltiSnips', 'UltiSnips']
         endif
 
         if exists('g:plugs["ctrlp"]')

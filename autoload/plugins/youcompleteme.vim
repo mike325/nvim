@@ -130,10 +130,10 @@ function! plugins#youcompleteme#init(data) abort
                 \]
 
     " Set fallback ycm config file
-    if filereadable(fnameescape(vars#basedir().'host/ycm_extra_conf.py'))
-        let g:ycm_global_ycm_extra_conf = fnameescape(vars#basedir().'host/ycm_extra_conf.py')
-    elseif filereadable(fnameescape(vars#basedir() . 'ycm_extra_conf.py'))
-        let g:ycm_global_ycm_extra_conf = fnameescape(vars#basedir() . 'ycm_extra_conf.py')
+    if filereadable(fnameescape(vars#basedir() . '/host/ycm_extra_conf.py'))
+        let g:ycm_global_ycm_extra_conf = fnameescape(vars#basedir().'/host/ycm_extra_conf.py')
+    elseif filereadable(fnameescape(vars#basedir() . '/ycm_extra_conf.py'))
+        let g:ycm_global_ycm_extra_conf = fnameescape(vars#basedir() . '/ycm_extra_conf.py')
     endif
 
     " let g:ycm_clangd_binary_path = ''

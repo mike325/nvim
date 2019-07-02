@@ -34,18 +34,18 @@ function! set#initconfigs() abort " Vim's InitConfig {{{
         return
     endif
 
-    let l:parent_dir = vars#basedir() . 'data/'
+    let l:parent_dir = vars#datadir()
 
     if !isdirectory(l:parent_dir)
         call mkdir(fnameescape(l:parent_dir), 'p')
     endif
 
     let l:dirpaths = {
-            \   'backup' : 'backupdir',
-            \   'swap' : 'directory',
-            \   'undo' : 'undodir',
-            \   'cache' : '',
-            \   'sessions' : '',
+            \   '/backup' : 'backupdir',
+            \   '/swap' : 'directory',
+            \   '/undo' : 'undodir',
+            \   '/cache' : '',
+            \   '/sessions' : '',
             \}
 
     " Better backup, swap and undos storage
@@ -69,7 +69,7 @@ function! set#initconfigs() abort " Vim's InitConfig {{{
     let l:persistent_settings = (has('nvim')) ? 'shada' : 'viminfo'
 
     execute 'set ' . l:persistent_settings . "=!,/1000,'1000,<1000,:1000,s10000,h"
-    execute 'set ' . l:persistent_settings . '+=n' . fnameescape(l:parent_dir . l:persistent_settings)
+    execute 'set ' . l:persistent_settings . '+=n' . fnameescape(l:parent_dir .'/'. l:persistent_settings)
 
     let l:wildignores = [
         \   '*.spl',

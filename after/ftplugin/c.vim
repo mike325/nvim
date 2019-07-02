@@ -1,6 +1,6 @@
-" ############################################################################
+" HEADER {{{
 "
-"                               dosini Setttings
+"                                  C settings
 "
 "                                     -`
 "                     ...            .o+`
@@ -22,9 +22,17 @@
 "                   `++:.  github.com/mike325/.vim  `-/+/
 "                   .`                                 `/
 "
-" ############################################################################
+" }}} END HEADER
 
-if exists("+formatprg") && executable("sed")
-    " dosini config files must not have spaces at the beginning of the line
-    setlocal formatprg=sed\ --regexp-extended\ \"s/^\\s+//\"
+setlocal cindent
+setlocal foldmethod=syntax
+
+if exists('+formatprg')
+    " if exists('g:plugs["LanguageClient-neovim"]')
+    "     finish
+    if executable('clang-format')
+        setlocal formatprg=clang-format
+    endif
 endif
+
+setlocal commentstring=//\ %s

@@ -42,6 +42,22 @@ else
     set diffopt=filler,vertical,iwhite
 endif
 
+if has('winaltkeys')
+    set winaltkeys=no
+endif
+
+if has('directx')
+    set renderoptions=type:directx
+endif
+
+if os#name('windows')
+    behave xterm
+endif
+
+if has('nvim-0.2')
+    set cpoptions-=_
+endif
+
 " Allow lua omni completion
 let g:lua_complete_omni = 1
 
@@ -223,12 +239,6 @@ set shiftwidth=4   " Same for autoindenting
 set expandtab      " Use spaces for indenting, tabs are evil
 
 set shiftround     " Use multiple of shiftwidth when indenting with '<' and '>'
-
-if !exists('g:minimal')
-    set cursorline     " Turn on cursor line by default
-else
-    set nocursorline   " Turn off cursor line by default
-endif
 
 " Allow to send unsaved buffers to the backgroud
 set hidden

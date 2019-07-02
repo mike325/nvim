@@ -70,4 +70,7 @@ function! vim#init() abort
         set belloff=all " Bells are annoying
     endif
 
+    " TODO: Something it's changing the settings in vim so recall this
+    call set#initconfigs()
+
 endfunction

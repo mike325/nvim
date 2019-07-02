@@ -38,6 +38,9 @@ if os#name('windows')
     if exists('+shellslash')
         set shellslash
     endif
+
+    let &runtimepath = tr(&runtimepath, '\', '/')
+
 endif
 
 " }}} END Improve compatibility between Unix and DOS platfomrs
@@ -46,31 +49,22 @@ endif
 
 " If there are no plugins available and we don't have git
 " fallback to minimal mode
-if (!executable('git') && !isdirectory(fnameescape(vars#basedir().'plugged'))) || v:progname ==# 'vi'
+if (!executable('git') && !isdirectory(fnameescape(vars#basedir().'/plugged'))) || v:progname ==# 'vi'
     let g:minimal = 1
 endif
 
 " TODO: Should minimal include lightweight tpope's plugins ?
-
-try
-    call set#initconfigs()
-catch E117
-    " Don't raise and error yet
-    augroup InitErrors
-        autocmd!
-        autocmd VimEnter * echoerr 'Errors found in set#initconfigs function'
-    augroup end
-endtry
+call set#initconfigs()
 
 if !exists('g:minimal') || g:minimal == 0
 
     try
         if exists('*execute')
-            call execute('set runtimepath+=' . expand(vars#basedir() . 'plug/'))
+            call execute('set runtimepath+=' . expand(vars#basedir() . '/plug/'))
         else
-            execute 'set runtimepath+=' . expand(vars#basedir() . 'plug/')
+            execute 'set runtimepath+=' . expand(vars#basedir() . '/plug/')
         endif
-        call plug#begin(vars#basedir().'plugged')
+        call plug#begin(vars#basedir().'/plugged')
     catch /E\(117\|492\)/
         " Fallback if we fail to init Plug
         if !has('nvim') && v:version >= 800
@@ -554,18 +548,23 @@ if !exists('g:minimal') || g:minimal == 0
 
     let s:available_configs = map(glob(vars#basedir() . '/autoload/plugins/*.vim', 0, 1, 0), 'fnamemodify(v:val, ":t:r")')
 
-    for [s:name, s:data] in items(filter(deepcopy(g:plugs), 'index(s:available_configs, s:Convert2settings(v:key), 0) != -1'))
-        " available keys
-        "   uri: URL of the repo
-        "   dir: Install dir
-        "   frozen: is it frozen? (0, 1)
-        "   branch: cloned branch
-        "   do: Post install function
-        "   on: CMD to source plugin
-        "   for: FT to source plugin
-        let s:func_name = s:Convert2settings(s:name)
-        call plugins#{s:func_name}#init(s:data)
-    endfor
+    try
+        for [s:name, s:data] in items(filter(deepcopy(g:plugs), 'index(s:available_configs, s:Convert2settings(v:key), 0) != -1'))
+            " available keys
+            "   uri: URL of the repo
+            "   dir: Install dir
+            "   frozen: is it frozen? (0, 1)
+            "   branch: cloned branch
+            "   do: Post install function
+            "   on: CMD to source plugin
+            "   for: FT to source plugin
+            let s:func_name = s:Convert2settings(s:name)
+            call plugins#{s:func_name}#init(s:data)
+        endfor
+    catch
+        echomsg 'Error trying to read config from ' . s:name
+    endtry
+
 else
     if !has('nvim') && v:version >= 800
         packadd! matchit

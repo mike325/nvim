@@ -63,6 +63,8 @@ try
         colorscheme onedark
     endif
 
+    set cursorline
+
 catch E185
     " We don't have our cool color schemes
     " colorscheme industry

@@ -54,8 +54,8 @@ function! plugins#ultisnips#init(data) abort
     endif
 
     let g:UltiSnipsEditSplit           = 'context'
-    let g:UltiSnipsSnippetsDir         = vars#basedir() . 'UltiSnips'
-    let g:UltiSnipsSnippetDirectories  = [vars#basedir() . 'UltiSnips']
+    let g:UltiSnipsSnippetsDir         = vars#basedir() . '/UltiSnips'
+    let g:UltiSnipsSnippetDirectories  = [vars#basedir() . '/UltiSnips']
     let g:UltiSnipsExpandTrigger       = '<C-e>'
 
     " Remove all select mappigns in expanded snip

@@ -53,33 +53,33 @@ let s:ignores_patterns = {
 " Set the default work dir
 let s:basedir = ''
 let s:homedir = ''
+let s:datadir = ''
 
 function! s:setupdirs() abort
     if !empty(s:homedir) && !empty(s:basedir)
         return
     endif
 
+    let s:homedir =  substitute( expand( os#name('windows') ? $USERPROFILE : $HOME), '\', '/', 'g' )
+
+    if empty($XDG_DATA_HOME)
+        let $XDG_DATA_HOME = s:homedir . (os#name('windows') ? '/AppData/Local' : '/.local/share')
+    endif
+
+    let s:datadir = expand($XDG_DATA_HOME) . (os#name('windows') ? '/nvim-data' : '/nvim')
+    
     if has('nvim')
-        if os#name() ==# 'windows'
-            let s:basedir = substitute( expand($USERPROFILE), '\', '/', 'g' ) . '/AppData/Local/nvim/'
-            let s:homedir = substitute( expand($USERPROFILE), '\', '/', 'g' )
-        else
-            " TODO: Check $XDG_DATA_HOME
-            let s:basedir = expand($HOME) . '/.config/nvim/'
-            let s:homedir = expand($HOME)
-        endif
-    elseif os#name() ==# 'windows'
+        let s:basedir = substitute( stdpath('config'), '\', '/', 'g' )
+    elseif os#name('windows')
         " if $USERPROFILE and ~ expansions are different, then gVim may be running as portable
-        let s:homedir = substitute( expand($USERPROFILE), '\', '/', 'g' )
-        if  substitute( expand($USERPROFILE), '\', '/', 'g' ) ==# substitute( expand('~'), '\', '/', 'g' )
-            let s:basedir =  substitute( expand($USERPROFILE), '\', '/', 'g' ) . '/vimfiles/'
-        else
-            let s:basedir =  substitute( expand('~'), '\', '/', 'g' ) . '/vimfiles/'
-        endif
+        let l:userprofile = substitute( expand($USERPROFILE), '\', '/', 'g' )
+        let l:prog_home = substitute( expand('~'), '\', '/', 'g' )
+        let s:basedir =  (l:userprofile ==# l:prog_home) ? l:userprofile : l:prog_home
+        let s:basedir =  s:basedir . '/vimfiles'
     else
-        let s:basedir = expand($HOME) . '/.vim/'
-        let s:homedir = expand($HOME)
-    endif   " Statements
+        let s:basedir = s:homedir . '/.vim'
+    endif
+
 endfunction
 
 function! vars#ignore_cmd(cmd) abort
@@ -97,6 +97,13 @@ function! vars#basedir() abort
     return s:basedir
 endfunction
 
+function! vars#datadir() abort
+    if empty(s:homedir)
+        call s:setupdirs()
+    endif
+    return s:datadir
+endfunction
+
 function! vars#home() abort
     if empty(s:homedir)
         call s:setupdirs()
@@ -112,7 +119,7 @@ function! vars#libclang() abort
         if filereadable(vars#home() . '/.local/bin/libclang.dll')
             let l:libclang = vars#home() . '/.local/bin/libclang.dll'
         elseif exists('g:plugs["YouCompleteMe"]')
-            let l:libclang = vars#basedir() . 'plugged/YouCompleteMe/third_party/ycmd/libclang.dll'
+            let l:libclang = vars#basedir() . '/plugged/YouCompleteMe/third_party/ycmd/libclang.dll'
         elseif filereadable('c:/Program Files/LLVM/bin/libclang.dll')
             let l:libclang = 'c:/Program Files/LLVM/bin/libclang.dll'
         elseif filereadable('c:/Program Files(x86)/LLVM/bin/libclang.dll')
@@ -123,8 +130,8 @@ function! vars#libclang() abort
             let l:libclang = vars#home() . '/.local/lib/libclang.so'
         elseif exists('g:plugs["YouCompleteMe"]')
             for s:version in ['7', '6', '5', '4', '3']
-                if filereadable(vars#basedir() . 'plugged/YouCompleteMe/third_party/ycmd/libclang.so.' . s:version)
-                    let l:libclang = vars#basedir() . 'plugged/YouCompleteMe/third_party/ycmd/libclang.so.' . s:version
+                if filereadable(vars#basedir() . '/plugged/YouCompleteMe/third_party/ycmd/libclang.so.' . s:version)
+                    let l:libclang = vars#basedir() . '/plugged/YouCompleteMe/third_party/ycmd/libclang.so.' . s:version
                     break
                 endif
             endfor

@@ -94,7 +94,8 @@ xnoremap < <gv
 nnoremap <leader><leader>e :echo expand("%")<CR>
 
 " Very Magic sane regex searches
-nnoremap g/ /\v
+nnoremap / ms/
+nnoremap g/ ms/\v
 " nnoremap gs :%s/\v
 
 nnoremap <expr> i mappings#IndentWithI()
@@ -176,6 +177,12 @@ xnoremap & :&&<CR>
 nnoremap 0 ^
 nnoremap ^ 0
 
+" select last inserted text
+nnoremap gV `[v`]
+
+" repeat last command for each line of a visual selection
+xnoremap . :normal .<CR>
+
 " }}} EndTabBufferManagement
 
 if has('nvim') || has('terminal')
@@ -191,6 +198,10 @@ if has('nvim') || has('terminal')
         " Better terminal access
         nnoremap <A-t> :Terminal<CR>
     endif
+endif
+
+if os#name('windows')
+    command! PowershellToggle call windows#toggle_powershell()
 endif
 
 if exists('+relativenumber')

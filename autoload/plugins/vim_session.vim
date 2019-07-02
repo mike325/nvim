@@ -42,7 +42,7 @@ function! plugins#vim_session#init(data) abort
     " Don't ask for load last session
     let g:session_autoload = 'no'
 
-    let g:session_directory = vars#basedir().'.resources/sessions'
+    let g:session_directory = vars#basedir() . '/sessions'
 
     " Disable all session locking - I know what I'm doing :-).
     let g:session_lock_enabled = 0
