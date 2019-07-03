@@ -104,7 +104,7 @@ if !exists('g:minimal') || g:minimal == 0
     Plug 'mhinz/vim-nginx'
     Plug 'raimon49/requirements.txt.vim'
 
-    if has('nvim') && has#python('3')
+    if has('nvim') && has#python('3', '5')
         Plug 'numirias/semshi', {'do': ':silent! UpdateRemotePlugins'}
         " Plug 'blahgeek/neovim-colorcoder', {'do': ':silent! UpdateRemotePlugins'}
         " Plug 'arakashic/chromatica.nvim', {'do': ':silent! UpdateRemotePlugins'}
@@ -276,7 +276,7 @@ if !exists('g:minimal') || g:minimal == 0
             " C/C++ project generator
             " Plug 'rdnetto/ycm-generator', { 'branch': 'stable' }
             let s:ycm_installed = 1
-        elseif has('nvim-0.2.0') && has#python('3') " TODO: Check python version, deoplete supports 3.6.1+
+        elseif has('nvim-0.2.0') && has#python('3', '4')
 
             " " TODO: There's no package check
             " if !has('nvim')
@@ -285,7 +285,7 @@ if !exists('g:minimal') || g:minimal == 0
             "     set pyxversion=3
             " endif
 
-            if has('nvim-0.3.0')
+            if has('nvim-0.3.0') && has#python('3', '6', '1')
                 Plug 'Shougo/deoplete.nvim', { 'do': ':silent! UpdateRemotePlugins'}
             else
                 Plug 'Shougo/deoplete.nvim', { 'tag': '2.0', 'do': ':silent! UpdateRemotePlugins', 'frozen' : 1}

@@ -24,6 +24,8 @@
 "
 " ############################################################################
 
+let s:pyversion = {}
+
 " Check an specific version of python (empty==2)
 function! has#python(...) abort
 
@@ -35,10 +37,40 @@ function! has#python(...) abort
 
     if l:version ==# 'any' || l:version ==# ''
         return (has('python') || has('python3'))
-    elseif l:version ==# '3'
-        return has('python3')
-    elseif l:version ==# '2'
-        return has('python')
+    else
+        if empty(s:pyversion)
+            if executable('python2')
+                let s:pyversion['2'] = matchstr(system('python2 --version'), "\\S\\+\\ze\n")
+            endif
+            if executable('python3')
+                let s:pyversion['3'] = matchstr(system('python3 --version'), "\\S\\+\\ze\n")
+            endif
+        endif
+
+        let l:version = s:pyversion[a:1]
+        let l:components = split(l:version, '\D\+')
+        let l:has_version = ''
+
+        for l:i in range(len(a:000))
+            if a:000[l:i] > +get(l:components, l:i)
+                let l:has_version = 0
+                break
+            elseif a:000[l:i] < +get(l:components, l:i)
+                let l:has_version = 1
+                break
+            endif
+        endfor
+        if empty(l:has_version)
+            let l:has_version = (a:000[l:i] ==# get(l:components, l:i)) ? 1 : 0
+        endif
+
+        if l:has_version
+            if l:version[0] ==# '3'
+                return has('python3')
+            elseif l:version[0] ==# '2'
+                return has('python')
+            endif
+        endif
     endif
 
     return 0
