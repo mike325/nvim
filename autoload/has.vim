@@ -39,11 +39,11 @@ function! has#python(...) abort
         return (has('python') || has('python3'))
     else
         if empty(s:pyversion)
-            if executable('python2')
-                let s:pyversion['2'] = matchstr(system('python2 --version'), "\\S\\+\\ze\n")
+            if exists('g:python_host_prog')
+                let s:pyversion['2'] = matchstr(system(g:python_host_prog . ' --version'), "\\S\\+\\ze\n")
             endif
-            if executable('python3')
-                let s:pyversion['3'] = matchstr(system('python3 --version'), "\\S\\+\\ze\n")
+            if exists('g:python3_host_prog')
+                let s:pyversion['3'] = matchstr(system(g:python3_host_prog . ' --version'), "\\S\\+\\ze\n")
             endif
         endif
 

@@ -270,7 +270,11 @@ if !exists('g:minimal') || g:minimal == 0
         if !empty($YCM) && has#async() && executable('cmake') && (( has('unix') && ( executable('gcc')  || executable('clang') )) ||
                     \ (os#name('windows') && executable('msbuild')))
 
-            Plug 'ycm-core/YouCompleteMe', { 'do': function('plugins#youcompleteme#install') }
+            if has#python('3', '5', '1')
+                Plug 'ycm-core/YouCompleteMe', { 'do': function('plugins#youcompleteme#install') }
+            else
+                Plug 'ycm-core/YouCompleteMe', { 'commit': '299f8e48e7d34e780d24b4956cd61e4d42a139eb', 'do': function('plugins#youcompleteme#install') , 'frozen', 1}
+            endif
             " Plug 'davits/DyeVim'
 
             " C/C++ project generator
