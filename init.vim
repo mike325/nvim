@@ -285,7 +285,7 @@ if !exists('g:minimal') || g:minimal == 0
             "     set pyxversion=3
             " endif
 
-            if has('nvim-0.3.0') && has#python('3', '6', '1')
+            if has('nvim-0.3.0') && has#python('3', '6')
                 Plug 'Shougo/deoplete.nvim', { 'do': ':silent! UpdateRemotePlugins'}
             else
                 Plug 'Shougo/deoplete.nvim', { 'tag': '2.0', 'do': ':silent! UpdateRemotePlugins', 'frozen' : 1}
