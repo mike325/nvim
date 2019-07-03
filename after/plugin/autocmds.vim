@@ -126,8 +126,8 @@ augroup end
 " Spell {{{
 augroup Spells
     autocmd!
-    autocmd FileType                    tex      setlocal spell complete+=k,kspell " Add spell completion
-    autocmd BufNewFile,BufRead,BufEnter *.org    setlocal spell complete+=k,kspell " Add spell completion
+    autocmd FileType tex,vimwiki              setlocal spell complete+=k,kspell
+    autocmd BufNewFile,BufRead,BufEnter *.org setlocal spell complete+=k,kspell
 augroup end
 " }}} EndSpell
 

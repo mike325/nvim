@@ -32,7 +32,6 @@ setlocal nobackup
 setlocal noswapfile
 
 setlocal spell
-setlocal spelllang=en
 setlocal complete+=k,kspell " Add spell completion
 
 setlocal textwidth=80
