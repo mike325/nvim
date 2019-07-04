@@ -37,17 +37,50 @@ function! plugins#languageclient_neovim#install(info) abort
     UpdateRemotePlugins
 endfunction
 
+function! s:Rename(name) abort
+    if !empty(a:name)
+        call LanguageClient#textDocument_rename({'newName': a:name})
+    else
+        call LanguageClient#textDocument_rename()
+    endif
+endfunction
+
+
+function! plugins#languageclient_neovim#LanguageMappings() abort
+    if has_key(g:LanguageClient_serverCommands, &filetype)
+        command! -buffer -nargs=? RenameSymbol      call s:Rename(<q-args>)
+        command! -buffer          Definition        call LanguageClient#textDocument_definition()
+        command! -buffer          Hover             call LanguageClient#textDocument_hover()
+        command! -buffer          Implementation    call LanguageClient#textDocument_implementation()
+        command! -buffer          References        call LanguageClient#textDocument_references()
+        command! -buffer          DocumentSymbols   call LanguageClient#textDocument_documentSymbol()
+
+        nnoremap <buffer> <silent> K    :call LanguageClient#textDocument_hover()<CR>
+        nnoremap <buffer> <silent> gD   :call LanguageClient#textDocument_definition()<CR>
+
+    endif
+endfunction
+
 function! plugins#languageclient_neovim#init(data) abort
     if !exists('g:plugs["LanguageClient-neovim"]')
         return -1
     endif
 
-    let g:LanguageClient_serverCommands = get(g:, 'LanguageClient_serverCommands', {})
-    " let g:LanguageClient_loggingFile = os#tmp('languageclient.log')
+    let l:supported_languages = []
 
-    " let g:LanguageClient_trace           = 'messages'
-    let g:LanguageClient_selectionUI     = 'Quickfix'
-    let g:LanguageClient_diagnosticsList = 'Location'
+    let g:LanguageClient_serverCommands    = get(g:, 'LanguageClient_serverCommands', {})
+    let g:LanguageClient_loggingLevel      = 'WARN'
+    let g:LanguageClient_loggingFile       = os#tmp('languageclient.log')
+    let g:LanguageClient_hoverPreview      = 'Auto'
+    let g:LanguageClient_hasSnippetSupport = 0
+
+    if has('nvim-0.3.2')
+        let g:LanguageClient_useVirtualText    = 1
+    endif
+
+    if has('nvim-0.4')
+        let g:LanguageClient_useFloatingHover = 1
+    endif
 
     if !executable('fzf')
         let g:LanguageClient_fzfContextMenu = 0
@@ -56,6 +89,11 @@ function! plugins#languageclient_neovim#init(data) abort
     if exists('g:plugs["neomake"]')
         let g:LanguageClient_diagnosticsEnable = 0
     endif
+
+    " Cleanup
+    augroup LanguageCmds
+        autocmd!
+    augroup end
 
     if executable('ccls') || executable('cquery') || executable('clangd')
         let s:lsp_exe = executable('ccls') ? 'ccls' : 'cquery'
@@ -67,90 +105,49 @@ function! plugins#languageclient_neovim#init(data) abort
 
         let g:LanguageClient_serverCommands.cpp = g:LanguageClient_serverCommands.c
 
-        augroup LanguageCmds
-            if ( executable('ccls') || executable('cquery') )
-                autocmd FileType c,cpp command! -buffer Callers call LanguageClient#cquery_callers()
-            endif
-            " autocmd FileType c,cpp autocmd CursorHold                                <buffer> call LanguageClient#textDocument_hover()
-            " autocmd FileType c,cpp autocmd InsertEnter,CursorMoved,TermOpen,BufLeave <buffer> pclose
-            autocmd FileType c,cpp command! -buffer References call LanguageClient#textDocument_references()
-            if exists('g:plugs["denite.nvim"]')
-                autocmd FileType c,cpp command! -buffer WorkspaceSymbols Denite -highlight-mode-insert=off -highlight-matched-range=off -prompt='WorkSymbols >'     -buffer-name=DeniteBuffer('worksym_') workspaceSymbol
-                autocmd FileType c,cpp command! -buffer DocumentSymbols  Denite -highlight-mode-insert=off -highlight-matched-range=off -prompt='DocumentSymbols >' -buffer-name=DeniteBuffer('docsym_')  documentSymbol
-            else
-                autocmd FileType c,cpp command! -buffer WorkspaceSymbols call LanguageClient#workspace_symbol()
-                autocmd FileType c,cpp command! -buffer DocumentSymbols call LanguageClient#textDocument_documentSymbol()
-            endif
-            autocmd FileType c,cpp command! -nargs=? -buffer RenameSymbol call s:Rename(<q-args>)
-            autocmd FileType c,cpp command! -buffer Definition call LanguageClient#textDocument_definition()
-            autocmd FileType c,cpp command! -buffer Hover call LanguageClient#textDocument_hover()
-            autocmd FileType c,cpp command! -buffer Implementation call LanguageClient#textDocument_implementation()
-        augroup end
-    endif
+        let l:supported_languages += ['c', 'cpp']
 
-    if executable('ccls')
-        let g:LanguageClient_serverCommands.cuda = g:LanguageClient_serverCommands.c
-        let g:LanguageClient_serverCommands.objc = g:LanguageClient_serverCommands.c
+        if executable('ccls') || executable('cquery')
+            autocmd LanguageCmds FileType c,cpp command! -buffer Callers call LanguageClient#cquery_callers()
+        endif
+
         augroup LanguageCmds
-            autocmd FileType cuda,objc command! -buffer Callers call LanguageClient#cquery_callers()
-            " autocmd FileType cuda,objc autocmd CursorHold                                <buffer> call LanguageClient#textDocument_hover()
-            " autocmd FileType cuda,objc autocmd InsertEnter,CursorMoved,TermOpen,BufLeave <buffer> pclose
-            autocmd FileType cuda,objc command! -buffer References call LanguageClient#textDocument_references()
-            if exists('g:plugs["denite.nvim"]')
-                autocmd FileType cuda,objc command! -buffer WorkspaceSymbols Denite -highlight-mode-insert=off -highlight-matched-range=off -prompt='WorkSymbols >'     -buffer-name=DeniteBuffer('worksym_') workspaceSymbol
-                autocmd FileType cuda,objc command! -buffer DocumentSymbols  Denite -highlight-mode-insert=off -highlight-matched-range=off -prompt='DocumentSymbols >' -buffer-name=DeniteBuffer('docsym_')  documentSymbol
-            else
-                autocmd FileType cuda,objc command! -buffer WorkspaceSymbols call LanguageClient#workspace_symbol()
-                autocmd FileType cuda,objc command! -buffer DocumentSymbols call LanguageClient#textDocument_documentSymbol()
-            endif
-            autocmd FileType cuda,objc command! -nargs=? -buffer RenameSymbol call s:Rename(<q-args>)
-            autocmd FileType cuda,objc command! -buffer Definition call LanguageClient#textDocument_definition()
-            autocmd FileType cuda,objc command! -buffer Hover call LanguageClient#textDocument_hover()
-            autocmd FileType cuda,objc command! -buffer Implementation call LanguageClient#textDocument_implementation()
+            autocmd FileType c,cpp autocmd CursorHold <buffer> call LanguageClient#textDocument_hover()
+            autocmd FileType c,cpp command! -buffer WorkspaceSymbols call LanguageClient#workspace_symbol()
         augroup end
+
+        if executable('ccls')
+            let g:LanguageClient_serverCommands.cuda = g:LanguageClient_serverCommands.c
+            let g:LanguageClient_serverCommands.objc = g:LanguageClient_serverCommands.c
+            let l:supported_languages += ['cuda', 'objc']
+            augroup LanguageCmds
+                autocmd FileType cuda,objc autocmd CursorHold  <buffer> call LanguageClient#textDocument_hover()
+                autocmd FileType cuda,objc command! -buffer Callers call LanguageClient#cquery_callers()
+                autocmd FileType cuda,objc command! -buffer WorkspaceSymbols call LanguageClient#workspace_symbol()
+            augroup end
+        endif
+
     endif
 
     if executable('bash-language-server')
         let g:LanguageClient_serverCommands.sh = ['bash-language-server', 'start']
         let g:LanguageClient_serverCommands.bash = g:LanguageClient_serverCommands.sh
-
-        augroup LanguageCmds
-            " autocmd FileType python autocmd CursorHold                                <buffer> call LanguageClient#textDocument_hover()
-            " autocmd FileType python autocmd InsertEnter,CursorMoved,TermOpen,BufLeave <buffer> pclose
-            " autocmd FileType sh,bash command! -buffer WorkspaceSymbols call LanguageClient#workspace_symbol()
-            autocmd FileType sh,bash command! -buffer References call LanguageClient#textDocument_references()
-            autocmd FileType sh,bash command! -buffer DocumentSymbols call LanguageClient#textDocument_documentSymbol()
-            autocmd FileType sh,bash command! -nargs=? -buffer RenameSymbol call s:Rename(<q-args>)
-            autocmd FileType sh,bash command! -buffer Definition call LanguageClient#textDocument_definition()
-            autocmd FileType sh,bash command! -buffer Hover call LanguageClient#textDocument_hover()
-            autocmd FileType sh,bash command! -buffer Implementation call LanguageClient#textDocument_implementation()
-        augroup end
+        let l:supported_languages += ['sh', 'bash']
+        autocmd LanguageCmds FileType sh,bash autocmd CursorHold <buffer> call LanguageClient#textDocument_hover()
     endif
 
-    " TODO: I had had some probles with pysl in windows, so let's
-    "       skip it until I can figure it out how to fix this
-    if executable('pyls') " && !os#name('windows')
+    if executable('pyls')
         let g:LanguageClient_serverCommands.python = ['pyls', '--log-file=' . os#tmp('pyls.log')]
+        let l:supported_languages += ['python']
         augroup LanguageCmds
-            " autocmd FileType python autocmd CursorHold                                <buffer> call LanguageClient#textDocument_hover()
-            " autocmd FileType python autocmd InsertEnter,CursorMoved,TermOpen,BufLeave <buffer> pclose
-            autocmd FileType python command! -buffer References call LanguageClient#textDocument_references()
+            autocmd FileType python autocmd CursorHold <buffer> call LanguageClient#textDocument_hover()
             autocmd FileType python command! -buffer WorkspaceSymbols call LanguageClient#workspace_symbol()
-            autocmd FileType python command! -buffer DocumentSymbols call LanguageClient#textDocument_documentSymbol()
-            autocmd FileType python command! -nargs=? -buffer RenameSymbol call s:Rename(<q-args>)
-            autocmd FileType python command! -buffer Definition call LanguageClient#textDocument_definition()
-            autocmd FileType python command! -buffer Hover call LanguageClient#textDocument_hover()
-            autocmd FileType python command! -buffer Implementation call LanguageClient#textDocument_implementation()
         augroup end
     endif
 
-    function! s:Rename(name) abort
-        if !empty(a:name)
-            call LanguageClient#textDocument_rename({'newName': a:name})
-        else
-            call LanguageClient#textDocument_rename()
-        endif
-    endfunction
+    if !empty(l:supported_languages)
+        execute 'autocmd LanguageCmds FileType '.join(l:supported_languages).' call plugins#languageclient_neovim#LanguageMappings()'
+    endif
 
     if exists('g:plugs["vim-abolish"]')
 

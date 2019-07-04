@@ -183,6 +183,11 @@ function! plugins#neomake#init(data) abort
             \],}
     endif
 
+    if has('nvim-0.3.2')
+        let g:neomake_virtualtext_current_error = 1
+        let g:neomake_virtualtext_prefix = empty($NO_COOL_FONTS) ? '➤ ' :  '❯ '
+    endif
+
     try
         " Trigger neomake right after save a file or after 1s after leaving insert mode
         " available options:
