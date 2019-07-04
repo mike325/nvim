@@ -45,17 +45,17 @@ def _parseArgs():
     """
     parser = argparse.ArgumentParser()
 
-    parser.add_argument(
-        '--version',
-        dest='show_version',
-        action='store_true',
-        help='print script version and exit')
+    parser.add_argument('--version',
+                        dest='show_version',
+                        action='store_true',
+                        help='print script version and exit')
 
-    parser.add_argument(
-        '--debug',
-        dest='enable_debug',
-        action='store_true',
-        help='Enable debug messages')
+    parser.add_argument('-l',
+                        '--logging',
+                        dest='logging',
+                        default="INFO",
+                        type=str,
+                        help='Enable debug messages')
 
     return parser.parse_args()
 
@@ -71,8 +71,24 @@ def main():
         print(_version)
         return 0
 
-    if args.enable_debug:
-        pass
+    if args.logging:
+        try:
+            level = int(args.logging)
+        except Exception:
+            if args.logging.lower() == "debug":
+                level = logging.DEBUG
+            elif args.logging.lower() == "info":
+                level = logging.INFO
+            elif args.logging.lower() == "warn" or args.logging.lower() == "warning":
+                level = logging.WARN
+            elif args.logging.lower() == "error":
+                level = logging.ERROR
+            elif args.logging.lower() == "critical":
+                level = logging.CRITICAL
+            else:
+                level = 0
+
+    logging.basicConfig(level=level, format='[%(levelname)s] - %(threadName)s: %(message)s')
 
     return 0
 
