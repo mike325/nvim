@@ -223,6 +223,7 @@ if !exists('g:minimal') || g:minimal == 0
         " Plug 'jreybert/vimagit', {'on': ['Magit', 'MagitOnly']}
         " Plug 'sodapopcan/vim-twiggy', {'on': ['Twiggy']}
         " Plug 'gregsexton/gitv', {'on': ['Gitv']}
+        Plug 'junegunn/gv.vim', {'on': ['GV']}
         if !os#name('windows')
             Plug 'rhysd/committia.vim'
         endif

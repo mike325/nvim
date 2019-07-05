@@ -24,10 +24,6 @@
 "
 " ############################################################################
 
-augroup LanguageCmds
-    autocmd!
-augroup end
-
 function! plugins#languageclient_neovim#install(info) abort
     if os#name('windows')
         execute '!powershell -executionpolicy bypass -File ./install.ps1'
@@ -48,6 +44,13 @@ endfunction
 
 function! plugins#languageclient_neovim#LanguageMappings() abort
     if has_key(g:LanguageClient_serverCommands, &filetype)
+        execute 'autocmd LanguageCmds FileType '.&filetype.' autocmd CursorHold  <buffer> call LanguageClient#textDocument_hover()'
+        if has('nvim-0.4')
+            " TODO: Close float buffer
+            " autocmd LanguageCmds FileType &filetype autocmd InsertEnter,CursorMoved,TermOpen,BufLeave <buffer> pclose
+        else
+            execute 'autocmd LanguageCmds FileType '.&filetype.' autocmd InsertEnter,CursorMoved,TermOpen,BufLeave <buffer> pclose'
+        endif
         command! -buffer -nargs=? RenameSymbol      call s:Rename(<q-args>)
         command! -buffer          Definition        call LanguageClient#textDocument_definition()
         command! -buffer          Hover             call LanguageClient#textDocument_hover()
@@ -111,17 +114,46 @@ function! plugins#languageclient_neovim#init(data) abort
             autocmd LanguageCmds FileType c,cpp command! -buffer Callers call LanguageClient#cquery_callers()
         endif
 
-        augroup LanguageCmds
-            autocmd FileType c,cpp autocmd CursorHold <buffer> call LanguageClient#textDocument_hover()
-            autocmd FileType c,cpp command! -buffer WorkspaceSymbols call LanguageClient#workspace_symbol()
-        augroup end
+        autocmd LanguageCmds FileType c,cpp command! -buffer WorkspaceSymbols call LanguageClient#workspace_symbol()
 
         if executable('ccls')
+            function! s:C_mappings() abort
+                nnoremap <buffer> <silent> gsr :call LanguageClient#textDocument_references({'includeDeclaration': v:false})<CR>zz
+                " bases
+                nnoremap <buffer> <silent> gsb :call LanguageClient#findLocations({'method':'$ccls/inheritance'})<CR>
+                " bases of up to 3 levels
+                nnoremap <buffer> <silent> gsB :call LanguageClient#findLocations({'method':'$ccls/inheritance','levels':3})<CR>
+                " derived
+                nnoremap <buffer> <silent> gsd :call LanguageClient#findLocations({'method':'$ccls/inheritance','derived':v:true})<CR>
+                " derived of up to 3 levels
+                nnoremap <buffer> <silent> gsD :call LanguageClient#findLocations({'method':'$ccls/inheritance','derived':v:true,'levels':3})<CR>
+
+                " caller
+                nnoremap <buffer> <silent> gsc :call LanguageClient#findLocations({'method':'$ccls/call'})<CR>
+                " callee
+                nnoremap <buffer> <silent> gsC :call LanguageClient#findLocations({'method':'$ccls/call','callee':v:true})<CR>
+
+                " $ccls/member
+                " nested classes / types in a namespace
+                nnoremap <buffer> <silent> gss :call LanguageClient#findLocations({'method':'$ccls/member','kind':2})<CR>
+                " member functions / functions in a namespace
+                nnoremap <buffer> <silent> gsf :call LanguageClient#findLocations({'method':'$ccls/member','kind':3})<CR>
+                " member variables / variables in a namespace
+                nnoremap <buffer> <silent> gsm :call LanguageClient#findLocations({'method':'$ccls/member'})<CR>
+
+                " nnoremap <buffer> <silent> ss s
+            endfunction
+
+            augroup LanguageClient_config
+                autocmd FileType c,cpp,cuda,objc call s:C_mappings()
+                " autocmd FileType c,cpp,cuda,objc autocmd CursorMoved *.{c,cpp,h,hpp,hxx,cxx,C,CC} silent call LanguageClient#textDocument_documentHighlight()
+            augroup end
+
             let g:LanguageClient_serverCommands.cuda = g:LanguageClient_serverCommands.c
             let g:LanguageClient_serverCommands.objc = g:LanguageClient_serverCommands.c
             let l:supported_languages += ['cuda', 'objc']
+
             augroup LanguageCmds
-                autocmd FileType cuda,objc autocmd CursorHold  <buffer> call LanguageClient#textDocument_hover()
                 autocmd FileType cuda,objc command! -buffer Callers call LanguageClient#cquery_callers()
                 autocmd FileType cuda,objc command! -buffer WorkspaceSymbols call LanguageClient#workspace_symbol()
             augroup end
@@ -133,34 +165,21 @@ function! plugins#languageclient_neovim#init(data) abort
         let g:LanguageClient_serverCommands.sh = ['bash-language-server', 'start']
         let g:LanguageClient_serverCommands.bash = g:LanguageClient_serverCommands.sh
         let l:supported_languages += ['sh', 'bash']
-        autocmd LanguageCmds FileType sh,bash autocmd CursorHold <buffer> call LanguageClient#textDocument_hover()
     endif
 
     if executable('pyls')
         let g:LanguageClient_serverCommands.python = ['pyls', '--log-file=' . os#tmp('pyls.log')]
         let l:supported_languages += ['python']
-        augroup LanguageCmds
-            autocmd FileType python autocmd CursorHold <buffer> call LanguageClient#textDocument_hover()
-            autocmd FileType python command! -buffer WorkspaceSymbols call LanguageClient#workspace_symbol()
-        augroup end
+        autocmd  LanguageCmds FileType python command! -buffer WorkspaceSymbols call LanguageClient#workspace_symbol()
     endif
 
     if !empty(l:supported_languages)
-        execute 'autocmd LanguageCmds FileType '.join(l:supported_languages).' call plugins#languageclient_neovim#LanguageMappings()'
+        execute 'autocmd LanguageCmds FileType '.join(l:supported_languages, ',').' call plugins#languageclient_neovim#LanguageMappings()'
     endif
 
-    if exists('g:plugs["vim-abolish"]')
-
-        " " Rename - rn => rename
-        " noremap <leader>rn :call LanguageClient#textDocument_rename()<CR>
-
-        " " Rename - rc => rename camelCase
-        noremap <leader>rc :call LanguageClient#textDocument_rename({'newName': Abolish.camelcase(expand('<cword>'))})<CR>
-
-        " " Rename - rs => rename snake_case
-        noremap <leader>rs :call LanguageClient#textDocument_rename({'newName': Abolish.snakecase(expand('<cword>'))})<CR>
-
-        " " Rename - ru => rename UPPERCASE
-        noremap <leader>ru :call LanguageClient#textDocument_rename({'newName': Abolish.uppercase(expand('<cword>'))})<CR>
-    endif
+    " if exists('g:plugs["vim-abolish"]')
+    "     noremap gsrc :call LanguageClient#textDocument_rename({'newName': Abolish.camelcase(expand('<cword>'))})<CR>
+    "     noremap gsrs :call LanguageClient#textDocument_rename({'newName': Abolish.snakecase(expand('<cword>'))})<CR>
+    "     noremap gsru :call LanguageClient#textDocument_rename({'newName': Abolish.uppercase(expand('<cword>'))})<CR>
+    " endif
 endfunction

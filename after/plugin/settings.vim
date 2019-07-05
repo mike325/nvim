@@ -213,6 +213,10 @@ else
     set title          " Set window title
 endif
 
+set updatetime=300
+" always show signcolumns
+set signcolumn=auto
+
 " Remove includes from completions
 set complete-=i
 

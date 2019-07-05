@@ -24,7 +24,7 @@
 "
 " ############################################################################
 
-function! plugins#ultisnips#nextsnippetorreturn()
+function! plugins#ultisnips#nextsnippetorreturn() abort
     call UltiSnips#ExpandSnippet()
     if g:ulti_expand_res == 0
         if pumvisible()
