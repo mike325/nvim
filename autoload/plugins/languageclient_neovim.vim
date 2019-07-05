@@ -44,22 +44,23 @@ endfunction
 
 function! plugins#languageclient_neovim#LanguageMappings() abort
     if has_key(g:LanguageClient_serverCommands, &filetype)
-        execute 'autocmd LanguageCmds FileType '.&filetype.' autocmd CursorHold  <buffer> call LanguageClient#textDocument_hover()'
-        if has('nvim-0.4')
-            " TODO: Close float buffer
-            " autocmd LanguageCmds FileType &filetype autocmd InsertEnter,CursorMoved,TermOpen,BufLeave <buffer> pclose
-        else
-            execute 'autocmd LanguageCmds FileType '.&filetype.' autocmd InsertEnter,CursorMoved,TermOpen,BufLeave <buffer> pclose'
-        endif
+        " execute 'autocmd LanguageCmds FileType '.&filetype.' autocmd CursorHold  <buffer> call LanguageClient#textDocument_hover()'
+        " if has('nvim-0.4')
+        "     " TODO: Close float buffer
+        "     " autocmd LanguageCmds FileType &filetype autocmd InsertEnter,CursorMoved,TermOpen,BufLeave <buffer> pclose
+        " else
+        "     execute 'autocmd LanguageCmds FileType '.&filetype.' autocmd InsertEnter,CursorMoved,TermOpen,BufLeave <buffer> pclose'
+        " endif
         command! -buffer -nargs=? RenameSymbol      call s:Rename(<q-args>)
         command! -buffer          Definition        call LanguageClient#textDocument_definition()
         command! -buffer          Hover             call LanguageClient#textDocument_hover()
         command! -buffer          Implementation    call LanguageClient#textDocument_implementation()
-        command! -buffer          References        call LanguageClient#textDocument_references()
+        command! -buffer          References        call LanguageClient#textDocument_references({'includeDeclaration': v:true})
         command! -buffer          DocumentSymbols   call LanguageClient#textDocument_documentSymbol()
 
         nnoremap <buffer> <silent> K    :call LanguageClient#textDocument_hover()<CR>
         nnoremap <buffer> <silent> gD   :call LanguageClient#textDocument_definition()<CR>
+        nnoremap <buffer> <silent> gsr  :call LanguageClient#textDocument_references({'includeDeclaration': v:true})<CR>
 
     endif
 endfunction
@@ -118,7 +119,6 @@ function! plugins#languageclient_neovim#init(data) abort
 
         if executable('ccls')
             function! s:C_mappings() abort
-                nnoremap <buffer> <silent> gsr :call LanguageClient#textDocument_references({'includeDeclaration': v:false})<CR>zz
                 " bases
                 nnoremap <buffer> <silent> gsb :call LanguageClient#findLocations({'method':'$ccls/inheritance'})<CR>
                 " bases of up to 3 levels
