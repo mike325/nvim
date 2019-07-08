@@ -57,11 +57,11 @@ function! plugins#youcompleteme#install(info) abort
         let l:cmd += ['--clangd-completer']
 
         if executable('go') && (!empty($GOROOT))
-            let l:cmd += ['--gocode-completer']
+            let l:cmd += ['--go-completer']
         endif
 
         if executable('mono') && ( (os#name('windows') && executable('msbuild')) || ( !os#name('windows') && executable('xbuild') ) )
-            let l:cmd += ['--omnisharp-completer']
+            let l:cmd += ['--cs-completer']
         endif
 
         if executable('racer') && executable('cargo')
@@ -69,7 +69,7 @@ function! plugins#youcompleteme#install(info) abort
         endif
 
         if executable('npm') && executable('node')
-            let l:cmd += ['--js-completer']
+            let l:cmd += ['--ts-completer']
         endif
 
         if !os#name('windows') && executable('java')
@@ -81,7 +81,7 @@ function! plugins#youcompleteme#install(info) abort
         endif
 
         echomsg 'CMD: ' . join(l:cmd, ' ')
-        execute ' ! ' join(l:cmd, ' ')
+        execute ' !' join(l:cmd, ' ')
 
         " if os#name('windows')
         "     execute '!' . l:python . ' ./install.py ' . l:cmd
@@ -124,6 +124,16 @@ function! plugins#youcompleteme#init(data) abort
 
     let g:ycm_python_interpreter_path = exists('g:python3_host_prog') ?  g:python3_host_prog : g:python_host_prog
     let g:ycm_python_interpreter_path = exepath(g:ycm_python_interpreter_path)
+
+    let g:ycm_language_server = []
+    if tools#CheckLanguageServer('bash')
+        let g:ycm_language_server += [
+            \ {
+            \     'name': 'bash',
+            \     'cmdline': ['bash-language-server', 'start'],
+            \     'filetypes': ['bash', 'sh']
+            \ }]
+    endif
 
     let g:ycm_extra_conf_vim_data = [
                 \  'g:ycm_python_interpreter_path',
@@ -194,17 +204,17 @@ function! plugins#youcompleteme#init(data) abort
         autocmd FileType c,cpp                                          nnoremap <buffer> <leader>i :YcmCompleter GoToInclude<CR>
         autocmd FileType c,cpp,cs                                       command! -buffer FixIt :YcmCompleter FixIt
 
-        autocmd FileType c,cpp,objc,objcpp                              command! -buffer Include :YcmCompleter GoToInclude
-        autocmd FileType c,cpp,objc,objcpp                              command! -buffer Parent :YcmCompleter GetParent
-        autocmd FileType c,cpp,python,go,cs,objc,objcpp,rust            command! -buffer Declaration :YcmCompleter GoToDeclaration
+        autocmd FileType c,cpp,objc,objcpp,cuda                         command! -buffer Include :YcmCompleter GoToInclude
+        autocmd FileType c,cpp,objc,objcpp,cuda                         command! -buffer Parent :YcmCompleter GetParent
+        autocmd FileType c,cpp,python,go,cs,objc,objcpp,rust,cuda       command! -buffer Declaration :YcmCompleter GoToDeclaration
         autocmd FileType c,cpp,python,go,cs,objc,objcpp,rust,javascript command! -buffer Definition :YcmCompleter GoToDefinition
         autocmd FileType javascript,python,typescript                   command! -buffer References :YcmCompleter GoToReferences
         autocmd FileType cs                                             command! -buffer Implementation :YcmCompleter GoToImplementationElseDeclaration
 
         autocmd FileType python,c,cpp,objc,objcpp,javascript            command! -buffer Type :YcmCompleter GetType
 
-        autocmd FileType c,cpp,objc,objcpp                              command! -buffer IncludeVSplit :call s:SplitYCM("vsplit", "YcmCompleter GoToInclude")
-        autocmd FileType c,cpp,python,go,cs,objc,objcpp,rust            command! -buffer DeclarationVSplit :call s:SplitYCM("vsplit", "YcmCompleter GoToDeclaration")
+        autocmd FileType c,cpp,objc,objcpp,cuda                         command! -buffer IncludeVSplit :call s:SplitYCM("vsplit", "YcmCompleter GoToInclude")
+        autocmd FileType c,cpp,python,go,cs,objc,objcpp,rust,cuda       command! -buffer DeclarationVSplit :call s:SplitYCM("vsplit", "YcmCompleter GoToDeclaration")
         autocmd FileType c,cpp,python,go,cs,objc,objcpp,rust,javascript command! -buffer DefinitionVSplit :call s:SplitYCM("vsplit", "YcmCompleter GoToDefinition")
         autocmd FileType javascript,python,typescript                   command! -buffer ReferencesVSplit :call s:SplitYCM("vsplit", "YcmCompleter GoToReferences")
         autocmd FileType cs                                             command! -buffer ImplementationVSplit :call s:SplitYCM("vsplit", "YcmCompleter GoToImplementationElseDeclaration")

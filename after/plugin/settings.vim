@@ -179,7 +179,7 @@ if empty($SSH_CONNECTION) && has('clipboard')
         endif
     endif
 else
-    let g:clipboard = {}
+    " let g:clipboard = {}
     set clipboard=
 endif
 

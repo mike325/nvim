@@ -67,7 +67,7 @@ function! tools#CheckLanguageServer(...) abort
             \ 'objc'  : ['ccls'],
             \ 'sh'    : ['bash-language-server'],
             \ 'bash'  : ['bash-language-server'],
-            \ 'go'    : ['go-langerver'],
+            \ 'go'    : ['gopls', 'go-langerver'],
             \ }
 
     if empty(l:lang)
