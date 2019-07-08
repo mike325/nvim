@@ -224,6 +224,7 @@ if !exists('g:minimal') || g:minimal == 0
         " Plug 'sodapopcan/vim-twiggy', {'on': ['Twiggy']}
         " Plug 'gregsexton/gitv', {'on': ['Gitv']}
         Plug 'junegunn/gv.vim', {'on': ['GV']}
+        Plug 'rhysd/git-messenger.vim', {'on': ['GitMessenger']}
         if !os#name('windows')
             Plug 'rhysd/committia.vim'
         endif
