@@ -69,7 +69,9 @@ function! set#initconfigs() abort " Vim's InitConfig {{{
     let l:persistent_settings = (has('nvim')) ? 'shada' : 'viminfo'
 
     execute 'set ' . l:persistent_settings . "=!,/1000,'1000,<1000,:1000,s10000,h"
-    execute 'set ' . l:persistent_settings . '+=n' . fnameescape(l:parent_dir .'/'. l:persistent_settings)
+    if l:persistent_settings ==# 'viminfo'
+        execute 'set ' . l:persistent_settings . '+=n' . fnameescape(l:parent_dir .'/'. l:persistent_settings)
+    endif
 
     let l:wildignores = [
         \   '*.spl',
