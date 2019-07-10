@@ -77,9 +77,12 @@ function! plugins#languageclient_neovim#init(data) abort
     let g:LanguageClient_loggingFile       = os#tmp('languageclient.log')
     let g:LanguageClient_hoverPreview      = 'Auto'
     let g:LanguageClient_hasSnippetSupport = 0
+    let g:LanguageClient_diagnosticsList   = 'Location'
+
+    let g:LanguageClient_diagnosticsEnable = !exists('g:plugs["neomake"]') ? 1 : 0
 
     if has('nvim-0.3.2')
-        let g:LanguageClient_useVirtualText    = 1
+        let g:LanguageClient_useVirtualText = 1
     endif
 
     if has('nvim-0.4')
@@ -88,10 +91,6 @@ function! plugins#languageclient_neovim#init(data) abort
 
     if !executable('fzf')
         let g:LanguageClient_fzfContextMenu = 0
-    endif
-
-    if exists('g:plugs["neomake"]')
-        let g:LanguageClient_diagnosticsEnable = 0
     endif
 
     " Cleanup

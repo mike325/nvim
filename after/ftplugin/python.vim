@@ -60,20 +60,23 @@ function! s:PythonFix()
     let l:dcout = '"'
 
     let l:patterns = [
-    \   '%s/==\(\s\+\)\(None\|True\|False\)/is\1\2/g',
-    \   '%s/!=\(\s\+\)\(None\|True\|False\)/is not\1\2/g',
-    \   '%s/\(if\s\+\)\(not\s\+\)\{0,1}\(.*\)\.has_key(\(.*\))/\1\4 \2in \3',
-    \   '%s/^\(\s\+\)\?#\([^ #!]\)/\1# \2/e',
+    \   '%s/\s\zs==\ze\(\s\+\)\(None\|True\|False\)/is/g',
+    \   '%s/\s\zs!=\ze\(\s\+\)\(None\|True\|False\)/is not/g',
+    \   '%s/==\ze\(\s\+\)\(None\|True\|False\)/ is/g',
+    \   '%s/!=\ze\(\s\+\)\(None\|True\|False\)/ is not/g',
+    \   '%s/^\(\s\+\)\?\zs#\ze\([^ #!]\)/# /e',
     \   '%s/\(except\):/\1 Exception:/e',
-    \   '%s/\(except\s\+[[:alnum:]_.()]\+\)\s*,\s*\([[:alnum:]_]\+:\)/\1 as \2/e',
-    \   '%s/^\([^#].*\)\(\s*\)\(if\|for\|while\)\(.*\):\s*\(return\|continue\|break\)$/\1\2\3\4:\r\1    \5/e',
-    \   '%s/\(print\)\s\+\("\|' . l:scout . '\)\(.*\)\2\(\s*%\s*\(\((.*)\)\|[_[:alnum:]]\+\|\(\("\|' . l:scout . '\).*\8\)\)\|\(\.format(.*)\)\)\?/\1(\2\3\2\4)/e',
-    \   '%s/\(print\)\s\+\([[:alnum:]]\)\(.*\)/\1(\2\3)/e',
-    \   '%s/,\([[:alnum:]]\)/, \1/g',
-    \   '%s/^\([^#][^[:space:]]\+\)(\s\+\([[:alnum:]]\+\)\s\+)/\1(\2)/g',
-    \   '%s/^\(\s*def\)\s\+\([[:alnum:]]\+\)\s*(\(.*\{-}=.*\{-}\)*)\s\+:/\1 \2(\3):/g',
+    \   '%s/re\.compile(\zs\('.l:scout.'|"\)/r\1/g',
     \]
+    " \   '%s/^\([^#][^[:space:]]\+\)(\s\+\([[:alnum:]]\+\)\s\+)/\1(\2)/g',
+    " \   '%s/^\(\s*def\)\s\+\([[:alnum:]]\+\)\s*(\(.*\{-}=.*\{-}\)*)\s\+:/\1 \2(\3):/g',
+    " \   '%s/^\([^#].*\)\(\s*\)\(if\|for\|while\)\(.*\):\s*\(return\|continue\|break\)$/\1\2\3\4:\r\1    \5/e',
     " \   '%s/[[:alnum:]_' . l:scout . l:dcout . ']\zs\(+\|-\|\/\|<<\|>>\|\(<\|>\|=\|!\|+\|-\|\/\|*\)=\)\ze[[:alnum:]_' . l:scout . l:dcout . ']/ \1 /g',
+    " \   '%s/\(if\s\+\)\(not\s\+\)\{0,1}\(.*\)\.has_key(\(.*\))/\1\4 \2in \3',
+    " \   '%s/\(print\)\s\+\("\|' . l:scout . '\)\(.*\)\2\(\s*%\s*\(\((.*)\)\|[_[:alnum:]]\+\|\(\("\|' . l:scout . '\).*\8\)\)\|\(\.format(.*)\)\)\?/\1(\2\3\2\4)/e',
+    " \   '%s/\(print\)\s\+\([[:alnum:]]\)\(.*\)/\1(\2\3)/e',
+    " \   '%s/\(except\s\+[[:alnum:]_.()]\+\)\s*,\s*\([[:alnum:]_]\+:\)/\1 as \2/e',
+    " \   '%s/,\([[:alnum:]]\)/, \1/g',
 
     for l:pattern in l:patterns
         silent! call s:PythonReplace(l:pattern)

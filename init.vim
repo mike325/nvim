@@ -151,7 +151,7 @@ if !exists('g:minimal') || g:minimal == 0
     "     Plug 'jsfaint/gen_tags.vim'
     " endif
 
-    " Syntax check
+    " Project check
     if has#python()
         if has#async()
             Plug 'neomake/neomake'

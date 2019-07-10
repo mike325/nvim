@@ -189,17 +189,7 @@ function! plugins#neomake#init(data) abort
     endif
 
     try
-        " Trigger neomake right after save a file or after 1s after leaving insert mode
-        " available options:
-        "       TextChanged
-        "       InsertLeave
-        "       BufWritePost
-        "       BufWinEnter
-        call neomake#configure#automake({
-            \ 'InsertLeave': {},
-            \ 'BufWritePost': {'delay': 0},
-            \ }, 1000)
-
+        call neomake#configure#automake('nrw', 1000)
     catch E117
     endtry
 endfunction
