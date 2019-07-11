@@ -189,7 +189,15 @@ function! plugins#neomake#init(data) abort
     endif
 
     try
-        call neomake#configure#automake('nrw', 1000)
+        if os#name('windows')
+            call neomake#configure#automake({
+                \ 'InsertLeave': {},
+                \ 'BufWinEnter': {},
+                \ 'BufWritePost': {'delay': 0},
+                \ }, 1000)
+        else
+            call neomake#configure#automake('nrw', 1000)
+        endif
     catch E117
     endtry
 endfunction

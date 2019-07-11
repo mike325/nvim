@@ -213,7 +213,7 @@ else
     set title          " Set window title
 endif
 
-set updatetime=300
+set updatetime=1000
 " always show signcolumns
 set signcolumn=auto
 
