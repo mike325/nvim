@@ -201,6 +201,9 @@ function! plugins#youcompleteme#init(data) abort
 
     augroup YCMGoTo
         autocmd!
+        autocmd FileType c,cpp,python,go,cs,objc,objcpp,rust,javascript nnoremap <buffer> <silent> K  :YcmCompleter GetDoc<CR>
+        autocmd FileType c,cpp,python,go,cs,objc,objcpp,rust,javascript nnoremap <buffer> <silent> gD :YcmCompleter GoToDeclaration<CR>
+
         autocmd FileType c,cpp                                          nnoremap <buffer> <leader>i :YcmCompleter GoToInclude<CR>
         autocmd FileType c,cpp,cs                                       command! -buffer FixIt :YcmCompleter FixIt
 
@@ -209,7 +212,6 @@ function! plugins#youcompleteme#init(data) abort
         autocmd FileType c,cpp,python,go,cs,objc,objcpp,rust,cuda       command! -buffer Declaration :YcmCompleter GoToDeclaration
         autocmd FileType c,cpp,python,go,cs,objc,objcpp,rust,javascript command! -buffer Definition :YcmCompleter GoToDefinition
         autocmd FileType javascript,python,typescript                   command! -buffer References :YcmCompleter GoToReferences
-        autocmd FileType cs                                             command! -buffer Implementation :YcmCompleter GoToImplementationElseDeclaration
 
         autocmd FileType python,c,cpp,objc,objcpp,javascript            command! -buffer Type :YcmCompleter GetType
 
@@ -217,13 +219,11 @@ function! plugins#youcompleteme#init(data) abort
         autocmd FileType c,cpp,python,go,cs,objc,objcpp,rust,cuda       command! -buffer DeclarationVSplit :call s:SplitYCM("vsplit", "YcmCompleter GoToDeclaration")
         autocmd FileType c,cpp,python,go,cs,objc,objcpp,rust,javascript command! -buffer DefinitionVSplit :call s:SplitYCM("vsplit", "YcmCompleter GoToDefinition")
         autocmd FileType javascript,python,typescript                   command! -buffer ReferencesVSplit :call s:SplitYCM("vsplit", "YcmCompleter GoToReferences")
-        autocmd FileType cs                                             command! -buffer ImplementationVSplit :call s:SplitYCM("vsplit", "YcmCompleter GoToImplementationElseDeclaration")
 
         autocmd FileType c,cpp,objc,objcpp                              command! -buffer IncludeSplit :call s:SplitYCM("split", "YcmCompleter GoToInclude")
         autocmd FileType c,cpp,python,go,cs,objc,objcpp,rust            command! -buffer DeclarationSplit :call s:SplitYCM("split", "YcmCompleter GoToDeclaration")
         autocmd FileType c,cpp,python,go,cs,objc,objcpp,rust,javascript command! -buffer DefinitionSplit :call s:SplitYCM("split", "YcmCompleter GoToDefinition")
         autocmd FileType javascript,python,typescript                   command! -buffer ReferencesSplit :call s:SplitYCM("split", "YcmCompleter GoToReferences")
-        autocmd FileType cs                                             command! -buffer ImplementationSplit :call s:SplitYCM("split", "YcmCompleter GoToImplementationElseDeclaration")
     augroup end
 
     if exists('g:plugs["YouCompleteMe"]') && exists('g:plugs["delimitMate"]')
