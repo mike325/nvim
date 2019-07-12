@@ -105,6 +105,7 @@ augroup end
 augroup QuickQuit
     autocmd!
     autocmd BufEnter,BufReadPost __LanguageClient__ nnoremap <silent> <buffer> q :q!<CR>
+    autocmd BufEnter,BufWinEnter * if &previewwindow | nnoremap <silent> <buffer> q :q!<CR> | endif
     if has('nvim')
         autocmd TermOpen * nnoremap <silent> <buffer> q :q!<CR>
     elseif has('terminal')
