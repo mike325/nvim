@@ -85,8 +85,11 @@ if !exists('g:minimal') || g:minimal == 0
     " Plug 'sickill/vim-monokai'
     " Plug 'nanotech/jellybeans.vim'
     " Plug 'whatyouhide/vim-gotham'
-    Plug 'joshdick/onedark.vim'
-    Plug 'ayu-theme/ayu-vim'
+    if has('nvim')
+        Plug 'ayu-theme/ayu-vim'
+    else
+        Plug 'joshdick/onedark.vim'
+    endif
 
     " }}} END Colorschemes
 
@@ -439,7 +442,7 @@ if !exists('g:minimal') || g:minimal == 0
     " Plug 'vim-scripts/ReplaceWithRegister'
 
     " JSON text objects
-    Plug 'tpope/vim-jdaddy'
+    " Plug 'tpope/vim-jdaddy'
 
     " Better motions
     Plug 'easymotion/vim-easymotion'

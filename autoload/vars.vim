@@ -63,11 +63,17 @@ function! s:setupdirs() abort
     let s:homedir =  substitute( expand( os#name('windows') ? $USERPROFILE : $HOME), '\', '/', 'g' )
 
     if empty($XDG_DATA_HOME)
-        let $XDG_DATA_HOME = s:homedir . (os#name('windows') ? '/AppData/Local' : '/.local/share')
+        let $XDG_DATA_HOME =  os#name('windows') ? $LOCALAPPDATA : s:homedir .'/.local/share'
+    endif
+
+    if exists('*mkdir')
+        silent! call mkdir(fnameescape($XDG_DATA_HOME), 'p')
+    else
+        echoerr 'Failed to create dir "' . $XDG_DATA_HOME . '" mkdir is not available'
     endif
 
     let s:datadir = expand($XDG_DATA_HOME) . (os#name('windows') ? '/nvim-data' : '/nvim')
-    
+
     if has('nvim')
         let s:basedir = substitute( stdpath('config'), '\', '/', 'g' )
     elseif os#name('windows')
