@@ -120,8 +120,9 @@ augroup end
 
 augroup FileTypeDetect
     autocmd!
-    autocmd BufRead,BufNewFile    *.bash*         setlocal filetype=sh
-    autocmd BufNewFile,BufReadPre /*/nginx/*.conf setlocal filetype=nginx
+    autocmd BufNewFile,BufReadPre    *.xmp          setlocal filetype=xml
+    autocmd BufNewFile,BufReadPre    *.bash*        setlocal filetype=sh
+    autocmd BufNewFile,BufReadPre /*/nginx/*.conf   setlocal filetype=nginx
 augroup end
 
 " Spell {{{
