@@ -214,8 +214,6 @@ else
 endif
 
 set updatetime=1000
-" always show signcolumns
-set signcolumn=auto
 
 " Remove includes from completions
 set complete-=i
