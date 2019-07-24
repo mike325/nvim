@@ -24,10 +24,6 @@
 "
 " ############################################################################
 
-function! set#min() abort
-    let g:minimal = 1
-endfunction
-
 function! set#initconfigs() abort " Vim's InitConfig {{{
     " Hidden path in `vars#basedir()` with all generated files
     if !exists('*mkdir')

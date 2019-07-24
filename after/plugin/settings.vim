@@ -302,7 +302,7 @@ set foldcolumn=0
 
 set undolevels=10000 " Set the number the undos per file
 
-if !exists('g:minimal') && exists('g:plugs["vim-airline"]')
+if !exists('g:bare') && exists('g:plugs["vim-airline"]')
     " We already have the statusline, we don't need this
     set noshowmode
 endif
