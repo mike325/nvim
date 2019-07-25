@@ -392,8 +392,6 @@ function! plugins#init() abort
 
     " ####### Misc {{{
 
-    Plug 'tweekmonster/startuptime.vim', {'on': ['StartupTime']}
-
     " Better buffer deletions
     Plug 'moll/vim-bbye', { 'on': [ 'Bdelete' ] }
 
