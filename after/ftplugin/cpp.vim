@@ -37,10 +37,12 @@ if executable('cppman')
     endif
 endif
 
-if exists('+formatprg')
-    if executable('clang-format')
-        setlocal formatprg=clang-format
-    endif
+if exists('+formatprg') && executable('clang-format')
+    setlocal formatprg=clang-format
 endif
 
 setlocal commentstring=//\ %s
+
+if exists('g:cpp_includes')
+    execute 'setlocal path^='.join(g:cpp_includes, ',')
+endif

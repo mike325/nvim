@@ -349,8 +349,8 @@ function! plugins#init() abort
     " Display indention
     Plug 'Yggdroot/indentLine'
 
-    " Automatically clears search highlight when cursor is moved
-    Plug 'junegunn/vim-slash'
+    " " Automatically clears search highlight when cursor is moved
+    " Plug 'junegunn/vim-slash'
 
     " Print the number of the available buffer matches
     Plug 'henrik/vim-indexed-search'
