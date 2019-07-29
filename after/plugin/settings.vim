@@ -308,3 +308,7 @@ set sessionoptions=buffers,curdir,folds,globals,localoptions,options,resize,tabp
 if os#name('windows')
     let &sessionoptions.=',slash,unix'
 endif
+
+if exists('g:plugs["vim-fugitive"]') && !exists('g:plugs["vim-airline"]')
+    set statusline=%<%f\ %h%m%r%{FugitiveStatusline()}%=%-14.(%l,%c%V%)\ %P
+endif
