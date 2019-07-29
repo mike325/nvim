@@ -117,14 +117,6 @@ else
 
     try
         for [s:name, s:data] in items(filter(deepcopy(g:plugs), 'index(s:available_configs, s:Convert2settings(v:key), 0) != -1'))
-            " available keys
-            "   uri: URL of the repo
-            "   dir: Install dir
-            "   frozen: is it frozen? (0, 1)
-            "   branch: cloned branch
-            "   do: Post install function
-            "   on: CMD to source plugin
-            "   for: FT to source plugin
             let s:func_name = s:Convert2settings(s:name)
             call plugins#{s:func_name}#init(s:data)
         endfor
