@@ -218,16 +218,14 @@ function! plugins#init() abort
             endif
 
             if !tools#CheckLanguageServer('c')
-                " C/C++ completion base on clang compiler
-                if executable('clang')
-                    if os#name('windows')
-                        " A bit faster C/C++ completion
-                        Plug 'tweekmonster/deoplete-clang2'
-                    else
-                        " NOTE: Doesn't support windows
-                        Plug 'zchee/deoplete-clang'
-                        " Plug 'Shougo/neoinclude.vim'
-                    endif
+                " C/C++ completion base on clang compiler if executable('clang')
+                if os#name('windows')
+                    " A bit faster C/C++ completion
+                    Plug 'tweekmonster/deoplete-clang2'
+                else
+                    " NOTE: Doesn't support windows
+                    Plug 'zchee/deoplete-clang'
+                    " Plug 'Shougo/neoinclude.vim'
                 endif
             endif
 
@@ -251,9 +249,7 @@ function! plugins#init() abort
             endif
 
             let l:deoplete_installed = 1
-        elseif has#async() && (has('nvim-0.2.0')) || !has('nvim')
-            " Test new completion has#async framework that require python and vim 8 or
-            " Neovim (without python3)
+        elseif has#async() && (has('nvim-0.2.0') || (!has('nvim') && has('lambda')))
             if tools#CheckLanguageServer('any')
                 Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do': function('plugins#languageclient_neovim#install')}
             endif
