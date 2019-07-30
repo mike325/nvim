@@ -54,10 +54,6 @@ if os#name('windows')
     behave xterm
 endif
 
-if has('nvim-0.2')
-    set cpoptions-=_
-endif
-
 " Allow lua omni completion
 let g:lua_complete_omni = 1
 
@@ -189,28 +185,12 @@ endif
 let &grepprg = tools#select_grep(0)
 let &grepformat = tools#select_grep(0, 'grepformat')
 
-if has('nvim') || v:version >= 704
+if v:version >= 704
     set formatoptions+=r " Auto insert comment with <Enter>...
     set formatoptions+=o " ...or o/O
     set formatoptions+=l " Do not wrap lines that have been longer when starting insert mode already
     set formatoptions+=n " Recognize numbered lists
     set formatoptions+=j " Delete comment character when joining commented lines
-endif
-
-if exists('g:gonvim_running')
-    " Use Gonvim UI instead of (Neo)vim native GUI/TUI
-
-    " set laststatus=0
-    set noshowmode
-    set noruler
-
-    if exists('g:plugs["gonvim-fuzzy"]')
-        let g:gonvim_fuzzy_ag_cmd = tools#grep('rg', 'grepprg')
-    endif
-
-else
-    set titlestring=%t\ (%f)
-    set title          " Set window title
 endif
 
 set updatetime=1000

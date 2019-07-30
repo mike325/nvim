@@ -55,9 +55,30 @@ function! nvim#init() abort
         let $snvr = 'nvr -cc split --remote-silent'
     endif
 
+    if has('nvim-0.2')
+        set cpoptions-=_
+    endif
+
     let g:terminal_scrollback_buffer_size = 100000
 
     " always show signcolumns
     set signcolumn=auto
+
+    if exists('g:gonvim_running')
+        " Use Gonvim UI instead of (Neo)vim native GUI/TUI
+
+        " set laststatus=0
+        set noshowmode
+        set noruler
+
+        if exists('g:plugs["gonvim-fuzzy"]')
+            let g:gonvim_fuzzy_ag_cmd = tools#grep('rg', 'grepprg')
+        endif
+
+    else
+        set titlestring=%t\ (%f)
+        set title          " Set window title
+    endif
+
 
 endfunction
