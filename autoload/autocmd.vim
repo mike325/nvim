@@ -30,7 +30,7 @@ function! autocmd#CleanFile() abort
     let l:buftypes = 'nofile\|help\|quickfix\|terminal'
     let l:filetypes = 'bin\|hex\|log\|git\|man\|terminal'
 
-    if b:trim != 1 || &buftype =~? l:buftypes || &filetype ==? l:filetypes || &filetype ==? ''
+    if mode() !=# 'n' && ( b:trim != 1 || &buftype =~? l:buftypes || &filetype ==? l:filetypes || &filetype ==? '' )
         return
     endif
 

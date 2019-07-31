@@ -93,7 +93,9 @@ augroup end
 augroup CleanFile
     autocmd!
     autocmd BufNewFile,BufRead,BufEnter * if !exists('b:trim') | let b:trim = 1 | endif
-    autocmd BufWritePre                 * call autocmd#CleanFile()
+    if !exists('g:plugs["completor.vim"]')
+        autocmd BufWritePre                 * call autocmd#CleanFile()
+    endif
 augroup end
 
 " Specially helpful for html and xml
