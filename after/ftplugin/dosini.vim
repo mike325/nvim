@@ -29,4 +29,4 @@ if exists('+formatprg') && executable('sed')
     setlocal formatprg=sed\ --regexp-extended\ \"s/^\\s+//\"
 endif
 
-setlocal commentstring=#\ %s
+setlocal commentstring=;\ %s
