@@ -59,6 +59,9 @@ function! plugins#fzf_vim#init(data) abort
         if executable('fd')
             let $FZF_ALT_C_COMMAND = 'fd -t d . $HOME'
         endif
-        let $FZF_DEFAULT_OPTS = '--layout=reverse --border'
+        let $FZF_DEFAULT_OPTS = '--layout=reverse --border --ansi'
+        if executable('bat')
+            let $FZF_DEFAULT_OPTS = $FZF_DEFAULT_OPTS . ' --preview-window "right:60%" --preview "bat --color=always --line-range :300 {}"'
+        endif
     endif
 endfunction

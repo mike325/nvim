@@ -38,23 +38,23 @@ augroup Modifiable
     autocmd BufReadPre * if &modifiable == 1 | setlocal fileencoding=utf-8 | endif
 augroup end
 
-if has('nvim') || v:version > 702
-    " TODO make a function to save the state of the toggles
-    augroup Numbers
-        autocmd!
-        autocmd WinEnter    *    setlocal relativenumber number
-        autocmd WinLeave    *    setlocal norelativenumber number
-        autocmd InsertLeave *    setlocal relativenumber number
-        autocmd InsertEnter *    setlocal norelativenumber number
-    augroup end
-endif
-
 " We don't need Vim's temp files here
 augroup DisableTemps
     autocmd!
     autocmd BufNewFile,BufReadPre,BufEnter /tmp/* setlocal noswapfile nobackup noundofile
 augroup end
 
+if has('nvim') || v:version > 702
+    " TODO make a function to save the state of the toggles
+    augroup Numbers
+        autocmd!
+        autocmd WinEnter    * setlocal relativenumber number
+        autocmd WinLeave    * setlocal norelativenumber number
+        autocmd InsertLeave * setlocal relativenumber number
+        autocmd InsertEnter * setlocal norelativenumber number
+    augroup end
+
+endif
 
 if has('nvim') || has('terminal')
     " Set modifiable to use easymotions
@@ -64,11 +64,11 @@ if has('nvim') || has('terminal')
     augroup TerminalAutocmds
         autocmd!
         if has('nvim')
-            autocmd TermOpen * setlocal relativenumber number nocursorline
-            autocmd TermOpen * setlocal noswapfile nobackup noundofile
+            autocmd TermOpen *      setlocal relativenumber number nocursorline
+            autocmd TermOpen *      setlocal noswapfile nobackup noundofile
         elseif has('terminal')
-            autocmd TerminalOpen * setlocal relativenumber number nocursorline
-            autocmd TerminalOpen * setlocal noswapfile nobackup noundofile
+            autocmd TerminalOpen *  setlocal relativenumber number nocursorline
+            autocmd TerminalOpen *  setlocal noswapfile nobackup noundofile
         endif
     augroup end
 endif

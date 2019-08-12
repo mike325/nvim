@@ -1,6 +1,6 @@
 " ############################################################################
 "
-"                               netrw Setttings
+"                               fzf Setttings
 "
 "                                     -`
 "                     ...            .o+`
@@ -24,12 +24,5 @@
 "
 " ############################################################################
 
-setlocal nobackup
-setlocal noswapfile
-setlocal bufhidden=wipe
-
-setlocal number
-setlocal relativenumber
-
-nnoremap <silent> <buffer> q :q!<CR>
-nnoremap <silent> <buffer> qq :q!<CR>
+setlocal norelativenumber
+setlocal nonumber
