@@ -1,28 +1,5 @@
-" ############################################################################
-"
-"                               vnc Setttings
-"
-"                                     -`
-"                     ...            .o+`
-"                  .+++s+   .h`.    `ooo/
-"                 `+++%++  .h+++   `+oooo:
-"                 +++o+++ .hhs++. `+oooooo:
-"                 +s%%so%.hohhoo'  'oooooo+:
-"                 `+ooohs+h+sh++`/:  ++oooo+:
-"                  hh+o+hoso+h+`/++++.+++++++:
-"                   `+h+++h.+ `/++++++++++++++:
-"                            `/+++ooooooooooooo/`
-"                           ./ooosssso++osssssso+`
-"                          .oossssso-````/osssss::`
-"                         -osssssso.      :ssss``to.
-"                        :osssssss/  Mike  osssl   +
-"                       /ossssssss/   8a   +sssslb
-"                     `/ossssso+/:-        -:/+ossss'.-
-"                    `+sso+:-`                 `.-/+oso:
-"                   `++:.  github.com/mike325/.vim  `-/+/
-"                   .`                                 `/
-"
-" ############################################################################
+" VNC Setttings
+" github.com/mike325/.vim
 
 let s:vnc_jobs = get(g:, 'vnc#jobs', {})
 " let vnc#knowhosts = get(g:, 'host#vnc#knowhosts', {})

@@ -1,28 +1,5 @@
-" ############################################################################
-"
-"                               vim-plug Setttings
-"
-"                                     -`
-"                     ...            .o+`
-"                  .+++s+   .h`.    `ooo/
-"                 `+++%++  .h+++   `+oooo:
-"                 +++o+++ .hhs++. `+oooooo:
-"                 +s%%so%.hohhoo'  'oooooo+:
-"                 `+ooohs+h+sh++`/:  ++oooo+:
-"                  hh+o+hoso+h+`/++++.+++++++:
-"                   `+h+++h.+ `/++++++++++++++:
-"                            `/+++ooooooooooooo/`
-"                           ./ooosssso++osssssso+`
-"                          .oossssso-````/osssss::`
-"                         -osssssso.      :ssss``to.
-"                        :osssssss/  Mike  osssl   +
-"                       /ossssssss/   8a   +sssslb
-"                     `/ossssso+/:-        -:/+ossss'.-
-"                    `+sso+:-`                 `.-/+oso:
-"                   `++:.  github.com/mike325/.vim  `-/+/
-"                   .`                                 `/
-"
-" ############################################################################
+" Vim-plug Setttings
+" github.com/mike325/.vim
 
 function! s:plug_doc() abort
     let name = matchstr(getline('.'), '^- \zs\S\+\ze:')

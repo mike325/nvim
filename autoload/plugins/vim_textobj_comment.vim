@@ -1,28 +1,5 @@
-" ############################################################################
-"
-"                               vim_textobj_comment Setttings
-"
-"                                     -`
-"                     ...            .o+`
-"                  .+++s+   .h`.    `ooo/
-"                 `+++%++  .h+++   `+oooo:
-"                 +++o+++ .hhs++. `+oooooo:
-"                 +s%%so%.hohhoo'  'oooooo+:
-"                 `+ooohs+h+sh++`/:  ++oooo+:
-"                  hh+o+hoso+h+`/++++.+++++++:
-"                   `+h+++h.+ `/++++++++++++++:
-"                            `/+++ooooooooooooo/`
-"                           ./ooosssso++osssssso+`
-"                          .oossssso-````/osssss::`
-"                         -osssssso.      :ssss``to.
-"                        :osssssss/  Mike  osssl   +
-"                       /ossssssss/   8a   +sssslb
-"                     `/ossssso+/:-        -:/+ossss'.-
-"                    `+sso+:-`                 `.-/+oso:
-"                   `++:.  github.com/mike325/.vim  `-/+/
-"                   .`                                 `/
-"
-" ############################################################################
+" Vim_textobj_comment Setttings
+" github.com/mike325/.vim
 
 function! plugins#vim_textobj_comment#post() abort
     if !exists('g:plugs["vim-textobj-comment"]')

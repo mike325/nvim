@@ -1,28 +1,5 @@
-" ############################################################################
-"
-"                               fzf_vim Setttings
-"
-"                                     -`
-"                     ...            .o+`
-"                  .+++s+   .h`.    `ooo/
-"                 `+++%++  .h+++   `+oooo:
-"                 +++o+++ .hhs++. `+oooooo:
-"                 +s%%so%.hohhoo'  'oooooo+:
-"                 `+ooohs+h+sh++`/:  ++oooo+:
-"                  hh+o+hoso+h+`/++++.+++++++:
-"                   `+h+++h.+ `/++++++++++++++:
-"                            `/+++ooooooooooooo/`
-"                           ./ooosssso++osssssso+`
-"                          .oossssso-````/osssss::`
-"                         -osssssso.      :ssss``to.
-"                        :osssssss/  Mike  osssl   +
-"                       /ossssssss/   8a   +sssslb
-"                     `/ossssso+/:-        -:/+ossss'.-
-"                    `+sso+:-`                 `.-/+oso:
-"                   `++:.  github.com/mike325/.vim  `-/+/
-"                   .`                                 `/
-"
-" ############################################################################
+" FZF_vim Setttings
+" github.com/mike325/.vim
 
 " Took from https://www.reddit.com/r/vim/comments/a3e5q7/fzfvim_question_how_to_add_a_jumps_command/
  function! plugins#fzf_vim#GetRegisters() abort

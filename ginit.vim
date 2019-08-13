@@ -1,28 +1,5 @@
-" ############################################################################
-"
-"                                 GUI settings
-"
-"                                     -`
-"                     ...            .o+`
-"                  .+++s+   .h`.    `ooo/
-"                 `+++%++  .h+++   `+oooo:
-"                 +++o+++ .hhs++. `+oooooo:
-"                 +s%%so%.hohhoo'  'oooooo+:
-"                 `+ooohs+h+sh++`/:  ++oooo+:
-"                  hh+o+hoso+h+`/++++.+++++++:
-"                   `+h+++h.+ `/++++++++++++++:
-"                            `/+++ooooooooooooo/`
-"                           ./ooosssso++osssssso+`
-"                          .oossssso-````/osssss::`
-"                         -osssssso.      :ssss``to.
-"                        :osssssss/  Mike  osssl   +
-"                       /ossssssss/   8a   +sssslb
-"                     `/ossssso+/:-        -:/+ossss'.-
-"                    `+sso+:-`                 `.-/+oso:
-"                   `++:.  github.com/mike325/.vim  `-/+/
-"                   .`                                 `/
-"
-" ############################################################################
+" GUI settings
+" github.com/mike325/.vim
 
 " This file could/should be linked/copied as .gvimrc for gVim configurations
 " same way as init.vim must be ALWAYS linked/copied as .vimrc in $HOME
