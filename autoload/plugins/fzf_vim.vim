@@ -15,30 +15,48 @@ function! plugins#fzf_vim#UseRegister(line) abort
     call setreg('"', l:reg, l:reg_type)
 endfunction
 
+function! plugins#fzf_vim#install(info) abort
+    if !os#name('windows')
+        let l:cmd = ['./install', '--all', '--no-update-rc']
+        " if has('nvim')
+        "
+        "     let l:args = {
+        "         \   'detach': 1,
+        "         \ }
+        "     silent! call jobstart(l:cmd, l:args)
+        " else
+        silent! call system(join(l:cmd, ' '))
+        " endif
+    endif
+endfunction
+
 function! plugins#fzf_vim#init(data) abort
-    if  !exists('g:plugs["fzf"]') || !exists('g:plugs["fzf.vim"]')
+    if !exists('g:plugs["fzf"]') || !exists('g:plugs["fzf.vim"]')
         return -1
     endif
 
-    nnoremap <C-p> :Files<CR>
-    nnoremap <C-b> :Buffers<CR>
-
-    command! Oldfiles History
-
-    command! Registers call fzf#run(fzf#wrap({
-            \ 'source': plugins#fzf_vim#GetRegisters(),
-            \ 'sink': function('plugins#fzf_vim#UseRegister')}))
-
     " preview function use bash, so windows support
     if os#name('windows') && &shell =~# '\v^cmd(\.exe)'
-        let $FZF_DEFAULT_COMMAND = '( git --no-pager ls-files -co --exclude-standard || '.tools#select_filelist(0).' ) 2> nul'
+        let $FZF_DEFAULT_COMMAND = '( '.tools#select_filelist(1).' || '.tools#select_filelist(0).' ) 2> nul'
         let $FZF_CTRL_T_COMMAND = $FZF_DEFAULT_COMMAND
         if executable('fd')
             let $FZF_ALT_C_COMMAND = 'fd -t d . $HOME'
         endif
         let $FZF_DEFAULT_OPTS = '--layout=reverse --border --ansi'
-        if executable('bat')
-            let $FZF_DEFAULT_OPTS = $FZF_DEFAULT_OPTS . ' --preview-window "right:60%" --preview "bat --color=always --line-range :300 {}"'
-        endif
     endif
+
+    " Known fzf/kernel issue
+    " https://github.com/junegunn/fzf/issues/1486
+    if !os#name('windows') && system('uname -r') !~# '4\.\(4\.0-142\|15.0-44\)'
+        command! -bang -nargs=? -complete=dir Files
+          \ call fzf#vim#files(<q-args>, fzf#vim#with_preview('right:50%', 'ctrl-p'), <bang>0)
+    endif
+
+    nnoremap <C-p> :Files<CR>
+    nnoremap <C-b> :Buffers<CR>
+    command! Oldfiles History
+    command! Registers call fzf#run(fzf#wrap({
+            \ 'source': plugins#fzf_vim#GetRegisters(),
+            \ 'sink': function('plugins#fzf_vim#UseRegister')}))
+
 endfunction

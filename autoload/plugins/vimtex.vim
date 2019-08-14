@@ -32,5 +32,14 @@ function! plugins#vimtex#init(data) abort
     let g:vimtex_motion_enabled   = 1
     let g:vimtex_text_obj_enabled = 1
     let g:tex_flavor              = 'latex'
+
+    if !exists('g:plugs["fzf"]') || !exists('g:plugs["fzf.vim"]')
+        augroup VimTexFZF
+            autocmd!
+            autocmd FileType tex command! -buffer Toc call vimtex#fzf#run()
+            autocmd FileType tex nnoremap <buffer> <leader>t :call vimtex#fzf#run()<CR>
+        augroup end
+    endif
+
     " let g:vimtex_imaps_leader     = '`'
 endfunction

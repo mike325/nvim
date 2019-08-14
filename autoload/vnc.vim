@@ -42,6 +42,7 @@ function! vnc#RunVNC(hostname, bang) abort
         \   '-SingleSignOn',
         \   l:host,
         \ ]
+
     let l:args = {
         \   'detach': 1,
         \   'on_exit': function('vnc#CleanVNC'),

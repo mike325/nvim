@@ -65,11 +65,8 @@ function! plugins#init() abort
 
     " TODO: Fugitive seems to break tcd, try to fix it
     if ( executable('fzf') && isdirectory(vars#home() . '/.fzf') ) || !os#name('windows')
-        if os#name('windows')  " install in windows by using choco install
-            Plug 'junegunn/fzf', { 'dir': '~/.fzf'}
-        else
-            Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all --no-update-rc'}
-        endif
+        " Use chocolately install in windows
+        Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': function('plugins#fzf_vim#install')}
         Plug 'junegunn/fzf.vim'
     elseif exists('g:gonvim_running')
         Plug 'akiyosi/gonvim-fuzzy'
