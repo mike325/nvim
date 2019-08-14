@@ -49,7 +49,9 @@ function! plugins#fzf_vim#init(data) abort
     " https://github.com/junegunn/fzf/issues/1486
     if !os#name('windows') && system('uname -r') !~# '4\.\(4\.0-142\|15.0-44\)'
         command! -bang -nargs=? -complete=dir Files
-          \ call fzf#vim#files(<q-args>, fzf#vim#with_preview('right:50%', 'ctrl-p'), <bang>0)
+            \ call fzf#vim#files(<q-args>, fzf#vim#with_preview('right:50%', 'ctrl-p'), <bang>0)
+    elseif os#name('windows') && executable('bat')
+        let g:fzf_files_options = ['--border', '--ansi', '--preview-window', 'right:50%', '--preview', 'bat --color=always {}']
     endif
 
     nnoremap <C-p> :Files<CR>
