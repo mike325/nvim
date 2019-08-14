@@ -1,3 +1,4 @@
+scriptencoding 'utf-8'
 " Neomake settings
 " github.com/mike325/.vim
 
