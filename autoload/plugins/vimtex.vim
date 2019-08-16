@@ -33,7 +33,7 @@ function! plugins#vimtex#init(data) abort
     let g:vimtex_text_obj_enabled = 1
     let g:tex_flavor              = 'latex'
 
-    if !exists('g:plugs["fzf"]') || !exists('g:plugs["fzf.vim"]')
+    if exists('g:plugs["fzf"]') && exists('g:plugs["fzf.vim"]')
         augroup VimTexFZF
             autocmd!
             autocmd FileType tex command! -buffer Toc call vimtex#fzf#run()

@@ -8,6 +8,7 @@ if !exists('g:plugs["vimtex"]')
 endif
 
 setlocal spell
+setlocal textwidth=80
 setlocal complete+=k,kspell " Add spell completion
 " setlocal foldmethod=indent
 
