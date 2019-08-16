@@ -27,7 +27,9 @@ function! plugins#vim_airline#init(data) abort
     " let g:airline_linecolumn_prefix = '␊ '
     " let g:airline_paste_symbol = 'ρ'
 
-    if empty($NO_COOL_FONTS)
+    if !empty($NO_COOL_FONTS) || (os#name('windows') && has('gui_running') && !has('nvim'))
+        let g:airline_powerline_fonts = 0
+    else
         let g:airline_powerline_fonts = 1
     endif
 
