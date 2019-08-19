@@ -46,16 +46,17 @@ function! s:PythonProviders(python) abort
         endif
     else
         let l:pynvim = {
+                    \ 'virtual': '',
                     \ 'local': vars#home() . '/.local/lib/python'.l:major.'.'.l:minor.'/site-packages/pynvim',
-                    \ 'system': '/usr/lib/python'.l:major.'.'.l:minor.'/site-packages/pynvim',
-                    \ 'virtual': ''
+                    \ 'system': '/usr/lib/python'.l:major.'.'.l:minor.'/site-packages/pynvim'
                     \ }
-        if executable('python'.l:major.'.'.l:minor) && (isdirectory(l:pynvim['local']) || isdirectory(l:pynvim['system']))
+
+        if (executable('python'.l:major.'.'.l:minor) || executable('python'.l:major)) &&  isdirectory(l:pynvim['virtual'])
+            return executable('python'.l:major.'.'.l:minor) ? exepath('python'.l:major.'.'.l:minor) : exepath('python'.l:major)
+        elseif executable('python'.l:major.'.'.l:minor) && (isdirectory(l:pynvim['local']) || isdirectory(l:pynvim['system']))
             return exepath('python'.l:major.'.'.l:minor)
         elseif executable('python'.l:major) && (isdirectory(l:pynvim['local']) || isdirectory(l:pynvim['system']))
             return exepath('python'.l:major)
-        elseif ( executable('python'.l:major.'.'.l:minor) || executable('python'.l:major) ) &&  isdirectory(l:pynvim['virtual'])
-            return executable('python'.l:major.'.'.l:minor) ? exepath('python'.l:major.'.'.l:minor) : exepath('python'.l:major)
         endif
     endif
     return ''
