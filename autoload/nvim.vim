@@ -39,7 +39,9 @@ function! nvim#init() abort
     let g:terminal_scrollback_buffer_size = 100000
 
     " always show signcolumns
-    set signcolumn=auto
+    if has('nvim-0.2')
+        set signcolumn=auto
+    endif
 
     if exists('g:gonvim_running')
         " Use Gonvim UI instead of (Neo)vim native GUI/TUI
