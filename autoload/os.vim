@@ -31,6 +31,11 @@ endfunction
 
 
 function! os#cache() abort
+    if has('nvim-0.2')
+        return stdpath('cache')
+    elseif !empty($XDG_CACHE_HOME)
+        return $XDG_CACHE_HOME
+    endif
     return vars#home() . '/.cache'
 endfunction
 

@@ -43,16 +43,21 @@ function! s:setupdirs() abort
         let $XDG_DATA_HOME =  os#name('windows') ? $LOCALAPPDATA : s:homedir .'/.local/share'
     endif
 
+    if empty($XDG_CONFIG_HOME)
+        let $XDG_CONFIG_HOME =  os#name('windows') ? $LOCALAPPDATA : s:homedir .'/.config'
+    endif
+
     if exists('*mkdir')
         silent! call mkdir(fnameescape($XDG_DATA_HOME), 'p')
-    else
-        echoerr 'Failed to create dir "' . $XDG_DATA_HOME . '" mkdir is not available'
+        silent! call mkdir(fnameescape($XDG_CONFIG_HOME), 'p')
+    elseif !isdirectory($XDG_CONFIG_HOME) || !isdirectory($XDG_DATA_HOME)
+        echoerr 'Failed to create data dirs, mkdir is not available'
     endif
 
     let s:datadir = expand($XDG_DATA_HOME) . (os#name('windows') ? '/nvim-data' : '/nvim')
 
     if has('nvim')
-        let s:basedir = substitute( stdpath('config'), '\', '/', 'g' )
+        let s:basedir = substitute(has('nvim-0.2') ? stdpath('config') : $XDG_CONFIG_HOME . '/nvim', '\', '/', 'g' )
     elseif os#name('windows')
         " if $USERPROFILE and ~ expansions are different, then gVim may be running as portable
         let l:userprofile = substitute( expand($USERPROFILE), '\', '/', 'g' )
