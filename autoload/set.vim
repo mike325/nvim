@@ -3,13 +3,10 @@
 
 function! set#initconfigs() abort " Vim's InitConfig {{{
     " Hidden path in `vars#basedir()` with all generated files
-    if !exists('*mkdir')
-        return
-    endif
 
     let l:parent_dir = vars#datadir()
 
-    if !isdirectory(l:parent_dir)
+    if !isdirectory(l:parent_dir) && exists('*mkdir')
         call mkdir(fnameescape(l:parent_dir), 'p')
     endif
 
@@ -30,7 +27,7 @@ function! set#initconfigs() abort " Vim's InitConfig {{{
 
     " Config all
     for [l:dirname, l:dir_setting] in items(l:dirpaths)
-        if !isdirectory(fnameescape( l:parent_dir . l:dirname ))
+        if !isdirectory(fnameescape( l:parent_dir . l:dirname )) && exists('*mkdir')
             call mkdir(fnameescape( l:parent_dir . l:dirname ), 'p')
         endif
 

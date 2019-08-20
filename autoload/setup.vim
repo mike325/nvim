@@ -1,8 +1,6 @@
 " Setup Setttings
 " github.com/mike325/.vim
 
-let s:setup_done = 0
-
 function! s:PythonProviders(python) abort
     let l:major = a:python[0]
     let l:minor = a:python[1]
@@ -63,22 +61,22 @@ function! s:PythonProviders(python) abort
 endfunction
 
 function! setup#python() abort
-    if s:setup_done
-        return
+    if exists('s:setup_done')
+        return s:setup_done
     endif
 
     let s:python = ['2', '7']
 
-    if s:PythonProviders(s:python) !=# ''
+    if !empty(s:PythonProviders(s:python))
         if exists('g:loaded_python_provider')
             unlet g:loaded_python_provider
         endif
         let g:python_host_prog = s:PythonProviders(s:python)
     endif
 
-    for s:minor in ['8', '7', '6', '5', '4']
+    for s:minor in ['9', '8', '7', '6', '5', '4']
         let s:python = ['3', s:minor]
-        if s:PythonProviders(s:python) !=# ''
+        if !empty(s:PythonProviders(s:python))
             if exists('g:loaded_python3_provider')
                 unlet g:loaded_python3_provider
             endif
@@ -87,6 +85,8 @@ function! setup#python() abort
         endif
     endfor
 
-    let s:setup_done = 1
+    let s:setup_done = exists('g:python3_host_prog') || exists('g:python_host_prog') ? 1 : 0
+
+    return s:setup_done
 
 endfunction

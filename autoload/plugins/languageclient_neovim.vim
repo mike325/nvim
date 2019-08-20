@@ -7,7 +7,7 @@ function! plugins#languageclient_neovim#install(info) abort
     else
         execute '!./install.sh'
     endif
-    UpdateRemotePlugins
+    silent! UpdateRemotePlugins
 endfunction
 
 function! s:Rename(name) abort

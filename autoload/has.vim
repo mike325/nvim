@@ -7,7 +7,7 @@ let s:pyversion = {}
 function! has#python(...) abort
 
     if !exists('g:python_host_prog') || !exists('g:python3_host_prog')
-        if empty(setup#python())
+        if ! setup#python()
             return 0
         endif
     endif
