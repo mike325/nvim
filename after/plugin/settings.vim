@@ -183,7 +183,7 @@ set showmatch  " Show matching parenthesis
 set number     " Show line numbers
 
 " Improve performance by just highlighting the first 256 chars
-set synmaxcol=256
+" set synmaxcol=256
 
 " Search settings
 set ignorecase     " ignore case
