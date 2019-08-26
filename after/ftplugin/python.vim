@@ -76,3 +76,5 @@ function! s:PythonFix()
 endfunction
 
 command! -buffer PythonFix call s:PythonFix()
+
+setlocal define=^\\s*\\(def\\\|class\\)\\s\\+

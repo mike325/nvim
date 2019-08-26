@@ -17,7 +17,7 @@ try:
 except ImportError:
     logging.warn('No ycm_core module found')
 
-__DEBUG = True
+_DEBUG = True
 
 __header__ = """
                               -`
@@ -48,11 +48,9 @@ BASE_FLAGS = [
     '-Werror',
     '-Weverything',
     '-Wno-missing-prototypes',
-    '-Wno-long-long',
     '-Wno-variadic-macros',
     '-fexceptions',
     '-ferror-limit=10000',
-    '-DNDEBUG',
     '-Wno-c++98-compat',
     '-std=c++17',
     '-x',
@@ -83,11 +81,7 @@ HEADER_DIRECTORIES = ['include']
 
 DIR_OF_THIS_SCRIPT = p.abspath(p.dirname(__file__))
 
-if os.name == 'nt':
-    BASE_FLAGS += WINDOWS_INCLUDES
-else:
-    BASE_FLAGS += LINUX_INCLUDES
-
+BASE_FLAGS += WINDOWS_INCLUDES if os.name == 'nt' else LINUX_INCLUDES
 
 COMPILE_DB = [
     'compile_commands.json',
