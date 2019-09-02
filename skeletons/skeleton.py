@@ -88,7 +88,7 @@ def main():
             else:
                 level = 0
 
-    logging.basicConfig(level=level, format='[%(levelname)s] - %(threadName)s: %(message)s')
+    logging.basicConfig(level=level, format='[%(levelname)s] - %(message)s')
 
     return 0
 
