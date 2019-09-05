@@ -20,7 +20,6 @@ else
     nmap <buffer> <BS> <Plug>VimwikiGoBackLink
 endif
 
-" Terminals receive <c-i> as <TAB> so vim's mark jump is masked by default vimwiki map
 silent! unmap <buffer> <TAB>
 
 nmap <buffer> - <Plug>VimwikiToggleListItem

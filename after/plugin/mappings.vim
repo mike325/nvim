@@ -26,13 +26,14 @@ nnoremap J m`J``
 " Better <ESC> mappings
 imap jj <Esc>
 
-nnoremap <BS> <ESC>
+nnoremap <BS> :call mappings#bs()<CR>
 xnoremap <BS> <ESC>
 
 " We assume that if we are running neovim from windows without has#gui we are
 " running from cmd or powershell, windows terminal send <C-h> when backspace is press
 if has('nvim') && os#name('windows') && !has#gui()
-    nnoremap <C-h> <ESC>
+    nnoremap <C-h> :call mappings#bs()<CR>
+    " nnoremap <C-h> <ESC>
     xnoremap <C-h> <ESC>
 
     " We can't sent neovim to background in cmd or powershell
@@ -158,7 +159,7 @@ nnoremap ^ 0
 nnoremap gV `[v`]
 
 " repeat last command for each line of a visual selection
-xnoremap . :normal .<CR>
+" xnoremap . :normal .<CR>
 
 " }}} EndTabBufferManagement
 

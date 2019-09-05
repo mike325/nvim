@@ -46,7 +46,7 @@ function! plugins#ultisnips#init(data) abort
     let g:ulti_expand_res         = 0
 
 
-    function! NextSnippet()
+    function! NextSnippet() abort
         if pumvisible()
             return "\<C-n>"
         endif
@@ -59,7 +59,7 @@ function! plugins#ultisnips#init(data) abort
         return ''
     endfunction
 
-    function! PrevSnippetOrNothing()
+    function! PrevSnippetOrNothing() abort
         if pumvisible()
             return "\<C-p>"
         endif

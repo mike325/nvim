@@ -1,8 +1,6 @@
 " Has Setttings
 " github.com/mike325/.vim
 
-let s:pyversion = {}
-
 " Check an specific version of python (empty==2)
 function! has#python(...) abort
 
@@ -17,13 +15,19 @@ function! has#python(...) abort
     if l:version ==# 'any' || l:version ==# ''
         return (has('python') || has('python3'))
     else
-        if empty(s:pyversion)
+        if !exists('s:pyversion')
             if exists('g:python_host_prog')
+                let s:pyversion = {'2' : ''}
                 let s:pyversion['2'] = matchstr(system(g:python_host_prog . ' --version'), "\\S\\+\\ze\n")
             endif
             if exists('g:python3_host_prog')
+                let s:pyversion = exists('s:pyversion["2"]') ? {'2': s:pyversion['2'], '3': ''} : {'3': ''}
                 let s:pyversion['3'] = matchstr(system(g:python3_host_prog . ' --version'), "\\S\\+\\ze\n")
             endif
+        endif
+
+        if !exists('s:pyversion[a:1]')
+            return 0
         endif
 
         let l:version = s:pyversion[a:1]

@@ -146,6 +146,23 @@ function! mappings#Trim() abort
     return 0
 endfunction
 
+function! mappings#bs() abort
+    try
+        execute 'pop'
+    catch /E55\(5\|6\)/
+        execute "normal! \<C-o>"
+    endtry
+endfunction
+
+function! mappings#cr() abort
+    let l:cword = expand('<cword>')
+    try
+        execute 'tag ' . l:cword
+    catch /E42\(6\|9\)/
+        execute "normal! \<CR>"
+    endtry
+endfunction
+
 function! mappings#spells(arglead, cmdline, cursorpos) abort
     let l:candidates = split(glob(vars#basedir() . '/spell/*.utf-8.sug'), '\n')
     let l:candidates = map(l:candidates, {key, val -> split(fnamemodify(val , ':t'), '\.')[0]})

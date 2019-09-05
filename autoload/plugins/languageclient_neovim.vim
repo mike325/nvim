@@ -55,6 +55,7 @@ function! plugins#languageclient_neovim#init(data) abort
     let g:LanguageClient_hoverPreview      = 'Auto'
     let g:LanguageClient_hasSnippetSupport = 0
     let g:LanguageClient_diagnosticsList   = 'Location'
+    let g:LanguageClient_hoverPreview      = 'Always'
 
     let g:LanguageClient_diagnosticsEnable = !exists('g:plugs["neomake"]') ? 1 : 0
 
