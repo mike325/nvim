@@ -1,7 +1,6 @@
 " Plugins Setttings
 " github.com/mike325/.vim
 
-
 function! plugins#init() abort
 
     " ####### Colorschemes {{{
@@ -331,6 +330,10 @@ function! plugins#init() abort
     " Unix commands
     if has('unix')
         Plug 'tpope/vim-eunuch'
+    endif
+
+    if has('nvim-0.4')
+        Plug 'voldikss/vim-floaterm', {'on': 'FloatermToggle'}
     endif
 
     if has('nvim')

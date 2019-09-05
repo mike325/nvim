@@ -1,7 +1,7 @@
 " Help Setttings
 " github.com/mike325/.vim
 
-setlocal bufhidden=wipe
+setlocal bufhidden=delete
 
 setlocal number
 setlocal relativenumber

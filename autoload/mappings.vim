@@ -17,7 +17,15 @@ if has('nvim') || has('terminal')
         let l:split = (&splitbelow) ? 'botright' : 'topleft'
         if os#name('windows')
             let l:shell = (&shell =~? '^cmd\(\.exe\)\?$') ? 'powershell -noexit -executionpolicy bypass ' : &shell
-            if has('nvim')
+            if exists('g:plugs["vim-floaterm"]')
+                let l:old = &shell
+                let &shell = l:shell
+                try
+                    execute 'FloatermToggle'
+                catch
+                endtry
+                let &shell = l:old
+            elseif has('nvim')
                 execute l:split . ' 20split term://' . l:shell . ' ' . a:cmd
             else
                 call term_start(l:shell . a:cmd, {'term_rows': 20})
@@ -25,7 +33,15 @@ if has('nvim') || has('terminal')
             endif
         else
             let l:shell = mappings#UnixShell()
-            if has('nvim')
+            if exists('g:plugs["vim-floaterm"]')
+                let l:old = &shell
+                let &shell = l:shell
+                try
+                    execute 'FloatermToggle'
+                catch
+                endtry
+                let &shell = l:old
+            elseif has('nvim')
                 execute l:split . ' 20split term://' . l:shell . ' ' . a:cmd
             else
                 call term_start(l:shell . a:cmd, {'term_rows': 20})
