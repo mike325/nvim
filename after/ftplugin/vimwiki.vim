@@ -20,8 +20,6 @@ else
     nmap <buffer> <BS> <Plug>VimwikiGoBackLink
 endif
 
-silent! unmap <buffer> <TAB>
-
 nmap <buffer> - <Plug>VimwikiToggleListItem
 vmap <buffer> - <Plug>VimwikiToggleListItem
 nmap <buffer> g- <Plug>VimwikiRemoveSingleCB

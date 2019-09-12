@@ -44,6 +44,8 @@ function! plugins#vimwiki#init(data) abort
         return -1
     endif
 
+    let g:vimwiki_table_mappings = 0
+
     let l:work_wiki = {
                     \ 'path'     : (isdirectory(vars#home() . '/Documents/vimwiki/')) ? vars#home() . '/Documents/vimwiki/' : vars#home() . '/vimwiki/',
                     \ 'syntax'   : 'markdown',
