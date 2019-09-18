@@ -21,13 +21,6 @@ endfunction
 
 function! plugins#languageclient_neovim#LanguageMappings() abort
     if has_key(g:LanguageClient_serverCommands, &filetype)
-        " execute 'autocmd LanguageCmds FileType '.&filetype.' autocmd CursorHold  <buffer> call LanguageClient#textDocument_hover()'
-        " if has('nvim-0.4')
-        "     " TODO: Close float buffer
-        "     " autocmd LanguageCmds FileType &filetype autocmd InsertEnter,CursorMoved,TermOpen,BufLeave <buffer> pclose
-        " else
-        "     execute 'autocmd LanguageCmds FileType '.&filetype.' autocmd InsertEnter,CursorMoved,TermOpen,BufLeave <buffer> pclose'
-        " endif
         command! -buffer -nargs=? RenameSymbol      call s:Rename(<q-args>)
         command! -buffer          Definition        call LanguageClient#textDocument_definition()
         command! -buffer          Hover             call LanguageClient#textDocument_hover()

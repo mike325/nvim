@@ -126,4 +126,8 @@ else
 
 endif
 
+if filereadable(vars#basedir() . '/local.vim')
+    execute "source " . vars#basedir() . '/local.vim'
+endif
+
 " }}} END Initialize plugins

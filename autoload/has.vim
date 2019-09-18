@@ -75,5 +75,5 @@ function! has#async() abort
 endfunction
 
 function! has#gui() abort
-    return ( has('nvim') && ( exists('g:gonvim_running') || exists('g:GuiLoaded')) ) || ( !has('nvim') && has('gui_running') )
+    return ( has('nvim') && ( exists('g:gonvim_running') || exists('g:GuiLoaded') || exists('veonim') )) || ( !has('nvim') && has('gui_running') )
 endfunction

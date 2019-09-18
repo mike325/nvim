@@ -42,6 +42,8 @@ if has('nvim') && exists('g:GuiLoaded')
 
     command! -nargs=? Font call gui#NeovimGuiFont(<q-args>)
 
+elseif has('veonim')
+    set linespace=2
 elseif has('gui_running')
     set guioptions-=m  " no menu
     set guioptions-=T  " no toolbar

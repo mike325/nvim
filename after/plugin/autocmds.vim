@@ -129,11 +129,11 @@ augroup end
 
 augroup ProjectConfig
     autocmd!
-    if  has('nvim-0.2') || v:version >= 801 || has('patch-8.0.1459')
+    if exists('##DirChanged')
         autocmd DirChanged * call autocmd#SetProjectConfigs()
     endif
-    if has('nvim-0.2') || v:version >= 800 || has('patch-7.4.2077')
-        autocmd WinNew, * call autocmd#SetProjectConfigs()
+    if exists('##WinNew')
+        autocmd WinNew * call autocmd#SetProjectConfigs()
     endif
     autocmd  WinEnter,VimEnter,SessionLoadPost * call autocmd#SetProjectConfigs()
     autocmd VimEnter                          * call tools#abolish('en')
