@@ -135,8 +135,8 @@ augroup ProjectConfig
     if exists('##WinNew')
         autocmd WinNew * call autocmd#SetProjectConfigs()
     endif
-    autocmd  WinEnter,VimEnter,SessionLoadPost * call autocmd#SetProjectConfigs()
-    autocmd VimEnter                          * call tools#abolish('en')
+    autocmd WinEnter,VimEnter,SessionLoadPost * call autocmd#SetProjectConfigs()
+    autocmd VimEnter                          * call tools#abolish(&spelllang)
 augroup end
 
 augroup LaTex

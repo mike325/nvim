@@ -141,6 +141,13 @@ xnoremap <leader>8 <ESC>8gt
 xnoremap <leader>9 <ESC>9gt
 xnoremap <leader>0 <ESC>:tablast<CR>
 
+cabbrev Gti Git
+cabbrev W   w
+cabbrev Q   q
+cabbrev q1  q!
+cabbrev w1  w!
+cabbrev wA! wa!
+
 " Use C-p and C-n to move in command's history
 cnoremap <C-n> <down>
 cnoremap <C-p> <up>
