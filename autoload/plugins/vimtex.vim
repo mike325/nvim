@@ -8,6 +8,19 @@ function! plugins#vimtex#init(data) abort
 
     if executable('latexmk')
         let g:vimtex_compiler_method = 'latexmk'
+
+        let g:vimtex_compiler_latexmk = {
+                    \   'options': [
+                    \       '-pdf',
+                    \       '-shell-escape',
+                    \       '-verbose',
+                    \       '-file-line-error',
+                    \       '-synctex=1',
+                    \       '-pvc',
+                    \       '-interaction=nonstopmode',
+                    \   ]
+                    \ }
+
     elseif executable('latexrun')
         let g:vimtex_compiler_method = 'latexrun'
     elseif executable('arara')
@@ -37,8 +50,7 @@ function! plugins#vimtex#init(data) abort
         let g:vimtex_compiler_progname = 'nvr'
     endif
 
-
-    let g:vimtex_enabled = 1
+    let g:vimtex_enabled          = 1
     let g:vimtex_mappings_enabled = 0
 
     if os#name('windows') && executable('sumatrapdf')
@@ -46,7 +58,11 @@ function! plugins#vimtex#init(data) abort
         let g:vimtex_view_general_viewer = 'SumatraPDF'
     endif
 
-    let g:vimtex_quickfix_open_on_warning = 0
+    let g:vimtex_latexmk_build_dir           = 'output'
+    let g:vimtex_latexmk_async               = 1
+    let g:vimtex_latexmk_preview_continuosly = 1 " -pvc option in latexmk
+    let g:vimtex_latexmk_continuous          = 1
+    let g:vimtex_quickfix_open_on_warning    = 0
 
     let g:vimtex_fold_enabled     = 1
     let g:vimtex_motion_enabled   = 1

@@ -271,5 +271,6 @@ function! autocmd#SetProjectConfigs() abort
         endif
 
     endif
+
     return b:project_root
 endfunction
