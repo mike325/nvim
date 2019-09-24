@@ -159,10 +159,6 @@ function! plugins#youcompleteme#init(data) abort
         let g:ycm_semantic_triggers = {}
     endif
 
-    if exists('g:plugs["vimtex"]') && exists('g:vimtex#re#youcompleteme')
-        let g:ycm_semantic_triggers.tex = g:vimtex#re#youcompleteme
-    endif
-
     " let g:ycm_server_log_level      = 'debug'
     " let g:ycm_server_use_vim_stdout = 1
 
@@ -177,6 +173,11 @@ function! plugins#youcompleteme#init(data) abort
 
     augroup YCMGoTo
         autocmd!
+
+        if exists('g:plugs["vimtex"]') && exists('g:vimtex#re#youcompleteme')
+            autocmd VimEnter * let g:ycm_semantic_triggers.tex = g:vimtex#re#youcompleteme
+        endif
+
         autocmd FileType c,cpp,python,go,cs,objc,objcpp,rust,javascript nnoremap <buffer> <silent> K  :YcmCompleter GetDoc<CR>
         autocmd FileType c,cpp,python,go,cs,objc,objcpp,rust,javascript nnoremap <buffer> <silent> gD :YcmCompleter GoToDeclaration<CR>
 

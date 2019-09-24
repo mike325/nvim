@@ -26,13 +26,13 @@ nnoremap J m`J``
 " Better <ESC> mappings
 imap jj <Esc>
 
-nnoremap <BS> :call mappings#bs()<CR>
+nnoremap <silent> <BS> :call mappings#bs()<CR>
 xnoremap <BS> <ESC>
 
 " We assume that if we are running neovim from windows without has#gui we are
 " running from cmd or powershell, windows terminal send <C-h> when backspace is press
 if has('nvim') && os#name('windows') && !has#gui()
-    nnoremap <C-h> :call mappings#bs()<CR>
+    nnoremap <silent> <C-h> :call mappings#bs()<CR>
     " nnoremap <C-h> <ESC>
     xnoremap <C-h> <ESC>
 
@@ -56,8 +56,8 @@ nnoremap <silent> <C-w>o :diffoff!<bar>only<cr>
 
 " Move vertically by visual line unless preceded by a count. If a movement is
 " greater than 5 then automatically add to the jumplist.
-nnoremap <expr> j v:count ? (v:count > 5 ? "m'" . v:count : '') . 'j' : 'gj'
-nnoremap <expr> k v:count ? (v:count > 5 ? "m'" . v:count : '') . 'k' : 'gk'
+nnoremap <silent><expr> j v:count ? (v:count > 5 ? "m'" . v:count : '') . 'j' : 'gj'
+nnoremap <silent><expr> k v:count ? (v:count > 5 ? "m'" . v:count : '') . 'k' : 'gk'
 
 " Jump to the previous mark, as <TAB>
 nnoremap <S-tab> <C-o>

@@ -297,8 +297,8 @@ endfunction
 
 function! tools#spelllangs(lang) abort
     call tools#abolish(a:lang)
-    execute 'set spelllang='.a:lang
-    execute 'set spelllang?'
+    execute 'setlocal spelllang='.a:lang
+    execute 'setlocal spelllang?'
 endfunction
 
 function! tools#oldfiles(arglead, cmdline, cursorpos) abort

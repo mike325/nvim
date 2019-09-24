@@ -332,7 +332,7 @@ function! plugins#init() abort
         Plug 'tpope/vim-eunuch'
     endif
 
-    if has('nvim-0.4')
+    if has('nvim-0.4') && !exists('veonim')
         Plug 'voldikss/vim-floaterm', {'on': 'FloatermToggle'}
     endif
 
