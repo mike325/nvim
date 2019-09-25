@@ -32,3 +32,4 @@ TAGS
 .*@neomake*
 
 /local.vim
+*.add.spl

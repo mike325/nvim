@@ -119,6 +119,11 @@ augroup Skeletons
     autocmd BufNewFile * call autocmd#FileName()
 augroup end
 
+augroup GitTags
+    autocmd!
+    autocmd BufNewFile,BufReadPre,BufEnter * if filereadable('./.git/tags') | setlocal tags^=.git/tags | endif
+augroup end
+
 augroup CRMapping
     autocmd!
     autocmd FileType vim,csh,zsh,sh,go,man,help,c,cpp,python nnoremap <buffer> <CR> :call mappings#cr()<CR>
