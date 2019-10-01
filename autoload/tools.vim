@@ -247,6 +247,7 @@ function! tools#abolish(lang) abort
         \ 'automatico'                                                          : 'automático',
         \ 'algun'                                                               : 'algún',
         \ 'dia{s}'                                                              : 'día{}',
+        \ 'pre{sici,cisi}on'                                                    : 'precisión',
         \ 'pro{j,y}ect{o}'                                                      : 'proyecto',
         \ 'logic{as,o,os}'                                                      : 'lógic{}',
         \ '{h,f}ernandez'                                                       : '{}ernández',

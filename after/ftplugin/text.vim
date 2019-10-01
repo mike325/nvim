@@ -4,10 +4,8 @@
 setlocal nobackup
 setlocal noswapfile
 
-function! s:requireSpell()
-    let l:file_name = expand('%:t:r')
-
-    if l:file_name !~# '^\(requirements\)$'
+function! s:requireSpell(filename)
+    if a:filename !~# '\v(.*require(ment)?s|require(ment)?s/.*|constraints)\.(txt|in)$'
         return 1
     endif
 
@@ -15,7 +13,7 @@ function! s:requireSpell()
 
 endfunction
 
-if s:requireSpell()
+if s:requireSpell(expand("%:p"))
     setlocal spell
     setlocal complete+=k,kspell " Add spell completion
 endif
