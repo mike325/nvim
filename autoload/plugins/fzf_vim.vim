@@ -31,14 +31,14 @@ function! plugins#fzf_vim#install(info) abort
 endfunction
 
 function! plugins#fzf_vim#floatingfzf() abort
-  let buf = nvim_create_buf(v:false, v:true)
-  call setbufvar(buf, '&signcolumn', 'no')
+    let buf = nvim_create_buf(0, 1)
+    call setbufvar(buf, '&signcolumn', 'no')
 
-  let height = &lines - 8
-  let width = float2nr(&columns - (&columns * 2 / 10))
-  let col = float2nr((&columns - width) / 2)
+    let height = &lines - 8
+    let width = float2nr(&columns - (&columns * 2 / 10))
+    let col = float2nr((&columns - width) / 2)
 
-  let opts = {
+    let opts = {
         \ 'relative': 'editor',
         \ 'row': 4,
         \ 'col': col,
@@ -46,7 +46,7 @@ function! plugins#fzf_vim#floatingfzf() abort
         \ 'height': height
         \ }
 
-  call nvim_open_win(buf, v:true, opts)
+    call nvim_open_win(buf, 1, opts)
 endfunction
 
 function! plugins#fzf_vim#init(data) abort
