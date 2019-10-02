@@ -234,6 +234,7 @@ function! tools#abolish(lang) abort
         \ 'disminicion'                                                         : 'disminución',
         \ 'adminstracion'                                                       : 'administración',
         \ 'relacion'                                                            : 'relación',
+        \ 'minimo'                                                              : 'mínimo',
         \ 'area'                                                                : 'área',
         \ 'imagenes'                                                            : 'imágenes',
         \ 'arificiales'                                                         : 'artificiales',

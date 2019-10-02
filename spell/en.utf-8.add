@@ -192,6 +192,7 @@ PCIe
 tesis
 Fernández
 Jalisco
+jalisco
 gmail
 smartcase
 IoT
@@ -205,7 +206,6 @@ virtualization
 WIP
 richard
 cpython
-MySQL
 Dockerfile
 github
 Github
@@ -217,3 +217,7 @@ Stanford
 RESTful
 Dell
 stuff
+PostgreSQL
+minio
+init
+hashtags

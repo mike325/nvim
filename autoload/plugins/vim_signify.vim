@@ -30,5 +30,6 @@ function! plugins#vim_signify#init(data) abort
     omap ah <plug>(signify-motion-outer-pending)
     xmap ah <plug>(signify-motion-outer-visual)
 
-    nnoremap <silent> =d :SignifyDiffPreview<CR>
+    nnoremap <silent> =p :SignifyHunkPreview<CR>
+    nnoremap <silent> =u :SignifyHunkUndo<CR>
 endfunction
