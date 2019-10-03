@@ -152,7 +152,9 @@ function! plugins#youcompleteme#init(data) abort
             \ 'mail' : 1,
             \ 'man' : 1,
             \ 'netrw': 1,
-            \ 'denite': 1
+            \ 'denite': 1,
+            \ 'GV': 1,
+            \ 'git': 1,
     \}
 
     if !exists('g:ycm_semantic_triggers')

@@ -29,6 +29,8 @@ function! plugins#completor_vim#init(data) abort
         \ 'netrw',
         \ 'unite',
         \ 'denite',
+        \ 'GV',
+        \ 'git',
         \]
 
     let g:completor_debug = 1
