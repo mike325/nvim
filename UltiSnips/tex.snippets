@@ -37,8 +37,23 @@ snippet beg "\begin{} ... \end{}"
 $0
 endsnippet
 
+snippet begin "\begin{} ... \end{}"
+\begin{$1}
+	$2
+\end{`!p snip.rv = t[1]`}
+$0
+endsnippet
+
 snippet inc "\include{}"
 \include{$1}
+endsnippet
+
+snippet include "\include{}"
+\include{$1}
+endsnippet
+
+snippet use "\usepackage{}"
+\usepackage{$1}
 endsnippet
 
 snippet pkg "\usepackage{}"
@@ -50,7 +65,7 @@ snippet br "\pagebreak{}"
 $0
 endsnippet
 
-snippet spc "\vspace*{cm}"
+snippet vspc "\vspace*{cm}"
 \vspace*{${1:1}cm}
 $0
 endsnippet
@@ -72,16 +87,97 @@ snippet list "\begin{itemize}...\end{itemize}"
 \end{itemize}
 endsnippet
 
-snippet figure "\begin{figure}...\end{figure}"
+snippet image "\begin{figure}...\end{figure}"
+\FloatBarrier{}
 \begin{figure}[ht]
 	\begin{center}
-		\includegraphics[height=6cm]{${1:image.jpg}}
+		\includegraphics[height=6cm,width=15cm]{${1:image.jpg}}
 		\caption{${2:Caption}}
 	\end{center}
 \end{figure}
+\FloatBarrie{}
 endsnippet
 
-snippet bib "\bibitem{NAME}"
-\bibitem{${1:id}}
-	$0
+snippet img "\begin{figure}...\end{figure}"
+\FloatBarrier{}
+\begin{figure}[ht]
+	\begin{center}
+		\includegraphics[height=6cm,width=15cm]{${1:image.jpg}}
+		\caption{${2:Caption}}
+	\end{center}
+\end{figure}
+\FloatBarrier{}
+endsnippet
+
+snippet bib "\bibliography{...}"
+\bibliography{${1:file.bib}}
+\bibliographystyle{${2:IEEEtran}}
+$0
+endsnippet
+
+snippet article "@article{...}"
+@article{${1:name},
+	author  = {${2:author}},
+	year    = {${3:year}},
+	month   = {${4:month}},
+	pages   = {${5:pages}},
+	title   = {${6:title}},
+	journal = {${7:journal}},
+	doi     = {${8:doi}}
+}
+$0
+endsnippet
+
+snippet book "@book{...}"
+@inbook{${1:name},
+	author  = {${2:author}},
+	year    = {${3:year}},
+	month   = {${4:month}},
+	pages   = {${5:pages}},
+	title   = {${6:title}},
+	isbn    = {${7:isbn}},
+	doi     = {${8:doi}}
+}
+$0
+endsnippet
+
+snippet misc "@misc{...}"
+@misc{${1:name},
+	author = {${2:author}},
+	year   = {${3:year}},
+	month  = {${4:month}},
+	url    = {${5:url}},
+}
+$0
+endsnippet
+
+snippet section "section{...}"
+\section{${1:Section}}\label{${2:label}}
+$0
+endsnippet
+
+snippet subsection "subsection{...}"
+\subsection{${1:Section}}\label{${2:label}}
+$0
+endsnippet
+
+snippet table "begin{table}...end{table}"
+\FloatBarrier{}
+\begin{table}[h!]
+	\centering
+	\begin{tabular}[c]{clccc} \hline
+		\# & Corrección                 & Hird          & Nuestro                   & Factor \\
+		\hline
+		1  & Frecuencia. ($Hz$)         & $1$           & $340$                     & $340$ \\
+		2  & Duración ($s$)             & $1$           & $60$                      & $1/60$ \\
+		3  & Área detección ($cm^2$)    & $25$          & $2.5\times 10^{-6}$       & $10^{-5}$ \\
+		4  & Mancha focal ($cm^2$)      & $1$           & $1$                       & $1$ \\
+		5  & Distancia ($cm$)           & $1$           & $1$                       & $1$ \\
+		6  & Fuentes X-Ray              & $1$           & $1$                       & $1$ \\ \hline
+	\end{tabular}
+	\caption{${2:Caption}}
+	\label{tab:corr}
+\end{table}
+\FloatBarrier{}
+$0
 endsnippet
