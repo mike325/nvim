@@ -1,3 +1,4 @@
+scriptencoding 'utf-8'
 " DelimitMate settings
 " github.com/mike325/.vim
 
@@ -17,7 +18,7 @@ function! plugins#delimitmate#init(data) abort
     augroup end
 
     " iunmap <BS>
-    if exists("*delimitMate#BS")
+    if exists('*delimitMate#BS')
         imap <silent> <BS> <Plug>delimitMateBS
     endif
 

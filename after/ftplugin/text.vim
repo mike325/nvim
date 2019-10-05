@@ -13,7 +13,7 @@ function! s:requireSpell(filename)
 
 endfunction
 
-if s:requireSpell(expand("%:p"))
+if s:requireSpell(expand('%:p'))
     setlocal spell
     setlocal complete+=k,kspell " Add spell completion
 endif

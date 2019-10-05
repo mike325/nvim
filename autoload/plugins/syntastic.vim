@@ -9,9 +9,9 @@ function! plugins#syntastic#init(data) abort
     " set sessionoptions-=blank
     " Set passive mode by default, can be changed with tsc map
     let g:syntastic_mode_map = {
-        \ "mode": "passive",
-        \ "active_filetypes": ["python", "sh"],
-        \ "passive_filetypes": ["puppet"]
+        \ 'mode': 'passive',
+        \ 'active_filetypes': ['python', 'sh'],
+        \ 'passive_filetypes': ['puppet']
         \ }
 
     if !exists('g:plugs["vim-airline"]')

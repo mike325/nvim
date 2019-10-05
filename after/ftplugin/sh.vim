@@ -58,6 +58,5 @@ let g:is_bash = 1
 
 if executable('shellcheck')
     setlocal makeprg=shellcheck\ -f\ gcc\ -e\ 1117\ -x\ -a\ %
-    let &efm='%f:%l:%c: %trror: %m [SC%n],%f:%l:%c: %tarning: %m [SC%n],%f:%l:%c: %tote: %m [SC%n]'
+    let &errorformat='%f:%l:%c: %trror: %m [SC%n],%f:%l:%c: %tarning: %m [SC%n],%f:%l:%c: %tote: %m [SC%n]'
 endif
-

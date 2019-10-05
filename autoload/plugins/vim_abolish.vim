@@ -6,7 +6,7 @@ function! plugins#vim_abolish#post() abort
         return -1
     endif
 
-    let l:abolish {
+    let l:abolish = {
         \    'gti': 'git',
         \ }
 

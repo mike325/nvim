@@ -2,7 +2,7 @@
 " github.com/mike325/.vim
 
 function! plugins#simpleautocomplpop#init(data) abort
-    if !exists('g:plugs["SimpleAutoComplPop"]') || !has("autocmd")
+    if !exists('g:plugs["SimpleAutoComplPop"]') || !has('autocmd')
         return -1
     endif
 

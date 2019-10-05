@@ -221,3 +221,6 @@ PostgreSQL
 minio
 init
 hashtags
+travis
+cli
+macOS

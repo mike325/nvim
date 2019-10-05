@@ -60,7 +60,7 @@ if exists('g:bare')
 
     if !has('nvim') && v:version >= 800
         packadd! matchit
-    elseif !exists('g:loaded_matchit') && findfile('plugin/matchit.vim', &rtp) ==# ''
+    elseif !exists('g:loaded_matchit') && findfile('plugin/matchit.vim', &runtimepath) ==# ''
         runtime! macros/matchit.vim
     endif
 
@@ -81,7 +81,7 @@ else
         " Fallback if we fail to init Plug
         if !has('nvim') && v:version >= 800
             packadd! matchit
-        elseif !exists('g:loaded_matchit') && findfile('plugin/matchit.vim', &rtp) ==# ''
+        elseif !exists('g:loaded_matchit') && findfile('plugin/matchit.vim', &runtimepath) ==# ''
             runtime! macros/matchit.vim
         endif
         filetype plugin indent on

@@ -2,7 +2,7 @@
 " github.com/mike325/.vim
 
 function! plugins#vim_autoformat#autoformatfile() abort
-    if !exists('g:plugs["vim-autoformat"]') || !has("autocmd")
+    if !exists('g:plugs["vim-autoformat"]') || !has('autocmd')
         return -1
     endif
     let b:auto_format = get(b:,'auto_format',0)
@@ -12,7 +12,7 @@ function! plugins#vim_autoformat#autoformatfile() abort
 endfunction
 
 function! plugins#vim_autoformat#init(data) abort
-    if !exists('g:plugs["vim-autoformat"]') || !has("autocmd")
+    if !exists('g:plugs["vim-autoformat"]') || !has('autocmd')
         return -1
     endif
 
@@ -53,4 +53,3 @@ function! plugins#vim_autoformat#init(data) abort
         autocmd FileType cpp        autocmd BufWritePre <buffer> silent! call plugins#vim_autoformat#autoformatfile()
     augroup end
 endfunction
-

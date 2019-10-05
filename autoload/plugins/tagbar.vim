@@ -1,3 +1,4 @@
+scriptencoding 'utf-8'
 " Tagbar settings
 " github.com/mike325/.vim
 
@@ -7,7 +8,7 @@ function! plugins#tagbar#init(data) abort
     endif
 
     " Default is <Space> which conflict with my leader settings
-    let g:tagbar_map_showproto = "<C-Space>"
+    let g:tagbar_map_showproto = '<C-Space>'
 
     let g:tagbar_compact          = 0
     let g:tagbar_case_insensitive = 1

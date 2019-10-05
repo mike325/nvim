@@ -1,11 +1,11 @@
 " SnipMate settings
 " github.com/mike325/.vim
 
-function! plugins#vim_snipmate#NextSnipOrReturn()
+function! plugins#vim_snipmate#NextSnipOrReturn() abort
     if pumvisible()
         if exists('g:plugs["YouCompleteMe"]')
             call feedkeys("\<C-y>")
-            return ""
+            return ''
         else
             return "\<C-y>"
         endif

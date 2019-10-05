@@ -1,3 +1,4 @@
+scriptencoding 'utf-8'
 " Vim Setttings
 " github.com/mike325/.vim
 
@@ -7,7 +8,7 @@ function! vim#init() abort
         return -1
     endif
 
-    set nocompatible
+    " set nocompatible
     set ttyfast
     set t_Co=255
     set t_vb= " ...disable the visual effect
@@ -17,7 +18,7 @@ function! vim#init() abort
     set background=dark
     set backspace=indent,eol,start
     set cscopeverbose
-    set encoding=utf-8     " The encoding displayed.
+    " set encoding=utf-8     " The encoding displayed.
     set fillchars=vert:│,fold:·
     set nofsync
     set hlsearch
@@ -45,6 +46,11 @@ function! vim#init() abort
 
     if exists('+belloff')
         set belloff=all " Bells are annoying
+    endif
+
+    if has('patch-8.1.1902')
+        set completeopt+=popup
+        set completepopup=height:10,width:60,highlight:Pmenu,border:off
     endif
 
     " TODO: Something it's changing the settings in vim so recall this

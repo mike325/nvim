@@ -6,12 +6,12 @@ function! plugins#supertab#init(data) abort
         return -1
     endif
 
-    let g:SuperTabDefaultCompletionType = "context"
-    let g:SuperTabContextDefaultCompletionType = "<c-p>"
+    let g:SuperTabDefaultCompletionType = 'context'
+    let g:SuperTabContextDefaultCompletionType = '<c-p>'
     let g:SuperTabCompletionContexts = ['s:ContextText', 's:extDiscover']
-    let g:SuperTabContextDiscoverDiscovery = ["&omnifunc:<c-x><c-o>"]
+    let g:SuperTabContextDiscoverDiscovery = ['&omnifunc:<c-x><c-o>']
 
-    if !has("autocmd")
+    if !has('autocmd')
         return -1
     endif
 
