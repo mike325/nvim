@@ -196,6 +196,7 @@ set copyindent
 " set softtabstop=4  " makes the spaces feel like real tabs
 set tabstop=4      " 1 tab = 4 spaces
 set shiftwidth=4   " Same for autoindenting
+set softtabstop=-1 " Edit "virtual tabs", negative value makes it use shiftwidth
 set expandtab      " Use spaces for indenting, tabs are evil
 
 set shiftround     " Use multiple of shiftwidth when indenting with '<' and '>'
