@@ -63,7 +63,7 @@ endfunction
 function! has#async() abort
     let l:async = 0
 
-    if has('nvim') || v:version > 800 || ( v:version == 800 && has('patch-8.0.0027') )
+    if has('nvim') || v:version > 800 || ( v:version == 800 && has('patch-8.0.902') )
         let l:async = 1
     elseif v:version ==# 704 && has('patch-7.4.1689')
         let l:async = 1

@@ -110,7 +110,11 @@ function! plugins#init() abort
     " Plug 'airblade/vim-gitgutter'
     if executable('git') || executable('hg') || executable('svn')
         " These are the only VCS I care, if none is installed, then skip this plugin
-        Plug 'mhinz/vim-signify'
+        if has#async()
+          Plug 'mhinz/vim-signify'
+        else
+          Plug 'mhinz/vim-signify', { 'branch': 'legacy' }
+        endif
     endif
 
     if executable('git')
