@@ -30,6 +30,4 @@ function! plugins#vim_fugitive#init(data) abort
     nmap UE Ue
     nmap UG Ug
 
-    let g:fugitive_blank_buffer_2019_alpha = 1
-
 endfunction
