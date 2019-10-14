@@ -245,6 +245,7 @@ function exit_append() {
         fi
         if [[ $_ERR_COUNT -gt 0 ]]; then
             printf "[*] Errors:\t\t%s\n" "$_ERR_COUNT" >> "${_LOG}"
+            echo
             cat "${_LOG}"
         fi
     fi
@@ -321,7 +322,10 @@ function run_test() {
 
         status_msg "Testing ${test_type} ${testname}"
         verbose_msg "Running ${prog} ${args}"
-        if ! eval "${prog} ${args}"; then
+        if ! hash nvim 2>/dev/null; then
+            error_msg "Neovim is not install or is missing in the path, test ${test_type} ${testname} fail"
+            rsp=1
+        elif ! eval "${prog} ${args}"; then
             error_msg "${test_type} ${testname} fail"
             rsp=1
         fi

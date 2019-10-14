@@ -106,4 +106,5 @@ jobs:
       - name: Basic stock test
         shell: bash
         run: |
+          export PATH="/c/tools/neovim/Neovim/bin:$PATH"
           ./test/test.sh
