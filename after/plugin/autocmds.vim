@@ -64,6 +64,7 @@ augroup LastEditPosition
                 \   endif
 augroup end
 
+
 " TODO To be improve
 
 " Trim whitespace in selected files
@@ -117,11 +118,6 @@ augroup end
 augroup Skeletons
     autocmd!
     autocmd BufNewFile * call autocmd#FileName()
-augroup end
-
-augroup GitTags
-    autocmd!
-    autocmd BufNewFile,BufReadPre,BufEnter * if filereadable('./.git/tags') | setlocal tags^=.git/tags | endif
 augroup end
 
 augroup CRMapping

@@ -27,6 +27,9 @@ _NOLOG=0
 _WARN_COUNT=0
 _ERR_COUNT=0
 
+_PYTHON2=0
+_PYTHON3=0
+
 _NAME="$0"
 _NAME="${_NAME##*/}"
 _LOG="${_NAME%%.*}.log"
@@ -34,6 +37,10 @@ _LOG="${_NAME%%.*}.log"
 _SCRIPT_PATH="$0"
 
 _SCRIPT_PATH="${_SCRIPT_PATH%/*}"
+
+_PROGS=("vim" "nvim")
+_TEST_TYPE=("full" "bare" "minimal")
+_ARGS=" --cmd version -Es -V2 "
 
 trap '{ exit_append; }' EXIT
 
@@ -243,6 +250,85 @@ function exit_append() {
     return 0
 }
 
+function get_runtime_files() {
+    prog="$1"
+    if is_windows; then
+        if [[ $prog == nvim ]]; then
+            echo "$HOME/AppData/Local/nvim/init.vim"
+        else
+            echo "$HOME/.vim/vimrc"
+        fi
+    else
+        if [[ $prog == nvim ]]; then
+            echo "$HOME/.config/nvim/init.vim"
+        else
+            echo "$HOME/.vim/vimrc"
+        fi
+    fi
+}
+
+function install_pynvim() {
+    if hash pip2 2>/dev/null; then
+        pip2 install --user pynvim
+        _PYTHON2=1
+    else
+        warn_msg "Skipping python 2 test with Neovim"
+    fi
+
+    if hash pip3 2>/dev/null; then
+        pip3 install --user pynvim
+        _PYTHON3=1
+    else
+        warn_msg "Skipping python 3 test with Neovim"
+    fi
+
+    if [[ $_PYTHON2 -eq 1 ]] || [[ $_PYTHON3 -eq 1 ]]; then
+        return 0
+    fi
+
+    return 1
+}
+
+function run_test() {
+    local prog="$1"
+    local rsp=0
+    if [[ $prog == nvim ]]; then
+        if [[ $_PYTHON2 -eq 0 ]] && [[ $_PYTHON3 -eq 0 ]]; then
+            local testname="stable Neovim without python"
+        else
+            local testname="stable Neovim with python"
+        fi
+    else
+        local testname="stock Vim"
+    fi
+
+    local exit_args=" -c 'autocmd VimEnter * qa!' "
+
+    for test_type in  "${_TEST_TYPE[@]}"; do
+
+        local args="-u $(get_runtime_files ${prog}) ${_ARGS} $exit_args"
+
+        status_msg "Using $(get_runtime_files ${prog})"
+
+        if [[ $test_type == full ]]; then
+            args="${args} -c 'PlugInstall'"
+        elif [[ $test_type == bare ]]; then
+            local args="${args} --cmd 'let g:bare=1'"
+        elif [[ $test_type == minimal ]]; then
+            local args="${args} --cmd 'let g:mininal=1'"
+        fi
+
+        status_msg "Testing ${test_type} ${testname}"
+        verbose_msg "Running ${prog} ${args}"
+        if ! eval "${prog} ${args}"; then
+            error_msg "${test_type} ${testname} fail"
+            rsp=1
+        fi
+    done
+
+    return $rsp
+}
+
 while [[ $# -gt 0 ]]; do
     key="$1"
     case "$key" in
@@ -270,5 +356,17 @@ while [[ $# -gt 0 ]]; do
 done
 
 initlog
+
+for prog in "${_PROGS[@]}"; do
+    run_test "$prog"
+done
+
+if install_pynvim; then
+    run_test "$prog"
+fi
+
+if [[ $_ERR_COUNT -gt 0 ]]; then
+    exit 1
+fi
 
 exit 0

@@ -1,4 +1,6 @@
 Dotvim files
+[![Github Status](https://github.com/Mike325/.vim/workflows/neovimfiles/badge.svg)](https://github.com/Mike325/.vim/actions)
+
 ---
 
 This repo have mi personal Vim/Neovim settings that I have been collecting

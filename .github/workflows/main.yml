@@ -1,0 +1,105 @@
+name: neovimfiles
+
+on: [push, pull_request]
+
+jobs:
+  linux-build:
+    name: Testing install script in ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [
+          ubuntu-latest,
+          ubuntu-18.04,
+        ]
+
+    env:
+      GITHUB: true
+
+    steps:
+      - name: Install dependencies
+        run: |
+          sudo apt install wget curl git shellcheck python3-setuptools python-setuptools -y
+          sudo apt install python3-pip  python-pip -y
+          sudo pip2 install --upgrade pip
+          sudo pip3 install --upgrade pip
+      - name: Fetch script
+        run: |
+          curl -OL https://raw.githubusercontent.com/Mike325/dotfiles/master/install.sh
+          chmod +x ./install.sh
+      - name: Vim and Neovim install
+        run: |
+          ./install.sh --verbose --vim --nvim
+      - name: Basic stock test
+        run: |
+          ./test/test.sh
+
+  osx-build:
+    name: Testing install script in ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [
+          macOS-latest,
+          macOS-10.14
+        ]
+
+    env:
+      GITHUB: true
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Install dependencies
+        run: |
+          brew install git curl shellcheck vim neovim
+      - name: Fetch script
+        run: |
+          curl -OL https://raw.githubusercontent.com/Mike325/dotfiles/master/install.sh
+          chmod +x ./install.sh
+      - name: Vim and Neovim install
+        run: |
+          ./install.sh --verbose --vim --nvim=dotfiles
+      - name: Basic stock test
+        run: |
+          ./test/test.sh
+
+
+  windows-build:
+    name: Testing install script in ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [
+          windows-latest,
+          windows-2019,
+          windows-2016
+        ]
+
+    env:
+      GITHUB: true
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Enable Chocolatey
+        shell: powershell
+        run: |
+          Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+      - name: Install dependencies
+        shell: bash
+        run: |
+          choco install python git curl vim neovim -y
+      - name: Fetch script
+        shell: bash
+        run: |
+          curl -OL https://raw.githubusercontent.com/Mike325/dotfiles/master/install.sh
+          chmod +x ./install.sh
+      - name: Vim and Neovim install
+        shell: bash
+        run: |
+          ./install.sh --verbose --vim --nvim=dotfiles
+      - name: Basic stock test
+        run: |
+          ./test/test.sh

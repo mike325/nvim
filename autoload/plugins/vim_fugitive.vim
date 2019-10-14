@@ -6,12 +6,12 @@ function! plugins#vim_fugitive#init(data) abort
         return -1
     endif
 
-    " nnoremap <silent> <leader>gs :Gstatus<CR>
-    " nnoremap <silent> <leader>gc :Gcommit<CR>
-    " nnoremap <silent> <Leader>ga :Gcommit --amend --reset-author --no-edit<CR>
-    " nnoremap <silent> <leader>gd :Gdiff<CR>
-    " nnoremap <silent> <leader>gw :Gwrite<CR>
-    " nnoremap <silent> <leader>gr :Gread<CR>
+    " augroup SetGitTags
+    "     autocmd!
+    "     autocmd BufReadPost,BufEnter * if filereadable(FugitiveExtractGitDir(getcwd()) . '/tags')  |
+    "                                 \    let &l:tags .= ','.FugitiveExtractGitDir(getcwd()) . '/tags' |
+    "                                 \  endif
+    " augroup end
 
     nnoremap <silent> Us :Gstatus<CR>
     nnoremap <silent> Ua :Gcommit --amend --reset-author --no-edit<CR>

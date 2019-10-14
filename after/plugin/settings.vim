@@ -223,7 +223,7 @@ else
 endif
 
 if has('path_extra')
-    setglobal tags-=./tags tags-=./tags; tags^=./tags;
+    setglobal tags^=.git/tags
 endif
 
 if !&sidescrolloff
