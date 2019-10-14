@@ -18,6 +18,7 @@ jobs:
       GITHUB: true
 
     steps:
+      - uses: actions/checkout@v1
       - name: Install dependencies
         run: |
           sudo apt install wget curl git shellcheck python3-setuptools python-setuptools -y
@@ -101,5 +102,6 @@ jobs:
         run: |
           ./install.sh --verbose --vim --nvim=dotfiles
       - name: Basic stock test
+        shell: bash
         run: |
           ./test/test.sh
