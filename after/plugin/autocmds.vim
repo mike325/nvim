@@ -43,7 +43,7 @@ if has('nvim') || has('terminal')
         if has('nvim')
             autocmd TermOpen *      setlocal relativenumber number nocursorline
             autocmd TermOpen *      setlocal noswapfile nobackup noundofile
-        elseif has('terminal')
+        elseif  has('terminal') && exists('##TerminalOpen')
             autocmd TerminalOpen *  setlocal relativenumber number nocursorline
             autocmd TerminalOpen *  setlocal noswapfile nobackup noundofile
         endif
@@ -88,7 +88,7 @@ augroup QuickQuit
     autocmd BufEnter,BufWinEnter * if &previewwindow | nnoremap <silent> <buffer> q :q!<CR> | endif
     if has('nvim')
         autocmd TermOpen * nnoremap <silent> <buffer> q :q!<CR>
-    elseif has('terminal')
+    elseif  has('terminal') && exists('##TerminalOpen')
         autocmd TerminalOpen * nnoremap <silent> <buffer> q :q!<CR>
     endif
 augroup end
@@ -149,7 +149,7 @@ augroup Wipe
     autocmd!
     if has('nvim')
         autocmd TermOpen * setlocal bufhidden=wipe
-    elseif has('terminal')
+    elseif  has('terminal') && exists('##TerminalOpen')
         autocmd TerminalOpen * setlocal bufhidden=wipe
     endif
 augroup end

@@ -19,7 +19,6 @@ function! vim#init() abort
     set backspace=indent,eol,start
     set cscopeverbose
     " set encoding=utf-8     " The encoding displayed.
-    set fillchars=vert:│,fold:·
     set nofsync
     set hlsearch
     set incsearch
@@ -35,6 +34,11 @@ function! vim#init() abort
     set tabpagemax=50
     set tags=./tags;,tags
     set ttimeoutlen=50
+
+    try
+        set fillchars=vert:│,fold:·
+    catch
+    endtry
 
     if exists('+display')
         set display=lastline

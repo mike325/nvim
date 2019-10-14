@@ -34,6 +34,7 @@ jobs:
           ./install.sh --verbose --vim --nvim
       - name: Basic stock test
         run: |
+          export PATH="$HOME/.local/bin:$PATH"
           ./test/test.sh
 
   osx-build:
@@ -64,6 +65,7 @@ jobs:
           ./install.sh --verbose --vim --nvim=dotfiles
       - name: Basic stock test
         run: |
+          export PATH="$HOME/.local/bin:$PATH"
           ./test/test.sh
 
 

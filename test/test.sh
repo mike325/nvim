@@ -170,9 +170,9 @@ function __parse_args() {
 function warn_msg() {
     local warn_message="$1"
     if [[ $_NOCOLOR -eq 0 ]]; then
-        printf "${yellow}[!] Warning:${reset_color}\t %s\n" "$warn_message"
+        printf "\n${yellow}[!] Warning:${reset_color}\t %s" "$warn_message"
     else
-        printf "[!] Warning:\t %s\n" "$warn_message"
+        printf "\n[!] Warning:\t %s" "$warn_message"
     fi
     _WARN_COUNT=$(( _WARN_COUNT + 1 ))
     if [[ $_NOLOG -eq 0 ]]; then
@@ -184,9 +184,9 @@ function warn_msg() {
 function error_msg() {
     local error_message="$1"
     if [[ $_NOCOLOR -eq 0 ]]; then
-        printf "${red}[X] Error:${reset_color}\t %s\n" "$error_message" 1>&2
+        printf "\n${red}[X] Error:${reset_color}\t %s" "$error_message" 1>&2
     else
-        printf "[X] Error:\t %s\n" "$error_message" 1>&2
+        printf "\n[X] Error:\t %s" "$error_message" 1>&2
     fi
     _ERR_COUNT=$(( _ERR_COUNT + 1 ))
     if [[ $_NOLOG -eq 0 ]]; then
@@ -198,9 +198,9 @@ function error_msg() {
 function status_msg() {
     local status_message="$1"
     if [[ $_NOCOLOR -eq 0 ]]; then
-        printf "${green}[*] Info:${reset_color}\t %s\n" "$status_message"
+        printf "\n${green}[*] Info:${reset_color}\t %s" "$status_message"
     else
-        printf "[*] Info:\t %s\n" "$status_message"
+        printf "\n[*] Info:\t %s" "$status_message"
     fi
     if [[ $_NOLOG -eq 0 ]]; then
         printf "[*] Info:\t\t %s\n" "$status_message" >> "${_LOG}"
@@ -212,9 +212,9 @@ function verbose_msg() {
     local debug_message="$1"
     if [[ $_VERBOSE -eq 1 ]]; then
         if [[ $_NOCOLOR -eq 0 ]]; then
-            printf "${purple}[+] Debug:${reset_color}\t %s\n" "$debug_message"
+            printf "\n${purple}[+] Debug:${reset_color}\t %s" "$debug_message"
         else
-            printf "[+] Debug:\t %s\n" "$debug_message"
+            printf "\n[+] Debug:\t %s" "$debug_message"
         fi
     fi
     if [[ $_NOLOG -eq 0 ]]; then
@@ -245,6 +245,7 @@ function exit_append() {
         fi
         if [[ $_ERR_COUNT -gt 0 ]]; then
             printf "[*] Errors:\t\t%s\n" "$_ERR_COUNT" >> "${_LOG}"
+            cat "${_LOG}"
         fi
     fi
     return 0
