@@ -43,7 +43,7 @@ _SCRIPT_PATH="$0"
 
 _SCRIPT_PATH="${_SCRIPT_PATH%/*}"
 
-_TEST_TYPE=("full" "bare" "minimal")
+_TEST_TYPE=("bare" "minimal" "full")
 _ARGS=" --cmd version -Es -V2 "
 
 trap '{ exit_append; }' EXIT
@@ -315,19 +315,19 @@ function run_test() {
 
         local args="-u $(get_runtime_files ${prog}) ${_ARGS} $exit_args"
 
-        status_msg "Using $(get_runtime_files ${prog})"
-
         if [[ $test_type == full ]]; then
-            args="${args} -c 'PlugInstall'"
+            args=" ${args} -c 'PlugInstall' "
+        elif [[ $test_type == minimal ]]; then
+            local args="${args} --cmd 'let g:mininal=1' -c 'PlugInstall' "
         elif [[ $test_type == bare ]]; then
             local args="${args} --cmd 'let g:bare=1'"
-        elif [[ $test_type == minimal ]]; then
-            local args="${args} --cmd 'let g:mininal=1'"
         fi
 
         status_msg "Testing ${test_type} ${testname}"
+        verbose_msg "Using $(get_runtime_files ${prog})"
+
         verbose_msg "Running ${prog} ${args}"
-        if ! hash nvim 2>/dev/null; then
+        if  [[ $prog == nvim ]] && ! hash nvim 2>/dev/null; then
             error_msg "Neovim is not install or is missing in the path, test ${test_type} ${testname} fail"
             rsp=1
         elif ! eval "${prog} ${args}"; then
