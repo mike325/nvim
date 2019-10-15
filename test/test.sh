@@ -21,12 +21,17 @@
 #            `++:.                           `-/+/
 #            .`                                 `/
 
+_ALL=1
 _VERBOSE=0
 _NOCOLOR=0
 _NOLOG=0
 _WARN_COUNT=0
 _ERR_COUNT=0
 
+_VIM=0
+_NVIM=0
+
+_PROGS=()
 _PYTHON2=0
 _PYTHON3=0
 
@@ -38,7 +43,6 @@ _SCRIPT_PATH="$0"
 
 _SCRIPT_PATH="${_SCRIPT_PATH%/*}"
 
-_PROGS=("vim" "nvim")
 _TEST_TYPE=("full" "bare" "minimal")
 _ARGS=" --cmd version -Es -V2 "
 
@@ -147,16 +151,17 @@ EOF
 
 function __parse_args() {
     if [[ $# -lt 2 ]]; then
-        echo ""
+        error_msg "Internal error in __parse_args function trying to parse $1"
+        exit 1
     fi
 
     local arg="$1"
     local name="$2"
 
-    local pattern="^--${name}[=][a-zA-Z0-9._-/~]+$"
+    local pattern="^--${name}=[a-zA-Z0-9.:@_/~-]+$"
 
     if [[ -n "$3" ]]; then
-        local pattern="^--${name}[=]$3$"
+        local pattern="^--${name}=$3$"
     fi
 
     if [[ $arg =~ $pattern ]]; then
@@ -343,12 +348,20 @@ while [[ $# -gt 0 ]]; do
         --nocolor)
             _NOCOLOR=1
             ;;
-        -v|--verbose)
+        --verbose)
             _VERBOSE=1
             ;;
         -h|--help)
             help_user
             exit 0
+            ;;
+        -v|--vim)
+            _VIM=1
+            _ALL=0
+            ;;
+        -n|--neovim|--nvim)
+            _NVIM=1
+            _ALL=0
             ;;
         *)
             initlog
@@ -362,11 +375,18 @@ done
 
 initlog
 
+if [[ $_ALL -eq 1 ]]; then
+    _PROGS=("vim" "nvim")
+else
+    [[ $_VIM -eq 1 ]] && _PROGS+=("vim")
+    [[ $_NVIM -eq 1 ]] && _PROGS+=("nvim")
+fi
+
 for prog in "${_PROGS[@]}"; do
     run_test "$prog"
 done
 
-if install_pynvim; then
+if { [[ $_ALL -eq 1 ]] || [[ $_NVIM -eq 1 ]] ; } &&  install_pynvim; then
     run_test "$prog"
 fi
 

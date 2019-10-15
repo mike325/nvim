@@ -140,16 +140,17 @@ EOF
 
 function __parse_args() {
     if [[ $# -lt 2 ]]; then
-        echo ""
+        error_msg "Internal error in __parse_args function trying to parse $1"
+        exit 1
     fi
 
     local arg="$1"
     local name="$2"
 
-    local pattern="^--${name}[=][a-zA-Z0-9._-/~]+$"
+    local pattern="^--${name}=[a-zA-Z0-9.:@_/~-]+$"
 
     if [[ -n "$3" ]]; then
-        local pattern="^--${name}[=]$3$"
+        local pattern="^--${name}=$3$"
     fi
 
     if [[ $arg =~ $pattern ]]; then
