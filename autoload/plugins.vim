@@ -342,9 +342,6 @@ function! plugins#init() abort
 
     if has('nvim')
         Plug 'Vigemus/iron.nvim'
-    elseif !has('terminal')
-        " Useful to get the console output in Vim (since :terminal is not enable yet)
-        Plug 'tpope/vim-dispatch'
     endif
 
     " }}} END Misc
