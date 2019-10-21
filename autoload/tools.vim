@@ -79,7 +79,7 @@ function! tools#getLanguageServer(language) abort
         \ 'cquery' : ['cquery',
         \             '--log-file=' . os#tmp('cquery.log'),
         \             '--init={"cacheDirectory":"' . os#cache() . '/cquery", "completion": {"filterAndSort": false}}'],
-        \ 'clangd' : ['clangd', '-index'],
+        \ 'clangd' : ['clangd', '-background-index'],
         \ 'gopls'  : ['gopls'],
         \ 'bash-language-server': ['bash-language-server', 'start'],
         \ }
