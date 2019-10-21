@@ -34,13 +34,13 @@ function! tools#GitVersion(...) abort
 endfunction
 
 if has('nvim-0.4')
-    function! tools#createFloatingBuffer() abort
+    function! tools#createFloatingBuffer(...) abort
         let buf = nvim_create_buf(0, 1)
         call setbufvar(buf, '&signcolumn', 'no')
 
-        let l:height = &lines - 8
-        let l:width  = float2nr(&columns - (&columns * 2 / 10))
-        let l:col    = float2nr((&columns - l:width) / 2)
+        let l:height = (a:0 > 0) ? a:1 : float2nr(&lines / 2)
+        let l:width  = (a:0 > 1) ? a:2 : float2nr(&columns - (&columns * 2 / 10))
+        let l:col    = (a:0 > 2) ? a:3 : float2nr((&columns - l:width) / 2)
 
         let l:opts = {
             \ 'style'   : 'minimal',
