@@ -186,8 +186,8 @@ set number     " Show line numbers
 " set synmaxcol=256
 
 " Search settings
-set ignorecase    " ignore case
-set smartcase     " Use smartcase for typed search
+set ignorecase  " ignore case
+" set smartcase " Use smartcase for typed search
 
 " Indenting stuff
 set smartindent
