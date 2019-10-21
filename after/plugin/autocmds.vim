@@ -25,10 +25,10 @@ if has('nvim') || v:version > 702
     " TODO make a function to save the state of the toggles
     augroup Numbers
         autocmd!
-        autocmd WinEnter    * setlocal relativenumber number
-        autocmd WinLeave    * setlocal norelativenumber number
-        autocmd InsertLeave * setlocal relativenumber number
-        autocmd InsertEnter * setlocal norelativenumber number
+        autocmd WinEnter    * if &buftype !=# 'terminal' | setlocal relativenumber number | endif
+        autocmd WinLeave    * if &buftype !=# 'terminal' | setlocal norelativenumber number | endif
+        autocmd InsertLeave * if &buftype !=# 'terminal' | setlocal relativenumber number | endif
+        autocmd InsertEnter * if &buftype !=# 'terminal' | setlocal norelativenumber number | endif
     augroup end
 
 endif

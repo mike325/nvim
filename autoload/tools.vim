@@ -33,6 +33,67 @@ function! tools#GitVersion(...) abort
     return a:000[l:i] ==# get(l:components, l:i)
 endfunction
 
+if has('nvim-0.4')
+    function! tools#createFloatingBuffer() abort
+        let buf = nvim_create_buf(0, 1)
+        call setbufvar(buf, '&signcolumn', 'no')
+
+        let l:height = &lines - 8
+        let l:width  = float2nr(&columns - (&columns * 2 / 10))
+        let l:col    = float2nr((&columns - l:width) / 2)
+
+        let l:opts = {
+            \ 'style'   : 'minimal',
+            \ 'relative': 'editor',
+            \ 'row'     : 4,
+            \ 'col'     : l:col,
+            \ 'width'   : l:width,
+            \ 'height'  : l:height
+            \ }
+
+        call nvim_open_win(buf, 1, l:opts)
+        return buf
+    endfunction
+endif
+
+function! tools#getLanguageServer(language) abort
+    if ! tools#CheckLanguageServer(a:language)
+        return []
+    endif
+
+    let l:langservers = {
+        \ 'python': ['pyls'],
+        \ 'c'     : ['ccls', 'clangd', 'cquery'],
+        \ 'cpp'   : ['ccls', 'clangd', 'cquery'],
+        \ 'cuda'  : ['ccls'],
+        \ 'objc'  : ['ccls'],
+        \ 'sh'    : ['bash-language-server'],
+        \ 'bash'  : ['bash-language-server'],
+        \ 'go'    : ['gopls'],
+        \ }
+    let l:cmds = {
+        \ 'pyls'   : ['pyls', '--log-file=' . os#tmp('pyls.log')],
+        \ 'ccls'   : ['ccls',
+        \             '--log-file=' . os#tmp('ccls.log'),
+        \             '--init={"cacheDirectory":"' . os#cache() . '/ccls", "completion": {"filterAndSort": false}}'],
+        \ 'cquery' : ['cquery',
+        \             '--log-file=' . os#tmp('cquery.log'),
+        \             '--init={"cacheDirectory":"' . os#cache() . '/cquery", "completion": {"filterAndSort": false}}'],
+        \ 'clangd' : ['clangd', '-index'],
+        \ 'gopls'  : ['gopls'],
+        \ 'bash-language-server': ['bash-language-server', 'start'],
+        \ }
+    let l:servers = l:langservers[a:language]
+    let l:cmd = []
+    for l:server in l:servers
+        if executable(l:server)
+            let l:cmd = l:cmds[l:server]
+            break
+        endif
+    endfor
+    return l:cmd
+endfunction
+
 function! tools#CheckLanguageServer(...) abort
     let l:lang = (a:0 > 0) ? a:1 : ''
 

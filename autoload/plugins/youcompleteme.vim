@@ -106,7 +106,7 @@ function! plugins#youcompleteme#init(data) abort
         let g:ycm_language_server += [
             \ {
             \     'name': 'bash',
-            \     'cmdline': ['bash-language-server', 'start'],
+            \     'cmdline': tools#getLanguageServer('bash'),
             \     'filetypes': ['bash', 'sh']
             \ }]
     endif

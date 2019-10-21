@@ -38,25 +38,28 @@ function! plugins#completor_vim#init(data) abort
     if tools#CheckLanguageServer()
         let g:completor_filetype_map = {}
 
-        if executable('ccls') || executable('cquery') || executable('clangd')
-            let s:lsp_exe = executable('ccls') ? 'ccls' : 'cquery'
-            let g:completor_filetype_map.c = ( executable('ccls') || executable('cquery')) ?
-                                           \ {'ft': 'lsp', 'cmd': join(
-                                           \    [s:lsp_exe,
-                                           \     '--log-file=' . os#tmp(s:lsp_exe . '.log'),
-                                           \     '--init={"cacheDirectory":"' . os#cache() . '/' . s:lsp_exe . '"}'], ' ')} :
-                                           \ {'ft': 'lsp', 'cmd': 'clangd -index'}
-
+        if tools#CheckLanguageServer('c')
+            let g:completor_filetype_map.c = {
+                \   'ft': 'lsp',
+                \   'cmd': join(tools#getLanguageServer('c'))
+                \}
             let g:completor_filetype_map.cpp = g:completor_filetype_map.c
         endif
 
-        if executable('bash-language-server')
-            let g:completor_filetype_map.go = {'ft': 'lsp', 'cmd': join(['bash-language-server', 'start'], ' ')}
+        if tools#CheckLanguageServer('bash')
+            let g:completor_filetype_map.sh = {
+                \ 'ft': 'lsp',
+                \ 'cmd': join(tools#getLanguageServer('bash'))
+                \ }
+            let g:completor_filetype_map.bash = g:completor_filetype_map.sh
         endif
 
-        " if executable('pyls') " && !os#name('windows')
-        "     let g:completor_filetype_map.python = {'ft': 'lsp', 'cmd': join(['pyls', '--log-file=' . os#tmp('pyls.log')], ' ')}
-        " endif
+        if tools#CheckLanguageServer('python') " && !os#name('windows')
+            let g:completor_filetype_map.python = {
+                \ 'ft': 'lsp',
+                \ 'cmd': join(tools#getLanguageServer('python'))
+                \ }
+        endif
 
     endif
 

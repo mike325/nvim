@@ -70,15 +70,8 @@ function! plugins#languageclient_neovim#init(data) abort
     augroup end
 
     if executable('ccls') || executable('cquery') || executable('clangd')
-        let s:lsp_exe = executable('ccls') ? 'ccls' : 'cquery'
-        let g:LanguageClient_serverCommands.c = ( executable('ccls') || executable('cquery')) ?
-                                                \ [s:lsp_exe,
-                                                \ '--log-file=' . os#tmp(s:lsp_exe . '.log'),
-                                                \ '--init={"cacheDirectory":"' . os#cache() . '/' . s:lsp_exe . '", "completion": {"filterAndSort": false}}'] :
-                                                \ ['clangd', '-index']
-
+        let g:LanguageClient_serverCommands.c = tools#getLanguageServer('c')
         let g:LanguageClient_serverCommands.cpp = g:LanguageClient_serverCommands.c
-
         let l:supported_languages += ['c', 'cpp']
 
         if executable('ccls') || executable('cquery')
@@ -132,13 +125,13 @@ function! plugins#languageclient_neovim#init(data) abort
     endif
 
     if executable('bash-language-server')
-        let g:LanguageClient_serverCommands.sh = ['bash-language-server', 'start']
+        let g:LanguageClient_serverCommands.sh = tools#getLanguageServer('sh')
         let g:LanguageClient_serverCommands.bash = g:LanguageClient_serverCommands.sh
         let l:supported_languages += ['sh', 'bash']
     endif
 
     if executable('pyls')
-        let g:LanguageClient_serverCommands.python = ['pyls', '--log-file=' . os#tmp('pyls.log')]
+        let g:LanguageClient_serverCommands.python = tools#getLanguageServer('python')
         let l:supported_languages += ['python']
         autocmd  LanguageCmds FileType python command! -buffer WorkspaceSymbols call LanguageClient#workspace_symbol()
     endif

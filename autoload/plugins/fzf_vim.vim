@@ -30,25 +30,6 @@ function! plugins#fzf_vim#install(info) abort
     endif
 endfunction
 
-function! plugins#fzf_vim#floatingfzf() abort
-    let buf = nvim_create_buf(0, 1)
-    call setbufvar(buf, '&signcolumn', 'no')
-
-    let height = &lines - 8
-    let width = float2nr(&columns - (&columns * 2 / 10))
-    let col = float2nr((&columns - width) / 2)
-
-    let opts = {
-        \ 'relative': 'editor',
-        \ 'row': 4,
-        \ 'col': col,
-        \ 'width': width,
-        \ 'height': height
-        \ }
-
-    call nvim_open_win(buf, 1, opts)
-endfunction
-
 function! plugins#fzf_vim#init(data) abort
     if !exists('g:plugs["fzf"]') || !exists('g:plugs["fzf.vim"]')
         return -1
@@ -74,7 +55,7 @@ function! plugins#fzf_vim#init(data) abort
     endif
 
     if has('nvim-0.4')
-        let g:fzf_layout = { 'window': 'call plugins#fzf_vim#floatingfzf()' }
+        let g:fzf_layout = { 'window': 'call tools#createFloatingBuffer()' }
     endif
 
     nnoremap <C-p> :Files<CR>
