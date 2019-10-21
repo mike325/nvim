@@ -85,52 +85,53 @@ function! plugins#neomake#init(data) abort
     endif
 
     let g:neomake_c_enabled_makers = get(g:,'neomake_c_enabled_makers',[])
-
-    if executable('gcc')
-        let g:neomake_c_enabled_makers += ['gcc']
-
-        let g:neomake_c_gcc_maker = {
-            \   'exe': 'gcc',
-            \   'args': [
-            \       '-Wall',
-            \       '-Wextra',
-            \       '-o', os#tmp('neomake'),
-            \],}
-
-    endif
+    " if executable('clang-tidy')
+    "     let g:neomake_c_enabled_makers += ['clangtidy']
+    "     let g:neomake_c_clangtidy_maker = {
+    "         \   'exe': 'clang-tidy',
+    "         \   'errorformat':
+    "         \       '%E%f:%l:%c: fatal error: %m,' .
+    "         \       '%E%f:%l:%c: error: %m,' .
+    "         \       '%W%f:%l:%c: warning: %m,' .
+    "         \       '%-G%\m%\%%(LLVM ERROR:%\|No compilation database found%\)%\@!%.%#,' .
+    "         \       '%E%m'
+    "         \}
+    "     let g:neomake_cpp_enabled_makers += ['clangtidy']
+    "     let g:neomake_cpp_clangtidy_maker = g:neomake_c_clangtidy_maker
+    " endif
 
     if executable('clang')
         let g:neomake_c_enabled_makers += ['clang']
-
         let g:neomake_c_clang_maker = {
             \   'exe': 'clang',
             \   'args': [
-            \       '-Wall',
-            \       '-Wextra',
-            \       '-Weverything',
-            \       '-Wno-missing-prototypes',
-            \       '-o', os#tmp('neomake'),
+            \      '-Wall',
+            \      '-std=c17',
+            \      '-Wextra',
+            \      '-Weverything',
+            \      '-Wno-missing-prototypes',
+            \      '-x',
+            \      'c',
+            \      '-o', os#tmp('neomake'),
+            \],}
+    elseif executable('gcc')
+        let g:neomake_c_enabled_makers += ['gcc']
+        let g:neomake_c_gcc_maker = {
+            \   'exe': 'gcc',
+            \   'args': [
+            \      '-std=c17',
+            \      '-Wall',
+            \      '-Wextra',
+            \      '-x',
+            \      'c',
+            \      '-o', os#tmp('neomake'),
             \],}
     endif
 
     let g:neomake_cpp_enabled_makers = get(g:,'neomake_cpp_enabled_makers',[])
 
-    if executable('g++')
-        let g:neomake_cpp_enabled_makers += ['gcc']
-
-        let g:neomake_cpp_gcc_maker = {
-            \   'exe': 'g++',
-            \   'args': [
-            \      '-std=c++17',
-            \      '-Wall',
-            \      '-Wextra',
-            \       '-o', os#tmp('neomake'),
-            \],}
-    endif
-
     if executable('clang++')
         let g:neomake_cpp_enabled_makers += ['clang']
-
         let g:neomake_cpp_clang_maker = {
             \   'exe': 'clang++',
             \   'args': [
@@ -140,6 +141,20 @@ function! plugins#neomake#init(data) abort
             \      '-Weverything',
             \      '-Wno-c++98-compat',
             \      '-Wno-missing-prototypes',
+            \      '-x',
+            \      'c++',
+            \       '-o', os#tmp('neomake'),
+            \],}
+    elseif executable('gcc++')
+        let g:neomake_cpp_enabled_makers += ['gcc']
+        let g:neomake_cpp_gcc_maker = {
+            \   'exe': 'g++',
+            \   'args': [
+            \      '-std=c++17',
+            \      '-Wall',
+            \      '-Wextra',
+            \      '-x',
+            \      'c++',
             \       '-o', os#tmp('neomake'),
             \],}
     endif

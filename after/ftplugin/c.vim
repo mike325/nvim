@@ -13,3 +13,16 @@ setlocal commentstring=//\ %s
 if exists('g:c_includes')
     execute 'setlocal path^='.join(g:c_includes, ',')
 endif
+
+if executable('clang-tidy') && filereadable(autocmd#getProjectRoot() . '/compile_commands.json')
+    setlocal makeprg=clang-tidy\ %
+    let &errorformat = '%E%f:%l:%c: fatal error: %m,' .
+        \              '%E%f:%l:%c: error: %m,' .
+        \              '%W%f:%l:%c: warning: %m,' .
+        \              '%-G%\m%\%%(LLVM ERROR:%\|No compilation database found%\)%\@!%.%#,' .
+        \              '%E%m'
+elseif executable('clang')
+    setlocal makeprg=clang\ -std=c17\ -Wall\ -Wextra\ -Weverything\ -Wno-missing-prototypes\ % " '-o', os#tmp('cpp')
+elseif executable('gcc')
+    setlocal makeprg=gcc\ -std=c17\ -Wall\ -Wextra\ % " '-o', os#tmp('neomake')
+endif

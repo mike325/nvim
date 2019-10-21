@@ -100,6 +100,11 @@ function! autocmd#FindProjectRoot(path) abort
     return l:project_root
 endfunction
 
+function! autocmd#getProjectRoot() abort
+    let b:project_root = get(b:, 'project_root', autocmd#FindProjectRoot(getcwd()))
+    return b:project_root
+endfunction
+
 function! autocmd#IsGitRepo(root) abort
     return (isdirectory(a:root . '/.git') || filereadable(a:root . '/.git'))
 endfunction
