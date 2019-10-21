@@ -29,14 +29,11 @@ function! plugins#init() abort
     Plug 'kurayama/systemd-vim-syntax'
     Plug 'mhinz/vim-nginx'
     Plug 'raimon49/requirements.txt.vim'
+    Plug 'octol/vim-cpp-enhanced-highlight'
 
     if has('nvim') && has#python('3', '5')
         Plug 'numirias/semshi', {'do': ':silent! UpdateRemotePlugins'}
-        " Plug 'blahgeek/neovim-colorcoder', {'do': ':silent! UpdateRemotePlugins'}
-        " Plug 'arakashic/chromatica.nvim', {'do': ':silent! UpdateRemotePlugins'}
     endif
-
-    Plug 'octol/vim-cpp-enhanced-highlight'
 
     " }}} END Syntax
 
@@ -54,12 +51,8 @@ function! plugins#init() abort
     endif
 
     " Project check
-    if has#python()
-        if has#async()
-            Plug 'neomake/neomake'
-        else
-            Plug 'vim-syntastic/syntastic'
-        endif
+    if has#python() && has#async()
+        Plug 'neomake/neomake'
     endif
 
     " TODO: Fugitive seems to break tcd, try to fix it
@@ -70,24 +63,13 @@ function! plugins#init() abort
     elseif exists('g:gonvim_running')
         Plug 'akiyosi/gonvim-fuzzy'
     elseif has('nvim') && has#python('3')
-
         Plug 'Shougo/denite.nvim'
         Plug 'raghur/fruzzy', {'do': { -> fruzzy#install()}}
-        " Plug 'dunstontc/projectile.nvim'
-        " Plug 'chemzqm/denite-git'
     else
-        Plug 'mhinz/vim-grepper', { 'on': ['Grepper', '<plug>(GrepperOperator)'] }
-
         Plug 'ctrlpvim/ctrlp.vim'
 
-        if os#name('unix') && executable('git')
-            Plug 'jasoncodes/ctrlp-modified.vim'
-        endif
-
         if has#python('3')
-
             Plug 'raghur/fruzzy', {'do': { -> fruzzy#install()}}
-
         elseif has#python()
             " Fast and 'easy' to compile C CtrlP matcher
             if (executable('gcc') || executable('clang')) && empty($NO_PYTHON_DEV) && !os#name('windows')
@@ -97,9 +79,6 @@ function! plugins#init() abort
                 " Fast matcher for ctrlp
                 Plug 'FelikZ/ctrlp-py-matcher'
             endif
-
-            " The fastes matcher (as far as I know) but way more complicated to setup
-            " Plug 'nixprime/cpsm'
         endif
     endif
 
@@ -118,10 +97,10 @@ function! plugins#init() abort
     endif
 
     if executable('git')
+        Plug 'rhysd/git-messenger.vim', {'on': ['GitMessenger']}
         if executable('hub')
             Plug 'tpope/vim-rhubarb'
         endif
-        Plug 'rhysd/git-messenger.vim', {'on': ['GitMessenger']}
         if !os#name('windows')
             Plug 'rhysd/committia.vim'
         endif
@@ -267,11 +246,10 @@ function! plugins#init() abort
     " ####### Languages {{{
 
     Plug 'tpope/vim-endwise'
-    " Plug 'fidian/hexmode'
 
-    if executable('go') && has#async()
-        Plug 'fatih/vim-go'
-    endif
+    " if executable('go') && has#async()
+    "     Plug 'fatih/vim-go'
+    " endif
 
     if (has('nvim') || (v:version >= 704)) && (executable('tex'))
         Plug 'lervag/vimtex'
@@ -291,9 +269,6 @@ function! plugins#init() abort
         " TODO: Solve conflict with comment plugin
         " Plug 'coderifous/textobj-word-column.vim'
     endif
-
-    " JSON text objects
-    " Plug 'tpope/vim-jdaddy'
 
     " Better motions
     Plug 'easymotion/vim-easymotion'
