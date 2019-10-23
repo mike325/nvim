@@ -132,114 +132,89 @@ function! plugins#init() abort
         Plug 'garbas/vim-snipmate'
     endif
 
-    let l:ycm_installed = 0
-    let l:deoplete_installed = 0
-    let l:completor = 0
-
     " This env var allow us to know if the python version has the dev libs
-    if empty($NO_PYTHON_DEV) && has#python() " Python base completions {{{
+    " Awesome has#async completion engine for Neovim
+    if !empty($YCM) && empty($NO_PYTHON_DEV) && has#python() && has#async() && executable('cmake') &&
+     \ ((has('unix') && (executable('gcc')  || executable('clang'))) ||
+     \ (os#name('windows') && executable('msbuild')))
 
-        " Awesome has#async completion engine for Neovim
-        if !empty($YCM) && has#async() && executable('cmake') && (( has('unix') && ( executable('gcc')  || executable('clang') )) ||
-                    \ (os#name('windows') && executable('msbuild')))
+        if has#python('3', '5', '1')
+            Plug 'ycm-core/YouCompleteMe', { 'do': function('plugins#youcompleteme#install') }
+        else
+            Plug 'ycm-core/YouCompleteMe', { 'commit': '299f8e48e7d34e780d24b4956cd61e4d42a139eb', 'do': function('plugins#youcompleteme#install') , 'frozen', 1}
+        endif
+        " Plug 'davits/DyeVim'
 
-            if has#python('3', '5', '1')
-                Plug 'ycm-core/YouCompleteMe', { 'do': function('plugins#youcompleteme#install') }
-            else
-                Plug 'ycm-core/YouCompleteMe', { 'commit': '299f8e48e7d34e780d24b4956cd61e4d42a139eb', 'do': function('plugins#youcompleteme#install') , 'frozen', 1}
-            endif
-            " Plug 'davits/DyeVim'
+        " C/C++ project generator
+        " Plug 'rdnetto/ycm-generator', { 'branch': 'stable' }
+    elseif has('nvim-0.2.0') && has#python('3', '4')
 
-            " C/C++ project generator
-            " Plug 'rdnetto/ycm-generator', { 'branch': 'stable' }
-            let l:ycm_installed = 1
-        elseif has('nvim-0.2.0') && has#python('3', '4')
-
-            if has('nvim-0.3.0') && has#python('3', '6', '1')
-                Plug 'Shougo/deoplete.nvim', { 'do': ':silent! UpdateRemotePlugins'}
-            else
-                Plug 'Shougo/deoplete.nvim', { 'tag': '2.0', 'do': ':silent! UpdateRemotePlugins', 'frozen' : 1}
-            endif
-
-            " Show parameters of the current function
-            Plug 'Shougo/echodoc.vim'
-
-            " TODO: I had had some probles with pysl in windows, so let's
-            "       skip it until I can figure it out how to fix this
-            if tools#CheckLanguageServer()
-                let g:branch =  has('nvim-0.2') ? {'branch': 'next', 'do': function('plugins#languageclient_neovim#install')} :
-                                                \ {'tag': '0.1.66', 'do': function('plugins#languageclient_neovim#install'), 'frozen': 1}
-                Plug 'autozimu/LanguageClient-neovim', g:branch
-                unlet g:branch
-            endif
-
-            if !tools#CheckLanguageServer('c')
-                " C/C++ completion base on clang compiler if executable('clang')
-                if os#name('windows')
-                    " A bit faster C/C++ completion
-                    Plug 'tweekmonster/deoplete-clang2'
-                else
-                    " NOTE: Doesn't support windows
-                    Plug 'zchee/deoplete-clang'
-                    " Plug 'Shougo/neoinclude.vim'
-                endif
-            endif
-
-            if !tools#CheckLanguageServer('python')
-                " Python completion
-                if has('nvim-0.2')
-                    Plug 'zchee/deoplete-jedi'
-                else
-                    Plug 'zchee/deoplete-jedi', {'commit': '3f510b467baded4279c52147e98f840b53324a8b', 'frozen': 1}
-                endif
-            endif
-
-            " Go completion
-            if !tools#CheckLanguageServer('go') && executable('make') && executable('go')
-                Plug 'zchee/deoplete-go', { 'do':function('plugins#deoplete_nvim#gocomletion')}
-            endif
-
-            " JavaScript completion
-            if !tools#CheckLanguageServer('javascript') && executable('ternjs')
-                Plug 'carlitux/deoplete-ternjs'
-            endif
-
-            let l:deoplete_installed = 1
-        elseif has#async() && (has('nvim-0.2.0') || (!has('nvim') && has('lambda')))
-            if tools#CheckLanguageServer('any')
-                Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do': function('plugins#languageclient_neovim#install')}
-            endif
-
-            Plug 'maralla/completor.vim'
-            let l:completor = 1
+        if has('nvim-0.3.0') && has#python('3', '6', '1')
+            Plug 'Shougo/deoplete.nvim', { 'do': ':silent! UpdateRemotePlugins'}
+        else
+            Plug 'Shougo/deoplete.nvim', { 'tag': '2.0', 'do': ':silent! UpdateRemotePlugins', 'frozen' : 1}
         endif
 
-        if l:ycm_installed==0 && l:deoplete_installed==0
-            " Completion for python without engines
-            Plug 'davidhalter/jedi-vim'
+        " Show parameters of the current function
+        Plug 'Shougo/echodoc.vim'
 
+        " TODO: I had had some probles with pysl in windows, so let's
+        "       skip it until I can figure it out how to fix this
+        if tools#CheckLanguageServer()
+            let g:branch =  has('nvim-0.2') ? {'branch': 'next', 'do': function('plugins#languageclient_neovim#install')} :
+                                            \ {'tag': '0.1.66', 'do': function('plugins#languageclient_neovim#install'), 'frozen': 1}
+            Plug 'autozimu/LanguageClient-neovim', g:branch
+            unlet g:branch
         endif
 
-    endif " }}} END Python base completions
+        if !tools#CheckLanguageServer('c')
+            " C/C++ completion base on clang compiler if executable('clang')
+            if os#name('windows')
+                " A bit faster C/C++ completion
+                Plug 'tweekmonster/deoplete-clang2'
+            else
+                " NOTE: Doesn't support windows
+                Plug 'zchee/deoplete-clang'
+                " Plug 'Shougo/neoinclude.vim'
+            endif
+        endif
 
-    " Vim clang does not require python
-    if executable('clang') && l:ycm_installed==0 && l:deoplete_installed==0
-        Plug 'justmao945/vim-clang'
+        if !tools#CheckLanguageServer('python')
+            " Python completion
+            if has('nvim-0.2')
+                Plug 'zchee/deoplete-jedi'
+            else
+                Plug 'zchee/deoplete-jedi', {'commit': '3f510b467baded4279c52147e98f840b53324a8b', 'frozen': 1}
+            endif
+        endif
+
+        " Go completion
+        if !tools#CheckLanguageServer('go') && executable('make') && executable('go')
+            Plug 'zchee/deoplete-go', { 'do':function('plugins#deoplete_nvim#gocomletion')}
+        endif
+
+        " JavaScript completion
+        if !tools#CheckLanguageServer('javascript') && executable('ternjs')
+            Plug 'carlitux/deoplete-ternjs'
+        endif
+
+    elseif has#async() && (has('nvim-0.2.0') || (!has('nvim') && has('lambda')))
+        if tools#CheckLanguageServer('any')
+            Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do': function('plugins#languageclient_neovim#install')}
+        endif
+
+        Plug 'maralla/completor.vim'
+    " Neovim does not support Lua plugins yet
+    elseif has('lua') && !has('nvim') && v:version >= 704
+        Plug 'Shougo/neocomplete.vim'
+    elseif v:version >= 703 || has('nvim')
+        Plug 'roxma/SimpleAutoComplPop'
+        if !has('nvim') && v:version < 800
+            Plug 'ervandew/supertab'
+        endif
     endif
 
-    " Completion without python completion engines ( ycm, deoplete or completer )
-    if l:ycm_installed==0 && l:deoplete_installed==0 && l:completor==0
-        " Neovim does not support Lua plugins yet
-        if has('lua') && !has('nvim') && (v:version >= 704)
-            Plug 'Shougo/neocomplete.vim'
-        elseif (v:version >= 703) || has('nvim')
-            Plug 'roxma/SimpleAutoComplPop'
-
-            if !has('nvim') && (v:version < 800)
-                Plug 'ervandew/supertab'
-            endif
-        endif
-    endif
+    " }}} END Python base completions
 
     " }}} END Completions
 
