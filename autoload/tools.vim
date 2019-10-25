@@ -38,7 +38,7 @@ if has('nvim-0.4')
         let buf = nvim_create_buf(0, 1)
         call setbufvar(buf, '&signcolumn', 'no')
 
-        let l:height = (a:0 > 0) ? a:1 : float2nr(&lines / 2)
+        let l:height = (a:0 > 0) ? a:1 : &lines - 8
         let l:width  = (a:0 > 1) ? a:2 : float2nr(&columns - (&columns * 2 / 10))
         let l:col    = (a:0 > 2) ? a:3 : float2nr((&columns - l:width) / 2)
 
@@ -72,7 +72,7 @@ function! tools#getLanguageServer(language) abort
         \ 'go'    : ['gopls'],
         \ }
     let l:cmds = {
-        \ 'pyls'   : ['pyls', '--log-file=' . os#tmp('pyls.log')],
+        \ 'pyls'   : ['pyls', '--check-parent-process', '--log-file=' . os#tmp('pyls.log')],
         \ 'ccls'   : ['ccls',
         \             '--log-file=' . os#tmp('ccls.log'),
         \             '--init={"cacheDirectory":"' . os#cache() . '/ccls", "completion": {"filterAndSort": false}}'],

@@ -1,12 +1,6 @@
 " Deoplete and plugins settings
 " github.com/mike325/.vim
 
-" TODO:  Move this out into autocmds.vim
-augroup CloseMenu
-    autocmd!
-    autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
-augroup end
-
 function! plugins#deoplete_nvim#gocomletion(info) abort
     if !executable('gocode')
         if os#name('windows')

@@ -147,6 +147,8 @@ function! plugins#init() abort
 
         " C/C++ project generator
         " Plug 'rdnetto/ycm-generator', { 'branch': 'stable' }
+    elseif has#async() && tools#CheckLanguageServer()
+        Plug 'natebosch/vim-lsc'
     elseif has('nvim-0.2.0') && has#python('3', '4')
 
         if has('nvim-0.3.0') && has#python('3', '6', '1')
@@ -197,12 +199,7 @@ function! plugins#init() abort
         if !tools#CheckLanguageServer('javascript') && executable('ternjs')
             Plug 'carlitux/deoplete-ternjs'
         endif
-
     elseif has#async() && (has('nvim-0.2.0') || (!has('nvim') && has('lambda')))
-        if tools#CheckLanguageServer('any')
-            Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do': function('plugins#languageclient_neovim#install')}
-        endif
-
         Plug 'maralla/completor.vim'
     " Neovim does not support Lua plugins yet
     elseif has('lua') && !has('nvim') && v:version >= 704

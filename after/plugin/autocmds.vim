@@ -145,6 +145,11 @@ augroup LaTex
     autocmd FileType tex let b:vimtex_main = 'main.tex'
 augroup end
 
+augroup CloseMenu
+    autocmd!
+    autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
+augroup end
+
 augroup Wipe
     autocmd!
     if has('nvim')
