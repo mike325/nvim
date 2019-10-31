@@ -33,6 +33,7 @@ MySQL
 mockup
 hotham
 fallback
+fallbacks
 repo
 ioctl
 blog
@@ -108,7 +109,6 @@ denite
 grepper
 UltiSnips
 esc
-fallbacks
 x86
 IPC
 PC
@@ -121,6 +121,7 @@ MCU
 Neomake
 lua
 API
+api
 vimagit
 Unstaged
 IFWI
@@ -183,6 +184,9 @@ https
 gotify
 gitignore
 Syncthing
+Gotify
+Torrent
+OpenVPN
 HW
 config
 SPI
@@ -192,8 +196,9 @@ Steppings
 PCIe
 tesis
 Fernández
-Jalisco
 jalisco
+Jalisco
+UAG
 gmail
 smartcase
 IoT
@@ -206,11 +211,14 @@ IOMMUI
 virtualization
 WIP
 richard
+Turing
 cpython
 Dockerfile
 github
 Github
 unicode
+BERT
+hashtags
 emoji
 framework
 BDSASA
@@ -221,11 +229,9 @@ stuff
 PostgreSQL
 minio
 init
-hashtags
 travis
 cli
 macOS
 aur
 regex
-Github
-api
+Debian
