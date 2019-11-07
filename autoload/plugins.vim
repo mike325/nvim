@@ -24,7 +24,6 @@ function! plugins#init() abort
     Plug 'tpope/vim-markdown'
     Plug 'PProvost/vim-ps1'
     Plug 'cespare/vim-toml'
-    Plug 'ekalinin/Dockerfile.vim'
     Plug 'bjoernd/vim-syntax-simics'
     Plug 'kurayama/systemd-vim-syntax'
     Plug 'mhinz/vim-nginx'

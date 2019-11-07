@@ -71,12 +71,13 @@ function! autocmd#FileName(...) abort
     endif
 
     if filereadable(l:skeleton)
-        execute '0r '. l:skeleton
+        execute 'keepalt read '. l:skeleton
         silent! execute '%s/\<NAME\>/'.l:filename.'/e'
         call histdel('search', -1)
         silent! execute '%s/\<NAME\ze_H\(PP\)\?\>/\U'.l:filename.'/g'
         call histdel('search', -1)
-        execute 'bwipeout! #'
+        execute 'bwipeout! ' . l:skeleton
+        execute '1delete_'
     endif
 
 endfunction
