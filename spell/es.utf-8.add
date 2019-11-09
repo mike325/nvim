@@ -1,6 +1,5 @@
 MX
 Neovim
-Debian
 Ubuntu
 SUSE
 openSUSE
@@ -60,6 +59,7 @@ firefox
 spotify
 nextcloud
 debian
+Debian
 automake
 ubuntu
 ShellCheck
@@ -237,4 +237,4 @@ cli
 macOS
 aur
 regex
-Debian
+poster
