@@ -71,6 +71,7 @@ function! tools#getLanguageServer(language) abort
         \ 'bash'  : ['bash-language-server'],
         \ 'go'    : ['gopls'],
         \ }
+
     let l:cmds = {
         \ 'pyls'   : ['pyls', '--check-parent-process', '--log-file=' . os#tmp('pyls.log')],
         \ 'ccls'   : ['ccls',
@@ -79,10 +80,11 @@ function! tools#getLanguageServer(language) abort
         \ 'cquery' : ['cquery',
         \             '--log-file=' . os#tmp('cquery.log'),
         \             '--init={"cacheDirectory":"' . os#cache() . '/cquery", "completion": {"filterAndSort": false}}'],
-        \ 'clangd' : ['clangd', '-background-index'],
+        \ 'clangd' : ['clangd', '--background-index'],
         \ 'gopls'  : ['gopls'],
         \ 'bash-language-server': ['bash-language-server', 'start'],
         \ }
+
     let l:servers = l:langservers[a:language]
     let l:cmd = []
     for l:server in l:servers

@@ -146,6 +146,8 @@ function! plugins#init() abort
 
         " C/C++ project generator
         " Plug 'rdnetto/ycm-generator', { 'branch': 'stable' }
+    elseif has('nvim-0.5') && tools#CheckLanguageServer()
+        Plug 'neovim/nvim-lsp'
     elseif has#async() && tools#CheckLanguageServer()
         Plug 'natebosch/vim-lsc'
     elseif has('nvim-0.2.0') && has#python('3', '4')

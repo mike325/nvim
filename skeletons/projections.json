@@ -1,12 +1,7 @@
 {
-    ".projections.json"    : { "type": "Projections" },
-    ".gitignore"           : { "type": "Gitignore" },
-    ".git/hooks/*"         : { "type": "GitHooks" },
-    ".git/config"          : { "type": "Git" },
-    ".ycm_extra_conf.py"   : { "type": "ConfigYCM" },
-    ".git/info/*"          : { "type": "Git" },
-    "project.vim"          : { "type": "Project" },
-    "README.md"            : { "type": "Readme" },
-    "LICENSE"              : { "type": "License" },
-    "clang-format"         : { "type": "ClangFormat" }
+  "example.c" : { "type": "Example" },
+  "*.c"       : {
+    "type": "Source",
+    "alternate": "{}.h"
+  }
 }

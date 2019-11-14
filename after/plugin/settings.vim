@@ -37,6 +37,9 @@ let g:lua_complete_omni = 1
 " Always prefer latex over plain text for *.tex files
 let g:tex_flavor = 'latex'
 
+" Use C for .h headers
+let g:c_syntax_for_h = 1
+
 if exists('+scrollback')
     set scrollback=-1
 endif
