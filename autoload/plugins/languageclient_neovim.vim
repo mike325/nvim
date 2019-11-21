@@ -31,7 +31,6 @@ function! plugins#languageclient_neovim#LanguageMappings() abort
         nnoremap <buffer> <silent> K    :call LanguageClient#textDocument_hover()<CR>
         nnoremap <buffer> <silent> gD   :call LanguageClient#textDocument_definition()<CR>
         nnoremap <buffer> <silent> gsr  :call LanguageClient#textDocument_references({'includeDeclaration': v:true})<CR>
-
     endif
 endfunction
 
@@ -69,7 +68,7 @@ function! plugins#languageclient_neovim#init(data) abort
         autocmd!
     augroup end
 
-    if executable('ccls') || executable('cquery') || executable('clangd')
+    if tools#getLanguageServer('c')
         let g:LanguageClient_serverCommands.c = tools#getLanguageServer('c')
         let g:LanguageClient_serverCommands.cpp = g:LanguageClient_serverCommands.c
         let l:supported_languages += ['c', 'cpp']
@@ -124,13 +123,13 @@ function! plugins#languageclient_neovim#init(data) abort
 
     endif
 
-    if executable('bash-language-server')
+    if tools#getLanguageServer('sh')
         let g:LanguageClient_serverCommands.sh = tools#getLanguageServer('sh')
         let g:LanguageClient_serverCommands.bash = g:LanguageClient_serverCommands.sh
         let l:supported_languages += ['sh', 'bash']
     endif
 
-    if executable('pyls')
+    if tools#getLanguageServer('python')
         let g:LanguageClient_serverCommands.python = tools#getLanguageServer('python')
         let l:supported_languages += ['python']
         autocmd  LanguageCmds FileType python command! -buffer WorkspaceSymbols call LanguageClient#workspace_symbol()
