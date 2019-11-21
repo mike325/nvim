@@ -11,11 +11,11 @@ import os
 import os.path as p
 import sys
 import logging
-import re
+# import re
 try:
     import ycm_core
 except ImportError:
-    logging.warn('No ycm_core module found')
+    logging.warning('No ycm_core module found')
 
 _DEBUG = True
 
