@@ -8,7 +8,7 @@ if exists('g:settings_loaded')
 endif
 
 if has('nvim')
-    call nvim#init()
+    lua require('mikecommon')
 else
     call vim#init()
 endif
@@ -99,54 +99,7 @@ endif
 " Don't use the system's clipboard whenever we run in SSH session or we don't have 'clipboard' option available
 " NOTE: Windows terminal doesn't have mouse support, so this wont have effect for vim/neovim TUI
 if empty($SSH_CONNECTION) && has('clipboard')
-    if has('nvim')
-        " Neovim in unix require external programs to use system's clipboard
-        let s:copy = {}
-        let s:paste = {}
-        if os#name('windows') && executable('win32yank')
-
-            let s:copy['+'] = 'win32yank.exe -i --crlf'
-            let s:paste['+'] = 'win32yank.exe -o --lf'
-            let s:copy['*'] = s:copy['+']
-            let s:paste['*'] = s:paste['+']
-
-            let g:clipboard = {
-                        \   'name': 'win32yank',
-                        \   'copy': s:copy,
-                        \   'paste': s:paste,
-                        \   'cache_enabled': 1,
-                        \ }
-        elseif !os#name('windows') && executable('xclip')
-            let s:copy['+'] = 'xclip -quiet -i -selection clipboard'
-            let s:paste['+'] = 'xclip -o -selection clipboard'
-            let s:copy['*'] = 'xclip -quiet -i -selection primary'
-            let s:paste['*'] = 'xclip -o -selection primary'
-            let g:clipboard = {
-                        \   'name': 'xclip',
-                        \   'copy': s:copy,
-                        \   'paste': s:paste,
-                        \   'cache_enabled': 1,
-                        \ }
-        elseif !os#name('windows') && executable('pbcopy')
-            let s:copy['+'] = 'pbcopy'
-            let s:paste['+'] = 'pbpaste'
-            let s:copy['*'] = s:copy['+']
-            let s:paste['*'] = s:paste['+']
-            let g:clipboard = {
-                        \   'name': 'pbcopy',
-                        \   'copy': s:copy,
-                        \   'paste': s:paste,
-                        \   'cache_enabled': 1,
-                        \ }
-        endif
-        if exists('g:clipboard')
-            set clipboard+=unnamedplus,unnamed
-            if has('mouse')
-                set mouse=a    " We have mouse support, so we use it
-                set mousehide  " Hide mouse when typing text
-            endif
-        endif
-    else
+    if !has('nvim')
         " We assume that Vim's magic clipboard will work (hopefully, not warranty)
         set clipboard+=unnamedplus,unnamed
         if has('mouse')

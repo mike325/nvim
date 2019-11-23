@@ -16,6 +16,7 @@ endfunction
 
 function! nvim#LanguageMappings() abort
     if tools#CheckLanguageServer(&filetype)
+
         command! -buffer  Definition      call lsp#text_document_definition()
         command! -buffer  Declaration     call lsp#text_document_declaration()
         command! -buffer  Hover           call lsp#text_document_hover()
@@ -78,15 +79,11 @@ function! nvim#init() abort
         let $snvr = 'nvr -cc split --remote-silent'
     endif
 
-    if has('nvim-0.2')
-        set cpoptions-=_
-    endif
-
     let g:terminal_scrollback_buffer_size = 100000
 
-    " always show signcolumns
     if has('nvim-0.2')
         set signcolumn=auto
+        set cpoptions-=_
     endif
 
     if exists('g:gonvim_running')

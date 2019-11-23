@@ -18,7 +18,8 @@ if has('nvim') || has('terminal')
         if os#name('windows')
             let l:shell = (&shell =~? '^cmd\(\.exe\)\?$') ? 'powershell -noexit -executionpolicy bypass ' : &shell
             if has('nvim-0.4')
-                let l:buf = tools#createFloatingBuffer()
+                " let l:buf = tools#createFloatingBuffer()
+                lua require("floating").window()
                 execute 'edit term://' . l:shell . ' ' . a:cmd
                 setlocal nonumber norelativenumber
             elseif has('nvim')
@@ -30,7 +31,8 @@ if has('nvim') || has('terminal')
         else
             let l:shell = mappings#UnixShell()
             if has('nvim-0.4')
-                let l:buf = tools#createFloatingBuffer()
+                " let l:buf = tools#createFloatingBuffer()
+                lua require("floating").window()
                 execute 'edit term://' . l:shell . ' ' . a:cmd
                 setlocal nonumber norelativenumber
             elseif has('nvim')

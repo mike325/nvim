@@ -55,7 +55,7 @@ function! plugins#fzf_vim#init(data) abort
     endif
 
     if has('nvim-0.4')
-        let g:fzf_layout = { 'window': 'call tools#createFloatingBuffer()' }
+        let g:fzf_layout = { 'window': 'lua require("floating").window()' }
     endif
 
     nnoremap <C-p> :Files<CR>
