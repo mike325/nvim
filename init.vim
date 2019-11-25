@@ -108,22 +108,11 @@ else
 
     call plug#end()
 
-    function s:Convert2settings(name)
-        let l:name = (a:name =~? '[\.\-]') ? substitute(a:name, '[\.\-]', '_', 'g') : a:name
-        let l:name = substitute(l:name, '.', '\l\0', 'g')
-        return l:name
-    endfunction
-
-    let s:available_configs = map(glob(vars#basedir() . '/autoload/plugins/*.vim', 0, 1, 0), 'fnamemodify(v:val, ":t:r")')
-
-    try
-        for [s:name, s:data] in items(filter(deepcopy(g:plugs), 'index(s:available_configs, s:Convert2settings(v:key), 0) != -1'))
-            let s:func_name = s:Convert2settings(s:name)
-            call plugins#{s:func_name}#init(s:data)
-        endfor
-    catch
-        echomsg 'Error trying to read config from ' . s:name
-    endtry
+    if has('nvim')
+        " lua require('plugins/settings')
+    else
+        call plugins#settings()
+    endif
 
 endif
 
