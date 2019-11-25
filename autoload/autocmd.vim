@@ -34,7 +34,6 @@ function! autocmd#CleanFile() abort
 endfunction
 
 function! autocmd#FileName(...) abort
-
     let l:filename = expand('%:t:r')
     let l:extension = expand('%:e')
 
@@ -79,7 +78,6 @@ function! autocmd#FileName(...) abort
         execute 'bwipeout! ' . l:skeleton
         execute '1delete_'
     endif
-
 endfunction
 
 function! autocmd#FindProjectRoot(path) abort
