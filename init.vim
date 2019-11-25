@@ -53,8 +53,11 @@ if (!executable('git') && !isdirectory(fnameescape(vars#basedir().'/plugged'))) 
     let g:bare = 1
 endif
 
-" TODO: Should minimal include lightweight tpope's plugins ?
-call set#initconfigs()
+if has('nvim')
+    lua require('mikecommon')
+else
+    call set#initconfigs()
+endif
 
 if exists('g:bare')
 
@@ -116,8 +119,8 @@ else
 
 endif
 
-if filereadable(vars#basedir() . '/local.vim')
-    execute 'source ' . vars#basedir() . '/local.vim'
-endif
+" if filereadable(vars#basedir() . '/local.vim')
+"     execute 'source ' . vars#basedir() . '/local.vim'
+" endif
 
 " }}} END Initialize plugins

@@ -7,9 +7,7 @@ if exists('g:settings_loaded')
     finish
 endif
 
-if has('nvim')
-    lua require('mikecommon')
-else
+if !has('nvim')
     call vim#init()
 endif
 
@@ -102,10 +100,10 @@ if empty($SSH_CONNECTION) && has('clipboard')
     if !has('nvim')
         " We assume that Vim's magic clipboard will work (hopefully, not warranty)
         set clipboard+=unnamedplus,unnamed
-        if has('mouse')
-            set mouse=a    " We have mouse support, so we use it
-            set mousehide  " Hide mouse when typing text
-        endif
+    endif
+    if has('mouse')
+        set mouse=a    " We have mouse support, so we use it
+        set mousehide  " Hide mouse when typing text
     endif
 else
     " let g:clipboard = {}
