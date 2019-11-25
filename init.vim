@@ -109,7 +109,7 @@ else
     call plug#end()
 
     if has('nvim')
-        " lua require('plugins/settings')
+        lua require('plugins/settings')
     else
         call plugins#settings()
     endif
