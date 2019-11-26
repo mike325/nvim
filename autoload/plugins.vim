@@ -159,7 +159,7 @@ function! plugins#init() abort
         if has#python('3', '5', '1')
             Plug 'ycm-core/YouCompleteMe', { 'do': function('plugins#youcompleteme#install') }
         else
-            Plug 'ycm-core/YouCompleteMe', { 'commit': '299f8e48e7d34e780d24b4956cd61e4d42a139eb', 'do': function('plugins#youcompleteme#install') , 'frozen', 1}
+            Plug 'ycm-core/YouCompleteMe', { 'commit': '299f8e48e7d34e780d24b4956cd61e4d42a139eb', 'do': function('plugins#youcompleteme#install') , 'frozen': 1}
         endif
         " Plug 'davits/DyeVim'
 
