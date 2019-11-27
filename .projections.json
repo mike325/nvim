@@ -5,8 +5,6 @@
   "init.vim"                   : { "type": "Init", "alternate" : "ginit.vim"},
   "ginit.vim"                  : { "type": "Ginit", "alternate": "init.vim"},
   "lua/*.lua"                  : { "type": "Lua"},
-  "lua/helper/*.lua"           : { "type": "LuaHelper"},
-  "lua/host/*.lua"             : { "type": "LuaHost"},
   "rplugins/python3/*.py"      : { "type": "RPython3"},
   "rplugins/python/*.py"       : { "type": "RPython"},
   "python3/*.py"               : { "type": "Python3"},
