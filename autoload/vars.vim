@@ -37,6 +37,13 @@ function! s:setupdirs() abort
         return
     endif
 
+    if has('nvim')
+        let s:homedir = luaeval("require('sys').home")
+        let s:basedir = luaeval("require('sys').base")
+        let s:datadir = luaeval("require('sys').data")
+        return
+    endif
+
     let s:homedir =  substitute( expand( os#name('windows') ? $USERPROFILE : $HOME), '\', '/', 'g' )
 
     if empty($XDG_DATA_HOME)

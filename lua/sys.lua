@@ -9,11 +9,23 @@ local function homedir(...)
 end
 
 local function basedir(...)
-    return vim.api.nvim_call_function('stdpath', {'config'}):gsub('\\', '/')
+    local basedir = vim.api.nvim_call_function('stdpath', {'config'}):gsub('\\', '/')
+
+    if not vim.api.nvim_call_function('isdirectory', {basedir}) then
+        vim.api.nvim_call_function('mkdir', {basedir, 'p'})
+    end
+
+    return basedir
 end
 
 local function datadir(...)
-    return vim.api.nvim_call_function('stdpath', {'data'}):gsub('\\', '/')
+    local datadir = vim.api.nvim_call_function('stdpath', {'data'}):gsub('\\', '/')
+
+    if not vim.api.nvim_call_function('isdirectory', {datadir}) then
+        vim.api.nvim_call_function('mkdir', {datadir, 'p'})
+    end
+
+    return datadir
 end
 
 local sys = {

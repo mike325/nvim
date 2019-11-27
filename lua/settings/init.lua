@@ -6,10 +6,6 @@ local function isempty(s)
     return s == nil or s == ''
 end
 
-if not vim.api.nvim_call_function('isdirectory', {parent}) then
-    vim.api.nvim_call_function('mkdir', {parent, 'p'})
-end
-
 local dirpaths = {
     backup   = 'backupdir',
     swap     = 'directory',

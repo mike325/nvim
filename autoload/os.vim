@@ -29,7 +29,6 @@ function! s:os_type(os) abort
     return l:is_type
 endfunction
 
-
 function! os#cache() abort
     if has('nvim-0.2')
         return stdpath('cache')
