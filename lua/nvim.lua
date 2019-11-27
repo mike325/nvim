@@ -50,4 +50,11 @@ nvim.has_version = function(version)
     return vim.api.nvim_call_function('has', {'nvim-'..version})
 end
 
+nvim.get_env = function(env)
+    local value = vim.loop.os_getenv(env)
+    return value ~= nil and value or nil
+end
+
+nvim.set_env = function(env, value) vim.loop.os_setenv(env, value) end
+
 return nvim

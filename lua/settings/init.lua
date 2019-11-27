@@ -1,5 +1,6 @@
 -- local nvim = require('mikecommon/nvim')
 local parent = require('sys').data
+local get_env = require('nvim').get_env
 
 local function isempty(s)
     return s == nil or s == ''
@@ -91,6 +92,6 @@ vim.api.nvim_set_option('backupskip', table.concat(no_backup, ',') .. ',' .. tab
 --     nvimFuncWrapper('nvim#lsp')
 -- end
 
-if vim.loop.os_getenv('SSH_CONNECTION') == nil then
+if get_env('SSH_CONNECTION') == nil then
     vim.api.nvim_set_option('clipboard', 'unnamedplus,unnamed')
 end
