@@ -31,6 +31,7 @@ let s:ignores_patterns = {
 let s:basedir = ''
 let s:homedir = ''
 let s:datadir = ''
+let s:cache   = ''
 
 function! s:setupdirs() abort
     if !empty(s:homedir) && !empty(s:basedir)
@@ -38,9 +39,10 @@ function! s:setupdirs() abort
     endif
 
     if has('nvim')
-        let s:homedir = luaeval("require('sys').home")
-        let s:basedir = luaeval("require('sys').base")
-        let s:datadir = luaeval("require('sys').data")
+        let s:homedir  = luaeval("require('sys').home")
+        let s:basedir  = luaeval("require('sys').base")
+        let s:datadir  = luaeval("require('sys').data")
+        let s:cachedir = luaeval("require('sys').cache")
         return
     endif
 
