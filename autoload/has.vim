@@ -21,14 +21,20 @@ function! has#python(...) abort
     else
         if !exists('s:pyversion')
             if exists('g:python_host_prog')
-                " python import platform
                 let s:pyversion = {'2' : ''}
-                let s:pyversion['2'] = matchstr(system(g:python_host_prog . ' --version'), "\\S\\+\\ze\n")
+                if has('nvim')
+                    let s:pyversion['2'] = luaeval("require('python').python2.version")
+                else
+                    let s:pyversion['2'] = matchstr(system(g:python_host_prog . ' --version'), "\\S\\+\\ze\n")
+                endif
             endif
             if exists('g:python3_host_prog')
-                " python3 import platform
                 let s:pyversion = exists('s:pyversion["2"]') ? {'2': s:pyversion['2'], '3': ''} : {'3': ''}
-                let s:pyversion['3'] = matchstr(system(g:python3_host_prog . ' --version'), "\\S\\+\\ze\n")
+                if has('nvim')
+                    let s:pyversion['3'] = luaeval("require('python').python3.version")
+                else
+                    let s:pyversion['3'] = matchstr(system(g:python3_host_prog . ' --version'), "\\S\\+\\ze\n")
+                endif
             endif
         endif
 

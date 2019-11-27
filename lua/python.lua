@@ -46,6 +46,11 @@ local function get_python_exe(version)
         if get_var(deactivate) ~= nil then
             vim.api.nvim_del_var(deactivate)
         end
+
+        local full_version = vim.api.nvim_call_function('system', {pyexe .. ' --version'})
+        full_version = string.match(full_version, '[%d%p]+')
+        python[pyversion]['version'] = full_version
+
     else
         vim.api.nvim_set_var(deactivate, 0)
     end
