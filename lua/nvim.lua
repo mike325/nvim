@@ -1,14 +1,6 @@
 -- luacheck: globals unpack vim
 local nvim = {}
 
-nvim.plugs = nil
-local ok, plugs = pcall(vim.api.nvim_get_var, 'plugs')
-
-if ok then
-    nvim.plugs = plugs
-end
-
-
 local function nvimFuncWrapper (name, ...)
     return vim.api.nvim_call_function(name, {...})
 end

@@ -54,7 +54,7 @@ if (!executable('git') && !isdirectory(fnameescape(vars#basedir().'/plugged'))) 
 endif
 
 if has('nvim')
-    lua require('mikecommon')
+    lua require('settings')
 else
     call set#initconfigs()
 endif
@@ -112,7 +112,7 @@ else
     call plug#end()
 
     if has('nvim')
-        lua require('plugins/settings')
+        lua require('plugins')
     else
         call plugins#settings()
     endif
