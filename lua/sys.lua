@@ -1,38 +1,51 @@
--- local nvim = require('mikecommon/nvim')
+local mkdir       = require('nvim').mkdir
+local stdpath     = require('nvim').stdpath
+local isdirectory = require('nvim').isdirectory
 
-local function system_name(...)
+local function system_name()
     return vim.loop.os_uname()['sysname']:lower():gsub('_.*', '')
 end
 
-local function homedir(...)
+local function homedir()
     return vim.loop.os_homedir():gsub('\\', '/')
 end
 
-local function basedir(...)
-    local basedir = vim.api.nvim_call_function('stdpath', {'config'}):gsub('\\', '/')
+local function basedir()
+    local basedir = stdpath('config'):gsub('\\', '/')
 
-    if not vim.api.nvim_call_function('isdirectory', {basedir}) then
-        vim.api.nvim_call_function('mkdir', {basedir, 'p'})
+    if not isdirectory(basedir) then
+        mkdir(basedir, 'p')
     end
 
     return basedir
 end
 
-local function datadir(...)
-    local datadir = vim.api.nvim_call_function('stdpath', {'data'}):gsub('\\', '/')
+local function cachedir()
+    local cachedir = stdpath('cache'):gsub('\\', '/')
 
-    if not vim.api.nvim_call_function('isdirectory', {datadir}) then
-        vim.api.nvim_call_function('mkdir', {datadir, 'p'})
+    if not isdirectory(cachedir) then
+        mkdir(cachedir, 'p')
+    end
+
+    return cachedir
+end
+
+local function datadir()
+    local datadir = stdpath('data'):gsub('\\', '/')
+
+    if not isdirectory(datadir) then
+        mkdir(datadir, 'p')
     end
 
     return datadir
 end
 
 local sys = {
-    name = system_name(),
-    home = homedir(),
-    base = basedir(),
-    data = datadir(),
+    name  = system_name(),
+    home  = homedir(),
+    base  = basedir(),
+    data  = datadir(),
+    cache = cachedir(),
 }
 
 return sys

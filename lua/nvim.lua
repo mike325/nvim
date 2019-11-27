@@ -5,17 +5,20 @@ local function nvimFuncWrapper (name, ...)
     return vim.api.nvim_call_function(name, {...})
 end
 
-nvim.getcwd = function()
-    return nvimFuncWrapper('getcwd')
-end
-
+nvim.getcwd     = function() return nvimFuncWrapper('getcwd') end
 nvim.has        = function(feature) return nvimFuncWrapper('has', feature) end
 nvim.executable = function(program) return nvimFuncWrapper('executable', program) end
 nvim.exepath    = function(program) return nvimFuncWrapper('exepath', program) end
 nvim.system     = function(cmd) return nvimFuncWrapper('system', cmd) end
 nvim.systemlist = function(cmd) return nvimFuncWrapper('systemlist', cmd) end
+nvim.stdpath    = function(path) return nvimFuncWrapper('stdpath', path) end
 nvim.split      = function(str, pattern, keepempty) return nvimFuncWrapper('split', str, pattern, keepempty) end
 nvim.join       = function(str, separator) return nvimFuncWrapper('join', str, separator) end
+
+nvim.isdirectory  = function(dir) return nvimFuncWrapper('isdirectory', dir) end
+nvim.filereadable = function(file) return nvimFuncWrapper('filereadable', file) end
+nvim.filewritable = function(file) return nvimFuncWrapper('filewritable', file) end
+nvim.mkdir        = function(dir, ...) return nvimFuncWrapper('mkdir', dir, ...) end
 
 nvim.realpath = function(path)
     path = path == '.' and getcwd() or path

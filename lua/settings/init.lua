@@ -1,6 +1,7 @@
--- local nvim = require('mikecommon/nvim')
-local parent = require('sys').data
-local get_env = require('nvim').get_env
+local parent      = require('sys').data
+local mkdir       = require('nvim').mkdir
+local get_env     = require('nvim').get_env
+local isdirectory = require('nvim').isdirectory
 
 local function isempty(s)
     return s == nil or s == ''
@@ -15,8 +16,8 @@ local dirpaths = {
 }
 
 for dirname,dir_setting in pairs(dirpaths) do
-    if not vim.api.nvim_call_function('isdirectory', {parent .. '/' .. dirname}) then
-        vim.api.nvim_call_function('mkdir', {parent .. '/' .. dirname, 'p'})
+    if not isdirectory(parent .. '/' .. dirname) then
+        mkdir(parent .. '/' .. dirname, 'p')
     end
 
     if not isempty(dir_setting) then
