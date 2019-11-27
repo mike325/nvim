@@ -1,6 +1,11 @@
 # Override lua-snippets file
-
 priority 5
+
+snippet if "if ... then ... end"
+if $1 then
+	${0:${VISUAL:-- Code}}
+end
+endsnippet
 
 snippet lfunc "local function name() end"
 local function ${1:name}(${2:args})
