@@ -1,6 +1,8 @@
 local api = vim.api
 
-local function floating_window()
+local floating = {}
+
+function floating.window()
     -- get the editor's max width and height
     local width = api.nvim_get_option("columns")
     local height = api.nvim_get_option("lines")
@@ -42,9 +44,4 @@ local function floating_window()
     end
 end
 
-
-local floating_funcs = {
-    window   = floating_window,
-}
-
-return floating_funcs
+return floating

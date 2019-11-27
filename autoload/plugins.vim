@@ -80,13 +80,13 @@ function! plugins#init() abort
         Plug 'junegunn/fzf.vim'
     elseif exists('g:gonvim_running')
         Plug 'akiyosi/gonvim-fuzzy'
-    elseif has('nvim') && has#python('3')
+    elseif has('nvim') && has('python3')
         Plug 'Shougo/denite.nvim'
         Plug 'raghur/fruzzy', {'do': { -> fruzzy#install()}}
     else
         Plug 'ctrlpvim/ctrlp.vim'
 
-        if has#python('3')
+        if has('python3')
             Plug 'raghur/fruzzy', {'do': { -> fruzzy#install()}}
         elseif has#python()
             " Fast and 'easy' to compile C CtrlP matcher

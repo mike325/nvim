@@ -1,11 +1,15 @@
 " Has Setttings
 " github.com/mike325/.vim
 
+function! s:python_setup() abort
+    return has('nvim') ? luaeval("require('python').setup()") : setup#python()
+endfunction
+
 " Check an specific version of python (empty==2)
 function! has#python(...) abort
 
-    if !exists('g:python_host_prog') || !exists('g:python3_host_prog')
-        if ! setup#python()
+    if !exists('g:python_host_prog') && !exists('g:python3_host_prog')
+        if ! s:python_setup()
             return 0
         endif
     endif
@@ -17,10 +21,12 @@ function! has#python(...) abort
     else
         if !exists('s:pyversion')
             if exists('g:python_host_prog')
+                " python import platform
                 let s:pyversion = {'2' : ''}
                 let s:pyversion['2'] = matchstr(system(g:python_host_prog . ' --version'), "\\S\\+\\ze\n")
             endif
             if exists('g:python3_host_prog')
+                " python3 import platform
                 let s:pyversion = exists('s:pyversion["2"]') ? {'2': s:pyversion['2'], '3': ''} : {'3': ''}
                 let s:pyversion['3'] = matchstr(system(g:python3_host_prog . ' --version'), "\\S\\+\\ze\n")
             endif
