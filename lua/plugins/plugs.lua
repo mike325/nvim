@@ -7,4 +7,4 @@ if ok then
     nvim.plugs = plugs
 end
 
-return nvim
+return nvim.plugs

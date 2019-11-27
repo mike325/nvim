@@ -1,5 +1,5 @@
 local nvim = require('nvim')
-local plugs = require('plugins/plugs').plugs
+local plugs = require('plugins/plugs')
 
 local function convert2settings(name)
     if name:find('-', 1, true) or name:find('.', 1, true) then
