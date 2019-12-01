@@ -5,6 +5,20 @@ scriptencoding 'utf-8'
 let s:gitversion = ''
 let s:moderngit = -1
 
+let s:langservers = {
+    \ 'python': ['pyls'],
+    \ 'c'     : ['ccls', 'clangd', 'cquery'],
+    \ 'cpp'   : ['ccls', 'clangd', 'cquery'],
+    \ 'cuda'  : ['ccls'],
+    \ 'objc'  : ['ccls'],
+    \ 'sh'    : ['bash-language-server'],
+    \ 'bash'  : ['bash-language-server'],
+    \ 'go'    : ['gopls'],
+    \ 'latex' : ['texlab'],
+    \ 'tex'   : ['texlab'],
+    \ }
+
+
 " Extracted from tpop's Fugitive plugin
 function! tools#GitVersion(...) abort
     if !executable('git')
@@ -61,17 +75,6 @@ function! tools#getLanguageServer(language) abort
         return []
     endif
 
-    let l:langservers = {
-        \ 'python': ['pyls'],
-        \ 'c'     : ['ccls', 'clangd', 'cquery'],
-        \ 'cpp'   : ['ccls', 'clangd', 'cquery'],
-        \ 'cuda'  : ['ccls'],
-        \ 'objc'  : ['ccls'],
-        \ 'sh'    : ['bash-language-server'],
-        \ 'bash'  : ['bash-language-server'],
-        \ 'go'    : ['gopls'],
-        \ }
-
     let l:cmds = {
         \ 'pyls'   : ['pyls', '--check-parent-process', '--log-file=' . os#tmp('pyls.log')],
         \ 'ccls'   : ['ccls',
@@ -82,10 +85,11 @@ function! tools#getLanguageServer(language) abort
         \             '--init={"cacheDirectory":"' . os#cache() . '/cquery", "completion": {"filterAndSort": false}}'],
         \ 'clangd' : ['clangd', '--background-index'],
         \ 'gopls'  : ['gopls'],
+        \ 'texlab' : ['texlab'],
         \ 'bash-language-server': ['bash-language-server', 'start'],
         \ }
 
-    let l:servers = l:langservers[a:language]
+    let l:servers = s:langservers[a:language]
     let l:cmd = []
     for l:server in l:servers
         if executable(l:server)
@@ -99,19 +103,8 @@ endfunction
 function! tools#CheckLanguageServer(...) abort
     let l:lang = (a:0 > 0) ? a:1 : ''
 
-    let l:langservers = {
-            \ 'python': ['pyls'],
-            \ 'c'     : ['ccls', 'cquery', 'clangd'],
-            \ 'cpp'   : ['ccls', 'cquery', 'clangd'],
-            \ 'cuda'  : ['ccls'],
-            \ 'objc'  : ['ccls'],
-            \ 'sh'    : ['bash-language-server'],
-            \ 'bash'  : ['bash-language-server'],
-            \ 'go'    : ['gopls', 'go-langerver'],
-            \ }
-
     if empty(l:lang)
-        for [l:language, l:servers] in  items(l:langservers)
+        for [l:language, l:servers] in  items(s:langservers)
             for l:server in l:servers
                 if executable(l:server)
                     return 1
@@ -119,7 +112,7 @@ function! tools#CheckLanguageServer(...) abort
             endfor
         endfor
     else
-        let l:servers = get(l:langservers, l:lang, '')
+        let l:servers = get(s:langservers, l:lang, '')
         if !empty(l:servers)
             for l:server in l:servers
                 if executable(l:server)

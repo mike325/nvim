@@ -100,12 +100,22 @@ function! plugins#youcompleteme#init(data) abort
 
     let g:ycm_python_interpreter_path = exists('g:python3_host_prog') ?  g:python3_host_prog : g:python_host_prog
 
-    let g:ycm_language_server = []
-    if tools#CheckLanguageServer('bash')
+    let g:ycm_language_server = get(g:, 'ycm_language_server', [])
+
+    if tools#CheckLanguageServer('tex')
         let g:ycm_language_server += [
             \ {
-            \     'name': 'bash',
-            \     'cmdline': tools#getLanguageServer('bash'),
+            \     'name': 'tex',
+            \     'cmdline': tools#getLanguageServer('tex'),
+            \     'filetypes': ['tex']
+            \ }]
+    endif
+
+    if tools#CheckLanguageServer('sh')
+        let g:ycm_language_server += [
+            \ {
+            \     'name': 'sh',
+            \     'cmdline': tools#getLanguageServer('sh'),
             \     'filetypes': ['bash', 'sh']
             \ }]
     endif
