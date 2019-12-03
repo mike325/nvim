@@ -185,8 +185,8 @@ function! plugins#youcompleteme#init(data) abort
     augroup YCMGoTo
         autocmd!
 
-        if exists('g:plugs["vimtex"]') && exists('g:vimtex#re#youcompleteme')
-            autocmd VimEnter * let g:ycm_semantic_triggers.tex = g:vimtex#re#youcompleteme
+        if exists('g:plugs["vimtex"]')
+            let g:ycm_semantic_triggers.tex = g:vimtex#re#youcompleteme
         endif
 
         autocmd FileType c,cpp,python,go,cs,objc,objcpp,rust,javascript nnoremap <buffer> <silent> K  :YcmCompleter GetDoc<CR>
