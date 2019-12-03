@@ -3,11 +3,6 @@
 
 " let s:load_remotes = 0
 
-" augroup UpdateRemotes
-"     autocmd!
-"     autocmd VimEnter * if s:load_remotes == 1 | UpdateRemotePlugins | endif
-" augroup end
-
 function! nvim#updateremoteplugins(info) abort
     if has('nvim')
         let s:load_remotes = 1

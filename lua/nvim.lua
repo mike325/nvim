@@ -6,7 +6,6 @@ local api = vim.api
 -- GPL3 apply to the nvim object
 nvim = setmetatable({
     l = api.loop;
-    has_version = function(version) api.nvim_call_function('has', {'nvim-'..version}) end;
     fn = setmetatable({}, {
         __index = function(self, k)
         local mt = getmetatable(self)

@@ -1,3 +1,5 @@
+local nvim = require('nvim')
+
 local plugs = require('plugins/plugs')
 local api = vim.api
 
