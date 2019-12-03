@@ -1,7 +1,9 @@
+local nvim = require('nvim')
+local api = vim.api
+
 local parent      = require('sys').data
-local mkdir       = require('nvim').mkdir
-local get_env     = require('nvim').get_env
-local isdirectory = require('nvim').isdirectory
+local mkdir       = require('nvim').fn.mkdir
+local isdirectory = require('nvim').fn.isdirectory
 
 local function isempty(s)
     return s == nil or s == ''
@@ -21,27 +23,25 @@ for dirname,dir_setting in pairs(dirpaths) do
     end
 
     if not isempty(dir_setting) then
-        vim.api.nvim_set_option(dir_setting, parent .. '/' .. dirname)
+        nvim.option[dir_setting] = parent .. '/' .. dirname
     end
 end
 
-vim.api.nvim_set_option('shada', "!,/1000,'1000,<1000,:1000,s10000,h")
+nvim.option.shada =  "!,/1000,'1000,<1000,:1000,s10000,h"
 
-vim.api.nvim_set_option('backup', true)
-vim.api.nvim_set_option('undofile', true)
-vim.api.nvim_set_option('signcolumn', 'auto')
-vim.api.nvim_set_option('inccommand', 'split')
+nvim.option.backup     = true
+nvim.option.undofile   = true
+nvim.option.signcolumn = 'auto'
+nvim.option.inccommand = 'split'
 
-vim.api.nvim_set_var('terminal_scrollback_buffer_size', 100000)
+nvim.g.terminal_scrollback_buffer_size = 100000
 
-local ok, _ = pcall(vim.api.nvim_get_var, 'gonvim_running')
-
-if ok then
-    vim.api.nvim_set_option('showmode', false)
-    vim.api.nvim_set_option('ruler', false)
+if nvim.g.gonvim_running ~= nil then
+    nvim.option.showmode = false
+    nvim.option.ruler    = false
 else
-    vim.api.nvim_set_option('titlestring', '%t (%f)')
-    vim.api.nvim_set_option('title', true)
+    nvim.option.titlestring = '%t (%f)'
+    nvim.option.title       = true
 end
 
 local wildignores = {
@@ -82,13 +82,9 @@ local no_backup = {
     'COMMIT_EDITMSG',
 }
 
-vim.api.nvim_set_option('wildignore', table.concat(wildignores, ','))
-vim.api.nvim_set_option('backupskip', table.concat(no_backup, ',') .. ',' .. table.concat(wildignores, ',') )
+nvim.option.wildignore =  table.concat(wildignores, ',')
+nvim.option.backupskip =  table.concat(no_backup, ',') .. ',' .. table.concat(wildignores, ',')
 
--- if nvim.has_version('0.5') and nvimFuncWrapper('tools#CheckLanguageServer') then
---     nvimFuncWrapper('nvim#lsp')
--- end
-
-if get_env('SSH_CONNECTION') == nil then
-    vim.api.nvim_set_option('clipboard', 'unnamedplus,unnamed')
+if nvim.env.SSH_CONNECTION == nil then
+    nvim.option.clipboard = 'unnamedplus,unnamed'
 end

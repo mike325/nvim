@@ -1,4 +1,5 @@
 local plugs = require('plugins/plugs')
+local api = vim.api
 
 local function convert2settings(name)
     if name:find('-', 1, true) or name:find('.', 1, true) then
@@ -12,7 +13,7 @@ end
 for plugin, data in pairs(plugs) do
     local name = plugin
     local func_name = convert2settings(name)
-    local ok, error_code = pcall(vim.api.nvim_call_function, 'plugins#'..func_name..'#init', {data})
+    local ok, error_code = pcall(api.nvim_call_function, 'plugins#'..func_name..'#init', {data})
     -- if not ok then
     --     -- print('Something failed "'..error_code..'" Happened trying to call '..'plugins#'..func_name..'#init')
     -- else

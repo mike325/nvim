@@ -1,6 +1,6 @@
-local mkdir       = require('nvim').mkdir
-local stdpath     = require('nvim').stdpath
-local isdirectory = require('nvim').isdirectory
+local mkdir       = require('nvim').fn.mkdir
+local stdpath     = require('nvim').fn.stdpath
+local isdirectory = require('nvim').fn.isdirectory
 
 local function system_name()
     return vim.loop.os_uname()['sysname']:lower():gsub('_.*', '')

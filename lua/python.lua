@@ -1,8 +1,11 @@
-local has        = require('nvim').has
-local exists     = require('nvim').exists
-local system     = require('nvim').system
-local exepath    = require('nvim').exepath
-local executable = require('nvim').executable
+local nvim = require('nvim')
+local api = vim.api
+
+local has        = require('nvim').fn.has
+local exists     = require('nvim').fn.exists
+local system     = require('nvim').fn.system
+local exepath    = require('nvim').fn.exepath
+local executable = require('nvim').fn.executable
 
 local python = {
     python2 = {
@@ -15,11 +18,6 @@ local python = {
     },
 }
 
-local function get_var(var)
-    local ok, value = pcall(vim.api.nvim_get_var, var)
-    return ok and value or nil
-end
-
 local function get_python_exe(version)
 
     local pyexe = nil
@@ -30,8 +28,8 @@ local function get_python_exe(version)
 
     if python[pyversion]['path'] ~= nil then
         return python[pyversion]['path']
-    elseif get_var(variable) ~= nil then
-        python[pyversion]['path'] = vim.api.nvim_get_var(variable)
+    elseif nvim.g[variable] ~= nil then
+        python[pyversion]['path'] = nvim.g[variable]
         return python[pyversion]['path']
     end
 
@@ -42,17 +40,17 @@ local function get_python_exe(version)
     if pyexe ~= nil then
         pyexe = pyexe:gsub('\\', '/')
         python[pyversion]['path'] = pyexe
-        vim.api.nvim_set_var(variable, pyexe)
-        if get_var(deactivate) ~= nil then
-            vim.api.nvim_del_var(deactivate)
+        nvim.g[variable] = pyexe
+        if nvim.g[deactivate] ~= nil then
+            nvim.g[deactivate] = nil
         end
 
-        local full_version = vim.api.nvim_call_function('system', {pyexe .. ' --version'})
+        local full_version = nvim.fn.system(pyexe .. ' --version')
         full_version = string.match(full_version, '[%d%p]+')
         python[pyversion]['version'] = full_version
 
     else
-        vim.api.nvim_set_var(deactivate, 0)
+        nvim.g[deactivate] = 0
     end
 
     return pyexe
