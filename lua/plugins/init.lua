@@ -1,4 +1,3 @@
-local nvim = require('nvim')
 local plugs = require('plugins/plugs')
 
 local function convert2settings(name)

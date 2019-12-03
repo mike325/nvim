@@ -58,7 +58,7 @@ local function get_python_exe(version)
     return pyexe
 end
 
-function python.setup()
+function python:setup()
 
     local has_python = 0
 
