@@ -83,9 +83,9 @@ endfunction
 function! autocmd#FindProjectRoot(path) abort
     let l:project_root = ''
     let l:markers = ['.git', '.svn', '.hg']
+    let l:dir = fnamemodify(a:path, ':p')
 
     for l:marker in l:markers
-        let l:dir = fnamemodify(a:path, ':p')
         let l:project_root = finddir(l:marker, l:dir.';')
         if l:marker =~# '\.git' && empty(l:project_root)
             let l:project_root = findfile(l:marker, l:dir.';')
