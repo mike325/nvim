@@ -16,9 +16,11 @@ for plugin, data in pairs(plugs) do
     local name = plugin
     local func_name = convert2settings(name)
     local ok, error_code = pcall(api.nvim_call_function, 'plugins#'..func_name..'#init', {data})
-    -- if not ok then
-    --     -- print('Something failed "'..error_code..'" Happened trying to call '..'plugins#'..func_name..'#init')
-    -- else
-    --     -- print('Success calling plugins#'..func_name..'#init')
-    -- end
+    if not ok then
+        if not string.match(error_code, 'Vim:E117') then
+            print('Something failed "'..error_code..'" Happened trying to call '..'plugins#'..func_name..'#init')
+        end
+    else
+        -- print('Success calling plugins#'..func_name..'#init')
+    end
 end

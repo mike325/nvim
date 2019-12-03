@@ -166,7 +166,9 @@ function! plugins#youcompleteme#init(data) abort
             \ 'git': 1,
     \}
 
-    let g:ycm_semantic_triggers = get(g: 'ycm_semantic_triggers', {})
+    if !exists('g:ycm_semantic_triggers')
+        let g:ycm_semantic_triggers = {}
+    endif
 
     " let g:ycm_server_log_level      = 'debug'
     " let g:ycm_server_use_vim_stdout = 1

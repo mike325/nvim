@@ -154,11 +154,8 @@ function! plugins#deoplete_nvim#init(data) abort
 
     try
         if exists('g:plugs["vimtex"]')
-            call deoplete#custom#var('omni', 'input_patterns', {
-                    \ 'tex': g:vimtex#re#deoplete
-                    \})
+            call deoplete#custom#var('omni', 'input_patterns', {'tex': g:vimtex#re#deoplete})
         endif
     catch
-        "
     endtry
 endfunction
