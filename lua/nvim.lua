@@ -20,9 +20,9 @@ local function nvim_get_mapping(m, lhs, ...)
     local mode = modes[m] ~= nil and modes[m] or m
 
     if opts['buffer'] ~= nil and opts['buffer'] == true then
-        mappings = vim.api.nvim_buf_get_keymap(mode)
+        mappings = api.nvim_buf_get_keymap(mode)
     else
-        mappings = vim.api.nvim_get_keymap(mode)
+        mappings = api.nvim_get_keymap(mode)
     end
 
     for _,map in pairs(mappings) do
@@ -54,18 +54,71 @@ local function nvim_set_mapping(m, lhs, rhs, ...)
         opts['buffer'] = nil
 
         if rhs ~= nil then
-            vim.api.nvim_buf_set_keymap(0, mode, lhs, rhs, opts)
+            api.nvim_buf_set_keymap(0, mode, lhs, rhs, opts)
         else
-            vim.api.nvim_buf_del_keymap(0, mode, lhs)
+            api.nvim_buf_del_keymap(0, mode, lhs)
         end
     else
         if rhs ~= nil then
-            vim.api.nvim_set_keymap(mode, lhs, rhs, opts)
+            api.nvim_set_keymap(mode, lhs, rhs, opts)
         else
-            vim.api.nvim_del_keymap(mode, lhs)
+            api.nvim_del_keymap(mode, lhs)
         end
     end
 
+end
+
+local function nvim_set_autocmd(event, pattern, cmd, ...)
+    local opts = ...
+    local once = nil
+    local group = nil
+    local nested = nil
+    local autocmd = {'autocmd'}
+
+    if opts ~= nil then
+        group = opts['group'] ~= nil and opts['group'] or nil
+        once = opts['once'] ~= nil and '++once' or nil
+        nested = opts['nested'] ~= nil and '++nested' or nil
+    end
+
+    if group ~= nil then
+        table.insert(autocmd, group)
+    end
+
+    if event ~= nil then
+        if type(event) == 'table' then
+            table.concat(event, ',')
+        end
+
+        table.insert(autocmd, event)
+    end
+
+    if pattern ~= nil then
+        if type(pattern) == 'table' then
+            table.concat(pattern, ',')
+        end
+
+        table.insert(autocmd, pattern)
+    end
+
+    if once ~= nil then
+        table.insert(autocmd, once)
+    end
+
+    if nested ~= nil then
+        table.insert(autocmd, nested)
+    end
+
+    if cmd == nil then
+        autocmd[1] = 'autocmd!'
+    else
+        table.insert(autocmd, cmd)
+    end
+
+    autocmd = table.concat(autocmd, ' ')
+    print(autocmd)
+
+    api.nvim_command(autocmd)
 end
 
 -- Took from https://github.com/norcalli/nvim_utils
@@ -74,6 +127,7 @@ nvim = setmetatable({
     l = api.loop;
     nvim_get_mapping = nvim_get_mapping;
     nvim_set_mapping = nvim_set_mapping;
+    nvim_set_autocmd = nvim_set_autocmd;
     fn = setmetatable({}, {
         __index = function(self, k)
         local mt = getmetatable(self)
