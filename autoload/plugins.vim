@@ -27,11 +27,8 @@ function! plugins#init() abort
     " Plug 'sickill/vim-monokai'
     " Plug 'nanotech/jellybeans.vim'
     " Plug 'whatyouhide/vim-gotham'
-    if has('nvim')
-        Plug 'ayu-theme/ayu-vim'
-    else
-        Plug 'joshdick/onedark.vim'
-    endif
+    Plug 'ayu-theme/ayu-vim'
+    Plug 'joshdick/onedark.vim'
 
     " }}} END Colorschemes
 
