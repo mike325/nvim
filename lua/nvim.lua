@@ -9,17 +9,19 @@ local function nvim_get_mapping(m, lhs, ...)
     local opts = ...
 
     local modes = {
-        normal = 'n',
-        insert = 'i',
-        visual = 'v',
-        select  = 's',
-        command = 'c',
-        terminal = 't',
+        normal   = "n",
+        visual   = "v",
+        operator = "o",
+        insert   = "i",
+        command  = "c",
+        select   = "s",
+        langmap  = "l",
+        terminal = "t",
     }
 
     local mode = modes[m] ~= nil and modes[m] or m
 
-    if opts['buffer'] ~= nil and opts['buffer'] == true then
+    if opts ~= nil and opts['buffer'] ~= nil and opts['buffer'] == true then
         mappings = api.nvim_buf_get_keymap(mode)
     else
         mappings = api.nvim_get_keymap(mode)
@@ -40,17 +42,19 @@ local function nvim_set_mapping(m, lhs, rhs, ...)
     local opts = ...
 
     local modes = {
-        normal = 'n',
-        insert = 'i',
-        visual = 'v',
-        select  = 's',
-        command = 'c',
-        terminal = 't',
+        normal   = "n",
+        visual   = "v",
+        operator = "o",
+        insert   = "i",
+        command  = "c",
+        select   = "s",
+        langmap  = "l",
+        terminal = "t",
     }
 
     local mode = modes[m] ~= nil and modes[m] or m
 
-    if opts['buffer'] ~= nil and opts['buffer'] == true then
+    if opts ~= nil and opts['buffer'] ~= nil and opts['buffer'] == true then
         opts['buffer'] = nil
 
         if rhs ~= nil then
