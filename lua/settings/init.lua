@@ -1,5 +1,7 @@
-local nvim = require('nvim')
 local api = vim.api
+
+local sys  = require('sys')
+local nvim = require('nvim')
 
 local parent      = require('sys').data
 local mkdir       = require('nvim').fn.mkdir
@@ -7,6 +9,15 @@ local isdirectory = require('nvim').fn.isdirectory
 
 local function isempty(s)
     return s == nil or s == ''
+end
+
+local function set_option(option, value)
+    if type(value) == 'boolean' then
+        local setcmd = value and 'set ' or 'set no'
+        api.nvim_command(setcmd .. option)
+    else
+        api.nvim_command('set ' .. option .. '=' .. value)
+    end
 end
 
 local dirpaths = {
@@ -27,14 +38,74 @@ for dirname,dir_setting in pairs(dirpaths) do
     end
 end
 
+nvim.g.lua_complete_omni = 1
+nvim.g.tex_flavor = 'latex'
+nvim.g.c_syntax_for_h = 1
+nvim.g.terminal_scrollback_buffer_size = 100000
+
 nvim.option.shada =  "!,/1000,'1000,<1000,:1000,s10000,h"
 
-nvim.option.backup     = true
-nvim.option.undofile   = true
-nvim.option.signcolumn = 'auto'
-nvim.option.inccommand = 'split'
+nvim.option.scrollback  = -1
+nvim.option.softtabstop = -1
+nvim.option.shiftwidth  = 4
+nvim.option.tabstop     = 4
+nvim.option.updatetime  = 1000
 
-nvim.g.terminal_scrollback_buffer_size = 100000
+nvim.option.sidescrolloff = 5
+nvim.option.scrolloff     = 1
+nvim.option.undolevels    = 10000
+
+nvim.option.inccommand    = 'split'
+nvim.option.winaltkeys    = 'no'
+nvim.option.virtualedit   = 'block'
+nvim.option.formatoptions = 'tcqrolnj'
+nvim.option.backupcopy    = 'yes'
+
+nvim.option.complete    = '.,w,b,u,t'
+nvim.option.completeopt = 'menuone,preview'
+nvim.option.tags        = '.git/tags,./tags;,tags'
+nvim.option.display     = 'lastline,msgsep'
+nvim.option.fileformats = 'unix,dos'
+
+nvim.option.wildmenu = true
+nvim.option.wildmode = 'full'
+
+nvim.option.showbreak      = '↪\\'
+nvim.option.listchars      = 'tab:▸ ,trail:•,extends:❯,precedes:❮'
+nvim.option.sessionoptions = 'buffers,curdir,folds,globals,localoptions,options,resize,tabpages,winpos,winsize'
+
+if sys.name == 'windows' then
+    nvim.option.sessionoptions = nvim.option.sessionoptions .. ',slash,unix'
+end
+
+nvim.option.lazyredraw = true
+nvim.option.showmatch  = true
+
+nvim.option.splitright = true
+nvim.option.splitbelow = true
+
+nvim.option.backup   = true
+nvim.option.undofile = true
+
+nvim.option.termguicolors = true
+
+nvim.option.infercase  = true
+nvim.option.ignorecase = true
+
+nvim.option.smartindent = true
+nvim.option.copyindent  = true
+
+nvim.option.expandtab = true
+
+nvim.option.joinspaces = false
+nvim.option.showmode   = false
+nvim.option.visualbell = true
+nvim.option.shiftround = true
+
+nvim.option.hidden = true
+
+nvim.option.autowrite    = true
+nvim.option.autowriteall = true
 
 if nvim.g.gonvim_running ~= nil then
     nvim.option.showmode = false
@@ -42,6 +113,32 @@ if nvim.g.gonvim_running ~= nil then
 else
     nvim.option.titlestring = '%t (%f)'
     nvim.option.title       = true
+end
+
+if nvim.has_version('0.3.3') then
+    nvim.option.diffopt = 'internal,filler,vertical,iwhiteall,iwhiteeol,indent-heuristic,algorithm:patience'
+else
+    nvim.option.diffopt = 'filler,vertical,iwhite'
+end
+
+local rare_options = {
+    signcolumn     = 'auto',
+    cpoptions      = 'aAceFs_B',
+    numberwidth    = 1,
+    colorcolumn    = 80,
+    breakindent    = true,
+    relativenumber = true,
+    number         = true,
+    list           = true,
+    wrap           = false,
+    foldenable     = false,
+    foldmethod     = 'syntax',
+    foldlevel      = 99,
+    foldcolumn     = 0,
+}
+
+for option,value in pairs(rare_options) do
+    set_option(option, value)
 end
 
 local wildignores = {
@@ -86,5 +183,8 @@ nvim.option.wildignore =  table.concat(wildignores, ',')
 nvim.option.backupskip =  table.concat(no_backup, ',') .. ',' .. table.concat(wildignores, ',')
 
 if nvim.env.SSH_CONNECTION == nil then
+    nvim.option.mouse     = 'a'
     nvim.option.clipboard = 'unnamedplus,unnamed'
+else
+    nvim.option.mouse     = ''
 end

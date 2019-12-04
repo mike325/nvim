@@ -7,7 +7,9 @@ if exists('g:settings_loaded')
     finish
 endif
 
-if !has('nvim')
+if has('nvim')
+    finish
+else
     call vim#init()
 endif
 
