@@ -299,6 +299,7 @@ function install_pynvim() {
 function run_test() {
     local prog="$1"
     local rsp=0
+    local args
     if [[ $prog == nvim ]]; then
         if [[ $_PYTHON2 -eq 0 ]] && [[ $_PYTHON3 -eq 0 ]]; then
             local testname="stable Neovim without python"
@@ -313,7 +314,11 @@ function run_test() {
 
     for test_type in  "${_TEST_TYPE[@]}"; do
 
-        local args="-u $(get_runtime_files ${prog}) ${_ARGS} $exit_args"
+        args="-u $(get_runtime_files ${prog}) ${_ARGS}"
+        if [[ $prog == vim ]]; then
+            args="$args -N"
+        fi
+        args="$args $exit_args"
 
         if [[ $test_type == full ]]; then
             args=" ${args} -c 'PlugInstall' "
