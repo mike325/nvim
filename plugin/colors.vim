@@ -24,6 +24,8 @@ let g:gruvbox_invert_tabline       = 0
 let g:gruvbox_improved_warnings    = 1
 let g:gruvbox_improved_strings     = 0
 
+let g:ayucolor = 'dark'
+
 try
 
     " let g:gruvbox_italic               = 1
