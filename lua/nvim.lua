@@ -121,6 +121,10 @@ local function nvim_set_autocmd(event, pattern, cmd, ...)
     api.nvim_command(autocmd)
 end
 
+local function has_version(version)
+    return api.nvim_call_function('has', {'nvim-'..version})
+end
+
 -- Took from https://github.com/norcalli/nvim_utils
 -- GPL3 apply to the nvim object
 nvim = setmetatable({
@@ -128,6 +132,7 @@ nvim = setmetatable({
     nvim_get_mapping = nvim_get_mapping;
     nvim_set_mapping = nvim_set_mapping;
     nvim_set_autocmd = nvim_set_autocmd;
+    has_version = has_version;
     fn = setmetatable({}, {
         __index = function(self, k)
         local mt = getmetatable(self)
