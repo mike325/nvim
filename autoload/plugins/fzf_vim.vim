@@ -18,15 +18,7 @@ endfunction
 function! plugins#fzf_vim#install(info) abort
     if !os#name('windows')
         let l:cmd = ['./install', '--all', '--no-update-rc']
-        " if has('nvim')
-        "
-        "     let l:args = {
-        "         \   'detach': 1,
-        "         \ }
-        "     silent! call jobstart(l:cmd, l:args)
-        " else
         silent! call system(join(l:cmd, ' '))
-        " endif
     endif
 endfunction
 
@@ -57,6 +49,18 @@ function! plugins#fzf_vim#init(data) abort
     if has('nvim-0.4')
         let g:fzf_layout = { 'window': 'lua require("floating").window()' }
     endif
+
+    " An action can be a reference to a function that processes selected lines
+    function! s:build_quickfix_list(lines) abort
+        call setqflist(map(copy(a:lines), '{ "filename": v:val }'))
+    endfunction
+
+    let g:fzf_action = {
+    \   'ctrl-q': function('s:build_quickfix_list'),
+    \   'ctrl-t': 'tab split',
+    \   'ctrl-x': 'split',
+    \   'ctrl-v': 'vsplit'
+    \ }
 
     nnoremap <C-p> :Files<CR>
     nnoremap <C-b> :Buffers<CR>
