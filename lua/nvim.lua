@@ -219,6 +219,14 @@ nvim = setmetatable({
             return api.nvim_set_option(k, v)
         end
     });
+    wo = setmetatable({}, {
+        __index = function(_, k)
+            return api.nvim_win_get_option(0, k)
+        end;
+        __newindex = function(_, k, v)
+            return api.nvim_win_set_option(0, k, v)
+        end
+    });
     bo = setmetatable({}, {
         __index = function(_, k)
             return api.nvim_buf_get_option(0, k)

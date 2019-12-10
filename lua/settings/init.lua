@@ -11,15 +11,6 @@ local function isempty(s)
     return s == nil or s == ''
 end
 
-local function set_option(option, value)
-    if type(value) == 'boolean' then
-        local setcmd = value and 'set ' or 'set no'
-        api.nvim_command(setcmd .. option)
-    else
-        api.nvim_command('set ' .. option .. '=' .. value)
-    end
-end
-
 local dirpaths = {
     backup   = 'backupdir',
     swap     = 'directory',
@@ -73,6 +64,7 @@ nvim.option.wildmode = 'full'
 nvim.option.showbreak      = '↪\\'
 nvim.option.listchars      = 'tab:▸ ,trail:•,extends:❯,precedes:❮'
 nvim.option.sessionoptions = 'buffers,curdir,folds,globals,localoptions,options,resize,tabpages,winpos,winsize'
+nvim.option.cpoptions      = 'aAceFs_B'
 
 if sys.name == 'windows' then
     nvim.option.sessionoptions = nvim.option.sessionoptions .. ',slash,unix'
@@ -121,25 +113,19 @@ else
     nvim.option.diffopt = 'filler,vertical,iwhite'
 end
 
-local rare_options = {
-    signcolumn     = 'auto',
-    cpoptions      = 'aAceFs_B',
-    numberwidth    = 1,
-    colorcolumn    = 80,
-    breakindent    = true,
-    relativenumber = true,
-    number         = true,
-    list           = true,
-    wrap           = false,
-    foldenable     = false,
-    foldmethod     = 'syntax',
-    foldlevel      = 99,
-    foldcolumn     = 0,
-}
-
-for option,value in pairs(rare_options) do
-    set_option(option, value)
-end
+-- Windows options
+nvim.wo.foldmethod     = 'syntax'
+nvim.wo.signcolumn     = 'auto'
+nvim.wo.colorcolumn    = '80'
+nvim.wo.breakindent    = true
+nvim.wo.relativenumber = true
+nvim.wo.number         = true
+nvim.wo.list           = true
+nvim.wo.wrap           = false
+nvim.wo.foldenable     = false
+nvim.wo.numberwidth    = 1
+nvim.wo.foldlevel      = 99
+nvim.wo.foldcolumn     = 0
 
 local wildignores = {
     '*.spl',
