@@ -7,6 +7,11 @@ if exists('g:mappings_loaded')
     finish
 endif
 
+if has('nvim')
+    lua require('settings/mappings')
+    finish
+endif
+
 nnoremap , :
 xnoremap , :
 
