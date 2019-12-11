@@ -56,6 +56,7 @@ local function nvim_set_mapping(m, lhs, rhs, ...)
 
     if opts ~= nil and opts['buffer'] ~= nil and opts['buffer'] == true then
         opts['buffer'] = nil
+        opts = opts == nil and {} or opts
 
         if rhs ~= nil then
             api.nvim_buf_set_keymap(0, mode, lhs, rhs, opts)
@@ -63,6 +64,7 @@ local function nvim_set_mapping(m, lhs, rhs, ...)
             api.nvim_buf_del_keymap(0, mode, lhs)
         end
     else
+        opts = opts == nil and {} or opts
         if rhs ~= nil then
             api.nvim_set_keymap(mode, lhs, rhs, opts)
         else
@@ -120,10 +122,105 @@ local function nvim_set_autocmd(event, pattern, cmd, ...)
     end
 
     autocmd = table.concat(autocmd, ' ')
-    print(autocmd)
 
     api.nvim_command(autocmd)
 end
+
+local function nvim_set_abbr(m, lhs, rhs, ...)
+    local opts = ...
+    local command = {}
+    local extras = {}
+
+    local modes = {
+        insert   = "i",
+        command  = "c",
+    }
+
+    if opts ~= nil then
+        if opts['buffer'] ~= nil  then
+            table.insert(extras, '<buffer>')
+        end
+
+        if opts['expr'] ~= nil  then
+            table.insert(extras, '<expr>')
+        end
+    end
+
+    local mode = modes[m] ~= nil and modes[m] or m
+
+    if rhs ~= nil then
+        for _, v in pairs(extras) do table.inset(command, v) end
+    end
+
+    if mode == 'i' then
+        if rhs == nil then
+            table.insert(command, 1, 'iunabbrev')
+            table.insert(command, lhs)
+        else
+            table.insert(command, 1, 'iabbrev')
+            table.insert(command, lhs)
+            table.insert(command, rhs)
+        end
+    elseif mode == 'c' then
+        if rhs == nil then
+            table.insert(command, 1, 'cunabbrev')
+            table.insert(command, lhs)
+        else
+            table.insert(command, 1, 'cabbrev')
+            table.insert(command, lhs)
+            table.insert(command, rhs)
+        end
+    end
+
+    command = table.concat(command, ' ')
+    api.nvim_command(command)
+end
+
+local function nvim_set_command(lhs, rhs, ...)
+    local opts = ... ~= nil and ... or {}
+
+    local command = {
+        'command',
+    }
+
+    if rhs == nil then
+        command[1] = 'delcommand'
+        command[#command + 1] = lhs
+    else
+        if opts['force'] ~= nil and opts['force'] == true then
+            command[1] = 'command!'
+            opts['force'] = nil
+        end
+        local attr
+        for name,val in pairs(opts) do
+            if val ~= false then
+                attr = '-'..name
+                if type(val) ~= 'boolean' then
+                    attr = attr..'='..val
+                end
+                command[#command + 1] = attr
+            end
+        end
+        command[#command + 1] = lhs
+        command[#command + 1] = rhs
+    end
+
+    command = table.concat(command, ' ')
+    api.nvim_command(command)
+
+end
+
+-- TODO
+-- local function nvim_get_abbr(m, lhs)
+--     local command = {}
+--
+--     local modes = {
+--         insert   = "i",
+--         command  = "c",
+--     }
+--
+--     local mode = modes[m] ~= nil and modes[m] or m
+-- end
 
 local function has_version(version)
     return api.nvim_call_function('has', {'nvim-'..version})
@@ -136,6 +233,8 @@ nvim = setmetatable({
     nvim_get_mapping = nvim_get_mapping;
     nvim_set_mapping = nvim_set_mapping;
     nvim_set_autocmd = nvim_set_autocmd;
+    nvim_set_abbr = nvim_set_abbr;
+    nvim_set_command = nvim_set_command;
     has_version = has_version;
     fn = setmetatable({}, {
         __index = function(self, k)
