@@ -30,7 +30,6 @@ for dirname,dir_setting in pairs(dirpaths) do
 end
 
 nvim.g.lua_complete_omni = 1
-nvim.g.tex_flavor = 'latex'
 nvim.g.c_syntax_for_h = 1
 nvim.g.terminal_scrollback_buffer_size = 100000
 
@@ -114,18 +113,19 @@ else
 end
 
 -- Windows options
-nvim.wo.foldmethod     = 'syntax'
-nvim.wo.signcolumn     = 'auto'
-nvim.wo.colorcolumn    = '80'
-nvim.wo.breakindent    = true
-nvim.wo.relativenumber = true
-nvim.wo.number         = true
-nvim.wo.list           = true
-nvim.wo.wrap           = false
-nvim.wo.foldenable     = false
-nvim.wo.numberwidth    = 1
-nvim.wo.foldlevel      = 99
-nvim.wo.foldcolumn     = 0
+nvim.ex.set('breakindent')
+nvim.ex.set('relativenumber')
+nvim.ex.set('number')
+nvim.ex.set('list')
+nvim.ex.set('nowrap')
+nvim.ex.set('nofoldenable')
+nvim.ex.set('colorcolumn=80')
+nvim.ex.set('foldmethod=syntax')
+nvim.ex.set('signcolumn=auto')
+nvim.ex.set('numberwidth=1')
+nvim.ex.set('foldlevel=99')
+nvim.ex.set('foldcolumn=0')
+nvim.ex.set('fileencoding=utf-8')
 
 local wildignores = {
     '*.spl',
