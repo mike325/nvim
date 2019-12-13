@@ -1,6 +1,7 @@
 -- luacheck: globals unpack vim
 local nvim = {}
 local api = vim.api
+local inspect = vim.inspect
 
 local function nvim_get_mapping(m, lhs, ...)
     local mappings
@@ -71,18 +72,23 @@ local function nvim_set_mapping(m, lhs, rhs, ...)
             api.nvim_del_keymap(mode, lhs)
         end
     end
+end
 
+local function nvim_create_autogrp(autogrp)
+    api.nvim_command('augroup '..autogrp..' | autocmd! | autogrp end')
 end
 
 local function nvim_set_autocmd(event, pattern, cmd, ...)
     local opts = ...
     local once = nil
     local group = nil
+    local create = nil
     local nested = nil
     local autocmd = {'autocmd'}
 
     if opts ~= nil then
         group = opts['group'] ~= nil and opts['group'] or nil
+        create = opts['create'] ~= nil and opts['create'] or nil
         once = opts['once'] ~= nil and '++once' or nil
         nested = opts['nested'] ~= nil and '++nested' or nil
     end
@@ -93,7 +99,7 @@ local function nvim_set_autocmd(event, pattern, cmd, ...)
 
     if event ~= nil then
         if type(event) == 'table' then
-            table.concat(event, ',')
+            event = table.concat(event, ',')
         end
 
         table.insert(autocmd, event)
@@ -101,7 +107,7 @@ local function nvim_set_autocmd(event, pattern, cmd, ...)
 
     if pattern ~= nil then
         if type(pattern) == 'table' then
-            table.concat(pattern, ',')
+            pattern = table.concat(pattern, ',')
         end
 
         table.insert(autocmd, pattern)
@@ -119,6 +125,10 @@ local function nvim_set_autocmd(event, pattern, cmd, ...)
         autocmd[1] = 'autocmd!'
     else
         table.insert(autocmd, cmd)
+    end
+
+    if create ~= nil then
+        nvim_create_autogrp(group)
     end
 
     autocmd = table.concat(autocmd, ' ')
