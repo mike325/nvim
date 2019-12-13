@@ -4,6 +4,9 @@
 " if !has#gui() " Terminals can't detect some special key combinations
 " endif
 
+setlocal spell
+setlocal complete+=k,kspell
+
 if !exists('g:plugs["vimwiki"]')
     finish
 endif

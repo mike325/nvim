@@ -9,3 +9,4 @@ setlocal relativenumber
 setlocal nospell
 
 nnoremap <silent> <buffer> q :q!<CR>
+nnoremap <buffer> <CR> :call mappings#cr()<CR>

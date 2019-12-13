@@ -7,6 +7,11 @@ if !exists('g:plugs["vimtex"]')
     " let &includeexpr=''
 endif
 
+" Always prefer latex over plain text for *.tex files
+let g:tex_flavor = 'latex'
+
+let b:vimtex_main = 'main.tex'
+
 setlocal spell
 setlocal textwidth=80
 setlocal complete+=k,kspell " Add spell completion

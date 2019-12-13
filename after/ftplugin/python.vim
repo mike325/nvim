@@ -78,3 +78,5 @@ endfunction
 command! -buffer PythonFix call s:PythonFix()
 
 setlocal define=^\\s*\\(def\\\|class\\)\\s\\+
+
+nnoremap <buffer> <CR> :call mappings#cr()<CR>

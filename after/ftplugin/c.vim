@@ -26,3 +26,5 @@ elseif executable('clang')
 elseif executable('gcc')
     setlocal makeprg=gcc\ -std=c17\ -Wall\ -Wextra\ % " '-o', os#tmp('neomake')
 endif
+
+nnoremap <buffer> <CR> :call mappings#cr()<CR>
