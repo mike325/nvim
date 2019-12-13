@@ -46,8 +46,8 @@ nvim.ex.nnoremap('<S-tab> <C-o>')
 nvim.ex.xnoremap('< <gv')
 nvim.ex.xnoremap('> >gv')
 
--- nvim.nvim_set_mapping('n', 'k', 'v:count ? (v:count > 3 ? "'.."m'"..'". v:count : "") . "k" : "gk"', {silent = true, expr = true})
--- nvim.nvim_set_mapping('n', 'j', 'v:count ? (v:count > 3 ? "'.."m'"..'". v:count : "") . "j" : "gj"', {silent = true, expr = true})
+nvim.ex.nnoremap([[ <silent><expr> j v:count ? (v:count > 3 ? "m'" . v:count : '') . 'j' : 'gj' ]])
+nvim.ex.nnoremap([[ <silent><expr> k v:count ? (v:count > 3 ? "m'" . v:count : '') . 'k' : 'gk' ]])
 
 nvim.nvim_set_mapping('n', '<leader><leader>e', ':echo expand("%")<CR>')
 
