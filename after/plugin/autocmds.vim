@@ -7,13 +7,12 @@ if !has('autocmd') || ( exists('g:autocmds_loaded') && g:autocmds_loaded )
     finish
 endif
 
-let g:autocmds_loaded = 1
+if has('nvim')
+    lua require('settings/autocmds')
+    finish
+endif
 
-" Allow to use Vim as Pager
-augroup Modifiable
-    autocmd!
-    autocmd BufReadPre * if &modifiable == 1 | setlocal fileencoding=utf-8 | endif
-augroup end
+let g:autocmds_loaded = 1
 
 " We don't need Vim's temp files here
 augroup DisableTemps
@@ -21,7 +20,7 @@ augroup DisableTemps
     autocmd BufNewFile,BufReadPre,BufEnter /tmp/* setlocal noswapfile nobackup noundofile
 augroup end
 
-if has('nvim') || v:version > 702
+if v:version > 702
     " TODO make a function to save the state of the toggles
     augroup Numbers
         autocmd!
@@ -33,20 +32,12 @@ if has('nvim') || v:version > 702
 
 endif
 
-if has('nvim') || has('terminal')
-    " Set modifiable to use easymotions
-    " autocmd TermOpen * setlocal modifiable
-
-    " I like to see the numbers in the terminal
+if exists('##TerminalOpen')
     augroup TerminalAutocmds
         autocmd!
-        if has('nvim')
-            autocmd TermOpen *      setlocal relativenumber number nocursorline
-            autocmd TermOpen *      setlocal noswapfile nobackup noundofile
-        elseif  has('terminal') && exists('##TerminalOpen')
-            autocmd TerminalOpen *  setlocal relativenumber number nocursorline
-            autocmd TerminalOpen *  setlocal noswapfile nobackup noundofile
-        endif
+        autocmd TerminalOpen * setlocal relativenumber number nocursorline
+        autocmd TerminalOpen * setlocal noswapfile nobackup noundofile
+        autocmd TerminalOpen * setlocal bufhidden=wipe
     augroup end
 endif
 
@@ -76,19 +67,11 @@ augroup CleanFile
     endif
 augroup end
 
-" Specially helpful for html and xml
-augroup MatchChars
-    autocmd!
-    autocmd FileType xml,html autocmd BufReadPre <buffer> setlocal matchpairs+=<:>
-augroup end
-
 augroup QuickQuit
     autocmd!
     autocmd BufEnter,BufReadPost __LanguageClient__ nnoremap <silent> <buffer> q :q!<CR>
     autocmd BufEnter,BufWinEnter * if &previewwindow | nnoremap <silent> <buffer> q :q!<CR> | endif
-    if has('nvim')
-        autocmd TermOpen * nnoremap <silent> <buffer> q :q!<CR>
-    elseif  has('terminal') && exists('##TerminalOpen')
+    if  has('terminal') && exists('##TerminalOpen')
         autocmd TerminalOpen * nnoremap <silent> <buffer> q :q!<CR>
     endif
 augroup end
@@ -98,33 +81,12 @@ augroup LocalCR
     autocmd CmdwinEnter * nnoremap <CR> <CR>
 augroup end
 
-augroup FileTypeDetect
-    autocmd!
-    autocmd BufNewFile,BufReadPre    *.xmp          setlocal filetype=xml
-    autocmd BufNewFile,BufReadPre    *.bash*        setlocal filetype=sh
-    autocmd BufNewFile,BufReadPre /*/nginx/*.conf   setlocal filetype=nginx
-augroup end
-
-" Spell {{{
-augroup Spells
-    autocmd!
-    autocmd FileType tex,vimwiki              setlocal spell complete+=k,kspell
-    autocmd BufNewFile,BufRead,BufEnter *.org setlocal spell complete+=k,kspell
-augroup end
-" }}} EndSpell
-
 " Skeletons {{{
 
 augroup Skeletons
     autocmd!
     autocmd BufNewFile * call autocmd#FileName()
 augroup end
-
-augroup CRMapping
-    autocmd!
-    autocmd FileType vim,csh,zsh,sh,go,man,help,c,cpp,python nnoremap <buffer> <CR> :call mappings#cr()<CR>
-augroup end
-
 
 " }}} EndSkeletons
 
@@ -140,21 +102,7 @@ augroup ProjectConfig
     autocmd VimEnter                          * call tools#abolish(&spelllang)
 augroup end
 
-augroup LaTex
-    autocmd!
-    autocmd FileType tex let b:vimtex_main = 'main.tex'
-augroup end
-
 augroup CloseMenu
     autocmd!
     autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
-augroup end
-
-augroup Wipe
-    autocmd!
-    if has('nvim')
-        autocmd TermOpen * setlocal bufhidden=wipe
-    elseif  has('terminal') && exists('##TerminalOpen')
-        autocmd TerminalOpen * setlocal bufhidden=wipe
-    endif
 augroup end
