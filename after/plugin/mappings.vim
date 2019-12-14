@@ -61,8 +61,8 @@ nnoremap <silent> <C-w>o :diffoff!<bar>only<cr>
 
 " Move vertically by visual line unless preceded by a count. If a movement is
 " greater than 3 then automatically add to the jumplist.
-nnoremap <silent><expr> j v:count ? (v:count > 3 ? "m'" . v:count : '') . 'j' : 'gj'
-nnoremap <silent><expr> k v:count ? (v:count > 3 ? "m'" . v:count : '') . 'k' : 'gk'
+nnoremap <silent><expr> j v:count ? (v:count >= 3 ? "m'" . v:count : '') . 'j' : 'gj'
+nnoremap <silent><expr> k v:count ? (v:count >= 3 ? "m'" . v:count : '') . 'k' : 'gk'
 
 " Jump to the previous mark, as <TAB>
 nnoremap <S-tab> <C-o>
