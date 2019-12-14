@@ -7,7 +7,7 @@ local function nvim_get_mapping(m, lhs, ...)
     local mappings
     local mapping
 
-    local opts = ...
+    local opts = ... ~= nil and ... or {}
 
     local modes = {
         normal   = "n",
@@ -40,7 +40,7 @@ local function nvim_get_mapping(m, lhs, ...)
 end
 
 local function nvim_set_mapping(m, lhs, rhs, ...)
-    local opts = ...
+    local opts = ... ~= nil and ... or {}
 
     local modes = {
         normal   = "n",
@@ -79,7 +79,7 @@ local function nvim_create_autogrp(autogrp)
 end
 
 local function nvim_set_autocmd(event, pattern, cmd, ...)
-    local opts = ...
+    local opts = ... ~= nil and ... or {}
     local once = nil
     local group = nil
     local create = nil
@@ -137,7 +137,7 @@ local function nvim_set_autocmd(event, pattern, cmd, ...)
 end
 
 local function nvim_set_abbr(m, lhs, rhs, ...)
-    local opts = ...
+    local opts = ... ~= nil and ... or {}
     local command = {}
     local extras = {}
 
