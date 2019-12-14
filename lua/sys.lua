@@ -48,4 +48,9 @@ local sys = {
     cache = cachedir(),
 }
 
+function sys.tmp(filename)
+    local tmpdir = sys.name == 'windows' and 'c:/temp/' or '/tmp/'
+    return tmpdir .. filename
+end
+
 return sys
