@@ -6,8 +6,6 @@ local nvim_set_command = require('nvim').nvim_set_command
 local ok, lsp = pcall(require, 'nvim_lsp')
 
 if not ok then
-    print('Failed to initialize LSP')
-    print('LSP Error '..lsp)
     return nil
 end
 
