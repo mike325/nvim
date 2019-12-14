@@ -7,6 +7,10 @@ local system     = require('nvim').fn.system
 local exepath    = require('nvim').fn.exepath
 local executable = require('nvim').fn.executable
 
+local split            = require('tools').split
+local check_version    = require('tools').check_version
+local split_components = require('tools').split_components
+
 local python = {
     python2 = {
         path = nil,
@@ -69,6 +73,24 @@ function python:setup()
     end
 
     return has_python
+end
+
+function python.has_version(...)
+    if executable('python2') == 0 and executable('python3') == 0 then
+        return 0
+    end
+
+    local args = ... ~= nil and {...} or {}
+
+    if #args == 0 then
+        return 0
+    end
+
+    local major = args[1]
+    local version = python['python'..major].version
+    local components = split_components(version, '%d+')
+
+    return check_version(components, args)
 end
 
 return python
