@@ -8,13 +8,14 @@ local system     = require('nvim').fn.system
 local executable = require('nvim').fn.executable
 
 local sys = require('sys')
+local cache = require('sys').cache
 
 local helpers = {}
 
 local git_version = ''
 local modern_git = -1
 
-local function split_components(str, pattern)
+function helpers.split_components(str, pattern)
      local t = {}
     for v in string.gmatch(str, pattern) do
         t[#t + 1] = v
@@ -22,7 +23,7 @@ local function split_components(str, pattern)
     return t
 end
 
-local function split(str, pattern)
+function helpers.split(str, pattern)
      local t = {}
     for v in string.gmatch(str, '([^'..pattern..']+)') do
         t[#t + 1] = v
@@ -48,6 +49,19 @@ function helpers.LastPosition()
     end
 end
 
+function helpers.check_version(sys_version, version_target)
+    for i,val in pairs(version_target) do
+        if version_target[i] > sys_version[i] then
+            return 0
+        elseif version_target[i] < sys_version[i] then
+            return 1
+        elseif #version_target == i and version_target[i] == sys_version[i] then
+            return 1
+        end
+    end
+    return 0
+end
+
 function helpers.has_git_version(...)
     if executable('git') == 0 then
         return 0
@@ -59,22 +73,13 @@ function helpers.has_git_version(...)
         git_version = string.match(require'nvim'.fn.system('git --version'), '%d+%p%d+%p%d+')
     end
 
-    local components = split_components(git_version, '%d+')
+    local components = helpers.split_components(git_version, '%d+')
 
-    for i,val in pairs(args) do
-        if args[i] > components[i] then
-            return 0
-        elseif args[i] < components[i] then
-            return 1
-        elseif #args == i and args[i] == components[i] then
-            return 1
-        end
-    end
-    return 0
+    return helpers.check_version(components, args)
 end
 
 function helpers.ignores(tool)
-    local excludes = split(nvim.o.backupskip, ',')
+    local excludes = helpers.split(nvim.o.backupskip, ',')
 
     local ignores = {
         fd = ' -E ' .. table.concat(excludes, ' -E ') .. ' ',
@@ -179,6 +184,48 @@ function helpers.select_grep(is_git, ...)
     end
 
     return grep
+end
+
+local function check_lsp(servers)
+    for _, server in pairs(servers) do
+        if executable(server) == 1 then
+            return 1
+        end
+    end
+
+    return 0
+end
+
+function helpers.check_language_server(...)
+    local language = ... ~= nil and {...} or nil
+
+    language = language ~= nil and language[1] or language
+
+    local langservers = {
+        python = {'pyls'},
+        c      = {'ccls', 'clangd', 'cquery'},
+        cpp    = {'ccls', 'clangd', 'cquery'},
+        cuda   = {'ccls'},
+        objc   = {'ccls'},
+        sh     = {'bash-language-server'},
+        bash   = {'bash-language-server'},
+        docker = {'docker-language-server'},
+        go     = {'gopls'},
+        latex  = {'texlab'},
+        tex    = {'texlab'},
+    }
+
+    if language == nil then
+        for _, servers in pairs(langservers) do
+            if check_lsp(servers) == 1 then
+                return 1
+            end
+        end
+    elseif langservers[language] ~= nil then
+        return check_lsp(langservers[language])
+    end
+
+    return 0
 end
 
 function helpers.spelllangs(lang)
