@@ -47,29 +47,6 @@ function! tools#GitVersion(...) abort
     return a:000[l:i] ==# get(l:components, l:i)
 endfunction
 
-if has('nvim-0.4')
-    function! tools#createFloatingBuffer(...) abort
-        let buf = nvim_create_buf(0, 1)
-        call setbufvar(buf, '&signcolumn', 'no')
-
-        let l:height = (a:0 > 0) ? a:1 : &lines - 8
-        let l:width  = (a:0 > 1) ? a:2 : float2nr(&columns - (&columns * 2 / 10))
-        let l:col    = (a:0 > 2) ? a:3 : float2nr((&columns - l:width) / 2)
-
-        let l:opts = {
-            \ 'style'   : 'minimal',
-            \ 'relative': 'editor',
-            \ 'row'     : 4,
-            \ 'col'     : l:col,
-            \ 'width'   : l:width,
-            \ 'height'  : l:height
-            \ }
-
-        call nvim_open_win(buf, 1, l:opts)
-        return buf
-    endfunction
-endif
-
 function! tools#getLanguageServer(language) abort
     if ! tools#CheckLanguageServer(a:language)
         return []
@@ -156,6 +133,10 @@ endfunction
 
 " Small wrap to avoid change code all over the repo
 function! tools#grep(tool, ...) abort
+    if s:moderngit == -1
+        let s:moderngit = tools#GitVersion(2, 19)
+    endif
+
     let l:greplist = {
                 \   'git': {
                 \       'grepprg': 'git --no-pager grep '.(s:moderngit == 1 ? '--column' : '').' --no-color -Iin ',
@@ -178,15 +159,6 @@ function! tools#grep(tool, ...) abort
                 \       'grepformat': '%f:%l:%m'
                 \   },
                 \}
-
-    if s:moderngit == -1
-        let s:moderngit = 0
-        if tools#GitVersion(2, 19)
-            let l:greplist.git.grepprg    = 'git --no-pager grep --column --no-color -Iin '
-            let l:greplist.git.grepformat = '%f:%l:%c:%m,%f:%l:%m'
-            let s:moderngit = 1
-        endif
-    endif
 
     let l:properity = (a:0 > 0) ? a:000[0] : 'grepprg'
     return l:greplist[a:tool][l:properity]
@@ -215,7 +187,7 @@ function! tools#select_grep(is_git, ...) abort
         let l:grepprg = tools#grep('rg', l:properity)
     elseif executable('ag')
         let l:grepprg = tools#grep('ag', l:properity)
-    elseif os#name('unix') || ( os#name('windows') && executable('grep'))
+    elseif executable('grep')
         let l:grepprg = tools#grep('grep', l:properity)
     elseif os#name('windows')
         let l:grepprg = tools#grep('findstr', l:properity)
