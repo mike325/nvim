@@ -1,4 +1,5 @@
 local nvim = require('nvim')
+local plugs = require('plugins/plugs')
 local executable = require('nvim').fn.executable
 local nvim_set_autocmd = require('nvim').nvim_set_autocmd
 local nvim_set_command = require('nvim').nvim_set_command
@@ -32,7 +33,9 @@ for language,options in pairs(servers) do
     for option,server in pairs(options) do
         if executable(server) then
             lsp[option].setup({})
-            available_languages[#available_languages + 1] = language
+            if language ~= 'latex' or plugs['vimtex'] == nil then -- Use vimtex function instead
+                available_languages[#available_languages + 1] = language
+            end
             break
         end
     end
