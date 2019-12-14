@@ -20,7 +20,9 @@ for plugin, data in pairs(plugs) do
         if not string.match(error_code, 'Vim:E117') then
             print('Something failed "'..error_code..'" Happened trying to call '..'plugins#'..func_name..'#init')
         end
-    else
-        -- print('Success calling plugins#'..func_name..'#init')
     end
+end
+
+if nvim.has_version('0.5') then
+    local lsp = require('plugins/lsp')
 end
