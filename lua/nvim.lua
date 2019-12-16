@@ -232,10 +232,6 @@ end
 --     local mode = modes[m] ~= nil and modes[m] or m
 -- end
 
-local function has_version(version)
-    return api.nvim_call_function('has', {'nvim-'..version})
-end
-
 -- Took from https://github.com/norcalli/nvim_utils
 -- GPL3 apply to the nvim object
 nvim = setmetatable({
@@ -245,44 +241,62 @@ nvim = setmetatable({
     nvim_set_autocmd = nvim_set_autocmd;
     nvim_set_abbr = nvim_set_abbr;
     nvim_set_command = nvim_set_command;
-    has_version = has_version;
+    has_version = function(version)
+        return api.nvim_call_function('has', {'nvim-'..version})
+    end;
+    plugs = setmetatable({}, {
+        __index = function(self, k)
+            local mt = getmetatable(self)
+            local x = mt[k]
+            if x ~= nil then
+                return x
+            end
+            local ok, plugs = pcall(api.nvim_get_var, 'plugs')
+            if ok then
+                local plugin = plugs[k]
+                mt[k] = plugin
+                return plugin
+            end
+            return nil
+        end
+    });
     fn = setmetatable({}, {
         __index = function(self, k)
-        local mt = getmetatable(self)
-        local x = mt[k]
-        if x ~= nil then
-            return x
-        end
-        local f = function(...) return api.nvim_call_function(k, {...}) end
-        mt[k] = f
-        return f
+            local mt = getmetatable(self)
+            local x = mt[k]
+            if x ~= nil then
+                return x
+            end
+            local f = function(...) return api.nvim_call_function(k, {...}) end
+            mt[k] = f
+            return f
         end
     });
     buf = setmetatable({}, {
         __index = function(self, k)
-        local mt = getmetatable(self)
-        local x = mt[k]
-        if x ~= nil then
-            return x
-        end
-                local f = api['nvim_buf_'..k]
-        mt[k] = f
-        return f
+            local mt = getmetatable(self)
+            local x = mt[k]
+            if x ~= nil then
+                return x
+            end
+                    local f = api['nvim_buf_'..k]
+            mt[k] = f
+            return f
         end
     });
     ex = setmetatable({}, {
         __index = function(self, k)
-        local mt = getmetatable(self)
-        local x = mt[k]
-        if x ~= nil then
-            return x
-        end
-        local command = k:gsub("_$", "!")
-        local f = function(...)
-            return api.nvim_command(table.concat(vim.tbl_flatten {command, ...}, " "))
-        end
-        mt[k] = f
-        return f
+            local mt = getmetatable(self)
+            local x = mt[k]
+            if x ~= nil then
+                return x
+            end
+            local command = k:gsub("_$", "!")
+            local f = function(...)
+                return api.nvim_command(table.concat(vim.tbl_flatten {command, ...}, " "))
+            end
+            mt[k] = f
+            return f
         end
     });
     g = setmetatable({}, {
@@ -355,15 +369,15 @@ nvim = setmetatable({
     });
 }, {
   __index = function(self, k)
-    local mt = getmetatable(self)
-    local x = mt[k]
-    if x ~= nil then
-      return x
+        local mt = getmetatable(self)
+        local x = mt[k]
+        if x ~= nil then
+            return x
+        end
+        local f = api['nvim_'..k]
+        mt[k] = f
+        return f
     end
-    local f = api['nvim_'..k]
-    mt[k] = f
-    return f
-  end
 })
 
 nvim.option = nvim.o

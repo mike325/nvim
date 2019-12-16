@@ -1,5 +1,5 @@
 local nvim = require('nvim')
-local plugs = require('plugins/plugs')
+local plugs = require('nvim').plugs
 local executable = require('nvim').fn.executable
 local nvim_set_autocmd = require('nvim').nvim_set_autocmd
 local nvim_set_command = require('nvim').nvim_set_command

@@ -2,7 +2,7 @@ local api = vim.api
 
 local sys  = require('sys')
 local nvim = require('nvim')
-local plugs = require('plugins/plugs')
+local plugs = require('nvim').plugs
 
 local parent      = require('sys').data
 local has         = require('nvim').fn.has

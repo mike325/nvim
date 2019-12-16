@@ -1,7 +1,7 @@
 -- luacheck: globals unpack vim
 
 local nvim = require('nvim')
-local plugs = require('plugins/plugs')
+local plugs = require('nvim').plugs
 local nvim_set_autocmd = require('nvim').nvim_set_autocmd
 
 nvim_set_autocmd('TermOpen', '*', 'setlocal noswapfile nobackup noundofile', {create = true, group = 'TerminalAutocmds'})
