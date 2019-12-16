@@ -111,6 +111,8 @@ else
 
     call plug#end()
 
+    let g:plug_window = 'tabnew '
+
     if has('nvim')
         lua require('plugins')
     else

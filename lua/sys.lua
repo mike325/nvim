@@ -1,3 +1,5 @@
+-- luacheck: globals unpack vim
+
 local mkdir       = require('nvim').fn.mkdir
 local stdpath     = require('nvim').fn.stdpath
 local isdirectory = require('nvim').fn.isdirectory

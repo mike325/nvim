@@ -4,8 +4,8 @@ local sys  = require('sys')
 local nvim = require('nvim')
 local plugs = require('plugins/plugs')
 
-local has         = require('nvim').fn.has
 local parent      = require('sys').data
+local has         = require('nvim').fn.has
 local mkdir       = require('nvim').fn.mkdir
 local isdirectory = require('nvim').fn.isdirectory
 local executable  = require('nvim').fn.executable

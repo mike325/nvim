@@ -33,6 +33,8 @@ function! s:scroll_preview(down) abort
     endif
 endfunction
 
+let g:plug_pwindow = 'vertical rightbelow new '
+
 nnoremap <buffer> <silent> gx :call <sid>plug_gx()<CR>
 nnoremap <silent> <buffer> H :call <sid>plug_doc()<CR>
 nnoremap <silent> <buffer> J :call <sid>scroll_preview(1)<CR>
