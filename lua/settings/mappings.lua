@@ -152,11 +152,11 @@ nvim.nvim_set_command('GonvimSettngs', "execute('edit ~/.gonvim/setting.toml')",
 nvim.nvim_set_command('FileType'     , "call mappings#SetFileData('filetype', <q-args>, 'text')", {nargs='?', complete='filetype', force = true})
 nvim.nvim_set_command('FileFormat'   , "call mappings#SetFileData('fileformat', <q-args>, 'unix')", {nargs='?', complete='customlist,mappings#format', force = true})
 
--- command! -nargs=? -complete=customlist,mappings#spells SpellLang
---             \ let s:spell = (empty(<q-args>)) ?  'en' : expand(<q-args>) |
---             \ call tools#spelllangs(s:spell) |
---             \ unlet s:spell
---             " \ execute 'set spelllang?' |
+nvim.nvim_set_command(
+    'SpellLang',
+    'lua require"tools".spelllangs(<q-args>)',
+    {force = true, nargs = '?', complete = 'customlist,mappings#spells'}
+)
 
 nvim.nvim_set_command('ConncallLevel',  "call mappings#ConncallLevel(expand(<q-args>))", {nargs='?', force = true})
 nvim.nvim_set_command('Qopen', "execute((&splitbelow) ? 'botright' : 'topleft' ) . ' copen ' . expand(<q-args>)", {nargs='?', force = true})

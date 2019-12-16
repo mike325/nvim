@@ -10,7 +10,7 @@ nvim_set_autocmd('TermOpen', '*', 'setlocal bufhidden=wipe', {create = true, gro
 
 nvim_set_autocmd('VimResized', '*', 'wincmd =', {create = true, group = 'AutoResize'})
 
-nvim_set_autocmd('BufRead', '*', 'lua require("tools").LastPosition()', {create = true, group = 'LastEditPosition'})
+nvim_set_autocmd('BufRead', '*', 'lua require("tools").last_position()', {create = true, group = 'LastEditPosition'})
 
 if  plugs['completor.vim'] == nil then
     nvim_set_autocmd(

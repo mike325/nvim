@@ -2,6 +2,43 @@ scriptencoding 'utf-8'
 " Tools Setttings
 " github.com/mike325/.vim
 
+if has('nvim-0.5')
+    function! tools#getLanguageServer(language) abort
+        return v:lua.tools.get_language_server(a:language)
+    endfunction
+
+    function! tools#CheckLanguageServer(...) abort
+        return v:lua.tools.check_language_server(a:000)
+    endfunction
+
+    function! tools#grep(tool, ...) abort
+        return v:lua.tools.grep(a:tool, a:000)
+    endfunction
+
+    function! tools#filelist(tool) abort
+        return v:lua.tools.grep(a:tool)
+    endfunction
+
+    function! tools#filelist(tool) abort
+        return v:lua.tools.filelist(a:tool)
+    endfunction
+
+    function! tools#select_grep(is_git, ...) abort
+        return v:lua.tools.select_grep(a:is_git, a:000)
+    endfunction
+
+    function! tools#select_filelist(is_git) abort
+        return v:lua.tools.select_filelist(a:is_git)
+    endfunction
+
+    function! tools#spelllangs(lang) abort
+        lua tools.spelllang(a:lang)
+    endfunction
+
+    finish
+endif
+
+
 let s:gitversion = ''
 let s:moderngit = -1
 
