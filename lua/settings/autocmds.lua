@@ -5,8 +5,8 @@ local plugs = require('nvim').plugs
 local nvim_set_autocmd = require('nvim').nvim_set_autocmd
 
 nvim_set_autocmd('TermOpen', '*', 'setlocal noswapfile nobackup noundofile', {create = true, group = 'TerminalAutocmds'})
-nvim_set_autocmd('TermOpen', '*', 'setlocal relativenumber number nocursorline', {create = true, group = 'TerminalAutocmds'})
-nvim_set_autocmd('TermOpen', '*', 'setlocal bufhidden=wipe', {create = true, group = 'TerminalAutocmds'})
+nvim_set_autocmd('TermOpen', '*', 'setlocal relativenumber number nocursorline', {group = 'TerminalAutocmds'})
+nvim_set_autocmd('TermOpen', '*', 'setlocal bufhidden=wipe', {group = 'TerminalAutocmds'})
 
 nvim_set_autocmd('VimResized', '*', 'wincmd =', {create = true, group = 'AutoResize'})
 
@@ -19,7 +19,12 @@ if  plugs['completor.vim'] == nil then
         "if !exists('b:trim') | let b:trim = 1 | endif",
         {create = true, group = 'CleanFile'}
     )
-    nvim_set_autocmd('BufWritePre', '*', 'call autocmd#CleanFile()', {create = true, group = 'CleanFile'})
+    nvim_set_autocmd(
+        'BufWritePre',
+        '*',
+        'lua require("tools").clean_file()',
+        {group = 'CleanFile'}
+    )
 end
 
 nvim_set_autocmd('BufNewFile', '*', 'call autocmd#FileName()', {create = true, group = 'Skeletons'})
@@ -43,13 +48,13 @@ nvim_set_autocmd(
     {'BufEnter','BufWinEnter'},
     '*',
     'if &previewwindow | nnoremap <silent> <buffer> q :q!<CR> | endif',
-    {create = true, group = 'QuickQuit'}
+    {group = 'QuickQuit'}
 )
 nvim_set_autocmd(
     'TermOpen',
     '*',
     'nnoremap <silent> <buffer> q :q!<CR>',
-    {create = true, group = 'QuickQuit'}
+    {group = 'QuickQuit'}
 )
 
 

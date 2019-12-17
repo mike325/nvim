@@ -6,6 +6,7 @@ local nvim       = require('nvim')
 local line       = require('nvim').fn.line
 local system     = require('nvim').fn.system
 local executable = require('nvim').fn.executable
+local filereadable = require('nvim').fn.filereadable
 
 local sys = require('sys')
 local cache = require('sys').cache
@@ -402,6 +403,47 @@ function tools.spelllangs(lang)
     tools.abolish(lang)
     nvim.o.spelllang = lang
     print(nvim.bo.spelllang)
+end
+
+function tools.clean_file()
+    local buftypes = {
+        nofile = 1,
+        help = 1,
+        quickfix = 1,
+        terminal = 1,
+    }
+
+    local filetypes = {
+        bin = 1,
+        log = 1,
+        git = 1,
+        man = 1,
+        terminal = 1,
+    }
+
+    local buftype = nvim.bo.buftype
+    local filetype = nvim.bo.filetype
+
+    if nvim.b.trim ~= 1 or buftypes[buftype] ~= nil or filetypes[filetype] ~= nil or filetype == '' then
+        return 1
+    end
+
+    local position = nvim.win_get_cursor(0)
+    local search_reg = nvim.fn.getreg('/')
+
+    nvim.exec('%s/\\s\\+$//e', nil)
+    nvim.fn.histdel('search', -1)
+
+    nvim.exec('%s/\\(\\s\\+\\)┊/\\1 /ge', nil)
+    nvim.fn.histdel('search', -1)
+
+    if sys.name ~= 'windows' then
+        nvim.exec('%s/\\r$//ge', nil)
+        nvim.fn.histdel('search', -1)
+    end
+
+    nvim.win_set_cursor(0, position)
+    nvim.fn.setreg('/', search_reg)
 end
 
 return tools

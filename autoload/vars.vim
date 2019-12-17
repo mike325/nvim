@@ -1,6 +1,25 @@
 " Vars Setttings
 " github.com/mike325/.vim
 
+if has('nvim-0.5')
+    function! vars#basedir() abort
+        return luaeval('require"sys".base')
+    endfunction
+
+    function! vars#datadir() abort
+        return luaeval('require"sys".data')
+    endfunction
+
+    function! vars#home() abort
+        return luaeval('require"sys".home')
+    endfunction
+
+    function! vars#cache() abort
+        return luaeval('require"sys".cache')
+    endfunction
+
+    finish
+endif
 
 let s:ignore_cmd = {
             \   'git' : '',
@@ -76,7 +95,6 @@ function! s:setupdirs() abort
     else
         let s:basedir = s:homedir . '/.vim'
     endif
-
 endfunction
 
 function! vars#ignore_cmd(cmd) abort
@@ -109,7 +127,6 @@ function! vars#home() abort
 endfunction
 
 function! vars#libclang() abort
-
     let l:libclang = ''
 
     if os#name('windows')
