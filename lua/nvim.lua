@@ -301,7 +301,7 @@ nvim = setmetatable({
     });
     g = setmetatable({}, {
         __index = function(_, k)
-            local ok, value pcall(api.nvim_get_var, k)
+            local ok, value = pcall(api.nvim_get_var, k)
             return ok and value or nil
         end;
         __newindex = function(_, k, v)
@@ -314,7 +314,7 @@ nvim = setmetatable({
     });
     v = setmetatable({}, {
         __index = function(_, k)
-            local ok, value pcall(api.nvim_get_vvar, k)
+            local ok, value = pcall(api.nvim_get_vvar, k)
             return ok and value or nil
         end;
         __newindex = function(_, k, v)
@@ -323,7 +323,7 @@ nvim = setmetatable({
     });
     b = setmetatable({}, {
         __index = function(_, k)
-            local ok, value pcall(api.nvim_buf_get_var, 0, k)
+            local ok, value = pcall(api.nvim_buf_get_var, 0, k)
             return ok and value or nil
         end;
         __newindex = function(_, k, v)
@@ -360,7 +360,7 @@ nvim = setmetatable({
     });
     env = setmetatable({}, {
         __index = function(_, k)
-            local ok, value pcall(api.nvim_call_function, 'getenv', {k})
+            local ok, value = pcall(api.nvim_call_function, 'getenv', {k})
             return ok and value or nil
         end;
         __newindex = function(_, k, v)
