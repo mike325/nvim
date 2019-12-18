@@ -10,7 +10,12 @@ nvim_set_autocmd('TermOpen', '*', 'setlocal bufhidden=wipe', {group = 'TerminalA
 
 nvim_set_autocmd('VimResized', '*', 'wincmd =', {create = true, group = 'AutoResize'})
 
-nvim_set_autocmd('BufRead', '*', 'lua require("tools").last_position()', {create = true, group = 'LastEditPosition'})
+nvim_set_autocmd(
+    'BufRead',
+    '*',
+    'lua require("tools").last_position()',
+    {create = true, group = 'LastEditPosition'}
+)
 
 if  plugs['completor.vim'] == nil then
     nvim_set_autocmd(
@@ -27,12 +32,17 @@ if  plugs['completor.vim'] == nil then
     )
 end
 
-nvim_set_autocmd('BufNewFile', '*', 'call autocmd#FileName()', {create = true, group = 'Skeletons'})
+nvim_set_autocmd(
+    'BufNewFile',
+    '*',
+    'lua require("tools").file_name()',
+    {create = true, group = 'Skeletons'}
+)
 
 nvim_set_autocmd(
-    {'DirChanged', 'WinNew' ,'WinEnter', 'VimEnter', 'SessionLoadPost'},
+    {'DirChanged', 'WinNew' ,'WinEnter', 'VimEnter'},
     '*',
-    'call autocmd#SetProjectConfigs()',
+    'lua require("tools").project_config()',
     {create = true, group = 'ProjectConfig'}
 )
 

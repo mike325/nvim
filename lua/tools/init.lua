@@ -11,6 +11,8 @@ local filereadable = require('nvim').fn.filereadable
 local sys = require('sys')
 local cache = require('sys').cache
 
+local plugs = nvim.plugs
+
 local git_version = ''
 local modern_git = -1
 
@@ -168,6 +170,8 @@ function tools.select_filelist(is_git)
 
     if is_git == 0 or is_git == nil then
         is_git = false
+    elseif type(is_git) == 'number' and is_git > 0 then
+        is_git = true
     end
 
     if executable('git') and is_git then
@@ -198,6 +202,8 @@ function tools.select_grep(is_git, ...)
 
     if is_git == 0 or is_git == nil then
         is_git = false
+    elseif type(is_git) == 'number' and is_git > 0 then
+        is_git = true
     end
 
     local grep = ''
@@ -444,6 +450,190 @@ function tools.clean_file()
 
     nvim.win_set_cursor(0, position)
     nvim.fn.setreg('/', search_reg)
+end
+
+function tools.file_name(...)
+    local opts
+
+    if ... == nil or type(...) ~= 'table' then
+        opts = ... == nil and {} or {...}
+    else
+        opts = ...
+    end
+
+    local filename = nvim.fn.expand('%:t:r')
+    local extension = nvim.fn.expand('%:e')
+    local skeleton = ''
+
+    print('File: '..filename)
+    print('Extention: '..extension)
+
+    local template = #opts > 0 and opts[1] or ''
+
+    local skeletons_path = sys.base..'/skeletons/'
+
+    local known_names = {
+        py = {'ycm_extra_conf'},
+        json = {'projections'},
+        c = {'main'},
+        cpp = {'main'},
+    }
+
+    if #template == 0 then
+        skeleton = nvim.fn.fnameescape(skeletons_path .. template)
+    else
+        if known_names[extension] ~= nil then
+            local names = known_names[extension]
+            for _,name in pairs(names) do
+                if string.find(filename, name) ~= nil and filereadable(skeletons_path..name..'.'..extension) == 1 then
+                    skeleton = nvim.fn.fnameescape(skeletons_path..name..'.'..extension)
+                    break
+                end
+            end
+        end
+
+        if #skeleton == 0 then
+            skeleton = nvim.fn.fnameescape(skeletons_path..'/skeleton.'..extension)
+        end
+
+    end
+
+    print('Skeleton: '..skeleton)
+
+    if filereadable(skeleton) == 1 then
+        nvim.ex.keepalt('read '..skeleton)
+        nvim.exec('%s/\\<NAME\\>/'..filename..'/e', nil)
+        nvim.fn.histdel('search', -1)
+        nvim.exec('%s/\\<NAME\\ze_H\\(PP\\)\\?\\>/\\U'..filename..'/g', nil)
+        nvim.fn.histdel('search', -1)
+        nvim.ex['bwipeout!'](skeleton)
+        nvim.exec('1delete_', nil)
+    end
+end
+
+local function find_project_root(path)
+    local project_root
+    local vcs_markers = {'.git', '.svn', '.hg',}
+    local dir = nvim.fn.fnamemodify(path, ':p')
+
+    for _,marker in pairs(vcs_markers) do
+        project_root = nvim.fn.finddir(marker, dir..';')
+
+        if #project_root == 0 and marker == '.git' then
+            project_root = nvim.fn.finfile(marker, dir..';')
+        end
+
+        if #project_root > 0 then
+            project_root = nvim.fn.fnamemodify(project_root, ':p:h:h')
+            break
+        end
+
+    end
+
+    return project_root
+end
+
+local function is_git_repo(root)
+    local git = root .. '/.git'
+    return (nvim.fn.isdirectory(git) or filereadable(git) == 1) and true or false
+end
+
+function tools.project_config()
+    nvim.b.project_root = find_project_root(nvim.fn.getcwd())
+
+    if #nvim.b.project_root == 0 then
+        nvim.b.project_root = nvim.fn.fnamemodify(nvim.fn.getcwd(), ':p')
+    end
+
+    local root = nvim.b.project_root
+    local is_git = is_git_repo(root)
+
+    nvim.o.grepprg = tools.select_grep(is_git)
+    nvim.o.grepformat = tools.select_grep(is_git, 'grepformat')
+
+    if filereadable(root..'/project.vim') == 1 then
+        nvim.command('source '..root..'/project.vim')
+    end
+
+    if plugs['ultisnips'] ~= nil then
+        nvim.g.UltiSnipsSnippetDirectories = {
+            sys.base .. '/config/UltiSnips',
+            'UltiSnips'
+        }
+        if nvim.fn.isdirectory(root..'/UltiSnips') then
+            nvim.g.UltiSnipsSnippetsDir = root .. '/config/UltiSnips'
+            table.insert(nvim.g.UltiSnipsSnippetDirectories, 1, root..'/UltiSnips')
+        else
+            nvim.g.UltiSnipsSnippetsDir = sys.base .. '/config/UltiSnips'
+        end
+    end
+
+    if plugs['ctrlp'] ~= nil then
+        local fast_look_up = {
+            ag = 1,
+            fd = 1,
+            rg = 1,
+        }
+        local fallback = nvim.g.ctrlp_user_command.fallback
+        local clear_cache = is_git and 1 or (fast_look_up[fallback] ~= nil and 1 or 0)
+
+        nvim.g.ctrlp_clear_cache_on_exit = clear_cache
+    end
+
+    if plugs['projectile.nvim'] ~= nil then
+        nvim.g['projectile#search_prog'] = tools.select_grep(is_git)
+    end
+
+    if plugs['deoplete.nvim'] ~= nil and (plugs['deoplete-clang'] ~= nil or plugs['deoplete-clang2'] ~= nil) then
+        nvim.g['deoplete#sources#clang#clang_complete_database'] = nil
+        if filereadable(root..'/compile_commands.json') == 1 then
+            nvim.g['deoplete#sources#clang#clang_complete_database'] = root
+        end
+    end
+
+    if plugs['vim-grepper'] ~= nil then
+
+        local operator = {}
+        local tools = {}
+
+        if executable('git') and is_git then
+            tools[#tools + 1] = 'git'
+            operator[#operator + 1] = 'git'
+        end
+
+        if executable('rg') then
+            tools[#tools + 1] = 'rg'
+            operator[#operator + 1] = 'rg'
+        end
+
+        if executable('ag') then
+            tools[#tools + 1] = 'ag'
+            operator[#operator + 1] = 'ag'
+        end
+
+        if executable('grep') then
+            tools[#tools + 1] = 'grep'
+            operator[#operator + 1] = 'grep'
+        end
+
+        if executable('findstr') then
+            tools[#tools + 1] = 'findstr'
+            operator[#operator + 1] = 'findstr'
+        end
+
+        nvim.g.grepper = {
+            tools = tools,
+            operator = {
+                tools = operator
+            },
+        }
+
+    end
+
+    if plugs['gonvim-fuzzy'] ~= nil then
+        nvim.g.gonvim_fuzzy_ag_cmd = tools.select_grep(is_git)
+    end
+
 end
 
 return tools
