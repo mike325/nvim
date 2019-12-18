@@ -172,10 +172,10 @@ if executable('svn') then
 end
 
 if plugs["denite.nvim"] == nil and plugs["fzf.vim"] == nil then
-    nvim.nvim_set_command('Oldfiles', 'edit <args>', {nargs=1, complete='customlist,tools#oldfiles', force = true})
+    -- nvim.nvim_set_command('Oldfiles', 'edit <args>', {nargs=1, complete='customlist,tools#oldfiles', force = true})
 end
 
-if plugs["iron.nvim"] == nil and (has('python') or has('python3'))then
+if plugs["iron.nvim"] == nil and (has('python') == 1 or has('python3') == 1)then
     nvim.nvim_set_command('Python' , 'call mappings#Python(2, <q-args>)', {complete='file', nargs='*', force = true})
     nvim.nvim_set_command('Python3', 'call mappings#Python(3, <q-args>)', {complete='file', nargs='*', force = true})
 end
