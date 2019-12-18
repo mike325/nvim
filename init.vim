@@ -35,11 +35,10 @@ if os#name('windows')
     set shell=cmd.exe
 
     " Better compatibility with Unix paths in DOS systems
-    if exists('+shellslash')
-        set shellslash
-    endif
-
-    let &runtimepath = tr(&runtimepath, '\', '/')
+    " if exists('+shellslash')
+    "     set shellslash
+    "     let &runtimepath = tr(&runtimepath, '\', '/')
+    " endif
 
 endif
 
