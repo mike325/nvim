@@ -437,14 +437,14 @@ function tools.clean_file()
     local position = nvim.win_get_cursor(0)
     local search_reg = nvim.fn.getreg('/')
 
-    nvim.exec('%s/\\s\\+$//e', nil)
+    nvim.command('%s/\\s\\+$//e')
     nvim.fn.histdel('search', -1)
 
-    nvim.exec('%s/\\(\\s\\+\\)┊/\\1 /ge', nil)
+    nvim.command('%s/\\(\\s\\+\\)┊/\\1 /ge')
     nvim.fn.histdel('search', -1)
 
     if sys.name ~= 'windows' then
-        nvim.exec('%s/\\r$//ge', nil)
+        nvim.command('%s/\\r$//ge')
         nvim.fn.histdel('search', -1)
     end
 
@@ -502,12 +502,12 @@ function tools.file_name(...)
 
     if filereadable(skeleton) == 1 then
         nvim.ex.keepalt('read '..skeleton)
-        nvim.exec('%s/\\<NAME\\>/'..filename..'/e', nil)
+        nvim.command('%s/\\<NAME\\>/'..filename..'/e')
         nvim.fn.histdel('search', -1)
-        nvim.exec('%s/\\<NAME\\ze_H\\(PP\\)\\?\\>/\\U'..filename..'/g', nil)
+        nvim.command('%s/\\<NAME\\ze_H\\(PP\\)\\?\\>/\\U'..filename..'/g')
         nvim.fn.histdel('search', -1)
         nvim.ex['bwipeout!'](skeleton)
-        nvim.exec('1delete_', nil)
+        nvim.command('1delete_')
     end
 end
 
@@ -520,7 +520,7 @@ local function find_project_root(path)
         project_root = nvim.fn.finddir(marker, dir..';')
 
         if #project_root == 0 and marker == '.git' then
-            project_root = nvim.fn.finfile(marker, dir..';')
+            project_root = nvim.fn.findfile(marker, dir..';')
         end
 
         if #project_root > 0 then
@@ -547,6 +547,9 @@ function tools.project_config()
 
     local root = nvim.b.project_root
     local is_git = is_git_repo(root)
+
+    local filetype = nvim.bo.filetype
+    local buftype = nvim.bo.buftype
 
     nvim.o.grepprg = tools.select_grep(is_git)
     nvim.o.grepformat = tools.select_grep(is_git, 'grepformat')
