@@ -99,7 +99,6 @@ augroup ProjectConfig
         autocmd WinNew * call autocmd#SetProjectConfigs()
     endif
     autocmd WinEnter,VimEnter,SessionLoadPost * call autocmd#SetProjectConfigs()
-    autocmd VimEnter                          * call tools#abolish(&spelllang)
 augroup end
 
 augroup CloseMenu

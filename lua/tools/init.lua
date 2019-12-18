@@ -30,6 +30,81 @@ local langservers = {
     tex    = {'texlab'},
 }
 
+local abolish = {}
+abolish['en'] = {
+    ['flase']                                        = 'false',
+    ['syntaxis']                                     = 'syntax',
+    ['developement']                                 = 'development',
+    ['identation']                                   = 'indentation',
+    ['aligment']                                     = 'aliment',
+    ['posible']                                      = 'possible',
+    ['reproducable']                                 = 'reproducible',
+    ['retreive']                                     = 'retrieve',
+    ['compeletly']                                   = 'completely',
+    ['movil']                                        = 'mobil',
+    ['pro{j,y}ect{o}']                               = 'project',
+    ['imr{pov,pvo}e']                                = 'improve',
+    ['enviroment{,s}']                               = 'environment{}',
+    ['sustition{,s}']                                = 'substitution{}',
+    ['sustitution{,s}']                              = 'substitution{}',
+    ['aibbreviation{,s}']                            = 'abbreviation{}',
+    ['abbrevation{,s}']                              = 'abbreviation{}',
+    ['avalib{ility,le}']                             = 'availab{ility,le}',
+    ['seting{,s}']                                   = 'setting{}',
+    ['settign{,s}']                                  = 'setting{}',
+    ['subtitution{,s}']                              = 'substitution{}',
+    ['{despa,sepe}rat{e,es,ed,ing,ely,ion,ions,or}'] = '{despe,sepa}rat{}',
+    ['{,in}consistant{,ly}']                         = '{}consistent{}',
+    ['lan{gauge,gue,guege,guegae,ague,agueg}']       = 'language',
+    ['delimeter{,s}']                                = 'delimiter{}',
+    ['{,non}existan{ce,t}']                          = '{}existen{}',
+    ['d{e,i}screp{e,a}nc{y,ies}']                    = 'd{i}screp{a}nc{}',
+    ['{,un}nec{ce,ces,e}sar{y,ily}']                 = '{}nec{es}sar{}',
+    ['persistan{ce,t,tly}']                          = 'persisten{}',
+    ['{,ir}releven{ce,cy,t,tly}']                    = '{}relevan{}',
+    ['cal{a,e}nder{,s}']                             = 'cal{e}ndar{}'
+}
+abolish['es'] = {
+    ['analisis']                                                            = 'análisis',
+    ['artifial']                                                            = 'artificial',
+    ['conexion']                                                            = 'conexión',
+    ['autonomo']                                                            = 'autónomo',
+    ['codigo']                                                              = 'código',
+    ['teoricas']                                                            = 'teóricas',
+    ['disminicion']                                                         = 'disminución',
+    ['adminstracion']                                                       = 'administración',
+    ['relacion']                                                            = 'relación',
+    ['minimo']                                                              = 'mínimo',
+    ['area']                                                                = 'área',
+    ['imagenes']                                                            = 'imágenes',
+    ['arificiales']                                                         = 'artificiales',
+    ['actuan']                                                              = 'actúan',
+    ['basicamente']                                                         = 'básicamente',
+    ['acuardo']                                                             = 'acuerdo',
+    ['carateristicas']                                                      = 'características',
+    ['ademas']                                                              = 'además',
+    ['asi']                                                                 = 'así',
+    ['siguente']                                                            = 'siguiente',
+    ['automatico']                                                          = 'automático',
+    ['algun']                                                               = 'algún',
+    ['dia{,s}']                                                             = 'día{}',
+    ['pre{sici,cisi}on']                                                    = 'precisión',
+    ['pro{j,y}ect{o}']                                                      = 'proyecto',
+    ['logic{as,o,os}']                                                      = 'lógic{}',
+    ['{h,f}ernandez']                                                       = '{}ernández',
+    ['electronico{,s}']                                                     = 'electrónico{}',
+    ['algorimo{,s}']                                                        = 'algoritmo{}',
+    ['podria{,n,s}']                                                        = 'podría{}',
+    ['metodologia{,s}']                                                     = 'metodología{}',
+    ['{bibliogra}fia']                                                      = '{}fía',
+    ['{reflexi}on']                                                         = '{}ón',
+    ['mo{b,v}il']                                                           = 'móvil',
+    ['{televi,explo}sion']                                                  = '{}sión',
+    ['{reac,disminu,interac,clasifica,crea,notifica,introduc,justifi}cion'] = '{}ción',
+    ['{obten,ora,emo,valora,utilizap,modifica,sec,delimita,informa}cion']   = '{}ción',
+    ['{fun,administra,aplica,rala,aproxima,programa}cion']                  = '{}ción',
+}
+
 -- global helpers
 tools = {}
 
@@ -294,114 +369,41 @@ function tools.get_language_server(language)
     return cmd
 end
 
+function tools.get_abbrs(language)
+    return abolish[language]
+end
+
 function tools.abolish(language)
 
-    local abolish = {}
-    local current = nvim.o.spelllang
-
-    abolish['en'] = {
-        ['flase']                                        = 'false',
-        ['syntaxis']                                     = 'syntax',
-        ['developement']                                 = 'development',
-        ['identation']                                   = 'indentation',
-        ['aligment']                                     = 'aliment',
-        ['posible']                                      = 'possible',
-        ['abbrevations']                                 = 'abbreviations',
-        ['reproducable']                                 = 'reproducible',
-        ['retreive']                                     = 'retrieve',
-        ['compeletly']                                   = 'completely',
-        ['movil']                                        = 'mobil',
-        ['pro{j,y}ect{o}']                               = 'project',
-        ['imr{pov,pvo}e']                                = 'improve',
-        ['enviroment{s}']                                = 'environment{s}',
-        ['sustition{s}']                                 = 'substitution{s}',
-        ['sustitution{s}']                               = 'substitution{s}',
-        ['aibbreviation{s}']                             = 'abbreviation{s}',
-        ['abbrevation{s}']                               = 'abbreviations',
-        ['avalib{ility,le}']                             = 'availab{ility,le}',
-        ['seting{s}']                                    = 'setting{s}',
-        ['settign{s}']                                   = 'setting{s}',
-        ['subtitution{s}']                               = 'substitution{s}',
-        ['{despa,sepe}rat{e,es,ed,ing,ely,ion,ions,or}'] = '{despe,sepa}rat{}',
-        ['{,in}consistant{,ly}']                         = '{}consistent{}',
-        ['lan{gauge,gue,guege,guegae,ague,agueg}']       = 'language',
-        ['delimeter{,s}']                                = 'delimiter{}',
-        ['{,non}existan{ce,t}']                          = '{}existen{}',
-        ['d{e,i}screp{e,a}nc{y,ies}']                    = 'd{i}screp{a}nc{}',
-        ['{,un}nec{ce,ces,e}sar{y,ily}']                 = '{}nec{es}sar{}',
-        ['persistan{ce,t,tly}']                          = 'persisten{}',
-        ['{,ir}releven{ce,cy,t,tly}']                    = '{}relevan{}',
-        ['cal{a,e}nder{,s}']                             = 'cal{e}ndar{}'
-    }
-
-    abolish['es'] = {
-        ['analisis']                                                            = 'análisis',
-        ['artifial']                                                            = 'artificial',
-        ['conexion']                                                            = 'conexión',
-        ['autonomo']                                                            = 'autónomo',
-        ['codigo']                                                              = 'código',
-        ['teoricas']                                                            = 'teóricas',
-        ['disminicion']                                                         = 'disminución',
-        ['adminstracion']                                                       = 'administración',
-        ['relacion']                                                            = 'relación',
-        ['minimo']                                                              = 'mínimo',
-        ['area']                                                                = 'área',
-        ['imagenes']                                                            = 'imágenes',
-        ['arificiales']                                                         = 'artificiales',
-        ['actuan']                                                              = 'actúan',
-        ['basicamente']                                                         = 'básicamente',
-        ['acuardo']                                                             = 'acuerdo',
-        ['carateristicas']                                                      = 'características',
-        ['ademas']                                                              = 'además',
-        ['asi']                                                                 = 'así',
-        ['siguente']                                                            = 'siguiente',
-        ['automatico']                                                          = 'automático',
-        ['algun']                                                               = 'algún',
-        ['dia{s}']                                                              = 'día{}',
-        ['pre{sici,cisi}on']                                                    = 'precisión',
-        ['pro{j,y}ect{o}']                                                      = 'proyecto',
-        ['logic{as,o,os}']                                                      = 'lógic{}',
-        ['{h,f}ernandez']                                                       = '{}ernández',
-        ['electronico{s}']                                                      = 'electrónico{}',
-        ['algorimo{s}']                                                         = 'algoritmo{}',
-        ['podria{n}']                                                           = 'podría{}',
-        ['metodologia{s}']                                                      = 'metodología{}',
-        ['{bibliogra}fia']                                                      = '{}fía',
-        ['{reflexi}on']                                                         = '{}ón',
-        ['mo{b,v}il']                                                           = 'móvil',
-        ['{televi,explo}sion']                                                  = '{}sión',
-        ['{reac,disminu,interac,clasifica,crea,notifica,introduc,justifi}cion'] = '{}ción',
-        ['{obten,ora,emo,valora,utilizap,modifica,sec,delimita,informa}cion']   = '{}ción',
-        ['{fun,administra,aplica,rala,aproxima,programa}cion']                  = '{}ción',
-    }
+    local current = nvim.bo.spelllang
 
     if nvim.fn.exists(':Abolish') == 2 then
         if abolish[current] ~= nil then
             for base,replace in pairs(abolish[current]) do
-                nvim.command('Abolish -delete '..base)
+                nvim.command('Abolish -delete -buffer '..base)
             end
         end
         if abolish[language] ~= nil then
             for base,replace in pairs(abolish[language]) do
-                nvim.command('Abolish '..base..' '..replace)
+                nvim.command('Abolish -buffer '..base..' '..replace)
             end
         end
     else
         if abolish[current] ~= nil then
             for base,replace in pairs(abolish[current]) do
                 if not string.match(base, '{.+}') then
-                    nvim.nvim_set_abbr('i', base, nil, {silent = true})
-                    nvim.nvim_set_abbr('i', base:upper(), nil, {silent = true})
-                    nvim.nvim_set_abbr('i', base:gsub('%a', string.upper, 1), nil, {silent = true})
+                    nvim.nvim_set_abbr('i', base, nil, {silent = true, buffer = true})
+                    nvim.nvim_set_abbr('i', base:upper(), nil, {silent = true, buffer = true})
+                    nvim.nvim_set_abbr('i', base:gsub('%a', string.upper, 1), nil, {silent = true, buffer = true})
                 end
             end
         end
         if abolish[language] ~= nil then
             for base,replace in pairs(abolish[language]) do
                 if not string.match(base, '{.+}') then
-                    nvim.nvim_set_abbr('i', base, replace)
-                    nvim.nvim_set_abbr('i', base:upper(), replace:upper())
-                    nvim.nvim_set_abbr('i', base:gsub('%a', string.upper, 1), replace:gsub('%a', string.upper, 1))
+                    nvim.nvim_set_abbr('i', base, replace, {buffer = true})
+                    nvim.nvim_set_abbr('i', base:upper(), replace:upper(), {buffer = true})
+                    nvim.nvim_set_abbr('i', base:gsub('%a', string.upper, 1), replace:gsub('%a', string.upper, 1), {buffer = true})
                 end
             end
         end
@@ -411,7 +413,7 @@ end
 
 function tools.spelllangs(lang)
     tools.abolish(lang)
-    nvim.o.spelllang = lang
+    nvim.bo.spelllang = lang
     print(nvim.bo.spelllang)
 end
 
@@ -469,8 +471,8 @@ function tools.file_name(...)
     local extension = nvim.fn.expand('%:e')
     local skeleton = ''
 
-    print('File: '..filename)
-    print('Extention: '..extension)
+    -- print('File: '..filename)
+    -- print('Extention: '..extension)
 
     local template = #opts > 0 and opts[1] or ''
 
@@ -502,7 +504,7 @@ function tools.file_name(...)
 
     end
 
-    print('Skeleton: '..skeleton)
+    -- print('Skeleton: '..skeleton)
 
     if filereadable(skeleton) == 1 then
         nvim.ex.keepalt('read '..skeleton)

@@ -18,3 +18,9 @@ setlocal complete+=k,kspell " Add spell completion
 " setlocal foldmethod=indent
 
 setlocal wrapmargin=80
+
+if has('nvim-0.4')
+    call luaeval('tools.abolish("'.&l:spelllang.'")')
+else
+    call tools#abolish(&spelllang)
+endif

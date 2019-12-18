@@ -155,15 +155,15 @@ local function nvim_set_abbr(m, lhs, rhs, ...)
             table.insert(extras, '<buffer>')
         end
 
-        if opts['expr'] ~= nil  then
+        if opts['expr'] ~= nil and rhi ~= nil then
             table.insert(extras, '<expr>')
         end
     end
 
     local mode = modes[m] ~= nil and modes[m] or m
 
-    if rhs ~= nil then
-        for _, v in pairs(extras) do table.inset(command, v) end
+    for _, v in pairs(extras) do
+        table.insert(command, v)
     end
 
     if mode == 'i' then

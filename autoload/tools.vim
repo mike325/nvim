@@ -254,110 +254,118 @@ endfunction
 function! tools#abolish(lang) abort
     let l:abolish_lang = {}
 
-    let l:abolish_lang['en'] = {
-        \ 'flase'                                        : 'false',
-        \ 'syntaxis'                                     : 'syntax',
-        \ 'developement'                                 : 'development',
-        \ 'identation'                                   : 'indentation',
-        \ 'aligment'                                     : 'aliment',
-        \ 'posible'                                      : 'possible',
-        \ 'abbrevations'                                 : 'abbreviations',
-        \ 'reproducable'                                 : 'reproducible',
-        \ 'retreive'                                     : 'retrieve',
-        \ 'compeletly'                                   : 'completely',
-        \ 'movil'                                        : 'mobil',
-        \ 'pro{j,y}ect{o}'                               : 'project',
-        \ 'imr{pov,pvo}e'                                : 'improve',
-        \ 'enviroment{s}'                                : 'environment{s}',
-        \ 'sustition{s}'                                 : 'substitution{s}',
-        \ 'sustitution{s}'                               : 'substitution{s}',
-        \ 'aibbreviation{s}'                             : 'abbreviation{s}',
-        \ 'abbrevation{s}'                               : 'abbreviations',
-        \ 'avalib{ility,le}'                             : 'availab{ility,le}',
-        \ 'seting{s}'                                    : 'setting{s}',
-        \ 'settign{s}'                                   : 'setting{s}',
-        \ 'subtitution{s}'                               : 'substitution{s}',
-        \ '{despa,sepe}rat{e,es,ed,ing,ely,ion,ions,or}' : '{despe,sepa}rat{}',
-        \ '{,in}consistant{,ly}'                         : '{}consistent{}',
-        \ 'lan{gauge,gue,guege,guegae,ague,agueg}'       : 'language',
-        \ 'delimeter{,s}'                                : 'delimiter{}',
-        \ '{,non}existan{ce,t}'                          : '{}existen{}',
-        \ 'd{e,i}screp{e,a}nc{y,ies}'                    : 'd{i}screp{a}nc{}',
-        \ '{,un}nec{ce,ces,e}sar{y,ily}'                 : '{}nec{es}sar{}',
-        \ 'persistan{ce,t,tly}'                          : 'persisten{}',
-        \ '{,ir}releven{ce,cy,t,tly}'                    : '{}relevan{}',
-        \ 'cal{a,e}nder{,s}'                             : 'cal{e}ndar{}'
-        \ }
+    if has('nvim')
+        let l:abolish_lang['en'] = luaeval('tools.get_abbrs("en")')
+        let l:abolish_lang['es'] = luaeval('tools.get_abbrs("es")')
+    else
+        " WARN: This is already obsolete and may become out of sync with
+        "       abbreviations in lua file
+        "
+        " TODO: consider take this out to a json file to simplify portability
+        let l:abolish_lang['en'] = {
+            \ 'flase'                                        : 'false',
+            \ 'syntaxis'                                     : 'syntax',
+            \ 'developement'                                 : 'development',
+            \ 'identation'                                   : 'indentation',
+            \ 'aligment'                                     : 'aliment',
+            \ 'posible'                                      : 'possible',
+            \ 'reproducable'                                 : 'reproducible',
+            \ 'retreive'                                     : 'retrieve',
+            \ 'compeletly'                                   : 'completely',
+            \ 'movil'                                        : 'mobil',
+            \ 'pro{j,y}ect{o}'                               : 'project',
+            \ 'imr{pov,pvo}e'                                : 'improve',
+            \ 'enviroment{,s}'                               : 'environment{}',
+            \ 'sustition{,s}'                                : 'substitution{}',
+            \ 'sustitution{,s}'                              : 'substitution{}',
+            \ 'aibbreviation{,s}'                            : 'abbreviation{}',
+            \ 'abbrevation{,s}'                              : 'abbreviation{}',
+            \ 'avalib{ility,le}'                             : 'availab{ility,le}',
+            \ 'seting{,s}'                                   : 'setting{}',
+            \ 'settign{,s}'                                  : 'setting{}',
+            \ 'subtitution{,s}'                              : 'substitution{}',
+            \ '{despa,sepe}rat{e,es,ed,ing,ely,ion,ions,or}' : '{despe,sepa}rat{}',
+            \ '{,in}consistant{,ly}'                         : '{}consistent{}',
+            \ 'lan{gauge,gue,guege,guegae,ague,agueg}'       : 'language',
+            \ 'delimeter{,s}'                                : 'delimiter{}',
+            \ '{,non}existan{ce,t}'                          : '{}existen{}',
+            \ 'd{e,i}screp{e,a}nc{y,ies}'                    : 'd{i}screp{a}nc{}',
+            \ '{,un}nec{ce,ces,e}sar{y,ily}'                 : '{}nec{es}sar{}',
+            \ 'persistan{ce,t,tly}'                          : 'persisten{}',
+            \ '{,ir}releven{ce,cy,t,tly}'                    : '{}relevan{}',
+            \ 'cal{a,e}nder{,s}'                             : 'cal{e}ndar{}'
+            \ }
 
-    let l:abolish_lang['es'] = {
-        \ 'analisis'                                                            : 'análisis',
-        \ 'artifial'                                                            : 'artificial',
-        \ 'conexion'                                                            : 'conexión',
-        \ 'autonomo'                                                            : 'autónomo',
-        \ 'codigo'                                                              : 'código',
-        \ 'teoricas'                                                            : 'teóricas',
-        \ 'disminicion'                                                         : 'disminución',
-        \ 'adminstracion'                                                       : 'administración',
-        \ 'relacion'                                                            : 'relación',
-        \ 'minimo'                                                              : 'mínimo',
-        \ 'area'                                                                : 'área',
-        \ 'imagenes'                                                            : 'imágenes',
-        \ 'arificiales'                                                         : 'artificiales',
-        \ 'actuan'                                                              : 'actúan',
-        \ 'basicamente'                                                         : 'básicamente',
-        \ 'acuardo'                                                             : 'acuerdo',
-        \ 'carateristicas'                                                      : 'características',
-        \ 'ademas'                                                              : 'además',
-        \ 'asi'                                                                 : 'así',
-        \ 'siguente'                                                            : 'siguiente',
-        \ 'automatico'                                                          : 'automático',
-        \ 'algun'                                                               : 'algún',
-        \ 'dia{s}'                                                              : 'día{}',
-        \ 'pre{sici,cisi}on'                                                    : 'precisión',
-        \ 'pro{j,y}ect{o}'                                                      : 'proyecto',
-        \ 'logic{as,o,os}'                                                      : 'lógic{}',
-        \ '{h,f}ernandez'                                                       : '{}ernández',
-        \ 'electronico{s}'                                                      : 'electrónico{}',
-        \ 'algorimo{s}'                                                         : 'algoritmo{}',
-        \ 'podria{n}'                                                           : 'podría{}',
-        \ 'metodologia{s}'                                                      : 'metodología{}',
-        \ '{bibliogra}fia'                                                      : '{}fía',
-        \ '{reflexi}on'                                                         : '{}ón',
-        \ 'mo{b,v}il'                                                           : 'móvil',
-        \ '{televi,explo}sion'                                                  : '{}sión',
-        \ '{reac,disminu,interac,clasifica,crea,notifica,introduc,justifi}cion' : '{}ción',
-        \ '{obten,ora,emo,valora,utilizap,modifica,sec,delimita,informa}cion'   : '{}ción',
-        \ '{fun,administra,aplica,rala,aproxima,programa}cion'                  : '{}ción',
-        \ }
+        let l:abolish_lang['es'] = {
+            \ 'analisis'                                                            : 'análisis',
+            \ 'artifial'                                                            : 'artificial',
+            \ 'conexion'                                                            : 'conexión',
+            \ 'autonomo'                                                            : 'autónomo',
+            \ 'codigo'                                                              : 'código',
+            \ 'teoricas'                                                            : 'teóricas',
+            \ 'disminicion'                                                         : 'disminución',
+            \ 'adminstracion'                                                       : 'administración',
+            \ 'relacion'                                                            : 'relación',
+            \ 'minimo'                                                              : 'mínimo',
+            \ 'area'                                                                : 'área',
+            \ 'imagenes'                                                            : 'imágenes',
+            \ 'arificiales'                                                         : 'artificiales',
+            \ 'actuan'                                                              : 'actúan',
+            \ 'basicamente'                                                         : 'básicamente',
+            \ 'acuardo'                                                             : 'acuerdo',
+            \ 'carateristicas'                                                      : 'características',
+            \ 'ademas'                                                              : 'además',
+            \ 'asi'                                                                 : 'así',
+            \ 'siguente'                                                            : 'siguiente',
+            \ 'automatico'                                                          : 'automático',
+            \ 'algun'                                                               : 'algún',
+            \ 'dia{,s}'                                                             : 'día{}',
+            \ 'pre{sici,cisi}on'                                                    : 'precisión',
+            \ 'pro{j,y}ect{o}'                                                      : 'proyecto',
+            \ 'logic{as,o,os}'                                                      : 'lógic{}',
+            \ '{h,f}ernandez'                                                       : '{}ernández',
+            \ 'electronico{,s}'                                                     : 'electrónico{}',
+            \ 'algorimo{.s}'                                                        : 'algoritmo{}',
+            \ 'podria{,n}'                                                          : 'podría{}',
+            \ 'metodologia{,s}'                                                     : 'metodología{}',
+            \ '{bibliogra}fia'                                                      : '{}fía',
+            \ '{reflexi}on'                                                         : '{}ón',
+            \ 'mo{b,v}il'                                                           : 'móvil',
+            \ '{televi,explo}sion'                                                  : '{}sión',
+            \ '{reac,disminu,interac,clasifica,crea,notifica,introduc,justifi}cion' : '{}ción',
+            \ '{obten,ora,emo,valora,utilizap,modifica,sec,delimita,informa}cion'   : '{}ción',
+            \ '{fun,administra,aplica,rala,aproxima,programa}cion'                  : '{}ción',
+            \ }
+    endif
 
-    let l:current = &spelllang
+    let l:current = &l:spelllang
     if exists('g:plugs["vim-abolish"]') && exists(':Abolish') == 2
         if exists('l:abolish_lang[l:current]')
             for [l:key, l:val] in items(l:abolish_lang[l:current])
-                execute 'Abolish -delete ' . l:key
+                execute 'Abolish -delete -buffer ' . l:key
             endfor
         endif
         if exists('l:abolish_lang[a:lang]')
             for [l:key, l:val] in items(l:abolish_lang[a:lang])
-                execute 'Abolish ' . l:key . ' ' . l:val
+                execute 'Abolish -buffer ' . l:key . ' ' . l:val
             endfor
         endif
-    elseif l:current !=# a:lang
+    else
         if exists('l:abolish_lang[l:current]')
             for [l:key, l:val] in items(l:abolish_lang[l:current])
                 if l:key !~# '{|}'
-                    silent! execute 'iunabbrev ' . l:key
-                    silent! execute 'iunabbrev ' . substitute( l:key, '.*', '\U\0', 'g')
-                    silent! execute 'iunabbrev ' . substitute( l:key, '^.', '\U\0', 'g')
+                    silent! execute 'iunabbrev <buffer> ' . l:key
+                    silent! execute 'iunabbrev <buffer> ' . substitute( l:key, '.*', '\U\0', 'g')
+                    silent! execute 'iunabbrev <buffer> ' . substitute( l:key, '^.', '\U\0', 'g')
                 endif
             endfor
         endif
         if exists('l:abolish_lang[a:lang]')
             for [l:key, l:val] in items(l:abolish_lang[a:lang])
                 if l:key !~# '{|}'
-                    silent! execute 'iabbrev ' . l:key . ' ' . l:val
-                    silent! execute 'iabbrev ' . substitute( l:key, '.*', '\U\0', 'g') . ' ' . substitute( l:val, '.*', '\U\0', 'g')
-                    silent! execute 'iabbrev ' . substitute( l:key, '^.', '\U\0', 'g') . ' ' . substitute( l:val, '^.', '\U\0', 'g')
+                    execute 'iabbrev <buffer> ' . l:key . ' ' . l:val
+                    execute 'iabbrev <buffer> ' . substitute( l:key, '.*', '\U\0', 'g') . ' ' . substitute( l:val, '.*', '\U\0', 'g')
+                    execute 'iabbrev <buffer> ' . substitute( l:key, '^.', '\U\0', 'g') . ' ' . substitute( l:val, '^.', '\U\0', 'g')
                 endif
             endfor
         endif

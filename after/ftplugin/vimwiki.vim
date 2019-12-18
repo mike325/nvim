@@ -48,3 +48,9 @@ setlocal textwidth=80
 if exists('g:plugs["vim-signify"]')
     call plugins#vim_signify#init(0)
 endif
+
+if has('nvim-0.4')
+    call luaeval('tools.abolish("'.&l:spelllang.'")')
+else
+    call tools#abolish(&l:spelllang)
+endif
