@@ -44,9 +44,9 @@ local function get_python_exe(version)
         pyexe = pyexe:gsub('\\', '/')
         python[pyversion]['path'] = pyexe
         nvim.g[variable] = pyexe
-        if nvim.g[deactivate] ~= nil then
-            nvim.g[deactivate] = nil
-        end
+        -- if nvim.g[deactivate] ~= nil then
+        --     nvim.g[deactivate] = nil
+        -- end
 
         local full_version = nvim.fn.system(pyexe .. ' --version')
         full_version = string.match(full_version, '[%d%p]+')
