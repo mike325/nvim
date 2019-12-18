@@ -146,6 +146,10 @@ local function nvim_set_abbr(m, lhs, rhs, ...)
         command  = "c",
     }
 
+    if type(opts) ~= 'table' and opts ~= nil then
+        opts = {opts}
+    end
+
     if opts ~= nil then
         if opts['buffer'] ~= nil  then
             table.insert(extras, '<buffer>')
