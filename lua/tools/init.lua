@@ -386,11 +386,13 @@ function tools.abolish(language)
                 nvim.command('Abolish '..base..' '..replace)
             end
         end
-    elseif current ~= language then
+    else
         if abolish[current] ~= nil then
             for base,replace in pairs(abolish[current]) do
                 if not string.match(base, '{.+}') then
-                    nvim.nvim_set_abbr('i', base, nil)
+                    nvim.nvim_set_abbr('i', base, nil, {silent = true})
+                    nvim.nvim_set_abbr('i', base:upper(), nil, {silent = true})
+                    nvim.nvim_set_abbr('i', base:gsub('%a', string.upper, 1), nil, {silent = true})
                 end
             end
         end
@@ -398,6 +400,8 @@ function tools.abolish(language)
             for base,replace in pairs(abolish[language]) do
                 if not string.match(base, '{.+}') then
                     nvim.nvim_set_abbr('i', base, replace)
+                    nvim.nvim_set_abbr('i', base:upper(), replace:upper())
+                    nvim.nvim_set_abbr('i', base:gsub('%a', string.upper, 1), replace:gsub('%a', string.upper, 1))
                 end
             end
         end
