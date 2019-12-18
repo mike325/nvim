@@ -182,7 +182,12 @@ local function nvim_set_abbr(m, lhs, rhs, ...)
         end
     end
 
+    if opts['silent'] ~= nil then
+        table.insert(command, 1, 'silent!')
+    end
+
     command = table.concat(command, ' ')
+
     api.nvim_command(command)
 end
 
@@ -197,10 +202,12 @@ local function nvim_set_command(lhs, rhs, ...)
         command[1] = 'delcommand'
         command[#command + 1] = lhs
     else
+
         if opts['force'] ~= nil and opts['force'] == true then
             command[1] = 'command!'
             opts['force'] = nil
         end
+
         local attr
         for name,val in pairs(opts) do
             if val ~= false then
