@@ -53,10 +53,12 @@ if (!executable('git') && !isdirectory(fnameescape(vars#basedir().'/plugged'))) 
 endif
 
 if has('nvim')
+    lua require('python').setup()
     lua require('settings')
     lua require('tools')
 else
     call set#initconfigs()
+    call setup#python()
 endif
 
 if exists('g:bare')
