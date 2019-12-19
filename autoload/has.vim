@@ -1,6 +1,28 @@
 " Has Setttings
 " github.com/mike325/.vim
 
+
+function! has#gui() abort
+    return ( has('nvim') && ( exists('g:gonvim_running') || exists('g:GuiLoaded') || exists('veonim') )) || ( !has('nvim') && has('gui_running') )
+endfunction
+
+if has('nvim-0.5')
+
+    function! has#async() abort
+        return 1
+    endfunction
+
+    function! has#python(...) abort
+        if ! luaeval("require('python').setup()")
+            return 0
+        endif
+
+        return v:lua.python.has_version(a:000)
+    endfunction
+
+    finish
+endif
+
 function! s:python_setup() abort
     return has('nvim') ? luaeval("require('python').setup()") : setup#python()
 endfunction
@@ -84,8 +106,4 @@ function! has#async() abort
     endif
 
     return l:async
-endfunction
-
-function! has#gui() abort
-    return ( has('nvim') && ( exists('g:gonvim_running') || exists('g:GuiLoaded') || exists('veonim') )) || ( !has('nvim') && has('gui_running') )
 endfunction

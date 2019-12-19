@@ -10,7 +10,10 @@ local executable = require('nvim').fn.executable
 local check_version    = require('tools').check_version
 local split_components = require('tools').split_components
 
-local python = {
+local inspect = vim.inspect
+
+-- global python object
+python = {
     python2 = {
         path = nil,
         version = nil,
@@ -79,17 +82,24 @@ function python.has_version(...)
         return 0
     end
 
-    local args = ... ~= nil and {...} or {}
+    local opts
 
-    if #args == 0 then
-        return 0
+    if ... == nil or type(...) ~= 'table' then
+        opts = ... == nil and {} or {...}
+    else
+        opts = ...
     end
 
-    local major = args[1]
+    if #opts == 0 then
+        return has('python') == 1 or has('python3') == 1
+    end
+
+    local major = opts[1]
+
     local version = python['python'..major].version
     local components = split_components(version, '%d+')
 
-    return check_version(components, args)
+    return check_version(components, opts)
 end
 
 return python
