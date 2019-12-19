@@ -14,11 +14,11 @@ local inspect = vim.inspect
 
 -- global python object
 python = {
-    python2 = {
+    ['2'] = {
         path = nil,
         version = nil,
     },
-    python3 = {
+    ['3'] = {
         path = nil,
         version = nil,
     },
@@ -28,7 +28,7 @@ local function get_python_exe(version)
 
     local pyexe = nil
     local pyeval = version == 2 and 'pyeval' or 'py3eval'
-    local pyversion = version == 2 and 'python2' or 'python3'
+    local pyversion = version == 2 and '2' or '3'
     local variable = version == 2 and 'python_host_prog' or 'python3_host_prog'
     local deactivate = version == 2 and 'loaded_python_provider' or 'loaded_python3_provider'
 
@@ -39,8 +39,8 @@ local function get_python_exe(version)
         return python[pyversion]['path']
     end
 
-    if executable(pyversion) then
-        pyexe = exepath(pyversion)
+    if executable('python'..pyversion) then
+        pyexe = exepath('python'..pyversion)
     end
 
     if pyexe ~= nil then
@@ -96,7 +96,7 @@ function python.has_version(...)
 
     local major = opts[1]
 
-    local version = python['python'..major].version
+    local version = python[tostring(major)].version
     local components = split_components(version, '%d+')
 
     return check_version(components, opts)

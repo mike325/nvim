@@ -398,21 +398,29 @@ function tools.abolish(language)
             end
         end
     else
+        local function remove_abbr(base)
+            nvim.nvim_set_abbr('i', base, nil, {silent = true, buffer = true})
+            nvim.nvim_set_abbr('i', base:upper(), nil, {silent = true, buffer = true})
+            nvim.nvim_set_abbr('i', base:gsub('%a', string.upper, 1), nil, {silent = true, buffer = true})
+        end
+
+        local function set_abbr(base, replace)
+            nvim.nvim_set_abbr('i', base, replace, {buffer = true})
+            nvim.nvim_set_abbr('i', base:upper(), replace:upper(), {buffer = true})
+            nvim.nvim_set_abbr('i', base:gsub('%a', string.upper, 1), replace:gsub('%a', string.upper, 1), {buffer = true})
+        end
+
         if abolish[current] ~= nil then
             for base,replace in pairs(abolish[current]) do
                 if not string.match(base, '{.+}') then
-                    nvim.nvim_set_abbr('i', base, nil, {silent = true, buffer = true})
-                    nvim.nvim_set_abbr('i', base:upper(), nil, {silent = true, buffer = true})
-                    nvim.nvim_set_abbr('i', base:gsub('%a', string.upper, 1), nil, {silent = true, buffer = true})
+                    remove_abbr()
                 end
             end
         end
         if abolish[language] ~= nil then
             for base,replace in pairs(abolish[language]) do
                 if not string.match(base, '{.+}') then
-                    nvim.nvim_set_abbr('i', base, replace, {buffer = true})
-                    nvim.nvim_set_abbr('i', base:upper(), replace:upper(), {buffer = true})
-                    nvim.nvim_set_abbr('i', base:gsub('%a', string.upper, 1), replace:gsub('%a', string.upper, 1), {buffer = true})
+                    set_abbr()
                 end
             end
         end
@@ -554,10 +562,12 @@ local function is_git_repo(root)
 end
 
 function tools.project_config()
-    nvim.b.project_root = find_project_root(nvim.fn.getcwd())
+    local cwd = nvim.fn.getcwd()
+
+    nvim.b.project_root = find_project_root(cwd)
 
     if #nvim.b.project_root == 0 then
-        nvim.b.project_root = nvim.fn.fnamemodify(nvim.fn.getcwd(), ':p')
+        nvim.b.project_root = nvim.fn.fnamemodify(cwd, ':p')
     end
 
     local root = nvim.b.project_root
