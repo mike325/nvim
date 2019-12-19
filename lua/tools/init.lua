@@ -136,6 +136,15 @@ end
 
 function tools.check_version(sys_version, version_target)
     for i,val in pairs(version_target) do
+
+        if type(version_target[i]) == 'string' then
+            version_target[i] = tonumber(version_target[i])
+        end
+
+        if type(sys_version[i]) == 'string' then
+            sys_version[i] = tonumber(sys_version[i])
+        end
+
         if version_target[i] > sys_version[i] then
             return 0
         elseif version_target[i] < sys_version[i] then
