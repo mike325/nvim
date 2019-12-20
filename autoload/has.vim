@@ -45,7 +45,7 @@ function! has#python(...) abort
             if exists('g:python_host_prog')
                 let s:pyversion = {'2' : ''}
                 if has('nvim')
-                    let s:pyversion['2'] = luaeval("require('python').['2'].version")
+                    let s:pyversion['2'] = luaeval("require('python')['2'].version")
                 else
                     let s:pyversion['2'] = matchstr(system(g:python_host_prog . ' --version'), "\\S\\+\\ze\n")
                 endif
@@ -53,7 +53,7 @@ function! has#python(...) abort
             if exists('g:python3_host_prog')
                 let s:pyversion = exists('s:pyversion["2"]') ? {'2': s:pyversion['2'], '3': ''} : {'3': ''}
                 if has('nvim')
-                    let s:pyversion['3'] = luaeval("require('python').['3'].version")
+                    let s:pyversion['3'] = luaeval("require('python')['3'].version")
                 else
                     let s:pyversion['3'] = matchstr(system(g:python3_host_prog . ' --version'), "\\S\\+\\ze\n")
                 endif
