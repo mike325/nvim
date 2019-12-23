@@ -53,9 +53,12 @@ function! plugins#vimtex#init(data) abort
     let g:vimtex_enabled          = 1
     let g:vimtex_mappings_enabled = 0
 
-    if os#name('windows') && executable('sumatrapdf')
-        let g:latex_viewer = 'SumatraPDF'
-        let g:vimtex_view_general_viewer = 'SumatraPDF'
+    if os#name('windows')
+        if executable('sumatrapdf')
+            let g:vimtex_view_general_viewer = 'SumatraPDF'
+            let g:vimtex_view_general_options = '-reuse-instance -forward-search @tex @line @pdf'
+            let g:vimtex_view_general_options_latexmk = '-reuse-instance'
+        endif
     endif
 
     let g:vimtex_latexmk_build_dir           = 'output'

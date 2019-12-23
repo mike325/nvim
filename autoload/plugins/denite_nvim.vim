@@ -143,7 +143,7 @@ function! plugins#denite_nvim#init(data) abort
 
     if exists('g:plugs["projectile.nvim"]')
 
-        let g:projectile#data_dir =  vars#home() . '/cache/projectile'
+        let g:projectile#data_dir = vars#home() . '/cache/projectile'
 
         let g:projectile#enabled = 1
 

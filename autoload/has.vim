@@ -1,11 +1,37 @@
 " Has Setttings
 " github.com/mike325/.vim
 
+
+function! has#gui() abort
+    return ( has('nvim') && ( exists('g:gonvim_running') || exists('g:GuiLoaded') || exists('veonim') )) || ( !has('nvim') && has('gui_running') )
+endfunction
+
+if has('nvim-0.5')
+
+    function! has#async() abort
+        return 1
+    endfunction
+
+    function! has#python(...) abort
+        if ! luaeval("require('python').setup()")
+            return 0
+        endif
+
+        return v:lua.python.has_version(a:000)
+    endfunction
+
+    finish
+endif
+
+function! s:python_setup() abort
+    return has('nvim') ? luaeval("require('python').setup()") : setup#python()
+endfunction
+
 " Check an specific version of python (empty==2)
 function! has#python(...) abort
 
-    if !exists('g:python_host_prog') || !exists('g:python3_host_prog')
-        if ! setup#python()
+    if !exists('g:python_host_prog') && !exists('g:python3_host_prog')
+        if ! s:python_setup()
             return 0
         endif
     endif
@@ -18,11 +44,19 @@ function! has#python(...) abort
         if !exists('s:pyversion')
             if exists('g:python_host_prog')
                 let s:pyversion = {'2' : ''}
-                let s:pyversion['2'] = matchstr(system(g:python_host_prog . ' --version'), "\\S\\+\\ze\n")
+                if has('nvim')
+                    let s:pyversion['2'] = luaeval("require('python')['2'].version")
+                else
+                    let s:pyversion['2'] = matchstr(system(g:python_host_prog . ' --version'), "\\S\\+\\ze\n")
+                endif
             endif
             if exists('g:python3_host_prog')
                 let s:pyversion = exists('s:pyversion["2"]') ? {'2': s:pyversion['2'], '3': ''} : {'3': ''}
-                let s:pyversion['3'] = matchstr(system(g:python3_host_prog . ' --version'), "\\S\\+\\ze\n")
+                if has('nvim')
+                    let s:pyversion['3'] = luaeval("require('python')['3'].version")
+                else
+                    let s:pyversion['3'] = matchstr(system(g:python3_host_prog . ' --version'), "\\S\\+\\ze\n")
+                endif
             endif
         endif
 
@@ -72,8 +106,4 @@ function! has#async() abort
     endif
 
     return l:async
-endfunction
-
-function! has#gui() abort
-    return ( has('nvim') && ( exists('g:gonvim_running') || exists('g:GuiLoaded') || exists('veonim') )) || ( !has('nvim') && has('gui_running') )
 endfunction

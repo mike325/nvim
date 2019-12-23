@@ -99,14 +99,23 @@ function! plugins#youcompleteme#init(data) abort
     let g:ycm_extra_conf_globlist   = ['~/.vim/*', '~/.config/nvim/*', '~/AppData/nvim/*']
 
     let g:ycm_python_interpreter_path = exists('g:python3_host_prog') ?  g:python3_host_prog : g:python_host_prog
-    let g:ycm_python_interpreter_path = exepath(g:ycm_python_interpreter_path)
 
-    let g:ycm_language_server = []
-    if tools#CheckLanguageServer('bash')
+    let g:ycm_language_server = get(g:, 'ycm_language_server', [])
+
+    if tools#CheckLanguageServer('tex')
         let g:ycm_language_server += [
             \ {
-            \     'name': 'bash',
-            \     'cmdline': tools#getLanguageServer('bash'),
+            \     'name': 'tex',
+            \     'cmdline': tools#getLanguageServer('tex'),
+            \     'filetypes': ['tex']
+            \ }]
+    endif
+
+    if tools#CheckLanguageServer('sh')
+        let g:ycm_language_server += [
+            \ {
+            \     'name': 'sh',
+            \     'cmdline': tools#getLanguageServer('sh'),
             \     'filetypes': ['bash', 'sh']
             \ }]
     endif
@@ -173,12 +182,12 @@ function! plugins#youcompleteme#init(data) abort
         execute a:ycm_cmd
     endfunction
 
+    if exists('g:plugs["vimtex"]')
+        let g:ycm_semantic_triggers.tex = g:vimtex#re#youcompleteme
+    endif
+
     augroup YCMGoTo
         autocmd!
-
-        if exists('g:plugs["vimtex"]') && exists('g:vimtex#re#youcompleteme')
-            autocmd VimEnter * let g:ycm_semantic_triggers.tex = g:vimtex#re#youcompleteme
-        endif
 
         autocmd FileType c,cpp,python,go,cs,objc,objcpp,rust,javascript nnoremap <buffer> <silent> K  :YcmCompleter GetDoc<CR>
         autocmd FileType c,cpp,python,go,cs,objc,objcpp,rust,javascript nnoremap <buffer> <silent> gD :YcmCompleter GoToDeclaration<CR>

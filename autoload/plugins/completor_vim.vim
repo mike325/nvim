@@ -61,6 +61,13 @@ function! plugins#completor_vim#init(data) abort
                 \ }
         endif
 
+        if tools#CheckLanguageServer('tex') " && !os#name('windows')
+            let g:completor_filetype_map.tex = {
+                \ 'ft': 'lsp',
+                \ 'cmd': join(tools#getLanguageServer('tex'))
+                \ }
+        endif
+
     endif
 
 endfunction

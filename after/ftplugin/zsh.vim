@@ -50,6 +50,8 @@ endfunction
 setlocal foldmethod=expr
 setlocal foldexpr=GetZshFold()
 
+nnoremap <buffer> <CR> :call mappings#cr()<CR>
+
 " }}}
 
 " Since '$' is part of the variables, lets treat it as part of the word

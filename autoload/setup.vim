@@ -88,5 +88,4 @@ function! setup#python() abort
     let s:setup_done = exists('g:python3_host_prog') || exists('g:python_host_prog') ? 1 : 0
 
     return s:setup_done
-
 endfunction

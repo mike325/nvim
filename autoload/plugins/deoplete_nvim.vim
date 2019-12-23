@@ -101,7 +101,7 @@ function! plugins#deoplete_nvim#init(data) abort
     endif
 
     if exists('g:plugs["deoplete-clang"]') || exists('g:plugs["deoplete-clang2"]')
-        let g:deoplete#sources#clang#libclang_path = vars#libclang()
+        " let g:deoplete#sources#clang#libclang_path = vars#libclang()
 
         let g:deoplete#sources = get(g:,'deoplete#sources',{})
 
@@ -145,7 +145,7 @@ function! plugins#deoplete_nvim#init(data) abort
 
     if exists('g:plugs["deoplete-go"]')
         let g:deoplete#sources#go                   = 'vim-go'
-        let g:deoplete#sources#go#cgo#libclang_path = vars#libclang()
+        " let g:deoplete#sources#go#cgo#libclang_path = vars#libclang()
         let g:deoplete#sources#go#sort_class        = ['package', 'func', 'type', 'var', 'const']
         let g:deoplete#sources#go#use_cache         = 1
         let g:deoplete#sources#go#package_dot       = 1
@@ -154,11 +154,8 @@ function! plugins#deoplete_nvim#init(data) abort
 
     try
         if exists('g:plugs["vimtex"]')
-            call deoplete#custom#var('omni', 'input_patterns', {
-                    \ 'tex': g:vimtex#re#deoplete
-                    \})
+            call deoplete#custom#var('omni', 'input_patterns', {'tex': g:vimtex#re#deoplete})
         endif
     catch
-        "
     endtry
 endfunction

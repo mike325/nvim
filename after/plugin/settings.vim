@@ -8,12 +8,12 @@ if exists('g:settings_loaded')
 endif
 
 if has('nvim')
-    call nvim#init()
+    finish
 else
     call vim#init()
 endif
 
-if has('nvim-0.3.3') || has('patch-8.1.0360')
+if has('patch-8.1.0360')
     set diffopt=internal,filler,vertical,iwhiteall,iwhiteeol,indent-heuristic,algorithm:patience
 else
     set diffopt=filler,vertical,iwhite
@@ -34,27 +34,11 @@ endif
 " Allow lua omni completion
 let g:lua_complete_omni = 1
 
-" Always prefer latex over plain text for *.tex files
-let g:tex_flavor = 'latex'
-
 " Use C for .h headers
 let g:c_syntax_for_h = 1
 
 if exists('+scrollback')
     set scrollback=-1
-endif
-
-if exists('+numberwidth')
-    set numberwidth=1
-endif
-
-if exists('+breakindent')
-    set breakindent " respect indentation when wrapping
-    " set showbreak=\\\\\
-    try
-        set showbreak=↪\
-    catch E595
-    endtry
 endif
 
 if has('termguicolors')
@@ -65,22 +49,6 @@ endif
 if exists('+virtualedit')
     " Allow virtual editing in Visual block mode.
     set virtualedit=block
-endif
-
-
-" Color columns
-if exists('+colorcolumn')
-    " NOTE: May reactivate this since big files are consider logs and
-    "       automatically deactivate this
-    " This works but it tends to slowdown vim with big files
-    " let &colorcolumn="80,".join(range(120,999),",")
-
-    " Visual ruler
-    set colorcolumn=80
-endif
-
-if exists('+relativenumber')
-    set relativenumber " Show line numbers in motions friendly way
 endif
 
 if exists('+infercase')
@@ -99,60 +67,11 @@ endif
 " Don't use the system's clipboard whenever we run in SSH session or we don't have 'clipboard' option available
 " NOTE: Windows terminal doesn't have mouse support, so this wont have effect for vim/neovim TUI
 if empty($SSH_CONNECTION) && has('clipboard')
-    if has('nvim')
-        " Neovim in unix require external programs to use system's clipboard
-        let s:copy = {}
-        let s:paste = {}
-        if os#name('windows') && executable('win32yank')
-
-            let s:copy['+'] = 'win32yank.exe -i --crlf'
-            let s:paste['+'] = 'win32yank.exe -o --lf'
-            let s:copy['*'] = s:copy['+']
-            let s:paste['*'] = s:paste['+']
-
-            let g:clipboard = {
-                        \   'name': 'win32yank',
-                        \   'copy': s:copy,
-                        \   'paste': s:paste,
-                        \   'cache_enabled': 1,
-                        \ }
-        elseif !os#name('windows') && executable('xclip')
-            let s:copy['+'] = 'xclip -quiet -i -selection clipboard'
-            let s:paste['+'] = 'xclip -o -selection clipboard'
-            let s:copy['*'] = 'xclip -quiet -i -selection primary'
-            let s:paste['*'] = 'xclip -o -selection primary'
-            let g:clipboard = {
-                        \   'name': 'xclip',
-                        \   'copy': s:copy,
-                        \   'paste': s:paste,
-                        \   'cache_enabled': 1,
-                        \ }
-        elseif !os#name('windows') && executable('pbcopy')
-            let s:copy['+'] = 'pbcopy'
-            let s:paste['+'] = 'pbpaste'
-            let s:copy['*'] = s:copy['+']
-            let s:paste['*'] = s:paste['+']
-            let g:clipboard = {
-                        \   'name': 'pbcopy',
-                        \   'copy': s:copy,
-                        \   'paste': s:paste,
-                        \   'cache_enabled': 1,
-                        \ }
-        endif
-        if exists('g:clipboard')
-            set clipboard+=unnamedplus,unnamed
-            if has('mouse')
-                set mouse=a    " We have mouse support, so we use it
-                set mousehide  " Hide mouse when typing text
-            endif
-        endif
-    else
-        " We assume that Vim's magic clipboard will work (hopefully, not warranty)
-        set clipboard+=unnamedplus,unnamed
-        if has('mouse')
-            set mouse=a    " We have mouse support, so we use it
-            set mousehide  " Hide mouse when typing text
-        endif
+    " We assume that Vim's magic clipboard will work (hopefully, not warranty)
+    set clipboard+=unnamedplus,unnamed
+    if has('mouse')
+        set mouse=a    " We have mouse support, so we use it
+        set mousehide  " Hide mouse when typing text
     endif
 else
     " let g:clipboard = {}
@@ -183,9 +102,7 @@ set completeopt-=preview
 set lazyredraw " Don't draw when a macro is being executed
 set splitright " Split on the right the current buffer
 set splitbelow " Split on the below the current buffer
-set nowrap     " By default don't wrap the lines
 set showmatch  " Show matching parenthesis
-set number     " Show line numbers
 
 " Improve performance by just highlighting the first 256 chars
 " set synmaxcol=256
@@ -211,9 +128,6 @@ set hidden
 
 set autowrite    " Write files when navigating with :next/:previous
 set autowriteall " Write files when exit (Neo)vim
-
-" Show invisible characters
-set list
 
 if empty($NO_COOL_FONTS)
     " set listchars=tab:\┊\ ,trail:•,extends:❯,precedes:❮
@@ -255,13 +169,43 @@ set visualbell  " Visual bell instead of beeps, but...
 set fileformats=unix,dos " File mode unix by default
 
 " Folding settings
-set nofoldenable      " don't fold by default
-set foldmethod=syntax " fold based on syntax
-set foldlevel=99      " Autoclose fold levels greater than 99
-set foldcolumn=0
 " set foldnestmax=10    " deepest fold is 10 levels
 
 set undolevels=10000 " Set the number the undos per file
+
+if exists('+breakindent')
+    setglobal breakindent
+    " set showbreak=\\\\\
+    try
+        set showbreak=↪\
+    catch E595
+    endtry
+endif
+
+if exists('+relativenumber')
+    set relativenumber
+endif
+
+if exists('+colorcolumn')
+    set colorcolumn=80
+endif
+
+if exists('+numberwidth')
+    set numberwidth=1
+endif
+
+" if has('nvim')
+"     set signcolumn=auto
+" endif
+
+set number
+set list
+set nowrap
+set nofoldenable
+set foldmethod=syntax
+set foldlevel=99
+set foldcolumn=0
+set fileencoding=utf-8
 
 if !exists('g:bare') && exists('g:plugs["vim-airline"]')
     " We already have the statusline, we don't need this

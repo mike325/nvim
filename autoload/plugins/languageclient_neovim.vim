@@ -129,6 +129,11 @@ function! plugins#languageclient_neovim#init(data) abort
         let l:supported_languages += ['sh', 'bash']
     endif
 
+    if tools#getLanguageServer('tex')
+        let g:LanguageClient_serverCommands.tex = tools#getLanguageServer('tex')
+        let l:supported_languages += ['tex']
+    endif
+
     if tools#getLanguageServer('python')
         let g:LanguageClient_serverCommands.python = tools#getLanguageServer('python')
         let l:supported_languages += ['python']

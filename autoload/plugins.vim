@@ -1,6 +1,25 @@
 " Plugins Setttings
 " github.com/mike325/.vim
 
+function! s:Convert2settings(name) abort
+    let l:name = (a:name =~? '[\.\-]') ? substitute(a:name, '[\.\-]', '_', 'g') : a:name
+    let l:name = substitute(l:name, '.', '\l\0', 'g')
+    return l:name
+endfunction
+
+function! plugins#settings() abort
+    let s:available_configs = map(glob(vars#basedir() . '/autoload/plugins/*.vim', 0, 1, 0), 'fnamemodify(v:val, ":t:r")')
+
+    try
+        for [s:name, s:data] in items(filter(deepcopy(g:plugs), 'index(s:available_configs, s:Convert2settings(v:key), 0) != -1'))
+            let s:func_name = s:Convert2settings(s:name)
+            call plugins#{s:func_name}#init(s:data)
+        endfor
+    catch
+        echomsg 'Error trying to read config from ' . s:name
+    endtry
+endfunction
+
 function! plugins#init() abort
 
     " ####### Colorschemes {{{
@@ -8,11 +27,8 @@ function! plugins#init() abort
     " Plug 'sickill/vim-monokai'
     " Plug 'nanotech/jellybeans.vim'
     " Plug 'whatyouhide/vim-gotham'
-    if has('nvim')
-        Plug 'ayu-theme/ayu-vim'
-    else
-        Plug 'joshdick/onedark.vim'
-    endif
+    Plug 'ayu-theme/ayu-vim'
+    Plug 'joshdick/onedark.vim'
 
     " }}} END Colorschemes
 
@@ -61,13 +77,13 @@ function! plugins#init() abort
         Plug 'junegunn/fzf.vim'
     elseif exists('g:gonvim_running')
         Plug 'akiyosi/gonvim-fuzzy'
-    elseif has('nvim') && has#python('3')
+    elseif has('nvim') && has('python3')
         Plug 'Shougo/denite.nvim'
         Plug 'raghur/fruzzy', {'do': { -> fruzzy#install()}}
     else
         Plug 'ctrlpvim/ctrlp.vim'
 
-        if has#python('3')
+        if has('python3')
             Plug 'raghur/fruzzy', {'do': { -> fruzzy#install()}}
         elseif has#python()
             " Fast and 'easy' to compile C CtrlP matcher
@@ -140,7 +156,7 @@ function! plugins#init() abort
         if has#python('3', '5', '1')
             Plug 'ycm-core/YouCompleteMe', { 'do': function('plugins#youcompleteme#install') }
         else
-            Plug 'ycm-core/YouCompleteMe', { 'commit': '299f8e48e7d34e780d24b4956cd61e4d42a139eb', 'do': function('plugins#youcompleteme#install') , 'frozen', 1}
+            Plug 'ycm-core/YouCompleteMe', { 'commit': '299f8e48e7d34e780d24b4956cd61e4d42a139eb', 'do': function('plugins#youcompleteme#install') , 'frozen': 1}
         endif
         " Plug 'davits/DyeVim'
 

@@ -1,6 +1,25 @@
 " Vars Setttings
 " github.com/mike325/.vim
 
+if has('nvim-0.5')
+    function! vars#basedir() abort
+        return luaeval('require"sys".base')
+    endfunction
+
+    function! vars#datadir() abort
+        return luaeval('require"sys".data')
+    endfunction
+
+    function! vars#home() abort
+        return luaeval('require"sys".home')
+    endfunction
+
+    function! vars#cache() abort
+        return luaeval('require"sys".cache')
+    endfunction
+
+    finish
+endif
 
 let s:ignore_cmd = {
             \   'git' : '',
@@ -31,9 +50,18 @@ let s:ignores_patterns = {
 let s:basedir = ''
 let s:homedir = ''
 let s:datadir = ''
+let s:cache   = ''
 
 function! s:setupdirs() abort
     if !empty(s:homedir) && !empty(s:basedir)
+        return
+    endif
+
+    if has('nvim')
+        let s:homedir  = luaeval("require('sys').home")
+        let s:basedir  = luaeval("require('sys').base")
+        let s:datadir  = luaeval("require('sys').data")
+        let s:cachedir = luaeval("require('sys').cache")
         return
     endif
 
@@ -67,7 +95,6 @@ function! s:setupdirs() abort
     else
         let s:basedir = s:homedir . '/.vim'
     endif
-
 endfunction
 
 function! vars#ignore_cmd(cmd) abort
@@ -100,7 +127,6 @@ function! vars#home() abort
 endfunction
 
 function! vars#libclang() abort
-
     let l:libclang = ''
 
     if os#name('windows')

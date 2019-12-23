@@ -35,11 +35,10 @@ if os#name('windows')
     set shell=cmd.exe
 
     " Better compatibility with Unix paths in DOS systems
-    if exists('+shellslash')
-        set shellslash
-    endif
-
-    let &runtimepath = tr(&runtimepath, '\', '/')
+    " if exists('+shellslash')
+    "     set shellslash
+    "     let &runtimepath = tr(&runtimepath, '\', '/')
+    " endif
 
 endif
 
@@ -53,8 +52,14 @@ if (!executable('git') && !isdirectory(fnameescape(vars#basedir().'/plugged'))) 
     let g:bare = 1
 endif
 
-" TODO: Should minimal include lightweight tpope's plugins ?
-call set#initconfigs()
+if has('nvim')
+    lua require('python').setup()
+    lua require('settings')
+    lua require('tools')
+else
+    call set#initconfigs()
+    call setup#python()
+endif
 
 if exists('g:bare')
 
@@ -108,27 +113,18 @@ else
 
     call plug#end()
 
-    function s:Convert2settings(name)
-        let l:name = (a:name =~? '[\.\-]') ? substitute(a:name, '[\.\-]', '_', 'g') : a:name
-        let l:name = substitute(l:name, '.', '\l\0', 'g')
-        return l:name
-    endfunction
+    let g:plug_window = 'tabnew '
 
-    let s:available_configs = map(glob(vars#basedir() . '/autoload/plugins/*.vim', 0, 1, 0), 'fnamemodify(v:val, ":t:r")')
-
-    try
-        for [s:name, s:data] in items(filter(deepcopy(g:plugs), 'index(s:available_configs, s:Convert2settings(v:key), 0) != -1'))
-            let s:func_name = s:Convert2settings(s:name)
-            call plugins#{s:func_name}#init(s:data)
-        endfor
-    catch
-        echomsg 'Error trying to read config from ' . s:name
-    endtry
+    if has('nvim')
+        lua require('plugins')
+    else
+        call plugins#settings()
+    endif
 
 endif
 
-if filereadable(vars#basedir() . '/local.vim')
-    execute 'source ' . vars#basedir() . '/local.vim'
-endif
+" if filereadable(vars#basedir() . '/local.vim')
+"     execute 'source ' . vars#basedir() . '/local.vim'
+" endif
 
 " }}} END Initialize plugins

@@ -7,30 +7,24 @@ function! plugins#neomake#init(data) abort
         return -1
     endif
 
-    " nnoremap <F6> :Neomake<CR>
-    " nnoremap <F7> :lopen<CR>
-    " nnoremap <F8> :lclose<CR>
-
-    " let g:neomake_message_sign = {
-    "     \   'text': '➤',
-    "     \   'texthl': 'NeomakeMessageSign',
-    "     \}
-    " let g:neomake_info_sign = {'text': 'ℹ', 'texthl': 'NeomakeInfoSign'}
-
     if !empty($NO_COOL_FONTS)
-        let g:neomake_warning_sign = {
-            \ 'text': 'W',
-            \ 'texthl': 'WarningMsg',
-            \ }
-
         let g:neomake_error_sign = {
-            \ 'text': 'E',
-            \ 'texthl': 'ErrorMsg',
+            \ 'text': 'E>',
+            \ 'texthl': 'NeomakeErrorSign',
+            \ }
+        let g:neomake_warning_sign = {
+            \   'text': 'W>',
+            \   'texthl': 'NeomakeWarningSign',
+            \ }
+        let g:neomake_message_sign = {
+            \   'text': 'M>',
+            \   'texthl': 'NeomakeMessageSign',
+            \ }
+        let g:neomake_info_sign = {
+            \ 'text': 'I>',
+            \ 'texthl': 'NeomakeInfoSign'
             \ }
     endif
-
-    " Show location list and keep the cursor in the buffer
-    " let g:neomake_open_list = 2
 
     " Don't show the location list, silently run Neomake
     let g:neomake_open_list = 0
@@ -176,6 +170,7 @@ function! plugins#neomake#init(data) abort
     endif
 
     if has('nvim-0.3.2')
+        let g:neomake_echo_current_error = 0
         let g:neomake_virtualtext_current_error = 1
         let g:neomake_virtualtext_prefix = empty($NO_COOL_FONTS) ? '➤ ' :  '❯ '
     endif

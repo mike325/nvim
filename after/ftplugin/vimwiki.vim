@@ -4,6 +4,9 @@
 " if !has#gui() " Terminals can't detect some special key combinations
 " endif
 
+setlocal spell
+setlocal complete+=k,kspell
+
 if !exists('g:plugs["vimwiki"]')
     finish
 endif
@@ -44,4 +47,10 @@ setlocal textwidth=80
 " Restore signify mappings
 if exists('g:plugs["vim-signify"]')
     call plugins#vim_signify#init(0)
+endif
+
+if has('nvim-0.4')
+    call luaeval('tools.abolish("'.&l:spelllang.'")')
+else
+    call tools#abolish(&l:spelllang)
 endif

@@ -34,7 +34,6 @@ function! autocmd#CleanFile() abort
 endfunction
 
 function! autocmd#FileName(...) abort
-
     let l:filename = expand('%:t:r')
     let l:extension = expand('%:e')
 
@@ -79,15 +78,14 @@ function! autocmd#FileName(...) abort
         execute 'bwipeout! ' . l:skeleton
         execute '1delete_'
     endif
-
 endfunction
 
 function! autocmd#FindProjectRoot(path) abort
     let l:project_root = ''
     let l:markers = ['.git', '.svn', '.hg']
+    let l:dir = fnamemodify(a:path, ':p')
 
     for l:marker in l:markers
-        let l:dir = fnamemodify(a:path, ':p')
         let l:project_root = finddir(l:marker, l:dir.';')
         if l:marker =~# '\.git' && empty(l:project_root)
             let l:project_root = findfile(l:marker, l:dir.';')
@@ -112,171 +110,93 @@ endfunction
 
 function! autocmd#SetProjectConfigs() abort
     let b:project_root =  autocmd#FindProjectRoot(getcwd())
-    let l:is_git = 0
 
-    if !empty(b:project_root)
-        " let b:project_root = fnamemodify(b:project_root, ':h')
-        let l:is_git = autocmd#IsGitRepo(b:project_root)
-
-        if filereadable(b:project_root . '/project.vim')
-            try
-                execute 'source '. b:project_root . '/project.vim'
-            catch /.*/
-                if !has#gui()
-                    echoerr 'There were errors with the project file in ' . b:project_root . '/project.vim'
-                endif
-            endtry
-        endif
-
-        if exists('g:plugs["ultisnips"]')
-            function! s:ChangeUltisnipsDir(project_root) abort
-                if isdirectory(a:project_root . '/UltiSnips')
-                    let g:UltiSnipsSnippetsDir        = a:project_root . '/UltiSnips'
-                    let g:UltiSnipsSnippetDirectories = [
-                                \   a:project_root . '/UltiSnips',
-                                \   vars#basedir() . '/config/UltiSnips',
-                                \   'UltiSnips',
-                                \]
-                else
-                    let g:UltiSnipsSnippetsDir        = vars#basedir() . '/config/UltiSnips'
-                    let g:UltiSnipsSnippetDirectories = [
-                                \   vars#basedir() . '/config/UltiSnips',
-                                \   'UltiSnips'
-                                \ ]
-                endif
-            endfunction
-
-            command! UltiSnipsDir call mkdir(b:project_root . '/UltiSnips', 'p') | call s:ChangeUltisnipsDir()
-
-            try
-                call s:ChangeUltisnipsDir(b:project_root)
-            catch E117
-                "
-            endtry
-
-        endif
-
-        if exists('g:plugs["ctrlp"]')
-            let g:ctrlp_clear_cache_on_exit = 1
-        endif
-
-        if exists('g:plugs["projectile.nvim"]')
-            let g:projectile#search_prog = tools#select_grep(l:is_git)
-        endif
-
-        if exists('g:plugs["deoplete.nvim"]') && ( exists('g:plugs["deoplete-clang"]') || exists('g:plugs["deoplete-clang2"]') )
-            if filereadable(b:project_root . '/compile_commands.json')
-                let g:deoplete#sources#clang#clang_complete_database = b:project_root
-            else
-                if exists('g:deoplete#sources#clang#clang_complete_database')
-                    unlet g:deoplete#sources#clang#clang_complete_database
-                endif
-            endif
-        endif
-
-        " If we don't have grepper variable, we have not done :PlugInstall
-        if exists('g:plugs["vim-grepper"]') && exists('g:grepper')
-            let g:grepper.tools = []
-            let g:grepper.operator.tools = []
-
-            if executable('git') && l:is_git
-                let g:grepper.tools += ['git']
-                let g:grepper.operator.tools += ['git']
-            endif
-
-            if executable('rg')
-                let g:grepper.tools += ['rg']
-                let g:grepper.operator.tools += ['rg']
-            endif
-            if executable('ag')
-                let g:grepper.tools += ['ag']
-                let g:grepper.operator.tools += ['ag']
-            endif
-            if executable('grep')
-                let g:grepper.tools += ['grep']
-                let g:grepper.operator.tools += ['grep']
-            endif
-            if executable('findstr')
-                let g:grepper.tools += ['findstr']
-                let g:grepper.operator.tools += ['findstr']
-            endif
-        endif
-
-        let &grepprg    = tools#select_grep(l:is_git)
-        let &grepformat = tools#select_grep(l:is_git, 'grepformat')
-
-        if exists('g:plugs["gonvim-fuzzy"]')
-            let g:gonvim_fuzzy_ag_cmd = tools#select_grep(l:is_git)
-        endif
-
-    else
+    if empty(b:project_root)
         let b:project_root = fnamemodify(getcwd(), ':p')
+    endif
 
-        if filereadable(b:project_root . '/project.vim')
-            try
-                execute 'source '. b:project_root . '/project.vim'
-            catch /.*/
-                if !has#gui()
-                    echoerr 'There were errors with the project file in ' . b:project_root . '/project.vim'
-                endif
-            endtry
-        endif
+    " let b:project_root = fnamemodify(b:project_root, ':h')
+    let l:is_git = autocmd#IsGitRepo(b:project_root)
 
-        if exists('g:plugs["ultisnips"]')
-            silent! delcommand UltiSnipsDir
+    let &grepprg = tools#select_grep(l:is_git)
+    let &grepformat = tools#select_grep(l:is_git, 'grepformat')
+
+    if filereadable(b:project_root . '/project.vim')
+        try
+            execute 'source '. b:project_root . '/project.vim'
+        catch /.*/
+            if !has#gui()
+                echoerr 'There were errors with the project file in ' . b:project_root . '/project.vim'
+            endif
+        endtry
+    endif
+
+    if exists('g:plugs["ultisnips"]')
+        let g:UltiSnipsSnippetDirectories = [
+                    \   vars#basedir() . '/config/UltiSnips',
+                    \   'UltiSnips'
+                    \ ]
+
+        if isdirectory(b:project_root . '/UltiSnips')
+            let g:UltiSnipsSnippetsDir        = b:project_root . '/UltiSnips'
+            let g:UltiSnipsSnippetDirectories = [b:project_root . '/UltiSnips'] + g:UltiSnipsSnippetDirectories
+        else
             let g:UltiSnipsSnippetsDir        = vars#basedir() . '/config/UltiSnips'
-            let g:UltiSnipsSnippetDirectories = [vars#basedir() . '/config/UltiSnips', 'UltiSnips']
-        endif
-
-        if exists('g:plugs["ctrlp"]')
-            let g:ctrlp_clear_cache_on_exit = (g:ctrlp_user_command.fallback =~# '^\(ag\|rg\|fd\) ')
-        endif
-
-        if exists('g:plugs["projectile.nvim"]')
-            let g:projectile#search_prog = tools#select_grep(l:is_git)
-        endif
-
-        if exists('g:plugs["deoplete.nvim"]') && ( exists('g:plugs["deoplete-clang"]') || exists('g:plugs["deoplete-clang2"]') )
-            if filereadable(b:project_root . '/compile_commands.json')
-                let g:deoplete#sources#clang#clang_complete_database = b:project_root
-            else
-                if exists('g:deoplete#sources#clang#clang_complete_database')
-                    unlet g:deoplete#sources#clang#clang_complete_database
-                endif
-            endif
-        endif
-
-        " If we don't have grepper variable, we have not done :PlugInstall
-        if exists('g:plugs["vim-grepper"]') && exists('g:grepper')
-            let g:grepper.tools = []
-            let g:grepper.operator.tools = []
-
-            if executable('rg')
-                let g:grepper.tools += ['rg']
-                let g:grepper.operator.tools += ['rg']
-            endif
-            if executable('ag')
-                let g:grepper.tools += ['ag']
-                let g:grepper.operator.tools += ['ag']
-            endif
-            if executable('grep')
-                let g:grepper.tools += ['grep']
-                let g:grepper.operator.tools += ['grep']
-            endif
-            if executable('findstr')
-                let g:grepper.tools += ['findstr']
-                let g:grepper.operator.tools += ['findstr']
-            endif
-        endif
-
-        let &grepprg = tools#select_grep(l:is_git)
-        let &grepformat = tools#select_grep(l:is_git, 'grepformat')
-
-        if exists('g:plugs["gonvim-fuzzy"]')
-            let g:gonvim_fuzzy_ag_cmd = tools#select_grep(l:is_git)
         endif
 
     endif
+
+    if exists('g:plugs["ctrlp"]')
+        let l:fallback = g:ctrlp_user_command.fallback
+        let g:ctrlp_clear_cache_on_exit = is_git ? 1 : (fallback =~# '^\(ag\|rg\|fd\) ')
+    endif
+
+    if exists('g:plugs["projectile.nvim"]')
+        let g:projectile#search_prog = tools#select_grep(l:is_git)
+    endif
+
+    if exists('g:plugs["deoplete.nvim"]') && ( exists('g:plugs["deoplete-clang"]') || exists('g:plugs["deoplete-clang2"]') )
+        if filereadable(b:project_root . '/compile_commands.json')
+            let g:deoplete#sources#clang#clang_complete_database = b:project_root
+        else
+            if exists('g:deoplete#sources#clang#clang_complete_database')
+                unlet g:deoplete#sources#clang#clang_complete_database
+            endif
+        endif
+    endif
+
+    " If we don't have grepper variable, we have not done :PlugInstall
+    if exists('g:plugs["vim-grepper"]') && exists('g:grepper')
+        let g:grepper.tools = []
+        let g:grepper.operator.tools = []
+
+        if executable('git') && l:is_git
+            let g:grepper.tools += ['git']
+            let g:grepper.operator.tools += ['git']
+        endif
+
+        if executable('rg')
+            let g:grepper.tools += ['rg']
+            let g:grepper.operator.tools += ['rg']
+        endif
+        if executable('ag')
+            let g:grepper.tools += ['ag']
+            let g:grepper.operator.tools += ['ag']
+        endif
+        if executable('grep')
+            let g:grepper.tools += ['grep']
+            let g:grepper.operator.tools += ['grep']
+        endif
+        if executable('findstr')
+            let g:grepper.tools += ['findstr']
+            let g:grepper.operator.tools += ['findstr']
+        endif
+    endif
+
+    if exists('g:plugs["gonvim-fuzzy"]')
+        let g:gonvim_fuzzy_ag_cmd = tools#select_grep(l:is_git)
+    endif
+
 
     return b:project_root
 endfunction
