@@ -140,7 +140,12 @@ function! plugins#init() abort
     Plug 'Shougo/neco-vim'
 
     if has#python() && (has('nvim') || (v:version >= 704))
-        Plug 'SirVer/ultisnips'
+        if has#python(3, 5)
+            Plug 'SirVer/ultisnips'
+        else
+            " Froze ultisnips to latest python2 and python3.4 supported version
+            Plug 'SirVer/ultisnips', {'commit': 'd2f42d6b43902e5b2ef7bfca2579ccb6cc9f52c0', 'frozen': 1}
+        endif
     else
         Plug 'MarcWeber/vim-addon-mw-utils'
         Plug 'tomtom/tlib_vim'

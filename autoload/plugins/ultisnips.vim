@@ -38,7 +38,7 @@ function! plugins#ultisnips#init(data) abort
     " Remove all select mappigns in expanded snip
     " let g:UltiSnipsRemoveSelectModeMappings = 0
 
-    let g:UltiSnipsUsePythonVersion = has('python3') ? 3 : 2
+    let g:UltiSnipsUsePythonVersion = has#python(3, 5) ? 3 : 2
 
     let g:ulti_expand_or_jump_res = 0
     let g:ulti_jump_backwards_res = 0
