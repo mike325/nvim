@@ -17,11 +17,7 @@ local servers = {
     go     = { gopls         = 'gopls', },
     latex  = { texlab        = 'texlab', },
     python = { pyls          = 'pyls', },
-    c = {
-        ccls   = 'ccls',
-        clangd = 'clangd',
-    },
-    cpp = {
+    c = { -- Since both clangd and ccls works with C,Cpp,ObjC and ObjCpp; just 1 setup is ok
         ccls   = 'ccls',
         clangd = 'clangd',
     },
@@ -35,6 +31,11 @@ for language,options in pairs(servers) do
             lsp[option].setup({})
             if language ~= 'latex' or plugs['vimtex'] == nil then -- Use vimtex function instead
                 available_languages[#available_languages + 1] = language
+                if language == 'c' then
+                    available_languages[#available_languages + 1] = 'cpp'
+                    available_languages[#available_languages + 1] = 'objc'
+                    available_languages[#available_languages + 1] = 'objcpp'
+                end
             end
             break
         end
@@ -51,7 +52,6 @@ nvim_set_autocmd(
     available_languages,
     "lua require'nvim'.nvim_set_command('Declaration', 'lua vim.lsp.buf.declaration()', {buffer = true, force = true})",
     {group = 'NvimLSP'}
-
 )
 
 nvim_set_autocmd(
@@ -59,7 +59,6 @@ nvim_set_autocmd(
     available_languages,
     "lua require'nvim'.nvim_set_command('Definition', 'lua vim.lsp.buf.definition()', {buffer = true, force = true})",
     {group = 'NvimLSP'}
-
 )
 
 nvim_set_autocmd(
@@ -70,11 +69,10 @@ nvim_set_autocmd(
 )
 
 nvim_set_autocmd(
-    'CursorHold',
+    'FileType',
     available_languages,
-    "lua vim.lsp.buf.hover()",
+    "autocmd CursorHold <buffer> lua vim.lsp.buf.hover()",
     {group = 'NvimLSP', nested = true}
-
 )
 
 nvim_set_autocmd(
@@ -89,7 +87,6 @@ nvim_set_autocmd(
     available_languages,
     "lua require'nvim'.nvim_set_command('Signature', 'lua vim.lsp.buf.signature_help()', {buffer = true, force = true})",
     {group = 'NvimLSP'}
-
 )
 
 nvim_set_autocmd(
