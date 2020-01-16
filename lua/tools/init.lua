@@ -20,14 +20,15 @@ local langservers = {
     python = {'pyls'},
     c      = {'ccls', 'clangd', 'cquery'},
     cpp    = {'ccls', 'clangd', 'cquery'},
-    cuda   = {'ccls'},
-    objc   = {'ccls'},
+    cuda   = {'ccls', 'clangd'},
+    objc   = {'ccls', 'clangd'},
     sh     = {'bash-language-server'},
     bash   = {'bash-language-server'},
-    docker = {'docker-language-server'},
     go     = {'gopls'},
     latex  = {'texlab'},
     tex    = {'texlab'},
+    bib    = {'texlab'},
+    vim    = {'vim-language-server'},
 }
 
 local abolish = {}
@@ -364,6 +365,7 @@ function tools.get_language_server(language)
         ['gopls']  = {'gopls' },
         ['texlab'] = {'texlab' },
         ['bash-language-server'] = {'bash-language-server', 'start'},
+        ['vim-language-server'] = {'vim-language-server', '--stdio'},
     }
 
     local cmd = {}

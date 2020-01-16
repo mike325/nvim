@@ -46,13 +46,15 @@ let s:langservers = {
     \ 'python': ['pyls'],
     \ 'c'     : ['ccls', 'clangd', 'cquery'],
     \ 'cpp'   : ['ccls', 'clangd', 'cquery'],
-    \ 'cuda'  : ['ccls'],
-    \ 'objc'  : ['ccls'],
+    \ 'cuda'  : ['ccls', 'clangd'],
+    \ 'objc'  : ['ccls', 'clangd'],
     \ 'sh'    : ['bash-language-server'],
     \ 'bash'  : ['bash-language-server'],
     \ 'go'    : ['gopls'],
     \ 'latex' : ['texlab'],
     \ 'tex'   : ['texlab'],
+    \ 'bib'   : ['texlab'],
+    \ 'vim'   : ['vim-language-server'],
     \ }
 
 
@@ -101,6 +103,7 @@ function! tools#getLanguageServer(language) abort
         \ 'gopls'  : ['gopls'],
         \ 'texlab' : ['texlab'],
         \ 'bash-language-server': ['bash-language-server', 'start'],
+        \ 'vim-language-server': ['vim-language-server', '--stdio'],
         \ }
 
     let l:servers = s:langservers[a:language]

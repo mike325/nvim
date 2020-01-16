@@ -9,53 +9,6 @@ function! nvim#updateremoteplugins(info) abort
     endif
 endfunction
 
-function! nvim#LanguageMappings() abort
-    if tools#CheckLanguageServer(&filetype)
-
-        command! -buffer  Definition      call lsp#text_document_definition()
-        command! -buffer  Declaration     call lsp#text_document_declaration()
-        command! -buffer  Hover           call lsp#text_document_hover()
-        command! -buffer  Implementation  call lsp#text_document_implementation()
-        command! -buffer  Signature       call lsp#text_document_signature_help()
-        command! -buffer  Type            call lsp#text_document_type_definition()
-
-        nnoremap <buffer> <silent> K    :call lsp#text_document_hover()<CR>
-        nnoremap <buffer> <silent> gD   :call lsp#text_document_definition()<CR>
-
-    endif
-endfunction
-
-function! nvim#lsp() abort
-    " Cleanup
-    augroup LanguageCmds
-        autocmd!
-    augroup end
-
-    let l:supported_languages = []
-
-    if tools#CheckLanguageServer('c')
-        let l:supported_languages += ['c', 'cpp']
-        if executable('ccls') || executable('cquery')
-            let l:supported_languages += ['cuda', 'objc']
-        endif
-    endif
-
-    if tools#CheckLanguageServer('python')
-        let l:supported_languages += ['python']
-    endif
-
-    if tools#CheckLanguageServer('sh')
-        let l:supported_languages += ['sh', 'bash']
-    endif
-
-    if !empty(l:supported_languages)
-        execute 'autocmd LanguageCmds FileType '.join(l:supported_languages, ',').' setlocal omnifunc=lsp#omnifunc'
-        execute 'autocmd LanguageCmds FileType '.join(l:supported_languages, ',').' call nvim#LanguageMappings()'
-    endif
-
-
-endfunction
-
 function! nvim#init() abort
     if !has('nvim')
         return -1
@@ -95,11 +48,6 @@ function! nvim#init() abort
     else
         set titlestring=%t\ (%f)
         set title          " Set window title
-    endif
-
-
-    if has('nvim-0.5') && tools#CheckLanguageServer()
-        call nvim#lsp()
     endif
 
 endfunction

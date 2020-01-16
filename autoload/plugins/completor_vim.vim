@@ -44,6 +44,8 @@ function! plugins#completor_vim#init(data) abort
                 \   'cmd': join(tools#getLanguageServer('c'))
                 \}
             let g:completor_filetype_map.cpp = g:completor_filetype_map.c
+            let g:completor_filetype_map.objc = g:completor_filetype_map.c
+            let g:completor_filetype_map.objcpp = g:completor_filetype_map.c
         endif
 
         if tools#CheckLanguageServer('bash')
@@ -65,6 +67,14 @@ function! plugins#completor_vim#init(data) abort
             let g:completor_filetype_map.tex = {
                 \ 'ft': 'lsp',
                 \ 'cmd': join(tools#getLanguageServer('tex'))
+                \ }
+            let g:completor_filetype_map.bib = g:completor_filetype_map.tex
+        endif
+
+        if tools#CheckLanguageServer('vim') " && !os#name('windows')
+            let g:completor_filetype_map.tex = {
+                \ 'ft': 'lsp',
+                \ 'cmd': join(tools#getLanguageServer('vim'))
                 \ }
         endif
 

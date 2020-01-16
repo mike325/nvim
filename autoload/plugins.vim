@@ -163,6 +163,11 @@ function! plugins#init() abort
         else
             Plug 'ycm-core/YouCompleteMe', { 'commit': '299f8e48e7d34e780d24b4956cd61e4d42a139eb', 'do': function('plugins#youcompleteme#install') , 'frozen': 1}
         endif
+
+        if has('nvim-0.5') && tools#CheckLanguageServer()
+            Plug 'neovim/nvim-lsp'
+        endif
+
         " Plug 'davits/DyeVim'
 
         " C/C++ project generator

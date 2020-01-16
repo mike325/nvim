@@ -44,6 +44,8 @@ function! plugins#vim_lsc#init(data) abort
     if tools#CheckLanguageServer('c')
         let g:lsc_server_commands.c = tools#getLanguageServer('c')
         let g:lsc_server_commands.cpp = g:lsc_server_commands.c
+        let g:lsc_server_commands.objc = g:lsc_server_commands.c
+        let g:lsc_server_commands.objcpp = g:lsc_server_commands.c
     endif
 
     if tools#CheckLanguageServer('bash')
@@ -53,6 +55,15 @@ function! plugins#vim_lsc#init(data) abort
 
     if tools#CheckLanguageServer('python') " && !os#name('windows')
         let g:lsc_server_commands.python = tools#getLanguageServer('python')
+    endif
+
+    if tools#CheckLanguageServer('tex')
+        let g:lsc_server_commands.tex = tools#getLanguageServer('tex')
+        let g:lsc_server_commands.bib = g:lsc_server_commands.tex
+    endif
+
+    if tools#CheckLanguageServer('vim')
+        let g:lsc_server_commands.vim = tools#getLanguageServer('vim')
     endif
 
 endfunction
