@@ -8,7 +8,7 @@ function! s:Convert2settings(name) abort
 endfunction
 
 function! plugins#settings() abort
-    let s:available_configs = map(glob(vars#basedir() . '/autoload/plugins/*.vim', 0, 1, 0), 'fnamemodify(v:val, ":t:r")')
+    let s:available_configs = map(glob(vars#basedir() . '/autoload/plugins/*.vim', 0, 1), 'fnamemodify(v:val, ":t:r")')
 
     try
         for [s:name, s:data] in items(filter(deepcopy(g:plugs), 'index(s:available_configs, s:Convert2settings(v:key), 0) != -1'))
@@ -144,7 +144,7 @@ function! plugins#init() abort
             Plug 'SirVer/ultisnips'
         else
             " Froze ultisnips to latest python2 and python3.4 supported version
-            Plug 'SirVer/ultisnips', {'commit': 'd2f42d6b43902e5b2ef7bfca2579ccb6cc9f52c0', 'frozen': 1}
+            Plug 'SirVer/ultisnips', {'commit': '30e651f', 'frozen': 1}
         endif
     else
         Plug 'MarcWeber/vim-addon-mw-utils'
@@ -281,11 +281,11 @@ function! plugins#init() abort
     " Simple Join/Split operators
     " Plug 'AndrewRadev/splitjoin.vim'
 
-    if os#name('windows')
+    if os#name('windows') && v:version > 704
         " NOTE: Urls doesn't work in master branch because vimwiki pass the wrong
         "       variable
         Plug 'vimwiki/vimwiki', {'branch': 'dev'}
-    else
+    elseif v:version > 704
         Plug 'vimwiki/vimwiki'
     endif
 

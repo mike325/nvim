@@ -10,7 +10,7 @@ function! s:PythonProviders(python) abort
         let l:pynvim = {
                     \ 'local': vars#home() . '/AppData/Roaming/Python/Python'.l:major.l:minor.'/site-packages/pynvim',
                     \ }
-        if exepath('python' . l:major . '.' . l:minor) || exepath('python' . l:major)
+        if exists('*exepath') &&  exepath('python' . l:major . '.' . l:minor) || exepath('python' . l:major)
             if exepath('python' . l:major . '.' . l:minor)
                 let l:python = 'python' . l:major . '.' . l:minor
                 let l:pydir = fnamemodify(exepath('python' . l:major . '.' . l:minor) , ':h')
@@ -50,11 +50,15 @@ function! s:PythonProviders(python) abort
                     \ }
 
         if (executable('python'.l:major.'.'.l:minor) || executable('python'.l:major)) &&  isdirectory(l:pynvim['virtual'])
-            return executable('python'.l:major.'.'.l:minor) ? exepath('python'.l:major.'.'.l:minor) : exepath('python'.l:major)
+            if exists('*exepath')
+                return executable('python'.l:major.'.'.l:minor) ? exepath('python'.l:major.'.'.l:minor) : exepath('python'.l:major)
+            else
+                return executable('python'.l:major.'.'.l:minor) ? 'python'.l:major.'.'.l:minor : 'python'.l:major
+            endif
         elseif executable('python'.l:major.'.'.l:minor) && (isdirectory(l:pynvim['local']) || isdirectory(l:pynvim['system']))
-            return exepath('python'.l:major.'.'.l:minor)
+            return exists('*exepath') ? exepath('python'.l:major.'.'.l:minor) : 'python'.l:major.'.'.l:minor
         elseif executable('python'.l:major) && (isdirectory(l:pynvim['local']) || isdirectory(l:pynvim['system']))
-            return exepath('python'.l:major)
+            return exists('*exepath') ? exepath('python'.l:major) : 'python'.l:major
         endif
     endif
     return ''

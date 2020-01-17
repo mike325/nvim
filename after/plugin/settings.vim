@@ -53,6 +53,21 @@ if exists('+infercase')
     set infercase      " Smart casing when completing
 endif
 
+if exists('+langnoremap')
+    set langnoremap
+endif
+
+set nrformats=hex
+set shortmess=filnxtToO
+
+if has('patch-7.4.1065')
+    set nrformats+=bin
+endif
+
+if has('patch-7.4.1570')
+    set shortmess+=F
+endif
+
 " Clipboard {{{
 " Set the defaults, which we may change depending where we run (Neo)vim
 
@@ -77,11 +92,8 @@ set nofsync
 set hlsearch
 set incsearch
 set history=10000
-set langnoremap
 set laststatus=2
-set nrformats=bin,hex
 set ruler
-set shortmess=filnxtToOF
 set showcmd
 set sidescroll=1
 set smarttab
