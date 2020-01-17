@@ -6,6 +6,8 @@ setlocal bufhidden=delete
 setlocal number
 setlocal relativenumber
 
+setlocal nolist
+
 setlocal nospell
 
 nnoremap <silent> <buffer> q :q!<CR>
