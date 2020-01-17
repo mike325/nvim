@@ -14,6 +14,8 @@ function! plugins#youcompleteme#FixYCMBs() abort
     imap <C-h> <C-R>=plugins#youcompleteme#OnDeleteChar()<CR><Plug>delimitMateBS
 endfunction
 
+let g:ycm_languages = []
+
 
 function! plugins#youcompleteme#install(info) abort
     if a:info.status ==# 'installed' || a:info.force
@@ -102,6 +104,31 @@ function! plugins#youcompleteme#init(data) abort
 
     let g:ycm_language_server = get(g:, 'ycm_language_server', [])
 
+    let g:ycm_languages = []
+
+    let g:ycm_languages += ['c', 'cpp', 'objc', 'objcpp', 'python']
+
+    if executable('go') && (!empty($GOROOT))
+        let g:ycm_languages += ['go']
+    endif
+
+    if executable('mono') && ( (os#name('windows') && executable('msbuild')) || ( !os#name('windows') && executable('xbuild') ) )
+        let g:ycm_languages += ['cs']
+    endif
+
+    if executable('racer') && executable('cargo')
+        let g:ycm_languages += ['rust']
+    endif
+
+    if executable('npm') && executable('node')
+        let g:ycm_languages += ['javascript']
+    endif
+
+    if !os#name('windows') && executable('java')
+        let g:ycm_languages += ['java']
+    endif
+
+
     if tools#CheckLanguageServer('tex')
         let g:ycm_language_server += [
             \ {
@@ -109,6 +136,7 @@ function! plugins#youcompleteme#init(data) abort
             \     'cmdline': tools#getLanguageServer('tex'),
             \     'filetypes': ['tex', 'bib']
             \ }]
+        let g:ycm_languages += ['tex', 'bib']
     endif
 
     if tools#CheckLanguageServer('sh')
@@ -118,6 +146,7 @@ function! plugins#youcompleteme#init(data) abort
             \     'cmdline': tools#getLanguageServer('sh'),
             \     'filetypes': ['bash', 'sh']
             \ }]
+        let g:ycm_languages += ['bash', 'sh']
     endif
 
     if tools#CheckLanguageServer('vim')
@@ -127,6 +156,7 @@ function! plugins#youcompleteme#init(data) abort
             \     'cmdline': tools#getLanguageServer('vim'),
             \     'filetypes': ['vim']
             \ }]
+        let g:ycm_languages += ['vim']
     endif
 
     let g:ycm_extra_conf_vim_data = [
@@ -141,8 +171,8 @@ function! plugins#youcompleteme#init(data) abort
     endif
 
     " let g:ycm_clangd_binary_path = ''
-    let g:ycm_use_clangd = 'Auto' " Clangd will be use if it's in third_party folder
-    let g:ycm_clangd_args = ['--background-index']
+    let g:ycm_use_clangd = 1
+    let g:ycm_clangd_args = ['-background-index']
     " let g:ycm_clangd_uses_ycmd_caching = 1
 
     if executable('ctags')
@@ -195,35 +225,26 @@ function! plugins#youcompleteme#init(data) abort
         let g:ycm_semantic_triggers.tex = g:vimtex#re#youcompleteme
     endif
 
-    if !exists('g:plugs["nvim-lsp"]')
-        augroup YCMGoTo
-            autocmd!
+    augroup YCMMappings
+        autocmd!
+    augroup end
 
-            autocmd FileType c,cpp,python,go,cs,objc,objcpp,rust,javascript nnoremap <buffer> <silent> K  :YcmCompleter GetDoc<CR>
-            autocmd FileType c,cpp,python,go,cs,objc,objcpp,rust,javascript nnoremap <buffer> <silent> gD :YcmCompleter GoToDeclaration<CR>
-
-            autocmd FileType c,cpp                                          nnoremap <buffer> <leader>i :YcmCompleter GoToInclude<CR>
-            autocmd FileType c,cpp,cs                                       command! -buffer FixIt :YcmCompleter FixIt
-
-            autocmd FileType c,cpp,objc,objcpp,cuda                         command! -buffer Include :YcmCompleter GoToInclude
-            autocmd FileType c,cpp,objc,objcpp,cuda                         command! -buffer Parent :YcmCompleter GetParent
-            autocmd FileType c,cpp,python,go,cs,objc,objcpp,rust,cuda       command! -buffer Declaration :YcmCompleter GoToDeclaration
-            autocmd FileType c,cpp,python,go,cs,objc,objcpp,rust,javascript command! -buffer Definition :YcmCompleter GoToDefinition
-            autocmd FileType javascript,python,typescript                   command! -buffer References :YcmCompleter GoToReferences
-
-            autocmd FileType python,c,cpp,objc,objcpp,javascript            command! -buffer Type :YcmCompleter GetType
-
-            autocmd FileType c,cpp,objc,objcpp,cuda                         command! -buffer IncludeVSplit :call s:SplitYCM("vsplit", "YcmCompleter GoToInclude")
-            autocmd FileType c,cpp,python,go,cs,objc,objcpp,rust,cuda       command! -buffer DeclarationVSplit :call s:SplitYCM("vsplit", "YcmCompleter GoToDeclaration")
-            autocmd FileType c,cpp,python,go,cs,objc,objcpp,rust,javascript command! -buffer DefinitionVSplit :call s:SplitYCM("vsplit", "YcmCompleter GoToDefinition")
-            autocmd FileType javascript,python,typescript                   command! -buffer ReferencesVSplit :call s:SplitYCM("vsplit", "YcmCompleter GoToReferences")
-
-            autocmd FileType c,cpp,objc,objcpp                              command! -buffer IncludeSplit :call s:SplitYCM("split", "YcmCompleter GoToInclude")
-            autocmd FileType c,cpp,python,go,cs,objc,objcpp,rust            command! -buffer DeclarationSplit :call s:SplitYCM("split", "YcmCompleter GoToDeclaration")
-            autocmd FileType c,cpp,python,go,cs,objc,objcpp,rust,javascript command! -buffer DefinitionSplit :call s:SplitYCM("split", "YcmCompleter GoToDefinition")
-            autocmd FileType javascript,python,typescript                   command! -buffer ReferencesSplit :call s:SplitYCM("split", "YcmCompleter GoToReferences")
-        augroup end
-    endif
+    execute 'autocmd YCMMappings FileType ' . join(g:ycm_languages, ',') . ' nnoremap <buffer> <silent> <c-]> :YcmCompleter GoToDefinition<CR>'
+    execute 'autocmd YCMMappings FileType ' . join(g:ycm_languages, ',') . ' nnoremap <buffer> <silent> gd    :YcmCompleter GoToDeclaration<CR>'
+    execute 'autocmd YCMMappings FileType ' . join(g:ycm_languages, ',') . ' nnoremap <buffer> <silent> gD    :YcmCompleter GoToImplementation<CR>'
+    execute 'autocmd YCMMappings FileType ' . join(g:ycm_languages, ',') . ' nnoremap <buffer> <silent> gr    :YcmCompleter GoToReferences<CR>'
+    execute 'autocmd YCMMappings FileType ' . join(g:ycm_languages, ',') . ' nnoremap <buffer> <silent> gI    :YcmCompleter GoToInclude<CR>'
+    execute 'autocmd YCMMappings FileType ' . join(g:ycm_languages, ',') . ' nnoremap <buffer> <silent> K     :YcmCompleter GetDoc<CR>'
+                                                                     ,
+    execute 'autocmd YCMMappings FileType ' . join(g:ycm_languages, ',') . ' command! -buffer FixIt YcmCompleter FixIt'
+    execute 'autocmd YCMMappings FileType ' . join(g:ycm_languages, ',') . ' command! -buffer Include YcmCompleter GoToInclude'
+    execute 'autocmd YCMMappings FileType ' . join(g:ycm_languages, ',') . ' command! -buffer Parent YcmCompleter GoToParent'
+    execute 'autocmd YCMMappings FileType ' . join(g:ycm_languages, ',') . ' command! -buffer Declaration YcmCompleter GoToDeclaration'
+    execute 'autocmd YCMMappings FileType ' . join(g:ycm_languages, ',') . ' command! -buffer Definition YcmCompleter GoToDefinition'
+    execute 'autocmd YCMMappings FileType ' . join(g:ycm_languages, ',') . ' command! -buffer References YcmCompleter GoToReferences'
+    execute 'autocmd YCMMappings FileType ' . join(g:ycm_languages, ',') . ' command! -buffer Doc YcmCompleter GetDoc'
+    execute 'autocmd YCMMappings FileType ' . join(g:ycm_languages, ',') . ' command! -buffer Hover YcmCompleter GetDoc'
+    execute 'autocmd YCMMappings FileType ' . join(g:ycm_languages, ',') . ' command! -buffer Type YcmCompleter GoToType'
 
     if exists('g:plugs["YouCompleteMe"]') && exists('g:plugs["delimitMate"]')
         " Hack around
