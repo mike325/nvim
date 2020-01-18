@@ -109,6 +109,8 @@ else
 
     if !exists('g:minimal')
         call plugins#init()
+    elseif has('nvim-0.5')
+        Plug 'neovim/nvim-lsp'
     endif
 
     call plug#end()
