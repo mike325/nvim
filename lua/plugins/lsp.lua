@@ -22,8 +22,8 @@ local servers = {
     vim    = { vimls         = 'vimls', },
     lua    = { sumneko_lua   = 'sumneko_lua', },
     c = { -- Since both clangd and ccls works with C,Cpp,ObjC and ObjCpp; just 1 setup is ok
-        ccls   = 'ccls',
         clangd = 'clangd',
+        ccls   = 'ccls',
     },
 }
 
