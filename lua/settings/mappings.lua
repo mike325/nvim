@@ -161,7 +161,7 @@ nvim.nvim_set_command(
 nvim.nvim_set_command('ConncallLevel',  "call mappings#ConncallLevel(expand(<q-args>))", {nargs='?', force = true})
 nvim.nvim_set_command('Qopen', "execute((&splitbelow) ? 'botright' : 'topleft' ) . ' copen ' . expand(<q-args>)", {nargs='?', force = true})
 
-if executable('svn') then
+if executable('svn') == 1 then
     nvim.nvim_set_command('SVNstatus', "execute('!svn status ' . <q-args>)", {nargs='*', force = true})
     nvim.nvim_set_command('SVN'      , "execute('!svn ' . <q-args>)"       , {complete='file', nargs='+', force = true})
     nvim.nvim_set_command('SVNupdate', "execute('!svn update ' . <q-args>)", {complete='file', nargs='*', force = true})
@@ -284,7 +284,7 @@ if plugs["vim-eunuch"] == nil then
 
 end
 
-if plugs["vim-fugitive"] == nil and executable('git') then
+if plugs["vim-fugitive"] == nil and executable('git') == 1 then
     -- command! -nargs=+ Git execute(((&splitbelow) ? 'botright' : 'topleft' ) . ' 20split term://git ' . <q-args>)
     -- command! -nargs=* Gstatus execute(((&splitbelow) ? 'botright' : 'topleft' ) . ' 20split term://git status ' . <q-args>)
     -- command! -nargs=* Gcommit execute(((&splitbelow) ? 'botright' : 'topleft' ) . ' 20split term://git commit ' . <q-args>)

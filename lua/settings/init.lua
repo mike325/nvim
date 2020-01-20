@@ -20,11 +20,11 @@ local dirpaths = {
 }
 
 for dirname,dir_setting in pairs(dirpaths) do
-    if not isdirectory(parent .. '/' .. dirname) then
+    if isdirectory(parent .. '/' .. dirname) == 0 then
         mkdir(parent .. '/' .. dirname, 'p')
     end
 
-    if not isempty(dir_setting) then
+    if isempty(dir_setting) == 0 then
         nvim.option[dir_setting] = parent .. '/' .. dirname
     end
 end
@@ -106,7 +106,7 @@ else
     nvim.option.title       = true
 end
 
-if nvim.has_version('0.3.3') then
+if nvim.has_version('0.3.3') == 1 then
     nvim.option.diffopt = 'internal,filler,vertical,iwhiteall,iwhiteeol,indent-heuristic,algorithm:patience'
 else
     nvim.option.diffopt = 'filler,vertical,iwhite'

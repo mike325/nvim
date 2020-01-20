@@ -39,7 +39,7 @@ local function get_python_exe(version)
         return python[pyversion]['path']
     end
 
-    if executable('python'..pyversion) then
+    if executable('python'..pyversion) == 1 then
         pyexe = exepath('python'..pyversion)
     end
 

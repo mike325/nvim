@@ -15,7 +15,7 @@ end
 local function basedir()
     local basedir = stdpath('config'):gsub('\\', '/')
 
-    if not isdirectory(basedir) then
+    if isdirectory(basedir) == 0 then
         mkdir(basedir, 'p')
     end
 
@@ -25,7 +25,7 @@ end
 local function cachedir()
     local cachedir = stdpath('cache'):gsub('\\', '/')
 
-    if not isdirectory(cachedir) then
+    if isdirectory(cachedir) == 0 then
         mkdir(cachedir, 'p')
     end
 
@@ -35,7 +35,7 @@ end
 local function datadir()
     local datadir = stdpath('data'):gsub('\\', '/')
 
-    if not isdirectory(datadir) then
+    if isdirectory(datadir) == 0 then
         mkdir(datadir, 'p')
     end
 

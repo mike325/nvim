@@ -371,7 +371,7 @@ function tools.get_language_server(language)
     local cmd = {}
 
     for _,server in pairs(langservers[language]) do
-        if executable(server) then
+        if executable(server) == 1 then
             cmd = cmds[server]
             break
         end
@@ -560,7 +560,7 @@ end
 
 local function is_git_repo(root)
     local git = root .. '/.git'
-    return (nvim.fn.isdirectory(git) or filereadable(git) == 1) and true or false
+    return (nvim.fn.isdirectory(git) == 1 or filereadable(git) == 1) and true or false
 end
 
 function tools.project_config()
@@ -590,7 +590,7 @@ function tools.project_config()
             sys.base .. '/config/UltiSnips',
             'UltiSnips'
         }
-        if nvim.fn.isdirectory(root..'/UltiSnips') then
+        if nvim.fn.isdirectory(root..'/UltiSnips') == 1 then
             nvim.g.UltiSnipsSnippetsDir = root .. '/config/UltiSnips'
             table.insert(nvim.g.UltiSnipsSnippetDirectories, 1, root..'/UltiSnips')
         else
@@ -626,27 +626,27 @@ function tools.project_config()
         local operator = {}
         local tools = {}
 
-        if executable('git') and is_git then
+        if executable('git') == 1 and is_git then
             tools[#tools + 1] = 'git'
             operator[#operator + 1] = 'git'
         end
 
-        if executable('rg') then
+        if executable('rg') == 1 then
             tools[#tools + 1] = 'rg'
             operator[#operator + 1] = 'rg'
         end
 
-        if executable('ag') then
+        if executable('ag') == 1 then
             tools[#tools + 1] = 'ag'
             operator[#operator + 1] = 'ag'
         end
 
-        if executable('grep') then
+        if executable('grep') == 1 then
             tools[#tools + 1] = 'grep'
             operator[#operator + 1] = 'grep'
         end
 
-        if executable('findstr') then
+        if executable('findstr') == 1 then
             tools[#tools + 1] = 'findstr'
             operator[#operator + 1] = 'findstr'
         end
