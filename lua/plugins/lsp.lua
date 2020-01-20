@@ -20,7 +20,7 @@ local servers = {
     tex    = { texlab        = 'texlab', },
     python = { pyls          = 'pyls', },
     -- lua    = { sumneko_lua   = 'sumneko_lua', },
-    vim    = { vimls         = 'vimls', },
+    vim    = { vimls         = 'vim-language-server', },
     c = { -- Since both clangd and ccls works with C,Cpp,ObjC and ObjCpp; just 1 setup is ok
         ccls   = 'ccls',
         clangd = 'clangd',
