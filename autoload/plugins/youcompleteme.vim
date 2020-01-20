@@ -244,7 +244,7 @@ function! plugins#youcompleteme#init(data) abort
     execute 'autocmd YCMMappings FileType ' . join(g:ycm_languages, ',') . ' command! -buffer References YcmCompleter GoToReferences'
     execute 'autocmd YCMMappings FileType ' . join(g:ycm_languages, ',') . ' command! -buffer Doc YcmCompleter GetDoc'
     execute 'autocmd YCMMappings FileType ' . join(g:ycm_languages, ',') . ' command! -buffer Hover YcmCompleter GetDoc'
-    execute 'autocmd YCMMappings FileType ' . join(g:ycm_languages, ',') . ' command! -buffer Type YcmCompleter GoToType'
+    execute 'autocmd YCMMappings FileType ' . join(g:ycm_languages, ',') . ' command! -buffer Type YcmCompleter GetType'
 
     if exists('g:plugs["YouCompleteMe"]') && exists('g:plugs["delimitMate"]')
         " Hack around
