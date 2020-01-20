@@ -19,8 +19,8 @@ local servers = {
     go     = { gopls         = 'gopls', },
     tex    = { texlab        = 'texlab', },
     python = { pyls          = 'pyls', },
-    -- lua    = { sumneko_lua   = 'sumneko_lua', },
-    vim    = { vimls         = 'vim-language-server', },
+    vim    = { vimls         = 'vimls', },
+    lua    = { sumneko_lua   = 'sumneko_lua', },
     c = { -- Since both clangd and ccls works with C,Cpp,ObjC and ObjCpp; just 1 setup is ok
         ccls   = 'ccls',
         clangd = 'clangd',
@@ -31,7 +31,7 @@ local available_languages = {}
 
 for language,options in pairs(servers) do
     for option,server in pairs(options) do
-        if executable(server) == 1 or isdirectory(sys.home .. '/.cache/nvim/nvim_lsp/' .. server) then
+        if executable(server) == 1 or isdirectory(sys.home .. '/.cache/nvim/nvim_lsp/' .. server) == 1 then
             lsp[option].setup({})
             available_languages[#available_languages + 1] = language
             if language == 'c' then

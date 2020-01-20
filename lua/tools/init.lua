@@ -415,14 +415,14 @@ function tools.abolish(language)
         if abolish[current] ~= nil then
             for base,replace in pairs(abolish[current]) do
                 if not string.match(base, '{.+}') then
-                    remove_abbr()
+                    remove_abbr(base)
                 end
             end
         end
         if abolish[language] ~= nil then
             for base,replace in pairs(abolish[language]) do
                 if not string.match(base, '{.+}') then
-                    set_abbr()
+                    set_abbr(base, replace)
                 end
             end
         end
