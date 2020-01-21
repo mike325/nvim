@@ -58,6 +58,11 @@ function! plugins#youcompleteme#install(info) abort
             endif
         endif
 
+        if os#name('windows') && executable('msbuild')
+            let l:msbuild = split(systemlist('msbuild /version')[-1], '\.')[0]
+            let l:cmd += ['--msvc', l:msbuild]
+        endif
+
         echomsg 'CMD: ' . join(l:cmd, ' ')
         execute ' !' join(l:cmd, ' ')
 
