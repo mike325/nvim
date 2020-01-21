@@ -8,7 +8,7 @@ local mkdir       = require('nvim').fn.mkdir
 local isdirectory = require('nvim').fn.isdirectory
 
 local function isempty(s)
-    return s == nil or s == ''
+    return (s == nil or s == '') and 1 or 0
 end
 
 local dirpaths = {

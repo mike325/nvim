@@ -1,13 +1,14 @@
+-- luacheck: globals unpack vim
 local api = vim.api
 
 local sys  = require('sys')
 local nvim = require('nvim')
 local plugs = require('nvim').plugs
 
-local parent      = require('sys').data
+-- local parent      = require('sys').data
 local has         = require('nvim').fn.has
-local mkdir       = require('nvim').fn.mkdir
-local isdirectory = require('nvim').fn.isdirectory
+-- local mkdir       = require('nvim').fn.mkdir
+-- local isdirectory = require('nvim').fn.isdirectory
 local executable  = require('nvim').fn.executable
 
 nvim.ex.nnoremap(',', ':')
@@ -181,8 +182,8 @@ if plugs["iron.nvim"] == nil and (has('python') == 1 or has('python3') == 1)then
 end
 
 if plugs["ultisnips"] == nil and plugs["vim-snipmate"] == nil then
-    nvim.nvim_set_mapping('i', '<TAB> ', 'pumvisible() ? "\\<C-n>" : "\\<TAB>"', {expr = true})
-    nvim.nvim_set_mapping('i', '<S-TAB>', 'pumvisible() ? "\\<C-p>" : ""', {expr = true})
+    nvim.nvim_set_mapping('i', '<TAB>', [[pumvisible() ? "\<C-n>" : "\<TAB>"]], {expr = true})
+    nvim.nvim_set_mapping('i', '<S-TAB>', [[pumvisible() ? "\<C-p>" : ""]], {expr = true})
     nvim.nvim_set_mapping('i', '<CR>', '<C-R>=mappings#NextSnippetOrReturn()<CR>', {silent = true})
 end
 

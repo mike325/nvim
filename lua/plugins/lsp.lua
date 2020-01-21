@@ -1,10 +1,10 @@
-local nvim = require('nvim')
+-- local nvim = require('nvim')
 local sys = require('sys')
-local plugs = require('nvim').plugs
+-- local plugs = require('nvim').plugs
 local executable = require('nvim').fn.executable
 local isdirectory = require('nvim').fn.isdirectory
 local nvim_set_autocmd = require('nvim').nvim_set_autocmd
-local nvim_set_command = require('nvim').nvim_set_command
+-- local nvim_set_command = require('nvim').nvim_set_command
 
 local ok, lsp = pcall(require, 'nvim_lsp')
 
