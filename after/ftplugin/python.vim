@@ -3,6 +3,12 @@
 
 setlocal foldmethod=indent
 
+setlocal expandtab
+setlocal shiftround
+setlocal tabstop=4
+setlocal tabstop=4
+setlocal softtabstop=-1
+
 if exists('+formatprg')
     if executable('yapf')
         setlocal formatprg=yapf\ --style\ pep8

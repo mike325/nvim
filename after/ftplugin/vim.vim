@@ -7,6 +7,12 @@ setlocal keywordprg=:help
 setlocal matchpairs+=<:>
 " setlocal iskeyword+=:
 
+setlocal expandtab
+setlocal shiftround
+setlocal tabstop=4
+setlocal tabstop=4
+setlocal softtabstop=-1
+
 nnoremap <buffer> K :topleft help <C-r>=expand('<cword>')<CR><CR>
 nnoremap <buffer> <CR> :call mappings#cr()<CR>
 

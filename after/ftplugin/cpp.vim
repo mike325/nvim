@@ -4,6 +4,12 @@
 setlocal cindent
 setlocal foldmethod=syntax
 
+setlocal expandtab
+setlocal shiftround
+setlocal tabstop=4
+setlocal tabstop=4
+setlocal softtabstop=-1
+
 if executable('cppman')
     " Unfortunally Neovim works just with less as $PAGER
     if has('nvim') && ($PAGER ==# 'less')

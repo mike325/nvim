@@ -4,6 +4,12 @@
 setlocal cindent
 setlocal foldmethod=syntax
 
+setlocal expandtab
+setlocal shiftround
+setlocal tabstop=4
+setlocal tabstop=4
+setlocal softtabstop=-1
+
 if exists('+formatprg') && executable('clang-format')
     setlocal formatprg=clang-format
 endif
