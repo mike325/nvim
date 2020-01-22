@@ -17,26 +17,20 @@ function! plugins#vim_lsc#init(data) abort
     "     \ 'FindImplementations': ''
     "     \}
 
-    if has('nvim-0.4')
-        let g:lsc_hover_popup = 1
-    endif
-
     " ... or set only the commands you want mapped without defaults.
     " Complete default mappings are:
     let g:lsc_auto_map = {
-        \ 'GoToDefinition': 'gD',
-        \ 'GoToDefinitionSplit': '',
+        \ 'defaults': v:true,
+        \ 'GoToDefinition': '<c-]>',
         \ 'FindReferences': 'gr',
-        \ 'NextReference': '<C-n>',
+        \ 'NextReference': '',
         \ 'PreviousReference': '',
-        \ 'FindImplementations': 'gI',
+        \ 'FindImplementations': 'gD',
         \ 'FindCodeActions': 'ga',
         \ 'Rename': 'gR',
-        \ 'ShowHover': 1,
-        \ 'DocumentSymbol': 'go',
-        \ 'WorkspaceSymbol': 'gS',
-        \ 'SignatureHelp': 'gm',
-        \ 'Completion': 'completefunc',
+        \ 'DocumentSymbol': '',
+        \ 'WorkspaceSymbol': '',
+        \ 'SignatureHelp': '',
         \}
 
     let g:lsc_server_commands = {}

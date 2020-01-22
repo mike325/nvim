@@ -44,10 +44,10 @@ let s:moderngit = -1
 
 let s:langservers = {
     \ 'python': ['pyls'],
-    \ 'c'     : ['ccls', 'clangd', 'cquery'],
-    \ 'cpp'   : ['ccls', 'clangd', 'cquery'],
-    \ 'cuda'  : ['ccls', 'clangd'],
-    \ 'objc'  : ['ccls', 'clangd'],
+    \ 'c'     : ['clangd', 'ccls', 'cquery'],
+    \ 'cpp'   : ['clangd', 'ccls', 'cquery'],
+    \ 'cuda'  : ['clangd', 'ccls'] ,
+    \ 'objc'  : ['clangd', 'ccls'] ,
     \ 'sh'    : ['bash-language-server'],
     \ 'bash'  : ['bash-language-server'],
     \ 'go'    : ['gopls'],
