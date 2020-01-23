@@ -7,6 +7,8 @@ local parent      = require('sys').data
 local mkdir       = require('nvim').fn.mkdir
 local isdirectory = require('nvim').fn.isdirectory
 
+local tools = require('tools')
+
 local function isempty(s)
     return (s == nil or s == '') and 1 or 0
 end
@@ -111,6 +113,9 @@ if nvim.has_version('0.3.3') == 1 then
 else
     nvim.option.diffopt = 'filler,vertical,iwhite'
 end
+
+nvim.o.grepprg = tools.select_grep(false)
+nvim.o.grepformat = tools.select_grep(false, 'grepformat')
 
 -- Windows options
 nvim.ex.set('breakindent')

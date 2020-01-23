@@ -180,23 +180,23 @@ function! tools#grep(tool, ...) abort
     let l:greplist = {
                 \   'git': {
                 \       'grepprg': 'git --no-pager grep '.(s:moderngit == 1 ? '--column' : '').' --no-color -Iin ',
-                \       'grepformat': (s:moderngit == 1) ? '%f:%l:%c:%m,%f:%l:%m' : '%f:%l:%m',
+                \       'grepformat': '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m',
                 \    },
                 \   'rg' : {
                 \       'grepprg':  'rg -S -n --color never -H --no-search-zip --trim --vimgrep ',
-                \       'grepformat': '%f:%l:%c:%m,%f:%l:%m'
+                \       'grepformat': '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m'
                 \   },
                 \   'ag' : {
                 \       'grepprg': 'ag -S --follow --nogroup --nocolor --hidden --vimgrep '.tools#ignores('ag'),
-                \       'grepformat': '%f:%l:%c:%m,%f:%l:%m'
+                \       'grepformat': '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m'
                 \   },
                 \   'grep' : {
                 \       'grepprg': 'grep -RHiIn --color=never ',
-                \       'grepformat': '%f:%l:%m'
+                \       'grepformat': '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m'
                 \   },
                 \   'findstr' : {
                 \       'grepprg': 'findstr -rspn ' . tools#ignores('findstr') . ' ',
-                \       'grepformat': '%f:%l:%m'
+                \       'grepformat': '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m'
                 \   },
                 \}
 

@@ -89,7 +89,11 @@ function! autocmd#FindProjectRoot(path) abort
         let l:project_root = finddir(l:marker, l:dir.';')
         if l:marker =~# '\.git' && empty(l:project_root)
             let l:project_root = findfile(l:marker, l:dir.';')
+            if !empty(l:project_root)
+                let l:project_root = l:project_root . '/'
+            endif
         endif
+
         if !empty(l:project_root)
             let l:project_root = fnamemodify(l:project_root, ':p:h:h')
             break
@@ -108,18 +112,24 @@ function! autocmd#IsGitRepo(root) abort
     return (isdirectory(a:root . '/.git') || filereadable(a:root . '/.git'))
 endfunction
 
-function! autocmd#SetProjectConfigs() abort
-    let b:project_root =  autocmd#FindProjectRoot(getcwd())
+function! autocmd#SetProjectConfigs(event) abort
+    let l:project_root =  autocmd#FindProjectRoot(getcwd())
 
-    if empty(b:project_root)
-        let b:project_root = fnamemodify(getcwd(), ':p')
+    if empty(l:project_root)
+        let l:project_root = fnamemodify(getcwd(), ':p')
     endif
 
-    " let b:project_root = fnamemodify(b:project_root, ':h')
+    let b:project_root = get(b:, 'project_root', '')
+
+    if l:project_root == b:project_root
+        return b:project_root
+    endif
+
+    let b:project_root = l:project_root
+
     let l:is_git = autocmd#IsGitRepo(b:project_root)
 
-    let &grepprg = tools#select_grep(l:is_git)
-    let &grepformat = tools#select_grep(l:is_git, 'grepformat')
+    let &l:grepprg = tools#select_grep(l:is_git)
 
     if filereadable(b:project_root . '/project.vim')
         try
@@ -149,10 +159,6 @@ function! autocmd#SetProjectConfigs() abort
     if exists('g:plugs["ctrlp"]')
         let l:fallback = g:ctrlp_user_command.fallback
         let g:ctrlp_clear_cache_on_exit = is_git ? 1 : (fallback =~# '^\(ag\|rg\|fd\) ')
-    endif
-
-    if exists('g:plugs["projectile.nvim"]')
-        let g:projectile#search_prog = tools#select_grep(l:is_git)
     endif
 
     if exists('g:plugs["deoplete.nvim"]') && ( exists('g:plugs["deoplete-clang"]') || exists('g:plugs["deoplete-clang2"]') )

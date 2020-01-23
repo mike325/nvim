@@ -93,12 +93,12 @@ augroup end
 augroup ProjectConfig
     autocmd!
     if exists('##DirChanged')
-        autocmd DirChanged * call autocmd#SetProjectConfigs()
+        autocmd DirChanged * call autocmd#SetProjectConfigs(has('patch-8.0.1394') ? deepcopy(v:event) : {})
     endif
     if exists('##WinNew')
-        autocmd WinNew * call autocmd#SetProjectConfigs()
+        autocmd WinNew * call autocmd#SetProjectConfigs(has('patch-8.0.1394') ? deepcopy(v:event) : {})
     endif
-    autocmd WinEnter,VimEnter,SessionLoadPost * call autocmd#SetProjectConfigs()
+    autocmd WinEnter,VimEnter * call autocmd#SetProjectConfigs(has('patch-8.0.1394') ? deepcopy(v:event) : {})
 augroup end
 
 augroup CloseMenu

@@ -2,13 +2,14 @@
 
 local inspect = vim.inspect
 
-local nvim       = require('nvim')
-local line       = require('nvim').fn.line
-local system     = require('nvim').fn.system
-local executable = require('nvim').fn.executable
+local nvim         = require('nvim')
+local line         = require('nvim').fn.line
+local system       = require('nvim').fn.system
+local executable   = require('nvim').fn.executable
+local isdirectory  = require('nvim').fn.isdirectory
 local filereadable = require('nvim').fn.filereadable
 
-local sys = require('sys')
+local sys   = require('sys')
 local cache = require('sys').cache
 
 local plugs = nvim.plugs
@@ -65,6 +66,7 @@ abolish['en'] = {
     ['{,ir}releven{ce,cy,t,tly}']                    = '{}relevan{}',
     ['cal{a,e}nder{,s}']                             = 'cal{e}ndar{}'
 }
+
 abolish['es'] = {
     ['analisis']                                                            = 'análisis',
     ['artifial']                                                            = 'artificial',
@@ -215,23 +217,23 @@ function tools.grep(tool, ...)
     local greplist = {
         git = {
             grepprg = 'git --no-pager grep '.. (modern_git == 1 and '--column' or '') ..' --no-color -Iin ',
-            grepformat = modern_git == 1 and '%f:%l:%c:%m,%f:%l:%m' or '%f:%l:%m',
+            grepformat = '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m',
         },
         rg = {
             grepprg = 'rg -S -n --color never -H --no-search-zip --trim --vimgrep ',
-            grepformat = '%f:%l:%c:%m,%f:%l:%m'
+            grepformat = '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m'
         },
         ag = {
             grepprg = 'ag -S --follow --nogroup --nocolor --hidden --vimgrep '..tools.ignores('ag'),
-            grepformat = '%f:%l:%c:%m,%f:%l:%m'
+            grepformat = '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m'
         },
         grep = {
             grepprg = 'grep -RHiIn --color=never ',
-            grepformat = '%f:%l:%m'
+            grepformat = '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m'
         },
         findstr = {
             grepprg = 'findstr -rspn ',
-            grepformat = '%f:%l:%m',
+            grepformat = '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m',
         },
     }
 
@@ -253,13 +255,7 @@ end
 function tools.select_filelist(is_git)
     local filelist = ''
 
-    if is_git == 0 or is_git == nil then
-        is_git = false
-    elseif type(is_git) == 'number' and is_git > 0 then
-        is_git = true
-    end
-
-    if executable('git') and is_git then
+    if executable('git') and is_git == true or is_git == 1 then
         filelist = tools.filelist('git')
     elseif executable('fd') then
         filelist = tools.filelist('fd')
@@ -285,15 +281,9 @@ function tools.select_grep(is_git, ...)
 
     local properity = #opts > 0 and opts[1] or 'grepprg'
 
-    if is_git == 0 or is_git == nil then
-        is_git = false
-    elseif type(is_git) == 'number' and is_git > 0 then
-        is_git = true
-    end
-
     local grep = ''
 
-    if executable('git') and is_git then
+    if executable('git') and is_git == true or is_git == 1 then
         grep = tools.grep('git', properity)
     elseif executable('rg') then
         grep = tools.grep('rg', properity)
@@ -546,6 +536,7 @@ local function find_project_root(path)
 
         if #project_root == 0 and marker == '.git' then
             project_root = nvim.fn.findfile(marker, dir..';')
+            project_root = #project_root > 0 and project_root..'/' or project_root
         end
 
         if #project_root > 0 then
@@ -560,26 +551,31 @@ end
 
 local function is_git_repo(root)
     local git = root .. '/.git'
-    return (nvim.fn.isdirectory(git) == 1 or filereadable(git) == 1) and true or false
+    return (isdirectory(git) == 1 or filereadable(git) == 1) and true or false
 end
 
-function tools.project_config()
-    local cwd = nvim.fn.getcwd()
+function tools.project_config(event)
+    -- print(inspect(event))
 
-    nvim.b.project_root = find_project_root(cwd)
+    local cwd = event.cwd or nvim.fn.getcwd()
 
-    if #nvim.b.project_root == 0 then
-        nvim.b.project_root = nvim.fn.fnamemodify(cwd, ':p')
+    local root = find_project_root(cwd)
+
+    if #root == 0 then
+        root = nvim.fn.fnamemodify(cwd, ':p')
     end
 
-    local root = nvim.b.project_root
-    local is_git = is_git_repo(root)
+    if root == nvim.b.project_root then
+        return root
+    end
 
+    nvim.b.project_root = root
+
+    local is_git = is_git_repo(nvim.b.project_root)
     local filetype = nvim.bo.filetype
     local buftype = nvim.bo.buftype
 
-    nvim.o.grepprg = tools.select_grep(is_git)
-    nvim.o.grepformat = tools.select_grep(is_git, 'grepformat')
+    nvim.bo.grepprg = tools.select_grep(is_git)
 
     if filereadable(root..'/project.vim') == 1 then
         nvim.command('source '..root..'/project.vim')
@@ -590,7 +586,7 @@ function tools.project_config()
             sys.base .. '/config/UltiSnips',
             'UltiSnips'
         }
-        if nvim.fn.isdirectory(root..'/UltiSnips') == 1 then
+        if isdirectory(root..'/UltiSnips') == 1 then
             nvim.g.UltiSnipsSnippetsDir = root .. '/config/UltiSnips'
             table.insert(nvim.g.UltiSnipsSnippetDirectories, 1, root..'/UltiSnips')
         else
@@ -608,10 +604,6 @@ function tools.project_config()
         local clear_cache = is_git and 1 or (fast_look_up[fallback] ~= nil and 1 or 0)
 
         nvim.g.ctrlp_clear_cache_on_exit = clear_cache
-    end
-
-    if plugs['projectile.nvim'] ~= nil then
-        nvim.g['projectile#search_prog'] = tools.select_grep(is_git)
     end
 
     if plugs['deoplete.nvim'] ~= nil and (plugs['deoplete-clang'] ~= nil or plugs['deoplete-clang2'] ~= nil) then

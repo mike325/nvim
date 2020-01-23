@@ -42,7 +42,7 @@ nvim_set_autocmd(
 nvim_set_autocmd(
     {'DirChanged', 'WinNew' ,'WinEnter', 'VimEnter'},
     '*',
-    'lua require("tools").project_config()',
+    'lua require("tools").project_config(vim.fn.deepcopy(vim.v.event))',
     {create = true, group = 'ProjectConfig'}
 )
 
