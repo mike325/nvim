@@ -61,7 +61,7 @@ else
     call setup#python()
 endif
 
-if exists('g:bare')
+if exists('g:bare') || !empty($VIM_BARE)
 
     if !has('nvim') && v:version >= 800
         packadd! matchit
@@ -107,7 +107,7 @@ else
     Plug 'tomtom/tcomment_vim'
     Plug 'tpope/vim-apathy'
 
-    if !exists('g:minimal')
+    if !exists('g:minimal') && empty($VIM_MIN)
         call plugins#init()
     elseif has('nvim-0.5')
         Plug 'neovim/nvim-lsp'
