@@ -20,7 +20,7 @@ function! plugins#vim_projectionist#init(data) abort
                     \   '.github/workflows/*.yml'       : {'type': 'Github'},
                     \   '.travis.yml'                   : {'type': 'Travis' },
                     \   '.ycm_extra_conf.py'            : {'type': 'ConfigYCM'},
-                    \   'project.vim'                   : {'type': 'Project'},
+                    \   '.project.vim'                  : {'type': 'Project'},
                     \   'clang-format'                  : {'type': 'ClangFormat'},
                     \   'README.md'                     : {'type': 'Readme'},
                     \   'LICENSE'                       : {'type': 'License'},

@@ -577,8 +577,9 @@ function tools.project_config(event)
 
     nvim.bo.grepprg = tools.select_grep(is_git)
 
-    if filereadable(root..'/project.vim') == 1 then
-        nvim.command('source '..root..'/project.vim')
+    local project = nvim.fn.findfile('.project.vim', cwd..';')
+    if #project > 0 then
+        nvim.command('source '..project)
     end
 
     if plugs['ultisnips'] ~= nil then

@@ -113,7 +113,9 @@ function! autocmd#IsGitRepo(root) abort
 endfunction
 
 function! autocmd#SetProjectConfigs(event) abort
-    let l:project_root =  autocmd#FindProjectRoot(getcwd())
+    let l:cwd = exists('a:event["cwd"]') ? a:event['cwd'] : getcwd()
+
+    let l:project_root =  autocmd#FindProjectRoot(l:cwd)
 
     if empty(l:project_root)
         let l:project_root = fnamemodify(getcwd(), ':p')
@@ -131,14 +133,10 @@ function! autocmd#SetProjectConfigs(event) abort
 
     let &l:grepprg = tools#select_grep(l:is_git)
 
-    if filereadable(b:project_root . '/project.vim')
-        try
-            execute 'source '. b:project_root . '/project.vim'
-        catch /.*/
-            if !has#gui()
-                echoerr 'There were errors with the project file in ' . b:project_root . '/project.vim'
-            endif
-        endtry
+    let l:project = findfile('.project.vim', l:cwd.';')
+
+    if !empty(l:project)
+        execute 'source '. l:project
     endif
 
     if exists('g:plugs["ultisnips"]')
