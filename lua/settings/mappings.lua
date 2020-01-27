@@ -51,6 +51,7 @@ nvim.ex.nnoremap([[ <silent><expr> j v:count ? (v:count >= 3 ? "m'" . v:count : 
 nvim.ex.nnoremap([[ <silent><expr> k v:count ? (v:count >= 3 ? "m'" . v:count : '') . 'k' : 'gk' ]])
 
 nvim.nvim_set_mapping('n', '<leader><leader>e', ':echo expand("%")<CR>')
+nvim.nvim_set_mapping('n', '<leader>c', ':pclose<CR>')
 
 nvim.nvim_set_mapping('n', 'i', 'mappings#IndentWithI()', {expr = true})
 
