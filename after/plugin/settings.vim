@@ -276,5 +276,5 @@ if os#name('windows')
 endif
 
 if exists('g:plugs["vim-fugitive"]') && !exists('g:plugs["vim-airline"]')
-    set statusline=%<%f\ %h%m%r%{fugitive#statusline()}%=%-14.(%l,%c%V%)\ %P
+    set statusline=%<%f\ %h%m%r%{FugitiveStatusline())}%=%-14.(%l,%c%V%)\ %P
 endif
