@@ -135,8 +135,7 @@ function! plugins#youcompleteme#init(data) abort
 
 
     if tools#CheckLanguageServer('tex')
-        let g:ycm_language_server += [
-            \ {
+        let g:ycm_language_server += [{
             \     'name': 'tex',
             \     'cmdline': tools#getLanguageServer('tex'),
             \     'filetypes': ['tex', 'bib']
@@ -145,8 +144,7 @@ function! plugins#youcompleteme#init(data) abort
     endif
 
     if tools#CheckLanguageServer('sh')
-        let g:ycm_language_server += [
-            \ {
+        let g:ycm_language_server += [{
             \     'name': 'sh',
             \     'cmdline': tools#getLanguageServer('sh'),
             \     'filetypes': ['bash', 'sh']
@@ -155,13 +153,21 @@ function! plugins#youcompleteme#init(data) abort
     endif
 
     if tools#CheckLanguageServer('vim')
-        let g:ycm_language_server += [
-            \ {
+        let g:ycm_language_server += [{
             \     'name': 'vim',
             \     'cmdline': tools#getLanguageServer('vim'),
             \     'filetypes': ['vim']
             \ }]
         let g:ycm_languages += ['vim']
+    endif
+
+    if tools#CheckLanguageServer('dockerfile')
+        let g:ycm_language_server += [{
+            \     'name': 'docker',
+            \     'cmdline': tools#getLanguageServer('dockerfile'),
+            \     'filetypes': ['dockerfile', 'Dockerfile']
+            \ }]
+        let g:ycm_languages += ['dockerfile', 'Dockerfile']
     endif
 
     let g:ycm_extra_conf_vim_data = [

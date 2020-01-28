@@ -18,18 +18,22 @@ local git_version = ''
 local modern_git = -1
 
 local langservers = {
-    python = {'pyls'},
-    c      = {'ccls', 'clangd', 'cquery'},
-    cpp    = {'ccls', 'clangd', 'cquery'},
-    cuda   = {'ccls', 'clangd'},
-    objc   = {'ccls', 'clangd'},
-    sh     = {'bash-language-server'},
-    bash   = {'bash-language-server'},
-    go     = {'gopls'},
-    latex  = {'texlab'},
-    tex    = {'texlab'},
-    bib    = {'texlab'},
-    vim    = {'vim-language-server'},
+    python     = {'pyls'},
+    c          = {'clangd', 'ccls', 'cquery'},
+    cpp        = {'clangd', 'ccls', 'cquery'},
+    cuda       = {'clangd', 'ccls'},
+    objc       = {'clangd', 'ccls'},
+    objcpp     = {'clangd', 'ccls'},
+    sh         = {'bash-language-server'},
+    bash       = {'bash-language-server'},
+    go         = {'gopls'},
+    latex      = {'texlab'},
+    tex        = {'texlab'},
+    bib        = {'texlab'},
+    vim        = {'vim-language-server'},
+    lua        = {'sumneko_lua'},
+    dockerfile = {'docker-langserver'},
+    Dockerfile = {'docker-langserver'},
 }
 
 local abolish = {}
@@ -355,7 +359,8 @@ function tools.get_language_server(language)
         ['gopls']  = {'gopls' },
         ['texlab'] = {'texlab' },
         ['bash-language-server'] = {'bash-language-server', 'start'},
-        ['vim-language-server'] = {'vim-language-server', '--stdio'},
+        ['vim-language-server']  = {'vim-language-server', '--stdio'},
+        ['docker-langserver']    = {'docker-langserver', '--stdio'},
     }
 
     local cmd = {}

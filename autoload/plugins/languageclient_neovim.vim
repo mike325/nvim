@@ -123,10 +123,10 @@ function! plugins#languageclient_neovim#init(data) abort
 
     endif
 
-    if tools#getLanguageServer('sh')
-        let g:LanguageClient_serverCommands.sh = tools#getLanguageServer('sh')
-        let g:LanguageClient_serverCommands.bash = g:LanguageClient_serverCommands.sh
-        let l:supported_languages += ['sh', 'bash']
+    if tools#getLanguageServer('python')
+        let g:LanguageClient_serverCommands.python = tools#getLanguageServer('python')
+        let l:supported_languages += ['python']
+        autocmd  LanguageCmds FileType python command! -buffer WorkspaceSymbols call LanguageClient#workspace_symbol()
     endif
 
     if tools#getLanguageServer('tex')
@@ -134,10 +134,20 @@ function! plugins#languageclient_neovim#init(data) abort
         let l:supported_languages += ['tex']
     endif
 
-    if tools#getLanguageServer('python')
-        let g:LanguageClient_serverCommands.python = tools#getLanguageServer('python')
-        let l:supported_languages += ['python']
-        autocmd  LanguageCmds FileType python command! -buffer WorkspaceSymbols call LanguageClient#workspace_symbol()
+    if tools#getLanguageServer('sh')
+        let g:LanguageClient_serverCommands.sh = tools#getLanguageServer('sh')
+        let g:LanguageClient_serverCommands.bash = g:LanguageClient_serverCommands.sh
+        let l:supported_languages += ['sh', 'bash']
+    endif
+
+    if tools#getLanguageServer('vim')
+        let g:LanguageClient_serverCommands.vim = tools#getLanguageServer('vim')
+        let l:supported_languages += ['vim']
+    endif
+
+    if tools#getLanguageServer('Dockerfile')
+        let g:LanguageClient_serverCommands.Dockerfile = tools#getLanguageServer('Dockerfile')
+        let l:supported_languages += ['Dockerfile', 'dockerfile']
     endif
 
     if !empty(l:supported_languages)

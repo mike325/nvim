@@ -42,11 +42,6 @@ function! plugins#vim_lsc#init(data) abort
         let g:lsc_server_commands.objcpp = g:lsc_server_commands.c
     endif
 
-    if tools#CheckLanguageServer('bash')
-        let g:lsc_server_commands.sh = tools#getLanguageServer('sh')
-        let g:lsc_server_commands.bash = g:lsc_server_commands.sh
-    endif
-
     if tools#CheckLanguageServer('python') " && !os#name('windows')
         let g:lsc_server_commands.python = tools#getLanguageServer('python')
     endif
@@ -56,8 +51,18 @@ function! plugins#vim_lsc#init(data) abort
         let g:lsc_server_commands.bib = g:lsc_server_commands.tex
     endif
 
+    if tools#CheckLanguageServer('sh')
+        let g:lsc_server_commands.sh = tools#getLanguageServer('sh')
+        let g:lsc_server_commands.bash = g:lsc_server_commands.sh
+    endif
+
     if tools#CheckLanguageServer('vim')
         let g:lsc_server_commands.vim = tools#getLanguageServer('vim')
+    endif
+
+    if tools#CheckLanguageServer('Dockerfile')
+        let g:lsc_server_commands.Dockerfile = tools#getLanguageServer('Dockerfile')
+        let g:lsc_server_commands.dockerfile = g:lsc_server_commands.Dockerfile
     endif
 
 endfunction

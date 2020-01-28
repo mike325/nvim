@@ -56,14 +56,14 @@ function! plugins#completor_vim#init(data) abort
             let g:completor_filetype_map.bash = g:completor_filetype_map.sh
         endif
 
-        if tools#CheckLanguageServer('python') " && !os#name('windows')
+        if tools#CheckLanguageServer('python')
             let g:completor_filetype_map.python = {
                 \ 'ft': 'lsp',
                 \ 'cmd': join(tools#getLanguageServer('python'))
                 \ }
         endif
 
-        if tools#CheckLanguageServer('tex') " && !os#name('windows')
+        if tools#CheckLanguageServer('tex')
             let g:completor_filetype_map.tex = {
                 \ 'ft': 'lsp',
                 \ 'cmd': join(tools#getLanguageServer('tex'))
@@ -71,11 +71,19 @@ function! plugins#completor_vim#init(data) abort
             let g:completor_filetype_map.bib = g:completor_filetype_map.tex
         endif
 
-        if tools#CheckLanguageServer('vim') " && !os#name('windows')
+        if tools#CheckLanguageServer('vim')
             let g:completor_filetype_map.tex = {
                 \ 'ft': 'lsp',
                 \ 'cmd': join(tools#getLanguageServer('vim'))
                 \ }
+        endif
+
+        if tools#CheckLanguageServer('Dockerfile')
+            let g:completor_filetype_map.Dockerfile = {
+                \ 'ft': 'lsp',
+                \ 'cmd': join(tools#getLanguageServer('Dockerfile'))
+                \ }
+            let g:completor_filetype_map.dockerfile = g:completor_filetype_map.Dockerfile
         endif
 
     endif

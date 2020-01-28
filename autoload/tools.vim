@@ -43,18 +43,20 @@ let s:gitversion = ''
 let s:moderngit = -1
 
 let s:langservers = {
-    \ 'python': ['pyls'],
-    \ 'c'     : ['clangd', 'ccls', 'cquery'],
-    \ 'cpp'   : ['clangd', 'ccls', 'cquery'],
-    \ 'cuda'  : ['clangd', 'ccls'] ,
-    \ 'objc'  : ['clangd', 'ccls'] ,
-    \ 'sh'    : ['bash-language-server'],
-    \ 'bash'  : ['bash-language-server'],
-    \ 'go'    : ['gopls'],
-    \ 'latex' : ['texlab'],
-    \ 'tex'   : ['texlab'],
-    \ 'bib'   : ['texlab'],
-    \ 'vim'   : ['vim-language-server'],
+    \ 'python'     : ['pyls'],
+    \ 'c'          : ['clangd', 'ccls', 'cquery'],
+    \ 'cpp'        : ['clangd', 'ccls', 'cquery'],
+    \ 'cuda'       : ['clangd', 'ccls'] ,
+    \ 'objc'       : ['clangd', 'ccls'] ,
+    \ 'sh'         : ['bash-language-server'],
+    \ 'bash'       : ['bash-language-server'],
+    \ 'go'         : ['gopls'],
+    \ 'latex'      : ['texlab'],
+    \ 'tex'        : ['texlab'],
+    \ 'bib'        : ['texlab'],
+    \ 'vim'        : ['vim-language-server'],
+    \ 'dockerfile' : ['docker-langserver'],
+    \ 'Dockerfile' : ['docker-langserver'],
     \ }
 
 
@@ -103,7 +105,8 @@ function! tools#getLanguageServer(language) abort
         \ 'gopls'  : ['gopls'],
         \ 'texlab' : ['texlab'],
         \ 'bash-language-server': ['bash-language-server', 'start'],
-        \ 'vim-language-server': ['vim-language-server', '--stdio'],
+        \ 'vim-language-server' : ['vim-language-server', '--stdio'],
+        \ 'docker-langserver'   : ['docker-langserver', '--stdio'],
         \ }
 
     let l:servers = s:langservers[a:language]

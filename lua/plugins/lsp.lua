@@ -13,14 +13,14 @@ if not ok then
 end
 
 local servers = {
-    sh     = { bashls        = 'bash-language-server', },
-    docker = { dockerls      = 'docker-language-server', },
-    rust   = { rust_analyzer = 'rust_analyzer', },
-    go     = { gopls         = 'gopls', },
-    tex    = { texlab        = 'texlab', },
-    python = { pyls          = 'pyls', },
-    vim    = { vimls         = 'vimls', },
-    lua    = { sumneko_lua   = 'sumneko_lua', },
+    sh         = { bashls        = 'bash-language-server', },
+    rust       = { rust_analyzer = 'rust_analyzer', },
+    go         = { gopls         = 'gopls', },
+    tex        = { texlab        = 'texlab', },
+    python     = { pyls          = 'pyls', },
+    vim        = { vimls         = 'vimls', },
+    lua        = { sumneko_lua   = 'sumneko_lua', },
+    dockerfile = { dockerls      = 'docker-langserver', },
     c = { -- Since both clangd and ccls works with C,Cpp,ObjC and ObjCpp; just 1 setup is ok
         clangd = 'clangd',
         ccls   = 'ccls',
@@ -38,6 +38,8 @@ for language,options in pairs(servers) do
                 available_languages[#available_languages + 1] = 'cpp'
                 available_languages[#available_languages + 1] = 'objc'
                 available_languages[#available_languages + 1] = 'objcpp'
+            elseif language == 'dockerfile' then
+                available_languages[#available_languages + 1] = 'Dockerfile'
             elseif language == 'tex' then
                 available_languages[#available_languages + 1] = 'bib'
             end
