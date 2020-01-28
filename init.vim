@@ -24,8 +24,6 @@
 "
 " ############################################################################
 
-" Improve compatibility between Unix and DOS platfomrs {{{
-
 let g:mapleader="\<Space>"
 
 if os#name('windows')
@@ -42,12 +40,7 @@ if os#name('windows')
 
 endif
 
-" }}} END Improve compatibility between Unix and DOS platfomrs
-
-" Initialize plugins {{{
-
-" If there are no plugins available and we don't have git
-" fallback to minimal mode
+" If there are no plugins available and we don't have git fallback to minimal mode
 if (!executable('git') && !isdirectory(fnameescape(vars#basedir().'/plugged'))) || v:progname ==# 'vi'
     let g:bare = 1
 endif
@@ -124,9 +117,3 @@ else
     endif
 
 endif
-
-" if filereadable(vars#basedir() . '/local.vim')
-"     execute 'source ' . vars#basedir() . '/local.vim'
-" endif
-
-" }}} END Initialize plugins

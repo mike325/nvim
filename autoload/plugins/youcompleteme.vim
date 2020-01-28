@@ -63,17 +63,12 @@ function! plugins#youcompleteme#install(info) abort
             let l:cmd += ['--msvc', l:msbuild]
         endif
 
+        " silent! py3 ycm_state.OnVimLeave()
+
         echomsg 'CMD: ' . join(l:cmd, ' ')
         execute ' !' join(l:cmd, ' ')
 
-        " if os#name('windows')
-        "     execute '!' . l:python . ' ./install.py ' . l:cmd
-        " elseif executable('python3')
-        "     " Force python3
-        "     execute '!' . l:python . ' ./install.py ' . l:cmd
-        " else
-        "     execute '!./install.py ' . l:cmd
-        " endif
+        " silent! YcmRestartServer
     endif
 endfunction
 

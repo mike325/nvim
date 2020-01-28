@@ -1,38 +1,14 @@
 " Plugins Setttings
 " github.com/mike325/.vim
 
-function! s:Convert2settings(name) abort
-    let l:name = (a:name =~? '[\.\-]') ? substitute(a:name, '[\.\-]', '_', 'g') : a:name
-    let l:name = substitute(l:name, '.', '\l\0', 'g')
-    return l:name
-endfunction
-
-function! plugins#settings() abort
-    let s:available_configs = map(glob(vars#basedir() . '/autoload/plugins/*.vim', 0, 1), 'fnamemodify(v:val, ":t:r")')
-
-    try
-        for [s:name, s:data] in items(filter(deepcopy(g:plugs), 'index(s:available_configs, s:Convert2settings(v:key), 0) != -1'))
-            let s:func_name = s:Convert2settings(s:name)
-            call plugins#{s:func_name}#init(s:data)
-        endfor
-    catch
-        echomsg 'Error trying to read config from ' . s:name
-    endtry
-endfunction
-
 function! plugins#init() abort
 
-    " ####### Colorschemes {{{
     " Plug 'morhetz/gruvbox'
     " Plug 'sickill/vim-monokai'
     " Plug 'nanotech/jellybeans.vim'
     " Plug 'whatyouhide/vim-gotham'
     Plug 'ayu-theme/ayu-vim'
     Plug 'joshdick/onedark.vim'
-
-    " }}} END Colorschemes
-
-    " ####### Syntax {{{
 
     Plug 'elzr/vim-json'
     Plug 'tbastos/vim-lua'
@@ -49,10 +25,6 @@ function! plugins#init() abort
     if has('nvim') && has#python('3', '5')
         Plug 'numirias/semshi', {'do': ':silent! UpdateRemotePlugins'}
     endif
-
-    " }}} END Syntax
-
-    " ####### Project base {{{
 
     " Project standardize file settings
     " Plug 'editorconfig/editorconfig-vim'
@@ -97,10 +69,6 @@ function! plugins#init() abort
         endif
     endif
 
-    " }}} END Project base
-
-    " ####### Git integration {{{
-
     " Plug 'airblade/vim-gitgutter'
     if executable('git') || executable('hg') || executable('svn')
         " These are the only VCS I care, if none is installed, then skip this plugin
@@ -121,19 +89,11 @@ function! plugins#init() abort
         endif
     endif
 
-    " }}} END Git integration
-
-    " ####### Status bar {{{
-
     " Vim airline is available for >= Vim 7.4
     if v:version > 703 || has('nvim')
         Plug 'vim-airline/vim-airline'
         Plug 'vim-airline/vim-airline-themes'
     endif
-
-    " }}} END Status bar
-
-    " ####### Completions {{{
 
     Plug 'tpope/vim-abolish'
     Plug 'honza/vim-snippets'
@@ -234,12 +194,6 @@ function! plugins#init() abort
         endif
     endif
 
-    " }}} END Python base completions
-
-    " }}} END Completions
-
-    " ####### Languages {{{
-
     Plug 'tpope/vim-endwise'
 
     " if executable('go') && has#async()
@@ -249,10 +203,6 @@ function! plugins#init() abort
     if (has('nvim') || (v:version >= 704)) && (executable('tex'))
         Plug 'lervag/vimtex'
     endif
-
-    " }}} END Languages
-
-    " ####### Text objects, Motions and Text manipulation {{{
 
     if (has('nvim') || (v:version >= 704))
         Plug 'kana/vim-textobj-user'
@@ -267,10 +217,6 @@ function! plugins#init() abort
 
     " Better motions
     Plug 'easymotion/vim-easymotion'
-
-    " }}} END Text objects, Motions and Text manipulation
-
-    " ####### Misc {{{
 
     " Better buffer deletions
     Plug 'moll/vim-bbye', { 'on': [ 'Bdelete' ] }
@@ -310,5 +256,24 @@ function! plugins#init() abort
         Plug 'Vigemus/iron.nvim'
     endif
 
-    " }}} END Misc
 endfunction
+
+function! s:Convert2settings(name) abort
+    let l:name = (a:name =~? '[\.\-]') ? substitute(a:name, '[\.\-]', '_', 'g') : a:name
+    let l:name = substitute(l:name, '.', '\l\0', 'g')
+    return l:name
+endfunction
+
+function! plugins#settings() abort
+    let s:available_configs = map(glob(vars#basedir() . '/autoload/plugins/*.vim', 0, 1), 'fnamemodify(v:val, ":t:r")')
+
+    try
+        for [s:name, s:data] in items(filter(deepcopy(g:plugs), 'index(s:available_configs, s:Convert2settings(v:key), 0) != -1'))
+            let s:func_name = s:Convert2settings(s:name)
+            call plugins#{s:func_name}#init(s:data)
+        endfor
+    catch
+        echomsg 'Error trying to read config from ' . s:name
+    endtry
+endfunction
+
