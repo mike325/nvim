@@ -259,13 +259,13 @@ end
 function tools.select_filelist(is_git)
     local filelist = ''
 
-    if executable('git') and is_git == true or is_git == 1 then
+    if executable('git') == 1 and is_git == true or is_git == 1 then
         filelist = tools.filelist('git')
-    elseif executable('fd') then
+    elseif executable('fd') == 1 then
         filelist = tools.filelist('fd')
-    elseif executable('rg') then
+    elseif executable('rg') == 1 then
         filelist = tools.filelist('rg')
-    elseif executable('ag') then
+    elseif executable('ag') == 1 then
         filelist = tools.filelist('ag')
     elseif sys.name ~= 'windows' then
         filelist = tools.filelist('find')
@@ -287,13 +287,13 @@ function tools.select_grep(is_git, ...)
 
     local grep = ''
 
-    if executable('git') and is_git == true or is_git == 1 then
+    if executable('git') == 1 and is_git == true or is_git == 1 then
         grep = tools.grep('git', properity)
-    elseif executable('rg') then
+    elseif executable('rg') == 1 then
         grep = tools.grep('rg', properity)
-    elseif executable('ag') then
+    elseif executable('ag') == 1 then
         grep = tools.grep('ag', properity)
-    elseif executable('grep') then
+    elseif executable('grep') == 1 then
         grep = tools.grep('grep', properity)
     elseif sys.name == 'windows' then
         grep = tools.grep('findstr', properity)
