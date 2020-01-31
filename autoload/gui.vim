@@ -12,7 +12,6 @@ function! gui#NeovimGuiFont(size) abort
     if empty($NO_COOL_FONTS)
         try
             execute 'GuiFont! DejaVu Sans Mono for Powerline:h' . l:font_size
-            " execute 'GuiFont! DsjasknkjanljdnjwejaVu Sans Mono for Powerline:h' . l:font_size
         catch
             execute 'GuiFont! Monospace:h' . l:font_size
         endtry
