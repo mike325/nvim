@@ -104,7 +104,7 @@ function! plugins#init() abort
             Plug 'SirVer/ultisnips'
         else
             " Froze ultisnips to latest python2 and python3.4 supported version
-            Plug 'SirVer/ultisnips', {'commit': '30e651f', 'frozen': 1}
+            Plug 'SirVer/ultisnips', {'commit': '30e651f', 'frozen': 1, 'dir': vars#basedir().'/plugged/frozen_ultisnips'}
         endif
     else
         Plug 'MarcWeber/vim-addon-mw-utils'
@@ -121,7 +121,7 @@ function! plugins#init() abort
         if has#python('3', '5', '1')
             Plug 'ycm-core/YouCompleteMe', { 'do': function('plugins#youcompleteme#install') }
         else
-            Plug 'ycm-core/YouCompleteMe', { 'commit': '299f8e48e7d34e780d24b4956cd61e4d42a139eb', 'do': function('plugins#youcompleteme#install') , 'frozen': 1}
+            Plug 'ycm-core/YouCompleteMe', { 'commit': '299f8e48e7d34e780d24b4956cd61e4d42a139eb', 'do': function('plugins#youcompleteme#install'), 'frozen': 1, 'dir': vars#basedir().'/plugged/frozen_ycm'}
         endif
 
         " Plug 'davits/DyeVim'
@@ -137,7 +137,7 @@ function! plugins#init() abort
         if has('nvim-0.3.0') && has#python('3', '6', '1')
             Plug 'Shougo/deoplete.nvim', { 'do': ':silent! UpdateRemotePlugins'}
         else
-            Plug 'Shougo/deoplete.nvim', { 'tag': '2.0', 'do': ':silent! UpdateRemotePlugins', 'frozen' : 1}
+            Plug 'Shougo/deoplete.nvim', { 'tag': '2.0', 'do': ':silent! UpdateRemotePlugins', 'frozen': 1, 'dir': vars#basedir().'/plugged/frozen_deoplete'}
         endif
 
         " Show parameters of the current function
@@ -147,7 +147,7 @@ function! plugins#init() abort
         "       skip it until I can figure it out how to fix this
         if tools#CheckLanguageServer()
             let g:branch =  has('nvim-0.2') ? {'branch': 'next', 'do': function('plugins#languageclient_neovim#install')} :
-                                            \ {'tag': '0.1.66', 'do': function('plugins#languageclient_neovim#install'), 'frozen': 1}
+                                            \ {'tag': '0.1.66', 'do': function('plugins#languageclient_neovim#install'), 'frozen': 1, 'dir': vars#basedir().'/plugged/frozen_lsc'}
             Plug 'autozimu/LanguageClient-neovim', g:branch
             unlet g:branch
         endif
@@ -169,7 +169,7 @@ function! plugins#init() abort
             if has('nvim-0.2')
                 Plug 'zchee/deoplete-jedi'
             else
-                Plug 'zchee/deoplete-jedi', {'commit': '3f510b467baded4279c52147e98f840b53324a8b', 'frozen': 1}
+                Plug 'zchee/deoplete-jedi', {'commit': '3f510b467baded4279c52147e98f840b53324a8b', 'frozen': 1, 'dir': vars#basedir().'/plugged/frozen_deoplete_jedi'}
             endif
         endif
 

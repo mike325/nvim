@@ -8,6 +8,10 @@
 set background=dark
 set cursorline
 
+if has('termguicolors')
+    set termguicolors
+endif
+
 try
     if exists('g:plugs["ayu-vim"]') && has('nvim')
         let g:ayucolor = 'dark'

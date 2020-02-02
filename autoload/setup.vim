@@ -6,6 +6,12 @@ function! s:PythonProviders(python) abort
     let l:minor = a:python[1]
     " let l:patch = l:python[2]
 
+    let l:pyname = l:major == 2 ? 'python' : 'python3'
+
+    if !has('nvim') && !has(l:pyname)
+        return ''
+    endif
+
     if os#name('windows')
         let l:pynvim = {
                     \ 'local': vars#home() . '/AppData/Roaming/Python/Python'.l:major.l:minor.'/site-packages/pynvim',
