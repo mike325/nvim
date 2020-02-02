@@ -1,7 +1,8 @@
-local nvim = require('nvim')
 local inspect = vim.inspect
-
 local api = vim.api
+
+local nvim = require('nvim')
+
 local ok, plugs = pcall(api.nvim_get_var, 'plugs')
 
 if not ok then

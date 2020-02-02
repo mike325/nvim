@@ -47,7 +47,6 @@ endif
 
 if has('nvim')
     lua require('python').setup()
-    lua require('settings')
     lua require('tools')
 else
     call set#initconfigs()
