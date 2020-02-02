@@ -100,6 +100,7 @@ nvim.option.hidden = true
 
 nvim.option.autowrite    = true
 nvim.option.autowriteall = true
+nvim.option.fileencoding = 'utf-8'
 
 if nvim.g.gonvim_running ~= nil then
     nvim.option.showmode = false
@@ -115,23 +116,27 @@ else
     nvim.option.diffopt = 'filler,vertical,iwhite'
 end
 
-nvim.o.grepprg = tools.select_grep(false)
-nvim.o.grepformat = tools.select_grep(false, 'grepformat')
+nvim.option.grepprg = tools.select_grep(false)
+nvim.option.grepformat = tools.select_grep(false, 'grepformat')
 
--- Windows options
-nvim.ex.set('breakindent')
-nvim.ex.set('relativenumber')
-nvim.ex.set('number')
-nvim.ex.set('list')
-nvim.ex.set('nowrap')
-nvim.ex.set('nofoldenable')
-nvim.ex.set('colorcolumn=80')
-nvim.ex.set('foldmethod=syntax')
-nvim.ex.set('signcolumn=auto')
-nvim.ex.set('numberwidth=1')
-nvim.ex.set('foldlevel=99')
-nvim.ex.set('foldcolumn=0')
-nvim.ex.set('fileencoding=utf-8')
+if plugs['vim-fugitive'] ~= nil and plugs['vim-airline'] == nil then
+    nvim.option.statusline = '%<%f %h%m%r%{FugitiveStatusline()}%=%-14.(%l,%c%V%) %P'
+end
+
+-- Window options
+
+nvim.wo.breakindent    = true
+nvim.wo.relativenumber = true
+nvim.wo.number         = true
+nvim.wo.list           = true
+nvim.wo.wrap           = false
+nvim.wo.foldenable     = false
+nvim.wo.colorcolumn    = '80'
+nvim.wo.foldmethod     = 'syntax'
+nvim.wo.signcolumn     = 'auto'
+nvim.wo.numberwidth    = 1
+nvim.wo.foldlevel      = 99
+nvim.wo.foldcolumn     = 0
 
 local wildignores = {
     '*.spl',
