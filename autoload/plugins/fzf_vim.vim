@@ -28,13 +28,19 @@ function! plugins#fzf_vim#init(data) abort
     endif
 
     " preview function use bash, so windows support
-    if os#name('windows') && &shell =~# '\v^cmd(\.exe)'
-        let $FZF_DEFAULT_COMMAND = '( '.tools#select_filelist(1).' || '.tools#select_filelist(0).' ) 2> nul'
+    if (os#name('windows') && &shell =~# '\v^cmd(\.exe)') || empty($FZF_DEFAULT_COMMAND)
+        let l:null = os#name('windows') ? 'nul' : '/dev/null'
+
+        let $FZF_DEFAULT_COMMAND = '('.tools#select_filelist(1).' || '.tools#select_filelist(0).' ) 2> '.l:null
+        let $FZF_DEFAULT_OPTS = '--layout=reverse --border --ansi ' . (!os#name('windows') ? ' --height 70%' : '')
+
+    endif
+
+    if empty($FZF_CTRL_T_COMMAND)
         let $FZF_CTRL_T_COMMAND = $FZF_DEFAULT_COMMAND
         if executable('fd')
             let $FZF_ALT_C_COMMAND = 'fd -t d . $HOME'
         endif
-        let $FZF_DEFAULT_OPTS = '--layout=reverse --border --ansi'
     endif
 
     " Known fzf/kernel issue
