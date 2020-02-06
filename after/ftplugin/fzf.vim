@@ -5,5 +5,5 @@ setlocal norelativenumber
 setlocal nonumber
 setlocal bufhidden=wipe
 
-nnoremap <buffer><nowait> <ESC> :q!<CR>
-tnoremap <buffer><nowait> <ESC> <ESC>:q!<CR>
+nmap <buffer><nowait> <ESC> :q!<CR>
+tmap <buffer><nowait> <ESC> <C-c>
