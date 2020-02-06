@@ -38,7 +38,6 @@ if has('nvim-0.5')
     finish
 endif
 
-
 let s:gitversion = ''
 let s:moderngit = -1
 
@@ -357,24 +356,27 @@ function! tools#abolish(lang) abort
             endfor
         endif
     else
-        if exists('l:abolish_lang[l:current]')
-            for [l:key, l:val] in items(l:abolish_lang[l:current])
-                if l:key !~# '{|}'
-                    silent! execute 'iunabbrev <buffer> ' . l:key
-                    silent! execute 'iunabbrev <buffer> ' . substitute( l:key, '.*', '\U\0', 'g')
-                    silent! execute 'iunabbrev <buffer> ' . substitute( l:key, '^.', '\U\0', 'g')
-                endif
-            endfor
-        endif
-        if exists('l:abolish_lang[a:lang]')
-            for [l:key, l:val] in items(l:abolish_lang[a:lang])
-                if l:key !~# '{|}'
-                    execute 'iabbrev <buffer> ' . l:key . ' ' . l:val
-                    execute 'iabbrev <buffer> ' . substitute( l:key, '.*', '\U\0', 'g') . ' ' . substitute( l:val, '.*', '\U\0', 'g')
-                    execute 'iabbrev <buffer> ' . substitute( l:key, '^.', '\U\0', 'g') . ' ' . substitute( l:val, '^.', '\U\0', 'g')
-                endif
-            endfor
-        endif
+        " TODO: Fix this crap
+        " if exists('l:abolish_lang[l:current]')
+        "     for [l:key, l:val] in items(l:abolish_lang[l:current])
+        "         if l:key !~# '{\|}' || l:val !~# '{\|}'
+        "             silent! execute 'iunabbrev <buffer> ' . l:key
+        "             silent! execute 'iunabbrev <buffer> ' . substitute( l:key, '.*', '\U\0', 'g')
+        "             silent! execute 'iunabbrev <buffer> ' . substitute( l:key, '^.', '\U\0', 'g')
+        "         endif
+        "     endfor
+        " endif
+        " if exists('l:abolish_lang[a:lang]')
+        "     execute '!echo "' . string(items(l:abolish_lang[a:lang])) . '" >> echo.log'
+        "     for [l:key, l:val] in items(l:abolish_lang[a:lang])
+        "         execute '!echo ' . l:key . ' : '.l:val . '>> echo.log'
+        "         if l:key !~# '{\|}' || l:val !~# '{\|}'
+        "             execute 'iabbrev <buffer> ' . l:key . ' ' . l:val
+        "             execute 'iabbrev <buffer> ' . substitute( l:key, '.*', '\U\0', 'g') . ' ' . substitute( l:val, '.*', '\U\0', 'g')
+        "             execute 'iabbrev <buffer> ' . substitute( l:key, '^.', '\U\0', 'g') . ' ' . substitute( l:val, '^.', '\U\0', 'g')
+        "         endif
+        "     endfor
+        " endif
     endif
 endfunction
 

@@ -10,7 +10,6 @@ local isdirectory  = require('nvim').fn.isdirectory
 local filereadable = require('nvim').fn.filereadable
 
 local sys   = require('sys')
-local cache = require('sys').cache
 
 local plugs = nvim.plugs
 
@@ -142,7 +141,7 @@ function tools.last_position()
 end
 
 function tools.check_version(sys_version, version_target)
-    for i,val in pairs(version_target) do
+    for i,_ in pairs(version_target) do
 
         if type(version_target[i]) == 'string' then
             version_target[i] = tonumber(version_target[i])
@@ -176,7 +175,7 @@ function tools.has_git_version(...)
     end
 
     if #git_version == 0 then
-        git_version = string.match(require'nvim'.fn.system('git --version'), '%d+%p%d+%p%d+')
+        git_version = string.match(system('git --version'), '%d+%p%d+%p%d+')
     end
 
     if #args == 0 then
@@ -577,8 +576,8 @@ function tools.project_config(event)
     nvim.b.project_root = root
 
     local is_git = is_git_repo(nvim.b.project_root)
-    local filetype = nvim.bo.filetype
-    local buftype = nvim.bo.buftype
+    -- local filetype = nvim.bo.filetype
+    -- local buftype = nvim.bo.buftype
 
     nvim.bo.grepprg = tools.select_grep(is_git)
 
