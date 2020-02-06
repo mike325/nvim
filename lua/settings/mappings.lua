@@ -115,6 +115,7 @@ nvim.nvim_set_mapping('x', '<leader>8', '<ESC>8gt', {noremap = true})
 nvim.nvim_set_mapping('x', '<leader>9', '<ESC>9gt', {noremap = true})
 nvim.nvim_set_mapping('x', '<leader>0', '<ESC>:tablast<CR>', {noremap = true})
 
+-- Fucking Typos
 nvim.nvim_set_abbr('c', 'Gti', 'Git', {noremap = true})
 nvim.nvim_set_abbr('c', 'W'  , 'w', {noremap = true})
 nvim.nvim_set_abbr('c', 'Q'  , 'q', {noremap = true})

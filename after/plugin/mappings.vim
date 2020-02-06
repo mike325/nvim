@@ -191,6 +191,16 @@ if has('nvim') || has('terminal')
     endif
 endif
 
+" Fucking typos
+cabbrev Gti Git
+cabbrev W  w
+cabbrev Q  q
+cabbrev q1 q!
+cabbrev qa1 qa!
+cabbrev w1 w!
+cabbrev wA! wa!
+cabbrev wa1 wa!
+
 if os#name('windows')
     command! PowershellToggle call windows#toggle_powershell()
 endif
