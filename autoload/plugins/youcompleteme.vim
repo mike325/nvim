@@ -42,7 +42,7 @@ function! plugins#youcompleteme#install(info) abort
             let l:cmd += ['--cs-completer']
         endif
 
-        if executable('racer') && executable('cargo')
+        if executable('cargo')
             let l:cmd += ['--rust-completer']
         endif
 
@@ -63,12 +63,15 @@ function! plugins#youcompleteme#install(info) abort
             let l:cmd += ['--msvc', l:msbuild]
         endif
 
-        " silent! py3 ycm_state.OnVimLeave()
+        if os#name('windows')
+            silent! py3 ycm_state.OnVimLeave()
+        endif
 
         echomsg 'CMD: ' . join(l:cmd, ' ')
         execute ' !' join(l:cmd, ' ')
 
         " silent! YcmRestartServer
+
     endif
 endfunction
 
