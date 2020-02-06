@@ -42,16 +42,14 @@ function! plugins#init() abort
         Plug 'neomake/neomake'
     endif
 
-    " TODO: Fugitive seems to break tcd, try to fix it
-    if ( executable('fzf') && isdirectory(vars#home() . '/.fzf') ) || !os#name('windows')
+    if executable('fzf')
         " Use chocolately install in windows
         Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': function('plugins#fzf_vim#install')}
         Plug 'junegunn/fzf.vim'
     elseif exists('g:gonvim_running')
         Plug 'akiyosi/gonvim-fuzzy'
-    elseif has('nvim') && has('python3')
-        Plug 'Shougo/denite.nvim'
-        Plug 'raghur/fruzzy', {'do': { -> fruzzy#install()}}
+    elseif has('patch-8.1.2114') || has('nvim-0.4.2')
+        Plug 'liuchengxu/vim-clap'
     else
         Plug 'ctrlpvim/ctrlp.vim'
 
