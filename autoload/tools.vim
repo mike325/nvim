@@ -15,7 +15,7 @@ if has('nvim-0.5')
         return v:lua.tools.grep(a:tool, a:000)
     endfunction
 
-    function! tools#filelist(tool) abort
+    function! tools#grep(tool) abort
         return v:lua.tools.grep(a:tool)
     endfunction
 

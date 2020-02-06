@@ -55,14 +55,15 @@ local function nvim_set_mapping(m, lhs, rhs, ...)
 
     local mode = modes[m] ~= nil and modes[m] or m
 
-    if opts ~= nil and opts['buffer'] ~= nil and opts['buffer'] == true then
+    if opts ~= nil and opts['buffer'] ~= nil then
+        local buf = type(opts['buffer']) == 'boolean' and 0 or opts['buffer']
         opts['buffer'] = nil
         opts = opts == nil and {} or opts
 
         if rhs ~= nil then
-            api.nvim_buf_set_keymap(0, mode, lhs, rhs, opts)
+            api.nvim_buf_set_keymap(buf, mode, lhs, rhs, opts)
         else
-            api.nvim_buf_del_keymap(0, mode, lhs)
+            api.nvim_buf_del_keymap(buf, mode, lhs)
         end
     else
         opts = opts == nil and {} or opts
