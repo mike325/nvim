@@ -54,7 +54,7 @@ function! plugins#init() abort
         Plug 'ctrlpvim/ctrlp.vim'
 
         if has('python3')
-            Plug 'raghur/fruzzy', {'do': { -> fruzzy#install()}}
+            Plug 'raghur/fruzzy', {'do': function('fruzzy#install')}
         elseif has#python()
             " Fast and 'easy' to compile C CtrlP matcher
             if (executable('gcc') || executable('clang')) && empty($NO_PYTHON_DEV) && !os#name('windows')

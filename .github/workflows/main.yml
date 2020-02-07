@@ -108,29 +108,26 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
-      - name: Enable Scoop
+      - name: Enable Chocolatey
         shell: powershell
         run: |
-          iwr -useb get.scoop.sh | iex
+          Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
       - name: Install dependencies
+        shell: bash
         shell: powershell
         run: |
-          $env:PATH = "$env:USERPROFILE\scoop\shims;$PATH"
-          $env:PATH = "$env:USERPROFILE\.local\bin;$env:PATH"
-          scoop install python git curl vim neovim cmake gcc
+          choco install -y python git curl vim neovim mingw cmake
       - name: Fetch script
         shell: bash
         run: |
-          export PATH="$HOME/scoop/shims:$PATH"
           curl -OL https://raw.githubusercontent.com/Mike325/dotfiles/master/install.sh
           chmod +x ./install.sh
       - name: Install dotfiles
         shell: bash
         run: |
-          export PATH="$HOME/scoop/shims:$PATH"
           ./install.sh --verbose --vim --nvim=dotfiles
       - name: Basic stock test
         shell: bash
         run: |
-          export PATH="$HOME/scoop/shims:$PATH"
+          export PATH="/c/tools/neovim/Neovim/bin:$PATH"
           ./test/test.sh

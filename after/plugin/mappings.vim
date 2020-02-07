@@ -238,11 +238,17 @@ endif
 
 command! TrimToggle call mappings#Trim()
 
-command! -nargs=? -complete=customlist,mappings#spells SpellLang
-            \ let s:spell = (empty(<q-args>)) ?  'en' : expand(<q-args>) |
-            \ call tools#spelllangs(s:spell) |
-            \ unlet s:spell
-            " \ execute 'set spelllang?' |
+if has('nvim-0.2') || has('patch-7.4.2044')
+    command! -nargs=? -complete=customlist,mappings#spells SpellLang
+                \ let s:spell = (empty(<q-args>)) ?  'en' : expand(<q-args>) |
+                \ call tools#spelllangs(s:spell) |
+                \ unlet s:spell
+else
+    command! -nargs=? SpellLang
+                \ let s:spell = (empty(<q-args>)) ?  'en' : expand(<q-args>) |
+                \ call tools#spelllangs(s:spell) |
+                \ unlet s:spell
+endif
 
 command! -nargs=? ConncallLevel  call mappings#ConncallLevel(expand(<q-args>))
 
