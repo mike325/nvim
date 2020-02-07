@@ -52,9 +52,11 @@ if maparg('<C-L>', 'n') ==# ''
     nnoremap <silent> <C-L> :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-L>
 endif
 
-" Turn diff off when closiong other windows
-nnoremap <silent> <C-w><C-o> :diffoff!<bar>only<cr>
-nnoremap <silent> <C-w>o :diffoff!<bar>only<cr>
+if !has('patch-8.1.2289')
+    " Turn diff off when closiong other windows
+    nnoremap <silent> <C-w><C-o> :diffoff!<bar>only<cr>
+    nnoremap <silent> <C-w>o :diffoff!<bar>only<cr>
+endif
 
 " Seems like a good idea, may activate it later
 " nnoremap <expr> q &diff ? ":diffoff!\<bar>only\<cr>" : "q"

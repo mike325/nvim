@@ -12,11 +12,23 @@ if has('nvim')
     finish
 endif
 
+" Default should be internal,filler,closeoff
+set diffopt+=vertical
+
 if has('patch-8.1.0360')
-    set diffopt=internal,filler,vertical,iwhiteall,iwhiteeol,indent-heuristic,algorithm:patience
-else
-    set diffopt=filler,vertical,iwhite
+    set diffopt+=indent-heuristic,algorithm:minimal
 endif
+
+if has('patch-8.1.1361')
+    set diffopt+=hiddenoff
+endif
+
+if has('patch-8.1.2289')
+    set diffopt+=whiteall,iwhiteeol
+else
+    set diffopt+=iwhite
+endif
+
 
 if has('winaltkeys')
     set winaltkeys=no

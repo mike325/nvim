@@ -23,24 +23,27 @@ nvim.nvim_set_mapping('n', 'J', 'm`J``', {noremap = true})
 
 nvim.nvim_set_mapping('i', 'jj', '<ESC>')
 
-nvim.nvim_set_mapping('n', '<BS>', ':call mappings#bs()<CR>', {noremap = true, silent = true})
+nvim.nvim_set_mapping('n', '<BS>', ':call mappings#bs()<CR>', {noremap = true})
 nvim.nvim_set_mapping('x', '<BS>', '<ESC>', {noremap = true})
 
 -- TODO: Check for GUIs
 if sys.name == 'windows' then
-    nvim.nvim_set_mapping('n', '<C-h>', ':call mappings#bs()<CR>', {noremap = true, silent = true})
+    nvim.nvim_set_mapping('n', '<C-h>', ':call mappings#bs()<CR>', {noremap = true})
     nvim.nvim_set_mapping('x', '<C-h>', ':<ESC>', {noremap = true})
     nvim.nvim_set_mapping('n', '<C-z>', '<nop>', {noremap = true})
 end
 
 if nvim.nvim_get_mapping('n', '<C-L>') == nil then
-    nvim.nvim_set_mapping('n', '<C-L>', ':nohlsearch|diffupdate<CR>', {noremap = true, silent = true})
+    nvim.nvim_set_mapping('n', '<C-L>', ':nohlsearch|diffupdate<CR>', {noremap = true})
 end
 
 nvim.nvim_set_mapping('i', '<C-U>', '<C-G>u<C-U>', {noremap = true})
 
-nvim.nvim_set_mapping('n', '<C-w>o'    , ':diffoff!<BAR>only<CR>', {noremap = true, silent = true})
-nvim.nvim_set_mapping('n', '<C-w><C-o>', ':diffoff!<BAR>only<CR>', {noremap = true, silent = true})
+
+if nvim.has_version('0.5') ~= 1 then
+    nvim.nvim_set_mapping('n', '<C-w>o'    , ':diffoff!<BAR>only<CR>', {noremap = true})
+    nvim.nvim_set_mapping('n', '<C-w><C-o>', ':diffoff!<BAR>only<CR>', {noremap = true})
+end
 
 nvim.nvim_set_mapping('n', '<S-tab>', '<C-o>', {noremap = true})
 
@@ -51,14 +54,14 @@ nvim.nvim_set_mapping(
     'n',
     'j',
     [[v:count ? (v:count >= 3 ? "m'" . v:count : '') . 'j' : 'gj']],
-    {noremap = true, silent = true, expr = true}
+    {noremap = true, expr = true}
 )
 
 nvim.nvim_set_mapping(
     'n',
     'k',
     [[v:count ? (v:count >= 3 ? "m'" . v:count : '') . 'k' : 'gk']],
-    {noremap = true, silent = true, expr = true}
+    {noremap = true, expr = true}
 )
 
 nvim.nvim_set_mapping('n', '<leader><leader>e', ':echo expand("%")<CR>', {noremap = true})
@@ -70,7 +73,7 @@ nvim.nvim_set_mapping('n', 'c*', '*Ncgn', {noremap = true})
 nvim.nvim_set_mapping('n', 'c#', '#NcgN', {noremap = true})
 nvim.nvim_set_mapping('n', 'cg*', 'g*Ncgn', {noremap = true})
 nvim.nvim_set_mapping('n', 'cg#', 'g#NcgN', {noremap = true})
-nvim.nvim_set_mapping('x', 'c', '"cy/<C-r>c<CR>Ncgn', {noremap = true, silent = true})
+nvim.nvim_set_mapping('x', 'c', '"cy/<C-r>c<CR>Ncgn', {noremap = true})
 
 nvim.nvim_set_mapping('n', '¿', '`', {noremap = true})
 nvim.nvim_set_mapping('x', '¿', '`', {noremap = true})
@@ -196,7 +199,7 @@ end
 if plugs["ultisnips"] == nil and plugs["vim-snipmate"] == nil then
     nvim.nvim_set_mapping('i', '<TAB>', [[pumvisible() ? "\<C-n>" : "\<TAB>"]], {noremap = true, expr = true})
     nvim.nvim_set_mapping('i', '<S-TAB>', [[pumvisible() ? "\<C-p>" : ""]], {noremap = true, expr = true})
-    nvim.nvim_set_mapping('i', '<CR>', '<C-R>=mappings#NextSnippetOrReturn()<CR>', {noremap = true, silent = true})
+    nvim.nvim_set_mapping('i', '<CR>', '<C-R>=mappings#NextSnippetOrReturn()<CR>', {noremap = true})
 end
 
 if plugs["vim-bbye"] == nil then

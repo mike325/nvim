@@ -110,10 +110,11 @@ else
     nvim.option.title       = true
 end
 
+-- Default should be internal,filler,closeoff
 if nvim.has_version('0.3.3') == 1 then
-    nvim.option.diffopt = 'internal,filler,vertical,iwhiteall,iwhiteeol,indent-heuristic,algorithm:patience'
+    nvim.option.diffopt = nvim.option.diffopt .. ',vertical,iwhiteall,iwhiteeol,indent-heuristic,algorithm:minimal,hiddenoff'
 else
-    nvim.option.diffopt = 'filler,vertical,iwhite'
+    nvim.option.diffopt = 'vertical,iwhite'
 end
 
 nvim.option.grepprg = tools.select_grep(false)
