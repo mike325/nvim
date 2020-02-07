@@ -206,25 +206,25 @@ end
 if plugs["vim-indexed-search"] == nil then
     -- nvim.nvim_set_mapping('n', '*', '*zz')
     -- nvim.nvim_set_mapping('n', '#', '#zz')
-    nvim.nvim_set_mapping('n', 'n', ":call mappings#NiceNext('n')<cr>", {noremap = true, silent = true})
-    nvim.nvim_set_mapping('n', 'N', ":call mappings#NiceNext('N')<cr>", {noremap = true, silent = true})
+    nvim.nvim_set_mapping('n', 'n', ":call mappings#NiceNext('n')<cr>", {noremap = true})
+    nvim.nvim_set_mapping('n', 'N', ":call mappings#NiceNext('N')<cr>", {noremap = true})
 end
 
 if plugs["vim-unimpaired"] == nil then
-    nvim.nvim_set_mapping('n', '[Q', ':<C-U>exe "".(v:count ? v:count : "")."cfirst"<CR>zvzz'   , {noremap = true, silent = true})
-    nvim.nvim_set_mapping('n', ']Q', ':<C-U>exe "".(v:count ? v:count : "")."clast"<CR>zvzz'    , {noremap = true, silent = true})
-    nvim.nvim_set_mapping('n', '[q', ':<C-U>exe "".(v:count ? v:count : "")."cprevious"<CR>zvzz', {noremap = true, silent = true})
-    nvim.nvim_set_mapping('n', ']q', ':<C-U>exe "".(v:count ? v:count : "")."cnext"<CR>zvzz'    , {noremap = true, silent = true})
+    nvim.nvim_set_mapping('n', '[Q', ':<C-U>exe "".(v:count ? v:count : "")."cfirst"<CR>zvzz'   , {noremap = true})
+    nvim.nvim_set_mapping('n', ']Q', ':<C-U>exe "".(v:count ? v:count : "")."clast"<CR>zvzz'    , {noremap = true})
+    nvim.nvim_set_mapping('n', '[q', ':<C-U>exe "".(v:count ? v:count : "")."cprevious"<CR>zvzz', {noremap = true})
+    nvim.nvim_set_mapping('n', ']q', ':<C-U>exe "".(v:count ? v:count : "")."cnext"<CR>zvzz'    , {noremap = true})
 
-    nvim.nvim_set_mapping('n', '[L', ':<C-U>exe "".(v:count ? v:count : "")."lfirst"<CR>zvzz'   , {noremap = true, silent = true})
-    nvim.nvim_set_mapping('n', ']L', ':<C-U>exe "".(v:count ? v:count : "")."llast"<CR>zvzz'    , {noremap = true, silent = true})
-    nvim.nvim_set_mapping('n', '[l', ':<C-U>exe "".(v:count ? v:count : "")."lprevious"<CR>zvzz', {noremap = true, silent = true})
-    nvim.nvim_set_mapping('n', ']l', ':<C-U>exe "".(v:count ? v:count : "")."lnext"<CR>zvzz'    , {noremap = true, silent = true})
+    nvim.nvim_set_mapping('n', '[L', ':<C-U>exe "".(v:count ? v:count : "")."lfirst"<CR>zvzz'   , {noremap = true})
+    nvim.nvim_set_mapping('n', ']L', ':<C-U>exe "".(v:count ? v:count : "")."llast"<CR>zvzz'    , {noremap = true})
+    nvim.nvim_set_mapping('n', '[l', ':<C-U>exe "".(v:count ? v:count : "")."lprevious"<CR>zvzz', {noremap = true})
+    nvim.nvim_set_mapping('n', ']l', ':<C-U>exe "".(v:count ? v:count : "")."lnext"<CR>zvzz'    , {noremap = true})
 
-    nvim.nvim_set_mapping('n', '[B', ':<C-U>exe "".(v:count ? v:count : "")."bfirst"<CR>'   , {noremap = true, silent = true})
-    nvim.nvim_set_mapping('n', ']B', ':<C-U>exe "".(v:count ? v:count : "")."blast"<CR>'    , {noremap = true, silent = true})
-    nvim.nvim_set_mapping('n', '[b', ':<C-U>exe "".(v:count ? v:count : "")."bprevious"<CR>', {noremap = true, silent = true})
-    nvim.nvim_set_mapping('n', ']b', ':<C-U>exe "".(v:count ? v:count : "")."bnext"<CR>'    , {noremap = true, silent = true})
+    nvim.nvim_set_mapping('n', '[B', ':<C-U>exe "".(v:count ? v:count : "")."bfirst"<CR>'   , {noremap = true})
+    nvim.nvim_set_mapping('n', ']B', ':<C-U>exe "".(v:count ? v:count : "")."blast"<CR>'    , {noremap = true})
+    nvim.nvim_set_mapping('n', '[b', ':<C-U>exe "".(v:count ? v:count : "")."bprevious"<CR>', {noremap = true})
+    nvim.nvim_set_mapping('n', ']b', ':<C-U>exe "".(v:count ? v:count : "")."bnext"<CR>'    , {noremap = true})
 end
 
 if plugs["vim-vinegar"] == nil and plugs["nerdtree"] == nil then

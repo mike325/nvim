@@ -8,4 +8,5 @@ setlocal nobackup
 setlocal noswapfile
 setlocal noundofile
 
-nnoremap <silent> <buffer> q :q!<CR>
+nnoremap <silent> <nowait> <buffer> q :q!<CR>
+nnoremap <silent> <nowait> <buffer> = za

@@ -51,19 +51,19 @@ nvim_set_autocmd('CmdwinEnter', '*', 'nnoremap <CR> <CR>', {create = true, group
 nvim_set_autocmd(
     {'BufEnter','BufReadPost'},
     '__LanguageClient__',
-    'nnoremap <silent> <buffer> q :q!<CR>',
+    'nnoremap <silent> <nowait> <buffer> q :q!<CR>',
     {create = true, group = 'QuickQuit'}
 )
 nvim_set_autocmd(
     {'BufEnter','BufWinEnter'},
     '*',
-    'if &previewwindow | nnoremap <silent> <buffer> q :q!<CR> | endif',
+    'if &previewwindow | nnoremap <silent> <nowait> <buffer> q :q!<CR>| endif',
     {group = 'QuickQuit'}
 )
 nvim_set_autocmd(
     'TermOpen',
     '*',
-    'nnoremap <silent> <buffer> q :q!<CR>',
+    'nnoremap <silent> <nowait> <buffer> q :q!<CR>',
     {group = 'QuickQuit'}
 )
 

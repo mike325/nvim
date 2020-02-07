@@ -69,10 +69,10 @@ augroup end
 
 augroup QuickQuit
     autocmd!
-    autocmd BufEnter,BufReadPost __LanguageClient__ nnoremap <silent> <buffer> q :q!<CR>
-    autocmd BufEnter,BufWinEnter * if &previewwindow | nnoremap <silent> <buffer> q :q!<CR> | endif
+    autocmd BufEnter,BufReadPost __LanguageClient__ nnoremap <silent> <nowait> <buffer> q :q!<CR>
+    autocmd BufEnter,BufWinEnter * if &previewwindow | nnoremap <silent> <nowait> <buffer> q :q!<CR>| endif
     if  has('terminal') && exists('##TerminalOpen')
-        autocmd TerminalOpen * nnoremap <silent> <buffer> q :q!<CR>
+        autocmd TerminalOpen * nnoremap <silent> <nowait> <buffer> q :q!<CR>
     endif
 augroup end
 
