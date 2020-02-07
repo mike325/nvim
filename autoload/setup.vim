@@ -69,7 +69,7 @@ function! s:PythonProviders(python) abort
                 endif
             endfor
         endif
-    else
+    elseif !os#name('cygwin')
         let l:pynvim = {
                     \ 'virtual': '',
                     \ 'local': vars#home() . '/.local/lib/python'.l:major.'.'.l:minor.'/site-packages/pynvim',

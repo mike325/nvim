@@ -112,7 +112,8 @@ function! plugins#init() abort
 
     " This env var allow us to know if the python version has the dev libs
     " Awesome has#async completion engine for Neovim
-    if !empty($YCM) && empty($NO_PYTHON_DEV) && has#python() && has#async() && executable('cmake') &&
+    if !empty($YCM) && empty($NO_PYTHON_DEV) &&
+     \ has#python() && has#async() && !os#name('cygwin') && executable('cmake') &&
      \ ((has('unix') && (executable('gcc')  || executable('clang'))) ||
      \ (os#name('windows') && executable('msbuild')))
 
