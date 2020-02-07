@@ -23,8 +23,13 @@ jobs:
       - uses: actions/checkout@v1
       - name: Install dependencies
         run: |
-          sudo apt install wget curl git shellcheck python3-setuptools python-setuptools build-essential cmake python3-dev-y
-          sudo apt install python3-pip  python-pip -y
+          sudo apt install wget curl git
+          wget -O screenfetch-dev https://git.io/vaHfR
+          chmod +x screenfetch-dev
+          ./screenfetch-dev
+
+          sudo apt install -y shellcheck python3-setuptools python-setuptools build-essential cmake python3-dev
+          sudo apt install -y python3-pip  python-pip
           sudo pip2 install --upgrade pip
           sudo pip3 install --upgrade pip
       - name: Fetch script
@@ -58,13 +63,15 @@ jobs:
 
     env:
       GITHUB: true
-      YCM: 1
 
     steps:
       - uses: actions/checkout@v1
       - name: Install dependencies
         run: |
-          brew install git shellcheck neovim cmake macvim
+          brew install git shellcheck neovim cmake wget
+          wget -O screenfetch-dev https://git.io/vaHfR
+          chmod +x screenfetch-dev
+          ./screenfetch-dev
       - name: Fetch script
         run: |
           curl -OL https://raw.githubusercontent.com/Mike325/dotfiles/master/install.sh
@@ -108,15 +115,19 @@ jobs:
       - name: Install dependencies
         shell: powershell
         run: |
+          $env:PATH = "$env:USERPROFILE\scoop\shims;$PATH"
+          $env:PATH = "$env:USERPROFILE\.local\bin;$env:PATH"
           scoop install python git curl vim neovim cmake gcc
       - name: Fetch script
         shell: bash
         run: |
+          export PATH="$HOME/scoop/shims:$PATH"
           curl -OL https://raw.githubusercontent.com/Mike325/dotfiles/master/install.sh
           chmod +x ./install.sh
       - name: Install dotfiles
         shell: bash
         run: |
+          export PATH="$HOME/scoop/shims:$PATH"
           ./install.sh --verbose --vim --nvim=dotfiles
       - name: Basic stock test
         shell: bash
