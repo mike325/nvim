@@ -113,7 +113,6 @@ jobs:
         run: |
           Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
       - name: Install dependencies
-        shell: bash
         shell: powershell
         run: |
           choco install -y python git curl vim neovim mingw cmake
