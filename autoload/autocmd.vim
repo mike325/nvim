@@ -159,16 +159,6 @@ function! autocmd#SetProjectConfigs(event) abort
         let g:ctrlp_clear_cache_on_exit = is_git ? 1 : (fallback =~# '^\(ag\|rg\|fd\) ')
     endif
 
-    if exists('g:plugs["deoplete.nvim"]') && ( exists('g:plugs["deoplete-clang"]') || exists('g:plugs["deoplete-clang2"]') )
-        if filereadable(b:project_root . '/compile_commands.json')
-            let g:deoplete#sources#clang#clang_complete_database = b:project_root
-        else
-            if exists('g:deoplete#sources#clang#clang_complete_database')
-                unlet g:deoplete#sources#clang#clang_complete_database
-            endif
-        endif
-    endif
-
     " If we don't have grepper variable, we have not done :PlugInstall
     if exists('g:plugs["vim-grepper"]') && exists('g:grepper')
         let g:grepper.tools = []

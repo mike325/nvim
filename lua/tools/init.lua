@@ -611,13 +611,6 @@ function tools.project_config(event)
         nvim.g.ctrlp_clear_cache_on_exit = clear_cache
     end
 
-    if plugs['deoplete.nvim'] ~= nil and (plugs['deoplete-clang'] ~= nil or plugs['deoplete-clang2'] ~= nil) then
-        nvim.g['deoplete#sources#clang#clang_complete_database'] = nil
-        if filereadable(root..'/compile_commands.json') == 1 then
-            nvim.g['deoplete#sources#clang#clang_complete_database'] = root
-        end
-    end
-
     if plugs['vim-grepper'] ~= nil then
 
         local operator = {}
