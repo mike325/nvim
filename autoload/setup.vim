@@ -7,6 +7,11 @@ function! s:PythonProviders(python) abort
     " let l:patch = l:python[2]
 
     let l:pyname = l:major == 2 ? 'python' : 'python3'
+    let l:pydll = l:major == 2 ? 'pythondll' : 'pythonthreedll'
+
+    if !exists('+'.l:pydll))
+        execute 'set '.l:pydll . '=python' . l:major . l:minor .'.dll'
+    endif
 
     if !has('nvim') && !has(l:pyname)
         return ''

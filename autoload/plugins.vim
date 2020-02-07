@@ -42,7 +42,7 @@ function! plugins#init() abort
         Plug 'neomake/neomake'
     endif
 
-    if executable('fzf')
+    if executable('fzf') && !os#name('cygwin')
         " Use chocolately install in windows
         Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': function('plugins#fzf_vim#install')}
         Plug 'junegunn/fzf.vim'
