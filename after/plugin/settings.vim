@@ -13,20 +13,20 @@ if has('nvim')
 endif
 
 " Default should be internal,filler,closeoff
-set diffopt+=vertical
+set diffopt^=vertical
 
 if has('patch-8.1.0360')
-    set diffopt+=indent-heuristic,algorithm:minimal
+    set diffopt^=indent-heuristic,algorithm:minimal
 endif
 
 if has('patch-8.1.1361')
-    set diffopt+=hiddenoff
+    set diffopt^=hiddenoff
 endif
 
 if has('patch-8.1.2289')
-    set diffopt+=whiteall,iwhiteeol
+    set diffopt^=iwhiteall,iwhiteeol
 else
-    set diffopt+=iwhite
+    set diffopt^=iwhite
 endif
 
 
