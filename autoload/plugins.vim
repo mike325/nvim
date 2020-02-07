@@ -131,56 +131,6 @@ function! plugins#init() abort
         Plug 'neovim/nvim-lsp'
     elseif has#async() && tools#CheckLanguageServer()
         Plug 'natebosch/vim-lsc'
-    elseif has('nvim-0.2.0') && has#python('3', '4')
-
-        if has('nvim-0.3.0') && has#python('3', '6', '1')
-            Plug 'Shougo/deoplete.nvim', { 'do': ':silent! UpdateRemotePlugins'}
-        else
-            Plug 'Shougo/deoplete.nvim', { 'tag': '2.0', 'do': ':silent! UpdateRemotePlugins', 'frozen': 1, 'dir': vars#basedir().'/plugged/frozen_deoplete'}
-        endif
-
-        " Show parameters of the current function
-        Plug 'Shougo/echodoc.vim'
-
-        " TODO: I had had some probles with pysl in windows, so let's
-        "       skip it until I can figure it out how to fix this
-        if tools#CheckLanguageServer()
-            let g:branch =  has('nvim-0.2') ? {'branch': 'next', 'do': function('plugins#languageclient_neovim#install')} :
-                                            \ {'tag': '0.1.66', 'do': function('plugins#languageclient_neovim#install'), 'frozen': 1, 'dir': vars#basedir().'/plugged/frozen_lsc'}
-            Plug 'autozimu/LanguageClient-neovim', g:branch
-            unlet g:branch
-        endif
-
-        if !tools#CheckLanguageServer('c')
-            " C/C++ completion base on clang compiler if executable('clang')
-            if os#name('windows')
-                " A bit faster C/C++ completion
-                Plug 'tweekmonster/deoplete-clang2'
-            else
-                " NOTE: Doesn't support windows
-                Plug 'zchee/deoplete-clang'
-                " Plug 'Shougo/neoinclude.vim'
-            endif
-        endif
-
-        if !tools#CheckLanguageServer('python')
-            " Python completion
-            if has('nvim-0.2')
-                Plug 'zchee/deoplete-jedi'
-            else
-                Plug 'zchee/deoplete-jedi', {'commit': '3f510b467baded4279c52147e98f840b53324a8b', 'frozen': 1, 'dir': vars#basedir().'/plugged/frozen_deoplete_jedi'}
-            endif
-        endif
-
-        " Go completion
-        if !tools#CheckLanguageServer('go') && executable('make') && executable('go')
-            Plug 'zchee/deoplete-go', { 'do':function('plugins#deoplete_nvim#gocomletion')}
-        endif
-
-        " JavaScript completion
-        if !tools#CheckLanguageServer('javascript') && executable('ternjs')
-            Plug 'carlitux/deoplete-ternjs'
-        endif
     elseif has#async() && (has('nvim-0.2.0') || (!has('nvim') && has('lambda')))
         Plug 'maralla/completor.vim'
     " Neovim does not support Lua plugins yet
