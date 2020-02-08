@@ -75,6 +75,34 @@ if [ -z "$SHELL_PLATFORM" ]; then
     fi
 fi
 
+_ARCH="$(uname -m)"
+
+case "$SHELL_PLATFORM" in
+    # TODO: support more linux distros
+    linux)
+        if [[ -f /etc/arch-release ]]; then
+            _OS='arch'
+        elif [[ "$(cat /etc/issue)" == Ubuntu* ]]; then
+            _OS='ubuntu'
+        elif [[ -f /etc/debian_version ]] || [[ "$(cat /etc/issue)" == Debian* ]]; then
+            if [[ $_ARCH == *\ armv7* ]]; then # Raspberry pi 3 uses armv7 cpu
+                _OS='raspbian'
+            else
+                _OS='debian'
+            fi
+        fi
+        ;;
+    cygwin|msys|windows)
+        _OS='windows'
+        ;;
+    osx)
+        _OS='macos'
+        ;;
+    bsd)
+        _OS='bsd'
+        ;;
+esac
+
 if ! hash is_windows 2>/dev/null; then
     function is_windows() {
         if [[ $SHELL_PLATFORM == 'msys' ]] || [[ $SHELL_PLATFORM == 'cygwin' ]] || [[ $SHELL_PLATFORM == 'windows' ]]; then
@@ -82,7 +110,9 @@ if ! hash is_windows 2>/dev/null; then
         fi
         return 1
     }
+fi
 
+if ! hash is_osx 2>/dev/null; then
     function is_osx() {
         if [[ $SHELL_PLATFORM == 'osx' ]]; then
             return 0
@@ -91,14 +121,17 @@ if ! hash is_windows 2>/dev/null; then
     }
 fi
 
-# shellcheck disable=SC2009,SC2046
-_CURRENT_SHELL="$(ps | grep $$ | grep -Eo '(ba|z|tc|c)?sh')"
-_CURRENT_SHELL="${_CURRENT_SHELL##*/}"
-_CURRENT_SHELL="${_CURRENT_SHELL##*:}"
-if ! is_windows; then
-    # Hack when using sudo
-    if [[ $_CURRENT_SHELL == "sudo" ]] || [[ $_CURRENT_SHELL == "su" ]]; then
-        _CURRENT_SHELL="$(ps | head -4 | tail -n 1 | awk '{ print $4 }')"
+if [[ -n "$ZSH_NAME" ]]; then
+    _CURRENT_SHELL="zsh"
+elif [[ -n "$BASH" ]]; then
+    _CURRENT_SHELL="bash"
+else
+    # shellcheck disable=SC2009,SC2046
+    # _CURRENT_SHELL="$(ps | grep $$ | grep -Eo '(ba|z|tc|c)?sh')"
+    # _CURRENT_SHELL="${_CURRENT_SHELL##*/}"
+    # _CURRENT_SHELL="${_CURRENT_SHELL##*:}"
+    if [[ -z "$_CURRENT_SHELL" ]]; then
+        _CURRENT_SHELL="${SHELL##*/}"
     fi
 fi
 
@@ -300,6 +333,14 @@ function run_test() {
     local prog="$1"
     local rsp=0
     local args
+
+    if [[ $prog == nvim ]] && [[ $SHELL_PLATFORM == 'linux' ]]; then
+        status_msg "Setting YCM flag"
+        export YCM=1
+    else
+        unset YCM
+    fi
+
     if [[ $prog == nvim ]]; then
         if [[ $_PYTHON2 -eq 0 ]] && [[ $_PYTHON3 -eq 0 ]]; then
             local testname="stable Neovim without python"

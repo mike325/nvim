@@ -12,21 +12,24 @@ if has('nvim')
     finish
 endif
 
-" Default should be internal,filler,closeoff
-set diffopt^=vertical
+" Fucking hate stock vim in MAC
+if !os#name('macos')
+    " Default should be internal,filler,closeoff
+    set diffopt^=vertical
 
-if has('patch-8.1.0360')
-    set diffopt^=indent-heuristic,algorithm:minimal
-endif
+    if has('patch-8.1.0360')
+        set diffopt^=indent-heuristic,algorithm:minimal
+    endif
 
-if has('patch-8.1.1361')
-    set diffopt^=hiddenoff
-endif
+    if has('patch-8.1.1361')
+        set diffopt^=hiddenoff
+    endif
 
-if has('patch-8.1.2289')
-    set diffopt^=iwhiteall,iwhiteeol
-else
-    set diffopt^=iwhite
+    if has('patch-8.1.2289')
+        set diffopt^=iwhiteall,iwhiteeol
+    else
+        set diffopt^=iwhite
+    endif
 endif
 
 

@@ -17,7 +17,6 @@ jobs:
 
     env:
       GITHUB: true
-      YCM: 1
 
     steps:
       - uses: actions/checkout@v1
@@ -43,13 +42,16 @@ jobs:
         run: |
           export PATH="$HOME/.local/bin:$PATH"
           ./test/test.sh
-      - name: Install new vim
-        run: |
-          sudo apt install vim -y
       - name: Test latest vim
         run: |
+          sudo apt install vim -y
           export PATH="$HOME/.local/bin:$PATH"
           ./test/test.sh --vim
+      - name: Test latest neovim
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          ./install.sh --neovim dev --force
+          ./test/test.sh --nvim
 
   osx-build:
     name: Testing install script in ${{ matrix.os }}
