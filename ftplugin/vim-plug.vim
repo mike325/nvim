@@ -35,11 +35,11 @@ endfunction
 
 let g:plug_pwindow = 'vertical rightbelow new '
 
-nnoremap <buffer> <silent> gx :call <sid>plug_gx()<CR>
-nnoremap <silent> <buffer> H :call <sid>plug_doc()<CR>
-nnoremap <silent> <buffer> J :call <sid>scroll_preview(1)<CR>
-nnoremap <silent> <buffer> K :call <sid>scroll_preview(0)<CR>
-nnoremap <silent> <buffer> <C-n> :call search('^  \X*\zs\x')<CR>
-nnoremap <silent> <buffer> <C-p> :call search('^  \X*\zs\x', 'b')<CR>
-nmap <silent> <buffer> <C-j> <C-n>o
-nmap <silent> <buffer> <C-k> <C-p>o
+" nnoremap <buffer> <silent> gx :call <sid>plug_gx()<CR>
+" nnoremap <silent> <buffer> H :call <sid>plug_doc()<CR>
+" nnoremap <silent> <buffer> J :call <sid>scroll_preview(1)<CR>
+" nnoremap <silent> <buffer> K :call <sid>scroll_preview(0)<CR>
+" nnoremap <silent> <buffer> <C-n> :call search('^  \X*\zs\x')<CR>
+" nnoremap <silent> <buffer> <C-p> :call search('^  \X*\zs\x', 'b')<CR>
+" nmap <silent> <buffer> <C-j> <C-n>o
+" nmap <silent> <buffer> <C-k> <C-p>o

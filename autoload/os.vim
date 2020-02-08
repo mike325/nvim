@@ -27,6 +27,11 @@ function! s:os_type(os) abort
         let l:is_type = (has('win16') || has('win32') || has('win64'))
     elseif a:os ==# 'mac' || a:os ==# 'macos' || a:os ==# 'osx'
         let l:is_type = (has('gui_mac') || has('mac') || has('macos') || has('macunix'))
+        " Avoid false negative
+        if l:is_type == 0
+            let l:uname = substitute(system('uname'), '\n', '', '')
+            let l:is_type = l:uname ==? 'darwin' || l:uname ==? 'mac'
+        endif
     elseif a:os ==# 'linux' || a:os ==# 'unix'
         let l:is_type = (has('unix'))
     endif
