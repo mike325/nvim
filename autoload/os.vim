@@ -9,7 +9,7 @@ function! s:os_get_type() abort
         let l:name = 'wsl'
     elseif has('win16') || has('win32') || has('win64')
         let l:name = 'windows'
-    elseif has('macos') || has('macunix')
+    elseif has('gui_mac') || has('mac') || has('macos') || has('macunix')
         let l:name = 'mac'
     elseif has('unix')
         let l:name = 'unix'
@@ -26,7 +26,7 @@ function! s:os_type(os) abort
     elseif a:os ==# 'windows' || a:os ==# 'win32'
         let l:is_type = (has('win16') || has('win32') || has('win64'))
     elseif a:os ==# 'mac' || a:os ==# 'macos' || a:os ==# 'osx'
-        let l:is_type = (has('mac') || has('macos') || has('macunix'))
+        let l:is_type = (has('gui_mac') || has('mac') || has('macos') || has('macunix'))
     elseif a:os ==# 'linux' || a:os ==# 'unix'
         let l:is_type = (has('unix'))
     endif
