@@ -38,10 +38,13 @@ nvim.g.terminal_scrollback_buffer_size = 100000
 
 nvim.option.shada =  "!,/1000,'1000,<1000,:1000,s10000,h"
 
-nvim.option.scrollback  = -1
-nvim.option.softtabstop = -1
+nvim.option.expandtab   = true
+nvim.option.shiftround  = true
 nvim.option.shiftwidth  = 4
 nvim.option.tabstop     = 4
+nvim.option.softtabstop = -1
+
+nvim.option.scrollback  = -1
 nvim.option.updatetime  = 1000
 
 nvim.option.sidescrolloff = 5
