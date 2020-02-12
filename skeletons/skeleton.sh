@@ -327,4 +327,13 @@ verbose_msg "Platform      : ${SHELL_PLATFORM}"
 verbose_msg "OS Name       : ${_OS}"
 verbose_msg "Architecture  : ${_ARCH}"
 
+#######################################################################
+#                           CODE Goes Here                            #
+#######################################################################
+
+
+if [[ $_ERR_COUNT -gt 0 ]]; then
+    exit 1
+fi
+
 exit 0
