@@ -35,7 +35,7 @@ end
 nvim_set_autocmd(
     'BufNewFile',
     '*',
-    'lua require("tools").file_name()',
+    'lua tools.file_name()',
     {create = true, group = 'Skeletons'}
 )
 

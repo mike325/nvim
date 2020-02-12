@@ -484,26 +484,23 @@ function tools.file_name(...)
     local extension = nvim.fn.expand('%:e')
     local skeleton = ''
 
-    -- print('File: '..filename)
-    -- print('Extention: '..extension)
-
     local template = #opts > 0 and opts[1] or ''
 
     local skeletons_path = sys.base..'/skeletons/'
 
     local known_names = {
-        py = {'ycm_extra_conf'},
+        py   = {'ycm_extra_conf'},
         json = {'projections'},
-        c = {'main'},
-        cpp = {'main'},
+        c    = {'main'},
+        cpp  = {'main'},
     }
 
-    if #template == 0 then
+    if #template ~= 0 then
         skeleton = nvim.fn.fnameescape(skeletons_path .. template)
     else
         if known_names[extension] ~= nil then
             local names = known_names[extension]
-            for _,name in pairs(names) do
+            for _, name in pairs(names) do
                 if string.find(filename, name) ~= nil and filereadable(skeletons_path..name..'.'..extension) == 1 then
                     skeleton = nvim.fn.fnameescape(skeletons_path..name..'.'..extension)
                     break
@@ -517,15 +514,13 @@ function tools.file_name(...)
 
     end
 
-    -- print('Skeleton: '..skeleton)
-
     if filereadable(skeleton) == 1 then
-        nvim.ex.keepalt('read '..skeleton)
-        nvim.command('%s/\\<NAME\\>/'..filename..'/e')
+        nvim.command('keepalt read '..skeleton)
+        nvim.command('silent! %s/\\<NAME\\>/'..filename..'/e')
         nvim.fn.histdel('search', -1)
-        nvim.command('%s/\\<NAME\\ze_H\\(PP\\)\\?\\>/\\U'..filename..'/g')
+        nvim.command('silent! %s/\\<NAME\\ze_H\\(PP\\)\\?\\>/\\U'..filename..'/g')
         nvim.fn.histdel('search', -1)
-        nvim.ex['bwipeout!'](skeleton)
+        nvim.command('bwipeout! skeleton')
         nvim.command('1delete_')
     end
 end
