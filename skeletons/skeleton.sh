@@ -321,5 +321,10 @@ while [[ $# -gt 0 ]]; do
 done
 
 initlog
+verbose_msg "Log Disable   : ${_NOLOG}"
+verbose_msg "Current Shell : ${_CURRENT_SHELL}"
+verbose_msg "Platform      : ${SHELL_PLATFORM}"
+verbose_msg "OS Name       : ${_OS}"
+verbose_msg "Architecture  : ${_ARCH}"
 
 exit 0
