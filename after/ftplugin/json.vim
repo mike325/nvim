@@ -6,6 +6,8 @@ if has#python()
     let &formatprg = s:python_prog . ' -m json.tool'
 endif
 
+setlocal expandtab
+setlocal shiftround
 setlocal shiftwidth=2
 setlocal tabstop=2
-setlocal shiftwidth=2
+setlocal softtabstop=-1
