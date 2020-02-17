@@ -110,7 +110,7 @@ nnoremap <leader>p <C-^>
 nnoremap <leader>w :update<CR>
 
 " Close buffer/Editor
-nnoremap <leader>q :q!<CR>
+nnoremap <silent> <leader>q :q!<CR>
 
 " easy dump bin files into hex
 nnoremap <leader>x :%!xxd<CR>
