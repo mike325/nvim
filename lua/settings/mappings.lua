@@ -85,7 +85,7 @@ nvim.nvim_set_mapping('x', '¡', '^', {noremap = true})
 
 nvim.nvim_set_mapping('n', '<leader>p', '<C-^>', {noremap = true})
 nvim.nvim_set_mapping('n', '<leader>w', ':update<CR>', {noremap = true})
-nvim.nvim_set_mapping('n', '<leader>q', ':q!<CR>', {noremap = true})
+nvim.nvim_set_mapping('n', '<leader>q', ':q!<CR>', {noremap = true, silent = true})
 nvim.nvim_set_mapping('n', '<leader>x', ':%!xxd<CR>', {noremap = true})
 
 nvim.nvim_set_mapping('n', '<leader>h', '<C-w>h', {noremap = true})
