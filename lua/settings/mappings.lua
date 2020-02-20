@@ -92,6 +92,8 @@ nvim.nvim_set_mapping('n', '<leader>h', '<C-w>h', {noremap = true})
 nvim.nvim_set_mapping('n', '<leader>j', '<C-w>j', {noremap = true})
 nvim.nvim_set_mapping('n', '<leader>k', '<C-w>k', {noremap = true})
 nvim.nvim_set_mapping('n', '<leader>l', '<C-w>l', {noremap = true})
+nvim.nvim_set_mapping('n', '<leader>b', '<C-w>b', {noremap = true})
+nvim.nvim_set_mapping('n', '<leader>t', '<C-w>t', {noremap = true})
 
 nvim.nvim_set_mapping('n', '<leader>e', '<C-w>=', {noremap = true})
 

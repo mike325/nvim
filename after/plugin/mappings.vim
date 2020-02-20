@@ -122,6 +122,8 @@ nnoremap <leader>h <C-w>h
 nnoremap <leader>j <C-w>j
 nnoremap <leader>k <C-w>k
 nnoremap <leader>l <C-w>l
+nnoremap <leader>b <C-w>b
+nnoremap <leader>t <C-w>t
 
 " Equally resize buffer splits
 nnoremap <leader>e <C-w>=
