@@ -30,6 +30,8 @@ for plugin, data in pairs(plugs) do
     end
 end
 
+require('plugins/config')
+
 if nvim.has_version('0.5') == 1 then
     local lsp = require('plugins/lsp')
 end
