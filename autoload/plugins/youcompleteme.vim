@@ -10,8 +10,8 @@ function! plugins#youcompleteme#OnDeleteChar() abort
 endfunction
 
 function! plugins#youcompleteme#FixYCMBs() abort
-    imap <BS> <C-R>=plugins#youcompleteme#OnDeleteChar()<CR><Plug>delimitMateBS
-    imap <C-h> <C-R>=plugins#youcompleteme#OnDeleteChar()<CR><Plug>delimitMateBS
+    imap <silent><BS> <C-R>=plugins#youcompleteme#OnDeleteChar()<CR><Plug>delimitMateBS
+    imap <silent><C-h> <C-R>=plugins#youcompleteme#OnDeleteChar()<CR><Plug>delimitMateBS
 endfunction
 
 let g:ycm_languages = []
