@@ -36,6 +36,7 @@ local langservers = {
 }
 
 local abolish = {}
+
 abolish['en'] = {
     ['flase']                                        = 'false',
     ['syntaxis']                                     = 'syntax',
@@ -649,6 +650,14 @@ function tools.project_config(event)
         nvim.g.gonvim_fuzzy_ag_cmd = tools.select_grep(is_git)
     end
 
+end
+
+function tools.regex(str, regex)
+    return nvim.eval(str .. " =~# '" .. regex .. "'")
+end
+
+function tools.iregex(str, regex)
+    return nvim.eval(str .. " =~? '" .. regex .. "'")
 end
 
 return tools

@@ -5,11 +5,43 @@ local sys  = require('sys')
 local nvim = require('nvim')
 local plugs = require('nvim').plugs
 
+local regex = require('tools').regex
+
 -- local parent      = require('sys').data
-local has         = require('nvim').fn.has
 -- local mkdir       = require('nvim').fn.mkdir
 -- local isdirectory = require('nvim').fn.isdirectory
+local has         = require('nvim').fn.has
 local executable  = require('nvim').fn.executable
+local has_version = require('nvim').has_version
+
+local function terminal(cmd)
+    local split = nvim.o.splitbelow == true and 'botright' or 'topleft'
+    local is_empty = (cmd == nil or cmd == '') and true or false
+    local shell
+
+    if not is_empty then
+        shell = cmd
+    elseif sys.name == 'windows' then
+        if regex("&shell", [[^cmd\(\.exe\)\?$]]) == 1 then
+            shell = 'powershell -noexit -executionpolicy bypass '
+        else
+            shell = nvim.o.shell
+        end
+    else
+        local unix_shell = nvim.fn.fnamemodify(nvim.env.SHELL or '', ':t')
+        if regex( "'"..unix_shell.."'", [[\(t\)\?csh]]) == 1 then
+            shell = executable('zsh') == 1 and 'zsh' or (executable('bash') == 1 and 'bash' or unix_shell)
+        end
+    end
+
+    require("floating").window()
+    nvim.ex.edit('term://'..shell)
+
+    if is_empty then
+        nvim.command('startinsert')
+    end
+
+end
 
 nvim.nvim_set_mapping('n', ',', ':', {noremap = true})
 nvim.nvim_set_mapping('x', ',', ':', {noremap = true})
@@ -40,7 +72,7 @@ end
 nvim.nvim_set_mapping('i', '<C-U>', '<C-G>u<C-U>', {noremap = true})
 
 
-if nvim.has_version('0.5') ~= 1 then
+if has_version('0.5') ~= 1 then
     nvim.nvim_set_mapping('n', '<C-w>o'    , ':diffoff!<BAR>only<CR>', {noremap = true})
     nvim.nvim_set_mapping('n', '<C-w><C-o>', ':diffoff!<BAR>only<CR>', {noremap = true})
 end

@@ -5,43 +5,37 @@ let s:arrows = -1
 
 if has('nvim') || has('terminal')
 
-    function! mappings#UnixShell() abort
-        let l:shell = fnamemodify(expand($SHELL), ':t')
-        if l:shell =~# '\(t\)\?csh'
-            let l:shell = (executable('zsh')) ? 'zsh' : (executable('bash')) ? 'bash' : l:shell
-        endif
-        return l:shell
-    endfunction
-
     function! mappings#terminal(cmd) abort
         let l:split = (&splitbelow) ? 'botright' : 'topleft'
-        if os#name('windows')
+
+        if !empty(a:cmd)
+            let l:shell = a:cmd
+        elseif os#name('windows')
             let l:shell = (&shell =~? '^cmd\(\.exe\)\?$') ? 'powershell -noexit -executionpolicy bypass ' : &shell
-            if has('nvim-0.4')
-                lua require("floating").window()
-                execute 'edit term://' . l:shell . ' ' . a:cmd
-                setlocal nonumber norelativenumber
-            elseif has('nvim')
-                execute l:split . ' 20split term://' . l:shell . ' ' . a:cmd
-            else
-                call term_start(l:shell . a:cmd, {'term_rows': 20})
-                wincmd J
-            endif
         else
-            let l:shell = mappings#UnixShell()
-            if has('nvim-0.4')
-                lua require("floating").window()
-                execute 'edit term://' . l:shell . ' ' . a:cmd
-                setlocal nonumber norelativenumber
-            elseif has('nvim')
-                execute l:split . ' 20split term://' . l:shell . ' ' . a:cmd
-            else
-                call term_start(l:shell . a:cmd, {'term_rows': 20})
-                wincmd J
+            let l:shell = fnamemodify(expand($SHELL), ':t')
+            if l:shell =~# '\(t\)\?csh'
+                let l:shell = (executable('zsh')) ? 'zsh' : (executable('bash')) ? 'bash' : l:shell
             endif
         endif
-        startinsert
+
+        if has('nvim-0.4')
+            lua require("floating").window()
+            execute 'edit term://' . l:shell
+            setlocal nonumber norelativenumber
+        elseif has('nvim')
+            execute l:split . ' 20split term://' . l:shell
+        else
+            call term_start(l:shell . a:cmd, {'term_rows': 20})
+            wincmd J
+        endif
+
+        if empty(a:cmd)
+            startinsert
+        endif
+
     endfunction
+
 endif
 
 if exists('+mouse')
