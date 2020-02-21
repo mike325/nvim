@@ -7,7 +7,7 @@ if exists('g:settings_loaded')
     finish
 endif
 
-if has('nvim')
+if has('nvim-0.4')
     lua require('settings')
     finish
 endif
@@ -17,15 +17,15 @@ if !os#name('macos')
     " Default should be internal,filler,closeoff
     set diffopt^=vertical
 
-    if has('patch-8.1.0360')
+    if has('patch-8.1.0360') || has('nvim')
         set diffopt^=indent-heuristic,algorithm:minimal
     endif
 
-    if has('patch-8.1.1361')
+    if has('patch-8.1.1361') || has('nvim')
         set diffopt^=hiddenoff
     endif
 
-    if has('patch-8.1.2289')
+    if has('patch-8.1.2289') || has('nvim')
         set diffopt^=iwhiteall,iwhiteeol
     else
         set diffopt^=iwhite
