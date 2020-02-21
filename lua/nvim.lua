@@ -373,10 +373,21 @@ nvim = setmetatable({
     env = setmetatable({}, {
         __index = function(_, k)
             local ok, value = pcall(api.nvim_call_function, 'getenv', {k})
-            return ok and value or nil
+
+            if not ok then
+                value = api.nvim_call_function('expand', {'$'..k})
+                value = value == k and nil or value
+            end
+
+            return value or nil
         end;
         __newindex = function(_, k, v)
-            return api.nvim_call_function('setenv', {k, v})
+            local ok, value = pcall(api.nvim_call_function, 'setenv', {k, v})
+
+            if not ok then
+                v = type(v) == 'string' and '"'..v..'"' or v
+                value = api.nvim_eval('let $'..k..' = '..v)
+            end
         end
     });
 }, {

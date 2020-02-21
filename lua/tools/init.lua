@@ -112,6 +112,14 @@ abolish['es'] = {
     ['{fun,administra,aplica,rala,aproxima,programa}cion']                  = '{}ción',
 }
 
+local function split(str, delimiter)
+    local results = {}
+    for match in str:gmatch("([^"..delimiter.."]+)") do
+        results[#results + 1] = match
+    end
+    return results
+end
+
 -- global helpers
 tools = {}
 
@@ -189,7 +197,7 @@ function tools.has_git_version(...)
 end
 
 function tools.ignores(tool)
-    local excludes = vim.split(nvim.o.backupskip, ',')
+    local excludes = split(nvim.o.backupskip, ',')
 
     local ignores = {
         fd = ' -E ' .. table.concat(excludes, ' -E ') .. ' ',

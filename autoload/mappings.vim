@@ -3,7 +3,7 @@
 
 let s:arrows = -1
 
-if has('terminal') && !has('nvim-0.4')
+if has('terminal') || (!has('nvim-0.4') && has('nvim'))
 
     function! mappings#terminal(cmd) abort
         let l:split = (&splitbelow) ? 'botright' : 'topleft'
