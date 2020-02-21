@@ -3,7 +3,7 @@
 
 let s:arrows = -1
 
-if has('nvim') || has('terminal')
+if has('terminal') && !has('nvim-0.4')
 
     function! mappings#terminal(cmd) abort
         let l:split = (&splitbelow) ? 'botright' : 'topleft'
@@ -19,16 +19,14 @@ if has('nvim') || has('terminal')
             endif
         endif
 
-        if has('nvim-0.4')
-            lua require("floating").window()
-            execute 'edit term://' . l:shell
-            setlocal nonumber norelativenumber
-        elseif has('nvim')
+        if has('nvim')
             execute l:split . ' 20split term://' . l:shell
         else
             call term_start(l:shell . a:cmd, {'term_rows': 20})
-            wincmd J
         endif
+
+        wincmd J
+        setlocal nonumber norelativenumber
 
         if empty(a:cmd)
             startinsert

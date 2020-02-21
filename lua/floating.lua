@@ -41,6 +41,7 @@ function floating:window()
 
         -- create a new floating window, centered in the editor
         local win = api.nvim_open_win(buf, true, opts)
+        return win
     end
 end
 

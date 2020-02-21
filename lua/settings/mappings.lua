@@ -14,7 +14,9 @@ local has         = require('nvim').fn.has
 local executable  = require('nvim').fn.executable
 local has_version = require('nvim').has_version
 
-local function terminal(cmd)
+local mappings = {}
+
+function mappings.terminal(cmd)
     local split = nvim.o.splitbelow == true and 'botright' or 'topleft'
     local is_empty = (cmd == nil or cmd == '') and true or false
     local shell
@@ -34,13 +36,16 @@ local function terminal(cmd)
         end
     end
 
-    require("floating").window()
+    local win = require("floating").window()
+
     nvim.ex.edit('term://'..shell)
+
+    nvim.win_set_option(win, 'number', false)
+    nvim.win_set_option(win, 'relativenumber', false)
 
     if is_empty then
         nvim.command('startinsert')
     end
-
 end
 
 nvim.nvim_set_mapping('n', ',', ':', {noremap = true})
@@ -55,18 +60,18 @@ nvim.nvim_set_mapping('n', 'J', 'm`J``', {noremap = true})
 
 nvim.nvim_set_mapping('i', 'jj', '<ESC>')
 
-nvim.nvim_set_mapping('n', '<BS>', ':call mappings#bs()<CR>', {noremap = true})
+nvim.nvim_set_mapping('n', '<BS>', ':call mappings#bs()<CR>', {noremap = true, silent = true})
 nvim.nvim_set_mapping('x', '<BS>', '<ESC>', {noremap = true})
 
 -- TODO: Check for GUIs
 if sys.name == 'windows' then
-    nvim.nvim_set_mapping('n', '<C-h>', ':call mappings#bs()<CR>', {noremap = true})
+    nvim.nvim_set_mapping('n', '<C-h>', ':call mappings#bs()<CR>', {noremap = true, silent = true})
     nvim.nvim_set_mapping('x', '<C-h>', ':<ESC>', {noremap = true})
     nvim.nvim_set_mapping('n', '<C-z>', '<nop>', {noremap = true})
 end
 
 if nvim.nvim_get_mapping('n', '<C-L>') == nil then
-    nvim.nvim_set_mapping('n', '<C-L>', ':nohlsearch|diffupdate<CR>', {noremap = true})
+    nvim.nvim_set_mapping('n', '<C-L>', ':nohlsearch|diffupdate<CR>', {noremap = true, silent = true})
 end
 
 nvim.nvim_set_mapping('i', '<C-U>', '<C-G>u<C-U>', {noremap = true})
@@ -181,7 +186,8 @@ nvim.nvim_set_mapping('t', '<ESC>', '<C-\\><C-n>', {noremap = true})
 nvim.nvim_set_mapping('n', '<A-s>', '<C-w>s', {noremap = true})
 nvim.nvim_set_mapping('n', '<A-v>', '<C-w>v', {noremap = true})
 
-nvim.nvim_set_command('Terminal'              , 'call mappings#terminal(<q-args>)', {nargs='?', force=true})
+nvim.nvim_set_command('Terminal' , [[ call luaeval('require"settings/mappings".terminal("'.<q-args>.'")') ]], {nargs='?', force=true})
+
 nvim.nvim_set_command('PowershellToggle'      , 'call windows#toggle_powershell()', {force=true})
 nvim.nvim_set_command('RelativeNumbersToggle' , 'set relativenumber! relativenumber?', {force=true})
 nvim.nvim_set_command('MouseToggle'           , 'call mappings#ToggleMouse()', {force=true})
@@ -233,7 +239,7 @@ end
 if plugs["ultisnips"] == nil and plugs["vim-snipmate"] == nil then
     nvim.nvim_set_mapping('i', '<TAB>', [[pumvisible() ? "\<C-n>" : "\<TAB>"]], {noremap = true, expr = true})
     nvim.nvim_set_mapping('i', '<S-TAB>', [[pumvisible() ? "\<C-p>" : ""]], {noremap = true, expr = true})
-    nvim.nvim_set_mapping('i', '<CR>', '<C-R>=mappings#NextSnippetOrReturn()<CR>', {noremap = true})
+    nvim.nvim_set_mapping('i', '<CR>', '<C-R>=mappings#NextSnippetOrReturn()<CR>', {noremap = true, silent = true})
 end
 
 if plugs["vim-bbye"] == nil then
@@ -351,3 +357,5 @@ if plugs["vim-fugitive"] == nil and executable('git') == 1 then
     -- nvim.nvim_set_mapping('n', '<leader>gc', ':Gcommit<CR>')
     -- nvim.nvim_set_mapping('n', '<leader>gr', ':Gread<CR>')
 end
+
+return mappings
