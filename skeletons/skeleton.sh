@@ -26,6 +26,7 @@ _NOCOLOR=0
 _NOLOG=0
 _WARN_COUNT=0
 _ERR_COUNT=0
+_FROM_STDIN=()
 
 _NAME="$0"
 _NAME="${_NAME##*/}"
@@ -309,6 +310,12 @@ while [[ $# -gt 0 ]]; do
         -h|--help)
             help_user
             exit 0
+            ;;
+        -)
+            while read -r from_stdin; do
+                _FROM_STDIN+=("$from_stdin")
+            done
+            break
             ;;
         *)
             initlog
