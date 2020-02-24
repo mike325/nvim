@@ -67,7 +67,6 @@ function! plugins#init() abort
         endif
     endif
 
-    " Plug 'airblade/vim-gitgutter'
     if executable('git') || executable('hg') || executable('svn')
         " These are the only VCS I care, if none is installed, then skip this plugin
         if has#async()
@@ -78,7 +77,7 @@ function! plugins#init() abort
     endif
 
     if executable('git')
-        Plug 'rhysd/git-messenger.vim', {'on': ['GitMessenger']}
+        Plug 'rhysd/git-messenger.vim'
         if executable('hub')
             Plug 'tpope/vim-rhubarb'
         endif

@@ -4,7 +4,6 @@
 let s:arrows = -1
 
 if has('terminal') || (!has('nvim-0.4') && has('nvim'))
-
     function! mappings#terminal(cmd) abort
         let l:split = (&splitbelow) ? 'botright' : 'topleft'
 
@@ -33,7 +32,6 @@ if has('terminal') || (!has('nvim-0.4') && has('nvim'))
         endif
 
     endfunction
-
 endif
 
 if exists('+mouse')
@@ -62,8 +60,8 @@ endif
 if !exists('g:plugs["iron.nvim"]') && has#python()
     function! mappings#Python(version, args) abort
 
-        let l:python3 = exists('g:python3_host_prog') ? g:python3_host_prog : exists('*exepath') ? exepath('python3') : python3
-        let l:python2 = exists('g:python_host_prog') ? g:python_host_prog : exists('*exepath') ? exepath('python2') : python2
+        let l:python3 = exists('g:python3_host_prog') ? g:python3_host_prog : exists('*exepath') ? exepath('python3') : 'python3'
+        let l:python2 = exists('g:python_host_prog') ? g:python_host_prog : exists('*exepath') ? exepath('python2') : 'python2'
 
         let l:version = ( a:version  == 3 ) ? l:python3 : l:python2
         if empty(l:version)
@@ -158,9 +156,8 @@ endfunction
 function! mappings#IndentWithI() abort
     if len(getline('.')) == 0 && line('.') != line('$') && &buftype !~? 'terminal'
         return '"_ddO'
-    else
-        return 'i'
     endif
+    return 'i'
 endfunction
 
 " Remove buffers

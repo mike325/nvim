@@ -278,7 +278,8 @@ if !exists('g:plugs["denite.nvim"]') && !exists('g:plugs["fzf.vim"]')
 endif
 
 if !exists('g:plugs["iron.nvim"]') && has#python()
-    command! -complete=file -nargs=* Python call mappings#Python(2, <q-args>)
+    command! -complete=file -nargs=* Python2 call mappings#Python(2, <q-args>)
+    command! -complete=file -nargs=* Python call mappings#Python(3, <q-args>)
     command! -complete=file -nargs=* Python3 call mappings#Python(3, <q-args>)
 endif
 
