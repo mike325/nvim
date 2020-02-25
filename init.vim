@@ -99,6 +99,10 @@ else
     Plug 'tomtom/tcomment_vim'
     Plug 'tpope/vim-apathy'
 
+    if has('nvim')
+        Plug 'Vigemus/iron.nvim'
+    endif
+
     if !exists('g:minimal') && empty($VIM_MIN)
         call plugins#init()
     elseif has('nvim-0.5')

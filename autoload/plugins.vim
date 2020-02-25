@@ -202,10 +202,6 @@ function! plugins#init() abort
         Plug 'tpope/vim-eunuch'
     endif
 
-    if has('nvim')
-        Plug 'Vigemus/iron.nvim'
-    endif
-
 endfunction
 
 function! s:Convert2settings(name) abort
