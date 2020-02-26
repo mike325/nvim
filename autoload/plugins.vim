@@ -130,6 +130,7 @@ function! plugins#init() abort
         " Plug 'rdnetto/ycm-generator', { 'branch': 'stable' }
     elseif has('nvim-0.5') && tools#CheckLanguageServer()
         Plug 'neovim/nvim-lsp'
+        Plug 'lifepillar/vim-mucomplete'
     elseif has#async() && tools#CheckLanguageServer()
         Plug 'natebosch/vim-lsc'
     elseif has#async() && (has('nvim-0.2.0') || (!has('nvim') && has('lambda')))

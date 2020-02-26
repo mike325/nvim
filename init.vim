@@ -116,6 +116,7 @@ else
         call plugins#init()
     elseif has('nvim-0.5')
         Plug 'neovim/nvim-lsp'
+        Plug 'lifepillar/vim-mucomplete'
     endif
 
     call plug#end()
