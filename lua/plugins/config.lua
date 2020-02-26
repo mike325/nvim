@@ -1,6 +1,8 @@
-local nvim = require('nvim')
-local sys = require('sys')
-local floating = require('floating').window
+local nvim         = require('nvim')
+local sys          = require('sys')
+local floating     = require('floating').window
+local executable   = require('nvim').fn.executable
+local filereadable = require('nvim').fn.filereadable
 
 local configs = {
     iron = function(m)
@@ -13,7 +15,45 @@ local configs = {
             },
         }
 
+        local preferred = {}
+
+        if executable('ipython') == 1 then
+            preferred['python'] = 'ipython'
+        end
+
+        if sys.name == 'windows' then
+            local wsl = {
+                'debian',
+                'ubuntu',
+                'fedora',
+            }
+
+            local definitions = {}
+            local default = ''
+
+            for _,distro in ipairs(wsl) do
+                if filereadable(sys.home..'/AppData/Local/Microsoft/WindowsApps/'..distro..'.exe') == 1 then
+                    definitions[distro] = {
+                        command = {distro}
+                    }
+                    if default == '' then
+                        default = distro
+                    end
+                end
+            end
+
+            if #definitions > 0 then
+                m.core.add_repl_definitions{
+                    sh = definitions,
+                }
+                preferred['sh'] = default
+            end
+        else
+            preferred['sh'] = 'bash'
+        end
+
         m.core.set_config({
+            preferred = preferred,
             repl_open_cmd = 'botright split',
         })
 
