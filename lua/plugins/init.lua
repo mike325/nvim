@@ -3,6 +3,9 @@ local api = vim.api
 
 local nvim = require('nvim')
 
+nvim.command('packadd! cfilter')
+nvim.command('packadd! matchit')
+
 local ok, plugs = pcall(api.nvim_get_var, 'plugs')
 
 if not ok then

@@ -53,9 +53,12 @@ else
     call setup#python()
 endif
 
-if has('nvim') || v:version >= 800
-    packadd! matchit
+if v:version >= 800
     packadd! cfilter
+endif
+
+if v:version >= 704
+    packadd! matchit
 endif
 
 if exists('g:bare') || !empty($VIM_BARE)
