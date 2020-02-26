@@ -53,13 +53,12 @@ else
     call setup#python()
 endif
 
-if exists('g:bare') || !empty($VIM_BARE)
+if has('nvim') || v:version >= 800
+    packadd! matchit
+    packadd! cfilter
+endif
 
-    if !has('nvim') && v:version >= 800
-        packadd! matchit
-    elseif !exists('g:loaded_matchit') && findfile('plugin/matchit.vim', &runtimepath) ==# ''
-        runtime! macros/matchit.vim
-    endif
+if exists('g:bare') || !empty($VIM_BARE)
 
     filetype plugin indent on
     if exists('+syntax')
@@ -75,17 +74,13 @@ else
         endif
         call plug#begin(vars#basedir().'/plugged')
     catch /E\(117\|492\)/
-        " Fallback if we fail to init Plug
-        if !has('nvim') && v:version >= 800
-            packadd! matchit
-        elseif !exists('g:loaded_matchit') && findfile('plugin/matchit.vim', &runtimepath) ==# ''
-            runtime! macros/matchit.vim
-        endif
+
         filetype plugin indent on
         if exists('+syntax')
             syntax on      " Switch on syntax highlighting
         endif
         finish
+
     endtry
 
     Plug 'tpope/vim-repeat'
