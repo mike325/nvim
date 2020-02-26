@@ -66,6 +66,8 @@ nvim.option.fileformats = 'unix,dos'
 nvim.option.wildmenu = true
 nvim.option.wildmode = 'full'
 
+nvim.option.pumblend = 20
+
 nvim.option.showbreak      = '↪\\'
 nvim.option.listchars      = 'tab:▸ ,trail:•,extends:❯,precedes:❮'
 nvim.option.sessionoptions = 'buffers,curdir,folds,globals,localoptions,options,resize,tabpages,winpos,winsize'

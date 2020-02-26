@@ -4,13 +4,17 @@ local floating     = require('floating').window
 local executable   = require('nvim').fn.executable
 local filereadable = require('nvim').fn.filereadable
 
+local python = require('python')
+
 local configs = {
     iron = function(m)
+
+        local python_executable = python['3'].version ~= nil and python['3'].path or python['2'].path
 
         m.core.add_repl_definitions{
             python = {
                 django = {
-                    command = {'python3', './manage.py', 'shell'},
+                    command = {python_executable, './manage.py', 'shell'},
                 },
             },
         }

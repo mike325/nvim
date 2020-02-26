@@ -45,6 +45,17 @@ if (!executable('git') && !isdirectory(fnameescape(vars#basedir().'/plugged'))) 
     let g:bare = 1
 endif
 
+" ================ PLUGINS ==================== {{{
+" " Disable built-in plugins
+let g:loaded_2html_plugin      = 1
+let g:loaded_gzip              = 1
+let g:loaded_matchparen        = 1
+let g:loaded_rrhelper          = 1
+let g:loaded_tarPlugin         = 1
+let g:loaded_zipPlugin         = 1
+let g:loaded_tutor_mode_plugin = 1
+" }}}
+
 if has('nvim')
     lua require('python').setup()
     lua require('tools')
@@ -109,7 +120,7 @@ else
 
     call plug#end()
 
-    let g:plug_window = 'tabnew '
+    let g:plug_window = has('nvim-0.4') ? 'lua require("floating").window()' : 'tabnew'
 
     if has('nvim')
         lua require('plugins')

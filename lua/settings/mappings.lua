@@ -20,7 +20,7 @@ local noremap = {noremap = true}
 
 function mappings.terminal(cmd)
     local split = nvim.o.splitbelow == true and 'botright' or 'topleft'
-    local is_empty = (cmd == nil or cmd == '') and true or false
+    local is_empty = (cmd == nil or #cmd == 0) and true or false
     local shell
 
     if not is_empty then

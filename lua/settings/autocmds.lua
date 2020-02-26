@@ -63,7 +63,7 @@ nvim_set_autocmd(
 nvim_set_autocmd(
     'TermOpen',
     '*',
-    'nnoremap <silent> <nowait> <buffer> q :q!<CR>',
+    'nnoremap <silent><nowait><buffer> q :q!<CR>',
     {group = 'QuickQuit'}
 )
 
