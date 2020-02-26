@@ -22,7 +22,7 @@ local configs = {
 
         nvim.nvim_set_mapping('n', 'gs', '<Plug>(iron-send-motion)')
         nvim.nvim_set_mapping('v', 'gs', '<Plug>(iron-visual-send)')
-        nvim.nvim_set_mapping('n', 'gr', '<Plug>(iron-repeat-cmd)')
+        nvim.nvim_set_mapping('n', 'gsr', '<Plug>(iron-repeat-cmd)')
         nvim.nvim_set_mapping('n', '<leader><leader>l', '<Plug>(iron-send-line)')
 
         nvim.nvim_set_mapping('n', 'gs<CR>', '<Plug>(iron-cr)')
