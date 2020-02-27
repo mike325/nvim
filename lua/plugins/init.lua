@@ -28,13 +28,13 @@ for plugin, data in pairs(plugs) do
     local ok, error_code = pcall(api.nvim_call_function, 'plugins#'..func_name..'#init', {data})
     if not ok then
         if not string.match(error_code, 'Vim:E117') then
-            print('Something failed "'..error_code..'" Happened trying to call '..'plugins#'..func_name..'#init')
+            nvim.echoerr('Something failed "'..error_code..'" Happened trying to call '..'plugins#'..func_name..'#init')
         end
     end
 end
 
 require('plugins/config')
 
-if nvim.has_version('0.5') == 1 then
+if nvim.has('nvim-0.5') then
     local lsp = require('plugins/lsp')
 end

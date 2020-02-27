@@ -116,7 +116,7 @@ else
 end
 
 -- Default should be internal,filler,closeoff
-if nvim.has_version('0.3.3') == 1 then
+if nvim.has('nvim-0.3.3') then
     nvim.option.diffopt = nvim.option.diffopt .. ',vertical,iwhiteall,iwhiteeol,indent-heuristic,algorithm:minimal,hiddenoff'
 else
     nvim.option.diffopt = 'vertical,iwhite'

@@ -253,8 +253,13 @@ nvim = setmetatable({
     nvim_set_autocmd = nvim_set_autocmd;
     nvim_set_abbr = nvim_set_abbr;
     nvim_set_command = nvim_set_command;
-    has_version = function(version)
-        return api.nvim_call_function('has', {'nvim-'..version})
+    echoerr = function(msg)
+        api.nvim_command('echohl ErrorMsg')
+        api.nvim_command('echomsg "'..msg..'"')
+        api.nvim_command('echohl')
+    end;
+    has = function(feature)
+        return api.nvim_call_function('has', {feature}) == 1
     end;
     plugs = setmetatable({}, {
         __index = function(self, k)

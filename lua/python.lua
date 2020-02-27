@@ -1,7 +1,7 @@
 local nvim = require('nvim')
 local api = vim.api
 
-local has        = require('nvim').fn.has
+local has        = require('nvim').has
 local exists     = require('nvim').fn.exists
 local system     = require('nvim').fn.system
 local exepath    = require('nvim').fn.exepath
@@ -91,7 +91,7 @@ function python.has_version(...)
     end
 
     if #opts == 0 then
-        return has('python') == 1 or has('python3') == 1
+        return has('python') or has('python3')
     end
 
     local major = opts[1]

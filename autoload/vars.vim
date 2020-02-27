@@ -79,7 +79,9 @@ function! s:setupdirs() abort
         silent! call mkdir(fnameescape($XDG_DATA_HOME), 'p')
         silent! call mkdir(fnameescape($XDG_CONFIG_HOME), 'p')
     elseif !isdirectory($XDG_CONFIG_HOME) || !isdirectory($XDG_DATA_HOME)
-        echoerr 'Failed to create data dirs, mkdir is not available'
+        echohl ErrorMsg
+        echo 'Failed to create data dirs, mkdir is not available'
+        echohl
     endif
 
     let s:datadir = expand($XDG_DATA_HOME) . (os#name('windows') ? '/nvim-data' : '/nvim')

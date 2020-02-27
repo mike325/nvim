@@ -10,9 +10,8 @@ local regex = require('tools').regex
 -- local parent      = require('sys').data
 -- local mkdir       = require('nvim').fn.mkdir
 -- local isdirectory = require('nvim').fn.isdirectory
-local has         = require('nvim').fn.has
+local has         = require('nvim').has
 local executable  = require('nvim').fn.executable
-local has_version = require('nvim').has_version
 
 local mappings = {}
 
@@ -57,7 +56,7 @@ function mappings.python(version, args)
     local pyversion = version == 3 and py3 or py2
 
     if pyversion == nil or pyversion == '' then
-        nvim.ex.echoerr('Python'..pyversion..' is not available in the system')
+        nvim.echoerr('Python'..pyversion..' is not available in the system')
         return -1
     end
 
@@ -106,7 +105,7 @@ end
 nvim.nvim_set_mapping('i', '<C-U>', '<C-G>u<C-U>', noremap)
 
 
-if has_version('0.5') ~= 1 then
+if not has('nvim-0.5') then
     nvim.nvim_set_mapping('n', '<C-w>o'    , ':diffoff!<BAR>only<CR>', noremap)
     nvim.nvim_set_mapping('n', '<C-w><C-o>', ':diffoff!<BAR>only<CR>', noremap)
 end
@@ -256,7 +255,7 @@ if executable('svn') == 1 then
     --             \ unlet s:bang
 end
 
-if plugs["iron.nvim"] == nil and (has('python') == 1 or has('python3') == 1)then
+if plugs["iron.nvim"] == nil and (has('python') or has('python3'))then
     nvim.nvim_set_command('Python' , [[ call luaeval('require"settings/mappings".python(2, "'.<q-args>.'")') ]], {complete='file', nargs='*', force = true})
     nvim.nvim_set_command('Python' , [[ call luaeval('require"settings/mappings".python(3, "'.<q-args>.'")') ]], {complete='file', nargs='*', force = true})
     nvim.nvim_set_command('Python3', [[ call luaeval('require"settings/mappings".python(3, "'.<q-args>.'")') ]], {complete='file', nargs='*', force = true})
@@ -301,87 +300,11 @@ if plugs["vim-vinegar"] == nil and plugs["nerdtree"] == nil then
 end
 
 if plugs["vim-eunuch"] == nil then
-
-    -- command! -bang -nargs=1 -complete=file Move
-    --             \ let s:name = expand(<q-args>) |
-    --             \ let s:current = expand('%:p') |
-    --             \ if (rename(s:current, s:name)) |
-    --             \   execute 'edit ' . s:name |
-    --             \   execute 'bwipeout! '.s:current |
-    --             \ endif |
-    --             \ unlet s:name |
-    --             \ unlet s:current
-
-    -- command! -bang -nargs=1 -complete=file Rename
-    --             \ let s:name = expand('%:p:h') . '/' . expand(<q-args>) |
-    --             \ let s:current = expand('%:p') |
-    --             \ if (rename(s:current, s:name)) |
-    --             \   execute 'edit ' . s:name |
-    --             \   execute 'bwipeout! '.s:current |
-    --             \ endif |
-    --             \ unlet s:name |
-    --             \ unlet s:current
-
-    -- command! -bang -nargs=1 -complete=dir Mkdir
-    --             \ let s:bang = empty(<bang>0) ? 0 : 1 |
-    --             \ let s:dir = expand(<q-args>) |
-    --             \ if exists('*mkdir') |
-    --             \   call mkdir(fnameescape(s:dir), (s:bang) ? "p" : "") |
-    --             \ else |
-    --             \   echoerr "Failed to create dir '" . s:dir . "' mkdir is not available" |
-    --             \ endif |
-    --             \ unlet s:bang |
-    --             \ unlet s:dir
-
-    -- command! -bang -nargs=? -complete=file Remove
-    --             \ let s:bang = empty(<bang>0) ? 0 : 1 |
-    --             \ let s:target = fnamemodify(empty(<q-args>) ? expand("%") : expand(<q-args>), ":p") |
-    --             \ if filereadable(s:target) || bufloaded(s:target) |
-    --             \   if filereadable(s:target) |
-    --             \       if delete(s:target) == -1 |
-    --             \           echoerr "Failed to delete the file '" . s:target . "'" |
-    --             \       endif |
-    --             \   endif |
-    --             \   if bufloaded(s:target) |
-    --             \       let s:cmd = (s:bang) ? "bwipeout! " : "bdelete! " |
-    --             \       try |
-    --             \           execute s:cmd . s:target |
-    --             \       catch /E94/ |
-    --             \           echoerr "Failed to delete/wipe '" . s:target . "'" |
-    --             \       finally |
-    --             \           unlet s:cmd |
-    --             \       endtry |
-    --             \   endif |
-    --             \ elseif isdirectory(s:target) |
-    --             \   let s:flag = (s:bang) ? "rf" : "d" |
-    --             \   if delete(s:target, s:flag) == -1 |
-    --             \       echoerr "Failed to remove '" . s:target . "'" |
-    --             \   endif |
-    --             \   unlet s:flag |
-    --             \ else |
-    --             \   echoerr "Failed to remove '" . s:target . "'" |
-    --             \ endif |
-    --             \ unlet s:bang |
-    --             \ unlet s:target
-
+    -- TODO
 end
 
 if plugs["vim-fugitive"] == nil and executable('git') == 1 then
-    -- command! -nargs=+ Git execute(((&splitbelow) ? 'botright' : 'topleft' ) . ' 20split term://git ' . <q-args>)
-    -- command! -nargs=* Gstatus execute(((&splitbelow) ? 'botright' : 'topleft' ) . ' 20split term://git status ' . <q-args>)
-    -- command! -nargs=* Gcommit execute(((&splitbelow) ? 'botright' : 'topleft' ) . ' 20split term://git commit ' . <q-args>)
-    -- command! -nargs=* Gpush  execute(((&splitbelow) ? 'botright' : 'topleft' ) . ' 20split term://git push ' .<q-args>)
-    -- command! -nargs=* Gpull  execute('!git pull ' .<q-args>)
-    -- command! -nargs=* Gwrite  execute('!git add ' . expand("%") . ' ' .<q-args>)
-    -- command! -bang Gread execute('!git reset HEAD ' . expand("%") . ' && git checkout -- ' . expand("%")) |
-    --             \ let s:bang = empty(<bang>0) ? '' : '!' |
-    --             \ execute('edit'.s:bang) |
-    --             \ unlet s:bang
-
-    -- nvim.nvim_set_mapping('n', '<leader>gw', ':Gwrite<CR>')
-    -- nvim.nvim_set_mapping('n', '<leader>gs', ':Gstatus<CR>')
-    -- nvim.nvim_set_mapping('n', '<leader>gc', ':Gcommit<CR>')
-    -- nvim.nvim_set_mapping('n', '<leader>gr', ':Gread<CR>')
+    -- TODO
 end
 
 return mappings
