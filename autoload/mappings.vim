@@ -3,6 +3,59 @@
 
 let s:arrows = -1
 
+function! mappings#enter() abort
+    if exists('g:plugs["ultisnips"]')
+        let l:snippet = UltiSnips#ExpandSnippet()
+    endif
+
+    if get(g:,'ulti_expand_res', 0) > 0
+        return l:snippet
+    elseif pumvisible()
+        if exists('g:plugs["YouCompleteMe"]')
+            call feedkeys("\<C-y>")
+            return ''
+        else
+            return "\<C-y>"
+        endif
+    elseif exists('g:plugs["delimitMate"]') && delimitMate#WithinEmptyPair()
+        return delimitMate#ExpandReturn()
+    elseif exists('g:plugs["ultisnips"]')
+        call UltiSnips#JumpForwards()
+        if get(g:, 'ulti_jump_forwards_res', 0) > 0
+            return ''
+        endif
+    endif
+
+    return "\<CR>"
+endfunction
+
+function! mappings#tab() abort
+    if pumvisible()
+        return "\<C-n>"
+    endif
+    if exists('g:plugs["ultisnips"]')
+        call UltiSnips#JumpForwards()
+        if get(g:, 'ulti_jump_forwards_res', 0) > 0
+            return ''
+        endif
+    endif
+    return "\<TAB>"
+endfunction
+
+function! mappings#shifttab() abort
+    if pumvisible()
+        return "\<C-p>"
+    endif
+    if exists('g:plugs["ultisnips"]')
+        call UltiSnips#JumpBackwards()
+        if get(g:, 'ulti_jump_backwards_res', 0) > 0
+            return ''
+        endif
+    endif
+    " TODO
+    return ''
+endfunction
+
 if has('terminal') || (!has('nvim-0.4') && has('nvim'))
     function! mappings#terminal(cmd) abort
         let l:split = (&splitbelow) ? 'botright' : 'topleft'
@@ -83,23 +136,6 @@ if !exists('g:plugs["iron.nvim"]') && has#python()
             wincmd J
         endif
 
-    endfunction
-endif
-
-
-if !exists('g:plugs["ultisnips"]') && !exists('g:plugs["vim-snipmate"]')
-    function! mappings#NextSnippetOrReturn() abort
-        if pumvisible()
-            if exists('g:plugs["YouCompleteMe"]')
-                call feedkeys("\<C-y>")
-                return ''
-            else
-                return "\<C-y>"
-            endif
-        elseif exists('g:plugs["delimitMate"]') && delimitMate#WithinEmptyPair()
-            return delimitMate#ExpandReturn()
-        endif
-        return "\<CR>"
     endfunction
 endif
 

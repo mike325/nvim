@@ -94,6 +94,11 @@ nvim.nvim_set_mapping('i', 'jj', '<ESC>')
 nvim.nvim_set_mapping('n', '<BS>', ':call mappings#bs()<CR>', {noremap = true, silent = true})
 nvim.nvim_set_mapping('x', '<BS>', '<ESC>', noremap)
 
+local snip_mapping = {noremap = true, silent = true}
+nvim.nvim_set_mapping('i', '<TAB>'  , [[<C-R>=mappings#tab()<CR>]]     , snip_mapping)
+nvim.nvim_set_mapping('i', '<S-TAB>', [[<C-R>=mappings#shifttab()<CR>]], snip_mapping)
+nvim.nvim_set_mapping('i', '<CR>'   , [[<C-R>=mappings#enter()<CR>]]   , snip_mapping)
+
 -- TODO: Check for GUIs
 if sys.name == 'windows' then
     nvim.nvim_set_mapping('n', '<C-h>', ':call mappings#bs()<CR>', {noremap = true, silent = true})
@@ -262,12 +267,6 @@ if plugs["iron.nvim"] == nil and (has('python') or has('python3'))then
     nvim.nvim_set_command('Python' , [[ call luaeval('require"settings/mappings".python(2, "'.<q-args>.'")') ]], {complete='file', nargs='*', force = true})
     nvim.nvim_set_command('Python' , [[ call luaeval('require"settings/mappings".python(3, "'.<q-args>.'")') ]], {complete='file', nargs='*', force = true})
     nvim.nvim_set_command('Python3', [[ call luaeval('require"settings/mappings".python(3, "'.<q-args>.'")') ]], {complete='file', nargs='*', force = true})
-end
-
-if plugs["ultisnips"] == nil and plugs["vim-snipmate"] == nil then
-    nvim.nvim_set_mapping('i', '<TAB>', [[pumvisible() ? "\<C-n>" : "\<TAB>"]], {noremap = true, expr = true})
-    nvim.nvim_set_mapping('i', '<S-TAB>', [[pumvisible() ? "\<C-p>" : ""]], {noremap = true, expr = true})
-    nvim.nvim_set_mapping('i', '<CR>', '<C-R>=mappings#NextSnippetOrReturn()<CR>', {noremap = true, silent = true})
 end
 
 if plugs["vim-bbye"] == nil then

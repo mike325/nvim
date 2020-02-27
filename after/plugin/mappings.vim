@@ -34,6 +34,10 @@ imap jj <Esc>
 nnoremap <silent> <BS> :call mappings#bs()<CR>
 xnoremap <BS> <ESC>
 
+inoremap <silent> <TAB>   <C-R>=mappings#tab()<CR>
+inoremap <silent> <S-TAB> <C-R>=mappings#shifttab()<CR>
+inoremap <silent> <CR>    <C-R>=mappings#enter()<CR>
+
 " We assume that if we are running neovim from windows without has#gui we are
 " running from cmd or powershell, windows terminal send <C-h> when backspace is press
 if has('nvim') && os#name('windows') && !has#gui()
@@ -281,12 +285,6 @@ if !exists('g:plugs["iron.nvim"]') && has#python()
     command! -complete=file -nargs=* Python2 call mappings#Python(2, <q-args>)
     command! -complete=file -nargs=* Python call mappings#Python(3, <q-args>)
     command! -complete=file -nargs=* Python3 call mappings#Python(3, <q-args>)
-endif
-
-if !exists('g:plugs["ultisnips"]') && !exists('g:plugs["vim-snipmate"]')
-    inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
-    inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : ""
-    inoremap <silent><CR>    <C-R>=mappings#NextSnippetOrReturn()<CR>
 endif
 
 if !exists('g:plugs["vim-bbye"]')
