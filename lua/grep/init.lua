@@ -1,6 +1,6 @@
 local nvim = require('nvim')
 
-local ok luajob = pcall(require, 'luajob')
+local ok, luajob = pcall(require, 'luajob')
 
 if not ok then
     nvim.echoerr('Failed to load luajob and Async Grep')
