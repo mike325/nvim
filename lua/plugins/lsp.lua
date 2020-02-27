@@ -111,3 +111,17 @@ nvim_set_autocmd(
     "lua require'nvim'.nvim_set_command('Type' , 'lua vim.lsp.buf.type_definition()', {buffer = true, force = true})",
     {group = 'NvimLSP'}
 )
+
+do
+    local method = 'textDocument/publishDiagnostics'
+    local default_callback = vim.lsp.callbacks[method]
+    vim.lsp.callbacks[method] = function(err, method, result, client_id)
+        default_callback(err, method, result, client_id)
+        if result and result.diagnostics then
+            for _, v in ipairs(result.diagnostics) do
+                v.uri = v.uri or result.uri
+            end
+            vim.lsp.util.set_loclist(result.diagnostics)
+        end
+    end
+end

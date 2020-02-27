@@ -38,7 +38,7 @@ function! plugins#init() abort
     endif
 
     " Project check
-    if has#python() && has#async()
+    if has#python() && has#async() && !has('nvim-0.5')
         Plug 'neomake/neomake'
     endif
 
@@ -78,9 +78,6 @@ function! plugins#init() abort
 
     if executable('git')
         Plug 'rhysd/git-messenger.vim'
-        if executable('hub')
-            Plug 'tpope/vim-rhubarb'
-        endif
         if !os#name('windows')
             Plug 'rhysd/committia.vim'
         endif
