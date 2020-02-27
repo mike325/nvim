@@ -111,6 +111,10 @@ else
         Plug 'Vigemus/iron.nvim'
     endif
 
+    if has('nvim-0.4')
+        Plug 'TravonteD/luajob'
+    endif
+
     if !exists('g:minimal') && empty($VIM_MIN)
         call plugins#init()
     elseif has('nvim-0.5')

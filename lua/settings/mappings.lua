@@ -1,9 +1,8 @@
--- luacheck: globals unpack vim
-local api = vim.api
-
 local sys  = require('sys')
 local nvim = require('nvim')
 local plugs = require('nvim').plugs
+
+-- local api = nvim.api
 
 local regex = require('tools').regex
 
@@ -13,12 +12,16 @@ local regex = require('tools').regex
 local has         = require('nvim').has
 local executable  = require('nvim').fn.executable
 
+if nvim.plugs['luajob'] ~= nil then
+    require('grep')
+end
+
 local mappings = {}
 
 local noremap = {noremap = true}
 
 function mappings.terminal(cmd)
-    local split = nvim.o.splitbelow == true and 'botright' or 'topleft'
+    -- local split = nvim.o.splitbelow == true and 'botright' or 'topleft'
     local is_empty = (cmd == nil or #cmd == 0) and true or false
     local shell
 

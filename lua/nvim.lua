@@ -403,7 +403,11 @@ nvim = setmetatable({
             return x
         end
         local f = api['nvim_'..k]
-        mt[k] = f
+        if f ~= nil then
+            mt[k] = f
+        else
+            f = vim[k]
+        end
         return f
     end
 })
