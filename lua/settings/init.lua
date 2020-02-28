@@ -40,8 +40,8 @@ nvim.option.shada =  "!,/1000,'1000,<1000,:1000,s10000,h"
 
 nvim.option.expandtab   = true
 nvim.option.shiftround  = true
-nvim.option.shiftwidth  = 4
 nvim.option.tabstop     = 4
+nvim.option.shiftwidth  = 0
 nvim.option.softtabstop = -1
 
 nvim.option.scrollback  = -1

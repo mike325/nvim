@@ -196,8 +196,8 @@ set copyindent
 
 set expandtab
 set shiftround
-set shiftwidth=4
 set tabstop=4
+set shiftwidth=0
 set softtabstop=-1
 
 set shiftround     " Use multiple of shiftwidth when indenting with '<' and '>'
