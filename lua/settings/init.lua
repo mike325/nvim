@@ -67,6 +67,7 @@ nvim.option.wildmenu = true
 nvim.option.wildmode = 'full'
 
 nvim.option.pumblend = 20
+nvim.option.winblend = 10
 
 nvim.option.showbreak      = '↪\\'
 nvim.option.listchars      = 'tab:▸ ,trail:•,extends:❯,precedes:❮'
