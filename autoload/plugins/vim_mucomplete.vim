@@ -10,4 +10,11 @@ function! plugins#vim_mucomplete#init(data) abort
     let g:mucomplete#no_mappings = 1
     let g:mucomplete#completion_delay = 10
 
+    let g:mucomplete#ultisnips#match_at_start = 0
+
+	let g:mucomplete#chains = {
+	    \ 'default' : ['path', 'ulti', 'omni', 'keyn', 'dict', 'uspl'],
+	    \ 'vim'     : ['path', 'ulti', 'cmd', 'keyn']
+	    \ }
+
 endfunction
