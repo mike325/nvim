@@ -9,7 +9,6 @@ function! plugins#delimitmate#init(data) abort
 
     let g:delimitMate_expand_space = 1
 
-    " let delimitMate_matchpairs = "(:),[:],{:},<:>"
     augroup DelimitMaters
         autocmd!
         autocmd FileType vim,html let b:delimitMate_matchpairs = "(:),[:],{:},<:>"
@@ -17,7 +16,6 @@ function! plugins#delimitmate#init(data) abort
         autocmd FileType c,cpp,java,perl let b:delimitMate_eol_marker = ";"
     augroup end
 
-    " iunmap <BS>
     if exists('*delimitMate#BS')
         imap <silent> <BS> <Plug>delimitMateBS
     endif

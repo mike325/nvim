@@ -3,13 +3,10 @@ local api = vim.api
 
 local nvim = require('nvim')
 
-nvim.command('packadd! cfilter')
-nvim.command('packadd! matchit')
-
 local ok, plugs = pcall(api.nvim_get_var, 'plugs')
 
 if not ok then
-    nvim.command('echoerr "Plugs are not load yet"')
+    nvim.echoerr('Plugs are not load yet')
     return nil
 end
 

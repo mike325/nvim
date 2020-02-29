@@ -13,4 +13,4 @@ setlocal number
 setlocal relativenumber
 
 nnoremap <silent> <nowait> <buffer> q :q!<CR>
-nnoremap <buffer> <CR> :call mappings#cr()<CR>
+nnoremap <silent><buffer> <CR> :call mappings#cr()<CR>

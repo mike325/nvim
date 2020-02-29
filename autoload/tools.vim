@@ -35,6 +35,10 @@ if has('nvim-0.5')
         lua tools.spelllang(a:lang)
     endfunction
 
+    function! tools#echoerr(msg) abort
+        lua tools.echoerr(a:msg)
+    endfunction
+
     finish
 endif
 
@@ -58,6 +62,11 @@ let s:langservers = {
     \ 'Dockerfile' : ['docker-langserver'],
     \ }
 
+function! tools#echoerr(msg) abort
+    echohl ErrorMsg
+    echo a:msg
+    echohl
+endfunction
 
 " Extracted from tpop's Fugitive plugin
 function! tools#GitVersion(...) abort

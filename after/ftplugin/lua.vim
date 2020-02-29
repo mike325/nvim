@@ -3,9 +3,7 @@
 
 setlocal expandtab
 setlocal shiftround
-setlocal shiftwidth=4
 setlocal tabstop=4
-setlocal softtabstop=-1
 
 if has('nvim')
 

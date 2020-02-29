@@ -9,12 +9,10 @@ setlocal matchpairs+=<:>
 
 setlocal expandtab
 setlocal shiftround
-setlocal shiftwidth=4
 setlocal tabstop=4
-setlocal softtabstop=-1
 
 nnoremap <buffer> K :topleft help <C-r>=expand('<cword>')<CR><CR>
-nnoremap <buffer> <CR> :call mappings#cr()<CR>
+nnoremap <silent><buffer> <CR> :call mappings#cr()<CR>
 
 if executable('vint')
     setlocal makeprg=vint\ -f\ \"{file_path}:{line_number}:{column_number}:\ {severity}:\ {description}\ (see\ {reference})\"\ --enable-neovim\ %

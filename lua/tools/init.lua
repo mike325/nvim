@@ -123,6 +123,10 @@ end
 -- global helpers
 tools = {}
 
+function tools.echoerr(msg)
+    nvim.echoerr(msg)
+end
+
 function tools.split_components(str, pattern)
      local t = {}
     for v in string.gmatch(str, pattern) do

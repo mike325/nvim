@@ -5,9 +5,7 @@ setlocal foldmethod=indent
 
 setlocal expandtab
 setlocal shiftround
-setlocal shiftwidth=4
 setlocal tabstop=4
-setlocal softtabstop=-1
 
 if exists('+formatprg')
     if executable('yapf')
@@ -85,4 +83,4 @@ command! -buffer PythonFix call s:PythonFix()
 
 setlocal define=^\\s*\\(def\\\|class\\)\\s\\+
 
-nnoremap <buffer> <CR> :call mappings#cr()<CR>
+nnoremap <silent><buffer> <CR> :call mappings#cr()<CR>

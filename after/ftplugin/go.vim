@@ -8,4 +8,4 @@ if exists('+formatprg')
 endif
 
 setlocal foldmethod=syntax
-nnoremap <buffer> <CR> :call mappings#cr()<CR>
+nnoremap <silent><buffer> <CR> :call mappings#cr()<CR>

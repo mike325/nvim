@@ -355,9 +355,7 @@ if !exists('g:plugs["vim-eunuch"]')
                 \ if exists('*mkdir') |
                 \   call mkdir(fnameescape(s:dir), (s:bang) ? "p" : "") |
                 \ else |
-                \   echohl ErrorMsg |
-                \   echo "Failed to create dir '" . s:dir . "' mkdir is not available" |
-                \   echohl |
+                \   tools#echoerr("Failed to create dir '" . s:dir . "' mkdir is not available") |
                 \ endif |
                 \ unlet s:bang |
                 \ unlet s:dir
@@ -368,9 +366,7 @@ if !exists('g:plugs["vim-eunuch"]')
                 \ if filereadable(s:target) || bufloaded(s:target) |
                 \   if filereadable(s:target) |
                 \       if delete(s:target) == -1 |
-                \           echohl ErrorMsg |
-                \           echo "Failed to delete the file '" . s:target . "'" |
-                \           echohl |
+                \           tools#echoerr("Failed to delete the file '" . s:target . "'") |
                 \       endif |
                 \   endif |
                 \   if bufloaded(s:target) |
@@ -378,9 +374,7 @@ if !exists('g:plugs["vim-eunuch"]')
                 \       try |
                 \           execute s:cmd . s:target |
                 \       catch /E94/ |
-                \           echohl ErrorMsg |
-                \           echo "Failed to delete/wipe '" . s:target . "'" |
-                \           echohl |
+                \           tools#echoerr("Failed to delete/wipe '" . s:target . "'") |
                 \       finally |
                 \           unlet s:cmd |
                 \       endtry |
@@ -388,15 +382,11 @@ if !exists('g:plugs["vim-eunuch"]')
                 \ elseif isdirectory(s:target) |
                 \   let s:flag = (s:bang) ? "rf" : "d" |
                 \   if delete(s:target, s:flag) == -1 |
-                \       echohl ErrorMsg |
-                \       echo "Failed to remove '" . s:target . "'" |
-                \       echohl |
+                \       tools#echoerr("Failed to remove '" . s:target . "'") |
                 \   endif |
                 \   unlet s:flag |
                 \ else |
-                \   echohl ErrorMsg |
-                \   echo "Failed to remove '" . s:target . "'" |
-                \   echohl |
+                \   tools#echoerr("Failed to remove '" . s:target . "'") |
                 \ endif |
                 \ unlet s:bang |
                 \ unlet s:target

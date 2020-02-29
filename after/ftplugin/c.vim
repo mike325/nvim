@@ -6,9 +6,7 @@ setlocal foldmethod=syntax
 
 setlocal expandtab
 setlocal shiftround
-setlocal shiftwidth=4
 setlocal tabstop=4
-setlocal softtabstop=-1
 
 if exists('+formatprg') && executable('clang-format')
     setlocal formatprg=clang-format
@@ -33,4 +31,4 @@ elseif executable('gcc')
     setlocal makeprg=gcc\ -std=c17\ -Wall\ -Wextra\ % " '-o', os#tmp('neomake')
 endif
 
-nnoremap <buffer> <CR> :call mappings#cr()<CR>
+nnoremap <silent><buffer> <CR> :call mappings#cr()<CR>

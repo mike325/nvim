@@ -6,9 +6,7 @@ setlocal foldmethod=syntax
 
 setlocal expandtab
 setlocal shiftround
-setlocal shiftwidth=4
 setlocal tabstop=4
-setlocal softtabstop=-1
 
 if executable('cppman')
     " Unfortunally Neovim works just with less as $PAGER
@@ -43,4 +41,4 @@ elseif executable('g++')
     setlocal makeprg=g++\ -std=c++17\ -Wall\ -Wextra\ % " '-o', os#tmp('neomake')
 endif
 
-nnoremap <buffer> <CR> :call mappings#cr()<CR>
+nnoremap <silent><buffer> <CR> :call mappings#cr()<CR>

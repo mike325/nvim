@@ -118,9 +118,7 @@ if !exists('g:plugs["iron.nvim"]') && has#python()
 
         let l:version = ( a:version  == 3 ) ? l:python3 : l:python2
         if empty(l:version)
-            echohl ErrorMsg
-            echo 'Python' . a:version . ' is not available in the system'
-            echohl
+            tools#echoerr('Python' . a:version . ' is not available in the system')
             return -1
         endif
         let l:split = (&splitbelow) ? 'botright' : 'topleft'
@@ -157,10 +155,10 @@ function! mappings#Trim() abort
     " Since default is to trim, the first call is to deactivate trim
     if b:trim == 0
         let b:trim = 1
-        echomsg ' Trim'
+        echo ' Trim'
     else
         let b:trim = 0
-        echomsg ' NoTrim'
+        echo ' NoTrim'
     endif
 
     return 0
@@ -212,7 +210,7 @@ function! mappings#BufKill(bang) abort
             let l:count += 1
         endif
     endfor
-    echo 'Deleted ' . l:count . ' buffers'
+    echomsg 'Deleted ' . l:count . ' buffers'
 endfunction
 
 " Clean buffer list
@@ -227,7 +225,7 @@ function! mappings#BufClean(bang) abort
             let l:count += 1
         endif
     endfor
-    echo 'Deleted ' . l:count . ' buffers'
+    echomsg 'Deleted ' . l:count . ' buffers'
 endfunction
 
 " Test remap arrow keys
