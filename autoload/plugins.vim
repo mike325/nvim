@@ -13,7 +13,7 @@ function! plugins#settings() abort
     try
         for [s:name, s:data] in items(filter(deepcopy(g:plugs), 'index(s:available_configs, s:Convert2settings(v:key), 0) != -1'))
             let s:func_name = s:Convert2settings(s:name)
-            call plugins#{s:func_name}#init(s:data)
+            execute 'runtime! autoload/plugins/' . s:func_name . '.vim'
         endfor
     catch
         tools#echoerr('Error trying to read config from ' . s:name)

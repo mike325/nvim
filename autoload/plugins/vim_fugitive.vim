@@ -1,33 +1,32 @@
 " Git Fugitive settings
 " github.com/mike325/.vim
 
-function! plugins#vim_fugitive#init(data) abort
-    if !exists('g:plugs["vim-fugitive"]')
-        return -1
-    endif
+if !exists('g:plugs["vim-fugitive"]') && exists('g:config_fugitive')
+    finish
+endif
 
-    " augroup SetGitTags
-    "     autocmd!
-    "     autocmd BufReadPost,BufEnter * if filereadable(FugitiveExtractGitDir(getcwd()) . '/tags')  |
-    "                                 \    let &l:tags .= ','.FugitiveExtractGitDir(getcwd()) . '/tags' |
-    "                                 \  endif
-    " augroup end
+let g:config_fugitive = 1
 
-    nnoremap <silent> Us :Gstatus<CR>
-    nnoremap <silent> Ua :Gcommit --amend --reset-author --no-edit<CR>
-    nnoremap <silent> Ud :Gdiff<CR>
-    nnoremap <silent> Uw :Gwrite<CR>
-    nnoremap <silent> Ur :Gread<CR>
-    nnoremap <silent> Ub :Gblame<CR>
-    nnoremap <silent> Ue :exe 'Gedit\|'.line('.')<CR>zz
+" augroup SetGitTags
+"     autocmd!
+"     autocmd BufReadPost,BufEnter * if filereadable(FugitiveExtractGitDir(getcwd()) . '/tags')  |
+"                                 \    let &l:tags .= ','.FugitiveExtractGitDir(getcwd()) . '/tags' |
+"                                 \  endif
+" augroup end
 
-    nmap US Us
-    nmap UA Ua
-    nmap UD Ud
-    nmap UW Uw
-    nmap UR Ur
-    nmap UB Ub
-    nmap UE Ue
-    nmap UG Ug
+nnoremap <silent> Us :Gstatus<CR>
+nnoremap <silent> Ua :Gcommit --amend --reset-author --no-edit<CR>
+nnoremap <silent> Ud :Gdiff<CR>
+nnoremap <silent> Uw :Gwrite<CR>
+nnoremap <silent> Ur :Gread<CR>
+nnoremap <silent> Ub :Gblame<CR>
+nnoremap <silent> Ue :exe 'Gedit\|'.line('.')<CR>zz
 
-endfunction
+nmap US Us
+nmap UA Ua
+nmap UD Ud
+nmap UW Uw
+nmap UR Ur
+nmap UB Ub
+nmap UE Ue
+nmap UG Ug

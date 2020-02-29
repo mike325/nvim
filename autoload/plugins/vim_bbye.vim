@@ -1,11 +1,11 @@
 " Vim-bbye settings
 " github.com/mike325/.vim
 
-function! plugins#vim_bbye#init(data) abort
-    if !exists('g:plugs["vim-bbye"]')
-        return -1
-    endif
+if !exists('g:plugs["vim-bbye"]') && exists('g:config_bbye')
+    finish
+endif
 
-    " Better behave buffer deletion
-    nnoremap <leader>d :Bdelete!<CR>
-endfunction
+let g:config_bbye = 1
+
+" Better behave buffer deletion
+nnoremap <leader>d :Bdelete!<CR>

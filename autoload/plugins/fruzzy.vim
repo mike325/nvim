@@ -1,6 +1,12 @@
 " Fruzzy Setttings
 " github.com/mike325/.vim
 
+if !exists('g:plugs["fruzzy"]]') && exists('g:config_fruzzy')
+    finish
+endif
+
+let g:config_fruzzy = 1
+
 function! plugins#fruzzy#install(info) abort
     if !exists('g:plugs["fruzzy"]]')
         return -1
@@ -9,10 +15,3 @@ function! plugins#fruzzy#install(info) abort
         call fruzzy#install()
     endif
 endfunction
-
-function! plugins#fruzzy#init(data) abort
-    if !exists('g:plugs["fruzzy"]]')
-        return -1
-    endif
-endfunction
-

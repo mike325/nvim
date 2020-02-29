@@ -1,6 +1,12 @@
 " Semshi Setttings
 " github.com/mike325/.vim
 
+if !exists('g:plugs["semshi"]') && exists('g:config_semshi')
+    finish
+endif
+
+let g:config_semshi = 1
+
 function! plugins#semshi#colorfix() abort
     hi semshiLocal           ctermfg=209 guifg=#ff875f
     hi semshiGlobal          ctermfg=214 guifg=#ffaf00
@@ -19,20 +25,14 @@ function! plugins#semshi#colorfix() abort
     sign define semshiError text=E> texthl=semshiErrorSign
 endfunction
 
-function! plugins#semshi#init(data) abort
-    if !exists('g:plugs["semshi"]')
-        return -1
-    endif
+let $SEMSHI_LOG_FILE  = os#tmp('semshi.log')
+let $SEMSHI_LOG_LEVEL = 'DEBUG'
 
-    let $SEMSHI_LOG_FILE  = os#tmp('semshi.log')
-    let $SEMSHI_LOG_LEVEL = 'DEBUG'
+let g:semshi#active                       = 1
+let g:semshi#simplify_markup              = 1
+let g:semshi#no_default_builtin_highlight = 1
 
-    let g:semshi#active                       = 1
-    let g:semshi#simplify_markup              = 1
-    let g:semshi#no_default_builtin_highlight = 1
-
-    augroup SemshiColorFix
-        autocmd!
-        autocmd ColorScheme * call plugins#semshi#colorfix()
-    augroup end
-endfunction
+augroup SemshiColorFix
+    autocmd!
+    autocmd ColorScheme * call plugins#semshi#colorfix()
+augroup end

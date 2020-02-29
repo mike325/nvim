@@ -1,6 +1,12 @@
 " SnipMate settings
 " github.com/mike325/.vim
 
+if !exists('g:plugs["vim-snipmate"]') && exists('g:config_snipmate')
+    finish
+endif
+
+let g:config_snipmate = 1
+
 function! plugins#vim_snipmate#NextSnipOrReturn() abort
     if pumvisible()
         if exists('g:plugs["YouCompleteMe"]')
@@ -15,20 +21,14 @@ function! plugins#vim_snipmate#NextSnipOrReturn() abort
     return "\<CR>"
 endfunction
 
-function! plugins#vim_snipmate#init(data) abort
-    if !exists('g:plugs["vim-snipmate"]')
-        return -1
-    endif
-
-    " TODO make SnipMate's mappings behave as UltiSnips ones
-    inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
-    inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : ""
+" TODO make SnipMate's mappings behave as UltiSnips ones
+inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : ""
 
 
-    " Best crap so far
-    inoremap <CR> <C-r>=snipMate#CanBeTriggered() ? snipMate#TriggerSnippet(1) : plugins#vim_snipmate#NextSnipOrReturn() <CR>
-    xmap <CR>     <Plug>snipMateVisual
+" Best crap so far
+inoremap <CR> <C-r>=snipMate#CanBeTriggered() ? snipMate#TriggerSnippet(1) : plugins#vim_snipmate#NextSnipOrReturn() <CR>
+xmap <CR>     <Plug>snipMateVisual
 
-    " nnoremap <C-k> <Plug>snipMateNextOrTrigger
-    imap <C-k> <Plug>snipMateNextOrTrigger
-endfunction
+" nnoremap <C-k> <Plug>snipMateNextOrTrigger
+imap <C-k> <Plug>snipMateNextOrTrigger

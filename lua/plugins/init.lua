@@ -1,7 +1,7 @@
-local inspect = vim.inspect
-local api = vim.api
-
 local nvim = require('nvim')
+
+-- local inspect = nvim.inspect
+local api = nvim.api
 
 local ok, plugs = pcall(api.nvim_get_var, 'plugs')
 
@@ -22,10 +22,10 @@ end
 for plugin, data in pairs(plugs) do
     _ = nvim.plugs[plugin] -- Cache plugins for future use
     local func_name = convert2settings(plugin)
-    local ok, error_code = pcall(api.nvim_call_function, 'plugins#'..func_name..'#init', {data})
+    local ok, error_code = pcall(nvim.command, 'runtime! autoload/plugins/'..func_name..'.vim')
     if not ok then
         if not string.match(error_code, 'Vim:E117') then
-            nvim.echoerr('Something failed "'..error_code..'" Happened trying to call '..'plugins#'..func_name..'#init')
+            nvim.echoerr("Something failed '"..error_code.."' Happened trying to source "..func_name..".vim")
         end
     end
 end

@@ -1,6 +1,12 @@
 " Vim_unimpaired Setttings
 " github.com/mike325/.vim
 
+if !exists('g:plugs["vim-unimpaired"]') && exists('g:config_unimpaired')
+    finish
+endif
+
+let g:config_unimpaired = 1
+
 function! plugins#vim_unimpaired#post() abort
     if !exists('g:plugs["vim-unimpaired"]')
         return -1
@@ -22,55 +28,9 @@ function! plugins#vim_unimpaired#post() abort
     nnoremap [l  :<C-U>exe "".(v:count ? v:count : "")."lprevious"<CR>zvzz
     nnoremap ]l  :<C-U>exe "".(v:count ? v:count : "")."lnext"<CR>zvzz
 
-    call s:map('n', '[e', '<Plug>unimpairedMoveUp')
-    call s:map('n', ']e', '<Plug>unimpairedMoveDown')
-    call s:map('x', '[e', '<Plug>unimpairedMoveSelectionUp')
-    call s:map('x', ']e', '<Plug>unimpairedMoveSelectionDown')
 endfunction
 
-function! plugins#vim_unimpaired#init(data) abort
-    if !exists('g:plugs["vim-unimpaired"]')
-        return -1
-    endif
-
-    augroup PostAbolish
-        autocmd!
-        autocmd VimEnter * call plugins#vim_unimpaired#post()
-    augroup end
-endfunction
-
-function! s:map(mode, lhs, rhs, ...) abort
-    let flags = (a:0 ? a:1 : '') . (a:rhs =~# '^<Plug>' ? '' : '<script>')
-    exe a:mode . 'map' flags a:lhs a:rhs
-endfunction
-
-function! s:ExecMove(cmd) abort
-    let old_fdm = &foldmethod
-    if old_fdm !=# 'manual'
-        let &foldmethod = 'manual'
-    endif
-    normal! m`
-    silent! exe a:cmd
-    norm! ``
-    if old_fdm !=# 'manual'
-        let &foldmethod = old_fdm
-    endif
-endfunction
-
-function! s:Move(cmd, count, map) abort
-    call s:ExecMove('move'.a:cmd.a:count)
-    silent! normal! ==
-    silent! call repeat#set("\<Plug>unimpairedMove".a:map, a:count)
-endfunction
-
-function! s:MoveSelectionUp(count) abort
-    call s:ExecMove("'<,'>move'<--".a:count)
-    silent! normal! gv=
-    silent! call repeat#set("\<Plug>unimpairedMoveSelectionUp", a:count)
-endfunction
-
-function! s:MoveSelectionDown(count) abort
-    call s:ExecMove("'<,'>move'>+".a:count)
-    silent! normal! gv=
-    silent! call repeat#set("\<Plug>unimpairedMoveSelectionDown", a:count)
-endfunction
+augroup PostAbolish
+    autocmd!
+    autocmd VimEnter * call plugins#vim_unimpaired#post()
+augroup end

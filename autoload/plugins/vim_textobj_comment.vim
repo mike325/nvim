@@ -1,13 +1,13 @@
 " Vim_textobj_comment Setttings
 " github.com/mike325/.vim
 
-function! plugins#vim_textobj_comment#init(data) abort
-    if !exists('g:plugs["vim-textobj-comment"]')
-        return -1
-    endif
+if !exists('g:plugs["vim-textobj-comment"]') && exists('g:config_textobj')
+    finish
+endif
 
-    augroup PostTextObjComments
-        autocmd!
-        autocmd VimEnter * silent! execute 'TextobjCommentDefaultKeyMappings!'
-    augroup end
-endfunction
+let g:config_textobj = 1
+
+augroup PostTextObjComments
+    autocmd!
+    autocmd VimEnter * silent! execute 'TextobjCommentDefaultKeyMappings!'
+augroup end

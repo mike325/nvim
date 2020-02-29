@@ -1,6 +1,12 @@
 " Vimwiki Setttings
 " github.com/mike325/.vim
 
+if !exists('g:plugs["vimwiki"]') && exists('g:config_vimwiki')
+    finish
+endif
+
+let g:config_vimwiki = 1
+
 function! VimwikiLinkHandler(link) abort
     " Use Vim to open external files with the 'vfile:' scheme.  E.g.:
     "   1) [[file:~/Code/PythonProject/abc123.py]]
@@ -39,63 +45,57 @@ function! VimwikiLinkHandler(link) abort
     return 0
 endfunction
 
-function! plugins#vimwiki#init(data) abort
-    if !exists('g:plugs["vimwiki"]')
-        return -1
-    endif
+let g:vimwiki_table_mappings = 0
 
-    let g:vimwiki_table_mappings = 0
+let s:work_wiki = {
+        \ 'path'     : (isdirectory(vars#home() . '/Documents/vimwiki/')) ? vars#home() . '/Documents/vimwiki/' : vars#home() . '/vimwiki/',
+        \ 'syntax'   : 'markdown',
+        \ 'ext'      : '.md',
+        \ 'auto_tags': 1,
+        \ 'nested_syntaxes': {
+        \       'ruby'  : 'ruby',
+        \       'python': 'python',
+        \       'c++'   : 'cpp',
+        \       'sh'    : 'sh',
+        \       'bash'  : 'sh' ,
+        \       'racket': 'racket'
+        \    },
+        \ }
 
-    let l:work_wiki = {
-                    \ 'path'     : (isdirectory(vars#home() . '/Documents/vimwiki/')) ? vars#home() . '/Documents/vimwiki/' : vars#home() . '/vimwiki/',
-                    \ 'syntax'   : 'markdown',
-                    \ 'ext'      : '.md',
-                    \ 'auto_tags': 1,
-                    \ 'nested_syntaxes': {
-                    \       'ruby'  : 'ruby',
-                    \       'python': 'python',
-                    \       'c++'   : 'cpp',
-                    \       'sh'    : 'sh',
-                    \       'bash'  : 'sh' ,
-                    \       'racket': 'racket'
-                    \    },
-                    \ }
+let s:personal_wiki = {
+        \ 'path'     : '~/notes/',
+        \ 'syntax'   : 'markdown',
+        \ 'ext'      : '.md',
+        \ 'auto_tags': 1,
+        \ 'nested_syntaxes': {
+        \       'ruby'  : 'ruby',
+        \       'python': 'python',
+        \       'c++'   : 'cpp',
+        \       'sh'    : 'sh',
+        \       'bash'  : 'sh' ,
+        \       'racket': 'racket'
+        \    },
+        \ }
+" let g:vimwiki_table_mappings = 0
 
-    let l:personal_wiki = {
-                    \ 'path'     : '~/notes/',
-                    \ 'syntax'   : 'markdown',
-                    \ 'ext'      : '.md',
-                    \ 'auto_tags': 1,
-                    \ 'nested_syntaxes': {
-                    \       'ruby'  : 'ruby',
-                    \       'python': 'python',
-                    \       'c++'   : 'cpp',
-                    \       'sh'    : 'sh',
-                    \       'bash'  : 'sh' ,
-                    \       'racket': 'racket'
-                    \    },
-                    \ }
-    " let g:vimwiki_table_mappings = 0
+if os#name('windows')
+    let g:vimwiki_list = [ s:work_wiki, s:personal_wiki ]
+else
+    let g:vimwiki_list = [ s:personal_wiki, s:work_wiki ]
+endif
 
-    if os#name('windows')
-        let g:vimwiki_list = [ l:work_wiki, l:personal_wiki ]
-    else
-        let g:vimwiki_list = [ l:personal_wiki, l:work_wiki ]
-    endif
+let g:vimwiki_ext2syntax = {
+        \   '.md': 'markdown',
+        \   '.mkd': 'markdown',
+        \   '.wiki': 'media'
+        \ }
 
-    let g:vimwiki_ext2syntax = {
-                \   '.md': 'markdown',
-                \   '.mkd': 'markdown',
-                \   '.wiki': 'media'
-                \ }
+nmap gww <Plug>VimwikiIndex
+nmap gwt <Plug>VimwikiTabIndex
+nmap gwd <Plug>VimwikiDiaryIndex
+nmap gwn <Plug>VimwikiMakeDiaryNote
+nmap gwu <Plug>VimwikiUISelect
 
-    nmap gww <Plug>VimwikiIndex
-    nmap gwt <Plug>VimwikiTabIndex
-    nmap gwd <Plug>VimwikiDiaryIndex
-    nmap gwn <Plug>VimwikiMakeDiaryNote
-    nmap gwu <Plug>VimwikiUISelect
-
-    " nmap <Leader>dt <Plug>VimwikiTabMakeDiaryNote
-    " nmap <Leader>dy <Plug>VimwikiMakeYesterdayDiaryNote
-    " nmap <Leader>dm <Plug>VimwikiMakeTomorrowDiaryNote
-endfunction
+" nmap <Leader>dt <Plug>VimwikiTabMakeDiaryNote
+" nmap <Leader>dy <Plug>VimwikiMakeYesterdayDiaryNote
+" nmap <Leader>dm <Plug>VimwikiMakeTomorrowDiaryNote

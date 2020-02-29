@@ -1,11 +1,11 @@
 " Gonvimfuzzy Setttings
 " github.com/mike325/.vim
 
-function! plugins#gonvim_fuzzy#init(data) abort
-    if !exists('g:gonvim_running') || !exists('g:plugs["gonvim-fuzzy"]')
-        return -1
-    endif
+if (!exists('g:gonvim_running') || !exists('g:plugs["gonvim-fuzzy"]')) && exists('g:config_gonvim')
+    finish
+endif
 
-    nnoremap <C-p> :GonvimFuzzyFiles<CR>
-    nnoremap <C-b> :GonvimFuzzyBuffers<CR>
-endfunction
+let g:config_gonvim = 1
+
+nnoremap <C-p> :GonvimFuzzyFiles<CR>
+nnoremap <C-b> :GonvimFuzzyBuffers<CR>

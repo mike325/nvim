@@ -1,10 +1,10 @@
 " Lion settings
 " github.com/mike325/.vim
 
-function! plugins#vim_lion#init(data) abort
-    if !exists('g:plugs["vim-lion"]')
-        return -1
-    endif
+if !exists('g:plugs["vim-lion"]') && exists('g:config_lion')
+    finish
+endif
 
-    let g:lion_squeeze_spaces = 1
-endfunction
+let g:config_lion = 1
+
+let g:lion_squeeze_spaces = 1
