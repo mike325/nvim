@@ -128,11 +128,8 @@ elseif has#async() && (has('nvim-0.2.0') || (!has('nvim') && has('lambda')))
     Plug 'maralla/completor.vim'
 elseif has('lua') && !has('nvim') && v:version >= 704
     Plug 'Shougo/neocomplete.vim'
-elseif v:version >= 703 || has('nvim')
-    Plug 'roxma/SimpleAutoComplPop'
-    if !has('nvim') && v:version < 800
-        Plug 'ervandew/supertab'
-    endif
+else
+    Plug 'ervandew/supertab'
 endif
 
 if (has('nvim') || (v:version >= 704)) && (executable('tex'))
