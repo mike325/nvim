@@ -1,7 +1,7 @@
 " plugins.vim Setttings
 " github.com/mike325/.vim
 
-if exists('g:loaded_mike_plugins')
+if exists('g:loaded_mike_plugins') || exists('g:minimal') || exists('g:bare')
     finish
 endif
 
