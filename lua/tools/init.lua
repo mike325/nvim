@@ -18,11 +18,11 @@ local modern_git = -1
 
 local langservers = {
     python     = {'pyls'},
-    c          = {'clangd', 'ccls', 'cquery'},
-    cpp        = {'clangd', 'ccls', 'cquery'},
-    cuda       = {'clangd', 'ccls'},
-    objc       = {'clangd', 'ccls'},
-    objcpp     = {'clangd', 'ccls'},
+    c          = {'ccls', 'clangd', 'cquery'},
+    cpp        = {'ccls', 'clangd', 'cquery'},
+    cuda       = {'ccls', 'clangd', 'cquery'},
+    objc       = {'ccls', 'clangd', 'cquery'},
+    objcpp     = {'ccls', 'clangd', 'cquery'},
     sh         = {'bash-language-server'},
     bash       = {'bash-language-server'},
     go         = {'gopls'},
@@ -360,12 +360,21 @@ function tools.get_language_server(language)
         ['ccls']   = {
             'ccls',
             '--log-file=' .. sys.tmp('ccls.log'),
-            '--init={"cacheDirectory":"' .. sys.cache .. '/ccls", "completion": {"filterAndSort": false}}'
+            '--init={'..
+                '"cacheDirectory":"' .. sys.cache .. '/ccls",'..
+                '"completion": {"filterAndSort": false},'..
+                '"highlight": {"lsRanges" : true }'..
+            '}'
         },
         ['cquery'] = {
             'cquery',
             '--log-file=' .. sys.tmp('cquery.log'),
-            '--init={"cacheDirectory":"' .. sys.cache .. '/cquery", "completion": {"filterAndSort": false}}'
+            '--init={'..
+                '"cacheDirectory":"' .. sys.cache .. '/cquery",'..
+                '"completion": {"filterAndSort": false},'..
+                '"highlight": { "enabled" : true },'..
+                '"emitInactiveRegions" : true'..
+            '}'
         },
         ['clangd'] = {'clangd', '--background-index'},
         ['gopls']  = {'gopls' },

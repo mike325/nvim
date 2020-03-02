@@ -36,11 +36,13 @@ function! plugins#youcompleteme#install(info) abort
 
         let l:cmd += ['./install.py']
 
-        "  Both libclang and clangd are downloaded from the upstream, so they can always be install
-        let l:cmd += ['--clang-completer']
-        let l:cmd += ['--clangd-completer']
+        if !executable('ccls')
+            "  Both libclang and clangd are downloaded from the upstream, so they can always be install
+            let l:cmd += ['--clang-completer']
+            let l:cmd += ['--clangd-completer']
+        endif
 
-        if executable('go') && (!empty($GOROOT))
+        if executable('go') && !empty($GOROOT)
             let l:cmd += ['--go-completer']
         endif
 
@@ -112,7 +114,7 @@ let g:ycm_languages = []
 
 let g:ycm_languages += ['c', 'cpp', 'objc', 'objcpp', 'python']
 
-if executable('go') && (!empty($GOROOT))
+if executable('go') && !empty($GOROOT)
     let g:ycm_languages += ['go']
 endif
 
@@ -134,44 +136,57 @@ endif
 
 
 if tools#CheckLanguageServer('tex')
+    let s:ft = ['tex', 'bib']
     let g:ycm_language_server += [{
         \     'name': 'tex',
         \     'cmdline': tools#getLanguageServer('tex'),
-        \     'filetypes': ['tex', 'bib']
+        \     'filetypes': s:ft,
         \ }]
-    let g:ycm_languages += ['tex', 'bib']
+    let g:ycm_languages += s:ft
 endif
 
 if tools#CheckLanguageServer('sh')
+    let s:ft = ['bash', 'sh']
     let g:ycm_language_server += [{
         \     'name': 'sh',
         \     'cmdline': tools#getLanguageServer('sh'),
-        \     'filetypes': ['bash', 'sh']
+        \     'filetypes': s:ft
         \ }]
-    let g:ycm_languages += ['bash', 'sh']
+    let g:ycm_languages += s:ft
 endif
 
 if tools#CheckLanguageServer('vim')
+    let s:ft = ['vim']
     let g:ycm_language_server += [{
         \     'name': 'vim',
         \     'cmdline': tools#getLanguageServer('vim'),
-        \     'filetypes': ['vim']
+        \     'filetypes': s:ft
         \ }]
-    let g:ycm_languages += ['vim']
+    let g:ycm_languages += s:ft
 endif
 
 if tools#CheckLanguageServer('dockerfile')
+    let s:ft = ['dockerfile', 'Dockerfile']
     let g:ycm_language_server += [{
         \     'name': 'docker',
         \     'cmdline': tools#getLanguageServer('dockerfile'),
-        \     'filetypes': ['dockerfile', 'Dockerfile']
+        \     'filetypes': s:ft
         \ }]
-    let g:ycm_languages += ['dockerfile', 'Dockerfile']
+    let g:ycm_languages += s:ft
+endif
+
+if tools#CheckLanguageServer('c') && executable('ccls')
+    let g:ycm_language_server += [{
+        \   'name': 'ccls',
+        \   'cmdline': tools#getLanguageServer('c'),
+        \   'filetypes': [ 'c', 'cpp', 'cuda', 'objc', 'objcpp'  ],
+        \   'project_root_files': [ '.ccls-root', 'compile_commands.json']
+        \ }]
 endif
 
 let g:ycm_extra_conf_vim_data = [
-            \  'g:ycm_python_interpreter_path',
-            \]
+    \  'g:ycm_python_interpreter_path',
+    \]
 
 " Set fallback ycm config file
 if filereadable(fnameescape(vars#basedir() . '/host/ycm_extra_conf.py'))
@@ -181,7 +196,7 @@ elseif filereadable(fnameescape(vars#basedir() . '/ycm_extra_conf.py'))
 endif
 
 " let g:ycm_clangd_binary_path = ''
-let g:ycm_use_clangd = 1
+let g:ycm_use_clangd = executable('ccls') ? 0 : 1
 let g:ycm_clangd_args = ['-background-index']
 " let g:ycm_clangd_uses_ycmd_caching = 1
 

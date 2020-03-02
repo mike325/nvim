@@ -47,10 +47,10 @@ let s:moderngit = -1
 
 let s:langservers = {
     \ 'python'     : ['pyls'],
-    \ 'c'          : ['clangd', 'ccls', 'cquery'],
-    \ 'cpp'        : ['clangd', 'ccls', 'cquery'],
-    \ 'cuda'       : ['clangd', 'ccls'] ,
-    \ 'objc'       : ['clangd', 'ccls'] ,
+    \ 'c'          : ['ccls', 'clangd', 'cquery'],
+    \ 'cpp'        : ['ccls', 'clangd', 'cquery'],
+    \ 'cuda'       : ['ccls', 'clangd', 'cquery'],
+    \ 'objc'       : ['ccls', 'clangd', 'cquery'],
     \ 'sh'         : ['bash-language-server'],
     \ 'bash'       : ['bash-language-server'],
     \ 'go'         : ['gopls'],
@@ -103,12 +103,25 @@ function! tools#getLanguageServer(language) abort
 
     let l:cmds = {
         \ 'pyls'   : ['pyls', '--check-parent-process', '--log-file=' . os#tmp('pyls.log')],
-        \ 'ccls'   : ['ccls',
-        \             '--log-file=' . os#tmp('ccls.log'),
-        \             '--init={"cacheDirectory":"' . os#cache() . '/ccls", "completion": {"filterAndSort": false}}'],
-        \ 'cquery' : ['cquery',
-        \             '--log-file=' . os#tmp('cquery.log'),
-        \             '--init={"cacheDirectory":"' . os#cache() . '/cquery", "completion": {"filterAndSort": false}}'],
+        \ 'ccls'   : [
+        \   'ccls',
+        \   '--log-file=' . os#tmp('ccls.log'),
+        \   '--init={'.
+        \       '"cacheDirectory":"' . os#cache() . '/ccls",'.
+        \       '"completion": {"filterAndSort": false},'.
+        \       '"highlight": { "lsRanges" : true }'.
+        \   '}'
+        \ ],
+        \ 'cquery' : [
+        \   'cquery',
+        \   '--log-file=' . os#tmp('cquery.log'),
+        \   '--init={'.
+        \       '"cacheDirectory":"' . os#cache() . '/cquery",'.
+        \       '"completion": {"filterAndSort": false},'.
+        \       '"highlight": { "enabled" : true },'.
+        \       '"emitInactiveRegions" : true'.
+        \   '}'
+        \ ],
         \ 'clangd' : ['clangd', '--background-index'],
         \ 'gopls'  : ['gopls'],
         \ 'texlab' : ['texlab'],

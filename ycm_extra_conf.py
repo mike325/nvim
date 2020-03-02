@@ -12,10 +12,6 @@ import os.path as p
 import sys
 import logging
 # import re
-try:
-    import ycm_core
-except ImportError:
-    logging.warning('No ycm_core module found')
 
 _DEBUG = True
 
@@ -86,6 +82,8 @@ BASE_FLAGS += WINDOWS_INCLUDES if os.name == 'nt' else LINUX_INCLUDES
 COMPILE_DB = [
     'compile_commands.json',
 ]
+
+database = None
 
 
 def GetCompilationDatabase():
@@ -245,9 +243,3 @@ def FlagsForFile(filename, **kwargs):
             settings['language'] = 'python'
 
     return Settings(**settings)
-
-
-database = None
-compilation_database_folder = GetCompilationDatabase()
-if p.exists(compilation_database_folder):
-    database = ycm_core.CompilationDatabase(compilation_database_folder)

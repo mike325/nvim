@@ -13,17 +13,31 @@ if not ok then
 end
 
 local servers = {
-    sh         = { bashls        = 'bash-language-server', },
-    rust       = { rust_analyzer = 'rust_analyzer', },
-    go         = { gopls         = 'gopls', },
-    tex        = { texlab        = 'texlab', },
-    python     = { pyls          = 'pyls', },
-    vim        = { vimls         = 'vimls', },
-    lua        = { sumneko_lua   = 'sumneko_lua', },
-    dockerfile = { dockerls      = 'docker-langserver', },
-    c = { -- Since both clangd and ccls works with C,Cpp,ObjC and ObjCpp; just 1 setup is ok
-        clangd = 'clangd',
-        ccls   = 'ccls',
+    sh         = { bashls        = { name = 'bash-language-server'}, },
+    rust       = { rust_analyzer = { name = 'rust_analyzer'}, },
+    go         = { gopls         = { name = 'gopls'}, },
+    tex        = { texlab        = { name = 'texlab'}, },
+    python     = { pyls          = { name = 'pyls'}, },
+    vim        = { vimls         = { name = 'vimls'}, },
+    lua        = { sumneko_lua   = { name = 'sumneko_lua'}, },
+    dockerfile = { dockerls      = { name = 'docker-langserver'}, },
+    c = {
+        ccls = {
+            name = 'ccls',
+            options = {
+                init_options = {
+                    highlight = {
+                        lsRanges = true;
+                    },
+                    completion = {
+                        caseSensitivity = 1,
+                        detailedLabel = false,
+                        filterAndSort = true,
+                    },
+                },
+            },
+        },
+        clangd = { name = 'clangd', },
     },
 }
 
@@ -31,8 +45,9 @@ local available_languages = {}
 
 for language,options in pairs(servers) do
     for option,server in pairs(options) do
-        if executable(server) == 1 or isdirectory(sys.home .. '/.cache/nvim/nvim_lsp/' .. server) == 1 then
-            lsp[option].setup({})
+        if executable(server['name']) == 1 or isdirectory(sys.home .. '/.cache/nvim/nvim_lsp/' .. server['name']) == 1 then
+            local init = server['options'] ~= nil and server['options'] or {}
+            lsp[option].setup(init)
             available_languages[#available_languages + 1] = language
             if language == 'c' then
                 available_languages[#available_languages + 1] = 'cpp'

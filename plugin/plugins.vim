@@ -132,6 +132,10 @@ else
     Plug 'ervandew/supertab'
 endif
 
+if executable('ccls')
+    Plug 'jackguo380/vim-lsp-cxx-highlight'
+endif
+
 if (has('nvim') || (v:version >= 704)) && (executable('tex'))
     Plug 'lervag/vimtex'
 endif
