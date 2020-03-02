@@ -30,9 +30,9 @@ endfunction
 
 " preview function use bash, so windows support
 if (os#name('windows') && &shell =~# '\v^cmd(\.exe)') || empty($FZF_DEFAULT_COMMAND)
-    let l:null = os#name('windows') ? 'nul' : '/dev/null'
+    let s:null = os#name('windows') ? 'nul' : '/dev/null'
 
-    let $FZF_DEFAULT_COMMAND = '('.tools#select_filelist(1).' || '.tools#select_filelist(0).' ) 2> '.l:null
+    let $FZF_DEFAULT_COMMAND = '('.tools#select_filelist(1).' || '.tools#select_filelist(0).' ) 2> '.s:null
     let $FZF_DEFAULT_OPTS = '--layout=reverse --border --ansi ' . (!os#name('windows') ? ' --height 70%' : '')
 
 endif
