@@ -180,7 +180,7 @@ if tools#CheckLanguageServer('c') && executable('ccls')
         \   'name': 'ccls',
         \   'cmdline': tools#getLanguageServer('c'),
         \   'filetypes': [ 'c', 'cpp', 'cuda', 'objc', 'objcpp'  ],
-        \   'project_root_files': [ '.ccls-root', 'compile_commands.json']
+        \   'project_root_files': [ '.ccls-root', 'compile_commands.json', 'compile_flags.txt', '.git']
         \ }]
 endif
 

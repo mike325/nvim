@@ -1,6 +1,6 @@
--- local nvim = require('nvim')
+local nvim = require('nvim')
+
 local sys = require('sys')
--- local plugs = require('nvim').plugs
 local executable = require('nvim').fn.executable
 local isdirectory = require('nvim').fn.isdirectory
 local nvim_set_autocmd = require('nvim').nvim_set_autocmd
@@ -26,6 +26,9 @@ local servers = {
             name = 'ccls',
             options = {
                 init_options = {
+                    cache = {
+                        directory = sys.cache..'/ccls'
+                    },
                     highlight = {
                         lsRanges = true;
                     },
