@@ -412,6 +412,4 @@ nvim = setmetatable({
     end
 })
 
-nvim.option = nvim.o
-
 return nvim

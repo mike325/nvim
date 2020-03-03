@@ -10,6 +10,8 @@ setlocal matchpairs+=<:>
 setlocal expandtab
 setlocal shiftround
 setlocal tabstop=4
+setlocal shiftwidth=0
+setlocal softtabstop=-1
 
 nnoremap <buffer> K :topleft help <C-r>=expand('<cword>')<CR><CR>
 nnoremap <silent><buffer> <CR> :call mappings#cr()<CR>

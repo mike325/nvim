@@ -1,7 +1,8 @@
-local api = vim.api
+local nvim  = require('nvim')
+
+local api = nvim.api
 
 local sys   = require('sys')
-local nvim  = require('nvim')
 local plugs = require('nvim').plugs
 
 local parent      = require('sys').data
@@ -28,7 +29,7 @@ for dirname,dir_setting in pairs(dirpaths) do
     end
 
     if isempty(dir_setting) == 0 then
-        nvim.option[dir_setting] = parent .. '/' .. dirname
+        nvim.o[dir_setting] = parent .. '/' .. dirname
     end
 end
 
@@ -36,98 +37,98 @@ nvim.g.lua_complete_omni = 1
 nvim.g.c_syntax_for_h = 1
 nvim.g.terminal_scrollback_buffer_size = 100000
 
-nvim.option.shada =  "!,/1000,'1000,<1000,:1000,s10000,h"
+nvim.o.shada =  "!,/1000,'1000,<1000,:1000,s10000,h"
 
-nvim.option.expandtab   = true
-nvim.option.shiftround  = true
-nvim.option.tabstop     = 4
-nvim.option.shiftwidth  = 0
-nvim.option.softtabstop = -1
+nvim.o.expandtab   = true
+nvim.o.shiftround  = true
+nvim.o.tabstop     = 4
+nvim.o.shiftwidth  = 0
+nvim.o.softtabstop = -1
 
-nvim.option.scrollback  = -1
-nvim.option.updatetime  = 1000
+nvim.o.scrollback  = -1
+nvim.o.updatetime  = 1000
 
-nvim.option.sidescrolloff = 5
-nvim.option.scrolloff     = 1
-nvim.option.undolevels    = 10000
+nvim.o.sidescrolloff = 5
+nvim.o.scrolloff     = 1
+nvim.o.undolevels    = 10000
 
-nvim.option.inccommand    = 'split'
-nvim.option.winaltkeys    = 'no'
-nvim.option.virtualedit   = 'block'
-nvim.option.formatoptions = 'tcqrolnj'
-nvim.option.backupcopy    = 'yes'
+nvim.o.inccommand    = 'split'
+nvim.o.winaltkeys    = 'no'
+nvim.o.virtualedit   = 'block'
+nvim.o.formatoptions = 'tcqrolnj'
+nvim.o.backupcopy    = 'yes'
 
-nvim.option.complete    = '.,w,b,u,t'
-nvim.option.completeopt = 'menuone,noselect'
-nvim.option.tags        = '.git/tags,./tags;,tags'
-nvim.option.display     = 'lastline,msgsep'
-nvim.option.fileformats = 'unix,dos'
+nvim.o.complete    = '.,w,b,u,t'
+nvim.o.completeopt = 'menuone,noselect'
+nvim.o.tags        = '.git/tags,./tags;,tags'
+nvim.o.display     = 'lastline,msgsep'
+nvim.o.fileformats = 'unix,dos'
 
-nvim.option.wildmenu = true
-nvim.option.wildmode = 'full'
+nvim.o.wildmenu = true
+nvim.o.wildmode = 'full'
 
-nvim.option.pumblend = 20
-nvim.option.winblend = 10
+nvim.o.pumblend = 20
+nvim.o.winblend = 10
 
-nvim.option.showbreak      = '↪\\'
-nvim.option.listchars      = 'tab:▸ ,trail:•,extends:❯,precedes:❮'
-nvim.option.sessionoptions = 'buffers,curdir,folds,globals,localoptions,options,resize,tabpages,winpos,winsize'
-nvim.option.cpoptions      = 'aAceFs_B'
+nvim.o.showbreak      = '↪\\'
+nvim.o.listchars      = 'tab:▸ ,trail:•,extends:❯,precedes:❮'
+nvim.o.sessionoptions = 'buffers,curdir,folds,globals,localoptions,options,resize,tabpages,winpos,winsize'
+nvim.o.cpoptions      = 'aAceFs_B'
 
 if sys.name == 'windows' then
-    nvim.option.sessionoptions = nvim.option.sessionoptions .. ',slash,unix'
+    nvim.o.sessionoptions = nvim.o.sessionoptions .. ',slash,unix'
 end
 
-nvim.option.lazyredraw = true
-nvim.option.showmatch  = true
+nvim.o.lazyredraw = true
+nvim.o.showmatch  = true
 
-nvim.option.splitright = true
-nvim.option.splitbelow = true
+nvim.o.splitright = true
+nvim.o.splitbelow = true
 
-nvim.option.backup   = true
-nvim.option.undofile = true
+nvim.o.backup   = true
+nvim.o.undofile = true
 
-nvim.option.termguicolors = true
+nvim.o.termguicolors = true
 
-nvim.option.infercase  = true
-nvim.option.ignorecase = true
+nvim.o.infercase  = true
+nvim.o.ignorecase = true
 
-nvim.option.smartindent = true
-nvim.option.copyindent  = true
+nvim.o.smartindent = true
+nvim.o.copyindent  = true
 
-nvim.option.expandtab = true
+nvim.o.expandtab = true
 
-nvim.option.joinspaces = false
-nvim.option.showmode   = false
-nvim.option.visualbell = true
-nvim.option.shiftround = true
+nvim.o.joinspaces = false
+nvim.o.showmode   = false
+nvim.o.visualbell = true
+nvim.o.shiftround = true
 
-nvim.option.hidden = true
+nvim.o.hidden = true
 
-nvim.option.autowrite    = true
-nvim.option.autowriteall = true
-nvim.option.fileencoding = 'utf-8'
+nvim.o.autowrite    = true
+nvim.o.autowriteall = true
+nvim.o.fileencoding = 'utf-8'
 
 if nvim.g.gonvim_running ~= nil then
-    nvim.option.showmode = false
-    nvim.option.ruler    = false
+    nvim.o.showmode = false
+    nvim.o.ruler    = false
 else
-    nvim.option.titlestring = '%t (%f)'
-    nvim.option.title       = true
+    nvim.o.titlestring = '%t (%f)'
+    nvim.o.title       = true
 end
 
 -- Default should be internal,filler,closeoff
 if nvim.has('nvim-0.3.3') then
-    nvim.option.diffopt = nvim.option.diffopt .. ',vertical,iwhiteall,iwhiteeol,indent-heuristic,algorithm:minimal,hiddenoff'
+    nvim.o.diffopt = nvim.o.diffopt .. ',vertical,iwhiteall,iwhiteeol,indent-heuristic,algorithm:minimal,hiddenoff'
 else
-    nvim.option.diffopt = 'vertical,iwhite'
+    nvim.o.diffopt = 'vertical,iwhite'
 end
 
-nvim.option.grepprg = tools.select_grep(false)
-nvim.option.grepformat = tools.select_grep(false, 'grepformat')
+nvim.o.grepprg = tools.select_grep(false)
+nvim.o.grepformat = tools.select_grep(false, 'grepformat')
 
 if plugs['vim-fugitive'] ~= nil and plugs['vim-airline'] == nil then
-    nvim.option.statusline = '%<%f %h%m%r%{FugitiveStatusline()}%=%-14.(%l,%c%V%) %P'
+    nvim.o.statusline = '%<%f %h%m%r%{FugitiveStatusline()}%=%-14.(%l,%c%V%) %P'
 end
 
 -- Window options
@@ -183,12 +184,12 @@ local no_backup = {
     'COMMIT_EDITMSG',
 }
 
-nvim.option.wildignore =  table.concat(wildignores, ',')
-nvim.option.backupskip =  table.concat(no_backup, ',') .. ',' .. table.concat(wildignores, ',')
+nvim.o.wildignore =  table.concat(wildignores, ',')
+nvim.o.backupskip =  table.concat(no_backup, ',') .. ',' .. table.concat(wildignores, ',')
 
 if nvim.env.SSH_CONNECTION == nil then
-    nvim.option.mouse     = 'a'
-    nvim.option.clipboard = 'unnamedplus,unnamed'
+    nvim.o.mouse     = 'a'
+    nvim.o.clipboard = 'unnamedplus,unnamed'
 else
-    nvim.option.mouse     = ''
+    nvim.o.mouse     = ''
 end

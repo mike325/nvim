@@ -56,6 +56,8 @@ setlocal foldexpr=GetCshFold()
 setlocal expandtab
 setlocal shiftround
 setlocal tabstop=4
+setlocal shiftwidth=0
+setlocal softtabstop=-1
 
 nnoremap <silent><buffer> <CR> :call mappings#cr()<CR>
 

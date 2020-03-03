@@ -10,4 +10,5 @@ setlocal expandtab
 setlocal shiftround
 setlocal shiftwidth=2
 setlocal tabstop=2
+setlocal shiftwidth=0
 setlocal softtabstop=-1
