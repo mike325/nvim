@@ -17,10 +17,43 @@ local servers = {
     rust       = { rust_analyzer = { name = 'rust_analyzer'}, },
     go         = { gopls         = { name = 'gopls'}, },
     tex        = { texlab        = { name = 'texlab'}, },
-    python     = { pyls          = { name = 'pyls'}, },
     vim        = { vimls         = { name = 'vimls'}, },
-    lua        = { sumneko_lua   = { name = 'sumneko_lua'}, },
     dockerfile = { dockerls      = { name = 'docker-langserver'}, },
+    lua = {
+        sumneko_lua = {
+            name = 'sumneko_lua',
+            options = {
+                settings = {
+                    Lua = {
+                        diagnostics = {
+                            globals = {
+                                'vim',
+                            }
+                        },
+                    },
+                },
+            },
+        },
+    },
+    python = {
+        pyls = {
+            name = 'pyls',
+            options = {
+                settings = {
+                    pyls = {
+                        plugins = {
+                            mccabe = {
+                                threshold = 20
+                            },
+                            pycodestyle = {
+                                maxLineLength = 120
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    },
     c = {
         ccls = {
             name = 'ccls',
