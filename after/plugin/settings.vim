@@ -12,6 +12,10 @@ if has('nvim-0.4')
     finish
 endif
 
+if exists('+syntax')
+    syntax on
+endif
+
 " Fucking hate stock vim in MAC
 if !os#name('macos')
     " Default should be internal,filler,closeoff

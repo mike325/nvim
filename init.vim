@@ -48,11 +48,6 @@ let g:loaded_zipPlugin         = 1
 let g:loaded_tutor_mode_plugin = 1
 " }}}
 
-filetype plugin indent on
-if exists('+syntax')
-    syntax on
-endif
-
 if has('nvim')
     lua require('python').setup()
     lua require('tools')
@@ -65,11 +60,13 @@ if v:version >= 800
     packadd! cfilter
 endif
 
-if v:version >= 704
+if v:version >= 704 && !has('nvim')
+    packadd! matchparen
     packadd! matchit
 endif
 
 if exists('g:bare')
+    filetype plugin indent on
     finish
 else
 
@@ -77,6 +74,7 @@ else
         execute 'set runtimepath+=' . expand(vars#basedir() . '/plug/')
         call plug#begin(vars#basedir().'/plugged')
     catch /E\(117\|492\)/
+        filetype plugin indent on
         finish
     endtry
 

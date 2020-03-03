@@ -64,15 +64,23 @@ local configs = {
         nvim.g.iron_map_defaults = 0
         nvim.g.iron_map_extended = 0
 
-        nvim.nvim_set_mapping('n', 'gs', '<Plug>(iron-send-motion)')
-        nvim.nvim_set_mapping('v', 'gs', '<Plug>(iron-visual-send)')
-        nvim.nvim_set_mapping('n', 'gsr', '<Plug>(iron-repeat-cmd)')
-        nvim.nvim_set_mapping('n', '<leader><leader>l', '<Plug>(iron-send-line)')
-
-        nvim.nvim_set_mapping('n', 'gs<CR>', '<Plug>(iron-cr)')
-        nvim.nvim_set_mapping('n', 'gsq', '<Plug>(iron-exit)')
-
-        nvim.nvim_set_mapping('n', '=r', ':IronRepl<CR><ESC>', {noremap = true, silent = true})
+        if nvim.has('nvim-0.4') then
+            nvim.nvim_set_mapping('n', 'gs', '<Plug>(iron-send-motion)')
+            nvim.nvim_set_mapping('v', 'gs', '<Plug>(iron-visual-send)')
+            nvim.nvim_set_mapping('n', 'gsr', '<Plug>(iron-repeat-cmd)')
+            nvim.nvim_set_mapping('n', '<leader><leader>l', '<Plug>(iron-send-line)')
+            nvim.nvim_set_mapping('n', 'gs<CR>', '<Plug>(iron-cr)')
+            nvim.nvim_set_mapping('n', 'gsq', '<Plug>(iron-exit)')
+            nvim.nvim_set_mapping('n', '=r', ':IronRepl<CR><ESC>', {noremap = true, silent = true})
+        else
+            nvim.command('nmap              gs                   <Plug>(iron-send-motion)')
+            nvim.command('nmap              gs                   <Plug>(iron-visual-send)')
+            nvim.command('nmap              gsr                  <Plug>(iron-repeat-cmd)')
+            nvim.command('nmap              <leader><leader>l    <Plug>(iron-send-line)')
+            nvim.command('nmap              gs<CR>               <Plug>(iron-cr)')
+            nvim.command('nmap              gsq                  <Plug>(iron-exit)')
+            nvim.command('nnoremap <silent> =r                   :IronRepl<CR><ESC>')
+        end
 
     end,
 }
