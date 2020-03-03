@@ -197,7 +197,13 @@ endif
 
 " let g:ycm_clangd_binary_path = ''
 let g:ycm_use_clangd = executable('ccls') ? 0 : 1
-let g:ycm_clangd_args = ['-background-index']
+let g:ycm_clangd_args = [
+    \   '--index',
+    \   '--background-index',
+    \   '--suggest-missing-includes',
+    \   '--clang-tidy',
+    \]
+
 " let g:ycm_clangd_uses_ycmd_caching = 1
 
 if executable('ctags')

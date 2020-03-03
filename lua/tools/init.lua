@@ -376,7 +376,13 @@ function tools.get_language_server(language)
                 '"emitInactiveRegions" : true'..
             '}'
         },
-        ['clangd'] = {'clangd', '--background-index'},
+        ['clangd'] = {
+            'clangd',
+            '--index',
+            '--background-index',
+            '--suggest-missing-includes',
+            '--clang-tidy',
+        },
         ['gopls']  = {'gopls' },
         ['texlab'] = {'texlab' },
         ['bash-language-server'] = {'bash-language-server', 'start'},

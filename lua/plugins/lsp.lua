@@ -74,7 +74,18 @@ local servers = {
                 },
             },
         },
-        clangd = { name = 'clangd', },
+        clangd = {
+            name = 'clangd',
+            options = {
+                cmd = {
+                    'clangd',
+                    '--index',
+                    '--background-index',
+                    '--suggest-missing-includes',
+                    '--clang-tidy',
+                },
+            }
+        },
     },
 }
 
