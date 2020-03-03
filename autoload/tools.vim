@@ -107,7 +107,7 @@ function! tools#getLanguageServer(language) abort
         \   'ccls',
         \   '--log-file=' . os#tmp('ccls.log'),
         \   '--init={'.
-        \       '"cacheDirectory":"' . os#cache() . '/ccls",'.
+        \       '"cache": {"directory": "' . os#cache() . '/ccls"},'.
         \       '"completion": {"filterAndSort": false},'.
         \       '"highlight": { "lsRanges" : true }'.
         \   '}'
@@ -116,7 +116,7 @@ function! tools#getLanguageServer(language) abort
         \   'cquery',
         \   '--log-file=' . os#tmp('cquery.log'),
         \   '--init={'.
-        \       '"cacheDirectory":"' . os#cache() . '/cquery",'.
+        \       '"cache": {"directory": "' . os#cache() . '/cquery"},'.
         \       '"completion": {"filterAndSort": false},'.
         \       '"highlight": { "enabled" : true },'.
         \       '"emitInactiveRegions" : true'.

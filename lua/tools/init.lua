@@ -361,7 +361,7 @@ function tools.get_language_server(language)
             'ccls',
             '--log-file=' .. sys.tmp('ccls.log'),
             '--init={'..
-                '"cacheDirectory":"' .. sys.cache .. '/ccls",'..
+                '"cache": {"directory": "' .. sys.cache .. '/ccls"},'..
                 '"completion": {"filterAndSort": false},'..
                 '"highlight": {"lsRanges" : true }'..
             '}'
@@ -370,7 +370,7 @@ function tools.get_language_server(language)
             'cquery',
             '--log-file=' .. sys.tmp('cquery.log'),
             '--init={'..
-                '"cacheDirectory":"' .. sys.cache .. '/cquery",'..
+                '"cache": {"directory": "' .. sys.cache .. '/cquery"},'..
                 '"completion": {"filterAndSort": false},'..
                 '"highlight": { "enabled" : true },'..
                 '"emitInactiveRegions" : true'..

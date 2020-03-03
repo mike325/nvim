@@ -58,6 +58,7 @@ local servers = {
         ccls = {
             name = 'ccls',
             options = {
+                cmd = { 'ccls', '--log-file=' .. sys.tmp('ccls.log') }
                 init_options = {
                     cache = {
                         directory = sys.cache..'/ccls'
@@ -66,9 +67,9 @@ local servers = {
                         lsRanges = true;
                     },
                     completion = {
+                        filterAndSort = true,
                         caseSensitivity = 1,
                         detailedLabel = false,
-                        filterAndSort = true,
                     },
                 },
             },
