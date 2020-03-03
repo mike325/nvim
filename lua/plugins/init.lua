@@ -19,7 +19,7 @@ local function convert2settings(name)
 end
 
 -- TODO: Add glob function to call just the available configs
-for plugin, data in pairs(plugs) do
+for plugin, _ in pairs(plugs) do
     _ = nvim.plugs[plugin] -- Cache plugins for future use
     local func_name = convert2settings(plugin)
     local ok, error_code = pcall(nvim.command, 'runtime! autoload/plugins/'..func_name..'.vim')
@@ -33,5 +33,5 @@ end
 require('plugins/config')
 
 if nvim.has('nvim-0.5') then
-    local lsp = require('plugins/lsp')
+    require('plugins/lsp')
 end
