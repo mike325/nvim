@@ -58,7 +58,7 @@ local servers = {
         ccls = {
             name = 'ccls',
             options = {
-                cmd = { 'ccls', '--log-file=' .. sys.tmp('ccls.log') }
+                cmd = { 'ccls', '--log-file=' .. sys.tmp('ccls.log') },
                 init_options = {
                     cache = {
                         directory = sys.cache..'/ccls'
