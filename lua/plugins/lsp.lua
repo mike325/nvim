@@ -39,6 +39,10 @@ local servers = {
         pyls = {
             name = 'pyls',
             options = {
+                cmd = {
+                    'pyls',
+                    '--log-file=' .. sys.tmp('pyls.log'),
+                },
                 settings = {
                     pyls = {
                         plugins = {
