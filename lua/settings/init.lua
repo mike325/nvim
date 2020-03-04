@@ -144,7 +144,9 @@ nvim.wo.foldmethod     = 'syntax'
 nvim.wo.signcolumn     = 'auto'
 nvim.wo.numberwidth    = 1
 nvim.wo.foldlevel      = 99
-nvim.wo.foldcolumn     = '0'
+
+-- Changes in nvim master
+-- nvim.wo.foldcolumn     = 'auto'
 
 local wildignores = {
     '*.spl',
