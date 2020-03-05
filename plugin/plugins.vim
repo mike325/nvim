@@ -37,6 +37,10 @@ Plug 'tpope/vim-endwise'
 " Plug 'AndrewRadev/splitjoin.vim'
 " Plug 'editorconfig/editorconfig-vim'
 
+if has('nvim-0.4')
+    Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
+endif
+
 if has('nvim') && has#python('3', '5')
     Plug 'numirias/semshi', {'do': ':silent! UpdateRemotePlugins'}
 endif
@@ -88,7 +92,7 @@ if executable('git')
     endif
 endif
 
-if v:version > 703 || has('nvim')
+if (v:version > 703 || has('nvim')) && !exists('g:started_by_firenvim')
     Plug 'vim-airline/vim-airline'
     Plug 'vim-airline/vim-airline-themes'
 endif

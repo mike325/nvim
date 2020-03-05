@@ -65,6 +65,10 @@ if v:version >= 704 && !has('nvim')
     packadd! matchit
 endif
 
+if exists('g:started_by_firenvim')
+    let $NO_COOL_FONTS = 1
+endif
+
 if exists('g:bare')
     filetype plugin indent on
     finish

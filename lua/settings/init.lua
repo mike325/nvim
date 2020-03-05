@@ -1,6 +1,6 @@
 local nvim  = require('nvim')
 
-local api = nvim.api
+-- local api = nvim.api
 
 local sys   = require('sys')
 local plugs = require('nvim').plugs
@@ -36,6 +36,10 @@ end
 nvim.g.lua_complete_omni = 1
 nvim.g.c_syntax_for_h = 1
 nvim.g.terminal_scrollback_buffer_size = 100000
+
+if nvim.g.started_by_firenvim ~= nil then
+    nvim.o.laststatus = 0
+end
 
 nvim.o.shada =  "!,/1000,'1000,<1000,:1000,s10000,h"
 
