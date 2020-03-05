@@ -1,7 +1,7 @@
 " Neocomplete settings
 " github.com/mike325/.vim
 
-if !exists('g:plugs["neocomplete.vim"]') && exists('g:config_neocomplete')
+if !exists('g:plugs["neocomplete.vim"]') || exists('g:config_neocomplete')
     finish
 endif
 

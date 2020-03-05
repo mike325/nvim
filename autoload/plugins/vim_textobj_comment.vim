@@ -1,7 +1,7 @@
 " Vim_textobj_comment Setttings
 " github.com/mike325/.vim
 
-if !exists('g:plugs["vim-textobj-comment"]') && exists('g:config_textobj')
+if !exists('g:plugs["vim-textobj-comment"]') || exists('g:config_textobj')
     finish
 endif
 

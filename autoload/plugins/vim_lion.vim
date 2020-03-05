@@ -1,7 +1,7 @@
 " Lion settings
 " github.com/mike325/.vim
 
-if !exists('g:plugs["vim-lion"]') && exists('g:config_lion')
+if !exists('g:plugs["vim-lion"]') || exists('g:config_lion')
     finish
 endif
 

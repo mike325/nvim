@@ -2,7 +2,7 @@ scriptencoding 'utf-8'
 " Airline settings
 " github.com/mike325/.vim
 
-if !exists('g:plugs["vim-airline"]') && exists('g:config_airline')
+if !exists('g:plugs["vim-airline"]') || exists('g:config_airline')
     finish
 endif
 

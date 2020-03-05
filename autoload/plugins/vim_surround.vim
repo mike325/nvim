@@ -3,7 +3,7 @@ scriptencoding 'utf-8'
 " Surround Setttings
 " github.com/mike325/.vim
 
-if !exists('g:plugs["vim-surround"]') && exists('g:config_surround')
+if !exists('g:plugs["vim-surround"]') || exists('g:config_surround')
     finish
 endif
 

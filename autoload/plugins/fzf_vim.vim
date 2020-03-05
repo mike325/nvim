@@ -1,7 +1,7 @@
 " FZF_vim Setttings
 " github.com/mike325/.vim
 
-if (!exists('g:plugs["fzf"]') || !exists('g:plugs["fzf.vim"]')) && exists('g:config_fzf')
+if (!exists('g:plugs["fzf"]') || !exists('g:plugs["fzf.vim"]')) || exists('g:config_fzf')
     finish
 endif
 

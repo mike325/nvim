@@ -1,7 +1,7 @@
 " EasyMotions settings
 " github.com/mike325/.vim
 
-if !exists('g:plugs["vim-easymotion"]') && exists('g:config_easymotion')
+if !exists('g:plugs["vim-easymotion"]') || exists('g:config_easymotion')
     finish
 endif
 

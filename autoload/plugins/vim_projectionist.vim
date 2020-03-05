@@ -1,7 +1,7 @@
 " Projections Setttings
 " github.com/mike325/.vim
 
-if !exists('g:plugs["vim-projectionist"]') && exists('g:config_projectionist')
+if !exists('g:plugs["vim-projectionist"]') || exists('g:config_projectionist')
     finish
 endif
 

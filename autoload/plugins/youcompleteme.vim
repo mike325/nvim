@@ -2,7 +2,7 @@ scriptencoding 'utf-8'
 " YCM settings
 " github.com/mike325/.vim
 
-if !exists('g:plugs["YouCompleteMe"]') && exists('g:config_ycm')
+if !exists('g:plugs["YouCompleteMe"]') || exists('g:config_ycm')
     finish
 endif
 

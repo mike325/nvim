@@ -1,7 +1,7 @@
 " vim_lsc Setttings
 " github.com/mike325/.vim
 
-if !exists('g:plugs["vim-lsc"]') && exists('g:config_lsc')
+if !exists('g:plugs["vim-lsc"]') || exists('g:config_lsc')
     finish
 endif
 

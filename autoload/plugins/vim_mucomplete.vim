@@ -1,7 +1,7 @@
 " vim_mucomplete Setttings
 " github.com/mike325/.vim
 
-if !exists('g:plugs["vim-mucomplete"]') && exists('g:config_mucomplete')
+if !exists('g:plugs["vim-mucomplete"]') || exists('g:config_mucomplete')
     finish
 endif
 

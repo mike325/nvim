@@ -1,7 +1,7 @@
 " CtrlP settings
 " github.com/mike325/.vim
 
-if !exists('g:plugs["ctrlp.vim"]') && exists('g:config_ctrlp')
+if !exists('g:plugs["ctrlp.vim"]') || exists('g:config_ctrlp')
     finish
 endif
 

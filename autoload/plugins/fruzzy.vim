@@ -1,7 +1,7 @@
 " Fruzzy Setttings
 " github.com/mike325/.vim
 
-if !exists('g:plugs["fruzzy"]]') && exists('g:config_fruzzy')
+if !exists('g:plugs["fruzzy"]]') || exists('g:config_fruzzy')
     finish
 endif
 

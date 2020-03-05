@@ -1,7 +1,7 @@
 " Semshi Setttings
 " github.com/mike325/.vim
 
-if !exists('g:plugs["semshi"]') && exists('g:config_semshi')
+if !exists('g:plugs["semshi"]') || exists('g:config_semshi')
     finish
 endif
 

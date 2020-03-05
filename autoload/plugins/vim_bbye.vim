@@ -1,7 +1,7 @@
 " Vim-bbye settings
 " github.com/mike325/.vim
 
-if !exists('g:plugs["vim-bbye"]') && exists('g:config_bbye')
+if !exists('g:plugs["vim-bbye"]') || exists('g:config_bbye')
     finish
 endif
 

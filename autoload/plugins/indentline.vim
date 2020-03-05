@@ -2,7 +2,7 @@ scriptencoding 'utf-8'
 " IndentLine settings
 " github.com/mike325/.vim
 
-if !exists('g:plugs["indentLine"]') && exists('g:config_indentline')
+if !exists('g:plugs["indentLine"]') || exists('g:config_indentline')
     finish
 endif
 

@@ -1,7 +1,7 @@
 " SnipMate settings
 " github.com/mike325/.vim
 
-if !exists('g:plugs["vim-snipmate"]') && exists('g:config_snipmate')
+if !exists('g:plugs["vim-snipmate"]') || exists('g:config_snipmate')
     finish
 endif
 

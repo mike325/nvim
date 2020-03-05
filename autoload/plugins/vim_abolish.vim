@@ -1,7 +1,7 @@
 " Abolish Setttings
 " github.com/mike325/.vim
 
-if !exists('g:plugs["vim-abolish"]') && exists('g:config_abolish')
+if !exists('g:plugs["vim-abolish"]') || exists('g:config_abolish')
     finish
 endif
 

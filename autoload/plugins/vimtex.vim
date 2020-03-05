@@ -1,7 +1,7 @@
 " Vimtex Setttings
 " github.com/mike325/.vim
 
-if !exists('g:plugs["vimtex"]') && exists('g:config_vimtex')
+if !exists('g:plugs["vimtex"]') || exists('g:config_vimtex')
     finish
 endif
 

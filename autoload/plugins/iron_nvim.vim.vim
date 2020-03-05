@@ -1,7 +1,7 @@
 " iron_nvim.vim Setttings
 " github.com/mike325/.vim
 
-if !exists('g:plugs["iron.nvim"]') && exists('g:config_iron')
+if !exists('g:plugs["iron.nvim"]') || exists('g:config_iron')
     finish
 endif
 

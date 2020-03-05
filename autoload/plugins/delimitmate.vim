@@ -2,7 +2,7 @@ scriptencoding 'utf-8'
 " DelimitMate settings
 " github.com/mike325/.vim
 
-if !exists('g:plugs["delimitMate"]') && exists('g:config_delimitMate')
+if !exists('g:plugs["delimitMate"]') || exists('g:config_delimitMate')
     finish
 endif
 

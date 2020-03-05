@@ -16,6 +16,6 @@ function! plugins#settings() abort
             execute 'runtime! autoload/plugins/' . s:func_name . '.vim'
         endfor
     catch
-        tools#echoerr('Error trying to read config from ' . s:name)
+        call tools#echoerr('Error trying to read config from ' . s:name)
     endtry
 endfunction
