@@ -11,11 +11,7 @@ import os
 import os.path as p
 import sys
 import logging
-import re
-try:
-    import ycm_core
-except ImportError:
-    logging.warn('No ycm_core module found')
+# import re
 
 _DEBUG = True
 
@@ -87,6 +83,8 @@ COMPILE_DB = [
     'compile_commands.json',
 ]
 
+database = None
+
 
 def GetCompilationDatabase():
     """TODO: Docstring for GetCompilationDatabase.
@@ -157,18 +155,18 @@ def GetStandardLibraryIndexInSysPath(sys_path):
     raise RuntimeError('Could not find standard library path in Python path.')
 
 
-def PythonSysPath(**kwargs):
-    sys_path = kwargs['sys_path']
-
-    home = 'HOME' if os.name != 'nt' else 'USERPROFILE'
-    home = NormalizePath(os.environ[home])
-
-    # interpreter_path = kwargs['interpreter_path']
-    # major_version = subprocess.check_output([
-    #     interpreter_path, '-c', 'import sys; print(sys.version_info[0])']
-    # ).rstrip().decode('utf8')
-
-    return sys_path
+# def PythonSysPath(**kwargs):
+#     sys_path = kwargs['sys_path']
+#
+#     home = 'HOME' if os.name != 'nt' else 'USERPROFILE'
+#     home = NormalizePath(os.environ[home])
+#
+#     # interpreter_path = kwargs['interpreter_path']
+#     # major_version = subprocess.check_output([
+#     #     interpreter_path, '-c', 'import sys; print(sys.version_info[0])']
+#     # ).rstrip().decode('utf8')
+#
+#     return sys_path
 
 
 def Settings(**kwargs):
@@ -245,9 +243,3 @@ def FlagsForFile(filename, **kwargs):
             settings['language'] = 'python'
 
     return Settings(**settings)
-
-
-database = None
-compilation_database_folder = GetCompilationDatabase()
-if p.exists(compilation_database_folder):
-    database = ycm_core.CompilationDatabase(compilation_database_folder)

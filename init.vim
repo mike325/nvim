@@ -57,12 +57,12 @@ else
 endif
 
 if v:version >= 800
-    packadd! cfilter
+    silent! packadd! cfilter
 endif
 
 if v:version >= 704 && !has('nvim')
-    packadd! matchparen
-    packadd! matchit
+    silent! packadd! matchparen
+    silent! packadd! matchit
 endif
 
 if exists('g:started_by_firenvim')
