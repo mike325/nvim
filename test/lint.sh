@@ -368,7 +368,7 @@ fi
 
 status_msg "Running VimL lint"
 verbose_msg "Vint version: $(vint --version)"
-if ! fd -e vim --exclude plug --exclude ftdetect -X vint --enable-neovim -t -s || fd -e vim . ftdetect -X vint --enable-neovim -t -e; then
+if ! fd -e vim --exclude plug --exclude ftdetect -X vint --enable-neovim -t -s || ! fd -e vim . ftdetect -X vint --enable-neovim -t -e; then
     error_msg 'Fail VimL lint test'
     exit 2
 fi

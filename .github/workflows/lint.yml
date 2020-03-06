@@ -36,7 +36,7 @@ jobs:
           wget https://raw.githubusercontent.com/Mike325/dotfiles/master/install.sh
           chmod +x ./install.sh
           ./install.sh --portables --verbose --force
-      - name: Test neovim and stock vim
+      - name: Lint source code
         run: |
           export PATH="$HOME/.local/bin:$PATH"
           ./test/lint.sh --verbose
