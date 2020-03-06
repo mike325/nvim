@@ -1,7 +1,6 @@
 -- luacheck: globals unpack vim
-local nvim = {}
 local api = vim.api
-local inspect = vim.inspect
+-- local inspect = vim.inspect
 
 local function nvim_get_mapping(m, lhs, ...)
     local mappings
@@ -156,7 +155,7 @@ local function nvim_set_abbr(m, lhs, rhs, ...)
             table.insert(extras, '<buffer>')
         end
 
-        if opts['expr'] ~= nil and rhi ~= nil then
+        if opts['expr'] ~= nil and rhs ~= nil then
             table.insert(extras, '<expr>')
         end
     end
@@ -246,7 +245,7 @@ end
 
 -- Took from https://github.com/norcalli/nvim_utils
 -- GPL3 apply to the nvim object
-nvim = setmetatable({
+local nvim = setmetatable({
     l = api.loop;
     nvim_get_mapping = nvim_get_mapping;
     nvim_set_mapping = nvim_set_mapping;
@@ -387,11 +386,11 @@ nvim = setmetatable({
             return value or nil
         end;
         __newindex = function(_, k, v)
-            local ok, value = pcall(api.nvim_call_function, 'setenv', {k, v})
+            local ok, _ = pcall(api.nvim_call_function, 'setenv', {k, v})
 
             if not ok then
                 v = type(v) == 'string' and '"'..v..'"' or v
-                value = api.nvim_eval('let $'..k..' = '..v)
+                local _ = api.nvim_eval('let $'..k..' = '..v)
             end
         end
     });

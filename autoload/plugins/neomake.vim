@@ -43,6 +43,20 @@ if executable('vint')
         \],}
 endif
 
+if executable('luacheck')
+    let g:neomake_lua_enabled_makers = ['luacheck']
+
+    " The configuration scrips use Neovim commands
+    let g:neomake_vim_luacheck_maker = {
+        \ 'exe': 'luacheck',
+        \ 'errorformat': '%f:%l:%c: %m',
+        \ 'args': [
+        \   '--std', 'luajit',
+        \   '--formatter', 'plain',
+        \],}
+
+endif
+
 let g:neomake_python_enabled_makers = get(g:,'neomake_python_enabled_makers',[])
 
 if executable('flake8')

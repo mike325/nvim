@@ -1,4 +1,4 @@
-local nvim = require('nvim')
+-- local nvim = require('nvim')
 
 local sys = require('sys')
 local executable = require('nvim').fn.executable
