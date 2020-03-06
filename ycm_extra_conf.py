@@ -155,18 +155,18 @@ def GetStandardLibraryIndexInSysPath(sys_path):
     raise RuntimeError('Could not find standard library path in Python path.')
 
 
-def PythonSysPath(**kwargs):
-    sys_path = kwargs['sys_path']
-
-    home = 'HOME' if os.name != 'nt' else 'USERPROFILE'
-    home = NormalizePath(os.environ[home])
-
-    # interpreter_path = kwargs['interpreter_path']
-    # major_version = subprocess.check_output([
-    #     interpreter_path, '-c', 'import sys; print(sys.version_info[0])']
-    # ).rstrip().decode('utf8')
-
-    return sys_path
+# def PythonSysPath(**kwargs):
+#     sys_path = kwargs['sys_path']
+#
+#     home = 'HOME' if os.name != 'nt' else 'USERPROFILE'
+#     home = NormalizePath(os.environ[home])
+#
+#     # interpreter_path = kwargs['interpreter_path']
+#     # major_version = subprocess.check_output([
+#     #     interpreter_path, '-c', 'import sys; print(sys.version_info[0])']
+#     # ).rstrip().decode('utf8')
+#
+#     return sys_path
 
 
 def Settings(**kwargs):

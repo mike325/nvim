@@ -15,11 +15,7 @@ let g:config_indentline = 1
 
 " nnoremap tdi :IndentLinesToggle<CR>
 
-if empty($NO_COOL_FONTS)
-    let g:indentLine_char            = '┊'
-else
-    let g:indentLine_char            = '│'
-endif
+let g:indentLine_char = empty($NO_COOL_FONTS) ? '┊' : '│'
 
 " Set the inline characters for each indent
 " let g:indentLine_char_list = ['|', '¦', '┆', '┊']
@@ -29,9 +25,7 @@ let g:indentLine_color_term      = 214
 let g:indentLine_enabled         = 1
 let g:indentLine_setColors       = 1
 
-" let g:indentLine_fileType = [
-"             \
-"             \]
+" let g:indentLine_leadingSpaceChar = '*'
 
 let g:indentLine_fileTypeExclude = [
     \   'text',
@@ -40,8 +34,14 @@ let g:indentLine_fileTypeExclude = [
     \   'help',
     \   'man',
     \   'git',
+    \   'log',
     \   '',
-    \ ]
+    \]
+
+let g:indentLine_bufTypeExclude = [
+    \   'terminal',
+    \   'help',
+    \]
 
 let g:indentLine_bufNameExclude = [
     \   '',
@@ -51,4 +51,4 @@ let g:indentLine_bufNameExclude = [
     \   'NERD_tree.*',
     \   'term://*',
     \   'man://*',
-    \ ]
+    \]
