@@ -1,0 +1,42 @@
+name: lint
+
+on: [push, pull_request]
+
+jobs:
+  linux-build:
+    name: Lint source files ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [
+          ubuntu-latest,
+        ]
+
+    env:
+      GITHUB: true
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: OS Info
+        run: |
+          sudo apt install wget
+          wget -O screenfetch-dev https://git.io/vaHfR
+          chmod +x screenfetch-dev
+          ./screenfetch-dev
+      - name: Install dependencies
+        run: |
+          sudo apt install -y curl git shellcheck python3-setuptools python-setuptools luarocks
+          sudo apt install -y python3-pip
+          sudo pip3 install --upgrade pip
+          sudo pip3 install 'vim-vint>=0.3.19' 'mypy==0.710' 'flake8>=3.5.0' 'flake8-mypy>=17.8.0' 'pyflakes>=2.0.0' 'yapf>=0.22.0' 'mccabe>=0.6.1'
+          sudo luarocks install luacheck
+      - name: Fetch install script
+        run: |
+          wget https://raw.githubusercontent.com/Mike325/dotfiles/master/install.sh
+          chmod +x ./install.sh
+          ./install.sh --portables --verbose
+      - name: Test neovim and stock vim
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          ./test/lint.sh

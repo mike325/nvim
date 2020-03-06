@@ -178,7 +178,7 @@ if executable('shellcheck')
         \   'errorformat':'%f:%l:%c: %trror: %m [SC%n],%f:%l:%c: %tarning: %m [SC%n],%f:%l:%c: %tote: %m [SC%n]',
         \   'args': [
         \      '-f', 'gcc',
-        \      '-e', '1117',
+        \      '-e', '1117,2034',
         \      '-x',
         \      '-a',
         \],}

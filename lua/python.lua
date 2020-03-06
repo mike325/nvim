@@ -1,16 +1,16 @@
 local nvim = require('nvim')
-local api = vim.api
+-- local api = vim.api
 
 local has        = require('nvim').has
-local exists     = require('nvim').fn.exists
-local system     = require('nvim').fn.system
+-- local exists     = require('nvim').fn.exists
+-- local system     = require('nvim').fn.system
 local exepath    = require('nvim').fn.exepath
 local executable = require('nvim').fn.executable
 
 local check_version    = require('tools').check_version
 local split_components = require('tools').split_components
 
-local inspect = vim.inspect
+-- local inspect = vim.inspect
 
 -- global python object
 python = {
@@ -27,7 +27,7 @@ python = {
 local function get_python_exe(version)
 
     local pyexe = nil
-    local pyeval = version == 2 and 'pyeval' or 'py3eval'
+    -- local pyeval = version == 2 and 'pyeval' or 'py3eval'
     local pyversion = version == 2 and '2' or '3'
     local variable = version == 2 and 'python_host_prog' or 'python3_host_prog'
     local deactivate = version == 2 and 'loaded_python_provider' or 'loaded_python3_provider'

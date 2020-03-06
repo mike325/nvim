@@ -118,7 +118,7 @@ if !exists('g:plugs["iron.nvim"]') && has#python()
 
         let l:version = ( a:version  == 3 ) ? l:python3 : l:python2
         if empty(l:version)
-            tools#echoerr('Python' . a:version . ' is not available in the system')
+            call tools#echoerr('Python' . a:version . ' is not available in the system')
             return -1
         endif
         let l:split = (&splitbelow) ? 'botright' : 'topleft'

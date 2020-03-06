@@ -19,14 +19,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
-      - name: Install dependencies
+      - name: OS Info
         run: |
-          sudo apt install wget curl git
+          sudo apt install wget
           wget -O screenfetch-dev https://git.io/vaHfR
           chmod +x screenfetch-dev
           ./screenfetch-dev
-
-          sudo apt install -y shellcheck python3-setuptools python-setuptools build-essential cmake python3-dev
+      - name: Install dependencies
+        run: |
+          sudo apt install -y curl git shellcheck python3-setuptools python-setuptools build-essential cmake python3-dev
           sudo apt install -y python3-pip  python-pip
           sudo pip2 install --upgrade pip
           sudo pip3 install --upgrade pip
@@ -67,7 +68,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
-      - name: Install dependencies
+      - name: OS Info
         run: |
           brew install git shellcheck neovim cmake wget
           wget -O screenfetch-dev https://git.io/vaHfR
