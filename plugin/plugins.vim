@@ -49,7 +49,7 @@ if !os#name('windows')
     Plug 'tpope/vim-vinegar'
 endif
 
-if has#python() && has#async() && !has('nvim-0.5')
+if has#python() && has#async()
     Plug 'neomake/neomake'
 endif
 

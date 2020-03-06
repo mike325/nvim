@@ -1,5 +1,6 @@
 -- local nvim = require('nvim')
 
+local plugs = require('nvim').plugs
 local sys = require('sys')
 local executable = require('nvim').fn.executable
 local isdirectory = require('nvim').fn.isdirectory
@@ -178,6 +179,16 @@ nvim_set_autocmd(
     "lua require'nvim'.nvim_set_command('Type' , 'lua vim.lsp.buf.type_definition()', {buffer = true, force = true})",
     {group = 'NvimLSP'}
 )
+
+-- Disable neomake for lsp buffers
+if plugs['neomake'] ~= nil then
+    nvim_set_autocmd(
+        'FileType',
+        available_languages,
+        "call neomake#cmd#disable(b:)",
+        {group = 'NvimLSP'}
+    )
+end
 
 do
     local method = 'textDocument/publishDiagnostics'

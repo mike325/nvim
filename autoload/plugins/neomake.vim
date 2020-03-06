@@ -196,9 +196,9 @@ try
             \ 'InsertLeave': {},
             \ 'BufWinEnter': {},
             \ 'BufWritePost': {'delay': 0},
-            \ }, 1000)
+            \ }, 500)
     else
-        call neomake#configure#automake('nrw', 1000)
+        call neomake#configure#automake('nrw', 200)
     endif
 catch E117
 endtry
