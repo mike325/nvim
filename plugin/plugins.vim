@@ -37,7 +37,7 @@ Plug 'tpope/vim-endwise'
 " Plug 'AndrewRadev/splitjoin.vim'
 " Plug 'editorconfig/editorconfig-vim'
 
-if has('nvim-0.4') && empty($SSH_CONNECTION)
+if has('nvim-0.4') && empty($SSH_CONNECTION) && !os#name('wsl')
     Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
 endif
 
