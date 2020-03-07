@@ -21,7 +21,7 @@ if executable('vint')
     let &errorformat='%f:%l:%c: %trror: %m,%f:%l:%c: %tarning: %m,%f:%l:%c: %tote: %m'
 endif
 
-if exists('g:plugs["neomake"]')
-    call plugins#neomake#makeprg()
-endif
-
+" TODO: Parse makeprg to use neomake
+" if exists('g:plugs["neomake"]')
+"     call plugins#neomake#makeprg()
+" endif
