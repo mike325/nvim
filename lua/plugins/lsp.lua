@@ -18,8 +18,13 @@ local servers = {
     rust       = { rust_analyzer = { name = 'rust_analyzer'}, },
     go         = { gopls         = { name = 'gopls'}, },
     tex        = { texlab        = { name = 'texlab'}, },
-    vim        = { vimls         = { name = 'vimls'}, },
     dockerfile = { dockerls      = { name = 'docker-langserver'}, },
+    vim = {
+        vimls = {
+            name = 'vimls',
+            executable = 'vim-language-server',
+        },
+    },
     lua = {
         sumneko_lua = {
             name = 'sumneko_lua',
@@ -98,7 +103,10 @@ local available_languages = {}
 
 for language,options in pairs(servers) do
     for option,server in pairs(options) do
-        if executable(server['name']) == 1 or isdirectory(sys.home .. '/.cache/nvim/nvim_lsp/' .. server['name']) == 1 then
+        local dir = isdirectory(sys.home .. '/.cache/nvim/nvim_lsp/' .. server['name']) == 1
+        local exec = executable(server['name']) == 1 or
+                    (server['executable'] ~= nil and executable(server['executable']))
+        if exec or dir then
             local init = server['options'] ~= nil and server['options'] or {}
             lsp[option].setup(init)
             available_languages[#available_languages + 1] = language
