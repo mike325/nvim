@@ -67,3 +67,8 @@ if executable('shellcheck')
     setlocal makeprg=shellcheck\ -f\ gcc\ -e\ 1117,2034\ -x\ -a\ %
     let &errorformat='%f:%l:%c: %trror: %m [SC%n],%f:%l:%c: %tarning: %m [SC%n],%f:%l:%c: %tote: %m [SC%n]'
 endif
+
+if exists('g:plugs["neomake"]')
+    call plugins#neomake#makeprg()
+endif
+

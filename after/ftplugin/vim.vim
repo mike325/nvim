@@ -17,6 +17,11 @@ nnoremap <buffer> K :topleft help <C-r>=expand('<cword>')<CR><CR>
 nnoremap <silent><buffer> <CR> :call mappings#cr()<CR>
 
 if executable('vint')
-    setlocal makeprg=vint\ -f\ \"{file_path}:{line_number}:{column_number}:\ {severity}:\ {description}\ (see\ {reference})\"\ --enable-neovim\ %
+    setlocal makeprg=vint\ --no-color\ --style-problem\ -f\ \"{file_path}:{line_number}:{column_number}:\ {severity}:\ {description}\ \({policy_name})\ (see\ {reference})\"\ --enable-neovim\ %
     let &errorformat='%f:%l:%c: %trror: %m,%f:%l:%c: %tarning: %m,%f:%l:%c: %tote: %m'
 endif
+
+if exists('g:plugs["neomake"]')
+    call plugins#neomake#makeprg()
+endif
+

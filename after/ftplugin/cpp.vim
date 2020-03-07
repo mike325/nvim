@@ -43,4 +43,8 @@ elseif executable('g++')
     setlocal makeprg=g++\ -std=c++17\ -Wall\ -Wextra\ % " '-o', os#tmp('neomake')
 endif
 
+if exists('g:plugs["neomake"]')
+    call plugins#neomake#makeprg()
+endif
+
 nnoremap <silent><buffer> <CR> :call mappings#cr()<CR>
