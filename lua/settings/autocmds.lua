@@ -4,7 +4,12 @@
 local plugs = require('nvim').plugs
 local nvim_set_autocmd = require('nvim').nvim_set_autocmd
 
-nvim_set_autocmd('TermOpen', '*', 'setlocal noswapfile nobackup noundofile', {create = true, group = 'TerminalAutocmds'})
+nvim_set_autocmd(
+    'TermOpen',
+    '*',
+    'setlocal noswapfile nobackup noundofile',
+    {create = true, group = 'TerminalAutocmds'}
+)
 nvim_set_autocmd('TermOpen', '*', 'setlocal relativenumber number nocursorline', {group = 'TerminalAutocmds'})
 -- nvim_set_autocmd('TermOpen', '*', 'setlocal bufhidden=wipe', {group = 'TerminalAutocmds'})
 

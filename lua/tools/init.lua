@@ -1,6 +1,6 @@
 -- luacheck: globals unpack vim
 
-local inspect = vim.inspect
+-- local inspect = vim.inspect
 
 local nvim         = require('nvim')
 local line         = require('nvim').fn.line
@@ -412,7 +412,7 @@ function tools.abolish(language)
 
     if nvim.fn.exists(':Abolish') == 2 then
         if abolish[current] ~= nil then
-            for base,replace in pairs(abolish[current]) do
+            for base,_ in pairs(abolish[current]) do
                 nvim.command('Abolish -delete -buffer '..base)
             end
         end
@@ -431,11 +431,16 @@ function tools.abolish(language)
         local function set_abbr(base, replace)
             nvim.nvim_set_abbr('i', base, replace, {buffer = true})
             nvim.nvim_set_abbr('i', base:upper(), replace:upper(), {buffer = true})
-            nvim.nvim_set_abbr('i', base:gsub('%a', string.upper, 1), replace:gsub('%a', string.upper, 1), {buffer = true})
+            nvim.nvim_set_abbr(
+                'i',
+                base:gsub('%a', string.upper, 1),
+                replace:gsub('%a', string.upper, 1),
+                {buffer = true}
+            )
         end
 
         if abolish[current] ~= nil then
-            for base,replace in pairs(abolish[current]) do
+            for base, _ in pairs(abolish[current]) do
                 if not string.match(base, '{.+}') then
                     remove_abbr(base)
                 end

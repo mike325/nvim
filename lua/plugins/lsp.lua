@@ -199,9 +199,9 @@ if plugs['neomake'] ~= nil then
 end
 
 do
-    local method = 'textDocument/publishDiagnostics'
-    local default_callback = vim.lsp.callbacks[method]
-    vim.lsp.callbacks[method] = function(err, method, result, client_id)
+    local lsp_method = 'textDocument/publishDiagnostics'
+    local default_callback = vim.lsp.callbacks[lsp_method]
+    vim.lsp.callbacks[lsp_method] = function(err, method, result, client_id)
         default_callback(err, method, result, client_id)
         if result and result.diagnostics then
             for _, v in ipairs(result.diagnostics) do

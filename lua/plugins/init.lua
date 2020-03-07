@@ -3,9 +3,9 @@ local nvim = require('nvim')
 -- local inspect = nvim.inspect
 local api = nvim.api
 
-local ok, plugs = pcall(api.nvim_get_var, 'plugs')
+local installed, plugs = pcall(api.nvim_get_var, 'plugs')
 
-if not ok then
+if not installed then
     nvim.echoerr('Plugs are not load yet')
     return nil
 end

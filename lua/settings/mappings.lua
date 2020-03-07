@@ -222,7 +222,11 @@ nvim.nvim_set_mapping('t', '<ESC>', '<C-\\><C-n>', noremap)
 nvim.nvim_set_mapping('n', '<A-s>', '<C-w>s', noremap)
 nvim.nvim_set_mapping('n', '<A-v>', '<C-w>v', noremap)
 
-nvim.nvim_set_command('Terminal' , [[ call luaeval('require"settings/mappings".terminal("'.<q-args>.'")') ]], {nargs='?', force=true})
+nvim.nvim_set_command(
+    'Terminal',
+    [[ call luaeval('require"settings/mappings".terminal("'.<q-args>.'")') ]],
+    {nargs='?', force=true}
+)
 
 nvim.nvim_set_command('PowershellToggle'      , 'call windows#toggle_powershell()', {force=true})
 nvim.nvim_set_command('RelativeNumbersToggle' , 'set relativenumber! relativenumber?', {force=true})
@@ -241,8 +245,16 @@ nvim.nvim_set_command('WrapToggle'            , 'setlocal wrap! wrap?', {force=t
 nvim.nvim_set_command('VerboseToggle'         , 'let &verbose=!&verbose | echo "Verbose " . &verbose', {force=true})
 nvim.nvim_set_command('TrimToggle'            , [[lua require"settings/mappings".trim()]], {force=true})
 nvim.nvim_set_command('GonvimSettngs', "execute('edit ~/.gonvim/setting.toml')", {nargs='*'}, {force=true})
-nvim.nvim_set_command('FileType'     , "call mappings#SetFileData('filetype', <q-args>, 'text')", {nargs='?', complete='filetype', force = true})
-nvim.nvim_set_command('FileFormat'   , "call mappings#SetFileData('fileformat', <q-args>, 'unix')", {nargs='?', complete='customlist,mappings#format', force = true})
+nvim.nvim_set_command(
+    'FileType',
+    "call mappings#SetFileData('filetype', <q-args>, 'text')",
+    {nargs='?', complete='filetype', force = true}
+)
+nvim.nvim_set_command(
+    'FileFormat',
+    "call mappings#SetFileData('fileformat', <q-args>, 'unix')",
+    {nargs='?', complete='customlist,mappings#format', force = true}
+)
 
 nvim.nvim_set_command(
     'SpellLang',
@@ -251,7 +263,11 @@ nvim.nvim_set_command(
 )
 
 nvim.nvim_set_command('ConncallLevel',  "call mappings#ConncallLevel(expand(<q-args>))", {nargs='?', force = true})
-nvim.nvim_set_command('Qopen', "execute((&splitbelow) ? 'botright' : 'topleft' ) . ' copen ' . expand(<q-args>)", {nargs='?', force = true})
+nvim.nvim_set_command(
+    'Qopen',
+    "execute((&splitbelow) ? 'botright' : 'topleft' ) . ' copen ' . expand(<q-args>)",
+    {nargs='?', force = true}
+)
 
 if executable('svn') == 1 then
     nvim.nvim_set_command('SVNstatus', "execute('!svn status ' . <q-args>)", {nargs='*', force = true})
@@ -264,9 +280,21 @@ if executable('svn') == 1 then
 end
 
 if plugs["iron.nvim"] == nil and (has('python') or has('python3'))then
-    nvim.nvim_set_command('Python' , [[ call luaeval('require"settings/mappings".python(2, "'.<q-args>.'")') ]], {complete='file', nargs='*', force = true})
-    nvim.nvim_set_command('Python' , [[ call luaeval('require"settings/mappings".python(3, "'.<q-args>.'")') ]], {complete='file', nargs='*', force = true})
-    nvim.nvim_set_command('Python3', [[ call luaeval('require"settings/mappings".python(3, "'.<q-args>.'")') ]], {complete='file', nargs='*', force = true})
+    nvim.nvim_set_command(
+        'Python',
+        [[ call luaeval('require"settings/mappings".python(2, "'.<q-args>.'")') ]],
+        {complete='file', nargs='*', force = true}
+    )
+    nvim.nvim_set_command(
+        'Python',
+        [[ call luaeval('require"settings/mappings".python(3, "'.<q-args>.'")') ]],
+        {complete='file', nargs='*', force = true}
+    )
+    nvim.nvim_set_command(
+        'Python3',
+        [[ call luaeval('require"settings/mappings".python(3, "'.<q-args>.'")') ]],
+        {complete='file', nargs='*', force = true}
+    )
 end
 
 if plugs["vim-bbye"] == nil then
@@ -301,12 +329,12 @@ if plugs["vim-vinegar"] == nil and plugs["nerdtree"] == nil then
     nvim.nvim_set_mapping('n', '-', ':Explore<CR>')
 end
 
-if plugs["vim-eunuch"] == nil then
-    -- TODO
-end
+-- if plugs["vim-eunuch"] == nil then
+--     -- TODO
+-- end
 
-if plugs["vim-fugitive"] == nil and executable('git') == 1 then
-    -- TODO
-end
+-- if plugs["vim-fugitive"] == nil and executable('git') == 1 then
+--     -- TODO
+-- end
 
 return mappings

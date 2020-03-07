@@ -1,14 +1,14 @@
 -- luacheck: globals unpack vim
 
-local api = vim.api
+-- local api = vim.api
 local nvim = require('nvim')
 
 local has         = require('nvim').fn.has
 local mkdir       = require('nvim').fn.mkdir
-local system      = require('nvim').fn.system
 local stdpath     = require('nvim').fn.stdpath
-local executable  = require('nvim').fn.executable
 local isdirectory = require('nvim').fn.isdirectory
+-- local system      = require('nvim').fn.system
+-- local executable  = require('nvim').fn.executable
 
 local function system_name()
     local name = 'unknown'
@@ -37,33 +37,33 @@ local function homedir()
 end
 
 local function basedir()
-    local basedir = stdpath('config'):gsub('\\', '/')
+    local dir = stdpath('config'):gsub('\\', '/')
 
-    if isdirectory(basedir) == 0 then
-        mkdir(basedir, 'p')
+    if isdirectory(dir) == 0 then
+        mkdir(dir, 'p')
     end
 
-    return basedir
+    return dir
 end
 
 local function cachedir()
-    local cachedir = stdpath('cache'):gsub('\\', '/')
+    local dir = stdpath('cache'):gsub('\\', '/')
 
-    if isdirectory(cachedir) == 0 then
-        mkdir(cachedir, 'p')
+    if isdirectory(dir) == 0 then
+        mkdir(dir, 'p')
     end
 
-    return cachedir
+    return dir
 end
 
 local function datadir()
-    local datadir = stdpath('data'):gsub('\\', '/')
+    local dir = stdpath('data'):gsub('\\', '/')
 
-    if isdirectory(datadir) == 0 then
-        mkdir(datadir, 'p')
+    if isdirectory(dir) == 0 then
+        mkdir(dir, 'p')
     end
 
-    return datadir
+    return dir
 end
 
 local sys = {
