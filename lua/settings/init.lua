@@ -122,11 +122,7 @@ else
 end
 
 -- Default should be internal,filler,closeoff
-if nvim.has('nvim-0.3.3') then
-    nvim.o.diffopt = nvim.o.diffopt .. ',vertical,iwhiteall,iwhiteeol,indent-heuristic,algorithm:minimal,hiddenoff'
-else
-    nvim.o.diffopt = 'vertical,iwhite'
-end
+nvim.o.diffopt = nvim.o.diffopt .. ',vertical,iwhiteall,iwhiteeol,indent-heuristic,algorithm:minimal,hiddenoff'
 
 nvim.o.grepprg = tools.select_grep(false)
 nvim.o.grepformat = tools.select_grep(false, 'grepformat')
@@ -136,18 +132,18 @@ if plugs['vim-fugitive'] ~= nil and plugs['vim-airline'] == nil then
 end
 
 -- Window options
-
-nvim.wo.breakindent    = true
-nvim.wo.relativenumber = true
-nvim.wo.number         = true
-nvim.wo.list           = true
-nvim.wo.wrap           = false
-nvim.wo.foldenable     = false
-nvim.wo.colorcolumn    = '80'
-nvim.wo.foldmethod     = 'syntax'
-nvim.wo.signcolumn     = 'auto'
-nvim.wo.numberwidth    = 1
-nvim.wo.foldlevel      = 99
+-- Use set to modify global and window value
+nvim.command('set breakindent')
+nvim.command('set relativenumber')
+nvim.command('set number')
+nvim.command('set list')
+nvim.command('set nowrap')
+nvim.command('set nofoldenable')
+nvim.command('set colorcolumn="80"')
+nvim.command('set foldmethod=syntax')
+nvim.command('set signcolumn=auto')
+nvim.command('set numberwidth=1')
+nvim.command('set foldlevel=99')
 
 -- Changes in nvim master
 -- nvim.wo.foldcolumn     = 'auto'

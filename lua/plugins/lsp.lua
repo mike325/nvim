@@ -105,7 +105,7 @@ for language,options in pairs(servers) do
     for option,server in pairs(options) do
         local dir = isdirectory(sys.home .. '/.cache/nvim/nvim_lsp/' .. server['name']) == 1
         local exec = executable(server['name']) == 1 or
-                    (server['executable'] ~= nil and executable(server['executable']))
+                     (server['executable'] ~= nil and executable(server['executable']) == 1)
         if exec or dir then
             local init = server['options'] ~= nil and server['options'] or {}
             lsp[option].setup(init)
