@@ -2,6 +2,12 @@ scriptencoding 'utf-8'
 " Tools Setttings
 " github.com/mike325/.vim
 
+function! tools#checksize() abort
+    " If the size of the file is bigger than ~5MB
+    " lets consider it as a log
+    return ( getfsize(expand('%')) > 5242880 ) ? 1 : 0
+endfunction
+
 if has('nvim-0.5')
     function! tools#getLanguageServer(language) abort
         return v:lua.tools.get_language_server(a:language)
