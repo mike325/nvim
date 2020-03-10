@@ -3,9 +3,11 @@ scriptencoding 'utf-8'
 " github.com/mike325/.vim
 
 " We just want to source this file once and if we have autocmd available
-if !has('autocmd') || ( exists('g:autocmds_loaded') && g:autocmds_loaded )
+if !has('autocmd') || exists('g:autocmds_loaded')
     finish
 endif
+
+let g:autocmds_loaded = 1
 
 if has('nvim')
     lua require('settings/autocmds')

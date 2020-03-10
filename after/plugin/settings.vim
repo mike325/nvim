@@ -7,6 +7,8 @@ if exists('g:settings_loaded')
     finish
 endif
 
+let g:settings_loaded = 1
+
 if has('nvim-0.4')
     lua require('settings')
     finish

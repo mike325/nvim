@@ -7,6 +7,8 @@ if exists('g:mappings_loaded')
     finish
 endif
 
+let g:mappings_loaded = 1
+
 if has('nvim-0.4')
     lua require('settings/mappings')
     finish
