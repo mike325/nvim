@@ -19,9 +19,9 @@ nnoremap <silent><buffer> <CR> :call mappings#cr()<CR>
 if executable('vint')
     setlocal makeprg=vint\ --no-color\ --style-problem\ -f\ \"{file_path}:{line_number}:{column_number}:\ {severity}:\ {description}\ \({policy_name})\ (see\ {reference})\"\ --enable-neovim\ %
     let &errorformat='%f:%l:%c: %trror: %m,%f:%l:%c: %tarning: %m,%f:%l:%c: %tote: %m'
-endif
 
-" TODO: Parse makeprg to use neomake
-" if exists('g:plugs["neomake"]')
-"     call plugins#neomake#makeprg()
-" endif
+    " TODO: Parse makeprg to use neomake
+    " if exists('g:plugs["neomake"]')
+    "     call plugins#neomake#makeprg()
+    " endif
+endif

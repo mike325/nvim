@@ -43,7 +43,7 @@ elseif executable('g++')
     setlocal makeprg=g++\ -std=c++17\ -Wall\ -Wextra\ % " '-o', os#tmp('neomake')
 endif
 
-if exists('g:plugs["neomake"]')
+if exists('g:plugs["neomake"]') && (executable('clang++') || executable('clang-tidy') || executable('g++'))
     call plugins#neomake#makeprg()
 endif
 
