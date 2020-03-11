@@ -193,7 +193,7 @@ if plugs['neomake'] ~= nil then
     nvim_set_autocmd(
         'FileType',
         available_languages,
-        "call neomake#cmd#disable(b:)",
+        "silent! call neomake#cmd#disable(b:)",
         {group = 'NvimLSP'}
     )
 end

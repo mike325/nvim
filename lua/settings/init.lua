@@ -195,3 +195,10 @@ if nvim.env.SSH_CONNECTION == nil then
 else
     nvim.o.mouse     = ''
 end
+
+if nvim.fn.executable('nvr') == 1 then
+    nvim.env.nvr  = 'nvr --servername '.. nvim.v.servername ..' --remote-silent'
+    nvim.env.tnvr = 'nvr --servername '.. nvim.v.servername ..' --remote-tab-silent'
+    nvim.env.vnvr = 'nvr --servername '.. nvim.v.servername ..' -cc vsplit --remote-silent'
+    nvim.env.snvr = 'nvr --servername '.. nvim.v.servername ..' -cc split --remote-silent'
+end

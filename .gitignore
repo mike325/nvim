@@ -33,3 +33,4 @@ TAGS
 
 /local.vim
 *.add.spl
+/.luacheckcache
