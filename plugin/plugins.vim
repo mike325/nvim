@@ -126,6 +126,11 @@ if !empty($YCM) && empty($NO_PYTHON_DEV) &&
 elseif has('nvim-0.5') && tools#CheckLanguageServer()
     Plug 'neovim/nvim-lsp'
     Plug 'lifepillar/vim-mucomplete'
+
+    if executable('ccls')
+        Plug 'jackguo380/vim-lsp-cxx-highlight'
+    endif
+
 elseif v:version >= 800 && tools#CheckLanguageServer()
     Plug 'natebosch/vim-lsc'
 elseif has#async() && (has('nvim-0.2.0') || (!has('nvim') && has('lambda')))
@@ -134,10 +139,6 @@ elseif has('lua') && !has('nvim') && v:version >= 704
     Plug 'Shougo/neocomplete.vim'
 else
     Plug 'ervandew/supertab'
-endif
-
-if executable('ccls')
-    Plug 'jackguo380/vim-lsp-cxx-highlight'
 endif
 
 if (has('nvim') || (v:version >= 704)) && (executable('tex'))

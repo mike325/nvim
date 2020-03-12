@@ -3,7 +3,6 @@
 -- local api = vim.api
 local nvim = require('nvim')
 
-local has         = require('nvim').fn.has
 local mkdir       = require('nvim').fn.mkdir
 local stdpath     = require('nvim').fn.stdpath
 local isdirectory = require('nvim').fn.isdirectory
@@ -13,11 +12,11 @@ local isdirectory = require('nvim').fn.isdirectory
 local function system_name()
     local name = 'unknown'
 
-    if has('win32unix') == 1 or has('win32') == 1 then
+    if nvim.has('win32unix') or nvim.has('win32') then
         name = 'windows'
-    elseif has('gui_mac') == 1 or has('mac') == 1 or has('macos') == 1 or has('macunix') == 1 then
+    elseif nvim.has('gui_mac') or nvim.has('mac') or nvim.has('macos') or nvim.has('macunix') then
         name = 'mac'
-    elseif has('unix') == 1 then
+    elseif nvim.has('unix') then
         -- TODO: check for false positive problems in macOS
         name = 'linux'
     end

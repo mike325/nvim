@@ -1,8 +1,8 @@
 local nvim         = require('nvim')
 local sys          = require('sys')
-local floating     = require('floating').window
 local executable   = require('nvim').fn.executable
 local filereadable = require('nvim').fn.filereadable
+-- local floating     = require('floating').window
 
 local python = require('python')
 
@@ -18,6 +18,18 @@ local configs = {
                 },
             },
         }
+
+        -- TODO: Find a way to detect available COM ports
+        -- TODO: Handle WSL
+        if executable('rshell') == 1 and sys.name ~= 'windows' then
+            m.core.add_repl_definitions{
+                python = {
+                    micropython = {
+                        command = {'rshell', '-p', '/dev/ttyUSB0'},
+                    },
+                },
+            }
+        end
 
         local preferred = {}
 
