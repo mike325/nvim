@@ -44,10 +44,10 @@ nnoremap <buffer> <A-h> m`:VimwikiTableMoveColumnRight<CR>``
 
 setlocal textwidth=80
 
-" Restore signify mappings
-if exists('g:plugs["vim-signify"]')
-    call plugins#vim_signify#init(0)
-endif
+" " Restore signify mappings
+" if exists('g:plugs["vim-signify"]')
+"     call plugins#vim_signify#init(0)
+" endif
 
 if has('nvim-0.4')
     call luaeval('tools.abolish("'.&l:spelllang.'")')
