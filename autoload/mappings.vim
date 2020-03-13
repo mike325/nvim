@@ -176,8 +176,8 @@ function! mappings#cr() abort
     let l:cword = expand('<cword>')
     try
         execute 'tag ' . l:cword
-    catch /E42\(6\|9\)/
-        execute "normal! \<CR>"
+    catch /E4\(2\(6\|9\)\|33\)/
+        execute "silent! normal! \<CR>"
     endtry
 endfunction
 
