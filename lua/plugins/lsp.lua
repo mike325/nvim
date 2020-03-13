@@ -160,12 +160,12 @@ nvim_set_autocmd(
     {group = 'NvimLSP'}
 )
 
-nvim_set_autocmd(
-    'FileType',
-    available_languages,
-    "autocmd CursorHold <buffer> lua vim.lsp.buf.hover()",
-    {group = 'NvimLSP', nested = true}
-)
+-- nvim_set_autocmd(
+--     'FileType',
+--     available_languages,
+--     "autocmd CursorHold <buffer> lua vim.lsp.buf.hover()",
+--     {group = 'NvimLSP', nested = true}
+-- )
 
 nvim_set_autocmd(
     'FileType',
