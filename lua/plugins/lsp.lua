@@ -53,10 +53,13 @@ local servers = {
                     pyls = {
                         plugins = {
                             mccabe = {
-                                threshold = 20
+                                threshold = 20,
                             },
                             pycodestyle = {
-                                maxLineLength = 120
+                                maxLineLength = 120,
+                                ignore = {
+                                    'E203',
+                                },
                             },
                         },
                     },
