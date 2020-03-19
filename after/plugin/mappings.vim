@@ -279,7 +279,7 @@ endif
 
 " ####### Fallback Plugin mapping {{{
 
-if !exists('g:plugs["denite.nvim"]') && !exists('g:plugs["fzf.vim"]')
+if !exists('g:plugs["fzf.vim"]')
     command! -nargs=1 -complete=customlist,tools#oldfiles Oldfiles edit <args>
 endif
 
