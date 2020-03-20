@@ -66,6 +66,10 @@ else
         \ call fzf#vim#files(<q-args>, {}, <bang>0)
 endif
 
+if os#name('windows') && executable('bat')
+    let g:fzf_files_options = ['--border', '--ansi', '--preview-window', 'right:50%', '--preview', 'bat --color=always {}']
+endif
+
 call plugins#fzf_vim#map_command(vars#home().'/dotfiles', 'Dotfiles')
 
 if has('nvim-0.4')
