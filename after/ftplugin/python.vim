@@ -19,10 +19,10 @@ endif
 
 if executable('flake8')
     setlocal makeprg=flake8\ --max-line-length=120\ --ignore=E121,E123,E126,E226,E24,E704,W503,W504,H233,E228,E701,E226,E251,E501,E221,E203,E27\ %
-    let &errorformat='%f:%l:%c: %t%n %m'
+    setlocal errorformat=%f:%l:%c:\ %t%n\ %m
 elseif executable('pycodestyle')
     setlocal makeprg=pycodestyle\ --max-line-length=120\ --ignore=E121,E123,E126,E226,E24,E704,W503,W504,H233,E228,E701,E226,E251,E501,E221,E203,E27\ %
-    let &errorformat='%f:%l:%c: %t%n %m'
+    setlocal errorformat=%f:%l:%c:\ %t%n\ %m
 else
     setlocal makeprg=python3\ -c\ \"import\ py_compile,sys;\ sys.stderr=sys.stdout;\ py_compile.compile(r'%')\"
     setlocal errorformat=%C\ %.%#,%A\ \ File\ \"%f\"\\,\ line\ %l%.%#,%Z%[%^\ ]%\\@=%m

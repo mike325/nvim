@@ -52,7 +52,7 @@ function! plugins#neomake#makeprg() abort
     let b:neomake_{l:ft}_{l:name}_maker = {
         \   'exe': l:executable,
         \   'args': l:args,
-        \   'errorformat': &errorformat,
+        \   'errorformat': !empty(&l:errorformat) ? &l:errorformat : &errorformat,
         \}
 endfunction
 
