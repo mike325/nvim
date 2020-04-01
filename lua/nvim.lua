@@ -1,6 +1,6 @@
 -- luacheck: globals unpack vim
-local api = vim.api
 -- local inspect = vim.inspect
+local api = vim.api
 
 local function nvim_get_mapping(m, lhs, ...)
     local mappings

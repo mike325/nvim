@@ -3,6 +3,7 @@
 
 function! plugins#convert_name(name) abort
     let l:name = (a:name =~? '[\.\-]') ? substitute(a:name, '[\.\-]', '_', 'g') : a:name
+    let l:name = (a:name =~? '[\+]') ? substitute(a:name, '[\+]', '', 'g') : a:name
     let l:name = substitute(l:name, '.', '\l\0', 'g')
     return l:name
 endfunction
