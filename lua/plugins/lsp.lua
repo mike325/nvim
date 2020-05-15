@@ -13,6 +13,14 @@ if not ok then
     return nil
 end
 
+-- local ok, completion = pcall(require, 'completion')
+-- if not ok then
+--     completion = nil
+-- -- else
+--     -- nvim.g.completion_enable_snippet = ['ultisnips']
+--     -- nvim.g.completion_confirm_key = "\\<C-y>"
+-- end
+
 local servers = {
     sh         = { bashls        = { name = 'bash-language-server'}, },
     rust       = { rust_analyzer = { name = 'rust_analyzer'}, },
@@ -111,6 +119,9 @@ for language,options in pairs(servers) do
                      (server['executable'] ~= nil and executable(server['executable']) == 1)
         if exec or dir then
             local init = server['options'] ~= nil and server['options'] or {}
+            -- if completion ~= nil then
+            --     init['on_attach'] = completion.on_attach
+            -- end
             lsp[option].setup(init)
             available_languages[#available_languages + 1] = language
             if language == 'c' then

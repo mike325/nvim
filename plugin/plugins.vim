@@ -53,6 +53,8 @@ if has#python() && has#async()
     Plug 'neomake/neomake'
 endif
 
+" Plug 'pechorin/any-jump.vim'
+
 if executable('fzf') && !os#name('cygwin')
     " Use chocolately install in windows
     Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': function('plugins#fzf_vim#install')}
@@ -79,7 +81,8 @@ endif
 if executable('git') || executable('hg') || executable('svn')
     " These are the only VCS I care, if none is installed, then skip this plugin
     if has#async()
-        Plug 'mhinz/vim-signify'
+        " Plug 'mhinz/vim-signify' # Neovim 0.5 usage is a bit broken with stock repo
+        Plug 'mike325/vim-signify', {'branch': 'foldcolumn'}
     else
         Plug 'mhinz/vim-signify', { 'branch': 'legacy' }
     endif
@@ -126,6 +129,7 @@ if !empty($YCM) && empty($NO_PYTHON_DEV) &&
 elseif has('nvim-0.5') && tools#CheckLanguageServer()
     Plug 'neovim/nvim-lsp'
     Plug 'lifepillar/vim-mucomplete'
+    " Plug 'haorenW1025/completion-nvim'
 
     if executable('ccls')
         Plug 'jackguo380/vim-lsp-cxx-highlight'

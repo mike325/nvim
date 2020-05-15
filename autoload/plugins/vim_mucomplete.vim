@@ -18,13 +18,28 @@ let g:mucomplete#chains = {
     \ 'vim'     : ['path', 'ulti', 'cmd', 'keyn']
     \ }
 
-let s:cpp_cond  = { t -> t =~# '\%(->\|::\|\.\)\(\a[[:alnum:]]\+\)\?$' }
-let s:c_cond    = { t -> t =~# '\%(->\|\.\)\(\a[[:alnum:]]\+\)\?$' }
-let s:lua_cond  = { t -> t =~# '\%(:\|\.\)\(\a[[:alnum:]]\+\)\?$' }
-let s:omni_cond = { t -> t =~# '\%(\.\)\(\a[[:alnum:]]\+\)\?$' }
-
 let g:mucomplete#can_complete = get(g:, 'mucomplete#can_complete', {})
-let g:mucomplete#can_complete.c      = { 'omni': s:c_cond }
-let g:mucomplete#can_complete.cpp    = { 'omni': s:cpp_cond }
-let g:mucomplete#can_complete.lua    = { 'omni': s:lua_cond }
-let g:mucomplete#can_complete.python = { 'omni': s:omni_cond }
+
+function! s:SetOmni() abort
+
+    let l:omni = {
+        \ 'cpp'   : { t -> t =~# '\%(->\|::\|\.\)$' },
+        \ 'c'     : { t -> t =~# '\%(->\|\.\)$' },
+        \ 'lua'   : { t -> t =~# '\%(:\|\.\)$' },
+        \ 'python': { t -> t =~# '\%(\.\)$' },
+        \}
+
+    let l:ft = &filetype
+
+    if empty(l:ft) || !exists('l:omni[l:ft]') || &omnifunc !=# 'v:lua.vim.lsp.omnifunc'
+        return
+    endif
+
+    let g:mucomplete#can_complete[l:ft] = { 'omni': l:omni[l:ft] }
+
+endfunction
+
+augroup MuOmniPatterns
+    autocmd!
+    autocmd FileType * call s:SetOmni()
+augroup end
