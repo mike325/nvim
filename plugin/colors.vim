@@ -22,7 +22,7 @@ try
         colorscheme torte
         set nocursorline
     endif
-catch E185
+catch /E185/
     colorscheme torte
     set nocursorline
 endtry

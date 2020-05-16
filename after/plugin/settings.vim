@@ -125,7 +125,7 @@ set ttimeoutlen=50
 
 try
     set fillchars=vert:│,fold:·
-catch
+catch /.*/
 endtry
 
 if exists('+display')
@@ -219,7 +219,7 @@ if empty($NO_COOL_FONTS)
     " I like to have different chars for spaces and tabs (see IndentLine plugin)
     try
         set listchars=tab:▸\ ,trail:•,extends:❯,precedes:❮
-    catch E474
+    catch /E474/
         set listchars=tab:>\ ,trail:-,extends:$,precedes:$
     endtry
 else
@@ -263,7 +263,7 @@ if exists('+breakindent')
     " set showbreak=\\\\\
     try
         set showbreak=↪\
-    catch E595
+    catch /E595/
     endtry
 endif
 
