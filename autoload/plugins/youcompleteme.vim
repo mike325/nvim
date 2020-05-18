@@ -36,11 +36,11 @@ function! plugins#youcompleteme#install(info) abort
 
         let l:cmd += ['./install.py']
 
-        if !executable('ccls')
+        " if !executable('ccls')
             "  Both libclang and clangd are downloaded from the upstream, so they can always be install
             let l:cmd += ['--clang-completer']
             let l:cmd += ['--clangd-completer']
-        endif
+        " endif
 
         if executable('go') && !empty($GOROOT)
             let l:cmd += ['--go-completer']
@@ -196,7 +196,7 @@ elseif filereadable(fnameescape(vars#basedir() . '/ycm_extra_conf.py'))
 endif
 
 " let g:ycm_clangd_binary_path = ''
-let g:ycm_use_clangd = executable('ccls') ? 0 : 1
+let g:ycm_use_clangd = 1
 let g:ycm_clangd_args = [
     \   '--index',
     \   '--background-index',

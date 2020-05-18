@@ -53,10 +53,10 @@ let s:moderngit = -1
 
 let s:langservers = {
     \ 'python'     : ['pyls'],
-    \ 'c'          : ['ccls', 'clangd', 'cquery'],
-    \ 'cpp'        : ['ccls', 'clangd', 'cquery'],
-    \ 'cuda'       : ['ccls', 'clangd', 'cquery'],
-    \ 'objc'       : ['ccls', 'clangd', 'cquery'],
+    \ 'c'          : ['clangd', 'ccls', 'cquery'],
+    \ 'cpp'        : ['clangd', 'ccls', 'cquery'],
+    \ 'cuda'       : ['clangd', 'ccls', 'cquery'],
+    \ 'objc'       : ['clangd', 'ccls', 'cquery'],
     \ 'sh'         : ['bash-language-server'],
     \ 'bash'       : ['bash-language-server'],
     \ 'go'         : ['gopls'],
@@ -109,6 +109,13 @@ function! tools#getLanguageServer(language) abort
 
     let l:cmds = {
         \ 'pyls'   : ['pyls', '--check-parent-process', '--log-file=' . os#tmp('pyls.log')],
+        \ 'clangd' : [
+        \   'clangd',
+        \   '--index',
+        \   '--background-index',
+        \   '--suggest-missing-includes',
+        \   '--clang-tidy',
+        \ ],
         \ 'ccls'   : [
         \   'ccls',
         \   '--log-file=' . os#tmp('ccls.log'),
@@ -127,13 +134,6 @@ function! tools#getLanguageServer(language) abort
         \       '"highlight": { "enabled" : true },'.
         \       '"emitInactiveRegions" : true'.
         \   '}'
-        \ ],
-        \ 'clangd' : [
-        \   'clangd',
-        \   '--index',
-        \   '--background-index',
-        \   '--suggest-missing-includes',
-        \   '--clang-tidy',
         \ ],
         \ 'gopls'  : ['gopls'],
         \ 'texlab' : ['texlab'],

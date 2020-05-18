@@ -18,11 +18,11 @@ local modern_git = -1
 
 local langservers = {
     python     = {'pyls'},
-    c          = {'ccls', 'clangd', 'cquery'},
-    cpp        = {'ccls', 'clangd', 'cquery'},
-    cuda       = {'ccls', 'clangd', 'cquery'},
-    objc       = {'ccls', 'clangd', 'cquery'},
-    objcpp     = {'ccls', 'clangd', 'cquery'},
+    c          = {'clangd', 'ccls', 'cquery'},
+    cpp        = {'clangd', 'ccls', 'cquery'},
+    cuda       = {'clangd', 'ccls', 'cquery'},
+    objc       = {'clangd', 'ccls', 'cquery'},
+    objcpp     = {'clangd', 'ccls', 'cquery'},
     sh         = {'bash-language-server'},
     bash       = {'bash-language-server'},
     go         = {'gopls'},
@@ -357,6 +357,13 @@ function tools.get_language_server(language)
 
     local cmds = {
         ['pyls']   = { 'pyls', '--check-parent-process', '--log-file=' .. sys.tmp('pyls.log') },
+        ['clangd'] = {
+            'clangd',
+            '--index',
+            '--background-index',
+            '--suggest-missing-includes',
+            '--clang-tidy',
+        },
         ['ccls']   = {
             'ccls',
             '--log-file=' .. sys.tmp('ccls.log'),
@@ -375,13 +382,6 @@ function tools.get_language_server(language)
                 '"highlight": { "enabled" : true },'..
                 '"emitInactiveRegions" : true'..
             '}'
-        },
-        ['clangd'] = {
-            'clangd',
-            '--index',
-            '--background-index',
-            '--suggest-missing-includes',
-            '--clang-tidy',
         },
         ['gopls']  = {'gopls' },
         ['texlab'] = {'texlab' },

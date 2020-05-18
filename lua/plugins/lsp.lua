@@ -1,4 +1,4 @@
--- local nvim = require('nvim')
+local nvim = require('nvim')
 
 local plugs = require('nvim').plugs
 local sys = require('sys')
@@ -13,12 +13,23 @@ if not ok then
     return nil
 end
 
+local ok, diagnostics = pcall(require, 'diagnostic')
+if ok then
+    nvim.g.diagnostic_enable_virtual_text = 1
+    -- nvim.g.diagnostic_auto_popup_while_jump = 0
+    -- nvim.fn.sign_define("lspdiagnosticserrorsign", {"text" : "e", "texthl" : "lspdiagnosticserror"})
+    -- nvim.fn.sign_define("lspdiagnosticswarningsign", {"text" : "w", "texthl" : "lspdiagnosticswarning"})
+    -- nvim.fn.sign_define("lspdiagnosticinformationsign", {"text" : "i", "texthl" : "lspdiagnosticsinformation"})
+    -- nvim.fn.sign_define("LspDiagnosticHintSign", {"text" : "H", "texthl" : "LspDiagnosticsHint"})
+else
+    diagnostics = nil
+end
+
 -- local ok, completion = pcall(require, 'completion')
--- if not ok then
---     completion = nil
+-- if ok then
+--     -- nvim.g.completion_enable_snippet = 'UltiSnips'
 -- -- else
---     -- nvim.g.completion_enable_snippet = ['ultisnips']
---     -- nvim.g.completion_confirm_key = "\\<C-y>"
+--     completion = nil
 -- end
 
 local servers = {
@@ -76,6 +87,18 @@ local servers = {
         },
     },
     c = {
+        clangd = {
+            name = 'clangd',
+            options = {
+                cmd = {
+                    'clangd',
+                    '--index',
+                    '--background-index',
+                    '--suggest-missing-includes',
+                    '--clang-tidy',
+                },
+            }
+        },
         ccls = {
             name = 'ccls',
             options = {
@@ -95,18 +118,6 @@ local servers = {
                 },
             },
         },
-        clangd = {
-            name = 'clangd',
-            options = {
-                cmd = {
-                    'clangd',
-                    '--index',
-                    '--background-index',
-                    '--suggest-missing-includes',
-                    '--clang-tidy',
-                },
-            }
-        },
     },
 }
 
@@ -119,6 +130,9 @@ for language,options in pairs(servers) do
                      (server['executable'] ~= nil and executable(server['executable']) == 1)
         if exec or dir then
             local init = server['options'] ~= nil and server['options'] or {}
+            if diagnostics ~= nil then
+                init['on_attach'] = diagnostics.on_attach
+            end
             -- if completion ~= nil then
             --     init['on_attach'] = completion.on_attach
             -- end
@@ -210,18 +224,4 @@ if plugs['neomake'] ~= nil then
         "silent! call neomake#cmd#disable(b:)",
         {group = 'NvimLSP'}
     )
-end
-
-do
-    local lsp_method = 'textDocument/publishDiagnostics'
-    local default_callback = vim.lsp.callbacks[lsp_method]
-    vim.lsp.callbacks[lsp_method] = function(err, method, result, client_id)
-        default_callback(err, method, result, client_id)
-        if result and result.diagnostics then
-            for _, v in ipairs(result.diagnostics) do
-                v.uri = v.uri or result.uri
-            end
-            vim.lsp.util.set_loclist(result.diagnostics)
-        end
-    end
 end

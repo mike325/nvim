@@ -129,6 +129,7 @@ if !empty($YCM) && empty($NO_PYTHON_DEV) &&
 elseif has('nvim-0.5') && tools#CheckLanguageServer()
     Plug 'neovim/nvim-lsp'
     Plug 'lifepillar/vim-mucomplete'
+    Plug 'haorenW1025/diagnostic-nvim'
     " Plug 'haorenW1025/completion-nvim'
 
     if executable('ccls')
