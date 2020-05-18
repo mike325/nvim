@@ -24,7 +24,7 @@ if !os#name('macos')
     set diffopt^=vertical
 
     if has('patch-8.1.0360') || has('nvim')
-        set diffopt^=indent-heuristic,algorithm:minimal
+        set diffopt^=indent-heuristic,algorithm:patience
     endif
 
     if has('patch-8.1.1361') || has('nvim')

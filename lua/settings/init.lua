@@ -127,7 +127,7 @@ else
 end
 
 -- Default should be internal,filler,closeoff
-nvim.o.diffopt = nvim.o.diffopt .. ',vertical,iwhiteall,iwhiteeol,indent-heuristic,algorithm:minimal,hiddenoff'
+nvim.o.diffopt = nvim.o.diffopt .. ',vertical,iwhiteall,iwhiteeol,indent-heuristic,algorithm:patience,hiddenoff'
 
 nvim.o.grepprg = tools.select_grep(false)
 nvim.o.grepformat = tools.select_grep(false, 'grepformat')
