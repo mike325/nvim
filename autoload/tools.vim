@@ -115,6 +115,9 @@ function! tools#getLanguageServer(language) abort
         \   '--background-index',
         \   '--suggest-missing-includes',
         \   '--clang-tidy',
+        \   '--header-insertion=iwyu',
+        \   '--function-arg-placeholders',
+        \   '--log=verbose',
         \ ],
         \ 'ccls'   : [
         \   'ccls',

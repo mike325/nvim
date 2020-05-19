@@ -1,5 +1,4 @@
 local nvim = require('nvim')
-
 local plugs = require('nvim').plugs
 local sys = require('sys')
 local executable = require('nvim').fn.executable
@@ -7,29 +6,34 @@ local isdirectory = require('nvim').fn.isdirectory
 local nvim_set_autocmd = require('nvim').nvim_set_autocmd
 -- local nvim_set_command = require('nvim').nvim_set_command
 
-local ok, lsp = pcall(require, 'nvim_lsp')
+local function load_module(name)
+    local ok, M = pcall(require, name)
 
-if not ok then
+    if not ok then
+        return nil
+    end
+    return M
+end
+
+local lsp = load_module('nvim_lsp')
+
+if lsp == nil then
     return nil
 end
 
-local ok, diagnostics = pcall(require, 'diagnostic')
-if ok then
+local diagnostics = load_module('diagnostic')
+if diagnostics ~= nil then
     nvim.g.diagnostic_enable_virtual_text = 1
     -- nvim.g.diagnostic_auto_popup_while_jump = 0
     -- nvim.fn.sign_define("lspdiagnosticserrorsign", {"text" : "e", "texthl" : "lspdiagnosticserror"})
     -- nvim.fn.sign_define("lspdiagnosticswarningsign", {"text" : "w", "texthl" : "lspdiagnosticswarning"})
     -- nvim.fn.sign_define("lspdiagnosticinformationsign", {"text" : "i", "texthl" : "lspdiagnosticsinformation"})
     -- nvim.fn.sign_define("LspDiagnosticHintSign", {"text" : "H", "texthl" : "LspDiagnosticsHint"})
-else
-    diagnostics = nil
 end
 
--- local ok, completion = pcall(require, 'completion')
--- if ok then
---     -- nvim.g.completion_enable_snippet = 'UltiSnips'
--- -- else
---     completion = nil
+-- local completion = load_module('completion')
+-- if completion ~= nil then
+--     nvim.g.completion_enable_snippet = 'UltiSnips'
 -- end
 
 local servers = {
@@ -96,6 +100,9 @@ local servers = {
                     '--background-index',
                     '--suggest-missing-includes',
                     '--clang-tidy',
+                    '--header-insertion=iwyu',
+                    '--function-arg-placeholders',
+                    '--log=verbose',
                 },
             }
         },

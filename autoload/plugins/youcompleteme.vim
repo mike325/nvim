@@ -202,6 +202,9 @@ let g:ycm_clangd_args = [
     \   '--background-index',
     \   '--suggest-missing-includes',
     \   '--clang-tidy',
+    \   '--header-insertion=iwyu',
+    \   '--function-arg-placeholders',
+    \   '--log=verbose',
     \]
 
 " let g:ycm_clangd_uses_ycmd_caching = 1

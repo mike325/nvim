@@ -363,6 +363,9 @@ function tools.get_language_server(language)
             '--background-index',
             '--suggest-missing-includes',
             '--clang-tidy',
+            '--header-insertion=iwyu',
+            '--function-arg-placeholders',
+            '--log=verbose',
         },
         ['ccls']   = {
             'ccls',
