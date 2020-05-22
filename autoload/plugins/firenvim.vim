@@ -7,8 +7,8 @@ endif
 
 let g:config_firenvim = 1
 
-augroup FirenvimHacks
-    autocmd!
-    autocmd TextChanged * ++nested update
-    autocmd InsertLeave * ++nested update
-augroup end
+" augroup FirenvimHacks
+"     autocmd!
+"     autocmd TextChanged * ++nested update
+"     autocmd InsertLeave * ++nested update
+" augroup end
