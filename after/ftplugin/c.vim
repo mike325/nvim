@@ -28,9 +28,9 @@ if executable('clang-tidy') && filereadable(autocmd#getProjectRoot() . '/compile
         \                '%-G%\m%\%%(LLVM ERROR:%\|No compilation database found%\)%\@!%.%#,' .
         \                '%E%m'
 elseif executable('clang')
-    setlocal makeprg=clang\ -std=c17\ -Wall\ -Wextra\ -Weverything\ -Wno-missing-prototypes\ % " '-o', os#tmp('cpp')
+    setlocal makeprg=clang\ -Wall\ -Wextra\ -Weverything\ -Wno-missing-prototypes\ % " '-o', os#tmp('cpp')
 elseif executable('gcc')
-    setlocal makeprg=gcc\ -std=c17\ -Wall\ -Wextra\ % " '-o', os#tmp('neomake')
+    setlocal makeprg=gcc\ -Wall\ -Wextra\ % " '-o', os#tmp('neomake')
 endif
 
 if exists('g:plugs["neomake"]') && (executable('clang') || executable('clang-tidy') || executable('gcc'))

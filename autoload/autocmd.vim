@@ -35,7 +35,7 @@ endfunction
 
 function! autocmd#FileName(...) abort
     let l:filename = expand('%:t:r')
-    let l:extension = expand('%:e')
+    let l:extension = empty(expand('%:e')) ? '*' : expand('%:e')
 
     let l:skeleton = ''
     let l:template = (a:0 > 0) ? a:1 : ''
@@ -43,22 +43,29 @@ function! autocmd#FileName(...) abort
     let l:skeletons_path = vars#basedir(). '/skeletons/'
 
     let l:known_names = {
-                \ 'py': [ 'ycm_extra_conf' ],
-                \ 'json': [ 'projections' ],
-                \ 'c': [ 'main' ],
-                \ 'cpp': [ 'main' ],
-                \ }
+    \   '*': [ 'clang-format', 'clang-tidy' ],
+    \   'py': [ 'ycm_extra_conf' ],
+    \   'json': [ 'projections' ],
+    \   'c': [ 'main' ],
+    \   'cpp': [ 'main' ],
+    \ }
 
     if !empty(l:template)
         let l:skeleton = fnameescape(l:skeletons_path . l:template)
     else
-
         if get(l:known_names, l:extension, []) != []
             let l:names = l:known_names[l:extension]
             for l:name in l:names
-                if l:filename =~? l:name && filereadable(fnameescape(l:skeletons_path . l:name . '.' . l:extension))
-                    let l:skeleton = fnameescape(l:skeletons_path . l:name . '.' . l:extension)
-                    break
+                if l:filename =~? l:name
+                    let l:template_file = l:skeletons_path . l:name
+
+                    if filereadable(fnameescape(l:template_file))
+                        let l:skeleton = fnameescape(l:template_file)
+                        break
+                    elseif filereadable(fnameescape(l:template_file . '.' . l:extension))
+                        let l:skeleton = fnameescape(l:template_file . '.' . l:extension)
+                        break
+                    endif
                 endif
             endfor
         endif

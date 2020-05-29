@@ -517,7 +517,7 @@ function tools.file_name(...)
     end
 
     local filename = nvim.fn.expand('%:t:r')
-    local extension = nvim.fn.expand('%:e')
+    local extension = nvim.fn.expand('%:e') ~= '' and nvim.fn.expand('%:e') or '*'
     local skeleton = ''
 
     local template = #opts > 0 and opts[1] or ''
@@ -525,21 +525,33 @@ function tools.file_name(...)
     local skeletons_path = sys.base..'/skeletons/'
 
     local known_names = {
-        py   = {'ycm_extra_conf'},
-        json = {'projections'},
-        c    = {'main'},
-        cpp  = {'main'},
+        ['*'] = { 'clang-format', 'clang-tidy' },
+        py    = {'ycm_extra_conf'},
+        json  = {'projections'},
+        c     = {'main'},
+        cpp   = {'main'},
     }
 
     if #template ~= 0 then
         skeleton = nvim.fn.fnameescape(skeletons_path .. template)
     else
+
         if known_names[extension] ~= nil then
             local names = known_names[extension]
             for _, name in pairs(names) do
-                if string.find(filename, name) ~= nil and filereadable(skeletons_path..name..'.'..extension) == 1 then
-                    skeleton = nvim.fn.fnameescape(skeletons_path..name..'.'..extension)
-                    break
+
+                if string.find(filename, name, 1, true) ~= nil then
+
+                    local template_file = skeletons_path..name
+
+                    if filereadable(template_file) == 1 then
+                        skeleton = nvim.fn.fnameescape(template_file)
+                        break
+                    elseif filereadable(template_file..'.'..extension) == 1 then
+                        skeleton = nvim.fn.fnameescape(template_file..'.'..extension)
+                        break
+                    end
+
                 end
             end
         end
@@ -581,6 +593,8 @@ local function find_project_root(path)
 
     end
 
+    project_root = project_root:gsub('\\', '/')
+
     return project_root
 end
 
@@ -593,12 +607,15 @@ function tools.project_config(event)
     -- print(inspect(event))
 
     local cwd = event.cwd or nvim.fn.getcwd()
+    cwd = cwd:gsub('\\', '/')
 
     local root = find_project_root(cwd)
 
     if #root == 0 then
         root = nvim.fn.fnamemodify(cwd, ':p')
     end
+
+    root = root:gsub('\\', '/')
 
     if root == nvim.b.project_root then
         return root
