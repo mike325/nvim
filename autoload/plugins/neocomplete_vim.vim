@@ -30,21 +30,6 @@ let g:neocomplete#omni#input_patterns = get(g:,'neocomplete#omni#input_patterns'
 
 let g:neocomplete#sources={}
 
-" let g:neocomplete#sources._    = ['buffer', 'member', 'file', 'ultisnips']
-" let g:neocomplete#sources.vim        = ['buffer', 'member', 'file', 'ultisnips']
-" let g:neocomplete#sources.c          = ['buffer', 'member', 'file', 'omni', 'ultisnips']
-" let g:neocomplete#sources.cpp        = ['buffer', 'member', 'file', 'omni', 'ultisnips']
-" let g:neocomplete#sources.go         = ['buffer', 'member', 'file', 'omni', 'ultisnips']
-" let g:neocomplete#sources.java       = ['buffer', 'member', 'file', 'omni', 'ultisnips']
-" let g:neocomplete#sources.python     = ['buffer', 'member', 'file', 'omni', 'ultisnips']
-" let g:neocomplete#sources.javascript = ['buffer', 'member', 'file', 'omni', 'ultisnips']
-" let g:neocomplete#sources.ruby       = ['buffer', 'member', 'file', 'ultisnips']
-
 " if !exists('g:neocomplete#sources#omni#input_patterns')
 "     let g:neocomplete#sources#omni#input_patterns = {}
 " endif
-
-augroup CloseMenu
-    autocmd!
-    autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
-augroup end
