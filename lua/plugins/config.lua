@@ -9,7 +9,29 @@ local python = require('python')
 local configs = {
     iron = function(m)
 
+        local preferred = {}
+        local definitions = {}
+        local default = ''
+
         local python_executable = python['3'].version ~= nil and python['3'].path or python['2'].path
+
+        if nvim.env.SHELL ~= nil then
+            m.core.add_repl_definitions {
+                c = {
+                    shell = {
+                        command = {nvim.env.SHELL}
+                    }
+                },
+                cpp = {
+                    shell = {
+                        command = {nvim.env.SHELL}
+                    }
+                }
+            }
+
+            preferred['c'] = 'shell'
+            preferred['cpp'] = 'shell'
+        end
 
         m.core.add_repl_definitions{
             python = {
@@ -31,8 +53,6 @@ local configs = {
             }
         end
 
-        local preferred = {}
-
         if executable('ipython') == 1 then
             preferred['python'] = 'ipython'
         end
@@ -44,10 +64,7 @@ local configs = {
                 'fedora',
             }
 
-            local definitions = {}
-            local default = ''
-
-            for _,distro in ipairs(wsl) do
+            for _, distro in ipairs(wsl) do
                 if filereadable(sys.home..'/AppData/Local/Microsoft/WindowsApps/'..distro..'.exe') == 1 then
                     definitions[distro] = {
                         command = {distro}
