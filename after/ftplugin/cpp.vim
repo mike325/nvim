@@ -21,7 +21,7 @@ if executable('cppman')
 endif
 
 if exists('+formatprg') && executable('clang-format')
-    setlocal formatprg=clang-format
+    setlocal formatprg=clang-format\ --style=file\ --fallback-style=WebKit
 endif
 
 setlocal commentstring=//\ %s
@@ -30,7 +30,7 @@ if exists('g:cpp_includes')
     execute 'setlocal path^='.join(g:cpp_includes, ',')
 endif
 
-if executable('clang-tidy') && filereadable(autocmd#getProjectRoot() . '/compile_commands.json')
+if executable('clang-tidy') && findfile('compile_commands.json', tr(getcwd(), '\', '/').';')
     setlocal makeprg=clang-tidy\ %
     let &l:errorformat = '%E%f:%l:%c: fatal error: %m,' .
         \                '%E%f:%l:%c: error: %m,' .

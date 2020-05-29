@@ -2,4 +2,139 @@
 
 extends c
 
-priority 5
+priority 10
+
+snippet cla "class ... (class)"
+class ${1:`!p snip.rv = snip.basename or "name"`} {
+public:
+	${1/(\w+).*/$1/}(${2:/* Arguments */});
+	${1/(\w+).*/$1/}(const ${1/(\w+).*/$1/}& o);
+	${1/(\w+).*/$1/}(${1/(\w+).*/$1/}&& o) noexcept;
+	${1/(\w+).*/$1/}& operator=(const ${1/(\w+).*/$1/}& o);
+	${1/(\w+).*/$1/}& operator=(${1/(\w+).*/$1/}&& o) noexcept;
+	virtual ~${1/(\w+).*/$1/} ();
+
+private:
+	${0:/* data */}
+};
+endsnippet
+
+snippet co "std::cout << ... (print)"
+std::cout << ${0:val} ;
+endsnippet
+
+snippet cout "std::cout << ... (print)"
+std::cout << ${0:val} ;
+endsnippet
+
+snippet method "class method ... (class)"
+${1:auto} ${2:class}::${3:method}(${4:/* Arguments */}) {
+	$0
+}
+endsnippet
+
+snippet inc "#include ..." b
+#include <${1:iostream}>
+endsnippet
+
+snippet tem "template<typename T>" b
+template<typename ${1:T}>
+endsnippet
+
+snippet tp "template<typename T>" b
+template<typename ${1:T}>
+endsnippet
+
+snippet cxfun "constexpr function ... (function)"
+constexpr ${1:auto} ${2:name}(${3:/* Args */}) {
+	$0
+}
+endsnippet
+
+snippet cfun "constexpr function ... (function)"
+constexpr ${1:auto} ${2:name}(${3:/* Args */}) {
+	$0
+}
+endsnippet
+
+snippet cxvar "constexpr var ... (variable)"
+constexpr ${1:auto} ${2:var} = ${0:0};
+endsnippet
+
+snippet cvar "const var ... (variable)"
+const ${1:auto} ${2:var} = ${0:0};
+endsnippet
+
+snippet consv "const var ... (variable)"
+const ${1:auto} ${2:var} = ${0:0};
+endsnippet
+
+snippet cref "const reference ... (variable)"
+const ${1:auto}& ${2:ref};
+endsnippet
+
+snippet consr "const reference ... (variable)"
+const ${1:auto}& ${2:ref};
+endsnippet
+
+snippet lam "Lambda expression"
+[${1:&}](${2:/* Args */}){
+	${3:/* Body */}
+}$0
+endsnippet
+
+snippet ns "namespace ... (namespace)"
+namespace${1/.+/ /m}${1:`!p snip.rv = snip.basename or "name"`} {
+	${VISUAL}$0
+}${1/.+/ \/* /m}$1${1/.+/ *\/ /m}
+endsnippet
+
+snippet name "namespace ... (namespace)"
+namespace${1/.+/ /m}${1:`!p snip.rv = snip.basename or "name"`} {
+	${VISUAL}$0
+}${1/.+/ \/* /m}$1${1/.+/ *\/ /m}
+endsnippet
+
+snippet cx "constexpr"
+constexpr $0
+endsnippet
+
+snippet acc "std::accumulate ... (algorithm)"
+std::accumulate(${1:begin}, ${2:end}, ${4:init}, ${5:func});
+endsnippet
+
+snippet fore "std::for_each ... (algorithm)"
+std::for_each(${1:begin}, ${2:end}, ${5:func});
+endsnippet
+
+snippet find "std::find ... (algorithm)"
+std::find(${1:begin}, ${2:end}, ${5:func});
+endsnippet
+
+snippet fin "std::find ... (algorithm)"
+std::find(${1:begin}, ${2:end}, ${5:func});
+endsnippet
+
+snippet copy "std::copy ... (algorithm)"
+std::copy(${1:begin}, ${2:end}, ${5:func});
+endsnippet
+
+snippet sw "std::swap ... (algorithm)"
+std::swap(${1:begin}, ${2:end});
+endsnippet
+
+snippet beg "std::begin ... (algorithm)"
+std::begin(${1:iterator})
+endsnippet
+
+snippet end "std::end ... (algorithm)"
+std::end(${1:iterator})
+endsnippet
+
+snippet max "std::max ... (algorithm)"
+std::max(${1:begin}, ${2:end});
+endsnippet
+
+snippet min "std::min ... (algorithm)"
+std::min(${1:begin}, ${2:end});
+endsnippet
