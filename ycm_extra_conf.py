@@ -39,18 +39,12 @@ __header__ = """
 
 
 BASE_FLAGS = [
+    '-std=c++17',
     '-Wall',
     '-Wextra',
     '-Werror',
     '-Weverything',
-    '-Wno-missing-prototypes',
-    '-Wno-variadic-macros',
-    '-fexceptions',
-    '-ferror-limit=10000',
     '-Wno-c++98-compat',
-    '-std=c++17',
-    '-x',
-    'c++',
 ]
 
 LINUX_INCLUDES = ['-I/usr/lib/', '-I/usr/include/']
