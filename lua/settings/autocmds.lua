@@ -1,8 +1,15 @@
 -- luacheck: globals unpack vim
 
--- local nvim = require('nvim')
+local has = require('nvim').has
 local plugs = require('nvim').plugs
 local nvim_set_autocmd = require('nvim').nvim_set_autocmd
+
+-- nvim_set_autocmd(
+--     'TermOpen',
+--     '*',
+--     'setlocal bufhidden=wipe',
+--     {group = 'TerminalAutocmds'}
+-- )
 
 nvim_set_autocmd(
     'TermOpen',
@@ -10,10 +17,20 @@ nvim_set_autocmd(
     'setlocal noswapfile nobackup noundofile',
     {create = true, group = 'TerminalAutocmds'}
 )
-nvim_set_autocmd('TermOpen', '*', 'setlocal relativenumber number nocursorline', {group = 'TerminalAutocmds'})
--- nvim_set_autocmd('TermOpen', '*', 'setlocal bufhidden=wipe', {group = 'TerminalAutocmds'})
 
-nvim_set_autocmd('VimResized', '*', 'wincmd =', {create = true, group = 'AutoResize'})
+nvim_set_autocmd(
+    'TermOpen',
+    '*',
+    'setlocal relativenumber number nocursorline',
+    {group = 'TerminalAutocmds'}
+)
+
+nvim_set_autocmd(
+    'VimResized',
+    '*',
+    'wincmd =',
+    {create = true, group = 'AutoResize'}
+)
 
 nvim_set_autocmd(
     'BufRead',
@@ -21,21 +38,6 @@ nvim_set_autocmd(
     'lua require("tools").last_position()',
     {create = true, group = 'LastEditPosition'}
 )
-
-if  plugs['completor.vim'] == nil then
-    nvim_set_autocmd(
-        {'BufNewFile', 'BufRead', 'BufEnter'},
-        '*',
-        "if !exists('b:trim') | let b:trim = 1 | endif",
-        {create = true, group = 'CleanFile'}
-    )
-    nvim_set_autocmd(
-        'BufWritePre',
-        '*',
-        'lua require("tools").clean_file()',
-        {group = 'CleanFile'}
-    )
-end
 
 nvim_set_autocmd(
     'BufNewFile',
@@ -51,7 +53,12 @@ nvim_set_autocmd(
     {create = true, group = 'ProjectConfig'}
 )
 
-nvim_set_autocmd('CmdwinEnter', '*', 'nnoremap <CR> <CR>', {create = true, group = 'LocalCR'})
+nvim_set_autocmd(
+    'CmdwinEnter',
+    '*',
+    'nnoremap <CR> <CR>',
+    {create = true, group = 'LocalCR'}
+)
 
 nvim_set_autocmd(
     {'BufEnter','BufReadPost'},
@@ -72,7 +79,6 @@ nvim_set_autocmd(
     {group = 'QuickQuit'}
 )
 
-
 nvim_set_autocmd(
     {'BufNewFile', 'BufReadPre', 'BufEnter'},
     '/tmp/*',
@@ -86,3 +92,28 @@ nvim_set_autocmd(
     'if pumvisible() == 0 | pclose | endif',
     {create = true, group = 'CloseMenu'}
 )
+
+if has('nvim-0.5') then
+    nvim_set_autocmd(
+        'TextYankPost',
+        '*',
+        [[silent! lua require'vim.highlight'.on_yank("IncSearch", 3000)]],
+        {create = true, group = 'YankHL'}
+    )
+end
+
+if  plugs['completor.vim'] == nil then
+    nvim_set_autocmd(
+        {'BufNewFile', 'BufRead', 'BufEnter'},
+        '*',
+        "if !exists('b:trim') | let b:trim = 1 | endif",
+        {create = true, group = 'CleanFile'}
+    )
+
+    nvim_set_autocmd(
+        'BufWritePre',
+        '*',
+        'lua require("tools").clean_file()',
+        {group = 'CleanFile'}
+    )
+end
