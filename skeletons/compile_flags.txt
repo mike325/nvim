@@ -1,0 +1,8 @@
+%clang
+
+-std=c++17
+-Wall
+-Wextra
+-Weverything
+-Werror
+-Wno-c++98-compat
