@@ -19,12 +19,14 @@ private:
 };
 endsnippet
 
-snippet co "std::cout << ... (print)"
-std::cout << ${0:val} ;
+snippet cx "constexpr"
+constexpr $0
 endsnippet
 
-snippet cout "std::cout << ... (print)"
-std::cout << ${0:val} ;
+snippet /forr|rfor|rloop/ "for(auto i : iterator) { ... }" r
+for(auto ${1:i} : ${2:iterator}) {
+	${0:// Code}
+}
 endsnippet
 
 snippet method "class method ... (class)"
@@ -33,108 +35,68 @@ ${1:auto} ${2:class}::${3:method}(${4:/* Arguments */}) {
 }
 endsnippet
 
-snippet inc "#include ..." b
+snippet /co|cout/ "std::cout << ... (print)" r
+std::cout << ${0:val} ;
+endsnippet
+
+snippet /(#)?inc(lude)?/ "#include ..." rb
 #include <${1:iostream}>
 endsnippet
 
-snippet tem "template<typename T>" b
+snippet /t(p|em(plate)?)/ "template<typename T>" rb
 template<typename ${1:T}>
 endsnippet
 
-snippet tp "template<typename T>" b
-template<typename ${1:T}>
-endsnippet
-
-snippet cxfun "constexpr function ... (function)"
+snippet /c(x)?func/ "constexpr function ... (function)" r
 constexpr ${1:auto} ${2:name}(${3:/* Args */}) {
 	$0
 }
 endsnippet
 
-snippet cfun "constexpr function ... (function)"
-constexpr ${1:auto} ${2:name}(${3:/* Args */}) {
-	$0
-}
-endsnippet
-
-snippet cxvar "constexpr var ... (variable)"
-constexpr ${1:auto} ${2:var} = ${0:0};
-endsnippet
-
-snippet cvar "const var ... (variable)"
+snippet /c(ons(t)?)?var/ "const var ... (variable)" r
 const ${1:auto} ${2:var} = ${0:0};
 endsnippet
 
-snippet consv "const var ... (variable)"
-const ${1:auto} ${2:var} = ${0:0};
-endsnippet
-
-snippet cref "const reference ... (variable)"
-const ${1:auto}& ${2:ref};
-endsnippet
-
-snippet consr "const reference ... (variable)"
-const ${1:auto}& ${2:ref};
-endsnippet
-
-snippet lam "Lambda expression"
+snippet /lam(bda)?/ "Lambda expression" r
 [${1:&}](${2:/* Args */}){
-	${3:/* Body */}
+	${3:${VISUAL}}
 }$0
 endsnippet
 
-snippet ns "namespace ... (namespace)"
+snippet /n(s|ame(space)?)/ "namespace ... (namespace)" r
 namespace${1/.+/ /m}${1:`!p snip.rv = snip.basename or "name"`} {
 	${VISUAL}$0
 }${1/.+/ \/* /m}$1${1/.+/ *\/ /m}
 endsnippet
 
-snippet name "namespace ... (namespace)"
-namespace${1/.+/ /m}${1:`!p snip.rv = snip.basename or "name"`} {
-	${VISUAL}$0
-}${1/.+/ \/* /m}$1${1/.+/ *\/ /m}
+snippet /(end)|beg(in)?/ "std::(begin/end) ... (algorithm)" r
+std::`!p snip.rv = 'begin' if match.group(1) is None else match.group(1)`(${1:iterator})$0
 endsnippet
 
-snippet cx "constexpr"
-constexpr $0
-endsnippet
-
-snippet acc "std::accumulate ... (algorithm)"
+snippet /acc(umulate)?/ "std::accumulate ... (algorithm)" r
 std::accumulate(${1:begin}, ${2:end}, ${4:init}, ${5:func});
 endsnippet
 
-snippet fore "std::for_each ... (algorithm)"
-std::for_each(${1:begin}, ${2:end}, ${5:func});
+snippet /(?P<find>fin(d)?)|(?P<copy>copy)|(?P<for_each>for(e|_(each)?))/ "std::(find/copy/for_each) ... (algorithm)" r
+std::`!p
+groups = match.groups()
+if 'find' in groups:
+    snip.rv = 'find'
+elif 'copy' in groups:
+    snip.rv = 'copy'
+else:
+    snip.rv = 'for_each'
+`(${1:begin}, ${2:end}, ${5:func});
 endsnippet
 
-snippet find "std::find ... (algorithm)"
-std::find(${1:begin}, ${2:end}, ${5:func});
-endsnippet
-
-snippet fin "std::find ... (algorithm)"
-std::find(${1:begin}, ${2:end}, ${5:func});
-endsnippet
-
-snippet copy "std::copy ... (algorithm)"
-std::copy(${1:begin}, ${2:end}, ${5:func});
-endsnippet
-
-snippet sw "std::swap ... (algorithm)"
-std::swap(${1:begin}, ${2:end});
-endsnippet
-
-snippet beg "std::begin ... (algorithm)"
-std::begin(${1:iterator})
-endsnippet
-
-snippet end "std::end ... (algorithm)"
-std::end(${1:iterator})
-endsnippet
-
-snippet max "std::max ... (algorithm)"
-std::max(${1:begin}, ${2:end});
-endsnippet
-
-snippet min "std::min ... (algorithm)"
-std::min(${1:begin}, ${2:end});
+snippet /(?P<swap>sw(ap)?)|(?P<min>min)|(?P<max>max)/ "std::swap ... (algorithm)" r
+std::`!p
+groups = match.groups()
+if 'swap' in groups:
+    snip.rv = 'swap'
+elif 'min' in groups:
+    snip.rv = 'min'
+else:
+    snip.rv = 'max'
+`(${1:begin}, ${2:end});
 endsnippet

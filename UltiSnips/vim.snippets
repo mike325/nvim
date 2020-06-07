@@ -8,24 +8,14 @@ function! ${1:Name}(${2:arg1})
 endfunction
 endsnippet
 
-snippet funs "VimL script function"
-function! s:${1:Name}(${2:arg1})
-	${0:${VISUAL:" Statements}}
-endfunction
-endsnippet
-
 snippet sil "Silent command"
 silent! ${0:${VISUAL:cmd}}
 endsnippet
 
-# snippet ex "execute cmd"
-# execute '${0:${VISUAL:viml cmd}}'
-# endsnippet
-
 snippet try "try ... catch ... endtry"
 try
 	${1:${VISUAL:" Statements}}
-catch $2
+catch /${2:*}/
 	$0
 endtry
 endsnippet
