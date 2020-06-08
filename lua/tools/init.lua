@@ -634,19 +634,6 @@ function tools.project_config(event)
         nvim.command('source '..project)
     end
 
-    if plugs['ultisnips'] ~= nil then
-        nvim.g.UltiSnipsSnippetDirectories = {
-            sys.base .. '/config/UltiSnips',
-            'UltiSnips'
-        }
-        if isdirectory(root..'/UltiSnips') == 1 then
-            nvim.g.UltiSnipsSnippetsDir = root .. '/config/UltiSnips'
-            table.insert(nvim.g.UltiSnipsSnippetDirectories, 1, root..'/UltiSnips')
-        else
-            nvim.g.UltiSnipsSnippetsDir = sys.base .. '/config/UltiSnips'
-        end
-    end
-
     if plugs['ctrlp'] ~= nil then
         local fast_look_up = {
             ag = 1,

@@ -146,21 +146,6 @@ function! autocmd#SetProjectConfigs(event) abort
         execute 'source '. l:project
     endif
 
-    if exists('g:plugs["ultisnips"]')
-        let g:UltiSnipsSnippetDirectories = [
-                    \   vars#basedir() . '/config/UltiSnips',
-                    \   'UltiSnips'
-                    \ ]
-
-        if isdirectory(b:project_root . '/UltiSnips')
-            let g:UltiSnipsSnippetsDir        = b:project_root . '/UltiSnips'
-            let g:UltiSnipsSnippetDirectories = [b:project_root . '/UltiSnips'] + g:UltiSnipsSnippetDirectories
-        else
-            let g:UltiSnipsSnippetsDir        = vars#basedir() . '/config/UltiSnips'
-        endif
-
-    endif
-
     if exists('g:plugs["ctrlp"]')
         let l:fallback = g:ctrlp_user_command.fallback
         let g:ctrlp_clear_cache_on_exit = is_git ? 1 : (fallback =~# '^\(ag\|rg\|fd\) ')

@@ -20,4 +20,4 @@ let g:ulti_jump_backwards_res = 0
 let g:ulti_jump_forwards_res  = 0
 let g:ulti_expand_res         = 0
 
-xnoremap <silent>       <CR>    :call UltiSnips#SaveLastVisualSelection()<CR>gv"_s
+xnoremap <silent> <CR> :call UltiSnips#SaveLastVisualSelection()<CR>gv"_s
