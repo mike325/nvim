@@ -183,6 +183,7 @@ set complete-=i
 " Disable preview window during completions
 set completeopt-=preview
 set completeopt+=noselect
+set completeopt+=noinsert
 
 set lazyredraw " Don't draw when a macro is being executed
 set splitright " Split on the right the current buffer
