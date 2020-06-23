@@ -1,59 +1,38 @@
 #!/usr/bin/env python
-
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import with_statement
-from __future__ import division
-
-# from distutils.sysconfig import get_python_inc
-
 import os
-import os.path as p
 import sys
 import logging
-# import re
+import ycm_core
 
-_DEBUG = True
+# Logger for additional logging.
+# To enable debug logging, add `let g:ycm_server_log_level = 'debug'` to
+# your .vimrc file.
+logger = logging.getLogger('ycm-extra-conf')
 
-__header__ = """
-                              -`
-              ...            .o+`
-           .+++s+   .h`.    `ooo/
-          `+++%++  .h+++   `+oooo:
-          +++o+++ .hhs++. `+oooooo:
-          +s%%so%.hohhoo'  'oooooo+:
-          `+ooohs+h+sh++`/:  ++oooo+:
-           hh+o+hoso+h+`/++++.+++++++:
-            `+h+++h.+ `/++++++++++++++:
-                     `/+++ooooooooooooo/`
-                    ./ooosssso++osssssso+`
-                   .oossssso-````/osssss::`
-                  -osssssso.      :ssss``to.
-                 :osssssss/  Mike  osssl   +
-                /ossssssss/   8a   +sssslb
-              `/ossssso+/:-        -:/+ossss'.-
-             `+sso+:-`                 `.-/+oso:
-            `++:.                           `-/+/
-            .`                                 `/
-"""
-
-
-BASE_FLAGS = [
-    '-Wall',
-    '-Wextra',
-    '-Werror',
-    '-Weverything',
-    '-Wno-missing-prototypes',
-    '-Wno-variadic-macros',
-    '-fexceptions',
-    '-ferror-limit=10000',
-    '-Wno-c++98-compat',
-    '-std=c++17',
-    '-x',
-    'c++',
+# This is the list of all directories to search for header files.
+# Dirs in this list can be paths relative to this file, absolute
+# paths, or paths relative to the user (using ~/path/to/file).
+libDirs = [
+    "lib",
+    "include",
+    # Include paths where project libraries live, like Qt paths or where libraries
+    # are download
 ]
 
-LINUX_INCLUDES = ['-I/usr/lib/', '-I/usr/include/']
+flags = [
+    '-std=c++17',
+    '-Wall',
+    '-Wextra',
+    '-Weverything',
+    '-Werror',
+    '-Wno-c++98-compat',
+]
+
+# Make this more dynamic
+LINUX_INCLUDES = [
+    '-I/usr/lib/',
+    '-I/usr/include/'
+]
 
 WINDOWS_INCLUDES = [
     # TODO
@@ -65,82 +44,118 @@ SOURCE_EXTENSIONS = [
     '.cc',
     '.c',
     '.s',
+    '.ino',
     '.m',
     '.mm',
 ]
 
-SOURCE_DIRECTORIES = ['src', 'lib']
-
-HEADER_EXTENSIONS = ['.h', '.hxx', '.hpp', '.hh']
-
-HEADER_DIRECTORIES = ['include']
-
-DIR_OF_THIS_SCRIPT = p.abspath(p.dirname(__file__))
-
-BASE_FLAGS += WINDOWS_INCLUDES if os.name == 'nt' else LINUX_INCLUDES
-
-COMPILE_DB = [
-    'compile_commands.json',
+SOURCE_DIRECTORIES = [
+    'src',
 ]
 
+HEADER_EXTENSIONS = [
+    '.h',
+    '.hxx',
+    '.hpp',
+    '.hh',
+]
+
+flags += WINDOWS_INCLUDES if os.name == 'nt' else LINUX_INCLUDES
+
 database = None
+compilation_database_folder = ''
+
+# Check the directory where 'compile_commands.json' live
+if os.path.exists(compilation_database_folder):
+    database = ycm_core.CompilationDatabase(compilation_database_folder)
+else:
+    database = None
 
 
-def GetCompilationDatabase():
-    """TODO: Docstring for GetCompilationDatabase.
-    :returns: TODO
+def DirectoryOfThisScript():
+    return os.path.dirname(os.path.abspath(__file__))
 
-    """
-    cwd = os.getcwd()
-    compilation_database_folder = ''
-    parent = p.abspath(p.join(cwd, '..'))
 
-    logging.info('CWD: {0}, Parent: {1}'.format(cwd, parent))
+def MakeRelativePathsInFlagsAbsolute(flags, working_directory):
+    if not working_directory:
+        return list(flags)
 
-    while cwd != parent:
-        files = os.listdir(cwd)
-        if 'compile_commands.json' in files:
-            compilation_database_folder = cwd
-            logging.info('Database found {0}'.format(compilation_database_folder))
-            break
-        cwd = parent
-        parent = p.abspath(p.join(cwd, '..'))
-        logging.info('CWD: {0}, Parent: {1}'.format(cwd, parent))
+    new_flags = []
+    make_next_absolute = False
+    path_flags = ['-isystem', '-I', '-iquote', '--sysroot=']
 
-    if compilation_database_folder == '':
-        logging.info('No compilation database found')
+    for libDir in libDirs:
 
-    return compilation_database_folder
+        # dir is relative to $HOME
+        if libDir.startswith('~'):
+            libDir = os.path.expanduser(libDir)
+
+        # dir is relative to `working_directory`
+        if not libDir.startswith('/'):
+            libDir = os.path.join(working_directory, libDir)
+
+        # Else, assume dir is absolute
+
+        for path, dirs, files in os.walk(libDir):
+            # Add to flags if dir contains a header file and is not
+            # one of the metadata dirs (examples and extras).
+            if any(IsHeaderFile(x) for x in files) and\
+               path.find("examples") == -1 and path.find("extras") == -1:
+                logger.info("Directory contains header files - %s" % path)
+                flags.append('-I' + path)
+
+    for flag in flags:
+        new_flag = flag
+
+        if make_next_absolute:
+            make_next_absolute = False
+            if not flag.startswith('/'):
+                new_flag = os.path.join(working_directory, flag)
+
+        for path_flag in path_flags:
+            if flag == path_flag:
+                make_next_absolute = True
+                break
+
+            if flag.startswith(path_flag):
+                path = flag[len(path_flag):]
+                new_flag = path_flag + os.path.join(working_directory, path)
+                break
+
+        if new_flag:
+            new_flags.append(new_flag)
+    return new_flags
 
 
 def NormalizePath(path):
-    """TODO: Docstring for NormalizePath.
-
-    :path: TODO
-    :returns: TODO
-
-    """
     return path if os.name != 'nt' else path.replace('\\', '/')
 
 
 def IsHeaderFile(filename):
-    extension = p.splitext(filename)[1]
+    extension = os.path.splitext(filename)[1]
     return extension in HEADER_EXTENSIONS
 
 
-def FindCorrespondingSourceFile(filename):
+def GetCompilationInfoForFile(filename):
+    # The compilation_commands.json file generated by CMake does not have entries
+    # for header files. So we do our best by asking the db for flags for a
+    # corresponding source file, if any. If one exists, the flags for that file
+    # should be good enough.
     if IsHeaderFile(filename):
-        basename = p.splitext(filename)[0]
+        basename = os.path.splitext(filename)[0]
         for extension in SOURCE_EXTENSIONS:
             replacement_file = basename + extension
-            if p.exists(replacement_file):
-                return replacement_file
-    return filename
+            if os.path.exists(replacement_file):
+                compilation_info = database.GetCompilationInfoForFile(replacement_file)
+                if compilation_info.compiler_flags_:
+                    return compilation_info
+        return None
+    return database.GetCompilationInfoForFile(filename)
 
 
 def PathToPythonUsedDuringBuild():
     try:
-        filepath = p.join(DIR_OF_THIS_SCRIPT, 'python_version.txt')
+        filepath = os.path.join(DirectoryOfThisScript(), 'python_version.txt')
         with open(filepath) as f:
             return f.read().strip()
         # We need to check for IOError for Python 2 and OSError for Python 3.
@@ -148,29 +163,10 @@ def PathToPythonUsedDuringBuild():
         return sys.executable
 
 
-def GetStandardLibraryIndexInSysPath(sys_path):
-    for index, path in enumerate(sys_path):
-        if p.isfile(p.join(path, 'os.py')):
-            return index
-    raise RuntimeError('Could not find standard library path in Python path.')
-
-
-# def PythonSysPath(**kwargs):
-#     sys_path = kwargs['sys_path']
-#
-#     home = 'HOME' if os.name != 'nt' else 'USERPROFILE'
-#     home = NormalizePath(os.environ[home])
-#
-#     # interpreter_path = kwargs['interpreter_path']
-#     # major_version = subprocess.check_output([
-#     #     interpreter_path, '-c', 'import sys; print(sys.version_info[0])']
-#     # ).rstrip().decode('utf8')
-#
-#     return sys_path
-
-
 def Settings(**kwargs):
+
     language = kwargs['language']
+    filename = kwargs['filename']
     client_data = None if 'client_data' not in kwargs else kwargs['client_data']
 
     if language == 'cfamily':
@@ -180,31 +176,35 @@ def Settings(**kwargs):
         # In addition, use this source file as the translation unit. This makes it
         # possible to jump from a declaration in the header file to its definition
         # in the corresponding source file.
-        logging.info('Looking for {0}'.format(kwargs['filename']))
-        filename = FindCorrespondingSourceFile(kwargs['filename'])
-        logging.info('Got {0}'.format(filename))
+        if database:
+            # Bear in mind that compilation_info.compiler_flags_ does NOT return a
+            # python list, but a "list-like" StringVec object
+            compilation_info = GetCompilationInfoForFile(filename)
 
-        if not database:
-            logging.info('Database is empty, usging defualt flags')
-            return {
-                'flags': BASE_FLAGS,
-                'include_paths_relative_to_dir': DIR_OF_THIS_SCRIPT,
-                'override_filename': filename,
-                'do_cache': True,
-            }
+            if not compilation_info:
+                return None
 
-        compilation_info = database.GetCompilationInfoForFile(filename)
-        if not compilation_info.compiler_flags_:
-            logging.info('No flags for {0}'.format(filename))
-            return {}
+            final_flags = compilation_info.compiler_flags_
+            relative_to = compilation_info.compiler_working_dir_
 
-        # Bear in mind that compilation_info.compiler_flags_ does NOT return a
-        # python list, but a "list-like" StringVec object.
-        final_flags = list(compilation_info.compiler_flags_)
+            # NOTE: This is just for YouCompleteMe. it's highly likely that your project
+            # does NOT need to remove the stdlib flag. DO NOT USE THIS IN YOUR
+            # ycm_extra_conf IF YOU'RE NOT 100% SURE YOU NEED IT.
+            # try:
+            #     final_flags.remove( '-stdlib=libc++' )
+            # except ValueError:
+            #     pass
+        else:
+            relative_to = DirectoryOfThisScript()
+            final_flags = flags
+            # final_flags = MakeRelativePathsInFlagsAbsolute(flags, relative_to)
+
+        # logger.info(final_flags)
+        # return {'flags': final_flags, 'do_cache': True}
 
         return {
             'flags': final_flags,
-            'include_paths_relative_to_dir': compilation_info.compiler_working_dir_,
+            'include_paths_relative_to_dir': relative_to,
             'override_filename': filename,
             'do_cache': True,
         }
@@ -215,7 +215,7 @@ def Settings(**kwargs):
         else:
             pypath = PathToPythonUsedDuringBuild()
 
-        logging.info('Using {0} as python interpeter'.format(pypath))
+        logger.info('Using {0} as python interpeter'.format(pypath))
 
         return {
             'interpreter_path': pypath
@@ -235,7 +235,7 @@ def FlagsForFile(filename, **kwargs):
     if 'language' not in settings:
         settings['language'] = ''
 
-        extension = p.splitext(settings['filename'])[1]
+        extension = os.path.splitext(settings['filename'])[1]
 
         if extension in SOURCE_EXTENSIONS or extension in HEADER_EXTENSIONS:
             settings['language'] = 'cfamily'
