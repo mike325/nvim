@@ -3,6 +3,7 @@
 
 let s:arrows = -1
 
+" TODO: Add completion-nvim handler
 function! mappings#enter() abort
     if exists('g:plugs["ultisnips"]')
         let l:snippet = UltiSnips#ExpandSnippet()

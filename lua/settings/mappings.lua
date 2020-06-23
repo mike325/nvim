@@ -19,6 +19,7 @@ end
 local mappings = {}
 
 local noremap = {noremap = true}
+local noremap_silent = {noremap = true, silent = true}
 
 function mappings.terminal(cmd)
     -- local split = nvim.o.splitbelow == true and 'botright' or 'topleft'
@@ -91,23 +92,22 @@ nvim.nvim_set_mapping('n', 'J', 'm`J``', noremap)
 
 nvim.nvim_set_mapping('i', 'jj', '<ESC>')
 
-nvim.nvim_set_mapping('n', '<BS>', ':call mappings#bs()<CR>', {noremap = true, silent = true})
+nvim.nvim_set_mapping('n', '<BS>', ':call mappings#bs()<CR>', noremap_silent)
 nvim.nvim_set_mapping('x', '<BS>', '<ESC>', noremap)
 
-local snip_mapping = {noremap = true, silent = true}
-nvim.nvim_set_mapping('i', '<TAB>'  , [[<C-R>=mappings#tab()<CR>]]     , snip_mapping)
-nvim.nvim_set_mapping('i', '<S-TAB>', [[<C-R>=mappings#shifttab()<CR>]], snip_mapping)
-nvim.nvim_set_mapping('i', '<CR>'   , [[<C-R>=mappings#enter()<CR>]]   , snip_mapping)
+nvim.nvim_set_mapping('i', '<TAB>'  , [[<C-R>=mappings#tab()<CR>]]     , noremap_silent)
+nvim.nvim_set_mapping('i', '<S-TAB>', [[<C-R>=mappings#shifttab()<CR>]], noremap_silent)
+nvim.nvim_set_mapping('i', '<CR>'   , [[<C-R>=mappings#enter()<CR>]]   , noremap_silent)
 
 -- TODO: Check for GUIs
 if sys.name == 'windows' then
-    nvim.nvim_set_mapping('n', '<C-h>', ':call mappings#bs()<CR>', {noremap = true, silent = true})
+    nvim.nvim_set_mapping('n', '<C-h>', ':call mappings#bs()<CR>', noremap_silent)
     nvim.nvim_set_mapping('x', '<C-h>', ':<ESC>', noremap)
     nvim.nvim_set_mapping('n', '<C-z>', '<nop>', noremap)
 end
 
 if nvim.nvim_get_mapping('n', '<C-L>') == nil then
-    nvim.nvim_set_mapping('n', '<C-L>', ':nohlsearch|diffupdate<CR>', {noremap = true, silent = true})
+    nvim.nvim_set_mapping('n', '<C-L>', ':nohlsearch|diffupdate<CR>', noremap_silent)
 end
 
 nvim.nvim_set_mapping('i', '<C-U>', '<C-G>u<C-U>', noremap)
@@ -142,11 +142,11 @@ nvim.nvim_set_mapping('n', '<leader>c', ':pclose<CR>', noremap)
 
 nvim.nvim_set_mapping('n', 'i', 'mappings#IndentWithI()', {noremap = true, expr = true})
 
-nvim.nvim_set_mapping('n', 'c*', '*Ncgn', noremap)
-nvim.nvim_set_mapping('n', 'c#', '#NcgN', noremap)
-nvim.nvim_set_mapping('n', 'cg*', 'g*Ncgn', noremap)
-nvim.nvim_set_mapping('n', 'cg#', 'g#NcgN', noremap)
-nvim.nvim_set_mapping('x', 'c', '"cy/<C-r>c<CR>Ncgn', noremap)
+nvim.nvim_set_mapping('n', 'c*', 'm`*``cgn', noremap)
+nvim.nvim_set_mapping('n', 'c#', 'm`#``cgN', noremap)
+nvim.nvim_set_mapping('n', 'cg*', 'm`g*``cgn', noremap)
+nvim.nvim_set_mapping('n', 'cg#', 'm`#``cgN', noremap)
+nvim.nvim_set_mapping('x', 'c', [["cy/<C-r>c<CR>Ncgn]], noremap)
 
 nvim.nvim_set_mapping('n', '¿', '`', noremap)
 nvim.nvim_set_mapping('x', '¿', '`', noremap)
@@ -158,7 +158,7 @@ nvim.nvim_set_mapping('x', '¡', '^', noremap)
 
 nvim.nvim_set_mapping('n', '<leader>p', '<C-^>', noremap)
 nvim.nvim_set_mapping('n', '<leader>w', ':update<CR>', noremap)
-nvim.nvim_set_mapping('n', '<leader>q', ':q!<CR>', {noremap = true, silent = true})
+nvim.nvim_set_mapping('n', '<leader>q', ':q!<CR>', noremap_silent)
 nvim.nvim_set_mapping('n', '<leader>x', ':%!xxd<CR>', noremap)
 
 nvim.nvim_set_mapping('n', '<leader>h', '<C-w>h', noremap)

@@ -94,10 +94,10 @@ nnoremap <expr> i mappings#IndentWithI()
 
 if has('nvim') || v:version >= 704
     " Change word under cursor and dot repeat
-    nnoremap c* *Ncgn
-    nnoremap c# #NcgN
-    nnoremap cg* g*Ncgn
-    nnoremap cg# g#NcgN
+    nnoremap c* m`*``cgn
+    nnoremap c# m`#``cgN
+    nnoremap cg* m`g*``cgn
+    nnoremap cg# m`g#``cgN
     xnoremap <silent> c "cy/<C-r>c<CR>Ncgn
 endif
 
