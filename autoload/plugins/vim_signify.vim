@@ -31,5 +31,5 @@ xmap ih <plug>(signify-motion-inner-visual)
 omap ah <plug>(signify-motion-outer-pending)
 xmap ah <plug>(signify-motion-outer-visual)
 
-nnoremap <silent> =d :SignifyHunkDiff<CR>
+nnoremap <silent> =f :SignifyHunkDiff<CR>
 nnoremap <silent> =u :SignifyHunkUndo<CR>

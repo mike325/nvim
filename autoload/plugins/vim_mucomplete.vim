@@ -20,7 +20,7 @@ let g:mucomplete#chains = {
 
 let g:mucomplete#can_complete = get(g:, 'mucomplete#can_complete', {})
 
-function! s:SetOmni() abort
+function! plugins#vim_mucomplete#setOmni() abort
 
     let l:omni = {
         \ 'cpp'   : { t -> t =~# '\%(->\|::\|\.\)$' },
@@ -38,8 +38,3 @@ function! s:SetOmni() abort
     let g:mucomplete#can_complete[l:ft] = { 'omni': l:omni[l:ft] }
 
 endfunction
-
-augroup MuOmniPatterns
-    autocmd!
-    autocmd FileType * call s:SetOmni()
-augroup end

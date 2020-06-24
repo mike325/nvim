@@ -31,10 +31,15 @@ if diagnostics ~= nil then
     -- nvim.fn.sign_define("LspDiagnosticHintSign", {"text" : "H", "texthl" : "LspDiagnosticsHint"})
 end
 
--- local completion = load_module('completion')
--- if completion ~= nil then
---     nvim.g.completion_enable_snippet = 'UltiSnips'
--- end
+local completion = load_module('completion')
+if completion ~= nil then
+    if plugs['ultisnips']  then
+        nvim.g.completion_enable_snippet = 'UltiSnips'
+    end
+    -- TODO: Add confirm key completion handler
+    nvim.g.completion_confirm_key = ''
+    nvim.g.completion_matching_ignore_case = 1
+end
 
 local servers = {
     sh         = { bashls        = { name = 'bash-language-server'}, },
@@ -129,6 +134,7 @@ local servers = {
 }
 
 local available_languages = {}
+local cfamily = false
 
 for language,options in pairs(servers) do
     for option,server in pairs(options) do
@@ -140,12 +146,10 @@ for language,options in pairs(servers) do
             if diagnostics ~= nil then
                 init['on_attach'] = diagnostics.on_attach
             end
-            -- if completion ~= nil then
-            --     init['on_attach'] = completion.on_attach
-            -- end
             lsp[option].setup(init)
             available_languages[#available_languages + 1] = language
             if language == 'c' then
+                cfamily = true
                 available_languages[#available_languages + 1] = 'cpp'
                 available_languages[#available_languages + 1] = 'objc'
                 available_languages[#available_languages + 1] = 'objcpp'
@@ -159,6 +163,9 @@ for language,options in pairs(servers) do
     end
 end
 
+-- Expose languages to VimL
+nvim.g.available_languages = available_languages
+
 nvim_set_autocmd('FileType', available_languages, 'setlocal omnifunc=v:lua.vim.lsp.omnifunc', {group = 'NvimLSP', create = true})
 
 nvim_set_autocmd('FileType', available_languages, 'nnoremap <buffer><silent> <c-]> :lua vim.lsp.buf.definition()<CR>', {group = 'NvimLSP'})
@@ -166,60 +173,68 @@ nvim_set_autocmd('FileType', available_languages, 'nnoremap <buffer><silent> gd 
 nvim_set_autocmd('FileType', available_languages, 'nnoremap <buffer><silent> gD    :lua vim.lsp.buf.implementation()<CR>', {group = 'NvimLSP'})
 nvim_set_autocmd('FileType', available_languages, 'nnoremap <buffer><silent> gr    :lua vim.lsp.buf.references()<CR>', {group = 'NvimLSP'})
 nvim_set_autocmd('FileType', available_languages, 'nnoremap <buffer><silent> K     :lua vim.lsp.buf.hover()<CR>', {group = 'NvimLSP'})
+nvim_set_autocmd('FileType', available_languages, 'nnoremap <buffer><silent> =d    :lua vim.lsp.util.show_line_diagnostics()<CR>', {group = 'NvimLSP'})
 
 nvim_set_autocmd(
     'FileType',
     available_languages,
-    "lua require'nvim'.nvim_set_command('Declaration', 'lua vim.lsp.buf.declaration()', {buffer = true, force = true})",
+    [[lua require'nvim'.nvim_set_command('Declaration', 'lua vim.lsp.buf.declaration()', {buffer = true, force = true})]],
     {group = 'NvimLSP'}
 )
 
 nvim_set_autocmd(
     'FileType',
     available_languages,
-    "lua require'nvim'.nvim_set_command('Definition', 'lua vim.lsp.buf.definition()', {buffer = true, force = true})",
+    [[lua require'nvim'.nvim_set_command('Diagnostics', 'lua vim.lsp.util.show_line_diagnostics()', {buffer = true, force = true})]],
     {group = 'NvimLSP'}
 )
 
 nvim_set_autocmd(
     'FileType',
     available_languages,
-    "lua require'nvim'.nvim_set_command('References', 'lua vim.lsp.buf.references()', {buffer = true, force = true})",
+    [[lua require'nvim'.nvim_set_command('Definition', 'lua vim.lsp.buf.definition()', {buffer = true, force = true})]],
     {group = 'NvimLSP'}
 )
 
 nvim_set_autocmd(
     'FileType',
     available_languages,
-    "lua require'nvim'.nvim_set_command('Hover', 'lua vim.lsp.buf.hover()', {buffer = true, force = true})",
+    [[lua require'nvim'.nvim_set_command('References', 'lua vim.lsp.buf.references()', {buffer = true, force = true})]],
+    {group = 'NvimLSP'}
+)
+
+nvim_set_autocmd(
+    'FileType',
+    available_languages,
+    [[lua require'nvim'.nvim_set_command('Hover', 'lua vim.lsp.buf.hover()', {buffer = true, force = true})]],
     {group = 'NvimLSP'}
 )
 
 -- nvim_set_autocmd(
 --     'FileType',
 --     available_languages,
---     "autocmd CursorHold <buffer> lua vim.lsp.buf.hover()",
+--     [[autocmd CursorHold <buffer> lua vim.lsp.buf.hover()]],
 --     {group = 'NvimLSP', nested = true}
 -- )
 
 nvim_set_autocmd(
     'FileType',
     available_languages,
-    "lua require'nvim'.nvim_set_command('Implementation', 'lua vim.lsp.buf.implementation()', {buffer = true, force = true})",
+    [[lua require'nvim'.nvim_set_command('Implementation', 'lua vim.lsp.buf.implementation()', {buffer = true, force = true})]],
     {group = 'NvimLSP'}
 )
 
 nvim_set_autocmd(
     'FileType',
     available_languages,
-    "lua require'nvim'.nvim_set_command('Signature', 'lua vim.lsp.buf.signature_help()', {buffer = true, force = true})",
+    [[lua require'nvim'.nvim_set_command('Signature', 'lua vim.lsp.buf.signature_help()', {buffer = true, force = true})]],
     {group = 'NvimLSP'}
 )
 
 nvim_set_autocmd(
     'FileType',
     available_languages,
-    "lua require'nvim'.nvim_set_command('Type' , 'lua vim.lsp.buf.type_definition()', {buffer = true, force = true})",
+    [[lua require'nvim'.nvim_set_command('Type' , 'lua vim.lsp.buf.type_definition()', {buffer = true, force = true})]],
     {group = 'NvimLSP'}
 )
 
@@ -228,7 +243,46 @@ if plugs['neomake'] ~= nil then
     nvim_set_autocmd(
         'FileType',
         available_languages,
-        "silent! call neomake#cmd#disable(b:)",
+        [[silent! call neomake#cmd#disable(b:)]],
         {group = 'NvimLSP'}
     )
 end
+
+if completion ~= nil then
+
+    nvim_set_autocmd(
+        'BufEnter',
+        '*',
+        [[lua require'completion'.on_attach()]],
+        {create = true, group = 'Completion'}
+    )
+
+    -- TODO: Make trigger characters dynamic with LSP information
+    -- vim.lsp.buf_get_clients()[2].server_capabilities.completionProvider.triggerCharacters
+
+    -- TODO: Create Pull request to use buffer-variables
+
+    nvim_set_autocmd(
+        'BufEnter',
+        '*',
+        [[ let g:completion_trigger_character = ['.'] ]],
+        {group = 'Completion'}
+    )
+
+    if cfamily then
+        nvim_set_autocmd(
+            'BufEnter',
+            {'*.c', '*.cpp', '*.h', '*.hpp', '*.cc', '*.cxx'},
+            [[ let g:completion_trigger_character = ['.', '::', '->'] ]],
+            {group = 'Completion'}
+        )
+    end
+elseif plugs['vim-mucomplete'] ~= nil then
+    nvim_set_autocmd(
+        'FileType',
+        available_languages,
+        [[call plugins#vim_mucomplete#setOmni()]],
+        {create = true, group = 'Completion'}
+    )
+end
+
