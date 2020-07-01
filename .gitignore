@@ -31,6 +31,9 @@ TAGS
 
 .*@neomake*
 
+# Binary spell files
+*.spl
+*.sug
+
 /local.vim
-*.add.spl
 /.luacheckcache
