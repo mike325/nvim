@@ -23,10 +23,11 @@ let g:mucomplete#can_complete = get(g:, 'mucomplete#can_complete', {})
 function! plugins#vim_mucomplete#setOmni() abort
 
     let l:omni = {
-        \ 'cpp'   : { t -> t =~# '\%(->\|::\|\.\)$' },
-        \ 'c'     : { t -> t =~# '\%(->\|\.\)$' },
-        \ 'lua'   : { t -> t =~# '\%(:\|\.\)$' },
-        \ 'python': { t -> t =~# '\%(\.\)$' },
+        \ 'cpp':    { t -> t =~# '\%(->\|::\|\.\)' },
+        \ 'c':      { t -> t =~# '\%(->\|\.\)' },
+        \ 'lua':    { t -> t =~# '\%(:\|\.\)' },
+        \ 'python': { t -> t =~# '\%(\.\)' },
+        \ 'tex':    { t -> t =~# '\%(\\\)' },
         \}
 
     let l:ft = &filetype
