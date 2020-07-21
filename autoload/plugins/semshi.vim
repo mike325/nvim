@@ -25,8 +25,8 @@ function! plugins#semshi#colorfix() abort
     sign define semshiError text=E> texthl=semshiErrorSign
 endfunction
 
-let $SEMSHI_LOG_FILE  = os#tmp('semshi.log')
-let $SEMSHI_LOG_LEVEL = 'DEBUG'
+" let $SEMSHI_LOG_FILE  = os#tmp('semshi.log')
+" let $SEMSHI_LOG_LEVEL = 'DEBUG'
 
 let g:semshi#active                       = 1
 let g:semshi#simplify_markup              = 1
