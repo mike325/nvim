@@ -27,7 +27,7 @@ function! plugins#vim_mucomplete#setOmni() abort
         \ 'c':      { t -> t =~# '\%(->\|\.\)' },
         \ 'lua':    { t -> t =~# '\%(:\|\.\)' },
         \ 'python': { t -> t =~# '\%(\.\)' },
-        \ 'tex':    { t -> t =~# '\%(\\\)' },
+        \ 'tex':    { t -> t =~# '\\' },
         \}
 
     let l:ft = &filetype
