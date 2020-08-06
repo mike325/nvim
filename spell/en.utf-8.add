@@ -1,7 +1,11 @@
 MX
 Neovim
+raspbian
+Raspbian
+debian
 Debian
 Ubuntu
+ubuntu
 SUSE
 openSUSE
 Archlinux
@@ -61,9 +65,7 @@ sl
 firefox
 spotify
 nextcloud
-debian
 automake
-ubuntu
 ShellCheck
 pkgconfig
 Docstring
@@ -234,9 +236,7 @@ cli
 macOS
 aur
 regex
-Debian
 lua
-Ubuntu
 YCM
 neovim
 plugin
@@ -246,3 +246,4 @@ esp8266
 MQTT
 WIFI
 ssid
+AI

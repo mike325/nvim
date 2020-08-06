@@ -1,6 +1,11 @@
 MX
 Neovim
+raspbian
+Raspbian
+debian
+Debian
 Ubuntu
+ubuntu
 SUSE
 openSUSE
 Archlinux
@@ -57,10 +62,7 @@ sl
 firefox
 spotify
 nextcloud
-debian
-Debian
 automake
-ubuntu
 ShellCheck
 pkgconfig
 Docstring
@@ -186,8 +188,12 @@ Syncthing
 Gotify
 Torrent
 OpenVPN
+HW
+config
+SPI
 I2C
 SRAM
+Steppings
 PCIe
 tesis
 Fernández
@@ -195,6 +201,7 @@ jalisco
 Jalisco
 UAG
 gmail
+smartcase
 IoT
 Tensorflow
 cbdma
@@ -243,12 +250,10 @@ USB
 OpenCV
 Django
 Lina
-Tripie
 micropython
 esp32
 esp8266
 MQTT
 WIFI
 ssid
-API
 AI
