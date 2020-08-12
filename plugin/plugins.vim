@@ -89,7 +89,9 @@ if executable('git') || executable('hg') || executable('svn')
 endif
 
 if executable('git')
-    Plug 'rhysd/git-messenger.vim'
+    if v:version > 704
+        Plug 'rhysd/git-messenger.vim'
+    endif
     if !os#name('windows')
         Plug 'rhysd/committia.vim'
     endif

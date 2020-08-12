@@ -50,7 +50,7 @@ function! plugins#fzf_vim#map_command(dir, command) abort
         return 0
     endif
 
-    if !os#name('windows') && system('uname -r') !~# '4\.\(4\.0-142\|15.0-44\)'
+    if !os#name('windows') && system('uname -r') !~# '4\.\(4\.0-142\|15.0-44\)' && exists('*exepath')
         execute 'command! -bang '.a:command." call fzf#vim#files('".a:dir."', fzf#vim#with_preview('right:50%', 'ctrl-p'), <bang>0)"
     else
         execute 'command! -bang '.a:command.' call fzf#vim#files("'.a:dir.'", {}, <bang>0)'
@@ -58,15 +58,14 @@ function! plugins#fzf_vim#map_command(dir, command) abort
 
 endfunction
 
-if !os#name('windows') && system('uname -r') !~# '4\.\(4\.0-142\|15.0-44\)'
-    command! -bang -nargs=? -complete=dir Files
-        \ call fzf#vim#files(<q-args>, fzf#vim#with_preview('right:50%', 'ctrl-p'), <bang>0)
+if executable('uname') && system('uname -r') !~# '4\.\(4\.0-142\|15.0-44\)' && executable('bat') && exists('*exepath')
+    let g:fzf_files_options = ['--border', '--ansi', '--preview-window', 'right:50%', '--preview', 'bat --color=always {}']
 else
     command! -bang -nargs=? -complete=dir Files
         \ call fzf#vim#files(<q-args>, {}, <bang>0)
 endif
 
-if os#name('windows') && executable('bat')
+if os#name('windows') && executable('bat') && exists('*exepath')
     let g:fzf_files_options = ['--border', '--ansi', '--preview-window', 'right:50%', '--preview', 'bat --color=always {}']
 endif
 
@@ -80,7 +79,7 @@ endif
 function! plugins#fzf_vim#build_quickfix_list(type, lines) abort
     if a:type
         call setqflist(map(copy(a:lines), '{ "filename": v:val }'))
-        copen
+        botright copen
     else
         call setloclist(0, map(copy(a:lines), '{ "filename": v:val }'))
         lopen
@@ -88,16 +87,20 @@ function! plugins#fzf_vim#build_quickfix_list(type, lines) abort
 endfunction
 
 let g:fzf_action = {
-\   'ctrl-q': function('plugins#fzf_vim#build_quickfix_list', [1]),
-\   'ctrl-l': function('plugins#fzf_vim#build_quickfix_list', [0]),
 \   'ctrl-t': 'tab split',
 \   'ctrl-x': 'split',
 \   'ctrl-v': 'vsplit'
 \ }
 
+if v:version >704
+    let g:fzf_action['ctrl-q'] = function('plugins#fzf_vim#build_quickfix_list', [1])
+    let g:fzf_action['ctrl-l'] = function('plugins#fzf_vim#build_quickfix_list', [0])
+endif
+
 nnoremap <silent> <C-p> :Files<CR>
 nnoremap <silent> <C-b> :Buffers<CR>
 command! Oldfiles History
 command! Registers call fzf#run(fzf#wrap({
-        \ 'source': plugins#fzf_vim#GetRegisters(),
-        \ 'sink': function('plugins#fzf_vim#UseRegister')}))
+        \   'source': plugins#fzf_vim#GetRegisters(),
+        \   'sink': function('plugins#fzf_vim#UseRegister')
+        \ }))
