@@ -24,7 +24,7 @@ if has('nvim-0.5')
 endif
 
 function! s:python_setup() abort
-    return has('nvim') ? luaeval("require('python').setup()") : setup#python()
+    return has('nvim') ? luaeval("require'python'.setup()") : setup#python()
 endfunction
 
 " Check an specific version of python (empty==2)
