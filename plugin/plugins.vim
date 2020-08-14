@@ -81,8 +81,7 @@ endif
 if executable('git') || executable('hg') || executable('svn')
     " These are the only VCS I care, if none is installed, then skip this plugin
     if has#async()
-        " Plug 'mhinz/vim-signify' # Neovim 0.5 usage is a bit broken with stock repo
-        Plug 'mike325/vim-signify', {'branch': 'foldcolumn'}
+        Plug 'mhinz/vim-signify'
     else
         Plug 'mhinz/vim-signify', { 'branch': 'legacy' }
     endif

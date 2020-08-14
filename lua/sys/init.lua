@@ -6,7 +6,6 @@ local nvim = require('nvim')
 local mkdir       = require('nvim').fn.mkdir
 local stdpath     = require('nvim').fn.stdpath
 local isdirectory = require('nvim').fn.isdirectory
--- local system      = require('nvim').fn.system
 -- local executable  = require('nvim').fn.executable
 
 local function system_name()

@@ -58,10 +58,10 @@ function! s:setupdirs() abort
     endif
 
     if has('nvim')
-        let s:homedir  = luaeval("require('sys').home")
-        let s:basedir  = luaeval("require('sys').base")
-        let s:datadir  = luaeval("require('sys').data")
-        let s:cachedir = luaeval("require('sys').cache")
+        let s:homedir  = luaeval('require"sys".home')
+        let s:basedir  = luaeval('require"sys".base')
+        let s:datadir  = luaeval('require"sys".data')
+        let s:cachedir = luaeval('require"sys".cache')
         return
     endif
 

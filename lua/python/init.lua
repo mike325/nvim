@@ -5,7 +5,6 @@ local has        = require('nvim').has
 local exepath    = require('nvim').fn.exepath
 local executable = require('nvim').fn.executable
 -- local exists     = require('nvim').fn.exists
--- local system     = require('nvim').fn.system
 
 local check_version    = require('tools').check_version
 local split_components = require('tools').split_components
