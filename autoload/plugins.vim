@@ -17,7 +17,7 @@ function! plugins#settings() abort
             execute 'runtime! autoload/plugins/' . s:func_name . '.vim'
         endfor
     catch
-        call tools#echoerr("Something failed trying to source ".s:func_name.".vim")
+        call tools#echoerr('Something failed trying to source '.s:func_name.'.vim')
     endtry
 
 endfunction
