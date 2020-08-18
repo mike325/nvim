@@ -9,16 +9,8 @@ let g:loaded_mike_plugins = 1
 
 Plug 'ayu-theme/ayu-vim'
 Plug 'joshdick/onedark.vim'
-Plug 'elzr/vim-json'
 Plug 'tbastos/vim-lua'
-Plug 'peterhoeg/vim-qml'
 Plug 'tpope/vim-markdown'
-Plug 'PProvost/vim-ps1'
-Plug 'cespare/vim-toml'
-Plug 'bjoernd/vim-syntax-simics'
-Plug 'kurayama/systemd-vim-syntax'
-Plug 'mhinz/vim-nginx'
-Plug 'raimon49/requirements.txt.vim'
 Plug 'octol/vim-cpp-enhanced-highlight'
 Plug 'easymotion/vim-easymotion'
 Plug 'moll/vim-bbye', { 'on': [ 'Bdelete' ] }

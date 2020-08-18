@@ -92,6 +92,16 @@ else
     Plug 'Raimondi/delimitMate'
     Plug 'tomtom/tcomment_vim'
 
+    " Syntax files
+    Plug 'elzr/vim-json'
+    Plug 'peterhoeg/vim-qml'
+    Plug 'PProvost/vim-ps1'
+    Plug 'cespare/vim-toml'
+    Plug 'bjoernd/vim-syntax-simics'
+    Plug 'kurayama/systemd-vim-syntax'
+    Plug 'mhinz/vim-nginx'
+    Plug 'raimon49/requirements.txt.vim'
+
     if has('nvim')
         Plug 'Vigemus/iron.nvim'
     endif
