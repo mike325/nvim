@@ -196,20 +196,20 @@ function __parse_args() {
         exit 1
     fi
 
-    local arg="$1"
-    local name="$2"
+    local flag="$2"
+    local value="$1"
 
-    local pattern="^--${name}=[a-zA-Z0-9.:@_/~-]+$"
+    local pattern="^--${flag}=[a-zA-Z0-9.:@_/~-]+$"
 
     if [[ -n "$3" ]]; then
-        local pattern="^--${name}=$3$"
+        local pattern="^--${flag}=$3$"
     fi
 
-    if [[ $arg =~ $pattern ]]; then
-        local left_side="${arg#*=}"
+    if [[ $value =~ $pattern ]]; then
+        local left_side="${value#*=}"
         echo "${left_side/#\~/$HOME}"
     else
-        echo "$arg"
+        echo "$value"
     fi
 }
 
@@ -340,8 +340,8 @@ initlog
 verbose_msg "Log Disable   : ${_NOLOG}"
 verbose_msg "Current Shell : ${_CURRENT_SHELL}"
 verbose_msg "Platform      : ${SHELL_PLATFORM}"
-verbose_msg "OS Name       : ${_OS}"
 verbose_msg "Architecture  : ${_ARCH}"
+verbose_msg "OS            : ${_OS}"
 
 #######################################################################
 #                           CODE Goes Here                            #
