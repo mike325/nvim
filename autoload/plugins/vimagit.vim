@@ -1,7 +1,7 @@
 " vimagit Setttings
 " github.com/mike325/.vim
 
-if !exists('g:plugs["vimagit"]') || exists('g:config_vimagit')
+if !has#plugin('vimagit') || exists('g:config_vimagit')
     finish
 endif
 

@@ -2,7 +2,7 @@ scriptencoding 'utf-8'
 " YCM settings
 " github.com/mike325/.vim
 
-if !exists('g:plugs["YouCompleteMe"]') || exists('g:config_ycm')
+if !has#plugin('YouCompleteMe') || exists('g:config_ycm')
     finish
 endif
 
@@ -248,14 +248,14 @@ endif
 
 " let g:ycm_cache_omnifunc = 1
 
-let g:ycm_use_ultisnips_completer = exists('g:plugs["ultisnips"]') ? 1 : 0
+let g:ycm_use_ultisnips_completer = has#plugin('ultisnips')
 
 function! s:SplitYCM(split_type, ycm_cmd) abort
     execute a:split_type
     execute a:ycm_cmd
 endfunction
 
-if exists('g:plugs["vimtex"]')
+if has#plugin('vimtex')
     let g:ycm_semantic_triggers.tex = g:vimtex#re#youcompleteme
 endif
 
@@ -280,7 +280,7 @@ execute 'autocmd YCMMappings FileType ' . join(g:ycm_languages, ',') . ' command
 execute 'autocmd YCMMappings FileType ' . join(g:ycm_languages, ',') . ' command! -buffer Hover YcmCompleter GetDoc'
 execute 'autocmd YCMMappings FileType ' . join(g:ycm_languages, ',') . ' command! -buffer Type YcmCompleter GetType'
 
-if exists('g:plugs["YouCompleteMe"]') && exists('g:plugs["delimitMate"]')
+if has#plugin('YouCompleteMe') && has#plugin('delimitMate')
     " Hack around
     " https://github.com/Valloric/YouCompleteMe/issues/2696
     if has( 'vim_starting' )

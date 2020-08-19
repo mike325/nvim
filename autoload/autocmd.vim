@@ -120,7 +120,7 @@ function! autocmd#IsGitRepo(root) abort
 endfunction
 
 function! autocmd#SetProjectConfigs(event) abort
-    let l:cwd = exists('a:event["cwd"]') ? a:event['cwd'] : getcwd()
+    let l:cwd = has_key(a:event, 'cwd') ? a:event['cwd'] : getcwd()
 
     let l:project_root =  autocmd#FindProjectRoot(l:cwd)
 
@@ -146,13 +146,13 @@ function! autocmd#SetProjectConfigs(event) abort
         execute 'source '. l:project
     endif
 
-    if exists('g:plugs["ctrlp"]')
+    if has#plugin('ctrlp')
         let l:fallback = g:ctrlp_user_command.fallback
         let g:ctrlp_clear_cache_on_exit = is_git ? 1 : (fallback =~# '^\(ag\|rg\|fd\) ')
     endif
 
     " If we don't have grepper variable, we have not done :PlugInstall
-    if exists('g:plugs["vim-grepper"]') && exists('g:grepper')
+    if has#plugin('vim-grepper') && exists('g:grepper')
         let g:grepper.tools = []
         let g:grepper.operator.tools = []
 
@@ -179,7 +179,7 @@ function! autocmd#SetProjectConfigs(event) abort
         endif
     endif
 
-    if exists('g:plugs["gonvim-fuzzy"]')
+    if has#plugin('gonvim-fuzzy')
         let g:gonvim_fuzzy_ag_cmd = tools#select_grep(l:is_git)
     endif
 

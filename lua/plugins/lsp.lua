@@ -1,5 +1,5 @@
 local nvim = require('nvim')
-local plugs = require('nvim').plugs
+local plugins = require('nvim').plugins
 local sys = require('sys')
 local executable = require('nvim').fn.executable
 local isdirectory = require('nvim').fn.isdirectory
@@ -33,7 +33,7 @@ end
 
 local completion = load_module('completion')
 if completion ~= nil then
-    if plugs['ultisnips']  then
+    if plugins['ultisnips']  then
         nvim.g.completion_enable_snippet = 'UltiSnips'
     end
     -- TODO: Add confirm key completion handler
@@ -239,7 +239,7 @@ nvim_set_autocmd(
 )
 
 -- Disable neomake for lsp buffers
-if plugs['neomake'] ~= nil then
+if plugins['neomake'] ~= nil then
     nvim_set_autocmd(
         'FileType',
         available_languages,
@@ -277,7 +277,7 @@ if completion ~= nil then
             {group = 'Completion'}
         )
     end
-elseif plugs['vim-mucomplete'] ~= nil then
+elseif plugins['vim-mucomplete'] ~= nil then
     nvim_set_autocmd(
         'FileType',
         available_languages,

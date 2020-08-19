@@ -1,7 +1,7 @@
 " SuperTab settings
 " github.com/mike325/.vim
 
-if !exists('g:plugs["supertab"]') || exists('g:config_supertab')
+if !has#plugin('supertab') || exists('g:config_supertab')
     finish
 endif
 

@@ -2,8 +2,8 @@
 " github.com/mike325/.vim
 
 function! plugins#convert_name(name) abort
-    let l:name = (a:name =~? '[\.\-]') ? substitute(a:name, '[\.\-]', '_', 'g') : a:name
-    let l:name = (l:name =~? '[\+]') ? substitute(l:name, '[\+]', '', 'g') : l:name
+    let l:name = (a:name =~? '[\.\-/]') ? substitute(a:name, '[\.\-/]', '_', 'g') : a:name
+    let l:name = (l:name =~? '[\+/]') ? substitute(l:name, '[\+]', '', 'g') : l:name
     let l:name = substitute(l:name, '.', '\l\0', 'g')
     return l:name
 endfunction

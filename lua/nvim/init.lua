@@ -247,20 +247,17 @@ end
 -- GPL3 apply to the nvim object
 local nvim = setmetatable({
     l = api.loop;
+    nvim_set_abbr    = nvim_set_abbr;
     nvim_get_mapping = nvim_get_mapping;
     nvim_set_mapping = nvim_set_mapping;
     nvim_set_autocmd = nvim_set_autocmd;
-    nvim_set_abbr = nvim_set_abbr;
     nvim_set_command = nvim_set_command;
     echoerr = function(msg)
         api.nvim_command('echohl ErrorMsg')
         api.nvim_command('echomsg "'..msg..'"')
         api.nvim_command('echohl')
     end;
-    has = function(feature)
-        return api.nvim_call_function('has', {feature}) == 1
-    end;
-    plugs = setmetatable({}, {
+    plugins = setmetatable({}, {
         __index = function(self, k)
             local mt = getmetatable(self)
             local x = mt[k]
@@ -276,6 +273,50 @@ local nvim = setmetatable({
             return nil
         end
     });
+    has = setmetatable({
+            cmd = function(cmd)
+                return api.nvim_call_function('exists', {':'..cmd}) == 1
+            end;
+            autocmd = function(autocmd)
+                return api.nvim_call_function('exists', {'##'..autocmd}) == 1
+            end;
+            augroup = function(augroup)
+                return api.nvim_call_function('exists', {'#'..augroup}) == 1
+            end;
+            option = function(option)
+                return api.nvim_call_function('exists', {'+'..option}) == 1
+            end;
+            func = function(func)
+                return api.nvim_call_function('exists', {'*'..func}) == 1
+            end;
+        },{
+            __call = function(self, feature)
+                return api.nvim_call_function('has', {feature}) == 1
+            end;
+        }
+    );
+    exists = setmetatable({
+            cmd = function(cmd)
+                return api.nvim_call_function('exists', {':'..cmd}) == 1
+            end;
+            autocmd = function(autocmd)
+                return api.nvim_call_function('exists', {'##'..autocmd}) == 1
+            end;
+            augroup = function(augroup)
+                return api.nvim_call_function('exists', {'#'..augroup}) == 1
+            end;
+            option = function(option)
+                return api.nvim_call_function('exists', {'+'..option}) == 1
+            end;
+            func = function(func)
+                return api.nvim_call_function('exists', {'*'..func}) == 1
+            end;
+        },{
+            __call = function(self, feature)
+                return api.nvim_call_function('exists', {feature}) == 1
+            end;
+        }
+    );
     fn = setmetatable({}, {
         __index = function(self, k)
             local mt = getmetatable(self)

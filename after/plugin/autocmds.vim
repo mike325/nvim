@@ -34,7 +34,7 @@ if v:version > 702
 
 endif
 
-if exists('##TerminalOpen')
+if has#autocmd('TerminalOpen')
     augroup TerminalAutocmds
         autocmd!
         autocmd TerminalOpen * setlocal relativenumber number nocursorline
@@ -64,8 +64,8 @@ augroup end
 augroup CleanFile
     autocmd!
     autocmd BufNewFile,BufRead,BufEnter * if !exists('b:trim') | let b:trim = 1 | endif
-    if !exists('g:plugs["completor.vim"]')
-        autocmd BufWritePre                 * call autocmd#CleanFile()
+    if !has#plugin('completor.vim')
+        autocmd BufWritePre * call autocmd#CleanFile()
     endif
 augroup end
 
@@ -73,7 +73,7 @@ augroup QuickQuit
     autocmd!
     autocmd BufEnter,BufReadPost __LanguageClient__ nnoremap <silent> <nowait> <buffer> q :q!<CR>
     autocmd BufEnter,BufWinEnter * if &previewwindow | nnoremap <silent> <nowait> <buffer> q :q!<CR>| endif
-    " if  has('terminal') && exists('##TerminalOpen')
+    " if  has('terminal') && has#autocmd('TerminalOpen')
     "     autocmd TerminalOpen * nnoremap <silent> <nowait> <buffer> q :q!<CR>
     " endif
 augroup end
@@ -94,13 +94,13 @@ augroup end
 
 augroup ProjectConfig
     autocmd!
-    if exists('##DirChanged')
-        autocmd DirChanged * call autocmd#SetProjectConfigs(has('patch-8.0.1394') ? deepcopy(v:event) : {})
+    if has#autocmd('DirChanged')
+        autocmd DirChanged * call autocmd#SetProjectConfigs(has#patch('8.0.1394') ? deepcopy(v:event) : {})
     endif
-    if exists('##WinNew')
-        autocmd WinNew * call autocmd#SetProjectConfigs(has('patch-8.0.1394') ? deepcopy(v:event) : {})
+    if has#autocmd('WinNew')
+        autocmd WinNew * call autocmd#SetProjectConfigs(has#patch('8.0.1394') ? deepcopy(v:event) : {})
     endif
-    autocmd WinEnter,VimEnter * call autocmd#SetProjectConfigs(has('patch-8.0.1394') ? deepcopy(v:event) : {})
+    autocmd WinEnter,VimEnter * call autocmd#SetProjectConfigs(has#patch('8.0.1394') ? deepcopy(v:event) : {})
 augroup end
 
 augroup CloseMenu

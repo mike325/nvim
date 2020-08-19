@@ -6,7 +6,7 @@ function! set#initconfigs() abort " Vim's InitConfig {{{
 
     let l:parent_dir = vars#datadir()
 
-    if !isdirectory(l:parent_dir) && exists('*mkdir')
+    if !isdirectory(l:parent_dir) && has#func('mkdir')
         call mkdir(fnameescape(l:parent_dir), 'p')
     endif
 
@@ -21,17 +21,17 @@ function! set#initconfigs() abort " Vim's InitConfig {{{
     " Better backup, swap and undos storage
     set backup   " make backup files
 
-    if exists('+undofile')
+    if has#option('undofile')
         set undofile " persistent undos - undo after you re-open the file
     endif
 
     " Config all
     for [l:dirname, l:dir_setting] in items(l:dirpaths)
-        if !isdirectory(fnameescape( l:parent_dir . l:dirname )) && exists('*mkdir')
+        if !isdirectory(fnameescape( l:parent_dir . l:dirname )) && has#func('mkdir')
             call mkdir(fnameescape( l:parent_dir . l:dirname ), 'p')
         endif
 
-        if l:dir_setting !=# '' && exists('+' . l:dir_setting)
+        if l:dir_setting !=# '' && has#option(l:dir_setting)
             execute 'set ' . l:dir_setting . '=' . fnameescape(l:parent_dir . l:dirname)
         endif
     endfor

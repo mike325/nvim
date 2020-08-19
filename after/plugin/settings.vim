@@ -23,15 +23,15 @@ if !os#name('macos')
     " Default should be internal,filler,closeoff
     set diffopt^=vertical
 
-    if has('patch-8.1.0360') || has('nvim')
+    if has#patch('8.1.0360') || has('nvim')
         set diffopt^=indent-heuristic,algorithm:patience
     endif
 
-    if has('patch-8.1.1361') || has('nvim')
+    if has#patch('8.1.1361') || has('nvim')
         set diffopt^=hiddenoff
     endif
 
-    if has('patch-8.1.2289') || has('nvim')
+    if has#patch('8.1.2289') || has('nvim')
         set diffopt^=iwhiteall,iwhiteeol
     else
         set diffopt^=iwhite
@@ -39,11 +39,11 @@ if !os#name('macos')
 endif
 
 
-if has('winaltkeys')
+if has#option('winaltkeys')
     set winaltkeys=no
 endif
 
-if has('directx')
+if has#option('renderoptions')
     set renderoptions=type:directx
 endif
 
@@ -57,36 +57,35 @@ let g:lua_complete_omni = 1
 " Use C for .h headers
 let g:c_syntax_for_h = 1
 
-if exists('+scrollback')
+if has#option('scrollback')
     set scrollback=-1
 endif
 
-if has('termguicolors')
-    " set terminal colors
+if has#option('termguicolors')
     set termguicolors
 endif
 
-if exists('+virtualedit')
+if has#option('virtualedit')
     " Allow virtual editing in Visual block mode.
     set virtualedit=block
 endif
 
-if exists('+infercase')
+if has#option('infercase')
     set infercase      " Smart casing when completing
 endif
 
-if exists('+langnoremap')
+if has#option('langnoremap')
     set langnoremap
 endif
 
 set nrformats=hex
 set shortmess=filnxtToO
 
-if has('patch-7.4.1065')
+if has#patch('7.4.1065')
     set nrformats+=bin
 endif
 
-if has('patch-7.4.1570')
+if has#patch('7.4.1570')
     set shortmess+=F
 endif
 
@@ -128,7 +127,7 @@ try
 catch /.*/
 endtry
 
-if exists('+display')
+if has#option('display')
     set display=lastline
 endif
 
@@ -136,11 +135,11 @@ if v:version >= 704
     set formatoptions=tcqj
 endif
 
-if exists('+belloff')
+if has#option('belloff')
     set belloff=all " Bells are annoying
 endif
 
-if has('patch-8.1.1902')
+if has#patch('8.1.1902')
     set completeopt+=popup
     set completepopup=height:10,width:60,highlight:Pmenu,border:off
 endif
@@ -262,7 +261,7 @@ set fileformats=unix,dos " File mode unix by default
 
 set undolevels=10000 " Set the number the undos per file
 
-if exists('+breakindent')
+if has#option('breakindent')
     setglobal breakindent
     " set showbreak=\\\\\
     try
@@ -271,15 +270,15 @@ if exists('+breakindent')
     endtry
 endif
 
-if exists('+relativenumber')
+if has#option('relativenumber')
     set relativenumber
 endif
 
-if exists('+colorcolumn')
+if has#option('colorcolumn')
     set colorcolumn=80
 endif
 
-if exists('+numberwidth')
+if has#option('numberwidth')
     set numberwidth=1
 endif
 
@@ -292,7 +291,7 @@ set foldlevel=99
 set foldcolumn=0
 set fileencoding=utf-8
 
-if !exists('g:bare') && exists('g:plugs["vim-airline"]')
+if !exists('g:bare') && has#plugin('vim-airline')
     " We already have the statusline, we don't need this
     set noshowmode
 endif
@@ -302,6 +301,6 @@ if os#name('windows')
     let &sessionoptions.=',slash,unix'
 endif
 
-if exists('g:plugs["vim-fugitive"]') && !exists('g:plugs["vim-airline"]')
+if has#plugin('vim-fugitive') && !has#plugin('vim-airline')
     set statusline=%<%f\ %h%m%r%{FugitiveStatusline()}%=%-14.(%l,%c%V%)\ %P
 endif

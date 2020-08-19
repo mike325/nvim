@@ -195,7 +195,7 @@ function! tools#ignores(tool) abort
 
     let l:exludes = []
 
-    if has('nvim-0.2') || v:version >= 800 || has('patch-7.4.2044')
+    if has('nvim-0.2') || v:version >= 800 || has#patch('7.4.2044')
         let l:exludes = map(split(copy(&backupskip), ','), {key, val -> substitute(val, '.*', '"\0"', 'g') })
     endif
 
@@ -381,20 +381,20 @@ function! tools#abolish(lang) abort
     endif
 
     let l:current = &l:spelllang
-    if exists('g:plugs["vim-abolish"]') && exists(':Abolish') == 2
-        if exists('l:abolish_lang[l:current]')
+    if has#plugin('vim-abolish') && has#cmd('Abolish') == 2
+        if has_key(l:abolish_lang, l:current)
             for [l:key, l:val] in items(l:abolish_lang[l:current])
                 execute 'Abolish -delete -buffer ' . l:key
             endfor
         endif
-        if exists('l:abolish_lang[a:lang]')
+        if has_key(l:abolish_lang, a:lang)
             for [l:key, l:val] in items(l:abolish_lang[a:lang])
                 execute 'Abolish -buffer ' . l:key . ' ' . l:val
             endfor
         endif
     else
         " TODO: Fix this crap
-        " if exists('l:abolish_lang[l:current]')
+        " if has_key(l:abolish_lang, l:current)
         "     for [l:key, l:val] in items(l:abolish_lang[l:current])
         "         if l:key !~# '{\|}' || l:val !~# '{\|}'
         "             silent! execute 'iunabbrev <buffer> ' . l:key
@@ -403,7 +403,7 @@ function! tools#abolish(lang) abort
         "         endif
         "     endfor
         " endif
-        " if exists('l:abolish_lang[a:lang]')
+        " if has_key(l:abolish_lang, a:lang)
         "     execute '!echo "' . string(items(l:abolish_lang[a:lang])) . '" >> echo.log'
         "     for [l:key, l:val] in items(l:abolish_lang[a:lang])
         "         execute '!echo ' . l:key . ' : '.l:val . '>> echo.log'

@@ -1,7 +1,7 @@
 " Git Fugitive settings
 " github.com/mike325/.vim
 
-if !exists('g:plugs["vim-fugitive"]') || exists('g:config_fugitive')
+if !has#plugin('vim-fugitive') || exists('g:config_fugitive')
     finish
 endif
 

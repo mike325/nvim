@@ -20,7 +20,7 @@ if executable('cppman')
     endif
 endif
 
-if exists('+formatprg') && executable('clang-format')
+if has#option('formatprg') && executable('clang-format')
     setlocal formatprg=clang-format\ --style=file\ --fallback-style=WebKit
 endif
 
@@ -43,7 +43,7 @@ elseif executable('g++')
     setlocal makeprg=g++\ -std=c++17\ -Wall\ -Wextra\ % " '-o', os#tmp('neomake')
 endif
 
-if exists('g:plugs["neomake"]') && (executable('clang++') || executable('clang-tidy') || executable('g++'))
+if has#plugin('neomake') && (executable('clang++') || executable('clang-tidy') || executable('g++'))
     call plugins#neomake#makeprg()
 endif
 

@@ -1,7 +1,7 @@
 " vim_mucomplete Setttings
 " github.com/mike325/.vim
 
-if !exists('g:plugs["vim-mucomplete"]') || exists('g:config_mucomplete')
+if !has#plugin('vim-mucomplete') || exists('g:config_mucomplete')
     finish
 endif
 
@@ -32,7 +32,7 @@ function! plugins#vim_mucomplete#setOmni() abort
 
     let l:ft = &filetype
 
-    if empty(l:ft) || !exists('l:omni[l:ft]') || &omnifunc !=# 'v:lua.vim.lsp.omnifunc'
+    if empty(l:ft) || !has_key(l:omni, l:ft) || &omnifunc !=# 'v:lua.vim.lsp.omnifunc'
         return
     endif
 

@@ -16,27 +16,27 @@ imap <S-Insert> <MiddleMouse>
 
 if has('nvim') && exists('g:GuiLoaded')
 
-    if exists(':GuiLinespace') == 2
+    if has#cmd('GuiLinespace') == 2
         GuiLinespace 1
     endif
 
-    if exists(':GuiPopupmenu') == 2
+    if has#cmd('GuiPopupmenu') == 2
         GuiPopupmenu 0
     endif
 
-    if exists(':GuiTabline') == 2
+    if has#cmd('GuiTabline') == 2
         GuiTabline 0
     endif
 
-    if exists('*GuiWindowMaximized')
+    if has#func('GuiWindowMaximized')
         call GuiWindowMaximized(1)
     endif
 
-    if exists('*GuiMousehide')
+    if has#func('GuiMousehide')
         call GuiMousehide(1)
     endif
 
-    if exists(':GuiFont') == 2
+    if has#cmd('GuiFont') == 2
         call gui#NeovimGuiFont(10)
     endif
 

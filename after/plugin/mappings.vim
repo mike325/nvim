@@ -58,7 +58,7 @@ if maparg('<C-L>', 'n') ==# ''
     nnoremap <silent> <C-L> :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-L>
 endif
 
-if !has('patch-8.1.2289')
+if !has#patch('8.1.2289')
     " Turn diff off when closiong other windows
     nnoremap <silent> <C-w><C-o> :diffoff!<bar>only<cr>
     nnoremap <silent> <C-w>o :diffoff!<bar>only<cr>
@@ -215,11 +215,11 @@ if os#name('windows')
     command! PowershellToggle call windows#toggle_powershell()
 endif
 
-if exists('+relativenumber')
+if has#option('relativenumber')
     command! RelativeNumbersToggle set relativenumber! relativenumber?
 endif
 
-if exists('+mouse')
+if has#option('mouse')
     command! MouseToggle call mappings#ToggleMouse()
 endif
 
@@ -248,7 +248,7 @@ endif
 
 command! TrimToggle call mappings#Trim()
 
-if has('nvim-0.2') || has('patch-7.4.2044')
+if has('nvim-0.2') || has#patch('7.4.2044')
     command! -nargs=? -complete=customlist,mappings#spells SpellLang
                 \ let s:spell = (empty(<q-args>)) ?  'en' : expand(<q-args>) |
                 \ call tools#spelllangs(s:spell) |
@@ -279,28 +279,28 @@ endif
 
 " ####### Fallback Plugin mapping {{{
 
-if !exists('g:plugs["fzf.vim"]')
+if !has#plugin('fzf.vim')
     command! -nargs=1 -complete=customlist,tools#oldfiles Oldfiles edit <args>
 endif
 
-if !exists('g:plugs["iron.nvim"]') && has#python()
+if !has#plugin('iron.nvim') && has#python()
     command! -complete=file -nargs=* Python2 call mappings#Python(2, <q-args>)
     command! -complete=file -nargs=* Python call mappings#Python(3, <q-args>)
     command! -complete=file -nargs=* Python3 call mappings#Python(3, <q-args>)
 endif
 
-if !exists('g:plugs["vim-bbye"]')
+if !has#plugin('vim-bbye')
     nnoremap <leader>d :bdelete!<CR>
 endif
 
-if !exists('g:plugs["vim-indexed-search"]')
+if !has#plugin('vim-indexed-search')
     " nnoremap * *zz
     " nnoremap # #zz
     nnoremap <silent> n :call mappings#NiceNext('n')<cr>
     nnoremap <silent> N :call mappings#NiceNext('N')<cr>
 endif
 
-if !exists('g:plugs["vim-unimpaired"]')
+if !has#plugin('vim-unimpaired')
 
     nnoremap <silent> [Q  :<C-U>exe "".(v:count ? v:count : "")."cfirst"<CR>zvzz
     nnoremap <silent> ]Q  :<C-U>exe "".(v:count ? v:count : "")."clast"<CR>zvzz
@@ -319,17 +319,17 @@ if !exists('g:plugs["vim-unimpaired"]')
 
 endif
 
-if !exists('g:plugs["vim-vinegar"]') && !exists('g:plugs["nerdtree"]')
+if !has#plugin('vim-vinegar') && !has#plugin('nerdtree')
     nnoremap - :Explore<CR>
 endif
 
-" if !exists('g:plugs["vim-grepper"]')
+" if !has#plugin('vim-grepper')
 "     onoremap igc
 "     xnoremap igc
 " endif
 
-if !exists('g:plugs["vim-eunuch"]')
-    if exists('*rename')
+if !has#plugin('vim-eunuch')
+    if has#func('rename')
         command! -bang -nargs=1 -complete=file Move
                     \ let s:name = expand(<q-args>) |
                     \ let s:current = expand('%:p') |
@@ -354,7 +354,7 @@ if !exists('g:plugs["vim-eunuch"]')
     command! -bang -nargs=1 -complete=dir Mkdir
                 \ let s:bang = empty(<bang>0) ? 0 : 1 |
                 \ let s:dir = expand(<q-args>) |
-                \ if exists('*mkdir') |
+                \ if has#func('mkdir') |
                 \   call mkdir(fnameescape(s:dir), (s:bang) ? "p" : "") |
                 \ else |
                 \   tools#echoerr("Failed to create dir '" . s:dir . "' mkdir is not available") |
@@ -394,7 +394,7 @@ if !exists('g:plugs["vim-eunuch"]')
                 \ unlet s:target
 endif
 
-if !exists('g:plugs["vim-fugitive"]') && executable('git')
+if !has#plugin('vim-fugitive') && executable('git')
     if has('nvim')
         command! -nargs=+ Git execute(((&splitbelow) ? 'botright' : 'topleft' ) . ' 20split term://git ' . <q-args>)
         command! -nargs=* Gstatus execute(((&splitbelow) ? 'botright' : 'topleft' ) . ' 20split term://git status ' . <q-args>)
@@ -433,7 +433,7 @@ if !exists('g:plugs["vim-fugitive"]') && executable('git')
     nnoremap <leader>gr :Gread<CR>
 endif
 
-" if !exists('g:plugs["denite.nvim"]') && !exists('g:plugs["vim-grepper"]')
+" if !has#plugin('denite.nvim') && !has#plugin('vim-grepper')
 "     nnoremap gs :set operatorfunc=GrepOperator<cr>g@
 "     vnoremap gs :<c-u>call GrepOperator(visualmode())<cr>
 "

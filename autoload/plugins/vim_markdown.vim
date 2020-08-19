@@ -1,7 +1,7 @@
 " Markdown Setttings
 " github.com/mike325/.vim
 
-if !exists('g:plugs["vim-markdown"]') || exists('g:config_markdown')
+if !has#plugin('vim-markdown') || exists('g:config_markdown')
     finish
 endif
 

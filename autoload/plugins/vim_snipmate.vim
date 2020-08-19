@@ -1,7 +1,7 @@
 " SnipMate settings
 " github.com/mike325/.vim
 
-if !exists('g:plugs["vim-snipmate"]') || exists('g:config_snipmate')
+if !has#plugin('vim-snipmate') || exists('g:config_snipmate')
     finish
 endif
 
@@ -9,13 +9,13 @@ let g:config_snipmate = 1
 
 function! plugins#vim_snipmate#NextSnipOrReturn() abort
     if pumvisible()
-        if exists('g:plugs["YouCompleteMe"]')
+        if has#plugin('YouCompleteMe')
             call feedkeys("\<C-y>")
             return ''
         else
             return "\<C-y>"
         endif
-    elseif exists('g:plugs["delimitMate"]') && delimitMate#WithinEmptyPair()
+    elseif has#plugin('delimitMate') && delimitMate#WithinEmptyPair()
         return delimitMate#ExpandReturn()
     endif
     return "\<CR>"

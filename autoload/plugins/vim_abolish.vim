@@ -1,14 +1,14 @@
 " Abolish Setttings
 " github.com/mike325/.vim
 
-if !exists('g:plugs["vim-abolish"]') || exists('g:config_abolish')
+if !has#plugin('vim-abolish') || exists('g:config_abolish')
     finish
 endif
 
 let g:config_abolish = 1
 
 function! plugins#vim_abolish#post() abort
-    if !exists('g:plugs["vim-abolish"]') || exists(':Abolish') != 2
+    if !has#plugin('vim-abolish') || has#cmd('Abolish') != 2
         return -1
     endif
 

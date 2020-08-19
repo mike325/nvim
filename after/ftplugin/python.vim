@@ -9,7 +9,7 @@ setlocal tabstop=4
 setlocal shiftwidth=0
 setlocal softtabstop=-1
 
-if exists('+formatprg')
+if has#option('formatprg')
     if executable('yapf')
         setlocal formatprg=yapf\ --style\ pep8
     elseif executable('autopep8')
@@ -28,7 +28,7 @@ else
     setlocal errorformat=%C\ %.%#,%A\ \ File\ \"%f\"\\,\ line\ %l%.%#,%Z%[%^\ ]%\\@=%m
 endif
 
-if exists('g:plugs["neomake"]')
+if has#plugin('neomake')
     call plugins#neomake#makeprg()
 endif
 

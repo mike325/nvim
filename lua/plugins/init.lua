@@ -3,24 +3,38 @@ local nvim = require('nvim')
 -- local inspect = nvim.inspect
 local api = nvim.api
 
-local installed, plugs = pcall(api.nvim_get_var, 'plugs')
+local function get_plugins()
+    local installed, plugins = pcall(api.nvim_get_var, 'plugs')
 
-if not installed then
-    nvim.echoerr('Plugs are not load yet')
+    if installed then
+        return plugins
+    end
+
+    return nil
+end
+
+local plugins = get_plugins()
+
+if plugins == nil then
+    nvim.echoerr('No plugins were load')
     return nil
 end
 
 local function convert2settings(name)
-    if name:find('-', 1, true) or name:find('.', 1, true) then
-        name = name:gsub('-', '_')
-        name = name:gsub('%.', '_')
+    if name:find('+', 1, true) then
+        name = name:gsub('+', '')
     end
+
+    if name:find('[-/%.]', 1, false) then
+        name = name:gsub('[-/%.]', '_')
+    end
+
     return name:lower()
 end
 
 -- TODO: Add glob function to call just the available configs
-for plugin, _ in pairs(plugs) do
-    _ = nvim.plugs[plugin] -- Cache plugins for future use
+for plugin, _ in pairs(plugins) do
+    _ = nvim.plugins[plugin] -- Cache plugins for future use
     local func_name = convert2settings(plugin)
     local ok, error_code = pcall(nvim.command, 'runtime! autoload/plugins/'..func_name..'.vim')
     if not ok then

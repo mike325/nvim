@@ -3,7 +3,7 @@ local nvim  = require('nvim')
 -- local api = nvim.api
 
 local sys   = require('sys')
-local plugs = require('nvim').plugs
+local plugins = require('nvim').plugins
 
 local parent      = require('sys').data
 local mkdir       = require('nvim').fn.mkdir
@@ -132,7 +132,7 @@ nvim.o.diffopt = nvim.o.diffopt .. ',vertical,iwhiteall,iwhiteeol,indent-heurist
 nvim.o.grepprg = tools.select_grep(false)
 nvim.o.grepformat = tools.select_grep(false, 'grepformat')
 
-if plugs['vim-fugitive'] ~= nil and plugs['vim-airline'] == nil then
+if plugins['vim-fugitive'] ~= nil and plugins['vim-airline'] == nil then
     nvim.o.statusline = '%<%f %h%m%r%{FugitiveStatusline()}%=%-14.(%l,%c%V%) %P'
 end
 

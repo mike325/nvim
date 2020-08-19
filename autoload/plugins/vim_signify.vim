@@ -1,7 +1,7 @@
 " Signify settings
 " github.com/mike325/.vim
 
-if !exists('g:plugs["vim-signify"]') || exists('g:config_signify')
+if !has#plugin('vim-signify') || exists('g:config_signify')
     finish
 endif
 

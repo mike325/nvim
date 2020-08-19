@@ -1,7 +1,7 @@
 " Vimwiki Setttings
 " github.com/mike325/.vim
 
-if !exists('g:plugs["vimwiki"]') || exists('g:config_vimwiki')
+if !has#plugin('vimwiki') || exists('g:config_vimwiki')
     finish
 endif
 

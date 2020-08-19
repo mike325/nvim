@@ -17,7 +17,7 @@ if executable('luacheck')
     setlocal makeprg=luacheck\ --std\ luajit\ --formatter\ plain\ %
     setlocal errorformat=%f:%l:%c:\ %m
 
-    if exists('g:plugs["neomake"]')
+    if has#plugin('neomake')
         call plugins#neomake#makeprg()
     endif
 endif

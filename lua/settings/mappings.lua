@@ -1,6 +1,6 @@
 local sys  = require('sys')
 local nvim = require('nvim')
-local plugs = require('nvim').plugs
+local plugins = require('nvim').plugins
 
 -- local api = nvim.api
 
@@ -12,7 +12,7 @@ local regex = require('tools').regex
 local has         = require('nvim').has
 local executable  = require('nvim').fn.executable
 
-if nvim.plugs['luajob'] ~= nil then
+if plugins['luajob'] ~= nil then
     require('grep')
 end
 
@@ -279,7 +279,7 @@ if executable('svn') == 1 then
     --             \ unlet s:bang
 end
 
-if plugs["iron.nvim"] == nil and (has('python') or has('python3'))then
+if plugins["iron.nvim"] == nil and (has('python') or has('python3'))then
     nvim.nvim_set_command(
         'Python',
         [[ call luaeval('require"settings/mappings".python(2, "'.<q-args>.'")') ]],
@@ -297,18 +297,18 @@ if plugs["iron.nvim"] == nil and (has('python') or has('python3'))then
     )
 end
 
-if plugs["vim-bbye"] == nil then
+if plugins["vim-bbye"] == nil then
     nvim.nvim_set_mapping('n', '<leader>d', ':bdelete!<CR>')
 end
 
-if plugs["vim-indexed-search"] == nil then
+if plugins["vim-indexed-search"] == nil then
     -- nvim.nvim_set_mapping('n', '*', '*zz')
     -- nvim.nvim_set_mapping('n', '#', '#zz')
     nvim.nvim_set_mapping('n', 'n', ":call mappings#NiceNext('n')<cr>", noremap)
     nvim.nvim_set_mapping('n', 'N', ":call mappings#NiceNext('N')<cr>", noremap)
 end
 
-if plugs["vim-unimpaired"] == nil then
+if plugins["vim-unimpaired"] == nil then
     nvim.nvim_set_mapping('n', '[Q', ':<C-U>exe "".(v:count ? v:count : "")."cfirst"<CR>zvzz'   , noremap)
     nvim.nvim_set_mapping('n', ']Q', ':<C-U>exe "".(v:count ? v:count : "")."clast"<CR>zvzz'    , noremap)
     nvim.nvim_set_mapping('n', '[q', ':<C-U>exe "".(v:count ? v:count : "")."cprevious"<CR>zvzz', noremap)
@@ -325,15 +325,15 @@ if plugs["vim-unimpaired"] == nil then
     nvim.nvim_set_mapping('n', ']b', ':<C-U>exe "".(v:count ? v:count : "")."bnext"<CR>'    , noremap)
 end
 
-if plugs["vim-vinegar"] == nil and plugs["nerdtree"] == nil then
+if plugins["vim-vinegar"] == nil and plugins["nerdtree"] == nil then
     nvim.nvim_set_mapping('n', '-', ':Explore<CR>')
 end
 
--- if plugs["vim-eunuch"] == nil then
+-- if plugins["vim-eunuch"] == nil then
 --     -- TODO
 -- end
 
--- if plugs["vim-fugitive"] == nil and executable('git') == 1 then
+-- if plugins["vim-fugitive"] == nil and executable('git') == 1 then
 --     -- TODO
 -- end
 

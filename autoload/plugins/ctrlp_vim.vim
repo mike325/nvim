@@ -1,7 +1,7 @@
 " CtrlP settings
 " github.com/mike325/.vim
 
-if !exists('g:plugs["ctrlp.vim"]') || exists('g:config_ctrlp')
+if !has#plugin('ctrlp.vim') || exists('g:config_ctrlp')
     finish
 endif
 
@@ -25,7 +25,7 @@ nnoremap <C-b> :CtrlPBuffer<CR>
 nnoremap <C-f> :CtrlPMRUFiles<CR>
 nnoremap <C-q> :CtrlPQuickfix<CR>
 
-" if exists('g:plugs["ctrlp-modified.vim"]')
+" if has#plugin('ctrlp-modified.vim')
 "     nnoremap <C-x> :CtrlPModified<CR>
 " endif
 
@@ -50,15 +50,15 @@ let g:ctrlp_switch_buffer       = 'et'
 
 let g:ctrlp_cache_dir = os#cache() . '/ctrlp'
 
-let g:ctrlp_max_files = (exists('g:plugs["fruzzy"]')         ||
-                        \ exists('g:plugs["ctrlp-cmatcher"]') ||
-                        \ exists('g:plugs["ctrlp-py-matcher"]')) ? 0 : 1
+let g:ctrlp_max_files = (has#plugin('fruzzy')         ||
+                        \ has#plugin('ctrlp-cmatcher') ||
+                        \ has#plugin('ctrlp-py-matcher')) ? 0 : 1
 
-if exists('g:plugs["fruzzy"]')
+if has#plugin('fruzzy')
     let g:ctrlp_match_func = {'match': 'fruzzy#ctrlp#matcher'}
-elseif exists('g:plugs["ctrlp-cmatcher"]')
+elseif has#plugin('ctrlp-cmatcher')
     let g:ctrlp_match_func = {'match' : 'matcher#cmatch' }
-elseif exists('g:plugs["ctrlp-py-matcher"]')
+elseif has#plugin('ctrlp-py-matcher')
     let g:ctrlp_match_func = { 'match': 'pymatcher#PyMatch' }
 endif
 

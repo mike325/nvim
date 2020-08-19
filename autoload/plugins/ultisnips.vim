@@ -1,7 +1,7 @@
 " Ultisnips settings
 " github.com/mike325/.vim
 
-if !exists('g:plugs["ultisnips"]') || exists('g:config_ultisnips')
+if !has#plugin('ultisnips') || exists('g:config_ultisnips')
     finish
 endif
 

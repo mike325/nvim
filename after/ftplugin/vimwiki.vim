@@ -7,7 +7,7 @@
 setlocal spell
 setlocal complete+=k,kspell
 
-if !exists('g:plugs["vimwiki"]')
+if !has#plugin('vimwiki')
     finish
 endif
 
@@ -45,7 +45,7 @@ nnoremap <buffer> <A-h> m`:VimwikiTableMoveColumnRight<CR>``
 setlocal textwidth=80
 
 " " Restore signify mappings
-" if exists('g:plugs["vim-signify"]')
+" if has#plugin('vim-signify')
 "     call plugins#vim_signify#init(0)
 " endif
 

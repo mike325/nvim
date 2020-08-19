@@ -1,7 +1,7 @@
 -- luacheck: globals unpack vim
 
 local has = require('nvim').has
-local plugs = require('nvim').plugs
+local plugins = require('nvim').plugins
 local nvim_set_autocmd = require('nvim').nvim_set_autocmd
 
 -- nvim_set_autocmd(
@@ -102,7 +102,7 @@ if has('nvim-0.5') then
     )
 end
 
-if  plugs['completor.vim'] == nil then
+if  plugins['completor.vim'] == nil then
     nvim_set_autocmd(
         {'BufNewFile', 'BufRead', 'BufEnter'},
         '*',

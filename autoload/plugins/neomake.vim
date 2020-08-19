@@ -2,7 +2,7 @@ scriptencoding 'utf-8'
 " Neomake settings
 " github.com/mike325/.vim
 
-if !exists('g:plugs["neomake"]') || exists('g:config_neomake')
+if !has#plugin('neomake') || exists('g:config_neomake')
     finish
 endif
 

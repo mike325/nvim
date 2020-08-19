@@ -9,7 +9,7 @@ function! s:PythonProviders(python) abort
     let l:pyname = l:major == 2 ? 'python' : 'python3'
     let l:pydll = l:major == 2 ? 'pythondll' : 'pythonthreedll'
 
-    if !has('nvim') && !has(l:pyname) && !exists('+'.l:pydll)
+    if !has('nvim') && !has(l:pyname) && !has#option(l:pydll)
         return ''
     endif
 
@@ -19,7 +19,7 @@ function! s:PythonProviders(python) abort
                     \ 'local': vars#home() . '/AppData/Roaming/Python/Python'.l:major.l:minor.'/site-packages/pynvim',
                     \ }
 
-        if exists('*exepath') && (exepath('python' . l:major . '.' . l:minor) || exepath('python' . l:major))
+        if has#func('exepath') && (exepath('python' . l:major . '.' . l:minor) || exepath('python' . l:major))
             if exepath('python' . l:major . '.' . l:minor)
                 let l:python = 'python' . l:major . '.' . l:minor
                 let l:pydir = fnamemodify(exepath('python' . l:major . '.' . l:minor) , ':h')
@@ -30,7 +30,7 @@ function! s:PythonProviders(python) abort
 
             let l:python = tr(exepath(l:python), "\\", '/')
 
-            if exists('+'.l:pydll)
+            if has#option(l:pydll)
                 execute 'set '.l:pydll . '=python' . l:major . l:minor .'.dll'
             endif
 
@@ -59,7 +59,7 @@ function! s:PythonProviders(python) abort
                 let l:pynvim['system'] = l:pydir . '/site-packages/pynvim'
                 if isdirectory(l:pydir)
                     if !has('nvim')
-                        if exists('+'.l:pydll)
+                        if has#option(l:pydll)
                             execute 'set '.l:pydll . '=python' . l:major . l:minor .'.dll'
                         endif
                         return has(l:pyname) ? l:pydir . '/python' : ''
@@ -77,15 +77,15 @@ function! s:PythonProviders(python) abort
                     \ }
 
         if (executable('python'.l:major.'.'.l:minor) || executable('python'.l:major)) &&  (isdirectory(l:pynvim['virtual']) || !has('nvim'))
-            if exists('*exepath')
+            if has#func('exepath')
                 return executable('python'.l:major.'.'.l:minor) ? exepath('python'.l:major.'.'.l:minor) : exepath('python'.l:major)
             else
                 return executable('python'.l:major.'.'.l:minor) ? 'python'.l:major.'.'.l:minor : 'python'.l:major
             endif
         elseif executable('python'.l:major.'.'.l:minor) && (isdirectory(l:pynvim['local']) || isdirectory(l:pynvim['system']) || !has('nvim'))
-            return exists('*exepath') ? exepath('python'.l:major.'.'.l:minor) : 'python'.l:major.'.'.l:minor
+            return has#func('exepath') ? exepath('python'.l:major.'.'.l:minor) : 'python'.l:major.'.'.l:minor
         elseif executable('python'.l:major) && (isdirectory(l:pynvim['local']) || isdirectory(l:pynvim['system']) || !has('nvim'))
-            return exists('*exepath') ? exepath('python'.l:major) : 'python'.l:major
+            return has#func('exepath') ? exepath('python'.l:major) : 'python'.l:major
         endif
     endif
     return ''

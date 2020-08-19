@@ -1,9 +1,43 @@
 " Has Setttings
 " github.com/mike325/.vim
 
-
 function! has#gui() abort
     return ( has('nvim') && ( exists('g:gonvim_running') || exists('g:GuiLoaded') || exists('veonim') )) || ( !has('nvim') && has('gui_running') )
+endfunction
+
+function! has#patch(patch) abort
+    return has('patch-'.a:patch)
+endfunction
+
+function! has#augroup(augroup) abort
+    return exists('#'.a:augroup)
+endfunction
+
+function! has#autocmd(autocmd) abort
+    return exists('##'.a:autocmd)
+endfunction
+
+function! has#cmd(cmd) abort
+    return exists(':'.a:cmd)
+endfunction
+
+function! has#func(func) abort
+    return exists('*'.a:func)
+endfunction
+
+function! has#option(option) abort
+    return exists('+'.a:option)
+endfunction
+
+function! has#variable(variable) abort
+    return exists(a:variable)
+endfunction
+
+function! has#plugin(plugin) abort
+    if exists('g:plugs')
+        return has_key(g:plugs, a:plugin)
+    endif
+    return 0
 endfunction
 
 if has('nvim-0.5')
@@ -13,7 +47,7 @@ if has('nvim-0.5')
     endfunction
 
     function! has#python(...) abort
-        if ! luaeval("require('python').setup()")
+        if !luaeval("require('python').setup()")
             return 0
         endif
 
@@ -97,9 +131,9 @@ endfunction
 function! has#async() abort
     let l:async = 0
 
-    if has('nvim') || v:version > 800 || ( v:version == 800 && has('patch-8.0.902') )
+    if has('nvim') || v:version > 800 || ( v:version == 800 && has#patch('8.0.902') )
         let l:async = 1
-    elseif v:version ==# 704 && has('patch-7.4.1689')
+    elseif v:version ==# 704 && has#patch('7.4.1689')
         let l:async = 1
     elseif has('job') && has('timers') && has('channel')
         let l:async = 1

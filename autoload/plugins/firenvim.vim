@@ -1,7 +1,7 @@
 " firenvim Setttings
 " github.com/mike325/.vim
 
-if !exists('g:started_by_firenvim') || !exists('g:plugs["firenvim"]') || exists('g:config_firenvim')
+if !exists('g:started_by_firenvim') || !has#plugin('firenvim') || exists('g:config_firenvim')
     finish
 endif
 

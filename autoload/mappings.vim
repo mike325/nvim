@@ -5,22 +5,22 @@ let s:arrows = -1
 
 " TODO: Add completion-nvim handler
 function! mappings#enter() abort
-    if exists('g:plugs["ultisnips"]')
+    if has#plugin('ultisnips')
         let l:snippet = UltiSnips#ExpandSnippet()
     endif
 
     if get(g:,'ulti_expand_res', 0) > 0
         return l:snippet
     elseif pumvisible()
-        if exists('g:plugs["YouCompleteMe"]')
+        if has#plugin('YouCompleteMe')
             call feedkeys("\<C-y>")
             return ''
         else
             return "\<C-y>"
         endif
-    elseif exists('g:plugs["delimitMate"]') && delimitMate#WithinEmptyPair()
+    elseif has#plugin('delimitMate') && delimitMate#WithinEmptyPair()
         return delimitMate#ExpandReturn()
-    elseif exists('g:plugs["ultisnips"]')
+    elseif has#plugin('ultisnips')
         call UltiSnips#JumpForwards()
         if get(g:, 'ulti_jump_forwards_res', 0) > 0
             return ''
@@ -34,7 +34,7 @@ function! mappings#tab() abort
     if pumvisible()
         return "\<C-n>"
     endif
-    if exists('g:plugs["ultisnips"]')
+    if has#plugin('ultisnips')
         call UltiSnips#JumpForwards()
         if get(g:, 'ulti_jump_forwards_res', 0) > 0
             return ''
@@ -47,7 +47,7 @@ function! mappings#shifttab() abort
     if pumvisible()
         return "\<C-p>"
     endif
-    if exists('g:plugs["ultisnips"]')
+    if has#plugin('ultisnips')
         call UltiSnips#JumpBackwards()
         if get(g:, 'ulti_jump_backwards_res', 0) > 0
             return ''
@@ -88,7 +88,7 @@ if has('terminal') || (!has('nvim-0.4') && has('nvim'))
     endfunction
 endif
 
-if exists('+mouse')
+if has#option('mouse')
     function! mappings#ToggleMouse() abort
         if &mouse ==# ''
             execute 'set mouse=a'
@@ -111,11 +111,11 @@ if has('nvim') || v:version >= 704
     endfunction
 endif
 
-if !exists('g:plugs["iron.nvim"]') && has#python()
+if !has#plugin('iron.nvim') && has#python()
     function! mappings#Python(version, args) abort
 
-        let l:python3 = exists('g:python3_host_prog') ? g:python3_host_prog : exists('*exepath') ? exepath('python3') : 'python3'
-        let l:python2 = exists('g:python_host_prog') ? g:python_host_prog : exists('*exepath') ? exepath('python2') : 'python2'
+        let l:python3 = exists('g:python3_host_prog') ? g:python3_host_prog : has#func('exepath') ? exepath('python3') : 'python3'
+        let l:python2 = exists('g:python_host_prog') ? g:python_host_prog : has#func('exepath') ? exepath('python2') : 'python2'
 
         let l:version = ( a:version  == 3 ) ? l:python3 : l:python2
         if empty(l:version)
@@ -138,7 +138,7 @@ if !exists('g:plugs["iron.nvim"]') && has#python()
     endfunction
 endif
 
-if !exists('g:plugs["vim-indexed-search"]')
+if !has#plugin('vim-indexed-search')
     " TODO: Integrate center next into vim-slash
     " Center searches results
     " CREDITS: https://amp.reddit.com/r/vim/comments/4jy1mh/slightly_more_subltle_n_and_n_behavior/

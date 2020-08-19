@@ -5,7 +5,7 @@
 setlocal cindent
 setlocal foldmethod=syntax
 
-if exists('+formatprg')
+if has#option('formatprg')
     if executable('clang-format')
         setlocal formatprg=clang-format
     endif

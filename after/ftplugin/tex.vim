@@ -25,7 +25,7 @@ else
     call tools#abolish(&spelllang)
 endif
 
-if !exists('g:plugs["vimtex"]')
+if !has#plugin('vimtex')
     " Credits to vimtex plugin
     let &include='\v^\s*\%\s*!?\s*[tT][eE][xX]\s+[rR][oO][oO][tT]\s*\=\s*\zs.*\ze\s*$|\v^\s*%(\v\\%(input|include|subfile)\s*\{|\v\\%(sub)?%(import|%(input|include)from)\*?\{[^\}]*\}\{)\zs[^\}]*\ze\}?'
     " let &includeexpr=''

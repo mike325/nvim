@@ -75,7 +75,7 @@ function! s:setupdirs() abort
         let $XDG_CONFIG_HOME =  os#name('windows') ? $LOCALAPPDATA : s:homedir .'/.config'
     endif
 
-    if exists('*mkdir')
+    if has#func('mkdir')
         silent! call mkdir(fnameescape($XDG_DATA_HOME), 'p')
         silent! call mkdir(fnameescape($XDG_CONFIG_HOME), 'p')
     elseif !isdirectory($XDG_CONFIG_HOME) || !isdirectory($XDG_DATA_HOME)
@@ -132,7 +132,7 @@ function! vars#libclang() abort
     if os#name('windows')
         if filereadable(vars#home() . '/.local/bin/libclang.dll')
             let l:libclang = vars#home() . '/.local/bin/libclang.dll'
-        elseif exists('g:plugs["YouCompleteMe"]')
+        elseif has#plugin('YouCompleteMe')
             let l:libclang = vars#basedir() . '/plugged/YouCompleteMe/third_party/ycmd/libclang.dll'
         elseif filereadable('c:/Program Files/LLVM/bin/libclang.dll')
             let l:libclang = 'c:/Program Files/LLVM/bin/libclang.dll'
@@ -142,7 +142,7 @@ function! vars#libclang() abort
     else
         if filereadable(vars#home() . '/.local/lib/libclang.so')
             let l:libclang = vars#home() . '/.local/lib/libclang.so'
-        elseif exists('g:plugs["YouCompleteMe"]')
+        elseif has#plugin('YouCompleteMe')
             for s:version in ['7', '6', '5', '4', '3']
                 if filereadable(vars#basedir() . '/plugged/YouCompleteMe/third_party/ycmd/libclang.so.' . s:version)
                     let l:libclang = vars#basedir() . '/plugged/YouCompleteMe/third_party/ycmd/libclang.so.' . s:version

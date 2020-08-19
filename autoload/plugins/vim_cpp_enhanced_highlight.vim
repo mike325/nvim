@@ -1,7 +1,7 @@
 " Cpp highlight enhance settings
 " github.com/mike325/.vim
 
-if !exists('g:plugs["vim-cpp-enhanced-highlight"]') || exists('g:config_cpp_enhanced')
+if !has#plugin('vim-cpp-enhanced-highlight') || exists('g:config_cpp_enhanced')
     finish
 endif
 

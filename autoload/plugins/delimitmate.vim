@@ -2,7 +2,7 @@ scriptencoding 'utf-8'
 " DelimitMate settings
 " github.com/mike325/.vim
 
-if !exists('g:plugs["delimitMate"]') || exists('g:config_delimitMate')
+if !has#plugin('delimitMate') || exists('g:config_delimitMate')
     finish
 endif
 
@@ -17,6 +17,6 @@ augroup DelimitMaters
     autocmd FileType c,cpp,java,perl let b:delimitMate_eol_marker = ";"
 augroup end
 
-if exists('*delimitMate#BS')
+if has#func('delimitMate#BS')
     imap <silent> <BS> <Plug>delimitMateBS
 endif

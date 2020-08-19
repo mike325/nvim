@@ -1,7 +1,7 @@
 " Vimtex Setttings
 " github.com/mike325/.vim
 
-if !exists('g:plugs["vimtex"]') || exists('g:config_vimtex')
+if !has#plugin('vimtex') || exists('g:config_vimtex')
     finish
 endif
 
@@ -45,7 +45,7 @@ if os#name('windows')
 endif
 
 
-if !has('nvim') && exists('+clientserver') && empty(v:servername) && exists('*remote_startserver') && !(os#name('windows') || os#name('cygwin')) && empty($SSH_CONNECTION)
+if !has('nvim') && has#option('clientserver') && empty(v:servername) && has#func('remote_startserver') && !(os#name('windows') || os#name('cygwin')) && empty($SSH_CONNECTION)
     call remote_startserver('VIM')
 elseif has('nvim') && executable('nvr')
     let g:vimtex_compiler_progname = 'nvr'
@@ -73,7 +73,7 @@ let g:vimtex_motion_enabled   = 1
 let g:vimtex_text_obj_enabled = 1
 let g:tex_flavor              = 'latex'
 
-if exists('g:plugs["fzf"]') && exists('g:plugs["fzf.vim"]')
+if has#plugin('fzf') && has#plugin('fzf.vim')
     augroup VimTexFZF
         autocmd!
         autocmd FileType tex command! -buffer Toc call vimtex#fzf#run()

@@ -10,7 +10,7 @@ setlocal tabstop=4
 setlocal shiftwidth=0
 setlocal softtabstop=-1
 
-if exists('+formatprg') && executable('clang-format')
+if has#option('formatprg') && executable('clang-format')
     setlocal formatprg=clang-format\ --style=file\ --fallback-style=WebKit
 endif
 
@@ -33,7 +33,7 @@ elseif executable('gcc')
     setlocal makeprg=gcc\ -Wall\ -Wextra\ % " '-o', os#tmp('neomake')
 endif
 
-if exists('g:plugs["neomake"]') && (executable('clang') || executable('clang-tidy') || executable('gcc'))
+if has#plugin('neomake') && (executable('clang') || executable('clang-tidy') || executable('gcc'))
     call plugins#neomake#makeprg()
 endif
 

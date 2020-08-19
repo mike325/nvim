@@ -3,6 +3,7 @@
 -- local inspect = vim.inspect
 
 local nvim         = require('nvim')
+local plugins      = require('nvim').plugins
 local line         = require('nvim').fn.line
 local system       = require('nvim').fn.system
 local executable   = require('nvim').fn.executable
@@ -10,8 +11,6 @@ local isdirectory  = require('nvim').fn.isdirectory
 local filereadable = require('nvim').fn.filereadable
 
 local sys   = require('sys')
-
-local plugs = nvim.plugs
 
 local git_version = ''
 local modern_git = -1
@@ -413,7 +412,7 @@ function tools.abolish(language)
 
     local current = nvim.bo.spelllang
 
-    if nvim.fn.exists(':Abolish') == 2 then
+    if nvim.has.cmd('Abolish') == 2 then
         if abolish[current] ~= nil then
             for base,_ in pairs(abolish[current]) do
                 nvim.command('Abolish -delete -buffer '..base)
@@ -634,7 +633,7 @@ function tools.project_config(event)
         nvim.command('source '..project)
     end
 
-    if plugs['ctrlp'] ~= nil then
+    if plugins['ctrlp'] ~= nil then
         local fast_look_up = {
             ag = 1,
             fd = 1,
@@ -646,7 +645,7 @@ function tools.project_config(event)
         nvim.g.ctrlp_clear_cache_on_exit = clear_cache
     end
 
-    if plugs['vim-grepper'] ~= nil then
+    if plugins['vim-grepper'] ~= nil then
 
         local operator = {}
         local tools = {}
@@ -685,7 +684,7 @@ function tools.project_config(event)
 
     end
 
-    if plugs['gonvim-fuzzy'] ~= nil then
+    if plugins['gonvim-fuzzy'] ~= nil then
         nvim.g.gonvim_fuzzy_ag_cmd = tools.select_grep(is_git)
     end
 

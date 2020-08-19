@@ -1,7 +1,7 @@
 " Go Setttings
 " github.com/mike325/.vim
 
-if exists('+formatprg')
+if has#option('formatprg')
     if executable('gofmt')
         setlocal formatprg=gofmt
     endif

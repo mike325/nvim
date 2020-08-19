@@ -1,22 +1,22 @@
 " Colorscheme settings
 " github.com/mike325/.vim
 
-" if !exists('g:plugs["gruvbox"]')
+" if !has#plugin('gruvbox')
 "     finish
 " endif
 
 set background=dark
 set cursorline
 
-if has('termguicolors')
+if has#option('termguicolors')
     set termguicolors
 endif
 
 try
-    if exists('g:plugs["ayu-vim"]') && has('nvim')
+    if has#plugin('ayu-vim') && has('nvim')
         let g:ayucolor = 'dark'
         colorscheme ayu
-    elseif exists('g:plugs["onedark.vim"]')
+    elseif has#plugin('onedark.vim')
         colorscheme onedark
     else
         colorscheme torte

@@ -1,7 +1,7 @@
 " FZF_vim Setttings
 " github.com/mike325/.vim
 
-if (!exists('g:plugs["fzf"]') || !exists('g:plugs["fzf.vim"]')) || exists('g:config_fzf')
+if (!has#plugin('fzf') || !has#plugin('fzf.vim')) || exists('g:config_fzf')
     finish
 endif
 
@@ -50,7 +50,7 @@ function! plugins#fzf_vim#map_command(dir, command) abort
         return 0
     endif
 
-    if !os#name('windows') && system('uname -r') !~# '4\.\(4\.0-142\|15.0-44\)' && exists('*exepath')
+    if !os#name('windows') && system('uname -r') !~# '4\.\(4\.0-142\|15.0-44\)' && has#func('exepath')
         execute 'command! -bang '.a:command." call fzf#vim#files('".a:dir."', fzf#vim#with_preview('right:50%', 'ctrl-p'), <bang>0)"
     else
         execute 'command! -bang '.a:command.' call fzf#vim#files("'.a:dir.'", {}, <bang>0)'
@@ -58,14 +58,14 @@ function! plugins#fzf_vim#map_command(dir, command) abort
 
 endfunction
 
-if executable('uname') && system('uname -r') !~# '4\.\(4\.0-142\|15.0-44\)' && executable('bat') && exists('*exepath')
+if executable('uname') && system('uname -r') !~# '4\.\(4\.0-142\|15.0-44\)' && executable('bat') && has#func('exepath')
     let g:fzf_files_options = ['--border', '--ansi', '--preview-window', 'right:50%', '--preview', 'bat --color=always {}']
 else
     command! -bang -nargs=? -complete=dir Files
         \ call fzf#vim#files(<q-args>, {}, <bang>0)
 endif
 
-if os#name('windows') && executable('bat') && exists('*exepath')
+if os#name('windows') && executable('bat') && has#func('exepath')
     let g:fzf_files_options = ['--border', '--ansi', '--preview-window', 'right:50%', '--preview', 'bat --color=always {}']
 endif
 

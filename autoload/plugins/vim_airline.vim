@@ -2,7 +2,7 @@ scriptencoding 'utf-8'
 " Airline settings
 " github.com/mike325/.vim
 
-if !exists('g:plugs["vim-airline"]') || exists('g:config_airline')
+if !has#plugin('vim-airline') || exists('g:config_airline')
     finish
 endif
 
@@ -35,7 +35,7 @@ else
     let g:airline_powerline_fonts = 1
 endif
 
-if !exists('g:plugs["vim-airline-themes"]')
+if !has#plugin('vim-airline-themes')
     let g:airline_theme = 'molokai'
     " let g:airline_theme = 'solarized'
     " let g:airline_theme = 'gruvbox'
