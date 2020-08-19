@@ -352,32 +352,48 @@ if ! hash fd 2>/dev/null; then
     exit 1
 fi
 
-status_msg "Running shellcheck"
-verbose_msg "Shellcheck version: $(shellcheck --version)"
-if ! fd -e sh --exclude zsh -X shellcheck -x -a -e 1117,2034; then
-    error_msg 'Fail shellcheck test'
-    exit 2
+if hash shellcheck 2>/dev/null; then
+    status_msg "Running shellcheck"
+    verbose_msg "Shellcheck version: $(shellcheck --version)"
+    if ! fd -e sh --exclude zsh -X shellcheck -x -a -e 1117,2034; then
+        error_msg 'Fail shellcheck test'
+        exit 2
+    fi
+else
+    error_msg "Missing shellcheck, skipping Shell lint"
 fi
 
-status_msg "Running python check"
-verbose_msg "flake8 version: $(flake8 --version)"
-if ! fd -e py -X flake8 --max-line-length=120 --max-complexity=18; then
-    error_msg "Failed python lint test"
-    exit 3
+if hash flake8 2>/dev/null; then
+    status_msg "Running python check"
+    verbose_msg "flake8 version: $(flake8 --version)"
+    if ! fd -e py -X flake8 --max-line-length=120 --max-complexity=18; then
+        error_msg "Failed python lint test"
+        exit 3
+    fi
+else
+    error_msg "Missing flake8, skipping Python lint"
 fi
 
-status_msg "Running VimL lint"
-verbose_msg "Vint version: $(vint --version)"
-if ! fd -e vim --exclude plug --exclude ftdetect -X vint --enable-neovim -t -s || ! fd -e vim . ftdetect -X vint --enable-neovim -t -e; then
-    error_msg 'Fail VimL lint test'
-    exit 2
+if hash vint 2>/dev/null; then
+    status_msg "Running VimL lint"
+    verbose_msg "Vint version: $(vint --version)"
+    if ! fd -e vim --exclude plug --exclude ftdetect -X vint --enable-neovim -t -s || ! fd -e vim . ftdetect -X vint --enable-neovim -t -e; then
+        error_msg 'Fail VimL lint test'
+        exit 2
+    fi
+else
+    error_msg "Missing vint, skipping VimL lint"
 fi
 
-status_msg "Running luacheck"
-verbose_msg "luacheck version: $(luacheck --version)"
-if ! luacheck --std luajit --formatter plain lua/; then
-    # TODO: Cleanup luacheck erros
-    warn_msg 'Fail luacheck lint test'
+if hash luacheck 2>/dev/null; then
+    status_msg "Running luacheck"
+    verbose_msg "luacheck version: $(luacheck --version)"
+    if ! luacheck --std luajit --formatter plain lua/; then
+        # TODO: Cleanup luacheck errors
+        warn_msg 'Fail luacheck lint test'
+    fi
+else
+    error_msg "Missing luacheck, skipping lua lint"
 fi
 
 if [[ $_ERR_COUNT -gt 0 ]]; then
