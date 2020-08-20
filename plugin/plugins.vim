@@ -151,10 +151,7 @@ if (has('nvim') || (v:version >= 704))
     Plug 'michaeljsmith/vim-indent-object'
 endif
 
-if os#name('windows') && v:version > 704
-    " NOTE: Urls doesn't work in master branch because vimwiki pass the wrong variable
-    Plug 'vimwiki/vimwiki', {'branch': 'dev'}
-elseif v:version > 704
+if v:version > 704
     Plug 'vimwiki/vimwiki'
 endif
 
