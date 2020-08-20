@@ -12,10 +12,6 @@ local regex = require('tools').regex
 local has         = require('nvim').has
 local executable  = require('nvim').fn.executable
 
-if plugins['luajob'] ~= nil then
-    require('grep')
-end
-
 local mappings = {}
 
 local noremap = {noremap = true}

@@ -64,13 +64,28 @@ local function datadir()
     return dir
 end
 
-local sys = {
+local sys = setmetatable({
     name  = system_name(),
     home  = homedir(),
     base  = basedir(),
     data  = datadir(),
     cache = cachedir(),
-}
+}, {
+    __index = function(self, k)
+        local mt = getmetatable(self)
+        local x = mt[k]
+        if x ~= nil then
+            return x
+        end
+
+        local f = os[k]
+        if f ~= nil then
+            mt[k] = f
+        end
+
+        return f
+    end;
+})
 
 function sys.tmp(filename)
     local tmpdir = sys.name == 'windows' and 'c:/temp/' or '/tmp/'
