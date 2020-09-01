@@ -253,9 +253,13 @@ local nvim = {
     nvim_set_autocmd = nvim_set_autocmd;
     nvim_set_command = nvim_set_command;
     echoerr = function(msg)
-        api.nvim_command('echohl ErrorMsg')
-        api.nvim_command('echomsg "'..msg..'"')
-        api.nvim_command('echohl')
+        if type(msg) == 'string' and #msg > 0 then
+            msg = msg:gsub('"', [[\"]])
+            api.nvim_command('echohl ErrorMsg')
+            -- print(string.format('%s', msg))
+            api.nvim_command('echomsg '..string.format('"%s"', msg))
+            api.nvim_command('echohl')
+        end
     end;
     plugins = setmetatable({}, {
         __index = function(self, k)
