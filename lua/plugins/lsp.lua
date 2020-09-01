@@ -166,14 +166,48 @@ end
 -- Expose languages to VimL
 nvim.g.available_languages = available_languages
 
-nvim_set_autocmd('FileType', available_languages, 'setlocal omnifunc=v:lua.vim.lsp.omnifunc', {group = 'NvimLSP', create = true})
-
-nvim_set_autocmd('FileType', available_languages, 'nnoremap <buffer><silent> <c-]> :lua vim.lsp.buf.definition()<CR>', {group = 'NvimLSP'})
-nvim_set_autocmd('FileType', available_languages, 'nnoremap <buffer><silent> gd    :lua vim.lsp.buf.declaration()<CR>', {group = 'NvimLSP'})
-nvim_set_autocmd('FileType', available_languages, 'nnoremap <buffer><silent> gD    :lua vim.lsp.buf.implementation()<CR>', {group = 'NvimLSP'})
-nvim_set_autocmd('FileType', available_languages, 'nnoremap <buffer><silent> gr    :lua vim.lsp.buf.references()<CR>', {group = 'NvimLSP'})
-nvim_set_autocmd('FileType', available_languages, 'nnoremap <buffer><silent> K     :lua vim.lsp.buf.hover()<CR>', {group = 'NvimLSP'})
-nvim_set_autocmd('FileType', available_languages, 'nnoremap <buffer><silent> =d    :lua vim.lsp.util.show_line_diagnostics()<CR>', {group = 'NvimLSP'})
+nvim_set_autocmd(
+    'FileType',
+    available_languages,
+    'setlocal omnifunc=v:lua.vim.lsp.omnifunc',
+    {group = 'NvimLSP', create = true}
+)
+nvim_set_autocmd(
+    'FileType',
+    available_languages,
+    'nnoremap <buffer><silent> <c-]> :lua vim.lsp.buf.definition()<CR>',
+    {group = 'NvimLSP'}
+)
+nvim_set_autocmd(
+    'FileType',
+    available_languages,
+    'nnoremap <buffer><silent> gd    :lua vim.lsp.buf.declaration()<CR>',
+    {group = 'NvimLSP'}
+)
+nvim_set_autocmd(
+    'FileType',
+    available_languages,
+    'nnoremap <buffer><silent> gD    :lua vim.lsp.buf.implementation()<CR>',
+    {group = 'NvimLSP'}
+)
+nvim_set_autocmd(
+    'FileType',
+    available_languages,
+    'nnoremap <buffer><silent> gr    :lua vim.lsp.buf.references()<CR>',
+    {group = 'NvimLSP'}
+)
+nvim_set_autocmd(
+    'FileType',
+    available_languages,
+    'nnoremap <buffer><silent> K     :lua vim.lsp.buf.hover()<CR>',
+    {group = 'NvimLSP'}
+)
+nvim_set_autocmd(
+    'FileType',
+    available_languages,
+    'nnoremap <buffer><silent> =d    :lua vim.lsp.util.show_line_diagnostics()<CR>',
+    {group = 'NvimLSP'}
+)
 
 nvim_set_autocmd(
     'FileType',
