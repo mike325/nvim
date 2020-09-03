@@ -21,13 +21,8 @@ if plugins == nil then
 end
 
 local function convert2settings(name)
-    if name:find('+', 1, true) then
-        name = name:gsub('+', '')
-    end
-
-    if name:find('[-/%.]', 1, false) then
-        name = name:gsub('[-/%.]', '_')
-    end
+    name = name:gsub('+', '')
+    name = name:gsub('[-/%.]', '_')
 
     return name:lower()
 end

@@ -183,6 +183,5 @@ function! autocmd#SetProjectConfigs(event) abort
         let g:gonvim_fuzzy_ag_cmd = tools#select_grep(l:is_git)
     endif
 
-
     return b:project_root
 endfunction

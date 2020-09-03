@@ -64,7 +64,7 @@ local configs = {
                 'fedora',
             }
 
-            for _, distro in ipairs(wsl) do
+            for _, distro in pairs(wsl) do
                 if filereadable(sys.home..'/AppData/Local/Microsoft/WindowsApps/'..distro..'.exe') == 1 then
                     definitions[distro] = {
                         command = {distro}
