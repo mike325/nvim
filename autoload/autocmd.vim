@@ -88,31 +88,26 @@ function! autocmd#FileName(...) abort
 endfunction
 
 function! autocmd#FindProjectRoot(path) abort
-    let l:project_root = ''
+    let l:root = ''
     let l:markers = ['.git', '.svn', '.hg']
     let l:dir = fnamemodify(a:path, ':p')
 
     for l:marker in l:markers
-        let l:project_root = finddir(l:marker, l:dir.';')
-        if l:marker =~# '\.git' && empty(l:project_root)
-            let l:project_root = findfile(l:marker, l:dir.';')
-            if !empty(l:project_root)
-                let l:project_root = l:project_root . '/'
+        let l:root = finddir(l:marker, l:dir.';')
+        if l:marker =~# '\.git' && empty(l:root)
+            let l:root = findfile(l:marker, l:dir.';')
+            if !empty(l:root)
+                let l:root = l:root . '/'
             endif
         endif
 
-        if !empty(l:project_root)
-            let l:project_root = fnamemodify(l:project_root, ':p:h:h')
+        if !empty(l:root)
+            let l:root = fnamemodify(l:root, ':p:h:h')
             break
         endif
     endfor
 
-    return l:project_root
-endfunction
-
-function! autocmd#getProjectRoot() abort
-    let b:project_root = get(b:, 'project_root', autocmd#FindProjectRoot(getcwd()))
-    return b:project_root
+    return l:root
 endfunction
 
 function! autocmd#IsGitRepo(root) abort
@@ -122,21 +117,27 @@ endfunction
 function! autocmd#SetProjectConfigs(event) abort
     let l:cwd = has_key(a:event, 'cwd') ? a:event['cwd'] : getcwd()
 
-    let l:project_root =  autocmd#FindProjectRoot(l:cwd)
+    let b:project_root = get(b:, 'project_root', {'root': '', 'cwd': ''})
 
-    if empty(l:project_root)
-        let l:project_root = fnamemodify(getcwd(), ':p')
-    endif
-
-    let b:project_root = get(b:, 'project_root', '')
-
-    if l:project_root == b:project_root
+    if b:project_root['cwd'] == l:cwd
         return b:project_root
     endif
 
-    let b:project_root = l:project_root
+    let b:project_root['cwd'] = l:cwd
 
-    let l:is_git = autocmd#IsGitRepo(b:project_root)
+    let l:root =  autocmd#FindProjectRoot(l:cwd)
+
+    if empty(l:root)
+        let l:root = fnamemodify(getcwd(), ':p')
+    endif
+
+    if l:root == b:project_root['root']
+        return b:project_root
+    endif
+
+    let b:project_root['root'] = l:root
+
+    let l:is_git = autocmd#IsGitRepo(l:root)
 
     let &l:grepprg = tools#select_grep(l:is_git)
 

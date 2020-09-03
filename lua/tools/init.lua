@@ -573,28 +573,28 @@ function tools.file_name(...)
 end
 
 local function find_project_root(path)
-    local project_root
+    local root
     local vcs_markers = {'.git', '.svn', '.hg',}
     local dir = nvim.fn.fnamemodify(path, ':p')
 
     for _,marker in pairs(vcs_markers) do
-        project_root = nvim.fn.finddir(marker, dir..';')
+        root = nvim.fn.finddir(marker, dir..';')
 
-        if #project_root == 0 and marker == '.git' then
-            project_root = nvim.fn.findfile(marker, dir..';')
-            project_root = #project_root > 0 and project_root..'/' or project_root
+        if #root == 0 and marker == '.git' then
+            root = nvim.fn.findfile(marker, dir..';')
+            root = #root > 0 and root..'/' or root
         end
 
-        if #project_root > 0 then
-            project_root = nvim.fn.fnamemodify(project_root, ':p:h:h')
+        if #root > 0 then
+            root = nvim.fn.fnamemodify(root, ':p:h:h')
             break
         end
 
     end
 
-    project_root = project_root:gsub('\\', '/')
+    root = root:gsub('\\', '/')
 
-    return project_root
+    return root
 end
 
 local function is_git_repo(root)
@@ -608,6 +608,10 @@ function tools.project_config(event)
     local cwd = event.cwd or nvim.fn.getcwd()
     cwd = cwd:gsub('\\', '/')
 
+    if nvim.b.project_root and nvim.b.project_root['cwd'] == cwd then
+        return nvim.b.project_root
+    end
+
     local root = find_project_root(cwd)
 
     if #root == 0 then
@@ -616,13 +620,16 @@ function tools.project_config(event)
 
     root = root:gsub('\\', '/')
 
-    if root == nvim.b.project_root then
-        return root
+    if nvim.b.project_root and root == nvim.b.project_root['root'] then
+        return nvim.b.project_root
     end
 
-    nvim.b.project_root = root
+    nvim.b.project_root = {
+        cwd = cwd,
+        root = root,
+    }
 
-    local is_git = is_git_repo(nvim.b.project_root)
+    local is_git = is_git_repo(root)
     -- local filetype = nvim.bo.filetype
     -- local buftype = nvim.bo.buftype
 
