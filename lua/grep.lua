@@ -86,8 +86,6 @@ function _G.Grep.QueueJob(...)
 
     local args = {...}
 
-    -- print(string.format('Args %s', vim.inspect(args)))
-
     local flags = {}
     local search = {}
     for _, arg in pairs(args) do
@@ -101,21 +99,7 @@ function _G.Grep.QueueJob(...)
     flags = vim.fn.join(flags, ' ')
     search = vim.fn.join(search, ' ')
 
-    -- print(string.format('Flags Value %s', vim.inspect(flags)))
-    -- print(string.format('Flags Size  %s', #flags))
-    -- print(string.format('Flags Type  %s', type(flags)))
-
-    -- print(string.format('Search Value %s', vim.inspect(search)))
-    -- print(string.format('Search Size  %s', #search))
-    -- print(string.format('Search Type  %s', type(search)))
-
     cmd = string.format('%s %s %s', cmd, flags, nvim.fn.shellescape(search))
-
-    -- cmd = vim.split(cmd, ' ', true)
-
-    -- print(string.format('CMD val  %s', cmd))
-    -- print(string.format('CMD type %s', type(cmd)))
-    -- print(string.format('Format %s', format))
 
     local id = vim.fn.jobstart(
         cmd,
