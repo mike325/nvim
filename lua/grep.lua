@@ -32,7 +32,7 @@ local function on_exit(id, exit_code, event)
                 contex = 'AsyncGrep',
                 efm = grepjobs[id].format,
                 lines = lines,
-                title = 'Grep '..grepjobs[id].target,
+                title = 'Grep '..grepjobs[id].search,
             }
         )
 
@@ -40,7 +40,7 @@ local function on_exit(id, exit_code, event)
             local orientation = vim.o.splitbelow and 'botright' or 'topleft'
             nvim.command(orientation .. ' copen')
         else
-            print('Grep '..grepjobs[id].target .. ' finished')
+            print('Grep '..grepjobs[id].search .. ' finished')
         end
 
     elseif exit_code == 1 then
@@ -49,10 +49,10 @@ local function on_exit(id, exit_code, event)
             'r',
             {
                 contex = 'AsyncGrep',
-                title = 'No results for '..grepjobs[id].target,
+                title = 'No results for '..grepjobs[id].search,
             }
         )
-        nvim.echoerr('No results for '..grepjobs[id].target)
+        nvim.echoerr('No results for '..grepjobs[id].search)
     else
         vim.fn.setqflist(
             {},
@@ -61,12 +61,12 @@ local function on_exit(id, exit_code, event)
                 contex = 'AsyncGrep',
                 efm = grepjobs[id].format,
                 lines = grepjobs[id].data,
-                title = 'Error, Grep '..grepjobs[id].target..' exited with '..exit_code,
+                title = 'Error, Grep '..grepjobs[id].search..' exited with '..exit_code,
             }
         )
         nvim.echoerr('Grep exited with '..exit_code)
     end
-    -- grepjobs[id] = nil
+    grepjobs[id] = nil
 end
 
 function _G.Grep.QueueJob(...)
@@ -82,8 +82,6 @@ function _G.Grep.QueueJob(...)
         end
     end
 
-    cmd = vim.trim(cmd)
-
     local args = {...}
 
     local flags = {}
@@ -96,13 +94,18 @@ function _G.Grep.QueueJob(...)
         end
     end
 
-    flags = vim.fn.join(flags, ' ')
+    cmd = vim.split(cmd, ' ')
+    local prg = cmd[1]
+
+    table.remove(cmd, 1)
+
+    flags = string.format('%s %s', vim.fn.join(cmd, ' '), vim.fn.join(flags, ' '))
     search = vim.fn.join(search, ' ')
 
-    cmd = string.format('%s %s %s', cmd, flags, nvim.fn.shellescape(search))
+    local job = string.format('%s %s %s', prg, flags, nvim.fn.shellescape(search))
 
     local id = vim.fn.jobstart(
-        cmd,
+        job,
         {
             cwd = cwd,
             on_stdout = on_data,
@@ -113,9 +116,10 @@ function _G.Grep.QueueJob(...)
 
     grepjobs[id] = {
         id = id,
-        cmd = cmd,
+        cmd = prg,
+        flags = flags,
+        search = search,
         format = format,
-        target = 'placeholder',
         data = {},
         cwd = cwd,
     }

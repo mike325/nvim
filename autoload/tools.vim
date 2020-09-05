@@ -222,7 +222,7 @@ function! tools#grep(tool, ...) abort
                 \       'grepformat': '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m',
                 \    },
                 \   'rg' : {
-                \       'grepprg':  'rg -S -n --color never -H --no-search-zip --trim --vimgrep ',
+                \       'grepprg':  'rg -S --hidden --color never --no-search-zip --trim --vimgrep ',
                 \       'grepformat': '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m'
                 \   },
                 \   'ag' : {
@@ -248,7 +248,7 @@ function! tools#filelist(tool) abort
     let l:filelist = {
                 \ 'git'  : 'git --no-pager ls-files -co --exclude-standard',
                 \ 'fd'   : 'fd ' . tools#ignores('fd') . ' --type f --hidden --follow --color never . .',
-                \ 'rg'   : 'rg --line-number --column --with-filename --color never --no-search-zip --hidden --trim --files',
+                \ 'rg'   : 'rg --color never --no-search-zip --hidden --trim --files',
                 \ 'ag'   : 'ag -l --follow --nocolor --nogroup --hidden ' . tools#ignores('ag'). '-g ""',
                 \ 'find' : "find . -iname '*'",
                 \}
