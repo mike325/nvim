@@ -31,6 +31,5 @@ augroup CommonProjections
                 \   'CMakeLists.txt'             : {'type': 'CMakeLists'},
                 \   'cmake/*.cmake'              : {'type': 'CMakeLists'},
                 \ })
-                " \   'test/*'                     : {'type': 'Test'},
 
 augroup end

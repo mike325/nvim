@@ -323,11 +323,6 @@ if !has#plugin('vim-vinegar') && !has#plugin('nerdtree')
     nnoremap - :Explore<CR>
 endif
 
-" if !has#plugin('vim-grepper')
-"     onoremap igc
-"     xnoremap igc
-" endif
-
 if !has#plugin('vim-eunuch')
     if has#func('rename')
         command! -bang -nargs=1 -complete=file Move
@@ -432,22 +427,5 @@ if !has#plugin('vim-fugitive') && executable('git')
     nnoremap <leader>gc :Gcommit<CR>
     nnoremap <leader>gr :Gread<CR>
 endif
-
-" if !has#plugin('denite.nvim') && !has#plugin('vim-grepper')
-"     nnoremap gs :set operatorfunc=GrepOperator<cr>g@
-"     vnoremap gs :<c-u>call GrepOperator(visualmode())<cr>
-"
-"     function! GrepOperator(type)
-"         if a:type ==# 'v'
-"             normal! `<v`>y
-"         elseif a:type ==# 'char'
-"             normal! `[v`]y
-"         else
-"             return
-"         endif
-"
-"         silent execute 'grep -nIR ' . shellescape(@@) . ' .'
-"     endfunction
-" endif
 
 " }}} END Fallback Plugin mapping
