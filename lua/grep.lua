@@ -1,4 +1,5 @@
 local nvim = require'nvim'
+local sys =  require'sys'
 
 if not nvim.has('nvim-0.5') then
     return nil
@@ -10,20 +11,20 @@ local grepjobs = {}
 
 local function on_data(id, data, event)
     if data ~= nil and #data > 0 then
-        vim.list_extend(grepjobs[id].data, data)
+        vim.list_extend(grepjobs[id].data, nvim.list_clean(data))
     end
 end
 
 local function on_exit(id, exit_code, event)
-    if exit_code == 0 then
-        local lines = {}
 
-        for index, line in pairs(grepjobs[id].data) do
-            line = vim.trim(line)
-            if vim.fn.empty(line) == 0 and line ~= '\n' then
-                lines[#lines + 1] = grepjobs[id].data[index]
-            end
-        end
+    local search = grepjobs[id].search
+    if type(search) == 'table' then
+        search = vim.fn.join(search, ' ')
+    end
+
+    local lines = nvim.list_clean(grepjobs[id].data)
+
+    if exit_code == 0 then
 
         vim.fn.setqflist(
             {},
@@ -32,7 +33,7 @@ local function on_exit(id, exit_code, event)
                 contex = 'AsyncGrep',
                 efm = grepjobs[id].format,
                 lines = lines,
-                title = 'Grep '..grepjobs[id].search,
+                title = 'Grep '.. search,
             }
         )
 
@@ -40,7 +41,7 @@ local function on_exit(id, exit_code, event)
             local orientation = vim.o.splitbelow and 'botright' or 'topleft'
             nvim.command(orientation .. ' copen')
         else
-            print('Grep '..grepjobs[id].search .. ' finished')
+            print('Grep '.. search .. ' finished')
         end
 
     elseif exit_code == 1 then
@@ -49,10 +50,10 @@ local function on_exit(id, exit_code, event)
             'r',
             {
                 contex = 'AsyncGrep',
-                title = 'No results for '..grepjobs[id].search,
+                title = 'No results for '.. search,
             }
         )
-        nvim.echoerr('No results for '..grepjobs[id].search)
+        nvim.echoerr('No results for '.. search)
     else
         vim.fn.setqflist(
             {},
@@ -61,12 +62,12 @@ local function on_exit(id, exit_code, event)
                 contex = 'AsyncGrep',
                 efm = grepjobs[id].format,
                 lines = grepjobs[id].data,
-                title = 'Error, Grep '..grepjobs[id].search..' exited with '..exit_code,
+                title = 'Error, Grep '.. search ..' exited with '..exit_code,
             }
         )
         nvim.echoerr('Grep exited with '..exit_code)
     end
-    grepjobs[id] = nil
+    -- grepjobs[id] = nil
 end
 
 function _G.Grep.QueueJob(...)
@@ -86,10 +87,18 @@ function _G.Grep.QueueJob(...)
 
     local flags = {}
     local search = {}
-    for _, arg in pairs(args) do
-        if arg:sub(1, 1) == '-' then
+
+    local quoute = false
+    for i=1, #args do
+        local arg = args[i]
+        if arg:sub(1, 1) == '-' and quoute == false then
             flags[#flags + 1] = arg
         else
+            if arg:sub(1, 1) == "'" or arg:sub(1, 1) == '"' then
+                quoute = true
+            else
+                quoute = false
+            end
             search[#search + 1] = arg
         end
     end
@@ -99,10 +108,26 @@ function _G.Grep.QueueJob(...)
 
     table.remove(cmd, 1)
 
-    flags = string.format('%s %s', vim.fn.join(cmd, ' '), vim.fn.join(flags, ' '))
-    search = vim.fn.join(search, ' ')
+    vim.list_extend(flags, cmd)
 
-    local job = string.format('%s %s %s', prg, flags, nvim.fn.shellescape(search))
+    flags = nvim.list_clean(flags)
+
+    local job = {prg}
+
+    -- vim.list_extend(job, cmd)
+    vim.list_extend(job, flags)
+    vim.list_extend(job, search)
+
+    job = nvim.list_clean(job)
+
+    -- if sys.name == 'windows' then
+    --     flags = string.format('%s %s', vim.fn.join(cmd, ' '), vim.fn.join(flags, ' '))
+    --     search = vim.fn.join(search, ' ')
+    --     job = string.format('%s %s %s', prg, flags, nvim.fn.shellescape(search))
+    -- end
+
+    -- print('Job: ', vim.inspect(job))
+    -- print('Job Type: ', type(job))
 
     local id = vim.fn.jobstart(
         job,

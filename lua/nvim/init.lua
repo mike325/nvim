@@ -261,6 +261,18 @@ local nvim = {
             api.nvim_command('echohl')
         end
     end;
+    list_clean = function(lst)
+        local tmp = lst
+
+        for idx,val in pairs(lst) do
+            val = vim.trim(val)
+            if #val == 0 or val == [[\n]] then
+                table.remove(tmp, idx)
+            end
+        end
+
+        return tmp
+    end;
     plugins = setmetatable({}, {
         __index = function(self, k)
             local mt = getmetatable(self)
