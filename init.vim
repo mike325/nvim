@@ -111,6 +111,7 @@ else
     if exists('g:minimal') && has('nvim-0.5')
         Plug 'neovim/nvim-lsp'
         Plug 'haorenW1025/diagnostic-nvim'
+        " Plug 'nvim-lua/completion-nvim'
         Plug 'lifepillar/vim-mucomplete'
     elseif !exists('g:minimal')
         runtime! plugin/plugins.vim

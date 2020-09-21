@@ -38,7 +38,13 @@ if completion ~= nil then
     end
     -- TODO: Add confirm key completion handler
     nvim.g.completion_confirm_key = ''
+    nvim.g.completion_matching_strategy_list = { 'exact', 'substring', 'fuzzy', 'all' }
+    nvim.g.completion_enable_auto_signature = 0
     nvim.g.completion_matching_ignore_case = 1
+    nvim.g.completion_trigger_on_delete = 1
+    nvim.g.completion_enable_auto_hover = 0
+    nvim.g.completion_enable_auto_paren = 0
+
 end
 
 local servers = {
@@ -311,6 +317,7 @@ if completion ~= nil then
             {group = 'Completion'}
         )
     end
+
 elseif plugins['vim-mucomplete'] ~= nil then
     nvim_set_autocmd(
         'FileType',
