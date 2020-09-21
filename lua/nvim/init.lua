@@ -254,11 +254,7 @@ local nvim = {
     nvim_set_command = nvim_set_command;
     echoerr = function(msg)
         if type(msg) == 'string' and #msg > 0 then
-            msg = msg:gsub('"', [[\"]])
-            api.nvim_command('echohl ErrorMsg')
-            -- print(string.format('%s', msg))
-            api.nvim_command('echomsg '..string.format('"%s"', msg))
-            api.nvim_command('echohl')
+            vim.api.nvim_err_writeln(msg)
         end
     end;
     list_clean = function(lst)
