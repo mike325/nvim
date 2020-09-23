@@ -92,7 +92,7 @@ else
     Plug 'tpope/vim-apathy'
     Plug 'junegunn/gv.vim', {'on': ['GV']}
     Plug 'Raimondi/delimitMate'
-    Plug 'tomtom/tcomment_vim'
+    Plug 'tpope/vim-commentary'
 
     " Syntax files
     Plug 'elzr/vim-json'

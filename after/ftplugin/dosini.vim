@@ -6,4 +6,5 @@ if has#option('formatprg') && executable('sed')
     setlocal formatprg=sed\ --regexp-extended\ \"s/^\\s+//\"
 endif
 
+setlocal comments=:;,:#
 setlocal commentstring=;\ %s
