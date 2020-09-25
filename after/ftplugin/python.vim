@@ -9,6 +9,12 @@ setlocal tabstop=4
 setlocal shiftwidth=0
 setlocal softtabstop=-1
 
+setlocal define=^\\s*\\(def\\\|class\\)\\s\\+
+
+nnoremap <silent><buffer> <CR> :call mappings#cr()<CR>
+
+setlocal suffixesadd^=.py,__init__.py
+
 if has#option('formatprg')
     if executable('yapf')
         setlocal formatprg=yapf\ --style\ pep8
@@ -32,60 +38,87 @@ if has#plugin('neomake')
     call plugins#neomake#makeprg()
 endif
 
-function! s:PythonReplace(pattern) abort
-    execute a:pattern
-    call histdel('search', -1)
-endfunction
+if !has#plugin('vim-apathy')
 
-function! s:PythonFix()
-    normal! m`
+    if !exists('b:python_path')
+        if !exists('g:python_path')
+            let g:python_path = split(system(get(g:, 'python3_host_prog', 'python') . ' -c "import sys; print(''\n''.join(sys.path))"')[0:-2], "\n", 1)
+            if v:shell_error
+                let g:python_path = []
+            endif
+        endif
+        let b:python_path = g:python_path
+    end
 
-    execute 'retab'
+    let s:path = split(copy(&l:path), ',')
 
-    let l:scout = "'"
-    let l:dcout = '"'
+    if !empty(b:python_path)
+        for s:i in b:python_path
+            if !empty(s:i) && index(s:path, s:i) == -1
+                execute 'setlocal path+='.s:i
+            endif
+        endfor
+    endif
 
-    let l:patterns = [
-    \   '%s/\s\zs==\ze\(\s\+\)\(None\|True\|False\)/is/g',
-    \   '%s/\s\zs!=\ze\(\s\+\)\(None\|True\|False\)/is not/g',
-    \   '%s/==\ze\(\s\+\)\(None\|True\|False\)/ is/g',
-    \   '%s/!=\ze\(\s\+\)\(None\|True\|False\)/ is not/g',
-    \   '%s/^\(\s\+\)\?\zs#\ze\([^ #!]\)/# /e',
-    \   '%s/\(except\):/\1 Exception:/e',
-    \   '%s/re\.compile(\zs\('.l:scout.'|"\)/r\1/g',
-    \]
-    " \   '%s/^\([^#][^[:space:]]\+\)(\s\+\([[:alnum:]]\+\)\s\+)/\1(\2)/g',
-    " \   '%s/^\(\s*def\)\s\+\([[:alnum:]]\+\)\s*(\(.*\{-}=.*\{-}\)*)\s\+:/\1 \2(\3):/g',
-    " \   '%s/^\([^#].*\)\(\s*\)\(if\|for\|while\)\(.*\):\s*\(return\|continue\|break\)$/\1\2\3\4:\r\1    \5/e',
-    " \   '%s/[[:alnum:]_' . l:scout . l:dcout . ']\zs\(+\|-\|\/\|<<\|>>\|\(<\|>\|=\|!\|+\|-\|\/\|*\)=\)\ze[[:alnum:]_' . l:scout . l:dcout . ']/ \1 /g',
-    " \   '%s/\(if\s\+\)\(not\s\+\)\{0,1}\(.*\)\.has_key(\(.*\))/\1\4 \2in \3',
-    " \   '%s/\(print\)\s\+\("\|' . l:scout . '\)\(.*\)\2\(\s*%\s*\(\((.*)\)\|[_[:alnum:]]\+\|\(\("\|' . l:scout . '\).*\8\)\)\|\(\.format(.*)\)\)\?/\1(\2\3\2\4)/e',
-    " \   '%s/\(print\)\s\+\([[:alnum:]]\)\(.*\)/\1(\2\3)/e',
-    " \   '%s/\(except\s\+[[:alnum:]_.()]\+\)\s*,\s*\([[:alnum:]_]\+:\)/\1 as \2/e',
-    " \   '%s/,\([[:alnum:]]\)/, \1/g',
+endif
 
-    for l:pattern in l:patterns
-        silent! call s:PythonReplace(l:pattern)
-    endfor
+if !exists('*s:PythonFix')
 
-    " try
-    "     while 1
-    "         let l:patterns = [
-    "         \   '%s/^\s*def\s\+[[:alnum:]_]\+\s*(\zs\(.\{-}\)\s\+=\s\+\(.\{-}\)\(,\?\)\ze/\1=\2\3/g',
-    "         \]
-    "
-    "         for l:pattern in l:patterns
-    "             call s:PythonReplace(l:pattern)
-    "         endfor
-    "     endwhile
-    " catch E486
-    " endtry
+    if !exists('*s:PythonReplace')
+        function! s:PythonReplace(pattern) abort
+            execute a:pattern
+            call histdel('search', -1)
+        endfunction
+    endif
 
-    normal! ``
-endfunction
+
+    function! s:PythonFix()
+        normal! m`
+
+        execute 'retab'
+
+        let l:scout = "'"
+        let l:dcout = '"'
+
+        let l:patterns = [
+        \   '%s/\s\zs==\ze\(\s\+\)\(None\|True\|False\)/is/g',
+        \   '%s/\s\zs!=\ze\(\s\+\)\(None\|True\|False\)/is not/g',
+        \   '%s/==\ze\(\s\+\)\(None\|True\|False\)/ is/g',
+        \   '%s/!=\ze\(\s\+\)\(None\|True\|False\)/ is not/g',
+        \   '%s/^\(\s\+\)\?\zs#\ze\([^ #!]\)/# /e',
+        \   '%s/\(except\):/\1 Exception:/e',
+        \   '%s/re\.compile(\zs\('.l:scout.'|"\)/r\1/g',
+        \]
+        " \   '%s/^\([^#][^[:space:]]\+\)(\s\+\([[:alnum:]]\+\)\s\+)/\1(\2)/g',
+        " \   '%s/^\(\s*def\)\s\+\([[:alnum:]]\+\)\s*(\(.*\{-}=.*\{-}\)*)\s\+:/\1 \2(\3):/g',
+        " \   '%s/^\([^#].*\)\(\s*\)\(if\|for\|while\)\(.*\):\s*\(return\|continue\|break\)$/\1\2\3\4:\r\1    \5/e',
+        " \   '%s/[[:alnum:]_' . l:scout . l:dcout . ']\zs\(+\|-\|\/\|<<\|>>\|\(<\|>\|=\|!\|+\|-\|\/\|*\)=\)\ze[[:alnum:]_' . l:scout . l:dcout . ']/ \1 /g',
+        " \   '%s/\(if\s\+\)\(not\s\+\)\{0,1}\(.*\)\.has_key(\(.*\))/\1\4 \2in \3',
+        " \   '%s/\(print\)\s\+\("\|' . l:scout . '\)\(.*\)\2\(\s*%\s*\(\((.*)\)\|[_[:alnum:]]\+\|\(\("\|' . l:scout . '\).*\8\)\)\|\(\.format(.*)\)\)\?/\1(\2\3\2\4)/e',
+        " \   '%s/\(print\)\s\+\([[:alnum:]]\)\(.*\)/\1(\2\3)/e',
+        " \   '%s/\(except\s\+[[:alnum:]_.()]\+\)\s*,\s*\([[:alnum:]_]\+:\)/\1 as \2/e',
+        " \   '%s/,\([[:alnum:]]\)/, \1/g',
+
+        for l:pattern in l:patterns
+            silent! call s:PythonReplace(l:pattern)
+        endfor
+
+        " try
+        "     while 1
+        "         let l:patterns = [
+        "         \   '%s/^\s*def\s\+[[:alnum:]_]\+\s*(\zs\(.\{-}\)\s\+=\s\+\(.\{-}\)\(,\?\)\ze/\1=\2\3/g',
+        "         \]
+        "
+        "         for l:pattern in l:patterns
+        "             call s:PythonReplace(l:pattern)
+        "         endfor
+        "     endwhile
+        " catch E486
+        " endtry
+
+        normal! ``
+    endfunction
+endif
 
 command! -buffer PythonFix call s:PythonFix()
 
-setlocal define=^\\s*\\(def\\\|class\\)\\s\\+
-
-nnoremap <silent><buffer> <CR> :call mappings#cr()<CR>
