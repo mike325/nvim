@@ -120,7 +120,7 @@ if !empty($YCM) && empty($NO_PYTHON_DEV) &&
     endif
 
 elseif has('nvim-0.5') && tools#CheckLanguageServer()
-    Plug 'neovim/nvim-lsp'
+    Plug 'neovim/nvim-lspconfig'
     Plug 'haorenW1025/diagnostic-nvim'
     " Plug 'nvim-lua/completion-nvim'
     Plug 'lifepillar/vim-mucomplete'

@@ -109,7 +109,7 @@ else
     endif
 
     if has#minimal() && has('nvim-0.5')
-        Plug 'neovim/nvim-lsp'
+        Plug 'neovim/nvim-lspconfig'
         Plug 'haorenW1025/diagnostic-nvim'
         " Plug 'nvim-lua/completion-nvim'
         Plug 'lifepillar/vim-mucomplete'
