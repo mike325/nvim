@@ -291,7 +291,7 @@ set foldlevel=99
 set foldcolumn=0
 set fileencoding=utf-8
 
-if !exists('g:bare') && has#plugin('vim-airline')
+if has#bare() && has#plugin('vim-airline')
     " We already have the statusline, we don't need this
     set noshowmode
 endif

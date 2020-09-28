@@ -1,6 +1,14 @@
 " Has Setttings
 " github.com/mike325/.vim
 
+function! has#minimal() abort
+    return exists('g:minimal') || !empty($VIM_MIN)
+endfunction
+
+function! has#bare() abort
+    return exists('g:bare') || !empty($VIM_BARE)
+endfunction
+
 function! has#gui() abort
     return ( has('nvim') && ( exists('g:gonvim_running') || exists('g:GuiLoaded') || exists('veonim') )) || ( !has('nvim') && has('gui_running') )
 endfunction

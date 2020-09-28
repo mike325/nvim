@@ -70,7 +70,7 @@ if exists('g:started_by_firenvim')
     let $NO_COOL_FONTS = 1
 endif
 
-if exists('g:bare')
+if has#bare()
     filetype plugin indent on
     finish
 else
@@ -108,12 +108,12 @@ else
         Plug 'Vigemus/iron.nvim'
     endif
 
-    if exists('g:minimal') && has('nvim-0.5')
+    if has#minimal() && has('nvim-0.5')
         Plug 'neovim/nvim-lsp'
         Plug 'haorenW1025/diagnostic-nvim'
         " Plug 'nvim-lua/completion-nvim'
         Plug 'lifepillar/vim-mucomplete'
-    elseif !exists('g:minimal')
+    elseif !has#minimal()
         runtime! plugin/plugins.vim
     endif
 
