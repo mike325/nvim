@@ -10,6 +10,8 @@ setlocal tabstop=4
 setlocal shiftwidth=0
 setlocal softtabstop=-1
 
+let &l:define = '^\(#\s*define\|[a-z]*\s*const\(expr\)\?\s*[a-z]*\)'
+
 if executable('cppman')
     " Unfortunally Neovim works just with less as $PAGER
     if has('nvim') && ($PAGER ==# 'less')
