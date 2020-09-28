@@ -51,8 +51,25 @@ local servers = {
     sh         = { bashls        = { name = 'bash-language-server'}, },
     rust       = { rust_analyzer = { name = 'rust_analyzer'}, },
     go         = { gopls         = { name = 'gopls'}, },
-    tex        = { texlab        = { name = 'texlab'}, },
     dockerfile = { dockerls      = { name = 'docker-langserver'}, },
+    tex = {
+        texlab = {
+            name = 'texlab',
+            options = {
+                settings = {
+                    latex = {
+                        build = {
+                            -- args = { "-pdf", "-interaction=nonstopmode", "-synctex=1" },
+                            onSave = true,
+                        },
+                        lint = {
+                            onChange = true,
+                        },
+                    },
+                },
+            },
+        },
+    },
     vim = {
         vimls = {
             name = 'vimls',
