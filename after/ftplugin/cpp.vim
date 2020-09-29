@@ -10,6 +10,8 @@ setlocal tabstop=4
 setlocal shiftwidth=0
 setlocal softtabstop=-1
 
+setlocal commentstring=//\ %s
+
 let &l:define = '^\(#\s*define\|[a-z]*\s*const\(expr\)\?\s*[a-z]*\)'
 
 if executable('cppman')
@@ -25,8 +27,6 @@ endif
 if has#option('formatprg') && executable('clang-format')
     setlocal formatprg=clang-format\ --style=file\ --fallback-style=WebKit
 endif
-
-setlocal commentstring=//\ %s
 
 if exists('g:cpp_includes')
     execute 'setlocal path^='.join(g:cpp_includes, ',')
