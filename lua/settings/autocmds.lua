@@ -102,7 +102,7 @@ if has('nvim-0.5') then
     )
 end
 
-if  plugins['completor.vim'] == nil then
+if plugins['completor.vim'] == nil then
     nvim_set_autocmd(
         {'BufNewFile', 'BufRead', 'BufEnter'},
         '*',
