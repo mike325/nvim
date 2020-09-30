@@ -9,9 +9,11 @@ let g:loaded_mike_plugins = 1
 
 Plug 'ayu-theme/ayu-vim'
 Plug 'joshdick/onedark.vim'
-Plug 'tbastos/vim-lua'
+" Plug 'bluz71/vim-moonfly-colors'
+" Plug 'bluz71/vim-nightfly-guicolors'
+
 Plug 'tpope/vim-markdown'
-Plug 'octol/vim-cpp-enhanced-highlight'
+
 Plug 'easymotion/vim-easymotion'
 Plug 'moll/vim-bbye', { 'on': [ 'Bdelete' ] }
 Plug 'tommcdo/vim-lion'
@@ -28,6 +30,13 @@ Plug 'tpope/vim-endwise'
 " Plug 'AndrewRadev/switch.vim'
 " Plug 'AndrewRadev/splitjoin.vim'
 " Plug 'editorconfig/editorconfig-vim'
+
+if has('nvim-0.5') && (executable('gcc') || executable('clang'))
+    Plug 'nvim-treesitter/nvim-treesitter'
+else
+    Plug 'tbastos/vim-lua'
+    Plug 'octol/vim-cpp-enhanced-highlight'
+endif
 
 if has('nvim-0.4') && empty($SSH_CONNECTION) && !os#name('wsl')
     Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
@@ -124,10 +133,6 @@ elseif has('nvim-0.5') && tools#CheckLanguageServer()
     Plug 'haorenW1025/diagnostic-nvim'
     " Plug 'nvim-lua/completion-nvim'
     Plug 'lifepillar/vim-mucomplete'
-
-    if executable('gcc') || executable('clang')
-        Plug 'nvim-treesitter/nvim-treesitter'
-    endif
 
     " if executable('ccls')
     "     Plug 'jackguo380/vim-lsp-cxx-highlight'

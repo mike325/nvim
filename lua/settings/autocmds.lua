@@ -47,7 +47,7 @@ nvim_set_autocmd(
 )
 
 nvim_set_autocmd(
-    {'DirChanged', 'BufEnter', 'VimEnter'},
+    {'DirChanged', 'BufNewFile', 'BufReadPre', 'BufEnter', 'VimEnter'},
     '*',
     'lua require("tools").project_config(require"nvim".fn.deepcopy(require"nvim".v.event))',
     {create = true, group = 'ProjectConfig'}

@@ -97,7 +97,7 @@ augroup ProjectConfig
     if has#autocmd('DirChanged')
         autocmd DirChanged * call autocmd#SetProjectConfigs(has#patch('8.0.1394') ? deepcopy(v:event) : {})
     endif
-    autocmd BufEnter,VimEnter * call autocmd#SetProjectConfigs(has#patch('8.0.1394') ? deepcopy(v:event) : {})
+    autocmd BufNewFile,BufReadPre,BufEnter,VimEnter * call autocmd#SetProjectConfigs(has#patch('8.0.1394') ? deepcopy(v:event) : {})
 augroup end
 
 augroup CloseMenu
