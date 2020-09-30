@@ -1,13 +1,12 @@
 local nvim = require('nvim')
 local plugins = require('nvim').plugins
+local nvim_set_autocmd = require('nvim').nvim_set_autocmd
 -- local sys = require('sys')
 -- local executable = require('nvim').fn.executable
 -- local isdirectory = require('nvim').fn.isdirectory
--- local nvim_set_autocmd = require('nvim').nvim_set_autocmd
 
 local function load_module(name)
     local ok, M = pcall(require, name)
-
     if not ok then
         return nil
     end
@@ -33,13 +32,42 @@ if plugins.semshi ~= nil then
     disable = {'python'}
 end
 
-
 treesitter.setup{
     ensure_installed = ensure_installed,
-    textobjects = { enable = true },
     highlight = {
         enable = true,
-        disable = disable,
+        -- disable = disable,
+    },
+    textobjects = {
+        -- enable = true,
+        select = {
+            enable = true,
+            keymaps = {
+                ["af"] = "@function.outer",
+                ["if"] = "@function.inner",
+                ["ac"] = "@class.outer",
+                ["ic"] = "@class.inner",
+            },
+        },
+        move = {
+            enable = true,
+            goto_next_start = {
+                ["]m"] = "@function.outer",
+                ["]]"] = "@class.outer",
+            },
+            goto_next_end = {
+                ["]M"] = "@function.outer",
+                ["]["] = "@class.outer",
+            },
+            goto_previous_start = {
+                ["[m"] = "@function.outer",
+                ["[["] = "@class.outer",
+            },
+            goto_previous_end = {
+                ["[M"] = "@function.outer",
+                ["[]"] = "@class.outer",
+            },
+        },
     },
     refactor = {
         -- highlight_current_scope = { enable = true },
@@ -56,11 +84,22 @@ treesitter.setup{
         navigation = {
             enable = true,
             keymaps = {
-                goto_definition = "gnd",  -- TODO: Change this mappings
-                list_definitions = "gnD", -- TODO: Change this mappings
-                -- goto_next_usage = "<a-*>",
-                -- goto_previous_usage = "<a-#>",
+                goto_definition     = "<A-d>", -- TODO: Change this mappings
+                list_definitions    = "<A-D>", -- TODO: Change this mappings
+                goto_next_usage     = "<A-*>",
+                goto_previous_usage = "<A-#>",
             },
         },
     },
 }
+
+if ensure_installed.bash ~= nil then
+    ensure_installed[#ensure_installed + 1] = 'sh'
+end
+
+nvim_set_autocmd(
+    'FileType',
+    ensure_installed,
+    'setlocal foldmethod=expr foldexpr=nvim_treesitter#foldexpr()',
+    {group = 'TreesitterFold', create = true}
+)
