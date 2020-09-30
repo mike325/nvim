@@ -11,7 +11,7 @@ local isdirectory = require('nvim').fn.isdirectory
 
 local tools = require('tools')
 
-local function isempty(s)
+local isempty = function(s)
     return (s == nil or s == '') and 1 or 0
 end
 

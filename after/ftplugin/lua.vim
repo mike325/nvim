@@ -7,7 +7,7 @@ setlocal tabstop=4
 setlocal shiftwidth=0
 setlocal softtabstop=-1
 
-let &l:define = '\s*\(local\s\+\)\?\(function\s\+\(\i\+\.\)\?\|\(\i\+\.\)\?\ze\s*=\s*function\)'
+let &l:define = '\s*\(local\s\+\)\?\(function\s\+\(\i\+\.\)\?\|\ze\i\+\s*=\s*function\|\(\i\+\.\)\?\ze\s*=\s*function\)'
 
 if has('nvim')
     execute 'setlocal path^=' . luaeval('require"sys".base') . '/lua'

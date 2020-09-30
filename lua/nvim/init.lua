@@ -2,7 +2,7 @@
 -- local inspect = vim.inspect
 local api = vim.api
 
-local function nvim_get_mapping(m, lhs, ...)
+local nvim_get_mapping = function(m, lhs, ...)
     local mappings
     local mapping
 
@@ -38,7 +38,7 @@ local function nvim_get_mapping(m, lhs, ...)
 
 end
 
-local function nvim_set_mapping(m, lhs, rhs, ...)
+local nvim_set_mapping = function(m, lhs, rhs, ...)
     local opts = ... ~= nil and ... or {}
 
     local modes = {
@@ -74,11 +74,11 @@ local function nvim_set_mapping(m, lhs, rhs, ...)
     end
 end
 
-local function nvim_create_autogrp(autogrp)
+local nvim_create_autogrp = function(autogrp)
     api.nvim_command('augroup '..autogrp..' | autocmd! | autogrp end')
 end
 
-local function nvim_set_autocmd(event, pattern, cmd, ...)
+local nvim_set_autocmd = function(event, pattern, cmd, ...)
     local opts = ... ~= nil and ... or {}
     local once = nil
     local group = nil
@@ -136,7 +136,7 @@ local function nvim_set_autocmd(event, pattern, cmd, ...)
     api.nvim_command(autocmd)
 end
 
-local function nvim_set_abbr(m, lhs, rhs, ...)
+local nvim_set_abbr = function(m, lhs, rhs, ...)
     local opts = ... ~= nil and ... or {}
     local command = {}
     local extras = {}
@@ -195,7 +195,7 @@ local function nvim_set_abbr(m, lhs, rhs, ...)
     api.nvim_command(command)
 end
 
-local function nvim_set_command(lhs, rhs, ...)
+local nvim_set_command = function(lhs, rhs, ...)
     local opts = ... ~= nil and ... or {}
 
     local command = {
@@ -232,7 +232,7 @@ local function nvim_set_command(lhs, rhs, ...)
 end
 
 -- TODO
--- local function nvim_get_abbr(m, lhs)
+-- local nvim_get_abbr = function(m, lhs)
 --     local command = {}
 --
 --     local modes = {

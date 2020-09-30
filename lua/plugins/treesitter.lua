@@ -5,7 +5,7 @@ local nvim_set_autocmd = require('nvim').nvim_set_autocmd
 -- local executable = require('nvim').fn.executable
 -- local isdirectory = require('nvim').fn.isdirectory
 
-local function load_module(name)
+local load_module = function(name)
     local ok, M = pcall(require, name)
     if not ok then
         return nil
@@ -45,8 +45,8 @@ treesitter.setup{
             keymaps = {
                 ["af"] = "@function.outer",
                 ["if"] = "@function.inner",
-                ["ac"] = "@class.outer",
-                ["ic"] = "@class.inner",
+                ["as"] = "@class.outer",
+                ["is"] = "@class.inner",
             },
         },
         move = {
@@ -84,8 +84,8 @@ treesitter.setup{
         navigation = {
             enable = true,
             keymaps = {
-                goto_definition     = "<A-d>", -- TODO: Change this mappings
-                list_definitions    = "<A-D>", -- TODO: Change this mappings
+                goto_definition     = "<A-d>",
+                list_definitions    = "<A-l>",
                 goto_next_usage     = "<A-*>",
                 goto_previous_usage = "<A-#>",
             },

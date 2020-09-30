@@ -6,7 +6,7 @@ local isdirectory = require('nvim').fn.isdirectory
 local nvim_set_autocmd = require('nvim').nvim_set_autocmd
 -- local nvim_set_command = require('nvim').nvim_set_command
 
-local function load_module(name)
+local load_module = function(name)
     local ok, M = pcall(require, name)
 
     if not ok then

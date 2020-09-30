@@ -9,13 +9,13 @@ _G.Grep = {}
 
 local grepjobs = {}
 
-local function on_data(id, data, event)
+local on_data = function(id, data, event)
     if data ~= nil and #data > 0 then
         vim.list_extend(grepjobs[id].data, nvim.list_clean(data))
     end
 end
 
-local function on_exit(id, exit_code, event)
+local on_exit = function(id, exit_code, event)
 
     local search = grepjobs[id].search
     if type(search) == 'table' then

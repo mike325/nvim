@@ -3,7 +3,7 @@ local nvim = require('nvim')
 -- local inspect = nvim.inspect
 local api = nvim.api
 
-local function get_plugins()
+local get_plugins = function()
     local installed, plugins = pcall(api.nvim_get_var, 'plugs')
 
     if installed then
@@ -20,7 +20,7 @@ if plugins == nil then
     return nil
 end
 
-local function convert2settings(name)
+local convert2settings = function(name)
     name = name:gsub('+', '')
     name = name:gsub('[-/%.]', '_')
 

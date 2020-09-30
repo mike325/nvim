@@ -23,7 +23,7 @@ python = {
     },
 }
 
-local function get_python_exe(version)
+local get_python_exe = function(version)
 
     local pyexe = nil
     -- local pyeval = version == 2 and 'pyeval' or 'py3eval'

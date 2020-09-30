@@ -8,7 +8,7 @@ local stdpath     = require('nvim').fn.stdpath
 local isdirectory = require('nvim').fn.isdirectory
 -- local executable  = require('nvim').fn.executable
 
-local function system_name()
+local system_name = function()
     local name = 'unknown'
 
     if nvim.has('win32unix') or nvim.has('win32') then
@@ -25,7 +25,7 @@ local function system_name()
     return name
 end
 
-local function homedir()
+local homedir = function()
     local var = system_name() == 'windows' and 'USERPROFILE' or 'HOME'
     local home = nvim.env[var]
 
@@ -34,7 +34,7 @@ local function homedir()
     return home
 end
 
-local function basedir()
+local basedir = function()
     local dir = stdpath('config'):gsub('\\', '/')
 
     if isdirectory(dir) == 0 then
@@ -44,7 +44,7 @@ local function basedir()
     return dir
 end
 
-local function cachedir()
+local cachedir = function()
     local dir = stdpath('cache'):gsub('\\', '/')
 
     if isdirectory(dir) == 0 then
@@ -54,7 +54,7 @@ local function cachedir()
     return dir
 end
 
-local function datadir()
+local datadir = function()
     local dir = stdpath('data'):gsub('\\', '/')
 
     if isdirectory(dir) == 0 then

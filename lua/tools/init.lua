@@ -111,7 +111,7 @@ abolish['es'] = {
     ['{fun,administra,aplica,rala,aproxima,programa}cion']                  = '{}ción',
 }
 
-local function split(str, delimiter)
+local split = function(str, delimiter)
     local results = {}
     for match in str:gmatch("([^"..delimiter.."]+)") do
         results[#results + 1] = match
@@ -313,7 +313,7 @@ function tools.select_grep(is_git, ...)
     return grep
 end
 
-local function check_lsp(servers)
+local check_lsp = function(servers)
     for _, server in pairs(servers) do
         if executable(server) == 1 then
             return 1
@@ -424,13 +424,13 @@ function tools.abolish(language)
             end
         end
     else
-        local function remove_abbr(base)
+        local remove_abbr = function(base)
             nvim.nvim_set_abbr('i', base, nil, {silent = true, buffer = true})
             nvim.nvim_set_abbr('i', base:upper(), nil, {silent = true, buffer = true})
             nvim.nvim_set_abbr('i', base:gsub('%a', string.upper, 1), nil, {silent = true, buffer = true})
         end
 
-        local function set_abbr(base, replace)
+        local set_abbr = function(base, replace)
             nvim.nvim_set_abbr('i', base, replace, {buffer = true})
             nvim.nvim_set_abbr('i', base:upper(), replace:upper(), {buffer = true})
             nvim.nvim_set_abbr(
@@ -573,7 +573,7 @@ function tools.file_name(...)
 
 end
 
-local function find_project_root(path)
+local find_project_root = function(path)
     local root
     local vcs_markers = {'.git', '.svn', '.hg',}
     local dir = nvim.fn.fnamemodify(path, ':p')
@@ -598,7 +598,7 @@ local function find_project_root(path)
     return root
 end
 
-local function is_git_repo(root)
+local is_git_repo = function(root)
     local git = root .. '/.git'
     return (isdirectory(git) == 1 or filereadable(git) == 1) and true or false
 end
