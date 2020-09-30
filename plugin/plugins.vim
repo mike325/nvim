@@ -125,9 +125,13 @@ elseif has('nvim-0.5') && tools#CheckLanguageServer()
     " Plug 'nvim-lua/completion-nvim'
     Plug 'lifepillar/vim-mucomplete'
 
-    if executable('ccls')
-        Plug 'jackguo380/vim-lsp-cxx-highlight'
+    if executable('gcc') || executable('clang')
+        Plug 'nvim-treesitter/nvim-treesitter'
     endif
+
+    " if executable('ccls')
+    "     Plug 'jackguo380/vim-lsp-cxx-highlight'
+    " endif
 
 elseif v:version >= 800 && tools#CheckLanguageServer()
     Plug 'natebosch/vim-lsc'

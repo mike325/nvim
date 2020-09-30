@@ -113,6 +113,11 @@ else
         Plug 'haorenW1025/diagnostic-nvim'
         " Plug 'nvim-lua/completion-nvim'
         Plug 'lifepillar/vim-mucomplete'
+
+        if executable('gcc') || executable('clang')
+            Plug 'nvim-treesitter/nvim-treesitter'
+        endif
+
     elseif !has#minimal()
         runtime! plugin/plugins.vim
     endif
