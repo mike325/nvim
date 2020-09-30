@@ -20,7 +20,7 @@ libDirs = [
 ]
 
 flags = [
-    '-std=c++17',
+    # '-std=c++17',
     '-Wall',
     '-Wextra',
     '-Weverything',

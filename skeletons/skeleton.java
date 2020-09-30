@@ -20,9 +20,9 @@
  *             .`                                 `/
  */
 
-public class NAME {
+public class %NAME {
 
-    public NAME() {
+    public %NAME() {
 
     }
 }

@@ -1,5 +1,5 @@
-#ifndef NAME_H
-#define NAME_H
+#ifndef %NAME_H
+#define %NAME_H
 
 /*
  *                             -`
@@ -23,4 +23,4 @@
  *           .`                                 `/
  */
 
-#endif /* ifndef NAME_H */
+#endif /* ifndef %NAME_H */

@@ -28,7 +28,7 @@ function! s:os_type(os) abort
     elseif a:os ==# 'mac' || a:os ==# 'macos' || a:os ==# 'osx'
         let l:is_type = (has('gui_mac') || has('mac') || has('macos') || has('macunix'))
         " Avoid false negative
-        if l:is_type == 0
+        if l:is_type == 0 && executable('uname')
             let l:uname = substitute(system('uname'), '\n', '', '')
             let l:is_type = l:uname ==? 'darwin' || l:uname ==? 'mac'
         endif

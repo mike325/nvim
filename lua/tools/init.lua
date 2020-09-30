@@ -563,13 +563,14 @@ function tools.file_name(...)
 
     if filereadable(skeleton) == 1 then
         nvim.command('keepalt read '..skeleton)
-        nvim.command('silent! %s/\\<NAME\\>/'..filename..'/e')
+        nvim.command('silent! %s/\\C%\\<NAME\\>/'..filename..'/e')
         nvim.fn.histdel('search', -1)
-        nvim.command('silent! %s/\\<NAME\\ze_H\\(PP\\)\\?\\>/\\U'..filename..'/g')
+        nvim.command('silent! %s/\\C%\\<NAME\\ze_H\\(PP\\)\\?\\>/\\U'..filename..'/g')
         nvim.fn.histdel('search', -1)
         nvim.command('bwipeout! skeleton')
         nvim.command('1delete_')
     end
+
 end
 
 local function find_project_root(path)
@@ -603,7 +604,7 @@ local function is_git_repo(root)
 end
 
 function tools.project_config(event)
-    -- print(inspect(event))
+    -- print(vim.inspect(event))
 
     local cwd = event.cwd or nvim.fn.getcwd()
     cwd = cwd:gsub('\\', '/')
@@ -637,6 +638,7 @@ function tools.project_config(event)
 
     local project = nvim.fn.findfile('.project.vim', cwd..';')
     if #project > 0 then
+        -- print('Sourcing Project ', project)
         nvim.command('source '..project)
     end
 

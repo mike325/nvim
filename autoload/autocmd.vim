@@ -78,13 +78,14 @@ function! autocmd#FileName(...) abort
 
     if filereadable(l:skeleton)
         execute 'keepalt read '. l:skeleton
-        silent! execute '%s/\<NAME\>/'.l:filename.'/e'
+        silent! execute '%s/\C%\<NAME\>/'.l:filename.'/e'
         call histdel('search', -1)
-        silent! execute '%s/\<NAME\ze_H\(PP\)\?\>/\U'.l:filename.'/g'
+        silent! execute '%s/\C%\<NAME\ze_H\(PP\)\?\>/\U'.l:filename.'/g'
         call histdel('search', -1)
         execute 'bwipeout! ' . l:skeleton
         execute '1delete_'
     endif
+
 endfunction
 
 function! autocmd#FindProjectRoot(path) abort

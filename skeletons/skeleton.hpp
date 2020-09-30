@@ -1,5 +1,5 @@
-#ifndef NAME_HPP
-#define NAME_HPP
+#ifndef %NAME_HPP
+#define %NAME_HPP
 
 /*
  *                               -`
@@ -23,4 +23,4 @@
  *             .`                                 `/
  */
 
-#endif /* ifndef NAME_HPP */
+#endif /* ifndef %NAME_HPP */
