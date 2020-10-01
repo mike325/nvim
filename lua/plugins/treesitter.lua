@@ -47,6 +47,11 @@ treesitter.setup{
                 ["if"] = "@function.inner",
                 ["as"] = "@class.outer",
                 ["is"] = "@class.inner",
+                ["ia"] = "@parameter.inner",
+                ["aa"] = "@parameter.inner",
+                ["iw"] = "@loop.inner",
+                ["aw"] = "@loop.outer",
+                -- ["ac"] = "@comment.outer",
             },
         },
         move = {
@@ -54,18 +59,26 @@ treesitter.setup{
             goto_next_start = {
                 ["]m"] = "@function.outer",
                 ["]]"] = "@class.outer",
+                ["]w"] = "@loop.outer",
+                ["]a"] = "@parameter.inner",
             },
             goto_next_end = {
                 ["]M"] = "@function.outer",
                 ["]["] = "@class.outer",
+                ["]W"] = "@loop.outer",
+                ["]A"] = "@parameter.inner",
             },
             goto_previous_start = {
                 ["[m"] = "@function.outer",
                 ["[["] = "@class.outer",
+                ["[w"] = "@loop.outer",
+                ["[a"] = "@parameter.inner",
             },
             goto_previous_end = {
                 ["[M"] = "@function.outer",
                 ["[]"] = "@class.outer",
+                ["[W"] = "@loop.outer",
+                ["[A"] = "@parameter.inner",
             },
         },
     },

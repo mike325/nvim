@@ -6,6 +6,7 @@
 
 setlocal spell
 setlocal complete+=k,kspell
+setlocal textwidth=80
 
 if !has#plugin('vimwiki')
     finish
@@ -41,8 +42,6 @@ nnoremap <buffer> gwg :VimwikiGoto<space>
 
 nnoremap <buffer> <A-l> m`:VimwikiTableMoveColumnLeft<CR>``
 nnoremap <buffer> <A-h> m`:VimwikiTableMoveColumnRight<CR>``
-
-setlocal textwidth=80
 
 " " Restore signify mappings
 " if has#plugin('vim-signify')

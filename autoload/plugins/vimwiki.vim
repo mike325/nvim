@@ -48,34 +48,34 @@ endfunction
 let g:vimwiki_table_mappings = 0
 
 let s:work_wiki = {
-        \ 'path'     : (isdirectory(vars#home() . '/Documents/vimwiki/')) ? vars#home() . '/Documents/vimwiki/' : vars#home() . '/vimwiki/',
-        \ 'syntax'   : 'markdown',
-        \ 'ext'      : '.md',
-        \ 'auto_tags': 1,
-        \ 'nested_syntaxes': {
-        \       'ruby'  : 'ruby',
-        \       'python': 'python',
-        \       'c++'   : 'cpp',
-        \       'sh'    : 'sh',
-        \       'bash'  : 'sh' ,
-        \       'racket': 'racket'
-        \    },
-        \ }
+    \ 'path'     : (isdirectory(vars#home() . '/Documents/vimwiki/')) ? vars#home() . '/Documents/vimwiki/' : vars#home() . '/vimwiki/',
+    \ 'syntax'   : 'markdown',
+    \ 'ext'      : '.md',
+    \ 'auto_tags': 1,
+    \ 'nested_syntaxes': {
+    \       'ruby'  : 'ruby',
+    \       'python': 'python',
+    \       'c++'   : 'cpp',
+    \       'sh'    : 'sh',
+    \       'bash'  : 'sh' ,
+    \       'racket': 'racket'
+    \    },
+    \ }
 
 let s:personal_wiki = {
-        \ 'path'     : '~/notes/',
-        \ 'syntax'   : 'markdown',
-        \ 'ext'      : '.md',
-        \ 'auto_tags': 1,
-        \ 'nested_syntaxes': {
-        \       'ruby'  : 'ruby',
-        \       'python': 'python',
-        \       'c++'   : 'cpp',
-        \       'sh'    : 'sh',
-        \       'bash'  : 'sh' ,
-        \       'racket': 'racket'
-        \    },
-        \ }
+    \ 'path'     : '~/notes/',
+    \ 'syntax'   : 'markdown',
+    \ 'ext'      : '.md',
+    \ 'auto_tags': 1,
+    \ 'nested_syntaxes': {
+    \       'ruby'  : 'ruby',
+    \       'python': 'python',
+    \       'c++'   : 'cpp',
+    \       'sh'    : 'sh',
+    \       'bash'  : 'sh' ,
+    \       'racket': 'racket'
+    \    },
+    \ }
 " let g:vimwiki_table_mappings = 0
 
 if os#name('windows')
@@ -85,10 +85,10 @@ else
 endif
 
 let g:vimwiki_ext2syntax = {
-        \   '.md': 'markdown',
-        \   '.mkd': 'markdown',
-        \   '.wiki': 'media'
-        \ }
+    \   '.md': 'markdown',
+    \   '.mkd': 'markdown',
+    \   '.wiki': 'media'
+    \ }
 
 nmap gww <Plug>VimwikiIndex
 nmap gwt <Plug>VimwikiTabIndex

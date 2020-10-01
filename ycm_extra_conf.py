@@ -164,7 +164,6 @@ def PathToPythonUsedDuringBuild():
 
 
 def Settings(**kwargs):
-
     language = kwargs['language']
     filename = kwargs['filename']
     client_data = None if 'client_data' not in kwargs else kwargs['client_data']
