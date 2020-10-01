@@ -32,6 +32,11 @@ if plugins.semshi ~= nil then
     disable = {'python'}
 end
 
+local commet_txtobj = nil
+if plugins['vim-textobj-comment'] == nil then
+    commet_txtobj = '@comment.outer'
+end
+
 treesitter.setup{
     ensure_installed = ensure_installed,
     highlight = {
@@ -49,9 +54,10 @@ treesitter.setup{
                 ["is"] = "@class.inner",
                 ["ia"] = "@parameter.inner",
                 ["aa"] = "@parameter.inner",
-                ["iw"] = "@loop.inner",
-                ["aw"] = "@loop.outer",
-                -- ["ac"] = "@comment.outer",
+                ["ir"] = "@loop.inner",
+                ["ar"] = "@loop.outer",
+                ["ac"] = commet_txtobj,
+                ["ic"] = commet_txtobj,
             },
         },
         move = {
@@ -59,26 +65,30 @@ treesitter.setup{
             goto_next_start = {
                 ["]m"] = "@function.outer",
                 ["]]"] = "@class.outer",
-                ["]w"] = "@loop.outer",
+                ["]r"] = "@loop.outer",
                 ["]a"] = "@parameter.inner",
+                ["]c"] = "@comment.outer",
             },
             goto_next_end = {
                 ["]M"] = "@function.outer",
                 ["]["] = "@class.outer",
-                ["]W"] = "@loop.outer",
+                ["]R"] = "@loop.outer",
                 ["]A"] = "@parameter.inner",
+                ["]C"] = "@comment.outer",
             },
             goto_previous_start = {
                 ["[m"] = "@function.outer",
                 ["[["] = "@class.outer",
-                ["[w"] = "@loop.outer",
+                ["[r"] = "@loop.outer",
                 ["[a"] = "@parameter.inner",
+                ["[c"] = "@comment.outer",
             },
             goto_previous_end = {
                 ["[M"] = "@function.outer",
                 ["[]"] = "@class.outer",
-                ["[W"] = "@loop.outer",
+                ["[R"] = "@loop.outer",
                 ["[A"] = "@parameter.inner",
+                ["[C"] = "@comment.outer",
             },
         },
     },
