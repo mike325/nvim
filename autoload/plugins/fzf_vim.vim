@@ -69,7 +69,11 @@ if os#name('windows') && executable('bat') && has#func('exepath')
     let g:fzf_files_options = ['--border', '--ansi', '--preview-window', 'right:50%', '--preview', 'bat --color=always {}']
 endif
 
-call plugins#fzf_vim#map_command(vars#home().'/dotfiles', 'Dotfiles')
+if isdirectory(vars#home().'/dotfiles')
+    call plugins#fzf_vim#map_command(vars#home().'/dotfiles', 'GetDotfiles')
+endif
+call plugins#fzf_vim#map_command(vars#basedir(), 'GetVimFiles')
+
 
 if has('nvim-0.4')
     let g:fzf_layout = { 'window': 'lua require("floating").window()' }
