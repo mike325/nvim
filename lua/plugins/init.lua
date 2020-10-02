@@ -42,7 +42,8 @@ end
 require('plugins/config')
 
 if nvim.has('nvim-0.5') then
-    require('plugins/lsp')
     require('plugins/treesitter')
+    require('plugins/lsp')
+    require('plugins/completion')
     require('grep')
 end

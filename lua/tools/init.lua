@@ -707,4 +707,13 @@ function tools.iregex(str, regex)
     return nvim.eval(str .. " =~? '" .. regex .. "'")
 end
 
+function tools.load_module(name)
+    local ok, M = pcall(require, name)
+
+    if not ok then
+        return nil
+    end
+    return M
+end
+
 return tools

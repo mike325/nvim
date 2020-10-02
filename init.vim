@@ -111,13 +111,17 @@ else
     if has#minimal() && has('nvim-0.5')
         Plug 'neovim/nvim-lspconfig'
         Plug 'haorenW1025/diagnostic-nvim'
-        " Plug 'nvim-lua/completion-nvim'
-        Plug 'lifepillar/vim-mucomplete'
+        Plug 'nvim-lua/completion-nvim'
 
         if executable('gcc') || executable('clang')
             Plug 'nvim-treesitter/nvim-treesitter'
+            Plug 'nvim-treesitter/completion-treesitter'
+            " Plug 'nvim-treesitter/nvim-treesitter-textobjects'
+            " Plug 'nvim-treesitter/nvim-treesitter-refactor'
         endif
 
+    elseif has#minimal() && v:version >= 704
+        Plug 'lifepillar/vim-mucomplete'
     elseif !has#minimal()
         runtime! plugin/plugins.vim
     endif

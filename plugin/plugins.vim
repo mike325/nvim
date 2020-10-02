@@ -33,6 +33,8 @@ Plug 'tpope/vim-endwise'
 
 if has('nvim-0.5') && (executable('gcc') || executable('clang'))
     Plug 'nvim-treesitter/nvim-treesitter'
+    " Plug 'nvim-treesitter/nvim-treesitter-textobjects'
+    " Plug 'nvim-treesitter/nvim-treesitter-refactor'
 else
     Plug 'tbastos/vim-lua'
     Plug 'octol/vim-cpp-enhanced-highlight'
@@ -128,34 +130,35 @@ if !empty($YCM) && empty($NO_PYTHON_DEV) &&
         Plug 'ycm-core/YouCompleteMe', { 'branch': 'legacy-py2', 'do': function('plugins#youcompleteme#install'), 'frozen': 1, 'dir': vars#basedir().'/plugged/frozen_ycm'}
     endif
 
-elseif has('nvim-0.5') && tools#CheckLanguageServer()
-    Plug 'neovim/nvim-lspconfig'
-    Plug 'haorenW1025/diagnostic-nvim'
-    " Plug 'nvim-lua/completion-nvim'
-    Plug 'lifepillar/vim-mucomplete'
+elseif has('nvim-0.5')
+    Plug 'nvim-lua/completion-nvim'
 
+    if executable('gcc') || executable('clang')
+        Plug 'nvim-treesitter/completion-treesitter'
+    endif
+
+    if tools#CheckLanguageServer()
+        Plug 'neovim/nvim-lspconfig'
+        Plug 'haorenW1025/diagnostic-nvim'
+    endif
+
+    " TODO: Integrate this with treesitter
     " if executable('ccls')
     "     Plug 'jackguo380/vim-lsp-cxx-highlight'
     " endif
 
-elseif v:version >= 800 && tools#CheckLanguageServer()
-    Plug 'natebosch/vim-lsc'
-elseif has#async() && (has('nvim-0.2.0') || (!has('nvim') && has('lambda')))
-    Plug 'maralla/completor.vim'
-elseif has('lua') && !has('nvim') && v:version >= 704
-    Plug 'Shougo/neocomplete.vim'
-else
-    Plug 'ervandew/supertab'
+elseif v:version >= 704
+    Plug 'lifepillar/vim-mucomplete'
 endif
 
-if (has('nvim') || (v:version >= 704)) && (executable('tex'))
+if executable('tex') && (has('nvim') || (v:version >= 704))
     Plug 'lervag/vimtex'
 endif
 
-if (has('nvim') || (v:version >= 704))
+if has('nvim') || (v:version >= 704)
     Plug 'kana/vim-textobj-user'
     " Plug 'kana/vim-textobj-line'
-    " Plug 'kana/vim-textobj-entire'
+    Plug 'kana/vim-textobj-entire'
     Plug 'glts/vim-textobj-comment'
     Plug 'michaeljsmith/vim-indent-object'
 endif

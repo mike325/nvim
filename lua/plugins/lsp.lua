@@ -4,16 +4,8 @@ local sys = require('sys')
 local executable = require('nvim').fn.executable
 local isdirectory = require('nvim').fn.isdirectory
 local nvim_set_autocmd = require('nvim').nvim_set_autocmd
+local load_module = require('tools').load_module
 -- local nvim_set_command = require('nvim').nvim_set_command
-
-local load_module = function(name)
-    local ok, M = pcall(require, name)
-
-    if not ok then
-        return nil
-    end
-    return M
-end
 
 local lsp = load_module('nvim_lsp')
 
@@ -29,22 +21,6 @@ if diagnostics ~= nil then
     -- nvim.fn.sign_define("lspdiagnosticswarningsign", {"text" : "w", "texthl" : "lspdiagnosticswarning"})
     -- nvim.fn.sign_define("lspdiagnosticinformationsign", {"text" : "i", "texthl" : "lspdiagnosticsinformation"})
     -- nvim.fn.sign_define("LspDiagnosticHintSign", {"text" : "H", "texthl" : "LspDiagnosticsHint"})
-end
-
-local completion = load_module('completion')
-if completion ~= nil then
-    if plugins['ultisnips']  then
-        nvim.g.completion_enable_snippet = 'UltiSnips'
-    end
-    -- TODO: Add confirm key completion handler
-    nvim.g.completion_confirm_key = ''
-    nvim.g.completion_matching_strategy_list = { 'exact', 'substring', 'fuzzy', 'all' }
-    nvim.g.completion_enable_auto_signature = 0
-    nvim.g.completion_matching_ignore_case = 1
-    nvim.g.completion_trigger_on_delete = 1
-    nvim.g.completion_enable_auto_hover = 0
-    nvim.g.completion_enable_auto_paren = 0
-
 end
 
 local servers = {
@@ -346,42 +322,5 @@ if plugins['neomake'] ~= nil then
     )
 end
 
-if completion ~= nil then
 
-    nvim_set_autocmd(
-        'BufEnter',
-        '*',
-        [[lua require'completion'.on_attach()]],
-        {create = true, group = 'Completion'}
-    )
-
-    -- TODO: Make trigger characters dynamic with LSP information
-    -- vim.lsp.buf_get_clients()[2].server_capabilities.completionProvider.triggerCharacters
-
-    -- TODO: Create Pull request to use buffer-variables
-
-    nvim_set_autocmd(
-        'BufEnter',
-        '*',
-        [[ let g:completion_trigger_character = ['.'] ]],
-        {group = 'Completion'}
-    )
-
-    if cfamily then
-        nvim_set_autocmd(
-            'BufEnter',
-            {'*.c', '*.cpp', '*.h', '*.hpp', '*.cc', '*.cxx'},
-            [[ let g:completion_trigger_character = ['.', '::', '->'] ]],
-            {group = 'Completion'}
-        )
-    end
-
-elseif plugins['vim-mucomplete'] ~= nil then
-    nvim_set_autocmd(
-        'FileType',
-        available_languages,
-        [[call plugins#vim_mucomplete#setOmni()]],
-        {create = true, group = 'Completion'}
-    )
-end
-
+return available_languages

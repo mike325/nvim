@@ -1,17 +1,10 @@
 local nvim = require('nvim')
 local plugins = require('nvim').plugins
 local nvim_set_autocmd = require('nvim').nvim_set_autocmd
+local load_module = require('tools').load_module
 -- local sys = require('sys')
 -- local executable = require('nvim').fn.executable
 -- local isdirectory = require('nvim').fn.isdirectory
-
-local load_module = function(name)
-    local ok, M = pcall(require, name)
-    if not ok then
-        return nil
-    end
-    return M
-end
 
 local treesitter = load_module('nvim-treesitter.configs')
 
@@ -126,3 +119,5 @@ nvim_set_autocmd(
     'setlocal foldmethod=expr foldexpr=nvim_treesitter#foldexpr()',
     {group = 'TreesitterFold', create = true}
 )
+
+return ensure_installed
