@@ -1,4 +1,4 @@
-package NAME
+package %NAME
 
 //
 //                             -`
