@@ -76,7 +76,7 @@ def DirectoryOfThisScript():
     return os.path.dirname(os.path.abspath(__file__))
 
 
-def MakeRelativePathsInFlagsAbsolute(flags, working_directory):
+def MakeRelativePathsInFlagsAbsolute(working_directory):
     if not working_directory:
         return list(flags)
 
@@ -197,7 +197,7 @@ def Settings(**kwargs):
         else:
             relative_to = DirectoryOfThisScript()
             final_flags = flags
-            # final_flags = MakeRelativePathsInFlagsAbsolute(flags, relative_to)
+            # final_flags = MakeRelativePathsInFlagsAbsolute(relative_to)
 
         # logger.info(final_flags)
         # return {'flags': final_flags, 'do_cache': True}

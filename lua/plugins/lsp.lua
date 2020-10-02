@@ -322,5 +322,4 @@ if plugins['neomake'] ~= nil then
     )
 end
 
-
 return available_languages

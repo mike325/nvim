@@ -9,6 +9,7 @@ let g:loaded_mike_plugins = 1
 
 Plug 'ayu-theme/ayu-vim'
 Plug 'joshdick/onedark.vim'
+Plug 'sainnhe/sonokai'
 " Plug 'bluz71/vim-moonfly-colors'
 " Plug 'bluz71/vim-nightfly-guicolors'
 
