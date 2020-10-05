@@ -59,6 +59,11 @@ endif
 
 " Plug 'pechorin/any-jump.vim'
 
+" if has('nvim-0.5')
+"     Plug 'nvim-lua/popup.nvim'
+"     Plug 'nvim-lua/plenary.nvim'
+"     Plug 'nvim-lua/telescope.nvim'
+" elseif executable('fzf') && !os#name('cygwin')
 if executable('fzf') && !os#name('cygwin')
     " Use chocolately install in windows
     Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': function('plugins#fzf_vim#install')}
