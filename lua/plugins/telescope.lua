@@ -1,5 +1,7 @@
 local nvim = require('nvim')
+local sys = require('sys')
 local plugins = require('nvim').plugins
+local isdirectory = require('nvim').fn.isdirectory
 local nvim_set_autocmd = require('nvim').nvim_set_autocmd
 local nvim_set_mapping = require('nvim').nvim_set_mapping
 local nvim_set_command = require('nvim').nvim_set_command
@@ -39,6 +41,20 @@ nvim_set_command(
     [[lua require'telescope.builtin'.oldfiles{}]],
     {force=true}
 )
+
+nvim.nvim_set_command(
+    'GetVimFiles',
+    [[lua require'telescope.builtin'.find_files{cwd = require'sys'.base, find_command = tools.to_clean_tbl(tools.select_filelist(false))}]],
+    {force=true}
+)
+
+if isdirectory(sys.home..'/dotfiles') then
+    nvim.nvim_set_command(
+        'GetDotfiles',
+        [[lua require'telescope.builtin'.find_files{cwd = require'sys'.home..'/dotfiles', find_command = tools.to_clean_tbl(tools.select_filelist(false))}]],
+        {force=true}
+    )
+end
 
 if lsp_languages ~= nil then
     nvim_set_autocmd(
