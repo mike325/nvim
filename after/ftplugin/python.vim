@@ -10,10 +10,11 @@ setlocal shiftwidth=0
 setlocal softtabstop=-1
 
 setlocal define=^\\s*\\(def\\\|class\\)\\s\\+
+setlocal suffixesadd^=.py,__init__.py
 
 nnoremap <silent><buffer> <CR> :call mappings#cr()<CR>
 
-setlocal suffixesadd^=.py,__init__.py
+let python_highlight_all = 1
 
 if has#option('formatprg')
     if executable('yapf')
@@ -121,4 +122,3 @@ if !exists('*s:PythonFix')
 endif
 
 command! -buffer PythonFix call s:PythonFix()
-

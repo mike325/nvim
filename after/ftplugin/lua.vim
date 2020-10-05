@@ -9,6 +9,9 @@ setlocal softtabstop=-1
 
 let &l:define = '\s*\(local\s\+\)\?\(function\s\+\(\i\+[.:]\)\?\|\ze\i\+\s*=\s*\|\(\i\+[.:]\)\?\ze\s*=\s*\)'
 
+let lua_version = 5
+let lua_subversion = 1
+
 if has('nvim')
     execute 'setlocal path^=' . luaeval('require"sys".base') . '/lua'
     setlocal suffixesadd^=.lua

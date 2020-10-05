@@ -1,7 +1,20 @@
 " Csh Setttings
 " github.com/mike325/.vim
 
-" CREDITS: https://github.com/demophoon/bash-fold-expr {{{
+setlocal expandtab
+setlocal shiftround
+setlocal tabstop=4
+setlocal shiftwidth=0
+setlocal softtabstop=-1
+
+" let g:filetype_csh = 'tcsh'
+
+" Since '$' is part of the variables, lets treat it as part of the word
+" setlocal iskeyword+=$
+
+nnoremap <silent><buffer> <CR> :call mappings#cr()<CR>
+
+" CREDITS: https://github.com/demophoon/bash-fold-expr
 " LICENSE: MIT
 function! GetCshFold()
     let line = getline(v:lnum)
@@ -47,21 +60,7 @@ function! GetCshFold()
 
     " Default
     return '='
-
 endfunction
 
 setlocal foldmethod=expr
 setlocal foldexpr=GetCshFold()
-
-setlocal expandtab
-setlocal shiftround
-setlocal tabstop=4
-setlocal shiftwidth=0
-setlocal softtabstop=-1
-
-nnoremap <silent><buffer> <CR> :call mappings#cr()<CR>
-
-" }}}
-
-" Since '$' is part of the variables, lets treat it as part of the word
-" setlocal iskeyword+=$

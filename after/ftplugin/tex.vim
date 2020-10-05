@@ -14,10 +14,10 @@ setlocal complete+=k,kspell " Add spell completion
 
 setlocal wrapmargin=80
 
-" Always prefer latex over plain text for *.tex files
-let g:tex_flavor = 'latex'
-let b:vimtex_main = 'main.tex'
-
+let b:vimtex_main      = 'main.tex'
+let g:tex_flavor       = 'latex'
+let g:tex_conceal      = 'abdmgs'
+let g:tex_fold_enabled = 1
 
 if has('nvim-0.4')
     call luaeval('tools.abolish("'.&l:spelllang.'")')

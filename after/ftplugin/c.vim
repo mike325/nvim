@@ -10,11 +10,13 @@ setlocal tabstop=4
 setlocal shiftwidth=0
 setlocal softtabstop=-1
 
+setlocal commentstring=//\ %s
+
+" let g:c_comment_strings = 1
+
 if has#option('formatprg') && executable('clang-format')
     setlocal formatprg=clang-format\ --style=file\ --fallback-style=WebKit
 endif
-
-setlocal commentstring=//\ %s
 
 if exists('g:c_includes')
     execute 'setlocal path^='.join(g:c_includes, ',')

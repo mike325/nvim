@@ -13,6 +13,10 @@ setlocal tabstop=4
 setlocal shiftwidth=0
 setlocal softtabstop=-1
 
+" Support embedded lua, python and ruby
+let g:vimsyn_embed = 'lPr'
+let g:vimsyn_folding = 'afpl'
+
 nnoremap <buffer> K :topleft help <C-r>=expand('<cword>')<CR><CR>
 nnoremap <silent><buffer> <CR> :call mappings#cr()<CR>
 

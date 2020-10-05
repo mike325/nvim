@@ -28,7 +28,7 @@ function! plugins#fzf_vim#install(info) abort
     endif
 endfunction
 
-" preview function use bash, so windows support
+" Preview function use bash, so windows support
 if empty($FZF_DEFAULT_COMMAND)
     let s:null = os#name('windows') ? 'nul' : '/dev/null'
     let $FZF_DEFAULT_COMMAND = '('.tools#select_filelist(1).' || '.tools#select_filelist(0).' ) 2> '.s:null
@@ -44,7 +44,6 @@ endif
 
 " Known fzf/kernel issue
 " https://github.com/junegunn/fzf/issues/1486
-
 function! plugins#fzf_vim#map_command(dir, command) abort
     if ! isdirectory(a:dir)
         return 0
@@ -72,8 +71,8 @@ endif
 if isdirectory(vars#home().'/dotfiles')
     call plugins#fzf_vim#map_command(vars#home().'/dotfiles', 'GetDotfiles')
 endif
-call plugins#fzf_vim#map_command(vars#basedir(), 'GetVimFiles')
 
+call plugins#fzf_vim#map_command(vars#basedir(), 'GetVimFiles')
 
 if has('nvim-0.4')
     let g:fzf_layout = { 'window': 'lua require("floating").window()' }
@@ -91,10 +90,10 @@ function! plugins#fzf_vim#build_quickfix_list(type, lines) abort
 endfunction
 
 let g:fzf_action = {
-\   'ctrl-t': 'tab split',
-\   'ctrl-x': 'split',
-\   'ctrl-v': 'vsplit'
-\ }
+    \   'ctrl-t': 'tab split',
+    \   'ctrl-x': 'split',
+    \   'ctrl-v': 'vsplit'
+    \ }
 
 if v:version >704
     let g:fzf_action['ctrl-q'] = function('plugins#fzf_vim#build_quickfix_list', [1])
@@ -103,8 +102,9 @@ endif
 
 nnoremap <silent> <C-p> :Files<CR>
 nnoremap <silent> <C-b> :Buffers<CR>
+
 command! Oldfiles History
 command! Registers call fzf#run(fzf#wrap({
-        \   'source': plugins#fzf_vim#GetRegisters(),
-        \   'sink': function('plugins#fzf_vim#UseRegister')
-        \ }))
+    \   'source': plugins#fzf_vim#GetRegisters(),
+    \   'sink': function('plugins#fzf_vim#UseRegister')
+    \ }))
