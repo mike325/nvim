@@ -118,7 +118,7 @@ endfunction
 function! autocmd#SetProjectConfigs(event) abort
     let l:cwd = has_key(a:event, 'cwd') ? a:event['cwd'] : getcwd()
 
-    let b:project_root = get(b:, 'project_root', {'root': '', 'cwd': ''})
+    let b:project_root = get(b:, 'project_root', {'root': '', 'cwd': '', 'is_git': 0})
 
     if b:project_root['cwd'] == l:cwd
         return b:project_root
@@ -139,6 +139,8 @@ function! autocmd#SetProjectConfigs(event) abort
     let b:project_root['root'] = l:root
 
     let l:is_git = autocmd#IsGitRepo(l:root)
+
+    let b:project_root['is_git'] = l:is_git
 
     let &l:grepprg = tools#select_grep(l:is_git)
 

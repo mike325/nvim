@@ -11,7 +11,7 @@ local grepjobs = {}
 
 local on_data = function(id, data, event)
     if data ~= nil and #data > 0 then
-        vim.list_extend(grepjobs[id].data, nvim.list_clean(data))
+        vim.list_extend(grepjobs[id].data, nvim.clear_lst(data))
     end
 end
 
@@ -22,7 +22,7 @@ local on_exit = function(id, exit_code, event)
         search = vim.fn.join(search, ' ')
     end
 
-    local lines = nvim.list_clean(grepjobs[id].data)
+    local lines = nvim.clear_lst(grepjobs[id].data)
 
     if exit_code == 0 then
 
@@ -110,7 +110,7 @@ function _G.Grep.QueueJob(...)
 
     vim.list_extend(flags, cmd)
 
-    flags = nvim.list_clean(flags)
+    flags = nvim.clear_lst(flags)
 
     local job = {prg}
 
@@ -118,7 +118,7 @@ function _G.Grep.QueueJob(...)
     vim.list_extend(job, flags)
     vim.list_extend(job, search)
 
-    job = nvim.list_clean(job)
+    job = nvim.clear_lst(job)
 
     -- if sys.name == 'windows' then
     --     flags = string.format('%s %s', vim.fn.join(cmd, ' '), vim.fn.join(flags, ' '))

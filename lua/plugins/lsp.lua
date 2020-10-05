@@ -169,147 +169,147 @@ nvim_set_autocmd(
     'FileType',
     available_languages,
     'setlocal omnifunc=v:lua.vim.lsp.omnifunc',
-    {group = 'NvimLSP', create = true}
+    {group = 'LSPAutocmds', create = true}
 )
 
 nvim_set_autocmd(
     'FileType',
     available_languages,
     'nnoremap <buffer><silent> <c-]> :lua vim.lsp.buf.definition()<CR>',
-    {group = 'NvimLSP'}
+    {group = 'LSPAutocmds'}
 )
 
 nvim_set_autocmd(
     'FileType',
     available_languages,
     'nnoremap <buffer><silent> gd    :lua vim.lsp.buf.declaration()<CR>',
-    {group = 'NvimLSP'}
+    {group = 'LSPAutocmds'}
 )
 
 nvim_set_autocmd(
     'FileType',
     available_languages,
     'nnoremap <buffer><silent> gD    :lua vim.lsp.buf.implementation()<CR>',
-    {group = 'NvimLSP'}
+    {group = 'LSPAutocmds'}
 )
 
 nvim_set_autocmd(
     'FileType',
     available_languages,
     'nnoremap <buffer><silent> gr    :lua vim.lsp.buf.references()<CR>',
-    {group = 'NvimLSP'}
+    {group = 'LSPAutocmds'}
 )
 
 nvim_set_autocmd(
     'FileType',
     available_languages,
     'nnoremap <buffer><silent> K     :lua vim.lsp.buf.hover()<CR>',
-    {group = 'NvimLSP'}
+    {group = 'LSPAutocmds'}
 )
 
 nvim_set_autocmd(
     'FileType',
     available_languages,
     'nnoremap <buffer><silent> =d    :lua vim.lsp.util.show_line_diagnostics()<CR>',
-    {group = 'NvimLSP'}
+    {group = 'LSPAutocmds'}
 )
 
 nvim_set_autocmd(
     'FileType',
     available_languages,
     [[lua require'nvim'.nvim_set_command('Declaration', 'lua vim.lsp.buf.declaration()', {buffer = true, force = true})]],
-    {group = 'NvimLSP'}
+    {group = 'LSPAutocmds'}
 )
 
 nvim_set_autocmd(
     'FileType',
     available_languages,
     [[lua require'nvim'.nvim_set_command('Diagnostics', 'lua vim.lsp.util.show_line_diagnostics()', {buffer = true, force = true})]],
-    {group = 'NvimLSP'}
+    {group = 'LSPAutocmds'}
 )
 
 nvim_set_autocmd(
     'FileType',
     available_languages,
     [[lua require'nvim'.nvim_set_command('Definition', 'lua vim.lsp.buf.definition()', {buffer = true, force = true})]],
-    {group = 'NvimLSP'}
+    {group = 'LSPAutocmds'}
 )
 
 nvim_set_autocmd(
     'FileType',
     available_languages,
     [[lua require'nvim'.nvim_set_command('References', 'lua vim.lsp.buf.references()', {buffer = true, force = true})]],
-    {group = 'NvimLSP'}
+    {group = 'LSPAutocmds'}
 )
 
 nvim_set_autocmd(
     'FileType',
     available_languages,
     [[lua require'nvim'.nvim_set_command('Rename', 'lua vim.lsp.buf.rename()', {buffer = true, force = true})]],
-    {group = 'NvimLSP'}
+    {group = 'LSPAutocmds'}
 )
 
 nvim_set_autocmd(
     'FileType',
     available_languages,
     [[lua require'nvim'.nvim_set_command('Action', 'lua vim.lsp.buf.code_action()', {buffer = true, force = true})]],
-    {group = 'NvimLSP'}
+    {group = 'LSPAutocmds'}
 )
 
 nvim_set_autocmd(
     'FileType',
     available_languages,
     [[lua require'nvim'.nvim_set_command('OutgoingCalls', 'lua vim.lsp.buf.outgoing_calls()', {buffer = true, force = true})]],
-    {group = 'NvimLSP'}
+    {group = 'LSPAutocmds'}
 )
 
 nvim_set_autocmd(
     'FileType',
     available_languages,
     [[lua require'nvim'.nvim_set_command('IncommingCalls', 'lua vim.lsp.buf.incoming_calls()', {buffer = true, force = true})]],
-    {group = 'NvimLSP'}
+    {group = 'LSPAutocmds'}
 )
 
 nvim_set_autocmd(
     'FileType',
     available_languages,
     [[lua require'nvim'.nvim_set_command('DocSymbols', 'lua vim.lsp.buf.document_symbol()', {buffer = true, force = true})]],
-    {group = 'NvimLSP'}
+    {group = 'LSPAutocmds'}
 )
 
 nvim_set_autocmd(
     'FileType',
     available_languages,
     [[lua require'nvim'.nvim_set_command('Hover', 'lua vim.lsp.buf.hover()', {buffer = true, force = true})]],
-    {group = 'NvimLSP'}
+    {group = 'LSPAutocmds'}
 )
 
 -- nvim_set_autocmd(
 --     'FileType',
 --     available_languages,
 --     [[autocmd CursorHold <buffer> lua vim.lsp.buf.hover()]],
---     {group = 'NvimLSP', nested = true}
+--     {group = 'LSPAutocmds', nested = true}
 -- )
 
 nvim_set_autocmd(
     'FileType',
     available_languages,
     [[lua require'nvim'.nvim_set_command('Implementation', 'lua vim.lsp.buf.implementation()', {buffer = true, force = true})]],
-    {group = 'NvimLSP'}
+    {group = 'LSPAutocmds'}
 )
 
 nvim_set_autocmd(
     'FileType',
     available_languages,
     [[lua require'nvim'.nvim_set_command('Signature', 'lua vim.lsp.buf.signature_help()', {buffer = true, force = true})]],
-    {group = 'NvimLSP'}
+    {group = 'LSPAutocmds'}
 )
 
 nvim_set_autocmd(
     'FileType',
     available_languages,
     [[lua require'nvim'.nvim_set_command('Type' , 'lua vim.lsp.buf.type_definition()', {buffer = true, force = true})]],
-    {group = 'NvimLSP'}
+    {group = 'LSPAutocmds'}
 )
 
 -- Disable neomake for lsp buffers
@@ -318,7 +318,7 @@ if plugins['neomake'] ~= nil then
         'FileType',
         available_languages,
         [[silent! call neomake#cmd#disable(b:)]],
-        {group = 'NvimLSP'}
+        {group = 'LSPAutocmds'}
     )
 end
 

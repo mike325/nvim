@@ -257,7 +257,7 @@ local nvim = {
             vim.api.nvim_err_writeln(msg)
         end
     end;
-    list_clean = function(lst)
+    clear_lst = function(lst)
         local tmp = lst
 
         for idx,val in pairs(lst) do

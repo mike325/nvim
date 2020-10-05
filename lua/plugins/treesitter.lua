@@ -117,7 +117,7 @@ nvim_set_autocmd(
     'FileType',
     ensure_installed,
     'setlocal foldmethod=expr foldexpr=nvim_treesitter#foldexpr()',
-    {group = 'TreesitterFold', create = true}
+    {group = 'TreesitterAutocmds', create = true}
 )
 
 return ensure_installed

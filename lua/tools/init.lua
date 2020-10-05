@@ -122,6 +122,14 @@ end
 -- global helpers
 tools = {}
 
+function tools.load_module(name)
+    local ok, M = pcall(require, name)
+    if not ok then
+        return nil
+    end
+    return M
+end
+
 function tools.echoerr(msg)
     nvim.echoerr(msg)
 end
@@ -573,6 +581,10 @@ function tools.file_name(...)
 
 end
 
+function tools.dprint(...)
+    print(vim.inspect(...))
+end
+
 local find_project_root = function(path)
     local root
     local vcs_markers = {'.git', '.svn', '.hg',}
@@ -603,6 +615,10 @@ local is_git_repo = function(root)
     return (isdirectory(git) == 1 or filereadable(git) == 1) and true or false
 end
 
+function tools.to_clean_tbl(cmd_string)
+    return nvim.clear_lst(vim.split(vim.trim(cmd_string), ' ', true))
+end
+
 function tools.project_config(event)
     -- print(vim.inspect(event))
 
@@ -625,14 +641,15 @@ function tools.project_config(event)
         return nvim.b.project_root
     end
 
-    nvim.b.project_root = {
-        cwd = cwd,
-        root = root,
-    }
-
     local is_git = is_git_repo(root)
     -- local filetype = nvim.bo.filetype
     -- local buftype = nvim.bo.buftype
+
+    nvim.b.project_root = {
+        cwd = cwd,
+        root = root,
+        is_git = is_git,
+    }
 
     nvim.bo.grepprg = tools.select_grep(is_git)
 
@@ -640,6 +657,17 @@ function tools.project_config(event)
     if #project > 0 then
         -- print('Sourcing Project ', project)
         nvim.command('source '..project)
+    end
+
+    local telescope = tools.load_module('telescope')
+
+    if telescope ~= nil then
+        nvim.nvim_set_mapping(
+            'n',
+            '<C-p>',
+            [[<cmd>lua require'telescope.builtin'.find_files{ find_command = tools.to_clean_tbl(tools.select_filelist(require'nvim'.b.project_root.is_git))}<CR>]],
+            {noremap = true}
+        )
     end
 
     if plugins['ctrlp'] ~= nil then
@@ -705,15 +733,6 @@ end
 
 function tools.iregex(str, regex)
     return nvim.eval(str .. " =~? '" .. regex .. "'")
-end
-
-function tools.load_module(name)
-    local ok, M = pcall(require, name)
-
-    if not ok then
-        return nil
-    end
-    return M
 end
 
 return tools

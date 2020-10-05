@@ -97,7 +97,7 @@ let g:fzf_action = {
 
 if v:version >704
     let g:fzf_action['ctrl-q'] = function('plugins#fzf_vim#build_quickfix_list', [1])
-    let g:fzf_action['ctrl-l'] = function('plugins#fzf_vim#build_quickfix_list', [0])
+    " let g:fzf_action['ctrl-l'] = function('plugins#fzf_vim#build_quickfix_list', [0])
 endif
 
 nnoremap <silent> <C-p> :Files<CR>

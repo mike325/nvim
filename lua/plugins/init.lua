@@ -39,11 +39,16 @@ for plugin, _ in pairs(plugins) do
     end
 end
 
-require('plugins/config')
+-- TODO: Add dynamic plugin load
+require('python')
+require('plugins/iron')
 
 if nvim.has('nvim-0.5') then
     require('plugins/treesitter')
     require('plugins/lsp')
     require('plugins/completion')
-    require('grep')
+    local telescope = require('plugins/telescope')
+    if telescope == nil then
+        require('grep')
+    end
 end
