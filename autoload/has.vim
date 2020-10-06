@@ -48,6 +48,10 @@ function! has#plugin(plugin) abort
     return 0
 endfunction
 
+function! has#plugin_manager() abort
+    return has#cmd('Plug') == 2
+endfunction
+
 if has('nvim-0.5')
 
     function! has#async() abort

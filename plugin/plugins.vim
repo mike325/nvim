@@ -1,7 +1,7 @@
 " plugins.vim Setttings
 " github.com/mike325/.vim
 
-if exists('g:loaded_mike_plugins') || has#minimal() || has#bare()
+if exists('g:loaded_mike_plugins') || has#minimal() || has#bare() || !has#plugin_manager()
     finish
 endif
 
@@ -31,6 +31,7 @@ Plug 'tpope/vim-endwise'
 " Plug 'AndrewRadev/switch.vim'
 " Plug 'AndrewRadev/splitjoin.vim'
 " Plug 'editorconfig/editorconfig-vim'
+" Plug 'pechorin/any-jump.vim'
 
 if has('nvim-0.5') && (executable('gcc') || executable('clang'))
     Plug 'nvim-treesitter/nvim-treesitter'
@@ -56,8 +57,6 @@ endif
 if has#python() && has#async()
     Plug 'neomake/neomake'
 endif
-
-" Plug 'pechorin/any-jump.vim'
 
 " if has('nvim-0.5')
 "     Plug 'nvim-lua/popup.nvim'

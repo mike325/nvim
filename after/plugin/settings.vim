@@ -302,5 +302,7 @@ if os#name('windows')
 endif
 
 if has#plugin('vim-fugitive') && !has#plugin('vim-airline')
-    set statusline=%<%f\ %h%m%r%{FugitiveStatusline()}%=%-14.(%l,%c%V%)\ %P
+    let &statusline = '%< %{FugitiveStatusline()} %f%=%-5.(%y%r%m%w%q%) %-14.(%l,%c%V%) %P'
+elseif !has#plugin('vim-airline')
+    let &statusline = '%< %f%=%-5.(%y%r%m%w%q%) %-14.(%l,%c%V%) %P'
 endif

@@ -8,4 +8,4 @@ setlocal bufhidden=wipe
 imap <buffer><silent> <C-j> <C-n>
 imap <buffer><silent> <C-k> <C-p>
 
-" nnoremap <buffer><silent> <C-k> <C-p>
+nmap <buffer><silent> <C-c> <ESC>
