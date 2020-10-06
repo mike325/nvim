@@ -240,7 +240,7 @@ nvim.nvim_set_command('SpellToggle'           , 'setlocal spell! spell?', {force
 nvim.nvim_set_command('WrapToggle'            , 'setlocal wrap! wrap?', {force=true})
 nvim.nvim_set_command('VerboseToggle'         , 'let &verbose=!&verbose | echo "Verbose " . &verbose', {force=true})
 nvim.nvim_set_command('TrimToggle'            , [[lua require"settings/mappings".trim()]], {force=true})
--- nvim.nvim_set_command('GonvimSettngs', "execute('edit ~/.gonvim/setting.toml')", {nargs='*'}, {force=true})
+nvim.nvim_set_command('GonvimSettngs', "execute('edit ~/.gonvim/setting.toml')", {nargs='*', force = true})
 nvim.nvim_set_command(
     'FileType',
     "call mappings#SetFileData('filetype', <q-args>, 'text')",

@@ -212,11 +212,11 @@ function tools.ignores(tool)
 
     local ignores = {
         fd = ' -E ' .. table.concat(excludes, ' -E ') .. ' ',
-        find = '',
+        find = '', -- TODO
         rg = '',
         ag = ' --ignore ' .. table.concat(excludes, ' --ignore ') .. ' ',
         grep = '--exclude='.. table.concat(excludes, ' --exclude=') .. ' ',
-        findstr = '',
+        findstr = '', -- TODO
     }
 
     return ignores[tool] ~= nil and ignores[tool] or ''
