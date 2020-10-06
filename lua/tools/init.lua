@@ -735,4 +735,6 @@ function tools.iregex(str, regex)
     return nvim.eval(str .. " =~? '" .. regex .. "'")
 end
 
+require'tools.helpers'
+
 return tools

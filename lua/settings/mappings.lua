@@ -327,7 +327,7 @@ if plugins["vim-unimpaired"] == nil then
         local nvim = require'nvim'
         local cursor_pos = nvim.win.get_cursor(0)
         local lines = {''}
-        local count = nvim.v.count
+        local count = nvim.v['count1']
         if count > 1 then
             for i=2,count,1 do
                 lines[#lines + 1] = ''
@@ -346,14 +346,14 @@ EOF<CR>]],
         local nvim = require'nvim'
         local cursor_pos = nvim.win.get_cursor(0)
         local lines = {''}
-        local count = nvim.v.count
+        local count = nvim.v['count1']
         if count > 1 then
             for i=2,count,1 do
                 lines[#lines + 1] = ''
             end
         end
         nvim.put(lines, 'l', false, false)
-        cursor_pos[1] = count > 1 and cursor_pos[1] + count or cursor_pos[1] + 1
+        cursor_pos[1] = cursor_pos[1] + count
         nvim.win.set_cursor(0, cursor_pos)
 EOF<CR>]],
         noremap
@@ -365,9 +365,34 @@ if plugins["vim-vinegar"] == nil and plugins["nerdtree"] == nil then
     nvim.nvim_set_mapping('n', '-', ':Explore<CR>')
 end
 
--- if plugins["vim-eunuch"] == nil then
---     -- TODO
--- end
+if plugins["vim-eunuch"] == nil and nvim.has('nvim-0.5') then
+
+    -- TODO: Make this work with embedded lua
+    nvim.nvim_set_command(
+        'Move',
+        [[call v:lua.tools.helpers.rename(expand('%:p'), expand(<q-args>))]],
+        {force = true, bang = true, nargs = 1, complete = 'file'}
+    )
+
+    nvim.nvim_set_command(
+        'Rename',
+        [[call v:lua.tools.helpers.rename(expand('%:p'), expand('%:p:h').'/'.expand(<q-args>))]],
+        {force = true, bang = true, nargs = 1, complete = 'file'}
+    )
+
+    nvim.nvim_set_command(
+        'Mkdir',
+        [[call mkdir(fnameescape(expand(<q-args>)), 'p')]],
+        {force = true, bang = true, nargs = 1, complete = 'dir'}
+    )
+
+    nvim.nvim_set_command(
+        'Remove',
+        [[call v:lua.tools.helpers.delete(fnamemodify(empty(<q-args>) ? expand("%") : expand(<q-args>), ":p"), empty(<bang>0) ? 0 : 1)]],
+        {force = true, bang = true, nargs = '?', complete = 'file'}
+    )
+
+end
 
 -- if plugins["vim-fugitive"] == nil and executable('git') == 1 then
 --     -- TODO

@@ -330,67 +330,65 @@ endif
 if !has#plugin('vim-eunuch')
     if has#func('rename')
         command! -bang -nargs=1 -complete=file Move
-                    \ let s:name = expand(<q-args>) |
-                    \ let s:current = expand('%:p') |
-                    \ if (rename(s:current, s:name)) |
-                    \   execute 'edit ' . s:name |
-                    \   execute 'bwipeout! '.s:current |
-                    \ endif |
-                    \ unlet s:name |
-                    \ unlet s:current
+            \ let s:name = expand(<q-args>) |
+            \ let s:current = expand('%:p') |
+            \ if (rename(s:current, s:name)) |
+            \   execute 'edit ' . s:name |
+            \   execute 'bwipeout! '.s:current |
+            \ endif |
+            \ unlet s:name |
+            \ unlet s:current
 
         command! -bang -nargs=1 -complete=file Rename
-                    \ let s:name = expand('%:p:h') . '/' . expand(<q-args>) |
-                    \ let s:current = expand('%:p') |
-                    \ if (rename(s:current, s:name)) |
-                    \   execute 'edit ' . s:name |
-                    \   execute 'bwipeout! '.s:current |
-                    \ endif |
-                    \ unlet s:name |
-                    \ unlet s:current
+            \ let s:name = expand('%:p:h') . '/' . expand(<q-args>) |
+            \ let s:current = expand('%:p') |
+            \ if (rename(s:current, s:name)) |
+            \   execute 'edit ' . s:name |
+            \   execute 'bwipeout! '.s:current |
+            \ endif |
+            \ unlet s:name |
+            \ unlet s:current
     endif
 
-    command! -bang -nargs=1 -complete=dir Mkdir
-                \ let s:bang = empty(<bang>0) ? 0 : 1 |
-                \ let s:dir = expand(<q-args>) |
-                \ if has#func('mkdir') |
-                \   call mkdir(fnameescape(s:dir), (s:bang) ? "p" : "") |
-                \ else |
-                \   tools#echoerr("Failed to create dir '" . s:dir . "' mkdir is not available") |
-                \ endif |
-                \ unlet s:bang |
-                \ unlet s:dir
+    if has#func('mkdir')
+        command! -bang -nargs=1 -complete=dir Mkdir
+            \ let s:bang = empty(<bang>0) ? 0 : 1 |
+            \ let s:dir = expand(<q-args>) |
+            \ call mkdir(fnameescape(s:dir), (s:bang) ? "p" : "") |
+            \ unlet s:bang |
+            \ unlet s:dir
+    endif
 
     command! -bang -nargs=? -complete=file Remove
-                \ let s:bang = empty(<bang>0) ? 0 : 1 |
-                \ let s:target = fnamemodify(empty(<q-args>) ? expand("%") : expand(<q-args>), ":p") |
-                \ if filereadable(s:target) || bufloaded(s:target) |
-                \   if filereadable(s:target) |
-                \       if delete(s:target) == -1 |
-                \           tools#echoerr("Failed to delete the file '" . s:target . "'") |
-                \       endif |
-                \   endif |
-                \   if bufloaded(s:target) |
-                \       let s:cmd = (s:bang) ? "bwipeout! " : "bdelete! " |
-                \       try |
-                \           execute s:cmd . s:target |
-                \       catch /E94/ |
-                \           tools#echoerr("Failed to delete/wipe '" . s:target . "'") |
-                \       finally |
-                \           unlet s:cmd |
-                \       endtry |
-                \   endif |
-                \ elseif isdirectory(s:target) |
-                \   let s:flag = (s:bang) ? "rf" : "d" |
-                \   if delete(s:target, s:flag) == -1 |
-                \       tools#echoerr("Failed to remove '" . s:target . "'") |
-                \   endif |
-                \   unlet s:flag |
-                \ else |
-                \   tools#echoerr("Failed to remove '" . s:target . "'") |
-                \ endif |
-                \ unlet s:bang |
-                \ unlet s:target
+        \ let s:bang = empty(<bang>0) ? 0 : 1 |
+        \ let s:target = fnamemodify(empty(<q-args>) ? expand("%") : expand(<q-args>), ":p") |
+        \ if filereadable(s:target) || bufloaded(s:target) |
+        \   if filereadable(s:target) |
+        \       if delete(s:target) == -1 |
+        \           tools#echoerr("Failed to delete the file '" . s:target . "'") |
+        \       endif |
+        \   endif |
+        \   if bufloaded(s:target) |
+        \       let s:cmd = (s:bang) ? "bwipeout! " : "bdelete! " |
+        \       try |
+        \           execute s:cmd . s:target |
+        \       catch /E94/ |
+        \           tools#echoerr("Failed to delete/wipe '" . s:target . "'") |
+        \       finally |
+        \           unlet s:cmd |
+        \       endtry |
+        \   endif |
+        \ elseif isdirectory(s:target) |
+        \   let s:flag = (s:bang) ? "rf" : "d" |
+        \   if delete(s:target, s:flag) == -1 |
+        \       tools#echoerr("Failed to remove '" . s:target . "'") |
+        \   endif |
+        \   unlet s:flag |
+        \ else |
+        \   tools#echoerr('Non removable target: "'.s:target.'"') |
+        \ endif |
+        \ unlet s:bang |
+        \ unlet s:target
 endif
 
 if !has#plugin('vim-fugitive') && executable('git')
