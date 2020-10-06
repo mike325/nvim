@@ -240,7 +240,7 @@ nvim.nvim_set_command('SpellToggle'           , 'setlocal spell! spell?', {force
 nvim.nvim_set_command('WrapToggle'            , 'setlocal wrap! wrap?', {force=true})
 nvim.nvim_set_command('VerboseToggle'         , 'let &verbose=!&verbose | echo "Verbose " . &verbose', {force=true})
 nvim.nvim_set_command('TrimToggle'            , [[lua require"settings/mappings".trim()]], {force=true})
-nvim.nvim_set_command('GonvimSettngs', "execute('edit ~/.gonvim/setting.toml')", {nargs='*'}, {force=true})
+-- nvim.nvim_set_command('GonvimSettngs', "execute('edit ~/.gonvim/setting.toml')", {nargs='*'}, {force=true})
 nvim.nvim_set_command(
     'FileType',
     "call mappings#SetFileData('filetype', <q-args>, 'text')",
@@ -319,6 +319,46 @@ if plugins["vim-unimpaired"] == nil then
     nvim.nvim_set_mapping('n', ']B', ':<C-U>exe "".(v:count ? v:count : "")."blast"<CR>'    , noremap)
     nvim.nvim_set_mapping('n', '[b', ':<C-U>exe "".(v:count ? v:count : "")."bprevious"<CR>', noremap)
     nvim.nvim_set_mapping('n', ']b', ':<C-U>exe "".(v:count ? v:count : "")."bnext"<CR>'    , noremap)
+
+    nvim.nvim_set_mapping(
+        'n',
+        ']<Space>',
+        [[:<C-U>silent lua <<EOF
+        local nvim = require'nvim'
+        local cursor_pos = nvim.win.get_cursor(0)
+        local lines = {''}
+        local count = nvim.v.count
+        if count > 1 then
+            for i=2,count,1 do
+                lines[#lines + 1] = ''
+            end
+        end
+        nvim.put(lines, 'l', true, false)
+        nvim.win.set_cursor(0, cursor_pos)
+EOF<CR>]],
+        noremap
+    )
+
+    nvim.nvim_set_mapping(
+        'n',
+        '[<Space>',
+        [[:<C-U>silent lua <<EOF
+        local nvim = require'nvim'
+        local cursor_pos = nvim.win.get_cursor(0)
+        local lines = {''}
+        local count = nvim.v.count
+        if count > 1 then
+            for i=2,count,1 do
+                lines[#lines + 1] = ''
+            end
+        end
+        nvim.put(lines, 'l', false, false)
+        cursor_pos[1] = count > 1 and cursor_pos[1] + count or cursor_pos[1] + 1
+        nvim.win.set_cursor(0, cursor_pos)
+EOF<CR>]],
+        noremap
+    )
+
 end
 
 if plugins["vim-vinegar"] == nil and plugins["nerdtree"] == nil then
