@@ -7,6 +7,10 @@ if exists('g:mappings_loaded')
     finish
 endif
 
+if !exists('g:mapleader')
+    let g:mapleader = "\<Space>"
+endif
+
 let g:mappings_loaded = 1
 
 if has('nvim-0.4')
