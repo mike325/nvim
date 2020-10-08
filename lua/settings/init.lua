@@ -134,7 +134,7 @@ nvim.o.grepprg = tools.select_grep(false)
 nvim.o.grepformat = tools.select_grep(false, 'grepformat')
 
 if plugins['vim-fugitive'] ~= nil and plugins['vim-airline'] == nil then
-    nvim.o.statusline = '%< %{FugitiveStatusline()} %f%=%-5.(%y%r%m%w%q%) %-14.(%l,%c%V%) %P '
+    nvim.o.statusline = '%< [%{"Branch: ".FugitiveHead()}] %<[%f]%=%-5.(%y%r%m%w%q%) %-14.(%l,%c%V%) %P'
 elseif plugins['vim-airline'] == nil then
     nvim.o.statusline = '%< %f%=%-5.(%y%r%m%w%q%) %-14.(%l,%c%V%) %P '
 end
