@@ -20,7 +20,7 @@ setlocal complete+=k,kspell " Add spell completion
 setlocal textwidth=80
 
 if has('nvim-0.4')
-    call luaeval('tools.abolish("'.&l:spelllang.'")')
+    call luaeval('require"tools".abolish("'.&l:spelllang.'")')
 else
     call tools#abolish(&l:spelllang)
 endif

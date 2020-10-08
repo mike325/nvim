@@ -51,7 +51,6 @@ let g:loaded_vimballPlugin     = 1
 
 if has('nvim')
     lua require('python').setup()
-    lua require('tools')
 else
     call set#initconfigs()
     call setup#python()
@@ -83,11 +82,13 @@ else
         finish
     endtry
 
+    Plug 'tweekmonster/startuptime.vim', {'on': ['StartupTime']}
+
     Plug 'tpope/vim-repeat'
     Plug 'tpope/vim-surround'
     Plug 'tpope/vim-projectionist'
-    Plug 'tpope/vim-unimpaired'
-    Plug 'tpope/vim-dispatch'
+    " Plug 'tpope/vim-unimpaired'
+    " Plug 'tpope/vim-dispatch'
     Plug 'tpope/vim-fugitive'
     Plug 'tpope/vim-apathy'
     Plug 'junegunn/gv.vim', {'on': ['GV']}

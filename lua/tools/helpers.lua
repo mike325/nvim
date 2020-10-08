@@ -1,19 +1,29 @@
 local nvim = require'nvim'
 
-tools.helpers = {}
+if tools.helpers == nil then
+    tools.helpers = {}
+end
 
-function tools.helpers.rename(old, new)
+function tools.helpers.rename(old, new, bang)
 
     new = new:gsub('\\', '/')
     old = old:gsub('\\', '/')
 
-    if nvim.fn.filereadable(new) == 0 then
-        if nvim.fn.rename(old, new) == 0 then
+    if nvim.fn.filereadable(new) == 0 or bang == 1 then
 
+        if nvim.fn.filereadable(old) == 0 then
+            nvim.ex.write(old)
+        end
+
+        if nvim.fn.bufloaded(new) == 1 then
+            nvim.ex['bwipeout!'](new)
+        end
+
+        if nvim.fn.rename(old, new) == 0 then
             local cursor_pos = nvim.win.get_cursor(0)
 
-            nvim.command('edit '.. new)
-            nvim.command('bwipeout! '.. old)
+            nvim.ex.edit(new)
+            nvim.ex['bwipeout!'](old)
 
             nvim.win.set_cursor(0, cursor_pos)
 
@@ -21,6 +31,8 @@ function tools.helpers.rename(old, new)
         else
             nvim.echoerr('Failed to rename '..old)
         end
+    elseif nvim.fn.filereadable(new) == 1 then
+        nvim.echoerr('File: '..new..' exists, use ! to override, it')
     end
 
     return false
@@ -50,3 +62,5 @@ function tools.helpers.delete(target, bang)
         nvim.echoerr('Non removable target: '..target)
     end
 end
+
+return tools.helpers

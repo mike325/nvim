@@ -18,7 +18,7 @@ if s:requireSpell(expand('%:p'))
     setlocal complete+=k,kspell " Add spell completion
 
     if has('nvim-0.4')
-        call luaeval('tools.abolish("'.&l:spelllang.'")')
+        call luaeval('require"tools".abolish("'.&l:spelllang.'")')
     else
         call tools#abolish(&l:spelllang)
     endif

@@ -35,14 +35,14 @@ nvim_set_autocmd(
 nvim_set_autocmd(
     'BufRead',
     '*',
-    'lua require("tools").last_position()',
+    'lua require"tools".last_position()',
     {create = true, group = 'LastEditPosition'}
 )
 
 nvim_set_autocmd(
     'BufNewFile',
     '*',
-    'lua tools.file_name()',
+    'lua require"tools".file_name()',
     {create = true, group = 'Skeletons'}
 )
 
@@ -113,7 +113,7 @@ if plugins['completor.vim'] == nil then
     nvim_set_autocmd(
         'BufWritePre',
         '*',
-        'lua require("tools").clean_file()',
+        'lua require"tools".clean_file()',
         {group = 'CleanFile'}
     )
 end

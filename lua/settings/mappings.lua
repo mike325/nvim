@@ -335,6 +335,7 @@ if plugins["vim-unimpaired"] == nil then
         end
         nvim.put(lines, 'l', true, false)
         nvim.win.set_cursor(0, cursor_pos)
+        nvim.command('silent! call repeat#set("]<Space>",'..count..')')
 EOF<CR>]],
         noremap
     )
@@ -355,6 +356,7 @@ EOF<CR>]],
         nvim.put(lines, 'l', false, false)
         cursor_pos[1] = cursor_pos[1] + count
         nvim.win.set_cursor(0, cursor_pos)
+        nvim.command('silent! call repeat#set("[<Space>",'..count..')')
 EOF<CR>]],
         noremap
     )
@@ -367,16 +369,18 @@ end
 
 if plugins["vim-eunuch"] == nil and nvim.has('nvim-0.5') then
 
+    require'tools.helpers'
+
     -- TODO: Make this work with embedded lua
     nvim.nvim_set_command(
         'Move',
-        [[call v:lua.tools.helpers.rename(expand('%:p'), expand(<q-args>))]],
+        [[call v:lua.tools.helpers.rename(expand('%:p'), expand(<q-args>), empty(<bang>0) ? 0 : 1)]],
         {force = true, bang = true, nargs = 1, complete = 'file'}
     )
 
     nvim.nvim_set_command(
         'Rename',
-        [[call v:lua.tools.helpers.rename(expand('%:p'), expand('%:p:h').'/'.expand(<q-args>))]],
+        [[call v:lua.tools.helpers.rename(expand('%:p'), expand('%:p:h').'/'.expand(<q-args>), empty(<bang>0) ? 0 : 1)]],
         {force = true, bang = true, nargs = 1, complete = 'file'}
     )
 

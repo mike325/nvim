@@ -50,12 +50,14 @@ local get_python_exe = function(version)
 
         pyexe = pyexe:gsub('\\', '/')
 
-        local has_pynvim = system(pyexe .. ' -c "import pynvim"')
-
-        if has_pynvim ~= '' then
-            nvim.g[deactivate] = 0
-            return nil
-        end
+        -- TODO: This is slowing down neovim as hell
+        --       need to find another way to figure out if pynvim is installed
+        --
+        -- local has_pynvim = system(pyexe .. ' -c "import pynvim"')
+        -- if has_pynvim ~= '' then
+        --     nvim.g[deactivate] = 0
+        --     return nil
+        -- end
 
         python[pyversion]['path'] = pyexe
         nvim.g[variable] = pyexe

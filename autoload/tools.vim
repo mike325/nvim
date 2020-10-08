@@ -9,6 +9,8 @@ function! tools#checksize() abort
 endfunction
 
 if has('nvim-0.5')
+    lua require('tools')
+
     function! tools#getLanguageServer(language) abort
         return v:lua.tools.get_language_server(a:language)
     endfunction
@@ -297,8 +299,8 @@ function! tools#abolish(lang) abort
     let l:abolish_lang = {}
 
     if has('nvim')
-        let l:abolish_lang['en'] = luaeval('tools.get_abbrs("en")')
-        let l:abolish_lang['es'] = luaeval('tools.get_abbrs("es")')
+        let l:abolish_lang['en'] = luaeval('require"tools".get_abbrs("en")')
+        let l:abolish_lang['es'] = luaeval('require"tools".get_abbrs("es")')
     else
         " WARN: This is already obsolete and may become out of sync with
         "       abbreviations in lua file

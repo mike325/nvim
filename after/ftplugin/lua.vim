@@ -7,6 +7,9 @@ setlocal tabstop=4
 setlocal shiftwidth=0
 setlocal softtabstop=-1
 
+setlocal suffixesadd^=.lua,init.lua
+setlocal includeexpr=substitute(v:fname,'\\.','/','g')
+
 let &l:define = '\s*\(local\s\+\)\?\(function\s\+\(\i\+[.:]\)\?\|\ze\i\+\s*=\s*\|\(\i\+[.:]\)\?\ze\s*=\s*\)'
 
 let lua_version = 5
@@ -14,8 +17,6 @@ let lua_subversion = 1
 
 if has('nvim')
     execute 'setlocal path^=' . luaeval('require"sys".base') . '/lua'
-    setlocal suffixesadd^=.lua
-    setlocal includeexpr=substitute(v:fname,'\\.','/','g')
 endif
 
 if executable('luacheck')

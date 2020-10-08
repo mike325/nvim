@@ -172,7 +172,7 @@ if v:version > 704
     Plug 'vimwiki/vimwiki'
 endif
 
-" Unix commands
-if has('unix')
-    Plug 'tpope/vim-eunuch'
-endif
+" " Unix commands
+" if has('unix')
+"     Plug 'tpope/vim-eunuch'
+" endif

@@ -12,7 +12,7 @@ local isdirectory = require('nvim').fn.isdirectory
 local tools = require('tools')
 
 local isempty = function(s)
-    return (s == nil or s == '') and 1 or 0
+    return (s == nil or s == '') and true or false
 end
 
 local dirpaths = {
@@ -28,7 +28,7 @@ for dirname,dir_setting in pairs(dirpaths) do
         mkdir(parent .. '/' .. dirname, 'p')
     end
 
-    if isempty(dir_setting) == 0 then
+    if not isempty(dir_setting) then
         nvim.o[dir_setting] = parent .. '/' .. dirname
     end
 end
