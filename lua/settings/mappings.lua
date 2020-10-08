@@ -269,6 +269,30 @@ nvim.nvim_set_command(
     {nargs='?', force = true}
 )
 
+-- TODO: Add option to detect location lists
+nvim.nvim_set_mapping(
+    'n',
+    '=q',
+    [[:silent! lua <<EOF
+    local nvim = require'nvim'
+    local close = false
+    for _, win in pairs(nvim.tab.list_wins(0)) do
+        local buffer = nvim.win.get_buf(win)
+        if nvim.buf.get_option(buffer, 'buftype') == 'quickfix' then
+            close = true
+            break
+        end
+    end
+    if close then
+        nvim.ex.cclose()
+    else
+        nvim.ex.Qopen()
+        nvim.ex.wincmd('p')
+    end
+EOF<CR>]],
+    noremap
+)
+
 if executable('svn') then
     nvim.nvim_set_command('SVNstatus', "execute('!svn status ' . <q-args>)", {nargs='*', force = true})
     nvim.nvim_set_command('SVN'      , "execute('!svn ' . <q-args>)"       , {complete='file', nargs='+', force = true})

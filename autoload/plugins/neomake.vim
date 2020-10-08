@@ -56,17 +56,28 @@ function! plugins#neomake#makeprg() abort
         \}
 endfunction
 
-augroup NeomakeSetMakeprg
+augroup NeomakeConfig
     autocmd!
     autocmd OptionSet makeprg call plugins#neomake#makeprg()
 augroup end
 
 if os#name('windows')
-    call neomake#configure#automake({
-        \ 'InsertLeave': {},
-        \ 'BufWinEnter': {},
-        \ 'BufWritePost': {'delay': 0},
-        \ }, 500)
+    let s:triggers = [
+        \ {
+        \   'InsertLeave': {},
+        \   'BufWinEnter': {},
+        \   'BufWritePost': {'delay': 0},
+        \ },
+        \ 500
+        \]
 else
-    call neomake#configure#automake('nrw', 200)
+    let s:triggers = ['nrw', 200]
+endif
+
+if v:vim_did_enter
+    call neomake#configure#automake(s:triggers[0], s:triggers[1])
+else
+    augroup NeomakeConfig
+        autocmd VimEnter * call neomake#configure#automake(s:triggers[0], s:triggers[1])
+    augroup end
 endif
