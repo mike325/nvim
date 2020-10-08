@@ -269,18 +269,44 @@ nvim.nvim_set_command(
     {nargs='?', force = true}
 )
 
--- TODO: Add option to detect location lists
 nvim.nvim_set_mapping(
     'n',
-    '=q',
+    '=l',
     [[:silent! lua <<EOF
     local nvim = require'nvim'
     local close = false
-    for _, win in pairs(nvim.tab.list_wins(0)) do
-        local buffer = nvim.win.get_buf(win)
-        if nvim.buf.get_option(buffer, 'buftype') == 'quickfix' then
-            close = true
-            break
+    local loc_winid = nvim.fn.getloclist(0, {winid = 0}).winid
+    if loc_winid > 0 then
+        for _, winid in pairs(nvim.tab.list_wins(0)) do
+            if winid == loc_winid then
+                close = true
+                break
+            end
+        end
+    end
+    if close then
+        nvim.ex.lclose()
+    else
+        nvim.ex.lopen()
+        nvim.ex.wincmd('p')
+    end
+EOF<CR>]],
+    noremap
+)
+
+nvim.nvim_set_mapping(
+    'n',
+    '=q',
+    [[:silent lua <<EOF
+    local nvim = require'nvim'
+    local close = false
+    local qf_winid = nvim.fn.getqflist({winid = 0}).winid
+    if qf_winid > 0 then
+        for _, winid in pairs(nvim.tab.list_wins(0)) do
+            if winid == qf_winid then
+                close = true
+                break
+            end
         end
     end
     if close then
