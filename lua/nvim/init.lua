@@ -524,4 +524,20 @@ setmetatable(nvim, {
     end
 })
 
+local func_to_lua = {
+    'executable',
+    'isdirectory',
+    'filereadable',
+    'bufloaded',
+}
+
+for _,func_name in pairs(func_to_lua) do
+    local original = nvim.fn[func_name]
+    if original ~= nil and nvim[func_name] == nil then
+        nvim[func_name] = function(...)
+            return original(...) == 1
+        end
+    end
+end
+
 return nvim

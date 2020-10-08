@@ -1,10 +1,11 @@
-local nvim = require('nvim')
-local plugins = require('nvim').plugins
-local nvim_set_autocmd = require('nvim').nvim_set_autocmd
-local load_module = require('tools').load_module
+local nvim             = require('nvim')
+local load_module      = require('tools').load_module
 -- local sys = require('sys')
--- local executable = require('nvim').fn.executable
--- local isdirectory = require('nvim').fn.isdirectory
+
+local plugins          = nvim.plugins
+local nvim_set_autocmd = nvim.nvim_set_autocmd
+-- local executable       = nvim.executable
+-- local isdirectory      = nvim.isdirectory
 
 local treesitter = load_module('nvim-treesitter.configs')
 

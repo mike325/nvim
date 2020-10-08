@@ -1,8 +1,10 @@
 -- luacheck: globals unpack vim
 
-local has = require('nvim').has
-local plugins = require('nvim').plugins
-local nvim_set_autocmd = require('nvim').nvim_set_autocmd
+local has              = require'nvim'.has
+local plugins          = require'nvim'.plugins
+local nvim_set_autocmd = require'nvim'.nvim_set_autocmd
+
+local sys = require'sys'
 
 -- nvim_set_autocmd(
 --     'TermOpen',
@@ -49,7 +51,7 @@ nvim_set_autocmd(
 nvim_set_autocmd(
     {'DirChanged', 'BufNewFile', 'BufReadPre', 'BufEnter', 'VimEnter'},
     '*',
-    'lua require("tools").project_config(require"nvim".fn.deepcopy(require"nvim".v.event))',
+    'lua require"tools.helpers".project_config(require"nvim".fn.deepcopy(require"nvim".v.event))',
     {create = true, group = 'ProjectConfig'}
 )
 
@@ -104,7 +106,7 @@ end
 
 if plugins['completor.vim'] == nil then
     nvim_set_autocmd(
-        {'BufNewFile', 'BufRead', 'BufEnter'},
+        {'BufNewFile', 'BufReadPre', 'BufEnter'},
         '*',
         "if !exists('b:trim') | let b:trim = 1 | endif",
         {create = true, group = 'CleanFile'}

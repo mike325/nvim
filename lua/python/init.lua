@@ -1,10 +1,10 @@
 local nvim = require('nvim')
 -- local api = vim.api
 
-local has        = require('nvim').has
-local system     = require('nvim').fn.system
-local exepath    = require('nvim').fn.exepath
-local executable = require('nvim').fn.executable
+local has        = nvim.has
+local system     = nvim.fn.system
+local exepath    = nvim.fn.exepath
+local executable = nvim.executable
 
 local check_version    = require('tools').check_version
 local split_components = require('tools').split_components
@@ -42,7 +42,7 @@ local get_python_exe = function(version)
         return nil
     end
 
-    if executable('python'..pyversion) == 1 then
+    if executable('python'..pyversion) then
         pyexe = exepath('python'..pyversion)
     end
 
@@ -62,7 +62,7 @@ local get_python_exe = function(version)
         python[pyversion]['path'] = pyexe
         nvim.g[variable] = pyexe
 
-        local full_version = nvim.fn.system(pyexe .. ' --version')
+        local full_version = system(pyexe .. ' --version')
         full_version = string.match(full_version, '[%d%p]+')
         python[pyversion]['version'] = full_version
 
@@ -89,7 +89,7 @@ function python:setup()
 end
 
 function python.has_version(...)
-    if executable('python2') == 0 and executable('python3') == 0 then
+    if not executable('python2') and not executable('python3') then
         return 0
     end
 

@@ -3,10 +3,10 @@
 -- local api = vim.api
 local nvim = require('nvim')
 
-local mkdir       = require('nvim').fn.mkdir
-local stdpath     = require('nvim').fn.stdpath
-local isdirectory = require('nvim').fn.isdirectory
--- local executable  = require('nvim').fn.executable
+local mkdir       = nvim.fn.mkdir
+local stdpath     = nvim.fn.stdpath
+local isdirectory = nvim.isdirectory
+-- local executable  = nvim.executable
 
 local system_name = function()
     local name = 'unknown'
@@ -37,7 +37,7 @@ end
 local basedir = function()
     local dir = stdpath('config'):gsub('\\', '/')
 
-    if isdirectory(dir) == 0 then
+    if isdirectory(dir) then
         mkdir(dir, 'p')
     end
 
@@ -47,7 +47,7 @@ end
 local cachedir = function()
     local dir = stdpath('cache'):gsub('\\', '/')
 
-    if isdirectory(dir) == 0 then
+    if isdirectory(dir) then
         mkdir(dir, 'p')
     end
 
@@ -57,7 +57,7 @@ end
 local datadir = function()
     local dir = stdpath('data'):gsub('\\', '/')
 
-    if isdirectory(dir) == 0 then
+    if isdirectory(dir) then
         mkdir(dir, 'p')
     end
 

@@ -1,11 +1,12 @@
-local nvim = require('nvim')
-local plugins = require('nvim').plugins
-local sys = require('sys')
-local executable = require('nvim').fn.executable
-local isdirectory = require('nvim').fn.isdirectory
-local nvim_set_autocmd = require('nvim').nvim_set_autocmd
+local sys         = require('sys')
+local nvim        = require('nvim')
 local load_module = require('tools').load_module
--- local nvim_set_command = require('nvim').nvim_set_command
+
+local plugins          = nvim.plugins
+local executable       = nvim.executable
+local isdirectory      = nvim.isdirectory
+local nvim_set_autocmd = nvim.nvim_set_autocmd
+-- local nvim_set_command = nvim.nvim_set_command
 
 local lsp = load_module('nvim_lsp')
 
@@ -137,9 +138,8 @@ local cfamily = false
 
 for language,options in pairs(servers) do
     for option,server in pairs(options) do
-        local dir = isdirectory(sys.home .. '/.cache/nvim/nvim_lsp/' .. server['name']) == 1
-        local exec = executable(server['name']) == 1 or
-                     (server['executable'] ~= nil and executable(server['executable']) == 1)
+        local dir = isdirectory(sys.home .. '/.cache/nvim/nvim_lsp/' .. server['name'])
+        local exec = executable(server['name']) or (server['executable'] ~= nil and executable(server['executable']))
         if exec or dir then
             local init = server['options'] ~= nil and server['options'] or {}
             if diagnostics ~= nil then

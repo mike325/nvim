@@ -3,11 +3,12 @@ local nvim  = require('nvim')
 -- local api = nvim.api
 
 local sys   = require('sys')
-local plugins = require('nvim').plugins
 
-local parent      = require('sys').data
-local mkdir       = require('nvim').fn.mkdir
-local isdirectory = require('nvim').fn.isdirectory
+local parent      = sys.data
+local plugins     = nvim.plugins
+local mkdir       = nvim.fn.mkdir
+local isdirectory = nvim.isdirectory
+local executable  = nvim.executable
 
 local tools = require('tools')
 
@@ -24,7 +25,7 @@ local dirpaths = {
 }
 
 for dirname,dir_setting in pairs(dirpaths) do
-    if isdirectory(parent .. '/' .. dirname) == 0 then
+    if isdirectory(parent .. '/' .. dirname) then
         mkdir(parent .. '/' .. dirname, 'p')
     end
 
@@ -203,7 +204,7 @@ else
     nvim.o.mouse     = ''
 end
 
-if nvim.fn.executable('nvr') == 1 then
+if executable('nvr') then
     nvim.env.nvr  = 'nvr --servername '.. nvim.v.servername ..' --remote-silent'
     nvim.env.tnvr = 'nvr --servername '.. nvim.v.servername ..' --remote-tab-silent'
     nvim.env.vnvr = 'nvr --servername '.. nvim.v.servername ..' -cc vsplit --remote-silent'

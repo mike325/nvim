@@ -1,8 +1,9 @@
 local sys          = require('sys')
 local nvim         = require('nvim')
-local executable   = require('nvim').fn.executable
-local filereadable = require('nvim').fn.filereadable
-local load_module = require('tools').load_module
+local load_module  = require('tools').load_module
+
+local executable   = nvim.executable
+local filereadable = nvim.filereadable
 
 local iron = load_module('iron')
 
@@ -46,7 +47,7 @@ iron.core.add_repl_definitions{
 
 -- TODO: Find a way to detect available COM ports
 -- TODO: Handle WSL
-if executable('rshell') == 1 and sys.name ~= 'windows' then
+if executable('rshell') and sys.name ~= 'windows' then
     iron.core.add_repl_definitions{
         python = {
             micropython = {
@@ -56,7 +57,7 @@ if executable('rshell') == 1 and sys.name ~= 'windows' then
     }
 end
 
-if executable('ipython') == 1 then
+if executable('ipython') then
     preferred['python'] = 'ipython'
 end
 
@@ -68,7 +69,7 @@ if sys.name == 'windows' then
     }
 
     for _, distro in pairs(wsl) do
-        if filereadable(sys.home..'/AppData/Local/Microsoft/WindowsApps/'..distro..'.exe') == 1 then
+        if filereadable(sys.home..'/AppData/Local/Microsoft/WindowsApps/'..distro..'.exe') then
             definitions[distro] = {
                 command = {distro}
             }

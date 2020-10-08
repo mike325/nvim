@@ -2,15 +2,14 @@
 
 -- local inspect = vim.inspect
 
-local nvim         = require('nvim')
-local plugins      = require('nvim').plugins
-local line         = require('nvim').fn.line
-local system       = require('nvim').fn.system
-local executable   = require('nvim').fn.executable
-local isdirectory  = require('nvim').fn.isdirectory
-local filereadable = require('nvim').fn.filereadable
+local sys  = require('sys')
+local nvim = require('nvim')
 
-local sys   = require('sys')
+local line         = nvim.fn.line
+local system       = nvim.fn.system
+local executable   = nvim.executable
+local isdirectory  = nvim.isdirectory
+local filereadable = nvim.filereadable
 
 local git_version = ''
 local modern_git = -1
@@ -119,7 +118,7 @@ local split = function(str, delimiter)
     return results
 end
 
--- global helpers
+-- Global helpers
 tools = {}
 
 function tools.load_module(name)
@@ -183,7 +182,7 @@ function tools.check_version(sys_version, version_target)
 end
 
 function tools.has_git_version(...)
-    if executable('git') == 0 then
+    if not executable('git') then
         return 0
     end
 
@@ -231,7 +230,7 @@ function tools.grep(tool, ...)
         opts = ...
     end
 
-    local properity = #opts > 0 and opts[1] or 'grepprg'
+    local property = #opts > 0 and opts[1] or 'grepprg'
 
     if modern_git == -1 then
         modern_git = tools.has_git_version('2', '19')
@@ -260,7 +259,7 @@ function tools.grep(tool, ...)
         },
     }
 
-    return greplist[tool] ~= nil and greplist[tool][properity] or nil
+    return greplist[tool] ~= nil and greplist[tool][property] or nil
 end
 
 function tools.filelist(tool)
@@ -278,13 +277,13 @@ end
 function tools.select_filelist(is_git)
     local filelist = ''
 
-    if executable('git') == 1 and is_git == true or is_git == 1 then
+    if executable('git') and is_git == true or is_git then
         filelist = tools.filelist('git')
-    elseif executable('fd') == 1 then
+    elseif executable('fd') then
         filelist = tools.filelist('fd')
-    elseif executable('rg') == 1 then
+    elseif executable('rg') then
         filelist = tools.filelist('rg')
-    elseif executable('ag') == 1 then
+    elseif executable('ag') then
         filelist = tools.filelist('ag')
     elseif sys.name ~= 'windows' then
         filelist = tools.filelist('find')
@@ -302,20 +301,20 @@ function tools.select_grep(is_git, ...)
         opts = ...
     end
 
-    local properity = #opts > 0 and opts[1] or 'grepprg'
+    local property = #opts > 0 and opts[1] or 'grepprg'
 
     local grep = ''
 
-    if executable('git') == 1 and is_git == true or is_git == 1 then
-        grep = tools.grep('git', properity)
-    elseif executable('rg') == 1 then
-        grep = tools.grep('rg', properity)
-    elseif executable('ag') == 1 then
-        grep = tools.grep('ag', properity)
-    elseif executable('grep') == 1 then
-        grep = tools.grep('grep', properity)
+    if executable('git') and (is_git or is_git == 1) then
+        grep = tools.grep('git', property)
+    elseif executable('rg') then
+        grep = tools.grep('rg', property)
+    elseif executable('ag') then
+        grep = tools.grep('ag', property)
+    elseif executable('grep') then
+        grep = tools.grep('grep', property)
     elseif sys.name == 'windows' then
-        grep = tools.grep('findstr', properity)
+        grep = tools.grep('findstr', property)
     end
 
     return grep
@@ -323,7 +322,7 @@ end
 
 local check_lsp = function(servers)
     for _, server in pairs(servers) do
-        if executable(server) == 1 then
+        if executable(server) then
             return 1
         end
     end
@@ -403,7 +402,7 @@ function tools.get_language_server(language)
     local cmd = {}
 
     for _,server in pairs(langservers[language]) do
-        if executable(server) == 1 then
+        if executable(server) then
             cmd = cmds[server]
             break
         end
@@ -551,10 +550,10 @@ function tools.file_name(...)
 
                     local template_file = skeletons_path..name
 
-                    if filereadable(template_file) == 1 then
+                    if filereadable(template_file) then
                         skeleton = nvim.fn.fnameescape(template_file)
                         break
-                    elseif filereadable(template_file..'.'..extension) == 1 then
+                    elseif filereadable(template_file..'.'..extension) then
                         skeleton = nvim.fn.fnameescape(template_file..'.'..extension)
                         break
                     end
@@ -569,13 +568,13 @@ function tools.file_name(...)
 
     end
 
-    if filereadable(skeleton) == 1 then
-        nvim.command('keepalt read '..skeleton)
+    if filereadable(skeleton) then
+        nvim.ex.keepalt('read '..skeleton)
         nvim.command('silent! %s/\\C%\\<NAME\\>/'..filename..'/e')
         nvim.fn.histdel('search', -1)
         nvim.command('silent! %s/\\C%\\<NAME\\ze_H\\(PP\\)\\?\\>/\\U'..filename..'/g')
         nvim.fn.histdel('search', -1)
-        nvim.command('bwipeout! skeleton')
+        nvim.ex['bwipeout!']('skeleton')
         nvim.command('1delete_')
     end
 
@@ -585,7 +584,7 @@ function tools.dprint(...)
     print(vim.inspect(...))
 end
 
-local find_project_root = function(path)
+function tools.find_project_root(path)
     local root
     local vcs_markers = {'.git', '.svn', '.hg',}
     local dir = nvim.fn.fnamemodify(path, ':p')
@@ -610,121 +609,19 @@ local find_project_root = function(path)
     return root
 end
 
-local is_git_repo = function(root)
+function tools.is_git_repo(root)
     local git = root .. '/.git'
-    return (isdirectory(git) == 1 or filereadable(git) == 1) and true or false
+    if not executable('git') then
+        return false
+    end
+    if isdirectory(git) or filereadable(git) then
+        return true
+    end
+    return nvim.fn.findfile('.git', root..';') ~= ''
 end
 
 function tools.to_clean_tbl(cmd_string)
     return nvim.clear_lst(vim.split(vim.trim(cmd_string), ' ', true))
-end
-
-function tools.project_config(event)
-    -- print(vim.inspect(event))
-
-    local cwd = event.cwd or nvim.fn.getcwd()
-    cwd = cwd:gsub('\\', '/')
-
-    if nvim.b.project_root and nvim.b.project_root['cwd'] == cwd then
-        return nvim.b.project_root
-    end
-
-    local root = find_project_root(cwd)
-
-    if #root == 0 then
-        root = nvim.fn.fnamemodify(cwd, ':p')
-    end
-
-    root = root:gsub('\\', '/')
-
-    if nvim.b.project_root and root == nvim.b.project_root['root'] then
-        return nvim.b.project_root
-    end
-
-    local is_git = is_git_repo(root)
-    -- local filetype = nvim.bo.filetype
-    -- local buftype = nvim.bo.buftype
-
-    nvim.b.project_root = {
-        cwd = cwd,
-        root = root,
-        is_git = is_git,
-    }
-
-    nvim.bo.grepprg = tools.select_grep(is_git)
-
-    local project = nvim.fn.findfile('.project.vim', cwd..';')
-    if #project > 0 then
-        -- print('Sourcing Project ', project)
-        nvim.command('source '..project)
-    end
-
-    local telescope = tools.load_module('telescope')
-
-    if telescope ~= nil then
-        nvim.nvim_set_mapping(
-            'n',
-            '<C-p>',
-            [[<cmd>lua require'telescope.builtin'.find_files{ find_command = tools.to_clean_tbl(tools.select_filelist(require'nvim'.b.project_root.is_git))}<CR>]],
-            {noremap = true}
-        )
-    end
-
-    if plugins['ctrlp'] ~= nil then
-        local fast_look_up = {
-            ag = 1,
-            fd = 1,
-            rg = 1,
-        }
-        local fallback = nvim.g.ctrlp_user_command.fallback
-        local clear_cache = is_git and 1 or (fast_look_up[fallback] ~= nil and 1 or 0)
-
-        nvim.g.ctrlp_clear_cache_on_exit = clear_cache
-    end
-
-    if plugins['vim-grepper'] ~= nil then
-
-        local operator = {}
-        local tools = {}
-
-        if executable('git') == 1 and is_git then
-            tools[#tools + 1] = 'git'
-            operator[#operator + 1] = 'git'
-        end
-
-        if executable('rg') == 1 then
-            tools[#tools + 1] = 'rg'
-            operator[#operator + 1] = 'rg'
-        end
-
-        if executable('ag') == 1 then
-            tools[#tools + 1] = 'ag'
-            operator[#operator + 1] = 'ag'
-        end
-
-        if executable('grep') == 1 then
-            tools[#tools + 1] = 'grep'
-            operator[#operator + 1] = 'grep'
-        end
-
-        if executable('findstr') == 1 then
-            tools[#tools + 1] = 'findstr'
-            operator[#operator + 1] = 'findstr'
-        end
-
-        nvim.g.grepper = {
-            tools = tools,
-            operator = {
-                tools = operator
-            },
-        }
-
-    end
-
-    if plugins['gonvim-fuzzy'] ~= nil then
-        nvim.g.gonvim_fuzzy_ag_cmd = tools.select_grep(is_git)
-    end
-
 end
 
 function tools.regex(str, regex)
@@ -734,7 +631,5 @@ end
 function tools.iregex(str, regex)
     return nvim.eval(str .. " =~? '" .. regex .. "'")
 end
-
-require'tools.helpers'
 
 return tools

@@ -1,11 +1,12 @@
-local nvim = require('nvim')
-local sys = require('sys')
-local plugins = require('nvim').plugins
-local isdirectory = require('nvim').fn.isdirectory
-local nvim_set_autocmd = require('nvim').nvim_set_autocmd
-local nvim_set_mapping = require('nvim').nvim_set_mapping
-local nvim_set_command = require('nvim').nvim_set_command
+local nvim        = require('nvim')
+local sys         = require('sys')
 local load_module = require('tools').load_module
+
+local plugins          = nvim.plugins
+local isdirectory      = nvim.isdirectory
+local nvim_set_autocmd = nvim.nvim_set_autocmd
+local nvim_set_mapping = nvim.nvim_set_mapping
+local nvim_set_command = nvim.nvim_set_command
 
 local telescope = load_module('telescope')
 

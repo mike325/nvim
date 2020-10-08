@@ -1,16 +1,16 @@
 local sys  = require('sys')
 local nvim = require('nvim')
-local plugins = require('nvim').plugins
 
 -- local api = nvim.api
 
 local regex = require('tools').regex
 
--- local parent      = require('sys').data
--- local mkdir       = require('nvim').fn.mkdir
--- local isdirectory = require('nvim').fn.isdirectory
-local has         = require('nvim').has
-local executable  = require('nvim').fn.executable
+-- local parent      = sys.data
+-- local mkdir       = nvim.fn.mkdir
+-- local isdirectory = nvim.isdirectory
+local has        = nvim.has
+local executable = nvim.executable
+local plugins    = nvim.plugins
 
 local mappings = {}
 
@@ -33,7 +33,7 @@ function mappings.terminal(cmd)
     else
         shell = nvim.fn.fnamemodify(nvim.env.SHELL or '', ':t')
         if regex( "'"..shell.."'", [[\(t\)\?csh]]) == 1 then
-            shell = executable('zsh') == 1 and 'zsh' or (executable('bash') == 1 and 'bash' or shell)
+            shell = executable('zsh') and 'zsh' or (executable('bash') and 'bash' or shell)
         end
     end
 
@@ -45,7 +45,7 @@ function mappings.terminal(cmd)
     nvim.win_set_option(win, 'relativenumber', false)
 
     if is_empty then
-        nvim.command('startinsert')
+        nvim.ex.startinsert()
     end
 end
 
@@ -265,7 +265,7 @@ nvim.nvim_set_command(
     {nargs='?', force = true}
 )
 
-if executable('svn') == 1 then
+if executable('svn') then
     nvim.nvim_set_command('SVNstatus', "execute('!svn status ' . <q-args>)", {nargs='*', force = true})
     nvim.nvim_set_command('SVN'      , "execute('!svn ' . <q-args>)"       , {complete='file', nargs='+', force = true})
     nvim.nvim_set_command('SVNupdate', "execute('!svn update ' . <q-args>)", {complete='file', nargs='*', force = true})
@@ -398,7 +398,7 @@ if plugins["vim-eunuch"] == nil and nvim.has('nvim-0.5') then
 
 end
 
--- if plugins["vim-fugitive"] == nil and executable('git') == 1 then
+-- if plugins["vim-fugitive"] == nil and executable('git') then
 --     -- TODO
 -- end
 

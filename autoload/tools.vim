@@ -241,8 +241,8 @@ function! tools#grep(tool, ...) abort
                 \   },
                 \}
 
-    let l:properity = (a:0 > 0) ? a:000[0] : 'grepprg'
-    return l:greplist[a:tool][l:properity]
+    let l:property = (a:0 > 0) ? a:000[0] : 'grepprg'
+    return l:greplist[a:tool][l:property]
 endfunction
 
 " Just like GrepTool but for listing files
@@ -261,17 +261,17 @@ endfunction
 " Small wrap to avoid change code all over the repo
 function! tools#select_grep(is_git, ...) abort
     let l:grepprg = ''
-    let l:properity = (a:0 > 0) ? a:000[0] : 'grepprg'
+    let l:property = (a:0 > 0) ? a:000[0] : 'grepprg'
     if executable('git') && a:is_git
-        let l:grepprg = tools#grep('git', l:properity)
+        let l:grepprg = tools#grep('git', l:property)
     elseif executable('rg')
-        let l:grepprg = tools#grep('rg', l:properity)
+        let l:grepprg = tools#grep('rg', l:property)
     elseif executable('ag')
-        let l:grepprg = tools#grep('ag', l:properity)
+        let l:grepprg = tools#grep('ag', l:property)
     elseif executable('grep')
-        let l:grepprg = tools#grep('grep', l:properity)
+        let l:grepprg = tools#grep('grep', l:property)
     elseif os#name('windows')
-        let l:grepprg = tools#grep('findstr', l:properity)
+        let l:grepprg = tools#grep('findstr', l:property)
     endif
 
     return l:grepprg
