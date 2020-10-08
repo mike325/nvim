@@ -76,6 +76,10 @@ function mappings.trim()
     return 0
 end
 
+if nvim.g.mapleader == nil then
+    nvim.g.mapleader = ' '
+end
+
 nvim.nvim_set_mapping('n', ',', ':', noremap)
 nvim.nvim_set_mapping('x', ',', ':', noremap)
 

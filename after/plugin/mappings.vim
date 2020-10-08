@@ -7,9 +7,7 @@ if exists('g:mappings_loaded')
     finish
 endif
 
-if !exists('g:mapleader')
-    let g:mapleader = "\<Space>"
-endif
+let g:mapleader = get(g:, mapleader, "\<Space>")
 
 let g:mappings_loaded = 1
 

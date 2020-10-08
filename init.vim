@@ -24,7 +24,7 @@
 "
 " ############################################################################
 
-let g:mapleader="\<Space>"
+let g:mapleader = "\<Space>"
 
 if os#name('windows')
     set shell=cmd.exe
