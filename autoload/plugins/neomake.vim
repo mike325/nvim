@@ -75,9 +75,9 @@ else
 endif
 
 if v:vim_did_enter
-    call neomake#configure#automake(s:triggers[0], s:triggers[1])
+    silent! call neomake#configure#automake(s:triggers[0], s:triggers[1])
 else
     augroup NeomakeConfig
-        autocmd VimEnter * call neomake#configure#automake(s:triggers[0], s:triggers[1])
+        autocmd VimEnter * silent! call neomake#configure#automake(s:triggers[0], s:triggers[1])
     augroup end
 endif
