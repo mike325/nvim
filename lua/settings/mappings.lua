@@ -41,8 +41,8 @@ function mappings.terminal(cmd)
 
     nvim.ex.edit('term://'..shell)
 
-    nvim.win_set_option(win, 'number', false)
-    nvim.win_set_option(win, 'relativenumber', false)
+    nvim.win.set_option(win, 'number', false)
+    nvim.win.set_option(win, 'relativenumber', false)
 
     if is_empty then
         nvim.ex.startinsert()
@@ -157,7 +157,7 @@ nvim.nvim_set_mapping('n', '¡', '^', noremap)
 nvim.nvim_set_mapping('x', '¡', '^', noremap)
 
 nvim.nvim_set_mapping('n', '<leader>p', '<C-^>', noremap)
-nvim.nvim_set_mapping('n', '<leader>w', ':update<CR>', noremap)
+-- nvim.nvim_set_mapping('n', '<leader>w', ':update<CR>', noremap)
 nvim.nvim_set_mapping('n', '<leader>q', ':q!<CR>', noremap_silent)
 nvim.nvim_set_mapping('n', '<leader>x', ':%!xxd<CR>', noremap)
 
@@ -272,7 +272,7 @@ nvim.nvim_set_command(
 nvim.nvim_set_mapping(
     'n',
     '=l',
-    [[:silent! lua <<EOF
+    [[:lua <<EOF
     local nvim = require'nvim'
     local close = false
     local loc_winid = nvim.fn.getloclist(0, {winid = 0}).winid
@@ -291,13 +291,13 @@ nvim.nvim_set_mapping(
         nvim.ex.wincmd('p')
     end
 EOF<CR>]],
-    noremap
+    noremap_silent
 )
 
 nvim.nvim_set_mapping(
     'n',
     '=q',
-    [[:silent lua <<EOF
+    [[:lua <<EOF
     local nvim = require'nvim'
     local close = false
     local qf_winid = nvim.fn.getqflist({winid = 0}).winid
@@ -316,7 +316,41 @@ nvim.nvim_set_mapping(
         nvim.ex.wincmd('p')
     end
 EOF<CR>]],
-    noremap
+    noremap_silent
+)
+
+nvim.nvim_set_mapping(
+    'n',
+    '<leader><leader>p',
+    [[:<C-U>lua <<EOF
+    local nvim = require'nvim'
+    if nvim.t.swap_window == nil then
+        nvim.t.swap_window   = 1
+        nvim.t.swap_cursor   = nvim.win.get_cursor(0)
+        nvim.t.swap_base_tab = nvim.tab.get_number(0)
+        nvim.t.swap_base_win = nvim.tab.get_win(0)
+        nvim.t.swap_base_buf = nvim.win.get_buf(0)
+    else
+        local swap_new_tab = nvim.tab.get_number(0)
+        local swap_new_win = nvim.tab.get_win(0)
+        local swap_new_buf = nvim.win.get_buf(0)
+        if swap_new_tab == nvim.t.swap_base_tab and
+           swap_new_win ~= nvim.t.swap_base_win and
+           swap_new_buf ~= nvim.t.swap_base_buf
+           then
+               nvim.win.set_buf(0, nvim.t.swap_base_buf)
+               nvim.win.set_buf(nvim.t.swap_base_win, swap_new_buf)
+               nvim.win.set_cursor(0, nvim.t.swap_cursor)
+               nvim.ex['normal!']('zz')
+        end
+        nvim.t.swap_window   = nil
+        nvim.t.swap_cursor   = nil
+        nvim.t.swap_base_tab = nil
+        nvim.t.swap_base_win = nil
+        nvim.t.swap_base_buf = nil
+    end
+EOF<CR>]],
+    noremap_silent
 )
 
 if executable('svn') then
@@ -377,7 +411,7 @@ if plugins["vim-unimpaired"] == nil then
     nvim.nvim_set_mapping(
         'n',
         ']<Space>',
-        [[:<C-U>silent lua <<EOF
+        [[:<C-U>lua <<EOF
         local nvim = require'nvim'
         local cursor_pos = nvim.win.get_cursor(0)
         local lines = {''}
@@ -391,13 +425,13 @@ if plugins["vim-unimpaired"] == nil then
         nvim.win.set_cursor(0, cursor_pos)
         nvim.command('silent! call repeat#set("]<Space>",'..count..')')
 EOF<CR>]],
-        noremap
+        noremap_silent
     )
 
     nvim.nvim_set_mapping(
         'n',
         '[<Space>',
-        [[:<C-U>silent lua <<EOF
+        [[:<C-U>lua <<EOF
         local nvim = require'nvim'
         local cursor_pos = nvim.win.get_cursor(0)
         local lines = {''}
@@ -412,7 +446,7 @@ EOF<CR>]],
         nvim.win.set_cursor(0, cursor_pos)
         nvim.command('silent! call repeat#set("[<Space>",'..count..')')
 EOF<CR>]],
-        noremap
+        noremap_silent
     )
 
 end

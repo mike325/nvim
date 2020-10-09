@@ -115,7 +115,7 @@ xnoremap ¡ ^
 nnoremap <leader>p <C-^>
 
 " For systems without F's keys (ex. Android)
-nnoremap <leader>w :update<CR>
+" nnoremap <leader>w :update<CR>
 
 " Close buffer/Editor
 nnoremap <silent> <leader>q :q!<CR>
