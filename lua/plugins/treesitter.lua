@@ -26,6 +26,10 @@ if plugins.semshi ~= nil then
     disable = {'python'}
 end
 
+if plugins['vim-lsp-cxx-highlight'] ~= nil then
+    disable = disable == nil and {'c', 'cpp'} or vim.list_extend(disable, {'c', 'cpp'})
+end
+
 local commet_txtobj = nil
 if plugins['vim-textobj-comment'] == nil then
     commet_txtobj = '@comment.outer'

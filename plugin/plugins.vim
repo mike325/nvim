@@ -162,7 +162,7 @@ endif
 
 if has('nvim') || (v:version >= 704)
     Plug 'kana/vim-textobj-user'
-    " Plug 'kana/vim-textobj-line'
+    Plug 'kana/vim-textobj-line'
     Plug 'kana/vim-textobj-entire'
     Plug 'glts/vim-textobj-comment'
     Plug 'michaeljsmith/vim-indent-object'
