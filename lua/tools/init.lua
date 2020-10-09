@@ -610,10 +610,18 @@ function tools.find_project_root(path)
 end
 
 function tools.is_git_repo(root)
-    local git = root .. '/.git'
     if not executable('git') then
         return false
     end
+
+    if root:sub(1, 1) == '~' then
+        root = nvim.fn.expand(root)
+    end
+
+    root = root:gsub('\\','/')
+
+    local git = root .. '/.git'
+
     if isdirectory(git) or filereadable(git) then
         return true
     end
