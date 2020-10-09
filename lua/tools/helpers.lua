@@ -180,4 +180,70 @@ function tools.helpers.project_config(event)
 
 end
 
+function tools.helpers.toggle_qf(qf_type)
+    local close = false
+
+    local funcs = {
+        qf = {
+            close = 'cclose',
+            open = 'Qopen',
+            get_list = 'getqflist',
+        },
+        loc = {
+            close = 'lclose',
+            open = 'lopen',
+            get_list = 'getloclist',
+        },
+    }
+
+    local qf = funcs[qf_type]
+
+    local qf_winid
+
+    if qf_type == 'qf' then
+        qf_winid = nvim.fn.getqflist({winid = 0}).winid
+    else
+        qf_winid = nvim.fn.getloclist(0, {winid = 0}).winid
+    end
+
+    if qf_winid > 0 then
+        for _, winid in pairs(nvim.tab.list_wins(0)) do
+            if winid == qf_winid then
+                close = true
+                break
+            end
+        end
+    end
+    if close then
+        nvim.ex[qf['close']]()
+    else
+        nvim.ex[qf['open']]()
+        nvim.ex.wincmd('p')
+    end
+end
+
+function tools.helpers.add_nl(down)
+    local cursor_pos = nvim.win.get_cursor(0)
+    local lines = {''}
+    local count = nvim.v['count1']
+    if count > 1 then
+        for i=2,count,1 do
+            lines[#lines + 1] = ''
+        end
+    end
+
+    local cmd
+    if not down then
+        cursor_pos[1] = cursor_pos[1] + count
+        cmd = '[ '
+    else
+        cmd = '] '
+    end
+
+    nvim.put(lines, 'l', down, true)
+    nvim.win.set_cursor(0, cursor_pos)
+    nvim.command('silent! call repeat#set("'..cmd..'",'..count..')')
+
+end
+
 return tools.helpers

@@ -272,50 +272,14 @@ nvim.nvim_set_command(
 nvim.nvim_set_mapping(
     'n',
     '=l',
-    [[:lua <<EOF
-    local nvim = require'nvim'
-    local close = false
-    local loc_winid = nvim.fn.getloclist(0, {winid = 0}).winid
-    if loc_winid > 0 then
-        for _, winid in pairs(nvim.tab.list_wins(0)) do
-            if winid == loc_winid then
-                close = true
-                break
-            end
-        end
-    end
-    if close then
-        nvim.ex.lclose()
-    else
-        nvim.ex.lopen()
-        nvim.ex.wincmd('p')
-    end
-EOF<CR>]],
+    [[:call v:lua.tools.helpers.toggle_qf('loc')<CR>]],
     noremap_silent
 )
 
 nvim.nvim_set_mapping(
     'n',
     '=q',
-    [[:lua <<EOF
-    local nvim = require'nvim'
-    local close = false
-    local qf_winid = nvim.fn.getqflist({winid = 0}).winid
-    if qf_winid > 0 then
-        for _, winid in pairs(nvim.tab.list_wins(0)) do
-            if winid == qf_winid then
-                close = true
-                break
-            end
-        end
-    end
-    if close then
-        nvim.ex.cclose()
-    else
-        nvim.ex.Qopen()
-        nvim.ex.wincmd('p')
-    end
-EOF<CR>]],
+    [[:call v:lua.tools.helpers.toggle_qf('qf')<CR>]],
     noremap_silent
 )
 
@@ -388,64 +352,37 @@ end
 if plugins["vim-indexed-search"] == nil then
     -- nvim.nvim_set_mapping('n', '*', '*zz')
     -- nvim.nvim_set_mapping('n', '#', '#zz')
-    nvim.nvim_set_mapping('n', 'n', ":call mappings#NiceNext('n')<cr>", noremap)
-    nvim.nvim_set_mapping('n', 'N', ":call mappings#NiceNext('N')<cr>", noremap)
+    nvim.nvim_set_mapping('n', 'n', ":call mappings#NiceNext('n')<cr>", noremap_silent)
+    nvim.nvim_set_mapping('n', 'N', ":call mappings#NiceNext('N')<cr>", noremap_silent)
 end
 
 if plugins["vim-unimpaired"] == nil then
-    nvim.nvim_set_mapping('n', '[Q', ':<C-U>exe "".(v:count ? v:count : "")."cfirst"<CR>zvzz'   , noremap)
-    nvim.nvim_set_mapping('n', ']Q', ':<C-U>exe "".(v:count ? v:count : "")."clast"<CR>zvzz'    , noremap)
-    nvim.nvim_set_mapping('n', '[q', ':<C-U>exe "".(v:count ? v:count : "")."cprevious"<CR>zvzz', noremap)
-    nvim.nvim_set_mapping('n', ']q', ':<C-U>exe "".(v:count ? v:count : "")."cnext"<CR>zvzz'    , noremap)
+    nvim.nvim_set_mapping('n', '[Q', ':<C-U>exe "".(v:count ? v:count : "")."cfirst"<CR>zvzz'   , noremap_silent)
+    nvim.nvim_set_mapping('n', ']Q', ':<C-U>exe "".(v:count ? v:count : "")."clast"<CR>zvzz'    , noremap_silent)
+    nvim.nvim_set_mapping('n', '[q', ':<C-U>exe "".(v:count ? v:count : "")."cprevious"<CR>zvzz', noremap_silent)
+    nvim.nvim_set_mapping('n', ']q', ':<C-U>exe "".(v:count ? v:count : "")."cnext"<CR>zvzz'    , noremap_silent)
 
-    nvim.nvim_set_mapping('n', '[L', ':<C-U>exe "".(v:count ? v:count : "")."lfirst"<CR>zvzz'   , noremap)
-    nvim.nvim_set_mapping('n', ']L', ':<C-U>exe "".(v:count ? v:count : "")."llast"<CR>zvzz'    , noremap)
-    nvim.nvim_set_mapping('n', '[l', ':<C-U>exe "".(v:count ? v:count : "")."lprevious"<CR>zvzz', noremap)
-    nvim.nvim_set_mapping('n', ']l', ':<C-U>exe "".(v:count ? v:count : "")."lnext"<CR>zvzz'    , noremap)
+    nvim.nvim_set_mapping('n', '[L', ':<C-U>exe "".(v:count ? v:count : "")."lfirst"<CR>zvzz'   , noremap_silent)
+    nvim.nvim_set_mapping('n', ']L', ':<C-U>exe "".(v:count ? v:count : "")."llast"<CR>zvzz'    , noremap_silent)
+    nvim.nvim_set_mapping('n', '[l', ':<C-U>exe "".(v:count ? v:count : "")."lprevious"<CR>zvzz', noremap_silent)
+    nvim.nvim_set_mapping('n', ']l', ':<C-U>exe "".(v:count ? v:count : "")."lnext"<CR>zvzz'    , noremap_silent)
 
-    nvim.nvim_set_mapping('n', '[B', ':<C-U>exe "".(v:count ? v:count : "")."bfirst"<CR>'   , noremap)
-    nvim.nvim_set_mapping('n', ']B', ':<C-U>exe "".(v:count ? v:count : "")."blast"<CR>'    , noremap)
-    nvim.nvim_set_mapping('n', '[b', ':<C-U>exe "".(v:count ? v:count : "")."bprevious"<CR>', noremap)
-    nvim.nvim_set_mapping('n', ']b', ':<C-U>exe "".(v:count ? v:count : "")."bnext"<CR>'    , noremap)
+    nvim.nvim_set_mapping('n', '[B', ':<C-U>exe "".(v:count ? v:count : "")."bfirst"<CR>'   , noremap_silent)
+    nvim.nvim_set_mapping('n', ']B', ':<C-U>exe "".(v:count ? v:count : "")."blast"<CR>'    , noremap_silent)
+    nvim.nvim_set_mapping('n', '[b', ':<C-U>exe "".(v:count ? v:count : "")."bprevious"<CR>', noremap_silent)
+    nvim.nvim_set_mapping('n', ']b', ':<C-U>exe "".(v:count ? v:count : "")."bnext"<CR>'    , noremap_silent)
 
     nvim.nvim_set_mapping(
         'n',
         ']<Space>',
-        [[:<C-U>lua <<EOF
-        local nvim = require'nvim'
-        local cursor_pos = nvim.win.get_cursor(0)
-        local lines = {''}
-        local count = nvim.v['count1']
-        if count > 1 then
-            for i=2,count,1 do
-                lines[#lines + 1] = ''
-            end
-        end
-        nvim.put(lines, 'l', true, false)
-        nvim.win.set_cursor(0, cursor_pos)
-        nvim.command('silent! call repeat#set("]<Space>",'..count..')')
-EOF<CR>]],
+        [[:<C-U>call v:lua.tools.helpers.add_nl(v:true)<CR>]],
         noremap_silent
     )
 
     nvim.nvim_set_mapping(
         'n',
         '[<Space>',
-        [[:<C-U>lua <<EOF
-        local nvim = require'nvim'
-        local cursor_pos = nvim.win.get_cursor(0)
-        local lines = {''}
-        local count = nvim.v['count1']
-        if count > 1 then
-            for i=2,count,1 do
-                lines[#lines + 1] = ''
-            end
-        end
-        nvim.put(lines, 'l', false, false)
-        cursor_pos[1] = cursor_pos[1] + count
-        nvim.win.set_cursor(0, cursor_pos)
-        nvim.command('silent! call repeat#set("[<Space>",'..count..')')
-EOF<CR>]],
+        [[:<C-U>call v:lua.tools.helpers.add_nl(v:false)<CR>]],
         noremap_silent
     )
 
