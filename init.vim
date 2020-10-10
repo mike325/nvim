@@ -88,8 +88,8 @@ else
     Plug 'tpope/vim-surround'
     Plug 'tpope/vim-projectionist'
     " Plug 'tpope/vim-unimpaired'
-    " Plug 'tpope/vim-dispatch'
     Plug 'tpope/vim-apathy'
+    Plug 'tpope/vim-dispatch'
     Plug 'tpope/vim-fugitive'
     Plug 'junegunn/gv.vim', {'on': ['GV']}
     Plug 'Raimondi/delimitMate'

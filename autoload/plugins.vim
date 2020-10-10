@@ -10,7 +10,6 @@ endfunction
 
 function! plugins#settings() abort
     let s:available_configs = map(glob(vars#basedir() . '/autoload/plugins/*.vim', 0, 1), 'fnamemodify(v:val, ":t:r")')
-
     try
         for [s:name, s:data] in items(filter(deepcopy(g:plugs), 'index(s:available_configs, plugins#convert_name(v:key), 0) != -1'))
             let s:func_name = plugins#convert_name(s:name)
@@ -19,5 +18,4 @@ function! plugins#settings() abort
     catch
         call tools#echoerr('Something failed trying to source '.s:func_name.'.vim')
     endtry
-
 endfunction
