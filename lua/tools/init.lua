@@ -119,7 +119,9 @@ local split = function(str, delimiter)
 end
 
 -- Global helpers
-tools = {}
+if tools == nil then
+    tools = {}
+end
 
 function tools.load_module(name)
     local ok, M = pcall(require, name)
@@ -127,6 +129,14 @@ function tools.load_module(name)
         return nil
     end
     return M
+end
+
+function tools.normalize_path(path)
+    if path:sub(1, 1) == '~' then
+        path = nvim.fn.expand(path)
+    end
+
+    return path:gsub('\\','/')
 end
 
 function tools.echoerr(msg)
@@ -604,7 +614,7 @@ function tools.find_project_root(path)
 
     end
 
-    root = root:gsub('\\', '/')
+    root = tools.normalize_path(root)
 
     return root
 end
@@ -614,11 +624,7 @@ function tools.is_git_repo(root)
         return false
     end
 
-    if root:sub(1, 1) == '~' then
-        root = nvim.fn.expand(root)
-    end
-
-    root = root:gsub('\\','/')
+    root = tools.normalize_path(root)
 
     local git = root .. '/.git'
 
@@ -633,11 +639,11 @@ function tools.to_clean_tbl(cmd_string)
 end
 
 function tools.regex(str, regex)
-    return nvim.eval(str .. " =~# '" .. regex .. "'")
+    return nvim.eval(string.format([[%s  =~# '%s' ]], str, regex))
 end
 
 function tools.iregex(str, regex)
-    return nvim.eval(str .. " =~? '" .. regex .. "'")
+    return nvim.eval(string.format([[%s  =~? '%s' ]], str, regex))
 end
 
 return tools

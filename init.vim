@@ -92,6 +92,7 @@ else
     Plug 'tpope/vim-dispatch'
     Plug 'tpope/vim-fugitive'
     Plug 'junegunn/gv.vim', {'on': ['GV']}
+    " Plug 'lambdalisue/gina.vim' " TODO: keep testing this
     Plug 'Raimondi/delimitMate'
     Plug 'tpope/vim-commentary'
 

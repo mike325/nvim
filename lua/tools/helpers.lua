@@ -14,8 +14,8 @@ end
 
 function tools.helpers.rename(old, new, bang)
 
-    new = new:gsub('\\', '/')
-    old = old:gsub('\\', '/')
+    new = tools.normalize_path(new)
+    old = tools.normalize_path(old)
 
     if filereadable(new) or bang == 1 then
 
@@ -47,7 +47,7 @@ function tools.helpers.rename(old, new, bang)
 end
 
 function tools.helpers.delete(target, bang)
-    target = target:gsub('\\', '/')
+    target = tools.normalize_path(target)
     if filereadable(target) or bufloaded(target) then
         if filereadable(target) then
             if nvim.fn.delete(target) == -1 then
@@ -87,7 +87,7 @@ function tools.helpers.project_config(event)
         root = nvim.fn.fnamemodify(cwd, ':p')
     end
 
-    root = root:gsub('\\', '/')
+    root = tools.normalize_path(root)
 
     if nvim.b.project_root and root == nvim.b.project_root['root'] then
         return nvim.b.project_root

@@ -372,6 +372,8 @@ if plugins["vim-unimpaired"] == nil then
     nvim.nvim_set_mapping('n', '[b', ':<C-U>exe "".(v:count ? v:count : "")."bprevious"<CR>', noremap_silent)
     nvim.nvim_set_mapping('n', ']b', ':<C-U>exe "".(v:count ? v:count : "")."bnext"<CR>'    , noremap_silent)
 
+    require('tools.helpers')
+
     nvim.nvim_set_mapping(
         'n',
         ']<Space>',
