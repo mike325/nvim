@@ -19,9 +19,11 @@ local ensure_installed = {
     'lua',
     'bash',
     'python',
+    -- 'query',
 }
 
 local disable = nil
+
 if plugins.semshi ~= nil then
     disable = {'python'}
 end
@@ -39,15 +41,16 @@ treesitter.setup{
     ensure_installed = ensure_installed,
     highlight = {
         enable = true,
-        -- disable = disable,
+        disable = disable,
     },
     textobjects = {
-        -- enable = true,
         select = {
             enable = true,
             keymaps = {
-                ["af"] = "@function.outer",
-                ["if"] = "@function.inner",
+                ["af"] = "@conditional.outer",
+                ["if"] = "@conditional.inner",
+                ["am"] = "@function.outer",
+                ["im"] = "@function.inner",
                 ["as"] = "@class.outer",
                 ["is"] = "@class.inner",
                 ["ia"] = "@parameter.inner",
@@ -61,6 +64,7 @@ treesitter.setup{
         move = {
             enable = true,
             goto_next_start = {
+                ["]f"] = "@conditional.outer",
                 ["]m"] = "@function.outer",
                 ["]]"] = "@class.outer",
                 ["]r"] = "@loop.outer",
@@ -68,6 +72,7 @@ treesitter.setup{
                 ["]c"] = "@comment.outer",
             },
             goto_next_end = {
+                ["]F"] = "@conditional.outer",
                 ["]M"] = "@function.outer",
                 ["]["] = "@class.outer",
                 ["]R"] = "@loop.outer",
@@ -75,6 +80,7 @@ treesitter.setup{
                 ["]C"] = "@comment.outer",
             },
             goto_previous_start = {
+                ["[f"] = "@conditional.outer",
                 ["[m"] = "@function.outer",
                 ["[["] = "@class.outer",
                 ["[r"] = "@loop.outer",
@@ -82,6 +88,7 @@ treesitter.setup{
                 ["[c"] = "@comment.outer",
             },
             goto_previous_end = {
+                ["[F"] = "@conditional.outer",
                 ["[M"] = "@function.outer",
                 ["[]"] = "@class.outer",
                 ["[R"] = "@loop.outer",

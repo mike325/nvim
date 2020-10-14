@@ -119,7 +119,7 @@ else
             Plug 'nvim-treesitter/nvim-treesitter'
             Plug 'nvim-treesitter/completion-treesitter'
             Plug 'nvim-treesitter/nvim-treesitter-textobjects'
-            " Plug 'nvim-treesitter/nvim-treesitter-refactor'
+            Plug 'nvim-treesitter/nvim-treesitter-refactor'
         endif
 
     elseif has#minimal() && v:version >= 704
