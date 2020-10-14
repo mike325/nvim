@@ -301,8 +301,6 @@ if os#name('windows')
     let &sessionoptions.=',slash,unix'
 endif
 
-if has#plugin('vim-fugitive') && !has#plugin('vim-airline')
-    let &statusline = '%< [%{"Branch: ".FugitiveHead()}] %<[%f]%=%-5.(%y%r%m%w%q%) %-14.(%l,%c%V%) %P'
-elseif !has#plugin('vim-airline')
-    let &statusline = '%< %f%=%-5.(%y%r%m%w%q%) %-14.(%l,%c%V%) %P'
+if !has#plugin('vim-airline')
+    let &statusline = '%< [%f]%=%-5.(%y%r%m%w%q%) %-14.(%l,%c%V%) %P '
 endif
