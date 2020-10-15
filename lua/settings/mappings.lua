@@ -138,7 +138,7 @@ nvim.nvim_set_mapping(
 )
 
 nvim.nvim_set_mapping('n', '<leader><leader>e', ':echo expand("%")<CR>', noremap)
-nvim.nvim_set_mapping('n', '<leader>c', ':pclose<CR>', noremap)
+-- nvim.nvim_set_mapping('n', '<leader>c', ':pclose<CR>', noremap)
 
 nvim.nvim_set_mapping('n', 'i', 'mappings#IndentWithI()', {noremap = true, expr = true})
 

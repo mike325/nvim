@@ -44,18 +44,29 @@ treesitter.setup{
         disable = disable,
     },
     textobjects = {
+        swap = {
+            enable = true,
+            swap_next = {
+                ["<leader>a"] = "@parameter.inner",
+                ["<leader>m"] = "@function.outer",
+            },
+            swap_previous = {
+                ["<leader><leader>a"] = "@parameter.inner",
+                ["<leader><leader>m"] = "@function.outer",
+            },
+        },
         select = {
             enable = true,
             keymaps = {
                 ["af"] = "@conditional.outer",
                 ["if"] = "@conditional.inner",
-                ["am"] = "@function.outer",
+                ["am"] = "@function.outer",    -- Same as [m, ]m "method"
                 ["im"] = "@function.inner",
                 ["as"] = "@class.outer",
                 ["is"] = "@class.inner",
                 ["ia"] = "@parameter.inner",
                 ["aa"] = "@parameter.inner",
-                ["ir"] = "@loop.inner",
+                ["ir"] = "@loop.inner",        -- "repeat" mnemonic
                 ["ar"] = "@loop.outer",
                 ["ac"] = commet_txtobj,
                 ["ic"] = commet_txtobj,
@@ -112,10 +123,11 @@ treesitter.setup{
         navigation = {
             enable = true,
             keymaps = {
-                goto_definition     = "<A-d>",
-                list_definitions    = "<A-l>",
-                goto_next_usage     = "<A-*>",
-                goto_previous_usage = "<A-#>",
+                goto_definition      = "<A-d>",
+                list_definitions     = "<A-l>",
+                -- list_definitions_toc = "<A-t>",
+                goto_next_usage      = "<A-n>",
+                goto_previous_usage  = "<A-N>",
             },
         },
     },

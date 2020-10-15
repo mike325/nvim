@@ -85,7 +85,7 @@ xnoremap < <gv
 
 " Echo the relative path and of the file
 nnoremap <leader><leader>e :echo expand("%")<CR>
-nnoremap <leader>c :pclose<CR>
+" nnoremap <leader>c :pclose<CR>
 
 " Very Magic sane regex searches
 nnoremap / ms/
