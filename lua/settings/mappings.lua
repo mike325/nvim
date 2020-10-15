@@ -224,7 +224,7 @@ nvim.nvim_set_mapping('n', '<A-v>', '<C-w>v', noremap)
 
 nvim.nvim_set_command(
     'Terminal',
-    [[ call luaeval('require"settings/mappings".terminal("'.<q-args>.'")') ]],
+    [[lua require'settings/mappings'.terminal(<q-args>)]],
     {nargs='?', force=true}
 )
 
@@ -330,17 +330,17 @@ end
 if plugins["iron.nvim"] == nil and (has('python') or has('python3'))then
     nvim.nvim_set_command(
         'Python',
-        [[ call luaeval('require"settings/mappings".python(2, "'.<q-args>.'")') ]],
+        [[lua require'settings/mappings'.python(2, <q-args>)]],
         {complete='file', nargs='*', force = true}
     )
     nvim.nvim_set_command(
         'Python',
-        [[ call luaeval('require"settings/mappings".python(3, "'.<q-args>.'")') ]],
+        [[lua require'settings/mappings'.python(3, <q-args>)]],
         {complete='file', nargs='*', force = true}
     )
     nvim.nvim_set_command(
         'Python3',
-        [[ call luaeval('require"settings/mappings".python(3, "'.<q-args>.'")') ]],
+        [[lua require'settings/mappings'.python(3, <q-args>)]],
         {complete='file', nargs='*', force = true}
     )
 end

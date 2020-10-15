@@ -12,3 +12,7 @@ setlocal shiftwidth=2
 setlocal tabstop=2
 setlocal shiftwidth=0
 setlocal softtabstop=-1
+
+" Json is used as config files, this enables comments for them
+setlocal commentstring=//\ %s
+
