@@ -20,8 +20,9 @@ if completion ~= nil then
     -- TODO: Add confirm key completion handler
     nvim.g.completion_matching_strategy_list = { 'exact', 'substring', 'fuzzy'}
     nvim.g.completion_confirm_key            = ''
+    -- nvim.g.completion_matching_ignore_case   = 1
+    -- nvim.g,completion_matching_smart_case    = 1
     nvim.g.completion_enable_auto_signature  = 0
-    nvim.g.completion_matching_ignore_case   = 1
     nvim.g.completion_trigger_on_delete      = 1
     nvim.g.completion_enable_auto_hover      = 0
     nvim.g.completion_enable_auto_paren      = 0

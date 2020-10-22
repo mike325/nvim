@@ -197,7 +197,7 @@ set showmatch  " Show matching parenthesis
 
 " Search settings
 set ignorecase  " ignore case
-" set smartcase " Use smartcase for typed search
+set smartcase " Use smartcase for typed search
 
 " Indenting stuff
 set smartindent
