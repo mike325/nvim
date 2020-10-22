@@ -25,7 +25,7 @@ local dirpaths = {
 }
 
 for dirname,dir_setting in pairs(dirpaths) do
-    if isdirectory(parent .. '/' .. dirname) then
+    if not isdirectory(parent .. '/' .. dirname) then
         mkdir(parent .. '/' .. dirname, 'p')
     end
 
