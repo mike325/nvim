@@ -8,7 +8,7 @@ local filereadable = nvim.filereadable
 local iron = load_module('iron')
 
 if iron == nil then
-    return nil
+    return false
 end
 
 local python = require('python')
@@ -114,3 +114,5 @@ else
     nvim.command('nmap              gsq                  <Plug>(iron-exit)')
     nvim.command('nnoremap <silent> =r                   :IronRepl<CR><ESC>')
 end
+
+return true

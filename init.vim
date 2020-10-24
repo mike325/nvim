@@ -111,9 +111,13 @@ else
     endif
 
     if has#minimal() && has('nvim-0.5')
-        Plug 'neovim/nvim-lspconfig'
-        Plug 'haorenW1025/diagnostic-nvim'
+
         Plug 'nvim-lua/completion-nvim'
+
+        if tools#CheckLanguageServer()
+            Plug 'neovim/nvim-lspconfig'
+            Plug 'haorenW1025/diagnostic-nvim'
+        endif
 
         if executable('gcc') || executable('clang')
             Plug 'nvim-treesitter/nvim-treesitter'

@@ -2,14 +2,11 @@ local nvim = require('nvim')
 local plugins = require('nvim').plugins
 local nvim_set_autocmd = require('nvim').nvim_set_autocmd
 local load_module = require('tools').load_module
--- local nvim_set_command = require('nvim').nvim_set_command
+local check_property = require('tools').check_property
 
 local completion = load_module('completion')
 local lsp = require('plugins/lsp')
 local treesitter = require('plugins/treesitter')
-
--- print('LSP: ', vim.inspect(lsp))
--- print('Treesitter: ', vim.inspect(treesitter))
 
 if completion ~= nil then
 
@@ -21,7 +18,7 @@ if completion ~= nil then
     nvim.g.completion_matching_strategy_list = { 'exact', 'substring', 'fuzzy'}
     nvim.g.completion_confirm_key            = ''
     -- nvim.g.completion_matching_ignore_case   = 1
-    -- nvim.g,completion_matching_smart_case    = 1
+    nvim.g.completion_matching_smart_case    = 1
     nvim.g.completion_enable_auto_signature  = 0
     nvim.g.completion_trigger_on_delete      = 1
     nvim.g.completion_enable_auto_hover      = 0
@@ -44,7 +41,7 @@ if completion ~= nil then
         },
     }
 
-    if lsp ~= nil then
+    if lsp then
         for _,language in pairs(lsp) do
             -- print('LSP Language: ', language)
             if completion_chain[language] == nil then
@@ -62,7 +59,7 @@ if completion ~= nil then
         end
     end
 
-    if treesitter ~= nil and plugins['completion-treesitter'] ~= nil then
+    if treesitter and plugins['completion-treesitter'] ~= nil then
         for _,language in pairs(treesitter) do
             -- print('Treesitter Language: ', language)
             if completion_chain[language] == nil then
@@ -118,7 +115,7 @@ if completion ~= nil then
         {group = 'Completion'}
     )
 
-    if lsp.cpp ~= nil or treesitter.cpp ~= nil then
+    if check_property(lsp, 'cpp') or check_property(treesitter, 'cpp') then
         nvim_set_autocmd(
             'BufEnter',
             {'*.cpp', '*.hpp', '*.cc', '*.cxx'},
@@ -127,11 +124,14 @@ if completion ~= nil then
         )
     end
 
-elseif lsp ~= nil and plugins['vim-mucomplete'] ~= nil then
+elseif lsp and plugins['vim-mucomplete'] ~= nil then
     nvim_set_autocmd(
         'FileType',
         lsp,
         [[call plugins#vim_mucomplete#setOmni()]],
         {create = true, group = 'Completion'}
     )
+    return false
 end
+
+return true

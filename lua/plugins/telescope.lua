@@ -11,7 +11,7 @@ local nvim_set_command = nvim.nvim_set_command
 local telescope = load_module('telescope')
 
 if telescope == nil then
-    return nil
+    return false
 end
 
 local lsp_languages = require('plugins/lsp')

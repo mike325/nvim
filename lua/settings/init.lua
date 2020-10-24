@@ -102,7 +102,7 @@ nvim.o.termguicolors = true
 
 nvim.o.infercase  = true
 nvim.o.ignorecase = true
-nvim.o.smartcase  = true
+nvim.o.smartcase  = false
 
 nvim.o.smartindent = true
 nvim.o.copyindent  = true

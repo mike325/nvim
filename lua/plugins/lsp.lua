@@ -11,7 +11,7 @@ local nvim_set_autocmd = nvim.nvim_set_autocmd
 local lsp = load_module('nvim_lsp')
 
 if lsp == nil then
-    return nil
+    return false
 end
 
 local diagnostics = load_module('diagnostic')

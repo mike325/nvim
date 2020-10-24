@@ -10,7 +10,7 @@ local nvim_set_autocmd = nvim.nvim_set_autocmd
 local treesitter = load_module('nvim-treesitter.configs')
 
 if treesitter == nil then
-    return nil
+    return false
 end
 
 local ensure_installed = {

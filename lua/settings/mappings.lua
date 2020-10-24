@@ -66,14 +66,12 @@ function mappings.python(version, args)
 end
 
 function mappings.trim()
-    if nvim.b.trim == nil or nvim.b.trim == 0 then
-        nvim.b.trim = 1
-        nvim.ex.echomsg([['Trim']])
+    if not nvim.b.trim then
+        print('Trim')
     else
-        nvim.b.trim = 0
-        nvim.ex.echomsg([['NoTrim']])
+        print('NoTrim')
     end
-    return 0
+    nvim.b.trim = not nvim.b.trim
 end
 
 if nvim.g.mapleader == nil then
@@ -400,13 +398,13 @@ if plugins["vim-eunuch"] == nil and nvim.has('nvim-0.5') then
 
     -- TODO: Make this work with embedded lua
     nvim.nvim_set_command(
-        'Move',
+        'MoveFile',
         [[call v:lua.tools.helpers.rename(expand('%:p'), expand(<q-args>), empty(<bang>0) ? 0 : 1)]],
         {force = true, bang = true, nargs = 1, complete = 'file'}
     )
 
     nvim.nvim_set_command(
-        'Rename',
+        'RenameFile',
         [[call v:lua.tools.helpers.rename(expand('%:p'), expand('%:p:h').'/'.expand(<q-args>), empty(<bang>0) ? 0 : 1)]],
         {force = true, bang = true, nargs = 1, complete = 'file'}
     )
@@ -418,7 +416,7 @@ if plugins["vim-eunuch"] == nil and nvim.has('nvim-0.5') then
     )
 
     nvim.nvim_set_command(
-        'Remove',
+        'RemoveFile',
         [[call v:lua.tools.helpers.delete(fnamemodify(empty(<q-args>) ? expand("%") : expand(<q-args>), ":p"), empty(<bang>0) ? 0 : 1)]],
         {force = true, bang = true, nargs = '?', complete = 'file'}
     )

@@ -108,7 +108,7 @@ if plugins['completor.vim'] == nil then
     nvim_set_autocmd(
         {'BufNewFile', 'BufReadPre', 'BufEnter'},
         '*',
-        "if !exists('b:trim') | let b:trim = 1 | endif",
+        "if !exists('b:trim') | let b:trim = v:true | endif",
         {create = true, group = 'CleanFile'}
     )
 

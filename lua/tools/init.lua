@@ -131,6 +131,15 @@ function tools.load_module(name)
     return M
 end
 
+
+function tools.check_property(tbl, prop)
+   if type(tbl) == 'table' and tbl[prop] ~= nil then
+       return true
+   end
+   return false
+end
+
+
 function tools.normalize_path(path)
     if path:sub(1, 1) == '~' then
         path = nvim.fn.expand(path)
@@ -181,19 +190,19 @@ function tools.check_version(sys_version, version_target)
         end
 
         if version_target[i] > sys_version[i] then
-            return 0
+            return false
         elseif version_target[i] < sys_version[i] then
-            return 1
+            return true
         elseif #version_target == i and version_target[i] == sys_version[i] then
-            return 1
+            return true
         end
     end
-    return 0
+    return false
 end
 
 function tools.has_git_version(...)
     if not executable('git') then
-        return 0
+        return false
     end
 
     local args
@@ -231,13 +240,10 @@ function tools.ignores(tool)
     return ignores[tool] ~= nil and ignores[tool] or ''
 end
 
-function tools.grep(tool, ...)
-    local opts
+function tools.grep(tool, opts)
 
-    if ... == nil or type(...) ~= 'table' then
-        opts = ... == nil and {} or {...}
-    else
-        opts = ...
+    if type(opts) ~= 'table' then
+        opts = {opts}
     end
 
     local property = #opts > 0 and opts[1] or 'grepprg'
@@ -248,7 +254,7 @@ function tools.grep(tool, ...)
 
     local greplist = {
         git = {
-            grepprg = 'git --no-pager grep '.. (modern_git == 1 and '--column' or '') ..' --no-color -Iin ',
+            grepprg = 'git --no-pager grep '.. (modern_git and '--column' or '') ..' --no-color -Iin ',
             grepformat = '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m',
         },
         rg = {
@@ -302,13 +308,10 @@ function tools.select_filelist(is_git)
     return filelist
 end
 
-function tools.select_grep(is_git, ...)
-    local opts
+function tools.select_grep(is_git, opts)
 
-    if ... == nil or type(...) ~= 'table' then
-        opts = ... == nil and {} or {...}
-    else
-        opts = ...
+    if type(opts) ~= 'table' then
+        opts = {opts}
     end
 
     local property = #opts > 0 and opts[1] or 'grepprg'
@@ -333,41 +336,37 @@ end
 local check_lsp = function(servers)
     for _, server in pairs(servers) do
         if executable(server) then
-            return 1
+            return true
         end
     end
 
-    return 0
+    return false
 end
 
-function tools.check_language_server(...)
-    local language
+function tools.check_language_server(languages)
 
-    if ... == nil then
-        language = nil
-    elseif type(...) == 'table' then
-        local tmp = ...
-        language = vim.tbl_isempty(tmp) and nil or tmp[1]
-    else
-        language = ...
-    end
-
-    if language == nil then
+    if languages == nil or #languages > 0 then
         for _, servers in pairs(langservers) do
-            if check_lsp(servers) == 1 then
-                return 1
+            if check_lsp(servers) then
+                return true
             end
         end
-    elseif langservers[language] ~= nil then
-        return check_lsp(langservers[language])
+    elseif type(languages) == 'table' then
+        for _, servers in pairs(languages) do
+            if check_lsp(langservers[languages]) then
+                return true
+            end
+        end
+    elseif langservers[languages] ~= nil then
+        return check_lsp(langservers[languages])
     end
 
-    return 0
+    return false
 end
 
 function tools.get_language_server(language)
 
-    if tools.check_language_server(language) == 0 then
+    if tools.check_language_server(language) then
         return {}
     end
 
@@ -501,8 +500,8 @@ function tools.clean_file()
     local buftype = nvim.bo.buftype
     local filetype = nvim.bo.filetype
 
-    if nvim.b.trim ~= 1 or buftypes[buftype] ~= nil or filetypes[filetype] ~= nil or filetype == '' then
-        return 1
+    if not nvim.b.trim or buftypes[buftype] ~= nil or filetypes[filetype] ~= nil or filetype == '' then
+        return false
     end
 
     local position = nvim.win_get_cursor(0)
@@ -523,13 +522,10 @@ function tools.clean_file()
     nvim.fn.setreg('/', search_reg)
 end
 
-function tools.file_name(...)
-    local opts
+function tools.file_name(opts)
 
-    if ... == nil or type(...) ~= 'table' then
-        opts = ... == nil and {} or {...}
-    else
-        opts = ...
+    if type(opts) ~= 'table' then
+        opts = {opts}
     end
 
     local filename = nvim.fn.expand('%:t:r')
@@ -639,11 +635,69 @@ function tools.to_clean_tbl(cmd_string)
 end
 
 function tools.regex(str, regex)
-    return nvim.eval(string.format([[%s  =~# '%s' ]], str, regex))
+    return nvim.eval(string.format([[ '%s'  =~# '%s' ]], str, regex)) == 1
 end
 
 function tools.iregex(str, regex)
-    return nvim.eval(string.format([[%s  =~? '%s' ]], str, regex))
+    return nvim.eval(string.format([[ '%s'  =~? '%s' ]], str, regex)) == 1
+end
+
+function tools.ls(expr)
+    expr = expr == nil and {} or expr
+
+    local search
+    local path = expr.path
+    local glob = expr.glob
+    local filter = expr.type
+
+    if glob == nil and path == nil then
+        path = path == nil and '.' or path
+        glob = glob == nil and '*' or glob
+    end
+
+    if path ~= nil and glob ~= nil then
+        search = path..'/'..glob
+    else
+        search = path == nil and glob or path
+    end
+
+    -- search = tools.normalize_path(search)
+
+    local results = nvim.fn.glob(search, false, true, false)
+
+    local filter_func = {
+        file = filereadable,
+        dir  = isdirectory,
+    }
+
+    filter_func.files = filter_func.file
+    filter_func.dirs = filter_func.dir
+
+    if filter_func[filter] ~= nil then
+        local filtered = {}
+
+        for _,element in pairs(results) do
+            if filter_func[filter](element) then
+                filtered[#filtered + 1] = element
+            end
+        end
+
+        results = filtered
+    end
+
+    return results
+end
+
+function tools.get_files(expr)
+    expr = expr == nil and {} or expr
+    expr.type = 'file'
+    return tools.ls(expr)
+end
+
+function tools.get_dirs(expr)
+    expr = expr == nil and {} or expr
+    expr.type = 'dirs'
+    return tools.ls(expr)
 end
 
 return tools

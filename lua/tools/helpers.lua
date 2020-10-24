@@ -17,7 +17,7 @@ function tools.helpers.rename(old, new, bang)
     new = tools.normalize_path(new)
     old = tools.normalize_path(old)
 
-    if filereadable(new) or bang == 1 then
+    if not filereadable(new) or bang == 1 then
 
         if not filereadable(old) then
             nvim.ex.write(old)
@@ -130,7 +130,7 @@ function tools.helpers.project_config(event)
             rg = 1,
         }
         local fallback = nvim.g.ctrlp_user_command.fallback
-        local clear_cache = is_git and 1 or (fast_look_up[fallback] ~= nil and 1 or 0)
+        local clear_cache = is_git and true or (fast_look_up[fallback] ~= nil and true or false)
 
         nvim.g.ctrlp_clear_cache_on_exit = clear_cache
     end
