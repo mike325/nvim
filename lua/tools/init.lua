@@ -661,8 +661,6 @@ function tools.ls(expr)
         search = path == nil and glob or path
     end
 
-    -- search = tools.normalize_path(search)
-
     local results = nvim.fn.glob(search, false, true, false)
 
     local filter_func = {
@@ -698,6 +696,14 @@ function tools.get_dirs(expr)
     expr = expr == nil and {} or expr
     expr.type = 'dirs'
     return tools.ls(expr)
+end
+
+function tools.read_json(filename)
+    if not filereadable(filename) then
+        return false
+    end
+
+    return nvim.fn.json_decode(nvim.fn.readfile(filename))
 end
 
 return tools
