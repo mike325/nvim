@@ -137,11 +137,11 @@ if ensure_installed.bash ~= nil then
     ensure_installed[#ensure_installed + 1] = 'sh'
 end
 
-nvim_set_autocmd(
-    'FileType',
-    ensure_installed,
-    'setlocal foldmethod=expr foldexpr=nvim_treesitter#foldexpr()',
-    {group = 'TreesitterAutocmds', create = true}
-)
+nvim_set_autocmd{
+    event   = 'FileType',
+    pattern = ensure_installed,
+    cmd     = 'setlocal foldmethod=expr foldexpr=nvim_treesitter#foldexpr()',
+    group   = 'TreesitterAutocmds',
+}
 
 return ensure_installed

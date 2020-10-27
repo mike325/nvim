@@ -151,10 +151,10 @@ function _G.Grep.QueueJob(...)
 
 end
 
-nvim.nvim_set_command(
-    'Grep',
-    'call v:lua.Grep.QueueJob(<f-args>)',
-    {nargs = '+', force = true}
-)
+nvim.nvim_set_command{
+    lhs = 'Grep',
+    rhs = 'call v:lua.Grep.QueueJob(<f-args>)',
+    args = {nargs = '+', force = true}
+}
 
 return grepjobs

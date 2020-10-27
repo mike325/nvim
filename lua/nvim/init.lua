@@ -1,143 +1,40 @@
 -- luacheck: globals unpack vim
--- local inspect = vim.inspect
+local i = vim.inspect
 local api = vim.api
 
-local nvim_get_mapping = function(m, lhs, ...)
-    local mappings
-    local mapping
-
-    local opts = ... ~= nil and ... or {}
-
-    local modes = {
-        normal   = "n",
-        visual   = "v",
-        operator = "o",
-        insert   = "i",
-        command  = "c",
-        select   = "s",
-        langmap  = "l",
-        terminal = "t",
-    }
-
-    local mode = modes[m] ~= nil and modes[m] or m
-
-    if opts ~= nil and opts['buffer'] ~= nil and opts['buffer'] == true then
-        mappings = api.nvim_buf_get_keymap(mode)
-    else
-        mappings = api.nvim_get_keymap(mode)
-    end
-
-    for _,map in pairs(mappings) do
-        if map['lhs'] == lhs then
-            mapping = map['rhs']
-            break
+local has_attrs = function(tbl, attrs)
+    if type(tbl) == 'table' then
+        if type(attrs) == 'table' then
+            for _,val in pairs(attrs) do
+                if tbl[val] == nil then
+                    return false
+                end
+            end
+            return true
+        elseif tbl[attrs] ~= nil then
+            return true
         end
     end
-
-    return mapping
-
+    return false
 end
 
-local nvim_set_mapping = function(m, lhs, rhs, ...)
-    local opts = ... ~= nil and ... or {}
-
-    local modes = {
-        normal   = "n",
-        visual   = "v",
-        operator = "o",
-        insert   = "i",
-        command  = "c",
-        select   = "s",
-        langmap  = "l",
-        terminal = "t",
-    }
-
-    local mode = modes[m] ~= nil and modes[m] or m
-
-    if opts ~= nil and opts['buffer'] ~= nil then
-        local buf = type(opts['buffer']) == 'boolean' and 0 or opts['buffer']
-        opts['buffer'] = nil
-        opts = opts == nil and {} or opts
-
-        if rhs ~= nil then
-            api.nvim_buf_set_keymap(buf, mode, lhs, rhs, opts)
-        else
-            api.nvim_buf_del_keymap(buf, mode, lhs)
-        end
-    else
-        opts = opts == nil and {} or opts
-        if rhs ~= nil then
-            api.nvim_set_keymap(mode, lhs, rhs, opts)
-        else
-            api.nvim_del_keymap(mode, lhs)
-        end
+local transform_mapping = function(lhs)
+    if lhs:sub(1, 3) == '<c-' or lhs:sub(1, 3) == '<a-' or lhs:sub(1, 3) == '<s-' then
+        lhs = string.upper(lhs:sub(1, 3)) .. lhs:sub(4, #lhs)
+    elseif nvim.eval(([[ '%s' =~? '<\(cr\|del\|esc\|bs\|tab\)>' ]]):format(lhs)) then
+        lhs = lhs:upper()
     end
+
+    return lhs
 end
 
-local nvim_create_autogrp = function(autogrp)
-    api.nvim_command('augroup '..autogrp..' | autocmd! | autogrp end')
-end
+local nvim_set_abbr = function(abbr)
 
-local nvim_set_autocmd = function(event, pattern, cmd, ...)
-    local opts = ... ~= nil and ... or {}
-    local once = nil
-    local group = nil
-    local create = nil
-    local nested = nil
-    local autocmd = {'autocmd'}
-
-    if opts ~= nil then
-        group = opts['group'] ~= nil and opts['group'] or nil
-        create = opts['create'] ~= nil and opts['create'] or nil
-        once = opts['once'] ~= nil and '++once' or nil
-        nested = opts['nested'] ~= nil and '++nested' or nil
+    if not has_attrs(abbr, {'mode', 'lhs'}) then
+        nvim.echoerr('Missing arguments, set_abbr need a mode and a lhs attribbutes')
+        return false
     end
 
-    if group ~= nil then
-        table.insert(autocmd, group)
-    end
-
-    if event ~= nil then
-        if type(event) == 'table' then
-            event = table.concat(event, ',')
-        end
-
-        table.insert(autocmd, event)
-    end
-
-    if pattern ~= nil then
-        if type(pattern) == 'table' then
-            pattern = table.concat(pattern, ',')
-        end
-
-        table.insert(autocmd, pattern)
-    end
-
-    if once ~= nil then
-        table.insert(autocmd, once)
-    end
-
-    if nested ~= nil then
-        table.insert(autocmd, nested)
-    end
-
-    if cmd == nil then
-        autocmd[1] = 'autocmd!'
-    else
-        table.insert(autocmd, cmd)
-    end
-
-    if create ~= nil then
-        nvim_create_autogrp(group)
-    end
-
-    autocmd = table.concat(autocmd, ' ')
-
-    api.nvim_command(autocmd)
-end
-
-local nvim_set_abbr = function(m, lhs, rhs, ...)
-    local opts = ... ~= nil and ... or {}
     local command = {}
     local extras = {}
 
@@ -146,27 +43,24 @@ local nvim_set_abbr = function(m, lhs, rhs, ...)
         command  = "c",
     }
 
-    if type(opts) ~= 'table' and opts ~= nil then
-        opts = {opts}
+    local lhs = abbr.lhs
+    local rhs = abbr.rhs
+    local args = type(abbr.args) == 'table' and abbr.args or {abbr.args}
+    local mode = modes[abbr.mode] ~= nil and modes[abbr.mode] or abbr.mode
+
+    if args.buffer ~= nil  then
+        table.insert(extras, '<buffer>')
     end
 
-    if opts ~= nil then
-        if opts['buffer'] ~= nil  then
-            table.insert(extras, '<buffer>')
-        end
-
-        if opts['expr'] ~= nil and rhs ~= nil then
-            table.insert(extras, '<expr>')
-        end
+    if args.expr ~= nil and rhs ~= nil then
+        table.insert(extras, '<expr>')
     end
-
-    local mode = modes[m] ~= nil and modes[m] or m
 
     for _, v in pairs(extras) do
         table.insert(command, v)
     end
 
-    if mode == 'i' then
+    if mode == 'i' or mode == 'insert' then
         if rhs == nil then
             table.insert(command, 1, 'iunabbrev')
             table.insert(command, lhs)
@@ -175,7 +69,7 @@ local nvim_set_abbr = function(m, lhs, rhs, ...)
             table.insert(command, lhs)
             table.insert(command, rhs)
         end
-    elseif mode == 'c' then
+    elseif mode == 'c' or mode == 'command' then
         if rhs == nil then
             table.insert(command, 1, 'cunabbrev')
             table.insert(command, lhs)
@@ -184,68 +78,235 @@ local nvim_set_abbr = function(m, lhs, rhs, ...)
             table.insert(command, lhs)
             table.insert(command, rhs)
         end
+    else
+        nvim.echoerr('Unsupported mode', mode)
+        return false
     end
 
-    if opts['silent'] ~= nil then
+    if args.silent ~= nil then
         table.insert(command, 1, 'silent!')
     end
 
-    command = table.concat(command, ' ')
-
-    api.nvim_command(command)
+    api.nvim_command(table.concat(command, ' '))
 end
 
-local nvim_set_command = function(lhs, rhs, ...)
-    local opts = ... ~= nil and ... or {}
+local nvim_get_mapping = function(mapping)
 
-    local command = {
-        'command',
+    if not has_attrs(mapping, {'mode', 'lhs'}) then
+        nvim.echoerr('Missing arguments, get_mapping need a mode and a lhs attribbutes')
+        return false
+    end
+
+    local result
+    local mappings
+
+    local modes = {
+        normal   = "n",
+        visual   = "v",
+        operator = "o",
+        insert   = "i",
+        command  = "c",
+        select   = "s",
+        langmap  = "l",
+        terminal = "t",
     }
 
+    local lhs = transform_mapping(mapping.lhs)
+    local args = type(mapping.args) == 'table' and mapping.args or {mapping.args}
+    local mode = modes[mapping.mode] ~= nil and modes[mapping.mode] or mapping.mode
+
+    if args.buffer ~= nil and args.buffer == true then
+        mappings = api.nvim_buf_get_keymap(mode)
+    else
+        mappings = api.nvim_get_keymap(mode)
+    end
+
+    for _,map in pairs(mappings) do
+        if map['lhs'] == lhs then
+            result = map['rhs']
+            break
+        end
+    end
+
+    return result
+end
+
+
+local nvim_set_mapping = function(mapping)
+
+    if not has_attrs(mapping, {'mode', 'lhs'}) then
+        nvim.echoerr('Missing arguments, set_mapping need a mode and a lhs attribbutes')
+        return false
+    end
+
+    local modes = {
+        normal   = "n",
+        visual   = "v",
+        operator = "o",
+        insert   = "i",
+        command  = "c",
+        select   = "s",
+        langmap  = "l",
+        terminal = "t",
+    }
+
+    local args = type(mapping.args) == 'table' and mapping.args or {mapping.args}
+    local mode = modes[mapping.mode] ~= nil and modes[mapping.mode] or mapping.mode
+    local lhs = mapping.lhs
+    local rhs = mapping.rhs
+
+    if args.buffer ~= nil then
+        local buf = type(args.buffer) == 'boolean' and 0 or args.buffer
+        args.buffer = nil
+
+        if rhs ~= nil then
+            api.nvim_buf_set_keymap(buf, mode, lhs, rhs, args)
+        else
+            api.nvim_buf_del_keymap(buf, mode, lhs)
+        end
+    else
+        args = args == nil and {} or args
+        if rhs ~= nil then
+            api.nvim_set_keymap(mode, lhs, rhs, args)
+        else
+            api.nvim_del_keymap(mode, lhs)
+        end
+    end
+end
+
+
+local nvim_create_autogrp = function(autogrp)
+    api.nvim_command('augroup '..autogrp..' | autocmd! | autogrp end')
+end
+
+local nvim_get_autocmd = function(autocmd)
+
+    if not has_attrs(autocmd, {'event'}) and not has_attrs(autocmd, {'group'}) then
+        nvim.echoerr('Missing arguments, get_autocmd need event or group attribbute')
+        return false
+    end
+
+    local autocmd_str = {'autocmd'}
+
+    autocmd_str[#autocmd_str + 1] = autocmd.group ~= nil and autocmd.group or nil
+    autocmd_str[#autocmd_str + 1] = autocmd.event ~= nil and autocmd.event or nil
+
+    local ok, autocmds = pcall(vim.api.nvim_exec, table.concat(autocmd_str, ' '), true)
+
+    if not ok then
+        return nil
+    end
+
+    return true
+    -- TODO: Work in parse autocmd output
+end
+
+local nvim_has_autocmd = function(autocmd)
+    return nvim_get_autocmd(autocmd) ~= nil
+end
+
+local nvim_set_autocmd = function(autocmd)
+
+    if not has_attrs(autocmd, {'event'}) then
+        nvim.echoerr('Missing arguments, set_autocmd need event attribbute')
+        return false
+    end
+
+    local autocmd_str = {'autocmd'}
+
+    local once    = autocmd.once    ~= nil and '++once'        or nil
+    local nested  = autocmd.nested  ~= nil and '++nested'      or nil
+    local cmd     = autocmd.cmd     ~= nil and autocmd.cmd     or nil
+    local event   = autocmd.event   ~= nil and autocmd.event   or nil
+    local group   = autocmd.group   ~= nil and autocmd.group   or nil
+    local clean   = autocmd.clean   ~= nil and autocmd.clean   or nil
+    local pattern = autocmd.pattern ~= nil and autocmd.pattern or nil
+
+    if group ~= nil then
+        autocmd_str[#autocmd_str + 1] = group
+    end
+
+    if event ~= nil then
+        if type(event) == 'table' then
+            event = table.concat(event, ',')
+        end
+
+        autocmd_str[#autocmd_str + 1] = event
+    end
+
+    if pattern ~= nil then
+        if type(pattern) == 'table' then
+            pattern = table.concat(pattern, ',')
+        end
+
+        autocmd_str[#autocmd_str + 1] = pattern
+    end
+
+    if once ~= nil then
+        autocmd_str[#autocmd_str + 1] = once
+    end
+
+    if nested ~= nil then
+        autocmd_str[#autocmd_str + 1] = nested
+    end
+
+    if cmd == nil then
+        autocmd_str[1] = 'autocmd!'
+    else
+        autocmd_str[#autocmd_str + 1] = cmd
+    end
+
+    if clean ~= nil and group ~= nil then
+        nvim_create_autogrp(group)
+    elseif group ~= nil and not nvim_has_autocmd { group = group } then
+        nvim_create_autogrp(group)
+    end
+
+    api.nvim_command(table.concat(autocmd_str, ' '))
+end
+
+local nvim_set_command = function(command)
+    if not has_attrs(command, {'lhs'}) then
+        nvim.echoerr('Missing arguments, set_command need a mode and a lhs attribbutes')
+        return false
+    end
+
+    local lhs  = command.lhs
+    local rhs  = command.rhs
+    local args = type(command.args) == 'table' and command.args or {command.args}
+
+    local command_str = {'command'}
+
     if rhs == nil then
-        command[1] = 'delcommand'
-        command[#command + 1] = lhs
+        command_str = {'delcommand'}
+        command_str[#command_str + 1] = lhs
     else
 
-        if opts['force'] ~= nil and opts['force'] == true then
-            command[1] = 'command!'
-            opts['force'] = nil
+        if args.force then
+            command_str = {'command!'}
+            args.force = nil
         end
 
         local attr
-        for name,val in pairs(opts) do
+        for name,val in pairs(args) do
             if val ~= false then
                 attr = '-'..name
                 if type(val) ~= 'boolean' then
                     attr = attr..'='..val
                 end
-                command[#command + 1] = attr
+                command_str[#command_str + 1] = attr
             end
         end
-        command[#command + 1] = lhs
-        command[#command + 1] = rhs
+        command_str[#command_str + 1] = lhs
+        command_str[#command_str + 1] = rhs
     end
 
-    command = table.concat(command, ' ')
-    api.nvim_command(command)
-
+    api.nvim_command(table.concat(command_str, ' '))
 end
-
--- TODO
--- local nvim_get_abbr = function(m, lhs)
---     local command = {}
---
---     local modes = {
---         insert   = "i",
---         command  = "c",
---     }
---
---     local mode = modes[m] ~= nil and modes[m] or m
--- end
 
 -- Took from https://github.com/norcalli/nvim_utils
 -- GPL3 apply to the nvim object
-local nvim = {
+nvim = {
     l = api.loop;
     nvim_set_abbr    = nvim_set_abbr;
     nvim_get_mapping = nvim_get_mapping;
@@ -289,8 +350,8 @@ local nvim = {
             cmd = function(cmd)
                 return api.nvim_call_function('exists', {':'..cmd}) == 1
             end;
-            autocmd = function(autocmd)
-                return api.nvim_call_function('exists', {'##'..autocmd}) == 1
+            command = function(command)
+                return api.nvim_call_function('exists', {'##'..command}) == 1
             end;
             augroup = function(augroup)
                 return api.nvim_call_function('exists', {'#'..augroup}) == 1
@@ -311,8 +372,8 @@ local nvim = {
             cmd = function(cmd)
                 return api.nvim_call_function('exists', {':'..cmd}) == 1
             end;
-            autocmd = function(autocmd)
-                return api.nvim_call_function('exists', {'##'..autocmd}) == 1
+            command = function(command)
+                return api.nvim_call_function('exists', {'##'..command}) == 1
             end;
             augroup = function(augroup)
                 return api.nvim_call_function('exists', {'#'..augroup}) == 1
@@ -345,6 +406,7 @@ local nvim = {
 
             if not ok then
                 v = type(v) == 'string' and '"'..v..'"' or v
+
                 local _ = api.nvim_eval('let $'..k..' = '..v)
             end
         end

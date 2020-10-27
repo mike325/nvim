@@ -48,7 +48,7 @@ endfunction
 let g:vimwiki_table_mappings = 0
 
 let s:work_wiki = {
-    \ 'path'     : (isdirectory(vars#home() . '/Documents/vimwiki/')) ? vars#home() . '/Documents/vimwiki/' : vars#home() . '/vimwiki/',
+    \ 'path'     : vars#home() . '/vimwiki/',
     \ 'syntax'   : 'markdown',
     \ 'ext'      : '.md',
     \ 'auto_tags': 1,

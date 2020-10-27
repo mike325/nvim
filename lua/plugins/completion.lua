@@ -1,8 +1,8 @@
-local nvim = require('nvim')
-local plugins = require('nvim').plugins
+local nvim             = require('nvim')
+local plugins          = require('nvim').plugins
+local load_module      = require('tools').load_module
+local check_property   = require('tools').check_property
 local nvim_set_autocmd = require('nvim').nvim_set_autocmd
-local load_module = require('tools').load_module
-local check_property = require('tools').check_property
 
 local completion = load_module('completion')
 local lsp = require('plugins/lsp')
@@ -100,37 +100,37 @@ if completion ~= nil then
 
     nvim.g.completion_chain_complete_list = completion_chain
 
-    nvim_set_autocmd(
-        'BufEnter',
-        '*',
-        [[lua require'completion'.on_attach()]],
-        {create = true, group = 'Completion'}
-    )
+    nvim_set_autocmd{
+        event   = 'BufEnter',
+        pattern = '*',
+        cmd     = [[lua require'completion'.on_attach()]],
+        group   = 'Completion',
+    }
 
     -- TODO: Create Pull request to use buffer-variables
-    nvim_set_autocmd(
-        'BufEnter',
-        '*',
-        [[ let g:completion_trigger_character = ['.'] ]],
-        {group = 'Completion'}
-    )
+    nvim_set_autocmd{
+        event   = 'BufEnter',
+        pattern = '*',
+        cmd     = [[ let g:completion_trigger_character = ['.'] ]],
+        group   = 'Completion',
+    }
 
     if check_property(lsp, 'cpp') or check_property(treesitter, 'cpp') then
-        nvim_set_autocmd(
-            'BufEnter',
-            {'*.cpp', '*.hpp', '*.cc', '*.cxx'},
-            [[ let g:completion_trigger_character = ['.', '::', '->'] ]],
-            {group = 'Completion'}
-        )
+        nvim_set_autocmd{
+            event   = 'BufEnter',
+            pattern = {'*.cpp', '*.hpp', '*.cc', '*.cxx'},
+            cmd     = [[ let g:completion_trigger_character = ['.', '::', '->'] ]],
+            group   = 'Completion',
+        }
     end
 
 elseif lsp and plugins['vim-mucomplete'] ~= nil then
-    nvim_set_autocmd(
-        'FileType',
-        lsp,
-        [[call plugins#vim_mucomplete#setOmni()]],
-        {create = true, group = 'Completion'}
-    )
+    nvim_set_autocmd{
+        event   = 'FileType',
+        pattern = lsp,
+        cmd     = [[call plugins#vim_mucomplete#setOmni()]],
+        group   = 'Completion',
+    }
     return false
 end
 

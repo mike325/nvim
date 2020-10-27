@@ -25,66 +25,84 @@ telescope.setup{
 
 local noremap = {noremap = true}
 
-nvim_set_mapping('n', '<C-b>', [[<cmd>lua require'telescope.builtin'.buffers{}<CR>]], noremap)
-nvim_set_mapping('n', '<C-q>', [[<cmd>lua require'telescope.builtin'.quickfix{}<CR>]], noremap)
--- nvim_set_mapping('n', '<C-l>', [[<cmd>lua require'telescope.builtin'.loclist{}<CR>]], noremap)
+nvim_set_mapping{
+    mode = 'n',
+    lhs = '<C-b>',
+    rhs = [[<cmd>lua require'telescope.builtin'.buffers{}<CR>]],
+    args = noremap,
+}
+nvim_set_mapping{
+    mode = 'n',
+    lhs = '<C-q>',
+    rhs = [[<cmd>lua require'telescope.builtin'.quickfix{}<CR>]],
+    args = noremap,
+}
+
+-- nvim_set_mapping{
+--     mode = 'n',
+--     lhs = '<C-l>',
+--     rhs = [[<cmd>lua require'telescope.builtin'.loclist{}<CR>]],
+--     args = noremap,
+-- }
 
 -- require'telescope.builtin'.command_history{}
 
-nvim_set_command(
-    'Grep',
-    [[lua require'telescope.builtin'.live_grep{}]],
-    {force=true}
-)
+nvim_set_command{
+    lhs = 'Grep',
+    rhs = [[lua require'telescope.builtin'.live_grep{}]],
+    args = {force=true}
+}
 
-nvim_set_command(
-    'Oldfiles',
-    [[lua require'telescope.builtin'.oldfiles{}]],
-    {force=true}
-)
+nvim_set_command{
+    lhs = 'Oldfiles',
+    rhs = [[lua require'telescope.builtin'.oldfiles{}]],
+    args = {force=true}
+}
 
-nvim.nvim_set_command(
-    'GetVimFiles',
-    [[lua require'telescope.builtin'.find_files{cwd = require'sys'.base, find_command = tools.to_clean_tbl(tools.select_filelist(false))}]],
-    {force=true}
-)
+nvim.nvim_set_command{
+    lhs = 'GetVimFiles',
+    rhs = [[lua require'telescope.builtin'.find_files{cwd = require'sys'.base, find_command = tools.to_clean_tbl(tools.select_filelist(false))}]],
+    args = {force=true}
+}
 
 if isdirectory(sys.home..'/dotfiles') then
-    nvim.nvim_set_command(
-        'GetDotfiles',
-        [[lua require'telescope.builtin'.find_files{cwd = require'sys'.home..'/dotfiles', find_command = tools.to_clean_tbl(tools.select_filelist(false))}]],
-        {force=true}
-    )
+    nvim.nvim_set_command{
+        lhs  = 'GetDotfiles',
+        rhs  = [[lua require'telescope.builtin'.find_files{cwd = require'sys'.home..'/dotfiles', find_command = tools.to_clean_tbl(tools.select_filelist(false))}]],
+        args = {force = true},
+    }
 end
 
 if lsp_languages ~= nil then
-    nvim_set_autocmd(
-        'FileType',
-        lsp_languages,
-        [[command! -buffer LSPReferences lua require'telescope.builtin'.lsp_references{}]],
-        {group = 'LSPAutocmds'}
-    )
-    nvim_set_autocmd(
-        'FileType',
-        lsp_languages,
-        [[command! -buffer LSPDocSymbols lua require'telescope.builtin'.lsp_document_symbols{}]],
-        {group = 'LSPAutocmds'}
-    )
-    nvim_set_autocmd(
-        'FileType',
-        lsp_languages,
-        [[command! -buffer LSPWorkSymbols lua require'telescope.builtin'.lsp_workspace_symbols{}]],
-        {group = 'LSPAutocmds'}
-    )
+    nvim_set_autocmd{
+        event   = 'FileType',
+        pattern = lsp_languages,
+        cmd     = [[command! -buffer LSPReferences lua require'telescope.builtin'.lsp_references{}]],
+        group   = 'LSPAutocmds'
+    }
+
+    nvim_set_autocmd{
+        event   = 'FileType',
+        pattern = lsp_languages,
+        cmd     = [[command! -buffer LSPDocSymbols lua require'telescope.builtin'.lsp_document_symbols{}]],
+        group   = 'LSPAutocmds'
+    }
+
+    nvim_set_autocmd{
+        event   = 'FileType',
+        pattern = lsp_languages,
+        cmd     = [[command! -buffer LSPWorkSymbols lua require'telescope.builtin'.lsp_workspace_symbols{}]],
+        group   = 'LSPAutocmds'
+    }
 end
 
 if treesitter_languages ~= nil then
-    nvim_set_autocmd(
-        'FileType',
-        treesitter_languages,
-        [[command! -buffer TSSymbols lua require'telescope.builtin'.treesitter{}]],
-        {group = 'TreesitterAutocmds'}
-    )
+    nvim_set_autocmd{
+        event   = 'FileType',
+        pattern = treesitter_languages,
+        cmd     = [[command! -buffer TSSymbols lua require'telescope.builtin'.treesitter{}]],
+        group   = 'TreesitterAutocmds'
+    }
 end
 
 return true

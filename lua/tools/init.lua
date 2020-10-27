@@ -345,15 +345,15 @@ end
 
 function tools.check_language_server(languages)
 
-    if languages == nil or #languages > 0 then
-        for _, servers in pairs(langservers) do
-            if check_lsp(servers) then
+    if languages == nil or #languages == 0 then
+        for _, server in pairs(langservers) do
+            if check_lsp(server) then
                 return true
             end
         end
     elseif type(languages) == 'table' then
-        for _, servers in pairs(languages) do
-            if check_lsp(langservers[languages]) then
+        for _, server in pairs(languages) do
+            if check_lsp(langservers[server]) then
                 return true
             end
         end
@@ -441,20 +441,47 @@ function tools.abolish(language)
         end
     else
         local remove_abbr = function(base)
-            nvim.nvim_set_abbr('i', base, nil, {silent = true, buffer = true})
-            nvim.nvim_set_abbr('i', base:upper(), nil, {silent = true, buffer = true})
-            nvim.nvim_set_abbr('i', base:gsub('%a', string.upper, 1), nil, {silent = true, buffer = true})
+            nvim.nvim_set_abbr{
+                mode = 'i',
+                lhs = base,
+                args = {silent = true, buffer = true},
+            }
+
+            nvim.nvim_set_abbr{
+                mode = 'i',
+                lhs = base:upper(),
+                args = {silent = true, buffer = true},
+            }
+
+            nvim.nvim_set_abbr{
+                mode = 'i',
+                lhs = base:gsub('%a',  string.upper, 1),
+                args = {silent = true, buffer = true}
+            }
+
         end
 
         local set_abbr = function(base, replace)
-            nvim.nvim_set_abbr('i', base, replace, {buffer = true})
-            nvim.nvim_set_abbr('i', base:upper(), replace:upper(), {buffer = true})
-            nvim.nvim_set_abbr(
-                'i',
-                base:gsub('%a', string.upper, 1),
-                replace:gsub('%a', string.upper, 1),
-                {buffer = true}
-            )
+            nvim.nvim_set_abbr{
+                mode = 'i',
+                lhs = base,
+                rhs = replace,
+                args = {buffer = true},
+            }
+
+            nvim.nvim_set_abbr{
+                mode = 'i',
+                lhs = base:upper(),
+                rhs = replace:upper(),
+                args = {buffer = true},
+            }
+
+            nvim.nvim_set_abbr{
+                mode = 'i',
+                lhs = base:gsub('%a', string.upper, 1),
+                rhs = replace:gsub('%a', string.upper, 1),
+                args = {buffer = true},
+            }
         end
 
         if abolish[current] ~= nil then
