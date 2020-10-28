@@ -36,6 +36,7 @@ Plug 'tpope/vim-endwise'
 if has('nvim-0.5') && (executable('gcc') || executable('clang'))
     Plug 'nvim-treesitter/nvim-treesitter'
     Plug 'nvim-treesitter/nvim-treesitter-refactor'
+    Plug 'romgrk/nvim-treesitter-context'
     Plug 'nvim-treesitter/nvim-treesitter-textobjects'
     " Plug '~/source/nvim-treesitter-textobjects'
 else

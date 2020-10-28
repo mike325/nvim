@@ -15,15 +15,20 @@ if completion ~= nil then
     end
 
     -- TODO: Add confirm key completion handler
-    nvim.g.completion_matching_strategy_list = { 'exact', 'substring', 'fuzzy'}
-    nvim.g.completion_confirm_key            = ''
+    nvim.g.completion_matching_strategy_list = {
+        'exact',
+        'substring',
+        'fuzzy',
+    }
     -- nvim.g.completion_matching_ignore_case   = 1
-    nvim.g.completion_matching_smart_case    = 1
-    nvim.g.completion_enable_auto_signature  = 0
+    -- nvim.g.completion_matching_smart_case    = 1
+    nvim.g.completion_confirm_key            = ''
+    nvim.g.completion_sorting                = 'none'
     nvim.g.completion_trigger_on_delete      = 1
-    nvim.g.completion_enable_auto_hover      = 0
-    nvim.g.completion_enable_auto_paren      = 0
     nvim.g.completion_auto_change_source     = 1
+    nvim.g.completion_enable_auto_signature  = 0
+    nvim.g.completion_enable_auto_hover      = 0
+    nvim.g.completion_enable_auto_paren      = 1
 
     local spell_check = {'gitcommit', 'markdown', 'tex'}
 
@@ -100,6 +105,11 @@ if completion ~= nil then
 
     nvim.g.completion_chain_complete_list = completion_chain
 
+    -- nvim_set_autocmd{
+    --     group   = 'Completion',
+    --     clean   = true,
+    -- }
+
     nvim_set_autocmd{
         event   = 'BufEnter',
         pattern = '*',
@@ -120,6 +130,15 @@ if completion ~= nil then
             event   = 'BufEnter',
             pattern = {'*.cpp', '*.hpp', '*.cc', '*.cxx'},
             cmd     = [[ let g:completion_trigger_character = ['.', '::', '->'] ]],
+            group   = 'Completion',
+        }
+    end
+
+    if check_property(lsp, 'lua') or check_property(treesitter, 'lua') then
+        nvim_set_autocmd{
+            event   = 'BufEnter',
+            pattern = {'*.lua'},
+            cmd     = [[ let g:completion_trigger_character = ['.', ':'] ]],
             group   = 'Completion',
         }
     end

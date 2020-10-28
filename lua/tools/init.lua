@@ -133,10 +133,18 @@ end
 
 
 function tools.check_property(tbl, prop)
-   if type(tbl) == 'table' and tbl[prop] ~= nil then
-       return true
-   end
-   return false
+    if type(tbl) == 'table' and tbl[prop] ~= nil then
+        return true
+    elseif type(tbl) == 'table' then
+
+        for idx=0,#tbl do
+            if tbl[idx] ~= nil and tbl[idx] == prop then
+                return true
+            end
+        end
+
+    end
+    return false
 end
 
 

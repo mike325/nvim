@@ -123,6 +123,7 @@ else
             Plug 'nvim-treesitter/nvim-treesitter'
             Plug 'nvim-treesitter/completion-treesitter'
             Plug 'nvim-treesitter/nvim-treesitter-refactor'
+            Plug 'romgrk/nvim-treesitter-context'
             Plug 'nvim-treesitter/nvim-treesitter-textobjects'
             " Plug '~/source/nvim-treesitter-textobjects'
         endif
