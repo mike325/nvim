@@ -4,6 +4,7 @@ local nvim = require('nvim')
 -- local api = nvim.api
 
 local regex = require('tools').regex
+local iregex = require('tools').regex
 
 -- local parent      = sys.data
 -- local mkdir       = nvim.fn.mkdir
@@ -25,14 +26,14 @@ function mappings.terminal(cmd)
     if not is_empty then
         shell = cmd
     elseif sys.name == 'windows' then
-        if regex("&shell", [[^cmd\(\.exe\)\?$]]) == 1 then
+        if iregex(nvim.o.shell, [[^cmd\(\.exe\)\?$]]) == 1 then
             shell = 'powershell -noexit -executionpolicy bypass '
         else
             shell = nvim.o.shell
         end
     else
         shell = nvim.fn.fnamemodify(nvim.env.SHELL or '', ':t')
-        if regex( "'"..shell.."'", [[\(t\)\?csh]]) == 1 then
+        if iregex( shell, [[\(t\)\?csh]]) == 1 then
             shell = executable('zsh') and 'zsh' or (executable('bash') and 'bash' or shell)
         end
     end
