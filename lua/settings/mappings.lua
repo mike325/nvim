@@ -26,14 +26,14 @@ function mappings.terminal(cmd)
     if not is_empty then
         shell = cmd
     elseif sys.name == 'windows' then
-        if iregex(nvim.o.shell, [[^cmd\(\.exe\)\?$]]) == 1 then
+        if iregex(nvim.o.shell, [[^cmd\(\.exe\)\?$]]) then
             shell = 'powershell -noexit -executionpolicy bypass '
         else
             shell = nvim.o.shell
         end
     else
         shell = nvim.fn.fnamemodify(nvim.env.SHELL or '', ':t')
-        if iregex( shell, [[\(t\)\?csh]]) == 1 then
+        if iregex(shell, [[\(t\)\?csh]]) then
             shell = executable('zsh') and 'zsh' or (executable('bash') and 'bash' or shell)
         end
     end
