@@ -133,8 +133,11 @@ treesitter.setup{
     },
 }
 
-if ensure_installed.bash ~= nil then
-    ensure_installed[#ensure_installed + 1] = 'sh'
+for i=0,#ensure_installed do
+    if ensure_installed[i] == 'bash' then
+        ensure_installed[#ensure_installed + 1] = 'sh'
+        break
+    end
 end
 
 nvim_set_autocmd{
