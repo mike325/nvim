@@ -138,10 +138,12 @@ else
 
     let g:plug_window = has('nvim-0.4') ? 'lua require("floating").window()' : 'tabnew'
 
-    if has('nvim')
-        lua require('plugins')
-    else
+    if !has('nvim')
         call plugins#settings()
     endif
 
+endif
+
+if has('nvim')
+    lua require('plugins')
 endif
