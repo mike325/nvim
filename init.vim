@@ -71,6 +71,11 @@ endif
 
 if has#bare()
     filetype plugin indent on
+
+    if has('nvim')
+        lua require('plugins')
+    endif
+
     finish
 else
 
@@ -138,12 +143,10 @@ else
 
     let g:plug_window = has('nvim-0.4') ? 'lua require("floating").window()' : 'tabnew'
 
-    if !has('nvim')
+    if has('nvim')
+        lua require('plugins')
+    else
         call plugins#settings()
     endif
 
-endif
-
-if has('nvim')
-    lua require('plugins')
 endif
