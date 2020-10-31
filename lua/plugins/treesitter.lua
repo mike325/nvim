@@ -1,11 +1,9 @@
-local nvim             = require('nvim')
-local load_module      = require('tools').load_module
--- local sys = require('sys')
+local nvim        = require'nvim'
+local load_module = require'tools'.load_module
+local has_attrs   = require'tools.tables'.has_attrs
 
 local plugins          = nvim.plugins
 local nvim_set_autocmd = nvim.nvim_set_autocmd
--- local executable       = nvim.executable
--- local isdirectory      = nvim.isdirectory
 
 local treesitter = load_module('nvim-treesitter.configs')
 
@@ -39,6 +37,9 @@ end
 
 treesitter.setup{
     ensure_installed = ensure_installed,
+    indent = {
+        enable = true
+    },
     highlight = {
         enable = true,
         disable = disable,
@@ -133,11 +134,8 @@ treesitter.setup{
     },
 }
 
-for i=0,#ensure_installed do
-    if ensure_installed[i] == 'bash' then
-        ensure_installed[#ensure_installed + 1] = 'sh'
-        break
-    end
+if has_attrs(ensure_installed, 'bash') then
+    ensure_installed[#ensure_installed + 1] = 'sh'
 end
 
 nvim_set_autocmd{
