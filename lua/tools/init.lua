@@ -110,14 +110,6 @@ abolish['es'] = {
     ['{fun,administra,aplica,rala,aproxima,programa}cion']                  = '{}ción',
 }
 
-local split = function(str, delimiter)
-    local results = {}
-    for match in str:gmatch("([^"..delimiter.."]+)") do
-        results[#results + 1] = match
-    end
-    return results
-end
-
 -- Global helpers
 if tools == nil then
     tools = {}
@@ -130,23 +122,6 @@ function tools.load_module(name)
     end
     return M
 end
-
-
-function tools.check_property(tbl, prop)
-    if type(tbl) == 'table' and tbl[prop] ~= nil then
-        return true
-    elseif type(tbl) == 'table' then
-
-        for idx=0,#tbl do
-            if tbl[idx] ~= nil and tbl[idx] == prop then
-                return true
-            end
-        end
-
-    end
-    return false
-end
-
 
 function tools.normalize_path(path)
     if path:sub(1, 1) == '~' then
@@ -234,7 +209,7 @@ function tools.has_git_version(...)
 end
 
 function tools.ignores(tool)
-    local excludes = split(nvim.o.backupskip, ',')
+    local excludes = nvim.fn.split(nvim.o.backupskip, ',')
 
     local ignores = {
         fd = ' -E ' .. table.concat(excludes, ' -E ') .. ' ',
@@ -666,7 +641,7 @@ function tools.is_git_repo(root)
 end
 
 function tools.to_clean_tbl(cmd_string)
-    return nvim.clear_lst(vim.split(vim.trim(cmd_string), ' ', true))
+    return nvim.clear_lst(nvim.fn.split(vim.trim(cmd_string), ' ', true))
 end
 
 function tools.regex(str, regex)
@@ -675,70 +650,6 @@ end
 
 function tools.iregex(str, regex)
     return nvim.eval(string.format([[ '%s'  =~? '%s' ]], str, regex)) == 1
-end
-
-function tools.ls(expr)
-    expr = expr == nil and {} or expr
-
-    local search
-    local path = expr.path
-    local glob = expr.glob
-    local filter = expr.type
-
-    if glob == nil and path == nil then
-        path = path == nil and '.' or path
-        glob = glob == nil and '*' or glob
-    end
-
-    if path ~= nil and glob ~= nil then
-        search = path..'/'..glob
-    else
-        search = path == nil and glob or path
-    end
-
-    local results = nvim.fn.glob(search, false, true, false)
-
-    local filter_func = {
-        file = filereadable,
-        dir  = isdirectory,
-    }
-
-    filter_func.files = filter_func.file
-    filter_func.dirs = filter_func.dir
-
-    if filter_func[filter] ~= nil then
-        local filtered = {}
-
-        for _,element in pairs(results) do
-            if filter_func[filter](element) then
-                filtered[#filtered + 1] = element
-            end
-        end
-
-        results = filtered
-    end
-
-    return results
-end
-
-function tools.get_files(expr)
-    expr = expr == nil and {} or expr
-    expr.type = 'file'
-    return tools.ls(expr)
-end
-
-function tools.get_dirs(expr)
-    expr = expr == nil and {} or expr
-    expr.type = 'dirs'
-    return tools.ls(expr)
-end
-
-function tools.read_json(filename)
-    if not filereadable(filename) then
-        return false
-    end
-
-    return nvim.fn.json_decode(nvim.fn.readfile(filename))
 end
 
 return tools

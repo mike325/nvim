@@ -2,21 +2,7 @@
 local i = vim.inspect
 local api = vim.api
 
-local has_attrs = function(tbl, attrs)
-    if type(tbl) == 'table' then
-        if type(attrs) == 'table' then
-            for _,val in pairs(attrs) do
-                if tbl[val] == nil then
-                    return false
-                end
-            end
-            return true
-        elseif tbl[attrs] ~= nil then
-            return true
-        end
-    end
-    return false
-end
+local has_attrs = require'tools.tables'.has_attrs
 
 local transform_mapping = function(lhs)
     if lhs:sub(1, 3) == '<c-' or lhs:sub(1, 3) == '<a-' or lhs:sub(1, 3) == '<s-' then

@@ -1,12 +1,14 @@
-local nvim             = require('nvim')
-local plugins          = require('nvim').plugins
-local load_module      = require('tools').load_module
-local check_property   = require('tools').check_property
-local nvim_set_autocmd = require('nvim').nvim_set_autocmd
+local nvim        = require'nvim'
+local load_module = require'tools'.load_module
+local has_attrs   = require'tools.tables'.has_attrs
+
+local plugins          = nvim.plugins
+local nvim_set_autocmd = nvim.nvim_set_autocmd
 
 local completion = load_module('completion')
-local lsp = require('plugins/lsp')
-local treesitter = require('plugins/treesitter')
+
+local lsp = require'plugins/lsp'
+local treesitter = require'plugins/treesitter'
 
 if completion ~= nil then
 
@@ -125,7 +127,7 @@ if completion ~= nil then
         group   = 'Completion',
     }
 
-    if check_property(lsp, 'cpp') or check_property(treesitter, 'cpp') then
+    if has_attrs(lsp, 'cpp') or has_attrs(treesitter, 'cpp') then
         nvim_set_autocmd{
             event   = 'BufEnter',
             pattern = {'*.cpp', '*.hpp', '*.cc', '*.cxx'},
@@ -134,7 +136,7 @@ if completion ~= nil then
         }
     end
 
-    if check_property(lsp, 'lua') or check_property(treesitter, 'lua') then
+    if has_attrs(lsp, 'lua') or has_attrs(treesitter, 'lua') then
         nvim_set_autocmd{
             event   = 'BufEnter',
             pattern = {'*.lua'},
