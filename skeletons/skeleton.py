@@ -45,17 +45,21 @@ def _parseArgs():
     """
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--version',
-                        dest='show_version',
-                        action='store_true',
-                        help='print script version and exit')
+    parser.add_argument(
+        '--version',
+        dest='show_version',
+        action='store_true',
+        help='print script version and exit',
+    )
 
-    parser.add_argument('-l',
-                        '--logging',
-                        dest='logging',
-                        default="INFO",
-                        type=str,
-                        help='Enable debug messages')
+    parser.add_argument(
+        '-l',
+        '--logging',
+        dest='logging',
+        default="INFO",
+        type=str,
+        help='Enable debug messages',
+    )
 
     return parser.parse_args()
 

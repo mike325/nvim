@@ -15,7 +15,7 @@ local git_version = ''
 local modern_git = -1
 
 local langservers = {
-    python     = {'pyls'},
+    python     = {'jedi-language-server', 'pyls'},
     c          = {'clangd', 'ccls', 'cquery'},
     cpp        = {'clangd', 'ccls', 'cquery'},
     cuda       = {'clangd', 'ccls', 'cquery'},
@@ -355,6 +355,7 @@ function tools.get_language_server(language)
 
     local cmds = {
         ['pyls']   = { 'pyls', '--check-parent-process', '--log-file=' .. sys.tmp('pyls.log') },
+        ['jedi-language-server']   = { 'jedi-language-server' },
         ['clangd'] = {
             'clangd',
             '--index',

@@ -54,7 +54,7 @@ let s:gitversion = ''
 let s:moderngit = -1
 
 let s:langservers = {
-    \ 'python'     : ['pyls'],
+    \ 'python'     : ['jedi-language-server', 'pyls'],
     \ 'c'          : ['clangd', 'ccls', 'cquery'],
     \ 'cpp'        : ['clangd', 'ccls', 'cquery'],
     \ 'cuda'       : ['clangd', 'ccls', 'cquery'],
@@ -111,6 +111,7 @@ function! tools#getLanguageServer(language) abort
 
     let l:cmds = {
         \ 'pyls'   : ['pyls', '--check-parent-process', '--log-file=' . os#tmp('pyls.log')],
+        \ 'jedi-language-server' : ['jedi-language-server'],
         \ 'clangd' : [
         \   'clangd',
         \   '--index',
