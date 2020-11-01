@@ -556,14 +556,17 @@ if plugins["vim-unimpaired"] == nil then
     nvim.nvim_set_mapping{ mode = 'n', lhs = '[b', rhs = ':<C-U>exe "".(v:count ? v:count : "")."bprevious"<CR>', args = noremap_silent }
     nvim.nvim_set_mapping{ mode = 'n', lhs = ']b', rhs = ':<C-U>exe "".(v:count ? v:count : "")."bnext"<CR>'    , args = noremap_silent }
 
-    require('tools.helpers')
-
-    nvim.nvim_set_mapping{ mode = 'n', lhs = ']<Space>', rhs = [[:<C-U>call v:lua.tools.helpers.add_nl(v:true)<CR>]], args = noremap_silent }
+    nvim.nvim_set_mapping{
+        mode = 'n',
+        lhs = ']<Space>',
+        rhs = [[:<C-U>lua require'tools.helpers'.add_nl(true)<CR>]],
+        args = noremap_silent
+    }
 
     nvim.nvim_set_mapping{
         mode = 'n',
         lhs = '[<Space>',
-        rhs = [[:<C-U>call v:lua.tools.helpers.add_nl(v:false)<CR>]],
+        rhs = [[:<C-U>lua require'tools.helpers'.add_nl(false)<CR>]],
         args = noremap_silent,
     }
 
