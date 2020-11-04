@@ -34,8 +34,8 @@ Plug 'tpope/vim-endwise'
 " Plug 'pechorin/any-jump.vim'
 
 if has('nvim-0.5') && (executable('gcc') || executable('clang'))
-    Plug 'nvim-treesitter/nvim-treesitter'
-    " Plug '~/source/nvim-treesitter'
+    Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+    " Plug '~/source/nvim-treesitter', {'do': ':TSUpdate'}
     Plug 'nvim-treesitter/nvim-treesitter-refactor'
     " Plug '~/source/nvim-treesitter-refactor'
     Plug 'nvim-treesitter/nvim-treesitter-textobjects'
