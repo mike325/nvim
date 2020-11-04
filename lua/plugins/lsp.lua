@@ -70,7 +70,6 @@ local servers = {
         },
     },
     python = {
-        jedi_language_server = { name = 'jedi-language-server' },
         pyls = {
             name = 'pyls',
             options = {
@@ -95,6 +94,7 @@ local servers = {
                 },
             },
         },
+        jedi_language_server = { name = 'jedi-language-server' },
     },
     c = {
         clangd = {

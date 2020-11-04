@@ -35,10 +35,12 @@ Plug 'tpope/vim-endwise'
 
 if has('nvim-0.5') && (executable('gcc') || executable('clang'))
     Plug 'nvim-treesitter/nvim-treesitter'
+    " Plug '~/source/nvim-treesitter'
     Plug 'nvim-treesitter/nvim-treesitter-refactor'
-    Plug 'romgrk/nvim-treesitter-context'
+    " Plug '~/source/nvim-treesitter-refactor'
     Plug 'nvim-treesitter/nvim-treesitter-textobjects'
     " Plug '~/source/nvim-treesitter-textobjects'
+    Plug 'romgrk/nvim-treesitter-context'
 else
     Plug 'tbastos/vim-lua'
     Plug 'octol/vim-cpp-enhanced-highlight'

@@ -54,7 +54,7 @@ let s:gitversion = ''
 let s:moderngit = -1
 
 let s:langservers = {
-    \ 'python'     : ['jedi-language-server', 'pyls'],
+    \ 'python'     : ['pyls', 'jedi-language-server'],
     \ 'c'          : ['clangd', 'ccls', 'cquery'],
     \ 'cpp'        : ['clangd', 'ccls', 'cquery'],
     \ 'cuda'       : ['clangd', 'ccls', 'cquery'],

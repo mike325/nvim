@@ -126,11 +126,13 @@ else
 
         if executable('gcc') || executable('clang')
             Plug 'nvim-treesitter/nvim-treesitter'
-            Plug 'nvim-treesitter/completion-treesitter'
+            " Plug '~/source/nvim-treesitter'
             Plug 'nvim-treesitter/nvim-treesitter-refactor'
-            Plug 'romgrk/nvim-treesitter-context'
+            " Plug '~/source/nvim-treesitter-refactor'
             Plug 'nvim-treesitter/nvim-treesitter-textobjects'
             " Plug '~/source/nvim-treesitter-textobjects'
+            Plug 'nvim-treesitter/completion-treesitter'
+            Plug 'romgrk/nvim-treesitter-context'
         endif
 
     elseif has#minimal() && v:version >= 704

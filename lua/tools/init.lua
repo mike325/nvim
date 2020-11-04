@@ -15,7 +15,7 @@ local git_version = ''
 local modern_git = -1
 
 local langservers = {
-    python     = {'jedi-language-server', 'pyls'},
+    python     = {'pyls', 'jedi-language-server'},
     c          = {'clangd', 'ccls', 'cquery'},
     cpp        = {'clangd', 'ccls', 'cquery'},
     cuda       = {'clangd', 'ccls', 'cquery'},
