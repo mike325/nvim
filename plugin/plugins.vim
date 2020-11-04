@@ -133,8 +133,6 @@ if !empty($YCM) && empty($NO_PYTHON_DEV) &&
 
     if has#python('3', '5', '1')
         Plug 'ycm-core/YouCompleteMe', { 'do': function('plugins#youcompleteme#install') }
-    elseif has('python3')
-        Plug 'ycm-core/YouCompleteMe', { 'commit': '299f8e48e7d34e780d24b4956cd61e4d42a139eb', 'do': function('plugins#youcompleteme#install'), 'frozen': 1, 'dir': vars#basedir().'/plugged/frozen_ycm'}
     else
         Plug 'ycm-core/YouCompleteMe', { 'branch': 'legacy-py2', 'do': function('plugins#youcompleteme#install'), 'frozen': 1, 'dir': vars#basedir().'/plugged/frozen_ycm'}
     endif

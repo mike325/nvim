@@ -32,7 +32,12 @@ function! plugins#youcompleteme#install(info) abort
         "  # sudo ln -s /lib64/libtinfo.so.6 /lib64/libtinfo.so.5
         "       or use --system-clang
         " https://github.com/Valloric/YouCompleteMe/issues/778#issuecomment-211452969
-        let l:cmd = (exists('g:python3_host_prog')) ? [g:python3_host_prog] : [g:python_host_prog]
+        let l:cmd = []
+        if exists('g:python3_host_prog') && has#python('3', '5', '1')
+            let l:cmd += [g:python3_host_prog]
+        else
+            let l:cmd += [g:python_host_prog]
+        endif
 
         let l:cmd += ['./install.py']
 
@@ -175,14 +180,14 @@ if tools#CheckLanguageServer('dockerfile')
     let g:ycm_languages += s:ft
 endif
 
-if tools#CheckLanguageServer('c') && executable('ccls')
-    let g:ycm_language_server += [{
-        \   'name': 'ccls',
-        \   'cmdline': tools#getLanguageServer('c'),
-        \   'filetypes': [ 'c', 'cpp', 'cuda', 'objc', 'objcpp'  ],
-        \   'project_root_files': [ '.ccls-root', 'compile_commands.json', 'compile_flags.txt', '.git']
-        \ }]
-endif
+" if executable('ccls')
+"     let g:ycm_language_server += [{
+"         \   'name': 'ccls',
+"         \   'cmdline': tools#getLanguageServer('c'),
+"         \   'filetypes': [ 'c', 'cpp', 'cuda', 'objc', 'objcpp'  ],
+"         \   'project_root_files': [ '.ccls-root', 'compile_commands.json', 'compile_flags.txt', '.git']
+"         \ }]
+" endif
 
 let g:ycm_extra_conf_vim_data = [
     \  'g:ycm_python_interpreter_path',
