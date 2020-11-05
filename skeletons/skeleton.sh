@@ -49,6 +49,17 @@ else
     popd 1> /dev/null || exit 1
 fi
 
+if [[ -n "$ZSH_NAME" ]]; then
+    CURRENT_SHELL="zsh"
+elif [[ -n "$BASH" ]]; then
+    CURRENT_SHELL="bash"
+else
+    # shellcheck disable=SC2009,SC2046
+    if [[ -z "$CURRENT_SHELL" ]]; then
+        CURRENT_SHELL="${SHELL##*/}"
+    fi
+fi
+
 if [ -z "$SHELL_PLATFORM" ]; then
     if [[ -n $TRAVIS_OS_NAME ]]; then
         export SHELL_PLATFORM="$TRAVIS_OS_NAME"
@@ -118,17 +129,6 @@ if ! hash is_osx 2>/dev/null; then
     }
 fi
 
-if [[ -n "$ZSH_NAME" ]]; then
-    CURRENT_SHELL="zsh"
-elif [[ -n "$BASH" ]]; then
-    CURRENT_SHELL="bash"
-else
-    # shellcheck disable=SC2009,SC2046
-    if [[ -z "$CURRENT_SHELL" ]]; then
-        CURRENT_SHELL="${SHELL##*/}"
-    fi
-fi
-
 if ! hash is_64bits 2>/dev/null; then
     # TODO: This should work with ARM 64bits
     function is_64bits() {
@@ -186,29 +186,6 @@ Usage:
 EOF
 }
 
-function __parse_args() {
-    if [[ $# -lt 2 ]]; then
-        error_msg "Internal error in __parse_args function trying to parse $1"
-        exit 1
-    fi
-
-    local flag="$2"
-    local value="$1"
-
-    local pattern="^--${flag}=[a-zA-Z0-9.:@_/~-]+$"
-
-    if [[ -n "$3" ]]; then
-        local pattern="^--${flag}=$3$"
-    fi
-
-    if [[ $value =~ $pattern ]]; then
-        local left_side="${value#*=}"
-        echo "${left_side/#\~/$HOME}"
-    else
-        echo "$value"
-    fi
-}
-
 function warn_msg() {
     local warn_message="$1"
     if [[ $NOCOLOR -eq 0 ]]; then
@@ -232,7 +209,7 @@ function error_msg() {
     fi
     ERR_COUNT=$(( ERR_COUNT + 1 ))
     if [[ $NOLOG -eq 0 ]]; then
-        printf "[X] Error:\t\t %s\n" "$error_message" >> "${LOG}"
+        printf "[X] Error:\t %s\n" "$error_message" >> "${LOG}"
     fi
     return 0
 }
@@ -265,6 +242,29 @@ function verbose_msg() {
     return 0
 }
 
+function __parse_args() {
+    if [[ $# -lt 2 ]]; then
+        error_msg "Internal error in __parse_args function trying to parse $1"
+        exit 1
+    fi
+
+    local flag="$2"
+    local value="$1"
+
+    local pattern="^--${flag}=[a-zA-Z0-9.:@_/~-]+$"
+
+    if [[ -n "$3" ]]; then
+        local pattern="^--${flag}=$3$"
+    fi
+
+    if [[ $value =~ $pattern ]]; then
+        local left_side="${value#*=}"
+        echo "${left_side/#\~/$HOME}"
+    else
+        echo "$value"
+    fi
+}
+
 function initlog() {
     if [[ $NOLOG -eq 0 ]]; then
         [[ -n $LOG ]] && rm -f "${LOG}" 2>/dev/null
@@ -294,7 +294,7 @@ function exit_append() {
             printf "[*] Warnings:\t%s\n" "$WARN_COUNT" >> "${LOG}"
         fi
         if [[ $ERR_COUNT -gt 0 ]]; then
-            printf "[*] Errors:\t\t%s\n" "$ERR_COUNT" >> "${LOG}"
+            printf "[*] Errors:\t%s\n" "$ERR_COUNT" >> "${LOG}"
         fi
     fi
     return 0
