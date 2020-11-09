@@ -132,7 +132,7 @@ else
             Plug 'nvim-treesitter/nvim-treesitter-textobjects'
             " Plug '~/source/nvim-treesitter-textobjects'
             Plug 'nvim-treesitter/completion-treesitter'
-            Plug 'romgrk/nvim-treesitter-context'
+            " Plug 'romgrk/nvim-treesitter-context'
         endif
 
     elseif has#minimal() && v:version >= 704

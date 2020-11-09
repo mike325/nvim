@@ -4,6 +4,8 @@ local api = vim.api
 
 local has_attrs = require'tools.tables'.has_attrs
 
+nvim = {}
+
 local transform_mapping = function(lhs)
     if lhs:sub(1, 3) == '<c-' or lhs:sub(1, 3) == '<a-' or lhs:sub(1, 3) == '<s-' then
         lhs = string.upper(lhs:sub(1, 3)) .. lhs:sub(4, #lhs)

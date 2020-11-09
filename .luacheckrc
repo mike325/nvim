@@ -11,5 +11,6 @@ ignore = {
 read_globals = {
   "vim",
   "tools",
+  "nvim",
   "python",
 }
