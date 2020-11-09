@@ -211,14 +211,22 @@ end
 function tools.ignores(tool)
     local excludes = nvim.fn.split(nvim.o.backupskip, ',')
 
+    for idx,val in pairs(excludes) do
+        excludes[idx] = "'" .. excludes[idx] .. "'"
+    end
+
     local ignores = {
         fd = ' -E ' .. table.concat(excludes, ' -E ') .. ' ',
-        find = '', -- TODO
-        rg = '',
+        find = [[ -regextype egrep ! \( -iwholename ]] .. table.concat(excludes, ' -or -iwholename ') .. [[ \) ]],
+        rg = '', -- TODO
         ag = ' --ignore ' .. table.concat(excludes, ' --ignore ') .. ' ',
         grep = '--exclude='.. table.concat(excludes, ' --exclude=') .. ' ',
         findstr = '', -- TODO
     }
+
+    if filereadable(sys.home .. '/.config/git/ignore') then
+        ignores.fd = ' --ignore-file '.. sys.home .. '/.config/git/ignore '
+    end
 
     return ignores[tool] ~= nil and ignores[tool] or ''
 end
@@ -245,11 +253,11 @@ function tools.grep(tool, opts)
             grepformat = '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m'
         },
         ag = {
-            grepprg = 'ag -S --follow --nogroup --nocolor --hidden --vimgrep '..tools.ignores('ag'),
+            grepprg = 'ag -S --follow --nogroup --nocolor --hidden --vimgrep '..tools.ignores('ag')..' ',
             grepformat = '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m'
         },
         grep = {
-            grepprg = 'grep -RHiIn --color=never ',
+            grepprg = 'grep -RHiIn --color=never '..tools.ignores('grep')..' ',
             grepformat = '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m'
         },
         findstr = {
@@ -267,7 +275,7 @@ function tools.filelist(tool)
         fd = 'fd ' .. tools.ignores('fd') .. ' --type f --hidden --follow --color never . .',
         rg = 'rg --color never --no-search-zip --hidden --trim --files',
         ag = 'ag -l --follow --nocolor --nogroup --hidden '..tools.ignores('ag')..'-g ""',
-        find = "find . -iname '*'",
+        find = "find . -type f -iname '*' "..tools.ignores('find') .. ' ',
     }
 
     return filelist[tool]

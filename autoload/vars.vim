@@ -21,16 +21,6 @@ if has('nvim-0.5')
     finish
 endif
 
-let s:ignore_cmd = {
-            \   'git' : '',
-            \   'ag' : '',
-            \   'rg' : '',
-            \   'find' : '',
-            \   'grep' : '',
-            \   'dir' : '',
-            \   'findstr' : '',
-            \}
-
 let s:ignores_patterns = {
             \   'bin': [ 'exe', 'dat',],
             \   'vcs': [ 'hg', 'svn', 'git',],
@@ -95,10 +85,6 @@ function! s:setupdirs() abort
     else
         let s:basedir = s:homedir . '/.vim'
     endif
-endfunction
-
-function! vars#ignore_cmd(cmd) abort
-    return s:ignore_cmd[a:cmd]
 endfunction
 
 function! vars#ignores_patterns() abort

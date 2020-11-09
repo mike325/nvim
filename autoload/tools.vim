@@ -47,6 +47,10 @@ if has('nvim-0.5')
         lua tools.echoerr(a:msg)
     endfunction
 
+    function! tools#ignores(tool) abort
+        return v:lua.tools.ignores(a:msg)
+    endfunction
+
     finish
 endif
 
@@ -185,32 +189,39 @@ function! tools#CheckLanguageServer(...) abort
 endfunction
 
 function! tools#ignores(tool) abort
-    let l:ignores = {
-                \ 'git-grep' : '',
-                \ 'git-ls'   : '',
-                \ 'fd'       : '',
-                \ 'find'     : '',
-                \ 'rg'       : '',
-                \ 'ag'       : '',
-                \ 'grep'     : '',
-                \ 'findstr'  : '',
-                \ }
-
-    let l:exludes = []
+    let l:excludes = []
 
     if has('nvim-0.2') || v:version >= 800 || has#patch('7.4.2044')
-        let l:exludes = map(split(copy(&backupskip), ','), {key, val -> substitute(val, '.*', '"\0"', 'g') })
+        let l:excludes = map(split(copy(&backupskip), ','), {key, val -> substitute(val, '.*', "'\\0'", 'g') })
     endif
 
-    if !empty(l:exludes)
-        if executable('ag') && a:tool ==# 'ag'
-            let l:ignores['ag'] = ' --ignore ' . join(l:exludes, ' --ignore ' ) . ' '
-        elseif executable('fd') && a:tool ==# 'fd'
-            let l:ignores['fd'] = ' -E ' . join(l:exludes, ' -E ' ) . ' '
+    let l:ignores = {
+                \ 'fd'       : '',
+                \ 'find'     : ' -regextype egrep ',
+                \ 'ag'       : '',
+                \ 'grep'     : '',
+                \ }
+
+    if !empty(l:excludes)
+        if executable('ag')
+            let l:ignores['ag'] .= ' --ignore ' . join(l:excludes, ' --ignore ' ) . ' '
+        endif
+        if executable('fd')
+            if filereadable(vars#home() .. '/.config/git/ignore')
+                let l:ignores['fd'] .= ' --ignore-file '. vars#home() .'/.config/git/ignore'
+            else
+                let l:ignores['fd'] .= ' -E ' . join(l:excludes, ' -E ' ) . ' '
+            endif
+        endif
+        if executable('find')
+            let l:ignores['find'] .= ' ! \( -iwholename ' . join(l:excludes, ' -or -iwholename ' ) . ' \) '
+        endif
+        if executable('grep')
+            let l:ignores['grep'] .= ' --exclude=' . join(l:excludes, ' --exclude=' ) . ' '
         endif
     endif
 
-    return (exists('l:ignores[a:tool]')) ? l:ignores[a:tool] : ''
+    return has_key(l:ignores, a:tool) ? l:ignores[a:tool] : ''
 endfunction
 
 " Small wrap to avoid change code all over the repo
@@ -233,11 +244,11 @@ function! tools#grep(tool, ...) abort
                 \       'grepformat': '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m'
                 \   },
                 \   'grep' : {
-                \       'grepprg': 'grep -RHiIn --color=never ',
+                \       'grepprg': 'grep -RHiIn --color=never ' . tools#ignores('grep') . ' ',
                 \       'grepformat': '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m'
                 \   },
                 \   'findstr' : {
-                \       'grepprg': 'findstr -rspn ' . tools#ignores('findstr') . ' ',
+                \       'grepprg': 'findstr -rspn ',
                 \       'grepformat': '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m'
                 \   },
                 \}
@@ -253,7 +264,7 @@ function! tools#filelist(tool) abort
                 \ 'fd'   : 'fd ' . tools#ignores('fd') . ' --type f --hidden --follow --color never . .',
                 \ 'rg'   : 'rg --color never --no-search-zip --hidden --trim --files',
                 \ 'ag'   : 'ag -l --follow --nocolor --nogroup --hidden ' . tools#ignores('ag'). '-g ""',
-                \ 'find' : "find . -iname '*'",
+                \ 'find' : "find . -type f -iname '*' ".tools#ignores('find'),
                 \}
 
     return l:filelist[a:tool]

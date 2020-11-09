@@ -66,7 +66,7 @@ let g:ctrlp_user_command = {
     \   'types': {
     \       1: ['.git', 'cd %s && ' . tools#filelist('git') ]
     \   },
-    \   'fallback': 'find %s -type f -iname "*" ',
+    \   'fallback': "find %s -type f -iname '*' ". tools#ignores('find') .' ',
     \ }
 
 " Do not clear filenames cache, to improve CtrlP startup
@@ -84,3 +84,4 @@ elseif os#name('windows')
     endif
     unlet s:windows_find
 endif
+

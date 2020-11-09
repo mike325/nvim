@@ -53,6 +53,7 @@ function! set#initconfigs() abort " Vim's InitConfig {{{
         \   '*.pdf',
         \   '*.sw',
         \   '*.swp',
+        \   '*.swo',
         \   '*.swap',
         \   '*.com',
         \   '*.exe',
@@ -62,9 +63,9 @@ function! set#initconfigs() abort " Vim's InitConfig {{{
         \ ]
 
     let l:no_backup = [
-        \   '.git/*',
-        \   '.svn/*',
-        \   '.xml',
+        \   '*/.git/*',
+        \   '*/.svn/*',
+        \   '*.xml',
         \   '*.log',
         \   '*.bin',
         \   '*.7z',
