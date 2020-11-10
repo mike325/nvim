@@ -9,21 +9,14 @@ local sys = require'sys'
 nvim_set_autocmd{
     event   = 'TermOpen',
     pattern = '*',
-    cmd     = 'setlocal noswapfile nobackup noundofile',
+    cmd     = 'setlocal noswapfile nobackup noundofile bufhidden=',
     group   = 'TerminalAutocmds'
 }
 
 nvim_set_autocmd{
     event   = 'TermOpen',
     pattern = '*',
-    cmd     = 'setlocal bufhidden=wipe',
-    group   = 'TerminalAutocmds'
-}
-
-nvim_set_autocmd{
-    event   = 'TermOpen',
-    pattern = '*',
-    cmd     = 'setlocal relativenumber number nocursorline',
+    cmd     = 'setlocal norelativenumber nonumber nocursorline',
     group   = 'TerminalAutocmds'
 }
 
