@@ -48,7 +48,7 @@ if has('nvim-0.5')
     endfunction
 
     function! tools#ignores(tool) abort
-        return v:lua.tools.ignores(a:msg)
+        return v:lua.tools.ignores(a:tool)
     endfunction
 
     finish
