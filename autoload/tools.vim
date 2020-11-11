@@ -207,7 +207,7 @@ function! tools#ignores(tool) abort
             let l:ignores['ag'] .= ' --ignore ' . join(l:excludes, ' --ignore ' ) . ' '
         endif
         if executable('fd')
-            if filereadable(vars#home() .. '/.config/git/ignore')
+            if filereadable(vars#home() . '/.config/git/ignore')
                 let l:ignores['fd'] .= ' --ignore-file '. vars#home() .'/.config/git/ignore'
             else
                 let l:ignores['fd'] .= ' -E ' . join(l:excludes, ' -E ' ) . ' '
