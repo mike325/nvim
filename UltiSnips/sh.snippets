@@ -8,6 +8,22 @@ if [[ ${1:condition} ]]; then
 fi
 endsnippet
 
+snippet elif "elif .. (elif)"
+elif [[ ${1:condition} ]]; then
+	${0:${VISUAL:# Statements}}
+endsnippet
+
+snippet ifh "if hash ... then (if)"
+if hash ${1:name} 2>/dev/null; then
+	${0:${VISUAL:# Statements}}
+fi
+endsnippet
+
+snippet elifh "elif hash .. (elif)"
+elif hash ${1:cmd} 2>/dev/null; then
+	${0:${VISUAL:# Statements}}
+endsnippet
+
 snippet until "until ... (done)"
 until [[ ${1:condition} ]]; do
 	${0:${VISUAL:# Statements}}
@@ -26,11 +42,6 @@ case ${1:word} in
 		${0:${VISUAL:# Statements}}
 		;;
 esac
-endsnippet
-
-snippet elif "elif .. (elif)"
-elif [[ ${1:condition} ]]; then
-	${0:${VISUAL:# Statements}}
 endsnippet
 
 snippet for "for ... done (for)"
@@ -57,4 +68,14 @@ snippet fun "shell funtion"
 function ${1:function_name}() {
 	${0:${VISUAL:# Statements}}
 }
+endsnippet
+
+snippet /ha(sh)?/ "check cmd is available" r
+hash ${1:cmd} 2>/dev/null$0
+endsnippet
+
+snippet /(1|2|&)?(dev|null)/ ">/dev/null" r
+${1:`!p
+snip.rv = match.group(1) if match.group(1) is not None else '2'
+`}>/dev/null$0
 endsnippet
