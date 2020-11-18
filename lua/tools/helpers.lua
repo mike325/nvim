@@ -114,7 +114,7 @@ function tools.helpers.project_config(event)
 
     local telescope = tools.load_module('telescope')
 
-    if telescope ~= nil then
+    if telescope then
         nvim.nvim_set_mapping{
             mode = 'n',
             lhs = '<C-p>',
