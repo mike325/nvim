@@ -125,7 +125,7 @@ else
         endif
 
         if executable('gcc') || executable('clang')
-            Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+            Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate', 'commit': '049028e'}
             " Plug '~/source/nvim-treesitter', {'do': ':TSUpdate'}
             Plug 'nvim-treesitter/nvim-treesitter-refactor'
             " Plug '~/source/nvim-treesitter-refactor'
