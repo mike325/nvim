@@ -117,7 +117,7 @@ else
 
     if has#minimal() && has('nvim-0.5')
 
-        Plug 'nvim-lua/completion-nvim'
+        Plug 'nvim-lua/completion-nvim', {'commit': '1cb7e96'}
 
         if tools#CheckLanguageServer()
             Plug 'neovim/nvim-lspconfig'

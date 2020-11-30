@@ -138,7 +138,7 @@ if !empty($YCM) && empty($NO_PYTHON_DEV) &&
     endif
 
 elseif has('nvim-0.5')
-    Plug 'nvim-lua/completion-nvim'
+    Plug 'nvim-lua/completion-nvim', {'commit': '1cb7e96'}
 
     if executable('gcc') || executable('clang')
         Plug 'nvim-treesitter/completion-treesitter'
