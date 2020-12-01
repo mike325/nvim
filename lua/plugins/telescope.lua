@@ -1,10 +1,11 @@
+-- luacheck: max line length 152
 local nvim        = require'nvim'
-local sys         = require'sys'
+-- local sys         = require'sys'
 local tools       = require'tools'
 local load_module = require'tools'.load_module
 
-local plugins          = nvim.plugins
-local isdirectory      = nvim.isdirectory
+-- local plugins          = nvim.plugins
+-- local isdirectory      = nvim.isdirectory
 local executable       = nvim.executable
 local nvim_set_autocmd = nvim.nvim_set_autocmd
 local nvim_set_mapping = nvim.nvim_set_mapping
@@ -54,7 +55,7 @@ telescope.setup{
         -- borderchars = { '', '', '', '', '', '', '', ''},
         color_devicons = true,
         -- use_less = true,
-        set_env = { ['COLORTERM'] = 'truecolor' }, -- default { }, currently unsupported for shells like cmd.exe / powershell.exe
+        set_env = { ['COLORTERM'] = 'truecolor' },
     },
 }
 
@@ -100,7 +101,7 @@ local noremap = {noremap = true}
 nvim_set_mapping{
     mode = 'n',
     lhs = '<C-p>',
-    rhs = [[<cmd>lua require'telescope.builtin'.find_files{ find_command = tools.to_clean_tbl(tools.select_filelist(require'nvim'.b.project_root.is_git))}<CR>]],
+    rhs = [[<cmd>lua require'telescope.builtin'.find_files{ find_command = tools.to_clean_tbl(tools.select_filelist(vim.b.project_root.is_git))}<CR>]],
     args = {noremap = true}
 }
 
@@ -135,14 +136,6 @@ nvim.nvim_set_command{
     rhs = [[lua require'telescope.builtin'.find_files{cwd = require'sys'.base, find_command = tools.to_clean_tbl(tools.select_filelist(false))}]],
     args = {force=true}
 }
-
-if isdirectory(sys.home..'/dotfiles') then
-    nvim.nvim_set_command{
-        lhs  = 'GetDotfiles',
-        rhs  = [[lua require'telescope.builtin'.find_files{cwd = require'sys'.home..'/dotfiles', find_command = tools.to_clean_tbl(tools.select_filelist(false))}]],
-        args = {force = true},
-    }
-end
 
 if executable('git') then
     nvim_set_mapping{

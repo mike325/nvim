@@ -110,20 +110,17 @@ abolish['es'] = {
     ['{fun,administra,aplica,rala,aproxima,programa}cion']                  = '{}ción',
 }
 
--- Global helpers
-if tools == nil then
-    tools = {}
-end
+local M = {}
 
-function tools.load_module(name)
-    local ok, M = pcall(require, name)
+function M.load_module(name)
+    local ok, module = pcall(require, name)
     if not ok then
         return nil
     end
-    return M
+    return module
 end
 
-function tools.normalize_path(path)
+function M.normalize_path(path)
     if path:sub(1, 1) == '~' then
         path = nvim.fn.expand(path)
     end
@@ -131,11 +128,11 @@ function tools.normalize_path(path)
     return path:gsub('\\','/')
 end
 
-function tools.echoerr(msg)
+function M.echoerr(msg)
     nvim.echoerr(msg)
 end
 
-function tools.split_components(str, pattern)
+function M.split_components(str, pattern)
      local t = {}
     for v in string.gmatch(str, pattern) do
         t[#t + 1] = v
@@ -143,7 +140,7 @@ function tools.split_components(str, pattern)
     return t
 end
 
-function tools.last_position()
+function M.last_position()
     local sc_mark = nvim.buf.get_mark(0, "'")
     local dc_mark = nvim.buf.get_mark(0, '"')
     local last_line = line('$')
@@ -161,7 +158,7 @@ function tools.last_position()
     end
 end
 
-function tools.check_version(sys_version, version_target)
+function M.check_version(sys_version, version_target)
     for i,_ in pairs(version_target) do
 
         if type(version_target[i]) == 'string' then
@@ -183,7 +180,7 @@ function tools.check_version(sys_version, version_target)
     return false
 end
 
-function tools.has_git_version(...)
+function M.has_git_version(...)
     if not executable('git') then
         return false
     end
@@ -203,15 +200,15 @@ function tools.has_git_version(...)
         return git_version
     end
 
-    local components = tools.split_components(git_version, '%d+')
+    local components = M.split_components(git_version, '%d+')
 
-    return tools.check_version(components, args)
+    return M.check_version(components, args)
 end
 
-function tools.ignores(tool)
+function M.ignores(tool)
     local excludes = nvim.fn.split(nvim.o.backupskip, ',')
 
-    for idx,val in pairs(excludes) do
+    for idx,_ in pairs(excludes) do
         excludes[idx] = "'" .. excludes[idx] .. "'"
     end
 
@@ -231,7 +228,7 @@ function tools.ignores(tool)
     return ignores[tool] ~= nil and ignores[tool] or ''
 end
 
-function tools.grep(tool, opts)
+function M.grep(tool, opts)
 
     if type(opts) ~= 'table' then
         opts = {opts}
@@ -240,7 +237,7 @@ function tools.grep(tool, opts)
     local property = #opts > 0 and opts[1] or 'grepprg'
 
     if modern_git == -1 then
-        modern_git = tools.has_git_version('2', '19')
+        modern_git = M.has_git_version('2', '19')
     end
 
     local greplist = {
@@ -253,11 +250,11 @@ function tools.grep(tool, opts)
             grepformat = '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m'
         },
         ag = {
-            grepprg = 'ag -S --follow --nogroup --nocolor --hidden --vimgrep '..tools.ignores('ag')..' ',
+            grepprg = 'ag -S --follow --nogroup --nocolor --hidden --vimgrep '..M.ignores('ag')..' ',
             grepformat = '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m'
         },
         grep = {
-            grepprg = 'grep -RHiIn --color=never '..tools.ignores('grep')..' ',
+            grepprg = 'grep -RHiIn --color=never '..M.ignores('grep')..' ',
             grepformat = '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m'
         },
         findstr = {
@@ -269,37 +266,37 @@ function tools.grep(tool, opts)
     return greplist[tool] ~= nil and greplist[tool][property] or nil
 end
 
-function tools.filelist(tool)
+function M.filelist(tool)
     local filelist = {
         git = 'git --no-pager ls-files -co --exclude-standard',
-        fd = 'fd ' .. tools.ignores('fd') .. ' --type f --hidden --follow --color never . .',
+        fd = 'fd ' .. M.ignores('fd') .. ' --type f --hidden --follow --color never . .',
         rg = 'rg --color never --no-search-zip --hidden --trim --files',
-        ag = 'ag -l --follow --nocolor --nogroup --hidden '..tools.ignores('ag')..'-g ""',
-        find = "find . -type f -iname '*' "..tools.ignores('find') .. ' ',
+        ag = 'ag -l --follow --nocolor --nogroup --hidden '..M.ignores('ag')..'-g ""',
+        find = "find . -type f -iname '*' "..M.ignores('find') .. ' ',
     }
 
     return filelist[tool]
 end
 
-function tools.select_filelist(is_git)
+function M.select_filelist(is_git)
     local filelist = ''
 
     if executable('git') and is_git == true or is_git then
-        filelist = tools.filelist('git')
+        filelist = M.filelist('git')
     elseif executable('fd') then
-        filelist = tools.filelist('fd')
+        filelist = M.filelist('fd')
     elseif executable('rg') then
-        filelist = tools.filelist('rg')
+        filelist = M.filelist('rg')
     elseif executable('ag') then
-        filelist = tools.filelist('ag')
+        filelist = M.filelist('ag')
     elseif sys.name ~= 'windows' then
-        filelist = tools.filelist('find')
+        filelist = M.filelist('find')
     end
 
     return filelist
 end
 
-function tools.select_grep(is_git, opts)
+function M.select_grep(is_git, opts)
 
     if type(opts) ~= 'table' then
         opts = {opts}
@@ -310,15 +307,15 @@ function tools.select_grep(is_git, opts)
     local grep = ''
 
     if executable('git') and (is_git or is_git == 1) then
-        grep = tools.grep('git', property)
+        grep = M.grep('git', property)
     elseif executable('rg') then
-        grep = tools.grep('rg', property)
+        grep = M.grep('rg', property)
     elseif executable('ag') then
-        grep = tools.grep('ag', property)
+        grep = M.grep('ag', property)
     elseif executable('grep') then
-        grep = tools.grep('grep', property)
+        grep = M.grep('grep', property)
     elseif sys.name == 'windows' then
-        grep = tools.grep('findstr', property)
+        grep = M.grep('findstr', property)
     end
 
     return grep
@@ -334,7 +331,7 @@ local check_lsp = function(servers)
     return false
 end
 
-function tools.check_language_server(languages)
+function M.check_language_server(languages)
 
     if languages == nil or #languages == 0 then
         for _, server in pairs(langservers) do
@@ -355,9 +352,9 @@ function tools.check_language_server(languages)
     return false
 end
 
-function tools.get_language_server(language)
+function M.get_language_server(language)
 
-    if tools.check_language_server(language) then
+    if M.check_language_server(language) then
         return {}
     end
 
@@ -412,11 +409,11 @@ function tools.get_language_server(language)
     return cmd
 end
 
-function tools.get_abbrs(language)
+function M.get_abbrs(language)
     return abolish[language]
 end
 
-function tools.abolish(language)
+function M.abolish(language)
 
     local current = nvim.bo.spelllang
 
@@ -494,13 +491,13 @@ function tools.abolish(language)
 
 end
 
-function tools.spelllangs(lang)
-    tools.abolish(lang)
+function M.spelllangs(lang)
+    M.abolish(lang)
     nvim.bo.spelllang = lang
     print(nvim.bo.spelllang)
 end
 
-function tools.clean_file()
+function M.clean_file()
     local buftypes = {
         nofile = 1,
         help = 1,
@@ -541,7 +538,7 @@ function tools.clean_file()
     nvim.fn.setreg('/', search_reg)
 end
 
-function tools.file_name(opts)
+function M.file_name(opts)
 
     if type(opts) ~= 'table' then
         opts = {opts}
@@ -605,11 +602,11 @@ function tools.file_name(opts)
 
 end
 
-function tools.dprint(...)
+function M.dprint(...)
     print(vim.inspect(...))
 end
 
-function tools.find_project_root(path)
+function M.find_project_root(path)
     local root
     local vcs_markers = {'.git', '.svn', '.hg',}
     local dir = nvim.fn.fnamemodify(path, ':p')
@@ -629,17 +626,17 @@ function tools.find_project_root(path)
 
     end
 
-    root = tools.normalize_path(root)
+    root = M.normalize_path(root)
 
     return root
 end
 
-function tools.is_git_repo(root)
+function M.is_git_repo(root)
     if not executable('git') then
         return false
     end
 
-    root = tools.normalize_path(root)
+    root = M.normalize_path(root)
 
     local git = root .. '/.git'
 
@@ -649,16 +646,18 @@ function tools.is_git_repo(root)
     return nvim.fn.findfile('.git', root..';') ~= ''
 end
 
-function tools.to_clean_tbl(cmd_string)
+function M.to_clean_tbl(cmd_string)
     return nvim.clear_lst(nvim.fn.split(vim.trim(cmd_string), ' ', true))
 end
 
-function tools.regex(str, regex)
+function M.regex(str, regex)
     return nvim.eval(string.format([[ '%s'  =~# '%s' ]], str, regex)) == 1
 end
 
-function tools.iregex(str, regex)
+function M.iregex(str, regex)
     return nvim.eval(string.format([[ '%s'  =~? '%s' ]], str, regex)) == 1
 end
 
-return tools
+_G['tools'] = M
+
+return _G['tools']

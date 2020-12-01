@@ -8,11 +8,13 @@ local filereadable = nvim.filereadable
 
 local plugins      = require'nvim'.plugins
 
-if tools.helpers == nil then
-    tools.helpers = {}
+if _G['tools'].helpers == nil then
+    _G['tools'].helpers = {}
 end
 
-function tools.helpers.rename(old, new, bang)
+local M = {}
+
+function M.rename(old, new, bang)
 
     new = tools.normalize_path(new)
     old = tools.normalize_path(old)
@@ -46,7 +48,7 @@ function tools.helpers.rename(old, new, bang)
     return false
 end
 
-function tools.helpers.delete(target, bang)
+function M.delete(target, bang)
     target = tools.normalize_path(target)
     if filereadable(target) or bufloaded(target) then
         if filereadable(target) then
@@ -71,7 +73,7 @@ function tools.helpers.delete(target, bang)
     end
 end
 
-function tools.helpers.project_config(event)
+function M.project_config(event)
     -- print(vim.inspect(event))
 
     local cwd = event.cwd or nvim.fn.getcwd()
@@ -171,7 +173,7 @@ function tools.helpers.project_config(event)
 
 end
 
-function tools.helpers.toggle_qf(qf_type)
+function M.toggle_qf(qf_type)
     local close = false
 
     local funcs = {
@@ -213,12 +215,12 @@ function tools.helpers.toggle_qf(qf_type)
     end
 end
 
-function tools.helpers.add_nl(down)
+function M.add_nl(down)
     local cursor_pos = nvim.win.get_cursor(0)
     local lines = {''}
     local count = nvim.v['count1']
     if count > 1 then
-        for i=2,count,1 do
+        for _=2,count,1 do
             lines[#lines + 1] = ''
         end
     end
@@ -237,4 +239,6 @@ function tools.helpers.add_nl(down)
 
 end
 
-return tools.helpers
+_G['tools'].helpers = M
+
+return M

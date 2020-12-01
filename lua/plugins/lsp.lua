@@ -1,6 +1,7 @@
-local sys         = require('sys')
-local nvim        = require('nvim')
-local load_module = require('tools').load_module
+-- luacheck: max line length 180
+local sys         = require'sys'
+local nvim        = require'nvim'
+local load_module = require'tools'.load_module
 
 local plugins          = nvim.plugins
 local executable       = nvim.executable
@@ -135,7 +136,6 @@ local servers = {
 }
 
 local available_languages = {}
-local cfamily = false
 
 for language,options in pairs(servers) do
     for option,server in pairs(options) do
@@ -149,7 +149,6 @@ for language,options in pairs(servers) do
             lsp[option].setup(init)
             available_languages[#available_languages + 1] = language
             if language == 'c' then
-                cfamily = true
                 available_languages[#available_languages + 1] = 'cpp'
                 available_languages[#available_languages + 1] = 'objc'
                 available_languages[#available_languages + 1] = 'objcpp'

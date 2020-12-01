@@ -265,19 +265,19 @@ function verbose_msg() {
 
 function initlog() {
     if [[ $NOLOG -eq 0 ]]; then
-        rm -f "${_LOG}" 2>/dev/null
-        if ! touch "${_LOG}" &>/dev/null; then
+        rm -f "${LOG}" 2>/dev/null
+        if ! touch "${LOG}" &>/dev/null; then
             error_msg "Fail to init log file"
             NOLOG=1
             return 1
         fi
         if [[ -f "${SCRIPT_PATH}/shell/banner" ]]; then
-            cat "${SCRIPT_PATH}/shell/banner" > "${_LOG}"
+            cat "${SCRIPT_PATH}/shell/banner" > "${LOG}"
         fi
         if ! is_osx; then
-            _LOG=$(readlink -e "${_LOG}")
+            LOG=$(readlink -e "${LOG}")
         fi
-        verbose_msg "Using log at ${_LOG}"
+        verbose_msg "Using log at ${LOG}"
     fi
     return 0
 }

@@ -1,5 +1,5 @@
 local nvim = require'nvim'
-local sys =  require'sys'
+-- local sys =  require'sys'
 
 if not nvim.has('nvim-0.5') then
     return nil

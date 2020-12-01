@@ -1,9 +1,9 @@
-local sys  = require('sys')
-local nvim = require('nvim')
+-- local sys  = require('sys')
+-- local nvim = require('nvim')
 
-local line         = nvim.fn.line
-local system       = nvim.fn.system
-local executable   = nvim.executable
+-- local line         = nvim.fn.line
+-- local system       = nvim.fn.system
+-- local executable   = nvim.executable
 local isdirectory  = nvim.isdirectory
 local filereadable = nvim.filereadable
 

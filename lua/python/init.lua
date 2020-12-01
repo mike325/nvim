@@ -11,8 +11,7 @@ local split_components = require('tools').split_components
 
 -- local inspect = vim.inspect
 
--- global python object
-python = {
+local M = {
     ['2'] = {
         path = nil,
         version = nil,
@@ -34,7 +33,7 @@ local get_python_exe = function(version)
     if python[pyversion]['path'] ~= nil then
         return python[pyversion]['path']
     elseif nvim.g[variable] ~= nil then
-        python[pyversion]['path'] = nvim.g[variable]
+        _G['python'][pyversion]['path'] = nvim.g[variable]
         return python[pyversion]['path']
     end
 
@@ -59,12 +58,12 @@ local get_python_exe = function(version)
         --     return nil
         -- end
 
-        python[pyversion]['path'] = pyexe
+        _G['python'][pyversion]['path'] = pyexe
         nvim.g[variable] = pyexe
 
         local full_version = system(pyexe .. ' --version')
         full_version = string.match(full_version, '[%d%p]+')
-        python[pyversion]['version'] = full_version
+        _G['python'][pyversion]['version'] = full_version
 
     else
         nvim.g[deactivate] = 0
@@ -73,7 +72,7 @@ local get_python_exe = function(version)
     return pyexe
 end
 
-function python:setup()
+function M:setup()
 
     local has_python = false
 
@@ -88,7 +87,7 @@ function python:setup()
     return has_python
 end
 
-function python.has_version(...)
+function M.has_version(...)
     if not executable('python2') and not executable('python3') then
         return 0
     end
@@ -113,4 +112,6 @@ function python.has_version(...)
     return check_version(components, opts)
 end
 
-return python
+_G['python'] = M
+
+return _G['python']

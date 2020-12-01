@@ -6,6 +6,7 @@
   "vimrc"                   : {"type": "Vimrc", "alternate" : "init.vim"},
   "ginit.vim"               : {"type": "Ginit", "alternate" : "init.vim"},
   "common/*.vim"            : {"type": "Common"},
+  ".luacheckrc"             : {"type": "Lua"},
   "lua/*.lua"               : {"type": "Lua"},
   "rplugins/python3/*.py"   : {"type": "RPython3"},
   "rplugins/python/*.py"    : {"type": "RPython"},

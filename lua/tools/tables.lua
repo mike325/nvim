@@ -28,7 +28,7 @@ function M.has_attrs(tbl, attrs)
 
             -- Checking for list with list
             if not is_tbl and not has_attrs then
-                local has_attr = false
+                local has_attr
                 has_attrs = true
                 for _,attr in pairs(attrs) do
                     has_attr = false

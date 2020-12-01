@@ -1,10 +1,8 @@
 -- luacheck: globals unpack vim
-local i = vim.inspect
+-- local i = vim.inspect
 local api = vim.api
 
 local has_attrs = require'tools.tables'.has_attrs
-
-nvim = {}
 
 local transform_mapping = function(lhs)
     if lhs:sub(1, 3) == '<c-' or lhs:sub(1, 3) == '<a-' or lhs:sub(1, 3) == '<s-' then
@@ -179,7 +177,7 @@ local nvim_get_autocmd = function(autocmd)
     autocmd_str[#autocmd_str + 1] = autocmd.group ~= nil and autocmd.group or nil
     autocmd_str[#autocmd_str + 1] = autocmd.event ~= nil and autocmd.event or nil
 
-    local ok, autocmds = pcall(vim.api.nvim_exec, table.concat(autocmd_str, ' '), true)
+    local ok, _ = pcall(vim.api.nvim_exec, table.concat(autocmd_str, ' '), true)
 
     if not ok then
         return nil
@@ -294,7 +292,7 @@ end
 
 -- Took from https://github.com/norcalli/nvim_utils
 -- GPL3 apply to the nvim object
-nvim = {
+_G['nvim'] = {
     l = api.loop;
     nvim_set_abbr    = nvim_set_abbr;
     nvim_get_mapping = nvim_get_mapping;
@@ -457,7 +455,7 @@ nvim = {
 -- more powerfull since Neovim's native fn object can auto-convert lua functions
 -- allowing to use jobstart and family with lua callbacks
 if api.nvim_call_function('has', {'nvim-0.5'}) == 0  then
-    nvim['fn'] = setmetatable({}, {
+    _G['nvim']['fn'] = setmetatable({}, {
         __index = function(self, k)
             local mt = getmetatable(self)
             local x = mt[k]
@@ -469,7 +467,7 @@ if api.nvim_call_function('has', {'nvim-0.5'}) == 0  then
             return f
         end
     })
-    nvim['g'] = setmetatable({}, {
+    _G['nvim']['g'] = setmetatable({}, {
         __index = function(_, k)
             local ok, value = pcall(api.nvim_get_var, k)
             return ok and value or nil
@@ -482,7 +480,7 @@ if api.nvim_call_function('has', {'nvim-0.5'}) == 0  then
             end
         end;
     })
-    nvim['b'] = setmetatable({}, {
+    _G['nvim']['b'] = setmetatable({}, {
         __index = function(_, k)
             local ok, value = pcall(api.nvim_buf_get_var, 0, k)
             return ok and value or nil
@@ -495,7 +493,7 @@ if api.nvim_call_function('has', {'nvim-0.5'}) == 0  then
             end
         end
     })
-    nvim['w'] = setmetatable({}, {
+    _G['nvim']['w'] = setmetatable({}, {
         __index = function(_, k)
             local ok, value = pcall(api.nvim_win_get_var, 0, k)
             return ok and value or nil
@@ -508,7 +506,7 @@ if api.nvim_call_function('has', {'nvim-0.5'}) == 0  then
             end
         end
     })
-    nvim['t'] = setmetatable({}, {
+    _G['nvim']['t'] = setmetatable({}, {
         __index = function(_, k)
             local ok, value = pcall(api.nvim_tabpage_get_var, 0, k)
             return ok and value or nil
@@ -521,7 +519,7 @@ if api.nvim_call_function('has', {'nvim-0.5'}) == 0  then
             end
         end
     })
-    nvim['v'] = setmetatable({}, {
+    _G['nvim']['v'] = setmetatable({}, {
         __index = function(_, k)
             local ok, value = pcall(api.nvim_get_vvar, k)
             return ok and value or nil
@@ -530,7 +528,7 @@ if api.nvim_call_function('has', {'nvim-0.5'}) == 0  then
             return api.nvim_set_vvar(k, v)
         end
     })
-    nvim['o'] = setmetatable({}, {
+    _G['nvim']['o'] = setmetatable({}, {
         __index = function(_, k)
             return api.nvim_get_option(k)
         end;
@@ -538,7 +536,7 @@ if api.nvim_call_function('has', {'nvim-0.5'}) == 0  then
             return api.nvim_set_option(k, v)
         end
     })
-    nvim['bo'] = setmetatable({}, {
+    _G['nvim']['bo'] = setmetatable({}, {
         __index = function(_, k)
             return api.nvim_buf_get_option(0, k)
         end;
@@ -546,7 +544,7 @@ if api.nvim_call_function('has', {'nvim-0.5'}) == 0  then
             return api.nvim_buf_set_option(0, k, v)
         end
     })
-    nvim['wo'] = setmetatable({}, {
+    _G['nvim']['wo'] = setmetatable({}, {
         __index = function(_, k)
             return api.nvim_win_get_option(0, k)
         end;
@@ -584,7 +582,7 @@ local func_to_lua = {
 for _,func_name in pairs(func_to_lua) do
     local original = nvim.fn[func_name]
     if original ~= nil and nvim[func_name] == nil then
-        nvim[func_name] = function(...)
+        _G['nvim'][func_name] = function(...)
             return original(...) == 1
         end
     end

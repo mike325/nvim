@@ -4,7 +4,7 @@ local has              = require'nvim'.has
 local plugins          = require'nvim'.plugins
 local nvim_set_autocmd = require'nvim'.nvim_set_autocmd
 
-local sys = require'sys'
+-- local sys = require'sys'
 
 nvim_set_autocmd{
     event   = 'TermOpen',

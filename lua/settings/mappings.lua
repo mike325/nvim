@@ -1,9 +1,10 @@
+-- luacheck: max line length 150
 local sys  = require('sys')
 local nvim = require('nvim')
 
 -- local api = nvim.api
 
-local regex = require('tools').regex
+-- local regex = require('tools').regex
 local iregex = require('tools').regex
 
 -- local parent      = sys.data
@@ -289,7 +290,12 @@ nvim.nvim_set_abbr{ mode = 'c', lhs = 'wa1', rhs = 'wa!' }
 
 nvim.nvim_set_mapping{ mode = 'c', lhs = '<C-n>', rhs = '<down>', args = noremap }
 nvim.nvim_set_mapping{ mode = 'c', lhs = '<C-p>', rhs = '<up>', args = noremap }
-nvim.nvim_set_mapping{ mode = 'c', lhs = '<C-r><C-w>', rhs = "<C-r>=escape(expand('<cword>'), '#')<CR>", args = noremap }
+nvim.nvim_set_mapping{
+    mode = 'c',
+    lhs = '<C-r><C-w>',
+    rhs = "<C-r>=escape(expand('<cword>'), '#')<CR>",
+    args = noremap
+}
 
 nvim.nvim_set_mapping{ mode = 'n', lhs = '&', rhs = ':&&<CR>', args = noremap }
 nvim.nvim_set_mapping{ mode = 'x', lhs = '&', rhs = ':&&<CR>', args = noremap }
@@ -446,8 +452,18 @@ nvim.nvim_set_command{
     args = {nargs='?', force = true}
 }
 
-nvim.nvim_set_mapping{ mode = 'n', lhs = '=l', rhs = [[:call v:lua.tools.helpers.toggle_qf('loc')<CR>]], args = noremap_silent }
-nvim.nvim_set_mapping{ mode = 'n', lhs = '=q', rhs = [[:call v:lua.tools.helpers.toggle_qf('qf')<CR>]],  args = noremap_silent }
+nvim.nvim_set_mapping{
+    mode = 'n',
+    lhs = '=l',
+    rhs = [[:call v:lua.tools.helpers.toggle_qf('loc')<CR>]],
+    args = noremap_silent
+}
+nvim.nvim_set_mapping{
+    mode = 'n',
+    lhs = '=q',
+    rhs = [[:call v:lua.tools.helpers.toggle_qf('qf')<CR>]],
+    args = noremap_silent
+}
 
 nvim.nvim_set_mapping{
     mode = 'n',
@@ -541,20 +557,89 @@ if plugins["vim-indexed-search"] == nil then
 end
 
 if plugins["vim-unimpaired"] == nil then
-    nvim.nvim_set_mapping{ mode = 'n', lhs = '[Q', rhs = ':<C-U>exe "".(v:count ? v:count : "")."cfirst"<CR>zvzz'   , args = noremap_silent }
-    nvim.nvim_set_mapping{ mode = 'n', lhs = ']Q', rhs = ':<C-U>exe "".(v:count ? v:count : "")."clast"<CR>zvzz'    , args = noremap_silent }
-    nvim.nvim_set_mapping{ mode = 'n', lhs = '[q', rhs = ':<C-U>exe "".(v:count ? v:count : "")."cprevious"<CR>zvzz', args = noremap_silent }
-    nvim.nvim_set_mapping{ mode = 'n', lhs = ']q', rhs = ':<C-U>exe "".(v:count ? v:count : "")."cnext"<CR>zvzz'    , args = noremap_silent }
+    nvim.nvim_set_mapping{
+        mode = 'n',
+        lhs = '[Q',
+        rhs = ':<C-U>exe "".(v:count ? v:count : "")."cfirst"<CR>zvzz',
+        args = noremap_silent
+    }
 
-    nvim.nvim_set_mapping{ mode = 'n', lhs = '[L', rhs = ':<C-U>exe "".(v:count ? v:count : "")."lfirst"<CR>zvzz'   , args = noremap_silent }
-    nvim.nvim_set_mapping{ mode = 'n', lhs = ']L', rhs = ':<C-U>exe "".(v:count ? v:count : "")."llast"<CR>zvzz'    , args = noremap_silent }
-    nvim.nvim_set_mapping{ mode = 'n', lhs = '[l', rhs = ':<C-U>exe "".(v:count ? v:count : "")."lprevious"<CR>zvzz', args = noremap_silent }
-    nvim.nvim_set_mapping{ mode = 'n', lhs = ']l', rhs = ':<C-U>exe "".(v:count ? v:count : "")."lnext"<CR>zvzz'    , args = noremap_silent }
+    nvim.nvim_set_mapping{
+        mode = 'n',
+        lhs = ']Q',
+        rhs = ':<C-U>exe "".(v:count ? v:count : "")."clast"<CR>zvzz',
+        args = noremap_silent
+    }
 
-    nvim.nvim_set_mapping{ mode = 'n', lhs = '[B', rhs = ':<C-U>exe "".(v:count ? v:count : "")."bfirst"<CR>'   , args = noremap_silent }
-    nvim.nvim_set_mapping{ mode = 'n', lhs = ']B', rhs = ':<C-U>exe "".(v:count ? v:count : "")."blast"<CR>'    , args = noremap_silent }
-    nvim.nvim_set_mapping{ mode = 'n', lhs = '[b', rhs = ':<C-U>exe "".(v:count ? v:count : "")."bprevious"<CR>', args = noremap_silent }
-    nvim.nvim_set_mapping{ mode = 'n', lhs = ']b', rhs = ':<C-U>exe "".(v:count ? v:count : "")."bnext"<CR>'    , args = noremap_silent }
+    nvim.nvim_set_mapping{
+        mode = 'n',
+        lhs = '[q',
+        rhs = ':<C-U>exe "".(v:count ? v:count : "")."cprevious"<CR>zvzz',
+        args = noremap_silent
+    }
+
+    nvim.nvim_set_mapping{
+        mode = 'n',
+        lhs = ']q',
+        rhs = ':<C-U>exe "".(v:count ? v:count : "")."cnext"<CR>zvzz',
+        args = noremap_silent
+    }
+
+    nvim.nvim_set_mapping{
+        mode = 'n',
+        lhs = '[L',
+        rhs = ':<C-U>exe "".(v:count ? v:count : "")."lfirst"<CR>zvzz',
+        args = noremap_silent
+    }
+
+    nvim.nvim_set_mapping{
+        mode = 'n',
+        lhs = ']L',
+        rhs = ':<C-U>exe "".(v:count ? v:count : "")."llast"<CR>zvzz',
+        args = noremap_silent
+    }
+
+    nvim.nvim_set_mapping{
+        mode = 'n',
+        lhs = '[l',
+        rhs = ':<C-U>exe "".(v:count ? v:count : "")."lprevious"<CR>zvzz',
+        args = noremap_silent
+    }
+
+    nvim.nvim_set_mapping{
+        mode = 'n',
+        lhs = ']l',
+        rhs = ':<C-U>exe "".(v:count ? v:count : "")."lnext"<CR>zvzz',
+        args = noremap_silent
+    }
+
+    nvim.nvim_set_mapping{
+        mode = 'n',
+        lhs = '[B',
+        rhs = ':<C-U>exe "".(v:count ? v:count : "")."bfirst"<CR>',
+        args = noremap_silent
+    }
+
+    nvim.nvim_set_mapping{
+        mode = 'n',
+        lhs = ']B',
+        rhs = ':<C-U>exe "".(v:count ? v:count : "")."blast"<CR>',
+        args = noremap_silent
+    }
+
+    nvim.nvim_set_mapping{
+        mode = 'n',
+        lhs = '[b',
+        rhs = ':<C-U>exe "".(v:count ? v:count : "")."bprevious"<CR>',
+        args = noremap_silent
+    }
+
+    nvim.nvim_set_mapping{
+        mode = 'n',
+        lhs = ']b',
+        rhs = ':<C-U>exe "".(v:count ? v:count : "")."bnext"<CR>',
+        args = noremap_silent
+    }
 
     nvim.nvim_set_mapping{
         mode = 'n',
