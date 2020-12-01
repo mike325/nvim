@@ -188,19 +188,9 @@ nnoremap gV `[v`]
 
 " }}} EndTabBufferManagement
 
-if has('nvim') || has('terminal')
+if has('terminal')
     tnoremap <ESC> <C-\><C-n>
-
     command! -nargs=? Terminal call mappings#terminal(<q-args>)
-
-    if has('nvim')
-        " Better splits
-        nnoremap <A-s> <C-w>s
-        nnoremap <A-v> <C-w>v
-
-        " Better terminal access
-        nnoremap <A-t> :Terminal<CR>
-    endif
 endif
 
 " Fucking typos

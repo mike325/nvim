@@ -40,8 +40,8 @@ nmap <buffer> g= <Plug>VimwikiRemoveHeaderLevel
 nnoremap <buffer> gwt :VimwikiTable<CR>
 nnoremap <buffer> gwg :VimwikiGoto<space>
 
-nnoremap <buffer> <A-l> m`:VimwikiTableMoveColumnLeft<CR>``
-nnoremap <buffer> <A-h> m`:VimwikiTableMoveColumnRight<CR>``
+" nnoremap <buffer> <A-l> m`:VimwikiTableMoveColumnLeft<CR>``
+" nnoremap <buffer> <A-h> m`:VimwikiTableMoveColumnRight<CR>``
 
 " " Restore signify mappings
 " if has#plugin('vim-signify')
@@ -49,7 +49,7 @@ nnoremap <buffer> <A-h> m`:VimwikiTableMoveColumnRight<CR>``
 " endif
 
 if has('nvim-0.4')
-    call luaeval('require"tools".abolish("'.&l:spelllang.'")')
+    call luaeval('require"tools".abolish(_A[1])', &l:spelllang)
 else
     call tools#abolish(&l:spelllang)
 endif

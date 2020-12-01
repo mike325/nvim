@@ -62,13 +62,13 @@ if has#python() && has#async()
     Plug 'neomake/neomake'
 endif
 
-" if has('nvim-0.5')
-"     Plug 'nvim-lua/popup.nvim'
-"     Plug 'nvim-lua/plenary.nvim'
-"     Plug 'nvim-lua/telescope.nvim'
-" elseif executable('fzf') && !os#name('cygwin')
-if executable('fzf') && !os#name('cygwin')
-    " Use chocolately install in windows
+" TODO: Need to do more test in windows
+if has('nvim-0.5') && !os#name('windows')
+    Plug 'nvim-lua/popup.nvim'
+    Plug 'nvim-lua/plenary.nvim'
+    Plug 'nvim-lua/telescope.nvim'
+elseif executable('fzf') && !os#name('cygwin')
+    " Use chocolately/scoop install in windows
     Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': function('plugins#fzf_vim#install')}
     Plug 'junegunn/fzf.vim'
 elseif exists('g:gonvim_running')

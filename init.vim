@@ -117,6 +117,13 @@ else
 
     if has#minimal() && has('nvim-0.5')
 
+        " TODO: Need to do more test in windows
+        if has('nvim-0.5') && !os#name('windows')
+            Plug 'nvim-lua/popup.nvim'
+            Plug 'nvim-lua/plenary.nvim'
+            Plug 'nvim-lua/telescope.nvim'
+        endif
+
         Plug 'nvim-lua/completion-nvim', {'commit': '1cb7e96'}
 
         if tools#CheckLanguageServer()

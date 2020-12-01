@@ -112,16 +112,7 @@ function tools.helpers.project_config(event)
         nvim.ex.source(project)
     end
 
-    local telescope = tools.load_module('telescope')
-
-    if telescope then
-        nvim.nvim_set_mapping{
-            mode = 'n',
-            lhs = '<C-p>',
-            rhs = [[<cmd>lua require'telescope.builtin'.find_files{ find_command = tools.to_clean_tbl(tools.select_filelist(require'nvim'.b.project_root.is_git))}<CR>]],
-            args = {noremap = true}
-        }
-    end
+    -- local telescope = tools.load_module('plugins/telescope')
 
     if plugins['ctrlp'] ~= nil then
         local fast_look_up = {
