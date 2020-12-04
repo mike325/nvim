@@ -15,6 +15,13 @@ function! mappings#enter() abort
         if has#plugin('YouCompleteMe')
             call feedkeys("\<C-y>")
             return ''
+        elseif has#plugin('completion-nvim')
+            if complete_info()['selected'] !=# '-1'
+                call completion#wrap_completion()
+                return ''
+            else
+                return "\<c-e>\<CR>"
+            endif
         else
             return "\<C-y>"
         endif
