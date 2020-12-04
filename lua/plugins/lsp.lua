@@ -76,6 +76,7 @@ local servers = {
             options = {
                 cmd = {
                     'pyls',
+                    '--check-parent-process',
                     '--log-file=' .. sys.tmp('pyls.log'),
                 },
                 settings = {

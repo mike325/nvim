@@ -25,7 +25,7 @@ if completion ~= nil then
     nvim.g.completion_matching_ignore_case   = 1
     nvim.g.completion_matching_smart_case    = 1
     nvim.g.completion_confirm_key            = ''
-    nvim.g.completion_sorting                = 'alphabet'
+    nvim.g.completion_sorting                = 'none'
     nvim.g.completion_trigger_on_delete      = 1
     nvim.g.completion_auto_change_source     = 1
     nvim.g.completion_enable_auto_signature  = 0
@@ -78,6 +78,8 @@ if completion ~= nil then
                 }
                 if language == 'vim' then
                     table.insert(completion_chain[language], 3, {mode = 'cmd'})
+                -- elseif spell_check[language] ~= nil then
+                --     table.insert(completion_chain[language], 3, {mode = 'spel'})
                 end
             end
         end
@@ -95,6 +97,9 @@ if completion ~= nil then
                     }
                 }
             end
+            -- if spell_check[language] ~= nil then
+            --     table.insert(completion_chain[language], 3, {mode = 'spel'})
+            -- end
         end
     end
 
@@ -110,18 +115,18 @@ if completion ~= nil then
         }
     end
 
-    for _,language in pairs(spell_check) do
-        if completion_chain[language] == nil then
-            completion_chain[language] = {
-                default = {
-                    {complete_items = { 'path' }, triggered_only = {'/'}},
-                    {mode = 'spel'},
-                    {mode = '<c-p>'},
-                    {mode = '<c-n>'},
-                }
-            }
-        end
-    end
+    -- for _,language in pairs(spell_check) do
+    --     if completion_chain[language] == nil then
+    --         completion_chain[language] = {
+    --             default = {
+    --                 {complete_items = { 'path' }, triggered_only = {'/'}},
+    --                 {mode = 'spel'},
+    --                 {mode = '<c-p>'},
+    --                 {mode = '<c-n>'},
+    --             }
+    --         }
+    --     end
+    -- end
 
     nvim.g.completion_chain_complete_list = completion_chain
 
