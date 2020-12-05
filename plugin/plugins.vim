@@ -34,7 +34,7 @@ Plug 'tpope/vim-endwise'
 " Plug 'pechorin/any-jump.vim'
 
 if has('nvim-0.5') && (executable('gcc') || executable('clang'))
-    Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate', 'commit': '049028e'}
+    Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
     " Plug '~/source/nvim-treesitter', {'do': ':TSUpdate'}
     Plug 'nvim-treesitter/nvim-treesitter-refactor'
     " Plug '~/source/nvim-treesitter-refactor'
@@ -138,7 +138,7 @@ if !empty($YCM) && empty($NO_PYTHON_DEV) &&
     endif
 
 elseif has('nvim-0.5')
-    Plug 'nvim-lua/completion-nvim', {'commit': '1cb7e96'}
+    Plug 'nvim-lua/completion-nvim'
 
     if executable('gcc') || executable('clang')
         Plug 'nvim-treesitter/completion-treesitter'
@@ -146,7 +146,6 @@ elseif has('nvim-0.5')
 
     if tools#CheckLanguageServer()
         Plug 'neovim/nvim-lspconfig'
-        Plug 'haorenW1025/diagnostic-nvim'
     endif
 
     " TODO: Integrate this with treesitter

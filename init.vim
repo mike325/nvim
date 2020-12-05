@@ -124,15 +124,14 @@ else
             Plug 'nvim-lua/telescope.nvim'
         endif
 
-        Plug 'nvim-lua/completion-nvim', {'commit': '1cb7e96'}
+        Plug 'nvim-lua/completion-nvim'
 
         if tools#CheckLanguageServer()
             Plug 'neovim/nvim-lspconfig'
-            Plug 'haorenW1025/diagnostic-nvim'
         endif
 
         if executable('gcc') || executable('clang')
-            Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate', 'commit': '049028e'}
+            Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
             " Plug '~/source/nvim-treesitter', {'do': ':TSUpdate'}
             Plug 'nvim-treesitter/nvim-treesitter-refactor'
             " Plug '~/source/nvim-treesitter-refactor'
