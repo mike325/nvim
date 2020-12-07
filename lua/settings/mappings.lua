@@ -287,6 +287,9 @@ nvim.nvim_set_abbr{ mode = 'c', lhs = 'qa1', rhs = 'qa!' }
 nvim.nvim_set_abbr{ mode = 'c', lhs = 'w1' , rhs = 'w!' }
 nvim.nvim_set_abbr{ mode = 'c', lhs = 'wA!', rhs = 'wa!' }
 nvim.nvim_set_abbr{ mode = 'c', lhs = 'wa1', rhs = 'wa!' }
+nvim.nvim_set_abbr{ mode = 'c', lhs = 'Qa1', rhs = 'qa!' }
+nvim.nvim_set_abbr{ mode = 'c', lhs = 'Qa!', rhs = 'qa!' }
+nvim.nvim_set_abbr{ mode = 'c', lhs = 'QA!', rhs = 'qa!' }
 
 nvim.nvim_set_mapping{ mode = 'c', lhs = '<C-n>', rhs = '<down>', args = noremap }
 nvim.nvim_set_mapping{ mode = 'c', lhs = '<C-p>', rhs = '<up>', args = noremap }

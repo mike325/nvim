@@ -166,6 +166,10 @@ end
 -- Expose languages to VimL
 nvim.g.available_languages = available_languages
 
+if #available_languages == 0 then
+    return false
+end
+
 nvim_set_autocmd{
     event   = 'FileType',
     pattern = available_languages,

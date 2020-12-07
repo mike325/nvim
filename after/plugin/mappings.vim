@@ -202,6 +202,10 @@ cabbrev qa1 qa!
 cabbrev w1 w!
 cabbrev wA! wa!
 cabbrev wa1 wa!
+cabbrev QA! qa!
+cabbrev QA1 qa!
+cabbrev Qa! qa!
+cabbrev Qa1 qa!
 
 if os#name('windows')
     command! PowershellToggle call windows#toggle_powershell()
