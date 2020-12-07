@@ -37,6 +37,10 @@ local get_python_exe = function(version)
         return python[pyversion]['path']
     end
 
+    if _G['python']['3']['path'] ~= nil and pyversion == '2' then
+        nvim.g[deactivate] = 0
+    end
+
     if nvim.g[deactivate] == 0 then
         return nil
     end
@@ -76,11 +80,11 @@ function M:setup()
 
     local has_python = false
 
-    if get_python_exe(2) ~= nil then
+    if get_python_exe(3) ~= nil then
         has_python = true
     end
 
-    if get_python_exe(3) ~= nil then
+    if get_python_exe(2) ~= nil then
         has_python = true
     end
 
