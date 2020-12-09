@@ -44,14 +44,15 @@ if has('nvim-0.5') && (executable('gcc') || executable('clang'))
 else
     Plug 'tbastos/vim-lua'
     Plug 'octol/vim-cpp-enhanced-highlight'
+
+    if has('nvim') && has#python('3', '5')
+        Plug 'numirias/semshi', {'do': ':silent! UpdateRemotePlugins'}
+    endif
+
 endif
 
 if has('nvim-0.4') && empty($SSH_CONNECTION) && !os#name('wsl')
     Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
-endif
-
-if has('nvim') && has#python('3', '5')
-    Plug 'numirias/semshi', {'do': ':silent! UpdateRemotePlugins'}
 endif
 
 if !os#name('windows')
