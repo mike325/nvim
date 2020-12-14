@@ -58,7 +58,7 @@ if completion ~= nil then
     -- end
 
     if nvim.g.completion_enable_snippet then
-        items.complete_items[#items.complete_items + 1] = 'snippets'
+        items.complete_items[#items.complete_items + 1] = 'snippet'
     end
 
     if #items.complete_items > 0 then
