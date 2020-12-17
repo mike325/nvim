@@ -308,18 +308,18 @@ function get_runtime_files() {
 }
 
 function install_pynvim() {
-    if hash pip2 2>/dev/null; then
-        pip2 install --user pynvim
-        PYTHON2=1
-    else
-        warn_msg "Skipping python 2 test with Neovim"
-    fi
-
     if hash pip3 2>/dev/null; then
-        pip3 install --user pynvim
+        pip3 install --user wheel pynvim
         PYTHON3=1
     else
         warn_msg "Skipping python 3 test with Neovim"
+    fi
+
+    if hash pip2 2>/dev/null; then
+        pip2 install --user wheel pynvim
+        PYTHON2=1
+    else
+        warn_msg "Skipping python 2 test with Neovim"
     fi
 
     if [[ $PYTHON2 -eq 1 ]] || [[ $PYTHON3 -eq 1 ]]; then
