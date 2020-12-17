@@ -4,7 +4,7 @@ local api = vim.api
 
 local has_attrs = require'tools.tables'.has_attrs
 
-local transform_mapping = function(lhs)
+local function transform_mapping(lhs)
     if lhs:sub(1, 3) == '<c-' or lhs:sub(1, 3) == '<a-' or lhs:sub(1, 3) == '<s-' then
         lhs = string.upper(lhs:sub(1, 3)) .. lhs:sub(4, #lhs)
     elseif nvim.eval(([[ '%s' =~? '<\(cr\|del\|esc\|bs\|tab\)>' ]]):format(lhs)) then
@@ -14,7 +14,7 @@ local transform_mapping = function(lhs)
     return lhs
 end
 
-local nvim_set_abbr = function(abbr)
+local function nvim_set_abbr(abbr)
 
     if not has_attrs(abbr, {'mode', 'lhs'}) then
         nvim.echoerr('Missing arguments, set_abbr need a mode and a lhs attribbutes')
@@ -76,7 +76,7 @@ local nvim_set_abbr = function(abbr)
     api.nvim_command(table.concat(command, ' '))
 end
 
-local nvim_get_mapping = function(mapping)
+local function nvim_get_mapping(mapping)
 
     if not has_attrs(mapping, {'mode', 'lhs'}) then
         nvim.echoerr('Missing arguments, get_mapping need a mode and a lhs attribbutes')
@@ -118,7 +118,7 @@ local nvim_get_mapping = function(mapping)
 end
 
 
-local nvim_set_mapping = function(mapping)
+local function nvim_set_mapping(mapping)
 
     if not has_attrs(mapping, {'mode', 'lhs'}) then
         nvim.echoerr('Missing arguments, set_mapping need a mode and a lhs attribbutes')
@@ -161,11 +161,11 @@ local nvim_set_mapping = function(mapping)
 end
 
 
-local nvim_create_autogrp = function(autogrp)
+local function nvim_create_autogrp(autogrp)
     api.nvim_command('augroup '..autogrp..' | autocmd! | autogrp end')
 end
 
-local nvim_get_autocmd = function(autocmd)
+local function nvim_get_autocmd(autocmd)
 
     if not has_attrs(autocmd, {'event'}) and not has_attrs(autocmd, {'group'}) then
         nvim.echoerr('Missing arguments, get_autocmd need event or group attribbute')
@@ -187,11 +187,11 @@ local nvim_get_autocmd = function(autocmd)
     -- TODO: Work in parse autocmd output
 end
 
-local nvim_has_autocmd = function(autocmd)
+local function nvim_has_autocmd(autocmd)
     return nvim_get_autocmd(autocmd) ~= nil
 end
 
-local nvim_set_autocmd = function(autocmd)
+local function nvim_set_autocmd(autocmd)
 
     if not has_attrs(autocmd, {'event'}) then
         nvim.echoerr('Missing arguments, set_autocmd need event attribbute')
@@ -251,7 +251,7 @@ local nvim_set_autocmd = function(autocmd)
     api.nvim_command(table.concat(autocmd_str, ' '))
 end
 
-local nvim_set_command = function(command)
+local function nvim_set_command(command)
     if not has_attrs(command, {'lhs'}) then
         nvim.echoerr('Missing arguments, set_command need a mode and a lhs attribbutes')
         return false

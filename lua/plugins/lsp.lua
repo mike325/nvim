@@ -157,7 +157,7 @@ if #available_languages == 0 then
     return false
 end
 
-vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
+_G['vim'].lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
     vim.lsp.diagnostic.on_publish_diagnostics, {
         underline = true,
         virtual_text = {

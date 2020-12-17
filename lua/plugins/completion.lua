@@ -32,7 +32,7 @@ if completion ~= nil then
     nvim.g.completion_enable_auto_hover      = 0
     nvim.g.completion_enable_auto_paren      = 1
 
-    local spell_check = {'gitcommit', 'markdown', 'tex', 'text', 'plaintext'}
+    -- local spell_check = {'gitcommit', 'markdown', 'tex', 'text', 'plaintext'}
 
     local completion_chain = {
         default = {
