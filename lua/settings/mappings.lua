@@ -664,13 +664,13 @@ if plugins["vim-eunuch"] == nil and nvim.has('nvim-0.5') then
     -- TODO: Make this work with embedded lua
     nvim.nvim_set_command{
         lhs = 'MoveFile',
-        rhs = [[call v:lua.tools.helpers.rename(expand('%:p'), expand(<q-args>), empty(<bang>0) ? 0 : 1)]],
+        rhs = [[call v:lua.tools.files.rename(expand('%:p'), expand(<q-args>), empty(<bang>0) ? 0 : 1)]],
         args = {force = true, bang = true, nargs = 1, complete = 'file'}
     }
 
     nvim.nvim_set_command{
         lhs = 'RenameFile',
-        rhs = [[call v:lua.tools.helpers.rename(expand('%:p'), expand('%:p:h').'/'.expand(<q-args>), empty(<bang>0) ? 0 : 1)]],
+        rhs = [[call v:lua.tools.files.rename(expand('%:p'), expand('%:p:h').'/'.expand(<q-args>), empty(<bang>0) ? 0 : 1)]],
         args = {force = true, bang = true, nargs = 1, complete = 'file'}
     }
 
@@ -682,7 +682,7 @@ if plugins["vim-eunuch"] == nil and nvim.has('nvim-0.5') then
 
     nvim.nvim_set_command{
         lhs = 'RemoveFile',
-        rhs = [[call v:lua.tools.helpers.delete(fnamemodify(empty(<q-args>) ? expand("%") : expand(<q-args>), ":p"), empty(<bang>0) ? 0 : 1)]],
+        rhs = [[call v:lua.tools.files.delete(fnamemodify(empty(<q-args>) ? expand("%") : expand(<q-args>), ":p"), empty(<bang>0) ? 0 : 1)]],
         args = {force = true, bang = true, nargs = '?', complete = 'file'}
     }
 

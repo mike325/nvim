@@ -37,7 +37,7 @@ nvim_set_autocmd{
 nvim_set_autocmd{
     event   = 'BufNewFile',
     pattern = '*',
-    cmd     = 'lua require"tools.helpers".skeleton_filename()',
+    cmd     = 'lua require"tools".files.skeleton_filename()',
     group   = 'Skeletons'
 }
 

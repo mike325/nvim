@@ -49,7 +49,7 @@ nnoremap <buffer> gwg :VimwikiGoto<space>
 " endif
 
 if has('nvim-0.4')
-    call luaeval('require"tools".abolish(_A[1])', &l:spelllang)
+    lua require"tools".helpers.abolish(require'nvim'.bo.spelllang)
 else
     call tools#abolish(&l:spelllang)
 endif

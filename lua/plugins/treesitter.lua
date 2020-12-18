@@ -108,6 +108,13 @@ treesitter.setup{
                 ["[C"] = "@comment.outer",
             },
         },
+        -- lsp_interop = {
+        --     enable = true,
+        --     peek_definition_code = {
+        --         ["df"] = "@function.outer",
+        --         ["dF"] = "@class.outer",
+        --     },
+        -- },
     },
     refactor = {
         -- highlight_current_scope = { enable = true },

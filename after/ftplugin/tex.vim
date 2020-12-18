@@ -20,7 +20,7 @@ let g:tex_conceal      = 'abdmgs'
 let g:tex_fold_enabled = 1
 
 if has('nvim-0.4')
-    lua require"tools".abolish(require'nvim'.o.spelllang)
+    lua require"tools".helpers.abolish(require'nvim'.bo.spelllang)
 else
     call tools#abolish(&spelllang)
 endif
