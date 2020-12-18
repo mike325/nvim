@@ -26,18 +26,18 @@ jobs:
           wget -O screenfetch-dev https://git.io/vaHfR
           chmod +x screenfetch-dev
           ./screenfetch-dev
-      - name: Install dependencies
+      - name: Install system packages
         run: |
           sudo apt install -y curl git shellcheck python3-setuptools python-setuptools build-essential cmake python3-dev
           sudo apt install -y python3-pip
-          sudo pip3 install --upgrade pip
       - name: Fetch script
         run: |
           curl -OL https://raw.githubusercontent.com/Mike325/dotfiles/master/install.sh
           chmod +x ./install.sh
-      - name: Install dotfiles
+      - name: Install dotfiles and dependencies
         run: |
-          ./install.sh --verbose --vim --nvim
+          ./install.sh --verbose --vim --nvim --python=3 --portables
+          sudo pip3 install --upgrade pip python-language-server
       - name: Test neovim and stock vim
         run: |
           export PATH="$HOME/.local/bin:$PATH"
@@ -70,7 +70,7 @@ jobs:
       - uses: actions/checkout@v1
       - name: OS Info
         run: |
-          brew install git shellcheck neovim cmake wget
+          brew install git shellcheck neovim cmake wget python
           wget -O screenfetch-dev https://git.io/vaHfR
           chmod +x screenfetch-dev
           ./screenfetch-dev
@@ -78,9 +78,10 @@ jobs:
         run: |
           curl -OL https://raw.githubusercontent.com/Mike325/dotfiles/master/install.sh
           chmod +x ./install.sh
-      - name: Install dotfiles
+      - name: Install dotfiles and dependencies
         run: |
-          ./install.sh --verbose --vim --nvim=dotfiles
+          ./install.sh --verbose --vim --nvim=dotfiles --python=3
+          pip3 install --upgrade python-language-server
       - name: Test neovim and stock vim
         run: |
           export PATH="$HOME/.local/bin:$PATH"
@@ -114,7 +115,7 @@ jobs:
         shell: powershell
         run: |
           Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
-      - name: Install dependencies
+      - name: Install system packages
         shell: powershell
         run: |
           choco install -y python git curl vim neovim mingw cmake
@@ -123,10 +124,10 @@ jobs:
         run: |
           curl -OL https://raw.githubusercontent.com/Mike325/dotfiles/master/install.sh
           chmod +x ./install.sh
-      - name: Install dotfiles
+      - name: Install dotfiles and dependencies
         shell: bash
         run: |
-          ./install.sh --verbose --vim --nvim=dotfiles
+          ./install.sh --verbose --vim --nvim=dotfiles --python=3 --portables
       - name: Basic stock test
         shell: bash
         run: |

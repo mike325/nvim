@@ -334,12 +334,12 @@ function run_test() {
     local rsp=0
     local args
 
-    if [[ $prog == nvim ]] && [[ $SHELL_PLATFORM == 'linux' ]]; then
-        status_msg "Setting YCM flag"
-        export YCM=1
-    else
-        unset YCM
-    fi
+    # if [[ $prog == nvim ]] && [[ $SHELL_PLATFORM == 'linux' ]]; then
+    #     status_msg "Setting YCM flag"
+    #     export YCM=1
+    # else
+    #     unset YCM
+    # fi
 
     if [[ $prog == nvim ]]; then
         if [[ $PYTHON2 -eq 0 ]] && [[ $PYTHON3 -eq 0 ]]; then
