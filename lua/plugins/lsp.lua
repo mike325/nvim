@@ -1,7 +1,7 @@
 -- luacheck: max line length 180
 local sys         = require'sys'
 local nvim        = require'nvim'
-local load_module = require'tools'.load_module
+local load_module = require'tools'.helpers.load_module
 
 local plugins          = nvim.plugins
 local executable       = nvim.executable

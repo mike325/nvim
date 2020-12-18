@@ -1,7 +1,6 @@
 -- luacheck: globals unpack vim
 -- local i = vim.inspect
 local api = vim.api
-
 local has_attrs = require'tools.tables'.has_attrs
 
 local function transform_mapping(lhs)
@@ -303,18 +302,6 @@ _G['nvim'] = {
         if type(msg) == 'string' and #msg > 0 then
             vim.api.nvim_err_writeln(msg)
         end
-    end;
-    clear_lst = function(lst)
-        local tmp = lst
-
-        for idx,val in pairs(lst) do
-            val = vim.trim(val)
-            if #val == 0 or val == [[\n]] then
-                table.remove(tmp, idx)
-            end
-        end
-
-        return tmp
     end;
     plugins = setmetatable({}, {
         __index = function(self, k)

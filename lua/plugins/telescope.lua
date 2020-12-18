@@ -2,7 +2,7 @@
 local nvim        = require'nvim'
 -- local sys         = require'sys'
 local tools       = require'tools'
-local load_module = require'tools'.load_module
+local load_module = tools.helpers.load_module
 
 -- local plugins          = nvim.plugins
 -- local isdirectory      = nvim.isdirectory
@@ -24,7 +24,7 @@ local actions = require('telescope.actions')
 
 telescope.setup{
     defaults = {
-        vimgrep_arguments = tools.to_clean_tbl(tools.select_grep(false)),
+        vimgrep_arguments = tools.tables.str_to_clean_tbl(tools.helpers.select_grep(false)),
         layout_defaults = {
             -- TODO add builtin options.
         },
@@ -101,7 +101,7 @@ local noremap = {noremap = true}
 nvim_set_mapping{
     mode = 'n',
     lhs = '<C-p>',
-    rhs = [[<cmd>lua require'telescope.builtin'.find_files{ find_command = tools.to_clean_tbl(tools.select_filelist(vim.b.project_root.is_git))}<CR>]],
+    rhs = [[<cmd>lua require'telescope.builtin'.find_files{ find_command = tools.tables.str_to_clean_tbl(tools.helpers.select_filelist(vim.b.project_root.is_git))}<CR>]],
     args = {noremap = true}
 }
 
@@ -133,7 +133,7 @@ nvim_set_command{
 
 nvim.nvim_set_command{
     lhs = 'GetVimFiles',
-    rhs = [[lua require'telescope.builtin'.find_files{cwd = require'sys'.base, find_command = tools.to_clean_tbl(tools.select_filelist(false))}]],
+    rhs = [[lua require'telescope.builtin'.find_files{cwd = require'sys'.base, find_command = tools.tables.str_to_clean_tbl(tools.helpers.select_filelist(false))}]],
     args = {force=true}
 }
 

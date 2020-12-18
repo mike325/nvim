@@ -8,7 +8,7 @@ local stdpath     = nvim.fn.stdpath
 local isdirectory = nvim.isdirectory
 -- local executable  = nvim.executable
 
-local system_name = function()
+local function system_name()
     local name = 'unknown'
 
     if nvim.has('win32unix') or nvim.has('win32') then
@@ -25,7 +25,7 @@ local system_name = function()
     return name
 end
 
-local homedir = function()
+local function homedir()
     local var = system_name() == 'windows' and 'USERPROFILE' or 'HOME'
     local home = nvim.env[var]
 
@@ -34,7 +34,7 @@ local homedir = function()
     return home
 end
 
-local basedir = function()
+local function basedir()
     local dir = stdpath('config'):gsub('\\', '/')
 
     if isdirectory(dir) then
@@ -44,7 +44,7 @@ local basedir = function()
     return dir
 end
 
-local cachedir = function()
+local function cachedir()
     local dir = stdpath('cache'):gsub('\\', '/')
 
     if isdirectory(dir) then
@@ -54,7 +54,7 @@ local cachedir = function()
     return dir
 end
 
-local datadir = function()
+local function datadir()
     local dir = stdpath('data'):gsub('\\', '/')
 
     if isdirectory(dir) then
@@ -64,28 +64,13 @@ local datadir = function()
     return dir
 end
 
-local sys = setmetatable({
+local sys = {
     name  = system_name(),
     home  = homedir(),
     base  = basedir(),
     data  = datadir(),
     cache = cachedir(),
-}, {
-    __index = function(self, k)
-        local mt = getmetatable(self)
-        local x = mt[k]
-        if x ~= nil then
-            return x
-        end
-
-        local f = os[k]
-        if f ~= nil then
-            mt[k] = f
-        end
-
-        return f
-    end;
-})
+}
 
 function sys.tmp(filename)
     local tmpdir = sys.name == 'windows' and 'c:/temp/' or '/tmp/'

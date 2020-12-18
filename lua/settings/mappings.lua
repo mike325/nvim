@@ -1,15 +1,9 @@
 -- luacheck: max line length 150
-local sys  = require('sys')
-local nvim = require('nvim')
+local sys  = require'sys'
+local nvim = require'nvim'
 
--- local api = nvim.api
+local iregex = require'tools'.strings.iregex
 
--- local regex = require('tools').regex
-local iregex = require('tools').regex
-
--- local parent      = sys.data
--- local mkdir       = nvim.fn.mkdir
--- local isdirectory = nvim.isdirectory
 local has        = nvim.has
 local executable = nvim.executable
 local plugins    = nvim.plugins
@@ -18,6 +12,7 @@ local mappings = {}
 
 local noremap = {noremap = true}
 local noremap_silent = {noremap = true, silent = true}
+
 
 function mappings.terminal(cmd)
     -- local split = nvim.o.splitbelow == true and 'botright' or 'topleft'
@@ -439,7 +434,7 @@ nvim.nvim_set_command{
 
 nvim.nvim_set_command{
     lhs = 'SpellLang',
-    rhs = 'lua require"tools".spelllangs(<q-args>)',
+    rhs = 'lua require"tools".helpers.spelllangs(<q-args>)',
     args = {force = true, nargs = '?', complete = 'customlist,mappings#spells'}
 }
 
@@ -458,13 +453,13 @@ nvim.nvim_set_command{
 nvim.nvim_set_mapping{
     mode = 'n',
     lhs = '=l',
-    rhs = [[:call v:lua.tools.helpers.toggle_qf('loc')<CR>]],
+    rhs = [[:lua require'tools'.helpers.toggle_qf('loc')<CR>]],
     args = noremap_silent
 }
 nvim.nvim_set_mapping{
     mode = 'n',
     lhs = '=q',
-    rhs = [[:call v:lua.tools.helpers.toggle_qf('qf')<CR>]],
+    rhs = [[:lua require'tools'.helpers.toggle_qf('qf')<CR>]],
     args = noremap_silent
 }
 
@@ -647,14 +642,14 @@ if plugins["vim-unimpaired"] == nil then
     nvim.nvim_set_mapping{
         mode = 'n',
         lhs = ']<Space>',
-        rhs = [[:<C-U>lua require'tools.helpers'.add_nl(true)<CR>]],
+        rhs = [[:<C-U>lua require'tools'.helpers.add_nl(true)<CR>]],
         args = noremap_silent
     }
 
     nvim.nvim_set_mapping{
         mode = 'n',
         lhs = '[<Space>',
-        rhs = [[:<C-U>lua require'tools.helpers'.add_nl(false)<CR>]],
+        rhs = [[:<C-U>lua require'tools'.helpers.add_nl(false)<CR>]],
         args = noremap_silent,
     }
 
@@ -665,8 +660,6 @@ if plugins["vim-vinegar"] == nil and plugins["nerdtree"] == nil then
 end
 
 if plugins["vim-eunuch"] == nil and nvim.has('nvim-0.5') then
-
-    require'tools.helpers'
 
     -- TODO: Make this work with embedded lua
     nvim.nvim_set_command{

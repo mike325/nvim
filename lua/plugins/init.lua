@@ -13,7 +13,7 @@ if nvim.has('nvim-0.5') then
     end
 end
 
-local get_plugins = function()
+local function get_plugins()
     return nvim.g.plugs
 end
 
@@ -23,7 +23,7 @@ if plugins == nil then
     return nil
 end
 
-local convert2settings = function(name)
+local function convert2settings(name)
     name = name:gsub('+', '')
     name = name:gsub('[-/%.]', '_')
 

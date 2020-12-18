@@ -52,8 +52,21 @@ function M.has_attrs(tbl, attrs)
     return false
 end
 
-function M.trim_table(cmd_string)
-    return nvim.clear_lst(nvim.fn.split(vim.trim(cmd_string), ' ', true))
+function M.clear_lst(lst)
+    local tmp = lst
+
+    for idx,val in pairs(lst) do
+        val = vim.trim(val)
+        if #val == 0 or val == [[\n]] then
+            table.remove(tmp, idx)
+        end
+    end
+
+    return tmp
+end
+
+function M.str_to_clean_tbl(cmd_string)
+    return M.clear_lst(vim.split(vim.trim(cmd_string), ' ', true))
 end
 
 return M

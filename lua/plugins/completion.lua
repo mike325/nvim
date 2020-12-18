@@ -1,6 +1,6 @@
 local nvim        = require'nvim'
-local load_module = require'tools'.load_module
-local has_attrs   = require'tools.tables'.has_attrs
+local load_module = require'tools'.helpers.load_module
+local has_attrs   = require'tools'.tables.has_attrs
 
 local plugins          = nvim.plugins
 local nvim_set_autocmd = nvim.nvim_set_autocmd

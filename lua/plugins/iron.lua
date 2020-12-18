@@ -1,6 +1,6 @@
-local sys          = require('sys')
-local nvim         = require('nvim')
-local load_module  = require('tools').load_module
+local sys          = require'sys'
+local nvim         = require'nvim'
+local load_module  = require'tools'.helpers.load_module
 
 local executable   = nvim.executable
 local filereadable = nvim.filereadable
@@ -37,13 +37,13 @@ if nvim.env.SHELL ~= nil then
     preferred['cpp'] = 'shell'
 end
 
-iron.core.add_repl_definitions{
-    python = {
-        django = {
-            command = {python_executable, './manage.py', 'shell'},
-        },
-    },
-}
+-- iron.core.add_repl_definitions{
+--     python = {
+--         django = {
+--             command = {python_executable, './manage.py', 'shell'},
+--         },
+--     },
+-- }
 
 -- TODO: Find a way to detect available COM ports
 -- TODO: Handle WSL

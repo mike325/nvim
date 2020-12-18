@@ -16,4 +16,8 @@ function M.split_components(str, pattern)
     return t
 end
 
+function M.str_to_clean_tbl(cmd_string)
+    return require'tools.tables'.str_to_clean_tbl(cmd_string)
+end
+
 return M

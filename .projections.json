@@ -8,6 +8,8 @@
   "common/*.vim"            : {"type": "Common"},
   ".luacheckrc"             : {"type": "Lua"},
   "lua/*.lua"               : {"type": "Lua"},
+  "lua/tools/init.lua"      : {"type": "Tools"},
+  "lua/tools/*.lua"         : {"type": "Tools"},
   "rplugins/python3/*.py"   : {"type": "RPython3"},
   "rplugins/python/*.py"    : {"type": "RPython"},
   "python3/*.py"            : {"type": "Python3"},

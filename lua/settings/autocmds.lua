@@ -30,21 +30,21 @@ nvim_set_autocmd{
 nvim_set_autocmd{
     event   = 'BufRead',
     pattern = '*',
-    cmd     = 'lua require"tools".last_position()',
+    cmd     = 'lua require"tools".buffers.last_position()',
     group   = 'LastEditPosition'
 }
 
 nvim_set_autocmd{
     event   = 'BufNewFile',
     pattern = '*',
-    cmd     = 'lua require"tools".file_name()',
+    cmd     = 'lua require"tools.helpers".skeleton_filename()',
     group   = 'Skeletons'
 }
 
 nvim_set_autocmd{
     event   = {'DirChanged', 'BufNewFile', 'BufReadPre', 'BufEnter', 'VimEnter'},
     pattern = '*',
-    cmd     = 'lua require"tools.helpers".project_config(require"nvim".fn.deepcopy(require"nvim".v.event))',
+    cmd     = 'lua require"tools".helpers.project_config(require"nvim".fn.deepcopy(require"nvim".v.event))',
     group   = 'ProjectConfig'
 }
 
@@ -110,7 +110,7 @@ if plugins['completor.vim'] == nil then
     nvim_set_autocmd{
         event   = 'BufWritePre',
         pattern = '*',
-        cmd     = 'lua require"tools".clean_file()',
+        cmd     = 'lua require"tools".files.clean_file()',
         group   = 'CleanFile'
     }
 end

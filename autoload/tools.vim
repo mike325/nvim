@@ -12,43 +12,43 @@ if has('nvim-0.5')
     lua require('tools')
 
     function! tools#getLanguageServer(language) abort
-        return v:lua.tools.get_language_server(a:language)
+        return luaeval("require'tools'.helpers.get_language_server(_A[1])", a:language)
     endfunction
 
     function! tools#CheckLanguageServer(...) abort
-        return v:lua.tools.check_language_server(a:000)
-    endfunction
-
-    function! tools#grep(tool, ...) abort
-        return v:lua.tools.grep(a:tool, a:000)
+        return luaeval("require'tools'.helpers.check_language_server(_A[1])", a:000)
     endfunction
 
     function! tools#grep(tool) abort
-        return v:lua.tools.grep(a:tool)
+        return luaeval("require'tools'.helpers.grep(_A[1])", a:tool)
     endfunction
 
-    function! tools#filelist(tool) abort
-        return v:lua.tools.filelist(a:tool)
+    function! tools#grep(tool, ...) abort
+        return v:lua.tools.helpers.grep(a:tool, a:000)
     endfunction
 
     function! tools#select_grep(is_git, ...) abort
-        return v:lua.tools.select_grep(a:is_git, a:000)
+        return v:lua.tools.helpers.select_grep(a:is_git, a:000)
+    endfunction
+
+    function! tools#filelist(tool) abort
+        return luaeval("require'tools'.helpers.filelist(_A[1])", a:tool)
     endfunction
 
     function! tools#select_filelist(is_git) abort
-        return v:lua.tools.select_filelist(a:is_git)
+        return luaeval("require'tools'.helpers.select_filelist(_A[1])", a:is_git)
     endfunction
 
     function! tools#spelllangs(lang) abort
-        lua tools.spelllang(a:lang)
+        lua require'tools'.helpers.spelllang(a:lang)
     endfunction
 
     function! tools#echoerr(msg) abort
-        lua tools.echoerr(a:msg)
+        lua require'tools'.helpers.echoerr(a:msg)
     endfunction
 
     function! tools#ignores(tool) abort
-        return v:lua.tools.ignores(a:tool)
+        return luaeval("require'tools'.helpers.ignores(_A[1])", a:tool)
     endfunction
 
     finish

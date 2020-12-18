@@ -1,4 +1,4 @@
-local nvim = require('nvim')
+local nvim = require'nvim'
 -- local api = vim.api
 
 local has        = nvim.has
@@ -6,8 +6,8 @@ local system     = nvim.fn.system
 local exepath    = nvim.fn.exepath
 local executable = nvim.executable
 
-local check_version    = require('tools').check_version
-local split_components = require('tools').split_components
+local check_version    = require'tools'.helpers.check_version
+local split_components = require'tools'.strings.split_components
 
 -- local inspect = vim.inspect
 
@@ -22,7 +22,7 @@ local M = {
     },
 }
 
-local get_python_exe = function(version)
+local function get_python_exe(version)
 
     local pyexe = nil
     -- local pyeval = version == 2 and 'pyeval' or 'py3eval'
