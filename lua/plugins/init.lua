@@ -1,15 +1,28 @@
-local nvim = require('nvim')
+local nvim = require'nvim'
 
 -- TODO: Add dynamic plugin load
-require('plugins/iron')
 
 if nvim.has('nvim-0.5') then
-    require('plugins/treesitter')
-    require('plugins/lsp')
-    require('plugins/completion')
-    local telescope = require('plugins/telescope')
-    if not telescope then
-        require('grep')
+    local plugins = {
+        iron       = { ok = false, status  = false},
+        lsp        = { ok = false, status  = false},
+        telescope  = { ok = false, status  = false},
+        treesitter = { ok = false, status  = false},
+        completion = { ok = false, status  = false},
+    }
+
+    for plugin, _ in pairs(plugins) do
+        local ok, status = pcall(require, 'plugins/'..plugin)
+        plugins[plugin].ok = ok
+        plugins[plugin].status = status
+        if not ok then
+            nvim.echoerr(string.format('Failed to load %s, Error: %s', plugin, status))
+            plugins[plugin].status = false
+        end
+    end
+
+    if plugins.telescope.ok and not plugins.telescope.status then
+        pcall(require, 'grep')
     end
 end
 

@@ -5,10 +5,10 @@ local has_attrs   = require'tools'.tables.has_attrs
 local plugins          = nvim.plugins
 local nvim_set_autocmd = nvim.nvim_set_autocmd
 
-local completion = load_module('completion')
+local completion = load_module 'completion'
 
-local lsp = require'plugins/lsp'
-local treesitter = require'plugins/treesitter'
+local lsp = require 'plugins/lsp'
+local treesitter = require 'plugins/treesitter'
 
 if completion ~= nil then
 
@@ -77,9 +77,9 @@ if completion ~= nil then
                     }
                 }
                 if language == 'vim' then
-                    table.insert(completion_chain[language], 3, {mode = 'cmd'})
+                    table.insert(completion_chain[language].default, 3, {mode = 'cmd'})
                 -- elseif spell_check[language] ~= nil then
-                --     table.insert(completion_chain[language], 3, {mode = 'spel'})
+                --     table.insert(completion_chain[language].default, 3, {mode = 'spel'})
                 end
             end
         end
@@ -98,7 +98,7 @@ if completion ~= nil then
                 }
             end
             -- if spell_check[language] ~= nil then
-            --     table.insert(completion_chain[language], 3, {mode = 'spel'})
+            --     table.insert(completion_chain[language].default, 3, {mode = 'spel'})
             -- end
         end
     end
