@@ -1,11 +1,11 @@
 local M = {}
 
 function M.regex(str, regex)
-    return vim.nvim_eval(string.format([[ '%s'  =~# '%s' ]], str, regex)) == 1
+    return vim.api.nvim_eval(string.format([[ '%s'  =~# '%s' ]], str, regex)) == 1
 end
 
 function M.iregex(str, regex)
-    return vim.nvim_eval(string.format([[ '%s'  =~? '%s' ]], str, regex)) == 1
+    return vim.api.nvim_eval(string.format([[ '%s'  =~? '%s' ]], str, regex)) == 1
 end
 
 function M.split_components(str, pattern)
