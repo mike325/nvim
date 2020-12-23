@@ -33,6 +33,8 @@ Plug 'tpope/vim-endwise'
 " Plug 'editorconfig/editorconfig-vim'
 " Plug 'pechorin/any-jump.vim'
 
+Plug 'ojroques/vim-oscyank'
+
 if has('nvim-0.5') && (executable('gcc') || executable('clang'))
     Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
     " Plug '~/source/nvim-treesitter', {'do': ':TSUpdate'}
