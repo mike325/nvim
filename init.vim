@@ -100,6 +100,7 @@ else
     " Plug 'lambdalisue/gina.vim' " TODO: keep testing this
     Plug 'Raimondi/delimitMate'
     Plug 'tpope/vim-commentary'
+    Plug 'ojroques/vim-oscyank'
 
     " Syntax files
     Plug 'elzr/vim-json'
