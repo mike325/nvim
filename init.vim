@@ -100,7 +100,6 @@ else
     " Plug 'lambdalisue/gina.vim' " TODO: keep testing this
     Plug 'Raimondi/delimitMate'
     Plug 'tpope/vim-commentary'
-    Plug 'ojroques/vim-oscyank'
 
     " Syntax files
     Plug 'elzr/vim-json'
@@ -114,6 +113,10 @@ else
 
     if has('nvim')
         Plug 'Vigemus/iron.nvim'
+    endif
+
+    if executable('alacritty') || executable('kitty') || executable('tmux') || (os#name('windows') && executable('wt'))
+        Plug 'ojroques/vim-oscyank'
     endif
 
     if has#minimal() && has('nvim-0.5')

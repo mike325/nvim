@@ -10,8 +10,11 @@ let g:config_vim_oscyank = 1
 
 if !empty($TMUX)
     let g:oscyank_term = 'tmux'
-else
+elseif os#name('windows')
     let g:oscyank_term = 'alacritty'
+    " let g:oscyank_term = 'wt'
+else
+    let g:oscyank_term = 'kitty'
 endif
 
 " vnoremap <leader>c :OSCYank<CR>
