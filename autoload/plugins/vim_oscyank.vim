@@ -8,7 +8,9 @@ endif
 
 let g:config_vim_oscyank = 1
 
-if !empty($TMUX)
+if !empty($OSCTERM)
+    let g:oscyank_term = $OSCTERM
+elseif !empty($TMUX)
     let g:oscyank_term = 'tmux'
 elseif os#name('windows')
     let g:oscyank_term = 'alacritty'
@@ -16,6 +18,8 @@ elseif os#name('windows')
 else
     let g:oscyank_term = 'kitty'
 endif
+
+" command! -nargs=1 -complete=customlist,{ arg, _, __ -> filter(['tmux', 'kitty', 'default'], "v:val =~? join(split(arg, 'zs'), '.*')") } OSCTerm let g:oscyank_term = <q-args>
 
 " vnoremap <leader>c :OSCYank<CR>
 
