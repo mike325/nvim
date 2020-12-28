@@ -5,7 +5,7 @@ local load_module  = require'tools'.helpers.load_module
 local executable   = nvim.executable
 local filereadable = nvim.filereadable
 
-local iron = load_module('iron')
+local iron = load_module'iron'
 
 if iron == nil then
     return false

@@ -5,7 +5,7 @@ local has_attrs   = require'tools'.tables.has_attrs
 local plugins          = nvim.plugins
 local nvim_set_autocmd = nvim.nvim_set_autocmd
 
-local treesitter = load_module('nvim-treesitter.configs')
+local treesitter = load_module'nvim-treesitter.configs'
 
 if treesitter == nil then
     return false
@@ -141,15 +141,30 @@ treesitter.setup{
     },
 }
 
-if has_attrs(ensure_installed, 'bash') then
-    ensure_installed[#ensure_installed + 1] = 'sh'
+local parsers = require'nvim-treesitter.parsers'
+
+local fts = {}
+
+for lang,opts in pairs(parsers.list) do
+    if parsers.has_parser(lang) then
+        if opts.filetype ~= nil then
+            lang = opts.filetype
+        end
+        fts[#fts + 1] = lang
+        if opts.used_by ~= nil then
+            vim.list_extend(fts, opts.used_by)
+        end
+    end
 end
 
-nvim_set_autocmd{
-    event   = 'FileType',
-    pattern = ensure_installed,
-    cmd     = 'setlocal foldmethod=expr foldexpr=nvim_treesitter#foldexpr()',
-    group   = 'TreesitterAutocmds',
-}
+if #fts > 0 then
+    -- TODO: Check module availability for each language
+    nvim_set_autocmd{
+        event   = 'FileType',
+        pattern = fts,
+        cmd     = 'setlocal foldmethod=expr foldexpr=nvim_treesitter#foldexpr()',
+        group   = 'TreesitterAutocmds',
+    }
+end
 
-return ensure_installed
+return fts

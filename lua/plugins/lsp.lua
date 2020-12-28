@@ -9,7 +9,7 @@ local isdirectory      = nvim.isdirectory
 local nvim_set_autocmd = nvim.nvim_set_autocmd
 -- local nvim_set_command = nvim.nvim_set_command
 
-local lsp = load_module('lspconfig')
+local lsp = load_module'lspconfig'
 
 if lsp == nil then
     return false

@@ -11,7 +11,7 @@ local nvim_set_autocmd = nvim.nvim_set_autocmd
 local nvim_set_mapping = nvim.nvim_set_mapping
 local nvim_set_command = nvim.nvim_set_command
 
-local telescope = load_module('telescope')
+local telescope = load_module'telescope'
 
 if telescope == nil then
     return false

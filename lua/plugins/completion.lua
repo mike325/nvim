@@ -5,7 +5,7 @@ local has_attrs   = require'tools'.tables.has_attrs
 local plugins          = nvim.plugins
 local nvim_set_autocmd = nvim.nvim_set_autocmd
 
-local completion = load_module 'completion'
+local completion = load_module'completion'
 
 local lsp = require 'plugins/lsp'
 local treesitter = require 'plugins/treesitter'

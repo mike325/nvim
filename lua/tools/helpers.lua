@@ -174,7 +174,7 @@ function M.project_config(event)
         nvim.ex.source(project)
     end
 
-    -- local telescope = M.load_module('plugins/telescope')
+    -- local telescope = M.load_module'plugins/telescope'
 
     if plugins['ctrlp'] ~= nil then
         local fast_look_up = {
