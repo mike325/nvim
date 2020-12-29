@@ -7,9 +7,6 @@ setlocal tabstop=4
 setlocal shiftwidth=0
 setlocal softtabstop=-1
 
-" Since '$' is part of the variables, lets treat it as part of the word
-" setlocal iskeyword+=$
-
 let g:is_bash = 1
 " let g:is_sh = 1
 " let g:is_posix = 1
