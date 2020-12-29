@@ -10,16 +10,19 @@ let g:config_vim_oscyank = 1
 
 if !empty($OSCTERM)
     let g:oscyank_term = $OSCTERM
+elseif executable('kitty')
+    let g:oscyank_term = 'kitty'
 elseif !empty($TMUX)
     let g:oscyank_term = 'tmux'
-elseif os#name('windows')
-    let g:oscyank_term = 'alacritty'
-    " let g:oscyank_term = 'wt'
 else
-    let g:oscyank_term = 'kitty'
+    let g:oscyank_term = 'default'
 endif
 
-" command! -nargs=1 -complete=customlist,{ arg, _, __ -> filter(['tmux', 'kitty', 'default'], "v:val =~? join(split(arg, 'zs'), '.*')") } OSCTerm let g:oscyank_term = <q-args>
+function! plugins#vim_oscyank#terminals(args, _, __) abort
+    return filter(['tmux', 'kitty', 'default'], "v:val =~? join(split(a:args, 'zs'), '.*')")
+endfunction
+
+command! -nargs=1 -complete=customlist,plugins#vim_oscyank#terminals OSCTerm let g:oscyank_term = <q-args>
 
 " vnoremap <leader>c :OSCYank<CR>
 
