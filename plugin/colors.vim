@@ -9,6 +9,7 @@ if has#option('termguicolors')
 endif
 
 if !has('nvim')
+    set t_Co=256
     let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
     let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
 endif
@@ -18,7 +19,7 @@ try
         if has#plugin('vim-airline')
             let g:airline_theme = 'sonokai'
         endif
-        let g:sonokai_better_performance = os#name('windows') ? 0 : 1
+        let g:sonokai_better_performance = 1
         let g:sonokai_style = 'shusia'
         let g:sonokai_enable_italic = 1
         let g:sonokai_disable_italic_comment = 1
