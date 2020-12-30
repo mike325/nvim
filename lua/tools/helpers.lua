@@ -13,6 +13,7 @@ local split_components = require'tools.strings'.split_components
 
 local system = nvim.fn.system
 local getcwd = nvim.fn.getcwd
+local line = nvim.fn.line
 
 local M = {}
 
@@ -296,7 +297,30 @@ function M.add_nl(down)
     nvim.put(lines, 'l', down, true)
     nvim.win.set_cursor(0, cursor_pos)
     nvim.command('silent! call repeat#set("'..cmd..'",'..count..')')
+end
 
+function M.move_line(down)
+    local cmd
+    local lines = {''}
+    local count = nvim.v['count1']
+
+    if count > 1 then
+        for _=2,count,1 do
+            lines[#lines + 1] = ''
+        end
+    end
+
+    if down then
+        cmd = ']e'
+        count = line('$') < line('.') + count and line('$') or line('.') + count
+    else
+        cmd = '[e'
+        count = line('.') - count - 1 < 1 and 1 or line('.') - count - 1
+    end
+
+    nvim.command(string.format([[move %s | normal! ==]], count))
+    -- TODO: Make repeat work
+    -- nvim.command('silent! call repeat#set("'..cmd..'",'..count..')')
 end
 
 local function check_lsp(servers)

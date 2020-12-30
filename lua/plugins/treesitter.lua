@@ -38,7 +38,7 @@ end
 treesitter.setup{
     ensure_installed = ensure_installed,
     indent = {
-        enable = true
+        enable = false
     },
     highlight = {
         enable = true,

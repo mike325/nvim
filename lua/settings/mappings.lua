@@ -653,6 +653,20 @@ if plugins["vim-unimpaired"] == nil then
         args = noremap_silent,
     }
 
+    nvim.nvim_set_mapping{
+        mode = 'n',
+        lhs = ']e',
+        rhs = [[:<C-U>lua require'tools'.helpers.move_line(true)<CR>]],
+        args = noremap_silent
+    }
+
+    nvim.nvim_set_mapping{
+        mode = 'n',
+        lhs = '[e',
+        rhs = [[:<C-U>lua require'tools'.helpers.move_line(false)<CR>]],
+        args = noremap_silent,
+    }
+
 end
 
 if plugins["vim-vinegar"] == nil and plugins["nerdtree"] == nil then
@@ -687,9 +701,5 @@ if plugins["vim-eunuch"] == nil and nvim.has('nvim-0.5') then
     }
 
 end
-
--- if plugins["vim-fugitive"] == nil and executable('git') then
---     -- TODO
--- end
 
 return mappings
