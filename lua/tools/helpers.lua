@@ -652,7 +652,7 @@ end
 
 function M.get_language_server(language)
 
-    if M.check_language_server(language) then
+    if not M.check_language_server(language) then
         return {}
     end
 
