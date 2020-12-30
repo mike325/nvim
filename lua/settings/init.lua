@@ -47,6 +47,12 @@ end
 
 nvim.o.shada =  "!,/1000,'1000,<1000,:1000,s10000,h"
 
+if sys.name == 'windows' then
+    nvim.o.shada = nvim.o.shada .. ",rA:,rB:,rC:/Temp/"
+else
+    nvim.o.shada = nvim.o.shada .. ",r/tmp/"
+end
+
 nvim.o.expandtab   = true
 nvim.o.shiftround  = true
 nvim.o.tabstop     = 4
@@ -80,12 +86,7 @@ nvim.o.winblend = 10
 
 nvim.o.showbreak      = '↪\\'
 nvim.o.listchars      = 'tab:▸ ,trail:•,extends:❯,precedes:❮'
-nvim.o.sessionoptions = 'buffers,curdir,folds,globals,localoptions,options,resize,tabpages,winpos,winsize'
 nvim.o.cpoptions      = 'aAceFs_B'
-
-if sys.name == 'windows' then
-    nvim.o.sessionoptions = nvim.o.sessionoptions .. ',slash,unix'
-end
 
 nvim.o.lazyredraw = true
 nvim.o.showmatch  = true

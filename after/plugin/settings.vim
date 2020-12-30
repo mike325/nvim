@@ -296,11 +296,6 @@ if has#bare() && has#plugin('vim-airline')
     set noshowmode
 endif
 
-set sessionoptions=buffers,curdir,folds,globals,localoptions,options,resize,tabpages,winpos,winsize
-if os#name('windows')
-    let &sessionoptions.=',slash,unix'
-endif
-
 if !has#plugin('vim-airline')
     let &statusline = '%< [%f]%=%-5.(%y%r%m%w%q%) %-14.(%l,%c%V%) %P '
 endif
