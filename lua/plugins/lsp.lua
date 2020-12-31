@@ -130,7 +130,7 @@ local available_languages = {}
 
 for language,options in pairs(servers) do
     for option,server in pairs(options) do
-        local dir = isdirectory(sys.home .. '/.cache/nvim/nvim_lsp/' .. server['name'])
+        local dir = isdirectory(sys.home .. '/.cache/nvim/lspconfig/' .. server['name'])
         local exec = executable(server['name']) or (server['executable'] ~= nil and executable(server['executable']))
         if exec or dir then
             local init = server['options'] ~= nil and server['options'] or {}
