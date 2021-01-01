@@ -11,13 +11,12 @@ if iron == nil then
     return false
 end
 
-local python = require('python')
-
 local preferred = {}
 local definitions = {}
 local default = ''
 
-local python_executable = python['3'].version ~= nil and python['3'].path or python['2'].path
+-- local python = require'python'
+-- local python_executable = python['3'].version ~= nil and python['3'].path or python['2'].path
 
 if nvim.env.SHELL ~= nil then
     iron.core.add_repl_definitions {

@@ -1,5 +1,6 @@
 _G['tools']  = setmetatable({}, {
     __index = function(self, k)
+        local ok
         local mt = getmetatable(self)
 
         local x = mt[k]
@@ -7,7 +8,7 @@ _G['tools']  = setmetatable({}, {
             return x
         end
 
-        local ok, x = pcall(require, 'tools.'..k)
+        ok, x = pcall(require, 'tools.'..k)
 
         if not ok then
             x = nil

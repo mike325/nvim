@@ -15,7 +15,7 @@ let g:config_indentline = 1
 
 " nnoremap tdi :IndentLinesToggle<CR>
 
-let g:indentLine_char = empty($NO_COOL_FONTS) ? '┊' : '│'
+" let g:indentLine_char = empty($NO_COOL_FONTS) ? '┊' : '│'
 
 " Set the inline characters for each indent
 " let g:indentLine_char_list = ['|', '¦', '┆', '┊']

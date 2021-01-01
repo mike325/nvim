@@ -8,8 +8,6 @@ local mkdir       = nvim.fn.mkdir
 local isdirectory = nvim.isdirectory
 local executable  = nvim.executable
 
-local tools = require('tools')
-
 local function isempty(s)
     return (s == nil or s == '') and true or false
 end

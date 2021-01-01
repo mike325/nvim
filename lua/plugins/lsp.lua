@@ -16,10 +16,11 @@ if lsp == nil then
 end
 
 local servers = {
-    sh         = { bashls        = { name = 'bash-language-server'}, },
-    rust       = { rust_analyzer = { name = 'rust_analyzer'}, },
-    go         = { gopls         = { name = 'gopls'}, },
-    dockerfile = { dockerls      = { name = 'docker-langserver'}, },
+    sh         = { bashls   = { name = 'bash-language-server'}, },
+    rust       = { rls      = { name = 'rls'}, },
+    go         = { gopls    = { name = 'gopls'}, },
+    dockerfile = { dockerls = { name = 'docker-langserver'}, },
+    java       = { jdtls    = { name = 'jdtls'}, },
     tex = {
         texlab = {
             name = 'texlab',
@@ -61,6 +62,17 @@ local servers = {
         },
     },
     python = {
+        pyls_ms = {
+            name = 'pyls_ms',
+            -- options = {
+            --     settings = {
+            --         python = {
+            --             analysis = {
+            --             },
+            --         },
+            --     },
+            -- },
+        },
         pyls = {
             name = 'pyls',
             options = {

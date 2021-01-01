@@ -2,8 +2,6 @@ local sys = require'sys'
 local nvim = require'nvim'
 local plugins = require'nvim'.plugins
 
-local rename       = nvim.fn.rename
-local bufloaded    = nvim.bufloaded
 local executable   = nvim.executable
 local isdirectory  = nvim.isdirectory
 local filereadable = nvim.filereadable
@@ -300,7 +298,7 @@ function M.add_nl(down)
 end
 
 function M.move_line(down)
-    local cmd
+    -- local cmd
     local lines = {''}
     local count = nvim.v['count1']
 
@@ -311,10 +309,10 @@ function M.move_line(down)
     end
 
     if down then
-        cmd = ']e'
+        -- cmd = ']e'
         count = line('$') < line('.') + count and line('$') or line('.') + count
     else
-        cmd = '[e'
+        -- cmd = '[e'
         count = line('.') - count - 1 < 1 and 1 or line('.') - count - 1
     end
 
@@ -710,7 +708,5 @@ function M.get_language_server(language)
 
     return cmd
 end
-
-_G['tools'].helpers = M
 
 return M
