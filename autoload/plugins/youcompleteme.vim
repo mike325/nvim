@@ -22,7 +22,6 @@ endfunction
 
 let g:ycm_languages = []
 
-
 function! plugins#youcompleteme#install(info) abort
     if a:info.status ==# 'installed' || a:info.force
         " !./install.py --all

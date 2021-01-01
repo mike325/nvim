@@ -16,13 +16,13 @@ if lsp == nil then
 end
 
 local servers = {
-    sh         = { bashls   = { name = 'bash-language-server'}, },
-    rust       = { rls      = { name = 'rls'}, },
-    go         = { gopls    = { name = 'gopls'}, },
-    dockerfile = { dockerls = { name = 'docker-langserver'}, },
-    java       = { jdtls    = { name = 'jdtls'}, },
+    sh         = { { name = 'bash-language-server', config = 'bashls'}, },
+    rust       = { { name = 'rls'}, },
+    go         = { { name = 'gopls'}, },
+    dockerfile = { { name = 'docker-langserver', config = 'dockerls'}, },
+    java       = { { name = 'jdtls'}, },
     tex = {
-        texlab = {
+        {
             name = 'texlab',
             options = {
                 settings = {
@@ -40,13 +40,13 @@ local servers = {
         },
     },
     vim = {
-        vimls = {
+        {
             name = 'vimls',
             executable = 'vim-language-server',
         },
     },
     lua = {
-        sumneko_lua = {
+        {
             name = 'sumneko_lua',
             options = {
                 settings = {
@@ -62,18 +62,8 @@ local servers = {
         },
     },
     python = {
-        pyls_ms = {
-            name = 'pyls_ms',
-            -- options = {
-            --     settings = {
-            --         python = {
-            --             analysis = {
-            --             },
-            --         },
-            --     },
-            -- },
-        },
-        pyls = {
+        { name = 'pyls_ms' },
+        {
             name = 'pyls',
             options = {
                 cmd = {
@@ -98,10 +88,10 @@ local servers = {
                 },
             },
         },
-        jedi_language_server = { name = 'jedi-language-server' },
+        { name = 'jedi-language-server', config = 'jedi_language_server' },
     },
     c = {
-        clangd = {
+        {
             name = 'clangd',
             options = {
                 cmd = {
@@ -116,22 +106,24 @@ local servers = {
                 },
             }
         },
-        ccls = {
+        {
             name = 'ccls',
             options = {
                 cmd = { 'ccls', '--log-file=' .. sys.tmp('ccls.log') },
-                init_options = {
-                    cache = {
-                        directory = sys.cache..'/ccls'
-                    },
-                    highlight = {
-                        lsRanges = true;
-                    },
-                    completion = {
-                        filterAndSort = true,
-                        caseSensitivity = 1,
-                        detailedLabel = false,
-                    },
+                settings = {
+                    ccls = {
+                        cache = {
+                            directory = sys.cache..'/ccls'
+                        },
+                        -- highlight = {
+                        --     lsRanges = true;
+                        -- },
+                        completion = {
+                            filterAndSort = true,
+                            caseSensitivity = 1,
+                            detailedLabel = false,
+                        },
+                    }
                 },
             },
         },
@@ -141,12 +133,15 @@ local servers = {
 local available_languages = {}
 
 for language,options in pairs(servers) do
-    for option,server in pairs(options) do
+    for _,server in pairs(options) do
         local dir = isdirectory(sys.home .. '/.cache/nvim/lspconfig/' .. server['name'])
         local exec = executable(server['name']) or (server['executable'] ~= nil and executable(server['executable']))
         if exec or dir then
             local init = server['options'] ~= nil and server['options'] or {}
-            lsp[option].setup(init)
+            config = server['config'] ~= nil and server['config'] or server['name']
+            -- print('Server: '..config)
+            -- print('Config: ', vim.inspect(init))
+            lsp[config].setup(init)
             available_languages[#available_languages + 1] = language
             if language == 'c' then
                 available_languages[#available_languages + 1] = 'cpp'
