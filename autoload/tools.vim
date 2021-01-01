@@ -12,7 +12,7 @@ if has('nvim-0.5')
     lua require('tools')
 
     function! tools#getLanguageServer(language) abort
-        return luaeval("require'tools'.helpers.get_language_server(_A[1])", a:language)
+        return luaeval("require'tools'.helpers.get_language_server(_A)", a:language)
     endfunction
 
     function! tools#CheckLanguageServer(...) abort
@@ -20,7 +20,7 @@ if has('nvim-0.5')
     endfunction
 
     function! tools#grep(tool) abort
-        return luaeval("require'tools'.helpers.grep(_A[1])", a:tool)
+        return luaeval("require'tools'.helpers.grep(_A)", a:tool)
     endfunction
 
     function! tools#grep(tool, ...) abort

@@ -321,37 +321,6 @@ function M.move_line(down)
     -- nvim.command('silent! call repeat#set("'..cmd..'",'..count..')')
 end
 
-local function check_lsp(servers)
-    for _, server in pairs(servers) do
-        if executable(server) then
-            return true
-        end
-    end
-
-    return false
-end
-
-function M.check_language_server(languages)
-
-    if languages == nil or #languages == 0 then
-        for _, server in pairs(langservers) do
-            if check_lsp(server) then
-                return true
-            end
-        end
-    elseif type(languages) == 'table' then
-        for _, server in pairs(languages) do
-            if check_lsp(langservers[server]) then
-                return true
-            end
-        end
-    elseif langservers[languages] ~= nil then
-        return check_lsp(langservers[languages])
-    end
-
-    return false
-end
-
 function M.find_project_root(path)
     local root
     local vcs_markers = {'.git', '.svn', '.hg',}
@@ -648,6 +617,37 @@ function M.abolish(language)
 
 end
 
+local function check_lsp(servers)
+    for _, server in pairs(servers) do
+        if executable(server) then
+            return true
+        end
+    end
+
+    return false
+end
+
+function M.check_language_server(languages)
+
+    if languages == nil or #languages == 0 then
+        for _, server in pairs(langservers) do
+            if check_lsp(server) then
+                return true
+            end
+        end
+    elseif type(languages) == 'table' then
+        for _, language in pairs(languages) do
+            if check_lsp(langservers[language]) then
+                return true
+            end
+        end
+    elseif langservers[languages] ~= nil then
+        return check_lsp(langservers[languages])
+    end
+
+    return false
+end
+
 function M.get_language_server(language)
 
     if not M.check_language_server(language) then
@@ -699,10 +699,12 @@ function M.get_language_server(language)
 
     local cmd = {}
 
-    for _,server in pairs(langservers[language]) do
-        if executable(server) then
-            cmd = cmds[server]
-            break
+    if langservers[language] ~= nil then
+        for _,server in pairs(langservers[language]) do
+            if executable(server) and cmds[server] ~= nil then
+                cmd = cmds[server]
+                break
+            end
         end
     end
 
