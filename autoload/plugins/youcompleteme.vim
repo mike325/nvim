@@ -138,7 +138,6 @@ if !os#name('windows') && executable('java')
     let g:ycm_languages += ['java']
 endif
 
-
 if tools#CheckLanguageServer('tex')
     let s:ft = ['tex', 'bib']
     let g:ycm_language_server += [{
@@ -174,6 +173,16 @@ if tools#CheckLanguageServer('dockerfile')
     let g:ycm_language_server += [{
         \     'name': 'docker',
         \     'cmdline': tools#getLanguageServer('dockerfile'),
+        \     'filetypes': s:ft
+        \ }]
+    let g:ycm_languages += s:ft
+endif
+
+if tools#CheckLanguageServer('lua')
+    let s:ft = ['lua']
+    let g:ycm_language_server += [{
+        \     'name': 'lua',
+        \     'cmdline': tools#getLanguageServer('lua'),
         \     'filetypes': s:ft
         \ }]
     let g:ycm_languages += s:ft

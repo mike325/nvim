@@ -214,7 +214,7 @@ function! mappings#BufKill(bang) abort
     let l:count = 0
     for l:b in range(1, bufnr('$'))
         if bufexists(l:b) && (!buflisted(l:b) || (a:bang && !bufloaded(l:b)))
-            execute 'bwipeout '.l:b
+            execute 'bwipeout! '.l:b
             let l:count += 1
         endif
     endfor
@@ -229,7 +229,7 @@ function! mappings#BufClean(bang) abort
     let l:count = 0
     for l:b in range(1, bufnr('$'))
         if bufexists(l:b) && ( (a:bang && !buflisted(l:b)) || (!a:bang && !bufloaded(l:b) && buflisted(l:b)) )
-            execute ( (a:bang) ? 'bwipeout ' : 'bdelete! ' ) . l:b
+            execute ( (a:bang) ? 'bwipeout! ' : 'bdelete! ' ) . l:b
             let l:count += 1
         endif
     endfor

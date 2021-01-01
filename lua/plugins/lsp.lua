@@ -54,6 +54,8 @@ local servers = {
                         diagnostics = {
                             globals = {
                                 'vim',
+                                'nvim',
+                                'tools',
                             }
                         },
                     },
@@ -138,7 +140,7 @@ for language,options in pairs(servers) do
         local exec = executable(server['name']) or (server['executable'] ~= nil and executable(server['executable']))
         if exec or dir then
             local init = server['options'] ~= nil and server['options'] or {}
-            config = server['config'] ~= nil and server['config'] or server['name']
+            local config = server['config'] ~= nil and server['config'] or server['name']
             -- print('Server: '..config)
             -- print('Config: ', vim.inspect(init))
             lsp[config].setup(init)
