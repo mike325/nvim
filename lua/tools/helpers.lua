@@ -619,7 +619,7 @@ end
 
 local function check_lsp(servers)
     for _, server in pairs(servers) do
-        if executable(server) or isdirectory(sys.home..'/.cache/nvim/lspconfig/'..server) then
+        if executable(server) or isdirectory(sys.cache..'/lspconfig/'..server) then
             return true
         end
     end
@@ -696,9 +696,9 @@ function M.get_language_server(language)
         ['vim-language-server']  = {'vim-language-server', '--stdio'},
         ['docker-langserver']    = {'docker-langserver', '--stdio'},
         ['sumneko_lua']    = {
-            sys.home..'/.cache/nvim/lspconfig/sumneko_lua/lua-language-server/bin/Linux/lua-language-server',
+            sys.cache..'/lspconfig/sumneko_lua/lua-language-server/bin/Linux/lua-language-server',
             '-E',
-            sys.home..'/.cache/nvim/lspconfig/sumneko_lua/lua-language-server/main.lua',
+            sys.cache..'/lspconfig/sumneko_lua/lua-language-server/main.lua',
         },
     }
 

@@ -16,19 +16,33 @@ if lsp == nil then
 end
 
 local servers = {
-    sh         = { { name = 'bash-language-server', config = 'bashls'}, },
-    rust       = { { name = 'rls'}, },
-    go         = { { name = 'gopls'}, },
-    dockerfile = { { name = 'docker-langserver', config = 'dockerls'}, },
-    java       = { { name = 'jdtls'}, },
+    go         = { { exec = 'gopls'}, },
+    java       = { { exec = 'jdtls'}, },
+    sh         = { { exec = 'bash-language-server',   config = 'bashls'}, },
+    dockerfile = { { exec = 'docker-langserver',      config = 'dockerls'}, },
+    kotlin     = { { exec = 'kotlin-language-server', config = 'kotlin_language_server'}, },
+    rust = {
+        { exec = 'rls', },
+        { exec = 'rust-analyzer', config = 'rust_analyzer', },
+    },
     tex = {
         {
-            name = 'texlab',
+            exec = 'texlab',
             options = {
                 settings = {
+                    bibtex = {
+                        formatting = {
+                        lineLength = 120
+                        }
+                    },
                     latex = {
+                        forwardSearch = {
+                            args = {},
+                            onSave = false
+                        },
                         build = {
-                            -- args = { "-pdf", "-interaction=nonstopmode", "-synctex=1" },
+                            args = { '-pdf', '-interaction=nonstopmode', '-synctex=1', '%f' },
+                            executable = "latexmk",
                             onSave = true,
                         },
                         lint = {
@@ -41,21 +55,32 @@ local servers = {
     },
     vim = {
         {
-            name = 'vimls',
-            executable = 'vim-language-server',
+            exec = 'vim-language-server',
+            config = 'vimls',
         },
     },
     lua = {
         {
-            name = 'sumneko_lua',
+            config = 'sumneko_lua',
             options = {
                 settings = {
                     Lua = {
+                        runtime = {
+                            -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
+                            version = 'LuaJIT',
+                            -- Setup your lua path
+                            path = vim.split(package.path, ';'),
+                        },
+                        workspace = {
+                            -- Make the server aware of Neovim runtime files
+                            library = {
+                                [vim.fn.expand('$VIMRUNTIME/lua')] = true,
+                                [vim.fn.expand('$VIMRUNTIME/lua/vim/lsp')] = true,
+                            },
+                        },
                         diagnostics = {
                             globals = {
                                 'vim',
-                                'nvim',
-                                'tools',
                             }
                         },
                     },
@@ -64,9 +89,12 @@ local servers = {
         },
     },
     python = {
-        { name = 'pyls_ms' },
         {
-            name = 'pyls',
+            config = 'pyls_ms',
+            -- cmd = { 'dotnet', 'exec', 'path/to/Microsoft.Python.languageServer.dll'  };
+        },
+        {
+            exec = 'pyls',
             options = {
                 cmd = {
                     'pyls',
@@ -90,11 +118,11 @@ local servers = {
                 },
             },
         },
-        { name = 'jedi-language-server', config = 'jedi_language_server' },
+        { exec = 'jedi-language-server', config = 'jedi_language_server' },
     },
     c = {
         {
-            name = 'clangd',
+            exec = 'clangd',
             options = {
                 cmd = {
                     'clangd',
@@ -109,17 +137,23 @@ local servers = {
             }
         },
         {
-            name = 'ccls',
+            exec = 'ccls',
             options = {
                 cmd = { 'ccls', '--log-file=' .. sys.tmp('ccls.log') },
                 settings = {
+                    init_options = {
+                        compilationDatabaseDirectory = "build";
+                        index = {
+                            threads = 0;
+                        },
+                        -- clang = {
+                        --     excludeArgs = { "-frounding-math"} ;
+                        -- },
+                    },
                     ccls = {
                         cache = {
                             directory = sys.cache..'/ccls'
                         },
-                        -- highlight = {
-                        --     lsRanges = true;
-                        -- },
                         completion = {
                             filterAndSort = true,
                             caseSensitivity = 1,
@@ -136,11 +170,11 @@ local available_languages = {}
 
 for language,options in pairs(servers) do
     for _,server in pairs(options) do
-        local dir = isdirectory(sys.home .. '/.cache/nvim/lspconfig/' .. server['name'])
-        local exec = executable(server['name']) or (server['executable'] ~= nil and executable(server['executable']))
+        local dir = isdirectory(sys.cache..'/lspconfig/'..(server['config'] or server['exec']) )
+        local exec = server['exec'] ~= nil and executable(server['exec']) or false
         if exec or dir then
             local init = server['options'] ~= nil and server['options'] or {}
-            local config = server['config'] ~= nil and server['config'] or server['name']
+            local config = server['config'] ~= nil and server['config'] or server['exec']
             -- print('Server: '..config)
             -- print('Config: ', vim.inspect(init))
             lsp[config].setup(init)
@@ -160,7 +194,10 @@ for language,options in pairs(servers) do
 end
 
 -- Expose languages to VimL
-nvim.g.available_languages = available_languages
+nvim.g.lsp_languages = available_languages
+
+vim.cmd [[sign define LspDiagnosticsSignError   text=✖ texthl=LspDiagnosticsSignError       linehl= numhl=]]
+vim.cmd [[sign define LspDiagnosticsSignWarning text=⚠ texthl=LspDiagnosticsSignWarning     linehl= numhl=]]
 
 if #available_languages == 0 then
     return false
@@ -178,8 +215,13 @@ _G['vim'].lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
     }
 )
 
-vim.cmd [[sign define LspDiagnosticsSignError   text=✖ texthl=LspDiagnosticsSignError       linehl= numhl=]]
-vim.cmd [[sign define LspDiagnosticsSignWarning text=⚠ texthl=LspDiagnosticsSignWarning     linehl= numhl=]]
+-- nvim_set_autocmd{
+--     event   = 'FileType',
+--     pattern = available_languages,
+--     cmd     = [[autocmd CursorHold <buffer> lua vim.lsp.buf.hover()]],
+--     group   = 'LSPAutocmds',
+--     nested  = true
+-- }
 
 nvim_set_autocmd{
     event   = 'FileType',
@@ -299,14 +341,6 @@ nvim_set_autocmd{
     cmd     = [[lua require'nvim'.nvim_set_command{ lhs = 'Hover', rhs = 'lua vim.lsp.buf.hover()', args = {buffer = true, force = true} }]],
     group   = 'LSPAutocmds'
 }
-
--- nvim_set_autocmd{
---     event   = 'FileType',
---     pattern = available_languages,
---     cmd     = [[autocmd CursorHold <buffer> lua vim.lsp.buf.hover()]],
---     group   = 'LSPAutocmds',
---     nested  = true
--- }
 
 nvim_set_autocmd{
     event   = 'FileType',
