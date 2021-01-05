@@ -4,27 +4,21 @@
 *.o
 *.out
 
-.netrwhist
+/.netrwhist
 
-shada*
-viminfo*
-nviminfo
+/shada*
+/viminfo*
+/nviminfo
 
 /rplugin.vim
 /extras.vim
 
-plugged/
+/plugged/
 /host/
 /autoload/host/
 /plugin/host/
 
 .ropeproject/*
-
-data/cache/*
-data/sessions/*
-data/swap/*
-data/undo/*
-data/backup/*
 
 tags
 TAGS

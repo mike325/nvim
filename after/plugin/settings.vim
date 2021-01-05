@@ -288,7 +288,7 @@ set nowrap
 set nofoldenable
 set foldmethod=syntax
 set foldlevel=99
-set foldcolumn=0
+" set foldcolumn=0
 set fileencoding=utf-8
 
 if has#bare() && has#plugin('vim-airline')

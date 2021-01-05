@@ -17,6 +17,20 @@ if lsp == nil then
     return false
 end
 
+local system_name = ''
+if sys.name == 'mac'  then
+    system_name = "macOS"
+elseif sys.name == 'linux' then
+    system_name = "Linux"
+elseif sys.name == 'windows' then
+    system_name = "Windows"
+else
+    print("Unsupported system for sumneko")
+end
+
+local sumneko_root_path = sys.cache..'/lspconfig/sumneko_lua/lua-language-server'
+local sumneko_binary = sumneko_root_path..'/bin/'..system_name..'/lua-language-server'
+
 local servers = {
     go         = { { exec = 'gopls'}, },
     java       = { { exec = 'jdtls'}, },
@@ -66,6 +80,7 @@ local servers = {
             config = 'sumneko_lua',
             options = {
                 settings = {
+                    cmd = {sumneko_binary, "-E", sumneko_root_path .. "/main.lua"};
                     Lua = {
                         runtime = {
                             -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
@@ -83,7 +98,9 @@ local servers = {
                         diagnostics = {
                             globals = {
                                 'vim',
-                            }
+                                'nvim',
+                                'tools',
+                            },
                         },
                     },
                 },

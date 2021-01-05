@@ -13,10 +13,9 @@ local function system_name()
 
     if nvim.has('win32unix') or nvim.has('win32') then
         name = 'windows'
-    elseif nvim.has('gui_mac') or nvim.has('mac') or nvim.has('macos') or nvim.has('macunix') then
+    elseif nvim.has('mac') then
         name = 'mac'
     elseif nvim.has('unix') then
-        -- TODO: check for false positive problems in macOS
         name = 'linux'
     end
 
