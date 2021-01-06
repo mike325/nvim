@@ -2,6 +2,7 @@
 -- local i = vim.inspect
 local api = vim.api
 local has_attrs = require'tools.tables'.has_attrs
+local echoerr = require'tools.messages'.echoerr
 
 local function transform_mapping(lhs)
     if lhs:sub(1, 3) == '<c-' or lhs:sub(1, 3) == '<a-' or lhs:sub(1, 3) == '<s-' then
@@ -16,7 +17,7 @@ end
 local function nvim_set_abbr(abbr)
 
     if not has_attrs(abbr, {'mode', 'lhs'}) then
-        nvim.echoerr('Missing arguments, set_abbr need a mode and a lhs attribbutes')
+        echoerr('Missing arguments, set_abbr need a mode and a lhs attribbutes')
         return false
     end
 
@@ -24,8 +25,8 @@ local function nvim_set_abbr(abbr)
     local extras = {}
 
     local modes = {
-        insert   = "i",
-        command  = "c",
+        insert  = "i",
+        command = "c",
     }
 
     local lhs = abbr.lhs
@@ -64,7 +65,7 @@ local function nvim_set_abbr(abbr)
             table.insert(command, rhs)
         end
     else
-        nvim.echoerr('Unsupported mode', mode)
+        echoerr('Unsupported mode', mode)
         return false
     end
 
@@ -78,7 +79,7 @@ end
 local function nvim_get_mapping(mapping)
 
     if not has_attrs(mapping, {'mode', 'lhs'}) then
-        nvim.echoerr('Missing arguments, get_mapping need a mode and a lhs attribbutes')
+        echoerr('Missing arguments, get_mapping need a mode and a lhs attribbutes')
         return false
     end
 
@@ -120,7 +121,7 @@ end
 local function nvim_set_mapping(mapping)
 
     if not has_attrs(mapping, {'mode', 'lhs'}) then
-        nvim.echoerr('Missing arguments, set_mapping need a mode and a lhs attribbutes')
+        echoerr('Missing arguments, set_mapping need a mode and a lhs attribbutes')
         return false
     end
 
@@ -167,7 +168,7 @@ end
 local function nvim_get_autocmd(autocmd)
 
     if not has_attrs(autocmd, {'event'}) and not has_attrs(autocmd, {'group'}) then
-        nvim.echoerr('Missing arguments, get_autocmd need event or group attribbute')
+        echoerr('Missing arguments, get_autocmd need event or group attribbute')
         return false
     end
 
@@ -193,7 +194,7 @@ end
 local function nvim_set_autocmd(autocmd)
 
     if not has_attrs(autocmd, {'event'}) then
-        nvim.echoerr('Missing arguments, set_autocmd need event attribbute')
+        echoerr('Missing arguments, set_autocmd need event attribbute')
         return false
     end
 
@@ -252,7 +253,7 @@ end
 
 local function nvim_set_command(command)
     if not has_attrs(command, {'lhs'}) then
-        nvim.echoerr('Missing arguments, set_command need a mode and a lhs attribbutes')
+        echoerr('Missing arguments, set_command need a mode and a lhs attribbutes')
         return false
     end
 
@@ -298,11 +299,6 @@ _G['nvim'] = {
     nvim_set_mapping = nvim_set_mapping;
     nvim_set_autocmd = nvim_set_autocmd;
     nvim_set_command = nvim_set_command;
-    echoerr = function(msg)
-        if type(msg) == 'string' and #msg > 0 then
-            vim.api.nvim_err_writeln(msg)
-        end
-    end;
     plugins = setmetatable({}, {
         __index = function(self, k)
             local mt = getmetatable(self)
@@ -554,21 +550,5 @@ setmetatable(nvim, {
         return f
     end
 })
-
-local func_to_lua = {
-    'executable',
-    'isdirectory',
-    'filereadable',
-    'bufloaded',
-}
-
-for _,func_name in pairs(func_to_lua) do
-    local original = nvim.fn[func_name]
-    if original ~= nil and nvim[func_name] == nil then
-        _G['nvim'][func_name] = function(...)
-            return original(...) == 1
-        end
-    end
-end
 
 return nvim

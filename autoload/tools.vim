@@ -9,18 +9,16 @@ function! tools#checksize() abort
 endfunction
 
 if has('nvim-0.5')
-    lua require('tools')
-
     function! tools#getLanguageServer(language) abort
-        return luaeval("require'tools'.helpers.get_language_server(_A)", a:language)
+        return v:lua.tools.helpers.get_language_server(a:language)
     endfunction
 
     function! tools#CheckLanguageServer(...) abort
-        return luaeval("require'tools'.helpers.check_language_server(_A[1])", a:000)
+        return v:lua.tools.helpers.check_language_server(a:000)
     endfunction
 
     function! tools#grep(tool) abort
-        return luaeval("require'tools'.helpers.grep(_A)", a:tool)
+        return v:lua.tools.helpers.grep(a:tool)
     endfunction
 
     function! tools#grep(tool, ...) abort
@@ -32,23 +30,23 @@ if has('nvim-0.5')
     endfunction
 
     function! tools#filelist(tool) abort
-        return luaeval("require'tools'.helpers.filelist(_A[1])", a:tool)
+        return v:lua.tools.helpers.filelist(a:tool)
     endfunction
 
     function! tools#select_filelist(is_git) abort
-        return luaeval("require'tools'.helpers.select_filelist(_A[1])", a:is_git)
+        return v:lua.tools.helpers.select_filelist(a:is_git)
     endfunction
 
     function! tools#spelllangs(lang) abort
-        lua require'tools'.helpers.spelllang(a:lang)
+        call v:lua.tools.helpers.spelllang(a:lang)
     endfunction
 
     function! tools#echoerr(msg) abort
-        lua require'tools'.helpers.echoerr(a:msg)
+        call v:lua.tools.messages.echoerr(a:msg)
     endfunction
 
     function! tools#ignores(tool) abort
-        return luaeval("require'tools'.helpers.ignores(_A[1])", a:tool)
+        return v:lua.tools.helpers.ignores(a:tool)
     endfunction
 
     finish

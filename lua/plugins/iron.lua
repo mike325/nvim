@@ -2,8 +2,8 @@ local sys          = require'sys'
 local nvim         = require'nvim'
 local load_module  = require'tools'.helpers.load_module
 
-local executable   = nvim.executable
-local filereadable = nvim.filereadable
+local executable   = require'tools'.files.executable
+local is_file = require'tools'.files.is_file
 
 local iron = load_module'iron'
 
@@ -68,7 +68,7 @@ if sys.name == 'windows' then
     }
 
     for _, distro in pairs(wsl) do
-        if filereadable(sys.home..'/AppData/Local/Microsoft/WindowsApps/'..distro..'.exe') then
+        if is_file(sys.home..'/AppData/Local/Microsoft/WindowsApps/'..distro..'.exe') then
             definitions[distro] = {
                 command = {distro}
             }

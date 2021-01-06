@@ -1,4 +1,5 @@
 local nvim = require'nvim'
+local echoerr = require'tools'.messages.echoerr
 -- local sys =  require'sys'
 
 if not nvim.has('nvim-0.5') then
@@ -53,7 +54,7 @@ local function on_exit(id, exit_code, event)
                 title = 'No results for '.. search,
             }
         )
-        nvim.echoerr('No results for '.. search)
+        echoerr('No results for '.. search)
     else
         vim.fn.setqflist(
             {},
@@ -65,7 +66,7 @@ local function on_exit(id, exit_code, event)
                 title = 'Error, Grep '.. search ..' exited with '..exit_code,
             }
         )
-        nvim.echoerr('Grep exited with '..exit_code)
+        echoerr('Grep exited with '..exit_code)
     end
     -- grepjobs[id] = nil
 end

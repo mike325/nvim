@@ -1,4 +1,5 @@
 local nvim = require'nvim'
+local echoerr = require'tools'.messages.echoerr
 
 -- TODO: Add dynamic plugin load
 
@@ -16,7 +17,7 @@ if nvim.has('nvim-0.5') then
         plugins[plugin].ok = ok
         plugins[plugin].status = status
         if not ok then
-            nvim.echoerr(string.format('Failed to load %s, Error: %s', plugin, status))
+            echoerr(string.format('Failed to load %s, Error: %s', plugin, status))
             plugins[plugin].status = false
         end
     end
@@ -49,6 +50,6 @@ for plugin, _ in pairs(plugins) do
     local func_name = convert2settings(plugin)
     local ok, error_code = pcall(nvim.command, 'runtime! autoload/plugins/'..func_name..'.vim')
     if not ok and not error_code:match('Vim:E117') then
-        nvim.echoerr("Something failed '"..error_code.."' Happened trying to source "..func_name..".vim")
+        echoerr("Something failed '"..error_code.."' Happened trying to source "..func_name..".vim")
     end
 end

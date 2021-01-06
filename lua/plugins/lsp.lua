@@ -2,10 +2,10 @@
 local sys         = require'sys'
 local nvim        = require'nvim'
 local load_module = require'tools'.helpers.load_module
+local executable  = require'tools'.files.executable
+local is_dir = require'tools'.files.is_dir
 
-local plugins          = nvim.plugins
-local executable       = nvim.executable
-local isdirectory      = nvim.isdirectory
+local plugins = nvim.plugins
 
 -- local nvim_set_command = nvim.nvim_set_command
 local nvim_set_autocmd = nvim.nvim_set_autocmd
@@ -190,14 +190,14 @@ local function on_attach(client)
     -- local nvim = require'nvim'
 
     local mappings = {
-        ['<C-]'] = '<cmd>lua vim.lsp.buf.definition()<CR>',
-        ['gd']   = '<cmd>lua vim.lsp.buf.declaration()<CR>',
-        ['gD']   = '<cmd>lua vim.lsp.buf.implementation()<CR>',
-        ['gr ']  = '<cmd>lua vim.lsp.buf.references()<CR>',
-        ['K']    = '<cmd>lua vim.lsp.buf.hover()<CR>',
-        ['=d']   = '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>',
-        [']d']   = '<cmd>lua vim.lsp.diagnostic.goto_next { wrap = false }<CR>',
-        ['[d']   = '<cmd>lua vim.lsp.diagnostic.goto_prev { wrap = false }<CR>',
+        ['<C-]>'] = '<cmd>lua vim.lsp.buf.definition()<CR>',
+        ['gd']    = '<cmd>lua vim.lsp.buf.declaration()<CR>',
+        ['gD']    = '<cmd>lua vim.lsp.buf.implementation()<CR>',
+        ['gr ']   = '<cmd>lua vim.lsp.buf.references()<CR>',
+        ['K']     = '<cmd>lua vim.lsp.buf.hover()<CR>',
+        ['=d']    = '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>',
+        [']d']    = '<cmd>lua vim.lsp.diagnostic.goto_next { wrap = false }<CR>',
+        ['[d']    = '<cmd>lua vim.lsp.diagnostic.goto_prev { wrap = false }<CR>',
     }
 
     for mapping,val in pairs(mappings) do
@@ -247,7 +247,7 @@ local commands = {
 local available_languages = {}
 for language,options in pairs(servers) do
     for _,server in pairs(options) do
-        local dir = isdirectory(sys.cache..'/lspconfig/'..(server['config'] or server['exec']) )
+        local dir = is_dir(sys.cache..'/lspconfig/'..(server['config'] or server['exec']) )
         local exec = server['exec'] ~= nil and executable(server['exec']) or false
         if exec or dir then
             local init = server['options'] ~= nil and server['options'] or {}

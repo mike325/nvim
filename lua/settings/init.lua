@@ -2,11 +2,11 @@ local nvim  = require'nvim'
 local sys   = require'sys'
 local select_grep   = require'tools'.helpers.select_grep
 
-local parent      = sys.data
-local plugins     = nvim.plugins
-local mkdir       = nvim.fn.mkdir
-local isdirectory = nvim.isdirectory
-local executable  = nvim.executable
+local parent     = sys.data
+local plugins    = nvim.plugins
+local mkdir      = require'tools'.files.mkdir
+local is_dir     = require'tools'.files.is_dir
+local executable = require'tools'.files.executable
 
 local function isempty(s)
     return (s == nil or s == '') and true or false
@@ -21,8 +21,8 @@ local dirpaths = {
 }
 
 for dirname,dir_setting in pairs(dirpaths) do
-    if not isdirectory(parent .. '/' .. dirname) then
-        mkdir(parent .. '/' .. dirname, 'p')
+    if not is_dir(parent .. '/' .. dirname) then
+        mkdir(parent .. '/' .. dirname)
     end
 
     if not isempty(dir_setting) then

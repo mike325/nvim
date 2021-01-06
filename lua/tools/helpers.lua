@@ -2,10 +2,9 @@ local sys = require'sys'
 local nvim = require'nvim'
 local plugins = require'nvim'.plugins
 
-local executable   = nvim.executable
-local isdirectory  = nvim.isdirectory
-local filereadable = nvim.filereadable
-
+local executable       = require'tools.files'.executable
+local is_dir           = require'tools.files'.is_dir
+local is_file          = require'tools.files'.is_file
 local normalize_path   = require'tools.files'.normalize_path
 local split_components = require'tools.strings'.split_components
 
@@ -126,10 +125,6 @@ function M.load_module(name)
         return nil
     end
     return module
-end
-
-function M.echoerr(msg)
-    nvim.echoerr(msg)
 end
 
 function M.project_config(event)
@@ -355,7 +350,7 @@ function M.is_git_repo(root)
 
     local git = root .. '/.git'
 
-    if isdirectory(git) or filereadable(git) then
+    if is_dir(git) or is_file(git) then
         return true
     end
     return nvim.fn.findfile('.git', root..';') ~= ''
@@ -428,7 +423,7 @@ function M.ignores(tool)
         findstr = '', -- TODO
     }
 
-    if filereadable(sys.home .. '/.config/git/ignore') then
+    if is_file(sys.home .. '/.config/git/ignore') then
         -- ignores.rg = ' --ignore-file '.. sys.home .. '/.config/git/ignore '
         ignores.fd = ' --ignore-file '.. sys.home .. '/.config/git/ignore '
     end
@@ -619,7 +614,7 @@ end
 
 local function check_lsp(servers)
     for _, server in pairs(servers) do
-        if executable(server) or isdirectory(sys.cache..'/lspconfig/'..server) then
+        if executable(server) or is_dir(sys.cache..'/lspconfig/'..server) then
             return true
         end
     end

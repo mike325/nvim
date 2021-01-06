@@ -2,10 +2,11 @@
 local sys  = require'sys'
 local nvim = require'nvim'
 
-local iregex = require'tools'.strings.iregex
+local iregex     = require'tools'.strings.iregex
+local echoerr    = require'tools'.messages.echoerr
+local executable = require'tools'.files.executable
 
 local has        = nvim.has
-local executable = nvim.executable
 local plugins    = nvim.plugins
 
 local mappings = {}
@@ -53,7 +54,7 @@ function mappings.python(version, args)
     local pyversion = version == 3 and py3 or py2
 
     if pyversion == nil or pyversion == '' then
-        nvim.echoerr('Python'..pyversion..' is not available in the system')
+        echoerr('Python'..pyversion..' is not available in the system')
         return -1
     end
 

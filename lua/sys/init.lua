@@ -1,16 +1,10 @@
 -- luacheck: globals unpack vim
-
--- local api = vim.api
-local nvim = require('nvim')
-
-local mkdir       = nvim.fn.mkdir
-local stdpath     = nvim.fn.stdpath
-local isdirectory = nvim.isdirectory
--- local executable  = nvim.executable
+local nvim    = require'nvim'
+local stdpath = nvim.fn.stdpath
 
 local function system_name()
-    local name = 'unknown'
 
+    local name = 'unknown'
     if nvim.has('win32unix') or nvim.has('win32') then
         name = 'windows'
     elseif nvim.has('mac') then
@@ -19,48 +13,25 @@ local function system_name()
         name = 'linux'
     end
 
-    name = name:lower()
-
     return name
 end
 
 local function homedir()
     local var = system_name() == 'windows' and 'USERPROFILE' or 'HOME'
     local home = nvim.env[var]
-
-    home = home:gsub('\\', '/')
-
-    return home
+    return home:gsub('\\', '/')
 end
 
 local function basedir()
-    local dir = stdpath('config'):gsub('\\', '/')
-
-    if isdirectory(dir) then
-        mkdir(dir, 'p')
-    end
-
-    return dir
+    return stdpath('config'):gsub('\\', '/')
 end
 
 local function cachedir()
-    local dir = stdpath('cache'):gsub('\\', '/')
-
-    if isdirectory(dir) then
-        mkdir(dir, 'p')
-    end
-
-    return dir
+    return stdpath('cache'):gsub('\\', '/')
 end
 
 local function datadir()
-    local dir = stdpath('data'):gsub('\\', '/')
-
-    if isdirectory(dir) then
-        mkdir(dir, 'p')
-    end
-
-    return dir
+    return stdpath('data'):gsub('\\', '/')
 end
 
 local sys = {

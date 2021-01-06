@@ -1,14 +1,45 @@
-local sys  = require'sys'
-local nvim = require'nvim'
+local sys       = require'sys'
+local nvim      = require'nvim'
+local echoerr   = require'tools.messages'.echoerr
+local bufloaded = require'tools.buffers'.bufloaded
 
--- local line         = nvim.fn.line
--- local system       = nvim.fn.system
-local rename       = nvim.fn.rename
-local bufloaded    = nvim.bufloaded
-local isdirectory  = nvim.isdirectory
-local filereadable = nvim.filereadable
+local uv = vim.loop
+
+local rename = uv.fs_rename
 
 local M = {}
+
+function M.exists(filename)
+    local stat = uv.fs_stat(filename)
+    return stat and stat.type or false
+end
+
+function M.is_dir(filename)
+    return M.exists(filename) == 'directory'
+end
+
+function M.is_file(filename)
+    return M.exists(filename) == 'file'
+end
+
+function M.mkdir(dirname)
+    vim.fn.mkdir(dirname, 'p')
+end
+
+function M.executable(exec)
+    return vim.fn.executable(exec) == 1
+end
+
+function M.realpath(path)
+    return uv.fs_realpath(path)
+end
+
+function M.chmod(path, mode)
+    if sys.name ~= 'windows' then
+        mode = vim.api.nvim_eval( string.format([[0%d]], mode) )
+        uv.fs_chmod(path, mode)
+    end
+end
 
 function M.ls(expr)
     expr = expr == nil and {} or expr
@@ -32,8 +63,8 @@ function M.ls(expr)
     local results = nvim.fn.glob(search, false, true, false)
 
     local filter_func = {
-        file = filereadable,
-        dir  = isdirectory,
+        file = M.is_file,
+        dir  = M.is_dir,
     }
 
     filter_func.files = filter_func.file
@@ -67,7 +98,7 @@ function M.get_dirs(expr)
 end
 
 function M.read_json(filename)
-    if not filereadable(filename) then
+    if not M.is_file(filename) then
         return false
     end
     return nvim.fn.json_decode(nvim.fn.readfile(filename))
@@ -85,9 +116,9 @@ function M.rename(old, new, bang)
     new = M.normalize_path(new)
     old = M.normalize_path(old)
 
-    if not filereadable(new) or bang == 1 then
+    if not M.exists(new) or bang == 1 then
 
-        if not filereadable(old) then
+        if not M.exists(old) and bufloaded(old) then
             nvim.ex.write(old)
         end
 
@@ -95,20 +126,24 @@ function M.rename(old, new, bang)
             nvim.ex['bwipeout!'](new)
         end
 
-        if rename(old, new) == 0 then
+        if rename(old, new) then
             local cursor_pos = nvim.win.get_cursor(0)
 
-            nvim.ex.edit(new)
-            nvim.ex['bwipeout!'](old)
+            if M.is_file(new) then
+                nvim.ex.edit(new)
+                nvim.win.set_cursor(0, cursor_pos)
+            end
 
-            nvim.win.set_cursor(0, cursor_pos)
+            if bufloaded(old) then
+                nvim.ex['bwipeout!'](old)
+            end
 
             return true
         else
-            nvim.echoerr('Failed to rename '..old)
+            echoerr('Failed to rename '..old)
         end
-    elseif filereadable(new) then
-        nvim.echoerr('File: '..new..' exists, use ! to override, it')
+    elseif M.exists(new) then
+        echoerr(new..' exists, use ! to override, it')
     end
 
     return false
@@ -116,26 +151,26 @@ end
 
 function M.delete(target, bang)
     target = M.normalize_path(target)
-    if filereadable(target) or bufloaded(target) then
-        if filereadable(target) then
+    if M.is_file(target) or bufloaded(target) then
+        if M.is_file(target) then
             if nvim.fn.delete(target) == -1 then
-                nvim.echoerr('Failed to delete the file: '..target)
+                echoerr('Failed to delete the file: '..target)
             end
         end
         if bufloaded(target) then
             local command = bang == 1 and 'bwipeout! ' or 'bdelete! '
             local ok, error_code = pcall(nvim.command, command..target)
             if not ok and error_code:match('Vim(.%w+.)\\?:E94') then
-                nvim.echoerr('Failed to remove buffer '..target)
+                echoerr('Failed to remove buffer '..target)
             end
         end
-    elseif isdirectory(target) then
+    elseif M.is_dir(target) then
         local flag = bang == 1 and 'rf' or 'd'
         if nvim.fn.delete(target, flag) == -1 then
-            nvim.echoerr('Failed to remove the directory: '..target)
+            echoerr('Failed to remove the directory: '..target)
         end
     else
-        nvim.echoerr('Non removable target: '..target)
+        echoerr('Non removable target: '..target)
    end
 end
 
@@ -173,10 +208,10 @@ function M.skeleton_filename(opts)
 
                     local template_file = skeletons_path..name
 
-                    if filereadable(template_file) then
+                    if M.is_file(template_file) then
                         skeleton = nvim.fn.fnameescape(template_file)
                         break
-                    elseif filereadable(template_file..'.'..extension) then
+                    elseif M.is_file(template_file..'.'..extension) then
                         skeleton = nvim.fn.fnameescape(template_file..'.'..extension)
                         break
                     end
@@ -191,7 +226,7 @@ function M.skeleton_filename(opts)
 
     end
 
-    if filereadable(skeleton) then
+    if M.is_file(skeleton) then
         nvim.ex.keepalt('read '..skeleton)
         nvim.command('silent! %s/\\C%\\<NAME\\>/'..filename..'/e')
         nvim.fn.histdel('search', -1)

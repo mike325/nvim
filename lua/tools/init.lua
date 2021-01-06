@@ -11,8 +11,8 @@ _G['tools']  = setmetatable({}, {
         ok, x = pcall(require, 'tools.'..k)
 
         if not ok then
+            error('Missing tools module '..k..' Error: '..x)
             x = nil
-            error('Missing tools module '..k)
         else
             mt[k] = x
         end
