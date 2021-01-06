@@ -8,6 +8,8 @@ local is_file          = require'tools.files'.is_file
 local normalize_path   = require'tools.files'.normalize_path
 local split_components = require'tools.strings'.split_components
 
+local set_abbr = nvim.abbrs.set_abbr
+
 local system = nvim.fn.system
 local getcwd = nvim.fn.getcwd
 local line = nvim.fn.line
@@ -551,19 +553,19 @@ function M.abolish(language)
         end
     else
         local function remove_abbr(base)
-            nvim.nvim_set_abbr{
+            set_abbr{
                 mode = 'i',
                 lhs = base,
                 args = {silent = true, buffer = true},
             }
 
-            nvim.nvim_set_abbr{
+            set_abbr{
                 mode = 'i',
                 lhs = base:upper(),
                 args = {silent = true, buffer = true},
             }
 
-            nvim.nvim_set_abbr{
+            set_abbr{
                 mode = 'i',
                 lhs = base:gsub('%a',  string.upper, 1),
                 args = {silent = true, buffer = true}
@@ -571,22 +573,22 @@ function M.abolish(language)
 
         end
 
-        local function set_abbr(base, replace)
-            nvim.nvim_set_abbr{
+        local function change_abbr(base, replace)
+            set_abbr{
                 mode = 'i',
                 lhs = base,
                 rhs = replace,
                 args = {buffer = true},
             }
 
-            nvim.nvim_set_abbr{
+            set_abbr{
                 mode = 'i',
                 lhs = base:upper(),
                 rhs = replace:upper(),
                 args = {buffer = true},
             }
 
-            nvim.nvim_set_abbr{
+            set_abbr{
                 mode = 'i',
                 lhs = base:gsub('%a', string.upper, 1),
                 rhs = replace:gsub('%a', string.upper, 1),
@@ -604,7 +606,7 @@ function M.abolish(language)
         if abolish[language] ~= nil then
             for base,replace in pairs(abolish[language]) do
                 if not string.match(base, '{.+}') then
-                    set_abbr(base, replace)
+                    change_abbr(base, replace)
                 end
             end
         end

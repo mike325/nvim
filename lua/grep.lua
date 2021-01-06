@@ -1,5 +1,6 @@
 local nvim = require'nvim'
 local echoerr = require'tools'.messages.echoerr
+local clear_lst = require'tools'.tables.clear_lst
 -- local sys =  require'sys'
 
 if not nvim.has('nvim-0.5') then
@@ -12,7 +13,7 @@ local grepjobs = {}
 
 local function on_data(id, data, event)
     if data ~= nil and #data > 0 then
-        vim.list_extend(grepjobs[id].data, nvim.clear_lst(data))
+        vim.list_extend(grepjobs[id].data, clear_lst(data))
     end
 end
 
@@ -23,7 +24,7 @@ local function on_exit(id, exit_code, event)
         search = vim.fn.join(search, ' ')
     end
 
-    local lines = nvim.clear_lst(grepjobs[id].data)
+    local lines = clear_lst(grepjobs[id].data)
 
     if exit_code == 0 then
 
@@ -111,7 +112,7 @@ function _G.Grep.QueueJob(...)
 
     vim.list_extend(flags, cmd)
 
-    flags = nvim.clear_lst(flags)
+    flags = clear_lst(flags)
 
     local job = {prg}
 
@@ -119,12 +120,12 @@ function _G.Grep.QueueJob(...)
     vim.list_extend(job, flags)
     vim.list_extend(job, search)
 
-    job = nvim.clear_lst(job)
+    job = clear_lst(job)
 
     -- if sys.name == 'windows' then
     --     flags = string.format('%s %s', vim.fn.join(cmd, ' '), vim.fn.join(flags, ' '))
     --     search = vim.fn.join(search, ' ')
-    --     job = string.format('%s %s %s', prg, flags, nvim.fn.shellescape(search))
+    --     job = string.format('%s %s %s', prg, flags, vim.fn.shellescape(search))
     -- end
 
     -- print('Job: ', vim.inspect(job))
@@ -152,7 +153,7 @@ function _G.Grep.QueueJob(...)
 
 end
 
-nvim.nvim_set_command{
+nvim.commands.set_command{
     lhs = 'Grep',
     rhs = 'call v:lua.Grep.QueueJob(<f-args>)',
     args = {nargs = '+', force = true}

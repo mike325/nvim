@@ -3,7 +3,10 @@ local load_module = require'tools'.helpers.load_module
 local has_attrs   = require'tools'.tables.has_attrs
 
 local plugins          = nvim.plugins
-local nvim_set_autocmd = nvim.nvim_set_autocmd
+
+local set_autocmd = nvim.autocmds.set_autocmd
+-- local set_command = nvim.commands.set_command
+-- local set_mapping = nvim.mappings.set_mapping
 
 local completion = load_module'completion'
 
@@ -28,8 +31,8 @@ if completion ~= nil then
     -- nvim.g.completion_sorting                = 'alphabet'  -- 'none' -- 'length'
     nvim.g.completion_trigger_on_delete      = 1
     nvim.g.completion_auto_change_source     = 1
-    nvim.g.completion_enable_auto_signature  = 0
-    nvim.g.completion_enable_auto_hover      = 0
+    nvim.g.completion_enable_auto_signature  = 1
+    nvim.g.completion_enable_auto_hover      = 1
     nvim.g.completion_enable_auto_paren      = 1
 
     -- local spell_check = {'gitcommit', 'markdown', 'tex', 'text', 'plaintext'}
@@ -130,7 +133,7 @@ if completion ~= nil then
 
     nvim.g.completion_chain_complete_list = completion_chain
 
-    nvim_set_autocmd{
+    set_autocmd{
         event   = 'BufEnter',
         pattern = '*',
         cmd     = [[lua require'completion'.on_attach()]],
@@ -138,7 +141,7 @@ if completion ~= nil then
     }
 
     -- TODO: Create Pull request to use buffer-variables
-    nvim_set_autocmd{
+    set_autocmd{
         event   = 'BufEnter',
         pattern = '*',
         cmd     = [[ let g:completion_trigger_character = ['.'] ]],
@@ -146,7 +149,7 @@ if completion ~= nil then
     }
 
     if has_attrs(lsp, 'cpp') or has_attrs(treesitter, 'cpp') then
-        nvim_set_autocmd{
+        set_autocmd{
             event   = 'BufEnter',
             pattern = {'*.cpp', '*.hpp', '*.cc', '*.cxx'},
             cmd     = [[ let g:completion_trigger_character = ['.', '::', '->'] ]],
@@ -155,7 +158,7 @@ if completion ~= nil then
     end
 
     if has_attrs(lsp, 'lua') or has_attrs(treesitter, 'lua') then
-        nvim_set_autocmd{
+        set_autocmd{
             event   = 'BufEnter',
             pattern = {'*.lua'},
             cmd     = [[ let g:completion_trigger_character = ['.', ':'] ]],
@@ -164,7 +167,7 @@ if completion ~= nil then
     end
 
 elseif lsp and plugins['vim-mucomplete'] ~= nil then
-    nvim_set_autocmd{
+    set_autocmd{
         event   = 'FileType',
         pattern = lsp,
         cmd     = [[call plugins#vim_mucomplete#setOmni()]],

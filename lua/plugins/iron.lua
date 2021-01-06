@@ -5,6 +5,10 @@ local load_module  = require'tools'.helpers.load_module
 local executable   = require'tools'.files.executable
 local is_file = require'tools'.files.is_file
 
+-- local set_autocmd = nvim.autocmds.set_autocmd
+-- local set_command = nvim.commands.set_command
+local set_mapping = nvim.mappings.set_mapping
+
 local iron = load_module'iron'
 
 if iron == nil then
@@ -97,37 +101,37 @@ nvim.g.iron_map_defaults = 0
 nvim.g.iron_map_extended = 0
 
 if nvim.has('nvim-0.4') then
-    nvim.nvim_set_mapping{
+    set_mapping{
         mode = 'n',
         lhs = 'gs',
         rhs = '<Plug>(iron-send-motion)',
     }
-    nvim.nvim_set_mapping{
+    set_mapping{
         mode = 'v',
         lhs = 'gs',
         rhs = '<Plug>(iron-visual-send)',
     }
-    nvim.nvim_set_mapping{
+    set_mapping{
         mode = 'n',
         lhs = 'gsr',
         rhs = '<Plug>(iron-repeat-cmd)',
     }
-    nvim.nvim_set_mapping{
+    set_mapping{
         mode = 'n',
         lhs = '<leader><leader>l',
         rhs = '<Plug>(iron-send-line)',
     }
-    nvim.nvim_set_mapping{
+    set_mapping{
         mode = 'n',
         lhs = 'gs<CR>',
         rhs = '<Plug>(iron-cr)',
     }
-    nvim.nvim_set_mapping{
+    set_mapping{
         mode = 'n',
         lhs = 'gsq',
         rhs = '<Plug>(iron-exit)',
     }
-    nvim.nvim_set_mapping{
+    set_mapping{
         mode = 'n',
         lhs = '=r', rhs = ':IronRepl<CR><ESC>',
         args = {noremap = true, silent = true},

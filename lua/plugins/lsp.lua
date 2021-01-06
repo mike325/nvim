@@ -1,15 +1,16 @@
 -- luacheck: max line length 180
-local sys         = require'sys'
-local nvim        = require'nvim'
+local sys  = require'sys'
+local nvim = require'nvim'
+
 local load_module = require'tools'.helpers.load_module
 local executable  = require'tools'.files.executable
 local is_dir = require'tools'.files.is_dir
 
 local plugins = nvim.plugins
 
--- local nvim_set_command = nvim.nvim_set_command
-local nvim_set_autocmd = nvim.nvim_set_autocmd
-local nvim_set_mapping = nvim.nvim_set_mapping
+-- local set_command = nvim.commands.set_command
+local set_autocmd = nvim.autocmds.set_autocmd
+local set_mapping = nvim.mappings.set_mapping
 
 local lsp = load_module'lspconfig'
 
@@ -79,8 +80,8 @@ local servers = {
         {
             config = 'sumneko_lua',
             options = {
+                cmd = {sumneko_binary, "-E", sumneko_root_path .. "/main.lua"},
                 settings = {
-                    cmd = {sumneko_binary, "-E", sumneko_root_path .. "/main.lua"};
                     Lua = {
                         runtime = {
                             -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
@@ -201,7 +202,7 @@ local function on_attach(client)
     }
 
     for mapping,val in pairs(mappings) do
-        nvim_set_mapping {
+        set_mapping {
             mode = 'n',
             lhs = mapping,
             rhs = val,
@@ -211,7 +212,7 @@ local function on_attach(client)
 
     -- Disable neomake for lsp buffers
     if plugins['neomake'] ~= nil then
-        nvim_set_autocmd{
+        set_autocmd{
             event   = 'FileType',
             pattern = '<buffer>',
             cmd     = [[silent! call neomake#cmd#disable(b:)]],
@@ -219,7 +220,7 @@ local function on_attach(client)
         }
     end
 
-    -- nvim.nvim_set_autocmd{
+    -- set_autocmd{
     --     event   = 'CursorHold',
     --     pattern = '<buffer>',
     --     cmd     = [[lua vim.lsp.buf.hover()]],

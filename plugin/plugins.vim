@@ -13,8 +13,6 @@ Plug 'sainnhe/sonokai'
 " Plug 'bluz71/vim-moonfly-colors'
 " Plug 'bluz71/vim-nightfly-guicolors'
 
-Plug 'tpope/vim-markdown'
-
 Plug 'easymotion/vim-easymotion'
 Plug 'moll/vim-bbye', { 'on': [ 'Bdelete' ] }
 Plug 'tommcdo/vim-lion'
@@ -24,6 +22,7 @@ Plug 'Yggdroot/indentLine'
 Plug 'henrik/vim-indexed-search'
 Plug 'tpope/vim-dadbod', {'on': ['DB']}
 Plug 'tpope/vim-endwise'
+Plug 'tpope/vim-markdown'
 " Plug 'morhetz/gruvbox'
 " Plug 'sickill/vim-monokai'
 " Plug 'nanotech/jellybeans.vim'
@@ -32,6 +31,8 @@ Plug 'tpope/vim-endwise'
 " Plug 'AndrewRadev/splitjoin.vim'
 " Plug 'editorconfig/editorconfig-vim'
 " Plug 'pechorin/any-jump.vim'
+
+Plug 'kyazdani42/nvim-web-devicons'
 
 if has('nvim-0.5') && (executable('gcc') || executable('clang'))
     Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
@@ -51,7 +52,7 @@ else
 
 endif
 
-if has('nvim-0.4') && empty($SSH_CONNECTION) && !os#name('wsl')
+if has('nvim-0.4') && empty($SSH_CONNECTION) && !os#name('wsl') && (executable('firefox') || executable('chrome'))
     Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
 endif
 

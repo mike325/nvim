@@ -2,7 +2,10 @@ local nvim        = require'nvim'
 local load_module = require'tools'.helpers.load_module
 
 local plugins          = nvim.plugins
-local nvim_set_autocmd = nvim.nvim_set_autocmd
+
+local set_autocmd = nvim.autocmds.set_autocmd
+-- local set_command = nvim.commands.set_command
+-- local set_mapping = nvim.mappings.set_mapping
 
 local treesitter = load_module'nvim-treesitter.configs'
 
@@ -158,7 +161,7 @@ end
 
 if #fts > 0 then
     -- TODO: Check module availability for each language
-    nvim_set_autocmd{
+    set_autocmd{
         event   = 'FileType',
         pattern = fts,
         cmd     = 'setlocal foldmethod=expr foldexpr=nvim_treesitter#foldexpr()',
