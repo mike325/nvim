@@ -117,6 +117,8 @@ nvim.o.autowrite    = true
 nvim.o.autowriteall = true
 nvim.o.fileencoding = 'utf-8'
 
+nvim.o.pastetoggle = '<f3>'
+
 if nvim.g.gonvim_running ~= nil then
     nvim.o.showmode = false
     nvim.o.ruler    = false

@@ -4,7 +4,12 @@ local api = vim.api
 local has_attrs = require'tools.tables'.has_attrs
 local echoerr = require'tools.messages'.echoerr
 
-local M = {}
+local M = {
+    funcs = {
+        g = {},
+        b = {},
+    }
+}
 
 function M.set_command(command)
     if not has_attrs(command, {'lhs'}) then
@@ -12,37 +17,63 @@ function M.set_command(command)
         return false
     end
 
+    local cmd, nargs
+    local scope = 'g'
     local lhs  = command.lhs
     local rhs  = command.rhs
     local args = type(command.args) == 'table' and command.args or {command.args}
 
-    local command_str = {'command'}
-
     if rhs == nil then
-        command_str = {'delcommand'}
-        command_str[#command_str + 1] = lhs
+        cmd = {'delcommand'}
+        cmd[#cmd + 1] = lhs
+    elseif args.force then
+        cmd = {'command!'}
+        args.force = nil
     else
-
-        if args.force then
-            command_str = {'command!'}
-            args.force = nil
-        end
-
-        local attr
-        for name,val in pairs(args) do
-            if val ~= false then
-                attr = '-'..name
-                if type(val) ~= 'boolean' then
-                    attr = attr..'='..val
-                end
-                command_str[#command_str + 1] = attr
-            end
-        end
-        command_str[#command_str + 1] = lhs
-        command_str[#command_str + 1] = rhs
+        cmd = {'command'}
     end
 
-    api.nvim_command(table.concat(command_str, ' '))
+    local attr
+    for name,val in pairs(args) do
+        if val then
+            attr = '-'..name
+            if type(val) ~= 'boolean' then
+                if attr == '-nargs' then
+                    nargs = val
+                end
+                attr = attr..'='..val
+            end
+            if attr == 'buffer' then
+                scope = 'b'
+            end
+            cmd[#cmd + 1] = attr
+        end
+    end
+    cmd[#cmd + 1] = lhs
+
+    if type(rhs) == 'string' then
+        cmd[#cmd + 1] = rhs
+    elseif type(rhs) == 'function' then
+        M.funcs[scope][lhs] = rhs
+        local nparams = debug.getinfo(rhs).nparams
+        local wrapper = string.format(
+            [[lua require'nvim'.commands.funcs['%s']['%s'](%s)]],
+            scope, lhs, nparams > 0 and '<f-args>' or ''
+        )
+        if nargs == nil then
+            if nparams == 1 then
+                nargs = '-nargs=1'
+            elseif  nparams > 1 then
+                nargs = '-nargs=*'
+            end
+        end
+        cmd[#cmd + 1] = wrapper
+    end
+
+    api.nvim_command(table.concat(cmd, ' '))
+    if rhs == nil and M.funcs[scope][lhs] ~= nil then
+        M.funcs[scope][lhs] = nil
+    end
 end
 
 return M

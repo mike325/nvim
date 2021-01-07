@@ -19,47 +19,6 @@ local mappings = {}
 local noremap = {noremap = true}
 local noremap_silent = {noremap = true, silent = true}
 
-function mappings.terminal(cmd)
-    -- local split = nvim.o.splitbelow == true and 'botright' or 'topleft'
-    local is_empty = (cmd == nil or #cmd == 0) and true or false
-    local shell
-
-    if not is_empty then
-        shell = cmd
-    elseif sys.name == 'windows' then
-        if iregex(nvim.o.shell, [[^cmd\(\.exe\)\?$]]) then
-            shell = 'powershell -noexit -executionpolicy bypass '
-        else
-            shell = nvim.o.shell
-        end
-    else
-        shell = nvim.fn.fnamemodify(nvim.env.SHELL or '', ':t')
-        if iregex(shell, [[\(t\)\?csh]]) then
-            shell = executable('zsh') and 'zsh' or (executable('bash') and 'bash' or shell)
-        end
-    end
-
-    local win = require("floating").window()
-
-    nvim.ex.edit('term://'..shell)
-
-    nvim.win.set_option(win, 'number', false)
-    nvim.win.set_option(win, 'relativenumber', false)
-
-    if is_empty then
-        nvim.ex.startinsert()
-    end
-end
-
-function mappings.trim()
-    if not nvim.b.trim then
-        print('Trim')
-    else
-        print('NoTrim')
-    end
-    nvim.b.trim = not nvim.b.trim
-end
-
 if nvim.g.mapleader == nil then
     nvim.g.mapleader = ' '
 end
@@ -301,7 +260,37 @@ set_mapping{ mode = 'n', lhs = '<A-v>', rhs = '<C-w>v', args = noremap }
 
 set_command{
     lhs = 'Terminal',
-    rhs = [[lua require'settings.mappings'.terminal(<q-args>)]],
+    rhs = function(cmd)
+        -- local split = nvim.o.splitbelow == true and 'botright' or 'topleft'
+        local is_empty = (cmd == nil or #cmd == 0) and true or false
+        local shell
+
+        if not is_empty then
+            shell = cmd
+        elseif sys.name == 'windows' then
+            if iregex(nvim.o.shell, [[^cmd\(\.exe\)\?$]]) then
+                shell = 'powershell -noexit -executionpolicy bypass '
+            else
+                shell = nvim.o.shell
+            end
+        else
+            shell = nvim.fn.fnamemodify(nvim.env.SHELL or '', ':t')
+            if iregex(shell, [[\(t\)\?csh]]) then
+                shell = executable('zsh') and 'zsh' or (executable('bash') and 'bash' or shell)
+            end
+        end
+
+        local win = require("floating").window()
+
+        nvim.ex.edit('term://'..shell)
+
+        nvim.win.set_option(win, 'number', false)
+        nvim.win.set_option(win, 'relativenumber', false)
+
+        if is_empty then
+            nvim.ex.startinsert()
+        end
+    end,
     args = {nargs='?', force=true}
 }
 
@@ -374,12 +363,6 @@ set_command{
 }
 
 set_command{
-    lhs = 'PasteToggle',
-    rhs = 'setlocal paste! paste?',
-    args = {force=true}
-}
-
-set_command{
     lhs = 'SpellToggle',
     rhs = 'setlocal spell! spell?',
     args = {force=true}
@@ -399,7 +382,14 @@ set_command{
 
 set_command{
     lhs = 'TrimToggle',
-    rhs = [[lua require"settings.mappings".trim()]],
+    rhs = function ()
+        if not nvim.b.trim then
+            print('Trim')
+        else
+            print('NoTrim')
+        end
+        nvim.b.trim = not nvim.b.trim
+    end,
     args = {force=true}
 }
 
