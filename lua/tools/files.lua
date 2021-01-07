@@ -23,11 +23,11 @@ function M.is_file(filename)
 end
 
 function M.mkdir(dirname)
-    vim.fn.mkdir(dirname, 'p')
+    nvim.fn.mkdir(dirname, 'p')
 end
 
 function M.executable(exec)
-    return vim.fn.executable(exec) == 1
+    return nvim.fn.executable(exec) == 1
 end
 
 function M.realpath(path)

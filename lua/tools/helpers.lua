@@ -7,6 +7,7 @@ local is_dir           = require'tools.files'.is_dir
 local is_file          = require'tools.files'.is_file
 local normalize_path   = require'tools.files'.normalize_path
 local split_components = require'tools.strings'.split_components
+local echoerr          = require'tools.messages'.echoerr
 
 local set_abbr = nvim.abbrs.set_abbr
 
@@ -711,6 +712,22 @@ function M.get_language_server(language)
     end
 
     return cmd
+end
+
+function M.python(version, args)
+    local py2 = nvim.g.python_host_prog
+    local py3 = nvim.g.python3_host_prog
+
+    local pyversion = version == 3 and py3 or py2
+
+    if pyversion == nil or pyversion == '' then
+        echoerr('Python'..pyversion..' is not available in the system')
+        return -1
+    end
+
+    local split = nvim.o.splitbelow and 'botright' or 'topleft'
+
+    nvim.command(split..' split term://'..pyversion..' '..args)
 end
 
 return M

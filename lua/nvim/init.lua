@@ -4,7 +4,7 @@ local api = vim.api
 
 -- Took from https://github.com/norcalli/nvim_utils
 -- GPL3 apply to the nvim object
-_G['nvim'] = {
+local nvim = {
     plugins = setmetatable({}, {
         __index = function(self, k)
             local mt = getmetatable(self)
@@ -163,4 +163,11 @@ setmetatable(nvim, {
     end
 })
 
-return _G['nvim']
+if api.nvim_call_function('has', {'nvim-0.5'}) == 0  then
+    local legacy = require'nvim.legacy'
+    for obj,val in pairs(legacy) do
+        nvim[obj] = val
+    end
+end
+
+return nvim

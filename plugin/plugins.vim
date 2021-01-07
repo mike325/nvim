@@ -32,8 +32,6 @@ Plug 'tpope/vim-markdown'
 " Plug 'editorconfig/editorconfig-vim'
 " Plug 'pechorin/any-jump.vim'
 
-Plug 'kyazdani42/nvim-web-devicons'
-
 if has('nvim-0.5') && (executable('gcc') || executable('clang'))
     Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
     " Plug '~/source/nvim-treesitter', {'do': ':TSUpdate'}

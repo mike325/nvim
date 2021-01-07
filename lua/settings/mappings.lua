@@ -3,7 +3,6 @@ local sys  = require'sys'
 local nvim = require'nvim'
 
 local iregex     = require'tools'.strings.iregex
-local echoerr    = require'tools'.messages.echoerr
 local executable = require'tools'.files.executable
 
 -- local set_autocmd = nvim.autocmds.set_autocmd
@@ -19,7 +18,6 @@ local mappings = {}
 
 local noremap = {noremap = true}
 local noremap_silent = {noremap = true, silent = true}
-
 
 function mappings.terminal(cmd)
     -- local split = nvim.o.splitbelow == true and 'botright' or 'topleft'
@@ -51,22 +49,6 @@ function mappings.terminal(cmd)
     if is_empty then
         nvim.ex.startinsert()
     end
-end
-
-function mappings.python(version, args)
-    local py2 = nvim.g.python_host_prog
-    local py3 = nvim.g.python3_host_prog
-
-    local pyversion = version == 3 and py3 or py2
-
-    if pyversion == nil or pyversion == '' then
-        echoerr('Python'..pyversion..' is not available in the system')
-        return -1
-    end
-
-    local split = nvim.o.splitbelow and 'botright' or 'topleft'
-
-    nvim.command(split..' split term://'..pyversion..' '..args)
 end
 
 function mappings.trim()
@@ -319,7 +301,7 @@ set_mapping{ mode = 'n', lhs = '<A-v>', rhs = '<C-w>v', args = noremap }
 
 set_command{
     lhs = 'Terminal',
-    rhs = [[lua require'settings/mappings'.terminal(<q-args>)]],
+    rhs = [[lua require'settings.mappings'.terminal(<q-args>)]],
     args = {nargs='?', force=true}
 }
 
@@ -417,7 +399,7 @@ set_command{
 
 set_command{
     lhs = 'TrimToggle',
-    rhs = [[lua require"settings/mappings".trim()]],
+    rhs = [[lua require"settings.mappings".trim()]],
     args = {force=true}
 }
 
@@ -463,6 +445,7 @@ set_mapping{
     rhs = [[:lua require'tools'.helpers.toggle_qf('loc')<CR>]],
     args = noremap_silent
 }
+
 set_mapping{
     mode = 'n',
     lhs = '=q',
@@ -473,34 +456,33 @@ set_mapping{
 set_mapping{
     mode = 'n',
     lhs = '<leader><leader>p',
-    rhs = [[:<C-U>lua <<EOF
-    local nvim = require'nvim'
-    if nvim.t.swap_window == nil then
-        nvim.t.swap_window   = 1
-        nvim.t.swap_cursor   = nvim.win.get_cursor(0)
-        nvim.t.swap_base_tab = nvim.tab.get_number(0)
-        nvim.t.swap_base_win = nvim.tab.get_win(0)
-        nvim.t.swap_base_buf = nvim.win.get_buf(0)
-    else
-        local swap_new_tab = nvim.tab.get_number(0)
-        local swap_new_win = nvim.tab.get_win(0)
-        local swap_new_buf = nvim.win.get_buf(0)
-        if swap_new_tab == nvim.t.swap_base_tab and
-           swap_new_win ~= nvim.t.swap_base_win and
-           swap_new_buf ~= nvim.t.swap_base_buf
-           then
-               nvim.win.set_buf(0, nvim.t.swap_base_buf)
-               nvim.win.set_buf(nvim.t.swap_base_win, swap_new_buf)
-               nvim.win.set_cursor(0, nvim.t.swap_cursor)
-               nvim.ex['normal!']('zz')
+    rhs = function()
+        if nvim.t.swap_window == nil then
+            nvim.t.swap_window   = 1
+            nvim.t.swap_cursor   = nvim.win.get_cursor(0)
+            nvim.t.swap_base_tab = nvim.tab.get_number(0)
+            nvim.t.swap_base_win = nvim.tab.get_win(0)
+            nvim.t.swap_base_buf = nvim.win.get_buf(0)
+        else
+            local swap_new_tab = nvim.tab.get_number(0)
+            local swap_new_win = nvim.tab.get_win(0)
+            local swap_new_buf = nvim.win.get_buf(0)
+            if swap_new_tab == nvim.t.swap_base_tab and
+            swap_new_win ~= nvim.t.swap_base_win and
+            swap_new_buf ~= nvim.t.swap_base_buf
+            then
+                nvim.win.set_buf(0, nvim.t.swap_base_buf)
+                nvim.win.set_buf(nvim.t.swap_base_win, swap_new_buf)
+                nvim.win.set_cursor(0, nvim.t.swap_cursor)
+                nvim.ex['normal!']('zz')
+            end
+            nvim.t.swap_window   = nil
+            nvim.t.swap_cursor   = nil
+            nvim.t.swap_base_tab = nil
+            nvim.t.swap_base_win = nil
+            nvim.t.swap_base_buf = nil
         end
-        nvim.t.swap_window   = nil
-        nvim.t.swap_cursor   = nil
-        nvim.t.swap_base_tab = nil
-        nvim.t.swap_base_win = nil
-        nvim.t.swap_base_buf = nil
-    end
-EOF<CR>]],
+    end,
     args = noremap_silent
 }
 
@@ -524,28 +506,24 @@ if executable('svn') then
         args = {complete='file', nargs='*', force = true}
     }
 
-    -- command! -complete=file -bang SVNread execute('!svn revert ' . expand("%")) |
-    --             \ let s:bang = empty(<bang>0) ? '' : '!' |
-    --             \ execute('edit'.s:bang) |
-    --             \ unlet s:bang
 end
 
 if plugins["iron.nvim"] == nil and (has('python') or has('python3'))then
     set_command{
-        lhs = 'Python',
-        rhs = [[lua require'settings/mappings'.python(2, <q-args>)]],
+        lhs = 'Python2',
+        rhs = [[lua require'tools'.helpers.python(2, <q-args>)]],
         args = {complete='file', nargs='*', force = true}
     }
 
     set_command{
         lhs = 'Python',
-        rhs = [[lua require'settings/mappings'.python(3, <q-args>)]],
+        rhs = [[lua require'tools'.helpers.python(3, <q-args>)]],
         args = {complete='file', nargs='*', force = true}
     }
 
     set_command{
         lhs = 'Python3',
-        rhs = [[lua require'settings/mappings'.python(3, <q-args>)]],
+        rhs = [[lua require'tools'.helpers.python(3, <q-args>)]],
         args = {complete='file', nargs='*', force = true}
     }
 end

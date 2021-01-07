@@ -112,6 +112,8 @@ else
     Plug 'mhinz/vim-nginx'
     Plug 'raimon49/requirements.txt.vim'
 
+    Plug 'kyazdani42/nvim-web-devicons'
+
     if has('nvim')
         Plug 'Vigemus/iron.nvim'
     endif

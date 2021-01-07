@@ -1,13 +1,13 @@
 -- luacheck: globals unpack vim
 
-local has              = require'nvim'.has
-local plugins          = require'nvim'.plugins
+local nvim = require'nvim'
+
+local has     = nvim.has
+local plugins = nvim.plugins
 
 local set_autocmd = nvim.autocmds.set_autocmd
 -- local set_command = nvim.commands.set_command
 -- local set_mapping = nvim.mappings.set_mapping
-
--- local sys = require'sys'
 
 set_autocmd{
     event   = 'TermOpen',

@@ -151,7 +151,7 @@ if completion ~= nil then
     if has_attrs(lsp, 'cpp') or has_attrs(treesitter, 'cpp') then
         set_autocmd{
             event   = 'BufEnter',
-            pattern = {'*.cpp', '*.hpp', '*.cc', '*.cxx'},
+            pattern = {'*.c', '*.h', '*.cpp', '*.hpp', '*.cc', '*.cxx'},
             cmd     = [[ let g:completion_trigger_character = ['.', '::', '->'] ]],
             group   = 'Completion',
         }
