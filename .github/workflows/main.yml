@@ -80,7 +80,7 @@ jobs:
           chmod +x ./install.sh
       - name: Install dotfiles and dependencies
         run: |
-          ./install.sh --verbose --vim --nvim=dotfiles --python=3
+          ./install.sh --verbose --vim --neovim=dotfiles --python=3
           pip3 install --upgrade python-language-server
       - name: Test neovim and stock vim
         run: |
@@ -127,7 +127,7 @@ jobs:
       - name: Install dotfiles and dependencies
         shell: bash
         run: |
-          ./install.sh --verbose --vim --nvim=dotfiles --python=3 --portables
+          ./install.sh --verbose --vim --neovim=dotfiles --python=3 --portables
       - name: Basic stock test
         shell: bash
         run: |
