@@ -187,7 +187,7 @@ local servers = {
 }
 
 local function on_attach(client)
-    vim.bo.omnifunc = 'v:lua.vim.lsp.omnifunc'
+    require'nvim'.bo.omnifunc = 'v:lua.vim.lsp.omnifunc'
     -- local nvim = require'nvim'
 
     local mappings = {

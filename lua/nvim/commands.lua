@@ -14,7 +14,6 @@ local M = {
 local function get_wrapper(info)
     local scope = info.scope
     local lhs = info.lhs
-    local rhs = info.rhs
     local nparams = info.nparams
     local varargs = info.varargs
     local bufnr = require'nvim'.win.get_buf(0)
@@ -97,7 +96,6 @@ function M.set_command(command)
         local varargs = debug.getinfo(rhs).isvararg
 
         local wrapper = get_wrapper {
-            rhs     = rhs,
             lhs     = lhs,
             nparams = nparams,
             varargs = varargs,

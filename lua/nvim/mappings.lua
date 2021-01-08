@@ -37,9 +37,6 @@ local function get_wrapper(info)
     local scope = info.scope
     local mode = info.mode
     local lhs = info.lhs
-    local rhs = info.rhs
-    local nparams = info.nparams
-    local varargs = info.varargs
     local bufnr = require'nvim'.win.get_buf(0)
 
     local cmd = [[<cmd>lua require'nvim'.mappings.funcs]]
@@ -130,7 +127,6 @@ function M.set_mapping(mapping)
             api.nvim_buf_set_keymap(buf, mode, lhs, rhs, args)
         elseif rhs ~= nil and type(rhs) == 'function' then
             local wrapper = get_wrapper {
-                rhs   = rhs,
                 lhs   = lhs,
                 mode  = mode,
                 scope = scope,
@@ -146,7 +142,6 @@ function M.set_mapping(mapping)
             api.nvim_set_keymap(mode, lhs, rhs, args)
         elseif rhs ~= nil and type(rhs) == 'function' then
             local wrapper = get_wrapper {
-                rhs   = rhs,
                 lhs   = lhs,
                 mode  = mode,
                 scope = scope,
