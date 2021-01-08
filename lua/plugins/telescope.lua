@@ -99,7 +99,14 @@ local noremap = {noremap = true}
 set_mapping{
     mode = 'n',
     lhs = '<C-p>',
-    rhs = [[<cmd>lua require'telescope.builtin'.find_files{ find_command = tools.tables.str_to_clean_tbl(tools.helpers.select_filelist(vim.b.project_root.is_git))}<CR>]],
+    rhs = function()
+        local is_git = vim.b.project_root.is_git
+        local str_to_clean_tbl = tools.tables.str_to_clean_tbl
+        local select_filelist = tools.helpers.select_filelist
+        require'telescope.builtin'.find_files {
+            find_command = str_to_clean_tbl(select_filelist(is_git))
+        }
+    end,
     args = {noremap = true}
 }
 
@@ -131,7 +138,14 @@ set_command{
 
 set_command{
     lhs = 'GetVimFiles',
-    rhs = [[lua require'telescope.builtin'.find_files{cwd = require'sys'.base, find_command = tools.tables.str_to_clean_tbl(tools.helpers.select_filelist(false))}]],
+    rhs = function()
+        local str_to_clean_tbl = tools.tables.str_to_clean_tbl
+        local select_filelist = tools.helpers.select_filelist
+        require'telescope.builtin'.find_files{
+            cwd = require'sys'.base,
+            find_command = str_to_clean_tbl(select_filelist(false))
+        }
+    end,
     args = {force=true}
 }
 

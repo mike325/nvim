@@ -39,8 +39,10 @@ local function get_wrapper(info)
     local lhs = info.lhs
     local bufnr = require'nvim'.win.get_buf(0)
 
-    local cmd = [[<cmd>lua require'nvim'.mappings.funcs]]
+    lhs = lhs:gsub('<leader>', api.nvim_get_var('mapleader'))
+    lhs = lhs:gsub('<C-', '^')
 
+    local cmd = [[<cmd>lua require'nvim'.mappings.funcs]]
     cmd = cmd..("['%s']"):format(scope)
 
     if scope == 'b' then
@@ -60,6 +62,9 @@ local function func_handle(info)
     local lhs = info.lhs
     local rhs = info.rhs
     local bufnr = tostring(require'nvim'.win.get_buf(0))
+
+    lhs = lhs:gsub('<leader>', api.nvim_get_var('mapleader'))
+    lhs = lhs:gsub('<C-', '^')
 
     if scope == 'b' then
         if M.funcs.b[bufnr] == nil then
@@ -115,8 +120,6 @@ function M.set_mapping(mapping)
     local lhs = mapping.lhs
     local rhs = mapping.rhs
     local scope
-
-    lhs = lhs:gsub('<leader>', api.nvim_get_var('mapleader'))
 
     if args.buffer ~= nil then
         local buf = type(args.buffer) == 'number' and args.buffer or 0
