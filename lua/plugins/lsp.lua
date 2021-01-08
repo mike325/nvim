@@ -233,16 +233,50 @@ local commands = {
     Type           = {vim.lsp.buf.type_definition},
     Hover          = {vim.lsp.buf.hover},
     Rename         = {vim.lsp.buf.rename},
-    Action         = {vim.lsp.buf.code_action},
     Signature      = {vim.lsp.buf.signature_help},
-    References     = {vim.lsp.buf.references},
-    DocSymbols     = {vim.lsp.buf.document_symbol},
     Definition     = {vim.lsp.buf.definition},
     Declaration    = {vim.lsp.buf.declaration},
     Diagnostics    = {vim.lsp.diagnostic.set_loclist},
     OutgoingCalls  = {vim.lsp.buf.outgoing_calls},
     IncommingCalls = {vim.lsp.buf.incoming_calls},
     Implementation = {vim.lsp.buf.implementation},
+    References = {function()
+        local load_module = require'tools'.helpers.load_module
+        local telescope = load_module'plugins.telescope'
+        if telescope then
+            require'telescope.builtin'.lsp_references{}
+        else
+            vim.lsp.buf.references()
+        end
+    end,},
+    DocSymbols = {function()
+        local load_module = require'tools'.helpers.load_module
+        local telescope = load_module'plugins.telescope'
+        if telescope then
+            require'telescope.builtin'.lsp_document_symbols{}
+        else
+            vim.lsp.buf.document_symbol()
+        end
+    end,},
+    WorkSymbols = {function()
+        local load_module = require'tools'.helpers.load_module
+        local telescope = load_module'plugins.telescope'
+        if telescope then
+            require'telescope.builtin'.lsp_workspace_symbols{}
+        else
+            vim.lsp.buf.workspace_symbol()
+        end
+
+    end,},
+    CodeAction = {function()
+        local load_module = require'tools'.helpers.load_module
+        local telescope = load_module'plugins.telescope'
+        if telescope then
+            require'telescope.builtin'.lsp_code_actions{}
+        else
+            vim.lsp.buf.lsp_code_actions()
+        end
+    end,},
 }
 
 local available_languages = {}

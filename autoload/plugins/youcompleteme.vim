@@ -283,7 +283,7 @@ execute 'autocmd YCMMappings FileType ' . join(g:ycm_languages, ',') . ' nnorema
 execute 'autocmd YCMMappings FileType ' . join(g:ycm_languages, ',') . ' nnoremap <buffer> <silent> gI    :YcmCompleter GoToInclude<CR>'
 execute 'autocmd YCMMappings FileType ' . join(g:ycm_languages, ',') . ' nnoremap <buffer> <silent> K     :YcmCompleter GetDoc<CR>'
                                                                     ,
-execute 'autocmd YCMMappings FileType ' . join(g:ycm_languages, ',') . ' command! -buffer FixIt YcmCompleter FixIt'
+execute 'autocmd YCMMappings FileType ' . join(g:ycm_languages, ',') . ' command! -buffer CodeAction YcmCompleter FixIt'
 execute 'autocmd YCMMappings FileType ' . join(g:ycm_languages, ',') . ' command! -buffer Include YcmCompleter GoToInclude'
 execute 'autocmd YCMMappings FileType ' . join(g:ycm_languages, ',') . ' command! -buffer Parent YcmCompleter GoToParent'
 execute 'autocmd YCMMappings FileType ' . join(g:ycm_languages, ',') . ' command! -buffer Declaration YcmCompleter GoToDeclaration'

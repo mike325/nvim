@@ -23,9 +23,6 @@ local actions = require('telescope.actions')
 telescope.setup{
     defaults = {
         vimgrep_arguments = tools.tables.str_to_clean_tbl(tools.helpers.select_grep(false)),
-        layout_defaults = {
-            -- TODO add builtin options.
-        },
         mappings = {
             i = {
                 ["<ESC>"] = actions.close,
@@ -40,20 +37,28 @@ telescope.setup{
         selection_strategy = "reset",
         sorting_strategy = "descending",
         layout_strategy = "horizontal",
-        file_ignore_patterns = {},
+        -- file_ignore_patterns = {},
         file_sorter =  require'telescope.sorters'.get_fzy_sorter ,
         generic_sorter =  require'telescope.sorters'.get_fzy_sorter,
-        shorten_path = true,
+        -- shorten_path = true,
         winblend = 0,
-        width = 0.75,
-        preview_cutoff = 120,
-        results_height = 1,
-        results_width = 0.8,
+        -- width = 0.75,
+        -- preview_cutoff = 120,
+        -- results_height = 1,
+        -- results_width = 0.8,
         -- border = {},
-        -- borderchars = { '', '', '', '', '', '', '', ''},
-        color_devicons = true,
+        -- borderchars = { '─', '│', '─', '│', '╭', '╮', '╯', '╰'},
+        -- color_devicons = true,
         -- use_less = true,
         set_env = { ['COLORTERM'] = 'truecolor' },
+
+        -- file_previewer = require'telescope.previewers'.cat.new,
+        -- grep_previewer = require'telescope.previewers'.vimgrep.new,
+        -- qflist_previewer = require'telescope.previewers'.qflist.new,
+
+        -- Developer configurations: Not meant for general override
+        -- buffer_previewer_maker = require'telescope.previewers'.buffer_previewer_maker
+
     },
 }
 
@@ -76,11 +81,6 @@ telescope.setup{
 -- builtin.current_buffer_fuzzy_find
 -- builtin.current_buffer_tags
 -- builtin.grep_string
--- builtin.lsp_references
--- builtin.lsp_document_symbols
--- builtin.lsp_workspace_symbols
--- builtin.lsp_code_actions
--- builtin.lsp_range_code_actions
 -- builtin.quickfix
 -- builtin.loclist
 -- builtin.reloader
@@ -95,6 +95,18 @@ telescope.setup{
 -- builtin.git_status
 
 local noremap = {noremap = true}
+
+set_command{
+    lhs = 'LuaReloaded',
+    rhs = [[lua require'telescope.builtin'.reloader()]],
+    args = {force=true}
+}
+
+set_command{
+    lhs = 'HelpTags',
+    rhs = [[lua require'telescope.builtin'.help_tags()]],
+    args = {force=true}
+}
 
 set_mapping{
     mode = 'n',
@@ -176,29 +188,6 @@ if executable('git') then
         lhs = '<leader>b',
         rhs = [[<cmd>lua require'telescope.builtin'.git_branches{}<CR>]],
         args = noremap,
-    }
-end
-
-if lsp_languages then
-    set_autocmd{
-        event   = 'FileType',
-        pattern = lsp_languages,
-        cmd     = [[command! -buffer LSPReferences lua require'telescope.builtin'.lsp_references{}]],
-        group   = 'LSPAutocmds'
-    }
-
-    set_autocmd{
-        event   = 'FileType',
-        pattern = lsp_languages,
-        cmd     = [[command! -buffer LSPDocSymbols lua require'telescope.builtin'.lsp_document_symbols{}]],
-        group   = 'LSPAutocmds'
-    }
-
-    set_autocmd{
-        event   = 'FileType',
-        pattern = lsp_languages,
-        cmd     = [[command! -buffer LSPWorkSymbols lua require'telescope.builtin'.lsp_workspace_symbols{}]],
-        group   = 'LSPAutocmds'
     }
 end
 

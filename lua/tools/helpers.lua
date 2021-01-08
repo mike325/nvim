@@ -452,7 +452,7 @@ function M.grep(tool, opts)
             grepformat = '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m',
         },
         rg = {
-            grepprg = 'rg -S --color=never --trim --vimgrep '..M.ignores('rg')..' ',
+            grepprg = 'rg --trim --color=never --no-heading --with-filename --line-number --column --smart-case '..M.ignores('rg')..' ',
             grepformat = '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m'
         },
         ag = {
@@ -469,7 +469,7 @@ function M.grep(tool, opts)
         },
     }
 
-    return greplist[tool] ~= nil and greplist[tool][property] or nil
+    return (executable(tool) and greplist[tool] ~= nil) and greplist[tool][property] or ''
 end
 
 function M.filelist(tool)
@@ -481,22 +481,28 @@ function M.filelist(tool)
         find = "find . -type f -iname '*' "..M.ignores('find') .. ' ',
     }
 
-    return filelist[tool]
+    return executable(tool) and filelist[tool] or ''
 end
 
 function M.select_filelist(is_git)
     local filelist = ''
 
-    if executable('git') and is_git == true or is_git then
+    local tools = {
+        'fd',
+        'rg',
+        'ag',
+        'find',
+    }
+
+    if executable('git') and is_git then
         filelist = M.filelist('git')
-    elseif executable('fd') then
-        filelist = M.filelist('fd')
-    elseif executable('rg') then
-        filelist = M.filelist('rg')
-    elseif executable('ag') then
-        filelist = M.filelist('ag')
-    elseif sys.name ~= 'windows' then
-        filelist = M.filelist('find')
+    else
+        for _,lister in pairs(tools) do
+            filelist = M.filelist(lister)
+            if filelist ~= '' then
+                break
+            end
+        end
     end
 
     return filelist
@@ -510,21 +516,27 @@ function M.select_grep(is_git, opts)
 
     local property = #opts > 0 and opts[1] or 'grepprg'
 
-    local grep = ''
+    local grepprg = ''
 
-    if executable('rg') then
-        grep = M.grep('rg', property)
-    elseif executable('git') and (is_git or is_git == 1) then
-        grep = M.grep('git', property)
-    elseif executable('ag') then
-        grep = M.grep('ag', property)
-    elseif executable('grep') then
-        grep = M.grep('grep', property)
-    elseif sys.name == 'windows' then
-        grep = M.grep('findstr', property)
+    local tools = {
+        'rg',
+        'ag',
+        'grep',
+        'findstr',
+    }
+
+    if executable('git') and is_git then
+        grepprg = M.grep('git', property)
+    else
+        for _,grep in pairs(tools) do
+            local grepprg = M.grep(grep, property)
+            if grepprg ~= '' then
+                break
+            end
+        end
     end
 
-    return grep
+    return grepprg
 end
 
 function M.spelllangs(lang)

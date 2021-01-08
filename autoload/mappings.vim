@@ -25,8 +25,8 @@ function! mappings#enter() abort
         else
             return "\<C-y>"
         endif
-    elseif has#plugin('delimitMate') && delimitMate#WithinEmptyPair()
-        return delimitMate#ExpandReturn()
+    " elseif has#plugin('delimitMate') && delimitMate#WithinEmptyPair()
+    "     return delimitMate#ExpandReturn()
     elseif has#plugin('ultisnips')
         call UltiSnips#JumpForwards()
         if get(g:, 'ulti_jump_forwards_res', 0) > 0
