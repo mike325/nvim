@@ -1,5 +1,5 @@
 # Override lua-snippets file
-priority 5
+priority 10
 
 snippet if "if ... then ... end"
 if $1 then
@@ -7,9 +7,29 @@ if $1 then
 end
 endsnippet
 
-snippet lfunc "local function name() ... end"
-local ${1:name} = function(${2:args})
-	$0
+snippet ife "if ... then ... end"
+if ${1:cond} then
+	${2:${VISUAL:-- Code}}
+else
+	${0:-- Code}
 end
 endsnippet
 
+snippet /el((se)?if)?/ "elseif ... then" r
+elseif ${1:cond} then
+endsnippet
+
+snippet /(l)?fun/ "local function name() ... end" r
+`!p snip.rv = 'local ' if match.group(1) is not None else ''`function ${1:name}(${2:args})
+	${0:${VISUAL:-- Code}}
+end
+endsnippet
+
+snippet l "local ..."
+local ${1:name} = ${2:x}
+endsnippet
+
+# Neovim api shortcuts
+snippet bufnr "get current window buffer"
+local ${1:bufnr} = require'nvim'.win.get_buf(${2:0})
+endsnippet

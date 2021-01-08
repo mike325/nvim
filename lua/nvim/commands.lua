@@ -11,9 +11,48 @@ local M = {
     }
 }
 
+local function get_wrapper(info)
+    local scope = info.scope
+    local lhs = info.lhs
+    local rhs = info.rhs
+    local nparams = info.nparams
+    local varargs = info.varargs
+    local bufnr = require'nvim'.win.get_buf(0)
+
+    local cmd = [[lua require'nvim'.commands.funcs]]
+
+    cmd = cmd..("['%s']"):format(scope)
+
+    if scope == 'b' then
+        cmd = cmd..("['%s']"):format(bufnr)
+    end
+
+    cmd = cmd..("['%s']"):format(lhs)
+    cmd = cmd..("(%s)"):format((nparams > 0 or varargs) and '<f-args>' or '')
+
+    return cmd
+end
+
+local function func_handle(info)
+    local scope = info.scope
+    local lhs = info.lhs
+    local rhs = info.rhs
+    local bufnr = tostring(require'nvim'.win.get_buf(0))
+
+    if scope == 'b' then
+        if M.funcs.b[bufnr] == nil then
+            M.funcs.b[bufnr] = {}
+        end
+        M.funcs.b[bufnr][lhs] = rhs
+    else
+        M.funcs.g[lhs] = rhs
+    end
+
+end
+
 function M.set_command(command)
     if not has_attrs(command, {'lhs'}) then
-        echoerr('Missing arguments, set_command need a mode and a lhs attribbutes')
+        echoerr('Missing arguments, set_command need a lhs attribbutes')
         return false
     end
 
@@ -43,7 +82,7 @@ function M.set_command(command)
                 end
                 attr = attr..'='..val
             end
-            if attr == 'buffer' then
+            if attr == '-buffer' then
                 scope = 'b'
             end
             cmd[#cmd + 1] = attr
@@ -54,25 +93,38 @@ function M.set_command(command)
     if type(rhs) == 'string' then
         cmd[#cmd + 1] = rhs
     elseif type(rhs) == 'function' then
-        M.funcs[scope][lhs] = rhs
         local nparams = debug.getinfo(rhs).nparams
-        local wrapper = string.format(
-            [[lua require'nvim'.commands.funcs['%s']['%s'](%s)]],
-            scope, lhs, nparams > 0 and '<f-args>' or ''
-        )
+        local varargs = debug.getinfo(rhs).isvararg
+
+        local wrapper = get_wrapper {
+            rhs     = rhs,
+            lhs     = lhs,
+            nparams = nparams,
+            varargs = varargs,
+            scope   = scope,
+        }
+
         if nargs == nil then
-            if nparams == 1 then
+            if nparams == 1 and not varargs then
                 nargs = '-nargs=1'
-            elseif  nparams > 1 then
+            elseif  nparams > 1 or varargs then
                 nargs = '-nargs=*'
             end
+            if nargs ~= nil then
+                table.insert(cmd, #cmd, nargs)
+            end
         end
+
         cmd[#cmd + 1] = wrapper
     end
 
     api.nvim_command(table.concat(cmd, ' '))
-    if rhs == nil and M.funcs[scope][lhs] ~= nil then
-        M.funcs[scope][lhs] = nil
+    if rhs ~= 'string' then
+        func_handle {
+            rhs   = rhs,
+            lhs   = lhs,
+            scope = scope,
+        }
     end
 end
 

@@ -62,7 +62,6 @@ if has#python() && has#async()
     Plug 'neomake/neomake'
 endif
 
-" TODO: Need to do more test in windows
 if has('nvim-0.5')
     Plug 'nvim-lua/popup.nvim'
     Plug 'nvim-lua/plenary.nvim'

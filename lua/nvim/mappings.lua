@@ -6,11 +6,12 @@ local transform_mapping = require'nvim.utils'.transform_mapping
 
 local modes = {
     normal   = "n",
-    visual   = "v",
-    operator = "o",
     insert   = "i",
-    command  = "c",
+    vis_sel  = "v",
+    visual   = "x",
     select   = "s",
+    operator = "o",
+    command  = "c",
     terminal = "t",
 }
 
@@ -21,12 +22,58 @@ local M = {
     }
 }
 
--- local maps = {}
-for _,mode in pairs(modes) do
-    -- maps[mode..'map'] = 1
-    -- maps[mode..'noremap'] = 1
-    M.funcs.g[mode] = {}
-    M.funcs.b[mode] = {}
+local function set_modes(obj)
+    for _,mode in pairs(modes) do
+        if obj[mode] == nil then
+            obj[mode] = {}
+        end
+    end
+    return obj
+end
+
+M.funcs.g = set_modes(M.funcs.g)
+
+local function get_wrapper(info)
+    local scope = info.scope
+    local mode = info.mode
+    local lhs = info.lhs
+    local rhs = info.rhs
+    local nparams = info.nparams
+    local varargs = info.varargs
+    local bufnr = require'nvim'.win.get_buf(0)
+
+    local cmd = [[<cmd>lua require'nvim'.mappings.funcs]]
+
+    cmd = cmd..("['%s']"):format(scope)
+
+    if scope == 'b' then
+        cmd = cmd..("['%s']"):format(bufnr)
+    end
+
+    cmd = cmd..("['%s']"):format(mode)
+    cmd = cmd..("['%s']"):format(lhs)
+    cmd = cmd..'()<CR>'
+
+    return cmd
+end
+
+local function func_handle(info)
+    local scope = info.scope
+    local mode = info.mode
+    local lhs = info.lhs
+    local rhs = info.rhs
+    local bufnr = tostring(require'nvim'.win.get_buf(0))
+
+    if scope == 'b' then
+        if M.funcs.b[bufnr] == nil then
+            M.funcs.b[bufnr] = {}
+            M.funcs.b[bufnr] = set_modes(M.funcs.b[bufnr])
+        end
+        M.funcs.b[bufnr][mode][lhs] = rhs
+    else
+        M.funcs.g[mode][lhs] = rhs
+    end
+
 end
 
 function M.get_mapping(mapping)
@@ -70,62 +117,65 @@ function M.set_mapping(mapping)
     local mode = modes[mapping.mode] ~= nil and modes[mapping.mode] or mapping.mode
     local lhs = mapping.lhs
     local rhs = mapping.rhs
+    local scope
 
     lhs = lhs:gsub('<leader>', api.nvim_get_var('mapleader'))
 
     if args.buffer ~= nil then
         local buf = type(args.buffer) == 'number' and args.buffer or 0
+        scope = 'b'
         args.buffer = nil
 
         if rhs ~= nil and type(rhs) == 'string' then
             api.nvim_buf_set_keymap(buf, mode, lhs, rhs, args)
         elseif rhs ~= nil and type(rhs) == 'function' then
-            M.funcs['b'][mode][lhs] = rhs
-            local wrapper = string.format(
-                [[<cmd>lua require'nvim'.mappings.funcs['b']['%s']['%s']()<CR>]],
-                mode, lhs
-            )
+            local wrapper = get_wrapper {
+                rhs   = rhs,
+                lhs   = lhs,
+                mode  = mode,
+                scope = scope,
+            }
             api.nvim_buf_set_keymap(buf, mode, lhs, wrapper, args)
         else
             api.nvim_buf_del_keymap(buf, mode, lhs)
-            if M.funcs['b'][mode]['lhs'] ~= nil then
-                M.funcs['b'][mode]['lhs'] = nil
-            end
         end
     else
         args = args == nil and {} or args
+        scope = 'g'
         if rhs ~= nil and type(rhs) == 'string' then
             api.nvim_set_keymap(mode, lhs, rhs, args)
         elseif rhs ~= nil and type(rhs) == 'function' then
-            M.funcs['g'][mode][lhs] = rhs
-            local wrapper = string.format(
-                [[<cmd>lua require'nvim'.mappings.funcs['g']['%s']['%s']()<CR>]],
-                mode, lhs -- , debug.getinfo(rhs).nparams > 0 and '<f-args>' or ''
-            )
+            local wrapper = get_wrapper {
+                rhs   = rhs,
+                lhs   = lhs,
+                mode  = mode,
+                scope = scope,
+            }
             api.nvim_set_keymap(mode, lhs, wrapper, args)
         else
             api.nvim_del_keymap(mode, lhs)
-            if M.funcs['g'][mode]['lhs'] ~= nil then
-                M.funcs['g'][mode]['lhs'] = nil
-            end
         end
     end
+
+    if rhs ~= 'string' then
+        func_handle {
+            rhs   = rhs,
+            lhs   = lhs,
+            mode  = mode,
+            scope = scope,
+        }
+    end
+
 end
 
 
 setmetatable(M, {
     __index = function(self, k)
-        -- local ok
-
         local mt = getmetatable(self)
         local x = mt[k]
         if x ~= nil then
             return x
         end
-
-        -- if maps[x] ~= nil then
-        --     x = M.get_mapping()
-        -- end
 
         return x
     end,
