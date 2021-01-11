@@ -11,8 +11,8 @@ local set_command = nvim.commands.set_command
 local set_mapping = nvim.mappings.set_mapping
 local get_mapping = nvim.mappings.get_mapping
 
-local has        = nvim.has
-local plugins    = nvim.plugins
+local has     = nvim.has
+local plugins = nvim.plugins
 
 local mappings = {}
 
@@ -498,28 +498,23 @@ if executable('svn') then
 
 end
 
-if plugins["iron.nvim"] == nil and (has('python') or has('python3'))then
-    set_command{
-        lhs = 'Python2',
-        rhs = [[lua require'tools'.helpers.python(2, <q-args>)]],
-        args = {complete='file', nargs='*', force = true}
-    }
-
-    set_command{
-        lhs = 'Python',
-        rhs = [[lua require'tools'.helpers.python(3, <q-args>)]],
-        args = {complete='file', nargs='*', force = true}
-    }
-
-    set_command{
-        lhs = 'Python3',
-        rhs = [[lua require'tools'.helpers.python(3, <q-args>)]],
-        args = {complete='file', nargs='*', force = true}
-    }
-end
-
 if plugins["vim-bbye"] == nil then
-    set_mapping{ mode = 'n', lhs = '<leader>d', rhs = ':bdelete!<CR>' }
+    set_mapping{
+        mode = 'n',
+        lhs = '<leader>d',
+        rhs = function()
+            local current_buf = nvim.win.get_buf(0)
+            local prev_buf = nvim.fn.expand('#') ~= '' and nvim.fn.bufnr(nvim.fn.expand('#')) or -1
+            local is_loaded = nvim.buf.is_loaded
+
+            local new_view = is_loaded(prev_buf) and prev_buf or nvim.create_buf(true, false)
+
+            nvim.win.set_buf(0, new_view)
+            vim.cmd(([[bdelete! %s]]):format(current_buf))
+            -- This wipeout the buffer, which is not what we want
+            -- nvim.buf.delete(current_buf, {unload = true, force = true})
+        end,
+    }
 end
 
 if plugins["vim-indexed-search"] == nil then
