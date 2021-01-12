@@ -1,6 +1,8 @@
 local nvim  = require'nvim'
 local sys   = require'sys'
-local select_grep   = require'tools'.helpers.select_grep
+
+-- local select_grep = require'tools'.helpers.select_grep
+local set_grep = require'tools'.helpers.set_grep
 
 local parent     = sys.data
 local plugins    = nvim.plugins
@@ -130,8 +132,7 @@ end
 -- Default should be internal,filler,closeoff
 nvim.o.diffopt = nvim.o.diffopt .. ',vertical,iwhiteall,iwhiteeol,indent-heuristic,algorithm:patience,hiddenoff'
 
-nvim.o.grepprg = select_grep(false)
-nvim.o.grepformat = select_grep(false, 'grepformat')
+set_grep(false, false)
 
 if plugins['vim-airline'] == nil then
     nvim.o.statusline = [[%< [%f]%=%-5.(%y%r%m%w%q%) %-14.(%l,%c%V%) %P ]]

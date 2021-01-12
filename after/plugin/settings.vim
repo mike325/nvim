@@ -164,8 +164,7 @@ endif
 " }}} END Clipboard
 
 " This is adjusted inside autocmd.vim to use git according to the dir changes events
-let &grepprg = tools#select_grep(0)
-let &grepformat = tools#select_grep(0, 'grepformat')
+call tools#set_grep(0, 0)
 
 if v:version >= 704
     set formatoptions+=r " Auto insert comment with <Enter>...

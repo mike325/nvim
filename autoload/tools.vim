@@ -49,6 +49,10 @@ if has('nvim-0.5')
         return v:lua.tools.helpers.ignores(a:tool)
     endfunction
 
+    function! tools#set_grep(is_git, is_local) abort
+        return v:lua.tools.helpers.set_grep(a:is_git, a:is_local)
+    endfunction
+
     finish
 endif
 
@@ -287,6 +291,14 @@ function! tools#select_grep(is_git, ...) abort
     return l:grepprg
 endfunction
 
+function! tools#set_grep(is_git, is_local) abort
+    if a:is_local
+        let &l:grepprg = tools#select_grep(a:is_git)
+    else
+        let &grepprg = tools#select_grep(a:is_git)
+    endif
+    let &grepformat = tools#select_grep(a:is_git, 'grepformat')
+endfunction
 
 function! tools#select_filelist(is_git, ...) abort
     let l:filelist = ''

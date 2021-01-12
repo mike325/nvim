@@ -163,7 +163,7 @@ function M.project_config(event)
         is_git = is_git,
     }
 
-    nvim.bo.grepprg = M.select_grep(is_git)
+    M.set_grep(is_git, true)
 
     local project = nvim.fn.findfile('.project.vim', cwd..';')
     if #project > 0 then
@@ -529,7 +529,7 @@ function M.select_grep(is_git, opts)
         grepprg = M.grep('git', property)
     else
         for _,grep in pairs(tools) do
-            local grepprg = M.grep(grep, property)
+            grepprg = M.grep(grep, property)
             if grepprg ~= '' then
                 break
             end
@@ -537,6 +537,15 @@ function M.select_grep(is_git, opts)
     end
 
     return grepprg
+end
+
+function M.set_grep(is_git, is_local)
+    if is_local then
+        nvim.bo.grepprg = M.select_grep(is_git)
+    else
+        nvim.o.grepprg = M.select_grep(is_git)
+    end
+    nvim.o.grepformat = M.select_grep(is_git, 'grepformat')
 end
 
 function M.spelllangs(lang)

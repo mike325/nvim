@@ -148,7 +148,7 @@ function! autocmd#SetProjectConfigs(event) abort
     let b:project_root['is_git'] = l:is_git
     let b:project_root['file_dir'] = expand('%:p:h')
 
-    let &l:grepprg = tools#select_grep(l:is_git)
+    call tools#set_grep(l:is_git, 1)
 
     let l:project = findfile('.project.vim', l:cwd.';')
 
