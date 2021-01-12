@@ -207,7 +207,7 @@ cabbrev QA1 qa!
 cabbrev Qa! qa!
 cabbrev Qa1 qa!
 
-if os#name('windows')
+if executable('powershell')
     command! PowershellToggle call windows#toggle_powershell()
 endif
 

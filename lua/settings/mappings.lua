@@ -294,11 +294,13 @@ set_command{
     args = {nargs='?', force=true}
 }
 
-set_command{
-    lhs = 'PowershellToggle',
-    rhs = 'call windows#toggle_powershell()',
-    args = {force=true}
-}
+if executable('powershell') then
+    set_command{
+        lhs = 'PowershellToggle',
+        rhs = 'call windows#toggle_powershell()',
+        args = {force=true}
+    }
+end
 
 set_command{
     lhs = 'RelativeNumbersToggle',

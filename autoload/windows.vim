@@ -1,9 +1,14 @@
 " Windows Setttings
 " github.com/mike325/.vim
 
-let g:sh_defaults = { 'shell':&shell, 'shellcmdflag':&shellcmdflag,
-                    \ 'shellquote':&shellquote, 'shellxquote':&shellxquote,
-                    \ 'shellpipe':&shellpipe, 'shellredir':&shellredir }
+let g:sh_defaults = {
+    \ 'shell':&shell,
+    \ 'shellcmdflag':&shellcmdflag,
+    \ 'shellquote':&shellquote,
+    \ 'shellxquote':&shellxquote,
+    \ 'shellpipe':&shellpipe,
+    \ 'shellredir':&shellredir
+    \}
 
 function! windows#toggle_powershell() abort
     if &shell =~# 'powershell\(.exe\)\?'
@@ -16,14 +21,12 @@ function! windows#toggle_powershell() abort
         let &shellcmdflag = s.shellcmdflag
         let &shellxquote  = s.shellxquote
     else
-        set shell=powershell.exe shellquote=\" shellpipe=\| shellredir=>
+        set shell=powershell.exe
         set shellcmdflag=-NoLogo\ -NoProfile\ -ExecutionPolicy\ RemoteSigned\ -Command
-        let &shellxquote=' '
-        " set shellxquote=
-        " " set shellxquote=(
-        " let &shellquote = ''
-        " let &shellpipe  = has('nvim') ? '| Out-File -Encoding UTF8 %s' : '>'
-        " let &shellredir = '| Out-File -Encoding UTF8 %s'
+        set shellxquote=
+        let &shellquote = ''
+        let &shellpipe  = has('nvim') ? '| Out-File -Encoding UTF8 %s' : '>'
+        let &shellredir = '| Out-File -Encoding UTF8 %s'
     endif
     echomsg 'Current shell ' . &shell
 endfunction
