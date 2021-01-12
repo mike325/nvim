@@ -27,7 +27,17 @@
 let g:mapleader = "\<Space>"
 
 if os#name('windows')
-    set shell=cmd.exe
+    if has('nvim-0.5')
+        set shell=powershell.exe
+        set shellcmdflag=-NoLogo\ -NoProfile\ -ExecutionPolicy\ RemoteSigned\ -Command
+        set shellxquote=
+        let &shellquote = ''
+        let &shellpipe  = '| Out-File -Encoding UTF8 %s'
+        let &shellredir = '| Out-File -Encoding UTF8 %s'
+        " set shellxquote=(
+    else
+        set shell=cmd.exe
+    endif
 endif
 
 " If there are no plugins available and we don't have git fallback to minimal mode
