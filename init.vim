@@ -122,7 +122,10 @@ else
     Plug 'mhinz/vim-nginx'
     Plug 'raimon49/requirements.txt.vim'
 
-    Plug 'kyazdani42/nvim-web-devicons'
+    if has('nvim-0.5')
+        Plug 'kyazdani42/nvim-web-devicons'
+        " Plug 'romgrk/barbar.nvim'
+    endif
 
     if has('nvim')
         Plug 'Vigemus/iron.nvim'
@@ -130,7 +133,6 @@ else
 
     if has#minimal() && has('nvim-0.5')
 
-        " TODO: Need to do more test in windows
         if has('nvim-0.5')
             Plug 'nvim-lua/popup.nvim'
             Plug 'nvim-lua/plenary.nvim'
@@ -144,13 +146,13 @@ else
         endif
 
         if executable('gcc') || executable('clang')
+            Plug 'nvim-treesitter/completion-treesitter'
             Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
             " Plug '~/source/nvim-treesitter', {'do': ':TSUpdate'}
             Plug 'nvim-treesitter/nvim-treesitter-refactor'
             " Plug '~/source/nvim-treesitter-refactor'
             Plug 'nvim-treesitter/nvim-treesitter-textobjects'
             " Plug '~/source/nvim-treesitter-textobjects'
-            Plug 'nvim-treesitter/completion-treesitter'
             " Plug 'romgrk/nvim-treesitter-context'
         endif
 

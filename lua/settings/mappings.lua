@@ -506,13 +506,16 @@ if plugins["vim-bbye"] == nil then
         lhs = '<leader>d',
         rhs = function()
             local current_buf = nvim.win.get_buf(0)
+            local is_wipe = nvim.buf.get_option(current_buf, 'bufhidden') == 'wipe'
             local prev_buf = nvim.fn.expand('#') ~= '' and nvim.fn.bufnr(nvim.fn.expand('#')) or -1
             local is_loaded = nvim.buf.is_loaded
 
             local new_view = is_loaded(prev_buf) and prev_buf or nvim.create_buf(true, false)
 
             nvim.win.set_buf(0, new_view)
-            vim.cmd(([[bdelete! %s]]):format(current_buf))
+            if not is_wipe then
+                vim.cmd(([[bdelete! %s]]):format(current_buf))
+            end
             -- This wipeout the buffer, which is not what we want
             -- nvim.buf.delete(current_buf, {unload = true, force = true})
         end,

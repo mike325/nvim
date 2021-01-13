@@ -15,8 +15,8 @@ if telescope == nil then
     return false
 end
 
-local lsp_languages = require('plugins/lsp')
-local treesitter_languages = require('plugins/treesitter')
+-- local lsp_languages = require'plugins/lsp'
+local treesitter_languages = require'plugins/treesitter'
 
 local actions = require('telescope.actions')
 

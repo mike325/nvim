@@ -8,13 +8,16 @@ endif
 
 let g:config_airline = 1
 
-let g:airline#extensions#tabline#enabled           = 1
-let g:airline#extensions#tabline#fnamemod          = ':t'
-let g:airline#extensions#tabline#close_symbol      = '×'
-let g:airline#extensions#tabline#show_tabs         = 1
-let g:airline#extensions#tabline#show_buffers      = 1
-let g:airline#extensions#tabline#show_close_button = 0
-let g:airline#extensions#tabline#show_splits       = 0
+if !has#plugin('barbar.nvim')
+    let g:airline#extensions#tabline#enabled           = 1
+    let g:airline#extensions#tabline#fnamemod          = ':t'
+    let g:airline#extensions#tabline#close_symbol      = '×'
+    let g:airline#extensions#tabline#show_tabs         = 1
+    let g:airline#extensions#tabline#show_buffers      = 1
+    let g:airline#extensions#tabline#show_close_button = 0
+    let g:airline#extensions#tabline#show_splits       = 0
+endif
+
 let g:airline_highlighting_cache                   = 1
 let g:airline_stl_path_style                       = 'short'
 

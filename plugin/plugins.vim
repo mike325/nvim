@@ -14,7 +14,6 @@ Plug 'sainnhe/sonokai'
 " Plug 'bluz71/vim-nightfly-guicolors'
 
 Plug 'easymotion/vim-easymotion'
-Plug 'moll/vim-bbye', { 'on': [ 'Bdelete' ] }
 Plug 'tommcdo/vim-lion'
 Plug 'tpope/vim-abolish'
 Plug 'honza/vim-snippets'
@@ -23,6 +22,7 @@ Plug 'henrik/vim-indexed-search'
 Plug 'tpope/vim-dadbod', {'on': ['DB']}
 Plug 'tpope/vim-endwise'
 Plug 'tpope/vim-markdown'
+" Plug 'moll/vim-bbye', { 'on': [ 'Bdelete' ] }
 " Plug 'morhetz/gruvbox'
 " Plug 'sickill/vim-monokai'
 " Plug 'nanotech/jellybeans.vim'
