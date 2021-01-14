@@ -15,10 +15,11 @@ if !has('nvim')
 endif
 
 try
-    if has#plugin('sonokai')
-        if has#plugin('vim-airline')
-            let g:airline_theme = 'sonokai'
-        endif
+    let g:airline_theme = 'owo'
+
+    if has#plugin('zephyr-nvim')
+        colorscheme zephyr
+    elseif has#plugin('sonokai')
         let g:sonokai_better_performance = 1
         let g:sonokai_style = 'shusia'
         let g:sonokai_enable_italic = 1

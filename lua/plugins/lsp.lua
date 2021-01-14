@@ -193,7 +193,7 @@ local function on_attach(client)
     local mappings = {
         ['<C-]>'] = '<cmd>lua vim.lsp.buf.definition()<CR>',
         ['gd']    = '<cmd>lua vim.lsp.buf.declaration()<CR>',
-        ['gD']    = '<cmd>lua vim.lsp.buf.implementation()<CR>',
+        -- ['gD']    = '<cmd>lua vim.lsp.buf.implementation()<CR>',
         ['gr ']   = '<cmd>lua vim.lsp.buf.references()<CR>',
         ['K']     = '<cmd>lua vim.lsp.buf.hover()<CR>',
         ['=d']    = '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>',

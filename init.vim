@@ -123,6 +123,7 @@ else
     Plug 'raimon49/requirements.txt.vim'
 
     if has('nvim-0.5')
+        Plug 'glepnir/zephyr-nvim'
         Plug 'kyazdani42/nvim-web-devicons'
         " Plug 'romgrk/barbar.nvim'
     endif

@@ -17,8 +17,7 @@ end
 
 -- local lsp_languages = require'plugins/lsp'
 local treesitter_languages = require'plugins/treesitter'
-
-local actions = require('telescope.actions')
+local actions = require'telescope.actions'
 
 telescope.setup{
     defaults = {
@@ -26,7 +25,7 @@ telescope.setup{
         mappings = {
             i = {
                 ["<ESC>"] = actions.close,
-                ["<CR>"]  = actions.goto_file_selection_edit + actions.center,
+                -- ["<CR>"]  = actions.goto_file_selection_edit + actions.center,
             },
             n = {
                 ["<ESC>"] = actions.close
