@@ -18,10 +18,10 @@ Plug 'tommcdo/vim-lion'
 Plug 'tpope/vim-abolish'
 Plug 'honza/vim-snippets'
 Plug 'Yggdroot/indentLine'
-Plug 'henrik/vim-indexed-search'
 Plug 'tpope/vim-dadbod', {'on': ['DB']}
 Plug 'tpope/vim-endwise'
 Plug 'tpope/vim-markdown'
+" Plug 'henrik/vim-indexed-search'
 " Plug 'moll/vim-bbye', { 'on': [ 'Bdelete' ] }
 " Plug 'morhetz/gruvbox'
 " Plug 'sickill/vim-monokai'

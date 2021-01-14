@@ -37,21 +37,27 @@ local function get_wrapper(info)
     local scope = info.scope
     local mode = info.mode
     local lhs = info.lhs
+    local expr = info.expr
     local bufnr = require'nvim'.win.get_buf(0)
+    local cmd
 
-    lhs = lhs:gsub('<leader>', api.nvim_get_var('mapleader'))
-    lhs = lhs:gsub('<C-', '^')
+    cmd = expr and [=[luaeval("]=] or [[<cmd>lua ]]
 
-    local cmd = [[<cmd>lua require'nvim'.mappings.funcs]]
+    cmd = cmd..[[require'nvim'.mappings.funcs]]
     cmd = cmd..("['%s']"):format(scope)
 
     if scope == 'b' then
         cmd = cmd..("['%s']"):format(bufnr)
     end
 
+    lhs = lhs:gsub('<leader>', api.nvim_get_var('mapleader'))
+    lhs = lhs:gsub('<C-', '^')
+
     cmd = cmd..("['%s']"):format(mode)
     cmd = cmd..("['%s']"):format(lhs)
-    cmd = cmd..'()<CR>'
+    cmd = cmd..'()'
+
+    cmd = expr and cmd..[=[")]=] or cmd..'<CR>'
 
     return cmd
 end
@@ -119,10 +125,18 @@ function M.set_mapping(mapping)
     local mode = modes[mapping.mode] ~= nil and modes[mapping.mode] or mapping.mode
     local lhs = mapping.lhs
     local rhs = mapping.rhs
-    local scope
+    local expr = false
+    local scope, buf
 
-    if args.buffer ~= nil then
-        local buf = type(args.buffer) == 'number' and args.buffer or 0
+    for attr, val in pairs(args) do
+        if attr == 'expr' then
+            expr = true
+        elseif attr == 'buffer' then
+            buf = type(val) == 'number' and val or 0
+        end
+    end
+
+    if buf ~= nil then
         scope = 'b'
         args.buffer = nil
 
@@ -133,6 +147,7 @@ function M.set_mapping(mapping)
                 lhs   = lhs,
                 mode  = mode,
                 scope = scope,
+                expr = expr,
             }
             api.nvim_buf_set_keymap(buf, mode, lhs, wrapper, args)
         else
@@ -148,6 +163,7 @@ function M.set_mapping(mapping)
                 lhs   = lhs,
                 mode  = mode,
                 scope = scope,
+                expr = expr,
             }
             api.nvim_set_keymap(mode, lhs, wrapper, args)
         else

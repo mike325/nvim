@@ -165,6 +165,7 @@ if #fts > 0 then
         event   = 'FileType',
         pattern = fts,
         cmd     = 'setlocal foldmethod=expr foldexpr=nvim_treesitter#foldexpr()',
+        -- cmd     = 'setlocal foldmethod=expr foldexpr=nvim_treesitter#foldexpr() indentexpr=nvim_treesitter#indent()',
         group   = 'TreesitterAutocmds',
     }
 end

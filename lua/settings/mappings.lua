@@ -165,7 +165,15 @@ set_mapping{
 set_mapping{
     mode = 'n',
     lhs = 'i',
-    rhs = 'mappings#IndentWithI()',
+    rhs = function()
+        local current_line = nvim.fn.line('.')
+        local last_line = nvim.fn.line('$')
+        local buftype = nvim.bo.buftype
+        if #nvim.fn.getline('.') == 0 and last_line ~= current_line and buftype ~= 'terminal' then
+            return '"_ddO'
+        end
+        return 'i'
+    end,
     args = {noremap = true, expr = true},
 }
 

@@ -3,7 +3,12 @@ local api = vim.api
 local echoerr   = require'tools.messages'.echoerr
 local has_attrs = require'tools.tables'.has_attrs
 
-local M = {}
+local M = {
+    funcs = {
+        g = {},
+        b = {},
+    }
+}
 
 function M.create_autogrp(autogrp)
     api.nvim_command('augroup '..autogrp..' | autocmd! | autogrp end')
