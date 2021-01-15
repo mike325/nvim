@@ -35,7 +35,7 @@ local function completion_chain()
 
     local items = { complete_items = {} }
 
-    -- local spell_check = {'gitcommit', 'markdown', 'tex', 'text', 'plaintext'}
+    local spell_check = {'gitcommit', 'markdown', 'tex', 'text', 'plaintext'}
 
     -- if lsp then
     --     items.complete_items[#items.complete_items + 1] = 'lsp'
@@ -52,19 +52,6 @@ local function completion_chain()
     if #items.complete_items > 0 then
         table.insert(chain.default.default, 1, items)
     end
-
-    -- for _,language in pairs(spell_check) do
-    --     if chain[language] == nil then
-    --         chain[language] = {
-    --             default = {
-    --                 {complete_items = { 'path' }, triggered_only = {'/'}},
-    --                 {mode = 'spel'},
-    --                 {mode = '<c-p>'},
-    --                 {mode = '<c-n>'},
-    --             }
-    --         }
-    --     end
-    -- end
 
     if lsp then
         for _,language in pairs(lsp) do
@@ -84,8 +71,8 @@ local function completion_chain()
 
                 if language == 'vim' then
                     table.insert(chain[language].default, 3, {mode = 'cmd'})
-                -- elseif spell_check[language] ~= nil then
-                --     table.insert(chain[language].default, 3, {mode = 'spel'})
+                elseif spell_check[language] ~= nil then
+                    table.insert(chain[language].default, 2, {mode = 'dict'})
                 end
             end
         end
@@ -103,9 +90,22 @@ local function completion_chain()
                     }
                 }
             end
-            -- if spell_check[language] ~= nil then
-            --     table.insert(chain[language].default, 3, {mode = 'spel'})
-            -- end
+            if spell_check[language] ~= nil then
+                table.insert(chain[language].default, 3, {mode = 'dict'})
+            end
+        end
+    end
+
+    for _,language in pairs(spell_check) do
+        if chain[language] == nil then
+            chain[language] = {
+                default = {
+                    {complete_items = { 'path' }, triggered_only = {'/'}},
+                    {mode = 'dict'},
+                    {mode = '<c-p>'},
+                    {mode = '<c-n>'},
+                }
+            }
         end
     end
 
