@@ -73,7 +73,7 @@ nvim.o.formatoptions = 'tcqrolnj'
 nvim.o.backupcopy    = 'yes'
 
 nvim.o.complete    = '.,w,b,u,t'
-nvim.o.completeopt = 'menuone,noselect,noinsert'
+nvim.o.completeopt = 'menu,menuone,noselect,noinsert'
 nvim.o.tags        = '.git/tags,./tags;,tags'
 nvim.o.display     = 'lastline,msgsep'
 nvim.o.fileformats = 'unix,dos'

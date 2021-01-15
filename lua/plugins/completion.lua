@@ -13,31 +13,8 @@ local completion = load_module'completion'
 local lsp = require 'plugins/lsp'
 local treesitter = require 'plugins/treesitter'
 
-if completion ~= nil then
-
-    if plugins.ultisnips then
-        nvim.g.completion_enable_snippet = 'UltiSnips'
-    end
-
-    nvim.g.completion_matching_strategy_list = {
-        'exact',
-        'fuzzy',
-        'substring',
-    }
-
-    nvim.g.completion_matching_ignore_case   = 1
-    nvim.g.completion_matching_smart_case    = 1
-    nvim.g.completion_confirm_key            = ''
-    -- nvim.g.completion_sorting                = 'alphabet'  -- 'none' -- 'length'
-    nvim.g.completion_trigger_on_delete      = 1
-    nvim.g.completion_auto_change_source     = 1
-    nvim.g.completion_enable_auto_signature  = 1
-    nvim.g.completion_enable_auto_hover      = 1
-    nvim.g.completion_enable_auto_paren      = 1
-
-    -- local spell_check = {'gitcommit', 'markdown', 'tex', 'text', 'plaintext'}
-
-    local completion_chain = {
+local function completion_chain()
+    local chain = {
         default = {
             default = {
                 {complete_items = { 'path' }, triggered_only = {'/'}},
@@ -45,12 +22,20 @@ if completion ~= nil then
                 {mode = '<c-n>'}
             },
             -- func = {}
-            -- string = {}
-            -- comment = {},
+            string = {
+                {mode = '<c-p>'},
+                {mode = '<c-n>'},
+            },
+            comment = {
+                {mode = '<c-p>'},
+                {mode = '<c-n>'},
+            },
         },
     }
 
     local items = { complete_items = {} }
+
+    -- local spell_check = {'gitcommit', 'markdown', 'tex', 'text', 'plaintext'}
 
     -- if lsp then
     --     items.complete_items[#items.complete_items + 1] = 'lsp'
@@ -65,62 +50,12 @@ if completion ~= nil then
     end
 
     if #items.complete_items > 0 then
-        table.insert(completion_chain.default.default, 1, items)
-    end
-
-    if lsp then
-        for _,language in pairs(lsp) do
-            if completion_chain[language] == nil then
-                completion_chain[language] = {
-                    default = {
-                        {complete_items = {'lsp', 'snippet'}},
-                        {complete_items = { 'path' }, triggered_only = {'/'}},
-                        {mode = '<c-p>'},
-                        {mode = '<c-n>'},
-                    }
-                }
-                if language == 'vim' then
-                    table.insert(completion_chain[language].default, 3, {mode = 'cmd'})
-                -- elseif spell_check[language] ~= nil then
-                --     table.insert(completion_chain[language].default, 3, {mode = 'spel'})
-                end
-            end
-        end
-    end
-
-    if treesitter and plugins['completion-treesitter'] ~= nil then
-        for _,language in pairs(treesitter) do
-            if completion_chain[language] == nil then
-                completion_chain[language] = {
-                    default = {
-                        {complete_items = {'ts', 'snippet'}},
-                        {complete_items = { 'path' }, triggered_only = {'/'}},
-                        {mode = '<c-p>'},
-                        {mode = '<c-n>'},
-                    }
-                }
-            end
-            -- if spell_check[language] ~= nil then
-            --     table.insert(completion_chain[language].default, 3, {mode = 'spel'})
-            -- end
-        end
-    end
-
-    if completion_chain.vim == nil then
-        completion_chain.vim = {
-            default = {
-                {complete_items = {'snippet'}},
-                {complete_items = { 'path' }, triggered_only = {'/'}},
-                {mode = 'cmd'},
-                {mode = '<c-p>'},
-                {mode = '<c-n>'},
-            }
-        }
+        table.insert(chain.default.default, 1, items)
     end
 
     -- for _,language in pairs(spell_check) do
-    --     if completion_chain[language] == nil then
-    --         completion_chain[language] = {
+    --     if chain[language] == nil then
+    --         chain[language] = {
     --             default = {
     --                 {complete_items = { 'path' }, triggered_only = {'/'}},
     --                 {mode = 'spel'},
@@ -131,7 +66,89 @@ if completion ~= nil then
     --     end
     -- end
 
-    nvim.g.completion_chain_complete_list = completion_chain
+    if lsp then
+        for _,language in pairs(lsp) do
+            if chain[language] == nil then
+                chain[language] = {
+                    default = {
+                        {complete_items = {'lsp', 'snippet'}},
+                        {complete_items = { 'path' }, triggered_only = {'/'}},
+                        {mode = 'omni'},
+                        {mode = '<c-p>'},
+                        {mode = '<c-n>'},
+                    }
+                }
+
+                chain[language].string = chain.default.string
+                chain[language].comment = chain.default.comment
+
+                if language == 'vim' then
+                    table.insert(chain[language].default, 3, {mode = 'cmd'})
+                -- elseif spell_check[language] ~= nil then
+                --     table.insert(chain[language].default, 3, {mode = 'spel'})
+                end
+            end
+        end
+    end
+
+    if treesitter and plugins['completion-treesitter'] ~= nil then
+        for _,language in pairs(treesitter) do
+            if chain[language] == nil then
+                chain[language] = {
+                    default = {
+                        {complete_items = {'ts', 'snippet'}},
+                        {complete_items = { 'path' }, triggered_only = {'/'}},
+                        {mode = '<c-p>'},
+                        {mode = '<c-n>'},
+                    }
+                }
+            end
+            -- if spell_check[language] ~= nil then
+            --     table.insert(chain[language].default, 3, {mode = 'spel'})
+            -- end
+        end
+    end
+
+    if chain.vim == nil then
+        chain.vim = {
+            default = {
+                {complete_items = {'snippet'}},
+                {complete_items = { 'path' }, triggered_only = {'/'}},
+                {mode = 'cmd'},
+                {mode = '<c-p>'},
+                {mode = '<c-n>'},
+            }
+        }
+    end
+
+    return chain
+end
+
+if completion ~= nil then
+
+    if plugins.ultisnips then
+        nvim.g.completion_enable_snippet = 'UltiSnips'
+    end
+
+    nvim.g.completion_sorting                = 'none'  -- 'alphabet' -- 'length'
+    nvim.g.completion_matching_ignore_case   = 1
+    nvim.g.completion_matching_smart_case    = 1
+    nvim.g.completion_confirm_key            = ''
+    nvim.g.completion_trigger_on_delete      = 1
+    nvim.g.completion_auto_change_source     = 1
+    nvim.g.completion_enable_auto_paren      = 1
+    nvim.g.completion_enable_auto_signature  = 1
+    nvim.g.completion_enable_auto_hover      = 1
+    nvim.g.completion_trigger_keyword_length = 1
+
+    -- nvim.g.completion_matching_strategy_list = {'exact', 'substring', 'fuzzy', 'all'}
+    nvim.g.completion_matching_strategy_list = {
+        'exact',
+        'fuzzy',
+        'substring',
+    }
+
+    nvim.g.completion_chain_complete_list = completion_chain()
 
     set_autocmd{
         event   = 'BufEnter',

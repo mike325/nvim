@@ -103,7 +103,9 @@ set_command{
 
 set_command{
     lhs = 'HelpTags',
-    rhs = [[lua require'telescope.builtin'.help_tags()]],
+    rhs = function()
+        require'telescope.builtin'.help_tags()
+    end,
     args = {force=true}
 }
 
