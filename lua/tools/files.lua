@@ -116,7 +116,7 @@ function M.rename(old, new, bang)
     new = M.normalize_path(new)
     old = M.normalize_path(old)
 
-    if not M.exists(new) or bang == 1 then
+    if not M.exists(new) or bang then
 
         if not M.exists(old) and bufloaded(old) then
             nvim.ex.write(old)

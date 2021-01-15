@@ -656,30 +656,49 @@ if plugins["vim-vinegar"] == nil and plugins["nerdtree"] == nil then
     set_mapping{ mode = 'n', lhs = '-', rhs = ':Explore<CR>' }
 end
 
-if plugins["vim-eunuch"] == nil and nvim.has('nvim-0.5') then
+if plugins["vim-eunuch"] == nil then
 
-    -- TODO: Make this work with embedded lua
     set_command{
         lhs = 'MoveFile',
-        rhs = [[call v:lua.tools.files.rename(expand('%:p'), expand(<q-args>), empty(<bang>0) ? 0 : 1)]],
+        rhs = function(new_path, bang)
+            local current_path = nvim.fn.expand('%:p')
+            local is_dir = require'tools'.files.is_dir
+            local is_file = require'tools'.files.is_file
+
+            if is_file(current_path) and is_dir(new_path) then
+                new_path = new_path .. '/' .. nvim.fn.fnamemodify(current_path, ':t')
+            end
+
+            require'tools'.files.rename(current_path, new_path, bang)
+        end,
         args = {force = true, bang = true, nargs = 1, complete = 'file'}
     }
 
     set_command{
         lhs = 'RenameFile',
-        rhs = [[call v:lua.tools.files.rename(expand('%:p'), expand('%:p:h').'/'.expand(<q-args>), empty(<bang>0) ? 0 : 1)]],
+        rhs = function(args, bang)
+            local current_path = nvim.fn.expand('%:p')
+            local current_dir = nvim.fn.expand('%:h')
+            require'tools'.files.rename(current_path, current_dir..'/'..args, bang)
+        end,
         args = {force = true, bang = true, nargs = 1, complete = 'file'}
     }
 
     set_command{
         lhs = 'Mkdir',
-        rhs = [[call mkdir(fnameescape(expand(<q-args>)), 'p')]],
-        args = {force = true, bang = true, nargs = 1, complete = 'dir'}
+        rhs = function(args)
+            nvim.fn.mkdir(nvim.fn.fnameescape(args), 'p')
+        end,
+        args = {force = true, nargs = 1, complete = 'dir'}
     }
 
     set_command{
         lhs = 'RemoveFile',
-        rhs = [[call v:lua.tools.files.delete(fnamemodify(empty(<q-args>) ? expand("%") : expand(<q-args>), ":p"), empty(<bang>0) ? 0 : 1)]],
+        rhs = function(args, bang)
+            local current_buffer = nvim.fn.expand('%')
+            local target = args ~= '' and args or current_buffer
+            require'tools'.files.delete(nvim.fn.fnamemodify(target, ":p"), bang)
+        end,
         args = {force = true, bang = true, nargs = '?', complete = 'file'}
     }
 

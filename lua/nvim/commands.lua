@@ -16,6 +16,7 @@ local function get_wrapper(info)
     local lhs = info.lhs
     local nparams = info.nparams
     local varargs = info.varargs
+    local bang = info.bang
     local bufnr = require'nvim'.win.get_buf(0)
 
     local cmd = [[lua require'nvim'.commands.funcs]]
@@ -27,7 +28,12 @@ local function get_wrapper(info)
     end
 
     cmd = cmd..("['%s']"):format(lhs)
-    cmd = cmd..("(%s)"):format((nparams > 0 or varargs) and '<f-args>' or '')
+
+    if bang then
+        cmd = cmd..("(%s, %s)"):format((nparams > 0 or varargs) and '<q-args>' or '', [["<bang>" == '']])
+    else
+        cmd = cmd..("(%s)"):format((nparams > 0 or varargs) and '<q-args>' or '')
+    end
 
     return cmd
 end
@@ -57,6 +63,7 @@ function M.set_command(command)
 
     local cmd, nargs
     local scope = 'g'
+    local bang = false
     local lhs  = command.lhs
     local rhs  = command.rhs
     local args = type(command.args) == 'table' and command.args or {command.args}
@@ -83,6 +90,8 @@ function M.set_command(command)
             end
             if attr == '-buffer' then
                 scope = 'b'
+            elseif attr == '-bang' then
+                bang = true
             end
             cmd[#cmd + 1] = attr
         end
@@ -100,6 +109,7 @@ function M.set_command(command)
             nparams = nparams,
             varargs = varargs,
             scope   = scope,
+            bang    = bang,
         }
 
         if nargs == nil then

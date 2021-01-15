@@ -20,4 +20,8 @@ function M.str_to_clean_tbl(cmd_string)
     return require'tools.tables'.str_to_clean_tbl(cmd_string)
 end
 
+function M.empty(str)
+    return str == ''
+end
+
 return M
