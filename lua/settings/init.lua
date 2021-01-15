@@ -45,10 +45,11 @@ if nvim.g.started_by_firenvim ~= nil then
     nvim.o.laststatus = 0
 end
 
-nvim.o.shada =  "!,/1000,'1000,<1000,:1000,s10000,h"
+nvim.o.shada = "!,/1000,'1000,<1000,:1000,s10000,h"
 
 if sys.name == 'windows' then
     nvim.o.shada = nvim.o.shada .. ",rA:,rB:,rC:/Temp/"
+    nvim.o.completeslash = 'slash'
 else
     nvim.o.shada = nvim.o.shada .. ",r/tmp/"
 end
@@ -132,11 +133,11 @@ end
 -- Default should be internal,filler,closeoff
 nvim.o.diffopt = nvim.o.diffopt .. ',vertical,iwhiteall,iwhiteeol,indent-heuristic,algorithm:patience,hiddenoff'
 
-set_grep(false, false)
-
 if plugins['vim-airline'] == nil then
     nvim.o.statusline = [[%< [%f]%=%-5.(%y%r%m%w%q%) %-14.(%l,%c%V%) %P ]]
 end
+
+set_grep(false, false)
 
 -- Window options
 -- Use set to modify global and window value

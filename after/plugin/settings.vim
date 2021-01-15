@@ -49,6 +49,9 @@ endif
 
 if os#name('windows')
     behave xterm
+    if has#option('completeslash')
+        set completeslash='slash'
+    endif
 endif
 
 " Allow lua omni completion
@@ -56,6 +59,9 @@ let g:lua_complete_omni = 1
 
 " Use C for .h headers
 let g:c_syntax_for_h = 1
+let g:c_comment_strings = 1
+let g:c_curly_error = 1
+let g:c_no_if0 = 0
 
 if has#option('scrollback')
     set scrollback=-1
