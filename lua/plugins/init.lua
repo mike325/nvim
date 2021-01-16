@@ -8,6 +8,7 @@ if nvim.has('nvim-0.5') then
         iron       = { ok = false, status  = false},
         lsp        = { ok = false, status  = false},
         telescope  = { ok = false, status  = false},
+        neorocks   = { ok = false, status  = false},
         treesitter = { ok = false, status  = false},
         completion = { ok = false, status  = false},
     }

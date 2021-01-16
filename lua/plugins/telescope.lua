@@ -11,7 +11,7 @@ local set_command = nvim.commands.set_command
 
 local telescope = load_module'telescope'
 
-if telescope == nil then
+if not telescope then
     return false
 end
 
