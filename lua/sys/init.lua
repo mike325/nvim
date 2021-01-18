@@ -34,12 +34,25 @@ local function datadir()
     return stdpath('data'):gsub('\\', '/')
 end
 
+local function luajit_version()
+    local version = nvim.split(nvim.exec('version', true), '\n', true)
+    local luajit = ''
+    for _,val in pairs(version) do
+        if val:match('LuaJIT') then
+            luajit = nvim.split(val, ' ', true)[2]
+            break
+        end
+    end
+    return luajit
+end
+
 local sys = {
     name  = system_name(),
     home  = homedir(),
     base  = basedir(),
     data  = datadir(),
     cache = cachedir(),
+    luajit = luajit_version(),
 }
 
 function sys.tmp(filename)

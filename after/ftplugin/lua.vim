@@ -15,12 +15,24 @@ let &l:define = '\s*\(local\s\+\)\?\(function\s\+\(\i\+[.:]\)\?\|\ze\i\+\s*=\s*\
 let lua_version = 5
 let lua_subversion = 1
 
+let s:luacheck = ''
+
 if has('nvim')
-    execute 'setlocal path^=' . luaeval('require"sys".base') . '/lua'
+    let s:base = luaeval('require"sys".base')
+    let s:cache = luaeval('require"sys".cache')
+    let s:luajit = luaeval('require"sys".luajit')
+
+    execute 'setlocal path^=' . s:base . '/lua'
 endif
 
 if executable('luacheck')
-    setlocal makeprg=luacheck\ --std\ luajit\ --formatter\ plain\ %
+    let s:luacheck = 'luacheck'
+elseif has('nvim') && filereadable(s:cache.'/plenary_hererocks/'.s:luajit.'/bin/luacheck')
+    let s:luacheck = s:cache.'/plenary_hererocks/'.s:luajit.'/bin/luacheck'
+endif
+
+if s:luacheck !=# ''
+    let &l:makeprg = s:luacheck . ' --std luajit --formatter plain %'
     setlocal errorformat=%f:%l:%c:\ %m
 
     if has#plugin('neomake')

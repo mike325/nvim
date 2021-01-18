@@ -22,7 +22,7 @@ set_command{
 set_command{
     lhs = 'NeorocksSetup',
     rhs = function()
-        neorocks.setup(false, false)
+        neorocks.setup(true, false)
     end,
     args = {force=true}
 }
