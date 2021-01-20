@@ -46,6 +46,13 @@ local servers = {
         {
             exec = 'texlab',
             options = {
+                capabilities = {
+                    textDocument = {
+                        completion = {
+                            completionItem = { snippetSupport = true }
+                        }
+                    }
+                },
                 settings = {
                     bibtex = {
                         formatting = {
@@ -81,8 +88,19 @@ local servers = {
             config = 'sumneko_lua',
             options = {
                 cmd = {sumneko_binary, "-E", sumneko_root_path .. "/main.lua"},
+                capabilities = {
+                    textDocument = {
+                        completion = {
+                            completionItem = { snippetSupport = true }
+                        }
+                    }
+                },
                 settings = {
                     Lua = {
+                        completion= {
+                            keywordSnippet = "Enable",
+                            callSnippet = "Both"
+                        },
                         runtime = {
                             -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
                             version = 'LuaJIT',
@@ -121,6 +139,13 @@ local servers = {
                     '--check-parent-process',
                     '--log-file=' .. sys.tmp('pyls.log'),
                 },
+                capabilities = {
+                    textDocument = {
+                        completion = {
+                            completionItem = { snippetSupport = true }
+                        }
+                    }
+                },
                 settings = {
                     pyls = {
                         plugins = {
@@ -138,7 +163,22 @@ local servers = {
                 },
             },
         },
-        { exec = 'jedi-language-server', config = 'jedi_language_server' },
+        {
+            exec = 'jedi-language-server',
+            config = 'jedi_language_server',
+            options = {
+                init_options = {
+                    disableSnippets = false,
+                },
+                capabilities = {
+                    textDocument = {
+                        completion = {
+                            completionItem = { snippetSupport=true }
+                        }
+                    }
+                },
+            }
+        },
     },
     c = {
         {
@@ -154,12 +194,31 @@ local servers = {
                     '--function-arg-placeholders',
                     '--log=verbose',
                 },
+                capabilities = {
+                    textDocument = {
+                        completion = {
+                            completionItem = { snippetSupport = true }
+                        }
+                    }
+                },
+                init_options = {
+                    usePlaceholders = true,
+                    completeUnimported = true,
+                    clangdFileStatus = true
+                },
             }
         },
         {
             exec = 'ccls',
             options = {
                 cmd = { 'ccls', '--log-file=' .. sys.tmp('ccls.log') },
+                capabilities = {
+                    textDocument = {
+                        completion = {
+                            completionItem = { snippetSupport = true }
+                        }
+                    }
+                },
                 settings = {
                     init_options = {
                         compilationDatabaseDirectory = "build";

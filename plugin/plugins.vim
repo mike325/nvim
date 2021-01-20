@@ -32,8 +32,17 @@ Plug 'tpope/vim-markdown'
 " Plug 'editorconfig/editorconfig-vim'
 " Plug 'pechorin/any-jump.vim'
 
+Plug 'junegunn/gv.vim', {'on': ['GV']}
+
 if has('nvim-0.5')
     Plug 'kevinhwang91/nvim-bqf'
+    Plug 'glepnir/zephyr-nvim'
+    Plug 'kyazdani42/nvim-web-devicons'
+    " Plug 'romgrk/barbar.nvim'
+endif
+
+if has('nvim')
+    Plug 'Vigemus/iron.nvim'
 endif
 
 if has('nvim-0.5') && (executable('gcc') || executable('clang'))

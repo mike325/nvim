@@ -102,40 +102,23 @@ else
     Plug 'tpope/vim-repeat'
     Plug 'tpope/vim-surround'
     Plug 'tpope/vim-projectionist'
-    " Plug 'tpope/vim-unimpaired'
     Plug 'tpope/vim-apathy'
     Plug 'tpope/vim-dispatch'
     Plug 'tpope/vim-fugitive'
-    Plug 'junegunn/gv.vim', {'on': ['GV']}
     " Plug 'lambdalisue/gina.vim' " TODO: keep testing this
     Plug 'Raimondi/delimitMate'
     Plug 'tpope/vim-commentary'
     Plug 'ojroques/vim-oscyank'
+    " Plug 'tpope/vim-unimpaired'
 
     " Syntax files
-    Plug 'elzr/vim-json'
-    Plug 'peterhoeg/vim-qml'
     Plug 'PProvost/vim-ps1'
-    Plug 'cespare/vim-toml'
-    Plug 'bjoernd/vim-syntax-simics'
     Plug 'kurayama/systemd-vim-syntax'
     Plug 'mhinz/vim-nginx'
     Plug 'raimon49/requirements.txt.vim'
 
     if exists('g:started_by_firenvim')
         Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
-    endif
-
-    " Plug 'subnut/nvim-ghost.nvim', {'do': ':call nvim_ghost#installer#install()'}
-
-    if has('nvim-0.5')
-        Plug 'glepnir/zephyr-nvim'
-        Plug 'kyazdani42/nvim-web-devicons'
-        " Plug 'romgrk/barbar.nvim'
-    endif
-
-    if has('nvim')
-        Plug 'Vigemus/iron.nvim'
     endif
 
     if has#minimal() && has('nvim-0.5')
