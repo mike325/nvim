@@ -32,6 +32,10 @@ Plug 'tpope/vim-markdown'
 " Plug 'editorconfig/editorconfig-vim'
 " Plug 'pechorin/any-jump.vim'
 
+if has('nvim-0.5')
+    Plug 'kevinhwang91/nvim-bqf'
+endif
+
 if has('nvim-0.5') && (executable('gcc') || executable('clang'))
     Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
     " Plug '~/source/nvim-treesitter', {'do': ':TSUpdate'}
