@@ -292,12 +292,14 @@ if sys.name == 'windows' then
         rhs = ':<ESC>',
         args = noremap,
     }
-    set_mapping{
-        mode = 'n',
-        lhs = '<C-z>',
-        rhs = '<nop>',
-        args = noremap,
-    }
+    if not nvim.g.started_by_firenvim then
+        set_mapping{
+            mode = 'n',
+            lhs = '<C-z>',
+            rhs = '<nop>',
+            args = noremap,
+        }
+    end
 end
 
 if not get_mapping{ mode = 'n', lhs = '<C-L>' } then

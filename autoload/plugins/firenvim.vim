@@ -7,8 +7,4 @@ endif
 
 let g:config_firenvim = 1
 
-" augroup FirenvimHacks
-"     autocmd!
-"     autocmd TextChanged * ++nested update
-"     autocmd InsertLeave * ++nested update
-" augroup end
+nnoremap <C-z> :call firenvim#hide_frame()<CR>

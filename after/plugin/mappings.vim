@@ -49,8 +49,10 @@ if has('nvim') && os#name('windows') && !has#gui()
     " nnoremap <C-h> <ESC>
     xnoremap <C-h> <ESC>
 
-    " We can't sent neovim to background in cmd or powershell
-    nnoremap <C-z> <nop>
+    if !exists('g:started_by_firenvim')
+        " We can't sent neovim to background in cmd or powershell
+        nnoremap <C-z> <nop>
+    endif
 endif
 
 inoremap <C-U> <C-G>u<C-U>

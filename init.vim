@@ -122,6 +122,12 @@ else
     Plug 'mhinz/vim-nginx'
     Plug 'raimon49/requirements.txt.vim'
 
+    if exists('g:started_by_firenvim')
+        Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
+    endif
+
+    " Plug 'subnut/nvim-ghost.nvim', {'do': ':call nvim_ghost#installer#install()'}
+
     if has('nvim-0.5')
         Plug 'glepnir/zephyr-nvim'
         Plug 'kyazdani42/nvim-web-devicons'

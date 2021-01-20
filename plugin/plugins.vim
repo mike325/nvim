@@ -50,7 +50,7 @@ else
 
 endif
 
-if has('nvim-0.4') && empty($SSH_CONNECTION) && !os#name('wsl') && (executable('firefox') || executable('chrome'))
+if has('nvim-0.4') && empty($SSH_CONNECTION)
     Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
 endif
 

@@ -175,7 +175,7 @@ endfunction
 function! mappings#bs() abort
     try
         execute 'pop'
-    catch /E\(55\(5\|6\)\|73\)/
+    catch /E\(55\(5\|6\)\|73\|92\)/
         execute "normal! \<C-o>"
     endtry
 endfunction
