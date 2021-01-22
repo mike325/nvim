@@ -132,6 +132,22 @@ local servers = {
             -- cmd = { 'dotnet', 'exec', 'path/to/Microsoft.Python.languageServer.dll'  };
         },
         {
+            exec = 'jedi-language-server',
+            config = 'jedi_language_server',
+            options = {
+                init_options = {
+                    disableSnippets = false,
+                },
+                -- capabilities = {
+                --     textDocument = {
+                --         completion = {
+                --             completionItem = { snippetSupport=true }
+                --         }
+                --     }
+                -- },
+            }
+        },
+        {
             exec = 'pyls',
             options = {
                 cmd = {
@@ -162,22 +178,6 @@ local servers = {
                     },
                 },
             },
-        },
-        {
-            exec = 'jedi-language-server',
-            config = 'jedi_language_server',
-            options = {
-                init_options = {
-                    disableSnippets = false,
-                },
-                capabilities = {
-                    textDocument = {
-                        completion = {
-                            completionItem = { snippetSupport=true }
-                        }
-                    }
-                },
-            }
         },
     },
     c = {

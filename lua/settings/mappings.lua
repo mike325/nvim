@@ -70,8 +70,20 @@ end
 if plugins["vim-indexed-search"] == nil then
     -- set_mapping{ mode = 'n', lhs = '*', rhs = '*zz' }
     -- set_mapping{ mode = 'n', lhs = '#', rhs = '#zz' }
-    set_mapping{ mode = 'n', lhs = 'n', rhs = ":call mappings#NiceNext('n')<cr>", args = noremap_silent }
-    set_mapping{ mode = 'n', lhs = 'N', rhs = ":call mappings#NiceNext('N')<cr>", args = noremap_silent }
+    set_mapping{
+        mode = 'n',
+        lhs = 'n',
+        rhs = ":call mappings#NiceNext('n')<cr>",
+        args = noremap_silent
+    }
+
+    set_mapping{
+        mode = 'n',
+        lhs = 'N',
+        rhs = ":call mappings#NiceNext('N')<cr>",
+        args = noremap_silent
+    }
+
 end
 
 if plugins["vim-unimpaired"] == nil then

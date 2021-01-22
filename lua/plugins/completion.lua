@@ -130,7 +130,7 @@ if completion ~= nil then
         nvim.g.completion_enable_snippet = 'UltiSnips'
     end
 
-    nvim.g.completion_sorting                = 'none'  -- 'alphabet' -- 'length'
+    -- nvim.g.completion_sorting                = 'none'  -- 'alphabet' -- 'length'
     nvim.g.completion_matching_ignore_case   = 1
     nvim.g.completion_matching_smart_case    = 1
     nvim.g.completion_confirm_key            = ''
