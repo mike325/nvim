@@ -8,7 +8,7 @@ endif
 let g:config_ultisnips = 1
 
 let g:UltiSnipsEditSplit           = 'context'
-let g:UltiSnipsExpandTrigger       = '<C-e>'
+let g:UltiSnipsExpandTrigger       = '<C-,>'
 
 " Remove all select mappigns in expanded snip
 " let g:UltiSnipsRemoveSelectModeMappings = 0

@@ -5,12 +5,18 @@ let s:arrows = -1
 
 " TODO: Add completion-nvim handler
 function! mappings#enter() abort
-    if has#plugin('ultisnips')
+    let l:snippet = 0
+
+    if has#plugin('snippets.nvim')
+        let l:snippet = luaeval("require'snippets'.expand_or_advance(1)")
+    elseif has#plugin('ultisnips')
         let l:snippet = UltiSnips#ExpandSnippet()
     endif
 
     if get(g:,'ulti_expand_res', 0) > 0
         return l:snippet
+    elseif has#plugin('snippets.nvim') && l:snippet
+        return ''
     elseif pumvisible()
         if has#plugin('YouCompleteMe')
             call feedkeys("\<C-y>")
@@ -41,7 +47,10 @@ function! mappings#tab() abort
     if pumvisible()
         return "\<C-n>"
     endif
-    if has#plugin('ultisnips')
+    if has#plugin('snippets.nvim')
+        let l:snippet = luaeval("require'snippets'.expand_or_advance(1)")
+        return ''
+    elseif has#plugin('ultisnips')
         call UltiSnips#JumpForwards()
         if get(g:, 'ulti_jump_forwards_res', 0) > 0
             return ''

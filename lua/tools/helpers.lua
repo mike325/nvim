@@ -267,9 +267,9 @@ function M.toggle_qf(qf_type)
     if close then
         nvim.ex[qf['close']]()
     else
-        local current_window = nvim.get_current_win()
+        -- local current_window = nvim.get_current_win()
         nvim.ex[qf['open']]()
-        nvim.set_current_win(current_window)
+        -- nvim.set_current_win(current_window)
     end
 end
 

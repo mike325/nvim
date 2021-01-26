@@ -23,8 +23,6 @@ let g:signify_skip_filename_pattern = [
 
 nmap ]h <plug>(signify-next-hunk)
 nmap [h <plug>(signify-prev-hunk)
-" nmap ]h 9999<leader>gj
-" nmap ]h 9999<leader>gk
 
 omap ih <plug>(signify-motion-inner-pending)
 xmap ih <plug>(signify-motion-inner-visual)

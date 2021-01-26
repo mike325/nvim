@@ -47,11 +47,8 @@ endif
 
 if has('nvim-0.5') && (executable('gcc') || executable('clang'))
     Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-    " Plug '~/source/nvim-treesitter', {'do': ':TSUpdate'}
     Plug 'nvim-treesitter/nvim-treesitter-refactor'
-    " Plug '~/source/nvim-treesitter-refactor'
     Plug 'nvim-treesitter/nvim-treesitter-textobjects'
-    " Plug '~/source/nvim-treesitter-textobjects'
     " Plug 'romgrk/nvim-treesitter-context'
 else
     Plug 'tbastos/vim-lua'
@@ -102,16 +99,18 @@ else
     endif
 endif
 
-if executable('git') || executable('hg') || executable('svn')
-    " These are the only VCS I care, if none is installed, then skip this plugin
-    if has#async()
-        Plug 'mhinz/vim-signify'
-    else
-        Plug 'mhinz/vim-signify', { 'branch': 'legacy' }
-    endif
-endif
+" if executable('git') || executable('hg') || executable('svn')
+"     " These are the only VCS I care, if none is installed, then skip this plugin
+"     if has#async()
+"         Plug 'mhinz/vim-signify'
+"     else
+"         Plug 'mhinz/vim-signify', { 'branch': 'legacy' }
+"     endif
+" endif
 
 if executable('git')
+    Plug 'airblade/vim-gitgutter'
+
     if v:version > 704
         Plug 'rhysd/git-messenger.vim'
     endif
@@ -125,6 +124,9 @@ if (v:version > 703 || has('nvim')) && !exists('g:started_by_firenvim')
     Plug 'vim-airline/vim-airline-themes'
 endif
 
+" if has('nvim-0.5')
+"     Plug 'norcalli/snippets.nvim'
+" elseif has#python() && (has('nvim') || (v:version >= 704))
 if has#python() && (has('nvim') || (v:version >= 704))
     if has#python(3, 5)
         Plug 'SirVer/ultisnips'
