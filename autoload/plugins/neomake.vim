@@ -35,7 +35,7 @@ let g:neomake_open_list = 0
 if has('nvim-0.3.2')
     let g:neomake_echo_current_error = 0
     let g:neomake_virtualtext_current_error = 1
-    let g:neomake_virtualtext_prefix = empty($NO_COOL_FONTS) ? '➤ ' :  '❯ '
+    let g:neomake_virtualtext_prefix = '❯ '
 endif
 
 function! plugins#neomake#makeprg() abort

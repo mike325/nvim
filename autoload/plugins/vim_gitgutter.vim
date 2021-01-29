@@ -17,6 +17,8 @@ nmap ]h <Plug>(GitGutterNextHunk)
 nmap [h <Plug>(GitGutterPrevHunk)]
 
 nmap =s <Plug>(GitGutterStageHunk)
+xmap <silent> =s :GitGutterStageHunk<CR>
+
 nmap =u <Plug>(GitGutterUndoHunk)
 
 omap ih <Plug>(GitGutterTextObjectInnerPending)

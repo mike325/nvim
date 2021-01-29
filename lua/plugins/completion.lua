@@ -2,13 +2,14 @@ local nvim        = require'nvim'
 local load_module = require'tools'.helpers.load_module
 local has_attrs   = require'tools'.tables.has_attrs
 
-local plugins          = nvim.plugins
+local plugins = nvim.plugins
 
 local set_autocmd = nvim.autocmds.set_autocmd
 -- local set_command = nvim.commands.set_command
 -- local set_mapping = nvim.mappings.set_mapping
 
 local completion = load_module'completion'
+local compe = load_module'compe'
 
 local lsp = require 'plugins/lsp'
 local treesitter = require 'plugins/treesitter'
@@ -183,6 +184,27 @@ if completion ~= nil then
         }
     end
 
+elseif compe ~= nil then
+
+    compe.setup {
+        enabled = true;
+        debug = false;
+        min_length = 2;
+        preselect = 'disable'; -- 'enable' || 'disable' || 'always';
+        -- throttle_time = ... number ...;
+        -- source_timeout = ... number ...;
+        -- incomplete_delay = ... number ...;
+        allow_prefix_unmatch = false;
+        source = {
+            path = true;
+            buffer = true;
+            vsnip = plugins['vsnip'] ~= nil;
+            ultisnips = plugins['ultisnips'] ~= nil;
+            nvim_lsp = lsp ~= nil;
+            -- nvim_lua = { ... overwrite source configuration ... };
+        };
+    }
+
 elseif lsp and plugins['vim-mucomplete'] ~= nil then
     set_autocmd{
         event   = 'FileType',
@@ -190,7 +212,6 @@ elseif lsp and plugins['vim-mucomplete'] ~= nil then
         cmd     = [[call plugins#vim_mucomplete#setOmni()]],
         group   = 'Completion',
     }
-    return false
 end
 
-return true
+return compe ~= nil or completion ~= nil

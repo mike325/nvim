@@ -180,7 +180,7 @@ if v:version >= 704
     set formatoptions+=j " Delete comment character when joining commented lines
 endif
 
-set updatetime=1000
+set updatetime=100
 
 " Remove includes from completions
 set complete-=i

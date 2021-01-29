@@ -61,7 +61,7 @@ nvim.o.shiftwidth  = 0
 nvim.o.softtabstop = -1
 
 nvim.o.scrollback  = -1
-nvim.o.updatetime  = 1000
+nvim.o.updatetime  = 100
 
 nvim.o.sidescrolloff = 5
 nvim.o.scrolloff     = 1
@@ -149,9 +149,14 @@ nvim.command('set nowrap')
 nvim.command('set nofoldenable')
 nvim.command('set colorcolumn=80')
 nvim.command('set foldmethod=syntax')
-nvim.command('set signcolumn=auto')
 nvim.command('set numberwidth=1')
 nvim.command('set foldlevel=99')
+
+if nvim.has('nvim-0.5') then
+    nvim.command('set signcolumn=auto:2')
+else
+    nvim.command('set signcolumn=auto')
+end
 
 -- Changes in nvim master
 -- nvim.wo.foldcolumn     = 'auto'

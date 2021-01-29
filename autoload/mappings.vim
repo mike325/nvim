@@ -25,12 +25,14 @@ function! mappings#enter() abort
             if complete_info()['selected'] !=# '-1'
                 call completion#wrap_completion()
                 return ''
-            else
-                return "\<c-e>\<CR>"
             endif
-        else
-            return "\<C-y>"
+        elseif has#plugin('nvim-compe')
+            if complete_info()['selected'] !=# '-1'
+                return compe#confirm('<CR>')
+            endif
         endif
+
+        return "\<C-y>"
     " elseif has#plugin('delimitMate') && delimitMate#WithinEmptyPair()
     "     return delimitMate#ExpandReturn()
     elseif has#plugin('ultisnips')

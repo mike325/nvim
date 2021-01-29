@@ -117,17 +117,15 @@ else
     Plug 'mhinz/vim-nginx'
     Plug 'raimon49/requirements.txt.vim'
 
-    if exists('g:started_by_firenvim')
+    if has#minimal() && exists('g:started_by_firenvim')
         Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
     endif
 
     if has#minimal() && has('nvim-0.5')
 
-        if has('nvim-0.5')
-            Plug 'nvim-lua/popup.nvim'
-            Plug 'nvim-lua/plenary.nvim'
-            Plug 'nvim-lua/telescope.nvim'
-        endif
+        Plug 'nvim-lua/popup.nvim'
+        Plug 'nvim-lua/plenary.nvim'
+        Plug 'nvim-lua/telescope.nvim'
 
         Plug 'nvim-lua/completion-nvim'
 

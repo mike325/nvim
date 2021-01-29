@@ -99,15 +99,6 @@ else
     endif
 endif
 
-" if executable('git') || executable('hg') || executable('svn')
-"     " These are the only VCS I care, if none is installed, then skip this plugin
-"     if has#async()
-"         Plug 'mhinz/vim-signify'
-"     else
-"         Plug 'mhinz/vim-signify', { 'branch': 'legacy' }
-"     endif
-" endif
-
 if executable('git')
     Plug 'airblade/vim-gitgutter'
 
@@ -116,6 +107,13 @@ if executable('git')
     endif
     if !os#name('windows')
         Plug 'rhysd/committia.vim'
+    endif
+elseif executable('hg') || executable('svn')
+    " These are the only VCS I care, if none is installed, then skip this plugin
+    if has#async()
+        Plug 'mhinz/vim-signify'
+    else
+        Plug 'mhinz/vim-signify', { 'branch': 'legacy' }
     endif
 endif
 
