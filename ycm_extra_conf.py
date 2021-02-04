@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 import os
 import sys
 import logging
@@ -154,13 +155,11 @@ def GetCompilationInfoForFile(filename):
 
 
 def PathToPythonUsedDuringBuild():
-    try:
-        filepath = os.path.join(DirectoryOfThisScript(), 'python_version.txt')
+    filepath = os.path.join(DirectoryOfThisScript(), 'python_version.txt')
+    if os.path.isfile(filepath):
         with open(filepath) as f:
             return f.read().strip()
-        # We need to check for IOError for Python 2 and OSError for Python 3.
-    except (IOError, OSError):
-        return sys.executable
+    return sys.executable
 
 
 def Settings(**kwargs):
@@ -208,7 +207,7 @@ def Settings(**kwargs):
             'do_cache': True,
         }
 
-    if language == 'python':
+    elif language == 'python':
         if client_data is not None and 'g:ycm_python_interpreter_path' in client_data:
             pypath = client_data['g:ycm_python_interpreter_path']
         else:
@@ -218,6 +217,13 @@ def Settings(**kwargs):
 
         return {
             'interpreter_path': pypath
+        }
+
+    elif language == 'java':
+        return {
+            'ls': {
+                'java.format.onType.enabled': True
+            }
         }
 
     return {}

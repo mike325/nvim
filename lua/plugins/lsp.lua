@@ -245,7 +245,7 @@ local servers = {
     },
 }
 
-local function on_attach(client)
+local function on_attach(_)
     require'nvim'.bo.omnifunc = 'v:lua.vim.lsp.omnifunc'
     -- local nvim = require'nvim'
 
@@ -300,27 +300,24 @@ local commands = {
     IncommingCalls = {vim.lsp.buf.incoming_calls},
     Implementation = {vim.lsp.buf.implementation},
     References = {function()
-        local load_module = require'tools'.helpers.load_module
-        local telescope = load_module'plugins.telescope'
-        if telescope then
+        local ok, _ = pcall(require, 'plugins.telescope' )
+        if ok then
             require'telescope.builtin'.lsp_references{}
         else
             vim.lsp.buf.references()
         end
     end,},
     DocSymbols = {function()
-        local load_module = require'tools'.helpers.load_module
-        local telescope = load_module'plugins.telescope'
-        if telescope then
+        local ok, _ = pcall(require, 'plugins.telescope')
+        if ok then
             require'telescope.builtin'.lsp_document_symbols{}
         else
             vim.lsp.buf.document_symbol()
         end
     end,},
     WorkSymbols = {function()
-        local load_module = require'tools'.helpers.load_module
-        local telescope = load_module'plugins.telescope'
-        if telescope then
+        local ok, _ = pcall(require, 'plugins.telescope')
+        if ok then
             require'telescope.builtin'.lsp_workspace_symbols{}
         else
             vim.lsp.buf.workspace_symbol()
@@ -328,9 +325,8 @@ local commands = {
 
     end,},
     CodeAction = {function()
-        local load_module = require'tools'.helpers.load_module
-        local telescope = load_module'plugins.telescope'
-        if telescope then
+        local ok, _ = pcall(require, 'plugins.telescope')
+        if ok then
             require'telescope.builtin'.lsp_code_actions{}
         else
             vim.lsp.buf.lsp_code_actions()
