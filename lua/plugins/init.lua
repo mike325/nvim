@@ -10,6 +10,8 @@ if nvim.has('nvim-0.5') then
         telescope  = { ok = false, status  = false},
         neorocks   = { ok = false, status  = false},
         treesitter = { ok = false, status  = false},
+        -- snippets   = { ok = false, status  = false},
+        -- galaxyline = { ok = false, status  = false},
         completion = { ok = false, status  = false},
     }
 

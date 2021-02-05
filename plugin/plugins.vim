@@ -150,8 +150,9 @@ if !empty($YCM) && empty($NO_PYTHON_DEV) &&
     endif
 
 elseif has('nvim-0.5')
-    Plug 'nvim-lua/completion-nvim'
+    " Plug 'hrsh7th/nvim-compe'
 
+    Plug 'nvim-lua/completion-nvim'
     if executable('gcc') || executable('clang')
         Plug 'nvim-treesitter/completion-treesitter'
     endif

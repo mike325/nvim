@@ -198,10 +198,11 @@ elseif compe ~= nil then
         source = {
             path = true;
             buffer = true;
+            nvim_lua = true;
+            nvim_lsp = lsp ~= nil;
             vsnip = plugins['vsnip'] ~= nil;
             ultisnips = plugins['ultisnips'] ~= nil;
-            nvim_lsp = lsp ~= nil;
-            -- nvim_lua = { ... overwrite source configuration ... };
+            snippets_nvim = plugins['snippets.nvim'] ~= nil;
         };
     }
 

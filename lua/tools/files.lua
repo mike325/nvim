@@ -31,7 +31,14 @@ function M.executable(exec)
 end
 
 function M.realpath(path)
-    return uv.fs_realpath(path)
+    return uv.fs_realpath(path):gsub('\\','/')
+end
+
+function M.normalize_path(path)
+    if path:sub(1, 1) == '~' then
+        path = nvim.fn.expand(path)
+    end
+    return path:gsub('\\','/')
 end
 
 function M.chmod(path, mode)
@@ -102,13 +109,6 @@ function M.read_json(filename)
         return false
     end
     return nvim.fn.json_decode(nvim.fn.readfile(filename))
-end
-
-function M.normalize_path(path)
-    if path:sub(1, 1) == '~' then
-        path = nvim.fn.expand(path)
-    end
-    return path:gsub('\\','/')
 end
 
 function M.rename(old, new, bang)

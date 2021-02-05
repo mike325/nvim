@@ -128,6 +128,7 @@ else
         Plug 'nvim-lua/telescope.nvim'
 
         Plug 'nvim-lua/completion-nvim'
+        " Plug 'hrsh7th/nvim-compe'
 
         if tools#CheckLanguageServer()
             Plug 'neovim/nvim-lspconfig'
