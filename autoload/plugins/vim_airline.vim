@@ -18,10 +18,31 @@ if !has#plugin('barbar.nvim')
     let g:airline#extensions#tabline#show_splits       = 0
 endif
 
-let g:airline_highlighting_cache                   = 1
-let g:airline_stl_path_style                       = 'short'
+let g:airline_stl_path_style     = 'short'
+let g:airline_highlighting_cache = 1
 
 let g:airline#extensions#branch#format = 0
+
+let g:airline_mode_map = {
+    \ '__'     : '-',
+    \ 'c'      : 'C',
+    \ 'i'      : 'I',
+    \ 'ic'     : 'I',
+    \ 'ix'     : 'I',
+    \ 'n'      : 'N',
+    \ 'multi'  : 'M',
+    \ 'ni'     : 'N',
+    \ 'no'     : 'N',
+    \ 'R'      : 'R',
+    \ 'Rv'     : 'R',
+    \ 's'      : 'S',
+    \ 'S'      : 'SL',
+    \ ''     : 'SB',
+    \ 't'      : 'T',
+    \ 'v'      : 'V',
+    \ 'V'      : 'VL',
+    \ ''     : 'VB',
+    \ }
 
 " Change to the name of the location/quickfix windows
 " let g:airline#extensions#quickfix#quickfix_text = 'Quickfix'
