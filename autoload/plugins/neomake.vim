@@ -10,24 +10,22 @@ let g:config_neomake = 1
 
 " let g:neomake_ft_maker_remove_invalid_entries = 1
 
-if !empty($NO_COOL_FONTS)
-    let g:neomake_error_sign = {
-        \ 'text': 'E>',
-        \ 'texthl': 'NeomakeErrorSign',
-        \ }
-    let g:neomake_warning_sign = {
-        \   'text': 'W>',
-        \   'texthl': 'NeomakeWarningSign',
-        \ }
-    let g:neomake_message_sign = {
-        \   'text': 'M>',
-        \   'texthl': 'NeomakeMessageSign',
-        \ }
-    let g:neomake_info_sign = {
-        \ 'text': 'I>',
-        \ 'texthl': 'NeomakeInfoSign'
-        \ }
-endif
+let g:neomake_error_sign = {
+    \ 'text': tools#get_icon('error'),
+    \ 'texthl': 'NeomakeErrorSign',
+    \ }
+let g:neomake_warning_sign = {
+    \ 'text': tools#get_icon('warn'),
+    \ 'texthl': 'NeomakeWarningSign',
+    \ }
+let g:neomake_info_sign = {
+    \ 'text': tools#get_icon('info'),
+    \ 'texthl': 'NeomakeInfoSign'
+    \ }
+let g:neomake_message_sign = {
+    \ 'text': tools#get_icon('message'),
+    \   'texthl': 'NeomakeMessageSign',
+    \ }
 
 " Don't show the location list, silently run Neomake
 let g:neomake_open_list = 0
@@ -35,7 +33,7 @@ let g:neomake_open_list = 0
 if has('nvim-0.3.2')
     let g:neomake_echo_current_error = 0
     let g:neomake_virtualtext_current_error = 1
-    let g:neomake_virtualtext_prefix = '❯ '
+    let g:neomake_virtualtext_prefix = tools#get_icon('virtual_text').' '
 endif
 
 function! plugins#neomake#makeprg() abort

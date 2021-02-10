@@ -24,7 +24,7 @@ function! plugins#semshi#colorfix() abort
     hi semshiErrorSign       ctermfg=231 guifg=#ffffff ctermbg=160 guibg=#d70000
     hi semshiErrorChar       ctermfg=231 guifg=#ffffff ctermbg=160 guibg=#d70000
 
-    sign define semshiError text=✖ texthl=semshiErrorSign
+    execute 'sign define semshiError text='.tools#get_icon('error').' texthl=semshiErrorSign'
 endfunction
 
 " let $SEMSHI_LOG_FILE  = os#tmp('semshi.log')

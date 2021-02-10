@@ -53,6 +53,14 @@ if has('nvim-0.5')
         return v:lua.tools.helpers.set_grep(a:is_git, a:is_local)
     endfunction
 
+    function! tools#get_icon(icon) abort
+        return v:lua.tools.helpers.get_icon(a:icon)
+    endfunction
+
+    function! tools#get_separators(sep_type) abort
+        return v:lua.tools.helpers.get_separators(a:sep_type)
+    endfunction
+
     finish
 endif
 
@@ -76,10 +84,75 @@ let s:langservers = {
     \ 'Dockerfile' : ['docker-langserver'],
     \ }
 
+if empty($NO_COOL_FONTS)
+    let s:icons = {
+    \    'error': '',
+    \    'warn': '',
+    \    'info': '',
+    \    'message': 'M',
+    \    'virtual_text': '❯',
+    \    'diff_add': '',
+    \    'diff_modified': '',
+    \    'diff_remove': '',
+    \    'git_branch': '',
+    \    'readonly': '🔒',
+    \    'bat': '▋',
+    \    'sep_triangle_left': '',
+    \    'sep_triangle_right': '',
+    \    'sep_circle_right': '',
+    \    'sep_circle_left': '',
+    \    'sep_arrow_left': '',
+    \    'sep_arrow_right': '',
+    \}
+else
+    let s:icons = {
+    \    'error': '×',
+    \    'warn': '!',
+    \    'info': 'I',
+    \    'message': 'M',
+    \    'virtual_text': '➤',
+    \    'diff_add': '+',
+    \    'diff_modified': '~',
+    \    'diff_remove': '-',
+    \    'git_branch': '',
+    \    'readonly': '',
+    \    'bat': '|',
+    \    'sep_triangle_left': '>',
+    \    'sep_triangle_right': '<',
+    \    'sep_circle_right': '(',
+    \    'sep_circle_left': ')',
+    \    'sep_arrow_left': '>',
+    \    'sep_arrow_right': '<',
+    \}
+endif
+
 function! tools#echoerr(msg) abort
     echohl ErrorMsg
     echo a:msg
     echohl
+endfunction
+
+function! tools#get_icon(icon) abort
+    return get(s:icons, a:icon, '')
+endfunction
+
+function! tools#get_separators(sep_type) abort
+    let l:separators = {
+    \   'circle': {
+    \       'left': s:icons['sep_circle_left'],
+    \       'right': s:icons['sep_circle_right'],
+    \   },
+    \   'triangle': {
+    \       'left': s:icons['sep_triangle_left'],
+    \       'right': s:icons['sep_triangle_right'],
+    \   },
+    \   'arrow': {
+    \       'left': s:icons['sep_arrow_left'],
+    \       'right': s:icons['sep_arrow_right'],
+    \   },
+    \}
+
+    return get(l:separators, a:sep_type, {})
 endfunction
 
 " Extracted from tpop's Fugitive plugin

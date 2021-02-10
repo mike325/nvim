@@ -3,6 +3,7 @@ local sys  = require'sys'
 local nvim = require'nvim'
 
 local load_module = require'tools'.helpers.load_module
+local get_icon = require'tools'.helpers.get_icon
 local executable  = require'tools'.files.executable
 local is_dir = require'tools'.files.is_dir
 
@@ -279,6 +280,34 @@ local function on_attach(_)
         }
     end
 
+    require('vim.lsp.protocol').CompletionItemKind = {
+        '';  -- Text          = 1;
+        '';  -- Method        = 2;
+        'ƒ';  -- Function      = 3;
+        '';  -- Constructor   = 4;
+        '識'; -- Field         = 5;
+        '';  -- Variable      = 6;
+        '';  -- Class         = 7;
+        'ﰮ';  -- Interface     = 8;
+        '';  -- Module        = 9;
+        '';  -- Property      = 10;
+        '';  -- Unit          = 11;
+        '';  -- Value         = 12;
+        '了'; -- Enum          = 13;
+        '';  -- Keyword       = 14;
+        '﬌';  -- Snippet       = 15;
+        '';  -- Color         = 16;
+        '';  -- File          = 17;
+        '渚'; -- Reference     = 18;
+        '';  -- Folder        = 19;
+        '';  -- EnumMember    = 20;
+        '';  -- Constant      = 21;
+        '';  -- Struct        = 22;
+        '鬒'; -- Event         = 23;
+        'Ψ';  -- Operator      = 24;
+        '';  -- TypeParameter = 25;
+    }
+
     -- set_autocmd{
     --     event   = 'CursorHold',
     --     pattern = '<buffer>',
@@ -363,8 +392,9 @@ end
 -- Expose languages to VimL
 nvim.g.lsp_languages = available_languages
 
-vim.cmd [[sign define LspDiagnosticsSignError   text=✖ texthl=LspDiagnosticsSignError   linehl= numhl=]]
-vim.cmd [[sign define LspDiagnosticsSignWarning text=⚠ texthl=LspDiagnosticsSignWarning linehl= numhl=]]
+vim.cmd('sign define LspDiagnosticsSignError text='..get_icon('error')..' texthl=LspDiagnosticsSignError linehl= numhl=')
+vim.cmd('sign define LspDiagnosticsSignWarning text='..get_icon('warn')..' texthl=LspDiagnosticsSignWarning linehl= numhl=')
+vim.cmd('sign define LspDiagnosticsSignHint text='..get_icon('info')..' texthl=LspDiagnosticsSignHint linehl= numhl=')
 
 _G['vim'].lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
     vim.lsp.diagnostic.on_publish_diagnostics, {

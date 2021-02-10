@@ -142,11 +142,28 @@ if completion ~= nil then
     nvim.g.completion_enable_auto_hover      = 1
     nvim.g.completion_trigger_keyword_length = 1
 
-    -- nvim.g.completion_matching_strategy_list = {'exact', 'substring', 'fuzzy', 'all'}
     nvim.g.completion_matching_strategy_list = {
         'exact',
         'fuzzy',
         'substring',
+    }
+
+    nvim.g.completion_items_priority = {
+        Method        = 10,
+        Field         = 8,
+        Function      = 7,
+        Module        = 7,
+        Variable      = 7,
+        Interface     = 5,
+        Constant      = 5,
+        Class         = 5,
+        UltiSnips     = 5,
+        Keyword       = 4,
+        ["vim-vsnip"] = 1,
+        Buffers       = 1,
+        TabNine       = 0,
+        File          = 0,
+        Text          = 0,
     }
 
     nvim.g.completion_chain_complete_list = completion_chain()

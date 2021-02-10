@@ -49,9 +49,9 @@ endif
 
 if os#name('windows')
     behave xterm
-    if has#option('completeslash')
-        set completeslash='slash'
-    endif
+    " if has#option('completeslash')
+    "     set completeslash='slash'
+    " endif
 endif
 
 " Allow lua omni completion

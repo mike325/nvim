@@ -100,13 +100,8 @@ let g:ycm_key_list_select_completion   = ['<C-n>', '<Down>']
 let g:ycm_key_list_previous_completion = ['<C-p>', '<Up>']
 " let g:ycm_key_list_stop_completion     = ['<C-y>', '<CR>']
 
-if !empty($NO_COOL_FONTS)
-    let g:ycm_error_symbol   = 'E'
-    let g:ycm_warning_symbol = 'W'
-else
-    let g:ycm_error_symbol   = '✖'
-    let g:ycm_warning_symbol = '⚠'
-endif
+let g:ycm_error_symbol   = tools#get_icon('error')
+let g:ycm_warning_symbol = tools#get_icon('warn')
 
 let g:ycm_extra_conf_globlist   = ['~/.vim/*', '~/.config/nvim/*', '~/AppData/nvim/*']
 

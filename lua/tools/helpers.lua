@@ -122,12 +122,92 @@ abolish['es'] = {
     ['{rala,aproxima,programa}cion']  = '{}ción',
 }
 
+local icons
+
+-- Separators
+-- 
+-- 
+-- ▶
+-- ◀
+-- »
+-- «
+-- ❯
+-- ➤
+-- 
+-- ☰
+-- 
+
+if not nvim.env['NO_COOL_FONTS'] then
+    icons = {
+        error = '',
+        warn = '',
+        info = '',
+        message = 'M',
+        virtual_text = '❯',
+        diff_add = '',
+        diff_modified = '',
+        diff_remove = '',
+        git_branch = '',
+        readonly = '🔒',
+        bar = '▋',
+        sep_triangle_left = '',
+        sep_triangle_right = '',
+        sep_circle_right = '',
+        sep_circle_left = '',
+        sep_arrow_left = '',
+        sep_arrow_right = '',
+    }
+else
+    icons = {
+        error = '×',
+        warn = '!',
+        info = 'I',
+        message = 'M',
+        virtual_text = '➤',
+        diff_add = '+',
+        diff_modified = '~',
+        diff_remove = '-',
+        git_branch = '',
+        readonly = '',
+        bar = '|',
+        sep_triangle_left = '>',
+        sep_triangle_right = '<',
+        sep_circle_right = '(',
+        sep_circle_left = ')',
+        sep_arrow_left = '>',
+        sep_arrow_right = '<',
+    }
+end
+
 function M.load_module(name)
     local ok, module = pcall(require, name)
     if not ok then
         return nil
     end
     return module
+end
+
+function M.get_separators(sep_type)
+    local separators = {
+        circle = {
+            left = icons.sep_circle_left,
+            right = icons.sep_circle_right,
+        },
+        triangle = {
+            left = icons.sep_triangle_left,
+            right = icons.sep_triangle_right,
+        },
+        arrow = {
+            left = icons.sep_arrow_left,
+            right = icons.sep_arrow_right,
+        },
+    }
+
+    return separators[sep_type]
+end
+
+function M.get_icon(icon)
+    return icons[icon]
 end
 
 function M.project_config(event)

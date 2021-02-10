@@ -1,5 +1,6 @@
 local nvim = require'nvim'
 local echoerr = require'tools'.messages.echoerr
+-- local load_module = require'tools'.helpers.load_module
 
 -- TODO: Add dynamic plugin load
 
@@ -11,7 +12,8 @@ if nvim.has('nvim-0.5') then
         neorocks   = { ok = false, status  = false},
         treesitter = { ok = false, status  = false},
         -- snippets   = { ok = false, status  = false},
-        -- galaxyline = { ok = false, status  = false},
+        colors     = { ok = false, status  = false},
+        statusline = { ok = false, status  = false},
         completion = { ok = false, status  = false},
     }
 
