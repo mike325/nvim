@@ -37,6 +37,7 @@ _log = logging.getLogger('MainLogger')
 _log.setLevel(logging.DEBUG)
 _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 _SCRIPTNAME = os.path.basename(__file__)
+_log_file = os.path.splitext(_SCRIPTNAME)[0] + '.log'
 
 
 def _createLogger(
@@ -75,14 +76,12 @@ def _createLogger(
 
     if file_level > 0:
 
-        logger = os.path.splitext(_SCRIPTNAME)[0] + '.log'
-
-        with open(logger, 'a') as log:
+        with open(_log_file, 'a') as log:
             log.write(_header)
             # log.write(f'\nDate: {datetime.datetime.date()}')
             log.write(f'\nAuthor:   {_AUTHOR}\nContact:  {_MAIL}\nVersion:  {_VERSION}\n\n')
 
-        file_handler = logging.FileHandler(filename=logger)
+        file_handler = logging.FileHandler(filename=_log_file)
         file_handler.setLevel(file_level)
         file_format = logging.Formatter('%(levelname)-8s | %(filename)s: [%(funcName)s] - %(message)s')
         file_handler.setFormatter(file_format)
@@ -105,7 +104,7 @@ def _str_to_logging(level: str):
     """
 
     try:
-        level = int(level)
+        level = abs(int(level) - 100)
     except Exception:
         level = level.lower()
         if level == "debug" or level == 'verbose':
@@ -119,7 +118,7 @@ def _str_to_logging(level: str):
         elif level == "critical":
             level = logging.CRITICAL
         else:
-            level = logging.NOTSET
+            level = 99
 
     return level
 
@@ -185,7 +184,19 @@ def main():
         color=args.no_color,
     )
 
-    return 0
+    # _log.debug('This is a DEBUG message')
+    # _log.info('This is a INFO message')
+    # _log.warning('This is a WARNing message')
+    # _log.error('This is a ERROR message')
+
+    errors = 0
+    try:
+        pass
+    except (Exception, KeyboardInterrupt) as e:
+        _log.exception(f'Halting due to {str(e.__class__.__name__)} exception')
+        errors = 1
+
+    return errors
 
 
 if __name__ == "__main__":
