@@ -103,7 +103,6 @@ else
     Plug 'tpope/vim-surround'
     Plug 'tpope/vim-projectionist'
     Plug 'tpope/vim-apathy'
-    Plug 'tpope/vim-dispatch'
     Plug 'tpope/vim-fugitive'
     " Plug 'lambdalisue/gina.vim' " TODO: keep testing this
     Plug 'Raimondi/delimitMate'
