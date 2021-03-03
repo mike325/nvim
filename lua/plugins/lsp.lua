@@ -275,7 +275,7 @@ local function on_attach(_)
         set_autocmd{
             event   = 'FileType',
             pattern = '<buffer>',
-            cmd     = [[silent! call neomake#cmd#disable(b:)]],
+            cmd     = [[silent! call neomake#CancelJobs(0) | silent! call neomake#cmd#clean(1) | silent! call neomake#cmd#disable(b:) ]],
             group   = 'LSPAutocmds'
         }
     end
