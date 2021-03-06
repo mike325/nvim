@@ -13,12 +13,16 @@ local M ={
 local function general_on_exit(jobid, rc, _)
     local stream
     if rc == 0 then
-        print(('Job "%s" finished'):format(M.jobs[jobid].cmd))
+        if M.jobs[jobid].qf == nil or (M.jobs[jobid].qf.open ~= true and M.jobs[jobid].qf.jump ~= true) then
+            print(('Job "%s" finished'):format(M.jobs[jobid].cmd))
+        end
         if M.jobs[jobid].qf and M.jobs[jobid].streams and M.jobs[jobid].streams.stdout then
             stream = M.jobs[jobid].streams.stdout
         end
     else
-        echoerr(('Job "%s" failed, exited with %s'):format(M.jobs[jobid].cmd, rc))
+        if M.jobs[jobid].qf == nil or (M.jobs[jobid].qf.open ~= true and M.jobs[jobid].qf.jump ~= true) then
+            echoerr(('Job "%s" failed, exited with %s'):format(M.jobs[jobid].cmd, rc))
+        end
         if M.jobs[jobid].streams and M.jobs[jobid].streams.stderr then
             stream = M.jobs[jobid].streams.stderr
         end
@@ -32,24 +36,32 @@ local function general_on_exit(jobid, rc, _)
             cmdname = vim.split(M.jobs[jobid].cmd, ' ')[1]
         end
 
-        nvim.fn.setqflist(
-            {},
-            'r',
-            {
-                contex = M.jobs[jobid].context or cmdname,
-                efm = M.jobs[jobid].efm or nvim.o.efm,
-                lines = stream,
-                title = M.jobs[jobid].title or (rc ~= 0 and cmdname..' exited with '..rc or cmdname..' output'),
-            }
-        )
 
-        if M.jobs[jobid].qf_open and #stream > 0 then
-            local qf = (nvim.o.splitbelow and 'botright' or 'topleft') .. ' copen'
-            nvim.command(qf)
-        end
+        if M.jobs[jobid].qf then
+            local opts = M.jobs[jobid].qf
+            opts.context = opts.context or cmdname
+            opts.efm = opts.efm or nvim.o.efm
+            opts.lines = stream
+            opts.title = opts.title or (rc ~= 0 and cmdname..' exited with '..rc or cmdname..' output')
 
-        if M.jobs[jobid].qf_jump and #stream > 0 then
-            nvim.command('cfirst')
+            local qf_open = opts.open
+            local qf_jump = opts.jump
+
+            opts.open = nil
+            opts.jump = nil
+
+            nvim.fn.setqflist({}, 'r', opts)
+
+            if #stream > 0 then
+                if qf_open then
+                    local qf = (nvim.o.splitbelow and 'botright' or 'topleft') .. ' copen'
+                    nvim.command(qf)
+                end
+
+                if qf_jump then
+                    nvim.command('cfirst')
+                end
+            end
         end
 
     end
@@ -127,28 +139,19 @@ function M.send_job(job)
             opts
         )
 
-        local qf_open
-        if job.qf == true and job.qf_open ~= nil then
-            qf_open = job.qf_open
-        else
-            qf_open = false
+        if job.qf and job.qf.open == nil then
+            job.qf.open = false
         end
 
-        local qf_jump
-        if job.qf == true and job.qf_jump ~= nil then
-            qf_jump = job.qf_jump
-        else
-            qf_jump = false
+        if job.qf and job.qf.jump == nil then
+            job.qf.jump = false
         end
 
         if id > 0 then
             M.jobs[id] = {
                 cmd = cmd,
                 opts = opts,
-                efm = job.efm,
                 qf = job.qf,
-                qf_open = qf_open,
-                qf_jump = qf_jump,
                 clean = type(job.clean) ~= 'boolean' and true or job.clean,
             }
         end

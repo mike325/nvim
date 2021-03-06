@@ -265,11 +265,12 @@ if has('nvim-0.5') then
 
             require'jobs'.send_job{
                 cmd = cmd,
-                qf = true,
-                qf_open = false,
-                qf_jump = true,
-                efm = vim.o.grepformat,
-                contex = 'AsyncGrep',
+                qf = {
+                    jump = true,
+                    efm = vim.o.grepformat,
+                    context = 'AsyncGrep',
+                    title = cmd,
+                },
             }
 
         end,
