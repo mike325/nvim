@@ -3,6 +3,10 @@
 
 let s:arrows = -1
 
+function! mappings#general_completion(arglead, cmdline, cursorpos, options) abort
+    return filter(a:options, "v:val =~? join(split(a:arglead, '\zs'), '.*')")
+endfunction
+
 " TODO: Add completion-nvim handler
 function! mappings#enter() abort
     let l:snippet = 0
@@ -120,7 +124,7 @@ endif
 
 if has('nvim') || v:version >= 704
     function! mappings#format(arglead, cmdline, cursorpos) abort
-        return filter(['unix', 'dos', 'mac'], "v:val =~? join(split(a:arglead, '\zs'), '.*')")
+        return mappings#general_completion(a:arglead, a:cmdline, a:cursorpos, ['unix', 'dos', 'mac'])
     endfunction
 
     function! mappings#SetFileData(action, type, default) abort
@@ -203,7 +207,7 @@ endfunction
 function! mappings#spells(arglead, cmdline, cursorpos) abort
     let l:candidates = split(glob(vars#basedir() . '/spell/*.utf-8.sug'), '\n')
     let l:candidates = map(l:candidates, {key, val -> split(fnamemodify(val , ':t'), '\.')[0]})
-    return filter(copy(l:candidates), "v:val =~? join(split(a:arglead, '\zs'), '.*')")
+    return mappings#general_completion(a:arglead, a:cmdline, a:cursorpos, l:candidates)
 endfunction
 
 " CREDITS: https://github.com/alexlafroscia/dotfiles/blob/master/nvim/init.vim

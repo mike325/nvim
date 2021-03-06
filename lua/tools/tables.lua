@@ -57,7 +57,7 @@ function M.clear_lst(lst)
 
     for idx,val in pairs(lst) do
         val = vim.trim(val)
-        if #val == 0 or val == [[\n]] then
+        if #val == 0 or val:match('^%s+$') ~= nil then
             table.remove(tmp, idx)
         end
     end

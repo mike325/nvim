@@ -35,7 +35,7 @@ function M.realpath(path)
 end
 
 function M.normalize_path(path)
-    if path:sub(1, 1) == '~' then
+    if path:sub(1, 1) == '~' or path == '%' then
         path = nvim.fn.expand(path)
     end
     return path:gsub('\\','/')

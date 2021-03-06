@@ -253,6 +253,30 @@ if plugins["vim-eunuch"] == nil then
 
 end
 
+
+if has('nvim-0.5') then
+    set_command {
+        lhs = 'Grep',
+        rhs = function(args)
+            -- local cwd = vim.fn.getcwd()
+
+            local cmd = vim.bo.grepprg or vim.o.grepprg
+            cmd = cmd .. args
+
+            require'jobs'.send_job{
+                cmd = cmd,
+                qf = true,
+                qf_open = false,
+                qf_jump = true,
+                efm = vim.o.grepformat,
+                contex = 'AsyncGrep',
+            }
+
+        end,
+        args = {nargs = '+', force = true}
+    }
+end
+
 set_mapping{ mode = 'n', lhs = ',',    rhs = ':',  args = noremap }
 set_mapping{ mode = 'x', lhs = ',',    rhs = ':',  args = noremap }
 set_mapping{ mode = 'n', lhs = 'Y',    rhs = 'y$', args = noremap }

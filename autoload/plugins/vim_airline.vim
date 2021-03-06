@@ -65,14 +65,14 @@ for s:plugin in s:plugins
     let airline#extensions#{s:plugin}#warning_symbol = tools#get_icon('warn').' '
 endfor
 
-let g:airline#extensions#hunks#hunk_symbols = [
-    \ tools#get_icon('diff_add').' ',
-    \ tools#get_icon('diff_modified').' ',
-    \ tools#get_icon('diff_remove').' ',
-    \]
+" let g:airline#extensions#hunks#hunk_symbols = [
+"     \ tools#get_icon('diff_add').' ',
+"     \ tools#get_icon('diff_modified').' ',
+"     \ tools#get_icon('diff_remove').' ',
+"     \]
 
-let g:airline_left_sep = tools#get_separators('circle')['left']
-let g:airline_right_sep = tools#get_separators('circle')['right']
+let g:airline_left_sep = tools#get_separators('arrow')['left']
+let g:airline_right_sep = tools#get_separators('arrow')['right']
 
 if !has#plugin('vim-airline-themes')
     let g:airline_theme = 'molokai'

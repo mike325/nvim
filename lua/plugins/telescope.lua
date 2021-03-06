@@ -137,11 +137,11 @@ set_mapping{
     args = noremap,
 }
 
-set_command{
-    lhs = 'Grep',
-    rhs = [[lua require'telescope.builtin'.live_grep{}]],
-    args = {force=true}
-}
+-- set_command{
+--     lhs = 'Grep',
+--     rhs = [[lua require'telescope.builtin'.live_grep{}]],
+--     args = {force=true}
+-- }
 
 set_command{
     lhs = 'Oldfiles',

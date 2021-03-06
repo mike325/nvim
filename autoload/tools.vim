@@ -518,8 +518,5 @@ endfunction
 function! tools#oldfiles(arglead, cmdline, cursorpos) abort
     let l:args = split(a:arglead, '\zs')
     let l:pattern = '.*' . join(l:args, '') . '.*'
-    let l:candidates = filter(copy(v:oldfiles), 'v:val =~? "' . l:pattern . '"')
-    let l:pattern = '.*' . join(l:args, '.*') . '.*'
-    let l:candidates += filter(copy(v:oldfiles), 'v:val =~? "' . l:pattern . '"')
-    return uniq(l:candidates)
+    return uniq(filter(copy(v:oldfiles), 'v:val =~? "' . l:pattern . '"'))
 endfunction
