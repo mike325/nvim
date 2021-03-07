@@ -276,6 +276,54 @@ if has('nvim-0.5') then
         end,
         args = {nargs = '+', force = true}
     }
+    set_command {
+        lhs = 'Make',
+        rhs = function(args)
+
+            local cmd = vim.bo.makeprg or vim.o.makeprg
+
+            if cmd:sub(#cmd, #cmd) == '%' then
+                cmd = cmd:gsub('%%', vim.fn.expand('%'))
+            end
+
+            cmd = cmd .. args
+
+            local opts = {
+                on_exit = function(jobid, rc, _)
+                    local jobs = require'jobs'
+                    local lines = {}
+                    if jobs.jobs[jobid].streams then
+                        if #jobs.jobs[jobid].streams.stderr > 0 then
+                            lines = jobs.jobs[jobid].streams.stderr
+                        else
+                            lines = jobs.jobs[jobid].streams.stdout
+                        end
+                    end
+
+                    local qf_opts = jobs.jobs[jobid].qf or {}
+                    qf_opts.lines = lines
+
+                    require'tools'.helpers.dump_to_qf(qf_opts)
+
+                end
+            }
+
+            require'jobs'.send_job{
+                cmd = cmd,
+                opts = opts,
+                qf = {
+                    -- open = false,
+                    loc = true,
+                    jump = true,
+                    efm = vim.bo.efm or vim.bo.efm,
+                    context = 'AsyncMake',
+                    title = cmd,
+                },
+            }
+
+        end,
+        args = {nargs = '*', force = true}
+    }
 end
 
 set_mapping{ mode = 'n', lhs = ',',    rhs = ':',  args = noremap }

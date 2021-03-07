@@ -122,6 +122,25 @@ abolish['es'] = {
     ['{rala,aproxima,programa}cion']  = '{}ción',
 }
 
+local qf_funcs = {
+    qf = {
+        first = 'cfirst',
+        last = 'clast',
+        close = 'cclose',
+        open = 'Qopen',
+        set_list = nvim.fn.setqflist,
+        get_list = nvim.fn.getqflist,
+    },
+    loc = {
+        first = 'lfirst',
+        last = 'llast',
+        close = 'lclose',
+        open = 'lopen',
+        set_list = nvim.fn.setloclist,
+        get_list = nvim.fn.getloclist,
+    },
+}
+
 local icons
 
 -- Separators
@@ -308,49 +327,6 @@ function M.project_config(event)
         nvim.g.gonvim_fuzzy_ag_cmd = M.select_grep(is_git)
     end
 
-end
-
-function M.toggle_qf(qf_type)
-    local close = false
-
-    local funcs = {
-        qf = {
-            close = 'cclose',
-            open = 'Qopen',
-            get_list = 'getqflist',
-        },
-        loc = {
-            close = 'lclose',
-            open = 'lopen',
-            get_list = 'getloclist',
-        },
-    }
-
-    local qf = funcs[qf_type]
-
-    local qf_winid
-
-    if qf_type == 'qf' then
-        qf_winid = nvim.fn.getqflist({winid = 0}).winid
-    else
-        qf_winid = nvim.fn.getloclist(0, {winid = 0}).winid
-    end
-
-    if qf_winid > 0 then
-        for _, winid in pairs(nvim.tab.list_wins(0)) do
-            if winid == qf_winid then
-                close = true
-                break
-            end
-        end
-    end
-    if close then
-        nvim.ex[qf['close']]()
-    else
-        -- local current_window = nvim.get_current_win()
-        nvim.ex[qf['open']]()
-        -- nvim.set_current_win(current_window)
-    end
 end
 
 function M.add_nl(down)
@@ -830,6 +806,80 @@ function M.python(version, args)
     local split = nvim.o.splitbelow and 'botright' or 'topleft'
 
     nvim.command(split..' split term://'..pyversion..' '..args)
+end
+
+function M.toggle_qf(qf_type)
+    local close = false
+
+    local qf = qf_funcs[qf_type]
+
+    local qf_winid
+
+    if qf_type == 'qf' then
+        qf_winid = nvim.fn.getqflist({winid = 0}).winid
+    else
+        qf_winid = nvim.fn.getloclist(0, {winid = 0}).winid
+    end
+
+    if qf_winid > 0 then
+        for _, winid in pairs(nvim.tab.list_wins(0)) do
+            if winid == qf_winid then
+                close = true
+                break
+            end
+        end
+    end
+    if close then
+        nvim.ex[qf['close']]()
+    else
+        -- local current_window = nvim.get_current_win()
+        nvim.ex[qf['open']]()
+        -- nvim.set_current_win(current_window)
+    end
+end
+
+function M.dump_to_qf(opts)
+
+    if opts.lines then
+        opts.context = opts.context or 'GenericQfData'
+        opts.efm = opts.efm or nvim.bo.efm or nvim.o.efm
+        opts.title = opts.title or 'Generic Qf data'
+
+        local qf_cmds = opts.loc and qf_funcs['loc'] or qf_funcs['qf']
+        local qf_type = opts.loc and 'loc' or 'qf'
+        local qf_open = opts.open
+        local qf_jump = opts.jump
+
+        opts.loc = nil
+        opts.open = nil
+        opts.jump = nil
+        opts.cmdname = nil
+
+        if qf_type == 'qf' then
+            qf_cmds.set_list({}, 'r', opts)
+        else
+            qf_cmds.set_list(0, {}, 'r', opts)
+        end
+
+        if #opts.lines > 0 then
+            if qf_open then
+                local qf = (nvim.o.splitbelow and 'botright' or 'topleft')..' '..qf_cmds.open
+                nvim.command(qf)
+            end
+
+            if qf_jump then
+                nvim.command(qf_cmds.first)
+            end
+        end
+    end
+end
+
+function M.clear_qf(qf_type)
+    if qf_type == 'loc' then
+        nvim.fn.setloclist(0, {}, 'r')
+    else
+        nvim.fn.setqflist({}, 'r')
+    end
 end
 
 return M

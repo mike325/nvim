@@ -1,6 +1,7 @@
 local nvim = require'nvim'
 local echoerr = require'tools'.messages.echoerr
 local clear_lst = require'tools'.tables.clear_lst
+local dump_to_qf = require'tools'.helpers.dump_to_qf
 
 if not nvim.has('nvim-0.5') then
     return false
@@ -11,6 +12,7 @@ local M ={
 }
 
 local function general_on_exit(jobid, rc, _)
+
     local stream
     if rc == 0 then
         if M.jobs[jobid].qf == nil or (M.jobs[jobid].qf.open ~= true and M.jobs[jobid].qf.jump ~= true) then
@@ -28,7 +30,8 @@ local function general_on_exit(jobid, rc, _)
         end
     end
 
-    if stream then
+    if #stream > 0 then
+
         local cmdname
         if type(M.jobs[jobid].cmd) == 'table' then
             cmdname = M.jobs[jobid].cmd[0]
@@ -36,34 +39,14 @@ local function general_on_exit(jobid, rc, _)
             cmdname = vim.split(M.jobs[jobid].cmd, ' ')[1]
         end
 
+        local qf_opts = M.jobs[jobid].qf
 
-        if M.jobs[jobid].qf then
-            local opts = M.jobs[jobid].qf
-            opts.context = opts.context or cmdname
-            opts.efm = opts.efm or nvim.o.efm
-            opts.lines = stream
-            opts.title = opts.title or (rc ~= 0 and cmdname..' exited with '..rc or cmdname..' output')
+        qf_opts.context = qf_opts.context or cmdname
+        qf_opts.efm = qf_opts.efm or nvim.bo.efm or nvim.o.efm
+        qf_opts.title = qf_opts.title or cmdname..' output'
+        qf_opts.lines = stream
 
-            local qf_open = opts.open
-            local qf_jump = opts.jump
-
-            opts.open = nil
-            opts.jump = nil
-
-            nvim.fn.setqflist({}, 'r', opts)
-
-            if #stream > 0 then
-                if qf_open then
-                    local qf = (nvim.o.splitbelow and 'botright' or 'topleft') .. ' copen'
-                    nvim.command(qf)
-                end
-
-                if qf_jump then
-                    nvim.command('cfirst')
-                end
-            end
-        end
-
+        dump_to_qf(qf_opts)
     end
 
     if rc == 0 and M.jobs[jobid].clean then
