@@ -53,6 +53,7 @@ function M.has_attrs(tbl, attrs)
 end
 
 function M.clear_lst(lst)
+    assert(vim.tbl_islist(lst), 'Not a list')
     local tmp = lst
 
     for idx,val in pairs(lst) do

@@ -2,6 +2,7 @@ local sys       = require'sys'
 local nvim      = require'nvim'
 local echoerr   = require'tools.messages'.echoerr
 local bufloaded = require'tools.buffers'.bufloaded
+local clear_lst = require'tools.tables'.clear_lst
 
 local uv = vim.loop
 
@@ -9,20 +10,29 @@ local rename = uv.fs_rename
 
 local M = {}
 
+local function split_path(path)
+    path = M.normalize_path(path)
+    return clear_lst(vim.split(path, '/'))
+end
+
 function M.exists(filename)
+    assert(type(filename) == 'string', ('Not a path: %s'):format(filename))
     local stat = uv.fs_stat(filename)
     return stat and stat.type or false
 end
 
 function M.is_dir(filename)
+    assert(type(filename) == 'string', ('Not a path: %s'):format(filename))
     return M.exists(filename) == 'directory'
 end
 
 function M.is_file(filename)
+    assert(type(filename) == 'string', ('Not a path: %s'):format(filename))
     return M.exists(filename) == 'file'
 end
 
 function M.mkdir(dirname)
+    assert(type(dirname) == 'string', ('Not a path: %s'):format(dirname))
     nvim.fn.mkdir(dirname, 'p')
 end
 
@@ -30,15 +40,66 @@ function M.executable(exec)
     return nvim.fn.executable(exec) == 1
 end
 
+function M.is_absolute(path)
+    assert(type(path) == 'string', ('Not a path: %s'):format(path))
+    path = M.normalize_path(path)
+    local is_abs = false
+    if sys.name == 'windows' and #path >= 2 then
+        is_abs = string.match(path:sub(1, 2), '^%w:$') ~= nil
+    elseif sys.name ~= 'windows' then
+        is_abs = path:sub(1, 1) == '/'
+    end
+    return is_abs
+end
+
 function M.realpath(path)
+    assert(type(path) == 'string', ('Not a path: %s'):format(path))
     return uv.fs_realpath(path):gsub('\\','/')
 end
 
 function M.normalize_path(path)
+    assert(type(path) == 'string', ('Not a path: %s'):format(path))
     if path:sub(1, 1) == '~' or path == '%' then
         path = nvim.fn.expand(path)
     end
     return path:gsub('\\','/')
+end
+
+function M.basename(path)
+    path = M.normalize_path(path)
+    return path:match'[^/]+$'
+end
+
+function M.extension(path)
+    local extension = ''
+    path = M.normalize_path(path)
+    if not M.is_dir(path) then
+        local filename = split_path(path)
+        filename = filename[#filename]
+        extension = filename:match'^.+(%..+)$' or ''
+    end
+    return extension
+end
+
+function M.basedir(path)
+    path = M.normalize_path(path)
+    if not M.is_dir(path) then
+        local path_components = split_path(path)
+        if #path_components > 1 then
+            table.remove(path_components, #path_components)
+            if M.is_absolute(path) and sys.name ~= 'windows' then
+                path = '/'
+            else
+                path = ''
+            end
+            path = path .. vim.fn.join(path_components, '/')
+        elseif M.is_absolute(path) then
+            path = sys.name == 'windows' and path:match(path:sub(1, 2), '^%w:$') or '/'
+        else
+            path = '.'
+        end
+    end
+    return path
 end
 
 function M.chmod(path, mode)

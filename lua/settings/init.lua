@@ -215,3 +215,7 @@ if executable('nvr') then
     nvim.env.vnvr = 'nvr --servername '.. nvim.v.servername ..' -cc vsplit --remote-silent'
     nvim.env.snvr = 'nvr --servername '.. nvim.v.servername ..' -cc split --remote-silent'
 end
+
+if nvim.has('nvim-0.5') then
+    require'tools'.system.get_ssh_hosts()
+end

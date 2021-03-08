@@ -288,29 +288,26 @@ if has('nvim-0.5') then
 
             cmd = cmd .. args
 
-            local opts = {
-                on_exit = function(jobid, rc, _)
-                    local jobs = require'jobs'
-                    local lines = {}
-                    if jobs.jobs[jobid].streams then
-                        if #jobs.jobs[jobid].streams.stderr > 0 then
-                            lines = jobs.jobs[jobid].streams.stderr
-                        else
-                            lines = jobs.jobs[jobid].streams.stdout
-                        end
-                    end
-
-                    local qf_opts = jobs.jobs[jobid].qf or {}
-                    qf_opts.lines = lines
-
-                    require'tools'.helpers.dump_to_qf(qf_opts)
-
-                end
-            }
-
             require'jobs'.send_job{
                 cmd = cmd,
-                opts = opts,
+                opts = {
+                    on_exit = function(jobid, rc, _)
+                        local jobs = require'jobs'
+                        local lines = {}
+                        if jobs.jobs[jobid].streams then
+                            if #jobs.jobs[jobid].streams.stderr > 0 then
+                                lines = jobs.jobs[jobid].streams.stderr
+                            else
+                                lines = jobs.jobs[jobid].streams.stdout
+                            end
+                        end
+
+                        local qf_opts = jobs.jobs[jobid].qf or {}
+                        qf_opts.lines = lines
+
+                        require'tools'.helpers.dump_to_qf(qf_opts)
+                    end
+                },
                 qf = {
                     -- open = false,
                     loc = true,

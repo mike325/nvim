@@ -92,6 +92,11 @@ end
 function M.send_job(job)
     local cmd = job.cmd
 
+    if not cmd or #cmd == 0 then
+        echoerr('Missing command')
+        return
+    end
+
     if job.async == false then
         local win = require("floating").window()
         local bufnr = require'nvim'.win.get_buf(win)
@@ -105,9 +110,19 @@ function M.send_job(job)
         nvim.ex.startinsert()
     else
         local opts = job.opts or {}
+        local clean = type(job.clean) ~= 'boolean' and true or job.clean
 
         if not opts.on_exit then
             opts.on_exit = general_on_exit
+        elseif clean then
+            local opts_on_exit = opts.on_exit
+            opts.on_exit = function(jobid, rc, event)
+                opts_on_exit(jobid, rc, event)
+                local jobs = require'jobs'
+                if rc == 0 and jobs.jobs[jobid] ~= nil then
+                    jobs.jobs[jobid] = nil
+                end
+            end
         end
 
         if not opts.on_stdout and not opts.on_stderr and not opts.on_stdin and not opts.on_data then
@@ -135,7 +150,7 @@ function M.send_job(job)
                 cmd = cmd,
                 opts = opts,
                 qf = job.qf,
-                clean = type(job.clean) ~= 'boolean' and true or job.clean,
+                clean = clean,
             }
         end
     end
