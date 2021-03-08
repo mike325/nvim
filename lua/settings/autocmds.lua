@@ -1,5 +1,4 @@
 -- luacheck: globals unpack vim
-
 local nvim = require'nvim'
 
 local has     = nvim.has
@@ -8,6 +7,31 @@ local plugins = nvim.plugins
 local set_autocmd = nvim.autocmds.set_autocmd
 -- local set_command = nvim.commands.set_command
 -- local set_mapping = nvim.mappings.set_mapping
+
+if plugins['completor.vim'] == nil then
+    set_autocmd{
+        event   = {'BufNewFile', 'BufReadPre', 'BufEnter'},
+        pattern = '*',
+        cmd     = "if !exists('b:trim') | let b:trim = v:true | endif",
+        group   = 'CleanFile'
+    }
+
+    set_autocmd{
+        event   = 'BufWritePre',
+        pattern = '*',
+        cmd     = 'lua require"tools".files.clean_file()',
+        group   = 'CleanFile'
+    }
+end
+
+if has('nvim-0.5') then
+    set_autocmd{
+        event   = 'TextYankPost',
+        pattern = '*',
+        cmd     = [[silent! lua require'vim.highlight'.on_yank("IncSearch", 3000)]],
+        group   = 'YankHL'
+    }
+end
 
 set_autocmd{
     event   = 'TermOpen',
@@ -93,27 +117,9 @@ set_autocmd{
     group   = 'CloseMenu'
 }
 
-if has('nvim-0.5') then
-    set_autocmd{
-        event   = 'TextYankPost',
-        pattern = '*',
-        cmd     = [[silent! lua require'vim.highlight'.on_yank("IncSearch", 3000)]],
-        group   = 'YankHL'
-    }
-end
-
-if plugins['completor.vim'] == nil then
-    set_autocmd{
-        event   = {'BufNewFile', 'BufReadPre', 'BufEnter'},
-        pattern = '*',
-        cmd     = "if !exists('b:trim') | let b:trim = v:true | endif",
-        group   = 'CleanFile'
-    }
-
-    set_autocmd{
-        event   = 'BufWritePre',
-        pattern = '*',
-        cmd     = 'lua require"tools".files.clean_file()',
-        group   = 'CleanFile'
-    }
-end
+set_autocmd{
+    event   = 'Filetype',
+    pattern = 'lua',
+    cmd     = [[nnoremap <buffer><silent> <leader><leader>r :luafile %<cr>:echo "File reloaded"<cr>]],
+    group   = 'Reload',
+}

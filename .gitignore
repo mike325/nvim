@@ -16,6 +16,9 @@
 /plugged/
 /host/
 /autoload/host/
+/autoload/host.vim
+/autoload/work/
+/autoload/work.vim
 /plugin/host/
 
 .ropeproject/*

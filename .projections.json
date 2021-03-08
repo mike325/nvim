@@ -12,6 +12,8 @@
   "lua/tools/*.lua"         : {"type": "Tools"},
   "lua/work/init.lua"       : {"type": "Work"},
   "lua/work/*.lua"          : {"type": "Work"},
+  "autoload/work.vim"       : {"type": "WorkAutoload"},
+  "autoload/work/*.vim"     : {"type": "WorkAutoload"},
   "rplugins/python3/*.py"   : {"type": "RPython3"},
   "rplugins/python/*.py"    : {"type": "RPython"},
   "python3/*.py"            : {"type": "Python3"},
