@@ -125,6 +125,13 @@ set_autocmd{
 }
 
 set_autocmd{
+    event   = 'BufNewFile',
+    pattern = '*',
+    cmd     = [[lua require'settings.functions'.make_executable()]],
+    group   = 'LuaAutocmds',
+}
+
+set_autocmd{
     event   = 'Filetype',
     pattern = 'python,lua,sh,bash,zsh,tcsh,csh,ruby,perl',
     cmd     = [[lua require'settings.functions'.make_executable()]],
