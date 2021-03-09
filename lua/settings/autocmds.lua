@@ -123,3 +123,10 @@ set_autocmd{
     cmd     = [[nnoremap <buffer><silent> <leader><leader>r :luafile %<cr>:echo "File reloaded"<cr>]],
     group   = 'Reload',
 }
+
+set_autocmd{
+    event   = 'Filetype',
+    pattern = 'python,lua,sh,bash,zsh,tcsh,csh,ruby,perl',
+    cmd     = [[lua require'settings.functions'.make_executable()]],
+    group   = 'LuaAutocmds',
+}

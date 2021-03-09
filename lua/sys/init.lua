@@ -52,4 +52,12 @@ function sys.tmp(filename)
     return tmpdir .. filename
 end
 
+if nvim.has('nvim-0.5') then
+    local function get_user_info()
+        sys.user = vim.loop.os_get_passwd()
+        sys.user.name = sys.user.username
+    end
+    get_user_info()
+end
+
 return sys

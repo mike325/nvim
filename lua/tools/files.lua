@@ -102,10 +102,10 @@ function M.basedir(path)
     return path
 end
 
-function M.chmod(path, mode)
+function M.chmod(path, mode, base)
     if sys.name ~= 'windows' then
-        mode = vim.api.nvim_eval( string.format([[0%d]], mode) )
-        uv.fs_chmod(path, mode)
+        base = base == nil and 8 or base
+        uv.fs_chmod(path, tonumber(mode, base))
     end
 end
 

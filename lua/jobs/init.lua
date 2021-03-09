@@ -30,7 +30,7 @@ local function general_on_exit(jobid, rc, _)
         end
     end
 
-    if #stream > 0 then
+    if stream and #stream > 0 then
 
         local cmdname
         if type(M.jobs[jobid].cmd) == 'table' then

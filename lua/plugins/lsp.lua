@@ -117,6 +117,7 @@ local servers = {
                         },
                         diagnostics = {
                             globals = {
+                                'bit',
                                 'vim',
                                 'nvim',
                                 'tools',
