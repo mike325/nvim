@@ -50,4 +50,34 @@ function M.chmod_exec()
     chmod(filename, bit.bor(filemode, 0x48), 10)
 end
 
+function M.opfun_grep(select, visual)
+    local select_save = nvim.o.selection
+    nvim.o.selection = 'inclusive'
+    local reg_save = nvim.reg['@']
+
+    -- TODO: migrate to neovim's api functions ?
+    if visual then
+        nvim.ex['normal!']('gvy')
+    elseif select == 'line' then
+        nvim.ex['normal!']("'[V']y")
+    else -- char/block
+        nvim.ex['normal!']("`[v`]y")
+    end
+
+    local cmd = ('%s %s'):format(nvim.bo.grepprg or nvim.o.grepprg, nvim.fn.shellescape(nvim.reg['@']))
+
+    require'jobs'.send_job{
+        cmd = cmd,
+        qf = {
+            jump = true,
+            efm = nvim.o.grepformat,
+            context = 'AsyncGrep',
+            title = cmd,
+        },
+    }
+
+    nvim.o.selection = select_save
+    nvim.reg['@'] = reg_save
+end
+
 return M

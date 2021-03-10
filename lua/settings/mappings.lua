@@ -258,8 +258,7 @@ if has('nvim-0.5') then
         rhs = function(args)
             -- local cwd = vim.fn.getcwd()
 
-            local cmd = vim.bo.grepprg or vim.o.grepprg
-            cmd = cmd .. args
+            local cmd = ('%s %s'):format(nvim.bo.grepprg or nvim.o.grepprg, nvim.fn.shellescape(args))
 
             require'jobs'.send_job{
                 cmd = cmd,
@@ -274,6 +273,21 @@ if has('nvim-0.5') then
         end,
         args = {nargs = '+', force = true}
     }
+
+    set_mapping{
+        mode = 'n',
+        lhs = 'gs',
+        rhs = ':set opfunc=neovim#grep<CR>g@',
+        args = noremap_silent,
+    }
+
+    set_mapping{
+        mode = 'v',
+        lhs = 'gs',
+        rhs = ':<C-U>call neovim#grep(visualmode(), v:true)<CR>',
+        args = noremap_silent,
+    }
+
     set_command {
         lhs = 'Make',
         rhs = function(args)
