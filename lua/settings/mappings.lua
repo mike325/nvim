@@ -24,7 +24,6 @@ if nvim.g.mapleader == nil then
 end
 
 if executable('svn') then
-
     set_command{
         lhs = 'SVNstatus',
         rhs = "execute('!svn status ' . <q-args>)",
@@ -42,7 +41,6 @@ if executable('svn') then
         rhs = "execute('!svn update ' . <q-args>)",
         args = {complete='file', nargs='*', force = true}
     }
-
 end
 
 if plugins["vim-bbye"] == nil then
@@ -382,6 +380,22 @@ if sys.name == 'windows' then
             args = noremap,
         }
     end
+else
+    set_command{
+        lhs = 'Chmod',
+        rhs = function(mode)
+            local filename = nvim.fn.expand('%')
+            local files = require'tools'.files
+            if not mode:match('^%d+$') then
+                require'tools'.messages.echoerr('Not a valid permissions mode: '..mode)
+                return
+            end
+            if files.is_file(filename) then
+                files.chmod(filename, mode)
+            end
+        end,
+        args = {nargs=1, force=true}
+    }
 end
 
 if not get_mapping{ mode = 'n', lhs = '<C-L>' } then

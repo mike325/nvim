@@ -33,6 +33,22 @@ if has('nvim-0.5') then
     }
 end
 
+if require'sys'.name ~= 'windows' then
+    set_autocmd{
+        event   = 'BufNewFile',
+        pattern = '*',
+        cmd     = [[lua require'settings.functions'.make_executable()]],
+        group   = 'LuaAutocmds',
+    }
+
+    set_autocmd{
+        event   = 'Filetype',
+        pattern = 'python,lua,sh,bash,zsh,tcsh,csh,ruby,perl',
+        cmd     = [[lua require'settings.functions'.make_executable()]],
+        group   = 'LuaAutocmds',
+    }
+end
+
 set_autocmd{
     event   = 'TermOpen',
     pattern = '*',
@@ -124,16 +140,4 @@ set_autocmd{
     group   = 'Reload',
 }
 
-set_autocmd{
-    event   = 'BufNewFile',
-    pattern = '*',
-    cmd     = [[lua require'settings.functions'.make_executable()]],
-    group   = 'LuaAutocmds',
-}
 
-set_autocmd{
-    event   = 'Filetype',
-    pattern = 'python,lua,sh,bash,zsh,tcsh,csh,ruby,perl',
-    cmd     = [[lua require'settings.functions'.make_executable()]],
-    group   = 'LuaAutocmds',
-}
