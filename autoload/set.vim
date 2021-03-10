@@ -11,12 +11,12 @@ function! set#initconfigs() abort " Vim's InitConfig {{{
     endif
 
     let l:dirpaths = {
-            \   '/backup' : 'backupdir',
-            \   '/swap' : 'directory',
-            \   '/undo' : 'undodir',
-            \   '/cache' : '',
-            \   '/sessions' : '',
-            \}
+        \ '/backup'   : 'backupdir',
+        \ '/swap'     : 'directory',
+        \ '/undo_vim' : 'undodir',
+        \ '/cache'    : '',
+        \ '/sessions' : '',
+        \}
 
     " Better backup, swap and undos storage
     set backup   " make backup files

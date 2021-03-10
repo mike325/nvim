@@ -282,6 +282,28 @@ if has('nvim-0.5') then
     }
 
     set_mapping{
+        mode = 'n',
+        lhs = 'gss',
+        rhs = function()
+            local cword = nvim.fn.expand('<cword>')
+            local cmd = ('%s %s'):format(
+                nvim.bo.grepprg or nvim.o.grepprg,
+                nvim.fn.shellescape(cword)
+            )
+            require'jobs'.send_job{
+                cmd = cmd,
+                qf = {
+                    jump = true,
+                    efm = nvim.o.grepformat,
+                    context = 'AsyncGrep',
+                    title = cmd,
+                },
+            }
+        end,
+        args = noremap_silent,
+    }
+
+    set_mapping{
         mode = 'v',
         lhs = 'gs',
         rhs = ':<C-U>call neovim#grep(visualmode(), v:true)<CR>',
