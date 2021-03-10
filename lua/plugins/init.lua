@@ -32,7 +32,7 @@ if nvim.has('nvim-0.5') then
     end
 
     pcall(require, 'host')
-
+    pcall(require, 'work')
 end
 
 local function get_plugins()

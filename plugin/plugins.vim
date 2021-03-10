@@ -41,9 +41,9 @@ if has('nvim-0.5')
     " Plug 'romgrk/barbar.nvim'
 endif
 
-if has('nvim')
-    Plug 'Vigemus/iron.nvim'
-endif
+" if has('nvim')
+"     Plug 'Vigemus/iron.nvim'
+" endif
 
 if has('nvim-0.5') && (executable('gcc') || executable('clang'))
     Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}

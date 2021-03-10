@@ -6,8 +6,6 @@ local clear_lst = require'tools.tables'.clear_lst
 
 local uv = vim.loop
 
-local rename = uv.fs_rename
-
 local M = {}
 
 local function split_path(path)
@@ -187,7 +185,7 @@ function M.rename(old, new, bang)
             nvim.ex['bwipeout!'](new)
         end
 
-        if rename(old, new) then
+        if uv.fs_rename(old, new) then
             local cursor_pos = nvim.win.get_cursor(0)
 
             if M.is_file(new) then

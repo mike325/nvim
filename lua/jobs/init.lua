@@ -7,6 +7,8 @@ if not nvim.has('nvim-0.5') then
     return false
 end
 
+local set_command = nvim.commands.set_command
+
 local M ={
     jobs = {},
 }
@@ -39,7 +41,7 @@ local function general_on_exit(jobid, rc, _)
             cmdname = vim.split(M.jobs[jobid].cmd, ' ')[1]
         end
 
-        local qf_opts = M.jobs[jobid].qf
+        local qf_opts = M.jobs[jobid].qf or {}
 
         qf_opts.context = qf_opts.context or cmdname
         qf_opts.efm = qf_opts.efm or nvim.bo.efm or nvim.o.efm
@@ -76,9 +78,11 @@ function M.kill_job(jobid)
     if not jobid then
         local ids = {}
         local cmds = {}
+        local jobidx = 1
         for id,opts in pairs(M.jobs) do
             ids[#ids + 1] = id
-            cmds[#cmds + 1] = opts.cmd
+            cmds[#cmds + 1] = ('%s: %s'):format(jobidx, opts.cmd)
+            jobidx = jobidx + 1
         end
         local idx = nvim.fn.inputlist(cmds)
         jobid = ids[idx]
@@ -155,5 +159,16 @@ function M.send_job(job)
         end
     end
 end
+
+set_command {
+    lhs = 'KillJob',
+    rhs = function(jobid)
+        if jobid == '' then
+            jobid = nil
+        end
+        M.kill_job(jobid)
+    end,
+    args = {nargs = '?', force = true}
+}
 
 return M
