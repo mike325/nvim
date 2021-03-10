@@ -45,19 +45,14 @@ local sys = {
     data  = datadir(),
     cache = cachedir(),
     luajit = luajit_version(),
+    user = vim.loop.os_get_passwd()
 }
+
+sys.user.name = sys.user.username
 
 function sys.tmp(filename)
     local tmpdir = sys.name == 'windows' and 'c:/temp/' or '/tmp/'
     return tmpdir .. filename
-end
-
-if nvim.has('nvim-0.5') then
-    local function get_user_info()
-        sys.user = vim.loop.os_get_passwd()
-        sys.user.name = sys.user.username
-    end
-    get_user_info()
 end
 
 return sys

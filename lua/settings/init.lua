@@ -23,6 +23,11 @@ local dirpaths = {
 }
 
 for dirname,dir_setting in pairs(dirpaths) do
+
+    if dirname == 'undo' and not nvim.has('nvim-0.5') then
+        dirname = 'undo_vim'
+    end
+
     if not is_dir(parent .. '/' .. dirname) then
         mkdir(parent .. '/' .. dirname)
     end
