@@ -12,8 +12,6 @@ setlocal softtabstop=-1
 setlocal define=^\\s*\\(def\\\|class\\)\\s\\+
 setlocal suffixesadd^=.py,__init__.py
 
-setlocal commentstring=#\ %s
-
 nnoremap <silent><buffer> <CR> :call mappings#cr()<CR>
 
 let python_highlight_all = 1

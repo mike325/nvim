@@ -10,8 +10,6 @@ setlocal softtabstop=-1
 setlocal suffixesadd^=.lua,init.lua
 setlocal includeexpr=substitute(v:fname,'\\.','/','g')
 
-setlocal commentstring=--\ %s
-
 let &l:define = '\s*\(local\s\+\)\?\(function\s\+\(\i\+[.:]\)\?\|\ze\i\+\s*=\s*\|\(\i\+[.:]\)\?\ze\s*=\s*\)'
 
 let lua_version = 5

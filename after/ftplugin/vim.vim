@@ -13,8 +13,6 @@ setlocal tabstop=4
 setlocal shiftwidth=0
 setlocal softtabstop=-1
 
-let &l:commentstring = '" %s'
-
 " Support embedded lua, python and ruby
 let g:vimsyn_embed = 'lPr'
 let g:vimsyn_folding = 'afpl'
