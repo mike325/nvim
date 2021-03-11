@@ -1,4 +1,4 @@
-" Vimwiki Setttings
+" Vimwiki Settings
 " github.com/mike325/.vim
 
 " if !has#gui() " Terminals can't detect some special key combinations

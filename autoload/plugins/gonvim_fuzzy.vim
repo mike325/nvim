@@ -1,4 +1,4 @@
-" Gonvimfuzzy Setttings
+" Gonvimfuzzy Settings
 " github.com/mike325/.vim
 
 if (!exists('g:gonvim_running') || !has#plugin('gonvim-fuzzy')) || exists('g:config_gonvim')

@@ -1,4 +1,4 @@
-" Vars Setttings
+" Vars Settings
 " github.com/mike325/.vim
 
 if has('nvim-0.5')

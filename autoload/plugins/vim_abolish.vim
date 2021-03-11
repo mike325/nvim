@@ -1,4 +1,4 @@
-" Abolish Setttings
+" Abolish Settings
 " github.com/mike325/.vim
 
 if !has#plugin('vim-abolish') || exists('g:config_abolish')

@@ -1,5 +1,5 @@
 scriptencoding 'utf-8'
-" Semshi Setttings
+" Semshi Settings
 " github.com/mike325/.vim
 
 if !has#plugin('semshi') || exists('g:config_semshi')

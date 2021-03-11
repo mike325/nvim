@@ -1,4 +1,4 @@
-" Help Setttings
+" Help Settings
 " github.com/mike325/.vim
 
 " setlocal bufhidden=delete

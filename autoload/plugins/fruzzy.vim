@@ -1,4 +1,4 @@
-" Fruzzy Setttings
+" Fruzzy Settings
 " github.com/mike325/.vim
 
 if !has#plugin('fruzzy') || exists('g:config_fruzzy')

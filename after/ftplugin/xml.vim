@@ -1,4 +1,4 @@
-" xml Setttings
+" xml Settings
 " github.com/mike325/.vim
 
 setlocal matchpairs+=<:>

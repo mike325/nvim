@@ -33,3 +33,7 @@ endsnippet
 snippet bufnr "get current window buffer"
 local ${1:bufnr} = require'nvim'.win.get_buf(${2:0})
 endsnippet
+
+snippet pvi "print(vim.inspect(...))"
+print(vim.inspect(${0:${VISUAL:1}}))
+endsnippet

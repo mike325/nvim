@@ -1,4 +1,4 @@
-" yaml Setttings
+" yaml Settings
 " github.com/mike325/.vim
 
 setlocal expandtab

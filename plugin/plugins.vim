@@ -1,4 +1,4 @@
-" plugins.vim Setttings
+" plugins.vim Settings
 " github.com/mike325/.vim
 
 if exists('g:loaded_mike_plugins') || has#minimal() || has#bare() || !has#plugin_manager()

@@ -1,4 +1,4 @@
-" Json Setttings
+" Json Settings
 " github.com/mike325/.vim
 
 if has#python()

@@ -1,4 +1,4 @@
-" gitcommit Setttings
+" gitcommit Settings
 " github.com/mike325/.vim
 
 setlocal bufhidden=delete

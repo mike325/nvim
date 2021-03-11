@@ -1,4 +1,4 @@
-" Vim-plug Setttings
+" Vim-plug Settings
 " github.com/mike325/.vim
 
 function! s:plug_doc() abort

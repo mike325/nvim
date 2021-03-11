@@ -1,4 +1,4 @@
-" txt Setttings
+" txt Settings
 " github.com/mike325/.vim
 
 autocmd BufNewFile,BufRead *.txt if ( tools#checksize() == 1 ) | setlocal filetype=log | endif

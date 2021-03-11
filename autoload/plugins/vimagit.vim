@@ -1,4 +1,4 @@
-" vimagit Setttings
+" vimagit Settings
 " github.com/mike325/.vim
 
 if !has#plugin('vimagit') || exists('g:config_vimagit')

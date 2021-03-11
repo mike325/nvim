@@ -1,4 +1,4 @@
-" vim_lsc Setttings
+" vim_lsc Settings
 " github.com/mike325/.vim
 
 if !has#plugin('vim-lsc') || exists('g:config_lsc')

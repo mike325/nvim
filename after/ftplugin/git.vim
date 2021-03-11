@@ -1,4 +1,4 @@
-" Git Setttings
+" Git Settings
 " github.com/mike325/.vim
 
 " setlocal bufhidden=hide

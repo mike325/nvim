@@ -1,4 +1,4 @@
-" vim_gitgutter Setttings
+" vim_gitgutter Settings
 " github.com/mike325/.vim
 
 if !has#plugin('vim-gitgutter') || exists('g:config_gitgutter')

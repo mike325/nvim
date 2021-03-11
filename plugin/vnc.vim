@@ -1,4 +1,4 @@
-" VNC Setttings
+" VNC Settings
 " github.com/mike325/.vim
 
 if !executable('vnc') || !has#async()

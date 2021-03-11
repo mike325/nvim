@@ -1,6 +1,6 @@
 scriptencoding 'utf-8'
 
-" Surround Setttings
+" Surround Settings
 " github.com/mike325/.vim
 
 if !has#plugin('vim-surround') || exists('g:config_surround')

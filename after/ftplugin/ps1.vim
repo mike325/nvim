@@ -1,4 +1,4 @@
-" ps1 Setttings
+" ps1 Settings
 " github.com/mike325/.vim
 
 setlocal expandtab

@@ -143,7 +143,7 @@ local nvim = {
             if v == nil then
                 error("Can't clear registers")
             end
-            api.nvim_command(([[let @%s = "%s"]]):format(k, v))
+            api.nvim_command(([[let @%s = '%s']]):format(k, v))
         end;
     });
 }

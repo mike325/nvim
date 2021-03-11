@@ -1,5 +1,5 @@
 scriptencoding 'utf-8'
-" Tools Setttings
+" Tools Settings
 " github.com/mike325/.vim
 
 function! tools#checksize() abort

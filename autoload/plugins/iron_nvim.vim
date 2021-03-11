@@ -1,4 +1,4 @@
-" iron_nvim.vim Setttings
+" iron_nvim.vim Settings
 " github.com/mike325/.vim
 
 if !has#plugin('iron.nvim') || exists('g:config_iron')

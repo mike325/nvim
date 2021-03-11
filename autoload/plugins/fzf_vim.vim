@@ -1,4 +1,4 @@
-" FZF_vim Setttings
+" FZF_vim Settings
 " github.com/mike325/.vim
 
 if (!has#plugin('fzf') || !has#plugin('fzf.vim')) || exists('g:config_fzf')

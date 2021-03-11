@@ -1,4 +1,4 @@
-" Plugins Setttings
+" Plugins Settings
 " github.com/mike325/.vim
 
 function! plugins#convert_name(name) abort

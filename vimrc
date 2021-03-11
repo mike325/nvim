@@ -1,4 +1,4 @@
-" vimrc Setttings
+" vimrc Settings
 " github.com/mike325/.vim
 
 set nocompatible

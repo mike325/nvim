@@ -1,4 +1,4 @@
-" Log Setttings
+" Log Settings
 " github.com/mike325/.vim
 
 if exists('b:current_syntax')

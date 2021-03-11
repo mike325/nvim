@@ -1,4 +1,4 @@
-" Setup Setttings
+" Setup Settings
 " github.com/mike325/.vim
 
 function! s:PythonProviders(python) abort

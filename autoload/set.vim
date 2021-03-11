@@ -1,4 +1,4 @@
-" Settings Setttings
+" Settings Settings
 " github.com/mike325/.vim
 
 function! set#initconfigs() abort " Vim's InitConfig {{{

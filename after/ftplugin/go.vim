@@ -1,4 +1,4 @@
-" Go Setttings
+" Go Settings
 " github.com/mike325/.vim
 
 if has#option('formatprg')

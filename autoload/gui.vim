@@ -1,4 +1,4 @@
-" GUI Setttings
+" GUI Settings
 " github.com/mike325/.vim
 
 function! gui#NeovimGuiFont(size) abort

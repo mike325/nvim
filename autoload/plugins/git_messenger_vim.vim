@@ -1,4 +1,4 @@
-" Git_messenger_vim Setttings
+" Git_messenger_vim Settings
 " github.com/mike325/.vim
 
 if !has#plugin('git-messenger.vim') || exists('g:config_git_messenger')

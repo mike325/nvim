@@ -1,4 +1,4 @@
-" Text Setttings
+" Text Settings
 " github.com/mike325/.vim
 
 setlocal nobackup

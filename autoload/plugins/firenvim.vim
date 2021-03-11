@@ -1,4 +1,4 @@
-" firenvim Setttings
+" firenvim Settings
 " github.com/mike325/.vim
 
 if !exists('g:started_by_firenvim') || !has#plugin('firenvim') || exists('g:config_firenvim')

@@ -1,5 +1,5 @@
 scriptencoding 'utf-8'
-" Autocmd Setttings
+" Autocmd Settings
 " github.com/mike325/.vim
 
 function! autocmd#CleanFile() abort

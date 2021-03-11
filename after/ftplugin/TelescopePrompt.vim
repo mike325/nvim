@@ -1,4 +1,4 @@
-" TelescopePrompt Setttings
+" TelescopePrompt Settings
 " github.com/mike325/.vim
 
 setlocal norelativenumber

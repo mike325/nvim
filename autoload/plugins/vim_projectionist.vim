@@ -1,4 +1,4 @@
-" Projections Setttings
+" Projections Settings
 " github.com/mike325/.vim
 
 if !has#plugin('vim-projectionist') || exists('g:config_projectionist')

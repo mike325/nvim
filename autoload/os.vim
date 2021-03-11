@@ -1,4 +1,4 @@
-" OS Setttings
+" OS Settings
 " github.com/mike325/.vim
 
 function! s:os_get_type() abort

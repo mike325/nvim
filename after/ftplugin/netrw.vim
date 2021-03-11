@@ -1,4 +1,4 @@
-" Netrw Setttings
+" Netrw Settings
 " github.com/mike325/.vim
 
 setlocal nobackup

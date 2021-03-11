@@ -1,4 +1,4 @@
-" Windows Setttings
+" Windows Settings
 " github.com/mike325/.vim
 
 let g:sh_defaults = {

@@ -1,4 +1,4 @@
-" Vimtex Setttings
+" Vimtex Settings
 " github.com/mike325/.vim
 
 if !has#plugin('vimtex') || exists('g:config_vimtex')

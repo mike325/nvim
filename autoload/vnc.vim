@@ -1,4 +1,4 @@
-" VNC Setttings
+" VNC Settings
 " github.com/mike325/.vim
 
 let s:vnc_jobs = get(g:, 'vnc#jobs', {})

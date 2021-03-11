@@ -1,4 +1,4 @@
-" Dosini Setttings
+" Dosini Settings
 " github.com/mike325/.vim
 
 setlocal expandtab

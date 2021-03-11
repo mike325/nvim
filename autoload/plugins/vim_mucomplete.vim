@@ -1,4 +1,4 @@
-" vim_mucomplete Setttings
+" vim_mucomplete Settings
 " github.com/mike325/.vim
 
 if !has#plugin('vim-mucomplete') || exists('g:config_mucomplete')

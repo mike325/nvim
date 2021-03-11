@@ -1,4 +1,4 @@
-" Mappings Setttings
+" Mappings Settings
 " github.com/mike325/.vim
 
 let s:arrows = -1

@@ -1,4 +1,4 @@
-" vim_oscyank Setttings
+" vim_oscyank Settings
 " github.com/mike325/.vim
 
 " TODO: Improve completor settings

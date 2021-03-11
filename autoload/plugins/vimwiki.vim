@@ -1,4 +1,4 @@
-" Vimwiki Setttings
+" Vimwiki Settings
 " github.com/mike325/.vim
 
 if !has#plugin('vimwiki') || exists('g:config_vimwiki')

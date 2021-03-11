@@ -1,4 +1,4 @@
-" json Setttings
+" json Settings
 " github.com/mike325/.vim
 
 syntax match Comment /\/\/.*/

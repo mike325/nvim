@@ -1,4 +1,4 @@
-" Vim_textobj_comment Setttings
+" Vim_textobj_comment Settings
 " github.com/mike325/.vim
 
 if !has#plugin('vim-textobj-comment') || exists('g:config_textobj')

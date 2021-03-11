@@ -1,4 +1,4 @@
-" Has Setttings
+" Has Settings
 " github.com/mike325/.vim
 
 function! has#minimal() abort

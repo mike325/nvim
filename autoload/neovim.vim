@@ -1,4 +1,4 @@
-" neovim Setttings
+" neovim Settings
 " github.com/mike325/.vim
 
 " This Autocmd file is wrapper around lua functions
