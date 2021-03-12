@@ -252,14 +252,15 @@ local function on_attach(_)
     -- local nvim = require'nvim'
 
     local mappings = {
-        ['<C-]>'] = '<cmd>lua vim.lsp.buf.definition()<CR>',
-        ['gd']    = '<cmd>lua vim.lsp.buf.declaration()<CR>',
+        ['<C-]>']     = '<cmd>lua vim.lsp.buf.definition()<CR>',
+        ['gd']        = '<cmd>lua vim.lsp.buf.declaration()<CR>',
         -- ['gD']    = '<cmd>lua vim.lsp.buf.implementation()<CR>',
-        ['gr ']   = '<cmd>lua vim.lsp.buf.references()<CR>',
-        ['K']     = '<cmd>lua vim.lsp.buf.hover()<CR>',
-        ['=d']    = '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>',
-        [']d']    = '<cmd>lua vim.lsp.diagnostic.goto_next { wrap = false }<CR>',
-        ['[d']    = '<cmd>lua vim.lsp.diagnostic.goto_prev { wrap = false }<CR>',
+        ['gr ']       = '<cmd>lua vim.lsp.buf.references()<CR>',
+        ['K']         = '<cmd>lua vim.lsp.buf.hover()<CR>',
+        ['<leader>r'] = '<cmd>lua vim.lsp.buf.rename()<CR>',
+        ['=d']        = '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>',
+        [']d']        = '<cmd>lua vim.lsp.diagnostic.goto_next { wrap = false }<CR>',
+        ['[d']        = '<cmd>lua vim.lsp.diagnostic.goto_prev { wrap = false }<CR>',
     }
 
     for mapping,val in pairs(mappings) do

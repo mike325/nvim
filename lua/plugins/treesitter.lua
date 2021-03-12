@@ -123,7 +123,7 @@ treesitter.setup{
         smart_rename = {
             enable = true,
             keymaps = {
-                smart_rename = "<leader>r",
+                smart_rename = "<A-r>",
             },
         },
         highlight_definitions = {

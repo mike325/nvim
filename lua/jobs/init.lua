@@ -96,8 +96,14 @@ end
 function M.send_job(job)
     local cmd = job.cmd
 
-    if not cmd or #cmd == 0 then
+    if not cmd or (type(cmd) == 'table' and next(cmd) == nil) or (type(cmd) == 'string' and cmd == '') then
         echoerr('Missing command')
+        return
+    elseif type(cmd) == 'table' and job.args ~= nil then
+        echoerr('Either use a cmd table or a cmd string with a table of args')
+        return
+    elseif job.args ~= nil and type(cmd) ~= type(job.args) then
+        echoerr('cmd and args must be the same type')
         return
     end
 
@@ -108,7 +114,12 @@ function M.send_job(job)
         nvim.win.set_option(win, 'relativenumber', false)
         nvim.buf.set_option(bufnr, 'bufhidden', 'wipe')
         if type(cmd) == 'table' then
+            if job.args ~= nil then
+                cmd = vim.list_extend(cmd, job.args)
+            end
             cmd = vim.fn.join(cmd, ' ')
+        elseif type(cmd) == 'string' and job.args ~= nil then
+            cmd = cmd .. ' ' .. job.args
         end
         nvim.command('terminal '..cmd)
         nvim.ex.startinsert()
@@ -134,6 +145,12 @@ function M.send_job(job)
             opts.on_stderr = general_on_data
             opts.on_stdin = general_on_data
             opts.on_data = general_on_data
+        end
+
+        if type(cmd) == 'table' and job.args ~= nil then
+            cmd = vim.list_extend(cmd, job.args)
+        elseif type(cmd) == 'string' and job.args ~= nil then
+            cmd = cmd .. ' ' .. job.args
         end
 
         local id = nvim.fn.jobstart(
