@@ -27,10 +27,6 @@ if nvim.has('nvim-0.5') then
         end
     end
 
-    if plugins.telescope.ok and not plugins.telescope.status then
-        pcall(require, 'grep')
-    end
-
     pcall(require, 'host')
     pcall(require, 'work')
 end
