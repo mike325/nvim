@@ -256,20 +256,8 @@ if has('nvim-0.5') then
     set_command {
         lhs = 'Grep',
         rhs = function(args)
-            -- local cwd = vim.fn.getcwd()
-
             local cmd = ('%s %s'):format(nvim.bo.grepprg or nvim.o.grepprg, nvim.fn.shellescape(args))
-
-            require'jobs'.send_job{
-                cmd = cmd,
-                qf = {
-                    jump = true,
-                    efm = vim.o.grepformat,
-                    context = 'AsyncGrep',
-                    title = cmd,
-                },
-            }
-
+            require'settings.functions'.send_grep_job(cmd)
         end,
         args = {nargs = '+', force = true}
     }
@@ -285,20 +273,11 @@ if has('nvim-0.5') then
         mode = 'n',
         lhs = 'gss',
         rhs = function()
-            local cword = nvim.fn.expand('<cword>')
             local cmd = ('%s %s'):format(
                 nvim.bo.grepprg or nvim.o.grepprg,
-                nvim.fn.shellescape(cword)
+                nvim.fn.shellescape(nvim.fn.expand('<cword>'))
             )
-            require'jobs'.send_job{
-                cmd = cmd,
-                qf = {
-                    jump = true,
-                    efm = nvim.o.grepformat,
-                    context = 'AsyncGrep',
-                    title = cmd,
-                },
-            }
+            require'settings.functions'.send_grep_job(cmd)
         end,
         args = noremap_silent,
     }

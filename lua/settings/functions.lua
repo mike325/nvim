@@ -50,6 +50,18 @@ function M.chmod_exec()
     chmod(filename, bit.bor(filemode, 0x48), 10)
 end
 
+function M.send_grep_job(cmd)
+    require'jobs'.send_job{
+        cmd = cmd,
+        qf = {
+            jump = true,
+            efm = nvim.o.grepformat,
+            context = 'AsyncGrep',
+            title = cmd,
+        },
+    }
+end
+
 function M.opfun_grep(select, visual)
     local select_save = nvim.o.selection
     nvim.o.selection = 'inclusive'
@@ -65,16 +77,7 @@ function M.opfun_grep(select, visual)
     end
 
     local cmd = ('%s %s'):format(nvim.bo.grepprg or nvim.o.grepprg, nvim.fn.shellescape(nvim.reg['@']))
-
-    require'jobs'.send_job{
-        cmd = cmd,
-        qf = {
-            jump = true,
-            efm = nvim.o.grepformat,
-            context = 'AsyncGrep',
-            title = cmd,
-        },
-    }
+    M.send_grep_job(cmd)
 
     nvim.o.selection = select_save
     nvim.reg['@'] = reg_save
