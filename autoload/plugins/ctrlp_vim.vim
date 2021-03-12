@@ -64,7 +64,7 @@ endif
 
 let g:ctrlp_user_command = {
     \   'types': {
-    \       1: ['.git', 'cd %s && ' . tools#filelist('git') ]
+    \       1: ['.git', 'cd %s && ' . tools#select_filelist(v:true) ]
     \   },
     \   'fallback': "find %s -type f -iname '*' ". tools#ignores('find') .' ',
     \ }

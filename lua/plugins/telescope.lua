@@ -21,7 +21,7 @@ local actions = require'telescope.actions'
 
 telescope.setup{
     defaults = {
-        vimgrep_arguments = tools.tables.str_to_clean_tbl(tools.helpers.select_grep(false)),
+        vimgrep_arguments = tools.helpers.select_grep(false, 'grepprg', true),
         mappings = {
             i = {
                 ["<ESC>"] = actions.close,
@@ -114,10 +114,8 @@ set_mapping{
     lhs = '<C-p>',
     rhs = function()
         local is_git = vim.b.project_root.is_git
-        local str_to_clean_tbl = tools.tables.str_to_clean_tbl
-        local select_filelist = tools.helpers.select_filelist
         require'telescope.builtin'.find_files {
-            find_command = str_to_clean_tbl(select_filelist(is_git))
+            find_command = tools.helpers.select_filelist(is_git, true)
         }
     end,
     args = {noremap = true}
@@ -152,11 +150,9 @@ set_command{
 set_command{
     lhs = 'GetVimFiles',
     rhs = function()
-        local str_to_clean_tbl = tools.tables.str_to_clean_tbl
-        local select_filelist = tools.helpers.select_filelist
         require'telescope.builtin'.find_files{
             cwd = require'sys'.base,
-            find_command = str_to_clean_tbl(select_filelist(false))
+            find_command = tools.helpers.select_filelist(false, true)
         }
     end,
     args = {force=true}

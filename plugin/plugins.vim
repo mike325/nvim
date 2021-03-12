@@ -132,10 +132,6 @@ if has#python() && (has('nvim') || (v:version >= 704))
         " Froze ultisnips to latest python2 and python3.4 supported version
         Plug 'SirVer/ultisnips', {'commit': '30e651f', 'frozen': 1, 'dir': vars#basedir().'/plugged/frozen_ultisnips'}
     endif
-else
-    Plug 'MarcWeber/vim-addon-mw-utils'
-    Plug 'tomtom/tlib_vim'
-    Plug 'garbas/vim-snipmate'
 endif
 
 if !empty($YCM) && empty($NO_PYTHON_DEV) &&

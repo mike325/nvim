@@ -8,6 +8,7 @@ local is_file          = require'tools.files'.is_file
 local normalize_path   = require'tools.files'.normalize_path
 local split_components = require'tools.strings'.split_components
 local echoerr          = require'tools.messages'.echoerr
+local clear_lst        = require'tools.tables'.clear_lst
 
 local set_abbr = nvim.abbrs.set_abbr
 
@@ -470,34 +471,45 @@ end
 function M.ignores(tool)
     local excludes = nvim.fn.split(nvim.o.backupskip, ',')
 
-    for idx,_ in pairs(excludes) do
-        excludes[idx] = "'" .. excludes[idx] .. "'"
+    if #excludes == 0 then
+        return ''
     end
 
     local ignores = {
-        fd = ' -E ' .. table.concat(excludes, ' -E ') .. ' ',
-        find = [[ -regextype egrep ! \( -iwholename ]] .. table.concat(excludes, ' -or -iwholename ') .. [[ \) ]],
-        rg = '',
-        ag = ' --ignore ' .. table.concat(excludes, ' --ignore ') .. ' ',
-        grep = '--exclude='.. table.concat(excludes, ' --exclude=') .. ' ',
-        findstr = '', -- TODO
+        fd = {},
+        find = {'-regextype', 'egrep', '!', [[\(]]},
+        rg = {},
+        ag = {},
+        grep = {},
+        findstr = {},
     }
 
-    if is_file(sys.home .. '/.config/git/ignore') then
-        -- ignores.rg = ' --ignore-file '.. sys.home .. '/.config/git/ignore '
-        ignores.fd = ' --ignore-file '.. sys.home .. '/.config/git/ignore '
+    for i=1,#excludes do
+        excludes[i] = "'" .. excludes[i] .. "'"
+
+        ignores.fd[#ignores.fd + 1] = '--exclude='..excludes[i]
+        ignores.find[#ignores.find + 1] = '-iwholename '..excludes[i]
+        if i < #excludes then
+            ignores.find[#ignores.find + 1] = '-or'
+        end
+        ignores.ag[#ignores.ag + 1] = ' --ignore '..excludes[i]
+        ignores.grep[#ignores.grep + 1] = '--exclude='..excludes[i]
+
     end
 
-    return ignores[tool] ~= nil and ignores[tool] or ''
+    ignores.find[#ignores.find + 1] = [[\)]]
+
+    -- if is_file(sys.home .. '/.config/git/ignore') then
+    --     -- ignores.rg = ' --ignore-file '.. sys.home .. '/.config/git/ignore '
+    --     ignores.fd = ' --ignore-file '.. sys.home .. '/.config/git/ignore '
+    -- end
+
+    return ignores[tool] ~= nil and nvim.fn.join(ignores[tool], ' ') or ''
 end
 
-function M.grep(tool, opts)
+function M.grep(tool, attr, lst)
 
-    if type(opts) ~= 'table' then
-        opts = {opts}
-    end
-
-    local property = #opts > 0 and opts[1] or 'grepprg'
+    local property = (attr and attr ~= '') and  attr or 'grepprg'
 
     if modern_git == -1 then
         modern_git = M.has_git_version('2', '19')
@@ -526,22 +538,34 @@ function M.grep(tool, opts)
         },
     }
 
-    return (executable(tool) and greplist[tool] ~= nil) and greplist[tool][property] or ''
+    local grep = lst and {} or ''
+    if executable(tool) and greplist[tool] ~= nil then
+        grep = greplist[tool][property]
+        grep = lst and clear_lst(nvim.fn.split(grep, ' ')) or grep
+    end
+
+    return grep
 end
 
-function M.filelist(tool)
-    local filelist = {
+function M.filelist(tool, lst)
+    local filetool = {
         git  = 'git --no-pager ls-files -co --exclude-standard',
-        fd   = 'fd ' .. M.ignores('fd') .. ' --type f --hidden --follow --color never . .',
+        fd   = 'fd ' .. M.ignores('fd') .. ' --type=file --hidden --follow --color=never . .',
         rg   = 'rg --color=never --no-search-zip --hidden --trim --files '.. M.ignores('rg'),
         ag   = 'ag -l --follow --nocolor --nogroup --hidden '..M.ignores('ag')..'-g ""',
         find = "find . -type f -iname '*' "..M.ignores('find') .. ' ',
     }
 
-    return executable(tool) and filelist[tool] or ''
+    local filelist = lst and {} or ''
+    if executable(tool) and filetool[tool] ~= nil then
+        filelist = filetool[tool]
+        filelist = lst and clear_lst(nvim.fn.split(filelist, ' ')) or filelist
+    end
+
+    return filelist
 end
 
-function M.select_filelist(is_git)
+function M.select_filelist(is_git, lst)
     local filelist = ''
 
     local tools = {
@@ -552,11 +576,11 @@ function M.select_filelist(is_git)
     }
 
     if executable('git') and is_git then
-        filelist = M.filelist('git')
+        filelist = M.filelist('git', lst)
     else
         for _,lister in pairs(tools) do
-            filelist = M.filelist(lister)
-            if filelist ~= '' then
+            filelist = M.filelist(lister, lst)
+            if #filelist > 0 then
                 break
             end
         end
@@ -565,13 +589,8 @@ function M.select_filelist(is_git)
     return filelist
 end
 
-function M.select_grep(is_git, opts)
-
-    if type(opts) ~= 'table' then
-        opts = {opts}
-    end
-
-    local property = #opts > 0 and opts[1] or 'grepprg'
+function M.select_grep(is_git, attr, lst)
+    local property = (attr and attr ~= '') and  attr or 'grepprg'
 
     local grepprg = ''
 
@@ -583,11 +602,11 @@ function M.select_grep(is_git, opts)
     }
 
     if executable('git') and is_git then
-        grepprg = M.grep('git', property)
+        grepprg = M.grep('git', property, lst)
     else
         for _,grep in pairs(tools) do
-            grepprg = M.grep(grep, property)
-            if grepprg ~= '' then
+            grepprg = M.grep(grep, property, lst)
+            if #grepprg > 0 then
                 break
             end
         end

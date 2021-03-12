@@ -17,24 +17,26 @@ if has('nvim-0.5')
         return v:lua.tools.helpers.check_language_server(a:000)
     endfunction
 
-    function! tools#grep(tool) abort
-        return v:lua.tools.helpers.grep(a:tool)
-    endfunction
-
     function! tools#grep(tool, ...) abort
-        return v:lua.tools.helpers.grep(a:tool, a:000)
+        let l:attr = a:0 > 0 ? a:1 : 'grepprg'
+        let l:lst = a:0 > 1 ? a:2 : v:false
+        return v:lua.tools.helpers.grep(a:tool, l:attr, l:lst)
     endfunction
 
     function! tools#select_grep(is_git, ...) abort
-        return v:lua.tools.helpers.select_grep(a:is_git, a:000)
+        let l:attr = a:0 > 0 ? a:1 : 'grepprg'
+        let l:lst = a:0 > 1 ? a:2 : v:false
+        return v:lua.tools.helpers.select_grep(a:is_git, l:attr, l:lst)
     endfunction
 
-    function! tools#filelist(tool) abort
-        return v:lua.tools.helpers.filelist(a:tool)
+    function! tools#filelist(tool, ...) abort
+        let l:lst = a:0 > 0 ? a:1 : v:false
+        return v:lua.tools.helpers.filelist(a:tool, l:lst)
     endfunction
 
-    function! tools#select_filelist(is_git) abort
-        return v:lua.tools.helpers.select_filelist(a:is_git)
+    function! tools#select_filelist(is_git, ...) abort
+        let l:lst = a:0 > 0 ? a:1 : v:false
+        return v:lua.tools.helpers.select_filelist(a:is_git, l:lst)
     endfunction
 
     function! tools#spelllangs(lang) abort
