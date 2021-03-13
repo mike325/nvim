@@ -4,6 +4,7 @@ local nvim = require'nvim'
 
 local iregex     = require'tools'.strings.iregex
 local executable = require'tools'.files.executable
+local clear_lst  = require'tools'.tables.clear_lst
 
 -- local set_autocmd = nvim.autocmds.set_autocmd
 local set_abbr    = nvim.abbrs.set_abbr
@@ -256,8 +257,7 @@ if has('nvim-0.5') then
     set_command {
         lhs = 'Grep',
         rhs = function(args)
-            local cmd = ('%s %s'):format(nvim.bo.grepprg or nvim.o.grepprg, nvim.fn.shellescape(args))
-            require'settings.functions'.send_grep_job(cmd)
+            require'settings.functions'.send_grep_job(args)
         end,
         args = {nargs = '+', force = true}
     }
@@ -273,11 +273,7 @@ if has('nvim-0.5') then
         mode = 'n',
         lhs = 'gss',
         rhs = function()
-            local cmd = ('%s %s'):format(
-                nvim.bo.grepprg or nvim.o.grepprg,
-                nvim.fn.shellescape(nvim.fn.expand('<cword>'))
-            )
-            require'settings.functions'.send_grep_job(cmd)
+            require'settings.functions'.send_grep_job(nvim.fn.expand('<cword>'))
         end,
         args = noremap_silent,
     }

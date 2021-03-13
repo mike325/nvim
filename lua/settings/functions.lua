@@ -2,6 +2,7 @@ local nvim = require'nvim'
 local sys = require'sys'
 local is_file = require'tools'.files.is_file
 local chmod = require'tools'.files.chmod
+local clear_lst = require'tools'.tables.clear_lst
 local set_autocmd = nvim.autocmds.set_autocmd
 
 local M = {}
@@ -50,7 +51,11 @@ function M.chmod_exec()
     chmod(filename, bit.bor(filemode, 0x48), 10)
 end
 
-function M.send_grep_job(cmd)
+function M.send_grep_job(args)
+    local cmd = clear_lst(vim.split(nvim.bo.grepprg or nvim.o.grepprg, ' '))
+    -- print('Type: ', type(args), 'Value:', vim.inspect(args))
+    cmd[#cmd + 1] = args
+
     require'jobs'.send_job{
         cmd = cmd,
         qf = {
@@ -76,8 +81,7 @@ function M.opfun_grep(select, visual)
         nvim.ex['normal!']("`[v`]y")
     end
 
-    local cmd = ('%s %s'):format(nvim.bo.grepprg or nvim.o.grepprg, nvim.fn.shellescape(nvim.reg['@']))
-    M.send_grep_job(cmd)
+    M.send_grep_job(nvim.reg['@'])
 
     nvim.o.selection = select_save
     nvim.reg['@'] = reg_save
