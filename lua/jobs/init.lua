@@ -13,6 +13,11 @@ local M ={
     jobs = {},
 }
 
+local function is_alive(id)
+    local ok, _ = pcall(nvim.fn.jobpid, id)
+    return ok
+end
+
 local function general_on_exit(jobid, rc, _)
 
     local stream
@@ -53,6 +58,8 @@ local function general_on_exit(jobid, rc, _)
 
     if rc == 0 and M.jobs[jobid].clean then
         M.jobs[jobid] = nil
+    else
+        M.jobs[jobid].is_alive = false
     end
 
 end
@@ -80,9 +87,14 @@ function M.kill_job(jobid)
         local cmds = {}
         local jobidx = 1
         for id,opts in pairs(M.jobs) do
-            ids[#ids + 1] = id
-            cmds[#cmds + 1] = ('%s: %s'):format(jobidx, opts.cmd)
-            jobidx = jobidx + 1
+            local running = is_alive()
+            if running then
+                ids[#ids + 1] = id
+                cmds[#cmds + 1] = ('%s: %s'):format(jobidx, opts.cmd)
+                jobidx = jobidx + 1
+            else
+                M.jobs[id].is_alive = running
+            end
         end
         local idx = nvim.fn.inputlist(cmds)
         jobid = ids[idx]
@@ -172,6 +184,7 @@ function M.send_job(job)
                 opts = opts,
                 qf = job.qf,
                 clean = clean,
+                is_alive = true,
             }
         end
     end
