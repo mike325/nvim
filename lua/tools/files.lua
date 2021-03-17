@@ -14,23 +14,23 @@ local function split_path(path)
 end
 
 function M.exists(filename)
-    assert(type(filename) == 'string', ('Not a path: %s'):format(filename))
+    assert(type(filename) == 'string' and filename ~= '', ([[Not a filename: "%s"]]):format(filename))
     local stat = uv.fs_stat(filename)
     return stat and stat.type or false
 end
 
 function M.is_dir(filename)
-    assert(type(filename) == 'string', ('Not a path: %s'):format(filename))
+    assert(type(filename) == 'string' and filename ~= '', ([[Not a filename: "%s"]]):format(filename))
     return M.exists(filename) == 'directory'
 end
 
 function M.is_file(filename)
-    assert(type(filename) == 'string', ('Not a path: %s'):format(filename))
+    assert(type(filename) == 'string' and filename ~= '', ([[Not a filename: "%s"]]):format(filename))
     return M.exists(filename) == 'file'
 end
 
 function M.mkdir(dirname)
-    assert(type(dirname) == 'string', ('Not a path: %s'):format(dirname))
+    assert(type(dirname) == 'string' and dirname ~= '', ([[Not a dirname: "%s"]]):format(dirname))
     nvim.fn.mkdir(dirname, 'p')
 end
 
@@ -39,7 +39,7 @@ function M.executable(exec)
 end
 
 function M.is_absolute(path)
-    assert(type(path) == 'string', ('Not a path: %s'):format(path))
+    assert(type(path) == 'string' and path ~= '', ([[Not a path: "%s"]]):format(path))
     path = M.normalize_path(path)
     local is_abs = false
     if sys.name == 'windows' and #path >= 2 then
@@ -50,13 +50,25 @@ function M.is_absolute(path)
     return is_abs
 end
 
+function M.is_root(path)
+    assert(type(path) == 'string' and path ~= '', ([[Not a path: "%s"]]):format(path))
+    local root = false
+    if sys.name == 'windows' and #path >= 2 then
+        path = path:gsub('\\','/')
+        root = string.match(path, '^%w:/?$') ~= nil
+    elseif sys.name ~= 'windows' then
+        root = path == '/'
+    end
+    return root
+end
+
 function M.realpath(path)
-    assert(type(path) == 'string', ('Not a path: %s'):format(path))
+    assert(type(path) == 'string' and path ~= '', ([[Not a path: "%s"]]):format(path))
     return uv.fs_realpath(path):gsub('\\','/')
 end
 
 function M.normalize_path(path)
-    assert(type(path) == 'string', ('Not a path: %s'):format(path))
+    assert(type(path) == 'string' and path ~= '', ([[Not a path: "%s"]]):format(path))
     if path:sub(1, 1) == '~' or path == '%' then
         path = nvim.fn.expand(path)
     end
@@ -98,6 +110,23 @@ function M.basedir(path)
         end
     end
     return path
+end
+
+function M.subpath_in_path(parent, child)
+    assert(M.is_dir(parent) and M.is_dir(child), 'Paths must be directories')
+
+    child = M.realpath(child)
+    parent = M.realpath(parent)
+
+    -- TODO: Check windows multi drive root
+    local child_in_parent = false
+    if M.is_root(parent) then
+        child_in_parent = true
+    elseif child:match('^'..parent) then
+        child_in_parent = true
+    end
+
+    return child_in_parent
 end
 
 function M.chmod(path, mode, base)

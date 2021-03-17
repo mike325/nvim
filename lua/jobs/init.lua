@@ -18,6 +18,14 @@ local function is_alive(id)
     return ok
 end
 
+local function cleanup(jobid, rc)
+    if rc == 0 and M.jobs[jobid].clean then
+        M.jobs[jobid] = nil
+    else
+        M.jobs[jobid].is_alive = false
+    end
+end
+
 local function general_on_exit(jobid, rc, _)
 
     local stream
@@ -56,11 +64,7 @@ local function general_on_exit(jobid, rc, _)
         dump_to_qf(qf_opts)
     end
 
-    if rc == 0 and M.jobs[jobid].clean then
-        M.jobs[jobid] = nil
-    else
-        M.jobs[jobid].is_alive = false
-    end
+    cleanup(jobid, rc)
 
 end
 
@@ -145,10 +149,7 @@ function M.send_job(job)
             local opts_on_exit = opts.on_exit
             opts.on_exit = function(jobid, rc, event)
                 opts_on_exit(jobid, rc, event)
-                local jobs = require'jobs'
-                if rc == 0 and jobs.jobs[jobid] ~= nil then
-                    jobs.jobs[jobid] = nil
-                end
+                cleanup(jobid, rc)
             end
         end
 

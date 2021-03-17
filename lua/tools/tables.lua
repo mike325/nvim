@@ -54,12 +54,12 @@ end
 
 function M.clear_lst(lst)
     assert(vim.tbl_islist(lst), 'Not a list')
-    local tmp = lst
+    local tmp = {}
 
-    for idx,val in pairs(lst) do
+    for _,val in pairs(lst) do
         val = vim.trim(val)
-        if #val == 0 or val:match('^%s+$') ~= nil then
-            table.remove(tmp, idx)
+        if not val:match('^%s*$') then
+            tmp[#tmp + 1] = val
         end
     end
 
