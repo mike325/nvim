@@ -378,7 +378,7 @@ function M.move_line(down)
 end
 
 function M.find_project_root(path)
-    assert(type(root) == 'string' and root ~= '', ([[Not a path: "%s"]]):format(root))
+    assert(type(path) == 'string' and path ~= '', ([[Not a path: "%s"]]):format(path))
     local root
     local vcs_markers = {'.git', '.svn', '.hg',}
     local dir = nvim.fn.fnamemodify(path, ':p')
