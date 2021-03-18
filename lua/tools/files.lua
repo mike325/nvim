@@ -129,6 +129,42 @@ function M.subpath_in_path(parent, child)
     return child_in_parent
 end
 
+function M.open(path, flags, callback)
+    assert(type(path) == 'string' and path ~= '', ([[Not a path: "%s"]]):format(path))
+    assert(flags, 'Missing flags')
+    assert(type(callback) == 'function', 'Missing valid callback')
+    local fd = uv.fs_open(path, flags, 438)
+    local ok, rst = pcall(callback, fd)
+    uv.fs_close(fd, function(cerr)
+        assert(not cerr, cerr)
+    end)
+    return rst or ok
+end
+
+local function fs_write(path, data, append)
+    data = type(data) == 'table' and nvim.fn.join(data, [[\n]]) or data
+    assert(data and type(data) == 'string', 'Missing valid data buffer/string')
+    local flags = append and 'a' or 'w'
+    M.open(path, flags, function(fd)
+        local stat = uv.fs_fstat(fd)
+        local offset = append and stat.size or 0
+        uv.fs_write(fd, data, offset)
+    end)
+end
+
+function M.write(path, data)  fs_write(path, data, false) end
+function M.update(path, data) fs_write(path, data, true)  end
+
+function M.read(path)
+    return M.open(path, 'r', function(fd)
+        local stat = uv.fs_fstat(fd)
+        local data = uv.fs_read(fd, stat.size, 0)
+        -- TODO: Support DOS format
+        data = vim.split(data, '\n')
+        return data
+    end)
+end
+
 function M.chmod(path, mode, base)
     if sys.name ~= 'windows' then
         base = base == nil and 8 or base
