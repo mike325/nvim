@@ -13,7 +13,7 @@ local clear_lst        = require'tools.tables'.clear_lst
 local set_abbr = nvim.abbrs.set_abbr
 
 local system = nvim.fn.system
-local getcwd = nvim.fn.getcwd
+local getcwd = vim.loop.cwd
 local line = nvim.fn.line
 
 local M = {}
@@ -378,6 +378,7 @@ function M.move_line(down)
 end
 
 function M.find_project_root(path)
+    assert(type(root) == 'string' and root ~= '', ([[Not a path: "%s"]]):format(root))
     local root
     local vcs_markers = {'.git', '.svn', '.hg',}
     local dir = nvim.fn.fnamemodify(path, ':p')
@@ -390,19 +391,18 @@ function M.find_project_root(path)
             root = #root > 0 and root..'/' or root
         end
 
-        if #root > 0 then
+        if root ~= '' then
             root = nvim.fn.fnamemodify(root, ':p:h:h')
             break
         end
-
     end
 
-    root = normalize_path(root)
-
-    return root
+    root = (not root or root == '') and getcwd() or root
+    return normalize_path(root)
 end
 
 function M.is_git_repo(root)
+    assert(type(root) == 'string' and root ~= '', ([[Not a path: "%s"]]):format(root))
     if not executable('git') then
         return false
     end
