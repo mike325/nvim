@@ -15,7 +15,7 @@ let g:gitgutter_grep = split(tools#select_grep(v:false), ' ')[0]
 let g:gitgutter_close_preview_on_escape = 1
 
 nmap ]h <Plug>(GitGutterNextHunk)
-nmap [h <Plug>(GitGutterPrevHunk)]
+nmap [h <Plug>(GitGutterPrevHunk)
 
 nmap =s <Plug>(GitGutterStageHunk)
 xmap <silent> =s :GitGutterStageHunk<CR>
