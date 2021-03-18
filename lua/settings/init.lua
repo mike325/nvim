@@ -90,9 +90,10 @@ nvim.o.wildmode = 'full'
 nvim.o.pumblend = 20
 nvim.o.winblend = 10
 
-nvim.o.showbreak      = '↪\\'
-nvim.o.listchars      = 'tab:▸ ,trail:•,extends:❯,precedes:❮'
-nvim.o.cpoptions      = 'aAceFs_B'
+nvim.o.showbreak = '↪\\'
+nvim.o.listchars = 'tab:▸ ,trail:•,extends:❯,precedes:❮'
+nvim.o.cpoptions = 'aAceFs_B'
+nvim.o.shortmess = nvim.o.shortmess..'ac'
 
 nvim.o.lazyredraw = true
 nvim.o.showmatch  = true

@@ -246,25 +246,18 @@ if !&scrolloff
     set scrolloff=1
 endif
 
-" Enable <TAB> completion in command mode
-set wildmenu
+set wildmenu             " Enable <TAB> completion in command mode
 set wildmode=full
-
 set backupcopy=yes
-
 set display+=lastline
-
-" Use only 1 space after "." when joining lines, not 2
-set nojoinspaces
-
-set visualbell  " Visual bell instead of beeps, but...
-
+set nojoinspaces         " Use only 1 space after "." when joining lines, not 2
+set visualbell           " Visual bell instead of beeps, but...
 set fileformats=unix,dos " File mode unix by default
+set undolevels=10000     " Set the number the undos per file
+set shortmess+=ac
 
 " Folding settings
-" set foldnestmax=10    " deepest fold is 10 levels
-
-set undolevels=10000 " Set the number the undos per file
+" set foldnestmax=10     " deepest fold is 10 levels
 
 if has#option('breakindent')
     setglobal breakindent
