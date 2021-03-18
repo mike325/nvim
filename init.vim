@@ -126,15 +126,15 @@ else
         Plug 'nvim-lua/plenary.nvim'
         Plug 'nvim-lua/telescope.nvim'
 
-        Plug 'nvim-lua/completion-nvim'
-        " Plug 'hrsh7th/nvim-compe'
+        " Plug 'nvim-lua/completion-nvim'
+        Plug 'hrsh7th/nvim-compe'
 
         if tools#CheckLanguageServer()
             Plug 'neovim/nvim-lspconfig'
         endif
 
         if executable('gcc') || executable('clang')
-            Plug 'nvim-treesitter/completion-treesitter'
+            " Plug 'nvim-treesitter/completion-treesitter'
             Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
             Plug 'nvim-treesitter/nvim-treesitter-refactor'
             Plug 'nvim-treesitter/nvim-treesitter-textobjects'

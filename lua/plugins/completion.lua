@@ -205,18 +205,26 @@ elseif compe ~= nil then
 
     compe.setup {
         enabled = true;
+        autocomplete = true;
         debug = false;
         min_length = 2;
         preselect = 'disable'; -- 'enable' || 'disable' || 'always';
-        -- throttle_time = ... number ...;
-        -- source_timeout = ... number ...;
-        -- incomplete_delay = ... number ...;
-        allow_prefix_unmatch = false;
+        throttle_time = 80;
+        source_timeout = 200;
+        incomplete_delay = 400;
+        max_abbr_width = 100;
+        max_kind_width = 100;
+        max_menu_width = 100;
+        documentation = true;
+        -- allow_prefix_unmatch = false;
         source = {
             path = true;
             buffer = true;
-            nvim_lua = true;
+            calc = true;
+            treesitter = treesitter ~= nil;
+            -- tags = true;
             nvim_lsp = lsp ~= nil;
+            nvim_lua = true;
             vsnip = plugins['vsnip'] ~= nil;
             ultisnips = plugins['ultisnips'] ~= nil;
             snippets_nvim = plugins['snippets.nvim'] ~= nil;
