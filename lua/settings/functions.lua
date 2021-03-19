@@ -1,11 +1,18 @@
 local nvim = require'nvim'
-local sys = require'sys'
-local is_file = require'tools'.files.is_file
-local chmod = require'tools'.files.chmod
-local clear_lst = require'tools'.tables.clear_lst
+local sys  = require'sys'
+
+local is_file         = require'tools'.files.is_file
+local chmod           = require'tools'.files.chmod
+local clear_lst       = require'tools'.tables.clear_lst
+local realpath        = require'tools'.files.realpath
+local subpath_in_path = require'tools'.files.subpath_in_path
+local select_filelist = require'tools'.helpers.select_filelist
+
 local set_autocmd = nvim.autocmds.set_autocmd
 
-local M = {}
+local M = {
+    filelists = {},
+}
 
 function M.make_executable()
     if sys.name == 'windows' then
@@ -85,6 +92,41 @@ function M.opfun_grep(select, visual)
 
     nvim.o.selection = select_save
     nvim.reg['@'] = reg_save
+end
+
+local function get_files(path, is_git)
+    local seeker = select_filelist(is_git, true)
+    require'jobs'.send_job{
+        cmd = seeker,
+        opts = {
+            cwd = path,
+            on_exit = function(jobid, rc, _)
+                local jobs = require'jobs'.jobs
+                if rc == 0 then
+                    if jobs[jobid].streams and #jobs[jobid].streams.stdout > 0 then
+                        M.filelists[path] = jobs[jobid].streams.stdout
+                    end
+                end
+            end
+        }
+    }
+end
+
+function M.get_path_files()
+    local paths = clear_lst(vim.split(nvim.bo.path or nvim.o.path, ','))
+    local cwd = realpath(nvim.fn.getcwd())
+
+    get_files(cwd, nvim.b.project_root.is_git)
+    for _,path in pairs(paths) do
+        print('Path:', vim.inspect(path))
+        local rpath = realpath(path)
+        if rpath ~= '.' and
+           rpath ~= cwd and
+           not subpath_in_path(cwd, rpath) and
+           not M.filelists[rpath] then
+            get_files(rpath)
+        end
+    end
 end
 
 return M
