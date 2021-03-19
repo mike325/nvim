@@ -521,7 +521,7 @@ function M.grep(tool, attr, lst)
             grepformat = '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m',
         },
         rg = {
-            grepprg = 'rg --trim --color=never --no-heading --with-filename --line-number --column --smart-case '..M.ignores('rg')..' ',
+            grepprg = 'rg -SHn --trim --color=never --no-heading --column '..M.ignores('rg')..' ',
             grepformat = '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m'
         },
         ag = {

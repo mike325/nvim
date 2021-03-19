@@ -4,7 +4,7 @@ local nvim = require'nvim'
 
 local iregex     = require'tools'.strings.iregex
 local executable = require'tools'.files.executable
-local echoerr    = require'tools'.messages.echoerr
+-- local echoerr    = require'tools'.messages.echoerr
 local is_file    = require'tools'.files.is_file
 local writefile  = require'tools'.files.write
 -- local clear_lst  = require'tools'.tables.clear_lst
@@ -212,9 +212,9 @@ if plugins["vim-eunuch"] == nil then
         rhs = function(new_path, bang)
             local current_path = nvim.fn.expand('%:p')
             local is_dir = require'tools'.files.is_dir
-            local is_file = require'tools'.files.is_file
+            local isfile = require'tools'.files.isfile
 
-            if is_file(current_path) and is_dir(new_path) then
+            if isfile(current_path) and is_dir(new_path) then
                 new_path = new_path .. '/' .. nvim.fn.fnamemodify(current_path, ':t')
             end
 
