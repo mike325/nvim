@@ -35,3 +35,4 @@ TAGS
 /local.vim
 /.luacheckcache
 /lua/work/
+/lua/host/

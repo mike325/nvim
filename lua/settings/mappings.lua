@@ -2,11 +2,15 @@
 local sys  = require'sys'
 local nvim = require'nvim'
 
-local iregex     = require'tools'.strings.iregex
-local executable = require'tools'.files.executable
+local iregex         = require'tools'.strings.iregex
+local executable     = require'tools'.files.executable
+local is_file        = require'tools'.files.is_file
+local writefile      = require'tools'.files.write
+local normalize_path = require'tools'.files.normalize_path
+local realpath       = require'tools'.files.realpath
+local basename       = require'tools'.files.basename
+
 -- local echoerr    = require'tools'.messages.echoerr
-local is_file    = require'tools'.files.is_file
-local writefile  = require'tools'.files.write
 -- local clear_lst  = require'tools'.tables.clear_lst
 
 -- local set_autocmd = nvim.autocmds.set_autocmd
@@ -73,14 +77,14 @@ if plugins["vim-indexed-search"] == nil then
     set_mapping{
         mode = 'n',
         lhs = 'n',
-        rhs = ":call mappings#NiceNext('n')<cr>",
+        rhs = "<cmd>call mappings#NiceNext('n')<cr>",
         args = noremap_silent
     }
 
     set_mapping{
         mode = 'n',
         lhs = 'N',
-        rhs = ":call mappings#NiceNext('N')<cr>",
+        rhs = "<cmd>call mappings#NiceNext('N')<cr>",
         args = noremap_silent
     }
 
@@ -90,14 +94,14 @@ if plugins["vim-unimpaired"] == nil then
     set_mapping{
         mode = 'n',
         lhs = '[Q',
-        rhs = ':<C-U>exe "".(v:count ? v:count : "")."cfirst"<CR>zvzz',
+        rhs = ':<C-U>cfirst<CR>zvzz',
         args = noremap_silent
     }
 
     set_mapping{
         mode = 'n',
         lhs = ']Q',
-        rhs = ':<C-U>exe "".(v:count ? v:count : "")."clast"<CR>zvzz',
+        rhs = ':<C-U>clast<CR>zvzz',
         args = noremap_silent
     }
 
@@ -118,14 +122,14 @@ if plugins["vim-unimpaired"] == nil then
     set_mapping{
         mode = 'n',
         lhs = '[L',
-        rhs = ':<C-U>exe "".(v:count ? v:count : "")."lfirst"<CR>zvzz',
+        rhs = ':<C-U>lfirst<CR>zvzz',
         args = noremap_silent
     }
 
     set_mapping{
         mode = 'n',
         lhs = ']L',
-        rhs = ':<C-U>exe "".(v:count ? v:count : "")."llast"<CR>zvzz',
+        rhs = ':<C-U>llast<CR>zvzz',
         args = noremap_silent
     }
 
@@ -146,14 +150,14 @@ if plugins["vim-unimpaired"] == nil then
     set_mapping{
         mode = 'n',
         lhs = '[B',
-        rhs = ':<C-U>exe "".(v:count ? v:count : "")."bfirst"<CR>',
+        rhs = ':<C-U>bfirst<CR>zvzz',
         args = noremap_silent
     }
 
     set_mapping{
         mode = 'n',
         lhs = ']B',
-        rhs = ':<C-U>exe "".(v:count ? v:count : "")."blast"<CR>',
+        rhs = ':<C-U>blast<CR>zvzz',
         args = noremap_silent
     }
 
@@ -202,7 +206,7 @@ if plugins["vim-unimpaired"] == nil then
 end
 
 if plugins["vim-vinegar"] == nil and plugins["nerdtree"] == nil then
-    set_mapping{ mode = 'n', lhs = '-', rhs = ':Explore<CR>' }
+    set_mapping{ mode = 'n', lhs = '-', rhs = '<cmd>Explore<CR>' }
 end
 
 if plugins["vim-eunuch"] == nil then
@@ -266,7 +270,7 @@ if has('nvim-0.5') then
     set_mapping{
         mode = 'n',
         lhs = 'gs',
-        rhs = ':set opfunc=neovim#grep<CR>g@',
+        rhs = '<cmd>set opfunc=neovim#grep<CR>g@',
         args = noremap_silent,
     }
 
@@ -282,7 +286,7 @@ if has('nvim-0.5') then
     set_mapping{
         mode = 'v',
         lhs = 'gs',
-        rhs = ':<C-U>call neovim#grep(visualmode(), v:true)<CR>',
+        rhs = '<cmd><C-U>call neovim#grep(visualmode(), v:true)<CR>',
         args = noremap_silent,
     }
 
@@ -345,7 +349,7 @@ set_mapping{ mode = 'x', lhs = '<BS>', rhs = '<ESC>', args = noremap }
 set_mapping{
     mode = 'n',
     lhs = '<BS>',
-    rhs = ':call mappings#bs()<CR>',
+    rhs = '<cmd>call mappings#bs()<CR>',
     args = noremap_silent,
 }
 
@@ -375,13 +379,13 @@ if sys.name == 'windows' then
     set_mapping{
         mode = 'n',
         lhs = '<C-h>',
-        rhs = ':call mappings#bs()<CR>',
+        rhs = '<cmd>call mappings#bs()<CR>',
         args = noremap_silent,
     }
     set_mapping{
         mode = 'x',
         lhs = '<C-h>',
-        rhs = ':<ESC>',
+        rhs = '<cmd><ESC>',
         args = noremap,
     }
     if not nvim.g.started_by_firenvim then
@@ -414,7 +418,7 @@ if not get_mapping{ mode = 'n', lhs = '<C-L>' } then
     set_mapping{
         mode = 'n',
         lhs  = '<C-L>',
-        rhs  = ':nohlsearch|diffupdate<CR>',
+        rhs  = '<cmd>nohlsearch|diffupdate<CR>',
         args = noremap_silent,
     }
 end
@@ -438,13 +442,13 @@ if not has('nvim-0.5') then
     set_mapping{
         mode = 'n',
         lhs = '<C-w>o',
-        rhs = ':diffoff!<BAR>only<CR>',
+        rhs = '<cmd>diffoff!<BAR>only<CR>',
         args =noremap,
     }
     set_mapping{
         mode = 'n',
         lhs = '<C-w><C-o>',
-        rhs = ':diffoff!<BAR>only<CR>',
+        rhs = '<cmd>diffoff!<BAR>only<CR>',
         args = noremap,
     }
 end
@@ -487,14 +491,14 @@ set_mapping{
 set_mapping{
     mode = 'n',
     lhs = '<leader><leader>e',
-    rhs = ':echo expand("%")<CR>',
+    rhs = '<cmd>echo expand("%")<CR>',
     args = noremap,
 }
 
 -- set_mapping{
 --     mode = 'n',
 --     lhs = '<leader>c',
---     rhs = ':pclose<CR>',
+--     rhs = '<cmd>pclose<CR>',
 --     args = noremap,
 -- }
 
@@ -527,11 +531,11 @@ set_mapping{ mode = 'x', lhs = '¿¿', rhs = '``', args = noremap }
 set_mapping{ mode = 'n', lhs = '¡', rhs = '^', args = noremap }
 set_mapping{ mode = 'x', lhs = '¡', rhs = '^', args = noremap }
 
--- set_mapping{ mode = 'n', lhs = '<leader>w', rhs = ':update<CR>', args = noremap }
+-- set_mapping{ mode = 'n', lhs = '<leader>w', rhs = '<cmd>update<CR>', args = noremap }
 
 set_mapping{ mode = 'n', lhs = '<leader>p', rhs = '<C-^>',       args = noremap }
-set_mapping{ mode = 'n', lhs = '<leader>q', rhs = ':q!<CR>',     args = noremap_silent }
-set_mapping{ mode = 'n', lhs = '<leader>x', rhs = ':%!xxd<CR>',  args = noremap }
+set_mapping{ mode = 'n', lhs = '<leader>q', rhs = '<cmd>q!<CR>',     args = noremap_silent }
+set_mapping{ mode = 'n', lhs = '<leader>x', rhs = '<cmd>%!xxd<CR>',  args = noremap }
 
 set_mapping{ mode = 'n', lhs = '<leader>h', rhs = '<C-w>h', args = noremap }
 set_mapping{ mode = 'n', lhs = '<leader>j', rhs = '<C-w>j', args = noremap }
@@ -551,8 +555,8 @@ set_mapping{ mode = 'n', lhs = '<leader>6', rhs = '6gt', args = noremap }
 set_mapping{ mode = 'n', lhs = '<leader>7', rhs = '7gt', args = noremap }
 set_mapping{ mode = 'n', lhs = '<leader>8', rhs = '8gt', args = noremap }
 set_mapping{ mode = 'n', lhs = '<leader>9', rhs = '9gt', args = noremap }
-set_mapping{ mode = 'n', lhs = '<leader>0', rhs = ':tablast<CR>', args = noremap }
-set_mapping{ mode = 'n', lhs = '<leader><leader>n', rhs = ':tabnew<CR>', args = noremap }
+set_mapping{ mode = 'n', lhs = '<leader>0', rhs = '<cmd>tablast<CR>', args = noremap }
+set_mapping{ mode = 'n', lhs = '<leader><leader>n', rhs = '<cmd>tabnew<CR>', args = noremap }
 
 set_mapping{ mode = 'x', lhs = '<leader>1', rhs = '<ESC>1gt', args = noremap }
 set_mapping{ mode = 'x', lhs = '<leader>2', rhs = '<ESC>2gt', args = noremap }
@@ -587,8 +591,8 @@ set_mapping{
     args = noremap
 }
 
-set_mapping{ mode = 'n', lhs = '&', rhs = ':&&<CR>', args = noremap }
-set_mapping{ mode = 'x', lhs = '&', rhs = ':&&<CR>', args = noremap }
+set_mapping{ mode = 'n', lhs = '&', rhs = '<cmd>&&<CR>', args = noremap }
+set_mapping{ mode = 'x', lhs = '&', rhs = '<cmd>&&<CR>', args = noremap }
 
 set_mapping{ mode = 'n', lhs = '/',  rhs = 'ms/',    args = noremap }
 set_mapping{ mode = 'n', lhs = 'g/', rhs = 'ms/\\v', args = noremap }
@@ -770,14 +774,14 @@ set_command{
 set_mapping{
     mode = 'n',
     lhs = '=l',
-    rhs = [[:lua require'tools'.helpers.toggle_qf('loc')<CR>]],
+    rhs = [[<cmd>lua require'tools'.helpers.toggle_qf('loc')<CR>]],
     args = noremap_silent
 }
 
 set_mapping{
     mode = 'n',
     lhs = '=q',
-    rhs = [[:lua require'tools'.helpers.toggle_qf('qf')<CR>]],
+    rhs = [[<cmd>lua require'tools'.helpers.toggle_qf('qf')<CR>]],
     args = noremap_silent
 }
 
@@ -836,41 +840,88 @@ set_mapping{
 
 -- TODO: Support Rsync
 if executable('scp') then
+    local function convert_path(path, send)
+        local remote_path = './'
+
+        local paths = {}
+        path = realpath(normalize_path(path))
+
+        for loc,remote in pairs(paths) do
+            loc = normalize_path(loc)
+            if path:match(loc) then
+                local tail = path:gsub(loc, '')
+                remote_path = remote .. '/' .. tail
+                break
+            end
+        end
+
+        if not send and remote_path == './' then
+            remote_path = remote_path .. basename(path)
+        end
+
+        return remote_path
+    end
+
+    local function remote_cmd(host, send)
+
+        require'tools'.system.get_ssh_hosts()
+
+        local filename = nvim.fn.expand('%')
+        local virtual_filename
+
+        if filename:match('^[%w%d_]+://') then
+            if filename:match('^fugitive://') then
+                filename = filename:gsub('%.git/+%d+/+', '')
+            end
+            filename = filename:gsub('^[%w%d_]+://', '')
+            virtual_filename = nvim.fn.tempname()
+        end
+
+        assert(is_file(filename), 'Not a regular file '..filename)
+
+        if not host or host == '' then
+            host = nvim.fn.input('Enter hostname > ', '', 'customlist,mappings#ssh_hosts_completion')
+            assert(type(host) == 'string' and host ~= '', 'Invalid hostname')
+        end
+
+        if virtual_filename and send then
+            writefile(virtual_filename, nvim.buf.get_lines(0, 0, -1, true))
+        end
+
+        local remote_path = convert_path(filename, send)
+
+        local remote_command
+        if send then
+            remote_command = ([[scp -r "%s" "%s:%s"]]):format(virtual_filename or filename, host, remote_path)
+        else
+            remote_command = ([[scp -r "%s:%s" "%s"]]):format(host, remote_path, virtual_filename or filename)
+        end
+
+        return remote_command
+    end
+
     set_command{
         lhs = 'SendFile',
         rhs = function(host)
-
-            require'tools'.system.get_ssh_hosts()
-
-            local filename = nvim.fn.expand('%')
-            local virtual_filename
-
-            if filename:match('^[%w%d_]+://') then
-                if filename:match('^fugitive://') then
-                    filename = filename:gsub('%.git/+%d+/+', '')
-                end
-                filename = filename:gsub('^[%w%d_]+://', '')
-                virtual_filename = nvim.fn.tempname()
-            end
-
-            assert(is_file(filename), 'Not a regular file '..filename)
-
-            if not host or host == '' then
-                host = nvim.fn.input('Enter hostname > ', '', 'customlist,mappings#ssh_hosts_completion')
-                assert(type(host) == 'string' and host ~= '', 'Invalid hostname')
-            end
-
-            if virtual_filename then
-                writefile(virtual_filename, nvim.buf.get_lines(0, 0, -1, true))
-            end
-
-            -- local remote_path = convert_path(filename)
-            local remote_path = '.'
-
+            local cmd = remote_cmd(host, true)
             require'jobs'.send_job{
-                cmd = ([[scp -r "%s" "%s:%s"]]):format(virtual_filename or filename, host, remote_path),
+                cmd = cmd,
             }
+        end,
+        args = {
+            nargs = '*',
+            force = true,
+            complete = 'customlist,mappings#ssh_hosts_completion'
+        }
+    }
 
+    set_command{
+        lhs = 'GetFile',
+        rhs = function(host)
+            local cmd = remote_cmd(host, false)
+            require'jobs'.send_job{
+                cmd = cmd,
+            }
         end,
         args = {
             nargs = '*',
@@ -882,9 +933,17 @@ if executable('scp') then
     set_mapping{
         mode = 'n',
         lhs = '<leader><leader>s',
-        rhs = ':SendFile<CR>',
+        rhs = '<cmd>SendFile<CR>',
         args = {noremap = true, silent = true},
     }
+
+    set_mapping{
+        mode = 'n',
+        lhs = '<leader><leader>g',
+        rhs = '<cmd>GetFile<CR>',
+        args = {noremap = true, silent = true},
+    }
+
 end
 
 pcall(require, 'host/mappings')
