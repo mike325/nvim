@@ -4,7 +4,10 @@ local nvim = require'nvim'
 
 local iregex     = require'tools'.strings.iregex
 local executable = require'tools'.files.executable
-local clear_lst  = require'tools'.tables.clear_lst
+local echoerr    = require'tools'.messages.echoerr
+local is_file    = require'tools'.files.is_file
+local writefile  = require'tools'.files.write
+-- local clear_lst  = require'tools'.tables.clear_lst
 
 -- local set_autocmd = nvim.autocmds.set_autocmd
 local set_abbr    = nvim.abbrs.set_abbr
@@ -14,8 +17,6 @@ local get_mapping = nvim.mappings.get_mapping
 
 local has     = nvim.has
 local plugins = nvim.plugins
-
-local mappings = {}
 
 local noremap = {noremap = true}
 local noremap_silent = {noremap = true, silent = true}
@@ -833,4 +834,59 @@ set_mapping{
     args = noremap_silent
 }
 
-return mappings
+-- TODO: Support Rsync
+if executable('scp') then
+    set_command{
+        lhs = 'SendFile',
+        rhs = function(host)
+
+            require'tools'.system.get_ssh_hosts()
+
+            local filename = nvim.fn.expand('%')
+            local virtual_filename
+
+            if filename:match('^[%w%d_]+://') then
+                if filename:match('^fugitive://') then
+                    filename = filename:gsub('%.git/+%d+/+', '')
+                end
+                filename = filename:gsub('^[%w%d_]+://', '')
+                virtual_filename = nvim.fn.tempname()
+            end
+
+            assert(is_file(filename), 'Not a regular file '..filename)
+
+            if not host or host == '' then
+                host = nvim.fn.input('Enter hostname > ', '', 'customlist,mappings#ssh_hosts_completion')
+                assert(type(host) == 'string' and host ~= '', 'Invalid hostname')
+            end
+
+            if virtual_filename then
+                writefile(virtual_filename, nvim.buf.get_lines(0, 0, -1, true))
+            end
+
+            -- local remote_path = convert_path(filename)
+            local remote_path = '.'
+
+            require'jobs'.send_job{
+                cmd = ([[scp -r "%s" "%s:%s"]]):format(virtual_filename or filename, host, remote_path),
+            }
+
+        end,
+        args = {
+            nargs = '*',
+            force = true,
+            complete = 'customlist,mappings#ssh_hosts_completion'
+        }
+    }
+
+    set_mapping{
+        mode = 'n',
+        lhs = '<leader><leader>s',
+        rhs = ':SendFile<CR>',
+        args = {noremap = true, silent = true},
+    }
+end
+
+pcall(require, 'host/mappings')
+
+return true

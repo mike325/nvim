@@ -26,9 +26,6 @@ if nvim.has('nvim-0.5') then
             plugins[plugin].status = false
         end
     end
-
-    pcall(require, 'host')
-    pcall(require, 'work')
 end
 
 local function get_plugins()

@@ -7,6 +7,13 @@ function! mappings#general_completion(arglead, cmdline, cursorpos, options) abor
     return filter(a:options, "v:val =~? join(split(a:arglead, '\zs'), '.*')")
 endfunction
 
+if has('nvim')
+    function! mappings#ssh_hosts_completion(arglead, cmdline, cursorpos) abort
+        let l:hosts = luaeval("vim.tbl_keys(require'tools'.system.hosts)")
+        return mappings#general_completion(a:arglead, a:cmdline, a:cursorpos, l:hosts)
+    endfunction
+endif
+
 " TODO: Add completion-nvim handler
 function! mappings#enter() abort
     let l:snippet = 0
