@@ -40,7 +40,7 @@ end
 treesitter.setup{
     ensure_installed = ensure_installed,
     indent = {
-        enable = false
+        enable = true,
     },
     highlight = {
         enable = true,
@@ -135,9 +135,9 @@ treesitter.setup{
             keymaps = {
                 goto_definition      = "<A-d>",
                 list_definitions     = "<A-l>",
-                -- list_definitions_toc = "<A-t>",
                 goto_next_usage      = "<A-n>",
                 goto_previous_usage  = "<A-N>",
+                -- list_definitions_toc = "<A-t>",
             },
         },
     },
@@ -165,7 +165,6 @@ if #fts > 0 then
         event   = 'FileType',
         pattern = fts,
         cmd     = 'setlocal foldmethod=expr foldexpr=nvim_treesitter#foldexpr()',
-        -- cmd     = 'setlocal foldmethod=expr foldexpr=nvim_treesitter#foldexpr() indentexpr=nvim_treesitter#indent()',
         group   = 'TreesitterAutocmds',
     }
 end
