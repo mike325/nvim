@@ -129,7 +129,7 @@ function M.subpath_in_path(parent, child)
     return child_in_parent
 end
 
-function M.open(path, flags, callback)
+function M.openfile(path, flags, callback)
     assert(type(path) == 'string' and path ~= '', ([[Not a path: "%s"]]):format(path))
     assert(flags, 'Missing flags')
     assert(type(callback) == 'function', 'Missing valid callback')
@@ -145,18 +145,22 @@ local function fs_write(path, data, append)
     data = type(data) == 'table' and nvim.fn.join(data, [[\n]]) or data
     assert(data and type(data) == 'string', 'Missing valid data buffer/string')
     local flags = append and 'a' or 'w'
-    M.open(path, flags, function(fd)
+    M.openfile(path, flags, function(fd)
         local stat = uv.fs_fstat(fd)
         local offset = append and stat.size or 0
         uv.fs_write(fd, data, offset)
     end)
 end
 
-function M.write(path, data)  fs_write(path, data, false) end
-function M.update(path, data) fs_write(path, data, true)  end
+function M.writefile(path, data) fs_write(path, data, false) end
+function M.updatefile(path, data)
+    assert(M.is_file(path), 'Not a file: '..path)
+    fs_write(path, data, true)
+end
 
-function M.read(path)
-    return M.open(path, 'r', function(fd)
+function M.readfile(path)
+    assert(M.is_file(path), 'Not a file: '..path)
+    return M.openfile(path, 'r', function(fd)
         local stat = uv.fs_fstat(fd)
         local data = uv.fs_read(fd, stat.size, 0)
         -- TODO: Support DOS format
@@ -229,10 +233,15 @@ function M.get_dirs(expr)
 end
 
 function M.read_json(filename)
-    if not M.is_file(filename) then
-        return false
-    end
-    return nvim.fn.json_decode(nvim.fn.readfile(filename))
+    assert(M.is_file(filename), 'Not a file: '..filename)
+    return nvim.fn.json_decode(M.readfile(filename))
+end
+
+function M.dump_json(filename, data)
+    assert(type(data) == 'table', 'Not a json data: '..type(data))
+    assert(type(filename) == 'string' and filename ~= '', ([[Not a filename: "%s"]]):format(filename))
+    local json = nvim.fn.json_encode(data)
+    M.writefile(filename, json)
 end
 
 function M.rename(old, new, bang)

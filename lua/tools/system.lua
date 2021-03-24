@@ -1,18 +1,21 @@
-local nvim = require'nvim'
+-- local nvim = require'nvim'
 local sys = require'sys'
--- local echoerr = require'tools'.messages.echoerr
+
+local is_file        = require'tools'.files.is_file
+local readfile       = require'tools'.files.readfile
+-- local read_json      = require'tools'.files.read_json
 -- local normalize_path = require'tools'.files.normalize_path
-local is_file = require'tools'.files.is_file
 
 local M = {
-    hosts = {}
+    hosts = {},
+    remotes = {},
 }
 
 local function read_ssh_hosts(jobid, rc, _)
     local host = ''
     local ssh_config = sys.home..'/.ssh/config'
     if is_file(ssh_config) then
-        for _,line in pairs(nvim.fn.readfile(ssh_config)) do
+        for _,line in pairs(readfile(ssh_config)) do
             if line:match('Host [a-zA-Z0-9_-%.]+') then
                 host = vim.split(line, ' ')[2]
             elseif line:match('%s+Hostname [a-zA-Z0-9_-%.]+') and host ~= '' then
