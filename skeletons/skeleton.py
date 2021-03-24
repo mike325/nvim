@@ -30,7 +30,6 @@ _header = """
 
 _VERSION = '0.1.0'
 _AUTHOR = 'Mike'
-_MAIL = 'mickiller.25@gmail.com'
 
 # _log = None
 _log = logging.getLogger('MainLogger')
@@ -60,6 +59,9 @@ def _createLogger(
         ColorFormatter = None
         Formatter = logging.Formatter
 
+    # This means both 0 and 100 silence all output
+    stdout_level = 100 if stdout_level == 0 else stdout_level
+
     has_color = ColorFormatter is not None and color
 
     stdout_handler = logging.StreamHandler(sys.stdout)
@@ -74,12 +76,12 @@ def _createLogger(
 
     _log.addHandler(stdout_handler)
 
-    if file_level > 0:
+    if file_level > 0 and file_level < 100:
 
         with open(_log_file, 'a') as log:
             log.write(_header)
             # log.write(f'\nDate: {datetime.datetime.date()}')
-            log.write(f'\nAuthor:   {_AUTHOR}\nContact:  {_MAIL}\nVersion:  {_VERSION}\n\n')
+            log.write(f'\nAuthor:   {_AUTHOR}\nVersion:  {_VERSION}\n\n')
 
         file_handler = logging.FileHandler(filename=_log_file)
         file_handler.setLevel(file_level)
@@ -118,7 +120,7 @@ def _str_to_logging(level: str):
         elif level == "critical":
             level = logging.CRITICAL
         else:
-            level = 99
+            level = 100
 
     return level
 
@@ -135,6 +137,22 @@ def _parseArgs():
         dest='show_version',
         action='store_true',
         help='print script version and exit',
+    )
+
+    parser.add_argument(
+        '--verbose',
+        dest='verbose',
+        action='store_true',
+        default=False,
+        help='Turn on Debug messages',
+    )
+
+    parser.add_argument(
+        '--quiet',
+        dest='quiet',
+        action='store_true',
+        default=False,
+        help='Turn off all messages',
     )
 
     parser.add_argument(
@@ -173,14 +191,18 @@ def main():
     args = _parseArgs()
 
     if args.show_version:
-        print(f'{_header}\nAuthor:   {_AUTHOR}\nContact:  {_MAIL}\nVersion:  {_VERSION}')
+        print(f'{_header}\nAuthor:   {_AUTHOR}\nVersion:  {_VERSION}')
         return 0
 
-    stdout_level = _str_to_logging(args.stdout_logging)
-    file_level = _str_to_logging(args.file_logging)
+    stdout_level = args.stdout_logging if not args.verbose else 'debug'
+    file_level = args.file_logging if not args.verbose else 'debug'
+
+    stdout_level = stdout_level if not args.quiet else 0
+    file_level = file_level if not args.quiet else 0
+
     _createLogger(
-        stdout_level=stdout_level,
-        file_level=file_level,
+        stdout_level=_str_to_logging(stdout_level),
+        file_level=_str_to_logging(file_level),
         color=args.no_color,
     )
 
