@@ -9,6 +9,7 @@ local writefile      = require'tools'.files.write
 local normalize_path = require'tools'.files.normalize_path
 local realpath       = require'tools'.files.realpath
 local basename       = require'tools'.files.basename
+local read_json      = require'tools'.files.read_json
 
 -- local echoerr    = require'tools'.messages.echoerr
 -- local clear_lst  = require'tools'.tables.clear_lst
@@ -841,15 +842,41 @@ set_mapping{
 -- TODO: Support Rsync
 if executable('scp') then
     local function convert_path(path, send)
-        local remote_path = './'
-
-        local paths = {}
         path = realpath(normalize_path(path))
 
+        local remote_path = './'
+        local paths = {}
+        local projects = {}
+        local path_json = normalize_path('~/.config/remotes/paths.json')
+        if is_file(path_json) then
+            local configs = read_json(path_json) or {}
+            paths = configs.paths or {}
+            projects = configs.projects or  {}
+        end
+
+        local project = path:match('projects/([%w%d%.-_]+)')
+        if not project then
+            for short,full in pairs(projects) do
+                if short ~= 'default' and path:match('/('..short..')[%w%d%.-_]*') then
+                    project = full
+                    break
+                end
+            end
+            if not project then
+                project = nvim.env.PROJECT or projects.default or 'mike'
+            end
+        end
+
         for loc,remote in pairs(paths) do
+            if loc:match('%%PROJECT') then
+                loc = loc:gsub('%%PROJECT', project)
+            end
             loc = normalize_path(loc)
             if path:match(loc) then
                 local tail = path:gsub(loc, '')
+                if remote:match('%%PROJECT') then
+                    remote = remote:gsub('%%PROJECT', project)
+                end
                 remote_path = remote .. '/' .. tail
                 break
             end
@@ -879,33 +906,37 @@ if executable('scp') then
 
         assert(is_file(filename), 'Not a regular file '..filename)
 
-        if not host or host == '' then
-            host = nvim.fn.input('Enter hostname > ', '', 'customlist,mappings#ssh_hosts_completion')
-            assert(type(host) == 'string' and host ~= '', 'Invalid hostname')
-        end
-
         if virtual_filename and send then
             writefile(virtual_filename, nvim.buf.get_lines(0, 0, -1, true))
         end
 
-        local remote_path = convert_path(filename, send)
-
-        local remote_command
+        local remote_path = ('%s:%s'):format(host, convert_path(filename, send))
+        local rcmd = [[scp -r "%s" "%s"]]
         if send then
-            remote_command = ([[scp -r "%s" "%s:%s"]]):format(virtual_filename or filename, host, remote_path)
+            rcmd = rcmd:format(virtual_filename or filename, remote_path)
         else
-            remote_command = ([[scp -r "%s:%s" "%s"]]):format(host, remote_path, virtual_filename or filename)
+            rcmd = rcmd:format(remote_path, virtual_filename or filename)
         end
+        return rcmd
+    end
 
-        return remote_command
+    local function get_host(host)
+        if not host or host == '' then
+            host = nvim.fn.input('Enter hostname > ', '', 'customlist,mappings#ssh_hosts_completion')
+            assert(type(host) == 'string' and host ~= '', 'Invalid hostname')
+        end
+        return host
     end
 
     set_command{
         lhs = 'SendFile',
         rhs = function(host)
+            host = get_host(host)
+            local async = require'tools'.system.hosts[host] ~= nil
             local cmd = remote_cmd(host, true)
             require'jobs'.send_job{
                 cmd = cmd,
+                async = async,
             }
         end,
         args = {
@@ -918,9 +949,12 @@ if executable('scp') then
     set_command{
         lhs = 'GetFile',
         rhs = function(host)
+            host = get_host(host)
+            local async = require'tools'.system.hosts[host] ~= nil
             local cmd = remote_cmd(host, false)
             require'jobs'.send_job{
                 cmd = cmd,
+                async = async,
             }
         end,
         args = {
