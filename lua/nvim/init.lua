@@ -136,14 +136,14 @@ local nvim = {
     });
     reg = setmetatable({}, {
         __index = function(_, k)
-            local ok, value = pcall(api.nvim_eval, '@'..k)
+            local ok, value = pcall(api.nvim_call_function, 'getreg', {k})
             return ok and value or nil
         end;
         __newindex = function(_, k, v)
             if v == nil then
                 error("Can't clear registers")
             end
-            api.nvim_command(([[let @%s = '%s']]):format(k, v))
+            pcall(api.nvim_call_function, 'setreg', {k, v})
         end;
     });
 }
