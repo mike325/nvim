@@ -398,22 +398,19 @@ function M.clean_file()
         return false
     end
 
-    local position = nvim.win_get_cursor(0)
-    local search_reg = nvim.fn.getreg('/')
-
-    nvim.command('%s/\\s\\+$//e')
-    nvim.fn.histdel('search', -1)
-
-    nvim.command('%s/\\(\\s\\+\\)┊/\\1 /ge')
-    nvim.fn.histdel('search', -1)
-
-    if sys.name ~= 'windows' then
-        nvim.command('%s/\\r$//ge')
-        nvim.fn.histdel('search', -1)
+    local lines = nvim.buf.get_lines(0, 0, -1, true)
+    for i=1,#lines do
+        local line = lines[i]
+        if line ~= '' then
+            line = line:gsub('%s+$', '')
+            line = line:gsub('┊', '')
+            if nvim.bo.fileformat == 'unix' then
+                line = line:gsub('\r', '')
+            end
+            lines[i] = line
+        end
     end
-
-    nvim.win_set_cursor(0, position)
-    nvim.fn.setreg('/', search_reg)
+    nvim.buf.set_lines(0, 0, -1, true, lines)
 end
 
 return M
