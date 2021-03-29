@@ -164,7 +164,7 @@ function M.readfile(path)
         local stat = uv.fs_fstat(fd)
         local data = uv.fs_read(fd, stat.size, 0)
         -- TODO: Support DOS format
-        data = vim.split(data, '\n')
+        data = nvim.fn.split(data, '\n')
         return data
     end)
 end
@@ -360,13 +360,17 @@ function M.skeleton_filename(opts)
     end
 
     if M.is_file(skeleton) then
-        nvim.ex.keepalt('read '..skeleton)
-        nvim.command('silent! %s/\\C%\\<NAME\\>/'..filename..'/e')
-        nvim.fn.histdel('search', -1)
-        nvim.command('silent! %s/\\C%\\<NAME\\ze_H\\(PP\\)\\?\\>/\\U'..filename..'/g')
-        nvim.fn.histdel('search', -1)
-        nvim.ex['bwipeout!']('skeleton')
-        nvim.command('1delete_')
+        local lines = M.readfile(skeleton)
+        for i=1,#lines do
+            local line = lines[i]
+            if line ~= '' then
+                local macro = filename:upper()
+                line = line:gsub('%%NAME_H', macro..'_H')
+                line = line:gsub('%%NAME', filename)
+                lines[i] = line
+            end
+        end
+        nvim.put(lines, 'c', false, true)
     end
 
 end
