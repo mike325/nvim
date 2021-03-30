@@ -122,7 +122,6 @@ function! autocmd#SetProjectConfigs(event) abort
     \    'root': '',
     \    'cwd': '',
     \    'is_git': 0,
-    \    'file_dir': expand('%:p:h'),
     \})
 
     if b:project_root['cwd'] == l:cwd
@@ -144,9 +143,7 @@ function! autocmd#SetProjectConfigs(event) abort
     let b:project_root['root'] = l:root
 
     let l:is_git = autocmd#IsGitRepo(l:root)
-
     let b:project_root['is_git'] = l:is_git
-    let b:project_root['file_dir'] = expand('%:p:h')
 
     call tools#set_grep(l:is_git, 1)
 

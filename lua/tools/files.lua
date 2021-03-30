@@ -8,6 +8,8 @@ local uv = vim.loop
 
 local M = {}
 
+M.getcwd = uv.cwd
+
 local function split_path(path)
     path = M.normalize_path(path)
     return clear_lst(vim.split(path, '/'))
@@ -63,8 +65,9 @@ function M.is_root(path)
 end
 
 function M.realpath(path)
-    assert(type(path) == 'string' and path ~= '', ([[Not a path: "%s"]]):format(path))
-    return uv.fs_realpath(path):gsub('\\','/')
+    assert(M.exists(path), ([[Not a path: "%s"]]):format(path))
+    local rpath = uv.fs_realpath(path)
+    return rpath and rpath:gsub('\\','/') or path
 end
 
 function M.normalize_path(path)
@@ -113,7 +116,8 @@ function M.basedir(path)
 end
 
 function M.subpath_in_path(parent, child)
-    assert(M.is_dir(parent) and M.is_dir(child), 'Paths must be directories')
+    assert(M.is_dir(parent), ('Parent path is not a directory "%s"'):format(parent) )
+    assert(M.is_dir(child), ('Child path is not a directory "%s"'):format(child) )
 
     child = M.realpath(child)
     parent = M.realpath(parent)
@@ -403,7 +407,7 @@ function M.clean_file()
         local line = lines[i]
         if line ~= '' then
             line = line:gsub('%s+$', '')
-            line = line:gsub('┊', '')
+            -- line = line:gsub('┊', '')
             if nvim.bo.fileformat == 'unix' then
                 line = line:gsub('\r', '')
             end

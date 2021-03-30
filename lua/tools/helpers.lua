@@ -6,14 +6,15 @@ local executable       = require'tools.files'.executable
 local is_dir           = require'tools.files'.is_dir
 local is_file          = require'tools.files'.is_file
 local normalize_path   = require'tools.files'.normalize_path
+local getcwd           = require'tools.files'.getcwd
 local split_components = require'tools.strings'.split_components
 local echoerr          = require'tools.messages'.echoerr
 local clear_lst        = require'tools.tables'.clear_lst
+local get_git_dir      = require'tools.system'.get_git_dir
 
 local set_abbr = nvim.abbrs.set_abbr
 
 local system = nvim.fn.system
-local getcwd = vim.loop.cwd
 local line = nvim.fn.line
 
 local M = {}
@@ -199,6 +200,8 @@ else
     }
 end
 
+local git_dirs = {}
+
 function M.load_module(name)
     local ok, module = pcall(require, name)
     if not ok then
@@ -253,15 +256,25 @@ function M.project_config(event)
     end
 
     local is_git = M.is_git_repo(root)
+    local git_dir = is_git and git_dirs[cwd] or nil
     -- local filetype = nvim.bo.filetype
     -- local buftype = nvim.bo.buftype
 
     nvim.b.project_root = {
         cwd = cwd,
-        file_dir = nvim.fn.expand('%:p:h'),
         root = root,
         is_git = is_git,
+        git_dir = git_dir,
     }
+
+    if is_git and not git_dir and nvim.has('nvim-0.5') then
+        get_git_dir(function(dir)
+            local project = nvim.b.project_root
+            project.git_dir = dir
+            git_dirs[cwd] = dir
+            nvim.b.project_root = project
+        end)
+    end
 
     M.set_grep(is_git, true)
 

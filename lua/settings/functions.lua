@@ -3,9 +3,10 @@ local sys  = require'sys'
 
 local is_file         = require'tools'.files.is_file
 local chmod           = require'tools'.files.chmod
-local clear_lst       = require'tools'.tables.clear_lst
+local getcwd          = require'tools'.files.getcwd
 local realpath        = require'tools'.files.realpath
 local subpath_in_path = require'tools'.files.subpath_in_path
+local clear_lst       = require'tools'.tables.clear_lst
 local select_filelist = require'tools'.helpers.select_filelist
 
 local set_autocmd = nvim.autocmds.set_autocmd
@@ -59,7 +60,7 @@ function M.chmod_exec()
 end
 
 function M.send_grep_job(args)
-    local cmd = clear_lst(vim.split(nvim.bo.grepprg or nvim.o.grepprg, ' '))
+    local cmd = clear_lst(nvim.fn.split(nvim.bo.grepprg or nvim.o.grepprg, ' '))
     -- print('Type: ', type(args), 'Value:', vim.inspect(args))
     cmd[#cmd + 1] = args
 
@@ -113,12 +114,11 @@ local function get_files(path, is_git)
 end
 
 function M.get_path_files()
-    local paths = clear_lst(vim.split(nvim.bo.path or nvim.o.path, ','))
-    local cwd = realpath(nvim.fn.getcwd())
+    local paths = clear_lst(nvim.fn.split(nvim.bo.path or nvim.o.path, ','))
+    local cwd = realpath(getcwd())
 
     get_files(cwd, nvim.b.project_root.is_git)
     for _,path in pairs(paths) do
-        print('Path:', vim.inspect(path))
         local rpath = realpath(path)
         if rpath ~= '.' and
            rpath ~= cwd and

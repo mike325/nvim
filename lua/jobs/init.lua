@@ -79,7 +79,7 @@ local function general_on_data(jobid, data, event)
 
     if type(data) == 'string' then
         data = data:gsub('\t','  ')
-        data = vim.split(data, '\n')
+        data = nvim.fn.split(data, '\n')
     end
 
     vim.list_extend(M.jobs[jobid].streams[event], clear_lst(data))
