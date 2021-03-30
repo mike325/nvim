@@ -63,6 +63,8 @@ let g:c_comment_strings = 1
 let g:c_curly_error = 1
 let g:c_no_if0 = 0
 
+let g:tex_flavor = 'latex'
+
 if has#option('scrollback')
     set scrollback=-1
 endif

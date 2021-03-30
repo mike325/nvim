@@ -68,10 +68,11 @@ let g:vimtex_latexmk_preview_continuosly = 1 " -pvc option in latexmk
 let g:vimtex_latexmk_continuous          = 1
 let g:vimtex_quickfix_open_on_warning    = 0
 
-let g:vimtex_fold_enabled     = 1
-let g:vimtex_motion_enabled   = 1
-let g:vimtex_text_obj_enabled = 1
-let g:tex_flavor              = 'latex'
+" let g:vimtex_fold_enabled     = 1
+" let g:vimtex_motion_enabled   = 1
+" let g:vimtex_text_obj_enabled = 1
+
+" let g:vimtex_imaps_leader     = '`'
 
 if has#plugin('fzf') && has#plugin('fzf.vim')
     augroup VimTexFZF
@@ -80,5 +81,3 @@ if has#plugin('fzf') && has#plugin('fzf.vim')
         autocmd FileType tex nnoremap <buffer> <leader>t :call vimtex#fzf#run()<CR>
     augroup end
 endif
-
-" let g:vimtex_imaps_leader     = '`'

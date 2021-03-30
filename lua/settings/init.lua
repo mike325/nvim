@@ -44,6 +44,8 @@ nvim.g.c_comment_strings = 1
 nvim.g.c_curly_error = 1
 nvim.g.c_no_if0 = 0
 
+nvim.g.tex_flavor = 'latex'
+
 nvim.g.terminal_scrollback_buffer_size = 100000
 
 if nvim.g.started_by_firenvim ~= nil then
