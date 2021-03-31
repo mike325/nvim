@@ -34,25 +34,40 @@ Plug 'tpope/vim-markdown'
 
 Plug 'junegunn/gv.vim', {'on': ['GV']}
 
+" if has('nvim')
+"     Plug 'Vigemus/iron.nvim'
+" endif
+
 if has('nvim-0.5')
     Plug 'kevinhwang91/nvim-bqf'
     Plug 'glepnir/zephyr-nvim'
     Plug 'kyazdani42/nvim-web-devicons'
     " Plug 'romgrk/barbar.nvim'
-endif
-
-" if has('nvim')
-"     Plug 'Vigemus/iron.nvim'
-" endif
-
-if has('nvim-0.5') && (executable('gcc') || executable('clang'))
-    Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-    Plug 'nvim-treesitter/nvim-treesitter-refactor'
-    Plug 'nvim-treesitter/nvim-treesitter-textobjects'
-    " Plug 'romgrk/nvim-treesitter-context'
 else
     Plug 'tbastos/vim-lua'
     Plug 'octol/vim-cpp-enhanced-highlight'
+
+    if executable('fzf') && !os#name('cygwin')
+        " Use chocolately/scoop install in windows
+        Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': function('plugins#fzf_vim#install')}
+        Plug 'junegunn/fzf.vim'
+    elseif exists('g:gonvim_running')
+        Plug 'akiyosi/gonvim-fuzzy'
+    else
+        Plug 'ctrlpvim/ctrlp.vim'
+        if has('python3')
+            Plug 'raghur/fruzzy', {'do': function('fruzzy#install')}
+        elseif has#python()
+            " Fast and 'easy' to compile C CtrlP matcher
+            if (executable('gcc') || executable('clang')) && empty($NO_PYTHON_DEV) && !os#name('windows')
+                " Windows must have msbuild compiler to work, temporally disabled
+                Plug 'JazzCore/ctrlp-cmatcher', { 'do': function('plugins#ctrlp_vim#installcmatcher')}
+            else
+                " Fast matcher for ctrlp
+                Plug 'FelikZ/ctrlp-py-matcher'
+            endif
+        endif
+    endif
 
     if has('nvim') && has#python('3', '5')
         Plug 'numirias/semshi', {'do': ':silent! UpdateRemotePlugins'}
@@ -72,36 +87,8 @@ if has#python() && has#async()
     Plug 'neomake/neomake'
 endif
 
-if has('nvim-0.5')
-    Plug 'nvim-lua/popup.nvim'
-    Plug 'nvim-lua/plenary.nvim'
-    Plug 'nvim-lua/telescope.nvim'
-elseif executable('fzf') && !os#name('cygwin')
-    " Use chocolately/scoop install in windows
-    Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': function('plugins#fzf_vim#install')}
-    Plug 'junegunn/fzf.vim'
-elseif exists('g:gonvim_running')
-    Plug 'akiyosi/gonvim-fuzzy'
-else
-    Plug 'ctrlpvim/ctrlp.vim'
-
-    if has('python3')
-        Plug 'raghur/fruzzy', {'do': function('fruzzy#install')}
-    elseif has#python()
-        " Fast and 'easy' to compile C CtrlP matcher
-        if (executable('gcc') || executable('clang')) && empty($NO_PYTHON_DEV) && !os#name('windows')
-            " Windows must have msbuild compiler to work, temporally disabled
-            Plug 'JazzCore/ctrlp-cmatcher', { 'do': function('plugins#ctrlp_vim#installcmatcher')}
-        else
-            " Fast matcher for ctrlp
-            Plug 'FelikZ/ctrlp-py-matcher'
-        endif
-    endif
-endif
-
 if executable('git')
     Plug 'airblade/vim-gitgutter'
-
     if v:version > 704
         Plug 'rhysd/git-messenger.vim'
     endif

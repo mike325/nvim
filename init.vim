@@ -120,18 +120,10 @@ else
         Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
     endif
 
-    if has#minimal() && has('nvim-0.5')
-
+    if has('nvim-0.5')
         Plug 'nvim-lua/popup.nvim'
         Plug 'nvim-lua/plenary.nvim'
         Plug 'nvim-lua/telescope.nvim'
-
-        " Plug 'nvim-lua/completion-nvim'
-        Plug 'hrsh7th/nvim-compe'
-
-        if tools#CheckLanguageServer()
-            Plug 'neovim/nvim-lspconfig'
-        endif
 
         if executable('gcc') || executable('clang')
             " Plug 'nvim-treesitter/completion-treesitter'
@@ -139,6 +131,17 @@ else
             Plug 'nvim-treesitter/nvim-treesitter-refactor'
             Plug 'nvim-treesitter/nvim-treesitter-textobjects'
             " Plug 'romgrk/nvim-treesitter-context'
+        endif
+
+    endif
+
+    if has#minimal()
+
+        " Plug 'nvim-lua/completion-nvim'
+        Plug 'hrsh7th/nvim-compe'
+
+        if tools#CheckLanguageServer()
+            Plug 'neovim/nvim-lspconfig'
         endif
 
     elseif has#minimal() && v:version >= 704

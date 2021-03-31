@@ -19,6 +19,7 @@ local ensure_installed = {
     'lua',
     'bash',
     'python',
+    'latex',
     -- 'query',
 }
 
