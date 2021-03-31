@@ -535,8 +535,24 @@ set_mapping{ mode = 'x', lhs = '¡', rhs = '^', args = noremap }
 -- set_mapping{ mode = 'n', lhs = '<leader>w', rhs = '<cmd>update<CR>', args = noremap }
 
 set_mapping{ mode = 'n', lhs = '<leader>p', rhs = '<C-^>',       args = noremap }
-set_mapping{ mode = 'n', lhs = '<leader>q', rhs = '<cmd>q!<CR>',     args = noremap_silent }
 set_mapping{ mode = 'n', lhs = '<leader>x', rhs = '<cmd>%!xxd<CR>',  args = noremap }
+
+set_mapping{
+    mode = 'n',
+    lhs = '<leader>q',
+    rhs = function()
+        local tabs = nvim.list_tabpages()
+        local wins = nvim.tab.list_wins(0)
+        if #wins > 1 and nvim.fn.expand('%') ~= '[Command Line]' then
+            nvim.win.hide(0)
+        elseif #tabs > 1 then
+            nvim.ex['tabclose!']()
+        else
+            nvim.ex['quit!']()
+        end
+    end,
+    args = noremap_silent,
+}
 
 set_mapping{ mode = 'n', lhs = '<leader>h', rhs = '<C-w>h', args = noremap }
 set_mapping{ mode = 'n', lhs = '<leader>j', rhs = '<C-w>j', args = noremap }
@@ -979,6 +995,46 @@ if executable('scp') then
     }
 
 end
+
+local scratchs = {}
+
+set_command{
+    lhs = 'Scratch',
+    rhs = function(ft)
+        ft = (ft and ft ~= '') and ft or nvim.bo.filetype
+        scratchs[ft] = nvim.buf.is_valid(scratchs[ft]) and scratchs[ft] or nvim.create_buf(false, true)
+        if ft and ft ~= '' then
+            nvim.buf.set_option(scratchs[ft], 'filetype', ft)
+        end
+        nvim.buf.set_option(scratchs[ft], 'bufhidden', 'hide')
+
+        local wins = nvim.tab.list_wins(0)
+        local scratch_win
+
+        for _,win in pairs(wins) do
+            if nvim.win.get_buf(win) == scratchs[ft] then
+                scratch_win = win
+                break
+            end
+        end
+
+        if not scratch_win then
+            scratch_win = nvim.open_win(
+                scratchs[ft],
+                true,
+                {relative='editor', width=1, height=1, row=1, col=1}
+            )
+        end
+
+        nvim.set_current_win(scratch_win)
+        nvim.ex.wincmd('K')
+    end,
+    args = {
+        nargs = '?',
+        force = true,
+        complete = 'filetype'
+    }
+}
 
 pcall(require, 'host/mappings')
 

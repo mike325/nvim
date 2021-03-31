@@ -1,31 +1,25 @@
-local nvim = require'nvim'
-local echoerr = require'tools'.messages.echoerr
--- local load_module = require'tools'.helpers.load_module
-
--- TODO: Add dynamic plugin load
+local nvim      = require'nvim'
+local get_files = require'tools'.files.get_files
+local basename  = require'tools'.files.basename
+local echoerr   = require'tools'.messages.echoerr
 
 if nvim.has('nvim-0.5') then
-    local plugins = {
-        iron       = { ok = false, status  = false},
-        lsp        = { ok = false, status  = false},
-        telescope  = { ok = false, status  = false},
-        neorocks   = { ok = false, status  = false},
-        treesitter = { ok = false, status  = false},
-        -- snippets   = { ok = false, status  = false},
-        colors     = { ok = false, status  = false},
-        statusline = { ok = false, status  = false},
-        completion = { ok = false, status  = false},
+
+    local plugins = get_files {
+        path = require'sys'.base .. '/lua/plugins',
+        glob = '*.lua'
     }
 
-    for plugin, _ in pairs(plugins) do
-        local ok, status = pcall(require, 'plugins/'..plugin)
-        plugins[plugin].ok = ok
-        plugins[plugin].status = status
-        if not ok then
-            echoerr(string.format('Failed to load %s, Error: %s', plugin, status))
-            plugins[plugin].status = false
+    for _,plugin in pairs(plugins) do
+        plugin = basename(plugin:gsub('%.lua', ''))
+        if plugin ~= 'init' then
+            local ok, status = pcall(require, 'plugins/'..plugin)
+            if not ok then
+                echoerr(string.format('Failed to load "%s", Error: "%s"', plugin, status))
+            end
         end
     end
+
 end
 
 local function get_plugins()

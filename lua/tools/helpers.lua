@@ -841,7 +841,7 @@ function M.python(version, args)
 end
 
 function M.toggle_qf(qf_type)
-    local close = false
+    local action = 'open'
 
     local qf = qf_funcs[qf_type]
 
@@ -856,18 +856,13 @@ function M.toggle_qf(qf_type)
     if qf_winid > 0 then
         for _, winid in pairs(nvim.tab.list_wins(0)) do
             if winid == qf_winid then
-                close = true
+                action = 'close'
                 break
             end
         end
     end
-    if close then
-        nvim.ex[qf['close']]()
-    else
-        -- local current_window = nvim.get_current_win()
-        nvim.ex[qf['open']]()
-        -- nvim.set_current_win(current_window)
-    end
+
+    nvim.ex[qf[action]]()
 end
 
 function M.dump_to_qf(opts)

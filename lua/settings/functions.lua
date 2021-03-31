@@ -21,7 +21,7 @@ function M.make_executable()
     end
 
     local shebang = nvim.buf.get_lines(0, 0, 1, true)[1]
-    if not shebang:match('^#!.+') then
+    if not shebang or not shebang:match('^#!.+') then
         return
     end
 

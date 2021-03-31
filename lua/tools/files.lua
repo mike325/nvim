@@ -221,19 +221,25 @@ function M.ls(expr)
         results = filtered
     end
 
+    if sys.name == 'windows' then
+        for i=1,#results do
+            results[i] = results[i]:gsub('\\','/')
+        end
+    end
+
     return results
 end
 
 function M.get_files(expr)
     expr = expr == nil and {} or expr
     expr.type = 'file'
-    return M.files.ls(expr)
+    return M.ls(expr)
 end
 
 function M.get_dirs(expr)
     expr = expr == nil and {} or expr
     expr.type = 'dirs'
-    return M.files.ls(expr)
+    return M.ls(expr)
 end
 
 function M.read_json(filename)
