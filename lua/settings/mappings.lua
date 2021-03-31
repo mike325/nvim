@@ -1002,17 +1002,19 @@ set_command{
     lhs = 'Scratch',
     rhs = function(ft)
         ft = (ft and ft ~= '') and ft or nvim.bo.filetype
-        scratchs[ft] = nvim.buf.is_valid(scratchs[ft]) and scratchs[ft] or nvim.create_buf(false, true)
+        scratchs[ft] = scratchs[ft] or nvim.fn.tempname()
+        local buf = nvim.fn.bufnr(scratchs[ft], true)
+
         if ft and ft ~= '' then
-            nvim.buf.set_option(scratchs[ft], 'filetype', ft)
+            nvim.buf.set_option(buf, 'filetype', ft)
         end
-        nvim.buf.set_option(scratchs[ft], 'bufhidden', 'hide')
+        nvim.buf.set_option(buf, 'bufhidden', 'hide')
 
         local wins = nvim.tab.list_wins(0)
         local scratch_win
 
         for _,win in pairs(wins) do
-            if nvim.win.get_buf(win) == scratchs[ft] then
+            if nvim.win.get_buf(win) == buf then
                 scratch_win = win
                 break
             end
@@ -1020,7 +1022,7 @@ set_command{
 
         if not scratch_win then
             scratch_win = nvim.open_win(
-                scratchs[ft],
+                buf,
                 true,
                 {relative='editor', width=1, height=1, row=1, col=1}
             )

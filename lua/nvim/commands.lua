@@ -30,7 +30,7 @@ local function get_wrapper(info)
     cmd = cmd..("['%s']"):format(lhs)
 
     if bang then
-        cmd = cmd..("(%s, %s)"):format((nparams > 0 or varargs) and '<q-args>' or '', [["<bang>" == '']])
+        cmd = cmd..("(%s, %s)"):format((nparams > 0 or varargs) and '<q-args>' or '', [['<bang>' == '!']])
     else
         cmd = cmd..("(%s)"):format((nparams > 0 or varargs) and '<q-args>' or '')
     end

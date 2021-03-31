@@ -301,14 +301,14 @@ function M.delete(target, bang)
             end
         end
         if bufloaded(target) then
-            local command = bang == 1 and 'bwipeout! ' or 'bdelete! '
-            local ok, error_code = pcall(nvim.command, command..target)
+            local command = bang and 'wipeout' or 'delete'
+            local ok, error_code = pcall(nvim.command, ([[b%s! %s]]):format(command, target))
             if not ok and error_code:match('Vim(.%w+.)\\?:E94') then
-                echoerr('Failed to remove buffer '..target)
+                echoerr('Failed to '..command..' buffer '..target)
             end
         end
     elseif M.is_dir(target) then
-        local flag = bang == 1 and 'rf' or 'd'
+        local flag = bang and 'rf' or 'd'
         if nvim.fn.delete(target, flag) == -1 then
             echoerr('Failed to remove the directory: '..target)
         end
