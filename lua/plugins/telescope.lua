@@ -148,6 +148,12 @@ set_command{
 }
 
 set_command{
+    lhs = 'Regsiters',
+    rhs = [[lua require'telescope.builtin'.registers{}]],
+    args = {force=true}
+}
+
+set_command{
     lhs = 'GetVimFiles',
     rhs = function()
         require'telescope.builtin'.find_files{
