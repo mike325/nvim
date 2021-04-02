@@ -30,9 +30,9 @@ if executable('clang-tidy') && findfile('compile_commands.json', tr(getcwd(), '\
         \                '%-G%\m%\%%(LLVM ERROR:%\|No compilation database found%\)%\@!%.%#,' .
         \                '%E%m'
 elseif executable('clang')
-    setlocal makeprg=clang\ -Wall\ -Wextra\ -Weverything\ -Wno-missing-prototypes\ % " '-o', os#tmp('cpp')
+    setlocal makeprg=clang\ -Wall\ -Wextra\ -Weverything\ -Wno-missing-prototypes\ -Wpedantic\ % " '-o', os#tmp('cpp')
 elseif executable('gcc')
-    setlocal makeprg=gcc\ -Wall\ -Wextra\ % " '-o', os#tmp('neomake')
+    setlocal makeprg=gcc\ -Wall\ -Wextra\ -Wpedantic\  % " '-o', os#tmp('neomake')
 endif
 
 if has#plugin('neomake') && (executable('clang') || executable('clang-tidy') || executable('gcc'))
