@@ -11,6 +11,11 @@ if executable('latexmk')
     let g:vimtex_compiler_method = 'latexmk'
 
     let g:vimtex_compiler_latexmk = {
+        \   'build_dir' : 'build',
+        \   'callback' : 1,
+        \   'continuous' : 1,
+        \   'executable' : 'latexmk',
+        \   'hooks' : [],
         \   'options': [
         \       '-pdf',
         \       '-shell-escape',
@@ -31,6 +36,10 @@ else
     finish
 endif
 
+let g:vimtex_enabled = 1
+let g:vimtex_mappings_enabled = 0
+let g:vimtex_quickfix_open_on_warning = 0
+
 if os#name('windows')
     let g:vimtex_compiler_latexmk_engines = {
         \ '_'                : '-pdf',
@@ -44,35 +53,17 @@ if os#name('windows')
         \}
 endif
 
-
-if !has('nvim') && has#option('clientserver') && empty(v:servername) && has#func('remote_startserver') && !(os#name('windows') || os#name('cygwin')) && empty($SSH_CONNECTION)
-    call remote_startserver('VIM')
-elseif has('nvim') && executable('nvr')
-    let g:vimtex_compiler_progname = 'nvr'
-endif
-
-let g:vimtex_enabled          = 1
-let g:vimtex_mappings_enabled = 0
-
 if os#name('windows')
     if executable('sumatrapdf')
         let g:vimtex_view_general_viewer = 'SumatraPDF'
         let g:vimtex_view_general_options = '-reuse-instance -forward-search @tex @line @pdf'
         let g:vimtex_view_general_options_latexmk = '-reuse-instance'
+    elseif executable('okular')
+        let g:vimtex_view_general_viewer = 'okular'
+        let g:vimtex_view_general_options = '--unique file:@pdf\#src:@line@tex'
+        let g:vimtex_view_general_options_latexmk = '--unique'
     endif
 endif
-
-let g:vimtex_latexmk_build_dir           = 'output'
-let g:vimtex_latexmk_async               = 1
-let g:vimtex_latexmk_preview_continuosly = 1 " -pvc option in latexmk
-let g:vimtex_latexmk_continuous          = 1
-let g:vimtex_quickfix_open_on_warning    = 0
-
-" let g:vimtex_fold_enabled     = 1
-" let g:vimtex_motion_enabled   = 1
-" let g:vimtex_text_obj_enabled = 1
-
-" let g:vimtex_imaps_leader     = '`'
 
 if has#plugin('fzf') && has#plugin('fzf.vim')
     augroup VimTexFZF
