@@ -20,23 +20,29 @@ if has('nvim-0.5')
     function! tools#grep(tool, ...) abort
         let l:attr = a:0 > 0 ? a:1 : 'grepprg'
         let l:lst = a:0 > 1 ? a:2 : v:false
+        let l:lst = l:lst == 1 || l:lst == v:true ? v:true : v:false " Make sure we pass a boolean and not a number
         return v:lua.tools.helpers.grep(a:tool, l:attr, l:lst)
     endfunction
 
     function! tools#select_grep(is_git, ...) abort
         let l:attr = a:0 > 0 ? a:1 : 'grepprg'
         let l:lst = a:0 > 1 ? a:2 : v:false
-        return v:lua.tools.helpers.select_grep(a:is_git, l:attr, l:lst)
+        let l:lst = l:lst == 1 || l:lst == v:true ? v:true : v:false
+        let l:is_git = a:is_git == 1 || a:is_git == v:true ? v:true : v:false
+        return v:lua.tools.helpers.select_grep(l:is_git, l:attr, l:lst)
     endfunction
 
     function! tools#filelist(tool, ...) abort
         let l:lst = a:0 > 0 ? a:1 : v:false
+        let l:lst = l:lst == 1 || l:lst == v:true ? v:true : v:false
         return v:lua.tools.helpers.filelist(a:tool, l:lst)
     endfunction
 
     function! tools#select_filelist(is_git, ...) abort
         let l:lst = a:0 > 0 ? a:1 : v:false
-        return v:lua.tools.helpers.select_filelist(a:is_git, l:lst)
+        let l:lst = l:lst == 1 || l:lst == v:true ? v:true : v:false
+        let l:is_git = a:is_git == 1 || a:is_git == v:true ? v:true : v:false
+        return v:lua.tools.helpers.select_filelist(l:is_git, l:lst)
     endfunction
 
     function! tools#spelllangs(lang) abort

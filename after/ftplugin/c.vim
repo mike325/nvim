@@ -32,7 +32,7 @@ if executable('clang-tidy') && findfile('compile_commands.json', tr(getcwd(), '\
 elseif executable('clang')
     setlocal makeprg=clang\ -Wall\ -Wextra\ -Weverything\ -Wno-missing-prototypes\ -Wpedantic\ % " '-o', os#tmp('cpp')
 elseif executable('gcc')
-    setlocal makeprg=gcc\ -Wall\ -Wextra\ -Wpedantic\  % " '-o', os#tmp('neomake')
+    setlocal makeprg=gcc\ -Wall\ -Wextra\ -Wpedantic\ % " '-o', os#tmp('neomake')
 endif
 
 if has#plugin('neomake') && (executable('clang') || executable('clang-tidy') || executable('gcc'))

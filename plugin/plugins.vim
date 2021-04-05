@@ -32,7 +32,9 @@ Plug 'tpope/vim-markdown'
 " Plug 'editorconfig/editorconfig-vim'
 " Plug 'pechorin/any-jump.vim'
 
-Plug 'junegunn/gv.vim', {'on': ['GV']}
+if has#async() && (executable('ctags') || executable('cscope') || executable('gtags-cscope'))
+    Plug 'ludovicchabant/vim-gutentags'
+endif
 
 " if has('nvim')
 "     Plug 'Vigemus/iron.nvim'
@@ -89,6 +91,7 @@ endif
 
 if executable('git')
     Plug 'airblade/vim-gitgutter'
+    Plug 'junegunn/gv.vim', {'on': ['GV']}
     if v:version > 704
         Plug 'rhysd/git-messenger.vim'
     endif

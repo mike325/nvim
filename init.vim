@@ -103,12 +103,14 @@ else
     Plug 'tpope/vim-surround'
     Plug 'tpope/vim-projectionist'
     Plug 'tpope/vim-apathy'
-    Plug 'tpope/vim-fugitive'
-    " Plug 'lambdalisue/gina.vim' " TODO: keep testing this
     Plug 'Raimondi/delimitMate'
     Plug 'tpope/vim-commentary'
     Plug 'ojroques/vim-oscyank'
-    " Plug 'tpope/vim-unimpaired'
+
+    if executable('git')
+        Plug 'tpope/vim-fugitive'
+        " Plug 'lambdalisue/gina.vim' " TODO: keep testing this
+    endif
 
     " Syntax files
     Plug 'PProvost/vim-ps1'

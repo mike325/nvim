@@ -35,6 +35,8 @@ let g:indentLine_fileTypeExclude = [
     \   'man',
     \   'git',
     \   'log',
+    \   'Telescope',
+    \   'TelescopePrompt',
     \   '',
     \]
 
