@@ -3,9 +3,10 @@ local sys  = require'sys'
 local nvim = require'nvim'
 
 local load_module = require'tools'.helpers.load_module
-local get_icon = require'tools'.helpers.get_icon
+local get_icon    = require'tools'.helpers.get_icon
 local executable  = require'tools'.files.executable
-local is_dir = require'tools'.files.is_dir
+local is_dir      = require'tools'.files.is_dir
+local split       = require'tools'.strings.split
 
 local plugins = nvim.plugins
 
@@ -106,7 +107,7 @@ local servers = {
                             -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
                             version = 'LuaJIT',
                             -- Setup your lua path
-                            path = vim.split(package.path, ';'),
+                            path = split(package.path, ';'),
                         },
                         workspace = {
                             -- Make the server aware of Neovim runtime files

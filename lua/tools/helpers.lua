@@ -11,6 +11,7 @@ local split_components = require'tools.strings'.split_components
 local echoerr          = require'tools.messages'.echoerr
 local clear_lst        = require'tools.tables'.clear_lst
 local get_git_dir      = require'tools.system'.get_git_dir
+local split            = require'tools.strings'.split
 
 local set_abbr = nvim.abbrs.set_abbr
 
@@ -482,7 +483,7 @@ function M.has_git_version(...)
 end
 
 function M.ignores(tool)
-    local excludes = nvim.fn.split(nvim.o.backupskip, ',')
+    local excludes = split(nvim.o.backupskip, ',')
 
     if #excludes == 0 then
         return ''
@@ -554,7 +555,7 @@ function M.grep(tool, attr, lst)
     local grep = lst and {} or ''
     if executable(tool) and greplist[tool] ~= nil then
         grep = greplist[tool][property]
-        grep = lst and clear_lst(nvim.fn.split(grep, ' ')) or grep
+        grep = lst and split(grep, ' ') or grep
     end
 
     return grep
@@ -572,7 +573,7 @@ function M.filelist(tool, lst)
     local filelist = lst and {} or ''
     if executable(tool) and filetool[tool] ~= nil then
         filelist = filetool[tool]
-        filelist = lst and clear_lst(nvim.fn.split(filelist, ' ')) or filelist
+        filelist = lst and split(filelist, ' ') or filelist
     end
 
     return filelist
@@ -835,9 +836,8 @@ function M.python(version, args)
         return -1
     end
 
-    local split = nvim.o.splitbelow and 'botright' or 'topleft'
-
-    nvim.command(split..' split term://'..pyversion..' '..args)
+    local split_type = nvim.o.splitbelow and 'botright' or 'topleft'
+    nvim.command(split_type..' split term://'..pyversion..' '..args)
 end
 
 function M.toggle_qf(qf_type)

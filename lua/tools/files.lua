@@ -2,7 +2,8 @@ local sys       = require'sys'
 local nvim      = require'nvim'
 local echoerr   = require'tools.messages'.echoerr
 local bufloaded = require'tools.buffers'.bufloaded
-local clear_lst = require'tools.tables'.clear_lst
+-- local clear_lst = require'tools.tables'.clear_lst
+local split     = require'tools.strings'.split
 
 local uv = vim.loop
 
@@ -12,7 +13,7 @@ M.getcwd = uv.cwd
 
 local function split_path(path)
     path = M.normalize_path(path)
-    return clear_lst(vim.split(path, '/'))
+    return split(path, '/')
 end
 
 function M.exists(filename)
@@ -139,9 +140,7 @@ function M.openfile(path, flags, callback)
     assert(type(callback) == 'function', 'Missing valid callback')
     local fd = uv.fs_open(path, flags, 438)
     local ok, rst = pcall(callback, fd)
-    uv.fs_close(fd, function(cerr)
-        assert(not cerr, cerr)
-    end)
+    assert(uv.fs_close(fd))
     return rst or ok
 end
 
@@ -168,8 +167,27 @@ function M.readfile(path)
         local stat = uv.fs_fstat(fd)
         local data = uv.fs_read(fd, stat.size, 0)
         -- TODO: Support DOS format
-        data = nvim.fn.split(data, '\n')
+        local split_func = vim.in_fast_event() and vim.split or nvim.fn.split
+        data = split_func(data, '\n')
         return data
+    end)
+end
+
+function M.async_readfile(path, callback)
+    assert(M.is_file(path), 'Not a file: '..path)
+    assert(type(callback) == 'function', 'Missing valid callback')
+    uv.fs_open(path, "r", 438, function(oerr, fd)
+        assert(not oerr, oerr)
+        uv.fs_fstat(fd, function(serr, stat)
+            assert(not serr, serr)
+            uv.fs_read(fd, stat.size, 0, function(rerr, data)
+                assert(not rerr, rerr)
+                uv.fs_close(fd, function(cerr)
+                    assert(not cerr, cerr)
+                    return callback(vim.split(data, '\n'))
+                end)
+            end)
+        end)
     end)
 end
 

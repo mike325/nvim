@@ -35,7 +35,7 @@ local function datadir()
 end
 
 local function luajit_version()
-    return vim.split(jit.version, ' ', true)[2]
+    return vim.split(jit.version, ' ')[2]
 end
 
 local sys = {

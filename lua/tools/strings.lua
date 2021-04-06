@@ -16,6 +16,16 @@ function M.split_components(str, pattern)
     return t
 end
 
+function M.split(str, sep)
+    sep = sep or '%s'
+    local t = {}
+    for s in string.gmatch(str, "([^"..sep.."]+)") do
+        table.insert(t, s)
+    end
+    return t
+end
+
+
 function M.str_to_clean_tbl(cmd_string)
     return require'tools.tables'.str_to_clean_tbl(cmd_string)
 end

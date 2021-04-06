@@ -1,7 +1,8 @@
-local nvim = require'nvim'
-local echoerr = require'tools'.messages.echoerr
-local clear_lst = require'tools'.tables.clear_lst
+local nvim       = require'nvim'
+local echoerr    = require'tools'.messages.echoerr
+local clear_lst  = require'tools'.tables.clear_lst
 local dump_to_qf = require'tools'.helpers.dump_to_qf
+-- local split      = require'tools'.strings.split
 
 if not nvim.has('nvim-0.5') then
     return false
@@ -79,7 +80,7 @@ local function general_on_data(jobid, data, event)
 
     if type(data) == 'string' then
         data = data:gsub('\t','  ')
-        data = nvim.fn.split(data, '\n')
+        data = vim.split(data, '\n')
     end
 
     vim.list_extend(M.jobs[jobid].streams[event], clear_lst(data))
