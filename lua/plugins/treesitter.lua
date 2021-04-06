@@ -43,6 +43,15 @@ treesitter.setup{
     indent = {
         enable = true,
     },
+    incremental_selection = {
+        enable = true,
+        keymaps = {
+            init_selection = "<A-i>",
+            node_incremental = "<A-I>",
+            scope_incremental = "<A-c>",
+            node_decremental = "<A-D>",
+        },
+    },
     highlight = {
         enable = true,
         disable = disable,
