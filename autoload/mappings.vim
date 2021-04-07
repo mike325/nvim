@@ -14,7 +14,6 @@ if has('nvim')
     endfunction
 endif
 
-" TODO: Add completion-nvim handler
 function! mappings#enter() abort
     let l:snippet = 0
 

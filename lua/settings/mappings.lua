@@ -3,6 +3,7 @@ local sys  = require'sys'
 local nvim = require'nvim'
 
 local iregex         = require'tools'.strings.iregex
+local split          = require'tools'.strings.split
 local executable     = require'tools'.files.executable
 local is_file        = require'tools'.files.is_file
 local writefile      = require'tools'.files.write
@@ -350,7 +351,39 @@ set_mapping{ mode = 'x', lhs = '<BS>', rhs = '<ESC>', args = noremap }
 set_mapping{
     mode = 'n',
     lhs = '<BS>',
-    rhs = '<cmd>call mappings#bs()<CR>',
+    rhs = function()
+        local ok, _ = pcall(nvim.ex.pop)
+        if not ok then
+            local key = nvim.replace_termcodes("<C-o>", true, false, true)
+            nvim.feedkeys(key, 'n', true)
+            -- local jumps
+            -- ok, jumps = pcall(nvim.exec, 'jumps', true)
+            -- if ok and #jumps > 0 then
+            --     jumps = vim.split(jumps, '\n')
+            --     table.remove(jumps, 1)
+            --     table.remove(jumps, #jumps)
+            --     local current_jump
+            --     for i=1,#jumps do
+            --         local jump = vim.trim(jumps[i]);
+            --         jump = split(jump, ' ');
+            --         if jump[1] == 0 then
+            --             current_jump = i;
+            --         end
+            --         jumps[i] = jump;
+            --     end
+            --     if current_jump > 1 then
+            --         local current_buf = nvim.win.get_buf(0)
+            --         local jump_buf = jumps[current_jump - 1][4]
+            --         if current_buf ~= jump_buf then
+            --             if not nvim.buf.is_valid(jump_buf) or not nvim.buf.is_loaded(jump_buf) then
+            --                 nvim.ex.edit(jump_buf)
+            --             end
+            --         end
+            --         nvim.win.set_cursor(0, jumps[current_jump - 1][2], jumps[current_jump - 1][3])
+            --     end
+            -- end
+        end
+    end,
     args = noremap_silent,
 }
 
@@ -1037,6 +1070,52 @@ set_command{
         complete = 'filetype'
     }
 }
+
+if executable('cscope') then
+    local function cscope(cword, action)
+        local actions = {
+            definition = 'find g',
+            callers = 'find c',
+            file = 'find f',
+            text = 'find t',
+        }
+        cword = (cword and cword ~= '') and cword or nvim.fn.expand('<cword>')
+        action = actions[action] or 'g'
+        nvim.ex.cscope(action..' '..cword)
+    end
+
+    set_command{
+        lhs = 'CDefinition',
+        rhs = function(cword)
+            cscope(cword, 'definition')
+        end,
+        args = {nargs='?', force = true}
+    }
+
+    set_command{
+        lhs = 'CCallers',
+        rhs = function(cword)
+            cscope(cword, 'callers')
+        end,
+        args = {nargs='?', force = true}
+    }
+
+    set_command{
+        lhs = 'CFile',
+        rhs = function(cword)
+            cscope(cword, 'file')
+        end,
+        args = {complete='file', nargs='?', force = true}
+    }
+
+    set_command{
+        lhs = 'CText',
+        rhs = function(cword)
+            cscope(cword, 'text')
+        end,
+        args = {nargs='?', force = true}
+    }
+end
 
 pcall(require, 'host/mappings')
 

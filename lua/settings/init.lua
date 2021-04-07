@@ -227,3 +227,5 @@ end
 if nvim.has('nvim-0.5') then
     require'tools'.system.get_ssh_hosts()
 end
+
+pcall(require, 'host')

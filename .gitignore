@@ -36,3 +36,4 @@ TAGS
 /.luacheckcache
 /lua/work/
 /lua/host/
+/after/plugin/host/
