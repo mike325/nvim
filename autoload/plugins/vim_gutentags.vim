@@ -61,9 +61,10 @@ if executable('ctags')
         \ ]
 endif
 
-if executable('gtags-cscope')
-    let g:gutentags_modules += ['gtags_cscope']
-elseif executable('cscope')
+" if executable('gtags-cscope')
+"     let g:gutentags_modules += ['gtags_cscope']
+" elseif executable('cscope')
+if executable('cscope')
     let g:gutentags_modules += ['cscope']
 endif
 

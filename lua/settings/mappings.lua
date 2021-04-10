@@ -581,7 +581,7 @@ set_mapping{
         elseif #tabs > 1 then
             nvim.ex['tabclose!']()
         else
-            nvim.ex['quit!']()
+            nvim.exec('quit!', false)
         end
     end,
     args = noremap_silent,
