@@ -430,15 +430,14 @@ function M.clean_file()
     for i=1,#lines do
         local line = lines[i]
         if line ~= '' then
-            line = line:gsub('%s+$', '')
-            -- line = line:gsub('┊', '')
-            if nvim.bo.fileformat == 'unix' then
-                line = line:gsub('\r', '')
+            if line:find('%s+$') or line:find('^\t+') then
+                -- local sidx, eidx = line:find('%s+$')
+                line = line:gsub('%s+$', ''):gsub('^\t+', '')
+                nvim.buf.set_lines(0, i - 1, i, true, {line})
+                -- nvim.buf.set_text(0, i - 1, sidx - 1, i, sidx + (eidx - sidx) - 1, {})
             end
-            lines[i] = line
         end
     end
-    nvim.buf.set_lines(0, 0, -1, true, lines)
 end
 
 return M
