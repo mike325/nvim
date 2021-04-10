@@ -9,7 +9,7 @@ local normalize_path   = require'tools.files'.normalize_path
 local getcwd           = require'tools.files'.getcwd
 local split_components = require'tools.strings'.split_components
 local echoerr          = require'tools.messages'.echoerr
-local clear_lst        = require'tools.tables'.clear_lst
+-- local clear_lst        = require'tools.tables'.clear_lst
 local get_git_dir      = require'tools.system'.get_git_dir
 local split            = require'tools.strings'.split
 
