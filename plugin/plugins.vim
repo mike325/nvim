@@ -12,42 +12,33 @@ Plug 'joshdick/onedark.vim'
 Plug 'sainnhe/sonokai'
 " Plug 'bluz71/vim-moonfly-colors'
 " Plug 'bluz71/vim-nightfly-guicolors'
+" Plug 'nanotech/jellybeans.vim'
+" Plug 'whatyouhide/vim-gotham'
 
 Plug 'easymotion/vim-easymotion'
 Plug 'tommcdo/vim-lion'
 Plug 'tpope/vim-abolish'
 Plug 'honza/vim-snippets'
-Plug 'Yggdroot/indentLine'
 Plug 'tpope/vim-dadbod', {'on': ['DB']}
 Plug 'tpope/vim-endwise'
 Plug 'tpope/vim-markdown'
-" Plug 'henrik/vim-indexed-search'
-" Plug 'moll/vim-bbye', { 'on': [ 'Bdelete' ] }
-" Plug 'morhetz/gruvbox'
-" Plug 'sickill/vim-monokai'
-" Plug 'nanotech/jellybeans.vim'
-" Plug 'whatyouhide/vim-gotham'
-" Plug 'AndrewRadev/switch.vim'
-" Plug 'AndrewRadev/splitjoin.vim'
+Plug 'Yggdroot/indentLine'
 " Plug 'editorconfig/editorconfig-vim'
-" Plug 'pechorin/any-jump.vim'
 
 if has#async() && (executable('ctags') || executable('cscope') || executable('gtags-cscope'))
     Plug 'ludovicchabant/vim-gutentags'
 endif
-
-" if has('nvim')
-"     Plug 'Vigemus/iron.nvim'
-" endif
 
 if has('nvim-0.5')
     Plug 'kevinhwang91/nvim-bqf'
     Plug 'glepnir/zephyr-nvim'
     Plug 'kyazdani42/nvim-web-devicons'
     " Plug 'romgrk/barbar.nvim'
+    " Plug 'lukas-reineke/indent-blankline.nvim', {'branch': 'lua'}
 else
     Plug 'tbastos/vim-lua'
     Plug 'octol/vim-cpp-enhanced-highlight'
+    Plug 'moll/vim-bbye', { 'on': [ 'Bdelete' ] }
 
     if executable('fzf') && !os#name('cygwin')
         " Use chocolately/scoop install in windows
