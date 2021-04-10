@@ -135,12 +135,6 @@ set_mapping{
     args = noremap,
 }
 
--- set_command{
---     lhs = 'Grep',
---     rhs = [[lua require'telescope.builtin'.live_grep{}]],
---     args = {force=true}
--- }
-
 set_command{
     lhs = 'Oldfiles',
     rhs = [[lua require'telescope.builtin'.oldfiles{}]],
@@ -150,6 +144,18 @@ set_command{
 set_command{
     lhs = 'Regsiters',
     rhs = [[lua require'telescope.builtin'.registers{}]],
+    args = {force=true}
+}
+
+set_command{
+    lhs = 'Marks',
+    rhs = [[lua require'telescope.builtin'.marks{}]],
+    args = {force=true}
+}
+
+set_command{
+    lhs = 'Manpages',
+    rhs = [[lua require'telescope.builtin'.man_pages{}]],
     args = {force=true}
 }
 

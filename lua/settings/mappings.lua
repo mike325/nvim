@@ -2,8 +2,8 @@
 local sys  = require'sys'
 local nvim = require'nvim'
 
+-- local split          = require'tools'.strings.split
 local iregex         = require'tools'.strings.iregex
-local split          = require'tools'.strings.split
 local executable     = require'tools'.files.executable
 local is_file        = require'tools'.files.is_file
 local writefile      = require'tools'.files.write
@@ -591,8 +591,8 @@ set_mapping{ mode = 'n', lhs = '<leader>h', rhs = '<C-w>h', args = noremap }
 set_mapping{ mode = 'n', lhs = '<leader>j', rhs = '<C-w>j', args = noremap }
 set_mapping{ mode = 'n', lhs = '<leader>k', rhs = '<C-w>k', args = noremap }
 set_mapping{ mode = 'n', lhs = '<leader>l', rhs = '<C-w>l', args = noremap }
-set_mapping{ mode = 'n', lhs = '<leader>b', rhs = '<C-w>b', args = noremap }
-set_mapping{ mode = 'n', lhs = '<leader>t', rhs = '<C-w>t', args = noremap }
+-- set_mapping{ mode = 'n', lhs = '<leader>b', rhs = '<C-w>b', args = noremap }
+-- set_mapping{ mode = 'n', lhs = '<leader>t', rhs = '<C-w>t', args = noremap }
 
 set_mapping{ mode = 'n', lhs = '<leader>e', rhs = '<C-w>=', args = noremap }
 
