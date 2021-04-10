@@ -427,15 +427,18 @@ function M.clean_file()
     end
 
     local lines = nvim.buf.get_lines(0, 0, -1, true)
+    local expandtab = nvim.bo.expandtab or nvim.o.expandtab
+
     for i=1,#lines do
         local line = lines[i]
-        if line ~= '' then
-            if line:find('%s+$') or line:find('^\t+') then
-                -- local sidx, eidx = line:find('%s+$')
-                line = line:gsub('%s+$', ''):gsub('^\t+', '')
-                nvim.buf.set_lines(0, i - 1, i, true, {line})
-                -- nvim.buf.set_text(0, i - 1, sidx - 1, i, sidx + (eidx - sidx) - 1, {})
+        if line ~= '' and (line:find('%s+$') or (expandtab and line:find('^\t+'))) then
+            line = line:gsub('%s+$', '')
+            if expandtab then
+                line = line:gsub('^\t+', '')
             end
+            nvim.buf.set_lines(0, i - 1, i, true, {line})
+            -- local sidx, eidx = line:find('%s+$')
+            -- nvim.buf.set_text(0, i - 1, sidx - 1, i, sidx + (eidx - sidx) - 1, {})
         end
     end
 end
