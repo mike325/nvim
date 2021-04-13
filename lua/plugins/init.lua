@@ -39,7 +39,6 @@ end
 
 -- TODO: Add glob function to call just the available configs
 for plugin, _ in pairs(plugins) do
-    -- _ = nvim.plugins[plugin] -- Cache plugins for future use
     local func_name = convert2settings(plugin)
     local ok, error_code = pcall(nvim.command, 'runtime! autoload/plugins/'..func_name..'.vim')
     if not ok and not error_code:match('Vim:E117') then
