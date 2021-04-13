@@ -14,6 +14,35 @@ if has('nvim')
     endfunction
 endif
 
+function! mappings#inside_empty_pairs() abort
+    let l:rsp = v:false
+    let l:pairs = {
+        \ '"': '"',
+        \ "'": "'",
+        \ ')': '(',
+        \ '}': '{',
+        \ ']': '[',
+        \ '>': '<',
+        \}
+        " \ '(': ')',
+        " \ '{': '}',
+        " \ '[': ']',
+        " \ '<': '>',
+
+    let l:line = nvim_get_current_line()
+    let [l:ln, l:col] = nvim_win_get_cursor(0)
+
+    if l:col > 0
+        let l:close = l:line[l:col]
+        let l:open = l:line[l:col - 1]
+        if get(l:pairs, l:close, -1) != -1
+            let l:rsp = l:pairs[l:close] == l:open
+        endif
+    endif
+
+    return l:rsp
+endfunction
+
 function! mappings#enter() abort
     let l:snippet = 0
 
@@ -45,6 +74,11 @@ function! mappings#enter() abort
         return "\<C-y>"
     " elseif has#plugin('delimitMate') && delimitMate#WithinEmptyPair()
     "     return delimitMate#ExpandReturn()
+    elseif has#plugin('pears.nvim')
+        if mappings#inside_empty_pairs()
+            call luaeval('require"pears".handle_return(_A)', nvim_get_current_buf())
+            return ''
+        endif
     elseif has#plugin('ultisnips')
         call UltiSnips#JumpForwards()
         if get(g:, 'ulti_jump_forwards_res', 0) > 0

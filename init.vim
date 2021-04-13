@@ -103,7 +103,6 @@ else
     Plug 'tpope/vim-surround'
     Plug 'tpope/vim-projectionist'
     Plug 'tpope/vim-apathy'
-    Plug 'Raimondi/delimitMate'
     Plug 'tpope/vim-commentary'
     Plug 'ojroques/vim-oscyank'
 
@@ -126,6 +125,7 @@ else
         Plug 'nvim-lua/popup.nvim'
         Plug 'nvim-lua/plenary.nvim'
         Plug 'nvim-lua/telescope.nvim'
+        Plug 'steelsojka/pears.nvim'
 
         if executable('gcc') || executable('clang')
             " Plug 'nvim-treesitter/completion-treesitter'
@@ -134,7 +134,8 @@ else
             Plug 'nvim-treesitter/nvim-treesitter-textobjects'
             " Plug 'romgrk/nvim-treesitter-context'
         endif
-
+    else
+        Plug 'Raimondi/delimitMate'
     endif
 
     if has#minimal()
