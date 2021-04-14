@@ -431,14 +431,36 @@ function M.clean_file()
 
     for i=1,#lines do
         local line = lines[i]
-        if line ~= '' and (line:find('%s+$') or (expandtab and line:find('^\t+'))) then
-            line = line:gsub('%s+$', '')
-            if expandtab then
-                line = line:gsub('^\t+', '')
+        if line ~= '' then
+            if line:find('%s+$') then
+                line = line:gsub('%s+$', '')
+                -- local sidx, eidx = line:find('%s+$')
+                -- nvim.buf.set_text(0, i - 1, sidx - 1, i, sidx + (eidx - sidx) - 1, {})
             end
-            nvim.buf.set_lines(0, i - 1, i, true, {line})
-            -- local sidx, eidx = line:find('%s+$')
-            -- nvim.buf.set_text(0, i - 1, sidx - 1, i, sidx + (eidx - sidx) - 1, {})
+
+            if expandtab and line:find('^\t+') then
+                local tabs = line:match('^\t+')
+                local spaces = nvim.bo.softtabstop or nvim.o.softtabstop
+                if spaces < 0 then
+                    spaces = nvim.bo.shiftwidth or nvim.o.shiftwidth
+                    if spaces == 0 then
+                        spaces = nvim.o.tabstop
+                    end
+                end
+                local tab2space = ''
+                for _=1,spaces do
+                    tab2space = tab2space .. ' '
+                end
+                spaces = ''
+                for _=1,#tabs do
+                    spaces = spaces .. tab2space
+                end
+                line = line:gsub('^\t+', spaces)
+            end
+
+            if line ~= lines[i] then
+                nvim.buf.set_lines(0, i - 1, i, true, {line})
+            end
         end
     end
 end
