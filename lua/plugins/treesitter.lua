@@ -75,8 +75,8 @@ treesitter.setup{
                 ["if"] = "@conditional.inner",
                 ["am"] = "@function.outer",    -- Same as [m, ]m "method"
                 ["im"] = "@function.inner",
-                ["as"] = "@class.outer",
-                ["is"] = "@class.inner",
+                ["ak"] = "@class.outer",
+                ["ik"] = "@class.inner",
                 ["ia"] = "@parameter.inner",
                 ["aa"] = "@parameter.inner",
                 ["ir"] = "@loop.inner",        -- "repeat" mnemonic
