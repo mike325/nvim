@@ -107,8 +107,10 @@ else
     Plug 'ojroques/vim-oscyank'
 
     if executable('git')
-        Plug 'tpope/vim-fugitive'
-        " Plug 'lambdalisue/gina.vim' " TODO: keep testing this
+        Plug 'tpope/vim-fugitive', {'on': ['G', 'Git', 'Gpush', 'Gpull', 'GLog']}
+        if has('nvim-0.5')
+            Plug 'TimUntersberger/neogit'
+        endif
     endif
 
     " Syntax files
