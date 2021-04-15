@@ -40,9 +40,9 @@ if executable('clang-tidy') && findfile('compile_commands.json', tr(getcwd(), '\
         \                '%-G%\m%\%%(LLVM ERROR:%\|No compilation database found%\)%\@!%.%#,' .
         \                '%E%m'
 elseif executable('clang++')
-    setlocal makeprg=clang++\ -std=c++17\ -Wall\ -Wextra\ -Weverything\ -Wno-c++98-compat\ -Wpedantic\ -Wno-missing-prototypes\ % " '-o', os#tmp('cpp')
+    let &l:makeprg = 'clang++ -o '.tempname().' -S -std=c++17 -Wall -Wextra -Weverything -Wno-c++98-compat -Wpedantic -Wno-missing-prototypes %'
 elseif executable('g++')
-    setlocal makeprg=g++\ -std=c++17\ -Wall\ -Wextra\ -Wpedantic\ % " '-o', os#tmp('neomake')
+    let &l:makeprg = 'g++ -o '.tempname().' -S -std=c++17 -Wall -Wextra -Wpedantic %'
 endif
 
 if has#plugin('neomake') && (executable('clang++') || executable('clang-tidy') || executable('g++'))
