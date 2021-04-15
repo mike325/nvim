@@ -20,6 +20,8 @@ local ensure_installed = {
     'bash',
     'python',
     'latex',
+    'jsonc',
+    'toml',
     -- 'query',
 }
 
