@@ -1,8 +1,7 @@
 local nvim        = require'nvim'
 local load_module = require'tools'.helpers.load_module
 
-local plugins          = nvim.plugins
-
+local plugins = nvim.plugins
 local set_autocmd = nvim.autocmds.set_autocmd
 -- local set_command = nvim.commands.set_command
 -- local set_mapping = nvim.mappings.set_mapping
@@ -20,6 +19,8 @@ local ensure_installed = {
     'bash',
     'python',
     'latex',
+    'jsonc',
+    'toml',
     -- 'query',
 }
 
@@ -60,10 +61,18 @@ treesitter.setup{
         swap = {
             enable = true,
             swap_next = {
+                -- ["<leader>k"] = "@class.outer",
+                -- ["<leader>c"] = "@comment.outer",
+                -- ["<leader>f"] = "@loop.outer",
+                ["<leader>f"] = "@conditional.outer",
                 ["<leader>a"] = "@parameter.inner",
                 ["<leader>m"] = "@function.outer",
             },
             swap_previous = {
+                -- ["<leader><leader>k"] = "@class.outer",
+                -- ["<leader><leader>c"] = "@comment.outer",
+                -- ["<leader><leader>f"] = "@loop.outer",
+                ["<leader><leader>f"] = "@conditional.outer",
                 ["<leader><leader>a"] = "@parameter.inner",
                 ["<leader><leader>m"] = "@function.outer",
             },
