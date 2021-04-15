@@ -653,8 +653,8 @@ set_mapping{ mode = 'n', lhs = 'gV', rhs = '`[v`]', args = noremap }
 
 set_mapping{ mode = 't', lhs = '<ESC>', rhs = '<C-\\><C-n>', args = noremap }
 
-set_mapping{ mode = 'n', lhs = '<A-s>', rhs = '<C-w>s', args = noremap }
-set_mapping{ mode = 'n', lhs = '<A-v>', rhs = '<C-w>v', args = noremap }
+-- set_mapping{ mode = 'n', lhs = '<A-s>', rhs = '<C-w>s', args = noremap }
+-- set_mapping{ mode = 'n', lhs = '<A-v>', rhs = '<C-w>v', args = noremap }
 
 set_command{
     lhs = 'Terminal',
