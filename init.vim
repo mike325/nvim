@@ -107,7 +107,7 @@ else
     Plug 'ojroques/vim-oscyank'
 
     if executable('git')
-        Plug 'tpope/vim-fugitive', {'on': ['G', 'Git', 'Gpush', 'Gpull', 'GLog']}
+        Plug 'tpope/vim-fugitive', {'on': ['G', 'Git', 'Gwrite', 'Gpush', 'Gpull', 'Glog']}
         if has('nvim-0.5')
             Plug 'TimUntersberger/neogit'
         endif
@@ -116,7 +116,6 @@ else
     " Syntax files
     Plug 'PProvost/vim-ps1'
     Plug 'kurayama/systemd-vim-syntax'
-    Plug 'mhinz/vim-nginx'
     Plug 'raimon49/requirements.txt.vim'
 
     if has#minimal() && exists('g:started_by_firenvim')
