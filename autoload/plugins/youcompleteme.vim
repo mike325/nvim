@@ -32,7 +32,7 @@ function! plugins#youcompleteme#install(info) abort
         "       or use --system-clang
         " https://github.com/Valloric/YouCompleteMe/issues/778#issuecomment-211452969
         let l:cmd = []
-        if exists('g:python3_host_prog') && has#python('3', '5', '1')
+        if exists('g:python3_host_prog') && has#python(3, 5, 1)
             let l:cmd += [g:python3_host_prog]
         else
             let l:cmd += [g:python_host_prog]

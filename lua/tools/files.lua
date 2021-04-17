@@ -106,7 +106,7 @@ function M.basedir(path)
             else
                 path = ''
             end
-            path = path .. vim.fn.join(path_components, '/')
+            path = path .. table.concat(path_components, '/')
         elseif M.is_absolute(path) then
             path = sys.name == 'windows' and path:match(path:sub(1, 2), '^%w:$') or '/'
         else
@@ -145,7 +145,7 @@ function M.openfile(path, flags, callback)
 end
 
 local function fs_write(path, data, append)
-    data = type(data) == 'table' and nvim.fn.join(data, [[\n]]) or data
+    data = type(data) == 'table' and table.concat(data, [[\n]]) or data
     assert(data and type(data) == 'string', 'Missing valid data buffer/string')
     local flags = append and 'a' or 'w'
     M.openfile(path, flags, function(fd)
@@ -463,6 +463,85 @@ function M.clean_file()
             end
         end
     end
+end
+
+local function parser_config(data)
+    data = type(data) ~= 'table' and split(data, '\n') or data
+    local data_tbl = {}
+    local section = nil
+    local subsection = nil
+    local subsections = {}
+    for _,line in pairs(data) do
+        if not line:match('^%s*;.*') and not line:match('^%s*#.*') and not line:match('^%s*$') then
+            if line:match('^%s*%[%s*%a[%w_]*%s*]$') then
+                section = line:match('%a[%w_]*')
+                if not subsections[section] then
+                    assert(not data_tbl[section], 'Repeated section: '..section)
+                    data_tbl[section] = {}
+                end
+                subsection = nil
+            elseif line:match('^%s*%[%s*%a[%w_]*%s+".+"%s*]$') then
+                section = line:match('^%s*%[(%a[%w_]*)')
+                if not data_tbl[section] then
+                    data_tbl[section] = {}
+                end
+                subsection = line:match('"(.+)"%s*]$')
+                assert(
+                    not data_tbl[section][subsection],
+                    'Repeated subsection: '..subsection..' in section: '..section..' '..vim.inspect(data_tbl)
+                )
+                data_tbl[section][subsection] = {}
+                subsections[section] = subsection
+            elseif section and line:match('^%s*%a[%w_%.-]*%s*=%s*.+$') then
+                local clean_line = line:gsub('%s+;.+$', ''):gsub('%s+#.+$', '')
+                local attr = clean_line:match('^%s*(%a[%w_%.-]*)%s*=')
+                local val = clean_line:match('=%s*(.+)$')
+                val = vim.trim(val)
+
+                if val == 'true' or val == 'false' then
+                    val = val == 'true'
+                elseif val:match('^%d+$') then
+                    val = tonumber(val)
+                elseif val:match('^0[box][%da-fA-F]+$') then
+                    if val:sub(2, 2) == 'x' and val:match('^0[xX][%da-fA-F]+$') then
+                        val = tonumber(val, 16)
+                    elseif val:sub(2, 2) == 'b' and val:match('^0b[01]+$') then
+                        val = tonumber(val:match('^0b([01]+)$'), 2)
+                    elseif val:sub(2, 2) == 'o' and val:match('^0o[0-7]+$') then
+                        val = tonumber(val:match('^0o([0-7]+)$'), 8)
+                    end
+                elseif (val:sub(1,1) == '"' or val:sub(1,1) == "'") and val:sub(#val,#val) == val:sub(1, 1) then
+                    local qtype = val:sub(1,1)
+                    val = val:match(('^%s(.*)%s$'):format(qtype, qtype))
+                end
+
+                if not subsection then
+                    data_tbl[section][attr] = val
+                else
+                    data_tbl[section][subsection][attr] = val
+                end
+            else
+                print('Unmatched line: '..line)
+                section = nil
+                subsection = nil
+            end
+        end
+    end
+    return data_tbl
+end
+
+function M.read_config(config, callback)
+    assert(not callback or type(callback) == 'function', 'Not a valid callback type: '..type(callback))
+
+    config = M.normalize_path(config)
+    assert(M.is_file(config), 'Not a valid file: '..config)
+    if not callback then
+        local data = M.readfile(config)
+        return parser_config(data)
+    end
+    M.async_readfile(config, function(data)
+        callback(parser_config(data))
+    end)
 end
 
 return M

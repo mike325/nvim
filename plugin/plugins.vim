@@ -62,7 +62,7 @@ else
         endif
     endif
 
-    if has('nvim') && has#python('3', '5')
+    if has('nvim') && has#python(3, 5)
         Plug 'numirias/semshi', {'do': ':silent! UpdateRemotePlugins'}
     endif
 
@@ -120,7 +120,7 @@ if !empty($YCM) && empty($NO_PYTHON_DEV) &&
     \ ((has('unix') && (executable('gcc')  || executable('clang'))) ||
     \ (os#name('windows') && executable('msbuild')))
 
-    if has#python('3', '5', '1')
+    if has#python(3, 5, 1)
         Plug 'ycm-core/YouCompleteMe', { 'do': function('plugins#youcompleteme#install') }
     else
         Plug 'ycm-core/YouCompleteMe', { 'branch': 'legacy-py2', 'do': function('plugins#youcompleteme#install'), 'frozen': 1, 'dir': vars#basedir().'/plugged/frozen_ycm'}

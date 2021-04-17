@@ -134,7 +134,7 @@ function M.send_job(job)
             if job.args ~= nil then
                 cmd = vim.list_extend(cmd, job.args)
             end
-            cmd = vim.fn.join(cmd, ' ')
+            cmd = table.concat(cmd, ' ')
         elseif type(cmd) == 'string' and job.args ~= nil then
             cmd = cmd .. ' ' .. job.args
         end

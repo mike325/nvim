@@ -940,8 +940,6 @@ if executable('scp') then
 
     local function remote_cmd(host, send)
 
-        require'tools'.system.get_ssh_hosts()
-
         local filename = nvim.fn.expand('%')
         local virtual_filename
 

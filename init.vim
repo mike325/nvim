@@ -61,6 +61,7 @@ let g:loaded_vimballPlugin     = 1
 
 if has('nvim')
     lua require('python').setup()
+    lua require('tools.globals')
 else
     call set#initconfigs()
     call setup#python()
