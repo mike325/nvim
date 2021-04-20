@@ -20,10 +20,9 @@ local function is_alive(id)
 end
 
 local function cleanup(jobid, rc)
+    M.jobs[jobid].is_alive = false
     if rc == 0 and M.jobs[jobid].clean then
         M.jobs[jobid] = nil
-    else
-        M.jobs[jobid].is_alive = false
     end
 end
 
@@ -53,6 +52,9 @@ local function general_on_exit(jobid, rc, _)
             cmdname = M.jobs[jobid].cmd[0]
         elseif type(M.jobs[jobid].cmd) == 'string' then
             cmdname = vim.split(M.jobs[jobid].cmd, ' ')[1]
+        else
+            -- We should not reach here
+            echoerr('Not a valid cmdname '..type(M.jobs[jobid].cmd))
         end
 
         local qf_opts = M.jobs[jobid].qf or {}
@@ -92,21 +94,22 @@ function M.kill_job(jobid)
         local cmds = {}
         local jobidx = 1
         for id,opts in pairs(M.jobs) do
-            local running = is_alive()
+            local running = is_alive(id)
             if running then
                 ids[#ids + 1] = id
-                cmds[#cmds + 1] = ('%s: %s'):format(jobidx, opts.cmd)
+                local cmd = type(opts.cmd) == 'string' and opts.cmd or table.concat(opts.cmd, ' ')
+                cmds[#cmds + 1] = ('%s: %s'):format(jobidx, cmd)
                 jobidx = jobidx + 1
-            else
-                M.jobs[id].is_alive = running
             end
+            M.jobs[id].is_alive = running
         end
         local idx = nvim.fn.inputlist(cmds)
         jobid = ids[idx]
     end
 
     if type(jobid) == 'number' and jobid > 0 then
-        nvim.fn.jobstop(jobid)
+        pcall(nvim.fn.jobstop, jobid)
+        M.jobs[jobid].is_alive = false
     end
 end
 
@@ -123,6 +126,9 @@ function M.send_job(job)
         echoerr('cmd and args must be the same type')
         return
     end
+
+    assert(job.async == nil or type(job.async) == 'boolean', 'Invalid async option: '..type(job.async))
+    assert(job.timeout == nil or type(job.timeout) == 'number', 'Invalid async option: '..type(job.timeout))
 
     if job.async == false then
         local win = require("floating").window()
@@ -146,31 +152,66 @@ function M.send_job(job)
 
         if not opts.on_exit then
             opts.on_exit = general_on_exit
-        elseif clean then
+        else
             local opts_on_exit = opts.on_exit
             opts.on_exit = function(jobid, rc, event)
+                M.jobs[jobid].is_alive = false
                 opts_on_exit(jobid, rc, event)
-                cleanup(jobid, rc)
+                if clean then
+                    cleanup(jobid, rc)
+                end
             end
         end
 
-        if not opts.on_stdout and not opts.on_stderr and not opts.on_stdin and not opts.on_data then
-            opts.on_stdout = general_on_data
-            opts.on_stderr = general_on_data
-            opts.on_stdin = general_on_data
-            opts.on_data = general_on_data
+        if not opts.on_data or job.save_data then
+            if not opts.on_stdout then
+                opts.on_stdout = general_on_data
+            elseif job.save_data then
+                local original_func = opts.on_stdout
+                opts.on_stdout = function(jobid, data, event)
+                    general_on_data(jobid, data, event)
+                    original_func(jobid, data, event)
+                end
+            end
+
+            if not opts.on_stderr then
+                opts.on_stderr = general_on_data
+            elseif job.save_data then
+                local original_func = opts.on_stderr
+                opts.on_stderr = function(jobid, data, event)
+                    general_on_data(jobid, data, event)
+                    original_func(jobid, data, event)
+                end
+            end
+
+            if not opts.on_stdin then
+                opts.on_stdin = general_on_data
+            elseif job.save_data then
+                local original_func = opts.on_stdin
+                opts.on_stdin = function(jobid, data, event)
+                    general_on_data(jobid, data, event)
+                    original_func(jobid, data, event)
+                end
+            end
+
+            if not opts.on_data then
+                opts.on_data = general_on_data
+            elseif job.save_data then
+                local original_func = opts.on_data
+                opts.on_data = function(jobid, data, event)
+                    general_on_data(jobid, data, event)
+                    original_func(jobid, data, event)
+                end
+            end
         end
 
-        if type(cmd) == 'table' and job.args ~= nil then
-            cmd = vim.list_extend(cmd, job.args)
-        elseif type(cmd) == 'string' and job.args ~= nil then
-            cmd = cmd .. ' ' .. job.args
+        if job.args then
+            if type(cmd) == 'table' then
+                cmd = vim.list_extend(cmd, job.args)
+            elseif type(cmd) == 'string' then
+                cmd = cmd .. ' ' .. job.args
+            end
         end
-
-        local id = nvim.fn.jobstart(
-            cmd,
-            opts
-        )
 
         if job.qf and job.qf.open == nil then
             job.qf.open = false
@@ -180,14 +221,31 @@ function M.send_job(job)
             job.qf.jump = false
         end
 
+        local id = nvim.fn.jobstart(
+            cmd,
+            opts
+        )
+
         if id > 0 then
             M.jobs[id] = {
                 cmd = cmd,
                 opts = opts,
+                save_data = job.save_data or false,
                 qf = job.qf,
                 clean = clean,
                 is_alive = true,
+                timeout = job.timeout or 0,
             }
+
+            if job.timeout and job.timeout > 0 then
+                vim.defer_fn(function()
+                        if M.jobs[id].is_alive then
+                            M.kill_job(id)
+                        end
+                    end,
+                    job.timeout
+                )
+            end
         end
     end
 end
