@@ -404,14 +404,14 @@ function M.skeleton_filename(opts)
 end
 
 function M.clean_file()
-    local buftypes = {
+    local exc_buftypes = {
         nofile = 1,
         help = 1,
         quickfix = 1,
         terminal = 1,
     }
 
-    local filetypes = {
+    local exc_filetypes = {
         bin = 1,
         log = 1,
         git = 1,
@@ -422,7 +422,7 @@ function M.clean_file()
     local buftype = nvim.bo.buftype
     local filetype = nvim.bo.filetype
 
-    if not nvim.b.trim or buftypes[buftype] ~= nil or filetypes[filetype] ~= nil or filetype == '' then
+    if not nvim.b.trim or exc_buftypes[buftype] or exc_filetypes[filetype] or filetype == '' then
         return false
     end
 
@@ -463,6 +463,7 @@ function M.clean_file()
             end
         end
     end
+    return true
 end
 
 local function parser_config(data)

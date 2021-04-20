@@ -142,7 +142,7 @@ set_command{
 }
 
 set_command{
-    lhs = 'Regsiters',
+    lhs = 'Registers',
     rhs = [[lua require'telescope.builtin'.registers{}]],
     args = {force=true}
 }

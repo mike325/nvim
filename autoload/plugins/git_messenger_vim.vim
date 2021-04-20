@@ -7,4 +7,5 @@ endif
 
 let g:config_git_messenger = 1
 
+let g:git_messenger_no_default_mappings = 1
 nmap <silent><nowait> =m <Plug>(git-messenger)
