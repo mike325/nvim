@@ -277,7 +277,7 @@ function M.project_config(event)
         end)
     end
 
-    require'tools.git'.set_commands()
+    pcall(require'git.commands'.set_commands)
 
     M.set_grep(is_git, true)
 

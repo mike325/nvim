@@ -18,7 +18,7 @@ if !has#plugin('barbar.nvim')
     let g:airline#extensions#tabline#show_splits       = 0
 endif
 
-let g:airline_stl_path_style     = 'short'
+" let g:airline_stl_path_style = 'short'
 let g:airline_highlighting_cache = 1
 
 let g:airline#extensions#branch#format = 0

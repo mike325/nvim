@@ -218,9 +218,8 @@ if plugins["vim-eunuch"] == nil then
         rhs = function(new_path, bang)
             local current_path = nvim.fn.expand('%:p')
             local is_dir = require'tools'.files.is_dir
-            local isfile = require'tools'.files.isfile
 
-            if isfile(current_path) and is_dir(new_path) then
+            if is_file(current_path) and is_dir(new_path) then
                 new_path = new_path .. '/' .. nvim.fn.fnamemodify(current_path, ':t')
             end
 
@@ -328,7 +327,7 @@ if has('nvim-0.5') then
                     -- open = false,
                     loc = true,
                     jump = true,
-                    efm = vim.bo.efm or vim.bo.efm,
+                    efm = vim.bo.efm or vim.o.efm,
                     context = 'AsyncMake',
                     title = cmd,
                 },

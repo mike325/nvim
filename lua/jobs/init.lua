@@ -69,6 +69,7 @@ local function general_on_exit(jobid, rc, _)
 
     local stream
     local cmd = type(M.jobs[jobid].cmd) == 'string' and M.jobs[jobid].cmd or table.concat(M.jobs[jobid].cmd, ' ')
+
     if rc == 0 then
         if M.jobs[jobid].qf == nil or (M.jobs[jobid].qf.open ~= true and M.jobs[jobid].qf.jump ~= true) then
             print(('Job "%s" finished'):format(cmd))
@@ -80,8 +81,12 @@ local function general_on_exit(jobid, rc, _)
         if M.jobs[jobid].qf == nil or (M.jobs[jobid].qf.open ~= true and M.jobs[jobid].qf.jump ~= true) then
             echoerr(('Job "%s" failed, exited with %s'):format(cmd, rc))
         end
-        if M.jobs[jobid].streams and M.jobs[jobid].streams.stderr then
-            stream = M.jobs[jobid].streams.stderr
+        if M.jobs[jobid].streams then
+            if M.jobs[jobid].streams.stderr then
+                stream = M.jobs[jobid].streams.stderr
+            elseif M.jobs[jobid].opts.pty and M.jobs[jobid].streams.stdout then
+                stream = M.jobs[jobid].streams.stdout
+            end
         end
     end
 
@@ -93,6 +98,15 @@ local function general_on_exit(jobid, rc, _)
         qf_opts.efm = qf_opts.efm or nvim.bo.efm or nvim.o.efm
         qf_opts.title = qf_opts.title or cmd..' output'
         qf_opts.lines = stream
+
+        if qf_opts.on_fail then
+            if qf_opts.on_fail.open then
+                qf_opts.open = rc ~= 0
+            end
+            if qf_opts.on_fail.jump then
+                qf_opts.jump = rc ~= 0
+            end
+        end
 
         dump_to_qf(qf_opts)
     end
