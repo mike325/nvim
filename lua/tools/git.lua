@@ -16,10 +16,13 @@ local M = {}
 local function parse_git_output(jobid, data)
     assert(type(data) == 'string', 'Not valid data: '..type(data))
     local input = ''
+    local requested_input = false
     if data:match('^[uU]sername.*') then
         input = nvim.fn.inputsecret('Git username: ')
+        requested_input = true
     elseif data:match('^[pP]assword.*') then
         input = nvim.fn.inputsecret('Git password: ')
+        requested_input = true
     end
 
     if input and input ~= '' then
@@ -27,7 +30,7 @@ local function parse_git_output(jobid, data)
             input = input .. '\n'
         end
         nvim.fn.chansend(jobid, input)
-    else
+    elseif requested_input then
         vim.defer_fn(function()
                 jobs.kill_job(jobid)
             end,
