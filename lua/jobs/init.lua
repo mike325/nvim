@@ -26,6 +26,45 @@ local function cleanup(jobid, rc)
     end
 end
 
+function M.general_output_parser(jobid, data)
+    assert(type(data) == 'string' or type(data) == 'table', 'Not valid data: '..type(data))
+    local input = ''
+    local requested_input = false
+
+    if type(data) == 'string' then
+        data = vim.split(data, '\n')
+    end
+
+    -- print('Parsing data:', vim.inspect(data))
+
+    for _,val in pairs(data) do
+        if val:match('^[uU]sername for .*') or val:match('.* [uU]sername:%s*$') then
+            input = nvim.fn.input(val)
+            requested_input = true
+            break
+        elseif val:match('^[pP]assword for .*') or val:match('.* [pP]assword:%s*$') then
+            input = nvim.fn.inputsecret(val)
+            requested_input = true
+            break
+        end
+    end
+
+    if requested_input then
+        if input and input ~= '' then
+            if input:sub(#input, #input) ~= '\n' then
+                input = input .. '\n'
+            end
+            nvim.fn.chansend(jobid, input)
+        else
+            vim.defer_fn(function()
+                    M.kill_job(jobid)
+                end,
+                1
+            )
+        end
+    end
+end
+
 local function general_on_exit(jobid, rc, _)
 
     local stream
@@ -62,8 +101,7 @@ local function general_on_exit(jobid, rc, _)
 
 end
 
-local function general_on_data(jobid, data, event)
-
+local function save_data(jobid, data, event)
     if not M.jobs[jobid].streams then
         M.jobs[jobid].streams = {}
         M.jobs[jobid].streams[event] = {}
@@ -77,6 +115,13 @@ local function general_on_data(jobid, data, event)
     end
 
     vim.list_extend(M.jobs[jobid].streams[event], clear_lst(data))
+end
+
+local function general_on_data(jobid, data, event)
+    save_data(jobid, data, event)
+    if M.jobs[jobid].opts.pty then
+        M.general_output_parser(jobid, data)
+    end
 end
 
 function M.kill_job(jobid)
@@ -159,7 +204,7 @@ function M.send_job(job)
             elseif job.save_data then
                 local original_func = opts.on_stdout
                 opts.on_stdout = function(jobid, data, event)
-                    general_on_data(jobid, data, event)
+                    save_data(jobid, data, event)
                     original_func(jobid, data, event)
                 end
             end
@@ -169,7 +214,7 @@ function M.send_job(job)
             elseif job.save_data then
                 local original_func = opts.on_stderr
                 opts.on_stderr = function(jobid, data, event)
-                    general_on_data(jobid, data, event)
+                    save_data(jobid, data, event)
                     original_func(jobid, data, event)
                 end
             end
@@ -179,7 +224,7 @@ function M.send_job(job)
             elseif job.save_data then
                 local original_func = opts.on_stdin
                 opts.on_stdin = function(jobid, data, event)
-                    general_on_data(jobid, data, event)
+                    save_data(jobid, data, event)
                     original_func(jobid, data, event)
                 end
             end
@@ -189,7 +234,7 @@ function M.send_job(job)
             elseif job.save_data then
                 local original_func = opts.on_data
                 opts.on_data = function(jobid, data, event)
-                    general_on_data(jobid, data, event)
+                    save_data(jobid, data, event)
                     original_func(jobid, data, event)
                 end
             end

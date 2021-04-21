@@ -979,11 +979,12 @@ if executable('scp') then
         lhs = 'SendFile',
         rhs = function(host)
             host = get_host(host)
-            local async = require'tools'.system.hosts[host] ~= nil
             local cmd = remote_cmd(host, true)
             require'jobs'.send_job{
                 cmd = cmd,
-                async = async,
+                opts = {
+                    pty = true,
+                },
             }
         end,
         args = {
@@ -997,11 +998,12 @@ if executable('scp') then
         lhs = 'GetFile',
         rhs = function(host)
             host = get_host(host)
-            local async = require'tools'.system.hosts[host] ~= nil
             local cmd = remote_cmd(host, false)
             require'jobs'.send_job{
                 cmd = cmd,
-                async = async,
+                opts = {
+                    pty = true,
+                },
             }
         end,
         args = {
