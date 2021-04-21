@@ -42,7 +42,7 @@ function M.get_git_dir(callback)
         opts = {
             on_exit = function(jobid, rc, _)
                 if rc == 0 then
-                    local dir = vim.fn.join(require'jobs'.jobs[jobid].streams.stdout, '')
+                    local dir = table.concat(require'jobs'.jobs[jobid].streams.stdout, '')
                     pcall(callback, realpath(dir))
                 end
             end,

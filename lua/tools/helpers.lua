@@ -277,6 +277,8 @@ function M.project_config(event)
         end)
     end
 
+    require'tools.git'.set_commands()
+
     M.set_grep(is_git, true)
 
     local project = nvim.fn.findfile('.project.vim', cwd..';')
@@ -518,7 +520,7 @@ function M.ignores(tool)
     --     ignores.fd = ' --ignore-file '.. sys.home .. '/.config/git/ignore '
     -- end
 
-    return ignores[tool] ~= nil and nvim.fn.join(ignores[tool], ' ') or ''
+    return ignores[tool] ~= nil and table.concat(ignores[tool], ' ') or ''
 end
 
 function M.grep(tool, attr, lst)

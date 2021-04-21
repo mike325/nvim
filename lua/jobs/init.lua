@@ -29,16 +29,17 @@ end
 local function general_on_exit(jobid, rc, _)
 
     local stream
+    local cmd = type(M.jobs[jobid].cmd) == 'string' and M.jobs[jobid].cmd or table.concat(M.jobs[jobid].cmd, ' ')
     if rc == 0 then
         if M.jobs[jobid].qf == nil or (M.jobs[jobid].qf.open ~= true and M.jobs[jobid].qf.jump ~= true) then
-            print(('Job "%s" finished'):format(M.jobs[jobid].cmd))
+            print(('Job "%s" finished'):format(cmd))
         end
         if M.jobs[jobid].qf and M.jobs[jobid].streams and M.jobs[jobid].streams.stdout then
             stream = M.jobs[jobid].streams.stdout
         end
     else
         if M.jobs[jobid].qf == nil or (M.jobs[jobid].qf.open ~= true and M.jobs[jobid].qf.jump ~= true) then
-            echoerr(('Job "%s" failed, exited with %s'):format(M.jobs[jobid].cmd, rc))
+            echoerr(('Job "%s" failed, exited with %s'):format(cmd, rc))
         end
         if M.jobs[jobid].streams and M.jobs[jobid].streams.stderr then
             stream = M.jobs[jobid].streams.stderr
@@ -47,21 +48,11 @@ local function general_on_exit(jobid, rc, _)
 
     if stream and #stream > 0 then
 
-        local cmdname
-        if type(M.jobs[jobid].cmd) == 'table' then
-            cmdname = M.jobs[jobid].cmd[0]
-        elseif type(M.jobs[jobid].cmd) == 'string' then
-            cmdname = vim.split(M.jobs[jobid].cmd, ' ')[1]
-        else
-            -- We should not reach here
-            echoerr('Not a valid cmdname '..type(M.jobs[jobid].cmd))
-        end
-
         local qf_opts = M.jobs[jobid].qf or {}
 
-        qf_opts.context = qf_opts.context or cmdname
+        qf_opts.context = qf_opts.context or cmd
         qf_opts.efm = qf_opts.efm or nvim.bo.efm or nvim.o.efm
-        qf_opts.title = qf_opts.title or cmdname..' output'
+        qf_opts.title = qf_opts.title or cmd..' output'
         qf_opts.lines = stream
 
         dump_to_qf(qf_opts)
@@ -109,7 +100,6 @@ function M.kill_job(jobid)
 
     if type(jobid) == 'number' and jobid > 0 then
         pcall(nvim.fn.jobstop, jobid)
-        M.jobs[jobid].is_alive = false
     end
 end
 
