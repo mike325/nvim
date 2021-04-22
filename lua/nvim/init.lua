@@ -23,10 +23,10 @@ local nvim = {
     });
     has = setmetatable({
             cmd = function(cmd)
-                return api.nvim_call_function('exists', {':'..cmd}) == 1
+                return api.nvim_call_function('exists', {':'..cmd}) == 2
             end;
             command = function(command)
-                return api.nvim_call_function('exists', {'##'..command}) == 1
+                return api.nvim_call_function('exists', {'##'..command}) == 2
             end;
             augroup = function(augroup)
                 return api.nvim_call_function('exists', {'#'..augroup}) == 1
@@ -45,10 +45,10 @@ local nvim = {
     );
     exists = setmetatable({
             cmd = function(cmd)
-                return api.nvim_call_function('exists', {':'..cmd}) == 1
+                return api.nvim_call_function('exists', {':'..cmd}) == 2
             end;
             command = function(command)
-                return api.nvim_call_function('exists', {'##'..command}) == 1
+                return api.nvim_call_function('exists', {'##'..command}) == 2
             end;
             augroup = function(augroup)
                 return api.nvim_call_function('exists', {'#'..augroup}) == 1

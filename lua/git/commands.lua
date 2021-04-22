@@ -13,6 +13,19 @@ local jobs = require'jobs'
 
 local M = {}
 
+function M.rm_commands()
+    local git_cmds = {
+        'GPush',
+        'GPull',
+        'GReview',
+    }
+    for _,cmd in pairs(git_cmds) do
+        if nvim.has.cmd(cmd) then
+            set_command { lhs = cmd }
+        end
+    end
+end
+
 function M.set_commands()
     set_command {
         lhs = 'GPull',

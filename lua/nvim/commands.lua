@@ -3,6 +3,7 @@
 local api = vim.api
 local has_attrs = require'tools.tables'.has_attrs
 local echoerr = require'tools.messages'.echoerr
+local echowarn = require'tools.messages'.echowarn
 
 local M = {
     funcs = {
@@ -70,7 +71,6 @@ function M.set_command(command)
 
     if rhs == nil then
         cmd = {'delcommand'}
-        cmd[#cmd + 1] = lhs
     elseif args.force then
         cmd = {'command!'}
         args.force = nil
@@ -79,21 +79,23 @@ function M.set_command(command)
     end
 
     local attr
-    for name,val in pairs(args) do
-        if val then
-            attr = '-'..name
-            if type(val) ~= 'boolean' then
-                if attr == '-nargs' then
-                    nargs = val
+    if rhs then
+        for name,val in pairs(args) do
+            if val then
+                attr = '-'..name
+                if type(val) ~= 'boolean' then
+                    if attr == '-nargs' then
+                        nargs = val
+                    end
+                    attr = attr..'='..val
                 end
-                attr = attr..'='..val
+                if attr == '-buffer' then
+                    scope = 'b'
+                elseif attr == '-bang' then
+                    bang = true
+                end
+                cmd[#cmd + 1] = attr
             end
-            if attr == '-buffer' then
-                scope = 'b'
-            elseif attr == '-bang' then
-                bang = true
-            end
-            cmd[#cmd + 1] = attr
         end
     end
     cmd[#cmd + 1] = lhs
@@ -126,8 +128,16 @@ function M.set_command(command)
         cmd[#cmd + 1] = wrapper
     end
 
-    api.nvim_command(table.concat(cmd, ' '))
-    if rhs ~= 'string' then
+    cmd = table.concat(cmd, ' ')
+    local ok, err = pcall(api.nvim_command, cmd)
+
+    if rhs and not ok then
+        echoerr(err)
+    elseif not rhs and not ok then
+        echowarn('Command not found: '..lhs)
+    end
+
+    if rhs ~= 'string' and ok then
         func_handle {
             rhs   = rhs,
             lhs   = lhs,
