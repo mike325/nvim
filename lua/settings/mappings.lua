@@ -295,7 +295,8 @@ if has('nvim-0.5') then
         lhs = 'Make',
         rhs = function(args)
 
-            local cmd = vim.bo.makeprg or vim.o.makeprg
+            local ok, val = pcall(nvim.buf.get_option, 0, 'makeprg')
+            local cmd = ok and val or vim.o.makeprg
 
             if cmd:sub(#cmd, #cmd) == '%' then
                 cmd = cmd:gsub('%%', vim.fn.expand('%'))
@@ -327,7 +328,6 @@ if has('nvim-0.5') then
                     -- open = false,
                     loc = true,
                     jump = true,
-                    efm = vim.bo.efm or vim.o.efm,
                     context = 'AsyncMake',
                     title = cmd,
                 },

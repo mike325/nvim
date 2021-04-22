@@ -95,9 +95,13 @@ local function general_on_exit(jobid, rc, _)
         local qf_opts = M.jobs[jobid].qf or {}
 
         qf_opts.context = qf_opts.context or cmd
-        qf_opts.efm = qf_opts.efm or nvim.bo.efm or nvim.o.efm
         qf_opts.title = qf_opts.title or cmd..' output'
         qf_opts.lines = stream
+
+        if not qf_opts.efm then
+            local ok, val = pcall(nvim.buf.get_option, 0, 'efm')
+            qf_opts.efm = ok and val or nvim.o.efm
+        end
 
         if qf_opts.on_fail then
             if qf_opts.on_fail.open then
