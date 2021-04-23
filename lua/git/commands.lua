@@ -1,5 +1,8 @@
 local nvim = require'nvim'
 local executable = require'tools'.files.executable
+-- local echowarn = require'tools'.messages.echowarn
+local split = require'tools'.strings.split
+-- local is_file = require'tools'.files.is_file
 
 if not executable('git') then
     return false
@@ -8,8 +11,6 @@ end
 local set_command = nvim.commands.set_command
 -- local set_mapping = nvim.mappings.set_mapping
 -- local get_mapping = nvim.mappings.get_mapping
-
-local jobs = require'jobs'
 
 local M = {}
 
@@ -30,30 +31,10 @@ function M.set_commands()
     set_command {
         lhs = 'GPull',
         rhs = function(args)
-            local cmd = {'git'}
-            if nvim.b.project_root and nvim.b.project_root.is_git then
-                vim.list_extend(cmd, {'--git-dir', nvim.b.project_root.git_dir})
+            if args then
+                args = split(args, ' ')
             end
-            cmd[#cmd + 1] = 'pull'
-            if args and args ~= '' then
-                cmd[#cmd + 1] = args
-            end
-            jobs.send_job{
-                cmd = cmd,
-                save_data = true,
-                opts = { pty = true, },
-                qf = {
-                    on_fail = {
-                        open = true,
-                        jump = false,
-                    },
-                    open = false,
-                    jump = false,
-                    context = 'Git pull',
-                    title = 'Git pull',
-                },
-            }
-
+            require'git.utils'.exec_git_cmd('pull', args)
         end,
         args = {nargs = '*', force = true, buffer = true}
     }
@@ -61,33 +42,21 @@ function M.set_commands()
     set_command {
         lhs = 'GPush',
         rhs = function(args)
-            local cmd = {'git'}
-            if nvim.b.project_root and nvim.b.project_root.is_git then
-                vim.list_extend(cmd, {'--git-dir', nvim.b.project_root.git_dir})
+            if args then
+                args = split(args, ' ')
             end
-            cmd[#cmd + 1] = 'push'
-            if args and args ~= '' then
-                cmd[#cmd + 1] = args
-            end
-            jobs.send_job{
-                cmd = cmd,
-                save_data = true,
-                opts = { pty = true, },
-                qf = {
-                    on_fail = {
-                        open = true,
-                        jump = false,
-                    },
-                    open = false,
-                    jump = false,
-                    context = 'Git Push',
-                    title = 'Git push',
-                },
-            }
-
+            require'git.utils'.exec_git_cmd('push', args)
         end,
         args = {nargs = '*', force = true, buffer = true}
     }
+
+    -- set_command {
+    --     lhs = 'GStageToggle',
+    --     rhs = function(args)
+    --         require'git.utils'.git_cmd('add', args)
+    --     end,
+    --     args = {nargs = '*', force = true, buffer = true}
+    -- }
 
 end
 

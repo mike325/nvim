@@ -2,7 +2,7 @@ local nvim       = require'nvim'
 local echoerr    = require'tools'.messages.echoerr
 local clear_lst  = require'tools'.tables.clear_lst
 local dump_to_qf = require'tools'.helpers.dump_to_qf
--- local split      = require'tools'.strings.split
+local split      = require'tools'.strings.split
 
 if not nvim.has('nvim-0.5') then
     return false
@@ -32,7 +32,7 @@ function M.general_output_parser(jobid, data)
     local requested_input = false
 
     if type(data) == 'string' then
-        data = vim.split(data, '\n')
+        data = split(data, '\n')
     end
 
     -- print('Parsing data:', vim.inspect(data))
@@ -98,11 +98,6 @@ local function general_on_exit(jobid, rc, _)
         qf_opts.title = qf_opts.title or cmd..' output'
         qf_opts.lines = stream
 
-        if not qf_opts.efm then
-            local ok, val = pcall(nvim.buf.get_option, 0, 'efm')
-            qf_opts.efm = ok and val or nvim.o.efm
-        end
-
         if qf_opts.on_fail then
             if qf_opts.on_fail.open then
                 qf_opts.open = rc ~= 0
@@ -129,10 +124,14 @@ local function save_data(jobid, data, event)
 
     if type(data) == 'string' then
         data = data:gsub('\t','  ')
-        data = vim.split(data, '\n')
+        data = split(data, '\n')
     end
 
-    vim.list_extend(M.jobs[jobid].streams[event], clear_lst(data))
+    data = clear_lst(data)
+
+    if #data > 0 then
+        vim.list_extend(M.jobs[jobid].streams[event], data)
+    end
 end
 
 local function general_on_data(jobid, data, event)

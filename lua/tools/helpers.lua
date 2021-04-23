@@ -875,8 +875,12 @@ function M.dump_to_qf(opts)
 
     if opts.lines then
         opts.context = opts.context or 'GenericQfData'
-        opts.efm = opts.efm or nvim.bo.efm or nvim.o.efm
         opts.title = opts.title or 'Generic Qf data'
+
+        if not opts.efm then
+            local ok, val = pcall(nvim.buf.get_option, 0, 'efm')
+            opts.efm = ok and val or nvim.o.efm
+        end
 
         local qf_cmds = opts.loc and qf_funcs['loc'] or qf_funcs['qf']
         local qf_type = opts.loc and 'loc' or 'qf'
