@@ -3,8 +3,9 @@ local executable = require'tools'.files.executable
 -- local echowarn = require'tools'.messages.echowarn
 -- local is_file = require'tools'.files.is_file
 -- local is_dir = require'tools'.files.is_dir
-local exists = require'tools'.files.exists
-local writefile = require'tools'.files.writefile
+-- local exists = require'tools'.files.exists
+-- local writefile = require'tools'.files.writefile
+local split = require'tools'.strings.split
 
 if not executable('git') then
     return false
@@ -40,8 +41,11 @@ function M.rm_paginate(cmd)
     vim.list_extend(cmd, {'--no-pager'})
 end
 
-local function start_git_cmd(cmd, gitcmd, jobopts)
+local function exec_async_gitcmd(cmd, gitcmd, jobopts)
     local opts = jobopts or {pty = true}
+    -- if require'sys'.name == 'windows' then
+    --     cmd = table.concat(cmd, ' ')
+    -- end
     jobs.send_job{
         cmd = cmd,
         save_data = true,
@@ -59,9 +63,13 @@ local function start_git_cmd(cmd, gitcmd, jobopts)
     }
 end
 
-function M.exec_git_cmd(gitcmd, args)
+local function exec_sync_gitcmd(cmd, gitcmd)
+    local ok, output = pcall(nvim.fn.system, cmd)
+    return ok and output or error('Failed to execute: '..gitcmd..', '..output)
+end
+
+function M.get_git_cmd(gitcmd, args)
     local cmd = {'git'}
-    local jobopts
     M.rm_colors(cmd)
     M.get_git_dir(cmd)
     M.rm_paginate(cmd)
@@ -69,48 +77,105 @@ function M.exec_git_cmd(gitcmd, args)
     if type(args) == 'table' then
         if vim.tbl_islist(args) then
             vim.list_extend(cmd, args)
-        else
-            if args.gitargs then
-                assert(vim.tbl_islist(args.gitargs), 'Invalid args')
-                vim.list_extend(cmd, args.gitargs)
-            end
-            if args.jobopts then
-                assert(type(args.jobopts) == 'table', 'Invalid Job args')
-                jobopts = args.jobopts
+        end
+    end
+    return cmd
+end
+
+function M.launch_gitcmd_job(opts)
+    assert(type(opts) == 'table', 'Options must be a table')
+    assert(type(opts.gitcmd) == 'string' and opts.gitcmd ~= '', 'Invalid gitcmd')
+    assert(not opts.args or vim.tbl_islist(opts.args), 'Invalid commad args, must be an array')
+    assert(not opts.jobopts or type(opts.jobopts) == 'table', 'Invalid commad job options, must be a table')
+
+    local gitcmd = opts.gitcmd
+    local args = opts.args
+    local jobopts = opts.jobopts
+
+    local cmd = M.get_git_cmd(gitcmd, args)
+    exec_async_gitcmd(cmd, gitcmd, jobopts)
+end
+
+local function parse_status(status)
+    assert(type(status) == 'string' or vim.tbl_islist(status), 'Invalid status type: '..type(status))
+    if type(status) == 'string' then
+        status = split(status, '\n')
+    end
+    local parsed = {}
+    for _,gitfile in pairs(status) do
+        if not parsed.branch and gitfile:match('^#%s+branch%.head') then
+            parsed.branch = split(gitfile, ' ')[3]
+        elseif not parsed.upstream and gitfile:match('^#%s+branch%.upstream') then
+            parsed.upstream = split(gitfile, ' ')[3]
+        elseif gitfile:sub(1, 1) ~= '#' then
+            -- parsed.files = parsed.files or {}
+            -- local line = split(gitfile, ' ')
+            if gitfile:sub(1, 1) == '1' or gitfile:sub(1, 1) == '2' then
+                local stage_status = gitfile:sub(3, 3)
+                local wt_status = gitfile:sub(4, 4)
+                if stage_status == 'A' or stage_status == 'M' or stage_status == 'D' then
+                    parsed.stage = parsed.stage or {}
+                    local filename = gitfile:sub(114, #gitfile)
+                    if stage_status == 'M' then
+                        stage_status = 'modified'
+                    else
+                        stage_status = stage_status == 'A' and 'added' or 'deleted'
+                    end
+                    parsed.stage[filename] = {status = stage_status}
+                    -- parsed.files[filename] = 'staged'
+                elseif stage_status == 'R' then
+                    parsed.stage = parsed.stage or {}
+                    local files = split(gitfile:sub(119, #gitfile), '\t')
+                    local filename = files[1]
+                    parsed.stage[filename] = {
+                        status = 'moved',
+                        original = files[2],
+                    }
+                    -- parsed.files[filename] = 'staged'
+                end
+                if wt_status == 'M' then
+                    parsed.workspace = parsed.workspace or {}
+                    local filename = gitfile:sub(114, #gitfile)
+                    parsed.workspace[filename] = {
+                        status = 'modified',
+                    }
+                    -- parsed.files[filename] = 'workspace'
+                end
+            elseif gitfile:sub(1, 1) == '?' then
+                parsed.untracked = parsed.untracked or {}
+                local filename = gitfile:sub(3, #gitfile)
+                parsed.untracked[#parsed.untracked + 1] = filename
+                -- parsed.files[filename] = 'untracked'
+            -- elseif gitfile:sub(1, 1) == 'u' then  -- TODO
+            --     parsed.unmerge = parsed.unmerge or {}
             end
         end
     end
-    start_git_cmd(cmd, gitcmd, jobopts)
+    return parsed
 end
 
-function M.push(args)
-    M.exec_git_cmd('push', args)
-end
+function M.status(callback)
+    assert(not callback or type(callback) == 'function', 'Invalid callback')
 
-function M.pull(args)
-    M.exec_git_cmd('pull', args)
-end
-
-function M.add(filename, args)
-    filename = filename or nvim.buf.get_name(nvim.get_current_buf())
-    if not exists(filename) then
-        writefile(filename, nvim.buf.get_lines(nvim.get_current_buf(), 0, -1, true))
+    local gitcmd = 'status'
+    local cmd = M.get_git_cmd(gitcmd, {
+        '--branch',
+        '--porcelain=2'
+    })
+    if not callback then
+        return parse_status(exec_sync_gitcmd(cmd, gitcmd))
     end
-    args = args or {}
-    vim.list_extend(args, {filename})
-    M.exec_git_cmd('add', args)
-end
-
-function M.switch(args)
-    M.exec_git_cmd('switch', args)
-end
-
-function M.reset(args)
-    M.exec_git_cmd('reset', args)
-end
-
-function M.stash(args)
-    M.exec_git_cmd('stash', args)
+    exec_async_gitcmd(cmd, gitcmd, {
+        on_exit = function(jobid, rc, _)
+            if rc ~= 0 then
+                error(('Failed to get git status, %s'):format(
+                    table.concat(jobs.jobs[jobid].streams.stderr, '\n')
+                ))
+            end
+            local status = jobs.jobs[jobid].streams.stdout
+            vim.defer_fn(function() callback(parse_status(status)) end, 0)
+        end
+    })
 end
 
 return M

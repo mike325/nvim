@@ -19,7 +19,14 @@ function M.last_position()
 end
 
 function M.bufloaded(bufnr)
+    assert(type(bufnr) == type(1) and bufnr > 0, 'Invalid buffer')
     return require'nvim'.fn.bufloaded(bufnr) == 1
+end
+
+function M.is_modified(bufnr)
+    assert(not bufnr or (type(bufnr) == type(1) and bufnr > 0), 'Invalid buffer')
+    bufnr = bufnr or require'nvim'.get_current_buf()
+    return require'nvim'.buf.get_option(bufnr, 'modified')
 end
 
 return M

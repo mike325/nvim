@@ -30,10 +30,12 @@ local function get_wrapper(info)
 
     cmd = cmd..("['%s']"):format(lhs)
 
-    if bang then
-        cmd = cmd..("(%s, %s)"):format((nparams > 0 or varargs) and '<q-args>' or '', [['<bang>' == '!']])
-    else
-        cmd = cmd..("(%s)"):format((nparams > 0 or varargs) and '<q-args>' or '')
+    if bang and (nparams > 0 or varargs) then
+        cmd = cmd..("(%s, %s)"):format('<q-args>', [['<bang>' == '!']])
+    elseif not bang and (nparams > 0 or varargs) then
+        cmd = cmd..("(%s)"):format('<q-args>')
+    elseif bang and not (nparams > 0 or varargs) then
+        cmd = cmd..("(%s)"):format([['<bang>' == '!']])
     end
 
     return cmd

@@ -1,5 +1,6 @@
 local nvim       = require'nvim'
 local echoerr    = require'tools'.messages.echoerr
+local echowarn   = require'tools'.messages.echowarn
 local clear_lst  = require'tools'.tables.clear_lst
 local dump_to_qf = require'tools'.helpers.dump_to_qf
 local split      = require'tools'.strings.split
@@ -35,9 +36,9 @@ function M.general_output_parser(jobid, data)
         data = split(data, '\n')
     end
 
-    -- print('Parsing data:', vim.inspect(data))
-
     for _,val in pairs(data) do
+        val = nvim.replace_termcodes(val, true, false, false)
+
         if val:match('^[uU]sername for .*') or val:match('.* [uU]sername:%s*$') then
             input = nvim.fn.input(val)
             requested_input = true
@@ -156,8 +157,12 @@ function M.kill_job(jobid)
             end
             M.jobs[id].is_alive = running
         end
-        local idx = nvim.fn.inputlist(cmds)
-        jobid = ids[idx]
+        if #cmds > 0 then
+            local idx = nvim.fn.inputlist(cmds)
+            jobid = ids[idx]
+        else
+            echowarn('No jobs to kill')
+        end
     end
 
     if type(jobid) == 'number' and jobid > 0 then
