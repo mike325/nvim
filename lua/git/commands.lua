@@ -1,8 +1,10 @@
-local nvim = require'nvim'
+local nvim       = require'nvim'
+
 local executable = require'tools'.files.executable
-local echowarn = require'tools'.messages.echowarn
-local split = require'tools'.strings.split
--- local is_file = require'tools'.files.is_file
+local echowarn   = require'tools'.messages.echowarn
+local split      = require'tools'.strings.split
+local is_file    = require'tools'.files.is_file
+local delete     = require'tools'.files.delete
 
 if not executable('git') then
     return false
@@ -22,6 +24,7 @@ function M.rm_commands()
         'GRead',
         'GWrite',
         'GRestore',
+        'GRm',
     }
     for _,cmd in pairs(git_cmds) do
         if nvim.has.cmd(cmd) then
@@ -64,6 +67,14 @@ function M.set_commands()
                         utils.launch_gitcmd_job{
                             gitcmd = 'add',
                             args = args,
+                            jobopts = {
+                                on_exit = function(jobid, rc, _)
+                                    if rc ~= 0 then
+                                        error('Failed to Add file: '..bufname)
+                                    end
+                                    nvim.ex.edit()
+                                end
+                            }
                         }
                     else
                         echowarn('Nothing to do')
@@ -77,7 +88,7 @@ function M.set_commands()
                 end
             end)
         end,
-        args = {nargs = '*', complete = 'file' ,force = true, buffer = true}
+        args = {nargs = '*', force = true, buffer = true, complete = [[customlist,neovim#gitfiles_workspace]]}
     }
 
     set_command {
@@ -161,7 +172,7 @@ function M.set_commands()
                 end
             end)
         end,
-        args = {nargs = '?', complete = 'file', force = true}
+        args = {nargs = '?', force = true, complete = [[customlist,neovim#gitfiles_stage]]}
     }
 
 end

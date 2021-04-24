@@ -29,4 +29,23 @@ function M.is_modified(bufnr)
     return require'nvim'.buf.get_option(bufnr, 'modified')
 end
 
+function M.delete(buffer, wipe)
+    assert(not buffer or (type(buffer) == type(1) and buffer > 0), 'Invalid buffer')
+    local nvim = require'nvim'
+    buffer = buffer or nvim.get_current_buf()
+    local is_wipe = nvim.buf.get_option(buffer, 'bufhidden') == 'wipe'
+    local prev_buf = nvim.fn.expand('#') ~= '' and nvim.fn.bufnr(nvim.fn.expand('#')) or -1
+    local is_loaded = nvim.buf.is_loaded
+
+    if nvim.get_current_buf() == buffer then
+        local new_view = is_loaded(prev_buf) and prev_buf or nvim.create_buf(true, false)
+        nvim.win.set_buf(0, new_view)
+    end
+
+    if not is_wipe then
+        local action = not wipe and {unload = true} or {force = true}
+        nvim.buf.delete(buffer, action)
+    end
+end
+
 return M
