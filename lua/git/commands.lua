@@ -3,8 +3,9 @@ local nvim       = require'nvim'
 local executable = require'tools'.files.executable
 local echowarn   = require'tools'.messages.echowarn
 local split      = require'tools'.strings.split
-local is_file    = require'tools'.files.is_file
-local delete     = require'tools'.files.delete
+local normalize  = require'tools'.files.normalize_path
+-- local is_file    = require'tools'.files.is_file
+-- local delete     = require'tools'.files.delete
 
 if not executable('git') then
     return false
@@ -61,7 +62,8 @@ function M.set_commands()
                 local utils = require'git.utils'
                 if #args == 0 then
                     local bufname = nvim.fn.bufname(nvim.get_current_buf())
-                    if status.workspace and status.workspace[bufname] then
+                    if (status.workspace and status.workspace[bufname]) or
+                       (status.untracked and status.untracked[bufname]) then
                         nvim.ex.update()
                         args = { bufname }
                         utils.launch_gitcmd_job{
@@ -72,7 +74,8 @@ function M.set_commands()
                                     if rc ~= 0 then
                                         error('Failed to Add file: '..bufname)
                                     end
-                                    nvim.ex.edit()
+                                    -- TODO: reset git gutter signs without re-edit file
+                                    -- nvim.ex.edit()
                                 end
                             }
                         }
@@ -81,6 +84,11 @@ function M.set_commands()
                     end
                 else
                     if args then args = split(args, ' ') end
+                    for i=1,#args do
+                        if args[i] == '%' then
+                            args = normalize(args[i])
+                        end
+                    end
                     utils.launch_gitcmd_job{
                         gitcmd = 'add',
                         args = args,
@@ -165,6 +173,12 @@ function M.set_commands()
                         echowarn('Nothing to do')
                     end
                 else
+                    if args then args = split(args, ' ') end
+                    for i=1,#args do
+                        if args[i] == '%' then
+                            args = normalize(args[i])
+                        end
+                    end
                     utils.launch_gitcmd_job{
                         gitcmd = 'reset',
                         args = {'HEAD', args},

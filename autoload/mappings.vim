@@ -62,18 +62,24 @@ function! mappings#enter() abort
             return ''
         elseif has#plugin('completion-nvim')
             if complete_info()['selected'] !=# '-1'
-                call completion#wrap_completion()
+                call luaeval("require'completion'.confirmCompletion()")
+                return "\<C-y>"
+            else
+                call nvim_select_popupmenu_item(0 , v:false , v:false ,{})
+                call luaeval("require'completion'.confirmCompletion()")
                 return ''
             endif
         elseif has#plugin('nvim-compe')
             if complete_info()['selected'] !=# '-1'
-                return compe#confirm('<CR>')
+                return compe#confirm("\<CR>")
             endif
         endif
 
         return "\<C-y>"
     " elseif has#plugin('delimitMate') && delimitMate#WithinEmptyPair()
     "     return delimitMate#ExpandReturn()
+    elseif has#plugin('nvim-autopairs')
+        return luaeval('require"nvim-autopairs".autopairs_cr()')
     elseif has#plugin('pears.nvim')
         if mappings#inside_empty_pairs()
             call luaeval('require"pears".handle_return(_A)', nvim_get_current_buf())

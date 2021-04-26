@@ -124,13 +124,15 @@ else
         Plug 'nvim-lua/popup.nvim'
         Plug 'nvim-lua/plenary.nvim'
         Plug 'nvim-lua/telescope.nvim'
-        Plug 'steelsojka/pears.nvim'
+        " Plug 'steelsojka/pears.nvim'
+        Plug 'windwp/nvim-autopairs'
 
         if executable('gcc') || executable('clang')
             " Plug 'nvim-treesitter/completion-treesitter'
             Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
             Plug 'nvim-treesitter/nvim-treesitter-refactor'
             Plug 'nvim-treesitter/nvim-treesitter-textobjects'
+            Plug 'nvim-treesitter/playground'
             " Plug 'romgrk/nvim-treesitter-context'
         endif
     else

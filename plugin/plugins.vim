@@ -30,11 +30,16 @@ if has#async() && (executable('ctags') || executable('cscope') || executable('gt
 endif
 
 if has('nvim-0.5')
-    Plug 'kevinhwang91/nvim-bqf'
-    Plug 'glepnir/zephyr-nvim'
-    Plug 'kyazdani42/nvim-web-devicons'
     " Plug 'romgrk/barbar.nvim'
     " Plug 'lukas-reineke/indent-blankline.nvim', {'branch': 'lua'}
+    Plug 'kyazdani42/nvim-web-devicons'
+    Plug 'kevinhwang91/nvim-bqf'
+
+    Plug 'glepnir/zephyr-nvim'
+    Plug 'marko-cerovac/material.nvim'
+    Plug 'tiagovla/tokyodark.nvim'
+
+    Plug 'folke/lsp-colors.nvim'
 else
     Plug 'tbastos/vim-lua'
     Plug 'octol/vim-cpp-enhanced-highlight'

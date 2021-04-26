@@ -17,7 +17,10 @@ endif
 try
     let g:airline_theme = 'owo'
 
-    if has#plugin('zephyr-nvim')
+    if has#plugin('material.nvim')
+        let g:material_style = 'darker'
+        colorscheme material
+    elseif has#plugin('zephyr-nvim')
         colorscheme zephyr
     elseif has#plugin('sonokai')
         let g:sonokai_better_performance = 1

@@ -16,7 +16,7 @@ if not telescope then
 end
 
 -- local lsp_languages = require'plugins/lsp'
-local treesitter_languages = require'plugins/treesitter'
+local ts_langs = require'plugins/treesitter'
 local actions = require'telescope.actions'
 
 telescope.setup{
@@ -200,16 +200,16 @@ if executable('git') then
     }
 end
 
-if treesitter_languages then
+if ts_langs then
     set_autocmd{
         event   = 'FileType',
-        pattern = treesitter_languages,
+        pattern = ts_langs,
         cmd     = [[nnoremap <A-s> <cmd>lua require'telescope.builtin'.treesitter{}<CR>]],
         group   = 'TreesitterAutocmds'
     }
     set_autocmd{
         event   = 'FileType',
-        pattern = treesitter_languages,
+        pattern = ts_langs,
         cmd     = [[command! -buffer TSSymbols lua require'telescope.builtin'.treesitter{}]],
         group   = 'TreesitterAutocmds'
     }
