@@ -48,9 +48,10 @@ function M.set_commands()
                     on_exit = function(jobid, rc, _)
                         if rc ~= 0 then
                             error(('Failed to pull changes, %s'):format(
-                                table.concat(require'jobs'.jobs[id].streams.stdout, '\n')
+                                table.concat(require'jobs'.jobs[jobid].streams.stdout, '\n')
                             ))
                         end
+                        print('Repo updated!')
                         nvim.ex.checktime()
                     end
                 }
