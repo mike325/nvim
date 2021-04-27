@@ -40,7 +40,21 @@ function M.set_commands()
         rhs = function(args)
             if args then args = split(args, ' ') end
             local utils = require'git.utils'
-            utils.launch_gitcmd_job{gitcmd = 'pull', args = args}
+            utils.launch_gitcmd_job{
+                gitcmd = 'pull',
+                args = args,
+                jobopts = {
+                    pty = true,
+                    on_exit = function(jobid, rc, _)
+                        if rc ~= 0 then
+                            error(('Failed to pull changes, %s'):format(
+                                table.concat(require'jobs'.jobs[id].streams.stdout, '\n')
+                            ))
+                        end
+                        nvim.ex.checktime()
+                    end
+                }
+            }
         end,
         args = {nargs = '*', force = true, buffer = true}
     }

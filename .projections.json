@@ -30,9 +30,9 @@
   "ftdetect/*.vim"          : {"type": "FtDetect"},
   "ftplugin/*.vim"          : {"type": "FtPlugin"},
   "plugin/*.vim"            : {"type": "Plugin"},
-  "after/plugin/*.vim"      : {"type": "AfterPlugin"},
-  "after/ftplugin/*.vim"    : {"type": "AfterFtplugin"},
-  "after/syntax/*.vim"      : {"type": "AfterSyntax"},
+  "after/plugin/*.vim"      : {"type": "PluginAfter"},
+  "after/ftplugin/*.vim"    : {"type": "FtPluginAfter"},
+  "after/syntax/*.vim"      : {"type": "SyntaxAfter"},
   "spell/*.add"             : {"type": "Spells"},
   "setting.toml"            : {"type": "Gonvim"},
   "skeletons/*"             : {"type": "Skeletons"}

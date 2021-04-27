@@ -27,17 +27,17 @@
 let g:mapleader = "\<Space>"
 
 if os#name('windows')
-    if has('nvim-0.5')
-        set shell=powershell.exe
-        set shellcmdflag=-NoLogo\ -NoProfile\ -ExecutionPolicy\ RemoteSigned\ -Command
-        set shellxquote=
-        let &shellquote = ''
-        let &shellpipe  = '| Out-File -Encoding UTF8 %s'
-        let &shellredir = '| Out-File -Encoding UTF8 %s'
-        " set shellxquote=(
-    else
-        set shell=cmd.exe
-    endif
+    " if has('nvim-0.5')
+    "     set shell=powershell.exe
+    "     set shellcmdflag=-NoLogo\ -NoProfile\ -ExecutionPolicy\ RemoteSigned\ -Command
+    "     set shellxquote=
+    "     let &shellquote = ''
+    "     let &shellpipe  = '| Out-File -Encoding UTF8 %s'
+    "     let &shellredir = '| Out-File -Encoding UTF8 %s'
+    "     " set shellxquote=(
+    " else
+    set shell=cmd.exe
+    " endif
 endif
 
 " If there are no plugins available and we don't have git fallback to minimal mode
@@ -128,7 +128,9 @@ else
         Plug 'windwp/nvim-autopairs'
 
         if executable('gcc') || executable('clang')
-            " Plug 'nvim-treesitter/completion-treesitter'
+            if os#name('windows')
+                Plug 'nvim-treesitter/completion-treesitter'
+            endif
             Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
             Plug 'nvim-treesitter/nvim-treesitter-refactor'
             Plug 'nvim-treesitter/nvim-treesitter-textobjects'
@@ -142,8 +144,11 @@ else
     if has#minimal()
 
         if has('nvim-0.5')
-            " Plug 'nvim-lua/completion-nvim'
-            Plug 'hrsh7th/nvim-compe'
+            if os#name('windows')
+                Plug 'nvim-lua/completion-nvim'
+            else
+                Plug 'hrsh7th/nvim-compe'
+            endif
 
             if tools#CheckLanguageServer()
                 Plug 'neovim/nvim-lspconfig'
