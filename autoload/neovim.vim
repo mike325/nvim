@@ -13,6 +13,11 @@ function! neovim#grep(type, ...) abort
     call luaeval('require"settings.functions".opfun_grep(_A[1], _A[2])', [a:type, l:visual])
 endfunction
 
+function! neovim#lsp_format(type, ...) abort
+    let l:visual = a:0 ? v:true : v:false
+    call luaeval('require"settings.functions".opfun_lsp_format(_A[1], _A[2])', [a:type, l:visual])
+endfunction
+
 function! neovim#gitfiles_status(gittype) abort
     let l:files = luaeval('require"git.utils".status()')
     let l:list = []

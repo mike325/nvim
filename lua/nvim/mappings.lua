@@ -96,7 +96,7 @@ function M.get_mapping(mapping)
 
     local lhs = transform_mapping(mapping.lhs)
     local args = type(mapping.args) == 'table' and mapping.args or {mapping.args}
-    local mode = modes[mapping.mode] ~= nil and modes[mapping.mode] or mapping.mode
+    local mode = modes[mapping.mode] or mapping.mode
 
     if args.buffer ~= nil and args.buffer == true then
         mappings = api.nvim_buf_get_keymap(mode)
@@ -121,12 +121,18 @@ function M.set_mapping(mapping)
         return false
     end
 
+    assert(
+        type(mapping.mode) == type('') or type(mapping.mode) == type({}),
+        'Mode must be a string or a list of strings'
+    )
+
     local args = type(mapping.args) == 'table' and mapping.args or {mapping.args}
-    local mode = modes[mapping.mode] ~= nil and modes[mapping.mode] or mapping.mode
+    -- local mode = modes[mapping.mode] ~= nil and modes[mapping.mode] or mapping.mode
     local lhs = mapping.lhs
     local rhs = mapping.rhs
     local expr = false
     local scope, buf
+    local mapping_modes = type(mapping.mode) == type('') and {mapping.mode} or mapping.mode
 
     for attr, val in pairs(args) do
         if attr == 'expr' then
@@ -136,48 +142,51 @@ function M.set_mapping(mapping)
         end
     end
 
-    if buf ~= nil then
-        scope = 'b'
-        args.buffer = nil
+    for _,mode in pairs(mapping_modes) do
+        mode = modes[mode] or mode
+        if buf ~= nil then
+            scope = 'b'
+            args.buffer = nil
 
-        if rhs ~= nil and type(rhs) == 'string' then
-            api.nvim_buf_set_keymap(buf, mode, lhs, rhs, args)
-        elseif rhs ~= nil and type(rhs) == 'function' then
-            local wrapper = get_wrapper {
+            if rhs ~= nil and type(rhs) == 'string' then
+                api.nvim_buf_set_keymap(buf, mode, lhs, rhs, args)
+            elseif rhs ~= nil and type(rhs) == 'function' then
+                local wrapper = get_wrapper {
+                    lhs   = lhs,
+                    mode  = mode,
+                    scope = scope,
+                    expr = expr,
+                }
+                api.nvim_buf_set_keymap(buf, mode, lhs, wrapper, args)
+            else
+                api.nvim_buf_del_keymap(buf, mode, lhs)
+            end
+        else
+            args = args == nil and {} or args
+            scope = 'g'
+            if rhs ~= nil and type(rhs) == 'string' then
+                api.nvim_set_keymap(mode, lhs, rhs, args)
+            elseif rhs ~= nil and type(rhs) == 'function' then
+                local wrapper = get_wrapper {
+                    lhs   = lhs,
+                    mode  = mode,
+                    scope = scope,
+                    expr = expr,
+                }
+                api.nvim_set_keymap(mode, lhs, wrapper, args)
+            else
+                api.nvim_del_keymap(mode, lhs)
+            end
+        end
+
+        if rhs ~= 'string' then
+            func_handle {
+                rhs   = rhs,
                 lhs   = lhs,
                 mode  = mode,
                 scope = scope,
-                expr = expr,
             }
-            api.nvim_buf_set_keymap(buf, mode, lhs, wrapper, args)
-        else
-            api.nvim_buf_del_keymap(buf, mode, lhs)
         end
-    else
-        args = args == nil and {} or args
-        scope = 'g'
-        if rhs ~= nil and type(rhs) == 'string' then
-            api.nvim_set_keymap(mode, lhs, rhs, args)
-        elseif rhs ~= nil and type(rhs) == 'function' then
-            local wrapper = get_wrapper {
-                lhs   = lhs,
-                mode  = mode,
-                scope = scope,
-                expr = expr,
-            }
-            api.nvim_set_keymap(mode, lhs, wrapper, args)
-        else
-            api.nvim_del_keymap(mode, lhs)
-        end
-    end
-
-    if rhs ~= 'string' then
-        func_handle {
-            rhs   = rhs,
-            lhs   = lhs,
-            mode  = mode,
-            scope = scope,
-        }
     end
 
 end

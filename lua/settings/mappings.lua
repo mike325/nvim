@@ -275,7 +275,7 @@ if has('nvim-0.5') then
     set_mapping{
         mode = 'v',
         lhs = 'gs',
-        rhs = '<cmd><C-U>call neovim#grep(visualmode(), v:true)<CR>',
+        rhs = ':<C-U>call neovim#grep(visualmode(), v:true)<CR>',
         args = noremap_silent,
     }
 

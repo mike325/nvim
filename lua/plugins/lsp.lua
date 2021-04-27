@@ -248,36 +248,105 @@ local servers = {
     },
 }
 
-local function on_attach(_)
+local function on_attach(client, bufnr)
     require'nvim'.bo.omnifunc = 'v:lua.vim.lsp.omnifunc'
     -- local nvim = require'nvim'
 
     local mappings = {
-        ['<C-]>']     = '<cmd>lua vim.lsp.buf.definition()<CR>',
-        ['gd']        = '<cmd>lua vim.lsp.buf.declaration()<CR>',
-        -- ['gD']    = '<cmd>lua vim.lsp.buf.implementation()<CR>',
-        ['gr ']       = '<cmd>lua vim.lsp.buf.references()<CR>',
-        ['K']         = '<cmd>lua vim.lsp.buf.hover()<CR>',
-        ['<leader>r'] = '<cmd>lua vim.lsp.buf.rename()<CR>',
-        ['=d']        = '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>',
-        [']d']        = '<cmd>lua vim.lsp.diagnostic.goto_next { wrap = false }<CR>',
-        ['[d']        = '<cmd>lua vim.lsp.diagnostic.goto_prev { wrap = false }<CR>',
+        ['<C-]>'] = {
+            capability = 'goto_definition',
+            mapping = '<cmd>lua vim.lsp.buf.definition()<CR>',
+        },
+        ['gd'] = {
+            capability = 'declaration',
+            mapping = '<cmd>lua vim.lsp.buf.declaration()<CR>',
+        },
+        ['gi'] = {
+            capability = 'implementation',
+            mapping = '<cmd>lua vim.lsp.buf.implementation()<CR>',
+        },
+        ['gr'] = {
+            capability = 'find_references',
+            mapping = '<cmd>lua vim.lsp.buf.references()<CR>',
+        },
+        ['K'] = {
+            capability = 'hover',
+            mapping = '<cmd>lua vim.lsp.buf.hover()<CR>',
+        },
+        ['<leader>r'] = {
+            capability = 'rename',
+            mapping = '<cmd>lua vim.lsp.buf.rename()<CR>',
+        },
+        ['=L'] = {
+            mapping = '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>',
+        },
+        ['=d'] = {
+            capability = 'completion',
+            mapping = '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>',
+        },
+        [']d'] = {
+            capability = 'completion',
+            mapping = '<cmd>lua vim.lsp.diagnostic.goto_next { wrap = false }<CR>',
+        },
+        ['[d'] = {
+            capability = 'completion',
+            mapping = '<cmd>lua vim.lsp.diagnostic.goto_prev { wrap = false }<CR>',
+        },
+        ['ga'] = {
+            capability = 'code_action',
+            mapping = '<cmd>lua vim.lsp.buf.code_action()<CR>',
+        },
+        ['gh'] = {
+            capability = 'signature_help',
+            mapping = '<cmd>lua vim.lsp.buf.signature_help()<CR>',
+        },
+        -- ['<space>wa'] = '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>',
+        -- ['<space>wr'] = '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>',
+        -- ['<space>wl'] = '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>',
+        -- ['<leader>D'] = '<cmd>lua vim.lsp.buf.type_definition()<CR>',
     }
 
     for mapping,val in pairs(mappings) do
+        if client.resolved_capabilities[val.capability] then
+            set_mapping {
+                mode = 'n',
+                lhs = mapping,
+                rhs = val.mapping,
+                args = { silent = true, buffer = bufnr, noremap = true},
+            }
+        end
+    end
+
+    if client.resolved_capabilities.document_formatting then
         set_mapping {
             mode = 'n',
-            lhs = mapping,
-            rhs = val,
-            args = { silent = true, buffer = true, noremap = true},
+            lhs = '=F',
+            rhs =  vim.lsp.buf.formatting,
+            args = {silent = true, buffer = bufnr, noremap = true},
+        }
+    end
+
+    if client.resolved_capabilities.document_range_formatting then
+        set_mapping {
+            mode = 'n',
+            lhs = 'gq',
+            rhs = '<cmd>set opfunc=neovim#lsp_format<CR>g@',
+            args = {silent = true, buffer = bufnr, noremap = true},
+        }
+
+        set_mapping {
+            mode = 'v',
+            lhs = 'gq',
+            rhs = ':<C-U>call neovim#lsp_format(visualmode(), v:true)<CR>',
+            args = {silent = true, buffer = bufnr, noremap = true},
         }
     end
 
     -- Disable neomake for lsp buffers
-    if plugins['neomake'] ~= nil then
+    if not plugins['neomake'] then
         set_autocmd{
             event   = 'FileType',
-            pattern = '<buffer>',
+            pattern = ('<buffer=%s>'):format(bufnr),
             cmd     = [[silent! call neomake#CancelJobs(0) | silent! call neomake#cmd#clean(1) | silent! call neomake#cmd#disable(b:) ]],
             group   = 'LSPAutocmds'
         }
@@ -320,6 +389,7 @@ local function on_attach(_)
 
 end
 
+-- TODO: Make commands capability-dependent
 local commands = {
     Type           = {vim.lsp.buf.type_definition},
     Hover          = {vim.lsp.buf.hover},
@@ -331,6 +401,7 @@ local commands = {
     OutgoingCalls  = {vim.lsp.buf.outgoing_calls},
     IncommingCalls = {vim.lsp.buf.incoming_calls},
     Implementation = {vim.lsp.buf.implementation},
+    Format         = {vim.lsp.buf.formatting},
     References = {function()
         local ok, _ = pcall(require, 'plugins.telescope' )
         if ok then

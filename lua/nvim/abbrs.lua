@@ -24,7 +24,7 @@ function M.set_abbr(abbr)
     local lhs = abbr.lhs
     local rhs = abbr.rhs
     local args = type(abbr.args) == 'table' and abbr.args or {abbr.args}
-    local mode = modes[abbr.mode] ~= nil and modes[abbr.mode] or abbr.mode
+    local mode = modes[abbr.mode] or abbr.mode
 
     if args.buffer ~= nil  then
         table.insert(extras, '<buffer>')

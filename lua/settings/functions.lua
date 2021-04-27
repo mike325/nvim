@@ -96,6 +96,17 @@ function M.opfun_grep(select, visual)
     nvim.reg['@'] = reg_save
 end
 
+function M.opfun_lsp_format(select, visual)
+    local buf = nvim.get_current_buf()
+    local startpos = nvim.buf.get_mark(buf, '[')
+    -- startpos[2] = 0
+    local endpos = nvim.buf.get_mark(buf, ']')
+    -- local endline = nvim.buf.get_lines(buf, endpos[1], endpos[1] + 1, false)[1]
+    -- endpos[2] = #endline
+
+    vim.lsp.buf.range_formatting({}, startpos, endpos)
+end
+
 local function get_files(path, is_git)
     local seeker = select_filelist(is_git, true)
     require'jobs'.send_job{

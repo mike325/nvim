@@ -104,7 +104,7 @@ set_command{
 set_command{
     lhs = 'HelpTags',
     rhs = function()
-        require'telescope.builtin'.help_tags()
+        require'telescope.builtin'.help_tags{}
     end,
     args = {force=true}
 }

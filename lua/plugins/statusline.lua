@@ -65,11 +65,11 @@ local modes = {
 }
 
 local function mode_label()
-    return modes[vim.fn.mode()][1]
+    return modes[nvim.get_mode()['mode']][1]
 end
 
 local function mode_hl()
-    return modes[vim.fn.mode()][2]
+    return modes[nvim.get_mode()['mode']][2]
 end
 
 local function highlight(group, fg, bg, gui)
