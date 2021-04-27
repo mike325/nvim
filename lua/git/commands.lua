@@ -23,6 +23,7 @@ function M.rm_commands()
         'GPull',
         'GReview',
         'GRead',
+        'GFetch',
         'GWrite',
         'GRestore',
         'GRm',
@@ -35,6 +36,7 @@ function M.rm_commands()
 end
 
 function M.set_commands()
+
     set_command {
         lhs = 'GPull',
         rhs = function(args)
@@ -66,6 +68,16 @@ function M.set_commands()
             if args then args = split(args, ' ') end
             local utils = require'git.utils'
             utils.launch_gitcmd_job{gitcmd = 'push', args = args}
+        end,
+        args = {nargs = '*', force = true, buffer = true}
+    }
+
+    set_command {
+        lhs = 'GFetch',
+        rhs = function(args)
+            if args then args = split(args, ' ') end
+            local utils = require'git.utils'
+            utils.launch_gitcmd_job{gitcmd = 'fetch', args = args}
         end,
         args = {nargs = '*', force = true, buffer = true}
     }
