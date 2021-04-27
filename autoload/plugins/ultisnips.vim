@@ -21,7 +21,7 @@ let g:ulti_jump_forwards_res  = 0
 let g:ulti_expand_res         = 0
 
 let g:ultisnips_python_quoting_style = 'single'
-let g:ultisnips_python_triple_quoting_style = 'single'
+let g:ultisnips_python_triple_quoting_style = 'double'
 let g:ultisnips_python_style = 'google'
 
 xnoremap <silent> <CR> :call UltiSnips#SaveLastVisualSelection()<CR>gv"_s

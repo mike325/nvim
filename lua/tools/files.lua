@@ -145,7 +145,8 @@ function M.openfile(path, flags, callback)
 end
 
 local function fs_write(path, data, append)
-    data = type(data) == 'table' and table.concat(data, [[\n]]) or data
+    assert(type(data) == type('') or type(data) == type({}), 'Invalid data type: '..type(data))
+    data = type(data) == type('') and table.concat(data, '\n') or data
     assert(data and type(data) == 'string', 'Missing valid data buffer/string')
     local flags = append and 'a' or 'w'
     M.openfile(path, flags, function(fd)
