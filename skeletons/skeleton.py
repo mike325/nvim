@@ -4,7 +4,7 @@ import argparse
 import logging
 import os
 import sys
-from subprocess import Popen, PIPE
+# from subprocess import PIPE, Popen
 # from datetime import datetime
 
 _header = """
@@ -92,7 +92,7 @@ def _createLogger(
         _log.addHandler(file_handler)
 
 
-def _str_to_logging(level: str):
+def _str_to_logging(level) -> int:
     """ Convert logging level string to a logging number
 
     :level: str: integer representation or a valid logging string
@@ -184,25 +184,23 @@ def _parseArgs():
     return parser.parse_args()
 
 
-def _execute(cmd: list, background: bool):
-    """ Execute a synchronous command
-
-    :cmd: list: command to execute
-    :returns: Popen obj: command object after execution
-
-    """
-    stdout = sys.stdout if not background else PIPE
-    stderr = sys.stderr if not background else PIPE
-    _log.debug(f'Executing cmd: {cmd}')
-    cmd_obj = Popen(cmd, stdout=stdout, stderr=stderr, text=True)
-    out, err = cmd_obj.communicate()
-    if out is not None and len(out) > 0:
-        _log.debug(out)
-    if cmd_obj.returncode != 0:
-        _log.error(f'Command exited with {cmd_obj.returncode}')
-        if err is not None:
-            _log.error(err)
-    return cmd_obj
+# def _execute(cmd: list, background: bool):
+#     """ Execute a synchronous command
+#     :cmd: list: command to execute
+#     :returns: Popen obj: command object after execution
+#     """
+#     stdout = sys.stdout if not background else PIPE
+#     stderr = sys.stderr if not background else PIPE
+#     _log.debug(f'Executing cmd: {cmd}')
+#     cmd_obj = Popen(cmd, stdout=stdout, stderr=stderr, text=True)
+#     out, err = cmd_obj.communicate()
+#     if out is not None and len(out) > 0:
+#         _log.debug(out)
+#     if cmd_obj.returncode != 0:
+#         _log.error(f'Command exited with {cmd_obj.returncode}')
+#         if err is not None:
+#             _log.error(err)
+#     return cmd_obj
 
 
 def main():
