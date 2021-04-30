@@ -11,9 +11,18 @@ local M = {}
 
 M.getcwd = uv.cwd
 
+local is_windows = sys.name == 'windows'
+
 local function split_path(path)
     path = M.normalize_path(path)
     return split(path, '/')
+end
+
+local function forward_path(path)
+    if is_windows and nvim.fn.shellslash then
+        path:gsub('\\','/')
+    end
+    return path
 end
 
 function M.exists(filename)
@@ -45,9 +54,9 @@ function M.is_absolute(path)
     assert(type(path) == 'string' and path ~= '', ([[Not a path: "%s"]]):format(path))
     path = M.normalize_path(path)
     local is_abs = false
-    if sys.name == 'windows' and #path >= 2 then
+    if is_windows and #path >= 2 then
         is_abs = string.match(path:sub(1, 2), '^%w:$') ~= nil
-    elseif sys.name ~= 'windows' then
+    elseif not is_windows then
         is_abs = path:sub(1, 1) == '/'
     end
     return is_abs
@@ -56,10 +65,10 @@ end
 function M.is_root(path)
     assert(type(path) == 'string' and path ~= '', ([[Not a path: "%s"]]):format(path))
     local root = false
-    if sys.name == 'windows' and #path >= 2 then
-        path = path:gsub('\\','/')
+    if is_windows and #path >= 2 then
+        path = forward_path(path)
         root = string.match(path, '^%w:/?$') ~= nil
-    elseif sys.name ~= 'windows' then
+    elseif not is_windows then
         root = path == '/'
     end
     return root
@@ -68,7 +77,7 @@ end
 function M.realpath(path)
     assert(M.exists(path), ([[Not a path: "%s"]]):format(path))
     local rpath = uv.fs_realpath(path)
-    return rpath and rpath:gsub('\\','/') or path
+    return forward_path(rpath or path)
 end
 
 function M.normalize_path(path)
@@ -76,7 +85,7 @@ function M.normalize_path(path)
     if path:sub(1, 1) == '~' or path == '%' then
         path = nvim.fn.expand(path)
     end
-    return path:gsub('\\','/')
+    return forward_path(path)
 end
 
 function M.basename(path)
@@ -101,14 +110,14 @@ function M.basedir(path)
         local path_components = split_path(path)
         if #path_components > 1 then
             table.remove(path_components, #path_components)
-            if M.is_absolute(path) and sys.name ~= 'windows' then
+            if M.is_absolute(path) and not is_windows then
                 path = '/'
             else
                 path = ''
             end
             path = path .. table.concat(path_components, '/')
         elseif M.is_absolute(path) then
-            path = sys.name == 'windows' and path:match(path:sub(1, 2), '^%w:$') or '/'
+            path = is_windows and path:match(path:sub(1, 2), '^%w:$') or '/'
         else
             path = '.'
         end
@@ -162,21 +171,19 @@ function M.updatefile(path, data)
     fs_write(path, data, true)
 end
 
-function M.readfile(path)
-    assert(M.is_file(path), 'Not a file: '..path)
-    return M.openfile(path, 'r', function(fd)
-        local stat = uv.fs_fstat(fd)
-        local data = uv.fs_read(fd, stat.size, 0)
-        -- TODO: Support DOS format
-        local split_func = vim.in_fast_event() and vim.split or nvim.fn.split
-        data = split_func(data, '\n')
-        return data
-    end)
-end
-
-function M.async_readfile(path, callback)
+function M.readfile(path, callback)
     assert(M.is_file(path), 'Not a file: '..path)
     assert(type(callback) == 'function', 'Missing valid callback')
+    if not callback then
+        return M.openfile(path, 'r', function(fd)
+            local stat = uv.fs_fstat(fd)
+            local data = uv.fs_read(fd, stat.size, 0)
+            -- TODO: Support DOS format
+            local split_func = vim.in_fast_event() and vim.split or nvim.fn.split
+            data = split_func(data, '\n')
+            return data
+        end)
+    end
     uv.fs_open(path, "r", 438, function(oerr, fd)
         assert(not oerr, oerr)
         uv.fs_fstat(fd, function(serr, stat)
@@ -193,7 +200,7 @@ function M.async_readfile(path, callback)
 end
 
 function M.chmod(path, mode, base)
-    if sys.name ~= 'windows' then
+    if not is_windows then
         base = base == nil and 8 or base
         uv.fs_chmod(path, tonumber(mode, base))
     end
@@ -240,9 +247,9 @@ function M.ls(expr)
         results = filtered
     end
 
-    if sys.name == 'windows' then
+    if is_windows and nvim.fn.shellslash then
         for i=1,#results do
-            results[i] = results[i]:gsub('\\','/')
+            results[i] = forward_path(results[i])
         end
     end
 
@@ -541,7 +548,7 @@ function M.read_config(config, callback)
         local data = M.readfile(config)
         return parser_config(data)
     end
-    M.async_readfile(config, function(data)
+    M.readfile(config, function(data)
         callback(parser_config(data))
     end)
 end

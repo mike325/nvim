@@ -1,11 +1,11 @@
 -- local nvim = require'nvim'
 local sys = require'sys'
 
-local is_file        = require'tools.files'.is_file
-local async_readfile = require'tools.files'.async_readfile
-local executable     = require'tools.files'.executable
-local realpath       = require'tools.files'.realpath
-local split          = require'tools.strings'.split
+local is_file    = require'tools.files'.is_file
+local readfile   = require'tools.files'.readfile
+local executable = require'tools.files'.executable
+local realpath   = require'tools.files'.realpath
+local split      = require'tools.strings'.split
 
 -- local read_json      = require'tools'.files.read_json
 -- local normalize_path = require'tools'.files.normalize_path
@@ -19,7 +19,7 @@ function M.get_ssh_hosts()
     local ssh_config = sys.home..'/.ssh/config'
     if is_file(ssh_config) then
         local host = ''
-        async_readfile(ssh_config, function(data)
+        readfile(ssh_config, function(data)
             for _,line in pairs(data) do
                 if line and line ~= '' and line:match('Host [a-zA-Z0-9_-%.]+') then
                     host = split(line, ' ')[2]
