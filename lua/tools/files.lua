@@ -173,7 +173,7 @@ end
 
 function M.readfile(path, callback)
     assert(M.is_file(path), 'Not a file: '..path)
-    assert(type(callback) == 'function', 'Missing valid callback')
+    assert(not callback or type(callback) == 'function', 'Missing valid callback')
     if not callback then
         return M.openfile(path, 'r', function(fd)
             local stat = uv.fs_fstat(fd)
