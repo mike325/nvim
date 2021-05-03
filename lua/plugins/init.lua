@@ -13,7 +13,7 @@ if nvim.has('nvim-0.5') then
     for _,plugin in pairs(plugins) do
         plugin = basename(plugin:gsub('%.lua', ''))
         if plugin ~= 'init' then
-            local ok, status = pcall(require, 'plugins/'..plugin)
+            local ok, status = pcall(require, 'plugins.'..plugin)
             if not ok then
                 echoerr(string.format('Failed to load "%s", Error: "%s"', plugin, status))
             end

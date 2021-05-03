@@ -19,10 +19,17 @@ local function split_path(path)
 end
 
 local function forward_path(path)
-    if is_windows and nvim.fn.shellslash then
+    if is_windows and nvim.o.shellslash then
         path:gsub('\\','/')
     end
     return path
+end
+
+local function separator()
+    if is_windows and not nvim.o.shellslash then
+        return '\\'
+    end
+    return '/'
 end
 
 function M.exists(filename)
@@ -90,7 +97,7 @@ end
 
 function M.basename(path)
     path = M.normalize_path(path)
-    return path:match'[^/]+$'
+    return path:match(('[^%s]+$'):format(separator()))
 end
 
 function M.extension(path)
@@ -247,7 +254,7 @@ function M.ls(expr)
         results = filtered
     end
 
-    if is_windows and nvim.fn.shellslash then
+    if is_windows and nvim.o.shellslash then
         for i=1,#results do
             results[i] = forward_path(results[i])
         end
