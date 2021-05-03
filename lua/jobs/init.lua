@@ -204,6 +204,10 @@ function M.send_job(job)
         nvim.command('terminal '..cmd)
         nvim.ex.startinsert()
     else
+        assert(not job.clean or type(job.clean) == type(true), 'Invalid Clean arg: '..type(job.clean))
+        assert(not job.server or type(job.server) == type(true), 'Invalid Server arg: '..type(job.server))
+        assert(not job.timeout or type(job.timeout) == type(1), 'Invalid Timeout arg: '..type(job.timeout))
+
         local opts = job.opts or {}
         local clean = type(job.clean) ~= 'boolean' and true or job.clean
 
