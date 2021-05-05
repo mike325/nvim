@@ -211,6 +211,12 @@ function M.send_job(job)
         local opts = job.opts or {}
         local clean = type(job.clean) ~= 'boolean' and true or job.clean
 
+        job.server = job.server or false
+        if job.server then
+            job.timeout = 0
+            clean = false
+        end
+
         if not opts.on_exit then
             opts.on_exit = general_on_exit
         else

@@ -956,7 +956,7 @@ if executable('scp') then
 
     local function get_host(host)
         if not host or host == '' then
-            host = nvim.fn.input('Enter hostname > ', '', 'customlist,mappings#ssh_hosts_completion')
+            host = nvim.fn.input('Enter hostname > ', '', 'customlist,neovim#ssh_hosts_completion')
             assert(type(host) == 'string' and host ~= '', 'Invalid hostname')
         end
         return host
@@ -977,7 +977,7 @@ if executable('scp') then
         args = {
             nargs = '*',
             force = true,
-            complete = 'customlist,mappings#ssh_hosts_completion'
+            complete = 'customlist,neovim#ssh_hosts_completion'
         }
     }
 
@@ -996,7 +996,7 @@ if executable('scp') then
         args = {
             nargs = '*',
             force = true,
-            complete = 'customlist,mappings#ssh_hosts_completion'
+            complete = 'customlist,neovim#ssh_hosts_completion'
         }
     }
 

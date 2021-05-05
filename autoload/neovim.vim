@@ -8,6 +8,11 @@ if !has('nvim')
     finish
 endif
 
+function! neovim#ssh_hosts_completion(arglead, cmdline, cursorpos) abort
+    let l:hosts = luaeval("vim.tbl_keys(require'tools'.system.hosts)")
+    return mappings#general_completion(a:arglead, a:cmdline, a:cursorpos, l:hosts)
+endfunction
+
 function! neovim#grep(type, ...) abort
     let l:visual = a:0 ? v:true : v:false
     call luaeval('require"settings.functions".opfun_grep(_A[1], _A[2])', [a:type, l:visual])

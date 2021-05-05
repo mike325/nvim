@@ -7,13 +7,6 @@ function! mappings#general_completion(arglead, cmdline, cursorpos, options) abor
     return filter(a:options, "v:val =~? join(split(a:arglead, '\zs'), '.*')")
 endfunction
 
-if has('nvim')
-    function! mappings#ssh_hosts_completion(arglead, cmdline, cursorpos) abort
-        let l:hosts = luaeval("vim.tbl_keys(require'tools'.system.hosts)")
-        return mappings#general_completion(a:arglead, a:cmdline, a:cursorpos, l:hosts)
-    endfunction
-endif
-
 function! mappings#inside_empty_pairs() abort
     let l:rsp = v:false
     let l:pairs = {
@@ -57,22 +50,18 @@ function! mappings#enter() abort
     elseif has#plugin('snippets.nvim') && l:snippet
         return ''
     elseif pumvisible()
+        let l:selected = complete_info()['selected'] !=# '-1'
         if has#plugin('YouCompleteMe')
             call feedkeys("\<C-y>")
             return ''
         elseif has#plugin('completion-nvim')
-            if complete_info()['selected'] !=# '-1'
-                call luaeval("require'completion'.confirmCompletion()")
-                return "\<C-y>"
-            else
+            if ! l:selected
                 call nvim_select_popupmenu_item(0 , v:false , v:false ,{})
-                call luaeval("require'completion'.confirmCompletion()")
-                return ''
             endif
+            call luaeval("require'completion'.confirmCompletion()")
+            return l:selected ? "\<C-y>" : ''
         elseif has#plugin('nvim-compe')
-            if complete_info()['selected'] !=# '-1'
-                return compe#confirm("\<CR>")
-            endif
+            return l:selected ? compe#confirm("\<CR>") : compe#close('<C-e>')
         endif
 
         return "\<C-y>"
