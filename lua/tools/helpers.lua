@@ -164,6 +164,7 @@ if not nvim.env['NO_COOL_FONTS'] then
         error = '',
         warn = '',
         info = '',
+        hint = '',
         message = 'M',
         virtual_text = '❯',
         diff_add = '',
@@ -184,6 +185,7 @@ else
         error = '×',
         warn = '!',
         info = 'I',
+        hint = 'H',
         message = 'M',
         virtual_text = '➤',
         diff_add = '+',
@@ -784,6 +786,7 @@ function M.get_language_server(language)
             '--clang-tidy',
             '--header-insertion=iwyu',
             '--function-arg-placeholders',
+            '--completion-style=detailed',
             '--log=verbose',
         },
         ['ccls']   = {

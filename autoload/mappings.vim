@@ -54,19 +54,17 @@ function! mappings#enter() abort
         if has#plugin('YouCompleteMe')
             call feedkeys("\<C-y>")
             return ''
+        elseif has#plugin('nvim-compe')
+            return l:selected ? compe#confirm('<CR>') : compe#close('<C-e>')
         elseif has#plugin('completion-nvim')
             if ! l:selected
-                call nvim_select_popupmenu_item(0 , v:false , v:false ,{})
+                call nvim_select_popupmenu_item(-1 , v:false , v:true ,{})
             endif
             call luaeval("require'completion'.confirmCompletion()")
             return l:selected ? "\<C-y>" : ''
-        elseif has#plugin('nvim-compe')
-            return l:selected ? compe#confirm("\<CR>") : compe#close('<C-e>')
         endif
 
         return "\<C-y>"
-    " elseif has#plugin('delimitMate') && delimitMate#WithinEmptyPair()
-    "     return delimitMate#ExpandReturn()
     elseif has#plugin('nvim-autopairs')
         return luaeval('require"nvim-autopairs".autopairs_cr()')
     elseif has#plugin('pears.nvim')
@@ -74,6 +72,8 @@ function! mappings#enter() abort
             call luaeval('require"pears".handle_return(_A)', nvim_get_current_buf())
             return ''
         endif
+    elseif has#plugin('delimitMate') && delimitMate#WithinEmptyPair()
+        return delimitMate#ExpandReturn()
     elseif has#plugin('ultisnips')
         call UltiSnips#JumpForwards()
         if get(g:, 'ulti_jump_forwards_res', 0) > 0

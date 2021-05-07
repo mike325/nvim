@@ -195,6 +195,7 @@ local servers = {
                     '--clang-tidy',
                     '--header-insertion=iwyu',
                     '--function-arg-placeholders',
+                    '--completion-style=detailed',
                     '--log=verbose',
                 },
                 capabilities = {
@@ -250,7 +251,7 @@ local servers = {
 
 local function on_attach(client, bufnr)
     require'nvim'.bo.omnifunc = 'v:lua.vim.lsp.omnifunc'
-    -- local nvim = require'nvim'
+    bufnr = bufnr or require'nvim'.get_current_buf()
 
     local mappings = {
         ['<C-]>'] = {
@@ -345,7 +346,7 @@ local function on_attach(client, bufnr)
     -- Disable neomake for lsp buffers
     if not plugins['neomake'] then
         set_autocmd{
-            event   = 'FileType',
+            event   = 'BufReadPost',
             pattern = ('<buffer=%s>'):format(bufnr),
             cmd     = [[silent! call neomake#CancelJobs(0) | silent! call neomake#cmd#clean(1) | silent! call neomake#cmd#disable(b:) ]],
             group   = 'LSPAutocmds'
@@ -468,7 +469,8 @@ nvim.g.lsp_languages = available_languages
 
 vim.cmd('sign define LspDiagnosticsSignError text='..get_icon('error')..' texthl=LspDiagnosticsSignError linehl= numhl=')
 vim.cmd('sign define LspDiagnosticsSignWarning text='..get_icon('warn')..' texthl=LspDiagnosticsSignWarning linehl= numhl=')
-vim.cmd('sign define LspDiagnosticsSignHint text='..get_icon('info')..' texthl=LspDiagnosticsSignHint linehl= numhl=')
+vim.cmd('sign define LspDiagnosticsSignHint text='..get_icon('hint')..' texthl=LspDiagnosticsSignHint linehl= numhl=')
+vim.cmd('sign define LspDiagnosticsSignInformation text='..get_icon('info')..' texthl=LspDiagnosticsSignInformation linehl= numhl=')
 
 _G['vim'].lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
     vim.lsp.diagnostic.on_publish_diagnostics, {

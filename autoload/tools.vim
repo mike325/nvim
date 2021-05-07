@@ -207,6 +207,7 @@ function! tools#getLanguageServer(language) abort
         \   '--clang-tidy',
         \   '--header-insertion=iwyu',
         \   '--function-arg-placeholders',
+        \   '--completion-style=detailed',
         \   '--log=verbose',
         \ ],
         \ 'ccls'   : [

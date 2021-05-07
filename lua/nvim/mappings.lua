@@ -38,7 +38,6 @@ local function get_wrapper(info)
     local mode = info.mode
     local lhs = info.lhs
     local expr = info.expr
-    local bufnr = require'nvim'.win.get_buf(0)
     local cmd
 
     cmd = expr and [=[luaeval("]=] or [[<cmd>lua ]]
@@ -47,6 +46,7 @@ local function get_wrapper(info)
     cmd = cmd..("['%s']"):format(scope)
 
     if scope == 'b' then
+        local bufnr = type(info.buf) == 'number' and info.buf or require'nvim'.get_current_buf()
         cmd = cmd..("['%s']"):format(bufnr)
     end
 
@@ -67,12 +67,13 @@ local function func_handle(info)
     local mode = info.mode
     local lhs = info.lhs
     local rhs = info.rhs
-    local bufnr = tostring(require'nvim'.win.get_buf(0))
 
     lhs = lhs:gsub('<leader>', api.nvim_get_var('mapleader'))
     lhs = lhs:gsub('<C-', '^')
 
     if scope == 'b' then
+        local bufnr = type(info.buf) == 'number' and info.buf or require'nvim'.get_current_buf()
+        bufnr = tostring(bufnr)
         if M.funcs.b[bufnr] == nil then
             M.funcs.b[bufnr] = {}
             M.funcs.b[bufnr] = set_modes(M.funcs.b[bufnr])
@@ -156,6 +157,7 @@ function M.set_mapping(mapping)
                     mode  = mode,
                     scope = scope,
                     expr = expr,
+                    buf = buf,
                 }
                 api.nvim_buf_set_keymap(buf, mode, lhs, wrapper, args)
             else
@@ -185,6 +187,7 @@ function M.set_mapping(mapping)
                 lhs   = lhs,
                 mode  = mode,
                 scope = scope,
+                buf = buf,
             }
         end
     end
