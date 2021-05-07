@@ -31,6 +31,10 @@ else
     print("Unsupported system for sumneko")
 end
 
+
+local has_saga,saga = pcall(require,'lspsaga')
+local has_telescope,telescope = pcall(require, 'telescope.builtin')
+
 local sumneko_root_path = sys.cache..'/lspconfig/sumneko_lua/lua-language-server'
 local sumneko_binary = sumneko_root_path..'/bin/'..system_name..'/lua-language-server'
 
@@ -252,60 +256,101 @@ local servers = {
 local function on_attach(client, bufnr)
     require'nvim'.bo.omnifunc = 'v:lua.vim.lsp.omnifunc'
     bufnr = bufnr or require'nvim'.get_current_buf()
+    local lua_cmd = '<cmd>lua %s<CR>'
 
     local mappings = {
         ['<C-]>'] = {
             capability = 'goto_definition',
-            mapping = '<cmd>lua vim.lsp.buf.definition()<CR>',
+            mapping = lua_cmd:format(
+                'vim.lsp.buf.definition()'
+            ),
         },
         ['gd'] = {
             capability = 'declaration',
-            mapping = '<cmd>lua vim.lsp.buf.declaration()<CR>',
+            mapping = lua_cmd:format('vim.lsp.buf.declaration()'),
         },
         ['gi'] = {
             capability = 'implementation',
-            mapping = '<cmd>lua vim.lsp.buf.implementation()<CR>',
+            mapping = lua_cmd:format('vim.lsp.buf.implementation()'),
         },
         ['gr'] = {
             capability = 'find_references',
-            mapping = '<cmd>lua vim.lsp.buf.references()<CR>',
+            mapping = lua_cmd:format(
+                (has_telescope and "require'telescope.builtin'.lsp_references{}") or
+                (has_saga and "require'lspsaga.provider'.lsp_finder()") or
+                'vim.lsp.buf.references()'
+            ),
         },
         ['K'] = {
             capability = 'hover',
-            mapping = '<cmd>lua vim.lsp.buf.hover()<CR>',
+            mapping = lua_cmd:format(
+                has_saga and "require('lspsaga.hover').render_hover_doc()" or 'vim.lsp.buf.hover()'
+
+            ),
         },
         ['<leader>r'] = {
             capability = 'rename',
-            mapping = '<cmd>lua vim.lsp.buf.rename()<CR>',
+            mapping = lua_cmd:format(
+                has_saga and "require('lspsaga.rename').rename()" or 'vim.lsp.buf.rename()'
+            ),
         },
         ['=L'] = {
-            mapping = '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>',
+            mapping = lua_cmd:format('vim.lsp.diagnostic.set_loclist()'),
         },
         ['=d'] = {
             capability = 'completion',
-            mapping = '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>',
+            mapping = lua_cmd:format(
+                has_saga and "require'lspsaga.diagnostic'.show_line_diagnostics()" or
+                'vim.lsp.diagnostic.show_line_diagnostics()'
+            ),
         },
         [']d'] = {
             capability = 'completion',
-            mapping = '<cmd>lua vim.lsp.diagnostic.goto_next { wrap = false }<CR>',
+            mapping = lua_cmd:format(
+                has_saga and "require'lspsaga.diagnostic'.lsp_jump_diagnostic_next()" or
+                'vim.lsp.diagnostic.goto_next{wrap=false}'
+            ),
         },
         ['[d'] = {
             capability = 'completion',
-            mapping = '<cmd>lua vim.lsp.diagnostic.goto_prev { wrap = false }<CR>',
+            mapping = lua_cmd:format(
+                has_saga and "require'lspsaga.diagnostic'.lsp_jump_diagnostic_prev()" or
+                'vim.lsp.diagnostic.goto_prev{wrap=false}'
+            ),
         },
         ['ga'] = {
             capability = 'code_action',
-            mapping = '<cmd>lua vim.lsp.buf.code_action()<CR>',
+            mapping = lua_cmd:format(
+                has_saga and "require('lspsaga.codeaction').code_action()" or 'vim.lsp.buf.code_action()'
+            ),
         },
         ['gh'] = {
             capability = 'signature_help',
-            mapping = '<cmd>lua vim.lsp.buf.signature_help()<CR>',
+            mapping = lua_cmd:format(
+                has_saga and "require('lspsaga.signaturehelp').signature_help()" or
+                'vim.lsp.buf.signature_help()'
+            ),
         },
         -- ['<space>wa'] = '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>',
         -- ['<space>wr'] = '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>',
         -- ['<space>wl'] = '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>',
         -- ['<leader>D'] = '<cmd>lua vim.lsp.buf.type_definition()<CR>',
     }
+
+    -- if has_saga then
+    --     set_mapping {
+    --         mode = 'n',
+    --         lhs = '<C-f>',
+    --         rhs = [[<cmd>lua require('lspsaga.action').smart_scroll_with_saga(1)<CR>]],
+    --         args = { silent = true, buffer = bufnr, noremap = true},
+    --     }
+    --     set_mapping {
+    --         mode = 'n',
+    --         lhs = '<C-b>',
+    --         rhs = [[<cmd>lua require('lspsaga.action').smart_scroll_with_saga(-1)<CR>]],
+    --         args = { silent = true, buffer = bufnr, noremap = true},
+    --     }
+    -- end
 
     for mapping,val in pairs(mappings) do
         if client.resolved_capabilities[val.capability] then
@@ -393,45 +438,76 @@ end
 -- TODO: Make commands capability-dependent
 local commands = {
     Type           = {vim.lsp.buf.type_definition},
-    Hover          = {vim.lsp.buf.hover},
-    Rename         = {vim.lsp.buf.rename},
-    Signature      = {vim.lsp.buf.signature_help},
-    Definition     = {vim.lsp.buf.definition},
     Declaration    = {vim.lsp.buf.declaration},
-    Diagnostics    = {vim.lsp.diagnostic.set_loclist},
     OutgoingCalls  = {vim.lsp.buf.outgoing_calls},
     IncommingCalls = {vim.lsp.buf.incoming_calls},
     Implementation = {vim.lsp.buf.implementation},
     Format         = {vim.lsp.buf.formatting},
+    Rename = {function()
+        if has_saga then
+            require('lspsaga.rename').rename()
+        else
+            vim.lsp.buf.rename{}
+        end
+    end},
+    Signature = {function()
+        if has_saga then
+            require('lspsaga.signaturehelp').signature_help()
+        else
+            vim.lsp.buf.signature_help{}
+        end
+    end},
+    Hover = {function()
+        if has_saga then
+            require('lspsaga.hover').render_hover_doc()
+        else
+            vim.lsp.buf.hover{}
+        end
+    end},
+    Definition = {function()
+        if has_saga then
+            require'lspsaga.provider'.lsp_finder()
+        elseif has_telescope then
+            telescope.lsp_definitions{}
+        else
+            vim.lsp.buf.definition()
+        end
+    end},
     References = {function()
-        local ok, _ = pcall(require, 'plugins.telescope' )
-        if ok then
-            require'telescope.builtin'.lsp_references{}
+        if has_telescope then
+            telescope.lsp_references{}
+        elseif has_saga then
+            require'lspsaga.provider'.lsp_finder()
         else
             vim.lsp.buf.references()
         end
     end,},
+    Diagnostic = {function()
+        if has_telescope then
+            telescope.lsp_document_diagnostics{}
+        else
+            vim.lsp.buf.set_loclist()
+        end
+    end},
     DocSymbols = {function()
-        local ok, _ = pcall(require, 'plugins.telescope')
-        if ok then
-            require'telescope.builtin'.lsp_document_symbols{}
+        if has_telescope then
+            telescope.lsp_document_symbols{}
         else
             vim.lsp.buf.document_symbol()
         end
     end,},
     WorkSymbols = {function()
-        local ok, _ = pcall(require, 'plugins.telescope')
-        if ok then
-            require'telescope.builtin'.lsp_workspace_symbols{}
+        if has_telescope then
+            telescope.lsp_workspace_symbols{}
         else
             vim.lsp.buf.workspace_symbol()
         end
-
     end,},
     CodeAction = {function()
-        local ok, _ = pcall(require, 'plugins.telescope')
-        if ok then
-            require'telescope.builtin'.lsp_code_actions{}
+        if has_saga then
+            require'lspsaga.codeaction'.code_action()
+        elseif has_telescope then
+            telescope.lsp_code_actions{}
         else
             vim.lsp.buf.lsp_code_actions()
         end

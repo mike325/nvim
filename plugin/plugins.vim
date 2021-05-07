@@ -144,6 +144,7 @@ elseif has('nvim-0.5')
 
     if tools#CheckLanguageServer()
         Plug 'neovim/nvim-lspconfig'
+        Plug 'glepnir/lspsaga.nvim'
     endif
 
     " TODO: Integrate this with treesitter

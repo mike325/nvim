@@ -152,6 +152,7 @@ else
 
             if tools#CheckLanguageServer()
                 Plug 'neovim/nvim-lspconfig'
+                Plug 'glepnir/lspsaga.nvim'
             endif
         endif
 
