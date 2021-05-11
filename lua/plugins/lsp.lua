@@ -31,6 +31,7 @@ else
     print("Unsupported system for sumneko")
 end
 
+local diagnostics = true
 
 local has_saga,_ = pcall(require,'lspsaga')
 local has_telescope,telescope = pcall(require, 'telescope.builtin')
@@ -295,6 +296,7 @@ local function on_attach(client, bufnr)
             ),
         },
         ['=L'] = {
+            capability = 'completion',
             mapping = lua_cmd:format('vim.lsp.diagnostic.set_loclist()'),
         },
         ['=d'] = {
@@ -390,13 +392,9 @@ local function on_attach(client, bufnr)
 
     -- Disable neomake for lsp buffers
     if plugins['neomake'] then
-        set_autocmd{
-            event   = 'BufReadPost',
-            pattern = ('<buffer=%s>'):format(bufnr),
-            once    = true,
-            cmd     = [[silent! call neomake#CancelJobs(0) | silent! call neomake#cmd#clean(1) | silent! call neomake#cmd#disable(b:) ]],
-            group   = 'LSPAutocmds'
-        }
+        pcall(nvim.fn['neomake#CancelJobs'], 0)
+        pcall(nvim.fn['neomake#cmd#clean'], 1)
+        pcall(vim.cmd, 'call neomake#cmd#disable(b:)')
     end
 
     require('vim.lsp.protocol').CompletionItemKind = {
@@ -444,6 +442,20 @@ local commands = {
     IncommingCalls = {vim.lsp.buf.incoming_calls},
     Implementation = {vim.lsp.buf.implementation},
     Format         = {vim.lsp.buf.formatting},
+    LSPToggleDiagnostics = {function()
+        diagnostics = not diagnostics
+        _G['vim'].lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
+            vim.lsp.diagnostic.on_publish_diagnostics, {
+                underline = diagnostics,
+                signs = diagnostics,
+                virtual_text = diagnostics and {
+                    spacing = 2,
+                    prefix = '❯',
+                } or false,
+                update_in_insert = true,
+            }
+        )
+    end},
     Rename = {function()
         if has_saga then
             require('lspsaga.rename').rename()
