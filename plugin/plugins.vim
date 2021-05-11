@@ -86,20 +86,18 @@ if has#python() && has#async()
 endif
 
 if executable('git')
-    Plug 'airblade/vim-gitgutter'
+    if has#async()
+        Plug 'mhinz/vim-signify'
+    else
+        Plug 'mhinz/vim-signify', { 'branch': 'legacy' }
+    endif
+
     Plug 'junegunn/gv.vim', {'on': ['GV']}
     if v:version > 704
         Plug 'rhysd/git-messenger.vim'
     endif
     if !os#name('windows')
         Plug 'rhysd/committia.vim'
-    endif
-elseif executable('hg') || executable('svn')
-    " These are the only VCS I care, if none is installed, then skip this plugin
-    if has#async()
-        Plug 'mhinz/vim-signify'
-    else
-        Plug 'mhinz/vim-signify', { 'branch': 'legacy' }
     endif
 endif
 

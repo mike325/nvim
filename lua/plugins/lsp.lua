@@ -32,7 +32,7 @@ else
 end
 
 
-local has_saga,saga = pcall(require,'lspsaga')
+local has_saga,_ = pcall(require,'lspsaga')
 local has_telescope,telescope = pcall(require, 'telescope.builtin')
 
 local sumneko_root_path = sys.cache..'/lspconfig/sumneko_lua/lua-language-server'
@@ -389,10 +389,11 @@ local function on_attach(client, bufnr)
     end
 
     -- Disable neomake for lsp buffers
-    if not plugins['neomake'] then
+    if plugins['neomake'] then
         set_autocmd{
             event   = 'BufReadPost',
             pattern = ('<buffer=%s>'):format(bufnr),
+            once    = true,
             cmd     = [[silent! call neomake#CancelJobs(0) | silent! call neomake#cmd#clean(1) | silent! call neomake#cmd#disable(b:) ]],
             group   = 'LSPAutocmds'
         }
@@ -543,10 +544,10 @@ end
 -- Expose languages to VimL
 nvim.g.lsp_languages = available_languages
 
-vim.cmd('sign define LspDiagnosticsSignError text='..get_icon('error')..' texthl=LspDiagnosticsSignError linehl= numhl=')
-vim.cmd('sign define LspDiagnosticsSignWarning text='..get_icon('warn')..' texthl=LspDiagnosticsSignWarning linehl= numhl=')
-vim.cmd('sign define LspDiagnosticsSignHint text='..get_icon('hint')..' texthl=LspDiagnosticsSignHint linehl= numhl=')
-vim.cmd('sign define LspDiagnosticsSignInformation text='..get_icon('info')..' texthl=LspDiagnosticsSignInformation linehl= numhl=')
+vim.cmd('sign define LspDiagnosticsSignError       text='..get_icon('error')..' texthl=LspDiagnosticsSignError linehl= numhl=')
+vim.cmd('sign define LspDiagnosticsSignWarning     text='..get_icon('warn')..'  texthl=LspDiagnosticsSignWarning linehl= numhl=')
+vim.cmd('sign define LspDiagnosticsSignHint        text='..get_icon('hint')..'  texthl=LspDiagnosticsSignHint linehl= numhl=')
+vim.cmd('sign define LspDiagnosticsSignInformation text='..get_icon('info')..'  texthl=LspDiagnosticsSignInformation linehl= numhl=')
 
 _G['vim'].lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
     vim.lsp.diagnostic.on_publish_diagnostics, {
