@@ -347,7 +347,7 @@ function M.delete(target, bang)
         end
     else
         echoerr('Non removable target: '..target)
-   end
+    end
 end
 
 function M.skeleton_filename(opts)
@@ -442,7 +442,8 @@ function M.clean_file()
     end
 
     local lines = nvim.buf.get_lines(0, 0, -1, true)
-    local expandtab = nvim.bo.expandtab or nvim.o.expandtab
+    local expandtab = nvim.bo.expandtab
+    local retab = false
 
     -- local start = os.time()
     for i=1,#lines do
@@ -457,31 +458,15 @@ function M.clean_file()
                 nvim.buf.set_text(0, s_row, s_col, e_row, e_col, {''})
             end
 
+            -- NOTE: Retab seems to be faster that set_(text/lines) API
             if expandtab and line:match('^\t+') then
-                local tabs = line:match('^\t+')
-                local s_col = 0
-                local e_col = #tabs
-                if tabs then
-                    local spaces = nvim.bo.softtabstop or nvim.o.softtabstop
-                    if spaces < 0 then
-                        spaces = nvim.bo.shiftwidth or nvim.o.shiftwidth
-                        if spaces == 0 then
-                            spaces = nvim.o.tabstop
-                        end
-                    end
-                    local tab2space = ''
-                    for _=1,spaces do
-                        tab2space = tab2space .. ' '
-                    end
-                    spaces = ''
-                    for _=1,#tabs do
-                        spaces = spaces .. tab2space
-                    end
-                    nvim.buf.set_text(0, s_row, s_col, e_row, e_col, {spaces})
-                end
+                retab = true
+            elseif not expandtab and line:match('^ +') then
+                retab = true
             end
         end
     end
+    if retab then nvim.ex['retab!']() end
     -- local endt = os.time()
     -- print('Cleanning time: ', os.difftime(endt, start)..'s')
     return true
