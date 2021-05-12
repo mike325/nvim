@@ -1,4 +1,5 @@
-local nvim       = require'nvim'
+local nvim = require'nvim'
+local sys  = require'sys'
 
 local executable = require'tools'.files.executable
 local echowarn   = require'tools'.messages.echowarn
@@ -89,6 +90,9 @@ function M.set_commands()
                 local utils = require'git.utils'
                 if #args == 0 then
                     local bufname = nvim.fn.bufname(nvim.get_current_buf())
+                    if sys.name == 'windows' then
+                        bufname = bufname:gsub('\\', '/')
+                    end
                     if (status.workspace and status.workspace[bufname]) or
                        (status.untracked and status.untracked[bufname]) then
                         nvim.ex.update()
@@ -133,6 +137,9 @@ function M.set_commands()
                 local utils = require'git.utils'
                 if #args == 0 then
                     local bufname = nvim.fn.bufname(nvim.get_current_buf())
+                    if sys.name == 'windows' then
+                        bufname = bufname:gsub('\\', '/')
+                    end
                     if status.stage and status.stage[bufname] then
                         nvim.ex.update()
                         utils.launch_gitcmd_job{
@@ -191,10 +198,24 @@ function M.set_commands()
                 local utils = require'git.utils'
                 if #args == 0 then
                     local bufname = nvim.fn.bufname(nvim.get_current_buf())
+                    if sys.name == 'windows' then
+                        bufname = bufname:gsub('\\', '/')
+                    end
                     if status.stage and status.stage[bufname] then
                         utils.launch_gitcmd_job{
                             gitcmd = 'reset',
                             args = { 'HEAD', bufname },
+                            jobopts = {
+                                on_exit = function(id, rc, _)
+                                    if rc ~= 0 then
+                                        error(('Failed to restore file: %s, due to %s'):format(
+                                            bufname,
+                                            table.concat(require'jobs'.jobs[id].streams.stderr, '\n')
+                                        ))
+                                    end
+                                    nvim.ex.checktime()
+                                end
+                            }
                         }
                     else
                         echowarn('Nothing to do')
@@ -206,9 +227,23 @@ function M.set_commands()
                             args = normalize(args[i])
                         end
                     end
+                    if sys.name == 'windows' then
+                        args = args:gsub('\\', '/')
+                    end
                     utils.launch_gitcmd_job{
                         gitcmd = 'reset',
                         args = {'HEAD', args},
+                        jobopts = {
+                            on_exit = function(id, rc, _)
+                                if rc ~= 0 then
+                                    error(('Failed to restore file: %s, due to %s'):format(
+                                        args,
+                                        table.concat(require'jobs'.jobs[id].streams.stderr, '\n')
+                                    ))
+                                end
+                                nvim.ex.checktime()
+                            end
+                        }
                     }
                 end
             end)
