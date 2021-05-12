@@ -444,40 +444,46 @@ function M.clean_file()
     local lines = nvim.buf.get_lines(0, 0, -1, true)
     local expandtab = nvim.bo.expandtab or nvim.o.expandtab
 
+    -- local start = os.time()
     for i=1,#lines do
         local line = lines[i]
         if line ~= '' then
+            local s_row = i - 1
+            local e_row = i - 1
+
             if line:find('%s+$') then
-                line = line:gsub('%s+$', '')
-                -- local sidx, eidx = line:find('%s+$')
-                -- nvim.buf.set_text(0, i - 1, sidx - 1, i, sidx + (eidx - sidx) - 1, {})
+                local s_col = line:find('%s+$') - 1
+                local e_col = #line
+                nvim.buf.set_text(0, s_row, s_col, e_row, e_col, {''})
             end
 
-            if expandtab and line:find('^\t+') then
+            if expandtab and line:match('^\t+') then
                 local tabs = line:match('^\t+')
-                local spaces = nvim.bo.softtabstop or nvim.o.softtabstop
-                if spaces < 0 then
-                    spaces = nvim.bo.shiftwidth or nvim.o.shiftwidth
-                    if spaces == 0 then
-                        spaces = nvim.o.tabstop
+                local s_col = 0
+                local e_col = #tabs
+                if tabs then
+                    local spaces = nvim.bo.softtabstop or nvim.o.softtabstop
+                    if spaces < 0 then
+                        spaces = nvim.bo.shiftwidth or nvim.o.shiftwidth
+                        if spaces == 0 then
+                            spaces = nvim.o.tabstop
+                        end
                     end
+                    local tab2space = ''
+                    for _=1,spaces do
+                        tab2space = tab2space .. ' '
+                    end
+                    spaces = ''
+                    for _=1,#tabs do
+                        spaces = spaces .. tab2space
+                    end
+                    nvim.buf.set_text(0, s_row, s_col, e_row, e_col, {spaces})
                 end
-                local tab2space = ''
-                for _=1,spaces do
-                    tab2space = tab2space .. ' '
-                end
-                spaces = ''
-                for _=1,#tabs do
-                    spaces = spaces .. tab2space
-                end
-                line = line:gsub('^\t+', spaces)
-            end
-
-            if line ~= lines[i] then
-                nvim.buf.set_lines(0, i - 1, i, true, {line})
             end
         end
     end
+    -- local endt = os.time()
+    -- print('Cleanning time: ', os.difftime(endt, start)..'s')
     return true
 end
 
