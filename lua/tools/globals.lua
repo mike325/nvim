@@ -7,3 +7,13 @@ _G['REALOAD'] = function(pkg)
     package.loaded[pkg] = nil
     return require(pkg)
 end
+
+_G['PASTE'] = function(data)
+    if type(data) == type('') then
+        data = vim.split(data, '\n')
+    end
+    if type(data) ~= type({}) then
+        data = vim.inspect(vim.split(data, '\n'))
+    end
+    vim.paste(data, -1)
+end
