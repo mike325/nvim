@@ -36,6 +36,8 @@ local function get_wrapper(info)
         cmd = cmd..("(%s)"):format('<q-args>')
     elseif bang and not (nparams > 0 or varargs) then
         cmd = cmd..("(%s)"):format([['<bang>' == '!']])
+    else
+        cmd = cmd..'()'
     end
 
     return cmd
