@@ -61,6 +61,15 @@ else
     nvim.o.shada = nvim.o.shada .. ",r/tmp/"
 end
 
+if sys.name == 'windows' then
+    nvim.o.swapfile  = false
+    nvim.bo.swapfile = false
+    nvim.o.backup    = false
+end
+
+nvim.o.backupcopy = 'yes'
+nvim.o.undofile   = true
+
 nvim.o.expandtab   = true
 nvim.o.shiftround  = true
 nvim.o.tabstop     = 4
@@ -78,7 +87,6 @@ nvim.o.inccommand    = 'split'
 nvim.o.winaltkeys    = 'no'
 nvim.o.virtualedit   = 'block'
 nvim.o.formatoptions = 'tcqrolnj'
-nvim.o.backupcopy    = 'yes'
 
 nvim.o.complete    = '.,w,b,u,t'
 nvim.o.completeopt = 'menu,menuone,noselect,noinsert'
@@ -102,9 +110,6 @@ nvim.o.showmatch  = true
 
 nvim.o.splitright = true
 nvim.o.splitbelow = true
-
-nvim.o.backup   = true
-nvim.o.undofile = true
 
 nvim.o.termguicolors = true
 
