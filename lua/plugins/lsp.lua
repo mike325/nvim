@@ -394,7 +394,7 @@ local function on_attach(client, bufnr)
     if plugins['neomake'] then
         pcall(nvim.fn['neomake#CancelJobs'], 0)
         pcall(nvim.fn['neomake#cmd#clean'], 1)
-        pcall(vim.cmd, 'call neomake#cmd#disable(b:)')
+        pcall(vim.cmd, 'silent call neomake#cmd#disable(b:)')
     end
 
     require('vim.lsp.protocol').CompletionItemKind = {
