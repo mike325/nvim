@@ -1,7 +1,6 @@
 " Completor settings
 " github.com/mike325/.vim
 
-" TODO: Improve completor settings
 if !has#plugin('completor.vim') || exists('g:config_completor')
     finish
 endif

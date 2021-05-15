@@ -1,7 +1,6 @@
 " vim_oscyank Settings
 " github.com/mike325/.vim
 
-" TODO: Improve completor settings
 if !has#plugin('vim-oscyank') || exists('g:config_vim_oscyank')
     finish
 endif

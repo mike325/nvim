@@ -17,6 +17,6 @@ psutil>=5.6.1
 # (Neo)vim stuff
 pynvim>=0.3.1
 # NOTE: sometimes vint cause some problems in python2
-# NOTE1: to use vim-vint in windows, use --dev
+# NOTE: to use vim-vint in windows, use --dev
 vim-vint>=0.3.19
 neovim-remote>=2.0.10

@@ -196,7 +196,6 @@ if !has#plugin('iron.nvim') && has#python()
 endif
 
 if !has#plugin('vim-indexed-search')
-    " TODO: Integrate center next into vim-slash
     " Center searches results
     " CREDITS: https://amp.reddit.com/r/vim/comments/4jy1mh/slightly_more_subltle_n_and_n_behavior/
     function! mappings#NiceNext(cmd) abort

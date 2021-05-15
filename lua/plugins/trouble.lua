@@ -27,8 +27,10 @@ trouble.setup{
         information = get_icon('info'),
         other       = "﫠"
     },
+    action_keys = {
+        toggle_fold = {'zA', 'za', '='},
+    },
 }
-
 
 set_mapping{
     mode = 'n',
