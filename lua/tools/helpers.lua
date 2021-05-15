@@ -165,6 +165,7 @@ if not nvim.env['NO_COOL_FONTS'] then
         warn = '',
         info = '',
         hint = '',
+        bug = '',
         message = 'M',
         virtual_text = '❯',
         diff_add = '',
@@ -186,6 +187,7 @@ else
         warn = '!',
         info = 'I',
         hint = 'H',
+        bug = 'B',
         message = 'M',
         virtual_text = '➤',
         diff_add = '+',
@@ -898,7 +900,9 @@ function M.dump_to_qf(opts)
         if qf_type == 'qf' then
             qf_cmds.set_list({}, 'r', opts)
         else
-            qf_cmds.set_list(0, {}, 'r', opts)
+            local win = opts.win or 0
+            opts.win = nil
+            qf_cmds.set_list(win, {}, 'r', opts)
         end
 
         if #opts.lines > 0 then

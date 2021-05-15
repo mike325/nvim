@@ -41,6 +41,7 @@ if has('nvim-0.5')
 
     Plug 'folke/lsp-colors.nvim'
     Plug 'folke/todo-comments.nvim'
+    Plug 'folke/trouble.nvim'
 else
     Plug 'tbastos/vim-lua'
     Plug 'octol/vim-cpp-enhanced-highlight'

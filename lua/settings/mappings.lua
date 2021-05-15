@@ -12,8 +12,8 @@ local realpath       = require'tools'.files.realpath
 local basename       = require'tools'.files.basename
 local read_json      = require'tools'.files.read_json
 
--- local echoerr    = require'tools'.messages.echoerr
--- local clear_lst  = require'tools'.tables.clear_lst
+local echomsg = require'tools'.messages.echomsg
+local echoerr = require'tools'.messages.echoerr
 
 -- local set_autocmd = nvim.autocmds.set_autocmd
 local set_abbr    = nvim.abbrs.set_abbr
@@ -291,33 +291,44 @@ if has('nvim-0.5') then
             end
 
             cmd = cmd .. args
+            local make_win = nvim.get_current_win()
 
             require'jobs'.send_job{
                 cmd = cmd,
-                opts = {
-                    on_exit = function(jobid, rc, _)
-                        local jobs = require'jobs'
-                        local lines = {}
-                        if jobs.jobs[jobid].streams then
-                            if #jobs.jobs[jobid].streams.stderr > 0 then
-                                lines = jobs.jobs[jobid].streams.stderr
-                            else
-                                lines = jobs.jobs[jobid].streams.stdout
-                            end
-                        end
-
-                        local qf_opts = jobs.jobs[jobid].qf or {}
-                        qf_opts.lines = lines
-
-                        require'tools'.helpers.dump_to_qf(qf_opts)
-                    end
-                },
                 qf = {
                     -- open = false,
                     loc = true,
+                    win = make_win,
                     jump = true,
                     context = 'AsyncMake',
                     title = cmd,
+                },
+                opts = {
+                    on_exit = function(jobid, rc, _)
+                        local jobs = require'jobs'.jobs
+                        local streams = jobs[jobid].streams or {}
+                        local stdout = streams.stdout or {}
+                        local stderr = streams.stderr or {}
+                        if #stdout > 0 or #stderr > 0 then
+                            local lines
+                            if #streams.stderr > 0 then
+                                lines = streams.stderr
+                            else
+                                lines = streams.stdout
+                            end
+                            local qf_opts = jobs[jobid].qf or {}
+                            qf_opts.lines = lines
+
+                            require'tools'.helpers.dump_to_qf(qf_opts)
+                        else
+                            if rc == 0 then
+                                echomsg('Everything seems fine! ')
+                            else
+                                echoerr('Make failed !, exited with error code '..rc)
+                            end
+                            nvim.fn.setloclist(make_win, {}, 'r')
+                        end
+                    end
                 },
             }
 
@@ -1103,6 +1114,22 @@ if executable('cscope') then
         args = {nargs='?', force = true}
     }
 end
+
+set_command{
+    lhs = 'ClearQf',
+    rhs = function()
+        nvim.fn.setqflist({}, 'r')
+    end,
+    args = {force=true}
+}
+
+set_command{
+    lhs = 'ClearLoc',
+    rhs = function()
+        nvim.fn.setloclist(nvim.get_current_win(), {}, 'r')
+    end,
+    args = {force=true}
+}
 
 pcall(require, 'host/mappings')
 

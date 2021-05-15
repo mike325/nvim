@@ -10,6 +10,9 @@ local subpath_in_path = require'tools'.files.subpath_in_path
 local select_filelist = require'tools'.helpers.select_filelist
 local split           = require'tools'.strings.split
 
+local echowarn = require'tools'.messages.echowarn
+local echoerr  = require'tools'.messages.echoerr
+
 local set_autocmd = nvim.autocmds.set_autocmd
 
 local M = {
@@ -68,10 +71,55 @@ function M.send_grep_job(args)
     require'jobs'.send_job{
         cmd = cmd,
         qf = {
+            on_fail = {
+                open = true,
+                jump = false,
+            },
             jump = true,
-            efm = nvim.o.grepformat,
             context = 'AsyncGrep',
             title = cmd,
+            efm = nvim.o.grepformat,
+        },
+        opts = {
+            on_exit = function(jobid, rc, _)
+                local jobs = require'jobs'.jobs
+                local dump_to_qf = require'tools'.helpers.dump_to_qf
+
+                local streams = jobs[jobid].streams or {}
+                local stdout = streams.stdout or {}
+                local stderr = streams.stderr or {}
+
+                local qf_opts = jobs[jobid].qf or {}
+                qf_opts.context = qf_opts.context or cmd[1]
+                qf_opts.title = qf_opts.title or cmd[1]..' output'
+                if rc == 0 then
+                    if #stdout > 0 then
+                        qf_opts.lines = stdout
+                        dump_to_qf(qf_opts)
+                    else
+                        echowarn('No results matching: '..args)
+                    end
+                elseif rc ~= 0 and #stderr == 0 then
+                    echowarn('No results matching: '..args)
+                else
+                    if qf_opts.on_fail then
+                        if qf_opts.on_fail.open then
+                            qf_opts.open = rc ~= 0
+                        end
+                        if qf_opts.on_fail.jump then
+                            qf_opts.jump = rc ~= 0
+                        end
+                    end
+
+                    echoerr(('%s exited with code %s'):format(
+                        cmd[1],
+                        rc
+                    ))
+
+                    qf_opts.lines = stderr
+                    dump_to_qf(qf_opts)
+                end
+            end
         },
     }
 end
@@ -96,7 +144,7 @@ function M.opfun_grep(select, visual)
     nvim.reg['@'] = reg_save
 end
 
-function M.opfun_lsp_format(select, visual)
+function M.opfun_lsp_format()
     local buf = nvim.get_current_buf()
     local startpos = nvim.buf.get_mark(buf, '[')
     -- startpos[2] = 0

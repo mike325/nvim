@@ -11,7 +11,7 @@ local split       = require'tools'.strings.split
 local plugins = nvim.plugins
 
 -- local set_command = nvim.commands.set_command
-local set_autocmd = nvim.autocmds.set_autocmd
+-- local set_autocmd = nvim.autocmds.set_autocmd
 local set_mapping = nvim.mappings.set_mapping
 
 local lsp = load_module'lspconfig'
@@ -163,7 +163,14 @@ local servers = {
                             pycodestyle = {
                                 maxLineLength = 120,
                                 ignore = {
-                                    'E203',
+                                    'E203', -- Whitespace before :
+                                    'E226', -- Whitespace around operators
+                                    'E231', -- Missing whitespace after ','
+                                    'E261', -- 2 spaces before inline comment
+                                    'E262', -- Comments should start with '#'
+                                    'E265', -- Block comment should start with '#'
+                                    -- 'E302', -- Expected 2 lines between funcs/classes
+                                    'W391', -- Blank line and the EOF
                                 },
                             },
                         },

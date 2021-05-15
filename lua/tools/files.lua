@@ -474,13 +474,17 @@ end
 
 local function parser_config(data)
     data = type(data) ~= 'table' and split(data, '\n') or data
-    local data_tbl = {}
+    local data_tbl = {
+        global = {},
+    }
     local section = nil
     local subsection = nil
     local subsections = {}
+    local isglobal = true
     for _,line in pairs(data) do
         if not line:match('^%s*;.*') and not line:match('^%s*#.*') and not line:match('^%s*$') then
             if line:match('^%s*%[%s*%a[%w_]*%s*]$') then
+                isglobal = false
                 section = line:match('%a[%w_]*')
                 if not subsections[section] then
                     assert(not data_tbl[section], 'Repeated section: '..section)
@@ -488,6 +492,7 @@ local function parser_config(data)
                 end
                 subsection = nil
             elseif line:match('^%s*%[%s*%a[%w_]*%s+".+"%s*]$') then
+                isglobal = false
                 section = line:match('^%s*%[(%a[%w_]*)')
                 if not data_tbl[section] then
                     data_tbl[section] = {}
@@ -499,7 +504,7 @@ local function parser_config(data)
                 )
                 data_tbl[section][subsection] = {}
                 subsections[section] = subsection
-            elseif section and line:match('^%s*%a[%w_%.-]*%s*=%s*.+$') then
+            elseif ( section or isglobal ) and line:match('^%s*%a[%w_%.-]*%s*=%s*.+$') then
                 local clean_line = line:gsub('%s+;.+$', ''):gsub('%s+#.+$', '')
                 local attr = clean_line:match('^%s*(%a[%w_%.-]*)%s*=')
                 local val = clean_line:match('=%s*(.+)$')
@@ -522,7 +527,9 @@ local function parser_config(data)
                     val = val:match(('^%s(.*)%s$'):format(qtype, qtype))
                 end
 
-                if not subsection then
+                if not section then
+                    data_tbl.global[attr] = val
+                elseif not subsection then
                     data_tbl[section][attr] = val
                 else
                     data_tbl[section][subsection][attr] = val

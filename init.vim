@@ -124,7 +124,6 @@ else
         Plug 'nvim-lua/popup.nvim'
         Plug 'nvim-lua/plenary.nvim'
         Plug 'nvim-lua/telescope.nvim'
-        " Plug 'steelsojka/pears.nvim'
         Plug 'windwp/nvim-autopairs'
 
         if executable('gcc') || executable('clang')

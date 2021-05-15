@@ -19,8 +19,8 @@ function! neovim#grep(type, ...) abort
 endfunction
 
 function! neovim#lsp_format(type, ...) abort
-    let l:visual = a:0 ? v:true : v:false
-    call luaeval('require"settings.functions".opfun_lsp_format(_A[1], _A[2])', [a:type, l:visual])
+    " let l:visual = a:0 ? v:true : v:false
+    call luaeval('require"settings.functions".opfun_lsp_format()')
 endfunction
 
 function! neovim#gitfiles_status(gittype) abort
