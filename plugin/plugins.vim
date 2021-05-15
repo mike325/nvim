@@ -40,7 +40,7 @@ if has('nvim-0.5')
     Plug 'tiagovla/tokyodark.nvim'
 
     Plug 'folke/lsp-colors.nvim'
-    Plug 'mike325/todo-comments.nvim', {'branch': 'improve_pattern_match'}
+    Plug 'folke/todo-comments.nvim'
 else
     Plug 'tbastos/vim-lua'
     Plug 'octol/vim-cpp-enhanced-highlight'
