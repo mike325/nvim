@@ -10,6 +10,7 @@ setlocal softtabstop=-1
 setlocal spell
 setlocal textwidth=80
 setlocal complete+=k,kspell " Add spell completion
+setlocal iskeyword-=:
 " setlocal foldmethod=indent
 
 setlocal wrapmargin=80

@@ -20,6 +20,12 @@ try
     if has#plugin('material.nvim')
         let g:material_style = 'darker'
         colorscheme material
+    elseif has#plugin('tokyodark.nvim')
+        let g:tokyodark_transparent_background = 0
+        let g:tokyodark_enable_italic_comment = 1
+        let g:tokyodark_enable_italic = 1
+        " let g:tokyodark_color_gamma = '1.0'
+        colorscheme tokyodark
     elseif has#plugin('zephyr-nvim')
         colorscheme zephyr
     elseif has#plugin('sonokai')
