@@ -21,13 +21,16 @@ elseif autopairs then
         require('nvim-treesitter.configs').setup {
             autopairs = {enable = true}
         }
-        -- local ts_conds = require('nvim-autopairs.ts-conds')
-        -- npairs.add_rules({
-        --     Rule("%", "%", "lua")
-        --         :with_pair(ts_conds.is_ts_node({'string','comment'})),
-        --     Rule("$", "$", "lua")
-        --         :with_pair(ts_conds.is_not_ts_node({'function'}))
+
+        -- local endwise = require('nvim-autopairs.ts-rule').endwise
+        -- autopairs.add_rules({
+        --     endwise('then$', 'end', 'lua', 'if_statement'),
+        --     endwise('do$', 'end', 'lua', 'for_in_statement'),
+        --     endwise('do$', 'end', 'lua', 'for_statement'),
+        --     endwise('^function', 'end', 'lua', 'function'),
+        --     endwise('^local function', 'end', 'lua', 'local_function'),
         -- })
+
     end
 else
     return false

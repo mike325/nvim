@@ -155,6 +155,83 @@ function M.opfun_lsp_format()
     vim.lsp.buf.range_formatting({}, startpos, endpos)
 end
 
+function M.toggle_comments(first, last)
+    local cursor = nvim.win.get_cursor(0)
+    local lines = nvim.buf.get_lines(0, first, last, false)
+
+    local commentstring = nvim.bo.commentstring:gsub('%s+', '')
+    local indent_level
+    local comment = false
+    local allempty = true
+
+    local comment_match = '^%s*'..commentstring:format('.*'):gsub('%-', '%%-'):gsub('/%*', '/%%*'):gsub('%*/', '%%*/')
+
+    for _,line in pairs(lines) do
+        if #line > 0 then
+            allempty = false
+            local _,level = line:find('^%s+')
+            if not indent_level or not level or level < indent_level then
+                indent_level = not level and 0 or level
+            end
+            if not comment and not line:match(comment_match) then
+                comment = true
+            end
+        end
+    end
+
+    if allempty then
+        indent_level = 0
+        comment = true
+    end
+
+    indent_level = indent_level + 1
+
+    local spaces = ''
+    if comment then
+        for _=1,indent_level - 1 do
+            spaces = spaces .. ' '
+        end
+    end
+
+    for i=1,#lines do
+        if comment then
+            local tocomment = lines[i]:sub(indent_level, #lines[i])
+            local uncomment = (#lines[i] == 0 and indent_level > 1) and spaces or lines[i]:sub(1, indent_level - 1)
+            local format = #lines[i] == 0 and tocomment or ' '..tocomment
+            lines[i] = uncomment .. commentstring:format(format)
+        else
+            local indent_match = '^%s+'
+            local uncomment_match = '^%s*'..commentstring:format('%s?(.*)'):gsub('%-', '%%-'):gsub('/%*', '/%%*'):gsub('%*/', '%%*/')
+            local indent = lines[i]:match(indent_match) or ''
+            local data = lines[i]:match(uncomment_match)
+            lines[i] = #data > 0 and indent .. data or ''
+        end
+    end
+
+    nvim.buf.set_lines(0, first, last, false, lines)
+    nvim.win.set_cursor(0, cursor)
+end
+
+function M.opfun_comment(_, visual)
+    local select_save = nvim.o.selection
+    nvim.o.selection = 'inclusive'
+    local reg_save = nvim.reg['@']
+
+    if visual then
+        nvim.ex['normal!']('gvy')
+    else
+        nvim.ex['normal!']("'[V']y")
+    end
+
+    local sel_start = nvim.buf.get_mark(0, '[')
+    local sel_end = nvim.buf.get_mark(0, ']')
+
+    M.toggle_comments(sel_start[1] - 1, sel_end[1])
+
+    nvim.o.selection = select_save
+    nvim.reg['@'] = reg_save
+end
+
 local function get_files(path, is_git)
     local seeker = select_filelist(is_git, true)
     require'jobs'.send_job{

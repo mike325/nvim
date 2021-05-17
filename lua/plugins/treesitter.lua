@@ -210,4 +210,7 @@ if #fts > 0 then
     }
 end
 
+-- Expose languages to VimL
+nvim.g.ts_languages = fts
+
 return fts

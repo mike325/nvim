@@ -264,18 +264,18 @@ if has('nvim-0.5') then
     }
 
     set_mapping{
+        mode = 'v',
+        lhs = 'gs',
+        rhs = ':<C-U>call neovim#grep(visualmode(), v:true)<CR>',
+        args = noremap_silent,
+    }
+
+    set_mapping{
         mode = 'n',
         lhs = 'gss',
         rhs = function()
             require'settings.functions'.send_grep_job(nvim.fn.expand('<cword>'))
         end,
-        args = noremap_silent,
-    }
-
-    set_mapping{
-        mode = 'v',
-        lhs = 'gs',
-        rhs = ':<C-U>call neovim#grep(visualmode(), v:true)<CR>',
         args = noremap_silent,
     }
 
@@ -1112,6 +1112,34 @@ if executable('cscope') then
             cscope(cword, 'text')
         end,
         args = {nargs='?', force = true}
+    }
+end
+
+if has('nvim-0.5') and not plugins['vim-commentary'] then
+
+    set_mapping{
+        mode = 'n',
+        lhs = 'gc',
+        rhs = '<cmd>set opfunc=neovim#comment<CR>g@',
+        args = noremap_silent,
+    }
+
+    set_mapping{
+        mode = 'v',
+        lhs = 'gc',
+        rhs = ':<C-U>call neovim#comment(visualmode(), v:true)<CR>',
+        args = noremap_silent,
+    }
+
+    set_mapping{
+        mode = 'n',
+        lhs = 'gcc',
+        rhs = function()
+            local cursor = nvim.win.get_cursor(0)
+            require'settings.functions'.toggle_comments(cursor[1] - 1, cursor[1])
+            nvim.win.set_cursor(0, cursor)
+        end,
+        args = noremap_silent,
     }
 end
 
