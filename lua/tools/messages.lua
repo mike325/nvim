@@ -8,9 +8,11 @@ function M.echoerr(msg)
     if type(msg) == type('') then
         msg = {msg}
     end
-    msg[#msg + 1] = 'ErrorMsg'
+    for i=1,#msg do
+        msg[i] = {msg[i], 'ErrorMsg'}
+    end
     vim.api.nvim_echo(
-        {msg},
+        msg,
         true,
         {}
     )
@@ -24,9 +26,11 @@ function M.echowarn(msg)
     if type(msg) == type('') then
         msg = {msg}
     end
-    msg[#msg + 1] = 'WarningMsg'
+    for i=1,#msg do
+        msg[i] = {msg[i], 'WarningMsg'}
+    end
     vim.api.nvim_echo(
-        {msg},
+        msg,
         true,
         {}
     )

@@ -230,45 +230,33 @@ function M.send_job(job)
             end
         end
 
-        if not opts.on_data or job.save_data then
-            if not opts.on_stdout then
-                opts.on_stdout = general_on_data
-            elseif job.save_data then
-                local original_func = opts.on_stdout
-                opts.on_stdout = function(jobid, data, event)
-                    save_data(jobid, data, event)
-                    original_func(jobid, data, event)
-                end
+        if not opts.on_stdout then
+            opts.on_stdout = general_on_data
+        elseif job.save_data then
+            local original_func = opts.on_stdout
+            opts.on_stdout = function(jobid, data, event)
+                save_data(jobid, data, event)
+                original_func(jobid, data, event)
             end
+        end
 
-            if not opts.on_stderr then
-                opts.on_stderr = general_on_data
-            elseif job.save_data then
-                local original_func = opts.on_stderr
-                opts.on_stderr = function(jobid, data, event)
-                    save_data(jobid, data, event)
-                    original_func(jobid, data, event)
-                end
+        if not opts.on_stderr then
+            opts.on_stderr = general_on_data
+        elseif job.save_data then
+            local original_func = opts.on_stderr
+            opts.on_stderr = function(jobid, data, event)
+                save_data(jobid, data, event)
+                original_func(jobid, data, event)
             end
+        end
 
-            if not opts.on_stdin then
-                opts.on_stdin = general_on_data
-            elseif job.save_data then
-                local original_func = opts.on_stdin
-                opts.on_stdin = function(jobid, data, event)
-                    save_data(jobid, data, event)
-                    original_func(jobid, data, event)
-                end
-            end
-
-            if not opts.on_data then
-                opts.on_data = general_on_data
-            elseif job.save_data then
-                local original_func = opts.on_data
-                opts.on_data = function(jobid, data, event)
-                    save_data(jobid, data, event)
-                    original_func(jobid, data, event)
-                end
+        if not opts.on_stdin then
+            opts.on_stdin = general_on_data
+        elseif job.save_data then
+            local original_func = opts.on_stdin
+            opts.on_stdin = function(jobid, data, event)
+                save_data(jobid, data, event)
+                original_func(jobid, data, event)
             end
         end
 
