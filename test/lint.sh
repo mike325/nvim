@@ -43,9 +43,9 @@ trap '{ exit_append; }' EXIT
 if hash realpath 2>/dev/null; then
     SCRIPT_PATH=$(realpath "$SCRIPT_PATH")
 else
-    pushd "$SCRIPT_PATH" 1> /dev/null || exit 1
+    pushd "$SCRIPT_PATH" 1>/dev/null || exit 1
     SCRIPT_PATH="$(pwd -P)"
-    popd 1> /dev/null || exit 1
+    popd 1>/dev/null || exit 1
 fi
 
 if [ -z "$SHELL_PLATFORM" ]; then
@@ -53,41 +53,41 @@ if [ -z "$SHELL_PLATFORM" ]; then
         export SHELL_PLATFORM="$TRAVIS_OS_NAME"
     else
         case "$OSTYPE" in
-            *'linux'*   ) export SHELL_PLATFORM='linux' ;;
-            *'darwin'*  ) export SHELL_PLATFORM='osx' ;;
-            *'freebsd'* ) export SHELL_PLATFORM='bsd' ;;
-            *'cygwin'*  ) export SHELL_PLATFORM='cygwin' ;;
-            *'msys'*    ) export SHELL_PLATFORM='msys' ;;
-            *'windows'* ) export SHELL_PLATFORM='windows' ;;
-            *           ) export SHELL_PLATFORM='unknown' ;;
+        *'linux'*) export SHELL_PLATFORM='linux' ;;
+        *'darwin'*) export SHELL_PLATFORM='osx' ;;
+        *'freebsd'*) export SHELL_PLATFORM='bsd' ;;
+        *'cygwin'*) export SHELL_PLATFORM='cygwin' ;;
+        *'msys'*) export SHELL_PLATFORM='msys' ;;
+        *'windows'*) export SHELL_PLATFORM='windows' ;;
+        *) export SHELL_PLATFORM='unknown' ;;
         esac
     fi
 fi
 
 case "$SHELL_PLATFORM" in
-    # TODO: support more linux distros
-    linux)
-        if [[ -f /etc/arch-release ]]; then
-            OS='arch'
-        elif [[ "$(cat /etc/issue)" == Ubuntu* ]]; then
-            OS='ubuntu'
-        elif [[ -f /etc/debian_version ]] || [[ "$(cat /etc/issue)" == Debian* ]]; then
-            if [[ $ARCH == *\ armv7* ]]; then # Raspberry pi 3 uses armv7 cpu
-                OS='raspbian'
-            else
-                OS='debian'
-            fi
+# TODO: support more linux distros
+linux)
+    if [[ -f /etc/arch-release ]]; then
+        OS='arch'
+    elif [[ "$(cat /etc/issue)" == Ubuntu* ]]; then
+        OS='ubuntu'
+    elif [[ -f /etc/debian_version ]] || [[ "$(cat /etc/issue)" == Debian* ]]; then
+        if [[ $ARCH == *\ armv7* ]]; then # Raspberry pi 3 uses armv7 cpu
+            OS='raspbian'
+        else
+            OS='debian'
         fi
-        ;;
-    cygwin|msys|windows)
-        OS='windows'
-        ;;
-    osx)
-        OS='macos'
-        ;;
-    bsd)
-        OS='bsd'
-        ;;
+    fi
+    ;;
+cygwin | msys | windows)
+    OS='windows'
+    ;;
+osx)
+    OS='macos'
+    ;;
+bsd)
+    OS='bsd'
+    ;;
 esac
 
 if ! hash is_windows 2>/dev/null; then
@@ -101,7 +101,7 @@ fi
 
 if ! hash is_wls 2>/dev/null; then
     function is_wls() {
-        if [[ "$(uname -r)" =~ Microsoft ]] ; then
+        if [[ "$(uname -r)" =~ Microsoft ]]; then
             return 0
         fi
         return 1
@@ -162,7 +162,7 @@ normal="\033[0m"
 reset_color="\033[39m"
 
 function help_user() {
-    cat<<EOF
+    cat <<EOF
 Description
 
 Usage:
@@ -214,9 +214,9 @@ function warn_msg() {
     else
         printf "[!] Warning:\t %s\n" "$warn_message"
     fi
-    WARN_COUNT=$(( WARN_COUNT + 1 ))
+    WARN_COUNT=$((WARN_COUNT + 1))
     if [[ $NOLOG -eq 0 ]]; then
-        printf "[!] Warning:\t %s\n" "$warn_message" >> "${LOG}"
+        printf "[!] Warning:\t %s\n" "$warn_message" >>"${LOG}"
     fi
     return 0
 }
@@ -228,9 +228,9 @@ function error_msg() {
     else
         printf "[X] Error:\t %s\n" "$error_message" 1>&2
     fi
-    ERR_COUNT=$(( ERR_COUNT + 1 ))
+    ERR_COUNT=$((ERR_COUNT + 1))
     if [[ $NOLOG -eq 0 ]]; then
-        printf "[X] Error:\t\t %s\n" "$error_message" >> "${LOG}"
+        printf "[X] Error:\t\t %s\n" "$error_message" >>"${LOG}"
     fi
     return 0
 }
@@ -243,7 +243,7 @@ function status_msg() {
         printf "[*] Info:\t %s\n" "$status_message"
     fi
     if [[ $NOLOG -eq 0 ]]; then
-        printf "[*] Info:\t\t %s\n" "$status_message" >> "${LOG}"
+        printf "[*] Info:\t\t %s\n" "$status_message" >>"${LOG}"
     fi
     return 0
 }
@@ -258,7 +258,7 @@ function verbose_msg() {
         fi
     fi
     if [[ $NOLOG -eq 0 ]]; then
-        printf "[+] Debug:\t\t %s\n" "$debug_message" >> "${LOG}"
+        printf "[+] Debug:\t\t %s\n" "$debug_message" >>"${LOG}"
     fi
     return 0
 }
@@ -272,7 +272,7 @@ function initlog() {
             return 1
         fi
         if [[ -f "${SCRIPT_PATH}/shell/banner" ]]; then
-            cat "${SCRIPT_PATH}/shell/banner" > "${LOG}"
+            cat "${SCRIPT_PATH}/shell/banner" >"${LOG}"
         fi
         if ! is_osx; then
             LOG=$(readlink -e "${LOG}")
@@ -285,14 +285,14 @@ function initlog() {
 function exit_append() {
     if [[ $NOLOG -eq 0 ]]; then
         if [[ $WARN_COUNT -gt 0 ]] || [[ $ERR_COUNT -gt 0 ]]; then
-            printf "\n\n" >> "${LOG}"
+            printf "\n\n" >>"${LOG}"
         fi
 
         if [[ $WARN_COUNT -gt 0 ]]; then
-            printf "[*] Warnings:\t%s\n" "$WARN_COUNT" >> "${LOG}"
+            printf "[*] Warnings:\t%s\n" "$WARN_COUNT" >>"${LOG}"
         fi
         if [[ $ERR_COUNT -gt 0 ]]; then
-            printf "[*] Errors:\t\t%s\n" "$ERR_COUNT" >> "${LOG}"
+            printf "[*] Errors:\t\t%s\n" "$ERR_COUNT" >>"${LOG}"
         fi
     fi
     return 0
@@ -301,31 +301,31 @@ function exit_append() {
 while [[ $# -gt 0 ]]; do
     key="$1"
     case "$key" in
-        --nolog)
-            NOLOG=1
-            ;;
-        --nocolor)
-            NOCOLOR=1
-            ;;
-        -v|--verbose)
-            VERBOSE=1
-            ;;
-        -h|--help)
-            help_user
-            exit 0
-            ;;
-        -)
-            while read -r from_stdin; do
-                FROM_STDIN=("$from_stdin")
-            done
-            break
-            ;;
-        *)
-            initlog
-            error_msg "Unknown argument $key"
-            help_user
-            exit 1
-            ;;
+    --nolog)
+        NOLOG=1
+        ;;
+    --nocolor)
+        NOCOLOR=1
+        ;;
+    -v | --verbose)
+        VERBOSE=1
+        ;;
+    -h | --help)
+        help_user
+        exit 0
+        ;;
+    -)
+        while read -r from_stdin; do
+            FROM_STDIN=("$from_stdin")
+        done
+        break
+        ;;
+    *)
+        initlog
+        error_msg "Unknown argument $key"
+        help_user
+        exit 1
+        ;;
     esac
     shift
 done
@@ -387,14 +387,14 @@ if hash luacheck 2>/dev/null; then
         warn_msg 'Fail luacheck lint test'
     fi
 elif hash nvim 2>/dev/null; then
-    lua_version=$(nvim --version | grep -i luajit |  awk '{print $2}')
-   if [[ -f ~/.cache/nvim/plenary_hererocks/$lua_version/bin/luacheck  ]]; then
-       if ! ~/.cache/nvim/plenary_hererocks/"$lua_version"/bin/luacheck --std luajit --formatter plain lua/; then
+    lua_version=$(nvim --version | grep -i luajit | awk '{print $2}')
+    if [[ -f ~/.cache/nvim/plenary_hererocks/$lua_version/bin/luacheck ]]; then
+        if ! ~/.cache/nvim/plenary_hererocks/"$lua_version"/bin/luacheck --std luajit --formatter plain lua/; then
             warn_msg 'Fail luacheck lint test'
-       fi
-   else
+        fi
+    else
         error_msg "Missing luacheck, skipping lua lint"
-   fi
+    fi
 else
     error_msg "Missing luacheck, skipping lua lint"
 fi

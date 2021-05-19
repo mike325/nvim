@@ -163,14 +163,28 @@ local servers = {
                             pycodestyle = {
                                 maxLineLength = 120,
                                 ignore = {
+                                    -- 'E121', --
+                                    -- 'E123', --
+                                    -- 'E126', --
                                     'E203', -- Whitespace before :
+                                    -- 'E221', --
                                     'E226', -- Whitespace around operators
+                                    -- 'E228', --
                                     'E231', -- Missing whitespace after ','
+                                    -- 'E24',  --
+                                    -- 'E251', --
                                     'E261', -- 2 spaces before inline comment
                                     'E262', -- Comments should start with '#'
                                     'E265', -- Block comment should start with '#'
-                                    -- 'E302', -- Expected 2 lines between funcs/classes
+                                    -- 'E27',  --
+                                    'E302', -- Expected 2 lines between funcs/classes
+                                    -- 'E501', --
+                                    -- 'E701', --
+                                    -- 'E704', --
+                                    -- 'H233', --
                                     'W391', -- Blank line and the EOF
+                                    -- 'W503', --
+                                    -- 'W504', --
                                 },
                             },
                         },

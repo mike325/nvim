@@ -160,22 +160,42 @@ function M.openfile(path, flags, callback)
     return rst or ok
 end
 
-local function fs_write(path, data, append)
+local function fs_write(path, data, append, callback)
     assert(type(data) == type('') or type(data) == type({}), 'Invalid data type: '..type(data))
     data = type(data) == type('') and table.concat(data, '\n') or data
+    assert(not callback or type(callback) == 'function', 'Missing valid callback')
     assert(data and type(data) == 'string', 'Missing valid data buffer/string')
     local flags = append and 'a' or 'w'
-    M.openfile(path, flags, function(fd)
-        local stat = uv.fs_fstat(fd)
-        local offset = append and stat.size or 0
-        uv.fs_write(fd, data, offset)
-    end)
+    if not callback then
+        M.openfile(path, flags, function(fd)
+            local stat = uv.fs_fstat(fd)
+            local offset = append and stat.size or 0
+            uv.fs_write(fd, data, offset)
+        end)
+    else
+        uv.fs_open(path, "r", 438, function(oerr, fd)
+            assert(not oerr, oerr)
+            uv.fs_fstat(fd, function(serr, stat)
+                assert(not serr, serr)
+                local offset = append and stat.size or 0
+                uv.fs_write(fd, data, offset, function(rerr)
+                    assert(not rerr, rerr)
+                    uv.fs_close(fd, function(cerr)
+                        assert(not cerr, cerr)
+                        return callback(vim.split(data, '\n'))
+                    end)
+                end)
+            end)
+        end)
+    end
 end
 
-function M.writefile(path, data) fs_write(path, data, false) end
-function M.updatefile(path, data)
+function M.writefile(path, data, callback)
+    fs_write(path, data, false, callback)
+end
+function M.updatefile(path, data, callback)
     assert(M.is_file(path), 'Not a file: '..path)
-    fs_write(path, data, true)
+    fs_write(path, data, true, callback)
 end
 
 function M.readfile(path, callback)

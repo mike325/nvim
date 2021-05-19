@@ -21,6 +21,10 @@ if executable('shellcheck')
     endif
 endif
 
+if executable('shfmt')
+    setlocal formatprg=shfmt\ -w\ -i\ 4\ %
+endif
+
 if !has#plugin('nvim-treesitter')
     let g:sh_fold_enabled = 4
     setlocal foldmethod=syntax

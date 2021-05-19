@@ -25,7 +25,13 @@ if has#option('formatprg')
 endif
 
 if executable('flake8')
-    setlocal makeprg=flake8\ --max-line-length=120\ --ignore=E121,E123,E126,E226,E24,E704,W503,W504,H233,E228,E701,E226,E251,E501,E221,E203,E27\ %
+    let s:cmd = ['flake8']
+    let s:path = expand(os#name('windows') ? '~/.flake8' : '~/.config/flake8')
+    if !filereadable(s:path) && !filereadable('./tox.ini') && !filereadable('./.flake8') && !filereadable('./setup.cfg')
+        let s:cmd += ['--max-line-length=120', '--ignore=E203,E226,E231,E261,E262,E265,E302,W391']
+    endif
+    let s:cmd += ['%']
+    let &l:makeprg = join(s:cmd, ' ')
     setlocal errorformat=%f:%l:%c:\ %t%n\ %m
 elseif executable('pycodestyle')
     setlocal makeprg=pycodestyle\ --max-line-length=120\ --ignore=E121,E123,E126,E226,E24,E704,W503,W504,H233,E228,E701,E226,E251,E501,E221,E203,E27\ %
