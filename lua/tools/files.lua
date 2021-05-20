@@ -385,7 +385,7 @@ function M.skeleton_filename(opts)
     local skeletons_path = sys.base..'/skeletons/'
 
     local known_names = {
-        ['*'] = { 'clang-format', 'clang-tidy' },
+        ['*'] = { 'clang-format', 'clang-tidy' , 'flake8'},
         py    = {'ycm_extra_conf'},
         json  = {'projections'},
         c     = {'main'},

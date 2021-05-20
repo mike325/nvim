@@ -72,7 +72,7 @@ local servers = {
                             onSave = false
                         },
                         build = {
-                            args = { '-pdf', '-interaction=nonstopmode', '-synctex=1', '%f' },
+                            args = { '-outdir=texlab', '-pdf', '-interaction=nonstopmode', '-synctex=1', '%f' },
                             executable = "latexmk",
                             onSave = true,
                         },

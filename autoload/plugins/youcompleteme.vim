@@ -54,7 +54,7 @@ function! plugins#youcompleteme#install(info) abort
             let l:cmd += ['--cs-completer']
         endif
 
-        if executable('cargo')
+        if executable('racer') && executable('cargo')
             let l:cmd += ['--rust-completer']
         endif
 
@@ -109,9 +109,7 @@ let g:ycm_python_interpreter_path = exists('g:python3_host_prog') ?  g:python3_h
 
 let g:ycm_language_server = get(g:, 'ycm_language_server', [])
 
-let g:ycm_languages = []
-
-let g:ycm_languages += ['c', 'cpp', 'objc', 'objcpp', 'python']
+let g:ycm_languages = ['c', 'cpp', 'objc', 'objcpp', 'python']
 
 if executable('go') && !empty($GOROOT)
     let g:ycm_languages += ['go']
