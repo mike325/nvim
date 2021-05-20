@@ -32,7 +32,7 @@ elseif has('nvim') && filereadable(s:cache.'/plenary_hererocks/'.s:luajit.'/bin/
 endif
 
 if s:luacheck !=# ''
-    let &l:makeprg = s:luacheck . ' --std luajit --formatter plain %'
+    let &l:makeprg = s:luacheck . ' --max-cyclomatic-complexity 15 --std luajit --formatter plain %'
     setlocal errorformat=%f:%l:%c:\ %m
 
     if has#plugin('neomake')
