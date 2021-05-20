@@ -201,7 +201,10 @@ function M.toggle_comments(first, last)
             lines[i] = uncomment .. commentstring:format(format)
         else
             local indent_match = '^%s+'
-            local uncomment_match = '^%s*'..commentstring:format('%s?(.*)'):gsub('%-', '%%-'):gsub('/%*', '/%%*'):gsub('%*/', '%%*/')
+            local uncomment_match = '^%s*'..commentstring:format('%s?(.*)')
+                                                         :gsub('%-', '%%-')
+                                                         :gsub('/%*', '/%%*')
+                                                         :gsub('%*/', '%%*/')
             local indent = lines[i]:match(indent_match) or ''
             local data = lines[i]:match(uncomment_match)
             lines[i] = #data > 0 and indent .. data or ''
