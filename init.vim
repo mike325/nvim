@@ -123,7 +123,7 @@ else
     if has('nvim-0.5')
         Plug 'nvim-lua/popup.nvim'
         Plug 'nvim-lua/plenary.nvim'
-        Plug 'nvim-lua/telescope.nvim'
+        Plug 'nvim-telescope/telescope.nvim'
         Plug 'windwp/nvim-autopairs'
 
         if executable('gcc') || executable('clang')

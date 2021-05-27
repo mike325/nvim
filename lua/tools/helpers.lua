@@ -573,19 +573,25 @@ end
 
 function M.filelist(tool, lst)
     local filetool = {
-        git  = 'git --no-pager ls-files -co --exclude-standard',
-        fd   = 'fd ' .. M.ignores('fd') .. ' --type=file --hidden --follow --color=never . .',
-        rg   = 'rg --color=never --no-search-zip --hidden --trim --files '.. M.ignores('rg'),
-        ag   = 'ag -l --follow --nocolor --nogroup --hidden '..M.ignores('ag')..'-g ""',
-        find = "find . -type f -iname '*' "..M.ignores('find') .. ' ',
+        git    = 'git --no-pager ls-files -co --exclude-standard',
+        fd     = 'fd ' .. M.ignores('fd') .. ' --type    =file --hidden --follow --color=never . .',
+        rg     = 'rg --color                             =never --no-search-zip --hidden --trim --files '.. M.ignores('rg'),
+        ag     = 'ag -l --follow --nocolor --nogroup --hidden '..M.ignores('ag')..'-g ""',
+        find   = "find . -type f -iname '*' "..M.ignores('find') .. ' ',
     }
+
+    filetool.fdfind = filetool.fd
 
     local filelist = lst and {} or ''
     if executable(tool) and filetool[tool] ~= nil then
         filelist = filetool[tool]
-        filelist = lst and split(filelist, ' ') or filelist
+    elseif tools == 'fd' and not executable('fd') and executable('fdfind') then
+        filelist = filetool.fdfind
     end
 
+    if #filelist > 0 then
+        filelist = lst and split(filelist, ' ') or filelist
+    end
     return filelist
 end
 

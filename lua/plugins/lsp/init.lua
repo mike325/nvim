@@ -136,8 +136,21 @@ local servers = {
     },
     python = {
         {
-            config = 'pyls_ms',
-            -- cmd = { 'dotnet', 'exec', 'path/to/Microsoft.Python.languageServer.dll'  };
+            config = 'pyright',
+            exec = 'pyright-langserver',
+            options = {
+                settings = {
+                    python = {
+                        analysis = {
+                            autoSearchPaths = true,
+                            diagnosticMode = "workspace",
+                            useLibraryCodeForTypes = true,
+                            typeCheckingMode = 'basic',  -- "off", "basic", "strict"
+                            -- extraPaths = {},
+                        },
+                    },
+                },
+            },
         },
         {
             exec = 'pyls',
@@ -551,11 +564,11 @@ local commands = {
 local available_languages = {}
 for language,options in pairs(servers) do
     for _,server in pairs(options) do
-        local dir = is_dir(sys.cache..'/lspconfig/'..(server['config'] or server['exec']) )
-        local exec = server['exec'] ~= nil and executable(server['exec']) or false
+        local dir = is_dir(sys.cache..'/lspconfig/'..(server.config or server.exec) )
+        local exec = server.exec ~= nil and executable(server.exec) or false
         if exec or dir then
-            local init = server['options'] ~= nil and server['options'] or {}
-            local config = server['config'] ~= nil and server['config'] or server['exec']
+            local config = server.config or server.exec
+            local init = server.options or {}
             init.commands = commands
             init.on_attach = on_attach
             lsp[config].setup(init)
