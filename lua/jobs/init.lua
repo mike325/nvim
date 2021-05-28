@@ -3,7 +3,7 @@ local echoerr    = require'tools'.messages.echoerr
 local echowarn   = require'tools'.messages.echowarn
 local clear_lst  = require'tools'.tables.clear_lst
 local dump_to_qf = require'tools'.helpers.dump_to_qf
-local split      = require'tools'.strings.split
+-- local split      = require'tools'.strings.split
 
 if not nvim.has('nvim-0.5') then
     return false
@@ -33,7 +33,7 @@ function M.general_output_parser(jobid, data)
     local requested_input = false
 
     if type(data) == 'string' then
-        data = split(data, '\n')
+        data = vim.split(data, '[\r]?\n')
     end
 
     for _,val in pairs(data) do
@@ -125,7 +125,7 @@ local function save_data(jobid, data, event)
 
     if type(data) == 'string' then
         data = data:gsub('\t','  ')
-        data = split(data, '\n')
+        data = vim.split(data, '[\r]?\n')
     end
 
     data = clear_lst(data)

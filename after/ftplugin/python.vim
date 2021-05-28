@@ -17,10 +17,14 @@ nnoremap <silent><buffer> <CR> :call mappings#cr()<CR>
 let python_highlight_all = 1
 
 if has#option('formatprg')
-    if executable('yapf')
-        setlocal formatprg=yapf\ --style\ pep8
-    elseif executable('autopep8')
-        setlocal formatprg=autopep8\ --experimental\ --aggressive\ --max-line-length\ 120
+    if has('nvim-0.5')
+        setlocal formatexpr=luaeval('require\"format.python\".format()')
+    else
+        if executable('yapf')
+            setlocal formatprg=yapf\ -i\ --style\ pep8\ %
+        elseif executable('autopep8')
+            setlocal formatprg=autopep8\ -i\ --experimental\ --aggressive\ --max-line-length\ 120\ %
+        endif
     endif
 endif
 

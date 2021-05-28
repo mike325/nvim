@@ -57,7 +57,7 @@ function M.clear_lst(lst)
     local tmp = {}
 
     for _,val in pairs(lst) do
-        val = vim.trim(val)
+        val = val:gsub('%s+$', '')
         if not val:match('^%s*$') then
             tmp[#tmp + 1] = val
         end

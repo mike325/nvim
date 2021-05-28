@@ -82,14 +82,14 @@ function M.send_grep_job(args)
         },
         opts = {
             on_exit = function(jobid, rc, _)
-                local jobs = require'jobs'.jobs
+                local job = require'jobs'.jobs[jobid]
                 local dump_to_qf = require'tools'.helpers.dump_to_qf
 
-                local streams = jobs[jobid].streams or {}
+                local streams = job.streams or {}
                 local stdout = streams.stdout or {}
                 local stderr = streams.stderr or {}
 
-                local qf_opts = jobs[jobid].qf or {}
+                local qf_opts = job.qf or {}
                 qf_opts.context = qf_opts.context or cmd[1]
                 qf_opts.title = qf_opts.title or cmd[1]..' output'
                 if rc == 0 then
@@ -242,10 +242,10 @@ local function get_files(path, is_git)
         opts = {
             cwd = path,
             on_exit = function(jobid, rc, _)
-                local jobs = require'jobs'.jobs
+                local job = require'jobs'.jobs[jobid]
                 if rc == 0 then
-                    if jobs[jobid].streams and #jobs[jobid].streams.stdout > 0 then
-                        M.filelists[path] = jobs[jobid].streams.stdout
+                    if job.streams and #job.streams.stdout > 0 then
+                        M.filelists[path] = job.streams.stdout
                     end
                 end
             end
