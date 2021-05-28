@@ -97,7 +97,7 @@ def MakeRelativePathsInFlagsAbsolute(working_directory):
 
         # Else, assume dir is absolute
 
-        for path, dirs, files in os.walk(libDir):
+        for path, _, files in os.walk(libDir):
             # Add to flags if dir contains a header file and is not
             # one of the metadata dirs (examples and extras).
             if any(IsHeaderFile(x) for x in files) and\

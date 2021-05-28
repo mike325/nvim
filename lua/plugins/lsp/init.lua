@@ -329,31 +329,6 @@ local function on_attach(client, bufnr)
                 has_saga and "require('lspsaga.rename').rename()" or 'vim.lsp.buf.rename()'
             ),
         },
-        ['=L'] = {
-            capability = 'completion',
-            mapping = lua_cmd:format('vim.lsp.diagnostic.set_loclist()'),
-        },
-        ['=d'] = {
-            capability = 'completion',
-            mapping = lua_cmd:format(
-                has_saga and "require'lspsaga.diagnostic'.show_line_diagnostics()" or
-                'vim.lsp.diagnostic.show_line_diagnostics()'
-            ),
-        },
-        [']d'] = {
-            capability = 'completion',
-            mapping = lua_cmd:format(
-                has_saga and "require'lspsaga.diagnostic'.lsp_jump_diagnostic_next()" or
-                'vim.lsp.diagnostic.goto_next{wrap=false}'
-            ),
-        },
-        ['[d'] = {
-            capability = 'completion',
-            mapping = lua_cmd:format(
-                has_saga and "require'lspsaga.diagnostic'.lsp_jump_diagnostic_prev()" or
-                'vim.lsp.diagnostic.goto_prev{wrap=false}'
-            ),
-        },
         ['ga'] = {
             capability = 'code_action',
             mapping = lua_cmd:format(
@@ -365,6 +340,30 @@ local function on_attach(client, bufnr)
             mapping = lua_cmd:format(
                 has_saga and "require('lspsaga.signaturehelp').signature_help()" or
                 'vim.lsp.buf.signature_help()'
+            ),
+        },
+        ['=L'] = {
+            mapping = lua_cmd:format('vim.lsp.diagnostic.set_loclist()'),
+        },
+        ['=d'] = {
+            mapping = lua_cmd:format(
+                has_saga and
+                "require'lspsaga.diagnostic'.show_line_diagnostics()" or
+                'vim.lsp.diagnostic.show_line_diagnostics()'
+            ),
+        },
+        [']d'] = {
+            mapping = lua_cmd:format(
+                has_saga and
+                "require'lspsaga.diagnostic'.lsp_jump_diagnostic_next()" or
+                'vim.lsp.diagnostic.goto_next{wrap=false}'
+            ),
+        },
+        ['[d'] = {
+            mapping = lua_cmd:format(
+                has_saga and
+                "require'lspsaga.diagnostic'.lsp_jump_diagnostic_prev()" or
+                'vim.lsp.diagnostic.goto_prev{wrap=false}'
             ),
         },
         -- ['<space>wa'] = '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>',
@@ -389,7 +388,7 @@ local function on_attach(client, bufnr)
     -- end
 
     for mapping,val in pairs(mappings) do
-        if client.resolved_capabilities[val.capability] then
+        if not val.capability or client.resolved_capabilities[val.capability] then
             set_mapping {
                 mode = 'n',
                 lhs = mapping,
