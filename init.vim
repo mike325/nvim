@@ -127,14 +127,10 @@ else
         Plug 'windwp/nvim-autopairs'
 
         if executable('gcc') || executable('clang')
-            " if os#name('windows')
-            "     Plug 'nvim-treesitter/completion-treesitter'
-            " endif
             Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
             Plug 'nvim-treesitter/nvim-treesitter-refactor'
             Plug 'nvim-treesitter/nvim-treesitter-textobjects'
             Plug 'nvim-treesitter/playground'
-            " Plug 'romgrk/nvim-treesitter-context'
         endif
     else
         Plug 'Raimondi/delimitMate'
@@ -143,11 +139,7 @@ else
     if has#minimal()
 
         if has('nvim-0.5')
-            " if os#name('windows')
-            "     Plug 'nvim-lua/completion-nvim'
-            " else
-                Plug 'hrsh7th/nvim-compe'
-            " endif
+            Plug 'hrsh7th/nvim-compe'
 
             if tools#CheckLanguageServer()
                 Plug 'neovim/nvim-lspconfig'

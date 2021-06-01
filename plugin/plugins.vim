@@ -133,14 +133,7 @@ if !empty($YCM) && empty($NO_PYTHON_DEV) &&
 
 elseif has('nvim-0.5')
 
-    if os#name('windows')
-        Plug 'nvim-lua/completion-nvim'
-        if executable('gcc') || executable('clang')
-            Plug 'nvim-treesitter/completion-treesitter'
-        endif
-    else
-        Plug 'hrsh7th/nvim-compe'
-    endif
+    Plug 'hrsh7th/nvim-compe'
 
     if tools#CheckLanguageServer()
         Plug 'neovim/nvim-lspconfig'
