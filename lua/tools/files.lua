@@ -160,9 +160,9 @@ end
 
 local function fs_write(path, data, append, callback)
     assert(type(data) == type('') or type(data) == type({}), 'Invalid data type: '..type(data))
-    data = type(data) == type('') and table.concat(data, '\n') or data
     assert(not callback or type(callback) == 'function', 'Missing valid callback')
-    assert(data and type(data) == 'string', 'Missing valid data buffer/string')
+
+    data = type(data) ~= type('') and table.concat(data, '\n') or data
     local flags = append and 'a' or 'w'
     if not callback then
         M.openfile(path, flags, function(fd)
@@ -191,6 +191,7 @@ end
 function M.writefile(path, data, callback)
     fs_write(path, data, false, callback)
 end
+
 function M.updatefile(path, data, callback)
     assert(M.is_file(path), 'Not a file: '..path)
     fs_write(path, data, true, callback)
