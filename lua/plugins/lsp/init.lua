@@ -1,4 +1,4 @@
--- luacheck: max line length 180
+-- luacheck: max line length 135
 local sys  = require'sys'
 local nvim = require'nvim'
 
@@ -38,6 +38,9 @@ local has_telescope,telescope = pcall(require, 'telescope.builtin')
 
 local sumneko_root_path = sys.cache..'/lspconfig/sumneko_lua/lua-language-server'
 local sumneko_binary = sumneko_root_path..'/bin/'..system_name..'/lua-language-server'
+local sumneko_runtime = vim.split(package.path, ';')
+table.insert(sumneko_runtime, "lua/?.lua")
+table.insert(sumneko_runtime, "lua/?/init.lua")
 
 local servers = {
     go         = { { exec = 'gopls'}, },
@@ -109,17 +112,15 @@ local servers = {
                             callSnippet = "Both"
                         },
                         runtime = {
-                            -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
+                            -- Tell the language server which version of Lua you're using
+                            -- (most likely LuaJIT in the case of Neovim)
                             version = 'LuaJIT',
                             -- Setup your lua path
-                            path = split(package.path, ';'),
+                            path = sumneko_runtime,
                         },
                         workspace = {
                             -- Make the server aware of Neovim runtime files
-                            library = {
-                                [vim.fn.expand('$VIMRUNTIME/lua')] = true,
-                                [vim.fn.expand('$VIMRUNTIME/lua/vim/lsp')] = true,
-                            },
+                            library = vim.api.nvim_get_runtime_file("", true),
                         },
                         diagnostics = {
                             globals = {

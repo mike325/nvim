@@ -58,7 +58,9 @@ if has('nvim-0.5')
     endfunction
 
     function! tools#set_grep(is_git, is_local) abort
-        return v:lua.tools.helpers.set_grep(a:is_git, a:is_local)
+        let l:is_git = a:is_git ? v:true : v:false
+        let l:is_local = a:is_local ? v:true : v:false
+        return v:lua.tools.helpers.set_grep(l:is_git, l:is_local)
     endfunction
 
     function! tools#get_icon(icon) abort
