@@ -20,7 +20,7 @@ end
 
 local function forward_path(path)
     if is_windows and nvim.o.shellslash then
-        path:gsub('\\','/')
+        return path:gsub('\\','/')
     end
     return path
 end
@@ -141,9 +141,7 @@ function M.subpath_in_path(parent, child)
 
     -- TODO: Check windows multi drive root
     local child_in_parent = false
-    if M.is_root(parent) then
-        child_in_parent = true
-    elseif child:match('^'..parent) then
+    if M.is_root(parent) or child:match('^'..parent) then
         child_in_parent = true
     end
 
