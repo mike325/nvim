@@ -108,7 +108,7 @@ function M.extension(path)
         filename = filename[#filename]
         extension = filename:match'^.+(%..+)$' or ''
     end
-    return extension
+    return #extension > 2 and extension:sub(2, #extension) or extension
 end
 
 function M.basedir(path)
@@ -492,90 +492,5 @@ function M.clean_file()
     return true
 end
 
-local function parser_config(data)
-    data = type(data) ~= 'table' and split(data, '\n') or data
-    local data_tbl = {
-        global = {},
-    }
-    local section = nil
-    local subsection = nil
-    local subsections = {}
-    local isglobal = true
-    for _,line in pairs(data) do
-        if not line:match('^%s*;.*') and not line:match('^%s*#.*') and not line:match('^%s*$') then
-            if line:match('^%s*%[%s*%a[%w_]*%s*]$') then
-                isglobal = false
-                section = line:match('%a[%w_]*')
-                if not subsections[section] then
-                    assert(not data_tbl[section], 'Repeated section: '..section)
-                    data_tbl[section] = {}
-                end
-                subsection = nil
-            elseif line:match('^%s*%[%s*%a[%w_]*%s+".+"%s*]$') then
-                isglobal = false
-                section = line:match('^%s*%[(%a[%w_]*)')
-                if not data_tbl[section] then
-                    data_tbl[section] = {}
-                end
-                subsection = line:match('"(.+)"%s*]$')
-                assert(
-                    not data_tbl[section][subsection],
-                    'Repeated subsection: '..subsection..' in section: '..section..' '..vim.inspect(data_tbl)
-                )
-                data_tbl[section][subsection] = {}
-                subsections[section] = subsection
-            elseif ( section or isglobal ) and line:match('^%s*%a[%w_%.-]*%s*=%s*.+$') then
-                local clean_line = line:gsub('%s+;.+$', ''):gsub('%s+#.+$', '')
-                local attr = clean_line:match('^%s*(%a[%w_%.-]*)%s*=')
-                local val = clean_line:match('=%s*(.+)$')
-                val = vim.trim(val)
-
-                if val == 'true' or val == 'false' then
-                    val = val == 'true'
-                elseif val:match('^%d+$') then
-                    val = tonumber(val)
-                elseif val:match('^0[box][%da-fA-F]+$') then
-                    if val:sub(2, 2) == 'x' and val:match('^0[xX][%da-fA-F]+$') then
-                        val = tonumber(val, 16)
-                    elseif val:sub(2, 2) == 'b' and val:match('^0b[01]+$') then
-                        val = tonumber(val:match('^0b([01]+)$'), 2)
-                    elseif val:sub(2, 2) == 'o' and val:match('^0o[0-7]+$') then
-                        val = tonumber(val:match('^0o([0-7]+)$'), 8)
-                    end
-                elseif (val:sub(1,1) == '"' or val:sub(1,1) == "'") and val:sub(#val,#val) == val:sub(1, 1) then
-                    local qtype = val:sub(1,1)
-                    val = val:match(('^%s(.*)%s$'):format(qtype, qtype))
-                end
-
-                if not section then
-                    data_tbl.global[attr] = val
-                elseif not subsection then
-                    data_tbl[section][attr] = val
-                else
-                    data_tbl[section][subsection][attr] = val
-                end
-            else
-                print('Unmatched line: '..line)
-                section = nil
-                subsection = nil
-            end
-        end
-    end
-    return data_tbl
-end
-
-function M.read_config(config, callback)
-    assert(not callback or type(callback) == 'function', 'Not a valid callback type: '..type(callback))
-
-    config = M.normalize_path(config)
-    assert(M.is_file(config), 'Not a valid file: '..config)
-    if not callback then
-        local data = M.readfile(config)
-        return parser_config(data)
-    end
-    M.readfile(config, function(data)
-        callback(parser_config(data))
-    end)
-end
 
 return M
