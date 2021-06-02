@@ -15,7 +15,6 @@ Plug 'sainnhe/sonokai'
 " Plug 'nanotech/jellybeans.vim'
 " Plug 'whatyouhide/vim-gotham'
 
-Plug 'easymotion/vim-easymotion'
 Plug 'tommcdo/vim-lion'
 Plug 'tpope/vim-abolish'
 Plug 'honza/vim-snippets'
@@ -32,6 +31,7 @@ endif
 if has('nvim-0.5')
     " Plug 'romgrk/barbar.nvim'
     " Plug 'lukas-reineke/indent-blankline.nvim', {'branch': 'lua'}
+    Plug 'phaazon/hop.nvim'
     Plug 'kyazdani42/nvim-web-devicons'
     Plug 'kevinhwang91/nvim-bqf'
 
@@ -43,6 +43,7 @@ if has('nvim-0.5')
     Plug 'folke/todo-comments.nvim'
     Plug 'folke/trouble.nvim'
 else
+    Plug 'easymotion/vim-easymotion'
     Plug 'tbastos/vim-lua'
     Plug 'octol/vim-cpp-enhanced-highlight'
     Plug 'moll/vim-bbye', { 'on': [ 'Bdelete' ] }

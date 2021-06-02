@@ -1,4 +1,3 @@
--- luacheck: max line length 152
 local nvim  = require'nvim'
 local tools = require'tools'
 
