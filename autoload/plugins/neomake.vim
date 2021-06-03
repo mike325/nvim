@@ -11,19 +11,19 @@ let g:config_neomake = 1
 " let g:neomake_ft_maker_remove_invalid_entries = 1
 
 let g:neomake_error_sign = {
-    \ 'text': tools#get_icon('error'),
-    \ 'texthl': 'NeomakeErrorSign',
+    \   'text': tools#get_icon('error'),
+    \   'texthl': 'NeomakeErrorSign',
     \ }
 let g:neomake_warning_sign = {
-    \ 'text': tools#get_icon('warn'),
-    \ 'texthl': 'NeomakeWarningSign',
+    \   'text': tools#get_icon('warn'),
+    \   'texthl': 'NeomakeWarningSign',
     \ }
 let g:neomake_info_sign = {
-    \ 'text': tools#get_icon('info'),
-    \ 'texthl': 'NeomakeInfoSign'
+    \   'text': tools#get_icon('info'),
+    \   'texthl': 'NeomakeInfoSign'
     \ }
 let g:neomake_message_sign = {
-    \ 'text': tools#get_icon('message'),
+    \   'text': tools#get_icon('message'),
     \   'texthl': 'NeomakeMessageSign',
     \ }
 

@@ -129,6 +129,13 @@ set_mapping{
 
 set_mapping{
     mode = 'n',
+    lhs = '<leader>g',
+    rhs = [[<cmd>lua require'telescope.builtin'.live_grep{}<CR>]],
+    args = noremap,
+}
+
+set_mapping{
+    mode = 'n',
     lhs = '<C-q>',
     rhs = [[<cmd>lua require'telescope.builtin'.quickfix{}<CR>]],
     args = noremap,
