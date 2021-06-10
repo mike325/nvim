@@ -18,21 +18,27 @@ if has#option('formatprg') && executable('clang-format')
     setlocal formatprg=clang-format\ --style=file\ --fallback-style=WebKit
 endif
 
-if exists('g:c_includes')
-    execute 'setlocal path^='.join(g:c_includes, ',')
-endif
+if has('nvim-0.5')
+    lua require'filetype.cpp'.setup()
+else
+    if exists('b:c_includes')
+        execute 'setlocal path^='.join(b:c_includes, ',')
+    elseif exists('g:c_includes')
+        execute 'setlocal path^='.join(g:c_includes, ',')
+    endif
 
-if executable('clang-tidy') && findfile('compile_commands.json', tr(getcwd(), '\', '/').';')
-    setlocal makeprg=clang-tidy\ %
-    let &l:errorformat = '%E%f:%l:%c: fatal error: %m,' .
-        \                '%E%f:%l:%c: error: %m,' .
-        \                '%W%f:%l:%c: warning: %m,' .
-        \                '%-G%\m%\%%(LLVM ERROR:%\|No compilation database found%\)%\@!%.%#,' .
-        \                '%E%m'
-elseif executable('clang')
-    let &l:makeprg = 'clang -o '.tempname().' -S -Wall -Wextra -Weverything -Wno-missing-prototypes -Wpedantic %'
-elseif executable('gcc')
-    let &l:makeprg = 'gcc -o '.tempname().' -S -Wall -Wextra -Wpedantic %'
+    if executable('clang-tidy') && findfile('compile_commands.json', tr(getcwd(), '\', '/').';')
+        setlocal makeprg=clang-tidy\ %
+        let &l:errorformat = '%E%f:%l:%c: fatal error: %m,' .
+            \                '%E%f:%l:%c: error: %m,' .
+            \                '%W%f:%l:%c: warning: %m,' .
+            \                '%-G%\m%\%%(LLVM ERROR:%\|No compilation database found%\)%\@!%.%#,' .
+            \                '%E%m'
+    elseif executable('clang')
+        let &l:makeprg = 'clang -o '.tempname().' -S -Wall -Wextra -Weverything -Wno-missing-prototypes -Wpedantic %'
+    elseif executable('gcc')
+        let &l:makeprg = 'gcc -o '.tempname().' -S -Wall -Wextra -Wpedantic %'
+    endif
 endif
 
 if has#plugin('neomake') && (executable('clang') || executable('clang-tidy') || executable('gcc'))

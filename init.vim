@@ -121,6 +121,7 @@ else
     endif
 
     if has('nvim-0.5')
+        Plug 'nanotee/luv-vimdocs'
         Plug 'nvim-lua/popup.nvim'
         Plug 'nvim-lua/plenary.nvim'
         Plug 'nvim-telescope/telescope.nvim'

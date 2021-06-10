@@ -48,4 +48,15 @@ function M.delete(buffer, wipe)
     end
 end
 
+function M.get_option(option, default)
+    local ok, opt = pcall(vim.api.nvim_buf_get_option, 0, option)
+    if not ok then
+        ok, opt = pcall(vim.api.nvim_get_option, 0, option)
+        if not ok then
+            opt = default
+        end
+    end
+    return opt
+end
+
 return M

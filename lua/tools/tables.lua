@@ -46,4 +46,32 @@ function M.str_to_clean_tbl(cmd_string)
     return M.clear_lst(vim.split(vim.trim(cmd_string), ' ', true))
 end
 
+-- NOTE: Took from http://lua-users.org/wiki/CopyTable
+function M.shallowcopy(orig)
+    local copy
+    if type(orig) == type({}) then
+        copy = {}
+        for orig_key, orig_value in pairs(orig) do
+            copy[orig_key] = orig_value
+        end
+    else -- number, string, boolean, etc
+        copy = orig
+    end
+    return copy
+end
+
+function M.deepcopy(orig)
+    local copy
+    if type(orig) == type({}) then
+        copy = {}
+        for orig_key, orig_value in next, orig, nil do
+            copy[M.deepcopy(orig_key)] = M.deepcopy(orig_value)
+        end
+        setmetatable(copy, M.deepcopy(getmetatable(orig)))
+    else -- number, string, boolean, etc
+        copy = orig
+    end
+    return copy
+end
+
 return M
