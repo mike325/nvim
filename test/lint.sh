@@ -382,14 +382,18 @@ fi
 if hash luacheck 2>/dev/null; then
     status_msg "Running luacheck"
     verbose_msg "luacheck version: $(luacheck --version)"
-    if ! luacheck --std luajit --formatter plain lua/; then
-        # TODO: Cleanup luacheck errors
+    if ! luacheck --std luajit lua/; then
+        warn_msg 'Fail luacheck lint test'
+    fi
+elif [[ -f "$HOME/.luarocks/bin/luacheck" ]]; then
+    status_msg "Running luacheck"
+    if ! "$HOME/.luarocks/bin/luacheck" --std luajit lua/; then
         warn_msg 'Fail luacheck lint test'
     fi
 elif hash nvim 2>/dev/null; then
     lua_version=$(nvim --version | grep -i luajit | awk '{print $2}')
     if [[ -f ~/.cache/nvim/plenary_hererocks/$lua_version/bin/luacheck ]]; then
-        if ! ~/.cache/nvim/plenary_hererocks/"$lua_version"/bin/luacheck --std luajit --formatter plain lua/; then
+        if ! ~/.cache/nvim/plenary_hererocks/"$lua_version"/bin/luacheck --std luajit lua/; then
             warn_msg 'Fail luacheck lint test'
         fi
     else
