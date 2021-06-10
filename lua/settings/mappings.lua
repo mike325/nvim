@@ -888,16 +888,18 @@ set_mapping{
 
 -- TODO: Support Rsync
 if executable('scp') then
-    local function convert_path(path, send)
+    local function convert_path(path, send, host)
         path = realpath(normalize_path(path))
 
         local remote_path = './'
         local paths = {}
+        local hosts = {}
         local projects = {}
         local path_json = normalize_path('~/.config/remotes/paths.json')
         if is_file(path_json) then
             local configs = read_json(path_json) or {}
-            paths = configs.paths or {}
+            hosts = configs.hosts or {}
+            paths = hosts[host] or configs.paths or {}
             projects = configs.projects or  {}
         end
 
@@ -955,7 +957,7 @@ if executable('scp') then
             writefile(virtual_filename, nvim.buf.get_lines(0, 0, -1, true))
         end
 
-        local remote_path = ('%s:%s'):format(host, convert_path(filename, send))
+        local remote_path = ('%s:%s'):format(host, convert_path(filename, send, host))
         local rcmd = [[scp -r "%s" "%s"]]
         if send then
             rcmd = rcmd:format(virtual_filename or filename, remote_path)
