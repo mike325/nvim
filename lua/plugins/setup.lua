@@ -219,7 +219,8 @@ packer.startup(function()
         cond = function()
             return vim.env.VIM_MIN == nil and vim.g.minimal == nil and vim.fn.has('python3') == 1
         end,
-        config = function()
+        event = 'InsertEnter',
+        setup = function()
             vim.g.UltiSnipsEditSplit     = 'context'
             vim.g.UltiSnipsExpandTrigger = '<C-,>'
 

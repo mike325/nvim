@@ -14,11 +14,11 @@ local read_json      = require'utils.files'.read_json
 local echomsg = require'utils.messages'.echomsg
 local echoerr = require'utils.messages'.echoerr
 
-local set_autocmd = require'nvim.autocmds'.set_autocmd
+-- local set_autocmd = require'nvim.autocmds'.set_autocmd
 local set_abbr    = require'nvim.abbrs'.set_abbr
 local set_command = require'nvim.commands'.set_command
 local set_mapping = require'nvim.mappings'.set_mapping
-local get_mapping = require'nvim.mappings'.get_mapping
+-- local get_mapping = require'nvim.mappings'.get_mapping
 
 -- local has     = nvim.has
 -- local plugins = nvim.plugins
@@ -80,17 +80,6 @@ set_mapping{ mode = 'n', lhs = '<leader>8', rhs = '8gt', args = noremap }
 set_mapping{ mode = 'n', lhs = '<leader>9', rhs = '9gt', args = noremap }
 set_mapping{ mode = 'n', lhs = '<leader>0', rhs = '<cmd>tablast<CR>', args = noremap }
 set_mapping{ mode = 'n', lhs = '<leader><leader>n', rhs = '<cmd>tabnew<CR>', args = noremap }
-
-set_mapping{ mode = 'x', lhs = '<leader>1', rhs = '<ESC>1gt', args = noremap }
-set_mapping{ mode = 'x', lhs = '<leader>2', rhs = '<ESC>2gt', args = noremap }
-set_mapping{ mode = 'x', lhs = '<leader>3', rhs = '<ESC>3gt', args = noremap }
-set_mapping{ mode = 'x', lhs = '<leader>4', rhs = '<ESC>4gt', args = noremap }
-set_mapping{ mode = 'x', lhs = '<leader>5', rhs = '<ESC>5gt', args = noremap }
-set_mapping{ mode = 'x', lhs = '<leader>6', rhs = '<ESC>6gt', args = noremap }
-set_mapping{ mode = 'x', lhs = '<leader>7', rhs = '<ESC>7gt', args = noremap }
-set_mapping{ mode = 'x', lhs = '<leader>8', rhs = '<ESC>8gt', args = noremap }
-set_mapping{ mode = 'x', lhs = '<leader>9', rhs = '<ESC>9gt', args = noremap }
-set_mapping{ mode = 'x', lhs = '<leader>0', rhs = '<ESC>:tablast<CR>', args = noremap }
 
 set_mapping{ mode = 'n', lhs = '-', rhs = '<cmd>Explore<CR>' }
 
