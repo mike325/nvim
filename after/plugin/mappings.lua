@@ -156,26 +156,29 @@ set_mapping{
     args = noremap_silent
 }
 
--- set_mapping{
---     mode = 'i',
---     lhs  = '<TAB>',
---     rhs  = [[<C-R>=mappings#tab()<CR>]],
---     args = noremap_silent,
--- }
+-- TODO: Migrate to lua functions
+set_mapping{
+    mode = 'i',
+    lhs  = '<TAB>',
+    rhs  = [[<C-R>=neovim#tab()<CR>]],
+    args = noremap_silent,
+}
 
--- set_mapping{
---     mode = 'i',
---     lhs  = '<S-TAB>',
---     rhs  = [[<C-R>=mappings#shifttab()<CR>]],
---     args = noremap_silent,
--- }
+-- TODO: Migrate to lua functions
+set_mapping{
+    mode = 'i',
+    lhs  = '<S-TAB>',
+    rhs  = [[<C-R>=neovim#shifttab()<CR>]],
+    args = noremap_silent,
+}
 
--- set_mapping{
---     mode = 'i',
---     lhs  = '<CR>',
---     rhs  = [[<C-R>=mappings#enter()<CR>]],
---     args = noremap_silent,
--- }
+-- TODO: Migrate to lua functions
+set_mapping{
+    mode = 'i',
+    lhs  = '<CR>',
+    rhs  = [[<C-R>=neovim#enter()<CR>]],
+    args = noremap_silent,
+}
 
 set_mapping{
     mode = 'n',
@@ -641,25 +644,25 @@ set_command{
 
 -- set_command{
 --     lhs = 'FileType',
---     rhs = "call mappings#SetFileData('filetype', <q-args>, 'text')",
+--     rhs = "call neovim#SetFileData('filetype', <q-args>, 'text')",
 --     args = {nargs='?', complete='filetype', force = true}
 -- }
 
 -- set_command{
 --     lhs = 'FileFormat',
---     rhs = "call mappings#SetFileData('fileformat', <q-args>, 'unix')",
---     args = {nargs='?', complete='customlist,mappings#format', force = true}
+--     rhs = "call neovim#SetFileData('fileformat', <q-args>, 'unix')",
+--     args = {nargs='?', complete='customlist,neovim#format', force = true}
 -- }
 
 -- set_command{
 --     lhs = 'SpellLang',
 --     rhs = 'lua require"utils".helpers.spelllangs(<q-args>)',
---     args = {force = true, nargs = '?', complete = 'customlist,mappings#spells'}
+--     args = {force = true, nargs = '?', complete = 'customlist,neovim#spells'}
 -- }
 
 -- set_command{
 --     lhs = 'ConncallLevel',
---     rhs = "call mappings#ConncallLevel(expand(<q-args>))",
+--     rhs = "call neovim#ConncallLevel(expand(<q-args>))",
 --     args = {nargs='?', force = true}
 -- }
 
@@ -682,7 +685,7 @@ if sys.name == 'windows' then
     set_mapping{
         mode = 'n',
         lhs = '<C-h>',
-        rhs = '<cmd>call mappings#bs()<CR>',
+        rhs = '<cmd>call neovim#bs()<CR>',
         args = noremap_silent,
     }
     set_mapping{
