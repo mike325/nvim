@@ -1,12 +1,12 @@
 local nvim  = require'nvim'
-local tools = require'tools'
+local utils = require'utils'
 
-local executable  = require'tools'.files.executable
-local load_module = require'tools'.helpers.load_module
+local executable  = require'utils.files'.executable
+local load_module = require'utils.helpers'.load_module
 
-local set_autocmd = nvim.autocmds.set_autocmd
-local set_mapping = nvim.mappings.set_mapping
-local set_command = nvim.commands.set_command
+local set_autocmd = require'nvim.autocmds'.set_autocmd
+local set_mapping = require'nvim.mappings'.set_mapping
+local set_command = require'nvim.commands'.set_command
 
 local telescope = load_module'telescope'
 
@@ -20,7 +20,7 @@ local actions = require'telescope.actions'
 
 telescope.setup{
     defaults = {
-        vimgrep_arguments = tools.helpers.select_grep(false, 'grepprg', true),
+        vimgrep_arguments = require'utils.helpers'.select_grep(false, 'grepprg', true),
         mappings = {
             i = {
                 ["<ESC>"] = actions.close,
@@ -112,10 +112,11 @@ set_mapping{
     mode = 'n',
     lhs = '<C-p>',
     rhs = function()
-        local is_git = vim.b.project_root.is_git
-        require'telescope.builtin'.find_files {
-            find_command = tools.helpers.select_filelist(is_git, true)
-        }
+        require'telescope.builtin'.find_files{}
+        -- local is_git = vim.b.project_root and vim.b.project_root.is_git or false
+        -- require'telescope.builtin'.find_files {
+        --     find_command = require'utils.helpers'.select_filelist(is_git, true)
+        -- }
     end,
     args = {noremap = true}
 }
@@ -170,7 +171,7 @@ set_command{
     rhs = function()
         require'telescope.builtin'.find_files{
             cwd = require'sys'.base,
-            find_command = tools.helpers.select_filelist(false, true)
+            find_command = require'utils.helpers'.select_filelist(false, true)
         }
     end,
     args = {force=true}

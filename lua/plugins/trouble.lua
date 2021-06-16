@@ -1,4 +1,4 @@
-local load_module = require'tools'.helpers.load_module
+local load_module = require'utils.helpers'.load_module
 local trouble     = load_module'trouble'
 
 if trouble == nil then
@@ -6,11 +6,11 @@ if trouble == nil then
 end
 
 local nvim  = require'nvim'
-local echomsg = require'tools'.messages.echomsg
-local echowarn = require'tools'.messages.echowarn
-local get_icon = require'tools'.helpers.get_icon
+local echomsg  = require'utils.messages'.echomsg
+local echowarn = require'utils.messages'.echowarn
+local get_icon = require'utils.helpers'.get_icon
 local has_devicon = pcall(require, 'nvim-web-devicons')
-local set_mapping = nvim.mappings.set_mapping
+local set_mapping = require'nvim.mappings'.set_mapping
 
 trouble.setup{
     position = "bottom",
@@ -45,8 +45,8 @@ set_mapping{
                 break
             end
         end
-        local loc_diagnostics = nvim.fn.getloclist(nvim.get_current_win())
-        local qf_diagnostics = nvim.fn.getqflist()
+        local loc_diagnostics = vim.fn.getloclist(nvim.get_current_win())
+        local qf_diagnostics = vim.fn.getqflist()
         local trouble_open = false
         for _,win in pairs(nvim.tab.list_wins(0)) do
             local buf = nvim.win.get_buf(win)

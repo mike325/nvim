@@ -1,6 +1,6 @@
 local nvim        = require'nvim'
-local load_module = require'tools'.helpers.load_module
-local has_attrs   = require'tools'.tables.has_attrs
+local load_module = require'utils.helpers'.load_module
+local has_attrs   = require'utils.tables'.has_attrs
 
 local plugins = nvim.plugins
 
@@ -11,8 +11,8 @@ local set_autocmd = nvim.autocmds.set_autocmd
 local completion = load_module'completion'
 local compe = load_module'compe'
 
-local lsp = require 'plugins/lsp'
-local treesitter = require 'plugins/treesitter'
+local lsp = require 'plugins.lsp'
+local treesitter = require 'plugins.treesitter'
 
 local function completion_chain()
     local chain = {

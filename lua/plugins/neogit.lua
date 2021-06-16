@@ -2,7 +2,7 @@
 -- local sys  = require'sys'
 -- local nvim = require'nvim'
 
-local load_module = require'tools'.helpers.load_module
+local load_module = require'utils.helpers'.load_module
 
 -- local set_command = nvim.commands.set_command
 -- local set_autocmd = nvim.autocmds.set_autocmd

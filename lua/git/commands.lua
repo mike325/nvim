@@ -1,12 +1,12 @@
 local nvim = require'nvim'
 local sys  = require'sys'
 
-local executable = require'tools'.files.executable
-local echowarn   = require'tools'.messages.echowarn
-local split      = require'tools'.strings.split
-local normalize  = require'tools'.files.normalize_path
--- local is_file    = require'tools'.files.is_file
--- local delete     = require'tools'.files.delete
+local executable = require'utils.files'.executable
+local echowarn   = require'utils.messages'.echowarn
+local split      = require'utils.strings'.split
+local normalize  = require'utils.files'.normalize_path
+-- local is_file    = require'utils'.files.is_file
+-- local delete     = require'utils'.files.delete
 
 if not executable('git') then
     return false
@@ -42,16 +42,17 @@ function M.set_commands()
         lhs = 'GPull',
         rhs = function(args)
             if args then args = split(args, ' ') end
-            local utils = require'git.utils'
+            local utils = RELOAD'git.utils'
             utils.launch_gitcmd_job{
                 gitcmd = 'pull',
                 args = args,
                 jobopts = {
                     pty = true,
                     on_exit = function(jobid, rc, _)
+                        local job = require'jobs.storage'.jobs[jobid]
                         if rc ~= 0 then
                             error(('Failed to pull changes, %s'):format(
-                                table.concat(require'jobs'.jobs[jobid].streams.stdout, '\n')
+                                table.concat(job.streams.stdout, '\n')
                             ))
                         end
                         print('Repo updated!')
@@ -67,7 +68,7 @@ function M.set_commands()
         lhs = 'GPush',
         rhs = function(args)
             if args then args = split(args, ' ') end
-            local utils = require'git.utils'
+            local utils = RELOAD'git.utils'
             utils.launch_gitcmd_job{gitcmd = 'push', args = args}
         end,
         args = {nargs = '*', force = true, buffer = true}
@@ -77,7 +78,7 @@ function M.set_commands()
         lhs = 'GFetch',
         rhs = function(args)
             if args then args = split(args, ' ') end
-            local utils = require'git.utils'
+            local utils = RELOAD'git.utils'
             utils.launch_gitcmd_job{gitcmd = 'fetch', args = args}
         end,
         args = {nargs = '*', force = true, buffer = true}
@@ -86,10 +87,10 @@ function M.set_commands()
     set_command {
         lhs = 'GWrite',
         rhs = function(args)
-            require'git.utils'.status(function(status)
-                local utils = require'git.utils'
+            RELOAD('git.utils').status(function(status)
+                local utils = RELOAD'git.utils'
                 if #args == 0 then
-                    local bufname = nvim.fn.bufname(nvim.get_current_buf())
+                    local bufname = vim.fn.bufname(nvim.get_current_buf())
                     if sys.name == 'windows' then
                         bufname = bufname:gsub('\\', '/')
                     end
@@ -133,10 +134,10 @@ function M.set_commands()
     set_command {
         lhs = 'GRead',
         rhs = function(args)
-            require'git.utils'.status(function(status)
-                local utils = require'git.utils'
+            RELOAD('git.utils').status(function(status)
+                local utils = RELOAD'git.utils'
                 if #args == 0 then
-                    local bufname = nvim.fn.bufname(nvim.get_current_buf())
+                    local bufname = vim.fn.bufname(nvim.get_current_buf())
                     if sys.name == 'windows' then
                         bufname = bufname:gsub('\\', '/')
                     end
@@ -147,16 +148,18 @@ function M.set_commands()
                             args = {'HEAD', bufname },
                             jobopts = {
                                 on_exit = function(jobid, rc, _)
+                                    local rjob = require'jobs.storage'.jobs[jobid]
                                     if rc == 0 then
                                         utils.launch_gitcmd_job{
                                             gitcmd = 'checkout',
                                             args = {'--', bufname},
                                             jobopts = {
                                                 on_exit = function(id, crc, _)
+                                                    local cjob = require'jobs.storage'.jobs[id]
                                                     if crc ~= 0 then
                                                         error(('Failed to reset file: %s, due to %s'):format(
                                                             bufname,
-                                                            table.concat(require'jobs'.jobs[id].streams.stderr, '\n')
+                                                            table.concat(cjob.streams.stderr, '\n')
                                                         ))
                                                     end
                                                     nvim.ex.checktime()
@@ -166,7 +169,7 @@ function M.set_commands()
                                     else
                                         error(('Failed to unstage file: %s, due to %s'):format(
                                             bufname,
-                                            table.concat(require'jobs'.jobs[jobid].streams.stderr, '\n')
+                                            table.concat(rjob.streams.stderr, '\n')
                                         ))
                                     end
                                 end
@@ -194,10 +197,10 @@ function M.set_commands()
     set_command {
         lhs = 'GRestore',
         rhs = function(args)
-            require'git.utils'.status(function(status)
-                local utils = require'git.utils'
+            RELOAD('git.utils').status(function(status)
+                local utils = RELOAD'git.utils'
                 if #args == 0 then
-                    local bufname = nvim.fn.bufname(nvim.get_current_buf())
+                    local bufname = vim.fn.bufname(nvim.get_current_buf())
                     if sys.name == 'windows' then
                         bufname = bufname:gsub('\\', '/')
                     end
@@ -207,10 +210,11 @@ function M.set_commands()
                             args = { 'HEAD', bufname },
                             jobopts = {
                                 on_exit = function(id, rc, _)
+                                    local job = require'jobs.storage'.jobs[id]
                                     if rc ~= 0 then
                                         error(('Failed to restore file: %s, due to %s'):format(
                                             bufname,
-                                            table.concat(require'jobs'.jobs[id].streams.stderr, '\n')
+                                            table.concat(job.streams.stderr, '\n')
                                         ))
                                     end
                                     nvim.ex.checktime()
@@ -235,10 +239,11 @@ function M.set_commands()
                         args = {'HEAD', args},
                         jobopts = {
                             on_exit = function(id, rc, _)
+                                local job = require'jobs.storage'.jobs[id]
                                 if rc ~= 0 then
                                     error(('Failed to restore file: %s, due to %s'):format(
                                         args,
-                                        table.concat(require'jobs'.jobs[id].streams.stderr, '\n')
+                                        table.concat(job.streams.stderr, '\n')
                                     ))
                                 end
                                 nvim.ex.checktime()

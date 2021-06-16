@@ -2,6 +2,8 @@
 -- local i = vim.inspect
 local api = vim.api
 
+require'globals'
+
 -- Took from https://github.com/norcalli/nvim_utils
 -- GPL3 apply to the nvim object
 local nvim = {
@@ -9,16 +11,21 @@ local nvim = {
         __index = function(self, k)
             local mt = getmetatable(self)
             local x = mt[k]
+
             if x ~= nil then
                 return x
             end
+
             local ok, plugs = pcall(api.nvim_get_var, 'plugs')
-            if ok then
-                local plugin = plugs[k]
-                mt[k] = plugin
-                return plugin
+            if not ok then
+                plugs = packer_plugins or {}
             end
-            return nil
+
+            local plugin = plugs[k]
+            if plugin then
+                mt[k] = plugin
+            end
+            return plugin
         end
     });
     has = setmetatable({
@@ -150,24 +157,17 @@ local nvim = {
 
 setmetatable(nvim, {
     __index = function(self, k)
-        local ok
-
         local mt = getmetatable(self)
-        local x = mt[k]
-        if x ~= nil then
-            return x
+        if mt[k] then
+            return mt[k]
         end
 
-        ok, x = pcall(require, 'nvim.'..k)
+        local ok, x = pcall(RELOAD, 'nvim.'..k)
 
         if not ok then
             x = api['nvim_'..k]
-            if x ~= nil then
-                mt[k] = x
-            else
-                -- Used to access vim's g, b, o, bo, wo, fn, etc interfaces
+            if not x then
                 x = vim[k]
-                mt[k] = x
             end
         end
 

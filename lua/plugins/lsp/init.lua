@@ -2,17 +2,17 @@
 local sys  = require'sys'
 local nvim = require'nvim'
 
-local load_module = require'tools'.helpers.load_module
-local get_icon    = require'tools'.helpers.get_icon
-local executable  = require'tools'.files.executable
-local is_dir      = require'tools'.files.is_dir
-local split       = require'tools'.strings.split
+local load_module = require'utils.helpers'.load_module
+local get_icon    = require'utils.helpers'.get_icon
+local executable  = require'utils.files'.executable
+local is_dir      = require'utils.files'.is_dir
+local split       = require'utils.strings'.split
 
 local plugins = nvim.plugins
 
--- local set_command = nvim.commands.set_command
--- local set_autocmd = nvim.autocmds.set_autocmd
-local set_mapping = nvim.mappings.set_mapping
+-- local set_command = require'nvim.commands'.set_command
+-- local set_autocmd = require'nvim.autocmds'.set_autocmd
+local set_mapping = require'nvim.mappings'.set_mapping
 
 local lsp = load_module'lspconfig'
 
@@ -126,8 +126,8 @@ local servers = {
                             globals = {
                                 'bit',
                                 'vim',
-                                'nvim',
-                                'tools',
+                                'use',
+                                -- 'utils',
                             },
                         },
                     },
@@ -290,8 +290,8 @@ local servers = {
 }
 
 local function on_attach(client, bufnr)
-    require'nvim'.bo.omnifunc = 'v:lua.vim.lsp.omnifunc'
-    bufnr = bufnr or require'nvim'.get_current_buf()
+    vim.bo.omnifunc = 'v:lua.vim.lsp.omnifunc'
+    bufnr = bufnr or nvim.get_current_buf()
     local lua_cmd = '<cmd>lua %s<CR>'
 
     local mappings = {
@@ -426,8 +426,8 @@ local function on_attach(client, bufnr)
 
     -- Disable neomake for lsp buffers
     if plugins['neomake'] then
-        pcall(nvim.fn['neomake#CancelJobs'], 0)
-        pcall(nvim.fn['neomake#cmd#clean'], 1)
+        pcall(vim.fn['neomake#CancelJobs'], 0)
+        pcall(vim.fn['neomake#cmd#clean'], 1)
         pcall(vim.cmd, 'silent call neomake#cmd#disable(b:)')
     end
 
@@ -588,7 +588,7 @@ for language,options in pairs(servers) do
 end
 
 -- Expose languages to VimL
-nvim.g.lsp_languages = available_languages
+vim.g.lsp_languages = available_languages
 
 vim.cmd('sign define LspDiagnosticsSignError       text='..get_icon('error')..' texthl=LspDiagnosticsSignError linehl= numhl=')
 vim.cmd('sign define LspDiagnosticsSignWarning     text='..get_icon('warn')..'  texthl=LspDiagnosticsSignWarning linehl= numhl=')

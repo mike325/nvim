@@ -1,8 +1,9 @@
 local api       = vim.api
-local has_attrs = require'tools.tables'.has_attrs
-local echoerr   = require'tools.messages'.echoerr
+local has_attrs = require'utils.tables'.has_attrs
+local echoerr   = require'utils.messages'.echoerr
 
 local transform_mapping = require'nvim.utils'.transform_mapping
+local funcs = require'nvim.storage'.mappings
 
 local modes = {
     normal   = "n",
@@ -15,12 +16,7 @@ local modes = {
     terminal = "t",
 }
 
-local M = {
-    funcs = {
-        g = {},
-        b = {},
-    }
-}
+local M = {}
 
 local function set_modes(obj)
     for _,mode in pairs(modes) do
@@ -31,7 +27,7 @@ local function set_modes(obj)
     return obj
 end
 
-M.funcs.g = set_modes(M.funcs.g)
+funcs.g = set_modes(funcs.g)
 
 local function get_wrapper(info)
     local scope = info.scope
@@ -42,7 +38,7 @@ local function get_wrapper(info)
 
     cmd = expr and [=[luaeval("]=] or [[<cmd>lua ]]
 
-    cmd = cmd..[[require'nvim'.mappings.funcs]]
+    cmd = cmd..[[require'nvim.storage'.mappings]]
     cmd = cmd..("['%s']"):format(scope)
 
     if scope == 'b' then
@@ -74,13 +70,13 @@ local function func_handle(info)
     if scope == 'b' then
         local bufnr = type(info.buf) == 'number' and info.buf or require'nvim'.get_current_buf()
         bufnr = tostring(bufnr)
-        if M.funcs.b[bufnr] == nil then
-            M.funcs.b[bufnr] = {}
-            M.funcs.b[bufnr] = set_modes(M.funcs.b[bufnr])
+        if funcs.b[bufnr] == nil then
+            funcs.b[bufnr] = {}
+            funcs.b[bufnr] = set_modes(funcs.b[bufnr])
         end
-        M.funcs.b[bufnr][mode][lhs] = rhs
+        funcs.b[bufnr][mode][lhs] = rhs
     else
-        M.funcs.g[mode][lhs] = rhs
+        funcs.g[mode][lhs] = rhs
     end
 
 end

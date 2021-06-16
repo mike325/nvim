@@ -1,8 +1,5 @@
 -- local nvim        = require'nvim'
--- local has_attrs   = require'tools'.tables.has_attrs
-local load_module = require'tools'.helpers.load_module
--- local get_icon = require'tools'.helpers.get_icon
--- local get_separators = require'tools'.helpers.get_separators
+local load_module = require'utils.helpers'.load_module
 
 local pears = load_module'pears'
 local autopairs = load_module'nvim-autopairs'
@@ -12,7 +9,7 @@ if pears then
         conf.expand_on_enter(false)
     end)
 elseif autopairs then
-    local ts_langs = require'plugins/treesitter'
+    local ts_langs = require'plugins.treesitter'
     autopairs.setup{
         disable_filetype = {'TelescopePrompt', 'log'},
         check_ts = type(ts_langs) == 'table',

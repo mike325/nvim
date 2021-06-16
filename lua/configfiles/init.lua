@@ -1,9 +1,9 @@
-local realpath       = require'tools'.files.realpath
-local is_file        = require'tools'.files.is_file
-local readfile       = require'tools'.files.readfile
-local extension      = require'tools'.files.extension
-local basename       = require'tools'.files.basename
-local normalize_path = require'tools'.files.normalize_path
+local realpath       = require'utils.files'.realpath
+local is_file        = require'utils.files'.is_file
+local readfile       = require'utils.files'.readfile
+local extension      = require'utils.files'.extension
+local basename       = require'utils.files'.basename
+local normalize_path = require'utils.files'.normalize_path
 
 local Config = {
     path = '',

@@ -1,4 +1,4 @@
-local load_module = require'tools'.helpers.load_module
+local load_module = require'utils.helpers'.load_module
 
 local todo = load_module'todo-comments'
 
@@ -7,7 +7,7 @@ if not todo then
 end
 
 local nvim  = require'nvim'
-local set_mapping = nvim.mappings.set_mapping
+local set_mapping = require'nvim.mappings'.set_mapping
 local has_trouble = load_module'trouble'
 
 todo.setup{

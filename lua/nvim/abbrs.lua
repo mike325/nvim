@@ -1,8 +1,8 @@
 -- luacheck: globals unpack vim
 -- local i = vim.inspect
 local api = vim.api
-local has_attrs = require'tools.tables'.has_attrs
-local echoerr = require'tools.messages'.echoerr
+local has_attrs = require'utils.tables'.has_attrs
+local echoerr = require'utils.messages'.echoerr
 
 local M = {}
 

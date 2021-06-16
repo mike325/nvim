@@ -1,24 +1,15 @@
 -- luacheck: globals unpack vim
 local nvim    = require'nvim'
-local stdpath = nvim.fn.stdpath
+local stdpath = vim.fn.stdpath
 
 local function system_name()
-
-    local name = 'unknown'
-    if nvim.has('win32unix') or nvim.has('win32') then
-        name = 'windows'
-    elseif nvim.has('mac') then
-        name = 'mac'
-    elseif nvim.has('unix') then
-        name = 'linux'
-    end
-
+    local name = vim.loop.os_uname().sysname:lower()
+    name = vim.split(name, '_')[1]
     return name
 end
 
 local function homedir()
-    local var = system_name() == 'windows' and 'USERPROFILE' or 'HOME'
-    local home = nvim.env[var]
+    local home = vim.loop.os_homedir()
     return home:gsub('\\', '/')
 end
 

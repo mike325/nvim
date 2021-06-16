@@ -8,24 +8,32 @@ if !has('nvim')
     finish
 endif
 
+function! neovim#general_completion(arglead, cmdline, cursorpos, options) abort
+    return filter(a:options, "v:val =~? join(split(a:arglead, '\zs'), '.*')")
+endfunction
+
+function! neovim#vim_oscyank(args, _, __) abort
+    return filter(['tmux', 'kitty', 'default'], "v:val =~? join(split(a:args, 'zs'), '.*')")
+endfunction
+
 function! neovim#ssh_hosts_completion(arglead, cmdline, cursorpos) abort
-    let l:hosts = luaeval("vim.tbl_keys(require'tools'.system.hosts)")
-    return mappings#general_completion(a:arglead, a:cmdline, a:cursorpos, l:hosts)
+    let l:hosts = luaeval("vim.tbl_keys(require'utils'.system.hosts)")
+    return neovim#general_completion(a:arglead, a:cmdline, a:cursorpos, l:hosts)
 endfunction
 
 function! neovim#grep(type, ...) abort
     let l:visual = a:0 ? v:true : v:false
-    call luaeval('require"settings.functions".opfun_grep(_A[1], _A[2])', [a:type, l:visual])
+    call luaeval('require"utils".functions.opfun_grep(_A[1], _A[2])', [a:type, l:visual])
 endfunction
 
 function! neovim#lsp_format(type, ...) abort
     " let l:visual = a:0 ? v:true : v:false
-    call luaeval('require"settings.functions".opfun_lsp_format()')
+    call luaeval('require"utils".functions.opfun_lsp_format()')
 endfunction
 
 function! neovim#comment(type, ...) abort
     let l:visual = a:0 ? v:true : v:false
-    call luaeval('require"settings.functions".opfun_comment(_A[1], _A[2])', [a:type, l:visual])
+    call luaeval('require"utils".functions.opfun_comment(_A[1], _A[2])', [a:type, l:visual])
 endfunction
 
 function! neovim#gitfiles_status(gittype) abort
@@ -44,11 +52,11 @@ function! neovim#gitfiles_status(gittype) abort
 endfunction
 
 function! neovim#gitfiles_stage(arglead, cmdline, cursorpos) abort
-    return mappings#general_completion(a:arglead, a:cmdline, a:cursorpos, neovim#gitfiles_status('stage'))
+    return neovim#general_completion(a:arglead, a:cmdline, a:cursorpos, neovim#gitfiles_status('stage'))
 endfunction
 
 function! neovim#gitfiles_workspace(arglead, cmdline, cursorpos) abort
     let l:files = neovim#gitfiles_status(['workspace', 'untracked'])
-    return mappings#general_completion(a:arglead, a:cmdline, a:cursorpos, l:files)
+    return neovim#general_completion(a:arglead, a:cmdline, a:cursorpos, l:files)
 endfunction
 

@@ -1,9 +1,11 @@
 local nvim       = require'nvim'
-local echoerr    = require'tools'.messages.echoerr
-local echowarn   = require'tools'.messages.echowarn
-local clear_lst  = require'tools'.tables.clear_lst
-local dump_to_qf = require'tools'.helpers.dump_to_qf
--- local split      = require'tools'.strings.split
+local echoerr    = require'utils.messages'.echoerr
+local echowarn   = require'utils.messages'.echowarn
+local clear_lst  = require'utils.tables'.clear_lst
+local dump_to_qf = require'utils.helpers'.dump_to_qf
+-- local split      = require'utils'.strings.split
+
+local jobs = require'jobs.storage'.jobs
 
 if not nvim.has('nvim-0.5') then
     return false
@@ -11,19 +13,17 @@ end
 
 local set_command = nvim.commands.set_command
 
-local M ={
-    jobs = {},
-}
+local M ={}
 
 local function is_alive(id)
-    local ok, _ = pcall(nvim.fn.jobpid, id)
+    local ok, _ = pcall(vim.fn.jobpid, id)
     return ok
 end
 
 local function cleanup(jobid, rc)
-    M.jobs[jobid].is_alive = false
-    if rc == 0 and M.jobs[jobid].clean then
-        M.jobs[jobid] = nil
+    jobs[jobid].is_alive = false
+    if rc == 0 and jobs[jobid].clean then
+        jobs[jobid] = nil
     end
 end
 
@@ -40,11 +40,11 @@ function M.general_output_parser(jobid, data)
         val = nvim.replace_termcodes(val, true, false, false)
 
         if val:match('^[uU]sername for .*') or val:match('.* [uU]sername:%s*$') then
-            input = nvim.fn.input(val)
+            input = vim.fn.input(val)
             requested_input = true
             break
         elseif val:match('^[pP]assword for .*') or val:match('.* [pP]assword:%s*$') then
-            input = nvim.fn.inputsecret(val)
+            input = vim.fn.inputsecret(val)
             requested_input = true
             break
         end
@@ -55,7 +55,7 @@ function M.general_output_parser(jobid, data)
             if input:sub(#input, #input) ~= '\n' then
                 input = input .. '\n'
             end
-            nvim.fn.chansend(jobid, input)
+            vim.fn.chansend(jobid, input)
         else
             vim.defer_fn(function()
                     M.kill_job(jobid)
@@ -69,31 +69,31 @@ end
 local function general_on_exit(jobid, rc, _)
 
     local stream
-    local cmd = type(M.jobs[jobid].cmd) == 'string' and M.jobs[jobid].cmd or table.concat(M.jobs[jobid].cmd, ' ')
+    local cmd = type(jobs[jobid].cmd) == 'string' and jobs[jobid].cmd or table.concat(jobs[jobid].cmd, ' ')
 
     if rc == 0 then
-        if M.jobs[jobid].qf == nil or (M.jobs[jobid].qf.open ~= true and M.jobs[jobid].qf.jump ~= true) then
+        if jobs[jobid].qf == nil or (jobs[jobid].qf.open ~= true and jobs[jobid].qf.jump ~= true) then
             print(('Job "%s" finished'):format(cmd))
         end
-        if M.jobs[jobid].qf and M.jobs[jobid].streams and M.jobs[jobid].streams.stdout then
-            stream = M.jobs[jobid].streams.stdout
+        if jobs[jobid].qf and jobs[jobid].streams and jobs[jobid].streams.stdout then
+            stream = jobs[jobid].streams.stdout
         end
     else
-        if M.jobs[jobid].qf == nil or (M.jobs[jobid].qf.open ~= true and M.jobs[jobid].qf.jump ~= true) then
+        if jobs[jobid].qf == nil or (jobs[jobid].qf.open ~= true and jobs[jobid].qf.jump ~= true) then
             echoerr(('Job "%s" failed, exited with %s'):format(cmd, rc))
         end
-        if M.jobs[jobid].streams then
-            if M.jobs[jobid].streams.stderr then
-                stream = M.jobs[jobid].streams.stderr
-            elseif M.jobs[jobid].opts.pty and M.jobs[jobid].streams.stdout then
-                stream = M.jobs[jobid].streams.stdout
+        if jobs[jobid].streams then
+            if jobs[jobid].streams.stderr then
+                stream = jobs[jobid].streams.stderr
+            elseif jobs[jobid].opts.pty and jobs[jobid].streams.stdout then
+                stream = jobs[jobid].streams.stdout
             end
         end
     end
 
     if stream and #stream > 0 then
 
-        local qf_opts = M.jobs[jobid].qf or {}
+        local qf_opts = jobs[jobid].qf or {}
 
         qf_opts.context = qf_opts.context or cmd
         qf_opts.title = qf_opts.title or cmd..' output'
@@ -116,11 +116,11 @@ local function general_on_exit(jobid, rc, _)
 end
 
 local function save_data(jobid, data, event)
-    if not M.jobs[jobid].streams then
-        M.jobs[jobid].streams = {}
-        M.jobs[jobid].streams[event] = {}
-    elseif not M.jobs[jobid].streams[event] then
-        M.jobs[jobid].streams[event] = {}
+    if not jobs[jobid].streams then
+        jobs[jobid].streams = {}
+        jobs[jobid].streams[event] = {}
+    elseif not jobs[jobid].streams[event] then
+        jobs[jobid].streams[event] = {}
     end
 
     if type(data) == 'string' then
@@ -131,13 +131,13 @@ local function save_data(jobid, data, event)
     data = clear_lst(data)
 
     if #data > 0 then
-        vim.list_extend(M.jobs[jobid].streams[event], data)
+        vim.list_extend(jobs[jobid].streams[event], data)
     end
 end
 
 local function general_on_data(jobid, data, event)
     save_data(jobid, data, event)
-    if M.jobs[jobid].opts.pty then
+    if jobs[jobid].opts.pty then
         M.general_output_parser(jobid, data)
     end
 end
@@ -147,7 +147,7 @@ function M.kill_job(jobid)
         local ids = {}
         local cmds = {}
         local jobidx = 1
-        for id,opts in pairs(M.jobs) do
+        for id,opts in pairs(jobs) do
             local running = is_alive(id)
             if running then
                 ids[#ids + 1] = id
@@ -155,10 +155,10 @@ function M.kill_job(jobid)
                 cmds[#cmds + 1] = ('%s: %s'):format(jobidx, cmd)
                 jobidx = jobidx + 1
             end
-            M.jobs[id].is_alive = running
+            jobs[id].is_alive = running
         end
         if #cmds > 0 then
-            local idx = nvim.fn.inputlist(cmds)
+            local idx = vim.fn.inputlist(cmds)
             jobid = ids[idx]
         else
             echowarn('No jobs to kill')
@@ -166,7 +166,7 @@ function M.kill_job(jobid)
     end
 
     if type(jobid) == 'number' and jobid > 0 then
-        pcall(nvim.fn.jobstop, jobid)
+        pcall(vim.fn.jobstop, jobid)
     end
 end
 
@@ -222,7 +222,7 @@ function M.send_job(job)
         else
             local opts_on_exit = opts.on_exit
             opts.on_exit = function(jobid, rc, event)
-                M.jobs[jobid].is_alive = false
+                jobs[jobid].is_alive = false
                 opts_on_exit(jobid, rc, event)
                 if clean then
                     cleanup(jobid, rc)
@@ -276,13 +276,13 @@ function M.send_job(job)
             job.qf.jump = false
         end
 
-        local id = nvim.fn.jobstart(
+        local id = vim.fn.jobstart(
             cmd,
             opts
         )
 
         if id > 0 then
-            M.jobs[id] = {
+            jobs[id] = {
                 cmd = cmd,
                 opts = opts,
                 save_data = job.save_data or false,
@@ -294,7 +294,7 @@ function M.send_job(job)
 
             if job.timeout and job.timeout > 0 then
                 vim.defer_fn(function()
-                        if M.jobs[id].is_alive then
+                        if jobs[id].is_alive then
                             M.kill_job(id)
                         end
                     end,

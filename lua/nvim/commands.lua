@@ -1,16 +1,12 @@
 -- luacheck: globals unpack vim
 -- local i = vim.inspect
 local api = vim.api
-local has_attrs = require'tools.tables'.has_attrs
-local echoerr = require'tools.messages'.echoerr
-local echowarn = require'tools.messages'.echowarn
+local has_attrs = require'utils.tables'.has_attrs
+local echoerr = require'utils.messages'.echoerr
+local echowarn = require'utils.messages'.echowarn
+local funcs = require'nvim.storage'.commands
 
-local M = {
-    funcs = {
-        g = {},
-        b = {},
-    }
-}
+local M = {}
 
 local function get_wrapper(info)
     local scope = info.scope
@@ -20,7 +16,7 @@ local function get_wrapper(info)
     local bang = info.bang
     local bufnr = require'nvim'.win.get_buf(0)
 
-    local cmd = [[lua require'nvim'.commands.funcs]]
+    local cmd = [[lua require'nvim.storage'.commands]]
 
     cmd = cmd..("['%s']"):format(scope)
 
@@ -50,12 +46,12 @@ local function func_handle(info)
     local bufnr = tostring(require'nvim'.win.get_buf(0))
 
     if scope == 'b' then
-        if M.funcs.b[bufnr] == nil then
-            M.funcs.b[bufnr] = {}
+        if funcs.b[bufnr] == nil then
+            funcs.b[bufnr] = {}
         end
-        M.funcs.b[bufnr][lhs] = rhs
+        funcs.b[bufnr][lhs] = rhs
     else
-        M.funcs.g[lhs] = rhs
+        funcs.g[lhs] = rhs
     end
 
 end

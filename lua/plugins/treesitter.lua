@@ -1,8 +1,8 @@
 local nvim        = require'nvim'
-local load_module = require'tools'.helpers.load_module
+local load_module = require'utils.helpers'.load_module
 
 local plugins = nvim.plugins
-local set_autocmd = nvim.autocmds.set_autocmd
+local set_autocmd = require'nvim.autocmds'.set_autocmd
 -- local set_command = nvim.commands.set_command
 -- local set_mapping = nvim.mappings.set_mapping
 
@@ -25,14 +25,6 @@ local ensure_installed = {
 }
 
 local disable = nil
-
-if plugins.semshi ~= nil then
-    disable = {'python'}
-end
-
-if plugins['vim-lsp-cxx-highlight'] ~= nil then
-    disable = disable == nil and {'c', 'cpp'} or vim.list_extend(disable, {'c', 'cpp'})
-end
 
 local commet_txtobj = nil
 if plugins['vim-textobj-comment'] == nil then

@@ -1,11 +1,11 @@
-local nvim = require'nvim'
-local executable = require'tools'.files.executable
--- local echowarn = require'tools'.messages.echowarn
--- local is_file = require'tools'.files.is_file
--- local is_dir = require'tools'.files.is_dir
--- local exists = require'tools'.files.exists
--- local writefile = require'tools'.files.writefile
-local split = require'tools'.strings.split
+-- local nvim = require'nvim'
+local executable = require'utils.files'.executable
+-- local echowarn = require'utils'.messages.echowarn
+-- local is_file = require'utils'.files.is_file
+-- local is_dir = require'utils'.files.is_dir
+-- local exists = require'utils'.files.exists
+-- local writefile = require'utils'.files.writefile
+local split = require'utils.strings'.split
 
 if not executable('git') then
     return false
@@ -32,8 +32,8 @@ function M.rm_colors(cmd)
 end
 
 function M.get_git_dir(cmd)
-    if nvim.b.project_root and nvim.b.project_root.is_git then
-        vim.list_extend(cmd, {'--git-dir', nvim.b.project_root.git_dir})
+    if vim.b.project_root and vim.b.project_root.is_git then
+        vim.list_extend(cmd, {'--git-dir', vim.b.project_root.git_dir})
     end
 end
 
@@ -64,7 +64,7 @@ local function exec_async_gitcmd(cmd, gitcmd, jobopts)
 end
 
 local function exec_sync_gitcmd(cmd, gitcmd)
-    local ok, output = pcall(nvim.fn.system, cmd)
+    local ok, output = pcall(vim.fn.system, cmd)
     return ok and output or error('Failed to execute: '..gitcmd..', '..output)
 end
 
@@ -167,12 +167,13 @@ function M.status(callback)
     end
     exec_async_gitcmd(cmd, gitcmd, {
         on_exit = function(jobid, rc, _)
+            local job = require'jobs.storage'.jobs[jobid]
             if rc ~= 0 then
                 error(('Failed to get git status, %s'):format(
-                    table.concat(jobs.jobs[jobid].streams.stderr, '\n')
+                    table.concat(job.streams.stderr, '\n')
                 ))
             end
-            local status = jobs.jobs[jobid].streams.stdout
+            local status = job.streams.stdout
             vim.defer_fn(function() callback(parse_status(status)) end, 0)
         end
     })

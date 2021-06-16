@@ -11,8 +11,9 @@ ignore = {
 read_globals = {
     "vim",
     "nvim",
-    "tools",
     "python",
     "P",
-    "REALOAD",
+    "RELOAD",
+    "PASTE",
+    "use",
 }
