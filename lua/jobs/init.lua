@@ -291,7 +291,6 @@ function M.send_job(job)
                 is_alive = true,
                 timeout = job.timeout or 0,
             }
-
             if job.timeout and job.timeout > 0 then
                 vim.defer_fn(function()
                         if jobs[id].is_alive then

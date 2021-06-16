@@ -73,7 +73,7 @@ local default_flags = {
 }
 
 local function get_compiler()
-    local ft = nvim.bo.filetype
+    local ft = vim.bo.filetype
     local compiler
     for _,exe in pairs(compilers[ft]) do
         if executable(exe) then
@@ -99,7 +99,7 @@ local function set_opts(filename, has_tidy, compiler, bufnum)
             vim.api.nvim_buf_set_option(
                 bufnum,
                 'makeprg',
-                ('%s %s -o %s %%'):format(compiler, config_flags, nvim.fn.tempname())
+                ('%s %s -o %s %%'):format(compiler, config_flags, vim.fn.tempname())
             )
         end
     elseif not has_tidy then
@@ -107,7 +107,7 @@ local function set_opts(filename, has_tidy, compiler, bufnum)
         vim.api.nvim_buf_set_option(
             bufnum,
             'makeprg',
-            ('%s %s -o %s %%'):format(compiler, config_flags, nvim.fn.tempname())
+            ('%s %s -o %s %%'):format(compiler, config_flags, vim.fn.tempname())
         )
     end
 end
@@ -118,13 +118,13 @@ function M.setup()
     local bufname = nvim.buf.get_name(0)
     local cwd = is_file(bufname) and basedir(bufname) or getcwd()
     if compiler then
-        local flags_file = nvim.fn.findfile('compile_flags.txt', cwd..';')
-        local db_file = nvim.fn.findfile('compile_commands.json', cwd..';')
+        local flags_file = vim.fn.findfile('compile_flags.txt', cwd..';')
+        local db_file = vim.fn.findfile('compile_commands.json', cwd..';')
         local has_tidy = false
         if executable('clang-tidy') and (flags_file ~= '' or db_file ~= '') then
             has_tidy = true
-            nvim.bo.makeprg = 'clang-tidy %'
-            nvim.bo.errorformat = '%E%f:%l:%c: fatal error: %m,%E%f:%l:%c: error: %m,%W%f:%l:%c: warning: %m'
+            vim.bo.makeprg = 'clang-tidy %'
+            vim.bo.errorformat = '%E%f:%l:%c: fatal error: %m,%E%f:%l:%c: error: %m,%W%f:%l:%c: warning: %m'
         end
         if flags_file ~= '' then
             local filename = realpath(normalize_path(flags_file))

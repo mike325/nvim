@@ -5,7 +5,7 @@ local sys   = require'sys'
 -- local set_grep = require'utils'.helpers.set_grep
 
 local parent     = sys.data
-local plugins    = nvim.plugins
+-- local plugins    = nvim.plugins
 local mkdir      = require'utils.files'.mkdir
 local is_dir     = require'utils.files'.is_dir
 local executable = require'utils.files'.executable
@@ -29,7 +29,7 @@ for dirname,dir_setting in pairs(dirpaths) do
     end
 
     if not isempty(dir_setting) then
-        nvim.o[dir_setting] = parent .. '/' .. dirname
+        vim.opt[dir_setting] = parent .. '/' .. dirname
     end
 end
 
@@ -139,7 +139,7 @@ vim.opt.fileencoding = 'utf-8'
 
 vim.opt.pastetoggle = '<f3>'
 
-if nvim.g.gonvim_running ~= nil then
+if vim.g.gonvim_running ~= nil then
     vim.opt.showmode = false
     vim.opt.ruler    = false
 else
