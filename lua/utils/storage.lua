@@ -1,3 +1,5 @@
-local M = {}
+local M = {
+    scratchs = {},
+}
 
 return M
