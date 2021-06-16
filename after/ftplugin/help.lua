@@ -1,7 +1,7 @@
-vim.bo.number = true
-vim.bo.relativenumber = true
+vim.wo.number = true
+vim.wo.relativenumber = true
 vim.bo.buflisted = true
-vim.bo.list = false
+vim.wo.list = false
 
 -- vim.bo.spell = false
 

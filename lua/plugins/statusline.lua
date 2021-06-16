@@ -1,8 +1,9 @@
 -- local nvim        = require'nvim'
--- local has_attrs   = require'tools'.tables.has_attrs
-local load_module = require'tools'.helpers.load_module
-local get_icon = require'tools'.helpers.get_icon
-local get_separators = require'tools'.helpers.get_separators
+-- local has_attrs   = require'utils'.tables.has_attrs
+
+local load_module    = require'utils.helpers'.load_module
+local get_icon       = require'utils.helpers'.get_icon
+local get_separators = require'utils.helpers'.get_separators
 
 local galaxyline = load_module'galaxyline'
 

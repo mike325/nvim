@@ -1,14 +1,15 @@
 local nvim = require'nvim'
 
--- local clear_lst = require'tools'.tables.clear_lst
--- local split = require'tools'.strings.split
-local getcwd = require'tools'.files.getcwd
-local realpath = require'tools'.files.realpath
-local executable = require'tools'.files.executable
-local readfile = require'tools'.files.readfile
-local is_file = require'tools'.files.is_file
-local basedir = require'tools'.files.basedir
-local normalize_path = require'tools'.files.normalize_path
+-- local clear_lst = require'utils'.tables.clear_lst
+-- local split = require'utils'.strings.split
+
+local getcwd         = require'utils.files'.getcwd
+local realpath       = require'utils.files'.realpath
+local executable     = require'utils.files'.executable
+local readfile       = require'utils.files'.readfile
+local is_file        = require'utils.files'.is_file
+local basedir        = require'utils.files'.basedir
+local normalize_path = require'utils.files'.normalize_path
 
 -- vim.bo.foldmethod = 'syntax'
 vim.bo.expandtab = true

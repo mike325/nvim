@@ -1,14 +1,14 @@
 local nvim = require'nvim'
-local executable = require'tools'.files.executable
+local executable = require'utils.files'.executable
 local send_job = require'jobs'.send_job
 
-local echowarn = require'tools'.messages.echowarn
-local echoerr  = require'tools'.messages.echoerr
+local echowarn = require'utils.messages'.echowarn
+local echoerr  = require'utils.messages'.echoerr
 
 local M = {}
 
 local function on_data(jobid, data, event)
-    local job = require'jobs'.jobs[jobid]
+    local job = require'jobs.storage'.jobs[jobid]
     if not job.streams then
         job.streams = {}
         job.streams[event] = {}
@@ -58,8 +58,8 @@ local function external_formatprg(opts)
             on_stdout = on_data,
             on_stderr = on_data,
             on_exit = function(jobid, rc, _)
-                local job = require'jobs'.jobs[jobid]
-                local dump_to_qf = require'tools'.helpers.dump_to_qf
+                local job = require'jobs.storage'.jobs[jobid]
+                local dump_to_qf = require'utils'.helpers.dump_to_qf
 
                 local streams = job.streams or {}
                 local stdout = streams.stdout or {}
@@ -105,8 +105,8 @@ local function external_formatprg(opts)
 end
 
 function M.format()
-    local first = nvim.v.lnum
-    local last = first + nvim.v.count
+    local first = vim.v.lnum
+    local last = first + vim.v.count
     local bufname = nvim.buf.get_name(0)
     local mode = nvim.get_mode()
 
@@ -127,7 +127,7 @@ function M.format()
             last = last,
         })
     elseif executable('autopep8') then
-        local cmd =
+        -- local cmd =
         external_formatprg({
             cmd = {
                 'autopep8',
