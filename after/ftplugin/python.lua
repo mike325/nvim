@@ -1,6 +1,6 @@
 local executable = require'utils.files'.executable
 
-vim.bo.foldmethod = 'indent'
+vim.wo.foldmethod = 'indent'
 
 vim.bo.expandtab = true
 -- vim.bo.shiftround = true

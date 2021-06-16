@@ -14,8 +14,8 @@ if not telescope then
     return false
 end
 
--- local lsp_languages = require'plugins/lsp'
-local ts_langs = require'plugins/treesitter'
+-- local lsp_langs = require'plugins.lsp'
+local ts_langs = require'plugins.treesitter'
 local actions = require'telescope.actions'
 
 telescope.setup{
@@ -124,7 +124,7 @@ set_mapping{
 set_mapping{
     mode = 'n',
     lhs = '<C-b>',
-    rhs = [[<cmd>lua require'telescope.builtin'.buffers{}<CR>]],
+    rhs = [[<cmd>lua require'telescope.builtin'.current_buffer_fuzzy_find{}<CR>]],
     args = noremap,
 }
 
@@ -178,12 +178,12 @@ set_command{
 }
 
 if executable('git') then
-    set_mapping{
-        mode = 'n',
-        lhs = '<leader>s',
-        rhs = [[<cmd>lua require'telescope.builtin'.git_status{}<CR>]],
-        args = noremap,
-    }
+    -- set_mapping{
+    --     mode = 'n',
+    --     lhs = '<leader>s',
+    --     rhs = [[<cmd>lua require'telescope.builtin'.git_status{}<CR>]],
+    --     args = noremap,
+    -- }
 
     set_mapping{
         mode = 'n',

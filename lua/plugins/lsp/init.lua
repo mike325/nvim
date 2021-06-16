@@ -34,7 +34,7 @@ end
 local diagnostics = true
 
 local has_saga,_ = pcall(require,'lspsaga')
-local has_telescope,telescope = pcall(require, 'telescope.builtin')
+local has_telescope = plugins['telescope.nvim']
 
 local sumneko_root_path = sys.cache..'/lspconfig/sumneko_lua/lua-language-server'
 local sumneko_binary = sumneko_root_path..'/bin/'..system_name..'/lua-language-server'
@@ -367,6 +367,12 @@ local function on_attach(client, bufnr)
                 'vim.lsp.diagnostic.goto_prev{wrap=false}'
             ),
         },
+        ['<leader>s'] = {
+            mapping = lua_cmd:format(
+                (has_telescope and "require'telescope.builtin'.lsp_document_symbols{}") or
+                'vim.lsp.buf.document_symbol{}'
+            ),
+        },
         -- ['<space>wa'] = '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>',
         -- ['<space>wr'] = '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>',
         -- ['<space>wl'] = '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>',
@@ -515,14 +521,14 @@ local commands = {
         if has_saga then
             require'lspsaga.provider'.lsp_finder()
         elseif has_telescope then
-            telescope.lsp_definitions{}
+            require'telescope.builtin'.lsp_definitions{}
         else
             vim.lsp.buf.definition()
         end
     end},
     References = {function()
         if has_telescope then
-            telescope.lsp_references{}
+            require'telescope.builtin'.lsp_references{}
         elseif has_saga then
             require'lspsaga.provider'.lsp_finder()
         else
@@ -531,21 +537,21 @@ local commands = {
     end,},
     Diagnostic = {function()
         if has_telescope then
-            telescope.lsp_document_diagnostics{}
+            require'telescope.builtin'.lsp_document_diagnostics{}
         else
             vim.lsp.buf.set_loclist()
         end
     end},
     DocSymbols = {function()
         if has_telescope then
-            telescope.lsp_document_symbols{}
+            require'telescope.builtin'.lsp_document_symbols{}
         else
             vim.lsp.buf.document_symbol()
         end
     end,},
     WorkSymbols = {function()
         if has_telescope then
-            telescope.lsp_workspace_symbols{}
+            require'telescope.builtin'.lsp_workspace_symbols{}
         else
             vim.lsp.buf.workspace_symbol()
         end
@@ -554,7 +560,7 @@ local commands = {
         if has_saga then
             require'lspsaga.codeaction'.code_action()
         elseif has_telescope then
-            telescope.lsp_code_actions{}
+            require'telescope.builtin'.lsp_code_actions{}
         else
             vim.lsp.buf.lsp_code_actions()
         end

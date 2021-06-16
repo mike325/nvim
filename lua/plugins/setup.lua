@@ -52,29 +52,6 @@ packer.startup(function()
     use {'tpope/vim-projectionist', event = 'VimEnter'}
 
     use {
-        'nvim-telescope/telescope.nvim',
-        config = function() require'plugins.telescope' end,
-        requires = {
-            {'nvim-lua/popup.nvim'},
-            {'nvim-lua/plenary.nvim'},
-        }
-    }
-
-    use {
-        'nvim-treesitter/nvim-treesitter',
-        run = ':TSUpdate',
-        config = function() require'plugins.treesitter' end,
-        cond = function()
-            return vim.fn.executable('gcc') == 1 or vim.fn.executable('clang') == 1
-        end,
-        requires = {
-            'nvim-treesitter/nvim-treesitter-refactor',
-            'nvim-treesitter/nvim-treesitter-textobjects',
-            'nvim-treesitter/playground',
-        }
-    }
-
-    use {
         'tpope/vim-fugitive',
         cond = function() return vim.fn.executable('git') == 1 end,
     }
@@ -270,12 +247,22 @@ packer.startup(function()
     }
 
     use {
+        'nvim-treesitter/nvim-treesitter',
+        run = ':TSUpdate',
+        config = function() require'plugins.treesitter' end,
+        cond = function()
+            return vim.fn.executable('gcc') == 1 or vim.fn.executable('clang') == 1
+        end,
+        requires = {
+            'nvim-treesitter/nvim-treesitter-refactor',
+            'nvim-treesitter/nvim-treesitter-textobjects',
+            'nvim-treesitter/playground',
+        }
+    }
+
+    use {
         'neovim/nvim-lspconfig',
         config = function() require'plugins.lsp' end,
-        cond = function()
-            -- TODO: has lsp
-            return vim.env.VIM_MIN == nil and vim.g.minimal == nil
-        end,
         requires = {
             {
                 'glepnir/lspsaga.nvim',
@@ -288,6 +275,16 @@ packer.startup(function()
             },
         }
     }
+
+    use {
+        'nvim-telescope/telescope.nvim',
+        config = function() require'plugins.telescope' end,
+        requires = {
+            {'nvim-lua/popup.nvim'},
+            {'nvim-lua/plenary.nvim'},
+        }
+    }
+
 
     -- use {
     --     'ycm-core/YouCompleteMe',
