@@ -122,4 +122,9 @@ set_autocmd{
     group   = 'Reload',
 }
 
-
+set_autocmd{
+    event   = 'BufWritePost',
+    pattern = 'lua/plugins/setup.lua',
+    cmd     = 'PackerCompile',
+    group   = 'Reload',
+}
