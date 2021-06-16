@@ -8,13 +8,6 @@ local set_autocmd = nvim.autocmds.set_autocmd
 -- local set_command = nvim.commands.set_command
 -- local set_mapping = nvim.mappings.set_mapping
 
-set_autocmd{
-    event   = 'TextYankPost',
-    pattern = '*',
-    cmd     = [[silent! lua require'vim.highlight'.on_yank({higroup = "IncSearch", timeout = 1000})]],
-    group   = 'YankHL'
-}
-
 if require'sys'.name ~= 'windows' then
     set_autocmd{
         event   = 'BufNewFile',
@@ -30,6 +23,27 @@ if require'sys'.name ~= 'windows' then
         group   = 'LuaAutocmds',
     }
 end
+
+set_autocmd{
+    event   = {'BufNewFile', 'BufReadPre', 'BufEnter'},
+    pattern = '*',
+    cmd     = "if !exists('b:trim') | let b:trim = v:true | endif",
+    group   = 'CleanFile'
+}
+
+set_autocmd{
+    event   = 'BufWritePre',
+    pattern = '*',
+    cmd     = 'lua require"utils".files.clean_file()',
+    group   = 'CleanFile'
+}
+
+set_autocmd{
+    event   = 'TextYankPost',
+    pattern = '*',
+    cmd     = [[silent! lua require'vim.highlight'.on_yank({higroup = "IncSearch", timeout = 1000})]],
+    group   = 'YankHL'
+}
 
 set_autocmd{
     event   = 'TermOpen',

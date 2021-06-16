@@ -105,7 +105,7 @@ vim.opt.pumblend = 20
 vim.opt.winblend = 10
 
 vim.opt.showbreak = '↪\\'
--- vim.opt.listchars = {'tab:▸ ','trail:•','extends:❯','precedes:❮'}
+vim.opt.listchars = {tab = '▸ ', trail = '•', extends = '❯', precedes = '❮'}
 vim.opt.cpoptions = 'aAceFs_B'
 vim.opt.shortmess:append('a')
 vim.opt.shortmess:append('c')
