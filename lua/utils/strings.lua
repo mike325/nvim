@@ -9,6 +9,8 @@ function M.iregex(str, regex)
 end
 
 function M.split_components(str, pattern)
+    assert(type(str) == type(''), 'Invalid string '..vim.inspect(str))
+    assert(type(pattern) == type(''), 'Invalid pattern '..vim.inspect(pattern))
      local t = {}
     for v in string.gmatch(str, pattern) do
         t[#t + 1] = v

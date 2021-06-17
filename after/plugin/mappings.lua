@@ -408,14 +408,6 @@ set_mapping{
     args = noremap_silent,
 }
 
-set_command{
-    lhs = 'ClearQf',
-    rhs = function()
-        vim.fn.setqflist({}, 'r')
-    end,
-    args = {force=true}
-}
-
 set_mapping{
     mode = 'n',
     lhs  = '<C-L>',
@@ -424,11 +416,19 @@ set_mapping{
 }
 
 set_command{
-    lhs = 'ClearLoc',
+    lhs = 'ClearQf',
     rhs = function()
-        vim.fn.setloclist(nvim.get_current_win(), {}, 'r')
+        require'utils'.helpers.clear_qf()
     end,
     args = {force=true}
+}
+
+set_command{
+    lhs = 'ClearLoc',
+    rhs = function(buf)
+        require'utils'.helpers.clear_qf(buf or nvim.get_current_win())
+    end,
+    args = {nargs = '?', force=true}
 }
 
 set_mapping{
@@ -849,7 +849,7 @@ set_command {
 
     end,
     args = {nargs = '*', force = true}
-} 
+}
 
 if executable('cscope') then
     local function cscope(cword, action)

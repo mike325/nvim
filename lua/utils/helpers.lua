@@ -13,6 +13,9 @@ local echoerr          = require'utils.messages'.echoerr
 local get_git_dir      = require'utils.system'.get_git_dir
 local split            = require'utils.strings'.split
 
+local git_version = require'utils.storage'.git_version
+local modern_git = require'utils.storage'.modern_git
+
 local set_abbr = nvim.abbrs.set_abbr
 
 local system = vim.fn.system
@@ -20,8 +23,6 @@ local line = vim.fn.line
 
 local M = {}
 
-local git_version = ''
-local modern_git = -1
 local abolish = {}
 
 local langservers = {
@@ -446,6 +447,9 @@ function M.dprint(...)
 end
 
 function M.check_version(sys_version, version_target)
+    assert(type(sys_version) == type({}), 'System version must be an array')
+    assert(type(version_target) == type({}), 'Checking version must be an array')
+
     for i,_ in pairs(version_target) do
 
         if type(version_target[i]) == 'string' then
@@ -924,11 +928,13 @@ function M.dump_to_qf(opts)
     end
 end
 
-function M.clear_qf(qf_type)
-    if qf_type == 'loc' then
-        vim.fn.setloclist(0, {}, 'r')
+function M.clear_qf(buf)
+    if buf then
+        vim.fn.setloclist(buf, {}, 'r')
+        nvim.ex.lclose()
     else
         vim.fn.setqflist({}, 'r')
+        nvim.ex.cclose()
     end
 end
 

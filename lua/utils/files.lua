@@ -231,7 +231,15 @@ function M.chmod(path, mode, base)
 end
 
 function M.ls(expr)
-    expr = expr == nil and {} or expr
+    assert(
+        not expr or type(expr) == type({}) or type(expr) == type(''),
+        'Invalid expression '..vim.inspect(expr)
+    )
+    if not expr then
+        expr = {}
+    elseif type(expr) == type('') then
+        expr = {path = M.normalize_path(expr)}
+    end
 
     local search
     local path = expr.path
@@ -245,6 +253,8 @@ function M.ls(expr)
 
     if path ~= nil and glob ~= nil then
         search = path..'/'..glob
+    elseif path ~= nil and glob == nil then
+        search = path..'/*'
     else
         search = path == nil and glob or path
     end
@@ -281,13 +291,29 @@ function M.ls(expr)
 end
 
 function M.get_files(expr)
-    expr = expr == nil and {} or expr
+    assert(
+        not expr or type(expr) == type({}) or type(expr) == type(''),
+        'Invalid expression '..vim.inspect(expr)
+    )
+    if not expr then
+        expr = {}
+    elseif type(expr) == type('') then
+        expr = {path = M.normalize_path(expr)}
+    end
     expr.type = 'file'
     return M.ls(expr)
 end
 
 function M.get_dirs(expr)
-    expr = expr == nil and {} or expr
+    assert(
+        not expr or type(expr) == type({}) or type(expr) == type(''),
+        'Invalid expression '..vim.inspect(expr)
+    )
+    if not expr then
+        expr = {}
+    elseif type(expr) == type('') then
+        expr = {path = M.normalize_path(expr)}
+    end
     expr.type = 'dirs'
     return M.ls(expr)
 end

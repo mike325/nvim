@@ -82,10 +82,9 @@ local function set_opts(filename, has_tidy, compiler, bufnum)
         vim.api.nvim_buf_set_option(
             bufnum,
             'makeprg',
-            ('%s %s -o %s %%'):format(
+            ('%s %s %%'):format(
                 databases[bufname].compiler,
-                table.concat(databases[bufname].args, ' '),
-                vim.fn.tempname()
+                table.concat(databases[bufname].args, ' ')
             )
         )
         return
