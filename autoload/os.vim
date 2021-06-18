@@ -39,13 +39,7 @@ function! s:os_type(os) abort
 endfunction
 
 function! os#cache() abort
-    if has('nvim-0.2')
-        return stdpath('cache')
-    elseif !empty($XDG_CACHE_HOME)
-        return $XDG_CACHE_HOME . '/nvim'
-    endif
-    " Point vim to nvim cache since some lsp are install here
-    return vars#home() . '/.cache/nvim'
+    return stdpath('cache')
 endfunction
 
 " Windows wrapper
