@@ -124,7 +124,11 @@ function M.basedir(path)
             end
             path = path .. table.concat(path_components, '/')
         elseif M.is_absolute(path) then
-            path = is_windows and path:match(path:sub(1, 2), '^%w:$') or '/'
+            if is_windows then
+                path = path:sub(1,#path > 2 and 3 or 2)
+            else
+                path = '/'
+            end
         else
             path = '.'
         end

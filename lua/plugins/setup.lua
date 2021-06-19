@@ -235,6 +235,9 @@ packer.startup(function()
             vim.g.ultisnips_python_quoting_style = 'single'
             vim.g.ultisnips_python_triple_quoting_style = 'double'
             vim.g.ultisnips_python_style = 'google'
+
+            -- vim.g.UltiSnipsSnippetDirectories = {}
+
             vim.api.nvim_set_keymap(
                 'x',
                 '<CR>',
@@ -291,6 +294,10 @@ packer.startup(function()
         }
     }
 
+    use {
+        'segeljakt/vim-silicon',
+        cond = function() return vim.fn.executable('silicon') == 1 end,
+    }
 
     -- use {
     --     'ycm-core/YouCompleteMe',
