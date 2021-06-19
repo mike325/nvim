@@ -9,6 +9,7 @@ ignore = {
 }
 
 read_globals = {
+    "bit",
     "vim",
     "nvim",
     "python",
@@ -16,4 +17,5 @@ read_globals = {
     "RELOAD",
     "PASTE",
     "use",
+    "use_rocks",
 }
