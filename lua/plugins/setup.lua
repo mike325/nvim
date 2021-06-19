@@ -16,6 +16,14 @@ packer.startup(function()
     use {'kyazdani42/nvim-web-devicons'}
     use {'kevinhwang91/nvim-bqf'}
 
+    use {
+        'norcalli/nvim-colorizer.lua',
+        config = function()
+            vim.opt.termguicolors = true
+            require 'colorizer'.setup()
+        end,
+    }
+
     use {'tpope/vim-repeat', event = 'VimEnter'}
     use {'tpope/vim-apathy', event = 'VimEnter'}
     use {'tpope/vim-commentary', event = 'VimEnter'}
@@ -297,6 +305,23 @@ packer.startup(function()
     use {
         'segeljakt/vim-silicon',
         cond = function() return vim.fn.executable('silicon') == 1 end,
+        setup = function()
+            vim.g.silicon = {
+                theme                  = 'Dracula',
+                font                   = 'Hack',
+                background             = '#000000',
+                ['shadow-color']       = '#555555',
+                ['line-pad']           = 2,
+                ['pad-horiz']          = 80,
+                ['pad-vert']           = 100,
+                ['shadow-blur-radius'] = 0,
+                ['shadow-offset-x']    = 0,
+                ['shadow-offset-y']    = 0,
+                ['line-number']        = true,
+                ['round-corner']       = true,
+                ['window-controls']    = true,
+            }
+        end,
     }
 
     -- use {
