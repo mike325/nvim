@@ -6,6 +6,7 @@ local readfile       = require'utils.files'.readfile
 local is_file        = require'utils.files'.is_file
 local basedir        = require'utils.files'.basedir
 local realpath       = require'utils.files'.realpath
+local read_json      = require'utils.files'.read_json
 local normalize_path = require'utils.files'.normalize_path
 
 local compile_flags = require'utils.storage'.compile_flags
@@ -147,17 +148,17 @@ function M.setup()
             if is_file(bufname) and not databases[realpath(bufname)] then
                 bufname = realpath(bufname)
                 readfile(filename, function(data)
-                    vim.schedule_wrap(function()
-                        for _, source in pairs(vim.fn.json_decode(data)) do
-                            local source_name = source.directory..'/'..source.file
-                            if not databases[source_name] then
-                                databases[source_name] = {}
-                                databases[source_name].filename = source_name
-                                databases[source_name].compiler = source.arguments[1]
-                                databases[source_name].args = vim.list_slice(source.arguments, 2, #source.arguments)
-                                databases[source_name].includes = parse_includes(databases[source_name].args)
-                            end
+                    for _, source in pairs(read_json(data)) do
+                        local source_name = source.directory..'/'..source.file
+                        if not databases[source_name] then
+                            databases[source_name] = {}
+                            databases[source_name].filename = source_name
+                            databases[source_name].compiler = source.arguments[1]
+                            databases[source_name].args = vim.list_slice(source.arguments, 2, #source.arguments)
+                            databases[source_name].includes = parse_includes(databases[source_name].args)
                         end
+                    end
+                    vim.schedule_wrap(function()
                         set_opts(filename, has_tidy, compiler, bufnum)
                     end)()
                 end)

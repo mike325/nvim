@@ -7,6 +7,13 @@ local split     = require'utils.strings'.split
 
 local uv = vim.loop
 
+local has_cjson = require'utils.storage'.has_cjson
+
+if has_cjson == -1 then
+    local ok, _ = pcall(require, 'cjson')
+    has_cjson = ok
+end
+
 local M = {}
 
 M.getcwd = uv.cwd
@@ -50,7 +57,7 @@ end
 
 function M.mkdir(dirname)
     assert(type(dirname) == 'string' and dirname ~= '', ([[Not a dirname: "%s"]]):format(dirname))
-    vim.fn.mkdir(dirname, 'p')
+    uv.fs_mkdir(M.normalize_path(dirname), 438)
 end
 
 function M.executable(exec)
@@ -89,7 +96,9 @@ end
 
 function M.normalize_path(path)
     assert(type(path) == 'string' and path ~= '', ([[Not a path: "%s"]]):format(path))
-    if path:sub(1, 1) == '~' or path == '%' then
+    if path:sub(1, 1) == '~' then
+        path = path:gsub('~', sys.home)
+    elseif path == '%' then
         path = vim.fn.expand(path)
     end
     return forward_path(path)
@@ -156,7 +165,7 @@ function M.openfile(path, flags, callback)
     assert(type(path) == 'string' and path ~= '', ([[Not a path: "%s"]]):format(path))
     assert(flags, 'Missing flags')
     assert(type(callback) == 'function', 'Missing valid callback')
-    local fd = uv.fs_open(path, flags, 438)
+    local fd = assert(uv.fs_open(path, flags, 438))
     local ok, rst = pcall(callback, fd)
     assert(uv.fs_close(fd))
     return rst or ok
@@ -168,6 +177,7 @@ local function fs_write(path, data, append, callback)
 
     data = type(data) ~= type('') and table.concat(data, '\n') or data
     local flags = append and 'a' or 'w'
+
     if not callback then
         M.openfile(path, flags, function(fd)
             local stat = uv.fs_fstat(fd)
@@ -184,12 +194,13 @@ local function fs_write(path, data, append, callback)
                     assert(not rerr, rerr)
                     uv.fs_close(fd, function(cerr)
                         assert(not cerr, cerr)
-                        return callback(vim.split(data, '[\r]?\n'))
+                        return callback()
                     end)
                 end)
             end)
         end)
     end
+
 end
 
 function M.writefile(path, data, callback)
@@ -201,15 +212,18 @@ function M.updatefile(path, data, callback)
     fs_write(path, data, true, callback)
 end
 
-function M.readfile(path, callback)
+function M.readfile(path, callback, split)
     assert(M.is_file(path), 'Not a file: '..path)
-    assert(not callback or type(callback) == 'function', 'Missing valid callback')
+    assert(callback == nil or type(callback) == 'function', 'Missing valid callback')
+    assert(split == nil or type(split) == type(true), 'Mismatch of split value '..vim.inspect(split))
+    if split == nil then
+        split = true
+    end
     if not callback then
         return M.openfile(path, 'r', function(fd)
-            local stat = uv.fs_fstat(fd)
-            local data = uv.fs_read(fd, stat.size, 0)
-            data = vim.split(data, '[\r]?\n')
-            return data
+            local stat = assert(uv.fs_fstat(fd))
+            local data = assert(uv.fs_read(fd, stat.size, 0))
+            return split and vim.split(data, '[\r]?\n') or data
         end)
     end
     uv.fs_open(path, "r", 438, function(oerr, fd)
@@ -220,7 +234,7 @@ function M.readfile(path, callback)
                 assert(not rerr, rerr)
                 uv.fs_close(fd, function(cerr)
                     assert(not cerr, cerr)
-                    return callback(vim.split(data, '[\r]?\n'))
+                    return callback(split and vim.split(data, '[\r]?\n') or data)
                 end)
             end)
         end)
@@ -320,18 +334,6 @@ function M.get_dirs(expr)
     end
     expr.type = 'dirs'
     return M.ls(expr)
-end
-
-function M.read_json(filename)
-    assert(M.is_file(filename), 'Not a file: '..filename)
-    return vim.fn.json_decode(M.readfile(filename))
-end
-
-function M.dump_json(filename, data)
-    assert(type(data) == 'table', 'Not a json data: '..type(data))
-    assert(type(filename) == 'string' and filename ~= '', ([[Not a filename: "%s"]]):format(filename))
-    local json = vim.fn.json_encode(data)
-    M.writefile(filename, json)
 end
 
 function M.rename(old, new, bang)
@@ -519,5 +521,40 @@ function M.clean_file()
     return true
 end
 
+function M.read_json(filename)
+    if filename:sub(1, 1) == '~' then
+        filename = filename:gsub('~', sys.home)
+    end
+    assert(M.is_file(filename), 'Not a file: '..filename)
+    if has_cjson then
+        local cjson = require'cjson'
+        return cjson.decode(M.readfile(filename, nil, false))
+    elseif vim.in_fast_event() then
+        return vim.schedule_wrap(function()
+            return vim.fn.json_decode(M.readfile(M.normalize_path(filename)))
+        end)()
+    end
+    return vim.fn.json_decode(M.readfile(M.normalize_path(filename)))
+end
+
+function M.dump_json(filename, data)
+    if filename:sub(1, 1) == '~' then
+        filename = filename:gsub('~', sys.home)
+    end
+    assert(type(data) == type({}) 'Not a json data: '..type(data))
+    assert(
+        type(filename) == type('') and filename ~= '',
+        ([[Not a filename: "%s"]]):format(vim.inspect(filename))
+    )
+    if has_cjson then
+        M.writefile(filename, require'cjson'.encode(data))
+    elseif vim.in_fast_event() then
+        vim.schedule_wrap(function()
+            M.writefile(M.normalize_path(filename), vim.fn.json_encode(data))
+        end)()
+    else
+        M.writefile(M.normalize_path(filename), vim.fn.json_encode(data))
+    end
+end
 
 return M

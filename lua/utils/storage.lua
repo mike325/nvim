@@ -4,6 +4,7 @@ local M = {
     scratchs = {},
     compile_flags = {},
     databases = {},
+    has_cjson = -1,
 }
 
 return M
