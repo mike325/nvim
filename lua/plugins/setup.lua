@@ -1,9 +1,23 @@
 local packer = require'packer'
-packer.startup(function()
 
-    -- if bare then
-    --     return
-    -- end
+packer.init{
+    luarocks = {
+        python_cmd = 'python3'
+    },
+    profile = {
+        enable = false,
+        threshold = 1 -- the amount in ms that a plugins load time must be over for it to be included in the profile
+    },
+    display = {
+        open_fn = require('packer.util').float,
+    },
+    git = {
+        clone_timeout = 90, -- Timeout, in seconds, for git clones
+    }
+}
+
+packer.startup(function()
+    use_rocks {'luacheck',  'lua-cjson'}
 
     use 'wbthomason/packer.nvim'
     use {'PProvost/vim-ps1'}

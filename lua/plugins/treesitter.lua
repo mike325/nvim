@@ -40,8 +40,8 @@ treesitter.setup{
         enable = true,
         keymaps = {
             init_selection = "<A-i>",
-            node_incremental = "<A-I>",
             scope_incremental = "<A-c>",
+            node_incremental = "<A-I>",
             node_decremental = "<A-D>",
         },
     },
