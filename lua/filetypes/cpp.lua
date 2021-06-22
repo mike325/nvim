@@ -6,11 +6,13 @@ local readfile       = require'utils.files'.readfile
 local is_file        = require'utils.files'.is_file
 local basedir        = require'utils.files'.basedir
 local realpath       = require'utils.files'.realpath
-local read_json      = require'utils.files'.read_json
+local decode_json    = require'utils.files'.decode_json
 local normalize_path = require'utils.files'.normalize_path
 
 local compile_flags = require'utils.storage'.compile_flags
 local databases = require'utils.storage'.databases
+
+local has_cjson = require'utils.storage'.has_cjson
 
 local M = {}
 
@@ -128,6 +130,21 @@ local function parse_includes(args)
     return includes
 end
 
+local function parse_compiledb(data)
+    assert(type(data) == type(''), 'Invalid data: '..vim.inspect(data))
+    local json = decode_json(data)
+    for _, source in pairs(json) do
+        local source_name = source.directory..'/'..source.file
+        if not databases[source_name] then
+            databases[source_name] = {}
+            databases[source_name].filename = source_name
+            databases[source_name].compiler = source.arguments[1]
+            databases[source_name].args = vim.list_slice(source.arguments, 2, #source.arguments)
+            databases[source_name].includes = parse_includes(databases[source_name].args)
+        end
+    end
+end
+
 function M.setup()
     local compiler = get_compiler()
     local bufnum = nvim.get_current_buf()
@@ -148,20 +165,18 @@ function M.setup()
             if is_file(bufname) and not databases[realpath(bufname)] then
                 bufname = realpath(bufname)
                 readfile(filename, function(data)
-                    for _, source in pairs(read_json(data)) do
-                        local source_name = source.directory..'/'..source.file
-                        if not databases[source_name] then
-                            databases[source_name] = {}
-                            databases[source_name].filename = source_name
-                            databases[source_name].compiler = source.arguments[1]
-                            databases[source_name].args = vim.list_slice(source.arguments, 2, #source.arguments)
-                            databases[source_name].includes = parse_includes(databases[source_name].args)
-                        end
+                    if has_cjson == true then
+                        parse_compiledb(data)
+                        vim.schedule(function()
+                            set_opts(filename, has_tidy, compiler, bufnum)
+                        end)
+                    else
+                        vim.schedule(function()
+                            parse_compiledb(data)
+                            set_opts(filename, has_tidy, compiler, bufnum)
+                        end)
                     end
-                    vim.schedule_wrap(function()
-                        set_opts(filename, has_tidy, compiler, bufnum)
-                    end)()
-                end)
+                end, false)
             else
                 set_opts(filename, has_tidy, compiler, bufnum)
             end
@@ -183,9 +198,9 @@ function M.setup()
                                 table.insert(compile_flags[filename].includes, path)
                             end
                         end
-                        vim.schedule_wrap(function()
+                        vim.schedule(function()
                             set_opts(filename, has_tidy, compiler, bufnum)
-                        end)()
+                        end)
                     end
                 end)
             else

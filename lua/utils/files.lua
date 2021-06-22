@@ -7,12 +7,8 @@ local split     = require'utils.strings'.split
 
 local uv = vim.loop
 
-local has_cjson = require'utils.storage'.has_cjson
-
-if has_cjson == -1 then
-    local ok, _ = pcall(require, 'cjson')
-    has_cjson = ok
-end
+local has_cjson, _ = pcall(require, 'cjson')
+require'utils.storage'.has_cjson = has_cjson
 
 local M = {}
 
@@ -521,7 +517,39 @@ function M.clean_file()
     return true
 end
 
+function M.decode_json(data)
+    assert(
+        type(data) == type('') or type(data) == type({}),
+        'Invalid Json data: '..vim.inspect(data)
+    )
+    if type(data) == type({}) then
+        data = table.concat(data, '\n')
+    end
+    if has_cjson then
+        return require'cjson'.decode(data)
+    elseif vim.in_fast_event() then
+        error('Decode json in fast event is not yet supported!!')
+        -- return vim.fn.json_decode(data)
+    end
+    return vim.fn.json_decode(data)
+end
+
+function M.encode_json(data)
+    assert(
+        type(data) == type({}),
+        'Invalid Json data: '..vim.inspect(data)
+    )
+    if has_cjson then
+        return require'cjson'.encode(data)
+    elseif vim.in_fast_event() then
+        error('Encode json in fast event is not yet supported!!')
+        -- return vim.fn.json_encode(data)
+    end
+    return vim.fn.json_encode(data)
+end
+
 function M.read_json(filename)
+    assert(type(filename) == 'string' and filename ~= '', 'Not a file: '..vim.inspect(filename))
     if filename:sub(1, 1) == '~' then
         filename = filename:gsub('~', sys.home)
     end
@@ -530,9 +558,8 @@ function M.read_json(filename)
         local cjson = require'cjson'
         return cjson.decode(M.readfile(filename, nil, false))
     elseif vim.in_fast_event() then
-        return vim.schedule_wrap(function()
-            return vim.fn.json_decode(M.readfile(M.normalize_path(filename)))
-        end)()
+        error('Read json in fast event is not yet supported!!')
+        -- return vim.fn.json_decode(M.readfile(M.normalize_path(filename)))
     end
     return vim.fn.json_decode(M.readfile(M.normalize_path(filename)))
 end
@@ -548,13 +575,12 @@ function M.dump_json(filename, data)
     )
     if has_cjson then
         M.writefile(filename, require'cjson'.encode(data))
+        return
     elseif vim.in_fast_event() then
-        vim.schedule_wrap(function()
-            M.writefile(M.normalize_path(filename), vim.fn.json_encode(data))
-        end)()
-    else
-        M.writefile(M.normalize_path(filename), vim.fn.json_encode(data))
+        error('Write json in fast event is not yet supported!!')
+        -- M.writefile(M.normalize_path(filename), vim.fn.json_encode(data))
     end
+    M.writefile(M.normalize_path(filename), vim.fn.json_encode(data))
 end
 
 return M
