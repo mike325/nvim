@@ -18,6 +18,16 @@ _G['PASTE'] = function(data)
     vim.paste(data, -1)
 end
 
+_G['PERF'] = function(func, msg)
+    assert(vim.is_callable(func), 'Invalid func ref: '..vim.inspect(func))
+    assert(not msg or type(msg) == type(''), 'Invalid message: '..vim.inspect(msg))
+    local start = os.clock()
+    local data = func()
+    msg = msg or 'Func reference elpse time:'
+    print(msg, ('%.2f s'):format(os.clock() - start) )
+    return data
+end
+
 if not STORAGE then
     _G['STORAGE'] = {
         git_version = '',

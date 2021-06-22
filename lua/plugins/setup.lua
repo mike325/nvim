@@ -263,9 +263,10 @@ packer.startup(function()
             vim.api.nvim_set_keymap(
                 'x',
                 '<CR>',
-                '<cmd>call UltiSnips#SaveLastVisualSelection()<CR>gv"_s',
-                {silent = true, noremap = true}
+                ':call UltiSnips#SaveLastVisualSelection()<CR>gv"_s',
+                {silent = true}
             )
+
         end,
     }
 

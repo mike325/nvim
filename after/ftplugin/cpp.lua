@@ -1,4 +1,4 @@
-local executable     = require'utils.files'.executable
+local executable = require'utils.files'.executable
 
 -- vim.bo.foldmethod = 'syntax'
 vim.bo.expandtab = true
