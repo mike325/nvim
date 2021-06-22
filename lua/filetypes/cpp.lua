@@ -9,10 +9,10 @@ local realpath       = require'utils.files'.realpath
 local decode_json    = require'utils.files'.decode_json
 local normalize_path = require'utils.files'.normalize_path
 
-local compile_flags = require'utils.storage'.compile_flags
-local databases = require'utils.storage'.databases
+local compile_flags = STORAGE.compile_flags
+local databases = STORAGE.databases
 
-local has_cjson = require'utils.storage'.has_cjson
+local has_cjson = STORAGE.has_cjson
 
 local M = {}
 

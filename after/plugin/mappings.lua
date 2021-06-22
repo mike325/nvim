@@ -820,7 +820,7 @@ set_command {
             },
             opts = {
                 on_exit = function(jobid, rc, _)
-                    local jobs = require'jobs.storage'.jobs[jobid]
+                    local jobs = STORAGE.jobs[jobid]
                     local streams = jobs.streams or {}
                     local stdout = streams.stdout or {}
                     local stderr = streams.stderr or {}
@@ -1043,7 +1043,7 @@ set_command{
     lhs = 'Scratch',
     rhs = function(ft)
         ft = (ft and ft ~= '') and ft or vim.bo.filetype
-        local scratchs = require'utils.storage'.scratchs
+        local scratchs = STORAGE.scratchs
         scratchs[ft] = scratchs[ft] or vim.fn.tempname()
         local buf = vim.fn.bufnr(scratchs[ft], true)
 

@@ -5,7 +5,7 @@ local clear_lst  = require'utils.tables'.clear_lst
 local dump_to_qf = require'utils.helpers'.dump_to_qf
 -- local split      = require'utils'.strings.split
 
-local jobs = require'jobs.storage'.jobs
+local jobs = STORAGE.jobs
 
 if not nvim.has('nvim-0.5') then
     return false

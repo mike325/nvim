@@ -41,7 +41,7 @@ function M.get_git_dir(callback)
         cmd = cmd,
         opts = {
             on_exit = function(jobid, rc, _)
-                local job = require'jobs.storage'.jobs[jobid]
+                local job = STORAGE.jobs[jobid]
                 if rc == 0 then
                     local dir = table.concat(job.streams.stdout, '')
                     pcall(callback, realpath(dir))

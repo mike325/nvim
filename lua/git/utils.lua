@@ -167,7 +167,7 @@ function M.status(callback)
     end
     exec_async_gitcmd(cmd, gitcmd, {
         on_exit = function(jobid, rc, _)
-            local job = require'jobs.storage'.jobs[jobid]
+            local job = STORAGE.jobs[jobid]
             if rc ~= 0 then
                 error(('Failed to get git status, %s'):format(
                     table.concat(job.streams.stderr, '\n')

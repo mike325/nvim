@@ -8,7 +8,7 @@ local split     = require'utils.strings'.split
 local uv = vim.loop
 
 local has_cjson, _ = pcall(require, 'cjson')
-require'utils.storage'.has_cjson = has_cjson
+STORAGE.has_cjson = has_cjson
 
 local M = {}
 

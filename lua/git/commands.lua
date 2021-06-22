@@ -49,7 +49,7 @@ function M.set_commands()
                 jobopts = {
                     pty = true,
                     on_exit = function(jobid, rc, _)
-                        local job = require'jobs.storage'.jobs[jobid]
+                        local job = STORAGE.jobs[jobid]
                         if rc ~= 0 then
                             error(('Failed to pull changes, %s'):format(
                                 table.concat(job.streams.stdout, '\n')
@@ -148,14 +148,14 @@ function M.set_commands()
                             args = {'HEAD', bufname },
                             jobopts = {
                                 on_exit = function(jobid, rc, _)
-                                    local rjob = require'jobs.storage'.jobs[jobid]
+                                    local rjob = STORAGE.jobs[jobid]
                                     if rc == 0 then
                                         utils.launch_gitcmd_job{
                                             gitcmd = 'checkout',
                                             args = {'--', bufname},
                                             jobopts = {
                                                 on_exit = function(id, crc, _)
-                                                    local cjob = require'jobs.storage'.jobs[id]
+                                                    local cjob = STORAGE.jobs[id]
                                                     if crc ~= 0 then
                                                         error(('Failed to reset file: %s, due to %s'):format(
                                                             bufname,
@@ -210,7 +210,7 @@ function M.set_commands()
                             args = { 'HEAD', bufname },
                             jobopts = {
                                 on_exit = function(id, rc, _)
-                                    local job = require'jobs.storage'.jobs[id]
+                                    local job = STORAGE.jobs[id]
                                     if rc ~= 0 then
                                         error(('Failed to restore file: %s, due to %s'):format(
                                             bufname,
@@ -239,7 +239,7 @@ function M.set_commands()
                         args = {'HEAD', args},
                         jobopts = {
                             on_exit = function(id, rc, _)
-                                local job = require'jobs.storage'.jobs[id]
+                                local job = STORAGE.jobs[id]
                                 if rc ~= 0 then
                                     error(('Failed to restore file: %s, due to %s'):format(
                                         args,

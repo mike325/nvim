@@ -17,3 +17,24 @@ _G['PASTE'] = function(data)
     end
     vim.paste(data, -1)
 end
+
+if not STORAGE then
+    _G['STORAGE'] = {
+        git_version = '',
+        modern_git = -1,
+        scratchs = {},
+        compile_flags = {},
+        databases = {},
+        has_cjson = -1,
+        jobs = {},
+        autocmds = {},
+        mappings = {
+            g = {},
+            b = {},
+        },
+        commands = {
+            g = {},
+            b = {},
+        },
+    }
+end

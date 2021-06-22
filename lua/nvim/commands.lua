@@ -4,7 +4,7 @@ local api = vim.api
 local has_attrs = require'utils.tables'.has_attrs
 local echoerr = require'utils.messages'.echoerr
 local echowarn = require'utils.messages'.echowarn
-local funcs = require'nvim.storage'.commands
+local funcs = STORAGE.commands
 
 local M = {}
 
@@ -16,7 +16,7 @@ local function get_wrapper(info)
     local bang = info.bang
     local bufnr = require'nvim'.win.get_buf(0)
 
-    local cmd = [[lua require'nvim.storage'.commands]]
+    local cmd = [[lua STORAGE.commands]]
 
     cmd = cmd..("['%s']"):format(scope)
 

@@ -8,7 +8,7 @@ local echoerr  = require'utils.messages'.echoerr
 local M = {}
 
 local function on_data(jobid, data, event)
-    local job = require'jobs.storage'.jobs[jobid]
+    local job = STORAGE.jobs[jobid]
     if not job.streams then
         job.streams = {}
         job.streams[event] = {}
@@ -58,7 +58,7 @@ local function external_formatprg(opts)
             on_stdout = on_data,
             on_stderr = on_data,
             on_exit = function(jobid, rc, _)
-                local job = require'jobs.storage'.jobs[jobid]
+                local job = STORAGE.jobs[jobid]
                 local dump_to_qf = require'utils'.helpers.dump_to_qf
 
                 local streams = job.streams or {}

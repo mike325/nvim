@@ -82,7 +82,7 @@ function M.send_grep_job(args)
         },
         opts = {
             on_exit = function(jobid, rc, _)
-                local job = require'jobs.storage'.jobs[jobid]
+                local job = STORAGE.jobs[jobid]
                 local dump_to_qf = require'utils'.helpers.dump_to_qf
 
                 local streams = job.streams or {}
@@ -242,7 +242,7 @@ local function get_files(path, is_git)
         opts = {
             cwd = path,
             on_exit = function(jobid, rc, _)
-                local job = require'jobs.storage'.jobs[jobid]
+                local job = STORAGE.jobs[jobid]
                 if rc == 0 then
                     if job.streams and #job.streams.stdout > 0 then
                         M.filelists[path] = job.streams.stdout

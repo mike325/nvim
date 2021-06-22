@@ -3,7 +3,7 @@ local has_attrs = require'utils.tables'.has_attrs
 local echoerr   = require'utils.messages'.echoerr
 
 local transform_mapping = require'nvim.utils'.transform_mapping
-local funcs = require'nvim.storage'.mappings
+local funcs = STORAGE.mappings
 
 local modes = {
     normal   = "n",
@@ -38,7 +38,7 @@ local function get_wrapper(info)
 
     cmd = expr and [=[luaeval("]=] or [[<cmd>lua ]]
 
-    cmd = cmd..[[require'nvim.storage'.mappings]]
+    cmd = cmd..[[STORAGE.mappings]]
     cmd = cmd..("['%s']"):format(scope)
 
     if scope == 'b' then

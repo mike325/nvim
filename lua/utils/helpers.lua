@@ -13,8 +13,8 @@ local echoerr          = require'utils.messages'.echoerr
 local get_git_dir      = require'utils.system'.get_git_dir
 local split            = require'utils.strings'.split
 
-local git_version = require'utils.storage'.git_version
-local modern_git = require'utils.storage'.modern_git
+local git_version = STORAGE.git_version
+local modern_git = STORAGE.modern_git
 
 local set_abbr = nvim.abbrs.set_abbr
 
