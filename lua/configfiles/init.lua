@@ -3,6 +3,7 @@ local is_file        = require'utils.files'.is_file
 local readfile       = require'utils.files'.readfile
 local extension      = require'utils.files'.extension
 local basename       = require'utils.files'.basename
+local basedir        = require'utils.files'.basedir
 local normalize_path = require'utils.files'.normalize_path
 
 local Config = {

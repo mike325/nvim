@@ -25,7 +25,7 @@
   "syntax/*.vim"            : {"type": "Syntax"},
   "autoload/*.vim"          : {"type": "Autoload"},
   "autoload/plugins/*.lua"  : {"type": "PluginsAutoload"},
-  "ftdetect/*.lua"          : {"type": "FtDetect"},
+  "ftdetect/*.vim"          : {"type": "FtDetect"},
   "ftplugin/*.lua"          : {"type": "FtPlugin"},
   "plugin/*.lua"            : {"type": "Plugin"},
   "after/plugin/*.lua"      : {"type": "PluginAfter"},
