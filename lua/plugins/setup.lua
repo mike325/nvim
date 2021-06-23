@@ -99,26 +99,49 @@ packer.startup(function()
             )
         end,
     }
+
     -- use {'rhysd/committia.vim'}
 
     use {'folke/lsp-colors.nvim'}
-    use {'glepnir/zephyr-nvim'}
-    use {
-        'ayu-theme/ayu-vim',
-        cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
-        event = 'CursorHold',
-    }
-    use {
-        'joshdick/onedark.vim',
-        cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
-        event = 'CursorHold',
-    }
+
     use {
         'sainnhe/sonokai',
-        cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
-        event = 'CursorHold',
+        config = function()
+            vim.opt.termguicolors = true
+
+            -- vim.g.sonokai_current_word = 'bold'
+            vim.g.sonokai_enable_italic = 1
+            vim.g.sonokai_diagnostic_text_highlight = 1
+            vim.g.sonokai_diagnostic_line_highlight = 1
+            vim.g.sonokai_diagnostic_virtual_text = 'colored'
+            -- vim.g.sonokai_better_performance = 1
+
+            vim.g.airline_theme = 'sonokai'
+
+            vim.cmd[[colorscheme sonokai]]
+        end,
     }
-    -- use {'marko-cerovac/material.nvim'}
+
+    -- use {
+    --     'marko-cerovac/material.nvim',
+    --     cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
+    --     event = {'CursorHold', 'CmdlineEnter'},
+    -- }
+    -- use {
+    --     'glepnir/zephyr-nvim',
+    --     cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
+    --     event = {'CursorHold', 'CmdlineEnter'},
+    -- }
+    -- use {
+    --     'ayu-theme/ayu-vim',
+    --     cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
+    --     event = {'CursorHold', 'CmdlineEnter'},
+    -- }
+    -- use {
+    --     'joshdick/onedark.vim',
+    --     cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
+    --     event = {'CursorHold', 'CmdlineEnter'},
+    -- }
     -- use {'tiagovla/tokyodark.nvim'}
     -- use {'bluz71/vim-moonfly-colors'}
     -- use {'bluz71/vim-nightfly-guicolors'}
