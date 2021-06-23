@@ -1,6 +1,6 @@
-vim.bo.foldmethod = 'syntax'
+vim.wo.foldmethod = 'syntax'
 
-vim.bo.backup = false
+-- vim.bo.backup = false
 vim.bo.swapfile = false
 vim.bo.undofile = false
 
