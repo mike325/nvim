@@ -1,21 +1,21 @@
-vim.wo.spell = false
+vim.opt_local.spell = false
 
--- vim.bo.backup = false
-vim.bo.swapfile = false
-vim.bo.sidescroll = 1
+-- vim.opt_local.backup = false
+vim.opt_local.swapfile = false
+vim.opt_local.sidescroll = 1
 
-vim.bo.smarttab = false
-vim.bo.copyindent = false
-vim.bo.autoindent = false
-vim.bo.cindent = false
+vim.opt_local.smarttab = false
+vim.opt_local.copyindent = false
+vim.opt_local.autoindent = false
+vim.opt_local.cindent = false
 
-vim.bo.readonly = true
-vim.bo.modifiable = false
+vim.opt_local.readonly = true
+vim.opt_local.modifiable = false
 
 -- Disable colorcolumn
-vim.bo.colorcolumn = ''
+vim.opt_local.colorcolumn = ''
 
-vim.bo.cursorline = false
+vim.opt_local.cursorline = false
 
 -- Disable the fold column
--- vim.bo.foldcolumn=0
+-- vim.opt_local.foldcolumn=0

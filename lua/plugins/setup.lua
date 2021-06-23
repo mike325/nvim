@@ -339,6 +339,12 @@ packer.startup(function()
         end,
     }
 
+    use {
+        'pwntester/octo.nvim',
+        cond = function() return vim.fn.executable('gh') == 1 end,
+        confg = function() require'octo'.setup() end,
+    }
+
     -- use {
     --     'ycm-core/YouCompleteMe',
     --     config = function()

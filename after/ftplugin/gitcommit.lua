@@ -1,22 +1,20 @@
-vim.bo.bufhidden = 'delete'
-vim.bo.readonly = false
+vim.opt_local.bufhidden = 'delete'
+vim.opt_local.readonly = false
 
-vim.bo.expandtab  = true
--- vim.bo.shiftround = true
-vim.bo.tabstop = 4
-vim.bo.shiftwidth = 0
-vim.bo.softtabstop = -1
+vim.opt_local.expandtab  = true
+vim.opt_local.tabstop = 4
+vim.opt_local.shiftwidth = 0
+vim.opt_local.softtabstop = -1
 
-vim.bo.modifiable = true
--- vim.bo.backup = false
-vim.bo.swapfile = false
+vim.opt_local.modifiable = true
+vim.opt_local.swapfile = false
 
-vim.wo.spell = true
+vim.opt_local.spell = true
 
 vim.opt_local.complete:append('k')
 vim.opt_local.complete:append('kspell')
 
 
-vim.bo.textwidth = 80
+vim.opt_local.textwidth = 80
 
--- require"utils.helpers".abolish(vim.bo.spelllang)
+-- require"utils.helpers".abolish(vim.opt_local.spelllang)

@@ -1,9 +1,9 @@
-vim.bo.expandtab = true
--- vim.bo.shiftround = true
-vim.bo.shiftwidth = 2
-vim.bo.tabstop = 2
-vim.bo.shiftwidth = 0
-vim.bo.softtabstop = -1
+vim.opt_local.expandtab = true
+-- vim.opt_local.shiftround = true
+vim.opt_local.shiftwidth = 2
+vim.opt_local.tabstop = 2
+vim.opt_local.shiftwidth = 0
+vim.opt_local.softtabstop = -1
 
 -- " Json is used as config files, this enables comments for them
-vim.bo.commentstring = '// %s'
+vim.opt_local.commentstring = '// %s'

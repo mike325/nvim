@@ -1,5 +1,4 @@
-vim.bo.expandtab = false
--- vim.bo.shiftround = true
-vim.bo.tabstop=4
-vim.bo.shiftwidth=0
-vim.bo.softtabstop=-1
+vim.opt_local.expandtab = false
+vim.opt_local.tabstop=4
+vim.opt_local.shiftwidth=0
+vim.opt_local.softtabstop=-1

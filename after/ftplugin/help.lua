@@ -1,9 +1,9 @@
-vim.wo.number = true
-vim.wo.relativenumber = true
-vim.bo.buflisted = true
-vim.wo.list = false
+vim.opt_local.number = true
+vim.opt_local.relativenumber = true
+vim.opt_local.buflisted = true
+vim.opt_local.list = false
 
--- vim.bo.spell = false
+-- vim.opt_local.spell = false
 
 vim.cmd[[nnoremap <silent> <nowait> <buffer> q :q!<CR>]]
 -- nnoremap <silent><buffer> <CR> :call mappings#cr()<CR>
