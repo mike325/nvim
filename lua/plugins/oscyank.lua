@@ -9,7 +9,7 @@ if vim.g.OSCTERM then
     vim.g.oscyank_term = vim.g.OSCTERM
 elseif executable('kitty') then
     vim.g.oscyank_term = 'kitty'
-elseif vim.g.OSCTERM then
+elseif vim.env.TMUX and not vim.env.SSH then
     vim.g.oscyank_term = 'tmux'
 else
     vim.g.oscyank_term = 'default'
@@ -18,7 +18,7 @@ end
 set_command{
     lhs = 'OSCTerm',
     rhs = 'let g:oscyank_term = <q-args>',
-    args = {force = true, nargs = 1, complete = 'customlist,neovim#vim_oscyank OSCTerm '}
+    args = {force = true, nargs = 1, complete = 'customlist,neovim#vim_oscyank'}
 }
 
 set_autocmd{
