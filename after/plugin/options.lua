@@ -226,5 +226,3 @@ if executable('nvr') then
     vim.env.vnvr = 'nvr --servername '.. nvim.v.servername ..' -cc vsplit --remote-silent'
     vim.env.snvr = 'nvr --servername '.. nvim.v.servername ..' -cc split --remote-silent'
 end
-
-pcall(vim.cmd, 'colorscheme ayu')
