@@ -114,7 +114,7 @@ packer.startup(function()
             vim.g.sonokai_diagnostic_text_highlight = 1
             vim.g.sonokai_diagnostic_line_highlight = 1
             vim.g.sonokai_diagnostic_virtual_text = 'colored'
-            -- vim.g.sonokai_better_performance = 1
+            vim.g.sonokai_better_performance = 1
 
             vim.g.airline_theme = 'sonokai'
 
@@ -175,6 +175,22 @@ packer.startup(function()
         'Yggdroot/indentLine',
         event = 'VimEnter',
         cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
+        setup = function()
+            vim.g.indentLine_fileTypeExclude = {
+                'Telescope',
+                'TelescopePrompt',
+                'log',
+                'help',
+            }
+            vim.g.indentLine_bufTypeExclude = {
+                'terminal',
+                'man'
+            }
+            vim.g.indentLine_bufNameExclude = {
+                'term://.*',
+                'man://.*',
+            }
+        end,
     }
     use {
         'glacambre/firenvim',
@@ -341,32 +357,32 @@ packer.startup(function()
     }
 
     use {
-        'segeljakt/vim-silicon',
-        cond = function() return vim.fn.executable('silicon') == 1 end,
-        setup = function()
-            vim.g.silicon = {
-                theme                  = 'Dracula',
-                font                   = 'Hack',
-                background             = '#000000',
-                ['shadow-color']       = '#555555',
-                ['line-pad']           = 2,
-                ['pad-horiz']          = 80,
-                ['pad-vert']           = 100,
-                ['shadow-blur-radius'] = 0,
-                ['shadow-offset-x']    = 0,
-                ['shadow-offset-y']    = 0,
-                ['line-number']        = true,
-                ['round-corner']       = true,
-                ['window-controls']    = true,
-            }
-        end,
-    }
-
-    use {
         'pwntester/octo.nvim',
         cond = function() return vim.fn.executable('gh') == 1 end,
         confg = function() require'octo'.setup() end,
     }
+
+    -- use {
+    --     'segeljakt/vim-silicon',
+    --     cond = function() return vim.fn.executable('silicon') == 1 end,
+    --     setup = function()
+    --         vim.g.silicon = {
+    --             theme                  = 'Dracula',
+    --             font                   = 'Hack',
+    --             background             = '#000000',
+    --             ['shadow-color']       = '#555555',
+    --             ['line-pad']           = 2,
+    --             ['pad-horiz']          = 80,
+    --             ['pad-vert']           = 100,
+    --             ['shadow-blur-radius'] = 0,
+    --             ['shadow-offset-x']    = 0,
+    --             ['shadow-offset-y']    = 0,
+    --             ['line-number']        = true,
+    --             ['round-corner']       = true,
+    --             ['window-controls']    = true,
+    --         }
+    --     end,
+    -- }
 
     -- use {
     --     'ycm-core/YouCompleteMe',
