@@ -28,7 +28,7 @@ if has('nvim-0.5') then
     set_autocmd{
         event   = 'TextYankPost',
         pattern = '*',
-        cmd     = [[silent! lua require'vim.highlight'.on_yank("IncSearch", 3000)]],
+        cmd     = [[lua vim.highlight.on_yank{higroup = "IncSearch", timeout = 2000}]],
         group   = 'YankHL'
     }
 end
