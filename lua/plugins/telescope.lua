@@ -25,9 +25,11 @@ telescope.setup{
             i = {
                 ["<ESC>"] = actions.close,
                 -- ["<CR>"]  = actions.goto_file_selection_edit + actions.center,
+                ["<C-j>"] = actions.move_selection_next,
+                ["<C-k>"] = actions.move_selection_previous,
             },
             n = {
-                ["<ESC>"] = actions.close
+                ["<ESC>"] = actions.close,
             },
         },
         prompt_position = "bottom",

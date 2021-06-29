@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import argparse
 import logging
@@ -58,7 +58,36 @@ def _createLogger(
         Formatter = ColorFormatter
     except ImportError:
         ColorFormatter = None
-        Formatter = logging.Formatter
+
+        class PrimitiveFormatter(logging.Formatter):
+            """Logging colored formatter, adapted from https://stackoverflow.com/a/56944256/3638629"""
+
+            grey     = '\x1b[38;21m'
+            green    = '\x1b[32m'
+            magenta  = '\x1b[35m'
+            blue     = '\x1b[38;5;39m'
+            yellow   = '\x1b[38;5;226m'
+            red      = '\x1b[38;5;196m'
+            bold_red = '\x1b[31;1m'
+            reset    = '\x1b[0m'
+
+            def __init__(self, fmt):
+                super().__init__()
+                self.fmt = fmt
+                self.FORMATS = {
+                    logging.DEBUG: self.magenta + self.fmt + self.reset,
+                    logging.INFO: self.green + self.fmt + self.reset,
+                    logging.WARNING: self.yellow + self.fmt + self.reset,
+                    logging.ERROR: self.red + self.fmt + self.reset,
+                    logging.CRITICAL: self.bold_red + self.fmt + self.reset
+                }
+
+            def format(self, record):
+                log_fmt = self.FORMATS.get(record.levelno)
+                formatter = logging.Formatter(log_fmt)
+                return formatter.format(record)
+
+        Formatter = PrimitiveFormatter
 
     # This means both 0 and 100 silence all output
     stdout_level = 100 if stdout_level == 0 else stdout_level

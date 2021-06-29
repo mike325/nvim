@@ -1,13 +1,15 @@
 local get_icon = require'utils.helpers'.get_icon
 local get_separators = require'utils.helpers'.get_separators
 
-vim.g['airline#extensions#tabline#enabled']           = 1
-vim.g['airline#extensions#tabline#fnamemod']          = ':t'
-vim.g['airline#extensions#tabline#close_symbol']      = '×'
-vim.g['airline#extensions#tabline#show_tabs']         = 1
-vim.g['airline#extensions#tabline#show_buffers']      = 1
-vim.g['airline#extensions#tabline#show_close_button'] = 0
-vim.g['airline#extensions#tabline#show_splits']       = 0
+if not vim.g.started_by_firenvim then
+    vim.g['airline#extensions#tabline#enabled']           = 1
+    vim.g['airline#extensions#tabline#fnamemod']          = ':t'
+    vim.g['airline#extensions#tabline#close_symbol']      = '×'
+    vim.g['airline#extensions#tabline#show_tabs']         = 1
+    vim.g['airline#extensions#tabline#show_buffers']      = 1
+    vim.g['airline#extensions#tabline#show_close_button'] = 0
+    vim.g['airline#extensions#tabline#show_splits']       = 0
+end
 
 vim.g.airline_highlighting_cache = 1
 

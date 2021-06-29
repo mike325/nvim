@@ -5,16 +5,13 @@ local executable = require'utils.files'.executable
 local echowarn   = require'utils.messages'.echowarn
 local split      = require'utils.strings'.split
 local normalize  = require'utils.files'.normalize_path
--- local is_file    = require'utils'.files.is_file
--- local delete     = require'utils'.files.delete
+local has_attrs  = require'utils.tables'.has_attrs
 
 if not executable('git') then
     return false
 end
 
 local set_command = nvim.commands.set_command
--- local set_mapping = nvim.mappings.set_mapping
--- local get_mapping = nvim.mappings.get_mapping
 
 local M = {}
 
@@ -94,8 +91,9 @@ function M.set_commands()
                     if sys.name == 'windows' then
                         bufname = bufname:gsub('\\', '/')
                     end
-                    if (status.workspace and status.workspace[bufname]) or
-                       (status.untracked and status.untracked[bufname]) then
+                    local workspace = status.workspace or {}
+                    local untracked = status.untracked or {}
+                    if workspace[bufname] or has_attrs(untracked, bufname) then
                         nvim.ex.update()
                         args = { bufname }
                         utils.launch_gitcmd_job{

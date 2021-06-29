@@ -161,16 +161,19 @@ packer.startup(function()
         -- TODO: configs
         -- config = function() require'plugins.abolish' end,
     }
+
     use {
         'tpope/vim-dadbod',
         cmd = 'DB',
         cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
     }
+
     use {
         'tpope/vim-markdown',
         ft = 'markdown',
         cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
     }
+
     use {
         'Yggdroot/indentLine',
         event = 'VimEnter',
@@ -192,6 +195,7 @@ packer.startup(function()
             }
         end,
     }
+
     use {
         'glacambre/firenvim',
         cond = function()
@@ -221,7 +225,8 @@ packer.startup(function()
         cond = function()
             local executable = function(exe) return vim.fn.executable(exe) == 1 end
             local min = vim.env.VIM_MIN ~= nil or vim.g.minimal ~= nil
-            return not min and (executable('ctags') or executable('cscope'))
+            local is_firenvim = vim.g.started_by_firenvim
+            return not min and not is_firenvim and (executable('ctags') or executable('cscope'))
         end,
         config = function() require'plugins.gutentags' end,
     }
@@ -260,6 +265,7 @@ packer.startup(function()
         'vim-airline/vim-airline',
         cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
         config = function() require'plugins.airline' end,
+        after = 'firenvim',
     }
     use {'vim-airline/vim-airline-themes', after = 'vim-airline'}
 
