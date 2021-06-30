@@ -60,6 +60,11 @@ function M.executable(exec)
     return vim.fn.executable(exec) == 1
 end
 
+function M.exepath(exec)
+    local path = vim.fn.exepath(exec)
+    return path ~= '' and path or false
+end
+
 function M.is_absolute(path)
     assert(type(path) == 'string' and path ~= '', ([[Not a path: "%s"]]):format(path))
     path = M.normalize_path(path)
