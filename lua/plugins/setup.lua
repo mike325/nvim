@@ -337,6 +337,24 @@ packer.startup(function()
         }
     }
 
+    -- use {
+    --     'lewis6991/spellsitter.nvim',
+    --     config = function()
+    --         require('spellsitter').setup{
+    --             hl = 'Error',
+    --             captures = {'comment', 'string'},
+    --         }
+    --     end,
+    --     after = 'nvim-treesitter',
+    -- }
+
+    use {
+        'mfussenegger/nvim-dap',
+        config = function()
+            require'plugins.dap'
+        end
+    }
+
     use {
         'neovim/nvim-lspconfig',
         config = function() require'plugins.lsp' end,
