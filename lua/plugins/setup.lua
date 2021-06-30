@@ -356,6 +356,14 @@ packer.startup(function()
     }
 
     use {
+        'theHamsta/nvim-dap-virtual-text',
+        setup = function()
+            vim.g.dap_virtual_text = true
+        end,
+        after = 'nvim-dap'
+    }
+
+    use {
         'neovim/nvim-lspconfig',
         config = function() require'plugins.lsp' end,
         requires = {

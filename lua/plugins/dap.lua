@@ -14,8 +14,10 @@ local set_command = nvim.commands.set_command
 local set_mapping = nvim.mappings.set_mapping
 
 local function pythonPath()
-    -- debugpy supports launching an application with a different interpreter then the one used to launch debugpy itself.
-    -- The code below looks for a `venv` or `.venv` folder in the current directly and uses the python within.
+    -- debugpy supports launching an application with a different interpreter
+    -- then the one used to launch debugpy itself.
+    -- The code below looks for a `venv` or `.venv` folder in the current directly
+    -- and uses the python within.
     -- You could adapt this - to for example use the `VIRTUAL_ENV` environment variable.
     local cwd = getcwd()
 
@@ -42,7 +44,8 @@ dap.configurations.python = {
         type = 'python'; -- the type here established the link to the adapter definition: `dap.adapters.python`
         request = 'launch';
         name = "Launch file";
-        -- Options below are for debugpy, see https://github.com/microsoft/debugpy/wiki/Debug-configuration-settings for supported options
+        -- Options below are for debugpy, see
+        -- https://github.com/microsoft/debugpy/wiki/Debug-configuration-settings for supported options
         program = "${file}"; -- This configuration will launch the current file if used.
         pythonPath = pythonPath;
     },
@@ -136,8 +139,12 @@ set_autocmd{
 -- require('dap.ui.variables').visual_hover()
 -- require('dap.ui.variables').toggle_multiline_display()
 
+local function list_breakpoints()
+    dap.list_breakpoints()
+    require'utils'.helpers.toggle_qf('qf')
+end
 
-local args = {noremap = true, silent = true},
+local args = {noremap = true, silent = true}
 
 set_mapping{
     mode = 'n',
@@ -148,22 +155,57 @@ set_mapping{
 
 set_mapping{
     mode = 'n',
+    lhs = '<F6>',
+    rhs = ":lua require'dap'.stop()<CR>",
+    args = args,
+}
+
+set_mapping{
+    mode = 'n',
     lhs = '<F10>',
+    rhs = ":lua require'dap'.run_to_cursor()<CR>",
+    args = args,
+}
+
+set_mapping{
+    mode = 'n',
+    lhs = ']s',
     rhs = ":lua require'dap'.step_over()<CR>",
     args = args,
 }
 
 set_mapping{
     mode = 'n',
-    lhs = '<F11>',
+    lhs = ']S',
     rhs = ":lua require'dap'.step_into()<CR>",
     args = args,
 }
 
 set_mapping{
     mode = 'n',
-    lhs = '<F12>',
+    lhs = '[s',
     rhs = ":lua require'dap'.step_out()<CR>",
+    args = args,
+}
+
+set_mapping{
+    mode = 'n',
+    lhs = '=s',
+    rhs = ":lua require'dap'.toggle_breakpoint()<CR>",
+    args = args,
+}
+
+set_mapping{
+    mode = 'n',
+    lhs = '=r',
+    rhs = ":lua require'dap'.repl.toggle()<CR>",
+    args = args,
+}
+
+set_mapping{
+    mode = 'n',
+    lhs = '=b',
+    rhs = list_breakpoints,
     args = args,
 }
 
@@ -187,7 +229,7 @@ set_command{
 
 set_command{
     lhs = 'DapListBreakpoint',
-    rhs = ":lua require'dap'.list_breakpoints()<CR>",
+    rhs = list_breakpoints,
     args = { force = true, }
 }
 
