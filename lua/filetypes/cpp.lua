@@ -153,8 +153,9 @@ function M.setup()
     if compiler then
         local flags_file = vim.fn.findfile('compile_flags.txt', cwd..';')
         local db_file = vim.fn.findfile('compile_commands.json', cwd..';')
+        local clang_tidy = vim.fn.findfile('.clang-tidy', cwd..';')
         local has_tidy = false
-        if executable('clang-tidy') and (flags_file ~= '' or db_file ~= '') then
+        if executable('clang-tidy') and (flags_file ~= '' or db_file ~= '' or clang_tidy ~= '') then
             has_tidy = true
             vim.bo.makeprg = 'clang-tidy %'
             vim.bo.errorformat = '%E%f:%l:%c: fatal error: %m,%E%f:%l:%c: error: %m,%W%f:%l:%c: warning: %m'
