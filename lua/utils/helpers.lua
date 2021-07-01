@@ -13,9 +13,6 @@ local echoerr          = require'utils.messages'.echoerr
 local get_git_dir      = require'utils.system'.get_git_dir
 local split            = require'utils.strings'.split
 
-local git_version = STORAGE.git_version
-local modern_git = STORAGE.modern_git
-
 local set_abbr = nvim.abbrs.set_abbr
 
 local system = vim.fn.system
@@ -483,15 +480,15 @@ function M.has_git_version(...)
         args = ...
     end
 
-    if #git_version == 0 then
-        git_version = string.match(system('git --version'), '%d+%p%d+%p%d+')
+    if #STORAGE.git_version == 0 then
+        STORAGE.git_version = string.match(system('git --version'), '%d+%p%d+%p%d+')
     end
 
     if #args == 0 then
-        return git_version
+        return STORAGE.git_version
     end
 
-    local components = split_components(git_version, '%d+')
+    local components = split_components(STORAGE.git_version, '%d+')
 
     return M.check_version(components, args)
 end
@@ -539,9 +536,10 @@ function M.grep(tool, attr, lst)
 
     local property = (attr and attr ~= '') and  attr or 'grepprg'
 
-    if modern_git == -1 then
-        modern_git = M.has_git_version('2', '19')
+    if STORAGE.modern_git == -1 then
+        STORAGE.modern_git = M.has_git_version('2', '19')
     end
+    local modern_git = STORAGE.modern_git
 
     local greplist = {
         git = {

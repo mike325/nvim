@@ -29,35 +29,85 @@ local compilers = {
 
 local default_flags = {
     ['clang++'] = {
-        '-S',
-        '-std=c++17',
-        '-Wall',
-        '-Wextra',
-        '-Weverything',
-        '-Wno-c++98-compat',
-        '-Wpedantic',
-        '-Wno-missing-prototypes',
+        "-std=c++17",
+        "-Wall",
+        "-Wextra",
+        "-Wshadow",
+        "-Wnon-virtual-dtor",
+        "-Wold-style-cast",
+        "-Wcast-align",
+        "-Wunused",
+        "-Woverloaded-virtual",
+        "-Wpedantic",
+        "-Wconversion",
+        "-Wsign-conversion",
+        "-Wnull-dereference",
+        "-Wdouble-promotion",
+        "-Wformat=2",
     },
     ['g++'] = {
-        '-S',
-        '-std=c++17',
-        '-Wall',
-        '-Wextra',
-        '-Wpedantic',
+        "-std=c++17",
+        "-Wall",
+        "-Wextra",
+        "-Wno-c++98-compat",
+        "-Wshadow",
+        "-Wnon-virtual-dtor",
+        "-Wold-style-cast",
+        "-Wcast-align",
+        "-Wunused",
+        "-Woverloaded-virtual",
+        "-Wpedantic",
+        "-Wconversion",
+        "-Wsign-conversion",
+        "-Wnull-dereference",
+        "-Wdouble-promotion",
+        "-Wmisleading-indentation",
+        "-Wduplicated-cond,",
+        "-Wduplicated-branches",
+        "-Wlogical-op",
+        "-Wuseless-cast",
+        "-Wformat=2",
     },
     clang = {
-        '-S',
-        '-Wall',
-        '-Wextra',
-        '-Weverything',
-        '-Wno-missing-prototypes',
-        '-Wpedantic',
+        "-std=c11",
+        "-Wall",
+        "-Wextra",
+        "-Wshadow",
+        "-Wnon-virtual-dtor",
+        "-Wold-style-cast",
+        "-Wcast-align",
+        "-Wunused",
+        "-Woverloaded-virtual",
+        "-Wpedantic",
+        "-Wno-missing-prototypes",
+        "-Wconversion",
+        "-Wsign-conversion",
+        "-Wnull-dereference",
+        "-Wdouble-promotion",
+        "-Wformat=2",
     },
     gcc = {
-        '-S',
-        '-Wall',
-        '-Wextra',
-        '-Wpedantic',
+        "-std=c11",
+        "-Wall",
+        "-Wextra",
+        "-Wshadow",
+        "-Wnon-virtual-dtor",
+        "-Wold-style-cast",
+        "-Wcast-align",
+        "-Wunused",
+        "-Woverloaded-virtual",
+        "-Wpedantic",
+        "-Wno-missing-prototypes",
+        "-Wconversion",
+        "-Wsign-conversion",
+        "-Wnull-dereference",
+        "-Wdouble-promotion",
+        "-Wmisleading-indentation",
+        "-Wduplicated-cond,",
+        "-Wduplicated-branches",
+        "-Wlogical-op",
+        "-Wuseless-cast",
+        "-Wformat=2",
     },
 }
 
@@ -76,6 +126,7 @@ end
 local function set_opts(filename, has_tidy, compiler, bufnum)
     local bufname = nvim.buf.get_name(bufnum)
     if is_file(bufname) and databases[realpath(bufname)] then
+        print('Setting DB options')
         bufname = realpath(bufname)
         vim.api.nvim_buf_set_option(
             bufnum,
@@ -93,6 +144,7 @@ local function set_opts(filename, has_tidy, compiler, bufnum)
         return
     end
     if filename and compile_flags[filename] then
+        print('Setting compile_flags options')
         if #compile_flags[filename].includes > 0 then
             vim.api.nvim_buf_set_option(
                 bufnum,
@@ -110,6 +162,7 @@ local function set_opts(filename, has_tidy, compiler, bufnum)
             )
         end
     elseif not has_tidy then
+        print('Setting default options')
         local config_flags = table.concat(default_flags[compiler], ' ')
         vim.api.nvim_buf_set_option(
             bufnum,
@@ -121,25 +174,40 @@ end
 
 local function parse_includes(args)
     local includes = {}
+    local include = false
     for _, arg in pairs(args) do
-        if arg:sub(1, 2) == '-I' or arg:sub(1, 2) == '/I' then
+        -- print('Parsing:',vim.inspect(arg))
+        if arg == '-isystem' or arg == '-I' or arg == '/I' then
+            include = true
+        elseif include then
+            table.insert(includes, arg)
+            include = false
+        elseif #arg > 2 and (arg:sub(1, 2) == '-I' or arg:sub(1, 2) == '/I') then
             local path = arg:sub(3, #arg):gsub('^%s+', '')
             table.insert(includes, path)
         end
     end
+    -- print('Includes:', vim.inspect(includes))
     return includes
 end
 
 local function parse_compiledb(data)
     assert(type(data) == type(''), 'Invalid data: '..vim.inspect(data))
     local json = decode_json(data)
+    print("Parsing DB")
     for _, source in pairs(json) do
         local source_name = source.directory..'/'..source.file
         if not databases[source_name] then
+            local args
+            if source.arguments then
+                args = source.arguments
+            elseif source.command then
+                args = vim.split(source.command, ' ')
+            end
             databases[source_name] = {}
             databases[source_name].filename = source_name
-            databases[source_name].compiler = source.arguments[1]
-            databases[source_name].args = vim.list_slice(source.arguments, 2, #source.arguments)
+            databases[source_name].compiler = args[1]
+            databases[source_name].args = vim.list_slice(args, 2, #args)
             databases[source_name].includes = parse_includes(databases[source_name].args)
         end
     end
@@ -167,15 +235,17 @@ function M.setup()
                 bufname = realpath(bufname)
                 readfile(filename, function(data)
                     if has_cjson == true then
+                        print('Using Cjson')
                         parse_compiledb(data)
-                        vim.schedule(function()
+                        vim.schedule_wrap(function()
                             set_opts(filename, has_tidy, compiler, bufnum)
-                        end)
+                        end)()
                     else
-                        vim.schedule(function()
+                        print("Using vim's json lib")
+                        vim.schedule_wrap(function()
                             parse_compiledb(data)
                             set_opts(filename, has_tidy, compiler, bufnum)
-                        end)
+                        end)()
                     end
                 end, false)
             else
@@ -199,9 +269,9 @@ function M.setup()
                                 table.insert(compile_flags[filename].includes, path)
                             end
                         end
-                        vim.schedule(function()
+                        vim.schedule_wrap(function()
                             set_opts(filename, has_tidy, compiler, bufnum)
-                        end)
+                        end)()
                     end
                 end)
             else
