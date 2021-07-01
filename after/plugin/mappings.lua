@@ -709,7 +709,7 @@ else
             local filename = vim.fn.expand('%')
             local files = require'utils'.files
             if not mode:match('^%d+$') then
-                require'utils'.messages.echoerr('Not a valid permissions mode: '..mode)
+                echoerr('Not a valid permissions mode: '..mode)
                 return
             end
             if files.is_file(filename) then

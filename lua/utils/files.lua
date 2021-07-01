@@ -53,7 +53,7 @@ end
 
 function M.mkdir(dirname)
     assert(type(dirname) == 'string' and dirname ~= '', ([[Not a dirname: "%s"]]):format(dirname))
-    uv.fs_mkdir(M.normalize_path(dirname), 438)
+    uv.fs_mkdir(M.normalize_path(dirname), 511)
 end
 
 function M.executable(exec)

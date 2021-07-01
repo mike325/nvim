@@ -23,11 +23,9 @@ local dirpaths = {
 }
 
 for dirname,dir_setting in pairs(dirpaths) do
-
     if not is_dir(parent .. '/' .. dirname) then
         mkdir(parent .. '/' .. dirname)
     end
-
     if not isempty(dir_setting) then
         vim.opt[dir_setting] = parent .. '/' .. dirname
     end
