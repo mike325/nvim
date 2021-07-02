@@ -19,6 +19,10 @@ local ts_langs = require'plugins.treesitter'
 local actions = require'telescope.actions'
 
 telescope.setup{
+    layout_config = {
+        prompt_position = "bottom",
+        prompt_prefix = ">",
+    },
     defaults = {
         vimgrep_arguments = require'utils.helpers'.select_grep(false, 'grepprg', true),
         mappings = {
@@ -32,8 +36,6 @@ telescope.setup{
                 ["<ESC>"] = actions.close,
             },
         },
-        prompt_position = "bottom",
-        prompt_prefix = ">",
         selection_strategy = "reset",
         sorting_strategy = "descending",
         layout_strategy = "horizontal",
@@ -42,23 +44,7 @@ telescope.setup{
         generic_sorter =  require'telescope.sorters'.get_fzy_sorter,
         -- shorten_path = true,
         winblend = 0,
-        -- width = 0.75,
-        -- preview_cutoff = 120,
-        -- results_height = 1,
-        -- results_width = 0.8,
-        -- border = {},
-        -- borderchars = { '─', '│', '─', '│', '╭', '╮', '╯', '╰'},
-        -- color_devicons = true,
-        -- use_less = true,
         set_env = { ['COLORTERM'] = 'truecolor' },
-
-        -- file_previewer = require'telescope.previewers'.cat.new,
-        -- grep_previewer = require'telescope.previewers'.vimgrep.new,
-        -- qflist_previewer = require'telescope.previewers'.qflist.new,
-
-        -- Developer configurations: Not meant for general override
-        -- buffer_previewer_maker = require'telescope.previewers'.buffer_previewer_maker
-
     },
 }
 
