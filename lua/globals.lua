@@ -1,7 +1,10 @@
-_G['P'] = function(val, str)
-    print(vim.inspect(val))
-    return str and vim.inspect(val) or val
+_G['P'] = function(...)
+    local vars = vim.tbl_map(vim.inspect, {...})
+    print(unpack(vars))
+    return {...}
 end
+
+_G['PRINT'] = _G['P']
 
 _G['RELOAD'] = function(pkg)
     package.loaded[pkg] = nil

@@ -1,19 +1,21 @@
 local nvim = require'nvim'
 
-local getcwd         = require'utils.files'.getcwd
-local executable     = require'utils.files'.executable
-local readfile       = require'utils.files'.readfile
-local is_file        = require'utils.files'.is_file
-local basedir        = require'utils.files'.basedir
-local realpath       = require'utils.files'.realpath
-local decode_json    = require'utils.files'.decode_json
-local normalize_path = require'utils.files'.normalize_path
+local getcwd          = require'utils.files'.getcwd
+local executable      = require'utils.files'.executable
+local readfile        = require'utils.files'.readfile
+local is_file         = require'utils.files'.is_file
+local basedir         = require'utils.files'.basedir
+local realpath        = require'utils.files'.realpath
+local decode_json     = require'utils.files'.decode_json
+local normalize_path  = require'utils.files'.normalize_path
+local merge_uniq_list = require'utils.tables'.merge_uniq_list
 
 local compile_flags = STORAGE.compile_flags
+local databases = STORAGE.databases
 local has_cjson = STORAGE.has_cjson
 
-local set_command = require'nvim.commands'.set_command
-local set_mapping = require'nvim.mappings'.set_mapping
+-- local set_command = require'nvim.commands'.set_command
+-- local set_mapping = require'nvim.mappings'.set_mapping
 
 local M = {}
 
@@ -126,44 +128,36 @@ end
 
 local function set_opts(filename, has_tidy, compiler, bufnum)
     local bufname = nvim.buf.get_name(bufnum)
-    if is_file(bufname) and STORAGE.databases[realpath(bufname)] then
+    if is_file(bufname) and databases[realpath(bufname)] then
         bufname = realpath(bufname)
         vim.api.nvim_buf_set_option(
             bufnum,
             'makeprg',
             ('%s %s %%'):format(
-                STORAGE.databases[bufname].compiler,
-                table.concat(STORAGE.databases[bufname].args, ' ')
+                databases[bufname].compiler,
+                table.concat(databases[bufname].args, ' ')
             )
         )
-        if bufnum == vim.api.nvim_get_current_buf() then
-            vim.opt_local.path:append(STORAGE.databases[bufname].includes)
-        else
-            local current_path = vim.api.nvim_buf_get_option(bufnum, 'path')
-            current_path = vim.split(current_path, ',')
-            vim.list_extend(current_path, STORAGE.databases[bufname].includes)
-            vim.api.nvim_buf_set_option(
-                bufnum,
-                'path',
-                '.,,'..table.concat(current_path, ',')
-            )
-        end
+        local path = vim.split(vim.api.nvim_buf_get_option(bufnum, 'path'), ',')
+        table.insert(path, '.')
+        path = merge_uniq_list(databases[bufname].includes, path)
+        vim.api.nvim_buf_set_option(
+            bufnum,
+            'path',
+            table.concat(path, ',')..','
+        )
         return
     end
     if filename and compile_flags[filename] then
         if #compile_flags[filename].includes > 0 then
-            if bufnum == vim.api.nvim_get_current_buf() then
-                vim.opt_local.path:append(compile_flags[filename].includes)
-            else
-                local current_path = vim.api.nvim_buf_get_option(bufnum, 'path')
-                current_path = vim.split(current_path, ',')
-                vim.list_extend(current_path, compile_flags[filename].includes)
-                vim.api.nvim_buf_set_option(
-                    bufnum,
-                    'path',
-                    '.,,'..table.concat(current_path, ',')
-                )
-            end
+            local path = vim.split(vim.api.nvim_buf_get_option(bufnum, 'path'), ',')
+            table.insert(path, '.')
+            path = merge_uniq_list(compile_flags[filename].includes, path)
+            vim.api.nvim_buf_set_option(
+                bufnum,
+                'path',
+                table.concat(path, ',')..','
+            )
         end
 
         if #compile_flags[filename].flags > 0 and not has_tidy then
@@ -211,18 +205,18 @@ local function parse_compiledb(data)
         else
             source_name = source.file
         end
-        if not STORAGE.databases[source_name] then
+        if not databases[source_name] then
             local args
             if source.arguments then
                 args = source.arguments
             elseif source.command then
                 args = vim.split(source.command, ' ')
             end
-            STORAGE.databases[source_name] = {}
-            STORAGE.databases[source_name].filename = source_name
-            STORAGE.databases[source_name].compiler = args[1]
-            STORAGE.databases[source_name].args = vim.list_slice(args, 2, #args)
-            STORAGE.databases[source_name].includes = parse_includes(STORAGE.databases[source_name].args)
+            databases[source_name] = {}
+            databases[source_name].filename = source_name
+            databases[source_name].compiler = args[1]
+            databases[source_name].args = vim.list_slice(args, 2, #args)
+            databases[source_name].includes = parse_includes(databases[source_name].args)
         end
     end
 end
@@ -251,7 +245,7 @@ function M.setup()
         local filename
         if db_file ~= '' then
             filename = realpath(normalize_path(db_file))
-            if is_file(bufname) and not STORAGE.databases[realpath(bufname)] then
+            if is_file(bufname) and not databases[realpath(bufname)] then
                 bufname = realpath(bufname)
                 readfile(db_file, function(data)
                     if has_cjson == true then

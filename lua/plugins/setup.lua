@@ -184,11 +184,15 @@ packer.startup(function()
                 'TelescopePrompt',
                 'log',
                 'help',
+                'packer',
             }
+
             vim.g.indentLine_bufTypeExclude = {
                 'terminal',
-                'man'
+                'man',
+                'nofile',
             }
+
             vim.g.indentLine_bufNameExclude = {
                 'term://.*',
                 'man://.*',

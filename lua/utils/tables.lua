@@ -1,7 +1,7 @@
 local M = {}
 
 function M.has_attrs(tbl, attrs)
-    assert(type(tbl) == 'table', 'TBL must be a table')
+    assert(type(tbl) == type({}), 'TBL must be a table')
 
     if type(attrs) ~= type(tbl) then
         if tbl[attrs] ~= nil then
@@ -13,7 +13,6 @@ function M.has_attrs(tbl, attrs)
             end
         end
     else
-        local is_tbl = false
         local has_attrs = true
         for _,attr in pairs(attrs) do
             has_attrs = M.has_attrs(tbl, attr)
@@ -26,6 +25,19 @@ function M.has_attrs(tbl, attrs)
         end
     end
     return false
+end
+
+function M.merge_uniq_list(dest, src)
+    assert(vim.tbl_islist(dest), "Dest must be an array")
+    assert(vim.tbl_islist(src), "Src must be an array")
+
+    local tmp = vim.deepcopy(dest)
+    for _, node in pairs(src) do
+        if not M.has_attrs(tmp, node) then
+            table.insert(tmp, node)
+        end
+    end
+    return tmp
 end
 
 function M.clear_lst(lst)
