@@ -10,9 +10,10 @@ local decode_json    = require'utils.files'.decode_json
 local normalize_path = require'utils.files'.normalize_path
 
 local compile_flags = STORAGE.compile_flags
-local databases = STORAGE.databases
-
 local has_cjson = STORAGE.has_cjson
+
+local set_command = require'nvim.commands'.set_command
+local set_mapping = require'nvim.mappings'.set_mapping
 
 local M = {}
 
@@ -125,32 +126,44 @@ end
 
 local function set_opts(filename, has_tidy, compiler, bufnum)
     local bufname = nvim.buf.get_name(bufnum)
-    if is_file(bufname) and databases[realpath(bufname)] then
-        print('Setting DB options')
+    if is_file(bufname) and STORAGE.databases[realpath(bufname)] then
         bufname = realpath(bufname)
-        vim.api.nvim_buf_set_option(
-            bufnum,
-            'path',
-            '.,,'..table.concat(databases[bufname].includes, ',')
-        )
         vim.api.nvim_buf_set_option(
             bufnum,
             'makeprg',
             ('%s %s %%'):format(
-                databases[bufname].compiler,
-                table.concat(databases[bufname].args, ' ')
+                STORAGE.databases[bufname].compiler,
+                table.concat(STORAGE.databases[bufname].args, ' ')
             )
         )
-        return
-    end
-    if filename and compile_flags[filename] then
-        print('Setting compile_flags options')
-        if #compile_flags[filename].includes > 0 then
+        if bufnum == vim.api.nvim_get_current_buf() then
+            vim.opt_local.path:append(STORAGE.databases[bufname].includes)
+        else
+            local current_path = vim.api.nvim_buf_get_option(bufnum, 'path')
+            current_path = vim.split(current_path, ',')
+            vim.list_extend(current_path, STORAGE.databases[bufname].includes)
             vim.api.nvim_buf_set_option(
                 bufnum,
                 'path',
-                '.,,'..table.concat(compile_flags[filename].includes, ',')
+                '.,,'..table.concat(current_path, ',')
             )
+        end
+        return
+    end
+    if filename and compile_flags[filename] then
+        if #compile_flags[filename].includes > 0 then
+            if bufnum == vim.api.nvim_get_current_buf() then
+                vim.opt_local.path:append(compile_flags[filename].includes)
+            else
+                local current_path = vim.api.nvim_buf_get_option(bufnum, 'path')
+                current_path = vim.split(current_path, ',')
+                vim.list_extend(current_path, compile_flags[filename].includes)
+                vim.api.nvim_buf_set_option(
+                    bufnum,
+                    'path',
+                    '.,,'..table.concat(current_path, ',')
+                )
+            end
         end
 
         if #compile_flags[filename].flags > 0 and not has_tidy then
@@ -162,7 +175,6 @@ local function set_opts(filename, has_tidy, compiler, bufnum)
             )
         end
     elseif not has_tidy then
-        print('Setting default options')
         local config_flags = table.concat(default_flags[compiler], ' ')
         vim.api.nvim_buf_set_option(
             bufnum,
@@ -176,7 +188,6 @@ local function parse_includes(args)
     local includes = {}
     local include = false
     for _, arg in pairs(args) do
-        -- print('Parsing:',vim.inspect(arg))
         if arg == '-isystem' or arg == '-I' or arg == '/I' then
             include = true
         elseif include then
@@ -187,28 +198,31 @@ local function parse_includes(args)
             table.insert(includes, path)
         end
     end
-    -- print('Includes:', vim.inspect(includes))
     return includes
 end
 
 local function parse_compiledb(data)
     assert(type(data) == type(''), 'Invalid data: '..vim.inspect(data))
     local json = decode_json(data)
-    print("Parsing DB")
     for _, source in pairs(json) do
-        local source_name = source.directory..'/'..source.file
-        if not databases[source_name] then
+        local source_name
+        if not source.file:match('/') then
+            source_name = source.directory..'/'..source.file
+        else
+            source_name = source.file
+        end
+        if not STORAGE.databases[source_name] then
             local args
             if source.arguments then
                 args = source.arguments
             elseif source.command then
                 args = vim.split(source.command, ' ')
             end
-            databases[source_name] = {}
-            databases[source_name].filename = source_name
-            databases[source_name].compiler = args[1]
-            databases[source_name].args = vim.list_slice(args, 2, #args)
-            databases[source_name].includes = parse_includes(databases[source_name].args)
+            STORAGE.databases[source_name] = {}
+            STORAGE.databases[source_name].filename = source_name
+            STORAGE.databases[source_name].compiler = args[1]
+            STORAGE.databases[source_name].args = vim.list_slice(args, 2, #args)
+            STORAGE.databases[source_name].includes = parse_includes(STORAGE.databases[source_name].args)
         end
     end
 end
@@ -219,9 +233,15 @@ function M.setup()
     local bufname = nvim.buf.get_name(bufnum)
     local cwd = is_file(bufname) and basedir(bufname) or getcwd()
     if compiler then
+
         local flags_file = vim.fn.findfile('compile_flags.txt', cwd..';')
         local db_file = vim.fn.findfile('compile_commands.json', cwd..';')
         local clang_tidy = vim.fn.findfile('.clang-tidy', cwd..';')
+
+        -- TODO: Add make and cmake build commands
+        -- local makefile = vim.fn.findfile('Makefile', cwd..';')
+        -- local cmake = vim.fn.findfile('CMakeLists.txt', cwd..';')
+
         local has_tidy = false
         if executable('clang-tidy') and (flags_file ~= '' or db_file ~= '' or clang_tidy ~= '') then
             has_tidy = true
@@ -230,22 +250,20 @@ function M.setup()
         end
         local filename
         if db_file ~= '' then
-            filename = realpath(db_file)
-            if is_file(bufname) and not databases[realpath(bufname)] then
+            filename = realpath(normalize_path(db_file))
+            if is_file(bufname) and not STORAGE.databases[realpath(bufname)] then
                 bufname = realpath(bufname)
-                readfile(filename, function(data)
+                readfile(db_file, function(data)
                     if has_cjson == true then
-                        print('Using Cjson')
                         parse_compiledb(data)
-                        vim.schedule_wrap(function()
+                        vim.schedule(function()
                             set_opts(filename, has_tidy, compiler, bufnum)
-                        end)()
+                        end)
                     else
-                        print("Using vim's json lib")
-                        vim.schedule_wrap(function()
+                        vim.schedule(function()
                             parse_compiledb(data)
                             set_opts(filename, has_tidy, compiler, bufnum)
-                        end)()
+                        end)
                     end
                 end, false)
             else
@@ -269,9 +287,9 @@ function M.setup()
                                 table.insert(compile_flags[filename].includes, path)
                             end
                         end
-                        vim.schedule_wrap(function()
+                        vim.schedule(function()
                             set_opts(filename, has_tidy, compiler, bufnum)
-                        end)()
+                        end)
                     end
                 end)
             else
