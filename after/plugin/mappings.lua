@@ -1079,3 +1079,12 @@ set_command{
         complete = 'filetype'
     }
 }
+
+set_command{
+    lhs = 'ConncallLevel',
+    rhs = function()
+        local conncall = vim.opt_local.conceallevel:get() or 0
+        vim.opt_local.conceallevel = conncall > 0 and 0 or 2
+    end,
+    args = {force = true}
+}
