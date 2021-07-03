@@ -89,7 +89,6 @@ local nvim = {
             end
         end
     });
-    -- TODO: Replace this with vim.cmd
     ex = setmetatable({}, {
         __index = function(self, k)
             local mt = getmetatable(self)
@@ -176,7 +175,7 @@ setmetatable(nvim, {
 })
 
 if api.nvim_call_function('has', {'nvim-0.5'}) == 0  then
-    local legacy = require'nvim.legacy'
+    local legacy = require'neovim.legacy'
     for obj,val in pairs(legacy) do
         nvim[obj] = val
     end

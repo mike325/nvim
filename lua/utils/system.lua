@@ -1,4 +1,3 @@
--- local nvim = require'nvim'
 local sys = require'sys'
 
 local is_file    = require'utils.files'.is_file

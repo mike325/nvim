@@ -1,12 +1,11 @@
-local nvim        = require'nvim'
 local load_module = require'utils.helpers'.load_module
 local has_attrs   = require'utils.tables'.has_attrs
 
-local plugins = nvim.plugins
+local plugins = require'neovim'.plugins
 
-local set_autocmd = nvim.autocmds.set_autocmd
--- local set_command = nvim.commands.set_command
--- local set_mapping = nvim.mappings.set_mapping
+-- local set_autocmd = require'neovim.autocmds'.set_autocmd
+-- local set_command = require'neovim.commands'.set_command
+-- local set_mapping = require'neovim.mappings'.set_mapping
 
 local completion = load_module'completion'
 local compe = load_module'compe'
@@ -46,7 +45,7 @@ local function completion_chain()
     --     items.complete_items[#items.complete_items + 1] = 'ts'
     -- end
 
-    if nvim.g.completion_enable_snippet then
+    if vim.g.completion_enable_snippet then
         items.complete_items[#items.complete_items + 1] = 'snippet'
     end
 
@@ -128,27 +127,27 @@ end
 if completion ~= nil then
 
     if plugins.ultisnips then
-        nvim.g.completion_enable_snippet = 'UltiSnips'
+        vim.g.completion_enable_snippet = 'UltiSnips'
     end
 
-    -- nvim.g.completion_sorting                = 'none'  -- 'alphabet' -- 'length'
-    nvim.g.completion_matching_ignore_case   = 1
-    nvim.g.completion_matching_smart_case    = 1
-    nvim.g.completion_confirm_key            = ''
-    nvim.g.completion_trigger_on_delete      = 1
-    nvim.g.completion_auto_change_source     = 1
-    nvim.g.completion_enable_auto_paren      = 1
-    nvim.g.completion_enable_auto_signature  = 1
-    nvim.g.completion_enable_auto_hover      = 1
-    nvim.g.completion_trigger_keyword_length = 1
+    -- vim.g.completion_sorting                = 'none'  -- 'alphabet' -- 'length'
+    vim.g.completion_matching_ignore_case   = 1
+    vim.g.completion_matching_smart_case    = 1
+    vim.g.completion_confirm_key            = ''
+    vim.g.completion_trigger_on_delete      = 1
+    vim.g.completion_auto_change_source     = 1
+    vim.g.completion_enable_auto_paren      = 1
+    vim.g.completion_enable_auto_signature  = 1
+    vim.g.completion_enable_auto_hover      = 1
+    vim.g.completion_trigger_keyword_length = 1
 
-    nvim.g.completion_matching_strategy_list = {
-        'exact',
+    vim.g.completion_matching_strategy_list = {
+       'exact',
         'fuzzy',
         'substring',
     }
 
-    nvim.g.completion_items_priority = {
+    vim.g.completion_items_priority = {
         Method        = 10,
         Field         = 8,
         Function      = 7,
@@ -166,7 +165,7 @@ if completion ~= nil then
         Text          = 0,
     }
 
-    nvim.g.completion_chain_complete_list = completion_chain()
+    vim.g.completion_chain_complete_list = completion_chain()
 
     set_autocmd{
         event   = 'BufEnter',

@@ -1,5 +1,4 @@
 -- luacheck: globals unpack vim
-local nvim    = require'nvim'
 local stdpath = vim.fn.stdpath
 
 local function system_name()

@@ -1,5 +1,5 @@
 local sys  = require'sys'
-local nvim = require'nvim'
+local nvim = require'neovim'
 
 -- local split          = require'utils.strings'.split
 local iregex         = require'utils.strings'.iregex
@@ -14,14 +14,11 @@ local read_json      = require'utils.files'.read_json
 local echomsg = require'utils.messages'.echomsg
 local echoerr = require'utils.messages'.echoerr
 
--- local set_autocmd = require'nvim.autocmds'.set_autocmd
-local set_abbr    = require'nvim.abbrs'.set_abbr
-local set_command = require'nvim.commands'.set_command
-local set_mapping = require'nvim.mappings'.set_mapping
--- local get_mapping = require'nvim.mappings'.get_mapping
-
--- local has     = nvim.has
--- local plugins = nvim.plugins
+-- local set_autocmd = require'neovim.autocmds'.set_autocmd
+local set_abbr    = require'neovim.abbrs'.set_abbr
+local set_command = require'neovim.commands'.set_command
+local set_mapping = require'neovim.mappings'.set_mapping
+-- local get_mapping = require'neovim.mappings'.get_mapping
 
 local noremap = {noremap = true}
 local noremap_silent = {noremap = true, silent = true}

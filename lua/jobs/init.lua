@@ -1,4 +1,4 @@
-local nvim       = require'nvim'
+local nvim       = require'neovim'
 local echoerr    = require'utils.messages'.echoerr
 local echowarn   = require'utils.messages'.echowarn
 local clear_lst  = require'utils.tables'.clear_lst
@@ -11,7 +11,7 @@ if not nvim.has('nvim-0.5') then
     return false
 end
 
-local set_command = nvim.commands.set_command
+local set_command = require'neovim.commands'.set_command
 
 local M ={}
 
@@ -189,7 +189,7 @@ function M.send_job(job)
 
     if job.async == false then
         local win = require("floating").window()
-        local bufnr = require'nvim'.win.get_buf(win)
+        local bufnr = require'neovim'.win.get_buf(win)
         nvim.win.set_option(win, 'number', false)
         nvim.win.set_option(win, 'relativenumber', false)
         nvim.buf.set_option(bufnr, 'bufhidden', 'wipe')

@@ -29,11 +29,6 @@ snippet l "local ..."
 local ${1:name} = ${2:x}
 endsnippet
 
-# Neovim api shortcuts
-snippet bufnr "get current window buffer"
-local ${1:bufnr} = require'nvim'.win.get_buf(${2:0})
-endsnippet
-
 snippet pvi "print(vim.inspect(...))"
 print(vim.inspect(${0:${VISUAL:1}}))
 endsnippet

@@ -1,4 +1,4 @@
-local nvim = require'nvim'
+local nvim = require'neovim'
 local sys  = require'sys'
 
 local is_file         = require'utils.files'.is_file
@@ -13,7 +13,7 @@ local split           = require'utils.strings'.split
 local echowarn = require'utils.messages'.echowarn
 local echoerr  = require'utils.messages'.echoerr
 
-local set_autocmd = nvim.autocmds.set_autocmd
+local set_autocmd = require'neovim.autocmds'.set_autocmd
 
 local M = {
     filelists = {},

@@ -1,4 +1,4 @@
-local nvim = require'nvim'
+local nvim = require'neovim'
 
 local getcwd          = require'utils.files'.getcwd
 local executable      = require'utils.files'.executable
@@ -14,8 +14,8 @@ local compile_flags = STORAGE.compile_flags
 local databases = STORAGE.databases
 local has_cjson = STORAGE.has_cjson
 
--- local set_command = require'nvim.commands'.set_command
--- local set_mapping = require'nvim.mappings'.set_mapping
+-- local set_command = require'neovim.commands'.set_command
+-- local set_mapping = require'neovim.mappings'.set_mapping
 
 local M = {}
 
@@ -233,8 +233,8 @@ function M.setup()
         local clang_tidy = vim.fn.findfile('.clang-tidy', cwd..';')
 
         -- TODO: Add make and cmake build commands
-        -- local makefile = vim.fn.findfile('Makefile', cwd..';')
-        -- local cmake = vim.fn.findfile('CMakeLists.txt', cwd..';')
+        local makefile = vim.fn.findfile('Makefile', cwd..';')
+        local cmake = vim.fn.findfile('CMakeLists.txt', cwd..';')
 
         local has_tidy = false
         if executable('clang-tidy') and (flags_file ~= '' or db_file ~= '' or clang_tidy ~= '') then

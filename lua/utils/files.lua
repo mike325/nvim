@@ -1,5 +1,5 @@
 local sys       = require'sys'
-local nvim      = require'nvim'
+local nvim      = require'neovim'
 local echoerr   = require'utils.messages'.echoerr
 local bufloaded = require'utils.buffers'.bufloaded
 -- local clear_lst = require'utils.tables'.clear_lst
@@ -385,7 +385,7 @@ function M.delete(target, bang)
         end
         if bufloaded(target) then
             local command = bang and 'wipeout' or 'delete'
-            local ok, error_code = pcall(nvim.command, ([[b%s! %s]]):format(command, target))
+            local ok, error_code = pcall(vim.cmd, ([[b%s! %s]]):format(command, target))
             if not ok and error_code:match('Vim(.%w+.)\\?:E94') then
                 echoerr('Failed to '..command..' buffer '..target)
             end

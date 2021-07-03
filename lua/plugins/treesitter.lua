@@ -1,8 +1,8 @@
-local nvim        = require'nvim'
+local nvim        = require'neovim'
 local load_module = require'utils.helpers'.load_module
 
 local plugins = nvim.plugins
-local set_autocmd = require'nvim.autocmds'.set_autocmd
+local set_autocmd = require'neovim.autocmds'.set_autocmd
 -- local set_command = nvim.commands.set_command
 -- local set_mapping = nvim.mappings.set_mapping
 
@@ -15,13 +15,14 @@ end
 local ensure_installed = {
     'c',
     'cpp',
-    'lua',
-    'bash',
+    'cmake',
     'python',
-    'latex',
+    'bash',
+    'lua',
     'jsonc',
-    'toml',
+    'latex',
     'query',
+    'toml',
 }
 
 local disable = nil

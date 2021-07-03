@@ -6,8 +6,8 @@ if not todo then
     return false
 end
 
-local nvim  = require'nvim'
-local set_mapping = require'nvim.mappings'.set_mapping
+local nvim  = require'neovim'
+local set_mapping = require'neovim.mappings'.set_mapping
 local has_trouble = load_module'trouble'
 
 todo.setup{

@@ -1,4 +1,3 @@
--- local nvim        = require'nvim'
 -- local has_attrs   = require'utils'.tables.has_attrs
 
 local load_module    = require'utils.helpers'.load_module

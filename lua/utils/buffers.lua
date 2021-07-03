@@ -1,10 +1,12 @@
+local nvim = require'neovim'
+
 local M = {}
 
 function M.last_position()
-    local sc_mark   = require'nvim'.buf.get_mark(0, "'")
-    local dc_mark   = require'nvim'.buf.get_mark(0, '"')
-    local last_line = require'nvim'.fn.line('$')
-    local filetype  = require'nvim'.bo.filetype
+    local sc_mark   = nvim.buf.get_mark(0, "'")
+    local dc_mark   = nvim.buf.get_mark(0, '"')
+    local last_line = nvim.fn.line('$')
+    local filetype  = nvim.bo.filetype
 
     local black_list = {
         git = 1,
@@ -14,7 +16,7 @@ function M.last_position()
     }
 
     if sc_mark[1] >= 1 and dc_mark[1] <= last_line and black_list[filetype] == nil then
-        require'nvim'.win.set_cursor(0, dc_mark)
+        nvim.win.set_cursor(0, dc_mark)
     end
 end
 
@@ -25,13 +27,12 @@ end
 
 function M.is_modified(bufnr)
     assert(not bufnr or (type(bufnr) == type(1) and bufnr > 0), 'Invalid buffer')
-    bufnr = bufnr or require'nvim'.get_current_buf()
-    return require'nvim'.buf.get_option(bufnr, 'modified')
+    bufnr = bufnr or nvim.get_current_buf()
+    return nvim.buf.get_option(bufnr, 'modified')
 end
 
 function M.delete(buffer, wipe)
     assert(not buffer or (type(buffer) == type(1) and buffer > 0), 'Invalid buffer')
-    local nvim = require'nvim'
     buffer = buffer or nvim.get_current_buf()
     local is_wipe = nvim.buf.get_option(buffer, 'bufhidden') == 'wipe'
     local prev_buf = vim.fn.expand('#') ~= '' and vim.fn.bufnr(vim.fn.expand('#')) or -1

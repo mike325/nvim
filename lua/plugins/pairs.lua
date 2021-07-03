@@ -1,4 +1,3 @@
--- local nvim        = require'nvim'
 local load_module = require'utils.helpers'.load_module
 
 local pears = load_module'pears'

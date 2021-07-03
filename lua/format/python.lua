@@ -1,4 +1,4 @@
-local nvim = require'nvim'
+local nvim = require'neovim'
 local executable = require'utils.files'.executable
 local send_job = require'jobs'.send_job
 

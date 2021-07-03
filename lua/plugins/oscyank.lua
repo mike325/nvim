@@ -1,9 +1,8 @@
-local nvim = require'nvim'
 local executable =  require'utils.files'.executable
 
-local set_command = require'nvim.commands'.set_command
-local set_autocmd = require'nvim.autocmds'.set_autocmd
--- local set_mapping = require'nvim.mappings'.set_mapping
+local set_command = require'neovim.commands'.set_command
+local set_autocmd = require'neovim.autocmds'.set_autocmd
+-- local set_mapping = require'neovim.mappings'.set_mapping
 
 if vim.g.OSCTERM then
     vim.g.oscyank_term = vim.g.OSCTERM

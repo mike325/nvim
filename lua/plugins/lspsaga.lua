@@ -1,7 +1,3 @@
--- luacheck: max line length 152
--- local nvim  = require'nvim'
--- local utils = require'utils'
-
 -- local executable  = require'utils.files'.executable
 local load_module = require'utils.helpers'.load_module
 local get_icon    = require'utils.helpers'.get_icon

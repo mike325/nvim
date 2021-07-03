@@ -1,4 +1,4 @@
--- local nvim = require'nvim'
+-- local nvim = require'neovim'
 local executable = require'utils.files'.executable
 -- local echowarn = require'utils'.messages.echowarn
 -- local is_file = require'utils'.files.is_file
@@ -11,9 +11,9 @@ if not executable('git') then
     return false
 end
 
--- local set_command = nvim.commands.set_command
--- local set_mapping = nvim.mappings.set_mapping
--- local get_mapping = nvim.mappings.get_mapping
+-- local set_command = require'neovim.commands'.set_command
+-- local set_mapping = require'neovim.mappings'.set_mapping
+-- local get_mapping = require'neovim.mappings'.get_mapping
 
 local jobs = require'jobs'
 

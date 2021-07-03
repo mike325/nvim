@@ -1,4 +1,3 @@
-local nvim        = require'nvim'
 local exepath     = require'utils.files'.exepath
 local load_module = require'utils.helpers'.load_module
 local getcwd      = require'utils.files'.getcwd
@@ -9,9 +8,9 @@ if not dap then
     return false
 end
 
-local set_autocmd = nvim.autocmds.set_autocmd
-local set_command = nvim.commands.set_command
-local set_mapping = nvim.mappings.set_mapping
+local set_autocmd = require'neovim.autocmds'.set_autocmd
+local set_command = require'neovim.commands'.set_command
+local set_mapping = require'neovim.mappings'.set_mapping
 
 local function pythonPath()
     -- debugpy supports launching an application with a different interpreter

@@ -1,6 +1,6 @@
 local sys = require'sys'
-local nvim = require'nvim'
-local plugins = require'nvim'.plugins
+local nvim = require'neovim'
+local plugins = require'neovim'.plugins
 
 local executable       = require'utils.files'.executable
 local is_dir           = require'utils.files'.is_dir
@@ -13,7 +13,7 @@ local echoerr          = require'utils.messages'.echoerr
 local get_git_dir      = require'utils.system'.get_git_dir
 local split            = require'utils.strings'.split
 
-local set_abbr = nvim.abbrs.set_abbr
+local set_abbr = require'neovim.abbrs'.set_abbr
 
 local system = vim.fn.system
 local line = vim.fn.line
@@ -157,7 +157,7 @@ local icons
 -- ☰
 -- 
 
-if not nvim.env['NO_COOL_FONTS'] then
+if not vim.env['NO_COOL_FONTS'] then
     icons = {
         error = '', -- ✗
         warn = '',
@@ -355,7 +355,7 @@ end
 function M.add_nl(down)
     local cursor_pos = nvim.win.get_cursor(0)
     local lines = {''}
-    local count = nvim.v['count1']
+    local count = vim.v['count1']
     if count > 1 then
         for _=2,count,1 do
             lines[#lines + 1] = ''
@@ -372,13 +372,13 @@ function M.add_nl(down)
 
     nvim.put(lines, 'l', down, true)
     nvim.win.set_cursor(0, cursor_pos)
-    nvim.command('silent! call repeat#set("'..cmd..'",'..count..')')
+    vim.cmd('silent! call repeat#set("'..cmd..'",'..count..')')
 end
 
 function M.move_line(down)
     -- local cmd
     local lines = {''}
-    local count = nvim.v['count1']
+    local count = vim.v.count1
 
     if count > 1 then
         for _=2,count,1 do
@@ -394,9 +394,9 @@ function M.move_line(down)
         count = line('.') - count - 1 < 1 and 1 or line('.') - count - 1
     end
 
-    nvim.command(string.format([[move %s | normal! ==]], count))
+    vim.cmd(string.format([[move %s | normal! ==]], count))
     -- TODO: Make repeat work
-    -- nvim.command('silent! call repeat#set("'..cmd..'",'..count..')')
+    -- vim.cmd('silent! call repeat#set("'..cmd..'",'..count..')')
 end
 
 function M.find_project_root(path)
@@ -673,12 +673,12 @@ function M.abolish(language)
     if nvim.has.cmd('Abolish') == 2 then
         if abolish[current] ~= nil then
             for base,_ in pairs(abolish[current]) do
-                nvim.command('Abolish -delete -buffer '..base)
+                vim.cmd('Abolish -delete -buffer '..base)
             end
         end
         if abolish[language] ~= nil then
             for base,replace in pairs(abolish[language]) do
-                nvim.command('Abolish -buffer '..base..' '..replace)
+                vim.cmd('Abolish -buffer '..base..' '..replace)
             end
         end
     else
@@ -856,7 +856,7 @@ function M.python(version, args)
     end
 
     local split_type = vim.o.splitbelow and 'botright' or 'topleft'
-    nvim.command(split_type..' split term://'..pyversion..' '..args)
+    vim.cmd(split_type..' split term://'..pyversion..' '..args)
 end
 
 function M.toggle_qf(qf_type)
@@ -916,11 +916,11 @@ function M.dump_to_qf(opts)
         if #opts.lines > 0 then
             if qf_open then
                 local qf = (vim.o.splitbelow and 'botright' or 'topleft')..' '..qf_cmds.open
-                nvim.command(qf)
+                vim.cmd(qf)
             end
 
             if qf_jump then
-                nvim.command(qf_cmds.first)
+                vim.cmd(qf_cmds.first)
             end
         end
     end

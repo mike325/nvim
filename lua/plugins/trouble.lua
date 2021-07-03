@@ -5,12 +5,12 @@ if trouble == nil then
     return false
 end
 
-local nvim  = require'nvim'
+local nvim  = require'neovim'
 local echomsg  = require'utils.messages'.echomsg
 local echowarn = require'utils.messages'.echowarn
 local get_icon = require'utils.helpers'.get_icon
 local has_devicon = pcall(require, 'nvim-web-devicons')
-local set_mapping = require'nvim.mappings'.set_mapping
+local set_mapping = require'neovim.mappings'.set_mapping
 
 trouble.setup{
     position = "bottom",

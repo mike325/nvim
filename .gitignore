@@ -38,4 +38,4 @@ TAGS
 /lua/host/
 /after/plugin/host/
 
-/plugin/packer_compiled.vim
+/plugin/packer_compiled.*

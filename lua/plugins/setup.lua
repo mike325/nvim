@@ -17,9 +17,25 @@ packer.init{
 }
 
 packer.startup(function()
-    use_rocks {'luacheck',  'lua-cjson'}
+
+    -- if vim.fn.executable('gcc') == 1 or vim.fn.executable('clang') == 1 then
+    --     use_rocks {
+    --         'luacheck',
+    --         cond = function()
+    --             return vim.fn.executable('gcc') == 1 or vim.fn.executable('clang') == 1
+    --         end,
+    --     }
+    --     use_rocks {
+    --         'lua-cjson',
+    --         cond = function()
+    --             return vim.fn.executable('gcc') == 1 or vim.fn.executable('clang') == 1
+    --         end,
+    --     }
+    -- end
 
     use 'wbthomason/packer.nvim'
+
+    use { 'norcalli/nvim-terminal.lua' }
     use {'PProvost/vim-ps1'}
     use {'kurayama/systemd-vim-syntax'}
     use {'raimon49/requirements.txt.vim'}

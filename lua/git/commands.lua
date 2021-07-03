@@ -1,4 +1,4 @@
-local nvim = require'nvim'
+local nvim = require'neovim'
 local sys  = require'sys'
 
 local executable = require'utils.files'.executable
@@ -11,7 +11,7 @@ if not executable('git') then
     return false
 end
 
-local set_command = nvim.commands.set_command
+local set_command = require'neovim.commands'.set_command
 
 local M = {}
 

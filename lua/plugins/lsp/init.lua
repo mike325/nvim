@@ -1,6 +1,6 @@
 -- luacheck: max line length 135
 local sys  = require'sys'
-local nvim = require'nvim'
+local nvim = require'neovim'
 
 local load_module = require'utils.helpers'.load_module
 local get_icon    = require'utils.helpers'.get_icon
@@ -8,11 +8,11 @@ local executable  = require'utils.files'.executable
 local is_dir      = require'utils.files'.is_dir
 local split       = require'utils.strings'.split
 
-local plugins = nvim.plugins
+local plugins = require'neovim'.plugins
 
--- local set_command = require'nvim.commands'.set_command
--- local set_autocmd = require'nvim.autocmds'.set_autocmd
-local set_mapping = require'nvim.mappings'.set_mapping
+-- local set_command = require'neovim.commands'.set_command
+-- local set_autocmd = require'neovim.autocmds'.set_autocmd
+local set_mapping = require'neovim.mappings'.set_mapping
 
 local lsp = load_module'lspconfig'
 
@@ -34,7 +34,7 @@ end
 local diagnostics = true
 
 local has_saga,_ = pcall(require,'lspsaga')
-local has_telescope = plugins['telescope.nvim']
+local has_telescope,_ = pcall(require,'telescope')
 
 local sumneko_root_path = sys.cache..'/lspconfig/sumneko_lua/lua-language-server'
 local sumneko_binary = sumneko_root_path..'/bin/'..system_name..'/lua-language-server'

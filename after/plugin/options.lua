@@ -1,11 +1,9 @@
-local nvim  = require'nvim'
 local sys   = require'sys'
 
 -- local select_grep = require'utils'.helpers.select_grep
 -- local set_grep = require'utils'.helpers.set_grep
 
 local parent     = sys.data
--- local plugins    = nvim.plugins
 local mkdir      = require'utils.files'.mkdir
 local is_dir     = require'utils.files'.is_dir
 local executable = require'utils.files'.executable
@@ -219,8 +217,8 @@ else
 end
 
 if executable('nvr') then
-    vim.env.nvr  = 'nvr --servername '.. nvim.v.servername ..' --remote-silent'
-    vim.env.tnvr = 'nvr --servername '.. nvim.v.servername ..' --remote-tab-silent'
-    vim.env.vnvr = 'nvr --servername '.. nvim.v.servername ..' -cc vsplit --remote-silent'
-    vim.env.snvr = 'nvr --servername '.. nvim.v.servername ..' -cc split --remote-silent'
+    vim.env.nvr  = 'nvr --servername '.. vim.v.servername ..' --remote-silent'
+    vim.env.tnvr = 'nvr --servername '.. vim.v.servername ..' --remote-tab-silent'
+    vim.env.vnvr = 'nvr --servername '.. vim.v.servername ..' -cc vsplit --remote-silent'
+    vim.env.snvr = 'nvr --servername '.. vim.v.servername ..' -cc split --remote-silent'
 end

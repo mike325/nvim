@@ -1,12 +1,4 @@
--- luacheck: globals unpack vim
-local nvim = require'nvim'
-
--- local has     = nvim.has
--- local plugins = nvim.plugins
-
-local set_autocmd = nvim.autocmds.set_autocmd
--- local set_command = nvim.commands.set_command
--- local set_mapping = nvim.mappings.set_mapping
+local set_autocmd = require'neovim.autocmds'.set_autocmd
 
 if require'sys'.name ~= 'windows' then
     set_autocmd{

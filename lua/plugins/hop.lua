@@ -1,7 +1,5 @@
-local nvim  = require'nvim'
 local load_module = require'utils.helpers'.load_module
-
-local set_mapping = require'nvim.mappings'.set_mapping
+local set_mapping = require'neovim.mappings'.set_mapping
 
 local hop = load_module'hop'
 

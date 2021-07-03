@@ -1,10 +1,9 @@
-local nvim = require'nvim'
 local load_module = require'utils.helpers'.load_module
 
 local colorizer = load_module'colorizer'
 
 if colorizer then
-    nvim.o.termguicolors = true
+    vim.o.termguicolors = true
     colorizer.setup()
 end
 

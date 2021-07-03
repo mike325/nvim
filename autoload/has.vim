@@ -1,3 +1,3 @@
 function! has#plugin(plugin) abort
-    return type(luaeval('require"nvim".plugins[_A]', a:plugin)) == type({})
+    return type(luaeval('require"neovim".plugins[_A]', a:plugin)) == type({})
 endfunction
