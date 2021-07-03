@@ -14,7 +14,7 @@ local compile_flags = STORAGE.compile_flags
 local databases = STORAGE.databases
 local has_cjson = STORAGE.has_cjson
 
--- local set_command = require'neovim.commands'.set_command
+local set_command = require'neovim.commands'.set_command
 -- local set_mapping = require'neovim.mappings'.set_mapping
 
 local M = {}
@@ -28,6 +28,11 @@ local compilers = {
         'clang++',
         'g++',
     }
+}
+
+local env = {
+    c = 'CC',
+    cpp = 'CXX',
 }
 
 local default_flags = {
@@ -116,6 +121,11 @@ local default_flags = {
 
 local function get_compiler()
     local ft = vim.bo.filetype
+
+    if vim.env[env[ft]] and executable(vim.env[env[ft]]) then
+        return vim.env[env[ft]]
+    end
+
     local compiler
     for _,exe in pairs(compilers[ft]) do
         if executable(exe) then
@@ -169,7 +179,7 @@ local function set_opts(filename, has_tidy, compiler, bufnum)
             )
         end
     elseif not has_tidy then
-        local config_flags = table.concat(default_flags[compiler], ' ')
+        local config_flags = table.concat(default_flags[compiler] or {}, ' ')
         vim.api.nvim_buf_set_option(
             bufnum,
             'makeprg',
@@ -232,9 +242,16 @@ function M.setup()
         local db_file = vim.fn.findfile('compile_commands.json', cwd..';')
         local clang_tidy = vim.fn.findfile('.clang-tidy', cwd..';')
 
-        -- TODO: Add make and cmake build commands
-        local makefile = vim.fn.findfile('Makefile', cwd..';')
+        -- local makefile = vim.fn.findfile('Makefile', cwd..';')
         local cmake = vim.fn.findfile('CMakeLists.txt', cwd..';')
+
+        if executable('make') then
+            require'filetypes.make'.setup()
+        end
+
+        if cmake ~= '' and executable('cmake') then
+            require'filetypes.cmake'.setup()
+        end
 
         local has_tidy = false
         if executable('clang-tidy') and (flags_file ~= '' or db_file ~= '' or clang_tidy ~= '') then
