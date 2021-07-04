@@ -151,6 +151,15 @@ function M.setup()
                                 local qf_opts = job.qf or {}
                                 qf_opts.lines = lines
 
+                                if qf_opts.on_fail then
+                                    if qf_opts.on_fail.open then
+                                        qf_opts.open = rc ~= 0
+                                    end
+                                    if qf_opts.on_fail.jump then
+                                        qf_opts.jump = rc ~= 0
+                                    end
+                                end
+
                                 require'utils'.helpers.dump_to_qf(qf_opts)
                             end
                         end
@@ -160,9 +169,6 @@ function M.setup()
         end,
         args = {nargs = '?', force = true, buffer = true, complete = 'customlist,neovim#cmake_build'}
     }
-
-    -- if executable('ccmake') then
-    -- end
 
 end
 
