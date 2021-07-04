@@ -148,56 +148,56 @@ local args = {noremap = true, silent = true}
 set_mapping{
     mode = 'n',
     lhs = '<F5>',
-    rhs = ":lua require'dap'.continue()<CR>",
+    rhs = require'dap'.continue,
     args = args,
 }
 
 set_mapping{
     mode = 'n',
     lhs = '<F4>',
-    rhs = ":lua require'dap'.stop()<CR>",
+    rhs = require'dap'.stop,
     args = args,
 }
 
 set_mapping{
     mode = 'n',
     lhs = '<F10>',
-    rhs = ":lua require'dap'.run_to_cursor()<CR>",
+    rhs = require'dap'.run_to_cursor,
     args = args,
 }
 
 set_mapping{
     mode = 'n',
     lhs = ']s',
-    rhs = ":lua require'dap'.step_over()<CR>",
+    rhs = require'dap'.step_over,
     args = args,
 }
 
 set_mapping{
     mode = 'n',
     lhs = ']S',
-    rhs = ":lua require'dap'.step_into()<CR>",
+    rhs = require'dap'.step_into,
     args = args,
 }
 
 set_mapping{
     mode = 'n',
     lhs = '[s',
-    rhs = ":lua require'dap'.step_out()<CR>",
+    rhs = require'dap'.step_out,
     args = args,
 }
 
 set_mapping{
     mode = 'n',
     lhs = '=s',
-    rhs = ":lua require'dap'.toggle_breakpoint()<CR>",
+    rhs = require'dap'.toggle_breakpoint,
     args = args,
 }
 
 set_mapping{
     mode = 'n',
     lhs = '=r',
-    rhs = ":lua require'dap'.repl.toggle()<CR>",
+    rhs = require'dap'.repl.toggle,
     args = args,
 }
 
@@ -208,21 +208,28 @@ set_mapping{
     args = args,
 }
 
+set_mapping{
+    mode = 'n',
+    lhs = 'gK',
+    rhs = require('dap.ui.widgets').hover,
+    args = args,
+}
+
 set_command{
     lhs = 'DapToggleBreakpoint',
-    rhs = ":lua require'dap'.toggle_breakpoint()<CR>",
+    rhs = require'dap'.toggle_breakpoint,
     args = { force = true, }
 }
 
 set_command{
     lhs = 'DapRun2Cursor',
-    rhs = ":lua require'dap'.run_to_cursor()<CR>",
+    rhs = require'dap'.run_to_cursor,
     args = { force = true, }
 }
 
 set_command{
     lhs = 'DapBreakpoint',
-    rhs = ":lua require'dap'.set_breakpoint()<CR>",
+    rhs = require'dap'.set_breakpoint,
     args = { force = true, }
 }
 
@@ -234,26 +241,51 @@ set_command{
 
 set_command{
     lhs = 'DapStart',
-    rhs = ":lua require'dap'.continue()<CR>",
+    rhs = require'dap'.continue,
     args = { force = true, }
 }
 
 set_command{
     lhs = 'DapStop',
-    rhs = ":lua require'dap'.stop()<CR>",
+    rhs = require'dap'.stop,
     args = { force = true, }
 }
 
 set_command{
     lhs = 'DapContinue',
-    rhs = ":lua require'dap'.continue()<CR>",
+    rhs = require'dap'.continue,
     args = { force = true, }
 }
 
 set_command{
     lhs = 'DapRepl',
-    rhs = ":lua require'dap'.repl.toggle()<CR>",
+    rhs = require'dap'.repl.toggle,
     args = { force = true, }
 }
+
+set_command{
+    lhs = 'DapInfo',
+    rhs = require('dap.ui.widgets').hover,
+    args = { force = true, }
+}
+
+local dapui = load_module'dapui'
+
+if dapui then
+    -- require("dapui").open()
+    -- require("dapui").close()
+    -- require("dapui").toggle()
+    set_command{
+        lhs = 'DapBar',
+        rhs = require("dapui").toggle,
+        args = { force = true, }
+    }
+    set_mapping{
+        mode = 'n',
+        lhs = '=i',
+        rhs = require("dapui").toggle,
+        args = args,
+    }
+end
 
 return true

@@ -384,6 +384,14 @@ packer.startup(function()
     }
 
     use {
+        'rcarriga/nvim-dap-ui',
+        config = function()
+            require'dapui'.setup()
+        end,
+        after = 'nvim-dap'
+    }
+
+    use {
         'neovim/nvim-lspconfig',
         config = function() require'plugins.lsp' end,
         requires = {
