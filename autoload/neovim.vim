@@ -16,6 +16,10 @@ function! neovim#vim_oscyank(args, _, __) abort
     return filter(['tmux', 'kitty', 'default'], "v:val =~? join(split(a:args, 'zs'), '.*')")
 endfunction
 
+function! neovim#cmake_build(args, _, __) abort
+    return filter(['Debug', 'Release', 'MinSizeRel', 'RelWithDebInfo'], "v:val =~? join(split(a:args, 'zs'), '.*')")
+endfunction
+
 function! neovim#ssh_hosts_completion(arglead, cmdline, cursorpos) abort
     let l:hosts = luaeval("vim.tbl_keys(require'utils'.system.hosts)")
     return neovim#general_completion(a:arglead, a:cmdline, a:cursorpos, l:hosts)

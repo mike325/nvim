@@ -792,7 +792,7 @@ set_mapping{
 }
 
 set_command {
-    lhs = 'Make',
+    lhs = 'Lint',
     rhs = function(args)
 
         local ok, val = pcall(nvim.buf.get_option, 0, 'makeprg')
@@ -803,16 +803,16 @@ set_command {
         end
 
         cmd = cmd .. args
-        local make_win = nvim.get_current_win()
+        local lint_win = nvim.get_current_win()
 
         RELOAD('jobs').send_job{
             cmd = cmd,
             qf = {
                 -- open = false,
                 loc = true,
-                win = make_win,
+                win = lint_win,
                 jump = true,
-                context = 'AsyncMake',
+                context = 'AsyncLint',
                 title = cmd,
             },
             opts = {
@@ -835,10 +835,10 @@ set_command {
                     else
                         if rc == 0 then
                             echomsg('Everything seems fine! ')
+                            vim.fn.setloclist(lint_win, {}, 'r')
                         else
-                            echoerr('Make failed !, exited with error code '..rc)
+                            echoerr('Lint failed !, exited with error code '..rc)
                         end
-                        vim.fn.setloclist(make_win, {}, 'r')
                     end
                 end
             },

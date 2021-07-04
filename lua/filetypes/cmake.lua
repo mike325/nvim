@@ -1,7 +1,14 @@
-local set_command = require'neovim.commands'.set_command
+local executable = require'utils'.files.executable
 local mkdir = require'utils'.files.mkdir
 local is_dir = require'utils'.files.is_dir
+local is_file = require'utils'.files.is_file
+local link = require'utils'.files.link
+
+local set_command = require'neovim.commands'.set_command
+
 local jobs = require'jobs'
+local echomsg = require'utils.messages'.echomsg
+local echoerr = require'utils.messages'.echoerr
 
 local M = {}
 
@@ -82,7 +89,7 @@ function M.setup()
                 },
             }
         end,
-        args = {nargs = '?', force = true, buffer = true}
+        args = {nargs = '?', force = true, buffer = true, complete = 'customlist,neovim#cmake_build'}
     }
 
     set_command{
@@ -115,10 +122,48 @@ function M.setup()
                     context = 'CMake',
                     title = 'CMake',
                 },
+                opts = {
+                    on_exit = function(jobid, rc, _)
+                        local job = STORAGE.jobs[jobid]
+                        if rc == 0 then
+                            echomsg('Build complete!')
+                            if is_file('build/compile_commands.json') then
+                                link(
+                                    'build/compile_commands.json',
+                                    '.',
+                                    false,
+                                    true
+                                )
+                            end
+                            vim.fn.setloclist(lint_win, {}, 'r')
+                        else
+                            echoerr('Build Failed! :c ')
+                            local streams = job.streams or {}
+                            local stdout = streams.stdout or {}
+                            local stderr = streams.stderr or {}
+                            if #stdout > 0 or #stderr > 0 then
+                                local lines
+                                if #streams.stderr > 0 then
+                                    lines = streams.stderr
+                                else
+                                    lines = streams.stdout
+                                end
+                                local qf_opts = job.qf or {}
+                                qf_opts.lines = lines
+
+                                require'utils'.helpers.dump_to_qf(qf_opts)
+                            end
+                        end
+                    end
+                },
             }
         end,
-        args = {nargs = '?', force = true, buffer = true}
+        args = {nargs = '?', force = true, buffer = true, complete = 'customlist,neovim#cmake_build'}
     }
+
+    -- if executable('ccmake') then
+    -- end
+
 end
 
 return M

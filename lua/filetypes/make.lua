@@ -4,7 +4,7 @@ local M = {}
 
 function M.setup()
     set_command{
-        lhs = 'Makefile',
+        lhs = 'Make',
         rhs = function(args)
             args = args or ''
             local jobs = require'jobs'
@@ -19,8 +19,8 @@ function M.setup()
                     },
                     open = false,
                     jump = false,
-                    context = 'Makefile',
-                    title = 'Makefile',
+                    context = 'Make',
+                    title = 'Make',
                 },
             }
         end,

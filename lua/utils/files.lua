@@ -36,24 +36,73 @@ local function separator()
 end
 
 function M.exists(filename)
-    assert(type(filename) == 'string' and filename ~= '', ([[Not a filename: "%s"]]):format(filename))
+    assert(type(filename) == type('') and filename ~= '', ([[Not a filename: "%s"]]):format(filename))
     local stat = uv.fs_stat(filename)
     return stat and stat.type or false
 end
 
 function M.is_dir(filename)
-    assert(type(filename) == 'string' and filename ~= '', ([[Not a filename: "%s"]]):format(filename))
+    assert(type(filename) == type('') and filename ~= '', ([[Not a filename: "%s"]]):format(filename))
     return M.exists(filename) == 'directory'
 end
 
 function M.is_file(filename)
-    assert(type(filename) == 'string' and filename ~= '', ([[Not a filename: "%s"]]):format(filename))
+    assert(type(filename) == type('') and filename ~= '', ([[Not a filename: "%s"]]):format(filename))
     return M.exists(filename) == 'file'
 end
 
 function M.mkdir(dirname)
-    assert(type(dirname) == 'string' and dirname ~= '', ([[Not a dirname: "%s"]]):format(dirname))
+    assert(type(dirname) == type('') and dirname ~= '', ([[Not a dirname: "%s"]]):format(dirname))
     uv.fs_mkdir(M.normalize_path(dirname), 511)
+end
+
+function M.link(src, dest, sym, force)
+    assert(type(src) == type('') and src ~= '', ([[Not a src: "%s"]]):format(src))
+    assert(not sym or type(sym) == type(true), ([[Invalid sym value: "%s"]]):format(sym))
+    assert(not force or type(force) == type(true), ([[Invalid force value: "%s"]]):format(force))
+    assert(M.exists(src), 'Src '..src..' does not exists')
+    assert(type(dest) == type('') and dest ~= '', ([[Not a dest: "%s"]]):format(dest))
+
+    if dest == '.' then
+        dest = M.basename(src)
+    end
+
+    assert(src ~= dest, 'Cannot link src to itself')
+
+    local status
+
+    if not sym and M.is_dir(src) then
+        echoerr('Cannot hard link a directory')
+        return false
+    end
+
+    if not force and M.exists(dest) then
+        echoerr('Dest already exists in '..dest)
+        return false
+    elseif force and M.exists(dest) then
+        status = uv.fs_unlink(dest)
+        if not status then
+            echoerr('Failed to unlink '..dest)
+            return status
+        end
+    end
+
+    if sym then
+        status = uv.fs_symlink(src, dest, 438)
+    else
+        status = uv.fs_link(src, dest)
+    end
+
+    if not status then
+        echoerr(('Failed to link "%s" to "%s"'):format(src, dest))
+    end
+
+    return status
+end
+
+function M.symlink(src, dest)
+    assert(type(src) == type('') and src ~= '', ([[Not a src: "%s"]]):format(src))
+    assert(type(dest) == type('') and dest ~= '', ([[Not a dest: "%s"]]):format(dest))
 end
 
 function M.executable(exec)
@@ -66,7 +115,7 @@ function M.exepath(exec)
 end
 
 function M.is_absolute(path)
-    assert(type(path) == 'string' and path ~= '', ([[Not a path: "%s"]]):format(path))
+    assert(type(path) == type('') and path ~= '', ([[Not a path: "%s"]]):format(path))
     path = M.normalize_path(path)
     local is_abs = false
     if is_windows and #path >= 2 then
@@ -78,7 +127,7 @@ function M.is_absolute(path)
 end
 
 function M.is_root(path)
-    assert(type(path) == 'string' and path ~= '', ([[Not a path: "%s"]]):format(path))
+    assert(type(path) == type('') and path ~= '', ([[Not a path: "%s"]]):format(path))
     local root = false
     if is_windows and #path >= 2 then
         path = forward_path(path)
@@ -96,7 +145,7 @@ function M.realpath(path)
 end
 
 function M.normalize_path(path)
-    assert(type(path) == 'string' and path ~= '', ([[Not a path: "%s"]]):format(path))
+    assert(type(path) == type('') and path ~= '', ([[Not a path: "%s"]]):format(path))
     if path:sub(1, 1) == '~' then
         path = path:gsub('~', sys.home)
     elseif path == '%' then
@@ -163,7 +212,7 @@ function M.subpath_in_path(parent, child)
 end
 
 function M.openfile(path, flags, callback)
-    assert(type(path) == 'string' and path ~= '', ([[Not a path: "%s"]]):format(path))
+    assert(type(path) == type('') and path ~= '', ([[Not a path: "%s"]]):format(path))
     assert(flags, 'Missing flags')
     assert(type(callback) == 'function', 'Missing valid callback')
     local fd = assert(uv.fs_open(path, flags, 438))
@@ -554,7 +603,7 @@ function M.encode_json(data)
 end
 
 function M.read_json(filename)
-    assert(type(filename) == 'string' and filename ~= '', 'Not a file: '..vim.inspect(filename))
+    assert(type(filename) == type('') and filename ~= '', 'Not a file: '..vim.inspect(filename))
     if filename:sub(1, 1) == '~' then
         filename = filename:gsub('~', sys.home)
     end

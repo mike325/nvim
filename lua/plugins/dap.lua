@@ -154,7 +154,7 @@ set_mapping{
 
 set_mapping{
     mode = 'n',
-    lhs = '<F6>',
+    lhs = '<F4>',
     rhs = ":lua require'dap'.stop()<CR>",
     args = args,
 }
