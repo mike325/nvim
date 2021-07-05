@@ -1,9 +1,8 @@
 local packer = require'packer'
 
 packer.init{
-    luarocks = {
-        python_cmd = 'python3'
-    },
+    -- log = {level = 'debug'},
+    luarocks = { python_cmd = 'python3' },
     profile = {
         enable = false,
         threshold = 1 -- the amount in ms that a plugins load time must be over for it to be included in the profile
@@ -18,20 +17,9 @@ packer.init{
 
 packer.startup(function()
 
-    -- if vim.fn.executable('gcc') == 1 or vim.fn.executable('clang') == 1 then
-    --     use_rocks {
-    --         'luacheck',
-    --         cond = function()
-    --             return vim.fn.executable('gcc') == 1 or vim.fn.executable('clang') == 1
-    --         end,
-    --     }
-    --     use_rocks {
-    --         'lua-cjson',
-    --         cond = function()
-    --             return vim.fn.executable('gcc') == 1 or vim.fn.executable('clang') == 1
-    --         end,
-    --     }
-    -- end
+    if vim.fn.executable('gcc') == 1 or vim.fn.executable('clang') == 1 then
+        use_rocks { 'luacheck','lua-cjson' }
+    end
 
     use 'wbthomason/packer.nvim'
 
@@ -484,3 +472,8 @@ packer.startup(function()
     -- }
 
 end)
+
+if vim.fn.executable('gcc') == 1 or vim.fn.executable('clang') == 1 then
+    local rocks = require'packer.luarocks'
+    rocks.install_commands()
+end

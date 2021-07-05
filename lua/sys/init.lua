@@ -2,8 +2,7 @@
 local stdpath = vim.fn.stdpath
 
 local function system_name()
-    local name = vim.loop.os_uname().sysname:lower()
-    name = vim.split(name, '_')[1]
+    local name = jit.os:lower()
     return name
 end
 
