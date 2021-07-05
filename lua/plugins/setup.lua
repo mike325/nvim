@@ -387,6 +387,22 @@ packer.startup(function()
         'rcarriga/nvim-dap-ui',
         config = function()
             require'dapui'.setup()
+            local set_command = require'neovim.commands'.set_command
+            local set_mapping = require'neovim.mappings'.set_mapping
+            -- require("dapui").open()
+            -- require("dapui").close()
+            -- require("dapui").toggle()
+            set_command{
+                lhs = 'DapBar',
+                rhs = require("dapui").toggle,
+                args = { force = true, }
+            }
+            set_mapping{
+                mode = 'n',
+                lhs = '=i',
+                rhs = require("dapui").toggle,
+                args = {noremap = true, silent = true},
+            }
         end,
         after = 'nvim-dap'
     }

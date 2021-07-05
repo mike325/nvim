@@ -269,23 +269,4 @@ set_command{
     args = { force = true, }
 }
 
-local dapui = load_module'dapui'
-
-if dapui then
-    -- require("dapui").open()
-    -- require("dapui").close()
-    -- require("dapui").toggle()
-    set_command{
-        lhs = 'DapBar',
-        rhs = require("dapui").toggle,
-        args = { force = true, }
-    }
-    set_mapping{
-        mode = 'n',
-        lhs = '=i',
-        rhs = require("dapui").toggle,
-        args = args,
-    }
-end
-
 return true
