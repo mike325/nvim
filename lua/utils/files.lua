@@ -637,4 +637,27 @@ function M.dump_json(filename, data)
     M.writefile(M.normalize_path(filename), vim.fn.json_encode(data))
 end
 
+-- took from the nvim docs
+local function on_change(err, fname, status)
+    -- Do work...
+    vim.api.nvim_command('checktime')
+    -- Debounce: stop/start.
+    uv.new_fs_event:stop()
+    watch_file(fname)
+end
+
+function M.watch_file(fname)
+    local fullpath = vim.api.nvim_call_function(
+        'fnamemodify',
+        {fname, ':p'}
+    )
+    uv.new_fs_event:start(
+        fullpath,
+        {},
+        vim.schedule_wrap(function(...)
+            on_change(...)
+        end)
+    )
+end
+
 return M
