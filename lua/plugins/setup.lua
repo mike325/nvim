@@ -71,7 +71,42 @@ packer.startup(function()
         end,
     }
 
-    use {'tpope/vim-projectionist', event = 'VimEnter'}
+    use {
+        'tpope/vim-projectionist',
+        config = function()
+            local set_autocmd = require'neovim.autocmds'.set_autocmd
+            -- TODO: Make this more "project" tailored, set git and language specific
+            --       projections depending of what's in the cwd
+            vim.g.common_projections = {
+                ['.projections.json']          = {type = 'Projections'},
+                ['.gitignore']                 = {type = 'Gitignore'},
+                ['.git/hooks/*']               = {type = 'GitHooks'},
+                ['.git/config']                = {type = 'Git'},
+                ['.git/info/*']                = {type = 'Git'},
+                ['.github/workflows/main.yml'] = {type = 'Github'},
+                ['.github/workflows/*.yml']    = {type = 'Github'},
+                ['.travis.yml']                = {type = 'Travis' },
+                ['.ycm_extra_conf.py']         = {type = 'YCM'},
+                ['.project.vim']               = {type = 'Project'},
+                ['.clang-format']              = {type = 'Clang'},
+                ['.clang-*']                   = {type = 'Clang'},
+                ['compile_flags.txt']          = {type = 'CompileFlags'},
+                ['compile_commands.json']      = {type = 'CompileDB'},
+                ['UltiSnips/*.snippets']       = {type = 'UltiSnips'},
+                ['README.md']                  = {type = 'Readme'},
+                ['LICENSE']                    = {type = 'License'},
+                ['Makefile']                   = {type = 'Makefile'},
+                ['CMakeLists.txt']             = {type = 'CMake'},
+                ['*.cmake']                    = {type = 'CMake'},
+            }
+            set_autocmd{
+                event   = 'User',
+                pattern = 'ProjectionistDetect',
+                cmd     = 'call projectionist#append(getcwd(), g:common_projections)',
+                group   = 'CommonProjections',
+            }
+        end,
+    }
 
     use {
         'tpope/vim-fugitive',
