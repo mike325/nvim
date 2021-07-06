@@ -48,17 +48,13 @@ packer.startup(function()
     use {
         'ojroques/vim-oscyank',
         event = 'VimEnter',
-        config = function()
-            require'plugins.oscyank'
-        end,
+        config = function() require'plugins.oscyank' end,
     }
 
     use {
         'windwp/nvim-autopairs',
         event = 'InsertEnter',
-        config = function()
-            require'plugins.pairs'
-        end,
+        config = function() require'plugins.pairs' end,
     }
 
     use {
@@ -84,9 +80,41 @@ packer.startup(function()
     use {'junegunn/gv.vim', cmd = 'GV', after = 'vim-fugitive'}
 
     use {
-        'mhinz/vim-signify',
+        'lewis6991/gitsigns.nvim',
         cond = function() return vim.fn.executable('git') == 1 end,
-        config = function() require'plugins.signify' end,
+        requires = { 'nvim-lua/plenary.nvim' },
+        config = function()
+            require('gitsigns').setup {
+                keymaps = {
+                    -- Default keymap options
+                    noremap = true,
+                    buffer = true,
+
+                    ['n ]c'] = { expr = true, "&diff ? ']c' : '<cmd>lua require\"gitsigns.actions\".next_hunk()<CR>'"},
+                    ['n [c'] = { expr = true, "&diff ? '[c' : '<cmd>lua require\"gitsigns.actions\".prev_hunk()<CR>'"},
+
+                    ['n =s'] = '<cmd>lua require"gitsigns".stage_hunk()<CR>',
+                    ['v =s'] = '<cmd>lua require"gitsigns".stage_hunk({vim.fn.line("."), vim.fn.line("v")})<CR>',
+                    ['n =S'] = '<cmd>lua require"gitsigns".undo_stage_hunk()<CR>',
+                    ['n =u'] = '<cmd>lua require"gitsigns".reset_hunk()<CR>',
+                    ['v =u'] = '<cmd>lua require"gitsigns".reset_hunk({vim.fn.line("."), vim.fn.line("v")})<CR>',
+                    ['n =U'] = '<cmd>lua require"gitsigns".reset_buffer()<CR>',
+                    ['n =f'] = '<cmd>lua require"gitsigns".preview_hunk()<CR>',
+                    ['n =M'] = '<cmd>lua require"gitsigns".blame_line(true)<CR>',
+
+                    -- Text objects
+                    ['o ih'] = ':<C-U>lua require"gitsigns.actions".select_hunk()<CR>',
+                    ['x ih'] = ':<C-U>lua require"gitsigns.actions".select_hunk()<CR>'
+                },
+                current_line_blame = false,
+                current_line_blame_delay = 1000,
+                current_line_blame_position = 'eol',
+                -- numhl = false,
+                -- linehl = false,
+                -- status_formatter = nil, -- Use default
+                -- word_diff = false,
+            }
+        end
     }
 
     use {
@@ -345,17 +373,6 @@ packer.startup(function()
         }
     }
 
-    -- use {
-    --     'lewis6991/spellsitter.nvim',
-    --     config = function()
-    --         require('spellsitter').setup{
-    --             hl = 'Error',
-    --             captures = {'comment', 'string'},
-    --         }
-    --     end,
-    --     after = 'nvim-treesitter',
-    -- }
-
     use {
         'mfussenegger/nvim-dap',
         config = function()
@@ -420,6 +437,7 @@ packer.startup(function()
         }
     }
 
+
     use {
         'pwntester/octo.nvim',
         cond = function() return vim.fn.executable('gh') == 1 end,
@@ -446,6 +464,17 @@ packer.startup(function()
     --             ['window-controls']    = true,
     --         }
     --     end,
+    -- }
+
+    -- use {
+    --     'lewis6991/spellsitter.nvim',
+    --     config = function()
+    --         require('spellsitter').setup{
+    --             hl = 'Error',
+    --             captures = {'comment', 'string'},
+    --         }
+    --     end,
+    --     after = 'nvim-treesitter',
     -- }
 
     -- use {

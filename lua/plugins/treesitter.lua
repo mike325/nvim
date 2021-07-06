@@ -95,7 +95,7 @@ treesitter.setup{
                 ["]]"] = "@class.outer",
                 ["]r"] = "@loop.outer",
                 ["]a"] = "@parameter.inner",
-                ["]c"] = "@comment.outer",
+                -- ["]c"] = "@comment.outer",
             },
             goto_next_end = {
                 ["]F"] = "@conditional.outer",
@@ -103,7 +103,7 @@ treesitter.setup{
                 ["]["] = "@class.outer",
                 ["]R"] = "@loop.outer",
                 ["]A"] = "@parameter.inner",
-                ["]C"] = "@comment.outer",
+                -- ["]C"] = "@comment.outer",
             },
             goto_previous_start = {
                 ["[f"] = "@conditional.outer",
@@ -111,15 +111,15 @@ treesitter.setup{
                 ["[["] = "@class.outer",
                 ["[r"] = "@loop.outer",
                 ["[a"] = "@parameter.inner",
-                ["[c"] = "@comment.outer",
+                -- ["[c"] = "@comment.outer",
             },
             goto_previous_end = {
                 ["[F"] = "@conditional.outer",
                 ["[M"] = "@function.outer",
-                ["[]"] = "@class.outer",
+                ["]]"] = "@class.outer",
                 ["[R"] = "@loop.outer",
                 ["[A"] = "@parameter.inner",
-                ["[C"] = "@comment.outer",
+                -- ["[C"] = "@comment.outer",
             },
         },
         -- lsp_interop = {
