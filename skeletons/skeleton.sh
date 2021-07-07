@@ -187,57 +187,57 @@ EOF
 }
 
 function warn_msg() {
-    local warn_message="$1"
+    local msg="$1"
     if [[ $NOCOLOR -eq 0 ]]; then
-        printf "${yellow}[!] Warning:${reset_color}\t %s\n" "$warn_message"
+        printf "${yellow}[!] Warning:${reset_color}\t %s\n" "$msg"
     else
-        printf "[!] Warning:\t %s\n" "$warn_message"
+        printf "[!] Warning:\t %s\n" "$msg"
     fi
     WARN_COUNT=$(( WARN_COUNT + 1 ))
     if [[ $NOLOG -eq 0 ]]; then
-        printf "[!] Warning:\t %s\n" "$warn_message" >> "${LOG}"
+        printf "[!] Warning:\t %s\n" "$msg" >> "${LOG}"
     fi
     return 0
 }
 
 function error_msg() {
-    local error_message="$1"
+    local msg="$1"
     if [[ $NOCOLOR -eq 0 ]]; then
-        printf "${red}[X] Error:${reset_color}\t %s\n" "$error_message" 1>&2
+        printf "${red}[X] Error:${reset_color}\t %s\n" "$msg" 1>&2
     else
-        printf "[X] Error:\t %s\n" "$error_message" 1>&2
+        printf "[X] Error:\t %s\n" "$msg" 1>&2
     fi
     ERR_COUNT=$(( ERR_COUNT + 1 ))
     if [[ $NOLOG -eq 0 ]]; then
-        printf "[X] Error:\t %s\n" "$error_message" >> "${LOG}"
+        printf "[X] Error:\t %s\n" "$msg" >> "${LOG}"
     fi
     return 0
 }
 
 function status_msg() {
-    local status_message="$1"
+    local msg="$1"
     if [[ $NOCOLOR -eq 0 ]]; then
-        printf "${green}[*] Info:${reset_color}\t %s\n" "$status_message"
+        printf "${green}[*] Info:${reset_color}\t %s\n" "$msg"
     else
-        printf "[*] Info:\t %s\n" "$status_message"
+        printf "[*] Info:\t %s\n" "$msg"
     fi
     if [[ $NOLOG -eq 0 ]]; then
-        printf "[*] Info:\t\t %s\n" "$status_message" >> "${LOG}"
+        printf "[*] Info:\t\t %s\n" "$msg" >> "${LOG}"
     fi
     return 0
 }
 
 function verbose_msg() {
-    local debug_message="$1"
+    local msg="$1"
     if [[ $VERBOSE -eq 1 ]]; then
         if [[ $NOCOLOR -eq 0 ]]; then
-            printf "${purple}[+] Debug:${reset_color}\t %s\n" "$debug_message"
+            printf "${purple}[+] Debug:${reset_color}\t %s\n" "$msg"
         else
-            printf "[+] Debug:\t %s\n" "$debug_message"
+            printf "[+] Debug:\t %s\n" "$msg"
         fi
     fi
     if [[ $NOLOG -eq 0 ]]; then
-        printf "[+] Debug:\t\t %s\n" "$debug_message" >> "${LOG}"
+        printf "[+] Debug:\t\t %s\n" "$msg" >> "${LOG}"
     fi
     return 0
 }
