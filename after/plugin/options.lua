@@ -160,10 +160,10 @@ vim.opt.relativenumber = true
 vim.opt.number = true
 vim.opt.list = true
 vim.opt.wrap = false
-vim.opt.foldenable = true
 vim.opt.colorcolumn = '80'
-vim.opt.foldmethod = 'syntax'
 vim.opt.numberwidth = 1
+vim.opt.foldenable = false
+vim.opt.foldmethod = 'syntax'
 vim.opt.foldlevel = 99
 
 vim.opt.signcolumn = 'auto:2'

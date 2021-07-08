@@ -1,6 +1,7 @@
 local executable = require'utils.files'.executable
 
-vim.opt_local.foldmethod = 'indent'
+-- vim.opt_local.foldenable = true
+-- vim.opt_local.foldmethod = 'syntax'
 
 vim.opt_local.expandtab = true
 -- vim.opt_local.shiftround = true

@@ -198,7 +198,7 @@ if #fts > 0 then
     set_autocmd{
         event   = 'FileType',
         pattern = fts,
-        cmd     = 'setlocal foldmethod=expr foldexpr=nvim_treesitter#foldexpr()',
+        cmd     = 'setlocal foldmethod=expr foldexpr=nvim_treesitter#foldexpr() foldenable',
         group   = 'TreesitterAutocmds',
     }
 end
