@@ -25,5 +25,20 @@ endsnippet
 
 snippet /w(h(ile)?)?/ "while : ... pass" r
 while ${1:condition}:
-	${0:pass}
+	${0:${VISUAL:pass}}
+endsnippet
+
+snippet for "for i in obj: ... pass"
+for ${1:i} in ${1:str}:
+	${0:${VISUAL:pass}}
+endsnippet
+
+snippet forr "for i in range(...): ... pass"
+for ${1:i} in range(${2:0}, ${2:len(obj)}):
+	${0:${VISUAL:pass}}
+endsnippet
+
+snippet ford "for i in dict.items(): ... pass"
+for ${1:i} in ${2:dict}.items():
+	${0:${VISUAL:pass}}
 endsnippet
