@@ -3,6 +3,7 @@ local sys  = require'sys'
 
 local executable = require'utils.files'.executable
 local echowarn   = require'utils.messages'.echowarn
+local echoerr   = require'utils.messages'.echoerr
 local split      = require'utils.strings'.split
 local normalize  = require'utils.files'.normalize_path
 local has_attrs  = require'utils.tables'.has_attrs
@@ -45,18 +46,16 @@ function M.set_commands()
                 args = args,
                 jobopts = {
                     pty = true,
-                    on_exit = function(jobid, rc, _)
-                        local job = STORAGE.jobs[jobid]
+                    on_exit = function(_, rc)
                         if rc ~= 0 then
-                            error(('Failed to pull changes, %s'):format(
-                                table.concat(job.streams.stdout, '\n')
-                            ))
+                            echoerr('Failed to pull changes!!')
                         end
                         print('Repo updated!')
                         nvim.ex.checktime()
                     end
                 }
             }
+            pull:start()
         end,
         args = {nargs = '*', force = true, buffer = true}
     }
@@ -84,13 +83,13 @@ function M.set_commands()
     set_command {
         lhs = 'GWrite',
         rhs = function(args)
+            local bufname = vim.fn.bufname(nvim.get_current_buf())
+            if sys.name == 'windows' then
+                bufname = bufname:gsub('\\', '/')
+            end
             RELOAD('git.utils').status(function(status)
                 local utils = RELOAD'git.utils'
                 if #args == 0 then
-                    local bufname = vim.fn.bufname(nvim.get_current_buf())
-                    if sys.name == 'windows' then
-                        bufname = bufname:gsub('\\', '/')
-                    end
                     local workspace = status.workspace or {}
                     local untracked = status.untracked or {}
                     if workspace[bufname] or has_attrs(untracked, bufname) then
@@ -100,16 +99,15 @@ function M.set_commands()
                             gitcmd = 'add',
                             args = args,
                             jobopts = {
-                                on_exit = function(jobid, rc, _)
+                                on_exit = function(_, rc)
                                     if rc ~= 0 then
-                                        error('Failed to Add file: '..bufname)
+                                        echoerr('Failed to Add file: '..bufname)
                                     end
-                                    -- TODO: reset git gutter signs without re-edit file
-                                    -- nvim.ex.edit()
                                 end
                             }
                         }
                     else
+                        -- TODO: Improve this, and check for merge conflics
                         echowarn('Nothing to do')
                     end
                 else
@@ -145,19 +143,16 @@ function M.set_commands()
                             gitcmd = 'reset',
                             args = {'HEAD', bufname },
                             jobopts = {
-                                on_exit = function(jobid, rc, _)
-                                    local rjob = STORAGE.jobs[jobid]
+                                on_exit = function(_, rc)
                                     if rc == 0 then
                                         utils.launch_gitcmd_job{
                                             gitcmd = 'checkout',
                                             args = {'--', bufname},
                                             jobopts = {
-                                                on_exit = function(id, crc, _)
-                                                    local cjob = STORAGE.jobs[id]
-                                                    if crc ~= 0 then
-                                                        error(('Failed to reset file: %s, due to %s'):format(
-                                                            bufname,
-                                                            table.concat(cjob.streams.stderr, '\n')
+                                                on_exit = function(_, ec)
+                                                    if ex ~= 0 then
+                                                        echoerr(('Failed to reset file: %s'):format(
+                                                            bufname
                                                         ))
                                                     end
                                                     nvim.ex.checktime()
@@ -165,9 +160,8 @@ function M.set_commands()
                                             }
                                         }
                                     else
-                                        error(('Failed to unstage file: %s, due to %s'):format(
-                                            bufname,
-                                            table.concat(rjob.streams.stderr, '\n')
+                                        echoerr(('Failed to unstage file: %s'):format(
+                                            bufname
                                         ))
                                     end
                                 end
@@ -207,12 +201,10 @@ function M.set_commands()
                             gitcmd = 'reset',
                             args = { 'HEAD', bufname },
                             jobopts = {
-                                on_exit = function(id, rc, _)
-                                    local job = STORAGE.jobs[id]
+                                on_exit = function(_, rc)
                                     if rc ~= 0 then
-                                        error(('Failed to restore file: %s, due to %s'):format(
-                                            bufname,
-                                            table.concat(job.streams.stderr, '\n')
+                                        echoerr(('Failed to restore file: %s'):format(
+                                            bufname
                                         ))
                                     end
                                     nvim.ex.checktime()
@@ -236,12 +228,10 @@ function M.set_commands()
                         gitcmd = 'reset',
                         args = {'HEAD', args},
                         jobopts = {
-                            on_exit = function(id, rc, _)
-                                local job = STORAGE.jobs[id]
+                            on_exit = function(_, rc)
                                 if rc ~= 0 then
-                                    error(('Failed to restore file: %s, due to %s'):format(
-                                        args,
-                                        table.concat(job.streams.stderr, '\n')
+                                    error(('Failed to restore file: %s'):format(
+                                        args
                                     ))
                                 end
                                 nvim.ex.checktime()

@@ -439,7 +439,7 @@ packer.startup(function()
             }
             set_mapping{
                 mode = 'n',
-                lhs = '=i',
+                lhs = '=I',
                 rhs = require("dapui").toggle,
                 args = {noremap = true, silent = true},
             }

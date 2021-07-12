@@ -1,6 +1,6 @@
 local nvim = require'neovim'
 local executable = require'utils.files'.executable
-local send_job = require'jobs'.send_job
+local dump_to_qf = require'utils'.helpers.dump_to_qf
 
 local echowarn = require'utils.messages'.echowarn
 local echoerr  = require'utils.messages'.echoerr
@@ -52,26 +52,24 @@ local function external_formatprg(opts)
     local cmd = opts.cmd
     local buf = nvim.get_current_buf()
 
-    send_job{
+    local Job = RELOAD'job'
+    local formatprg = Job:new{
         cmd = cmd,
+        qf = {
+            on_fail = {
+                open = true,
+                jump = false,
+            },
+            context = 'PyFormat',
+            title = 'PyFormat',
+        },
         opts = {
-            on_stdout = on_data,
-            on_stderr = on_data,
-            on_exit = function(jobid, rc, _)
-                local job = STORAGE.jobs[jobid]
-                local dump_to_qf = require'utils'.helpers.dump_to_qf
-
-                local streams = job.streams or {}
-                local stdout = streams.stdout or {}
-                local stderr = streams.stderr or {}
-
-                local qf_opts = job.qf or {}
+            on_exit = function(job, rc)
                 if rc == 0 or rc == 1 then
+                    local stdout = job:stdout()
                     if #stdout > 0 then
                         local chunks = parse_diff(stdout)
                         for _,chunk in pairs(chunks) do
-                            -- print('idx:',vim.inspect(_))
-                            -- print('Chunck:',vim.inspect(chunk))
                             local first = chunk.first
                             local last = chunk.last
                             local lines = chunk.lines
@@ -81,27 +79,15 @@ local function external_formatprg(opts)
                         echowarn('We should not be here, no format was detected')
                     end
                 else
-                    if qf_opts.on_fail then
-                        if qf_opts.on_fail.open then
-                            qf_opts.open = rc ~= 0
-                        end
-                        if qf_opts.on_fail.jump then
-                            qf_opts.jump = rc ~= 0
-                        end
-                    end
-
                     echoerr(('Failed to format code chunk, %s exited with code %s'):format(
-                        cmd[1],
+                        job:exe,
                         rc
                     ))
-
-                    qf_opts.lines = stderr
-                    -- print('Streams:',vim.inspect(job.streams))
-                    dump_to_qf(qf_opts)
                 end
             end,
-        }
+        },
     }
+
 end
 
 function M.format()

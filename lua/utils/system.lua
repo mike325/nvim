@@ -9,10 +9,7 @@ local split      = require'utils.strings'.split
 -- local read_json      = require'utils'.files.read_json
 -- local normalize_path = require'utils'.files.normalize_path
 
-local M = {
-    hosts = {},
-    remotes = {},
-}
+local M = {}
 
 function M.get_ssh_hosts()
     local ssh_config = sys.home..'/.ssh/config'
@@ -23,7 +20,7 @@ function M.get_ssh_hosts()
                 if line and line ~= '' and line:match('Host [a-zA-Z0-9_-%.]+') then
                     host = split(line, ' ')[2]
                 elseif line:match('%s+Hostname [a-zA-Z0-9_-%.]+') and host ~= '' then
-                    M.hosts[host] = split(line, ' ')[2]
+                    STORAGE.hosts[host] = split(line, ' ')[2]
                     host = ''
                 end
             end
@@ -33,21 +30,18 @@ end
 
 function M.get_git_dir(callback)
     assert(executable('git'), 'Missing git')
-    assert(type(callback) == 'function', 'Missing callback function')
+    -- assert(type(callback) == 'function', 'Missing callback function')
 
-    local cmd = { 'git', 'rev-parse', '--git-dir' }
-    require'jobs'.send_job{
-        cmd = cmd,
-        opts = {
-            on_exit = function(jobid, rc, _)
-                local job = STORAGE.jobs[jobid]
-                if rc == 0 then
-                    local dir = table.concat(job.streams.stdout, '')
-                    pcall(callback, realpath(dir))
-                end
-            end,
-        },
+    local Job = RELOAD'jobs'
+    local j = Job:new{
+        cmd = {'git', 'rev-parse', '--git-dir' },
+        silent = true,
     }
+    j:callback_on_success(function(job)
+        local dir = table.concat(job:output(), '')
+        pcall(callback, realpath(dir))
+    end)
+    j:start()
 end
 
 return M

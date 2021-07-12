@@ -7,22 +7,20 @@ function M.setup()
         lhs = 'Make',
         rhs = function(args)
             args = args or ''
-            local jobs = require'jobs'
-            local cmd = {'make'}
-            vim.list_extend(cmd, vim.split(args, ' '))
-            jobs.send_job{
-                cmd = cmd,
+            local Job = require'jobs'
+            local make = Job:new{
+                cmd = 'make',
+                args = vim.split(args, ' '),
                 qf = {
                     on_fail = {
                         open = true,
                         jump = false,
                     },
-                    open = false,
-                    jump = false,
                     context = 'Make',
                     title = 'Make',
                 },
             }
+            make:start()
         end,
         args = {nargs = '*', force = true, buffer = true}
     }

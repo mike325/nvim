@@ -112,7 +112,7 @@ function! neovim#enter() abort
             call feedkeys("\<C-y>")
             return ''
         elseif has#plugin('nvim-compe')
-            return l:selected ? compe#confirm('<CR>') : compe#close('<C-e>')
+            return l:selected ? compe#confirm('<C-y>') : compe#close('<C-e>')
         elseif has#plugin('completion-nvim')
             if ! l:selected
                 call nvim_select_popupmenu_item(-1 , v:false , v:true ,{})

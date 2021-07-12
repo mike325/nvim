@@ -15,9 +15,7 @@ local echoerr  = require'utils.messages'.echoerr
 
 local set_autocmd = require'neovim.autocmds'.set_autocmd
 
-local M = {
-    filelists = {},
-}
+local M = {}
 
 function M.make_executable()
     if sys.name == 'windows' then
@@ -65,11 +63,12 @@ end
 
 function M.send_grep_job(args)
     local cmd = split(vim.bo.grepprg or vim.o.grepprg, ' ')
-    -- print('Type: ', type(args), 'Value:', vim.inspect(args))
     cmd[#cmd + 1] = args
 
-    RELOAD('jobs').send_job{
+    local Job = RELOAD'jobs'
+    local grep = Job:new{
         cmd = cmd,
+        silent = true,
         qf = {
             on_fail = {
                 open = true,
@@ -77,51 +76,23 @@ function M.send_grep_job(args)
             },
             jump = true,
             context = 'AsyncGrep',
-            title = cmd,
+            title = 'AsyncGrep',
             efm = vim.o.grepformat,
         },
-        opts = {
-            on_exit = function(jobid, rc, _)
-                local job = STORAGE.jobs[jobid]
-                local dump_to_qf = require'utils'.helpers.dump_to_qf
-
-                local streams = job.streams or {}
-                local stdout = streams.stdout or {}
-                local stderr = streams.stderr or {}
-
-                local qf_opts = job.qf or {}
-                qf_opts.context = qf_opts.context or cmd[1]
-                qf_opts.title = qf_opts.title or cmd[1]..' output'
-                if rc == 0 then
-                    if #stdout > 0 then
-                        qf_opts.lines = stdout
-                        dump_to_qf(qf_opts)
-                    else
-                        echowarn('No results matching: '..args)
-                    end
-                elseif rc ~= 0 and #stderr == 0 then
-                    echowarn('No results matching: '..args)
-                else
-                    if qf_opts.on_fail then
-                        if qf_opts.on_fail.open then
-                            qf_opts.open = rc ~= 0
-                        end
-                        if qf_opts.on_fail.jump then
-                            qf_opts.jump = rc ~= 0
-                        end
-                    end
-
-                    echoerr(('%s exited with code %s'):format(
-                        cmd[1],
-                        rc
-                    ))
-
-                    qf_opts.lines = stderr
-                    dump_to_qf(qf_opts)
-                end
-            end
-        },
     }
+
+    grep:add_callback(function(job, rc)
+        if rc == 0 and #job:output() == 0 then
+            echowarn('No matching results '..args)
+        elseif rc ~= 0 then
+            echoerr(debug.traceback(('%s exited with code %s'):format(
+                cmd[1],
+                rc
+            )))
+        end
+    end)
+    grep:start()
+
 end
 
 function M.opfun_grep(select, visual)
@@ -237,20 +208,15 @@ end
 
 local function get_files(path, is_git)
     local seeker = select_filelist(is_git, true)
-    RELOAD('jobs').send_job{
+    local Job = RELOAD('jobs')
+    local get_files = Job:new{
         cmd = seeker,
-        opts = {
-            cwd = path,
-            on_exit = function(jobid, rc, _)
-                local job = STORAGE.jobs[jobid]
-                if rc == 0 then
-                    if job.streams and #job.streams.stdout > 0 then
-                        M.filelists[path] = job.streams.stdout
-                    end
-                end
-            end
-        }
+        silent = true,
     }
+    get_files:callback_on_success(function(job)
+        STORAGE.filelists[path] = job:output()
+    end)
+    get_files:start()
 end
 
 function M.get_path_files()
@@ -263,7 +229,7 @@ function M.get_path_files()
         if rpath ~= '.' and
            rpath ~= cwd and
            not subpath_in_path(cwd, rpath) and
-           not M.filelists[rpath] then
+           not STORAGE.filelists[rpath] then
             get_files(rpath)
         end
     end

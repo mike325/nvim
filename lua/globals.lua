@@ -41,6 +41,9 @@ if not STORAGE then
         has_cjson = -1,
         jobs = {},
         autocmds = {},
+        filelists = {},
+        hosts = {},
+        remotes = {},
         mappings = {
             g = {},
             b = {},

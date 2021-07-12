@@ -803,47 +803,22 @@ set_command {
         end
 
         cmd = cmd .. args
-        local lint_win = nvim.get_current_win()
+        local Job = RELOAD('jobs')
 
-        RELOAD('jobs').send_job{
+        local lint = Job:new{
             cmd = cmd,
             qf = {
-                -- open = false,
+                on_fail = {
+                    jump = true,
+                    open = true,
+                },
                 loc = true,
-                win = lint_win,
-                jump = true,
+                win = nvim.get_current_win(),
                 context = 'AsyncLint',
-                title = cmd,
-            },
-            opts = {
-                on_exit = function(jobid, rc, _)
-                    local jobs = STORAGE.jobs[jobid]
-                    local streams = jobs.streams or {}
-                    local stdout = streams.stdout or {}
-                    local stderr = streams.stderr or {}
-                    if #stdout > 0 or #stderr > 0 then
-                        local lines
-                        if #streams.stderr > 0 then
-                            lines = streams.stderr
-                        else
-                            lines = streams.stdout
-                        end
-                        local qf_opts = jobs.qf or {}
-                        qf_opts.lines = lines
-
-                        require'utils'.helpers.dump_to_qf(qf_opts)
-                    else
-                        if rc == 0 then
-                            echomsg('Everything seems fine! ')
-                            vim.fn.setloclist(lint_win, {}, 'r')
-                        else
-                            echoerr('Lint failed !, exited with error code '..rc)
-                        end
-                    end
-                end
+                title = 'AsyncLint',
             },
         }
-
+        lint:start()
     end,
     args = {nargs = '*', force = true}
 }
@@ -987,12 +962,14 @@ if executable('scp') then
         rhs = function(host)
             host = get_host(host)
             local cmd = remote_cmd(host, true)
-            require'jobs'.send_job{
+            local Job = RELOAD'jobs'
+            local send_file = Job:new{
                 cmd = cmd,
                 opts = {
-                    pty = true,
-                },
+                    pty = true
+                }
             }
+            send_file:start()
         end,
         args = {
             nargs = '*',
@@ -1006,12 +983,14 @@ if executable('scp') then
         rhs = function(host)
             host = get_host(host)
             local cmd = remote_cmd(host, false)
-            require'jobs'.send_job{
+            local Job = RELOAD'jobs'
+            local get_file = Job:new{
                 cmd = cmd,
                 opts = {
-                    pty = true,
-                },
+                    pty = true
+                }
             }
+            get_file:start()
         end,
         args = {
             nargs = '*',

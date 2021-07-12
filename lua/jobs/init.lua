@@ -3,7 +3,9 @@ local echoerr    = require'utils.messages'.echoerr
 local echowarn   = require'utils.messages'.echowarn
 local clear_lst  = require'utils.tables'.clear_lst
 local dump_to_qf = require'utils.helpers'.dump_to_qf
--- local split      = require'utils'.strings.split
+local executable = require'utils.files'.executable
+local getcwd     = require'utils.files'.getcwd
+local realpath   = require'utils.files'.realpath
 
 local jobs = STORAGE.jobs
 
@@ -13,21 +15,10 @@ end
 
 local set_command = require'neovim.commands'.set_command
 
-local M ={}
+local Job = {}
+Job.__index = Job
 
-local function is_alive(id)
-    local ok, _ = pcall(vim.fn.jobpid, id)
-    return ok
-end
-
-local function cleanup(jobid, rc)
-    jobs[jobid].is_alive = false
-    if rc == 0 and jobs[jobid].clean then
-        jobs[jobid] = nil
-    end
-end
-
-function M.general_output_parser(jobid, data)
+local function general_output_parser(jobid, data)
     assert(type(data) == 'string' or type(data) == 'table', 'Not valid data: '..type(data))
     local input = ''
     local requested_input = false
@@ -57,105 +48,319 @@ function M.general_output_parser(jobid, data)
             end
             vim.fn.chansend(jobid, input)
         else
-            vim.defer_fn(function()
-                    M.kill_job(jobid)
-                end,
-                1
-            )
+            -- M.kill_job(jobid)
         end
     end
 end
 
-local function general_on_exit(jobid, rc, _)
+function Job:new(job)
+    assert(
+        (type(job) == type({}) and next(job) ~= nil) or (type(job) == type('') and #job > 0),
+        debug.traceback('Missing job data '..vim.inspect(job))
+    )
 
-    local stream
-    local cmd = type(jobs[jobid].cmd) == 'string' and jobs[jobid].cmd or table.concat(jobs[jobid].cmd, ' ')
+    local exe,args,cmd
 
-    if rc == 0 then
-        if jobs[jobid].qf == nil or (jobs[jobid].qf.open ~= true and jobs[jobid].qf.jump ~= true) then
-            print(('Job "%s" finished'):format(cmd))
+    if type(job) == type('') then
+        assert(#job > 0, debug.traceback('Missing command'))
+        cmd = job
+        local space = cmd:find(' ')
+        if space then
+            exe = cmd:sub(1, space - 1)
+            args = vim.split(cmd:sub(space + 1, #cmd), ' ')
+        else
+            exe = cmd
         end
-        if jobs[jobid].qf and jobs[jobid].streams and jobs[jobid].streams.stdout then
-            stream = jobs[jobid].streams.stdout
+    elseif type(job) == type({}) and vim.tbl_islist(job) then
+        assert(#job > 0, debug.traceback('Missing command'))
+        cmd = job
+        exe = cmd[1]
+        if #cmd > 1 then
+            args = vim.list_slice(cmd, 2, #cmd)
         end
     else
-        if jobs[jobid].qf == nil or (jobs[jobid].qf.open ~= true and jobs[jobid].qf.jump ~= true) then
-            echoerr(('Job "%s" failed, exited with %s'):format(cmd, rc))
+        assert(
+            type(job) == type({}) and not vim.tbl_islist(job),
+            debug.traceback('New must receive a table not an array')
+        )
+
+        if job.cmd and job.exe then
+            error(debug.traceback('Cannot have bot job.cmd and job.exe'))
         end
-        if jobs[jobid].streams then
-            if jobs[jobid].streams.stderr then
-                stream = jobs[jobid].streams.stderr
-            elseif jobs[jobid].opts.pty and jobs[jobid].streams.stdout then
-                stream = jobs[jobid].streams.stdout
+
+        exe = job.cmd or job.exe
+        args = job.args
+
+        assert(
+            (type(exe) == type('') or (type(exe) == type({}) and vim.tbl_islist(exe))) and #exe > 0,
+            debug.traceback('Invalid cmd value '..vim.inspect(exe)..' it must be a str or an array')
+        )
+
+        if args then
+            -- NOTE: allow exe = '' and (args = {} or args = '')
+            assert(
+                type(exe) == type('') and (type(args) == type('') or (type(args) == type({}) and vim.tbl_islist(args))),
+                debug.traceback('Invalid args, args must be either a string or an array and cmd must be a string')
+            )
+
+            if type(args) == type({}) then
+                cmd = {exe}
+                vim.list_extend(cmd, args)
+            else
+                cmd = ('%s %s'):format(exe, args)
+            end
+        else
+            cmd = exe
+            if type(cmd) == type({}) and #cmd > 1 then
+                exe = cmd[1]
+                args = vim.list_slice(cmd, 2, #cmd)
+            elseif type(cmd) == type('') and cmd:find('%s') then
+                local space = cmd:find(' ')
+                exe = space and cmd:sub(1, space - 1) or cmd
+                local tmp = vim.split(cmd, ' ')
+                args = vim.list_slide(tmp, 2, #tmp)
             end
         end
     end
 
-    if stream and #stream > 0 then
+    if not executable(exe) then
+        error(debug.traceback('Command '..exe..' is not executable or is not located inside the PATH'))
+    end
 
-        local qf_opts = jobs[jobid].qf or {}
+    local obj = {}
+    obj.exe = exe
+    obj.args = args
+    obj._cmd = cmd
 
-        qf_opts.context = qf_opts.context or cmd
-        qf_opts.title = qf_opts.title or cmd..' output'
-        qf_opts.lines = stream
-
-        if qf_opts.on_fail then
-            if qf_opts.on_fail.open then
-                qf_opts.open = rc ~= 0
-            end
-            if qf_opts.on_fail.jump then
-                qf_opts.jump = rc ~= 0
-            end
+    if type(job) == type({}) and not vim.tbl_islist(job) then
+        if job.interactive ~= nil then
+            assert(type(job.interactive) == type(true), debug.traceback('interactive must be a bool'))
+            obj.interactive = job.interactive
         end
 
-        dump_to_qf(qf_opts)
+        if job.opts then
+            assert(type(job.opts) == type({}), debug.traceback('job options must be a table'))
+            obj._opts = job.opts
+        end
+
+        obj._qf = job.qf
+
+        assert(
+            job.save_data == nil or type(job.save_data) == type(true),
+            debug.traceback('save_data arg must be a bool')
+        )
+        obj.save_data = job.save_data == nil and true or job.save_data
+
+        assert(
+            job.clear == nil or type(job.clear) == type(true),
+            debug.traceback('Clear arg must be a bool')
+        )
+        obj._clear = job.clear == nil and true or job.clear
+
+        assert(
+            job.timeout == nil or type(job.timeout) == type(1),
+            debug.traceback('Timeout arg must be an integer')
+        )
+        obj._timeout = job.timeout
+
+        assert(
+            job.silent == nil or type(job.silent) == type(true),
+            debug.traceback('Invalid silent arg '..vim.inspect(job.silent))
+       )
+        obj.silent = false
+        if job.silent ~= nil then
+            obj.silent = job.silent
+        end
     end
 
-    cleanup(jobid, rc)
+    obj._isalive = false
+    obj._fired = false
+    obj._id = -1
+    obj._pid = -1
+    obj._callbacks = {}
+
+    obj._output = {}
+    obj._stdout = {}
+    obj._stderr = {}
+
+    return setmetatable(obj, self)
+end
+
+function Job:output()
+  return self._output
+end
+
+function Job:stdout()
+  return self._stdout
+end
+
+function Job:stderr()
+  return self._stderr
+end
+
+function Job:start()
+    assert(not self._fired, debug.traceback( ('Job %s was already started'):format(self._id) ))
+
+    local function dump_data(_, rc, event)
+    end
+
+    local function general_on_exit(_, rc, event)
+        if rc == 0 then
+            print( ('Job %s succeed!'):format(self.exe) )
+        else
+            echoerr( ('Job %s failed :c exit with code: %d!'):format(self.exe, rc) )
+        end
+    end
+
+    local function general_on_data(data, name)
+
+        if type(data) == type('') then
+            data = vim.split(data, '\n')
+        end
+
+        vim.list_extend(self['_'..name], data)
+        vim.list_extend(self._output, data)
+    end
+
+    self._opts = self._opts or {}
+
+    -- local _user_on_start = self._opts.on_start
+    local _user_on_stdout = self._opts.on_stdout
+    local _user_on_stderr = self._opts.on_stderr
+    local _user_on_exit = self._opts.on_exit
+    local _cwd = self._opts.cwd or getcwd()
+
+    self._opts.cwd = realpath(_cwd)
+
+    local function on_exit_wrapper(_, rc, event)
+        self._isalive = false
+        self.rc = rc
+        jobs[tostring(self._id)] = nil
+
+        if _user_on_exit then
+            _user_on_exit(self, rc)
+        elseif not self.silent then
+            general_on_exit(_, rc, event)
+        end
+
+        if self._qf then
+            local qf_opts = self._qf
+
+            qf_opts.lines = self:output()
+            if qf_opts.on_fail then
+                if qf_opts.on_fail.open then
+                    qf_opts.open = rc ~= 0
+                end
+                if qf_opts.on_fail.jump then
+                    qf_opts.jump = rc ~= 0
+                end
+            end
+            require'utils'.helpers.dump_to_qf(qf_opts)
+        end
+
+        if self._callbacks and #self._callbacks > 0 then
+            for _, cb in pairs(self._callbacks) do
+                cb(self, rc)
+            end
+        end
+    end
+
+    local function on_stdout_wrapper(_, data, name)
+        general_on_data(data, name)
+        if _user_on_stdout then
+            _user_on_stdout(self, data)
+        end
+    end
+
+    local function on_stderr_wrapper(_, data, name)
+        general_on_data(data, name)
+        if _user_on_stderr then
+            _user_on_stderr(self, data)
+        end
+    end
+
+    self._opts.on_stdout = on_stdout_wrapper
+    self._opts.on_stderr = on_stderr_wrapper
+    self._opts.on_exit = on_exit_wrapper
+
+    self._id = vim.fn.jobstart(
+        self._cmd,
+        self._opts
+    )
+
+    if self._id == -1 then
+        error(debug.traceback( ('%s is not executable'):format(self._exe) ))
+    end
+
+    self._fired = true
+    self._isalive = true
+    self._pid = vim.fn.jobpid(self._id)
+
+    if self._timeout and self._timeout > 0 then
+        vim.defer_fn(function()
+            echowarn( ('Timeout ! stoping job %s'):format(self._id) )
+            self:stop()
+        end, self._timeout)
+    end
+
+    jobs[tostring(self._id)] = self
 
 end
 
-local function save_data(jobid, data, event)
-    if not jobs[jobid].streams then
-        jobs[jobid].streams = {}
-        jobs[jobid].streams[event] = {}
-    elseif not jobs[jobid].streams[event] then
-        jobs[jobid].streams[event] = {}
-    end
-
-    if type(data) == 'string' then
-        data = data:gsub('\t','  ')
-        data = vim.split(data, '[\r]?\n')
-    end
-
-    data = clear_lst(data)
-
-    if #data > 0 then
-        vim.list_extend(jobs[jobid].streams[event], data)
-    end
+function Job:stop()
+    assert(self._isalive, debug.traceback( ('Job %s is not running'):format(self._id) ))
+    -- vim.fn.chanclose(self._id)
+    vim.fn.jobstop(self._id)
 end
 
-local function general_on_data(jobid, data, event)
-    save_data(jobid, data, event)
-    if jobs[jobid].opts.pty then
-        M.general_output_parser(jobid, data)
-    end
+function Job:pid()
+    assert(self._isalive, debug.traceback( ('Job %s is not running'):format(self._id) ))
+    return self._pid
 end
 
-function M.kill_job(jobid)
+function Job:send(data)
+    assert(self._isalive, debug.traceback( ('Job %s is not running'):format(self._id) ))
+    vim.fn.chansend(self._id, data)
+end
+
+function Job:wait(timeout)
+    assert(self._isalive, debug.traceback( ('Job %s is not running'):format(self._id) ))
+    assert(
+        type(timeout) == type(1) or timeout == nil,
+        debug.traceback('Timeout must be either nil or a number in ms')
+    )
+    return vim.fn.jobwait(self._id, timeout)
+end
+
+function Job:add_callback(cb)
+    assert(vim.is_callable(cb), debug.traceback('Callback must be a function'))
+    table.insert(self._callbacks, cb)
+end
+
+function Job:callback_on_failure(cb)
+    assert(vim.is_callable(cb), debug.traceback('Callback must be a function'))
+    self:add_callback(function(job, rc)
+        if rc ~= 0 then cb(job, rc) end
+    end)
+end
+
+function Job:callback_on_success(cb)
+    assert(vim.is_callable(cb), debug.traceback('Callback must be a function'))
+    self:add_callback(function(job, rc)
+        if rc == 0 then cb(job) end
+    end)
+end
+
+local function kill_job(jobid)
     if not jobid then
         local ids = {}
         local cmds = {}
         local jobidx = 1
-        for id,opts in pairs(jobs) do
-            local running = is_alive(id)
-            if running then
-                ids[#ids + 1] = id
-                local cmd = type(opts.cmd) == 'string' and opts.cmd or table.concat(opts.cmd, ' ')
-                cmds[#cmds + 1] = ('%s: %s'):format(jobidx, cmd)
-                jobidx = jobidx + 1
-            end
-            jobs[id].is_alive = running
+        for idx,job in pairs(jobs) do
+            ids[#ids + 1] = idx
+            local cmd = type(job._cmd) == type('') and job._cmd or table.concat(job._cmd , ' ')
+            cmds[#cmds + 1] = ('%s: %s'):format(jobidx, cmd)
+            jobidx = jobidx + 1
         end
         if #cmds > 0 then
             local idx = vim.fn.inputlist(cmds)
@@ -165,154 +370,24 @@ function M.kill_job(jobid)
         end
     end
 
-    if type(jobid) == 'number' and jobid > 0 then
+    if type(jobid) == type('') and jobid:match('^%d+$') then
+        jobid = tonumber(jobid)
+    end
+
+    if type(jobid) == type(1) and jobid > 0 then
         pcall(vim.fn.jobstop, jobid)
     end
 end
 
-function M.send_job(job)
-    local cmd = job.cmd
-
-    if not cmd or (type(cmd) == 'table' and next(cmd) == nil) or (type(cmd) == 'string' and cmd == '') then
-        echoerr('Missing command')
-        return
-    elseif type(cmd) == 'table' and job.args ~= nil then
-        echoerr('Either use a cmd table or a cmd string with a table of args')
-        return
-    elseif job.args ~= nil and type(cmd) ~= type(job.args) then
-        echoerr('cmd and args must be the same type')
-        return
-    end
-
-    assert(job.async == nil or type(job.async) == 'boolean', 'Invalid async option: '..type(job.async))
-    assert(job.timeout == nil or type(job.timeout) == 'number', 'Invalid async option: '..type(job.timeout))
-
-    if job.async == false then
-        local win = require("floating").window()
-        local bufnr = require'neovim'.win.get_buf(win)
-        nvim.win.set_option(win, 'number', false)
-        nvim.win.set_option(win, 'relativenumber', false)
-        nvim.buf.set_option(bufnr, 'bufhidden', 'wipe')
-        if type(cmd) == 'table' then
-            if job.args ~= nil then
-                cmd = vim.list_extend(cmd, job.args)
-            end
-            cmd = table.concat(cmd, ' ')
-        elseif type(cmd) == 'string' and job.args ~= nil then
-            cmd = cmd .. ' ' .. job.args
-        end
-        nvim.command('terminal '..cmd)
-        nvim.ex.startinsert()
-    else
-        assert(not job.clean or type(job.clean) == type(true), 'Invalid Clean arg: '..type(job.clean))
-        assert(not job.server or type(job.server) == type(true), 'Invalid Server arg: '..type(job.server))
-        assert(not job.timeout or type(job.timeout) == type(1), 'Invalid Timeout arg: '..type(job.timeout))
-
-        local opts = job.opts or {}
-        local clean = type(job.clean) ~= 'boolean' and true or job.clean
-
-        job.server = job.server or false
-        if job.server then
-            job.timeout = 0
-            clean = false
-        end
-
-        if not opts.on_exit then
-            opts.on_exit = general_on_exit
-        else
-            local opts_on_exit = opts.on_exit
-            opts.on_exit = function(jobid, rc, event)
-                jobs[jobid].is_alive = false
-                opts_on_exit(jobid, rc, event)
-                if clean then
-                    cleanup(jobid, rc)
-                end
-            end
-        end
-
-        if not opts.on_stdout then
-            opts.on_stdout = general_on_data
-        elseif job.save_data then
-            local original_func = opts.on_stdout
-            opts.on_stdout = function(jobid, data, event)
-                save_data(jobid, data, event)
-                original_func(jobid, data, event)
-            end
-        end
-
-        if not opts.on_stderr then
-            opts.on_stderr = general_on_data
-        elseif job.save_data then
-            local original_func = opts.on_stderr
-            opts.on_stderr = function(jobid, data, event)
-                save_data(jobid, data, event)
-                original_func(jobid, data, event)
-            end
-        end
-
-        if not opts.on_stdin then
-            opts.on_stdin = general_on_data
-        elseif job.save_data then
-            local original_func = opts.on_stdin
-            opts.on_stdin = function(jobid, data, event)
-                save_data(jobid, data, event)
-                original_func(jobid, data, event)
-            end
-        end
-
-        if job.args then
-            if type(cmd) == 'table' then
-                cmd = vim.list_extend(cmd, job.args)
-            elseif type(cmd) == 'string' then
-                cmd = cmd .. ' ' .. job.args
-            end
-        end
-
-        if job.qf and job.qf.open == nil then
-            job.qf.open = false
-        end
-
-        if job.qf and job.qf.jump == nil then
-            job.qf.jump = false
-        end
-
-        local id = vim.fn.jobstart(
-            cmd,
-            opts
-        )
-
-        if id > 0 then
-            jobs[id] = {
-                cmd = cmd,
-                opts = opts,
-                save_data = job.save_data or false,
-                qf = job.qf,
-                clean = clean,
-                is_alive = true,
-                timeout = job.timeout or 0,
-            }
-            if job.timeout and job.timeout > 0 then
-                vim.defer_fn(function()
-                        if jobs[id].is_alive then
-                            M.kill_job(id)
-                        end
-                    end,
-                    job.timeout
-                )
-            end
-        end
-    end
-end
-
-set_command {
+set_command{
     lhs = 'KillJob',
-    rhs = function(jobid)
+    rhs = function(jobid, bang)
         if jobid == '' then
             jobid = nil
         end
-        M.kill_job(jobid)
+        kill_job(jobid)
     end,
-    args = {nargs = '?', force = true}
+    args = {nargs = '?', bang = true, force = true},
 }
 
-return M
+return Job

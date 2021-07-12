@@ -3,7 +3,7 @@ local M = {}
 function M.echoerr(msg)
     assert(
         (type(msg) == 'string' or (type(msg) == type({}) and vim.tbl_islist(msg))) and #msg > 0 ,
-        'Invalid message: '..vim.inspect(msg)
+        debug.traceback('Invalid message: '..vim.inspect(msg))
     )
     if type(msg) == type('') then
         msg = {msg}
@@ -21,7 +21,7 @@ end
 function M.echowarn(msg)
     assert(
         (type(msg) == 'string' or (type(msg) == type({}) and vim.tbl_islist(msg))) and #msg > 0 ,
-        'Invalid message: '..vim.inspect(msg)
+        debug.traceback('Invalid message: '..vim.inspect(msg))
     )
     if type(msg) == type('') then
         msg = {msg}
@@ -39,7 +39,7 @@ end
 function M.echomsg(msg)
     assert(
         (type(msg) == 'string' or (type(msg) == type({}) and vim.tbl_islist(msg))) and #msg > 0 ,
-        'Invalid message: '..vim.inspect(msg)
+        debug.traceback('Invalid message: '..vim.inspect(msg))
     )
     if type(msg) == type('') then
         msg = {msg}

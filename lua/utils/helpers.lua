@@ -897,8 +897,9 @@ function M.dump_to_qf(opts)
 
         local qf_cmds = opts.loc and qf_funcs['loc'] or qf_funcs['qf']
         local qf_type = opts.loc and 'loc' or 'qf'
-        local qf_open = opts.open
-        local qf_jump = opts.jump
+
+        local qf_open = opts.open or false
+        local qf_jump = opts.jump or false
 
         opts.loc = nil
         opts.open = nil

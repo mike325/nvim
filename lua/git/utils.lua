@@ -15,12 +15,10 @@ end
 -- local set_mapping = require'neovim.mappings'.set_mapping
 -- local get_mapping = require'neovim.mappings'.get_mapping
 
-local jobs = require'jobs'
-
 local M = {}
 
-function M.rm_colors(cmd)
-    vim.list_extend(cmd, {
+local function rm_colors(cmd)
+    return vim.list_extend(cmd or {}, {
         '-c', 'color.ui=off',
         '-c', 'color.branch=off',
         '-c', 'color.interactive=off',
@@ -31,73 +29,119 @@ function M.rm_colors(cmd)
     })
 end
 
-function M.get_git_dir(cmd)
+local function rm_pager(cmd)
+    return vim.list_extend(cmd or {}, {
+        '--no-pager',
+    })
+end
+
+local function get_git_dir(cmd)
     if vim.b.project_root and vim.b.project_root.is_git then
-        vim.list_extend(cmd, {'--git-dir', vim.b.project_root.git_dir})
+        return vim.list_extend(cmd or {}, {'--git-dir', vim.b.project_root.git_dir})
     end
+    return {}
 end
 
-function M.rm_paginate(cmd)
-    vim.list_extend(cmd, {'--no-pager'})
-end
+local function exec_async_gitcmd(data)
+    local Job = RELOAD'jobs'
 
-local function exec_async_gitcmd(cmd, gitcmd, jobopts)
-    local opts = jobopts or {pty = true}
-    -- if require'sys'.name == 'windows' then
-    --     cmd = table.concat(cmd, ' ')
-    -- end
-    jobs.send_job{
+    assert(type(data) == type({}), debug.traceback('Missing data !'))
+
+    local cmd = data.cmd
+    assert(type(cmd) == type({}), debug.traceback('Missing cmd !'))
+
+    local callbacks = data.callbacks
+    assert(
+        not callbacks or vim.is_callable(callbacks) or type(callbacks) == type({}),
+        debug.traceback('Invalid callbacks '..vim.inspect(callbacks))
+    )
+
+    local silent = data.silent
+    local gitcmd
+    for i=2,#cmd do
+        if cmd[i]:sub(1, 1) ~= '-' then
+            gitcmd = cmd[i]
+            break
+        end
+    end
+
+    local opts = data.opts or {pty = true}
+
+    if require'sys'.name == 'windows' then
+        cmd = table.concat(cmd, ' ')
+    end
+
+    local async_git = Job:new{
         cmd = cmd,
-        save_data = true,
-        opts = opts,
+        silent = silent,
         qf = {
             on_fail = {
                 open = true,
                 jump = false,
             },
-            open = false,
-            jump = false,
-            context = 'Git '..gitcmd,
-            title = 'Git '..gitcmd,
+            context = 'Git '..(gitcmd or ''),
+            title = 'Git '..(gitcmd or ''),
         },
     }
+    if callbacks then
+        callbacks = type(callbacks) ~= type({}) and {callbacks} or callbacks
+        for _, cb in pairs(callbacks) do
+            async_git:add_callback(cb)
+        end
+    end
+    async_git:start()
 end
 
 local function exec_sync_gitcmd(cmd, gitcmd)
     local ok, output = pcall(vim.fn.system, cmd)
-    return ok and output or error('Failed to execute: '..gitcmd..', '..output)
+    return ok and output or error(debug.traceback('Failed to execute: '..gitcmd..', '..output))
 end
 
 function M.get_git_cmd(gitcmd, args)
     local cmd = {'git'}
-    M.rm_colors(cmd)
-    M.get_git_dir(cmd)
-    M.rm_paginate(cmd)
-    cmd[#cmd + 1] = gitcmd
-    if type(args) == 'table' then
-        if vim.tbl_islist(args) then
-            vim.list_extend(cmd, args)
-        end
+    rm_colors(cmd)
+    get_git_dir(cmd)
+    rm_pager(cmd)
+    table.insert(cmd, gitcmd)
+    if type(args) == type({}) and vim.tbl_islist(args) then
+        vim.list_extend(cmd, args)
     end
     return cmd
 end
 
 function M.launch_gitcmd_job(opts)
-    assert(type(opts) == 'table', 'Options must be a table')
-    assert(type(opts.gitcmd) == 'string' and opts.gitcmd ~= '', 'Invalid gitcmd')
-    assert(not opts.args or vim.tbl_islist(opts.args), 'Invalid commad args, must be an array')
-    assert(not opts.jobopts or type(opts.jobopts) == 'table', 'Invalid commad job options, must be a table')
+    assert(type(opts) == type({}), debug.traceback('Options must be a table'))
+    assert(
+        type(opts.gitcmd) == type('') and opts.gitcmd ~= '',
+        debug.traceback('Invalid gitcmd')
+    )
+    assert(
+        not opts.args or vim.tbl_islist(opts.args),
+        debug.traceback('Invalid commad args, must be an array')
+    )
+    assert(
+        not opts.jobopts or type(opts.jobopts) == type({}),
+        debug.traceback('Invalid commad job options, must be a table')
+    )
 
     local gitcmd = opts.gitcmd
     local args = opts.args
-    local jobopts = opts.jobopts
 
     local cmd = M.get_git_cmd(gitcmd, args)
-    exec_async_gitcmd(cmd, gitcmd, jobopts)
+    exec_async_gitcmd{
+        cmd = cmd,
+        opts = opts.jobopts,
+        silent = opts.silent,
+        callbacks = opts.callbacks,
+    }
 end
 
 local function parse_status(status)
-    assert(type(status) == 'string' or vim.tbl_islist(status), 'Invalid status type: '..type(status))
+    assert(
+        type(status) == 'string' or vim.tbl_islist(status),
+        debug.traceback('Invalid status type: '..type(status))
+    )
+
     if type(status) == 'string' then
         status = split(status, '\n')
     end
@@ -155,7 +199,7 @@ local function parse_status(status)
 end
 
 function M.status(callback)
-    assert(not callback or type(callback) == 'function', 'Invalid callback')
+    assert(not callback or vim.is_callable(callback), debug.traceback('Invalid callback'))
 
     local gitcmd = 'status'
     local cmd = M.get_git_cmd(gitcmd, {
@@ -165,18 +209,18 @@ function M.status(callback)
     if not callback then
         return parse_status(exec_sync_gitcmd(cmd, gitcmd))
     end
-    exec_async_gitcmd(cmd, gitcmd, {
-        on_exit = function(jobid, rc, _)
-            local job = STORAGE.jobs[jobid]
-            if rc ~= 0 then
-                error(('Failed to get git status, %s'):format(
-                    table.concat(job.streams.stderr, '\n')
-                ))
+    exec_async_gitcmd{
+        cmd = cmd,
+        silent = true,
+        opts = {
+            on_exit = function(job, rc)
+                if rc ~= 0 then
+                    error(debug.traceback('Failed to get git status'))
+                end
+                vim.defer_fn(function() callback(parse_status(job:stdout())) end, 0)
             end
-            local status = job.streams.stdout
-            vim.defer_fn(function() callback(parse_status(status)) end, 0)
-        end
-    })
+        }
+    }
 end
 
 return M
