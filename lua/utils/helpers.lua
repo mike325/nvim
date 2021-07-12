@@ -9,7 +9,8 @@ local normalize_path   = require'utils.files'.normalize_path
 local getcwd           = require'utils.files'.getcwd
 local split_components = require'utils.strings'.split_components
 local echoerr          = require'utils.messages'.echoerr
--- local clear_lst        = require'utils.tables'.clear_lst
+local echowarn         = require'utils.messages'.echowarn
+local clear_lst        = require'utils.tables'.clear_lst
 local get_git_dir      = require'utils.system'.get_git_dir
 local split            = require'utils.strings'.split
 
@@ -159,11 +160,14 @@ local icons
 
 if not vim.env['NO_COOL_FONTS'] then
     icons = {
-        error = '', -- ✗
+        error = '✗', -- ✗ -- 🞮 -- 
         warn = '',
         info = '',
         hint = '',
         bug = '',
+        wait = '☕',
+        build = '⛭',
+        success = '✔',
         message = 'M',
         virtual_text = '❯',
         diff_add = '',
@@ -186,6 +190,9 @@ else
         info = 'I',
         hint = 'H',
         bug = 'B',
+        build = 'W',
+        wait = '...',
+        success = ':)',
         message = 'M',
         virtual_text = '➤',
         diff_add = '+',
@@ -905,6 +912,7 @@ function M.dump_to_qf(opts)
         opts.open = nil
         opts.jump = nil
         opts.cmdname = nil
+        opts.lines = clear_lst(opts.lines)
 
         if qf_type == 'qf' then
             qf_cmds.set_list({}, 'r', opts)
@@ -914,7 +922,15 @@ function M.dump_to_qf(opts)
             qf_cmds.set_list(win, {}, 'r', opts)
         end
 
-        if #opts.lines > 0 then
+        local info_tab = opts.tab
+
+        if info_tab and info_tab ~= nvim.get_current_tabpage() then
+            echowarn(('%s Updated! with %s info'):format(
+                qf_type == 'qf' and 'Qf' or 'Loc',
+                opts.context
+            ))
+            return
+        elseif #opts.lines > 0 then
             if qf_open then
                 local qf = (vim.o.splitbelow and 'botright' or 'topleft')..' '..qf_cmds.open
                 vim.cmd(qf)

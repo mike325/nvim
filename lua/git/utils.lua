@@ -81,7 +81,7 @@ local function exec_async_gitcmd(data)
                 open = true,
                 jump = false,
             },
-            context = 'Git '..(gitcmd or ''),
+            context = 'Git'..(gitcmd or ''),
             title = 'Git '..(gitcmd or ''),
         },
     }
