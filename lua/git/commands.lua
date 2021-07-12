@@ -55,7 +55,6 @@ function M.set_commands()
                     end
                 }
             }
-            pull:start()
         end,
         args = {nargs = '*', force = true, buffer = true}
     }

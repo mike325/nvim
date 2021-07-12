@@ -74,6 +74,7 @@ local function exec_async_gitcmd(data)
     local async_git = Job:new{
         cmd = cmd,
         silent = silent,
+        opts = opts,
         qf = {
             on_fail = {
                 open = true,
