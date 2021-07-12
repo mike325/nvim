@@ -224,8 +224,8 @@ elseif compe ~= nil then
             -- tags = true;
             nvim_lsp = lsp ~= nil;
             nvim_lua = true;
-            vsnip = plugins['vsnip'] ~= nil;
-            ultisnips = plugins['ultisnips'] ~= nil;
+            vsnip = plugins.vsnip ~= nil;
+            ultisnips = plugins.ultisnips ~= nil;
             snippets_nvim = plugins['snippets.nvim'] ~= nil;
         };
     }
