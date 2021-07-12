@@ -30,6 +30,7 @@ function M.setup()
                 },
             }
             cmake:start()
+            cmake:progress()
         end,
         args = {nargs = '+', force = true, buffer = true}
     }
@@ -89,6 +90,7 @@ function M.setup()
                 },
             }
             cmake:start()
+            cmake:progress()
         end,
         args = {nargs = '?', force = true, buffer = true, complete = 'customlist,neovim#cmake_build'}
     }
@@ -143,6 +145,7 @@ function M.setup()
             end)
 
             cmake:start()
+            cmake:progress()
         end,
         args = {nargs = '?', force = true, buffer = true, complete = 'customlist,neovim#cmake_build'}
     }

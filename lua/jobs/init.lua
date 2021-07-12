@@ -14,6 +14,7 @@ if not nvim.has('nvim-0.5') then
 end
 
 local set_command = require'neovim.commands'.set_command
+local set_autocmd = require'neovim.autocmds'.set_autocmd
 
 local Job = {}
 Job.__index = Job
@@ -178,6 +179,7 @@ function Job:new(job)
     obj._id = -1
     obj._pid = -1
     obj._callbacks = {}
+    obj._show_progress = false
 
     obj._output = {}
     obj._stdout = {}
@@ -220,6 +222,11 @@ function Job:start()
 
         vim.list_extend(self['_'..name], data)
         vim.list_extend(self._output, data)
+
+        if self._show_progress and vim.t.progress_win and self._buffer and nvim.buf.is_valid(self._buffer) then
+            nvim.buf.set_lines(self._buffer, -2, -1, false, data)
+        end
+
     end
 
     self._opts = self._opts or {}
@@ -235,6 +242,7 @@ function Job:start()
     local function on_exit_wrapper(_, rc, event)
         self._isalive = false
         self.rc = rc
+        self._show_progress = false
         jobs[tostring(self._id)] = nil
 
         if _user_on_exit then
@@ -263,6 +271,12 @@ function Job:start()
                 cb(self, rc)
             end
         end
+
+        if vim.t.progress_win then
+            nvim.win.close(vim.t.progress_win, false)
+            vim.t.progress_win = nil
+        end
+
     end
 
     local function on_stdout_wrapper(_, data, name)
@@ -321,6 +335,46 @@ end
 function Job:send(data)
     assert(self._isalive, debug.traceback( ('Job %s is not running'):format(self._id) ))
     vim.fn.chansend(self._id, data)
+end
+
+function Job:progress()
+    assert(self._isalive, debug.traceback( ('Job %s is not running'):format(self._id) ))
+    self._show_progress = true
+
+    local columns = vim.opt.columns:get()
+    local lines = vim.opt.lines:get()
+
+    if not self._buffer or not nvim.buf.is_valid(self.buffer) then
+        self._buffer = vim.api.nvim_create_buf(false, true)
+        nvim.buf.set_lines(self._buffer, 0, -1, true, self:output())
+    end
+
+    if not vim.t.progress_win then
+        vim.t.progress_win = vim.api.nvim_open_win(
+            self._buffer,
+            false,
+            {
+                anchor = 'SW',
+                relative = 'win',
+                row = lines - 6,
+                col = 2,
+                -- bufpos = {lines/2, 15},
+                height = 15,
+                width = columns - 5,
+                style = 'minimal',
+                border = 'single',
+                noautocmd = true,
+            }
+        )
+        set_autocmd{
+            event = 'WinClosed',
+            pattern = ''..vim.t.progress_win,
+            cmd = 'unlet t:progress_win',
+            group = 'JobProgress'
+        }
+    else
+        nvim.win.set_buf(vim.t.progress_win, self._buffer)
+    end
 end
 
 function Job:wait(timeout)

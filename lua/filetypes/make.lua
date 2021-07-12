@@ -21,6 +21,7 @@ function M.setup()
                 },
             }
             make:start()
+            make:progress()
         end,
         args = {nargs = '*', force = true, buffer = true}
     }

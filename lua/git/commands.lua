@@ -44,6 +44,7 @@ function M.set_commands()
             utils.launch_gitcmd_job{
                 gitcmd = 'pull',
                 args = args,
+                progress = true,
                 jobopts = {
                     pty = true,
                     on_exit = function(_, rc)
@@ -64,7 +65,11 @@ function M.set_commands()
         rhs = function(args)
             if args then args = split(args, ' ') end
             local utils = RELOAD'git.utils'
-            utils.launch_gitcmd_job{gitcmd = 'push', args = args}
+            utils.launch_gitcmd_job{
+                gitcmd = 'push',
+                args = args,
+                progress = true,
+            }
         end,
         args = {nargs = '*', force = true, buffer = true}
     }
@@ -74,7 +79,11 @@ function M.set_commands()
         rhs = function(args)
             if args then args = split(args, ' ') end
             local utils = RELOAD'git.utils'
-            utils.launch_gitcmd_job{gitcmd = 'fetch', args = args}
+            utils.launch_gitcmd_job{
+                gitcmd = 'fetch',
+                args = args,
+                progress = true,
+            }
         end,
         args = {nargs = '*', force = true, buffer = true}
     }

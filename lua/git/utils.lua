@@ -66,6 +66,7 @@ local function exec_async_gitcmd(data)
     end
 
     local opts = data.opts or {pty = true}
+    local progress = data.progress
 
     if require'sys'.name == 'windows' then
         cmd = table.concat(cmd, ' ')
@@ -91,6 +92,9 @@ local function exec_async_gitcmd(data)
         end
     end
     async_git:start()
+    if progress then
+        async_git:progress()
+    end
 end
 
 local function exec_sync_gitcmd(cmd, gitcmd)
@@ -133,6 +137,7 @@ function M.launch_gitcmd_job(opts)
         cmd = cmd,
         opts = opts.jobopts,
         silent = opts.silent,
+        progress = opts.progress,
         callbacks = opts.callbacks,
     }
 end
