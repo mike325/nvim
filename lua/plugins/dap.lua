@@ -189,7 +189,7 @@ set_mapping{
 
 set_mapping{
     mode = 'n',
-    lhs = '=s',
+    lhs = '=b',
     rhs = require'dap'.toggle_breakpoint,
     args = args,
 }
@@ -203,7 +203,7 @@ set_mapping{
 
 set_mapping{
     mode = 'n',
-    lhs = '=b',
+    lhs = '=L',
     rhs = list_breakpoints,
     args = args,
 }
@@ -267,6 +267,30 @@ set_command{
     lhs = 'DapInfo',
     rhs = require('dap.ui.widgets').hover,
     args = { force = true, }
+}
+
+set_command{
+    lhs = 'DapStepOver',
+    rhs = function(args)
+        require'dap'.step_over()
+    end,
+    args = {nargs = '?', force = true, }
+}
+
+set_command{
+    lhs = 'DapStepInto',
+    rhs = function(args)
+        require'dap'.step_into()
+    end,
+    args = {nargs = '?', force = true, }
+}
+
+set_command{
+    lhs = 'DapStepOut',
+    rhs = function(args)
+        require'dap'.step_out()
+    end,
+    args = {nargs = '?', force = true, }
 }
 
 return true
