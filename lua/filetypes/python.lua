@@ -2,7 +2,7 @@ local nvim = require'neovim'
 local sys = require'sys'
 
 local executable      = require'utils.files'.executable
-local dump_to_qf      = require'utils'.helpers.dump_to_qf
+-- local dump_to_qf      = require'utils'.helpers.dump_to_qf
 local echowarn        = require'utils.messages'.echowarn
 local echoerr         = require'utils.messages'.echoerr
 local is_file         = require'utils.files'.is_file
@@ -12,21 +12,21 @@ local plugins = require'neovim'.plugins
 
 local M = {}
 
-local function on_data(jobid, data, event)
-    local job = STORAGE.jobs[jobid]
-    if not job.streams then
-        job.streams = {}
-        job.streams[event] = {}
-    elseif not job.streams[event] then
-        job.streams[event] = {}
-    end
+-- local function on_data(jobid, data, event)
+--     local job = STORAGE.jobs[jobid]
+--     if not job.streams then
+--         job.streams = {}
+--         job.streams[event] = {}
+--     elseif not job.streams[event] then
+--         job.streams[event] = {}
+--     end
 
-    if type(data) == 'string' then
-        data = vim.split(data, '[\r]?\n')
-    end
+--     if type(data) == 'string' then
+--         data = vim.split(data, '[\r]?\n')
+--     end
 
-    vim.list_extend(job.streams[event], data)
-end
+--     vim.list_extend(job.streams[event], data)
+-- end
 
 local function parse_diff(output)
     local chunks = {}
@@ -99,7 +99,7 @@ function M.format()
     local first = vim.v.lnum
     local last = first + vim.v.count
     local bufname = nvim.buf.get_name(0)
-    local mode = nvim.get_mode()
+    -- local mode = nvim.get_mode()
 
     -- print('First:',first, 'Last:',last)
 
@@ -173,14 +173,21 @@ function M.setup()
 
             local get_path = Job:new{
                 cmd = pyprog,
-                args = {'-c', [['import sys; print(",".join(sys.path))']]},
+                args = {'-c', 'import sys; print(",".join(sys.path), flush=True)'},
                 silent = true,
             }
-            get_path:callback_on_sueccess(function(job)
-                local output = table.concat(job:output(), ',')
-                local path = vim.split(vim.api.nvim_buf_get_option(buf, 'path'), ',')
+            get_path:callback_on_success(function(job)
+                -- NOTE: output is an array of stdout lines, we must join the array in a str
+                --       split it into a single array
+                local output = vim.split(table.concat(job:output(), ','), ',')
+                -- BUG: No idea why this fails
+                -- local path = vim.split(vim.api.nvim_buf_get_option(buf, 'path'), ',')
+                local path = vim.opt_local.path:get()
+                if type(path) == type('') then
+                    path = vim.split(path, ',')
+                end
                 path = merge_uniq_list(path, output)
-                vim.api.nvim_buf_set_option(buf, 'path', table.concat(path, ',')..',')
+                vim.api.nvim_buf_set_option(buf, 'path', table.concat(path, ','))
             end)
             get_path:start()
         else
@@ -193,7 +200,7 @@ function M.setup()
             end
             local path = vim.split(vim.api.nvim_buf_get_option(buf, 'path'), ',')
             path = merge_uniq_list(path, vim.b.python_path)
-            vim.api.nvim_buf_set_option(buf, 'path', table.concat(path, ',')..',')
+            vim.api.nvim_buf_set_option(buf, 'path', table.concat(path, ','))
         end
     end
 
