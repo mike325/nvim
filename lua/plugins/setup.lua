@@ -23,7 +23,6 @@ packer.startup(function()
 
     use 'wbthomason/packer.nvim'
 
-    use { 'norcalli/nvim-terminal.lua' }
     use {'PProvost/vim-ps1'}
     use {'kurayama/systemd-vim-syntax'}
     use {'raimon49/requirements.txt.vim'}
@@ -474,6 +473,13 @@ packer.startup(function()
         'pwntester/octo.nvim',
         cond = function() return vim.fn.executable('gh') == 1 end,
         confg = function() require'octo'.setup() end,
+    }
+
+    use {
+        'norcalli/nvim-terminal.lua',
+        config = function()
+            require'terminal'.setup()
+        end,
     }
 
     -- use {
