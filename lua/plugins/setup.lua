@@ -436,7 +436,7 @@ packer.startup(function()
             -- require("dapui").close()
             -- require("dapui").toggle()
             set_command{
-                lhs = 'DapBar',
+                lhs = 'DapUI',
                 rhs = require("dapui").toggle,
                 args = { force = true, }
             }
