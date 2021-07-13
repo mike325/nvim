@@ -1,4 +1,9 @@
 local nvim       = require'neovim'
+
+if not nvim.has('nvim-0.5') then
+    return false
+end
+
 local echoerr    = require'utils.messages'.echoerr
 local echowarn   = require'utils.messages'.echowarn
 local get_icon = require'utils.helpers'.get_icon
@@ -8,18 +13,15 @@ local realpath   = require'utils.files'.realpath
 
 local jobs = STORAGE.jobs
 
-if not nvim.has('nvim-0.5') then
-    return false
-end
+local plugins = require'neovim'.plugins
 
-local set_command = require'neovim.commands'.set_command
-local set_mapping = require'neovim.mappings'.set_mapping
 local set_autocmd = require'neovim.autocmds'.set_autocmd
+require'jobs.mappings'
 
 local Job = {}
 Job.__index = Job
 
-local function general_output_parser(jobid, data)
+local function general_output_parser(job, data)
     assert(type(data) == 'string' or type(data) == 'table', 'Not valid data: '..type(data))
     local input = ''
     local requested_input = false
@@ -47,11 +49,27 @@ local function general_output_parser(jobid, data)
             if input:sub(#input, #input) ~= '\n' then
                 input = input .. '\n'
             end
-            vim.fn.chansend(jobid, input)
+            job:send(input)
         else
-            -- M.kill_job(jobid)
+            job:stop()
         end
     end
+end
+
+local function get_buffer(job)
+    local buf = vim.api.nvim_create_buf(false, true)
+
+    nvim.buf.set_option(buf, 'bufhidden', 'wipe')
+    if plugins['nvim-terminal.lua'] then
+        nvim.buf.set_option(buf, 'filetype', 'terminal')
+    end
+
+    nvim.buf.set_lines(buf, 0, -1, true, job:output())
+    nvim.buf.call(buf, function() nvim.ex['normal!']('G') end)
+
+    job._buffer = buf
+
+    return buf
 end
 
 function Job:new(job)
@@ -209,7 +227,7 @@ end
 function Job:start()
     assert(not self._fired, debug.traceback( ('Job %s was already started'):format(self._id) ))
 
-    local function general_on_exit(_, rc, event)
+    local function general_on_exit(_, rc)
         if rc == 0 then
             print( ('Job %s succeed!! %s'):format(self.exe, get_icon('success')) )
         else
@@ -228,10 +246,7 @@ function Job:start()
 
         if self._show_progress and vim.t.progress_win then
             if not self._buffer or not nvim.buf.is_valid(self._buffer) then
-                self._buffer = vim.api.nvim_create_buf(false, true)
-                nvim.buf.set_option(self._buffer, 'bufhidden', 'wipe')
-                nvim.buf.set_lines(self._buffer, 0, -1, true, self:output())
-                nvim.buf.call(self._buffer, function() nvim.ex['normal!']('G') end)
+                self._buffer = get_buffer(self)
             else
                 nvim.buf.set_lines(self._buffer, -2, -1, false, data)
                 nvim.buf.call(self._buffer, function() nvim.ex['normal!']('G') end)
@@ -263,7 +278,7 @@ function Job:start()
         if _user_on_exit then
             _user_on_exit(self, rc)
         elseif not self.silent then
-            general_on_exit(_, rc, event)
+            general_on_exit(_, rc)
         end
 
         if self._qf then
@@ -286,6 +301,9 @@ function Job:start()
             qf_opts.clear = qf_opts.clear == nil and true or qf_opts.clear
 
             if qf_opts.dump then
+                if vim.t.progress_win and self._tab == nvim.get_current_tabpage() then
+                    nvim.win.close(vim.t.progress_win, false)
+                end
                 require'utils'.helpers.dump_to_qf(qf_opts)
             elseif qf_opts.clear and qf_opts.on_fail then
                 local context = vim.fn.getqflist({context = 1}).context
@@ -301,10 +319,6 @@ function Job:start()
             end
         end
 
-        -- if vim.t.progress_win then
-        --     nvim.win.close(vim.t.progress_win, false)
-        -- end
-
     end
 
     local function on_stdout_wrapper(_, data, name)
@@ -312,6 +326,7 @@ function Job:start()
         if _user_on_stdout then
             _user_on_stdout(self, data)
         end
+        general_output_parser(self, data)
     end
 
     local function on_stderr_wrapper(_, data, name)
@@ -319,6 +334,7 @@ function Job:start()
         if _user_on_stderr then
             _user_on_stderr(self, data)
         end
+        general_output_parser(self, data)
     end
 
     self._opts.on_stdout = on_stdout_wrapper
@@ -376,10 +392,7 @@ function Job:progress()
     self._show_progress = true
 
     if not self._buffer or not nvim.buf.is_valid(self.buffer) then
-        self._buffer = vim.api.nvim_create_buf(false, true)
-        nvim.buf.set_option(self._buffer, 'bufhidden', 'wipe')
-        nvim.buf.set_lines(self._buffer, 0, -1, true, self:output())
-        nvim.buf.call(self._buffer, function() nvim.ex['normal!']('G') end)
+        self._buffer = get_buffer(self)
     end
 
     if not vim.t.progress_win then
@@ -404,6 +417,7 @@ function Job:progress()
                 zindex = 1, -- very low priority
             }
         )
+
         set_autocmd{
             event = 'WinClosed',
             pattern = ''..vim.t.progress_win,
@@ -411,6 +425,7 @@ function Job:progress()
             group = 'JobProgress',
             once    = true,
         }
+
     else
         nvim.win.set_buf(vim.t.progress_win, self._buffer)
     end
@@ -443,87 +458,5 @@ function Job:callback_on_success(cb)
         if rc == 0 then cb(job) end
     end)
 end
-
-local function kill_job(jobid)
-    if not jobid then
-        local ids = {}
-        local cmds = {}
-        local jobidx = 1
-        for idx,job in pairs(jobs) do
-            ids[#ids + 1] = idx
-            local cmd = type(job._cmd) == type('') and job._cmd or table.concat(job._cmd , ' ')
-            cmds[#cmds + 1] = ('%s: %s'):format(jobidx, cmd)
-            jobidx = jobidx + 1
-        end
-        if #cmds > 0 then
-            local idx = vim.fn.inputlist(cmds)
-            jobid = ids[idx]
-        else
-            echowarn('No jobs to kill')
-        end
-    end
-
-    if type(jobid) == type('') and jobid:match('^%d+$') then
-        jobid = tonumber(jobid)
-    end
-
-    if type(jobid) == type(1) and jobid > 0 then
-        pcall(vim.fn.jobstop, jobid)
-    end
-end
-
-set_command{
-    lhs = 'KillJob',
-    rhs = function(jobid, bang)
-        if jobid == '' then
-            jobid = nil
-        end
-        kill_job(jobid)
-    end,
-    args = {nargs = '?', bang = true, force = true},
-}
-
-set_mapping{
-    mode = 'n',
-    lhs = '=p',
-    rhs = function()
-        if not vim.t.progress_win then
-            local columns = vim.opt.columns:get()
-            local lines = vim.opt.lines:get()
-
-            local scratch = vim.api.nvim_create_buf(false, true)
-            nvim.buf.set_option(scratch, 'bufhidden', 'wipe')
-
-            vim.t.progress_win = vim.api.nvim_open_win(
-                scratch,
-                false,
-                {
-                    anchor = 'SW',
-                    relative = 'win',
-                    row = lines - 6,
-                    col = 2,
-                    -- bufpos = {lines/2, 15},
-                    height = 15,
-                    width = columns - 5,
-                    style = 'minimal',
-                    border = 'rounded',
-                    noautocmd = true,
-                    focusable = true,
-                    zindex = 1, -- very low priority
-                }
-            )
-            set_autocmd{
-                event = 'WinClosed',
-                pattern = ''..vim.t.progress_win,
-                cmd = 'unlet t:progress_win',
-                group = 'JobProgress',
-                once    = true,
-            }
-        else
-            nvim.win.close(vim.t.progress_win, false)
-        end
-    end,
-    args = {noremap = true, silent = true}
-}
 
 return Job

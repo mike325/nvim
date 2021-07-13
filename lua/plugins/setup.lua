@@ -451,30 +451,24 @@ packer.startup(function()
     }
 
     use {
-        'neovim/nvim-lspconfig',
-        config = function() require'plugins.lsp' end,
-        requires = {
-            {
-                'glepnir/lspsaga.nvim',
-                cond = function()
-                    return vim.env.VIM_MIN == nil and vim.g.minimal == nil
-                end,
-                config = function()
-                    require'plugins.lspsaga'
-                end,
-            },
-        }
-    }
-
-    use {
         'nvim-telescope/telescope.nvim',
         config = function() require'plugins.telescope' end,
         requires = {
             {'nvim-lua/popup.nvim'},
             {'nvim-lua/plenary.nvim'},
-        }
+        },
     }
 
+    use {
+        'glepnir/lspsaga.nvim',
+        cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
+    }
+
+    use {
+        'neovim/nvim-lspconfig',
+        config = function() require'plugins.lsp' end,
+        after = 'telescope.nvim',
+    }
 
     use {
         'pwntester/octo.nvim',

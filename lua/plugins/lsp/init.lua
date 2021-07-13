@@ -33,8 +33,39 @@ end
 
 local diagnostics = true
 
-local has_saga,_ = pcall(require,'lspsaga')
+local has_saga,saga = pcall(require,'lspsaga')
 local has_telescope,_ = pcall(require,'telescope')
+
+if has_saga then
+    saga.init_lsp_saga{
+        error_sign = get_icon('error'),
+        warn_sign = get_icon('warn'),
+        hint_sign = get_icon('hint'),
+        infor_sign = get_icon('info'),
+        -- dianostic_header_icon = '   ',
+        -- code_action_icon = ' ',
+        -- finder_definition_icon = '  ',
+        -- finder_reference_icon = '  ',
+        -- definition_preview_icon = '  ',
+        rename_prompt_prefix = get_icon('virtual_text'),
+        rename_action_keys = {
+            quit = '<ESC>',
+            exec = '<CR>',
+        },
+        code_action_keys = {
+            quit = '<ESC>',
+            exec = '<CR>',
+        },
+        finder_action_keys = {
+            open = '<CR>',
+            vsplit = 'V',
+            split = 'X',
+            quit = '<ESC>',
+            scroll_down = '<C-u>',
+            scroll_up = '<C-d>',
+        },
+    }
+end
 
 local sumneko_root_path = sys.cache..'/lspconfig/sumneko_lua/lua-language-server'
 local sumneko_binary = sumneko_root_path..'/bin/'..system_name..'/lua-language-server'
