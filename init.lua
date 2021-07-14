@@ -17,15 +17,14 @@ if vim.fn.has('win32') == 1 then
     -- vim.opt.shellxquote = ''
 end
 
-require'setup'()
-require'globals'
-
 vim.g.mapleader = ' '
-
 vim.cmd[[packadd! cfilter]]
 vim.cmd[[packadd! matchit]]
 
+require'globals'
+
 if vim.fn.executable('git') == 1 then
+    require'setup'()
     pcall(require, 'plugins.setup')
 elseif vim.env.VIM_MIN ~= nil or vim.g.minimal ~= nil or vim.env.VIM_BARE ~= nil or vim.g.bare ~= nil then
     -- local echoerr = require'utils.messages'.echoerr

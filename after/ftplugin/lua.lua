@@ -7,7 +7,7 @@ vim.opt_local.shiftwidth = 0
 vim.opt_local.softtabstop = -1
 
 vim.opt_local.includeexpr = [[substitute(v:fname,'\.','/','g')]]
-vim.opt_local.define = [[\s*\(local\s\+\)\?\(function\s\+\(\i\+[.:]\)\?\|\ze\i\+\s*=\s*\|\(\i\+[.:]\)\?\ze\s*=\s*\)]]
+vim.opt_local.define = [[^\s*\(local\s\+\)\?\(function\s\+\(\i\+[.:]\)\?\|\ze\i\+\s*=\s*\|\(\i\+[.:]\)\?\ze\s*=\s*\)]]
 
 vim.opt_local.suffixesadd:prepend('.lua')
 vim.opt_local.suffixesadd:prepend('init.lua')

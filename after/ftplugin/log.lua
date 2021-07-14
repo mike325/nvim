@@ -2,12 +2,7 @@ vim.opt_local.spell = false
 
 -- vim.opt_local.backup = false
 vim.opt_local.swapfile = false
-vim.opt_local.sidescroll = 1
-
-vim.opt_local.smarttab = false
-vim.opt_local.copyindent = false
-vim.opt_local.autoindent = false
-vim.opt_local.cindent = false
+-- vim.opt_local.sidescroll = 1
 
 vim.opt_local.readonly = true
 vim.opt_local.modifiable = false

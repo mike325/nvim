@@ -25,8 +25,6 @@ local ensure_installed = {
     'toml',
 }
 
-local disable = nil
-
 local commet_txtobj = nil
 if plugins['vim-textobj-comment'] == nil then
     commet_txtobj = '@comment.outer'
@@ -48,7 +46,6 @@ treesitter.setup{
     },
     highlight = {
         enable = true,
-        disable = disable,
     },
     textobjects = {
         swap = {
@@ -83,8 +80,8 @@ treesitter.setup{
                 ["aa"] = "@parameter.inner",
                 ["ir"] = "@loop.inner",        -- "repeat" mnemonic
                 ["ar"] = "@loop.outer",
-                ["ac"] = commet_txtobj,
-                ["ic"] = commet_txtobj,
+                ["ac"] = '@comment.outer',
+                ["ic"] = '@comment.inner',
             },
         },
         move = {
@@ -95,7 +92,7 @@ treesitter.setup{
                 ["]]"] = "@class.outer",
                 ["]r"] = "@loop.outer",
                 ["]a"] = "@parameter.inner",
-                -- ["]c"] = "@comment.outer",
+                -- ["]c"] = commet_txtobj,  -- TODO: Conflict with diff ]c,[c mappings
             },
             goto_next_end = {
                 ["]F"] = "@conditional.outer",
@@ -103,7 +100,7 @@ treesitter.setup{
                 ["]["] = "@class.outer",
                 ["]R"] = "@loop.outer",
                 ["]A"] = "@parameter.inner",
-                -- ["]C"] = "@comment.outer",
+                -- ["]C"] =  commet_txtobj,
             },
             goto_previous_start = {
                 ["[f"] = "@conditional.outer",
@@ -111,7 +108,7 @@ treesitter.setup{
                 ["[["] = "@class.outer",
                 ["[r"] = "@loop.outer",
                 ["[a"] = "@parameter.inner",
-                -- ["[c"] = "@comment.outer",
+                -- ["[c"] = commet_txtobj,
             },
             goto_previous_end = {
                 ["[F"] = "@conditional.outer",
@@ -119,7 +116,7 @@ treesitter.setup{
                 ["]]"] = "@class.outer",
                 ["[R"] = "@loop.outer",
                 ["[A"] = "@parameter.inner",
-                -- ["[C"] = "@comment.outer",
+                -- ["[C"] = commet_txtobj,
             },
         },
         -- lsp_interop = {
