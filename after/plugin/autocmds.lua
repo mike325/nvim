@@ -131,6 +131,6 @@ set_autocmd{
 set_autocmd{
     event   = 'BufWritePost',
     pattern = 'lua/plugins/setup.lua',
-    cmd     = 'PackerCompile',
+    cmd     = 'source lua/plugins/setup.lua | PackerCompile',
     group   = 'Reload',
 }

@@ -107,7 +107,7 @@ function! neovim#enter() abort
     elseif has#plugin('snippets.nvim') && l:snippet
         return ''
     elseif pumvisible()
-        let l:selected = complete_info()['selected'] !=# '-1'
+        let l:selected = complete_info()['selected'] !=# -1
         if has#plugin('YouCompleteMe')
             call feedkeys("\<C-y>")
             return ''

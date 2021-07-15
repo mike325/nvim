@@ -130,14 +130,14 @@ function Job:new(job)
             end
         else
             cmd = exe
-            if type(cmd) == type({}) and #cmd > 1 then
+            if type(cmd) == type({}) then
                 exe = cmd[1]
-                args = vim.list_slice(cmd, 2, #cmd)
-            elseif type(cmd) == type('') and cmd:find('%s') then
+                args = #cmd > 1 and vim.list_slice(cmd, 2, #cmd) or {}
+            elseif type(cmd) == type('') then
                 local space = cmd:find(' ')
                 exe = space and cmd:sub(1, space - 1) or cmd
                 local tmp = vim.split(cmd, ' ')
-                args = vim.list_slice(tmp, 2, #tmp)
+                args = #tmp > 1 and vim.list_slice(tmp, 2, #tmp) or {}
             end
         end
     end
@@ -195,6 +195,15 @@ function Job:new(job)
         if job.silent ~= nil then
             obj.silent = job.silent
         end
+
+        assert(
+            job.progress == nil or type(job.progress) == type(true),
+            debug.traceback('Invalid progress arg '..vim.inspect(job._show_progress))
+       )
+        obj._show_progress = false
+        if job.progress ~= nil then
+            obj._show_progress = job.progress
+        end
     end
 
     obj._isalive = false
@@ -202,7 +211,7 @@ function Job:new(job)
     obj._id = -1
     obj._pid = -1
     obj._callbacks = {}
-    obj._show_progress = false
+    obj._show_progress = obj._show_progress or false
     obj._tab = nvim.get_current_tabpage()
 
     obj._output = {}
@@ -224,6 +233,27 @@ function Job:stderr()
   return self._stderr
 end
 
+function Job:restart()
+    local silent = self.silent
+    self.silent = true
+
+    if self._isalive then
+        self:stop()
+    end
+
+    self.silent = silent
+
+    self._stderr = {}
+    self._stdout = {}
+    self._output = {}
+    self._isalive = false
+    self._fired = false
+    self._id = -1
+    self._pid = -1
+    -- self._tab = nvim.get_current_tabpage()
+    self:start()
+end
+
 function Job:start()
     assert(not self._fired, debug.traceback( ('Job %s was already started'):format(self._id) ))
 
@@ -241,7 +271,7 @@ function Job:start()
             data = vim.split(data, '\n')
         end
 
-        vim.list_extend(self['_'..name], data)
+        vim.list_extend(self['_'..(name or 'stdout')], data)
         vim.list_extend(self._output, data)
 
         if self._show_progress and vim.t.progress_win then

@@ -8,6 +8,8 @@ local executable  = require'utils.files'.executable
 local is_dir      = require'utils.files'.is_dir
 local split       = require'utils.strings'.split
 
+local echoerr = require'utils.messages'.echoerr
+
 local plugins = require'neovim'.plugins
 
 -- local set_command = require'neovim.commands'.set_command
@@ -35,6 +37,16 @@ local diagnostics = true
 
 local has_saga,saga = pcall(require,'lspsaga')
 local has_telescope,_ = pcall(require,'telescope')
+
+local function switch_source_header_splitcmd(bufnr, splitcmd)
+    bufnr = require'lspconfig'.util.validate_bufnr(bufnr)
+    local params = { uri = vim.uri_from_bufnr(bufnr) }
+    vim.lsp.buf_request(bufnr, 'textDocument/switchSourceHeader', params, function(err, _, result)
+        if err then error(debug.traceback(tostring(err))) end
+        if not result then echoerr"Corresponding file can’t be determined" return end
+        vim.api.nvim_command(splitcmd..' '..vim.uri_to_fname(result))
+    end)
+end
 
 if has_saga then
     saga.init_lsp_saga{
@@ -190,12 +202,12 @@ local servers = {
             },
         },
         {
-            exec = 'pyls',
+            exec = 'pylsp',
             options = {
                 cmd = {
-                    'pyls',
+                    'pylsp',
                     '--check-parent-process',
-                    '--log-file=' .. sys.tmp('pyls.log'),
+                    '--log-file=' .. sys.tmp('pylsp.log'),
                 },
                 capabilities = {
                     textDocument = {
@@ -205,7 +217,7 @@ local servers = {
                     }
                 },
                 settings = {
-                    pyls = {
+                    pylsp = {
                         plugins = {
                             mccabe = {
                                 threshold = 20,
@@ -286,7 +298,21 @@ local servers = {
                     completeUnimported = true,
                     clangdFileStatus = true
                 },
-            }
+            },
+            commands = {
+                Switch = {
+                    function() switch_source_header_splitcmd(0, "edit") end;
+                    description = "Open source/header in current buffer";
+                },
+                SwitchVSplit = {
+                    function() switch_source_header_splitcmd(0, "vsplit") end;
+                    description = "Open source/header in a new vsplit";
+                },
+                SwitchSplit = {
+                    function() switch_source_header_splitcmd(0, "split") end;
+                    description = "Open source/header in a new split";
+                }
+            },
         },
         {
             exec = 'ccls',
@@ -331,12 +357,6 @@ local function on_attach(client, bufnr)
     local lua_cmd = '<cmd>lua %s<CR>'
 
     local mappings = {
-        ['<C-]>'] = {
-            capability = 'goto_definition',
-            mapping = lua_cmd:format(
-                'vim.lsp.buf.definition()'
-            ),
-        },
         ['gd'] = {
             capability = 'declaration',
             mapping = lua_cmd:format('vim.lsp.buf.declaration()'),
@@ -357,7 +377,6 @@ local function on_attach(client, bufnr)
             capability = 'hover',
             mapping = lua_cmd:format(
                 has_saga and "require('lspsaga.hover').render_hover_doc()" or 'vim.lsp.buf.hover()'
-
             ),
         },
         ['<leader>r'] = {
@@ -379,8 +398,12 @@ local function on_attach(client, bufnr)
                 'vim.lsp.buf.signature_help()'
             ),
         },
-        ['=L'] = {
-            mapping = lua_cmd:format('vim.lsp.diagnostic.set_loclist()'),
+        ['=L'] = { mapping = lua_cmd:format('vim.lsp.diagnostic.set_loclist()'), },
+        ['<leader>s'] = {
+            mapping = lua_cmd:format(
+                (has_telescope and "require'telescope.builtin'.lsp_document_symbols{}") or
+                'vim.lsp.buf.document_symbol{}'
+            ),
         },
         ['=d'] = {
             mapping = lua_cmd:format(
@@ -389,26 +412,20 @@ local function on_attach(client, bufnr)
                 'vim.lsp.diagnostic.show_line_diagnostics()'
             ),
         },
-        [']d'] = {
-            mapping = lua_cmd:format(
-                has_saga and
-                "require'lspsaga.diagnostic'.lsp_jump_diagnostic_next()" or
-                'vim.lsp.diagnostic.goto_next{wrap=false}'
-            ),
-        },
-        ['[d'] = {
-            mapping = lua_cmd:format(
-                has_saga and
-                "require'lspsaga.diagnostic'.lsp_jump_diagnostic_prev()" or
-                'vim.lsp.diagnostic.goto_prev{wrap=false}'
-            ),
-        },
-        ['<leader>s'] = {
-            mapping = lua_cmd:format(
-                (has_telescope and "require'telescope.builtin'.lsp_document_symbols{}") or
-                'vim.lsp.buf.document_symbol{}'
-            ),
-        },
+        -- [']d'] = {
+        --     mapping = lua_cmd:format(
+        --         has_saga and
+        --         "require'lspsaga.diagnostic'.lsp_jump_diagnostic_next()" or
+        --         'vim.lsp.diagnostic.goto_next{wrap=false}'
+        --     ),
+        -- },
+        -- ['[d'] = {
+        --     mapping = lua_cmd:format(
+        --         has_saga and
+        --         "require'lspsaga.diagnostic'.lsp_jump_diagnostic_prev()" or
+        --         'vim.lsp.diagnostic.goto_prev{wrap=false}'
+        --     ),
+        -- },
         -- ['<space>wa'] = '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>',
         -- ['<space>wr'] = '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>',
         -- ['<space>wl'] = '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>',
@@ -611,7 +628,11 @@ for language,options in pairs(servers) do
         if exec or dir then
             local config = server.config or server.exec
             local init = server.options or {}
-            init.commands = commands
+            local cmds = commands
+            if server.commands then
+                cmds = vim.tbl_extend('force', vim.deepcopy(cmds), server.commands)
+            end
+            init.commands = cmds
             init.on_attach = on_attach
             lsp[config].setup(init)
             available_languages[#available_languages + 1] = language
@@ -637,7 +658,7 @@ vim.cmd('sign define LspDiagnosticsSignWarning     text='..get_icon('warn')..'  
 vim.cmd('sign define LspDiagnosticsSignHint        text='..get_icon('hint')..'  texthl=LspDiagnosticsSignHint linehl= numhl=')
 vim.cmd('sign define LspDiagnosticsSignInformation text='..get_icon('info')..'  texthl=LspDiagnosticsSignInformation linehl= numhl=')
 
-_G['vim'].lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
+vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
     vim.lsp.diagnostic.on_publish_diagnostics, {
         underline = true,
         virtual_text = {
@@ -648,5 +669,24 @@ _G['vim'].lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
         update_in_insert = true,
     }
 )
+
+-- set which codelens text levels to show
+
+local original_set_virtual_text = vim.lsp.diagnostic.set_virtual_text
+local set_virtual_text_custom = function(diagnostics, bufnr, client_id, sign_ns, opts)
+    opts = opts or {}
+    -- show all messages that are Warning and above (Warning, Error)
+    opts.severity_limit = "Error"
+    original_set_virtual_text(diagnostics, bufnr, client_id, sign_ns, opts)
+end
+vim.lsp.diagnostic.set_virtual_text = set_virtual_text_custom
+
+-- local orig_et_signs = vim.lsp.diagnostic.set_signs
+-- local set_signs_limited = function(diagnostics, bufnr, client_id, sign_ns, opts)
+--     opts = opts or {}
+--     opts.severity_limit = "Error"
+--     orig_set_signs(diagnostics, bufnr, client_id, sign_ns, opts)
+-- end
+-- vim.lsp.diagnostic.set_signs = set_signs_limiteds
 
 return #available_languages > 0 and available_languages or false

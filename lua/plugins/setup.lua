@@ -1,4 +1,8 @@
-local packer = require'packer'
+local ok,packer = pcall(require, 'packer')
+
+if not ok then
+    return false
+end
 
 packer.init{
     -- log = {level = 'debug'},
@@ -39,11 +43,13 @@ packer.startup(function()
             vim.opt.termguicolors = true
             require 'colorizer'.setup()
         end,
+        event = {'CursorHold', 'CursorMoved', 'InsertEnter'},
     }
 
     use {'tpope/vim-repeat', event = 'VimEnter'}
     use {'tpope/vim-apathy', event = 'VimEnter'}
     use {'tpope/vim-commentary', event = 'VimEnter'}
+
     use {
         'ojroques/vim-oscyank',
         event = 'VimEnter',
@@ -111,6 +117,7 @@ packer.startup(function()
         'tpope/vim-fugitive',
         cond = function() return vim.fn.executable('git') == 1 end,
     }
+
     use {'junegunn/gv.vim', cmd = 'GV', after = 'vim-fugitive'}
 
     use {
@@ -168,8 +175,6 @@ packer.startup(function()
 
     -- use {'rhysd/committia.vim'}
 
-    use {'folke/lsp-colors.nvim'}
-
     use {
         'sainnhe/sonokai',
         config = function()
@@ -188,32 +193,6 @@ packer.startup(function()
         end,
     }
 
-    -- use {
-    --     'marko-cerovac/material.nvim',
-    --     cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
-    --     event = {'CursorHold', 'CmdlineEnter'},
-    -- }
-    -- use {
-    --     'glepnir/zephyr-nvim',
-    --     cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
-    --     event = {'CursorHold', 'CmdlineEnter'},
-    -- }
-    -- use {
-    --     'ayu-theme/ayu-vim',
-    --     cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
-    --     event = {'CursorHold', 'CmdlineEnter'},
-    -- }
-    -- use {
-    --     'joshdick/onedark.vim',
-    --     cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
-    --     event = {'CursorHold', 'CmdlineEnter'},
-    -- }
-    -- use {'tiagovla/tokyodark.nvim'}
-    -- use {'bluz71/vim-moonfly-colors'}
-    -- use {'bluz71/vim-nightfly-guicolors'}
-    -- use {'nanotech/jellybeans.vim'}
-    -- use {'whatyouhide/vim-gotham'}
-
     use {
         'tommcdo/vim-lion',
         event = 'VimEnter',
@@ -224,14 +203,9 @@ packer.startup(function()
     use {
         'tpope/vim-abolish',
         cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
+        event = {'InsertEnter', 'CmdwinEnter'},
         -- TODO: configs
         -- config = function() require'plugins.abolish' end,
-    }
-
-    use {
-        'tpope/vim-dadbod',
-        cmd = 'DB',
-        cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
     }
 
     use {
@@ -287,9 +261,6 @@ packer.startup(function()
         run = function() vim.fn['firenvim#install'](0) end,
     }
 
-    -- use {'editorconfig/editorconfig-vim'}
-    -- use {'tpope/vim-endwise'}
-
     use {
         'ludovicchabant/vim-gutentags',
         cond = function()
@@ -310,8 +281,8 @@ packer.startup(function()
 
     use {'kana/vim-textobj-line', after = 'vim-textobj-user'}
     use {'kana/vim-textobj-entire', after = 'vim-textobj-user'}
-    use {'glts/vim-textobj-comment', after = 'vim-textobj-user'}
     use {'michaeljsmith/vim-indent-object', after = 'vim-textobj-user'}
+    -- use {'glts/vim-textobj-comment', after = 'vim-textobj-user'}
 
     use {
         'phaazon/hop.nvim',
@@ -327,8 +298,13 @@ packer.startup(function()
 
     use {
         'folke/todo-comments.nvim',
-        cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
+        cond = function()
+            local no_min = vim.env.VIM_MIN == nil and vim.g.minimal == nil
+            local has_rg = vim.fn.executable('rg') == 1
+            return no_min and has_rg
+        end,
         config = function() require'plugins.todos' end,
+        after = 'trouble.nvim',
     }
 
     use {
@@ -337,6 +313,7 @@ packer.startup(function()
         config = function() require'plugins.airline' end,
         after = 'firenvim',
     }
+
     use {'vim-airline/vim-airline-themes', after = 'vim-airline'}
 
     use {
@@ -458,6 +435,10 @@ packer.startup(function()
         },
     }
 
+    use {'folke/lsp-colors.nvim'}
+    use {'weilbith/nvim-lsp-smag'}
+    use {'weilbith/nvim-floating-tag-preview'}
+
     use {
         'glepnir/lspsaga.nvim',
         cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
@@ -483,6 +464,52 @@ packer.startup(function()
     }
 
     -- use {
+    --     'tpope/vim-dadbod',
+    --     cmd = 'DB',
+    --     cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
+    -- }
+
+    -- use {
+    --     'lewis6991/spellsitter.nvim',
+    --     config = function()
+    --         require('spellsitter').setup{
+    --             hl = 'Error',
+    --             captures = {'comment', 'string'},
+    --         }
+    --     end,
+    --     after = 'nvim-treesitter',
+    -- }
+
+    -- use {'editorconfig/editorconfig-vim'}
+    -- use {'tpope/vim-endwise'}
+
+    -- use {
+    --     'marko-cerovac/material.nvim',
+    --     cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
+    --     event = {'CursorHold', 'CmdlineEnter'},
+    -- }
+    -- use {
+    --     'glepnir/zephyr-nvim',
+    --     cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
+    --     event = {'CursorHold', 'CmdlineEnter'},
+    -- }
+    -- use {
+    --     'ayu-theme/ayu-vim',
+    --     cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
+    --     event = {'CursorHold', 'CmdlineEnter'},
+    -- }
+    -- use {
+    --     'joshdick/onedark.vim',
+    --     cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
+    --     event = {'CursorHold', 'CmdlineEnter'},
+    -- }
+
+    -- use {'tiagovla/tokyodark.nvim'}
+    -- use {'bluz71/vim-moonfly-colors'}
+    -- use {'bluz71/vim-nightfly-guicolors'}
+    -- use {'nanotech/jellybeans.vim'}
+    -- use {'whatyouhide/vim-gotham'}
+    -- use {
     --     'segeljakt/vim-silicon',
     --     cond = function() return vim.fn.executable('silicon') == 1 end,
     --     setup = function()
@@ -502,17 +529,6 @@ packer.startup(function()
     --             ['window-controls']    = true,
     --         }
     --     end,
-    -- }
-
-    -- use {
-    --     'lewis6991/spellsitter.nvim',
-    --     config = function()
-    --         require('spellsitter').setup{
-    --             hl = 'Error',
-    --             captures = {'comment', 'string'},
-    --         }
-    --     end,
-    --     after = 'nvim-treesitter',
     -- }
 
     -- use {
