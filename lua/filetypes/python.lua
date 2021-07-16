@@ -203,36 +203,15 @@ function M.setup()
             vim.api.nvim_buf_set_option(buf, 'path', table.concat(path, ','))
         end
     end
+end
 
-    -- if !exists('*s:PythonFix')
-    --     if !exists('*s:PythonReplace')
-    --         function! s:PythonReplace(pattern) abort
-    --             execute a:pattern
-    --             call histdel('search', -1)
-    --         endfunction
-    --     endif
-    --     function! s:PythonFix()
-    --         normal! m`
-    --         execute 'retab'
-    --         let l:scout = "'"
-    --         let l:dcout = '"'
-    --         let l:patterns = [
-    --         \   '%s/\s\zs==\ze\(\s\+\)\(None\|True\|False\)/is/g',
-    --         \   '%s/\s\zs!=\ze\(\s\+\)\(None\|True\|False\)/is not/g',
-    --         \   '%s/==\ze\(\s\+\)\(None\|True\|False\)/ is/g',
-    --         \   '%s/!=\ze\(\s\+\)\(None\|True\|False\)/ is not/g',
-    --         \   '%s/^\(\s\+\)\?\zs#\ze\([^ #!]\)/# /e',
-    --         \   '%s/\(except\):/\1 Exception:/e',
-    --         \   '%s/re\.compile(\zs\('.l:scout.'|"\)/r\1/g',
-    --         \]
-    --         for l:pattern in l:patterns
-    --             silent! call s:PythonReplace(l:pattern)
-    --         endfor
-    --         normal! ``
-    --     endfunction
-    -- endif
-    -- command! -buffer PythonFix call s:PythonFix()
-
+function M.pynvim_setup()
+    -- NOTE: This should speed up startup times
+    -- lets just asume that if we have this two, any user could install pynvim
+    if executable('python3') and executable('pip3') then
+        vim.g.python3_host_prog = vim.fn.exepath('python3')
+        vim.g.loaded_python_provider = 0
+    end
 end
 
 return M

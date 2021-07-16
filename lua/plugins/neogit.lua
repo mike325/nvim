@@ -6,16 +6,14 @@ if neogit == nil then
     return false
 end
 
+local has_diffview = load_module'diffview'
+
 neogit.setup {
-    -- mappings = {
-    --     -- modify status buffer mappings
-    --     status = {
-    --         -- Adds a mapping with "B" as key that does the "BranchPopup" command
-    --         -- ["B"] = "BranchPopup",
-    --         -- Removes the default mapping of "s"
-    --         -- ["s"] = "",
-    --     }
-    -- }
+    -- disable_signs = true,
+    disable_commit_confirmation = true,
+    integrations = {
+        diffview = has_diffview ~= nil,
+    },
 }
 
 return true

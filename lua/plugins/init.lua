@@ -41,6 +41,7 @@ packer.startup(function()
         'lervag/vimtex',
         cond = function() return vim.fn.executable('latexmk') == 1 end,
         setup = function() require'plugins.vimtex' end,
+        ft = {'bib', 'tex', 'latex', 'bibtex'},
     }
 
     use {
@@ -129,7 +130,7 @@ packer.startup(function()
     use {
         'lewis6991/gitsigns.nvim',
         cond = function() return vim.fn.executable('git') == 1 end,
-        requires = { 'nvim-lua/plenary.nvim' },
+        requires = 'nvim-lua/plenary.nvim',
         config = function()
             require('gitsigns').setup {
                 keymaps = {
