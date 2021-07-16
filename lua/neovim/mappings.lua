@@ -88,27 +88,39 @@ function M.get_mapping(mapping)
         return false
     end
 
-    local mappings
+    local mappings = {}
     local result = nil
 
     local lhs = transform_mapping(mapping.lhs)
-    local args = type(mapping.args) == 'table' and mapping.args or {mapping.args}
+    lhs= lhs:gsub('<leader>', vim.g.mapleader)
+
+    local args = type(mapping.args) == type({}) and mapping.args or {mapping.args}
     local mode = modes[mapping.mode] or mapping.mode
 
-    if args.buffer ~= nil and args.buffer == true then
-        mappings = api.nvim_buf_get_keymap(mode)
+    if args.buffer then
+        local buf = type(args.buffer) == type(true) and 0 or args.buffer
+        mappings = api.nvim_buf_get_keymap(buf, mode)
     else
         mappings = api.nvim_get_keymap(mode)
     end
 
     for _,map in pairs(mappings) do
         if map['lhs'] == lhs then
-            result = map['rhs']
+            result = map
             break
         end
     end
 
     return result
+end
+
+local function fix_mappings(args)
+    for attr,val in pairs(args) do
+        if type(val) == type(1) and (val == 1 or val == 0) then
+            args[attr] = val == 1
+        end
+    end
+    return args
 end
 
 function M.set_mapping(mapping)
@@ -126,6 +138,9 @@ function M.set_mapping(mapping)
     local args = type(mapping.args) == 'table' and mapping.args or {mapping.args}
     -- local mode = modes[mapping.mode] ~= nil and modes[mapping.mode] or mapping.mode
     local lhs = mapping.lhs
+    if lhs:find(vim.g.mapleader) then
+        lhs = lhs:gsub(vim.g.mapleader, '<leader>')
+    end
     local rhs = mapping.rhs
     local expr = false
     local scope, buf
@@ -133,9 +148,9 @@ function M.set_mapping(mapping)
 
     for attr, val in pairs(args) do
         if attr == 'expr' then
-            expr = true
+            expr = val
         elseif attr == 'buffer' then
-            buf = type(val) == 'number' and val or 0
+            buf = type(val) == type(0) and val or 0
         end
     end
 
@@ -146,7 +161,7 @@ function M.set_mapping(mapping)
             args.buffer = nil
 
             if rhs ~= nil and type(rhs) == 'string' then
-                api.nvim_buf_set_keymap(buf, mode, lhs, rhs, args)
+                api.nvim_buf_set_keymap(buf, mode, lhs, rhs, fix_mappings(args))
             elseif rhs ~= nil and type(rhs) == 'function' then
                 local wrapper = get_wrapper {
                     lhs   = lhs,
@@ -155,7 +170,7 @@ function M.set_mapping(mapping)
                     expr = expr,
                     buf = buf,
                 }
-                api.nvim_buf_set_keymap(buf, mode, lhs, wrapper, args)
+                api.nvim_buf_set_keymap(buf, mode, lhs, wrapper, fix_mappings(args))
             else
                 api.nvim_buf_del_keymap(buf, mode, lhs)
             end
@@ -163,7 +178,7 @@ function M.set_mapping(mapping)
             args = args == nil and {} or args
             scope = 'g'
             if rhs ~= nil and type(rhs) == 'string' then
-                api.nvim_set_keymap(mode, lhs, rhs, args)
+                api.nvim_set_keymap(mode, lhs, rhs, fix_mappings(args))
             elseif rhs ~= nil and type(rhs) == 'function' then
                 local wrapper = get_wrapper {
                     lhs   = lhs,
@@ -171,7 +186,7 @@ function M.set_mapping(mapping)
                     scope = scope,
                     expr = expr,
                 }
-                api.nvim_set_keymap(mode, lhs, wrapper, args)
+                api.nvim_set_keymap(mode, lhs, wrapper, fix_mappings(args))
             else
                 api.nvim_del_keymap(mode, lhs)
             end

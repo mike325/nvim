@@ -166,23 +166,6 @@ packer.startup(function()
     }
 
     use {
-        'rhysd/git-messenger.vim',
-        cond = function() return vim.fn.executable('git') == 1 end,
-        keys = '=m',
-        config = function()
-            vim.g.git_messenger_no_default_mappings = 1
-            vim.api.nvim_set_keymap(
-                'n',
-                '=m',
-                '<Plug>(git-messenger)',
-                {silent = true, nowait = true}
-            )
-        end,
-    }
-
-    -- use {'rhysd/committia.vim'}
-
-    use {
         'sainnhe/sonokai',
         config = function()
             vim.opt.termguicolors = true
@@ -469,6 +452,23 @@ packer.startup(function()
             require'terminal'.setup()
         end,
     }
+
+    -- use {
+    --     'rhysd/git-messenger.vim',
+    --     cond = function() return vim.fn.executable('git') == 1 end,
+    --     keys = '=m',
+    --     config = function()
+    --         vim.g.git_messenger_no_default_mappings = 1
+    --         vim.api.nvim_set_keymap(
+    --             'n',
+    --             '=m',
+    --             '<Plug>(git-messenger)',
+    --             {silent = true, nowait = true}
+    --         )
+    --     end,
+    -- }
+
+    -- use {'rhysd/committia.vim'}
 
     -- use {
     --     'tpope/vim-dadbod',

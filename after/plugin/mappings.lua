@@ -11,14 +11,13 @@ local realpath       = require'utils.files'.realpath
 local basename       = require'utils.files'.basename
 local read_json      = require'utils.files'.read_json
 
-local echomsg = require'utils.messages'.echomsg
+-- local echomsg = require'utils.messages'.echomsg
 local echoerr = require'utils.messages'.echoerr
 
 -- local set_autocmd = require'neovim.autocmds'.set_autocmd
 local set_abbr    = require'neovim.abbrs'.set_abbr
 local set_command = require'neovim.commands'.set_command
 local set_mapping = require'neovim.mappings'.set_mapping
--- local get_mapping = require'neovim.mappings'.get_mapping
 
 local noremap = {noremap = true}
 local noremap_silent = {noremap = true, silent = true}
@@ -554,23 +553,6 @@ set_command{
     end,
     args = {bang = true, force = true, nargs = 0}
 }
-
--- set_command{
---     lhs = 'BufClean',
---     rhs = function(bang)
---         local count = 0
---         for _, buf in pairs(nvim.list_bufs()) do
---             if not nvim.buf.is_valid(buf) or (bang and not nvim.buf.is_loaded(buf)) then
---                 nvim.ex['bwipeout!'](buf)
---                 count = count + 1
---             end
---         end
---         if count > 0 then
---             print('Deleted:', count, 'buffers')
---         end
---     end,
---     args = {bang = true, force = true}
--- }
 
 set_command{
     lhs = 'ModifiableToggle',

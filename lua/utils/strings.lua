@@ -1,11 +1,13 @@
 local M = {}
 
 function M.regex(str, regex)
-    return vim.api.nvim_eval(string.format([[ '%s'  =~# '%s' ]], str, regex)) == 1
+    assert(type(str) == type('') and type(regex) == type(''), debug.traceback('both args must be strings'))
+    return vim.api.nvim_eval(string.format([[ '%s' =~# '%s' ]], str, regex)) == 1
 end
 
 function M.iregex(str, regex)
-    return vim.api.nvim_eval(string.format([[ '%s'  =~? '%s' ]], str, regex)) == 1
+    assert(type(str) == type('') and type(regex) == type(''), debug.traceback('both args must be strings'))
+    return vim.api.nvim_eval(string.format([[ '%s' =~? '%s' ]], str, regex)) == 1
 end
 
 function M.split_components(str, pattern)

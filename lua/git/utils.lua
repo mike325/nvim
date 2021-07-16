@@ -13,7 +13,6 @@ end
 
 -- local set_command = require'neovim.commands'.set_command
 -- local set_mapping = require'neovim.mappings'.set_mapping
--- local get_mapping = require'neovim.mappings'.get_mapping
 
 local M = {}
 
