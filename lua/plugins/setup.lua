@@ -38,6 +38,12 @@ packer.startup(function()
     use {'kevinhwang91/nvim-bqf'}
 
     use {
+        'lervag/vimtex',
+        cond = function() return vim.fn.executable('latexmk') == 1 end,
+        setup = function() require'plugins.vimtex' end,
+    }
+
+    use {
         'norcalli/nvim-colorizer.lua',
         config = function()
             vim.opt.termguicolors = true
