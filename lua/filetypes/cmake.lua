@@ -14,12 +14,12 @@ local M = {}
 function M.setup()
     set_command{
         lhs = 'CMake',
-        rhs = function(args)
-            args = args or ''
+        rhs = function(...)
+            args = {...}
             local Job = RELOAD'jobs'
             local cmake = Job:new{
                 cmd = 'cmake',
-                args = vim.split(args, ' '),
+                args = args,
                 qf = {
                     on_fail = {
                         open = true,

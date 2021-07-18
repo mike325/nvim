@@ -5,12 +5,12 @@ local M = {}
 function M.setup()
     set_command{
         lhs = 'Make',
-        rhs = function(args)
-            args = args or ''
+        rhs = function(...)
+            args = {...}
             local Job = require'jobs'
             local make = Job:new{
                 cmd = 'make',
-                args = vim.split(args, ' '),
+                args = args,
                 qf = {
                     on_fail = {
                         open = true,

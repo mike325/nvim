@@ -26,12 +26,16 @@ local function get_wrapper(info)
 
     cmd = cmd..("['%s']"):format(lhs)
 
-    if bang and (nparams > 0 or varargs) then
-        cmd = cmd..("(%s, %s)"):format('<q-args>', [['<bang>' == '!']])
-    elseif not bang and (nparams > 0 or varargs) then
-        cmd = cmd..("(%s)"):format('<q-args>')
-    elseif bang and not (nparams > 0 or varargs) then
+    if bang and nparams == 0 and not varargs then
         cmd = cmd..("(%s)"):format([['<bang>' == '!']])
+    elseif not bang and nparams == 1 and not varargs then
+        cmd = cmd..("(%s)"):format('<q-args>')
+    elseif not bang and (nparams > 1 or varargs) then
+        cmd = cmd..("(%s)"):format('<f-args>')
+    elseif bang and nparams == 1 and not varargs then
+        cmd = cmd..("(%s, %s)"):format([['<bang>' == '!']], '<q-args>')
+    elseif bang and (nparams > 1 or varargs) then
+        cmd = cmd..("(%s, %s)"):format([['<bang>' == '!']], '<f-args>')
     else
         cmd = cmd..'()'
     end

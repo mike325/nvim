@@ -12,7 +12,6 @@ local echoerr = require'utils.messages'.echoerr
 
 local plugins = require'neovim'.plugins
 
--- local set_command = require'neovim.commands'.set_command
 -- local set_autocmd = require'neovim.autocmds'.set_autocmd
 local set_mapping = require'neovim.mappings'.set_mapping
 

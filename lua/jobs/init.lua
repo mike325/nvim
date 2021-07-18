@@ -41,6 +41,10 @@ local function general_output_parser(job, data)
             input = vim.fn.inputsecret(val)
             requested_input = true
             break
+        elseif val:match('%(yes/no%)%??%s*$') then
+            input = vim.fn.input(val)
+            requested_input = true
+            break
         end
     end
 

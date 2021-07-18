@@ -476,13 +476,14 @@ set_mapping{
 
 set_command{
     lhs = 'Terminal',
-    rhs = function(cmd)
+    rhs = function(...)
+        cmd = {...}
         -- local split = vim.opt.splitbelow:get() == true and 'botright' or 'topleft'
-        local is_empty = (cmd == nil or #cmd == 0) and true or false
+        local is_empty = #cmd == 0
         local shell
 
         if not is_empty then
-            shell = cmd
+            shell = table.concat(cmd, ' ')
         elseif sys.name == 'windows' then
             if iregex(vim.opt.shell:get(), [[^cmd\(\.exe\)\?$]]) then
                 shell = 'powershell -noexit -executionpolicy bypass '
@@ -507,7 +508,7 @@ set_command{
             nvim.ex.startinsert()
         end
     end,
-    args = {nargs='?', force=true}
+    args = {nargs='*', force=true}
 }
 
 set_command{
@@ -701,7 +702,7 @@ end
 
 set_command{
     lhs = 'MoveFile',
-    rhs = function(new_path, bang)
+    rhs = function(bang, new_path)
         local current_path = vim.fn.expand('%:p')
         local is_dir = require'utils'.files.is_dir
 
@@ -716,7 +717,7 @@ set_command{
 
 set_command{
     lhs = 'RenameFile',
-    rhs = function(args, bang)
+    rhs = function(bang, args)
         local current_path = vim.fn.expand('%:p')
         local current_dir = vim.fn.expand('%:h')
         require'utils'.files.rename(current_path, current_dir..'/'..args, bang)
@@ -734,7 +735,7 @@ set_command{
 
 set_command{
     lhs = 'RemoveFile',
-    rhs = function(args, bang)
+    rhs = function(bang, args)
         local current_buffer = vim.fn.expand('%')
         local target = args ~= '' and args or current_buffer
         require'utils'.files.delete(vim.fn.fnamemodify(target, ":p"), bang)
@@ -744,8 +745,8 @@ set_command{
 
 set_command {
     lhs = 'Grep',
-    rhs = function(args)
-        require'utils'.functions.send_grep_job(args)
+    rhs = function(...)
+        require'utils'.functions.send_grep_job({...})
     end,
     args = {nargs = '+', force = true}
 }
@@ -775,7 +776,8 @@ set_mapping{
 
 set_command {
     lhs = 'Lint',
-    rhs = function(args)
+    rhs = function(...)
+        args = {...}
 
         local ok, val = pcall(nvim.buf.get_option, 0, 'makeprg')
         local cmd = ok and val or vim.o.makeprg
@@ -784,7 +786,7 @@ set_command {
             cmd = cmd:gsub('%%', vim.fn.expand('%'))
         end
 
-        cmd = cmd .. args
+        cmd = cmd .. table.concat(args, ' ')
         local Job = RELOAD('jobs')
 
         local lint = Job:new{

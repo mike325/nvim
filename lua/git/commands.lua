@@ -38,8 +38,8 @@ function M.set_commands()
 
     set_command {
         lhs = 'GPull',
-        rhs = function(args)
-            if args then args = split(args, ' ') end
+        rhs = function(...)
+            args = {...}
             local utils = RELOAD'git.utils'
             utils.launch_gitcmd_job{
                 gitcmd = 'pull',
@@ -62,8 +62,8 @@ function M.set_commands()
 
     set_command {
         lhs = 'GPush',
-        rhs = function(args)
-            if args then args = split(args, ' ') end
+        rhs = function(...)
+            args = {...}
             local utils = RELOAD'git.utils'
             utils.launch_gitcmd_job{
                 gitcmd = 'push',
@@ -76,8 +76,8 @@ function M.set_commands()
 
     set_command {
         lhs = 'GFetch',
-        rhs = function(args)
-            if args then args = split(args, ' ') end
+        rhs = function(...)
+            args = {...}
             local utils = RELOAD'git.utils'
             utils.launch_gitcmd_job{
                 gitcmd = 'fetch',
@@ -90,7 +90,8 @@ function M.set_commands()
 
     set_command {
         lhs = 'GWrite',
-        rhs = function(args)
+        rhs = function(...)
+            args = {...}
             local bufname = vim.fn.bufname(nvim.get_current_buf())
             if sys.name == 'windows' then
                 bufname = bufname:gsub('\\', '/')
@@ -119,7 +120,6 @@ function M.set_commands()
                         echowarn('Nothing to do')
                     end
                 else
-                    if args then args = split(args, ' ') end
                     for i=1,#args do
                         if args[i] == '%' then
                             args = normalize(args[i])
@@ -137,7 +137,8 @@ function M.set_commands()
 
     set_command {
         lhs = 'GRead',
-        rhs = function(args)
+        rhs = function(...)
+            args = {...}
             RELOAD('git.utils').status(function(status)
                 local utils = RELOAD'git.utils'
                 if #args == 0 then
@@ -183,11 +184,11 @@ function M.set_commands()
                             args = args,
                         }
                     else
-                        echowarn('Nothing to do')
+                        echowarn'Nothing to do'
                     end
-                -- else
-                --     if args then args = split(args, ' ') end
-                --     utils.launch_gitcmd_job{gitcmd = 'add', args = args}
+                else
+                    echowarn'This is still WIP'
+                    utils.launch_gitcmd_job{gitcmd = 'add', args = args}
                 end
             end)
         end,
@@ -196,7 +197,8 @@ function M.set_commands()
 
     set_command {
         lhs = 'GRestore',
-        rhs = function(args)
+        rhs = function(...)
+            args = {...}
             RELOAD('git.utils').status(function(status)
                 local utils = RELOAD'git.utils'
                 if #args == 0 then
@@ -223,7 +225,6 @@ function M.set_commands()
                         echowarn('Nothing to do')
                     end
                 else
-                    if args then args = split(args, ' ') end
                     for i=1,#args do
                         if args[i] == '%' then
                             args = normalize(args[i])
@@ -234,7 +235,7 @@ function M.set_commands()
                     end
                     utils.launch_gitcmd_job{
                         gitcmd = 'reset',
-                        args = {'HEAD', args},
+                        args = vim.list_extend({'HEAD'}, args),
                         jobopts = {
                             on_exit = function(_, rc)
                                 if rc ~= 0 then

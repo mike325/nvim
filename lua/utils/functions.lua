@@ -63,6 +63,9 @@ end
 
 function M.send_grep_job(args)
     local cmd = split(vim.bo.grepprg or vim.o.grepprg, ' ')
+    if type(args) == type({}) then
+        args = table.concat(args, ' ')
+    end
     cmd[#cmd + 1] = args
 
     local Job = RELOAD'jobs'

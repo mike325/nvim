@@ -431,7 +431,10 @@ function M.find_project_root(path)
 end
 
 function M.is_git_repo(root)
-    assert(type(root) == 'string' and root ~= '', ([[Not a path: "%s"]]):format(root))
+    assert(
+        type(root) == type('') and root ~= '',
+        debug.traceback(([[Not a path: "%s"]]):format(root))
+    )
     if not executable('git') then
         return false
     end
@@ -451,8 +454,8 @@ function M.dprint(...)
 end
 
 function M.check_version(sys_version, version_target)
-    assert(type(sys_version) == type({}), 'System version must be an array')
-    assert(type(version_target) == type({}), 'Checking version must be an array')
+    assert(type(sys_version) == type({}), debug.traceback('System version must be an array'))
+    assert(type(version_target) == type({}), debug.traceback('Checking version must be an array'))
 
     for i,_ in pairs(version_target) do
 
