@@ -41,7 +41,7 @@ function M.merge_uniq_list(dest, src)
 end
 
 function M.clear_lst(lst)
-    assert(vim.tbl_islist(lst), debug.traceback('Not a list'))
+    assert(vim.tbl_islist(lst), debug.traceback('clear_lst works only with array like tables'))
     local tmp = {}
 
     for _,val in pairs(lst) do
@@ -55,11 +55,13 @@ function M.clear_lst(lst)
 end
 
 function M.str_to_clean_tbl(cmd_string)
+    assert(type(cmd_string) == type(''), debug.traceback('cmd must be a string'))
     return M.clear_lst(vim.split(vim.trim(cmd_string), ' ', true))
 end
 
 -- NOTE: Took from http://lua-users.org/wiki/CopyTable
 function M.shallowcopy(orig)
+    assert(type(orig) == type({}), debug.traceback('shallowcopy receives a table'))
     local copy
     if type(orig) == type({}) then
         copy = {}
@@ -73,6 +75,7 @@ function M.shallowcopy(orig)
 end
 
 function M.deepcopy(orig)
+    assert(type(orig) == type({}), debug.traceback('deepcopy receives a table'))
     local copy
     if type(orig) == type({}) then
         copy = {}
