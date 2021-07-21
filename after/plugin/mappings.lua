@@ -736,8 +736,7 @@ set_command{
 set_command{
     lhs = 'RemoveFile',
     rhs = function(bang, args)
-        local current_buffer = vim.fn.expand('%')
-        local target = args ~= '' and args or current_buffer
+        local target = args ~= '' and args or vim.fn.expand('%')
         require'utils'.files.delete(vim.fn.fnamemodify(target, ":p"), bang)
     end,
     args = {force = true, bang = true, nargs = '?', complete = 'file'}

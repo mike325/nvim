@@ -62,24 +62,37 @@ def _createLogger(
         class PrimitiveFormatter(logging.Formatter):
             """Logging colored formatter, adapted from https://stackoverflow.com/a/56944256/3638629"""
 
-            grey = '\x1b[38;21m'
-            green = '\x1b[32m'
-            magenta = '\x1b[35m'
-            blue = '\x1b[38;5;39m'
-            yellow = '\x1b[38;5;226m'
-            red = '\x1b[38;5;196m'
-            bold_red = '\x1b[31;1m'
-            reset = '\x1b[0m'
-
-            def __init__(self, fmt):
+            def __init__(self, fmt, log_colors=None):
                 super().__init__()
                 self.fmt = fmt
+
+                colors = {
+                    'grey': '\x1b[38;21m',
+                    'green': '\x1b[32m',
+                    'magenta': '\x1b[35m',
+                    'purple': '\x1b[35m',
+                    'blue': '\x1b[38;5;39m',
+                    'yellow': '\x1b[38;5;226m',
+                    'red': '\x1b[38;5;196m',
+                    'bold_red': '\x1b[31;1m',
+                    'reset': '\x1b[0m',
+                }
+
+                if log_colors is None:
+                    log_colors = {}
+
+                log_colors['DEBUG'] = log_colors['DEBUG'] if 'DEBUG' in log_colors else 'magenta'
+                log_colors['INFO'] = log_colors['INFO'] if 'INFO' in log_colors else 'green'
+                log_colors['WARNING'] = log_colors['WARNING'] if 'WARNING' in log_colors else 'yellow'
+                log_colors['ERROR'] = log_colors['ERROR'] if 'ERROR' in log_colors else 'red'
+                log_colors['CRITICAL'] = log_colors['CRITICAL'] if 'CRITICAL' in log_colors else 'bold_red'
+
                 self.FORMATS = {
-                    logging.DEBUG: self.magenta + self.fmt + self.reset,
-                    logging.INFO: self.green + self.fmt + self.reset,
-                    logging.WARNING: self.yellow + self.fmt + self.reset,
-                    logging.ERROR: self.red + self.fmt + self.reset,
-                    logging.CRITICAL: self.bold_red + self.fmt + self.reset
+                    logging.DEBUG: colors[log_colors['DEBUG']] + self.fmt + colors['reset'],
+                    logging.INFO: colors[log_colors['INFO']] + self.fmt + colors['reset'],
+                    logging.WARNING: colors[log_colors['WARNING']] + self.fmt + colors['reset'],
+                    logging.ERROR: colors[log_colors['ERROR']] + self.fmt + colors['reset'],
+                    logging.CRITICAL: colors[log_colors['CRITICAL']] + self.fmt + colors['reset']
                 }
 
             def format(self, record):
@@ -101,7 +114,13 @@ def _createLogger(
         color='%(log_color)s' if has_color else '',
         # reset='%(reset)s' if has_color else '',
     )
-    stdout_format = Formatter(logformat)
+    stdout_format = Formatter(logformat, log_colors={
+        'DEBUG': 'purple',
+        'INFO': 'green',
+        'WARNING': 'yellow',
+        'ERROR': 'red',
+        'CRITICAL': 'red',
+    })
     stdout_handler.setFormatter(stdout_format)
 
     _log.addHandler(stdout_handler)
