@@ -48,6 +48,24 @@ treesitter.setup{
         enable = true,
     },
     textobjects = {
+        select = {
+            enable = true,
+            lookahead = true,
+            keymaps = {
+                ["af"] = "@conditional.outer",
+                ["if"] = "@conditional.inner",
+                ["am"] = "@function.outer",    -- Same as [m, ]m "method"
+                ["im"] = "@function.inner",
+                ["ak"] = "@class.outer",
+                ["ik"] = "@class.inner",
+                ["ia"] = "@parameter.inner",
+                ["aa"] = "@parameter.inner",
+                ["ir"] = "@loop.inner",        -- "repeat" mnemonic
+                ["ar"] = "@loop.outer",
+                ["ac"] = '@comment.outer',
+                ["ic"] = '@comment.inner',
+            },
+        },
         swap = {
             enable = true,
             swap_next = {
@@ -67,65 +85,42 @@ treesitter.setup{
                 ["<leader><leader>m"] = "@function.outer",
             },
         },
-        select = {
-            enable = true,
-            keymaps = {
-                ["af"] = "@conditional.outer",
-                ["if"] = "@conditional.inner",
-                ["am"] = "@function.outer",    -- Same as [m, ]m "method"
-                ["im"] = "@function.inner",
-                ["ak"] = "@class.outer",
-                ["ik"] = "@class.inner",
-                ["ia"] = "@parameter.inner",
-                ["aa"] = "@parameter.inner",
-                ["ir"] = "@loop.inner",        -- "repeat" mnemonic
-                ["ar"] = "@loop.outer",
-                ["ac"] = '@comment.outer',
-                ["ic"] = '@comment.inner',
-            },
-        },
         move = {
             enable = true,
-            goto_next_start = {
-                ["]f"] = "@conditional.outer",
-                ["]m"] = "@function.outer",
-                ["]]"] = "@class.outer",
-                ["]r"] = "@loop.outer",
-                ["]a"] = "@parameter.inner",
-                -- ["]c"] = commet_txtobj,  -- TODO: Conflict with diff ]c,[c mappings
-            },
-            goto_next_end = {
-                ["]F"] = "@conditional.outer",
-                ["]M"] = "@function.outer",
-                ["]["] = "@class.outer",
-                ["]R"] = "@loop.outer",
-                ["]A"] = "@parameter.inner",
-                -- ["]C"] =  commet_txtobj,
-            },
+            set_jumps = true,
             goto_previous_start = {
                 ["[f"] = "@conditional.outer",
                 ["[m"] = "@function.outer",
-                ["[["] = "@class.outer",
+                ["[k"] = "@class.outer",
                 ["[r"] = "@loop.outer",
                 ["[a"] = "@parameter.inner",
                 -- ["[c"] = commet_txtobj,
             },
+            goto_next_start = {
+                ["]f"] = "@conditional.outer",
+                ["]m"] = "@function.outer",
+                ["]k"] = "@class.outer",
+                ["]r"] = "@loop.outer",
+                ["]a"] = "@parameter.inner",
+                -- ["]c"] = commet_txtobj,  -- TODO: Conflict with diff ]c,[c mappings
+            },
             goto_previous_end = {
                 ["[F"] = "@conditional.outer",
                 ["[M"] = "@function.outer",
-                ["]]"] = "@class.outer",
+                ["]K"] = "@class.outer",
                 ["[R"] = "@loop.outer",
                 ["[A"] = "@parameter.inner",
                 -- ["[C"] = commet_txtobj,
             },
+            goto_next_end = {
+                ["]F"] = "@conditional.outer",
+                ["]M"] = "@function.outer",
+                ["[K"] = "@class.outer",
+                ["]R"] = "@loop.outer",
+                ["]A"] = "@parameter.inner",
+                -- ["]C"] =  commet_txtobj,
+            },
         },
-        -- lsp_interop = {
-        --     enable = true,
-        --     peek_definition_code = {
-        --         ["df"] = "@function.outer",
-        --         ["dF"] = "@class.outer",
-        --     },
-        -- },
     },
     playground = {
         enable = true,

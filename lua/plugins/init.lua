@@ -371,9 +371,9 @@ packer.startup(function()
             return vim.fn.executable('gcc') == 1 or vim.fn.executable('clang') == 1
         end,
         requires = {
-            'nvim-treesitter/nvim-treesitter-refactor',
-            'nvim-treesitter/nvim-treesitter-textobjects',
-            'nvim-treesitter/playground',
+            {'nvim-treesitter/playground'},
+            {'nvim-treesitter/nvim-treesitter-refactor'},
+            {'nvim-treesitter/nvim-treesitter-textobjects'},
         }
     }
 

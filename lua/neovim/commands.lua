@@ -33,9 +33,9 @@ local function get_wrapper(info)
     elseif not bang and (nparams > 1 or varargs) then
         cmd = cmd..("(%s)"):format('<f-args>')
     elseif bang and nparams == 2 and not varargs then
-        cmd = cmd..("(%s, %s)"):format([['<bang>' == '!']], 'empty("<q-args>") ? "" : <q-args>')
+        cmd = cmd..("(%s, %s)"):format([['<bang>' == '!']], [[#{<q-args>} > 0 and <q-args> or ""]])
     elseif bang and (nparams > 2 or varargs) then
-        cmd = cmd..("(%s, %s)"):format([['<bang>' == '!']], 'empty("<f-args>") ? "" : <f-args>')
+        cmd = cmd..("(%s, %s)"):format([['<bang>' == '!']], [[#{<f-args>} > 0 and <f-args> or ""]])
     else
         cmd = cmd..'()'
     end
