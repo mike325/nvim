@@ -55,7 +55,7 @@ packer.startup(function()
 
     use {'tpope/vim-repeat', event = 'VimEnter'}
     use {'tpope/vim-apathy', event = 'VimEnter'}
-    use {'tpope/vim-commentary', event = 'VimEnter'}
+    -- use {'tpope/vim-commentary', event = 'VimEnter'}
 
     use {
         'ojroques/vim-oscyank',
@@ -272,7 +272,7 @@ packer.startup(function()
     use {'kana/vim-textobj-line', after = 'vim-textobj-user'}
     use {'kana/vim-textobj-entire', after = 'vim-textobj-user'}
     use {'michaeljsmith/vim-indent-object', after = 'vim-textobj-user'}
-    -- use {'glts/vim-textobj-comment', after = 'vim-textobj-user'}
+    use {'glts/vim-textobj-comment', after = 'vim-textobj-user'}
 
     use {
         'phaazon/hop.nvim',
@@ -379,23 +379,19 @@ packer.startup(function()
 
     use {
         'mfussenegger/nvim-dap',
-        config = function()
-            require'plugins.dap'
-        end
+        config = function() require'plugins.dap' end,
     }
 
     use {
         'theHamsta/nvim-dap-virtual-text',
-        setup = function()
-            vim.g.dap_virtual_text = true
-        end,
+        setup = function() vim.g.dap_virtual_text = true end,
         after = 'nvim-dap'
     }
 
     use {
         'rcarriga/nvim-dap-ui',
         config = function()
-            require'dapui'.setup()
+            require'dapui'.setup{}
             local set_command = require'neovim.commands'.set_command
             local set_mapping = require'neovim.mappings'.set_mapping
             -- require("dapui").open()
@@ -448,9 +444,7 @@ packer.startup(function()
 
     use {
         'norcalli/nvim-terminal.lua',
-        config = function()
-            require'terminal'.setup()
-        end,
+        config = function() require'terminal'.setup() end,
     }
 
     -- use {

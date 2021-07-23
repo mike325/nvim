@@ -19,6 +19,8 @@ local set_abbr    = require'neovim.abbrs'.set_abbr
 local set_command = require'neovim.commands'.set_command
 local set_mapping = require'neovim.mappings'.set_mapping
 
+local plugins = require'neovim'.plugins
+
 local noremap = {noremap = true}
 local noremap_silent = {noremap = true, silent = true}
 
@@ -77,7 +79,7 @@ set_mapping{ mode = 'n', lhs = '<leader>9', rhs = '9gt', args = noremap }
 set_mapping{ mode = 'n', lhs = '<leader>0', rhs = '<cmd>tablast<CR>', args = noremap }
 set_mapping{ mode = 'n', lhs = '<leader><leader>n', rhs = '<cmd>tabnew<CR>', args = noremap }
 
-set_mapping{ mode = 'n', lhs = '-', rhs = '<cmd>Explore<CR>' }
+set_mapping{ mode = 'n', lhs = '-', rhs = '<cmd>Explore<CR>', args = noremap}
 
 set_mapping{ mode = 'n', lhs = '&', rhs = '<cmd>&&<CR>', args = noremap }
 set_mapping{ mode = 'x', lhs = '&', rhs = '<cmd>&&<CR>', args = noremap }
@@ -1047,3 +1049,30 @@ set_command{
     end,
     args = {force = true}
 }
+
+if not plugins['vim-commentary'] then
+    set_mapping{
+        mode = 'n',
+        lhs = 'gc',
+        rhs = '<cmd>set opfunc=neovim#comment<CR>g@',
+        args = noremap_silent,
+    }
+
+    set_mapping{
+        mode = 'v',
+        lhs = 'gc',
+        rhs = ':<C-U>call neovim#comment(visualmode(), v:true)<CR>',
+        args = noremap_silent,
+    }
+
+    set_mapping{
+        mode = 'n',
+        lhs = 'gcc',
+        rhs = function()
+            local cursor = nvim.win.get_cursor(0)
+            require'utils.functions'.toggle_comments(cursor[1] - 1, cursor[1])
+            nvim.win.set_cursor(0, cursor)
+        end,
+        args = noremap_silent,
+    }
+end

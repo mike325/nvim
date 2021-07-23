@@ -62,8 +62,8 @@ treesitter.setup{
                 ["aa"] = "@parameter.inner",
                 ["ir"] = "@loop.inner",        -- "repeat" mnemonic
                 ["ar"] = "@loop.outer",
-                ["ac"] = '@comment.outer',
-                ["ic"] = '@comment.inner',
+                ["ac"] = commet_txtobj,
+                ["ic"] = commet_txtobj,
             },
         },
         swap = {
