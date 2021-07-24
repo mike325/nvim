@@ -226,15 +226,26 @@ function Job:new(job)
 end
 
 function Job:output()
-  return self._output
+    return self._output
+end
+
+function Job:is_empty()
+    local is_empty = true
+    for _, v in pairs(self._output) do
+        if #v > 0 then
+            is_empty = false
+            break
+        end
+    end
+    return is_empty
 end
 
 function Job:stdout()
-  return self._stdout
+    return self._stdout
 end
 
 function Job:stderr()
-  return self._stderr
+    return self._stderr
 end
 
 function Job:restart()

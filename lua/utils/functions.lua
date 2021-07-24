@@ -66,11 +66,13 @@ function M.send_grep_job(args)
         type(args) == type('') or type(args) == type({}),
         debug.traceback('Invalid args'..vim.inspect(args))
     )
+
     local cmd = split(vim.bo.grepprg or vim.o.grepprg, ' ')
+
     if type(args) == type({}) then
         vim.list_extend(cmd, args)
     else
-        cmd[#cmd + 1] = args
+        table.insert(cmd, args)
     end
 
     local Job = RELOAD'jobs'
@@ -90,13 +92,18 @@ function M.send_grep_job(args)
     }
 
     grep:add_callback(function(job, rc)
-        if rc == 0 and #job:output() == 0 then
-            echowarn('No matching results '..args)
+        local search = type(args) == type({}) and args[#args] or args
+        if rc == 0 and job:is_empty() then
+            echowarn('No matching results '..search)
         elseif rc ~= 0 then
-            echoerr(debug.traceback(('%s exited with code %s'):format(
-                cmd[1],
-                rc
-            )))
+            if job:is_empty() then
+                echowarn('No matching results '..search)
+            else
+                echoerr(('%s exited with code %s'):format(
+                    cmd[1],
+                    rc
+                ))
+            end
         end
     end)
     grep:start()
