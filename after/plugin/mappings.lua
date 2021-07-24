@@ -688,14 +688,15 @@ else
     set_command{
         lhs = 'Chmod',
         rhs = function(mode)
-            local filename = vim.fn.expand('%')
-            local files = require'utils'.files
             if not mode:match('^%d+$') then
                 echoerr('Not a valid permissions mode: '..mode)
                 return
             end
-            if files.is_file(filename) then
-                files.chmod(filename, mode)
+            local filename = vim.fn.expand('%')
+            local is_file = require'utils'.files.is_file
+            local chmod = require'utils'.files.chmod
+            if is_file(filename) then
+                chmod(filename, mode)
             end
         end,
         args = {nargs=1, force=true}

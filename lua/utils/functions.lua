@@ -24,6 +24,13 @@ function M.make_executable()
 
     local shebang = nvim.buf.get_lines(0, 0, 1, true)[1]
     if not shebang or not shebang:match('^#!.+') then
+        set_autocmd{
+            event   = 'BufWritePre',
+            pattern = ('<buffer=%d>'):format(nvim.win.get_buf(0)),
+            cmd     = [[lua require'utils'.functions.make_executable()]],
+            group   = 'MakeExecutable',
+            once    = true,
+        }
         return
     end
 
@@ -37,15 +44,11 @@ function M.make_executable()
         end
     end
 
-    M.exec_on_save()
-end
-
-function M.exec_on_save()
     set_autocmd{
         event   = 'BufWritePost',
         pattern = ('<buffer=%d>'):format(nvim.win.get_buf(0)),
-        cmd     = ([[lua require'utils'.functions.chmod_exec()]]),
-        group   = 'LuaAutocmds',
+        cmd     = [[lua require'utils'.functions.chmod_exec()]],
+        group   = 'MakeExecutable',
         once    = true,
     }
 end

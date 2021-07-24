@@ -4,6 +4,7 @@ import argparse
 import logging
 import os
 import sys
+from typing import Union
 # from subprocess import PIPE, Popen
 # from datetime import datetime
 
@@ -32,10 +33,8 @@ _header = """
 _VERSION = '0.1.0'
 _AUTHOR = 'Mike'
 
-# _log = None
-_log = logging.getLogger('MainLogger')
-_log.setLevel(logging.DEBUG)
-_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+_log = None
+# _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 _SCRIPTNAME = os.path.basename(__file__)
 _log_file = os.path.splitext(_SCRIPTNAME)[0] + '.log'
 
@@ -43,7 +42,10 @@ _log_file = os.path.splitext(_SCRIPTNAME)[0] + '.log'
 def _createLogger(
         stdout_level: int = logging.INFO,
         file_level: int = logging.DEBUG,
-        color: bool = True):
+        color: bool = True,
+        filename: str = 'dummy.log',
+        name: str = 'MainLogger'
+    ):
     """ Creaters logging obj
 
     stdout_level: int: logging level displayed into the terminal
@@ -51,7 +53,8 @@ def _createLogger(
     color: bool: Enable/Disable color console output
 
     """
-    global _log
+    logger = logging.getLogger(name)
+    logger.setLevel(logging.DEBUG)
 
     try:
         from colorlog import ColoredFormatter as ColorFormatter
@@ -123,24 +126,26 @@ def _createLogger(
     })
     stdout_handler.setFormatter(stdout_format)
 
-    _log.addHandler(stdout_handler)
+    logger.addHandler(stdout_handler)
 
     if file_level > 0 and file_level < 100:
 
-        with open(_log_file, 'a') as log:
+        with open(filename, 'a') as log:
             log.write(_header)
             # log.write(f'\nDate: {datetime.datetime.date()}')
             log.write(f'\nAuthor:   {_AUTHOR}\nVersion:  {_VERSION}\n\n')
 
-        file_handler = logging.FileHandler(filename=_log_file)
+        file_handler = logging.FileHandler(filename=filename)
         file_handler.setLevel(file_level)
         file_format = logging.Formatter('%(levelname)-8s | %(filename)s: [%(funcName)s] - %(message)s')
         file_handler.setFormatter(file_format)
 
-        _log.addHandler(file_handler)
+        logger.addHandler(file_handler)
+
+    return logger
 
 
-def _str_to_logging(level) -> int:
+def _str_to_logging(level: Union[int, str]) -> int:
     """ Convert logging level string to a logging number
 
     :level: str: integer representation or a valid logging string
@@ -154,22 +159,25 @@ def _str_to_logging(level) -> int:
 
     """
 
-    try:
-        level = abs(int(level) - 100)
-    except Exception:
-        level = level.lower()
-        if level == "debug" or level == 'verbose':
-            level = logging.DEBUG
-        elif level == "info":
-            level = logging.INFO
-        elif level == "warn" or level == "warning":
-            level = logging.WARN
-        elif level == "error":
-            level = logging.ERROR
-        elif level == "critical":
-            level = logging.CRITICAL
-        else:
-            level = 100
+    if isinstance(level, int):
+        level = abs(level - 100)
+    elif isinstance(level, str):
+        try:
+            level = abs(int(level) - 100)
+        except Exception:
+            level = level.lower()
+            if level == "debug" or level == 'verbose':
+                level = logging.DEBUG
+            elif level == "info":
+                level = logging.INFO
+            elif level == "warn" or level == "warning":
+                level = logging.WARN
+            elif level == "error":
+                level = logging.ERROR
+            elif level == "critical":
+                level = logging.CRITICAL
+            else:
+                level = 100
 
     return level
 
@@ -256,6 +264,8 @@ def main():
     :returns: int: exit code, 0 in success any other integer in failure
 
     """
+    global _log
+
     args = _parseArgs()
 
     if args.show_version:
@@ -268,10 +278,11 @@ def main():
     stdout_level = stdout_level if not args.quiet else 0
     file_level = file_level if not args.quiet else 0
 
-    _createLogger(
+    _log = _createLogger(
         stdout_level=_str_to_logging(stdout_level),
         file_level=_str_to_logging(file_level),
         color=args.no_color,
+        filename=_log_file,
     )
 
     # _log.debug('This is a DEBUG message')
@@ -292,4 +303,9 @@ def main():
 if __name__ == "__main__":
     exit(main())
 else:
-    pass
+    _log = _createLogger(
+        stdout_level=_str_to_logging('INFO'),
+        file_level=_str_to_logging('DEBUG'),
+        color=True,
+        filename=_log_file,
+    )

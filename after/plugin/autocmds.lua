@@ -2,17 +2,17 @@ local set_autocmd = require'neovim.autocmds'.set_autocmd
 
 if require'sys'.name ~= 'windows' then
     set_autocmd{
-        event   = 'BufNewFile',
+        event   = {'BufReadPost'},
         pattern = '*',
         cmd     = [[lua require'utils'.functions.make_executable()]],
-        group   = 'LuaAutocmds',
+        group   = 'MakeExecutable',
     }
 
     set_autocmd{
         event   = 'Filetype',
         pattern = 'python,lua,sh,bash,zsh,tcsh,csh,ruby,perl',
         cmd     = [[lua require'utils'.functions.make_executable()]],
-        group   = 'LuaAutocmds',
+        group   = 'MakeExecutable',
     }
 end
 

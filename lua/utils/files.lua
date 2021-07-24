@@ -349,6 +349,14 @@ end
 
 function M.chmod(path, mode, base)
     if not is_windows then
+        assert(
+            type(path) == type('') and path ~= '',
+            debug.traceback('Missing path')
+        )
+        assert(
+            (type(mode) == type('') and path ~= '') or type(mode) == type(0),
+            debug.traceback('Missing permissions')
+        )
         base = base == nil and 8 or base
         uv.fs_chmod(path, tonumber(mode, base))
     end
