@@ -54,9 +54,18 @@ local function func_handle(info)
             funcs.b[bufnr] = {}
         end
         funcs.b[bufnr][lhs] = rhs
+
+        if not vim.b.wipe_cmds then
+            vim.cmd(
+                ([[autocmd BufWipeout <buffer=%s> lua STORAGE.commands.b['%s'] = nil ]]):format(bufnr, bufnr)
+            )
+            vim.b.wipe_cmds = true
+        end
+
     else
         funcs.g[lhs] = rhs
     end
+
 
 end
 
@@ -104,7 +113,7 @@ function M.set_command(command)
     end
     cmd[#cmd + 1] = lhs
 
-    if type(rhs) == 'string' then
+    if type(rhs) == type('') then
         cmd[#cmd + 1] = rhs
     elseif type(rhs) == 'function' then
         local nparams = debug.getinfo(rhs).nparams
@@ -141,7 +150,7 @@ function M.set_command(command)
         echowarn('Command not found: '..lhs)
     end
 
-    if rhs ~= 'string' and ok then
+    if type(rhs) ~= type('') and ok then
         func_handle {
             rhs   = rhs,
             lhs   = lhs,

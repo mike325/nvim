@@ -75,6 +75,14 @@ local function func_handle(info)
             funcs.b[bufnr] = set_modes(funcs.b[bufnr])
         end
         funcs.b[bufnr][mode][lhs] = rhs
+
+        if not vim.b.wipe_maps then
+            vim.cmd(
+                ([[autocmd BufWipeout <buffer=%s> lua STORAGE.mappings.b['%s'] = nil ]]):format(bufnr, bufnr)
+            )
+            vim.b.wipe_maps = true
+        end
+
     else
         funcs.g[mode][lhs] = rhs
     end
