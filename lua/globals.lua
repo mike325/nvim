@@ -21,11 +21,14 @@ _G['PASTE'] = function(data)
     vim.paste(data, -1)
 end
 
-_G['PERF'] = function(func, msg)
-    assert(vim.is_callable(func), 'Invalid func ref: '..vim.inspect(func))
+_G['PERF'] = function(msg, ...)
+    local args = {...}
+    assert(#args > 0 and vim.is_callable(args[1]), 'Invalid func ref')
     assert(not msg or type(msg) == type(''), 'Invalid message: '..vim.inspect(msg))
+    local func = args[1]
+    table.remove(args, 1)
     local start = os.clock()
-    local data = func()
+    local data = func(unpack(args))
     msg = msg or 'Func reference elpse time:'
     print(msg, ('%.2f s'):format(os.clock() - start) )
     return data

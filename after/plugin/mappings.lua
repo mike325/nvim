@@ -1071,7 +1071,7 @@ if not plugins['vim-commentary'] then
         lhs = 'gcc',
         rhs = function()
             local cursor = nvim.win.get_cursor(0)
-            require'utils.functions'.toggle_comments(cursor[1] - 1, cursor[1])
+            require'utils'.functions.toggle_comments(cursor[1] - 1, cursor[1])
             nvim.win.set_cursor(0, cursor)
         end,
         args = noremap_silent,

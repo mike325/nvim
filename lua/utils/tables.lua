@@ -89,4 +89,41 @@ function M.deepcopy(orig)
     return copy
 end
 
+function M.get_indent_block(lines)
+    assert(vim.tbl_islist(lines) and #lines > 0, debug.traceback('Lines must be an array'))
+
+    local indent_level
+    for _,line in pairs(lines) do
+        if #line > 0 then
+            local level = line:match('^%s+')
+            level = level and #level or nil
+            if not level then
+                indent_level = 0
+                break
+            elseif not indent_level or level < indent_level then
+                indent_level = level
+            end
+        end
+    end
+    return indent_level or 0
+end
+
+function M.indent(lines, level)
+    assert(vim.tbl_islist(lines) and #lines > 0, debug.traceback('Lines must be an array'))
+    assert(
+        type(level) == type(0) and level >= 0,
+        debug.traceback('Missing valid level, use positive values')
+    )
+    error(debug.traceback'TODO')
+end
+
+function M.deindent(lines, level)
+    assert(vim.tbl_islist(lines) and #lines > 0, debug.traceback('Lines must be an array'))
+    assert(
+        type(level) == type(0) and level < 0,
+        debug.traceback('Missing valid level, use negative values')
+    )
+    error(debug.traceback'TODO')
+end
+
 return M
