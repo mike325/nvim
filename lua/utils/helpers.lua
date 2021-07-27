@@ -11,7 +11,7 @@ local split_components = require'utils.strings'.split_components
 local echoerr          = require'utils.messages'.echoerr
 local echowarn         = require'utils.messages'.echowarn
 local clear_lst        = require'utils.tables'.clear_lst
-local get_git_dir      = require'utils.system'.get_git_dir
+local get_git_dir      = require'utils.functions'.get_git_dir
 local split            = require'utils.strings'.split
 
 local set_abbr = require'neovim.abbrs'.set_abbr

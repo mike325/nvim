@@ -32,3 +32,5 @@ elseif vim.env.VIM_MIN ~= nil or vim.g.minimal ~= nil or vim.env.VIM_BARE ~= nil
     local echowarn = require'utils.messages'.echowarn
     echowarn('Missing git! cannot install plugins')
 end
+
+require'utils'.functions.get_ssh_hosts()

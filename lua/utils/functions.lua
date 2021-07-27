@@ -6,8 +6,9 @@ local chmod            = require'utils.files'.chmod
 local getcwd           = require'utils.files'.getcwd
 local realpath         = require'utils.files'.realpath
 local subpath_in_path  = require'utils.files'.subpath_in_path
+local executable       = require'utils.files'.executable
+local readfile         = require'utils.files'.readfile
 -- local clear_lst     = require'utils.tables'.clear_lst
-local select_filelist  = require'utils.helpers'.select_filelist
 local split            = require'utils.strings'.split
 local get_indent_block = require'utils.tables'.get_indent_block
 
@@ -79,8 +80,7 @@ function M.send_grep_job(args)
         table.insert(cmd, args)
     end
 
-    local Job = RELOAD'jobs'
-    local grep = Job:new{
+    local grep = RELOAD'jobs':new{
         cmd = cmd,
         silent = true,
         qf = {
@@ -223,9 +223,8 @@ function M.opfun_comment(_, visual)
 end
 
 local function get_files(path, is_git)
-    local seeker = select_filelist(is_git, true)
-    local Job = RELOAD('jobs')
-    local get_files = Job:new{
+    local seeker = require'utils.helpers'.select_filelist(is_git, true)
+    local get_files = RELOAD'jobs':new{
         cmd = seeker,
         silent = true,
     }
@@ -249,6 +248,38 @@ function M.get_path_files()
             get_files(rpath)
         end
     end
+end
+
+function M.get_ssh_hosts()
+    local ssh_config = sys.home..'/.ssh/config'
+    if is_file(ssh_config) then
+        local host = ''
+        readfile(ssh_config, function(data)
+            for _,line in pairs(data) do
+                if line and line ~= '' and line:match('Host [a-zA-Z0-9_-%.]+') then
+                    host = split(line, ' ')[2]
+                elseif line:match('%s+Hostname [a-zA-Z0-9_-%.]+') and host ~= '' then
+                    STORAGE.hosts[host] = split(line, ' ')[2]
+                    host = ''
+                end
+            end
+        end)
+    end
+end
+
+function M.get_git_dir(callback)
+    assert(executable('git'), 'Missing git')
+    -- assert(type(callback) == 'function', 'Missing callback function')
+
+    local j = RELOAD'jobs':new{
+        cmd = {'git', 'rev-parse', '--git-dir' },
+        silent = true,
+    }
+    j:callback_on_success(function(job)
+        local dir = table.concat(job:output(), '')
+        pcall(callback, realpath(dir))
+    end)
+    j:start()
 end
 
 return M
