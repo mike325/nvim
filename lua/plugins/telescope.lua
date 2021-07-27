@@ -101,7 +101,7 @@ set_mapping{
     rhs = function()
         local is_git = vim.b.project_root and vim.b.project_root.is_git or false
         require'telescope.builtin'.find_files {
-            find_command = require'utils.helpers'.select_filelist(is_git, true)
+            find_command = require'utils'.helpers.select_filelist(is_git, true)
         }
     end,
     args = {noremap = true}

@@ -128,6 +128,11 @@ packer.startup(function()
     use {'junegunn/gv.vim', cmd = 'GV', after = 'vim-fugitive'}
 
     use {
+        'sindrets/diffview.nvim',
+        config = function() require'plugins.diffview'.setup() end,
+    }
+
+    use {
         'lewis6991/gitsigns.nvim',
         cond = function() return vim.fn.executable('git') == 1 end,
         requires = 'nvim-lua/plenary.nvim',

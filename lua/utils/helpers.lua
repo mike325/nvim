@@ -586,18 +586,18 @@ end
 function M.filelist(tool, lst)
     local filetool = {
         git    = 'git --no-pager ls-files -co --exclude-standard',
-        fd     = 'fd ' .. M.ignores('fd') .. ' --type    =file --hidden --follow --color=never . .',
-        rg     = 'rg --color                             =never --no-search-zip --hidden --trim --files '.. M.ignores('rg'),
+        fd     = 'fd ' .. M.ignores('fd') .. ' --type=file --hidden --follow --color=never . .',
+        rg     = 'rg --color=never --no-search-zip --hidden --trim --files '.. M.ignores('rg'),
         ag     = 'ag -l --follow --nocolor --nogroup --hidden '..M.ignores('ag')..'-g ""',
         find   = "find . -type f -iname '*' "..M.ignores('find') .. ' ',
     }
 
-    filetool.fdfind = filetool.fd
+    filetool.fdfind = string.gsub(filetool.fd, '^fd', 'fdfind')
 
     local filelist = lst and {} or ''
     if executable(tool) and filetool[tool] ~= nil then
         filelist = filetool[tool]
-    elseif utils == 'fd' and not executable('fd') and executable('fdfind') then
+    elseif tool == 'fd' and not executable('fd') and executable('fdfind') then
         filelist = filetool.fdfind
     end
 
