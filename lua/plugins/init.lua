@@ -134,6 +134,20 @@ packer.startup(function()
     }
 
     use {
+        'rhysd/git-messenger.vim',
+        cond = function() return vim.fn.executable('git') == 1 end,
+        setup = function() vim.g.git_messenger_no_default_mappings = 1 end,
+        config = function()
+            vim.api.nvim_set_keymap(
+                'n',
+                '=m',
+                '<Plug>(git-messenger)',
+                {silent = true, nowait = true}
+            )
+        end,
+    }
+
+    use {
         'lewis6991/gitsigns.nvim',
         cond = function() return vim.fn.executable('git') == 1 end,
         requires = 'nvim-lua/plenary.nvim',
@@ -452,21 +466,6 @@ packer.startup(function()
         'norcalli/nvim-terminal.lua',
         config = function() require'terminal'.setup() end,
     }
-
-    -- use {
-    --     'rhysd/git-messenger.vim',
-    --     cond = function() return vim.fn.executable('git') == 1 end,
-    --     keys = '=m',
-    --     config = function()
-    --         vim.g.git_messenger_no_default_mappings = 1
-    --         vim.api.nvim_set_keymap(
-    --             'n',
-    --             '=m',
-    --             '<Plug>(git-messenger)',
-    --             {silent = true, nowait = true}
-    --         )
-    --     end,
-    -- }
 
     -- use {'rhysd/committia.vim'}
 
