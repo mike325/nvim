@@ -1,14 +1,15 @@
 local nvim = require'neovim'
 local sys  = require'sys'
 
-local is_file         = require'utils.files'.is_file
-local chmod           = require'utils.files'.chmod
-local getcwd          = require'utils.files'.getcwd
-local realpath        = require'utils.files'.realpath
-local subpath_in_path = require'utils.files'.subpath_in_path
--- local clear_lst       = require'utils.tables'.clear_lst
-local select_filelist = require'utils.helpers'.select_filelist
-local split           = require'utils.strings'.split
+local is_file          = require'utils.files'.is_file
+local chmod            = require'utils.files'.chmod
+local getcwd           = require'utils.files'.getcwd
+local realpath         = require'utils.files'.realpath
+local subpath_in_path  = require'utils.files'.subpath_in_path
+-- local clear_lst     = require'utils.tables'.clear_lst
+local select_filelist  = require'utils.helpers'.select_filelist
+local split            = require'utils.strings'.split
+local get_indent_block = require'utils.tables'.get_indent_block
 
 local echowarn = require'utils.messages'.echowarn
 local echoerr  = require'utils.messages'.echoerr
@@ -158,12 +159,9 @@ function M.toggle_comments(first, last)
     for _,line in pairs(lines) do
         if #line > 0 then
             allempty = false
-            local _,level = line:find('^%s+')
-            if not indent_level or not level or level < indent_level then
-                indent_level = not level and 0 or level
-            end
             if not comment and not line:match(comment_match) then
                 comment = true
+                break
             end
         end
     end
@@ -173,7 +171,7 @@ function M.toggle_comments(first, last)
         comment = true
     end
 
-    indent_level = indent_level + 1
+    indent_level = get_indent_block(lines) + 1
 
     local spaces = ''
     if comment then

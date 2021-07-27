@@ -13,11 +13,12 @@ end
 
 local plugins = require'neovim'.plugins
 local set_command = require'neovim.commands'.set_command
+local rm_command = require'neovim.commands'.rm_command
 
 local M = {}
 
 function M.rm_commands()
-    local git_cmds = {
+    rm_command{
         'GPush',
         'GPull',
         'GReview',
@@ -27,11 +28,6 @@ function M.rm_commands()
         'GRestore',
         'GRm',
     }
-    for _,cmd in pairs(git_cmds) do
-        if nvim.has.cmd(cmd) then
-            set_command { lhs = cmd }
-        end
-    end
 end
 
 function M.set_commands()

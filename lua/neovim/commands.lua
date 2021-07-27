@@ -65,8 +65,6 @@ local function func_handle(info)
     else
         funcs.g[lhs] = rhs
     end
-
-
 end
 
 function M.set_command(command)
@@ -156,6 +154,24 @@ function M.set_command(command)
             lhs   = lhs,
             scope = scope,
         }
+    end
+end
+
+
+function M.rm_command(command)
+    assert(
+        type(command) == type('') or type(command) == type({}),
+        debug.traceback('Invalid command: '..vim.inspect(command))
+    )
+
+    if type(command) == type('') then
+        command = {command}
+    end
+
+    for _,cmd in pairs(command) do
+        if vim.api.nvim_call_function('exists', {':'..cmd}) == 2 then
+            M.set_command { lhs = cmd }
+        end
     end
 end
 
