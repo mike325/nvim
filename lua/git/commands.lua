@@ -3,8 +3,7 @@ local sys  = require'sys'
 
 local executable = require'utils.files'.executable
 local echowarn   = require'utils.messages'.echowarn
-local echoerr   = require'utils.messages'.echoerr
-local split      = require'utils.strings'.split
+local echoerr    = require'utils.messages'.echoerr
 local normalize  = require'utils.files'.normalize_path
 local has_attrs  = require'utils.tables'.has_attrs
 
@@ -12,6 +11,7 @@ if not executable('git') then
     return false
 end
 
+local plugins = require'neovim'.plugins
 local set_command = require'neovim.commands'.set_command
 
 local M = {}
@@ -39,7 +39,7 @@ function M.set_commands()
     set_command {
         lhs = 'GPull',
         rhs = function(...)
-            args = {...}
+            local args = {...}
             local utils = RELOAD'git.utils'
             utils.launch_gitcmd_job{
                 gitcmd = 'pull',
@@ -63,7 +63,7 @@ function M.set_commands()
     set_command {
         lhs = 'GPush',
         rhs = function(...)
-            args = {...}
+            local args = {...}
             local utils = RELOAD'git.utils'
             utils.launch_gitcmd_job{
                 gitcmd = 'push',
@@ -77,7 +77,7 @@ function M.set_commands()
     set_command {
         lhs = 'GFetch',
         rhs = function(...)
-            args = {...}
+            local args = {...}
             local utils = RELOAD'git.utils'
             utils.launch_gitcmd_job{
                 gitcmd = 'fetch',
@@ -91,7 +91,7 @@ function M.set_commands()
     set_command {
         lhs = 'GWrite',
         rhs = function(...)
-            args = {...}
+            local args = {...}
             local bufname = vim.fn.bufname(nvim.get_current_buf())
             if sys.name == 'windows' then
                 bufname = bufname:gsub('\\', '/')
@@ -138,7 +138,7 @@ function M.set_commands()
     set_command {
         lhs = 'GRead',
         rhs = function(...)
-            args = {...}
+            local args = {...}
             RELOAD('git.utils').status(function(status)
                 local utils = RELOAD'git.utils'
                 if #args == 0 then
@@ -159,7 +159,7 @@ function M.set_commands()
                                             args = {'--', bufname},
                                             jobopts = {
                                                 on_exit = function(_, ec)
-                                                    if ex ~= 0 then
+                                                    if ec ~= 0 then
                                                         echoerr(('Failed to reset file: %s'):format(
                                                             bufname
                                                         ))
@@ -198,7 +198,7 @@ function M.set_commands()
     set_command {
         lhs = 'GRestore',
         rhs = function(...)
-            args = {...}
+            local args = {...}
             RELOAD('git.utils').status(function(status)
                 local utils = RELOAD'git.utils'
                 if #args == 0 then
@@ -251,6 +251,27 @@ function M.set_commands()
             end)
         end,
         args = {nargs = '?', force = true, complete = [[customlist,neovim#gitfiles_stage]]}
+    }
+
+    if plugins['vim-fugitive'] then
+        return
+    end
+
+    set_command{
+        lhs = 'G',
+        rhs = function(...)
+            local args = {...}
+            assert(
+                vim.tbl_islist(args) and #args > 0,
+                debug.traceback('Invalid args '..vim.inspect(args))
+            )
+            local utils = RELOAD'git.utils'
+            utils.launch_gitcmd_job{
+                gitcmd = args[1],
+                args = vim.list_slice(args, 2, #args),
+            }
+        end,
+        args = {nargs = '+', force = true}
     }
 
 end
