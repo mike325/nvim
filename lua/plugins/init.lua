@@ -48,7 +48,7 @@ packer.startup(function()
         'norcalli/nvim-colorizer.lua',
         config = function()
             vim.opt.termguicolors = true
-            require 'colorizer'.setup()
+            require'colorizer'.setup()
         end,
         event = {'CursorHold', 'CursorMoved', 'InsertEnter'},
     }
@@ -129,7 +129,8 @@ packer.startup(function()
 
     use {
         'sindrets/diffview.nvim',
-        config = function() require'plugins.diffview'.setup() end,
+        cond = function() return vim.fn.executable('git') == 1 end,
+        config = function() require'plugins.diffview' end,
     }
 
     use {
