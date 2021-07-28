@@ -27,10 +27,12 @@ _G['PERF'] = function(msg, ...)
     assert(not msg or type(msg) == type(''), 'Invalid message: '..vim.inspect(msg))
     local func = args[1]
     table.remove(args, 1)
+    -- local start = os.time()
     local start = os.clock()
     local data = func(unpack(args))
     msg = msg or 'Func reference elpse time:'
-    print(msg, ('%.2f s'):format(os.clock() - start) )
+    print(msg, ('%.2f s'):format(os.clock() - start))
+    -- print(msg, ('%.2f s'):format(os.difftime(os.time(), start)))
     return data
 end
 

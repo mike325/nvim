@@ -60,4 +60,139 @@ function M.get_option(option, default)
     return opt
 end
 
+function M.get_indent()
+    local indent = vim.opt_local.softtabstop:get()
+    if indent <= 0 then
+        indent = vim.opt_local.shiftwidth:get()
+        if indent == 0 then
+            indent = vim.opt_local.tabstop:get()
+        end
+    end
+    return indent
+end
+
+function M.get_indent_block(lines)
+    assert(vim.tbl_islist(lines) and #lines > 0, debug.traceback('Lines must be an array'))
+
+    local indent_level
+    for _,line in pairs(lines) do
+        if #line > 0 then
+            local level = line:match('^%s+')
+            level = level and #level or nil
+            if not level then
+                indent_level = 0
+                break
+            elseif not indent_level or level < indent_level then
+                indent_level = level
+            end
+        end
+    end
+    return indent_level or 0
+end
+
+function M.get_indent_string(indent)
+    assert(not indent or (type(indent) == type(0) and indent > 0), 'Invalid indent number')
+    local expand = vim.opt_local.expandtab:get()
+    indent = indent or M.get_indent()
+
+    local spaces = ''
+    if not expand then
+        spaces = '\t'
+    else
+        for i=1,indent do
+            spaces = spaces..' '
+        end
+    end
+    return spaces
+end
+
+local function normalize_indent(lines, indent)
+    local expand = vim.opt_local.expandtab:get()
+    local spaces = M.get_indent_string(indent)
+
+    for i=1,#lines do
+        if #lines[i] > 0 and not lines[i]:match('^%s+$') then
+            if expand then
+                lines[i] = lines[i]:gsub('\t', spaces)
+            else
+                lines[i] = lines[i]:gsub(spaces, '\t')
+            end
+        end
+    end
+
+    return lines
+end
+
+function M.indent(lines, level)
+    assert(vim.tbl_islist(lines) and #lines > 0, debug.traceback('Lines must be an array'))
+    assert(
+        type(level) == type(0) and level > 0,
+        debug.traceback('Missing valid level, use positive values')
+    )
+
+    local indent = M.get_indent()
+    local spaces = M.get_indent_string(indent)
+
+    lines = normalize_indent(lines, indent)
+
+    local add = ''
+
+    for i=1,level do
+        add = add..spaces
+    end
+
+    for i=1,#lines do
+        if #lines[i] > 0 and not lines[i]:match('^%s+$') then
+            lines[i] = add..lines[i]
+        end
+    end
+
+    return lines
+end
+
+function M.deindent(lines, level)
+    assert(vim.tbl_islist(lines) and #lines > 0, debug.traceback('Lines must be an array'))
+    assert(
+        type(level) == type(0) and level < 0,
+        debug.traceback('Missing valid level, use negative values')
+    )
+
+    level = math.abs(level)
+
+    local indent = M.get_indent()
+    local spaces = M.get_indent_string(indent)
+    local expand = vim.opt_local.expandtab:get()
+
+    lines = normalize_indent(lines, indent)
+    local block_indent = M.get_indent_block(lines)
+
+    if block_indent == 0 then
+        return lines
+    else
+        if not expand then
+            block_indent = block_indent * indent
+        end
+
+        if block_indent < level*indent then
+            return lines
+        end
+    end
+
+    local rm = ''
+
+    for i=1,level do
+        rm = rm..spaces
+    end
+
+    rm = '^'..rm
+
+    for i=1,#lines do
+        if #lines[i] > 0 and not lines[i]:match('^%s+$') then
+            lines[i] = lines[i]:gsub(rm, '')
+        end
+    end
+
+    return lines
+end
+
 return M

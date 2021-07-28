@@ -608,7 +608,6 @@ function M.clean_file()
     local expandtab = vim.bo.expandtab
     local retab = false
 
-    -- local start = os.time()
     for i=1,#lines do
         local line = lines[i]
         if line ~= '' then
@@ -630,8 +629,6 @@ function M.clean_file()
         end
     end
     if retab then nvim.ex['retab!']() end
-    -- local endt = os.time()
-    -- print('Cleanning time: ', os.difftime(endt, start)..'s')
     return true
 end
 

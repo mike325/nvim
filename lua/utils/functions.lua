@@ -10,7 +10,7 @@ local executable       = require'utils.files'.executable
 local readfile         = require'utils.files'.readfile
 -- local clear_lst     = require'utils.tables'.clear_lst
 local split            = require'utils.strings'.split
-local get_indent_block = require'utils.tables'.get_indent_block
+local get_indent_block = require'utils.buffers'.get_indent_block
 
 local echowarn = require'utils.messages'.echowarn
 local echoerr  = require'utils.messages'.echoerr
