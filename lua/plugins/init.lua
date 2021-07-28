@@ -172,7 +172,9 @@ packer.startup(function()
 
                     -- Text objects
                     ['o ih'] = ':<C-U>lua require"gitsigns.actions".select_hunk()<CR>',
-                    ['x ih'] = ':<C-U>lua require"gitsigns.actions".select_hunk()<CR>'
+                    ['x ih'] = ':<C-U>lua require"gitsigns.actions".select_hunk()<CR>',
+                    ['o ah'] = ':<C-U>lua require"gitsigns.actions".select_hunk()<CR>',
+                    ['x ah'] = ':<C-U>lua require"gitsigns.actions".select_hunk()<CR>',
                 },
                 current_line_blame = false,
                 current_line_blame_delay = 1000,
