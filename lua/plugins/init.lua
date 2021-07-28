@@ -445,13 +445,13 @@ packer.startup(function()
     use {'weilbith/nvim-lsp-smag'}
     use {'weilbith/nvim-floating-tag-preview'}
 
-    use {'glepnir/lspsaga.nvim'}
-
     use {
         'neovim/nvim-lspconfig',
         config = function() require'plugins.lsp' end,
         after = 'telescope.nvim',
-        wants = 'lspsaga.nvim',
+        requires = {
+            {'glepnir/lspsaga.nvim'},
+        },
     }
 
     use {
