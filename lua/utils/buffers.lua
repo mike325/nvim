@@ -94,15 +94,7 @@ function M.get_indent_string(indent)
     assert(not indent or (type(indent) == type(0) and indent > 0), 'Invalid indent number')
     local expand = vim.opt_local.expandtab:get()
     indent = indent or M.get_indent()
-
-    local spaces = ''
-    if not expand then
-        spaces = '\t'
-    else
-        for i=1,indent do
-            spaces = spaces..' '
-        end
-    end
+    local spaces = not expand and '\t' or string.rep(' ', indent)
     return spaces
 end
 
@@ -126,69 +118,42 @@ end
 function M.indent(lines, level)
     assert(vim.tbl_islist(lines) and #lines > 0, debug.traceback('Lines must be an array'))
     assert(
-        type(level) == type(0) and level > 0,
-        debug.traceback('Missing valid level, use positive values')
+        type(level) == type(0) and level ~= 0,
+        debug.traceback('Missing valid level, cannot indent to level 0')
     )
 
-    local indent = M.get_indent()
-    local spaces = M.get_indent_string(indent)
-
-    lines = normalize_indent(lines, indent)
-
-    local add = ''
-
-    for i=1,level do
-        add = add..spaces
-    end
-
-    for i=1,#lines do
-        if #lines[i] > 0 and not lines[i]:match('^%s+$') then
-            lines[i] = add..lines[i]
-        end
-    end
-
-    return lines
-end
-
-function M.deindent(lines, level)
-    assert(vim.tbl_islist(lines) and #lines > 0, debug.traceback('Lines must be an array'))
-    assert(
-        type(level) == type(0) and level < 0,
-        debug.traceback('Missing valid level, use negative values')
-    )
-
-    level = math.abs(level)
+    abslevel = math.abs(level)
 
     local indent = M.get_indent()
-    local spaces = M.get_indent_string(indent)
     local expand = vim.opt_local.expandtab:get()
 
-    lines = normalize_indent(lines, indent)
-    local block_indent = M.get_indent_block(lines)
+    lines = normalize_indent(lines, abslevel)
 
-    if block_indent == 0 then
-        return lines
-    else
-        if not expand then
-            block_indent = block_indent * indent
-        end
+    local spaces = not expand and string.rep('\t', abslevel) or string.rep(' ', indent*abslevel)
 
-        if block_indent < level*indent then
+    if level < 0 then
+        local block_indent = M.get_indent_block(lines)
+        if block_indent == 0 then
             return lines
+        else
+            if not expand then
+                block_indent = block_indent * indent
+            end
+
+            if block_indent < abslevel*indent then
+                return lines
+            end
         end
+        spaces = '^'..spaces
     end
-
-    local rm = ''
-
-    for i=1,level do
-        rm = rm..spaces
-    end
-
-    rm = '^'..rm
 
     for i=1,#lines do
         if #lines[i] > 0 and not lines[i]:match('^%s+$') then
-            lines[i] = lines[i]:gsub(rm, '')
+            if level < 0 then
+                lines[i] = lines[i]:gsub(spaces, '')
+            else
+                lines[i] = spaces..lines[i]
+            end
         end
     end
 
