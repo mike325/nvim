@@ -1,8 +1,5 @@
 local api = vim.api
 
-local echoerr   = require'utils.messages'.echoerr
-local has_attrs = require'utils.tables'.has_attrs
-
 local M = {
     funcs = {
         g = {},
@@ -16,8 +13,9 @@ end
 
 function M.get_autocmd(autocmd)
 
+    local has_attrs = require'utils'.tables.has_attrs
     if not has_attrs(autocmd, {'event'}) and not has_attrs(autocmd, {'group'}) then
-        echoerr('Missing arguments, get_autocmd need event or group attribbute')
+        require'utils'.messages.echoerr('Missing arguments, get_autocmd need event or group attribbute')
         return false
     end
 
@@ -42,8 +40,9 @@ end
 
 function M.set_autocmd(autocmd)
 
+    local has_attrs = require'utils'.tables.has_attrs
     if not has_attrs(autocmd, {'event'}) then
-        echoerr('Missing arguments, set_autocmd need event attribbute')
+        require'utils'.messages.echoerr('Missing arguments, set_autocmd need event attribbute')
         return false
     end
 

@@ -1,18 +1,8 @@
--- local nvim = require'neovim'
 local executable = require'utils.files'.executable
--- local echowarn = require'utils'.messages.echowarn
--- local is_file = require'utils'.files.is_file
--- local is_dir = require'utils'.files.is_dir
--- local exists = require'utils'.files.exists
--- local writefile = require'utils'.files.writefile
-local split = require'utils.strings'.split
 
 if not executable('git') then
     return false
 end
-
--- local set_command = require'neovim.commands'.set_command
--- local set_mapping = require'neovim.mappings'.set_mapping
 
 local M = {}
 
@@ -147,10 +137,14 @@ local function parse_status(status)
         debug.traceback('Invalid status type: '..type(status))
     )
 
+    local split = require'utils.strings'.split
+
     if type(status) == 'string' then
         status = split(status, '\n')
     end
+
     local parsed = {}
+
     for _,gitfile in pairs(status) do
         if not parsed.branch and gitfile:match('^#%s+branch%.head') then
             parsed.branch = split(gitfile, ' ')[3]

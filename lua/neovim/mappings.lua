@@ -1,6 +1,4 @@
-local api       = vim.api
-local has_attrs = require'utils.tables'.has_attrs
-local echoerr   = require'utils.messages'.echoerr
+local api = vim.api
 
 local transform_mapping = require'neovim.utils'.transform_mapping
 local funcs = STORAGE.mappings
@@ -91,8 +89,9 @@ end
 
 function M.get_mapping(mapping)
 
+    local has_attrs = require'utils'.tables.has_attrs
     if not has_attrs(mapping, {'mode', 'lhs'}) then
-        echoerr('Missing arguments, get_mapping need a mode and a lhs attribbutes')
+        require'utils'.messages.echoerr('Missing arguments, get_mapping need a mode and a lhs attribbutes')
         return false
     end
 
@@ -133,8 +132,9 @@ end
 
 function M.set_mapping(mapping)
 
+    local has_attrs = require'utils'.tables.has_attrs
     if not has_attrs(mapping, {'mode', 'lhs'}) then
-        echoerr('Missing arguments, set_mapping need a mode and a lhs attribbutes')
+        require'utils'.messages.echoerr('Missing arguments, set_mapping need a mode and a lhs attribbutes')
         return false
     end
 

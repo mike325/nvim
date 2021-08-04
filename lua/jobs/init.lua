@@ -1,15 +1,12 @@
-local nvim       = require'neovim'
+local nvim = require'neovim'
 
 if not nvim.has('nvim-0.5') then
     return false
 end
 
-local echoerr    = require'utils.messages'.echoerr
-local echowarn   = require'utils.messages'.echowarn
-local get_icon = require'utils.helpers'.get_icon
-local executable = require'utils.files'.executable
-local getcwd     = require'utils.files'.getcwd
-local realpath   = require'utils.files'.realpath
+local echowarn   = require'utils'.messages.echowarn
+local get_icon   = require'utils'.helpers.get_icon
+local executable = require'utils'.files.executable
 
 local jobs = STORAGE.jobs
 
@@ -276,7 +273,13 @@ function Job:start()
         if rc == 0 then
             print( ('Job %s succeed!! %s'):format(self.exe, get_icon('success')) )
         else
-            echoerr(('Job %s failed :c exit with code: %d!! %s'):format(self.exe, rc, get_icon('error')))
+            require'utils'.messages.echoerr(
+                ('Job %s failed :c exit with code: %d!! %s'):format(
+                    self.exe,
+                    rc,
+                    get_icon('error')
+                )
+            )
         end
     end
 
@@ -310,9 +313,9 @@ function Job:start()
     local _user_on_stdout = self._opts.on_stdout
     local _user_on_stderr = self._opts.on_stderr
     local _user_on_exit = self._opts.on_exit
-    local _cwd = self._opts.cwd or getcwd()
+    local _cwd = self._opts.cwd or require'utils'.files.getcwd()
 
-    self._opts.cwd = realpath(_cwd)
+    self._opts.cwd = require'utils'.files.realpath(_cwd)
 
     local function on_exit_wrapper(_, rc, event)
         self._isalive = false

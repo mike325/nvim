@@ -1,5 +1,3 @@
-local echowarn = require'utils.messages'.echowarn
-
 local M = {}
 
 function M.parser(data)
@@ -80,7 +78,7 @@ function M.parser(data)
                     data_tbl.sections[section][subsection][attr] = val
                 end
             else
-                echowarn('Unmatched line: '..line)
+                require'utils'.messages.echowarn('Unmatched line: '..line)
                 section = nil
                 subsection = nil
             end

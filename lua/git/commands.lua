@@ -4,8 +4,6 @@ local sys  = require'sys'
 local executable = require'utils.files'.executable
 local echowarn   = require'utils.messages'.echowarn
 local echoerr    = require'utils.messages'.echoerr
-local normalize  = require'utils.files'.normalize_path
-local has_attrs  = require'utils.tables'.has_attrs
 
 if not executable('git') then
     return false
@@ -97,6 +95,8 @@ function M.set_commands()
                 if #args == 0 then
                     local workspace = status.workspace or {}
                     local untracked = status.untracked or {}
+                    local has_attrs  = require'utils.tables'.has_attrs
+
                     if workspace[bufname] or has_attrs(untracked, bufname) then
                         nvim.ex.update()
                         args = { bufname }
@@ -118,7 +118,7 @@ function M.set_commands()
                 else
                     for i=1,#args do
                         if args[i] == '%' then
-                            args = normalize(args[i])
+                            args = require'utils.files'.normalize_path(args[i])
                         end
                     end
                     utils.launch_gitcmd_job{
@@ -223,7 +223,7 @@ function M.set_commands()
                 else
                     for i=1,#args do
                         if args[i] == '%' then
-                            args = normalize(args[i])
+                            args = require'utils.files'.normalize_path(args[i])
                         end
                     end
                     if sys.name == 'windows' then

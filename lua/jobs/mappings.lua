@@ -1,10 +1,8 @@
-local nvim       = require'neovim'
+local nvim = require'neovim'
 
 if not nvim.has('nvim-0.5') then
     return false
 end
-
-local echowarn   = require'utils.messages'.echowarn
 
 local set_command = require'neovim.commands'.set_command
 local set_mapping = require'neovim.mappings'.set_mapping
@@ -27,7 +25,7 @@ local function kill_job(jobid)
             local idx = vim.fn.inputlist(cmds)
             jobid = ids[idx]
         else
-            echowarn('No jobs to kill')
+            require'utils'.messages.echowarn('No jobs to kill')
         end
     end
 

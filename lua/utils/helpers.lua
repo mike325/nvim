@@ -3,18 +3,9 @@ local nvim = require'neovim'
 local plugins = require'neovim'.plugins
 
 local executable       = require'utils.files'.executable
-local is_dir           = require'utils.files'.is_dir
-local is_file          = require'utils.files'.is_file
 local normalize_path   = require'utils.files'.normalize_path
 local getcwd           = require'utils.files'.getcwd
-local split_components = require'utils.strings'.split_components
-local echoerr          = require'utils.messages'.echoerr
-local echowarn         = require'utils.messages'.echowarn
-local clear_lst        = require'utils.tables'.clear_lst
-local get_git_dir      = require'utils.functions'.get_git_dir
 local split            = require'utils.strings'.split
-
-local set_abbr = require'neovim.abbrs'.set_abbr
 
 local system = vim.fn.system
 local line = vim.fn.line
@@ -278,7 +269,7 @@ function M.project_config(event)
     }
 
     if is_git and not git_dir and nvim.has('nvim-0.5') then
-        get_git_dir(function(dir)
+        require'utils.functions'.get_git_dir(function(dir)
             local project = vim.b.project_root
             project.git_dir = dir
             git_dirs[cwd] = dir
@@ -443,7 +434,7 @@ function M.is_git_repo(root)
 
     local git = root .. '/.git'
 
-    if is_dir(git) or is_file(git) then
+    if require'utils.files'.is_dir(git) or require'utils.files'.is_file(git) then
         return true
     end
     return vim.fn.findfile('.git', root..';') ~= ''
@@ -498,7 +489,7 @@ function M.has_git_version(...)
         return STORAGE.git_version
     end
 
-    local components = split_components(STORAGE.git_version, '%d+')
+    local components = require'utils.strings'.split_components(STORAGE.git_version, '%d+')
 
     return M.check_version(components, args)
 end
@@ -679,6 +670,7 @@ end
 function M.abolish(language)
 
     local current = vim.bo.spelllang
+    local set_abbr = require'neovim.abbrs'.set_abbr
 
     if nvim.has.cmd('Abolish') == 2 then
         if abolish[current] ~= nil then
@@ -756,7 +748,7 @@ end
 
 local function check_lsp(servers)
     for _, server in pairs(servers) do
-        if executable(server) or is_dir(sys.cache..'/lspconfig/'..server) then
+        if executable(server) or require'utils.files'.is_dir(sys.cache..'/lspconfig/'..server) then
             return true
         end
     end
@@ -861,7 +853,7 @@ function M.python(version, args)
     local pyversion = version == 3 and py3 or py2
 
     if pyversion == nil or pyversion == '' then
-        echoerr('Python'..pyversion..' is not available in the system')
+        require'utils.messages'.echoerr('Python'..pyversion..' is not available in the system')
         return -1
     end
 
@@ -915,7 +907,7 @@ function M.dump_to_qf(opts)
         opts.open = nil
         opts.jump = nil
         opts.cmdname = nil
-        opts.lines = clear_lst(opts.lines)
+        opts.lines = require'utils.tables'.clear_lst(opts.lines)
 
         if qf_type == 'qf' then
             qf_cmds.set_list({}, 'r', opts)
@@ -928,7 +920,7 @@ function M.dump_to_qf(opts)
         local info_tab = opts.tab
 
         if info_tab and info_tab ~= nvim.get_current_tabpage() then
-            echowarn(('%s Updated! with %s info'):format(
+            require'utils.messages'.echowarn(('%s Updated! with %s info'):format(
                 qf_type == 'qf' and 'Qf' or 'Loc',
                 opts.context
             ))

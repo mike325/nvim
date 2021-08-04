@@ -1,14 +1,9 @@
 local nvim = require'neovim'
 
-local getcwd          = require'utils.files'.getcwd
-local executable      = require'utils.files'.executable
-local readfile        = require'utils.files'.readfile
-local is_file         = require'utils.files'.is_file
-local basedir         = require'utils.files'.basedir
-local realpath        = require'utils.files'.realpath
-local decode_json     = require'utils.files'.decode_json
-local normalize_path  = require'utils.files'.normalize_path
-local merge_uniq_list = require'utils.tables'.merge_uniq_list
+local executable      = require'utils'.files.executable
+local readfile        = require'utils'.files.readfile
+local is_file         = require'utils'.files.is_file
+local realpath        = require'utils'.files.realpath
 
 local compile_flags = STORAGE.compile_flags
 local databases = STORAGE.databases
@@ -138,6 +133,8 @@ end
 
 local function set_opts(filename, has_tidy, compiler, bufnum)
     local bufname = nvim.buf.get_name(bufnum)
+    local merge_uniq_list = require'utils'.tables.merge_uniq_list
+
     if is_file(bufname) and databases[realpath(bufname)] then
         bufname = realpath(bufname)
         vim.api.nvim_buf_set_option(
@@ -207,7 +204,7 @@ end
 
 local function parse_compiledb(data)
     assert(type(data) == type(''), 'Invalid data: '..vim.inspect(data))
-    local json = decode_json(data)
+    local json = require'utils'.files.decode_json(data)
     for _, source in pairs(json) do
         local source_name
         if not source.file:match('/') then
@@ -235,7 +232,9 @@ function M.setup()
     local compiler = get_compiler()
     local bufnum = nvim.get_current_buf()
     local bufname = nvim.buf.get_name(bufnum)
-    local cwd = is_file(bufname) and basedir(bufname) or getcwd()
+    local cwd = is_file(bufname) and require'utils'.files.basedir(bufname) or require'utils'.files.getcwd()
+    local normalize_path  = require'utils'.files.normalize_path
+
     if compiler then
 
         local flags_file = vim.fn.findfile('compile_flags.txt', cwd..';')

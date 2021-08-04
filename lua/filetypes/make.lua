@@ -1,8 +1,8 @@
-local set_command = require'neovim.commands'.set_command
-
 local M = {}
 
 function M.setup()
+    local set_command = require'neovim.commands'.set_command
+
     set_command{
         lhs = 'Make',
         rhs = function(...)

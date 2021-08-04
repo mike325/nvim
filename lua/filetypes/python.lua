@@ -1,14 +1,12 @@
 local nvim = require'neovim'
 local sys = require'sys'
 
-local executable      = require'utils.files'.executable
--- local dump_to_qf      = require'utils'.helpers.dump_to_qf
-local echowarn        = require'utils.messages'.echowarn
-local echoerr         = require'utils.messages'.echoerr
-local is_file         = require'utils.files'.is_file
-local merge_uniq_list = require'utils.tables'.merge_uniq_list
+local executable = require'utils'.files.executable
 
 local plugins = require'neovim'.plugins
+
+local set_command = require'neovim.commands'.set_command
+local rm_command = require'neovim.commands'.rm_command
 
 local M = {}
 
@@ -81,13 +79,15 @@ local function external_formatprg(opts)
                             nvim.buf.set_lines(buf, first, last, false, lines)
                         end
                     else
-                        echowarn('We should not be here, no format was detected')
+                        require'utils'.messages.echowarn('We should not be here, no format was detected')
                     end
                 else
-                    echoerr(('Failed to format code chunk, %s exited with code %s'):format(
-                        job.exe,
-                        rc
-                    ))
+                    require'utils'.messages.echoerr(
+                        ('Failed to format code chunk, %s exited with code %s'):format(
+                            job.exe,
+                            rc
+                        )
+                    )
                 end
             end,
         },
@@ -148,7 +148,12 @@ function M.setup()
         local cmd = {'flake8'}
         local global_settings = vim.fn.expand( sys.name == 'windows' and '~/.flake8' or '~/.config/flake8' )
 
-        if not is_file(global_settings) and not is_file('./tox.ini') and not is_file('./.flake8') and not is_file('./setup.cfg') then
+        local is_file = require'utils'.files.is_file
+
+        if not is_file(global_settings) and
+           not is_file('./tox.ini') and
+           not is_file('./.flake8') and
+           not is_file('./setup.cfg') then
             vim.list_extend(cmd, {'--max-line-length=120', '--ignore=E203,E226,E231,E261,E262,E265,E302,W391'})
         end
         table.insert(cmd, '%')
@@ -166,6 +171,8 @@ function M.setup()
 
     if not plugins['vim-apathy'] then
         local buf = nvim.get_current_buf()
+        local merge_uniq_list = require'utils'.tables.merge_uniq_list
+
         if not vim.b.python_path then
             -- local pypath = {}
             local Job = RELOAD'jobs'

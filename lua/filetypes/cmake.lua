@@ -1,17 +1,18 @@
-local executable = require'utils'.files.executable
-local mkdir = require'utils'.files.mkdir
-local is_dir = require'utils'.files.is_dir
-local is_file = require'utils'.files.is_file
-local link = require'utils'.files.link
-
-local set_command = require'neovim.commands'.set_command
-
-local echomsg = require'utils.messages'.echomsg
-local echoerr = require'utils.messages'.echoerr
-
 local M = {}
 
 function M.setup()
+
+    local executable = require'utils'.files.executable
+    local mkdir      = require'utils'.files.mkdir
+    local is_dir     = require'utils'.files.is_dir
+    local is_file    = require'utils'.files.is_file
+    local link       = require'utils'.files.link
+
+    local set_command = require'neovim.commands'.set_command
+
+    local echomsg = require'utils'.messages.echomsg
+    local echoerr = require'utils'.messages.echoerr
+
     set_command{
         lhs = 'CMake',
         rhs = function(...)

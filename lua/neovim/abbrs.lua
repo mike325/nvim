@@ -1,14 +1,13 @@
 -- luacheck: globals unpack vim
 -- local i = vim.inspect
 local api = vim.api
-local has_attrs = require'utils.tables'.has_attrs
-local echoerr = require'utils.messages'.echoerr
 
 local M = {}
 
 function M.set_abbr(abbr)
+    local echoerr = require'utils'.messages.echoerr
 
-    if not has_attrs(abbr, {'mode', 'lhs'}) then
+    if not require'utils'.tables.has_attrs(abbr, {'mode', 'lhs'}) then
         echoerr('Missing arguments, set_abbr need a mode and a lhs attribbutes')
         return false
     end

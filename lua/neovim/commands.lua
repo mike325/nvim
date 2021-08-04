@@ -1,9 +1,6 @@
 -- luacheck: globals unpack vim
 -- local i = vim.inspect
 local api = vim.api
-local has_attrs = require'utils.tables'.has_attrs
-local echoerr = require'utils.messages'.echoerr
-local echowarn = require'utils.messages'.echowarn
 local funcs = STORAGE.commands
 
 local M = {}
@@ -68,7 +65,9 @@ local function func_handle(info)
 end
 
 function M.set_command(command)
-    if not has_attrs(command, {'lhs'}) then
+    local echoerr = require'utils'.messages.echoerr
+
+    if not require'utils'.tables.has_attrs(command, {'lhs'}) then
         echoerr('Missing arguments, set_command need a lhs attribbutes')
         return false
     end
@@ -145,7 +144,7 @@ function M.set_command(command)
     if rhs and not ok then
         echoerr(err)
     elseif not rhs and not ok then
-        echowarn('Command not found: '..lhs)
+        require'utils'.messages.echowarn('Command not found: '..lhs)
     end
 
     if type(rhs) ~= type('') and ok then
@@ -158,10 +157,15 @@ function M.set_command(command)
 end
 
 
-function M.rm_command(command)
+function M.rm_command(command, buffer)
     assert(
         type(command) == type('') or type(command) == type({}),
         debug.traceback('Invalid command: '..vim.inspect(command))
+    )
+
+    assert(
+        type(buffer) == type(true) or type(buffer) == type(1) or buffer == nil,
+        debug.traceback('Invalid buffer: '..vim.inspect(buffer))
     )
 
     if type(command) == type('') then

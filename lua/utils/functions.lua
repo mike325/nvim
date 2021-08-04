@@ -1,28 +1,18 @@
 local nvim = require'neovim'
 local sys  = require'sys'
 
-local is_file          = require'utils.files'.is_file
-local chmod            = require'utils.files'.chmod
-local getcwd           = require'utils.files'.getcwd
-local realpath         = require'utils.files'.realpath
-local subpath_in_path  = require'utils.files'.subpath_in_path
-local executable       = require'utils.files'.executable
-local readfile         = require'utils.files'.readfile
--- local clear_lst     = require'utils.tables'.clear_lst
-local split            = require'utils.strings'.split
-local get_indent_block = require'utils.buffers'.get_indent_block
-
-local echowarn = require'utils.messages'.echowarn
-local echoerr  = require'utils.messages'.echoerr
-
+local split = require'utils.strings'.split
 local set_autocmd = require'neovim.autocmds'.set_autocmd
 
 local M = {}
 
 function M.make_executable()
+
     if sys.name == 'windows' then
         return
     end
+
+    local is_file = require'utils.files'.is_file
 
     local shebang = nvim.buf.get_lines(0, 0, 1, true)[1]
     if not shebang or not shebang:match('^#!.+') then
@@ -57,13 +47,15 @@ end
 
 function M.chmod_exec()
     local filename = vim.fn.expand('%')
+    local is_file = require'utils.files'.is_file
+
     if not is_file(filename) or sys.name == 'windows' then
         return
     end
 
     local fileinfo = vim.loop.fs_stat(filename)
     local filemode = fileinfo.mode - 32768
-    chmod(filename, bit.bor(filemode, 0x48), 10)
+    require'utils.files'.chmod(filename, bit.bor(filemode, 0x48), 10)
 end
 
 function M.send_grep_job(args)
@@ -94,6 +86,9 @@ function M.send_grep_job(args)
             efm = vim.o.grepformat,
         },
     }
+
+    local echowarn = require'utils.messages'.echowarn
+    local echoerr  = require'utils.messages'.echoerr
 
     grep:add_callback(function(job, rc)
         local search = type(args) == type({}) and args[#args] or args
@@ -171,7 +166,7 @@ function M.toggle_comments(first, last)
         comment = true
     end
 
-    indent_level = get_indent_block(lines) + 1
+    indent_level = require'utils.buffers'.get_indent_block(lines) + 1
 
     local spaces = ''
     if comment then
@@ -236,14 +231,14 @@ end
 
 function M.get_path_files()
     local paths = split(vim.bo.path or vim.o.path, ',')
-    local cwd = realpath(getcwd())
+    local cwd = require'utils.files'.realpath(require'utils.files'.getcwd())
 
     get_files(cwd, vim.b.project_root.is_git)
     for _,path in pairs(paths) do
-        local rpath = realpath(path)
+        local rpath = require'utils.files'.realpath(path)
         if rpath ~= '.' and
            rpath ~= cwd and
-           not subpath_in_path(cwd, rpath) and
+           not require'utils.files'.subpath_in_path(cwd, rpath) and
            not STORAGE.filelists[rpath] then
             get_files(rpath)
         end
@@ -252,9 +247,11 @@ end
 
 function M.get_ssh_hosts()
     local ssh_config = sys.home..'/.ssh/config'
+    local is_file = require'utils.files'.is_file
+
     if is_file(ssh_config) then
         local host = ''
-        readfile(ssh_config, function(data)
+        require'utils.files'.readfile(ssh_config, function(data)
             for _,line in pairs(data) do
                 if line and line ~= '' and line:match('Host [a-zA-Z0-9_-%.]+') then
                     host = split(line, ' ')[2]
@@ -268,7 +265,7 @@ function M.get_ssh_hosts()
 end
 
 function M.get_git_dir(callback)
-    assert(executable('git'), 'Missing git')
+    assert(require'utils.files'.executable('git'), 'Missing git')
     -- assert(type(callback) == 'function', 'Missing callback function')
 
     local j = RELOAD'jobs':new{
@@ -277,7 +274,7 @@ function M.get_git_dir(callback)
     }
     j:callback_on_success(function(job)
         local dir = table.concat(job:output(), '')
-        pcall(callback, realpath(dir))
+        pcall(callback, require'utils.files'.realpath(dir))
     end)
     j:start()
 end
