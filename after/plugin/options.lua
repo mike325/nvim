@@ -182,8 +182,9 @@ local wildignores = {
     '*.com',
     '*.exe',
     '*.so',
-    '*/cache/*',
-    '*/__pycache__/*',
+    '*.pkl',
+    '*cache/*',
+    '*__pycache__/*',
 }
 
 local no_backup = {

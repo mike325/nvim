@@ -492,21 +492,22 @@ end
 function M.ignores(tool)
     local excludes = split(vim.o.backupskip, ',')
 
-    if #excludes == 0 then
-        return ''
-    end
-
     local ignores = {
         fd = {},
         find = {'-regextype', 'egrep', '!', [[\(]]},
-        rg = {},
+        -- rg = {},
         ag = {},
         grep = {},
-        findstr = {},
+        -- findstr = {},
     }
 
+
+    if #excludes == 0 or not ignores[tool] then
+        return ''
+    end
+
     for i=1,#excludes do
-        excludes[i] = "'" .. excludes[i] .. "'"
+        -- excludes[i] = "'" .. excludes[i] .. "'"
 
         ignores.fd[#ignores.fd + 1] = '--exclude='..excludes[i]
         ignores.find[#ignores.find + 1] = '-iwholename '..excludes[i]
@@ -525,7 +526,7 @@ function M.ignores(tool)
     --     ignores.fd = ' --ignore-file '.. sys.home .. '/.config/git/ignore '
     -- end
 
-    return ignores[tool] ~= nil and table.concat(ignores[tool], ' ') or ''
+    return table.concat(ignores[tool], ' ')
 end
 
 function M.grep(tool, attr, lst)
@@ -543,7 +544,7 @@ function M.grep(tool, attr, lst)
             grepformat = '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m',
         },
         rg = {
-            grepprg = 'rg -SHn --trim --color=never --no-heading --column '..M.ignores('rg')..' ',
+            grepprg = 'rg -SHn --trim --color=never --no-heading --column ',
             grepformat = '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m'
         },
         ag = {
@@ -573,7 +574,7 @@ function M.filelist(tool, lst)
     local filetool = {
         git    = 'git --no-pager ls-files -co --exclude-standard',
         fd     = 'fd ' .. M.ignores('fd') .. ' --type=file --hidden --follow --color=never . .',
-        rg     = 'rg --color=never --no-search-zip --hidden --trim --files '.. M.ignores('rg'),
+        rg     = 'rg --color=never --no-search-zip --hidden --trim --files ',
         ag     = 'ag -l --follow --nocolor --nogroup --hidden '..M.ignores('ag')..'-g ""',
         find   = "find . -type f -iname '*' "..M.ignores('find') .. ' ',
     }
