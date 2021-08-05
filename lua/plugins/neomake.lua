@@ -1,4 +1,4 @@
-local sys = require'sys'
+-- local sys = require'sys'
 local get_icon = require'utils.helpers'.get_icon
 
 -- vim.g.neomake_ft_maker_remove_invalid_entries = 1
@@ -25,7 +25,7 @@ vim.g.neomake_open_list = 0
 
 vim.g.neomake_echo_current_error = 0
 vim.g.neomake_virtualtext_current_error = 1
-vim.g.neomake_virtualtext_prefix = get_icon('virtual_text').' '
+vim.g.neomake_virtualtext_prefix = get_icon('virtual_text')..' '
 
 -- function! plugins#neomake#makeprg() abort
 --     if empty(&makeprg)
@@ -50,22 +50,22 @@ vim.g.neomake_virtualtext_prefix = get_icon('virtual_text').' '
 --     autocmd OptionSet makeprg call plugins#neomake#makeprg()
 -- augroup end
 
-local triggers = {'nrw', 200}
-if sys.name == 'windows' then
-    triggers = {
-        {
-            InsertLeave = {},
-            BufWinEnter = {},
-            BufWritePost = {delay = 0},
-        },
-        500
-    }
-end
+-- local triggers = {'nrw', 200}
+-- if sys.name == 'windows' then
+--     triggers = {
+--         {
+--             InsertLeave = {},
+--             BufWinEnter = {},
+--             BufWritePost = {delay = 0},
+--         },
+--         500
+--     }
+-- end
 
-if vim.v.vim_did_enter == 1 then
-    -- silent! call neomake#configure#automake(s:triggers[0], s:triggers[1])
-else
-    -- augroup NeomakeConfig
-    --     autocmd VimEnter * silent! call neomake#configure#automake(s:triggers[0], s:triggers[1])
-    -- augroup end
-end
+-- if vim.v.vim_did_enter == 1 then
+--     -- silent! call neomake#configure#automake(s:triggers[0], s:triggers[1])
+-- else
+--     -- augroup NeomakeConfig
+--     --     autocmd VimEnter * silent! call neomake#configure#automake(s:triggers[0], s:triggers[1])
+--     -- augroup end
+-- end

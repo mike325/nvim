@@ -8,7 +8,7 @@ function M.parser(data)
         'Invalid data: '..vim.inspect(data)
     )
 
-    data = type(data) ~= 'table' and split(data, '\n') or data
+    data = type(data) ~= 'table' and vim.split(data, '\n') or data
 
     local data_tbl = {
         global = {},

@@ -40,7 +40,7 @@ end
 
 set_command{
     lhs = 'KillJob',
-    rhs = function(bang, jobid)
+    rhs = function(_, jobid)
         if jobid == '' then
             jobid = nil
         end

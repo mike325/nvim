@@ -7,19 +7,19 @@ if not luasnip then
 end
 
 local s = luasnip.snippet
-local sn = luasnip.snippet_node
+-- local sn = luasnip.snippet_node
 local t = luasnip.text_node
 local i = luasnip.insert_node
 local f = luasnip.function_node
-local c = luasnip.choice_node
-local d = luasnip.dynamic_node
-local l = require("luasnip.extras").lambda
-local r = require("luasnip.extras").rep
+-- local c = luasnip.choice_node
+-- local d = luasnip.dynamic_node
+-- local l = require("luasnip.extras").lambda
+-- local r = require("luasnip.extras").rep
 local p = require("luasnip.extras").partial
-local m = require("luasnip.extras").match
-local n = require("luasnip.extras").nonempty
+-- local m = require("luasnip.extras").match
+-- local n = require("luasnip.extras").nonempty
 
-local nvim  = require'neovim'
+-- local nvim  = require'neovim'
 local set_mapping = require'neovim.mappings'.set_mapping
 
 -- local ts_locals = require "nvim-treesitter.locals"

@@ -19,5 +19,4 @@ setmetatable(M, {
     end
 })
 
-
-return M 
+return M

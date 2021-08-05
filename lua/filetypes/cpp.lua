@@ -9,7 +9,7 @@ local compile_flags = STORAGE.compile_flags
 local databases = STORAGE.databases
 local has_cjson = STORAGE.has_cjson
 
-local set_command = require'neovim.commands'.set_command
+-- local set_command = require'neovim.commands'.set_command
 -- local set_mapping = require'neovim.mappings'.set_mapping
 
 local M = {}
@@ -262,7 +262,7 @@ function M.setup()
         if db_file ~= '' then
             filename = realpath(normalize_path(db_file))
             if is_file(bufname) and not databases[realpath(bufname)] then
-                bufname = realpath(bufname)
+                -- bufname = realpath(bufname)
                 readfile(db_file, function(data)
                     if has_cjson == true then
                         parse_compiledb(data)

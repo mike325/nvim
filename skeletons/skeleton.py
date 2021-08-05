@@ -44,8 +44,7 @@ def _createLogger(
         file_level: int = logging.DEBUG,
         color: bool = True,
         filename: str = 'dummy.log',
-        name: str = 'MainLogger'
-    ):
+        name: str = 'MainLogger'):
     """ Creaters logging obj
 
     stdout_level: int: logging level displayed into the terminal

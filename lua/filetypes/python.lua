@@ -5,10 +5,35 @@ local executable = require'utils'.files.executable
 
 local plugins = require'neovim'.plugins
 
-local set_command = require'neovim.commands'.set_command
-local rm_command = require'neovim.commands'.rm_command
+-- local set_command = require'neovim.commands'.set_command
+-- local rm_command = require'neovim.commands'.rm_command
 
-local M = {}
+local M = {
+    pyignores = {
+        -- 'E121', --
+        -- 'E123', --
+        -- 'E126', --
+        'E203', -- Whitespace before :
+        -- 'E221', --
+        'E226', -- Whitespace around operators
+        -- 'E228', --
+        'E231', -- Missing whitespace after ','
+        -- 'E24',  --
+        -- 'E251', --
+        'E261', -- 2 spaces before inline comment
+        'E262', -- Comments should start with '#'
+        'E265', -- Block comment should start with '#'
+        -- 'E27',  --
+        'E302', -- Expected 2 lines between funcs/classes
+        -- 'E501', --
+        -- 'E701', --
+        -- 'E704', --
+        -- 'H233', --
+        'W391', -- Blank line and the EOF
+        -- 'W503', --
+        -- 'W504', --
+    }
+}
 
 -- local function on_data(jobid, data, event)
 --     local job = STORAGE.jobs[jobid]
@@ -158,7 +183,7 @@ function M.setup()
            not is_file('./tox.ini') and
            not is_file('./.flake8') and
            not is_file('./setup.cfg') then
-            vim.list_extend(cmd, {'--max-line-length=120', '--ignore=E203,E226,E231,E261,E262,E265,E302,W391'})
+            vim.list_extend(cmd, {'--max-line-length=120', '--ignore='..table.concat(M.pyignores, ',')})
         end
         table.insert(cmd, '%')
 
@@ -166,7 +191,7 @@ function M.setup()
         vim.opt_local.errorformat = '%f:%l:%c: %t%n %m'
 
     elseif executable('pycodestyle') then
-        vim.opt_local.makeprg = 'pycodestyle --max-line-length=120 --ignore=E121,E123,E126,E226,E24,E704,W503,W504,H233,E228,E701,E226,E251,E501,E221,E203,E27 %'
+        vim.opt_local.makeprg = 'pycodestyle --max-line-length=120 --ignore='..table.concat(M.pyignores, ',')..' %'
         vim.opt_local.errorformat = '%f:%l:%c: %t%n %m'
     else
         vim.opt_local.makeprg = [[python3 -c "import py_compile,sys; sys.stderr=sys.stdout; py_compile.compile(r'%')"]]

@@ -476,7 +476,7 @@ set_mapping{
 set_command{
     lhs = 'Terminal',
     rhs = function(...)
-        cmd = {...}
+        local cmd = {...}
         -- local split = vim.opt.splitbelow:get() == true and 'botright' or 'topleft'
         local is_empty = #cmd == 0
         local shell
@@ -690,7 +690,6 @@ else
                 return
             end
             local filename = vim.fn.expand('%')
-            local is_file = require'utils'.files.is_file
             local chmod = require'utils'.files.chmod
             if is_file(filename) then
                 chmod(filename, mode)
@@ -776,7 +775,7 @@ set_mapping{
 set_command {
     lhs = 'Lint',
     rhs = function(...)
-        args = {...}
+        local args = {...}
 
         local ok, val = pcall(nvim.buf.get_option, 0, 'makeprg')
         local cmd = ok and val or vim.o.makeprg

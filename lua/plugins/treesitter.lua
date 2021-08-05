@@ -155,7 +155,7 @@ treesitter.setup{
         },
         highlight_definitions = {
             enable = true,
-            disable = disable,
+            -- disable = disable,
         },
         navigation = {
             enable = true,

@@ -122,7 +122,7 @@ function M.indent(lines, level)
         debug.traceback('Missing valid level, cannot indent to level 0')
     )
 
-    abslevel = math.abs(level)
+    local abslevel = math.abs(level)
 
     local indent = M.get_indent()
     local expand = vim.opt_local.expandtab:get()

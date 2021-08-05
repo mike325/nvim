@@ -271,7 +271,7 @@ set_command{
 
 set_command{
     lhs = 'DapStepOver',
-    rhs = function(args)
+    rhs = function(_)
         require'dap'.step_over()
     end,
     args = {nargs = '?', force = true, }
@@ -279,7 +279,7 @@ set_command{
 
 set_command{
     lhs = 'DapStepInto',
-    rhs = function(args)
+    rhs = function(_)
         require'dap'.step_into()
     end,
     args = {nargs = '?', force = true, }
@@ -287,7 +287,7 @@ set_command{
 
 set_command{
     lhs = 'DapStepOut',
-    rhs = function(args)
+    rhs = function(_)
         require'dap'.step_out()
     end,
     args = {nargs = '?', force = true, }

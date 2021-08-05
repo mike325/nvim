@@ -21,7 +21,7 @@ function! neovim#cmake_build(args, _, __) abort
 endfunction
 
 function! neovim#ssh_hosts_completion(arglead, cmdline, cursorpos) abort
-    let l:hosts = luaeval("vim.tbl_keys(STORAGE.hosts or {})")
+    let l:hosts = luaeval('vim.tbl_keys(STORAGE.hosts or {})')
     return neovim#general_completion(a:arglead, a:cmdline, a:cursorpos, l:hosts)
 endfunction
 
@@ -175,7 +175,7 @@ function! neovim#shifttab() abort
     if has#plugin('LuaSnip') && luasnip#jumpable(-1)
         lua require'luasnip'.jump(-1)
         return ''
-    if has#plugin('ultisnips')
+    elseif has#plugin('ultisnips')
         call UltiSnips#JumpBackwards()
         if get(g:, 'ulti_jump_backwards_res', 0) > 0
             return ''

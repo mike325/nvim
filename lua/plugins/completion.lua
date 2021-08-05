@@ -3,7 +3,7 @@ local has_attrs   = require'utils.tables'.has_attrs
 
 local plugins = require'neovim'.plugins
 
--- local set_autocmd = require'neovim.autocmds'.set_autocmd
+local set_autocmd = require'neovim.autocmds'.set_autocmd
 -- local set_command = require'neovim.commands'.set_command
 -- local set_mapping = require'neovim.mappings'.set_mapping
 

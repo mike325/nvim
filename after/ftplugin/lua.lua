@@ -1,4 +1,7 @@
+local sys = require'sys'
+
 local executable = require'utils.files'.executable
+local is_file = require'utils.files'.is_file
 
 vim.opt_local.expandtab = true
 -- vim.opt_local.shiftround = true
@@ -13,7 +16,28 @@ vim.opt_local.suffixesadd:prepend('.lua')
 vim.opt_local.suffixesadd:prepend('init.lua')
 vim.opt_local.path:prepend(require'sys'.base..'/lua')
 
+local luacheck_args = {
+    '--max-cyclomatic-complexity',
+    '15',
+    '--std',
+    'luajit',
+    '--formatter',
+    'plain',
+    '%',
+}
+
 if executable('luacheck') then
-    vim.opt_local.makeprg = 'luacheck --max-cyclomatic-complexity 15 --std luajit --formatter plain %'
-    vim.opt_local.errorformat = '%f:%l:%c: %m'
+    vim.opt_local.makeprg = 'luacheck '..table.concat(luacheck_args, ' ')
+else
+    local exe = {
+        sys.home..'/.luarocks/bin/luacheck',
+        sys.home..'/cache/nvim/packer_hererocks/'..sys.luajit..'/bin/luacheck',
+    }
+    for i=1,#exe do
+        if is_file(exe[i]) then
+            vim.opt_local.makeprg = ('%s %s'):format(exe[i], table.concat(luacheck_args, ' '))
+        end
+    end
 end
+
+-- vim.opt_local.errorformat = '%f:%l:%c: %m'

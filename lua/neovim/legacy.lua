@@ -110,7 +110,7 @@ M.wo = setmetatable({}, {
 
 M.opt = setmetatable({}, {
     __index = function(_, k)
-        local g = api.nvim_get_option(k)
+        local ok, g = pcall(api.nvim_get_option, k)
         local l = M.bo[k] or M.wo[k]
         return ok and l or g
     end;

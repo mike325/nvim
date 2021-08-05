@@ -2,7 +2,6 @@ local M = {}
 
 function M.setup()
 
-    local executable = require'utils'.files.executable
     local mkdir      = require'utils'.files.mkdir
     local is_dir     = require'utils'.files.is_dir
     local is_file    = require'utils'.files.is_file
@@ -16,7 +15,7 @@ function M.setup()
     set_command{
         lhs = 'CMake',
         rhs = function(...)
-            args = {...}
+            local args = {...}
             local Job = RELOAD'jobs'
             local cmake = Job:new{
                 cmd = 'cmake',
@@ -65,9 +64,9 @@ function M.setup()
             end
 
             if vim.env.CXX then
-                c_compiler = '-DCMAKE_CXX_COMPILER='..vim.env.CXX
+                cpp_compiler = '-DCMAKE_CXX_COMPILER='..vim.env.CXX
             elseif vim.g.c_compiler then
-                c_compiler = '-DCMAKE_CXX_COMPILER='..vim.g.cpp_compiler
+                cpp_compiler = '-DCMAKE_CXX_COMPILER='..vim.g.cpp_compiler
             end
 
             if c_compiler then
@@ -128,7 +127,7 @@ function M.setup()
                 },
             }
 
-            cmake:callback_on_success(function(job)
+            cmake:callback_on_success(function(_)
                 echomsg('Build completed!', 'CMake')
                 if is_file('build/compile_commands.json') then
                     link(
@@ -141,7 +140,7 @@ function M.setup()
                 vim.fn.setqflist({}, 'r')
             end)
 
-            cmake:callback_on_failure(function(job, rc)
+            cmake:callback_on_failure(function(_, rc)
                 echoerr('CMake Build Failed! :c with exit code: '..rc, 'CMake')
             end)
 

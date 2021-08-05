@@ -29,7 +29,7 @@ function Config:new(configfile)
     configfile = require'utils'.files.normalize_path(configfile)
     assert(require'utils'.files.is_file(configfile), 'Not a valid configfile: '..configfile)
 
-    obj = obj or {}
+    local obj = {}
     setmetatable(obj, self)
     self.__index = self
     self.filename = configfile

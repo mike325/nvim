@@ -7,7 +7,7 @@ vim.g.signify_update_on_bufenter    = 0
 vim.g.signify_skip_filetype = {
     log = 1,
 }
-    
+
 vim.g.signify_skip_filename_pattern = {
     '*.log',
 }

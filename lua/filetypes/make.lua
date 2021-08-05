@@ -6,7 +6,7 @@ function M.setup()
     set_command{
         lhs = 'Make',
         rhs = function(...)
-            args = {...}
+            local args = {...}
             local Job = require'jobs'
             local make = Job:new{
                 cmd = 'make',
