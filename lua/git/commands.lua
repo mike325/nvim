@@ -4,6 +4,7 @@ local sys  = require'sys'
 local executable = require'utils.files'.executable
 local echowarn   = require'utils.messages'.echowarn
 local echoerr    = require'utils.messages'.echoerr
+local echomsg    = require'utils.messages'.echomsg
 
 if not executable('git') then
     return false
@@ -43,10 +44,11 @@ function M.set_commands()
                     pty = true,
                     on_exit = function(_, rc)
                         if rc ~= 0 then
-                            echoerr('Failed to pull changes!!')
+                            echoerr('Failed to pull changes!!', 'GPull')
+                        else
+                            echomsg('Repo updated!', 'GPull')
+                            nvim.ex.checktime()
                         end
-                        print('Repo updated!')
-                        nvim.ex.checktime()
                     end
                 }
             }
@@ -106,14 +108,14 @@ function M.set_commands()
                             jobopts = {
                                 on_exit = function(_, rc)
                                     if rc ~= 0 then
-                                        echoerr('Failed to Add file: '..bufname)
+                                        echoerr('Failed to Add file: '..bufname, 'GWrite')
                                     end
                                 end
                             }
                         }
                     else
                         -- TODO: Improve this, and check for merge conflics
-                        echowarn('Nothing to do')
+                        echomsg('Nothing to do', 'GWrite')
                     end
                 else
                     for i=1,#args do
@@ -156,18 +158,24 @@ function M.set_commands()
                                             jobopts = {
                                                 on_exit = function(_, ec)
                                                     if ec ~= 0 then
-                                                        echoerr(('Failed to reset file: %s'):format(
-                                                            bufname
-                                                        ))
+                                                        echoerr(
+                                                            ('Failed to reset file: %s'):format(
+                                                                bufname
+                                                            ),
+                                                            'GRead'
+                                                        )
                                                     end
                                                     nvim.ex.checktime()
                                                 end
                                             }
                                         }
                                     else
-                                        echoerr(('Failed to unstage file: %s'):format(
-                                            bufname
-                                        ))
+                                        echoerr(
+                                            ('Failed to unstage file: %s'):format(
+                                                bufname
+                                            ),
+                                            'GRead'
+                                        )
                                     end
                                 end
                             }
@@ -180,10 +188,10 @@ function M.set_commands()
                             args = args,
                         }
                     else
-                        echowarn'Nothing to do'
+                        echomsg('Nothing to do', 'GRead')
                     end
                 else
-                    echowarn'This is still WIP'
+                    echowarn('This is still WIP', 'GRead')
                     utils.launch_gitcmd_job{gitcmd = 'add', args = args}
                 end
             end)
@@ -209,16 +217,19 @@ function M.set_commands()
                             jobopts = {
                                 on_exit = function(_, rc)
                                     if rc ~= 0 then
-                                        echoerr(('Failed to restore file: %s'):format(
-                                            bufname
-                                        ))
+                                        echoerr(
+                                            ('Failed to restore file: %s'):format(
+                                                bufname
+                                            ),
+                                            'GRestore'
+                                        )
                                     end
                                     nvim.ex.checktime()
                                 end
                             }
                         }
                     else
-                        echowarn('Nothing to do')
+                        echomsg('Nothing to do', 'GRestore')
                     end
                 else
                     for i=1,#args do

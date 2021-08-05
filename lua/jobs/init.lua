@@ -271,14 +271,18 @@ function Job:start()
 
     local function general_on_exit(_, rc)
         if rc == 0 then
-            print( ('Job %s succeed!! %s'):format(self.exe, get_icon('success')) )
+            require'utils'.messages.echomsg(
+                ('Job %s succeed!! %s'):format(self.exe, get_icon('success')),
+                self.exe
+            )
         else
             require'utils'.messages.echoerr(
                 ('Job %s failed :c exit with code: %d!! %s'):format(
                     self.exe,
                     rc,
                     get_icon('error')
-                )
+                ),
+                self.exe
             )
         end
     end
@@ -404,7 +408,7 @@ function Job:start()
 
     if self._timeout and self._timeout > 0 then
         vim.defer_fn(function()
-            echowarn( ('Timeout ! stoping job %s'):format(self._id) )
+            echowarn(('Timeout ! stoping job %s'):format(self._id), 'Job Timeout')
             self:stop()
         end, self._timeout)
     end
@@ -433,7 +437,7 @@ function Job:progress()
     assert(self._isalive, debug.traceback( ('Job %s is not running'):format(self._id) ))
 
     if self._tab ~= nvim.get_current_tabpage() then
-        echowarn('Cannot show progress from a different tab !'..get_icon('warn'))
+        echowarn('Cannot show progress from a different tab !'..get_icon('warn'), 'Job Progress')
         return false
     end
 

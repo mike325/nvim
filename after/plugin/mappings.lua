@@ -1,20 +1,17 @@
 local sys  = require'sys'
 local nvim = require'neovim'
 
--- local split          = require'utils.strings'.split
-local iregex         = require'utils.strings'.iregex
-local executable     = require'utils.files'.executable
-local is_file        = require'utils.files'.is_file
-local writefile      = require'utils.files'.writefile
-local normalize_path = require'utils.files'.normalize_path
-local realpath       = require'utils.files'.realpath
-local basename       = require'utils.files'.basename
-local read_json      = require'utils.files'.read_json
+local iregex         = require'utils'.strings.iregex
+local executable     = require'utils'.files.executable
+local is_file        = require'utils'.files.is_file
+local writefile      = require'utils'.files.writefile
+local normalize_path = require'utils'.files.normalize_path
+local realpath       = require'utils'.files.realpath
+local basename       = require'utils'.files.basename
+local read_json      = require'utils'.files.read_json
 
--- local echomsg = require'utils.messages'.echomsg
-local echoerr = require'utils.messages'.echoerr
+local echoerr = require'utils'.messages.echoerr
 
--- local set_autocmd = require'neovim.autocmds'.set_autocmd
 local set_abbr    = require'neovim.abbrs'.set_abbr
 local set_command = require'neovim.commands'.set_command
 local set_mapping = require'neovim.mappings'.set_mapping
@@ -689,7 +686,7 @@ else
         lhs = 'Chmod',
         rhs = function(mode)
             if not mode:match('^%d+$') then
-                echoerr('Not a valid permissions mode: '..mode)
+                echoerr('Not a valid permissions mode: '..mode, 'Chmod')
                 return
             end
             local filename = vim.fn.expand('%')

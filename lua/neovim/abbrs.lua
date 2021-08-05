@@ -8,7 +8,7 @@ function M.set_abbr(abbr)
     local echoerr = require'utils'.messages.echoerr
 
     if not require'utils'.tables.has_attrs(abbr, {'mode', 'lhs'}) then
-        echoerr('Missing arguments, set_abbr need a mode and a lhs attribbutes')
+        echoerr('Missing arguments, set_abbr need a mode and a lhs attribbutes', 'Nvim Abbrs')
         return false
     end
 
@@ -56,7 +56,7 @@ function M.set_abbr(abbr)
             table.insert(command, rhs)
         end
     else
-        echoerr('Unsupported mode', mode)
+        echoerr('Unsupported mode: '..vim.inspect(mode), 'Nvim Abbrs')
         return false
     end
 

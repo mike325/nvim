@@ -235,7 +235,6 @@ function M.get_icon(icon)
 end
 
 function M.project_config(event)
-    -- print(vim.inspect(event))
 
     local cwd = event.cwd or getcwd()
     cwd = cwd:gsub('\\', '/')
@@ -438,10 +437,6 @@ function M.is_git_repo(root)
         return true
     end
     return vim.fn.findfile('.git', root..';') ~= ''
-end
-
-function M.dprint(...)
-    print(vim.inspect(...))
 end
 
 function M.check_version(sys_version, version_target)
@@ -853,7 +848,10 @@ function M.python(version, args)
     local pyversion = version == 3 and py3 or py2
 
     if pyversion == nil or pyversion == '' then
-        require'utils.messages'.echoerr('Python'..pyversion..' is not available in the system')
+        require'utils.messages'.echoerr(
+            'Python'..pyversion..' is not available in the system',
+            'Python'
+        )
         return -1
     end
 
@@ -920,10 +918,13 @@ function M.dump_to_qf(opts)
         local info_tab = opts.tab
 
         if info_tab and info_tab ~= nvim.get_current_tabpage() then
-            require'utils.messages'.echowarn(('%s Updated! with %s info'):format(
-                qf_type == 'qf' and 'Qf' or 'Loc',
-                opts.context
-            ))
+            require'utils.messages'.echomsg(
+                ('%s Updated! with %s info'):format(
+                    qf_type == 'qf' and 'Qf' or 'Loc',
+                    opts.context
+                ),
+                qf_type == 'qf' and 'QuickFix' or 'LocationList'
+            )
             return
         elseif #opts.lines > 0 then
             if qf_open then

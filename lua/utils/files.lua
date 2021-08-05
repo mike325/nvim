@@ -92,17 +92,17 @@ function M.link(src, dest, sym, force)
     local status
 
     if not sym and M.is_dir(src) then
-        echoerr('Cannot hard link a directory')
+        echoerr('Cannot hard link a directory', 'Link')
         return false
     end
 
     if not force and M.exists(dest) then
-        echoerr('Dest already exists in '..dest)
+        echoerr('Dest already exists in '..dest, 'Link')
         return false
     elseif force and M.exists(dest) then
         status = uv.fs_unlink(dest)
         if not status then
-            echoerr('Failed to unlink '..dest)
+            echoerr('Failed to unlink '..dest, 'Link')
             return status
         end
     end
@@ -114,7 +114,7 @@ function M.link(src, dest, sym, force)
     end
 
     if not status then
-        echoerr(('Failed to link "%s" to "%s"'):format(src, dest))
+        echoerr(('Failed to link "%s" to "%s"'):format(src, dest), 'Link')
     end
 
     return status
@@ -479,10 +479,10 @@ function M.rename(old, new, bang)
 
             return true
         else
-            echoerr('Failed to rename '..old)
+            echoerr('Failed to rename '..old, 'Rename')
         end
     elseif M.exists(new) then
-        echoerr(new..' exists, use ! to override, it')
+        echoerr(new..' exists, use ! to override, it', 'Rename')
     end
 
     return false
@@ -493,23 +493,23 @@ function M.delete(target, bang)
     if M.is_file(target) or bufloaded(target) then
         if M.is_file(target) then
             if vim.fn.delete(target) == -1 then
-                echoerr('Failed to delete the file: '..target)
+                echoerr('Failed to delete the file: '..target, 'Delete')
             end
         end
         if bufloaded(target) then
             local command = bang and 'wipeout' or 'delete'
             local ok, error_code = pcall(vim.cmd, ([[b%s! %s]]):format(command, target))
             if not ok and error_code:match('Vim(.%w+.)\\?:E94') then
-                echoerr('Failed to '..command..' buffer '..target)
+                echoerr('Failed to '..command..' buffer '..target, 'Delete')
             end
         end
     elseif M.is_dir(target) then
         local flag = bang and 'rf' or 'd'
         if vim.fn.delete(target, flag) == -1 then
-            echoerr('Failed to remove the directory: '..target)
+            echoerr('Failed to remove the directory: '..target, 'Delete')
         end
     else
-        echoerr('Non removable target: '..target)
+        echoerr('Non removable target: '..target, 'Delete')
     end
 end
 

@@ -129,7 +129,7 @@ function M.setup()
             }
 
             cmake:callback_on_success(function(job)
-                echomsg('Build completed!')
+                echomsg('Build completed!', 'CMake')
                 if is_file('build/compile_commands.json') then
                     link(
                         'build/compile_commands.json',
@@ -138,11 +138,11 @@ function M.setup()
                         true
                     )
                 end
-                vim.fn.setloclist(lint_win, {}, 'r')
+                vim.fn.setqflist({}, 'r')
             end)
 
             cmake:callback_on_failure(function(job, rc)
-                echoerr('CMake Build Failed! :c with exit code: '..rc)
+                echoerr('CMake Build Failed! :c with exit code: '..rc, 'CMake')
             end)
 
             cmake:start()

@@ -58,19 +58,19 @@ set_mapping{
         end
         if not trouble_open then
             if #lsp_document_diagnostics > 0 then
-                echomsg({' Document Diagnostics', 'TroubleHint'})
+                echomsg('Document Diagnostics', 'Trouble')
                 nvim.ex.Trouble("lsp_document_diagnostics")
             elseif has_workspace_diagnostics then
-                echomsg({' Workspace Diagnostics', 'TroubleHint'})
+                echomsg('Workspace Diagnostics', 'Trouble')
                 nvim.ex.Trouble("lsp_workspace_diagnostics")
             elseif #loc_diagnostics > 0 then
-                echomsg({' Location list', 'TroubleHint'})
+                echomsg('Location list', 'Trouble')
                 nvim.ex.Trouble("loclist")
             elseif #qf_diagnostics > 0 then
-                echomsg({' Quicfix', 'TroubleHint'})
+                echomsg('Quicfix', 'Trouble')
                 nvim.ex.Trouble("quickfix")
             else
-                echowarn(' Nothing to check !')
+                echowarn('Nothing to check !', 'Trouble')
             end
         end
     end,

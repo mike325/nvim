@@ -79,14 +79,18 @@ local function external_formatprg(opts)
                             nvim.buf.set_lines(buf, first, last, false, lines)
                         end
                     else
-                        require'utils'.messages.echowarn('We should not be here, no format was detected')
+                        require'utils'.messages.echowarn(
+                            'We should not be here, no format was detected',
+                            'FormatPrg'
+                        )
                     end
                 else
                     require'utils'.messages.echoerr(
                         ('Failed to format code chunk, %s exited with code %s'):format(
                             job.exe,
                             rc
-                        )
+                        ),
+                        'FormatPrg'
                     )
                 end
             end,

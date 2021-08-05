@@ -93,15 +93,18 @@ function M.send_grep_job(args)
     grep:add_callback(function(job, rc)
         local search = type(args) == type({}) and args[#args] or args
         if rc == 0 and job:is_empty() then
-            echowarn('No matching results '..search)
+            echowarn('No matching results '..search, 'Grep')
         elseif rc ~= 0 then
             if job:is_empty() then
-                echowarn('No matching results '..search)
+                echowarn('No matching results '..search, 'Grep')
             else
-                echoerr(('%s exited with code %s'):format(
-                    cmd[1],
-                    rc
-                ))
+                echoerr(
+                    ('%s exited with code %s'):format(
+                        cmd[1],
+                        rc
+                    ),
+                    'Grep'
+                )
             end
         end
     end)

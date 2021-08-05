@@ -29,7 +29,7 @@ elseif sys.name == 'linux' then
 elseif sys.name == 'windows' then
     system_name = "Windows"
 else
-    print("Unsupported system for sumneko")
+    echoerr('Unsupported system for sumneko', 'LSP')
 end
 
 local diagnostics = true
@@ -42,7 +42,7 @@ local function switch_source_header_splitcmd(bufnr, splitcmd)
     local params = { uri = vim.uri_from_bufnr(bufnr) }
     vim.lsp.buf_request(bufnr, 'textDocument/switchSourceHeader', params, function(err, _, result)
         if err then error(debug.traceback(tostring(err))) end
-        if not result then echoerr"Corresponding file can’t be determined" return end
+        if not result then echoerr('Corresponding file can’t be determined', 'Clangd') return end
         vim.api.nvim_command(splitcmd..' '..vim.uri_to_fname(result))
     end)
 end
