@@ -14,26 +14,33 @@ local function echo(msg, title, cat)
         msg = {msg}
     end
 
-    if title then
-        table.insert(msg, 1, ('[%s]: '):format(title))
+    local has_notify, notify = pcall(require, 'notify')
+
+    if has_notify then
+        local opts = title and {title = title} or nil
+        notify(table.concat(msg, '\n'), cat, opts)
+    else
+        if title then
+            table.insert(msg, 1, ('[%s]: '):format(title))
+        end
+
+        local msg_hl = {
+            error = 'ErrorMsg',
+            warn  = 'WarningMsg',
+            info  = 'LspDiagnosticsSignHint',
+            debug = 'LspDiagnosticsSignInformation',
+        }
+
+        for i=1,#msg do
+            msg[i] = {msg[i], msg_hl[cat]}
+        end
+
+        vim.api.nvim_echo(
+            msg,
+            true,
+            {}
+        )
     end
-
-    local msg_hl = {
-        error = 'ErrorMsg',
-        warn  = 'WarningMsg',
-        info  = 'LspDiagnosticsSignHint',
-        debug = 'LspDiagnosticsSignInformation',
-    }
-
-    for i=1,#msg do
-        msg[i] = {msg[i], msg_hl[cat]}
-    end
-
-    vim.api.nvim_echo(
-        msg,
-        true,
-        {}
-    )
 end
 
 function M.echoerr(msg, title)

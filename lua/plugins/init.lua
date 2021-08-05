@@ -38,6 +38,14 @@ packer.startup(function()
     use {'kevinhwang91/nvim-bqf'}
 
     use {
+        'rcarriga/nvim-notify',
+        config = function()
+            local has_notify, notify = pcall(require, 'notify')
+            vim.notify = has_notify and notify or vim.notify
+        end,
+    }
+
+    use {
         'lervag/vimtex',
         cond = function() return vim.fn.executable('latexmk') == 1 end,
         setup = function() require'plugins.vimtex' end,
