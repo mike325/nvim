@@ -25,8 +25,9 @@ local ensure_installed = {
     'toml',
 }
 
+local min = vim.env.VIM_MIN ~= nil or vim.g.minimal ~= nil
 local commet_txtobj = nil
-if plugins['vim-textobj-comment'] == nil then
+if packer_plugins['vim-textobj-comment'] == nil or min then
     commet_txtobj = '@comment.outer'
 end
 

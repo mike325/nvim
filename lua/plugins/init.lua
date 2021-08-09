@@ -21,7 +21,9 @@ packer.init{
 
 packer.startup(function()
 
-    if vim.fn.executable('gcc') == 1 or vim.fn.executable('clang') == 1 then
+    -- BUG: Seems like luarocks is not supported in windows
+    if vim.fn.has('win32') == 0 and
+      (vim.fn.executable('gcc') == 1 or vim.fn.executable('clang') == 1) then
         use_rocks { 'luacheck','lua-cjson' }
     end
 
@@ -295,7 +297,6 @@ packer.startup(function()
     use {
         'kana/vim-textobj-user',
         cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
-        event = 'VimEnter',
         requires = {
             {
                 'kana/vim-textobj-line',
@@ -427,39 +428,41 @@ packer.startup(function()
     }
 
     use {
-        'mfussenegger/nvim-dap',
+        'rcarriga/nvim-dap-ui',
         cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
-        config = function() require'plugins.dap' end,
+        config = function()
+            require'dapui'.setup{}
+            local set_command = require'neovim.commands'.set_command
+            local set_mapping = require'neovim.mappings'.set_mapping
+            -- require("dapui").open()
+            -- require("dapui").close()
+            -- require("dapui").toggle()
+            set_command{
+                lhs = 'DapUI',
+                rhs = require("dapui").toggle,
+                args = { force = true, }
+            }
+            set_mapping{
+                mode = 'n',
+                lhs = '=I',
+                rhs = require("dapui").toggle,
+                args = {noremap = true, silent = true},
+            }
+        end,
         requires = {
             {
-                'theHamsta/nvim-dap-virtual-text',
+                'mfussenegger/nvim-dap',
                 cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
-                setup = function() vim.g.dap_virtual_text = true end,
-            },
-            {
-                'rcarriga/nvim-dap-ui',
-                cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
-                config = function()
-                    require'dapui'.setup{}
-                    local set_command = require'neovim.commands'.set_command
-                    local set_mapping = require'neovim.mappings'.set_mapping
-                    -- require("dapui").open()
-                    -- require("dapui").close()
-                    -- require("dapui").toggle()
-                    set_command{
-                        lhs = 'DapUI',
-                        rhs = require("dapui").toggle,
-                        args = { force = true, }
-                    }
-                    set_mapping{
-                        mode = 'n',
-                        lhs = '=I',
-                        rhs = require("dapui").toggle,
-                        args = {noremap = true, silent = true},
-                    }
-                end,
-            },
-        }
+                config = function() require'plugins.dap' end,
+                requires = {
+                    {
+                        'theHamsta/nvim-dap-virtual-text',
+                        cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
+                        setup = function() vim.g.dap_virtual_text = true end,
+                    },
+                }
+            }
+        },
     }
 
     use {
