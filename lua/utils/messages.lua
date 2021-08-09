@@ -56,7 +56,9 @@ function M.echomsg(msg, title)
 end
 
 function M.echodebug(msg, title)
-    echo(msg, title, 'debug')
+    if vim.opt.verbose:get() == 1 then
+        echo(msg, title, 'debug')
+    end
 end
 
 return M
