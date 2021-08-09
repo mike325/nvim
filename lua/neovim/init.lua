@@ -17,15 +17,19 @@ local nvim = {
             end
 
             local ok, plugs = pcall(api.nvim_get_var, 'plugs')
-            if not ok then
-                plugs = packer_plugins or {}
+            if plugs[k] then
+                mt[k] = plugs[k]
+                return plugs[k]
             end
 
-            local plugin = plugs[k]
-            if plugin then
-                mt[k] = plugin
+            if not ok and packer_plugins then
+                plugs = packer_plugins
+                if plugs[k] and plugs[k].loaded then
+                    return plugs[k]
+                end
             end
-            return plugin
+
+            return nil
         end
     });
     has = setmetatable({

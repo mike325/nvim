@@ -47,7 +47,9 @@ packer.startup(function()
 
     use {
         'lervag/vimtex',
-        cond = function() return vim.fn.executable('latexmk') == 1 end,
+        cond = function()
+            return vim.fn.executable('latexmk') == 1 and vim.env.VIM_MIN == nil and vim.g.minimal == nil
+        end,
         setup = function() require'plugins.vimtex' end,
         ft = {'bib', 'tex', 'latex', 'bibtex'},
     }
@@ -128,22 +130,18 @@ packer.startup(function()
         end,
     }
 
-    use {
-        'tpope/vim-fugitive',
-        cond = function() return vim.fn.executable('git') == 1 end,
-    }
-
-    use {'junegunn/gv.vim', cmd = 'GV', after = 'vim-fugitive'}
+    use {'tpope/vim-fugitive',}
+    use {'junegunn/gv.vim', cmd = 'GV', wants = 'vim-fugitive'}
 
     use {
         'sindrets/diffview.nvim',
-        cond = function() return vim.fn.executable('git') == 1 end,
+        cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
         config = function() require'plugins.diffview' end,
     }
 
     use {
         'rhysd/git-messenger.vim',
-        cond = function() return vim.fn.executable('git') == 1 end,
+        cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
         setup = function() vim.g.git_messenger_no_default_mappings = 1 end,
         config = function()
             vim.api.nvim_set_keymap(
@@ -157,7 +155,7 @@ packer.startup(function()
 
     use {
         'lewis6991/gitsigns.nvim',
-        cond = function() return vim.fn.executable('git') == 1 end,
+        cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
         requires = 'nvim-lua/plenary.nvim',
         config = function()
             require('gitsigns').setup {
@@ -197,6 +195,7 @@ packer.startup(function()
 
     use {
         'sainnhe/sonokai',
+        cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
         config = function()
             vim.opt.termguicolors = true
 
@@ -297,12 +296,25 @@ packer.startup(function()
         'kana/vim-textobj-user',
         cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
         event = 'VimEnter',
+        requires = {
+            {
+                'kana/vim-textobj-line',
+                cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
+            },
+            {
+                'kana/vim-textobj-entire',
+                cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
+            },
+            {
+                'michaeljsmith/vim-indent-object',
+                cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
+            },
+            {
+                'glts/vim-textobj-comment',
+                cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
+            },
+        }
     }
-
-    use {'kana/vim-textobj-line', after = 'vim-textobj-user'}
-    use {'kana/vim-textobj-entire', after = 'vim-textobj-user'}
-    use {'michaeljsmith/vim-indent-object', after = 'vim-textobj-user'}
-    use {'glts/vim-textobj-comment', after = 'vim-textobj-user'}
 
     use {
         'phaazon/hop.nvim',
@@ -324,17 +336,21 @@ packer.startup(function()
             return no_min and has_rg
         end,
         config = function() require'plugins.todos' end,
-        after = 'trouble.nvim',
+        wants = 'trouble.nvim',
     }
 
     use {
         'vim-airline/vim-airline',
         cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
         config = function() require'plugins.airline' end,
+        requires = {
+            {
+                'vim-airline/vim-airline-themes',
+                cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
+            }
+        },
         after = 'firenvim',
     }
-
-    use {'vim-airline/vim-airline-themes', after = 'vim-airline'}
 
     use {
         'vimwiki/vimwiki',
@@ -349,38 +365,41 @@ packer.startup(function()
     }
 
     use {
-        'honza/vim-snippets',
+        'SirVer/ultisnips',
+        cond = function()
+            return vim.env.VIM_MIN == nil and vim.g.minimal == nil and vim.fn.has('python3') == 1
+        end,
+        setup = function()
+            vim.g.UltiSnipsEditSplit     = 'context'
+            vim.g.UltiSnipsExpandTrigger = '<C-,>'
+
+            -- Remove all select mappigns in expanded snip
+            -- vim.g.UltiSnipsRemoveSelectModeMappings = 0
+            vim.g.UltiSnipsUsePythonVersion = 3
+
+            vim.g.ulti_expand_or_jump_res = 0
+            vim.g.ulti_jump_backwards_res = 0
+            vim.g.ulti_jump_forwards_res  = 0
+            vim.g.ulti_expand_res         = 0
+
+            vim.g.ultisnips_python_quoting_style = 'single'
+            vim.g.ultisnips_python_triple_quoting_style = 'double'
+            vim.g.ultisnips_python_style = 'google'
+
+            -- vim.g.UltiSnipsSnippetDirectories = {}
+
+            vim.api.nvim_set_keymap(
+                'x',
+                '<CR>',
+                ':call UltiSnips#SaveLastVisualSelection()<CR>gv"_s',
+                {silent = true}
+            )
+        end,
         requires = {
             {
-                'SirVer/ultisnips',
+                'honza/vim-snippets',
                 cond = function()
                     return vim.env.VIM_MIN == nil and vim.g.minimal == nil and vim.fn.has('python3') == 1
-                end,
-                setup = function()
-                    vim.g.UltiSnipsEditSplit     = 'context'
-                    vim.g.UltiSnipsExpandTrigger = '<C-,>'
-
-                    -- Remove all select mappigns in expanded snip
-                    -- vim.g.UltiSnipsRemoveSelectModeMappings = 0
-                    vim.g.UltiSnipsUsePythonVersion = 3
-
-                    vim.g.ulti_expand_or_jump_res = 0
-                    vim.g.ulti_jump_backwards_res = 0
-                    vim.g.ulti_jump_forwards_res  = 0
-                    vim.g.ulti_expand_res         = 0
-
-                    vim.g.ultisnips_python_quoting_style = 'single'
-                    vim.g.ultisnips_python_triple_quoting_style = 'double'
-                    vim.g.ultisnips_python_style = 'google'
-
-                    -- vim.g.UltiSnipsSnippetDirectories = {}
-
-                    vim.api.nvim_set_keymap(
-                        'x',
-                        '<CR>',
-                        ':call UltiSnips#SaveLastVisualSelection()<CR>gv"_s',
-                        {silent = true}
-                    )
                 end,
             },
         },
@@ -409,37 +428,38 @@ packer.startup(function()
 
     use {
         'mfussenegger/nvim-dap',
+        cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
         config = function() require'plugins.dap' end,
-    }
-
-    use {
-        'theHamsta/nvim-dap-virtual-text',
-        setup = function() vim.g.dap_virtual_text = true end,
-        after = 'nvim-dap'
-    }
-
-    use {
-        'rcarriga/nvim-dap-ui',
-        config = function()
-            require'dapui'.setup{}
-            local set_command = require'neovim.commands'.set_command
-            local set_mapping = require'neovim.mappings'.set_mapping
-            -- require("dapui").open()
-            -- require("dapui").close()
-            -- require("dapui").toggle()
-            set_command{
-                lhs = 'DapUI',
-                rhs = require("dapui").toggle,
-                args = { force = true, }
-            }
-            set_mapping{
-                mode = 'n',
-                lhs = '=I',
-                rhs = require("dapui").toggle,
-                args = {noremap = true, silent = true},
-            }
-        end,
-        after = 'nvim-dap'
+        requires = {
+            {
+                'theHamsta/nvim-dap-virtual-text',
+                cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
+                setup = function() vim.g.dap_virtual_text = true end,
+            },
+            {
+                'rcarriga/nvim-dap-ui',
+                cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
+                config = function()
+                    require'dapui'.setup{}
+                    local set_command = require'neovim.commands'.set_command
+                    local set_mapping = require'neovim.mappings'.set_mapping
+                    -- require("dapui").open()
+                    -- require("dapui").close()
+                    -- require("dapui").toggle()
+                    set_command{
+                        lhs = 'DapUI',
+                        rhs = require("dapui").toggle,
+                        args = { force = true, }
+                    }
+                    set_mapping{
+                        mode = 'n',
+                        lhs = '=I',
+                        rhs = require("dapui").toggle,
+                        args = {noremap = true, silent = true},
+                    }
+                end,
+            },
+        }
     }
 
     use {
@@ -466,7 +486,9 @@ packer.startup(function()
 
     use {
         'pwntester/octo.nvim',
-        cond = function() return vim.fn.executable('gh') == 1 end,
+        cond = function()
+            return vim.env.VIM_MIN == nil and vim.g.minimal == nil and vim.fn.executable('gh') == 1
+        end,
         confg = function() require'octo'.setup() end,
     }
 
