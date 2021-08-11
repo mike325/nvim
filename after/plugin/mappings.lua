@@ -2,6 +2,8 @@ local sys  = require'sys'
 local nvim = require'neovim'
 
 local iregex         = require'utils'.strings.iregex
+-- local split          = require'utils'.strings.split
+local clear_lst      = require'utils'.tables.clear_lst
 local executable     = require'utils'.files.executable
 local is_file        = require'utils'.files.is_file
 local writefile      = require'utils'.files.writefile
@@ -477,7 +479,6 @@ set_command{
     lhs = 'Terminal',
     rhs = function(...)
         local cmd = {...}
-        -- local split = vim.opt.splitbelow:get() == true and 'botright' or 'topleft'
         local is_empty = #cmd == 0
         local shell
 
@@ -1073,3 +1074,18 @@ if not plugins['vim-commentary'] then
         args = noremap_silent,
     }
 end
+
+set_command{
+    lhs = 'Messages',
+    rhs = function()
+        local messages = nvim.exec('messages', true)
+        vim.fn.setqflist({}, 'r', {
+            lines = clear_lst(vim.split(messages, '\n')),
+            -- efm = '%t%n: %m,%m',
+            title = 'Messages',
+            context = 'Messages',
+        })
+        nvim.ex.Qopen()
+    end,
+    args = {force = true}
+}
