@@ -1077,15 +1077,24 @@ end
 
 set_command{
     lhs = 'Messages',
-    rhs = function()
-        local messages = nvim.exec('messages', true)
-        vim.fn.setqflist({}, 'r', {
-            lines = clear_lst(vim.split(messages, '\n')),
-            -- efm = '%t%n: %m,%m',
-            title = 'Messages',
-            context = 'Messages',
-        })
-        nvim.ex.Qopen()
+    rhs = function(args)
+        local clear = (args and args ~= '') and ' '..args or ''
+        local messages = nvim.exec('messages'..clear, true)
+        if not args or args == '' then
+            vim.fn.setqflist({}, 'r', {
+                lines = clear_lst(vim.split(messages, '\n')),
+                -- efm = '%t%n: %m,%m',
+                title = 'Messages',
+                context = 'Messages',
+            })
+            nvim.ex.Qopen()
+        else
+            local context = vim.fn.getqflist({context = 1}).context
+            if context == 'Messages' then
+                require'utils'.helpers.clear_qf()
+                nvim.ex.cclose()
+            end
+        end
     end,
-    args = {force = true}
+    args = {nargs = '?', force = true, complete='messages'}
 }
