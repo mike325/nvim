@@ -429,6 +429,19 @@ packer.startup(function()
     }
 
     use {
+        'mfussenegger/nvim-dap',
+        cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
+        config = function() require'plugins.dap' end,
+        requires = {
+            {
+                'theHamsta/nvim-dap-virtual-text',
+                cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
+                setup = function() vim.g.dap_virtual_text = true end,
+            },
+        }
+    }
+
+    use {
         'rcarriga/nvim-dap-ui',
         cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
         config = function()
@@ -450,21 +463,9 @@ packer.startup(function()
                 args = {noremap = true, silent = true},
             }
         end,
-        requires = {
-            {
-                'mfussenegger/nvim-dap',
-                cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
-                config = function() require'plugins.dap' end,
-                requires = {
-                    {
-                        'theHamsta/nvim-dap-virtual-text',
-                        cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
-                        setup = function() vim.g.dap_virtual_text = true end,
-                    },
-                }
-            }
-        },
+        wants = 'nvim-dap'
     }
+
 
     use {
         'nvim-telescope/telescope.nvim',

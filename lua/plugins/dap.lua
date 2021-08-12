@@ -155,7 +155,7 @@ set_mapping{
 set_mapping{
     mode = 'n',
     lhs = '<F4>',
-    rhs = require'dap'.stop,
+    rhs = require'dap'.close,
     args = args,
 }
 
