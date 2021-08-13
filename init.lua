@@ -22,7 +22,7 @@ vim.cmd[[packadd! cfilter]]
 vim.cmd[[packadd! matchit]]
 
 require'globals'
-require'filetypes.python'.pynvim_setup()
+RELOAD'filetypes.python'.pynvim_setup()
 
 if vim.fn.executable('git') == 1 then
     require'setup'()

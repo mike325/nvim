@@ -79,7 +79,8 @@ function Job:new(job)
         debug.traceback('Missing job data '..vim.inspect(job))
     )
 
-    local exe,args,cmd
+    local exe,args,cmd,verify_exec
+    verify_exec = true
 
     if type(job) == type('') then
         assert(#job > 0, debug.traceback('Missing command'))
@@ -110,6 +111,14 @@ function Job:new(job)
 
         exe = job.cmd or job.exe
         args = job.args
+
+        assert(
+            not job.verify_exec or type(job.verify_exec) == type(true),
+            debug.traceback('Invalid verify_exec arg')
+        )
+        if job.verify_exec ~= nil then
+            verify_exec = job.verify_exec
+        end
 
         assert(
             (type(exe) == type('') or (type(exe) == type({}) and vim.tbl_islist(exe))) and #exe > 0,
@@ -143,7 +152,7 @@ function Job:new(job)
         end
     end
 
-    if not executable(exe) then
+    if not executable(exe) and verify_exec then
         error(debug.traceback('Command '..exe..' is not executable or is not located inside the PATH'))
     end
 
@@ -447,40 +456,7 @@ function Job:progress()
         self._buffer = get_buffer(self)
     end
 
-    if not vim.t.progress_win then
-        local columns = vim.opt.columns:get()
-        local lines = vim.opt.lines:get()
-
-        vim.t.progress_win = vim.api.nvim_open_win(
-            self._buffer,
-            false,
-            {
-                anchor = 'SW',
-                relative = 'win',
-                row = lines - 6,
-                col = 2,
-                -- bufpos = {lines/2, 15},
-                height = 15,
-                width = columns - 5,
-                style = 'minimal',
-                border = 'rounded',
-                noautocmd = true,
-                focusable = true,
-                zindex = 1, -- very low priority
-            }
-        )
-
-        set_autocmd{
-            event = 'WinClosed',
-            pattern = ''..vim.t.progress_win,
-            cmd = 'unlet t:progress_win',
-            group = 'JobProgress',
-            once    = true,
-        }
-
-    else
-        nvim.win.set_buf(vim.t.progress_win, self._buffer)
-    end
+    require'utils'.windows.progress(self._buffer)
 end
 
 function Job:wait(timeout)

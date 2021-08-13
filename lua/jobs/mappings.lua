@@ -53,41 +53,7 @@ set_mapping{
     mode = 'n',
     lhs = '=p',
     rhs = function()
-        if not vim.t.progress_win then
-            local columns = vim.opt.columns:get()
-            local lines = vim.opt.lines:get()
-
-            local scratch = vim.api.nvim_create_buf(false, true)
-            nvim.buf.set_option(scratch, 'bufhidden', 'wipe')
-
-            vim.t.progress_win = vim.api.nvim_open_win(
-                scratch,
-                false,
-                {
-                    anchor = 'SW',
-                    relative = 'win',
-                    row = lines - 6,
-                    col = 2,
-                    -- bufpos = {lines/2, 15},
-                    height = 15,
-                    width = columns - 5,
-                    style = 'minimal',
-                    border = 'rounded',
-                    noautocmd = true,
-                    focusable = true,
-                    zindex = 1, -- very low priority
-                }
-            )
-            set_autocmd{
-                event = 'WinClosed',
-                pattern = ''..vim.t.progress_win,
-                cmd = 'unlet t:progress_win',
-                group = 'JobProgress',
-                once    = true,
-            }
-        else
-            nvim.win.close(vim.t.progress_win, false)
-        end
+        require'utils'.windows.progress()
     end,
     args = {noremap = true, silent = true}
 }

@@ -5,5 +5,5 @@ vim.opt_local.shiftwidth  = 0
 vim.opt_local.softtabstop = -1
 
 if executable('cmake') then
-    require'filetypes.cmake'.setup()
+    RELOAD'filetypes.cmake'.setup()
 end

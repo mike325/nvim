@@ -13,4 +13,4 @@ if executable('clang-format') then
     vim.opt_local.formatprg = 'clang-format --style=file --fallback-style=WebKit'
 end
 
-require'filetypes.cpp'.setup()
+RELOAD'filetypes.cpp'.setup()

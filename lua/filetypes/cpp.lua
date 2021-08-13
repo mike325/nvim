@@ -245,11 +245,11 @@ function M.setup()
         local cmake = vim.fn.findfile('CMakeLists.txt', cwd..';')
 
         if executable('make') then
-            require'filetypes.make'.setup()
+            RELOAD'filetypes.make'.setup()
         end
 
         if cmake ~= '' and executable('cmake') then
-            require'filetypes.cmake'.setup()
+            RELOAD'filetypes.cmake'.setup()
         end
 
         local has_tidy = false

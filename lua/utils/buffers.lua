@@ -44,8 +44,10 @@ function M.delete(buffer, wipe)
     end
 
     if not is_wipe then
-        local action = not wipe and {unload = true} or {force = true}
-        nvim.buf.delete(buffer, action)
+        if nvim.buf.is_valid(buffer) then
+            local action = not wipe and {unload = true} or {force = true}
+            nvim.buf.delete(buffer, action)
+        end
     end
 end
 

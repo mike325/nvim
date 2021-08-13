@@ -130,8 +130,6 @@ function M.format()
     local bufname = nvim.buf.get_name(0)
     -- local mode = nvim.get_mode()
 
-    -- print('First:',first, 'Last:',last)
-
     if executable('yapf') then
         external_formatprg({
             cmd = {
@@ -147,7 +145,6 @@ function M.format()
             last = last,
         })
     elseif executable('autopep8') then
-        -- local cmd =
         external_formatprg({
             cmd = {
                 'autopep8',
@@ -171,7 +168,7 @@ function M.format()
 end
 
 function M.setup()
-    vim.opt_local.formatexpr = [[luaeval('require\"filetypes.python\".format()')]]
+    vim.opt_local.formatexpr = [[luaeval('RELOAD\"filetypes.python\".format()')]]
 
     if executable('flake8') then
         local cmd = {'flake8'}

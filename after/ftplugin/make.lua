@@ -6,5 +6,5 @@ vim.opt_local.shiftwidth  = 0
 vim.opt_local.softtabstop = -1
 
 if executable('make') then
-    require'filetypes.make'.setup()
+    RELOAD'filetypes.make'.setup()
 end

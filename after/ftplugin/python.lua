@@ -12,7 +12,7 @@ vim.opt_local.define = [[^\s*\<\(def\|class\)\>]]
 vim.opt_local.suffixesadd:prepend('.py')
 vim.opt_local.suffixesadd:prepend('__init__.py')
 
-require'filetypes.python'.setup()
+RELOAD'filetypes.python'.setup()
 
 -- nnoremap <silent><buffer> <CR> :call mappings#cr()<CR>
 

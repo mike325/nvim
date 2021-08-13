@@ -497,12 +497,13 @@ set_command{
             end
         end
 
-        local win = RELOAD("floating").window()
-
-        nvim.ex.edit('term://'..shell)
+        local win = require'utils'.windows.big_center()
 
         nvim.win.set_option(win, 'number', false)
         nvim.win.set_option(win, 'relativenumber', false)
+
+        -- nvim.ex.edit('term://'..)
+        vim.fn.term_open(shell)
 
         if is_empty then
             nvim.ex.startinsert()
@@ -786,9 +787,7 @@ set_command {
         end
 
         cmd = cmd .. table.concat(args, ' ')
-        local Job = RELOAD('jobs')
-
-        local lint = Job:new{
+        local lint = RELOAD('jobs'):new{
             cmd = cmd,
             qf = {
                 on_fail = {
