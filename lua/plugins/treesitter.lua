@@ -17,6 +17,7 @@ local ensure_installed = {
     'cpp',
     'cmake',
     'python',
+    'vim',
     'bash',
     'lua',
     'jsonc',

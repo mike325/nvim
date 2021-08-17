@@ -23,6 +23,6 @@ set_command{
 set_autocmd{
     event = 'TextYankPost',
     pattern = '*',
-    cmd = [[if v:event.operator is 'y' && (v:event.regname ==? '' || v:event.regname ==? '*' || v:event.regname ==? '+') |silent call YankOSC52(getreg(v:event.regname)) |endif]],
+    cmd = [[if v:event.operator is 'y' && (v:event.regname is '+' || v:event.regname is '*' || v:event.regname is '') | OSCYankReg + | endif]],
     group = 'OSCYank',
 }
