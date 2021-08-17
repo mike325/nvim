@@ -297,22 +297,27 @@ packer.startup(function()
     use {
         'kana/vim-textobj-user',
         cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
+        event = 'VimEnter',
         requires = {
             {
                 'kana/vim-textobj-line',
                 cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
+                event = 'VimEnter',
             },
             {
                 'kana/vim-textobj-entire',
                 cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
+                event = 'VimEnter',
             },
             {
                 'michaeljsmith/vim-indent-object',
                 cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
+                event = 'VimEnter',
             },
             {
                 'glts/vim-textobj-comment',
                 cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
+                event = 'VimEnter',
             },
         }
     }
@@ -363,6 +368,7 @@ packer.startup(function()
         cond = function()
             return vim.env.VIM_MIN == nil and vim.g.minimal == nil and vim.fn.has('python3') == 1
         end,
+        event = 'VimEnter',
     }
 
     use {
