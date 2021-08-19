@@ -7,5 +7,5 @@ vim.opt_local.softtabstop = -1
 vim.opt_local.define = [[^\(\(function\s\+\)\?\ze\i\+()\|\s*\(local\s\+\)\?\ze\k\+=.*\)]]
 
 if executable('shellcheck') then
-    vim.opt_local.makeprg = 'shellcheck -x -e 1117 %'
+    vim.opt_local.makeprg = 'shellcheck -f gcc -x -e 1117 %'
 end
