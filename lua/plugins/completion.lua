@@ -229,6 +229,7 @@ elseif compe ~= nil then
             luasnip = plugins.luasnip ~= nil,
             ultisnips = plugins.ultisnips ~= nil,
             snippets_nvim = plugins['snippets.nvim'] ~= nil,
+            neorg = plugins.neorg ~= nil,
         },
     }
 

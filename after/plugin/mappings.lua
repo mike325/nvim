@@ -503,7 +503,7 @@ set_command{
         nvim.win.set_option(win, 'relativenumber', false)
 
         -- nvim.ex.edit('term://'..)
-        vim.fn.term_open(shell)
+        vim.fn.termopen(shell)
 
         if is_empty then
             nvim.ex.startinsert()

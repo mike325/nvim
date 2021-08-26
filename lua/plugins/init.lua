@@ -39,6 +39,9 @@ packer.startup(function()
     use {'kyazdani42/nvim-web-devicons'}
     use {'kevinhwang91/nvim-bqf'}
 
+    use {'nvim-lua/popup.nvim'}
+    use {'nvim-lua/plenary.nvim'}
+
     use {
         'rcarriga/nvim-notify',
         config = function()
@@ -138,7 +141,25 @@ packer.startup(function()
     use {
         'sindrets/diffview.nvim',
         cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
-        config = function() require'plugins.diffview' end,
+        config = function()
+            require'plugins.diffview'
+
+            local set_autocmd = require'neovim.autocmds'.set_autocmd
+
+            set_autocmd{
+                event   = 'Filetype',
+                pattern = 'DiffviewFiles',
+                cmd     = 'lua require"plugins.diffview".set_mappings()',
+                group   = 'DiffViewMappings',
+            }
+
+            set_autocmd{
+                event   = {'TabEnter'},
+                pattern = '*',
+                cmd     = 'lua require"plugins.diffview".set_mappings()',
+                group   = 'DiffViewMappings',
+            }
+        end,
     }
 
     use {
@@ -155,10 +176,12 @@ packer.startup(function()
         end,
     }
 
+    -- use {'rhysd/committia.vim'}
+
     use {
         'lewis6991/gitsigns.nvim',
         cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
-        requires = 'nvim-lua/plenary.nvim',
+        wants = 'plenary.nvim',
         config = function()
             require('gitsigns').setup {
                 keymaps = {
@@ -184,9 +207,12 @@ packer.startup(function()
                     ['o ah'] = ':<C-U>lua require"gitsigns.actions".select_hunk()<CR>',
                     ['x ah'] = ':<C-U>lua require"gitsigns.actions".select_hunk()<CR>',
                 },
-                current_line_blame = false,
-                current_line_blame_delay = 1000,
-                current_line_blame_position = 'eol',
+                current_line_blame = true,
+                current_line_blame_opts = {
+                    virt_text = true,
+                    virt_text_pos = 'eol',
+                    delay = 1000
+                },
                 -- numhl = false,
                 -- linehl = false,
                 -- status_formatter = nil, -- Use default
@@ -358,10 +384,72 @@ packer.startup(function()
         after = 'firenvim',
     }
 
-    use {
-        'vimwiki/vimwiki',
-        cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
-    }
+    -- use{
+    --     "vhyrro/neorg",
+    --     config = function()
+    --         require('neorg').setup {
+    --             -- Tell Neorg what modules to load
+    --             load = {
+    --                 ["core.defaults"] = {}, -- Load all the default modules
+    --                 ["core.keybinds"] = { -- Configure core.keybinds
+    --                     config = {
+    --                         default_keybinds = true, -- Generate the default keybinds
+    --                         neorg_leader = "<Leader>o" -- This is the default if unspecified
+    --                     }
+    --                 },
+    --                 ["core.norg.concealer"] = {}, -- Allows for use of icons
+    --                 ["core.norg.dirman"] = { -- Manage your directories with Neorg
+    --                     config = {
+    --                         workspaces = {
+    --                             my_workspace = "~/neorg"
+    --                         }
+    --                     }
+    --                 }
+    --             },
+    --         }
+    --     end,
+    --     wants = 'plenary.nvim'
+    -- }
+
+    -- use {
+    --     'vimwiki/vimwiki',
+    --     setup = function()
+    --         local general_wiki = {
+    --             auto_tags = 1,
+    --             syntax = 'markdown',
+    --             ext = '.md',
+    --             nested_syntaxes = {
+    --                 python  = 'python',
+    --                 lua     = 'lua',
+    --                 ['c++'] = 'cpp',
+    --                 sh      = 'sh',
+    --                 bash    = 'sh' ,
+    --             },
+    --
+    --         }
+    --
+    --         local personal_wiki = { path = '~/notes/', }
+    --         local work_wiki = { path = '~/vimwiki/', }
+    --
+    --         vim.g.vimwiki_table_mappings = 0
+    --         vim.g.vimwiki_list = {
+    --             vim.tbl_extend('force', personal_wiki, general_wiki),
+    --             vim.tbl_extend('force', work_wiki, general_wiki),
+    --         }
+    --         vim.g.vimwiki_ext2syntax = {
+    --             ['.md']   = 'markdown',
+    --             ['.mkd']  = 'markdown',
+    --             ['.wiki'] = 'media'
+    --         }
+    --     end,
+    --     -- config = function()
+    --     --     vim.cmd [[nmap gww <Plug>VimwikiIndex]]
+    --     --     vim.cmd [[nmap gwt <Plug>VimwikiTabIndex]]
+    --     --     vim.cmd [[nmap gwd <Plug>VimwikiDiaryIndex]]
+    --     --     vim.cmd [[nmap gwn <Plug>VimwikiMakeDiaryNote]]
+    --     --     vim.cmd [[nmap gwu <Plug>VimwikiUISelect]]
+    --     -- end,
+    -- }
 
     use {
         'neomake/neomake',
@@ -447,38 +535,38 @@ packer.startup(function()
         }
     }
 
-    use {
-        'rcarriga/nvim-dap-ui',
-        cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
-        config = function()
-            require'dapui'.setup{}
-            local set_command = require'neovim.commands'.set_command
-            local set_mapping = require'neovim.mappings'.set_mapping
-            -- require("dapui").open()
-            -- require("dapui").close()
-            -- require("dapui").toggle()
-            set_command{
-                lhs = 'DapUI',
-                rhs = require("dapui").toggle,
-                args = { force = true, }
-            }
-            set_mapping{
-                mode = 'n',
-                lhs = '=I',
-                rhs = require("dapui").toggle,
-                args = {noremap = true, silent = true},
-            }
-        end,
-        wants = 'nvim-dap'
-    }
+    -- use {
+    --     'rcarriga/nvim-dap-ui',
+    --     cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
+    --     config = function()
+    --         require'dapui'.setup{}
+    --         local set_command = require'neovim.commands'.set_command
+    --         local set_mapping = require'neovim.mappings'.set_mapping
+    --         -- require("dapui").open()
+    --         -- require("dapui").close()
+    --         -- require("dapui").toggle()
+    --         set_command{
+    --             lhs = 'DapUI',
+    --             rhs = require("dapui").toggle,
+    --             args = { force = true, }
+    --         }
+    --         set_mapping{
+    --             mode = 'n',
+    --             lhs = '=I',
+    --             rhs = require("dapui").toggle,
+    --             args = {noremap = true, silent = true},
+    --         }
+    --     end,
+    --     wants = 'nvim-dap'
+    -- }
 
 
     use {
         'nvim-telescope/telescope.nvim',
         config = function() require'plugins.telescope' end,
-        requires = {
-            {'nvim-lua/popup.nvim'},
-            {'nvim-lua/plenary.nvim'},
+        wants = {
+            'plenary.nvim',
+            'popup.nvim'
         },
     }
 
@@ -496,25 +584,9 @@ packer.startup(function()
     }
 
     use {
-        'pwntester/octo.nvim',
-        cond = function()
-            return vim.env.VIM_MIN == nil and vim.g.minimal == nil and vim.fn.executable('gh') == 1
-        end,
-        confg = function() require'octo'.setup() end,
-    }
-
-    use {
         'norcalli/nvim-terminal.lua',
         config = function() require'terminal'.setup() end,
     }
-
-    -- use {'rhysd/committia.vim'}
-
-    -- use {
-    --     'tpope/vim-dadbod',
-    --     cmd = 'DB',
-    --     cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
-    -- }
 
     -- use {
     --     'lewis6991/spellsitter.nvim',
@@ -527,35 +599,23 @@ packer.startup(function()
     --     after = 'nvim-treesitter',
     -- }
 
+    -- use {
+    --     'pwntester/octo.nvim',
+    --     cond = function()
+    --         return vim.env.VIM_MIN == nil and vim.g.minimal == nil and vim.fn.executable('gh') == 1
+    --     end,
+    --     confg = function() require'octo'.setup() end,
+    --     event = 'CmdlineEnter',
+    -- }
+
+    -- use {
+    --     'tpope/vim-dadbod',
+    --     cmd = 'DB',
+    --     cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
+    -- }
+
     -- use {'editorconfig/editorconfig-vim'}
-    -- use {'tpope/vim-endwise'}
 
-    -- use {
-    --     'marko-cerovac/material.nvim',
-    --     cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
-    --     event = {'CursorHold', 'CmdlineEnter'},
-    -- }
-    -- use {
-    --     'glepnir/zephyr-nvim',
-    --     cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
-    --     event = {'CursorHold', 'CmdlineEnter'},
-    -- }
-    -- use {
-    --     'ayu-theme/ayu-vim',
-    --     cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
-    --     event = {'CursorHold', 'CmdlineEnter'},
-    -- }
-    -- use {
-    --     'joshdick/onedark.vim',
-    --     cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
-    --     event = {'CursorHold', 'CmdlineEnter'},
-    -- }
-
-    -- use {'tiagovla/tokyodark.nvim'}
-    -- use {'bluz71/vim-moonfly-colors'}
-    -- use {'bluz71/vim-nightfly-guicolors'}
-    -- use {'nanotech/jellybeans.vim'}
-    -- use {'whatyouhide/vim-gotham'}
     -- use {
     --     'segeljakt/vim-silicon',
     --     cond = function() return vim.fn.executable('silicon') == 1 end,

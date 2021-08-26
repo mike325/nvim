@@ -9,7 +9,6 @@ end
 local nvim = require'neovim'
 
 -- local set_command = require'neovim.commands'.set_command
-local set_autocmd = require'neovim.autocmds'.set_autocmd
 local set_mapping = require'neovim.mappings'.set_mapping
 local get_mapping = require'neovim.mappings'.get_mapping
 
@@ -138,20 +137,5 @@ diffview.setup {
         }
     }
 }
-
-set_autocmd{
-    event   = 'Filetype',
-    pattern = 'DiffviewFiles',
-    cmd     = 'lua RELOAD"plugins.diffview".set_mappings()',
-    group   = 'DiffViewMappings',
-}
-
-set_autocmd{
-    event   = {'TabEnter'},
-    pattern = '*',
-    cmd     = 'lua RELOAD"plugins.diffview".set_mappings()',
-    group   = 'DiffViewMappings',
-}
-
 
 return M
