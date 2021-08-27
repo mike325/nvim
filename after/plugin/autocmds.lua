@@ -59,7 +59,7 @@ set_autocmd{
 }
 
 set_autocmd{
-    event   = 'BufRead',
+    event   = 'BufReadPost',
     pattern = '*',
     cmd     = 'lua require"utils".buffers.last_position()',
     group   = 'LastEditPosition'

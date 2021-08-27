@@ -4,7 +4,16 @@ import argparse
 import logging
 import os
 import sys
+
 from typing import Union
+from typing import Any
+
+# from typing import Dict
+# from typing import Optional
+# from typing import Sequence
+# from typing import TextIO
+from typing import cast
+
 # from subprocess import PIPE, Popen
 # from datetime import datetime
 
@@ -30,22 +39,23 @@ _header = """
       .`                                 `/
 """
 
-_VERSION = '0.1.0'
-_AUTHOR = 'Mike'
+_VERSION = "0.1.0"
+_AUTHOR = "Mike"
 
 _log = None
 # _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 _SCRIPTNAME = os.path.basename(__file__)
-_log_file = os.path.splitext(_SCRIPTNAME)[0] + '.log'
+_log_file = os.path.splitext(_SCRIPTNAME)[0] + ".log"
 
 
 def _createLogger(
-        stdout_level: int = logging.INFO,
-        file_level: int = logging.DEBUG,
-        color: bool = True,
-        filename: str = 'dummy.log',
-        name: str = 'MainLogger'):
-    """ Creaters logging obj
+    stdout_level: int = logging.INFO,
+    file_level: int = logging.DEBUG,
+    color: bool = True,
+    filename: str = "dummy.log",
+    name: str = "MainLogger",
+):
+    """Creaters logging obj
 
     stdout_level: int: logging level displayed into the terminal
     file_level: int: logging level saved into the logging file
@@ -55,11 +65,14 @@ def _createLogger(
     logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)
 
+    ColorFormatter: Any = None
+    Formatter: Any = None
     try:
-        from colorlog import ColoredFormatter as ColorFormatter
-        Formatter = ColorFormatter
+        from colorlog import ColoredFormatter
+
+        Formatter = ColoredFormatter
+        ColorFormatter = ColoredFormatter
     except ImportError:
-        ColorFormatter = None
 
         class PrimitiveFormatter(logging.Formatter):
             """Logging colored formatter, adapted from https://stackoverflow.com/a/56944256/3638629"""
@@ -69,32 +82,32 @@ def _createLogger(
                 self.fmt = fmt
 
                 colors = {
-                    'grey': '\x1b[38;21m',
-                    'green': '\x1b[32m',
-                    'magenta': '\x1b[35m',
-                    'purple': '\x1b[35m',
-                    'blue': '\x1b[38;5;39m',
-                    'yellow': '\x1b[38;5;226m',
-                    'red': '\x1b[38;5;196m',
-                    'bold_red': '\x1b[31;1m',
-                    'reset': '\x1b[0m',
+                    "grey": "\x1b[38;21m",
+                    "green": "\x1b[32m",
+                    "magenta": "\x1b[35m",
+                    "purple": "\x1b[35m",
+                    "blue": "\x1b[38;5;39m",
+                    "yellow": "\x1b[38;5;226m",
+                    "red": "\x1b[38;5;196m",
+                    "bold_red": "\x1b[31;1m",
+                    "reset": "\x1b[0m",
                 }
 
                 if log_colors is None:
                     log_colors = {}
 
-                log_colors['DEBUG'] = log_colors['DEBUG'] if 'DEBUG' in log_colors else 'magenta'
-                log_colors['INFO'] = log_colors['INFO'] if 'INFO' in log_colors else 'green'
-                log_colors['WARNING'] = log_colors['WARNING'] if 'WARNING' in log_colors else 'yellow'
-                log_colors['ERROR'] = log_colors['ERROR'] if 'ERROR' in log_colors else 'red'
-                log_colors['CRITICAL'] = log_colors['CRITICAL'] if 'CRITICAL' in log_colors else 'bold_red'
+                log_colors["DEBUG"] = log_colors["DEBUG"] if "DEBUG" in log_colors else "magenta"
+                log_colors["INFO"] = log_colors["INFO"] if "INFO" in log_colors else "green"
+                log_colors["WARNING"] = log_colors["WARNING"] if "WARNING" in log_colors else "yellow"
+                log_colors["ERROR"] = log_colors["ERROR"] if "ERROR" in log_colors else "red"
+                log_colors["CRITICAL"] = log_colors["CRITICAL"] if "CRITICAL" in log_colors else "bold_red"
 
                 self.FORMATS = {
-                    logging.DEBUG: colors[log_colors['DEBUG']] + self.fmt + colors['reset'],
-                    logging.INFO: colors[log_colors['INFO']] + self.fmt + colors['reset'],
-                    logging.WARNING: colors[log_colors['WARNING']] + self.fmt + colors['reset'],
-                    logging.ERROR: colors[log_colors['ERROR']] + self.fmt + colors['reset'],
-                    logging.CRITICAL: colors[log_colors['CRITICAL']] + self.fmt + colors['reset']
+                    logging.DEBUG: colors[log_colors["DEBUG"]] + self.fmt + colors["reset"],
+                    logging.INFO: colors[log_colors["INFO"]] + self.fmt + colors["reset"],
+                    logging.WARNING: colors[log_colors["WARNING"]] + self.fmt + colors["reset"],
+                    logging.ERROR: colors[log_colors["ERROR"]] + self.fmt + colors["reset"],
+                    logging.CRITICAL: colors[log_colors["CRITICAL"]] + self.fmt + colors["reset"],
                 }
 
             def format(self, record):
@@ -111,32 +124,35 @@ def _createLogger(
 
     stdout_handler = logging.StreamHandler(sys.stdout)
     stdout_handler.setLevel(stdout_level)
-    logformat = '{color}%(levelname)-8s | %(message)s'
+    logformat = "{color}%(levelname)-8s | %(message)s"
     logformat = logformat.format(
-        color='%(log_color)s' if has_color else '',
+        color="%(log_color)s" if has_color else "",
         # reset='%(reset)s' if has_color else '',
     )
-    stdout_format = Formatter(logformat, log_colors={
-        'DEBUG': 'purple',
-        'INFO': 'green',
-        'WARNING': 'yellow',
-        'ERROR': 'red',
-        'CRITICAL': 'red',
-    })
+    stdout_format = Formatter(
+        logformat,
+        log_colors={
+            "DEBUG": "purple",
+            "INFO": "green",
+            "WARNING": "yellow",
+            "ERROR": "red",
+            "CRITICAL": "red",
+        },
+    )
     stdout_handler.setFormatter(stdout_format)
 
     logger.addHandler(stdout_handler)
 
     if file_level > 0 and file_level < 100:
 
-        with open(filename, 'a') as log:
+        with open(filename, "a") as log:
             log.write(_header)
             # log.write(f'\nDate: {datetime.datetime.date()}')
-            log.write(f'\nAuthor:   {_AUTHOR}\nVersion:  {_VERSION}\n\n')
+            log.write(f"\nAuthor:   {_AUTHOR}\nVersion:  {_VERSION}\n\n")
 
         file_handler = logging.FileHandler(filename=filename)
         file_handler.setLevel(file_level)
-        file_format = logging.Formatter('%(levelname)-8s | %(filename)s: [%(funcName)s] - %(message)s')
+        file_format = logging.Formatter("%(levelname)-8s | %(filename)s: [%(funcName)s] - %(message)s")
         file_handler.setFormatter(file_format)
 
         logger.addHandler(file_handler)
@@ -145,7 +161,7 @@ def _createLogger(
 
 
 def _str_to_logging(level: Union[int, str]) -> int:
-    """ Convert logging level string to a logging number
+    """Convert logging level string to a logging number
 
     :level: str: integer representation or a valid logging string
                 - debug/verbose
@@ -164,8 +180,8 @@ def _str_to_logging(level: Union[int, str]) -> int:
         try:
             level = abs(int(level) - 100)
         except Exception:
-            level = level.lower()
-            if level == "debug" or level == 'verbose':
+            level = cast(str, level).lower()
+            if level == "debug" or level == "verbose":
                 level = logging.DEBUG
             elif level == "info":
                 level = logging.INFO
@@ -182,84 +198,78 @@ def _str_to_logging(level: Union[int, str]) -> int:
 
 
 def _parseArgs():
-    """ Parse CLI arguments
+    """Parse CLI arguments
     :returns: argparse.ArgumentParser class instance
 
     """
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
-        '--version',
-        dest='show_version',
-        action='store_true',
-        help='print script version and exit',
+        "--version",
+        dest="show_version",
+        action="store_true",
+        help="print script version and exit",
     )
 
     parser.add_argument(
-        '--verbose',
-        dest='verbose',
-        action='store_true',
+        "--verbose",
+        dest="verbose",
+        action="store_true",
         default=False,
-        help='Turn on Debug messages',
+        help="Turn on Debug messages",
     )
 
     parser.add_argument(
-        '--quiet',
-        dest='quiet',
-        action='store_true',
+        "--quiet",
+        dest="quiet",
+        action="store_true",
         default=False,
-        help='Turn off all messages',
+        help="Turn off all messages",
     )
 
     parser.add_argument(
-        '-l',
-        '--logging',
-        dest='stdout_logging',
+        "-l",
+        "--logging",
+        dest="stdout_logging",
         default="info",
         type=str,
-        help='File logger verbosity',
+        help="File logger verbosity",
     )
 
     parser.add_argument(
-        '-f',
-        '--file-logging',
-        dest='file_logging',
-        default='debug',
-        type=str,
-        help='File logger verbosity'
+        "-f", "--file-logging", dest="file_logging", default="debug", type=str, help="File logger verbosity"
     )
 
-    parser.add_argument(
-        '--no-color',
-        dest='no_color',
-        action='store_false',
-        help='Disable colored output'
-    )
+    parser.add_argument("--no-color", dest="no_color", action="store_false", help="Disable colored output")
 
     return parser.parse_args()
 
 
-# def _execute(cmd: list, background: bool):
-#     """ Execute a synchronous command
-#     :cmd: list: command to execute
+# def _execute(cmd: Sequence[str], background: bool):
+#     """Execute a synchronous command
+#
+#     :cmd: AnyStr: command to execute
 #     :returns: Popen obj: command object after execution
+#
 #     """
-#     stdout = sys.stdout if not background else PIPE
-#     stderr = sys.stderr if not background else PIPE
-#     _log.debug(f'Executing cmd: {cmd}')
-#     cmd_obj = Popen(cmd, stdout=stdout, stderr=stderr, text=True)
+#     rc = 0
+#     stdout: TextIO = sys.stdout if not background else cast(TextIO, PIPE)
+#     stderr: TextIO = sys.stderr if not background else cast(TextIO, PIPE)
+#     _log.debug(f"Executing cmd: {cmd}")
+#     cmd_obj = Popen(" ".join(cmd), stdout=stdout, stderr=stderr, text=True)
 #     out, err = cmd_obj.communicate()
 #     if out is not None and len(out) > 0:
 #         _log.debug(out)
 #     if cmd_obj.returncode != 0:
-#         _log.error(f'Command exited with {cmd_obj.returncode}')
+#         rc = 1
+#         _log.error(f"Command exited with {cmd_obj.returncode}")
 #         if err is not None:
 #             _log.error(err)
-#     return cmd_obj
+#     return rc
 
 
 def main():
-    """ Main function
+    """Main function
     :returns: int: exit code, 0 in success any other integer in failure
 
     """
@@ -268,11 +278,11 @@ def main():
     args = _parseArgs()
 
     if args.show_version:
-        print(f'{_header}\nAuthor:   {_AUTHOR}\nVersion:  {_VERSION}')
+        print(f"{_header}\nAuthor:   {_AUTHOR}\nVersion:  {_VERSION}")
         return 0
 
-    stdout_level = args.stdout_logging if not args.verbose else 'debug'
-    file_level = args.file_logging if not args.verbose else 'debug'
+    stdout_level = args.stdout_logging if not args.verbose else "debug"
+    file_level = args.file_logging if not args.verbose else "debug"
 
     stdout_level = stdout_level if not args.quiet else 0
     file_level = file_level if not args.quiet else 0
@@ -293,7 +303,7 @@ def main():
     try:
         pass
     except (Exception, KeyboardInterrupt) as e:
-        _log.exception(f'Halting due to {str(e.__class__.__name__)} exception')
+        _log.exception(f"Halting due to {str(e.__class__.__name__)} exception")
         errors = 1
 
     return errors
@@ -303,8 +313,8 @@ if __name__ == "__main__":
     exit(main())
 else:
     _log = _createLogger(
-        stdout_level=_str_to_logging('INFO'),
-        file_level=_str_to_logging('DEBUG'),
+        stdout_level=_str_to_logging("INFO"),
+        file_level=_str_to_logging("DEBUG"),
         color=True,
         filename=_log_file,
     )

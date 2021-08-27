@@ -26,7 +26,7 @@ NOCOLOR=0
 NOLOG=0
 WARN_COUNT=0
 ERR_COUNT=0
-FROM_STDIN=()
+# FROM_STDIN=()
 
 NAME="$0"
 NAME="${NAME##*/}"
@@ -316,12 +316,12 @@ while [[ $# -gt 0 ]]; do
             help_user
             exit 0
             ;;
-        -)
-            while read -r from_stdin; do
-                FROM_STDIN=("$from_stdin")
-            done
-            break
-            ;;
+        # -)
+        #     while read -r from_stdin; do
+        #         FROM_STDIN=("$from_stdin")
+        #     done
+        #     break
+        #     ;;
         *)
             initlog
             error_msg "Unknown argument $key"

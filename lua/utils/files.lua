@@ -533,20 +533,18 @@ function M.skeleton_filename(opts)
         json  = {'projections'},
         c     = {'main'},
         cpp   = {'main'},
+        yaml   = {'pre-commit-config'},
+        toml   = {'pyproject'},
     }
 
     if #template ~= 0 then
         skeleton = vim.fn.fnameescape(skeletons_path .. template)
     else
-
         if known_names[extension] ~= nil then
             local names = known_names[extension]
             for _, name in pairs(names) do
-
                 if string.find(filename, name, 1, true) ~= nil then
-
                     local template_file = skeletons_path..name
-
                     if M.is_file(template_file) then
                         skeleton = vim.fn.fnameescape(template_file)
                         break
@@ -554,7 +552,6 @@ function M.skeleton_filename(opts)
                         skeleton = vim.fn.fnameescape(template_file..'.'..extension)
                         break
                     end
-
                 end
             end
         end

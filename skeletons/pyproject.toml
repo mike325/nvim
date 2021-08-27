@@ -1,0 +1,39 @@
+[project]
+name = "Example"
+version = "0.1"
+description = "Project description"
+readme = "README.md"
+authors = [{ name = "Foo", email = "EXAMPLE@gmail.com" }]
+license = { text = "MIT" }
+# dependencies = [
+#     'httpie',
+#     'debugpy',
+#     'black[d]',
+#     'jedi',
+#     'mypy',
+#     'flake8',
+#     'flake8-mypy',
+#     'yapf',
+#     'mccabe',
+# ]
+
+[tool.black]
+line-legth = 120
+target-version = ['py36']
+# include = '\.pyi?$'
+exclude = '''
+    (
+    /(
+        \.eggs       # exclude a few common directories in the
+        | \.git          # root of the project
+        | \.hg
+        | \.mypy_cache
+        | \.tox
+        | \.venv
+        | _build
+        | buck-out
+        | build
+        | dist
+    )/
+    )
+'''

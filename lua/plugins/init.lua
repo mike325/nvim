@@ -113,6 +113,7 @@ packer.startup(function()
                 ['.github/workflows/main.yml'] = {type = 'Github'},
                 ['.github/workflows/*.yml']    = {type = 'Github'},
                 ['.travis.yml']                = {type = 'Travis' },
+                ['.pre-commit-config.yaml']    = {type = 'PreCommit'},
                 ['.ycm_extra_conf.py']         = {type = 'YCM'},
                 ['.project.vim']               = {type = 'Project'},
                 ['.clang-format']              = {type = 'Clang'},

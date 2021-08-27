@@ -3,21 +3,11 @@ name: lint
 on: [push, pull_request]
 
 jobs:
-  linux-build:
-    name: Lint source files ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      matrix:
-        os: [
-          ubuntu-latest,
-        ]
-
-    env:
-      GITHUB: true
-
+  precommit:
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
       - name: OS Info
         run: |
           sudo apt install wget
@@ -29,14 +19,11 @@ jobs:
           sudo apt install -y curl git python3-setuptools python-setuptools luarocks
           sudo apt install -y python3-pip
           sudo pip3 install --upgrade pip
-          sudo pip3 install 'vim-vint>=0.3.19' 'mypy==0.710' 'flake8>=3.5.0' 'flake8-mypy>=17.8.0' 'pyflakes>=2.0.0' 'yapf>=0.22.0' 'mccabe>=0.6.1'
+          sudo pip3 install -r ./test/requirements.txt
           sudo luarocks install luacheck
       - name: Fetch install script
         run: |
           wget https://raw.githubusercontent.com/Mike325/dotfiles/master/install.sh
           chmod +x ./install.sh
           ./install.sh --portables --verbose --force
-      - name: Lint source code
-        run: |
-          export PATH="$HOME/.local/bin:$PATH"
-          ./test/lint.sh --verbose
+      - uses: pre-commit/action@v2.0.3

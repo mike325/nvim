@@ -26,7 +26,7 @@ NOCOLOR=0
 NOLOG=0
 WARN_COUNT=0
 ERR_COUNT=0
-FROM_STDIN=()
+# FROM_STDIN=()
 
 NAME="$0"
 NAME="${NAME##*/}"
@@ -314,12 +314,12 @@ while [[ $# -gt 0 ]]; do
         help_user
         exit 0
         ;;
-    -)
-        while read -r from_stdin; do
-            FROM_STDIN=("$from_stdin")
-        done
-        break
-        ;;
+    # -)
+    #     while read -r from_stdin; do
+    #         FROM_STDIN=("$from_stdin")
+    #     done
+    #     break
+    #     ;;
     *)
         initlog
         error_msg "Unknown argument $key"
@@ -371,7 +371,7 @@ fi
 if hash vint 2>/dev/null; then
     status_msg "Running VimL lint"
     verbose_msg "Vint version: $(vint --version)"
-    if ! fd -e vim --exclude plug --exclude ftdetect -X vint --enable-neovim -t -s || ! fd -e vim . ftdetect -X vint --enable-neovim -t -e; then
+    if ! fd -e vim --exclude plug --exclude ftdetect -X vint --enable-neovim -t -s || ! fd -e vim . ftdetect -X vint --enable-neovim -t -w; then
         error_msg 'Fail VimL lint test'
         exit 2
     fi

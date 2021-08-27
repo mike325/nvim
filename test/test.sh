@@ -420,6 +420,11 @@ while [[ $# -gt 0 ]]; do
 done
 
 initlog
+verbose_msg "Log Disable   : ${NOLOG}"
+verbose_msg "Current Shell : ${CURRENT_SHELL}"
+verbose_msg "Platform      : ${SHELL_PLATFORM}"
+verbose_msg "Architecture  : ${ARCH}"
+verbose_msg "OS            : ${OS}"
 
 if [[ $ALL -eq 1 ]]; then
     PROGS=("vim" "nvim")
