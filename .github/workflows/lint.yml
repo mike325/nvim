@@ -18,7 +18,7 @@ jobs:
         run: |
           sudo apt install -y curl git python3-setuptools python-setuptools luarocks
           sudo apt install -y python3-pip
-          sudo pip3 install --upgrade pip
+          # sudo pip3 install --upgrade pip
           # sudo pip3 install -r ./test/requirements.txt
           sudo luarocks install luacheck
       - name: Fetch install script

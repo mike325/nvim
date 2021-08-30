@@ -31,7 +31,7 @@ repos:
       # - id: forbid-space-in-indent
       - id: git-check  # Configure in .gitattributes
       # - id: git-dirty  # Configure in .gitignore
-      - id: markdownlint # Configure in .mdlrc
+      # - id: markdownlint # Configure in .mdlrc
       # - id: reek
       # - id: require-ascii
       # - id: rubocop
