@@ -16,10 +16,16 @@ jobs:
           ./screenfetch-dev
       - name: Install dependencies
         run: |
-          sudo apt-get install -y curl git python3-setuptools python-setuptools luarocks python3-pip
-          # sudo pip3 install --upgrade pip
-          # sudo pip3 install -r ./test/requirements.txt
+          sudo apt-get install -y curl git python3-setuptools python-setuptools luarocks python3-pip python3-virtualenv
           sudo luarocks install luacheck
+          WORK_DIR="$HOME/.local/share"
+          mkdir -p "$WORK_DIR" && pushd "$WORK_DIR"
+          virtualenv -p python3 vint
+          source ./vint/bin/activate
+          pip install vim-vint
+          sudo ln -s "${VIRTUAL_ENV}/bin/vint" /usr/bin/
+          deactivate
+          popd
       - name: Fetch install script
         run: |
           wget https://raw.githubusercontent.com/Mike325/dotfiles/master/install.sh
