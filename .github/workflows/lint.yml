@@ -10,14 +10,14 @@ jobs:
       - uses: actions/setup-python@v2
       - name: OS Info
         run: |
-          sudo apt install wget
+          sudo apt-get install wget
           wget -O screenfetch-dev https://git.io/vaHfR
           chmod +x screenfetch-dev
           ./screenfetch-dev
       - name: Install dependencies
         run: |
-          sudo apt install -y curl git python3-setuptools python-setuptools luarocks
-          sudo apt install -y python3-pip
+          sudo apt-get install -y curl git python3-setuptools python-setuptools luarocks
+          sudo apt-get install -y python3-pip
           # sudo pip3 install --upgrade pip
           # sudo pip3 install -r ./test/requirements.txt
           sudo luarocks install luacheck
