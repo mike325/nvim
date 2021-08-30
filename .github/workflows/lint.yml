@@ -16,8 +16,7 @@ jobs:
           ./screenfetch-dev
       - name: Install dependencies
         run: |
-          sudo apt-get install -y curl git python3-setuptools python-setuptools luarocks
-          sudo apt-get install -y python3-pip
+          sudo apt-get install -y curl git python3-setuptools python-setuptools luarocks python3-pip
           # sudo pip3 install --upgrade pip
           # sudo pip3 install -r ./test/requirements.txt
           sudo luarocks install luacheck
