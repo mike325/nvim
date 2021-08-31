@@ -18,7 +18,7 @@ vim.opt_local.path:prepend(require'sys'.base..'/lua')
 
 local luacheck_args = {
     '--max-cyclomatic-complexity',
-    '15',
+    '20',
     '--std',
     'luajit',
     '--formatter',

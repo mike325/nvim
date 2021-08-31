@@ -103,13 +103,13 @@ repos:
                 ftdetect/.*
             )$
         files: '\.*.vim$'
-      # - id: luacheck
-      #   name: luacheck
-      #   description: Lua check
-      #   entry: luacheck
-      #   args: ['--max-cyclomatic-complexity', '15', '--std', 'luajit', '--formatter', 'plain']
-      #   language: system
-      #   types: [lua]
+      - id: luacheck
+        name: luacheck
+        description: Lua check
+        entry: luacheck
+        args: ['--max-cyclomatic-complexity', '20', '--std', 'luajit', '--formatter', 'plain']
+        language: system
+        types: [lua]
       # - id: flake8
       #   name: flake8
       #   description: '`flake8` is a command-line utility for enforcing style consistency across Python projects.'
