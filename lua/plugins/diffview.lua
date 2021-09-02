@@ -30,15 +30,16 @@ local mappings = {
 
 local function is_diffview()
     local ft = vim.opt_local.filetype:get()
-    local tab_diffview = ft == 'DiffviewFiles'
+    local tab_diffview = (ft == 'DiffviewFiles' or ft == 'DiffFileHistory')
 
     if not tab_diffview then
         local current_tab = nvim.get_current_tabpage()
         local wins = nvim.tab.list_wins(current_tab)
 
         for _, win in pairs(wins) do
-            if nvim.buf.get_option(nvim.win.get_buf(win), 'filetype') == 'DiffviewFiles' then
-                tab_diffview = true
+            local buf_win_ft = nvim.buf.get_option(nvim.win.get_buf(win), 'filetype')
+            tab_diffview = buf_win_ft == 'DiffviewFiles' or buf_win_ft == 'DiffFileHistory'
+            if tab_diffview then
                 break
             end
         end
@@ -49,7 +50,6 @@ end
 
 function M.set_mappings()
     if is_diffview() and not vim.g.restore_diffview_maps then
-
         local diff_mappings = {}
 
         for map, args in pairs(mappings) do
@@ -64,8 +64,8 @@ function M.set_mappings()
         end
 
         vim.g.restore_diffview_maps = diff_mappings
-
-        if vim.opt_local.filetype:get() == 'DiffviewFiles' then
+        local diff_ft = vim.opt_local.filetype:get()
+        if diff_ft == 'DiffviewFiles' or diff_ft == 'DiffFileHistory' then
             set_mapping{ mode = 'n', lhs = 'q', }
             set_mapping{
                 mode = 'n',
@@ -94,7 +94,6 @@ function M.set_mappings()
         end
         vim.g.restore_diffview_maps = nil
     end
-
 end
 
 diffview.setup {

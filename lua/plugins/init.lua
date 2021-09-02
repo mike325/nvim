@@ -149,13 +149,13 @@ packer.startup(function()
 
             set_autocmd{
                 event   = 'Filetype',
-                pattern = 'DiffviewFiles',
+                pattern = 'Diff{viewFiles,FileHistory}',
                 cmd     = 'lua require"plugins.diffview".set_mappings()',
                 group   = 'DiffViewMappings',
             }
 
             set_autocmd{
-                event   = {'TabEnter'},
+                event   = 'TabEnter',
                 pattern = '*',
                 cmd     = 'lua require"plugins.diffview".set_mappings()',
                 group   = 'DiffViewMappings',

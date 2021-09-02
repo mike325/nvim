@@ -8,8 +8,7 @@ local cmd = {
 nvim.ex.CompilerSet('makeprg='..table.concat(cmd, '\\ '))
 
 -- local formats = vim.opt_global.errorformat:get()
-local formats = {}
-vim.list_extend(formats, {
+local formats = {
     '%f:%l:%c: %t%n %m',
     '%f:%l:%c:%t: %m',
     '%f:%l:%c: %m',
@@ -22,5 +21,5 @@ vim.list_extend(formats, {
     '%E%f:%l:%c: fatal error: %m',
     '%E%f:%l:%c: error: %m',
     '%W%f:%l:%c: warning: %m',
-})
+}
 nvim.ex.CompilerSet('errorformat='..table.concat(formats, ','):gsub(' ', '\\ '))

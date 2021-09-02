@@ -856,15 +856,17 @@ if executable('scp') then
         path = realpath(normalize_path(path))
 
         local remote_path = './'
-        local paths = {}
-        local hosts = {}
-        local projects = {}
+        local hosts,paths,projects
+
         local path_json = normalize_path('~/.config/remotes/paths.json')
         if is_file(path_json) then
             local configs = read_json(path_json) or {}
             hosts = configs.hosts or {}
             paths = hosts[host] or configs.paths or {}
             projects = configs.projects or  {}
+        else
+            paths = {}
+            projects = {}
         end
 
         local project = path:match('projects/([%w%d%.-_]+)')
@@ -944,8 +946,7 @@ if executable('scp') then
         rhs = function(host)
             host = get_host(host)
             local cmd = remote_cmd(host, true)
-            local Job = RELOAD'jobs'
-            local send_file = Job:new{
+            local send_file = RELOAD'jobs':new{
                 cmd = cmd,
                 opts = {
                     pty = true
@@ -1097,3 +1098,44 @@ set_command{
     end,
     args = {nargs = '?', force = true, complete='messages'}
 }
+
+if executable('pre-commit') then
+    set_command{
+        lhs = 'PreCommit',
+        rhs = function(...)
+            local args = {...}
+            if #args == 0 then
+                table.insert(args, 'run')
+            end
+            local errorformats = {
+                '%f:%l:%c:\\ %t%n\\ %m',
+                '%f:%l:%c:%t:\\ %m',
+                '%f:%l:%c:\\ %m',
+                '%f:%l:\\ %trror:\\ %m',
+                '%f:%l:\\ %tarning:\\ %m',
+                '%f:%l:\\ %tote:\\ %m',
+                '%f:\\ %trror:\\ %m',
+                '%f:\\ %tarning:\\ %m',
+                '%f:\\ %tote:\\ %m',
+                '%E%f:%l:%c:\\ fatal\\ error:\\ %m',
+                '%E%f:%l:%c:\\ error:\\ %m',
+                '%W%f:%l:%c:\\ warning:\\ %m',
+            }
+            local precommit = RELOAD'jobs':new{
+                cmd = 'pre-commit',
+                args = args,
+                qf = {
+                    efm = table.concat(errorformats, ','),
+                    on_fail = {
+                        jump = false,
+                        open = true,
+                    },
+                    context = 'PreCommit',
+                    title = 'PreCommit',
+                },
+            }
+            precommit:start()
+        end,
+        args = {nargs = '*', force = true}
+    }
+end

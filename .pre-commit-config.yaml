@@ -25,16 +25,14 @@ repos:
     rev: 2.1.5  # or master
     hooks:
       # - id: bundler-audit
-      # - id: check-mailmap
-      # - id: fasterer
+      - id: check-mailmap
       - id: forbid-binary
       # - id: forbid-space-in-indent
-      - id: git-check  # Configure in .gitattributes
-      # - id: git-dirty  # Configure in .gitignore
-      # - id: markdownlint # Configure in .mdlrc
-      # - id: reek
+      - id: git-check       # Configure in .gitattributes
+      # - id: git-dirty     # Configure in .gitignore
+      # - id: markdownlint  # Configure in .mdlrc, depends on Ruby
+      - id: protect-first-parent
       # - id: require-ascii
-      # - id: rubocop
       # - id: script-must-have-extension
       # - id: script-must-not-have-extension
       # - id: shellcheck
