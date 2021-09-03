@@ -6,7 +6,7 @@ end
 
 local set_command = require'neovim.commands'.set_command
 local set_mapping = require'neovim.mappings'.set_mapping
-local set_autocmd = require'neovim.autocmds'.set_autocmd
+-- local set_autocmd = require'neovim.autocmds'.set_autocmd
 
 local jobs = STORAGE.jobs
 

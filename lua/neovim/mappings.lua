@@ -98,7 +98,7 @@ function M.get_mapping(mapping)
         return false
     end
 
-    local mappings = {}
+    local mappings
     local result = nil
 
     local lhs = transform_mapping(mapping.lhs)

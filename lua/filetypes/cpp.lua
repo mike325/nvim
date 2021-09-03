@@ -308,7 +308,7 @@ function M.setup()
             end
         elseif not has_tidy then
             -- NOTE: We need to call this multiple times since readfile is async
-            set_opts(filename, has_tidy, compiler, bufnum)
+            set_opts(nil, has_tidy, compiler, bufnum)
         end
     end
 end

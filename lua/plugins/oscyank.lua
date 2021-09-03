@@ -1,3 +1,4 @@
+-- luacheck: max line length 143
 local executable =  require'utils.files'.executable
 
 local set_command = require'neovim.commands'.set_command

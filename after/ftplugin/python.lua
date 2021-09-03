@@ -1,4 +1,4 @@
-local executable = require'utils.files'.executable
+-- local executable = require'utils.files'.executable
 
 -- vim.opt_local.foldenable = true
 -- vim.opt_local.foldmethod = 'syntax'

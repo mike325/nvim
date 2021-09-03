@@ -1,6 +1,6 @@
 local sys = require'sys'
 local nvim = require'neovim'
-local plugins = require'neovim'.plugins
+-- local plugins = require'neovim'.plugins
 
 local executable       = require'utils.files'.executable
 local normalize_path   = require'utils.files'.normalize_path
@@ -116,22 +116,57 @@ abolish['es'] = {
 }
 
 local qf_funcs = {
-    qf = {
-        first = 'cfirst',
-        last = 'clast',
-        close = 'cclose',
-        open = 'Qopen',
-        set_list = vim.fn.setqflist,
-        get_list = vim.fn.getqflist,
-    },
-    loc = {
-        first = 'lfirst',
-        last = 'llast',
-        close = 'lclose',
-        open = 'lopen',
-        set_list = vim.fn.setloclist,
-        get_list = vim.fn.getloclist,
-    },
+    first = function(win)
+        if win then
+            nvim.ex.lfirst()
+        else
+            nvim.ex.cfirst()
+        end
+    end,
+    last = function(win)
+        if win then
+            nvim.ex.llast()
+        else
+            nvim.ex.clast()
+        end
+    end,
+    open = function(win)
+        local cmd = vim.o.splitbelow and 'botright' or 'topleft'
+        if win then
+            vim.cmd(cmd..' lopen')
+        else
+            vim.cmd(cmd..' copen')
+        end
+    end,
+    close = function(win)
+        if win then
+            nvim.ex.lclose()
+        else
+            nvim.ex.cclose()
+        end
+    end,
+    set_list = function(items, action, what, win)
+        if win then
+            -- BUG: For some reason we cannot send what as nil, so it needs to be ommited
+            if not what then
+                vim.fn.setloclist(win, items, action)
+            else
+                vim.fn.setloclist(win, items, action, what)
+            end
+        else
+            if not what then
+                vim.fn.setqflist(items, action)
+            else
+                vim.fn.setqflist(items, action, what)
+            end
+        end
+    end,
+    get_list = function(what, win)
+        if win then
+            return vim.fn.getloclist(win, what)
+        end
+        return vim.fn.getqflist(what)
+    end,
 }
 
 local icons
@@ -200,6 +235,9 @@ else
         sep_arrow_right = '<',
     }
 end
+
+icons.warning = icons.warn
+icons.information = icons.info
 
 local git_dirs = {}
 
@@ -289,64 +327,6 @@ function M.project_config(event)
         -- print('Sourcing Project ', project)
         nvim.ex.source(project)
     end
-
-    -- local telescope = M.load_module'plugins/telescope'
-
-    if plugins['ctrlp'] ~= nil then
-        local fast_look_up = {
-            ag = 1,
-            fd = 1,
-            rg = 1,
-        }
-        local fallback = vim.g.ctrlp_user_command.fallback
-        local clear_cache = is_git and true or (fast_look_up[fallback] ~= nil and true or false)
-
-        vim.g.ctrlp_clear_cache_on_exit = clear_cache
-    end
-
-    if plugins['vim-grepper'] ~= nil then
-
-        local operator = {}
-        local utils = {}
-
-        if executable('git') and is_git then
-            utils[#utils + 1] = 'git'
-            operator[#operator + 1] = 'git'
-        end
-
-        if executable('rg') then
-            utils[#utils + 1] = 'rg'
-            operator[#operator + 1] = 'rg'
-        end
-
-        if executable('ag') then
-            utils[#utils + 1] = 'ag'
-            operator[#operator + 1] = 'ag'
-        end
-
-        if executable('grep') then
-            utils[#utils + 1] = 'grep'
-            operator[#operator + 1] = 'grep'
-        end
-
-        if executable('findstr') then
-            utils[#utils + 1] = 'findstr'
-            operator[#operator + 1] = 'findstr'
-        end
-
-        vim.g.grepper = {
-            utils = utils,
-            operator = {
-                utils = operator
-            },
-        }
-
-    end
-
-    if plugins['gonvim-fuzzy'] ~= nil then
-        vim.g.gonvim_fuzzy_ag_cmd = M.select_grep(is_git)
-    end
-
 end
 
 function M.add_nl(down)
@@ -860,94 +840,65 @@ function M.python(version, args)
     vim.cmd(split_type..' split term://'..pyversion..' '..args)
 end
 
-function M.toggle_qf(qf_type)
-    local action = 'open'
+function M.toggle_qf(win)
 
-    local qf = qf_funcs[qf_type]
+    local qf_winid = qf_funcs.get_list({winid = 0}, win).winid
+    local action = qf_winid > 0 and 'close' or 'open'
+    qf_funcs[action](win)
 
-    local qf_winid
-
-    if qf_type == 'qf' then
-        qf_winid = vim.fn.getqflist({winid = 0}).winid
-    else
-        qf_winid = vim.fn.getloclist(0, {winid = 0}).winid
-    end
-
-    if qf_winid > 0 then
-        for _, winid in pairs(nvim.tab.list_wins(0)) do
-            if winid == qf_winid then
-                action = 'close'
-                break
-            end
-        end
-    end
-
-    nvim.ex[qf[action]]()
 end
 
 function M.dump_to_qf(opts)
+    assert(
+        type(opts) == type({}) and type(opts.lines) == type({}),
+        'Missing "lines" attr to dump'
+    )
 
-    if opts.lines then
-        opts.context = opts.context or 'GenericQfData'
-        opts.title = opts.title or 'Generic Qf data'
+    opts.context = opts.context or 'GenericQfData'
+    opts.title = opts.title or 'Generic Qf data'
+    opts.efm = opts.efm or vim.opt_local.efm or vim.opt_global.efm
 
-        if not opts.efm then
-            local ok, val = pcall(nvim.buf.get_option, 0, 'efm')
-            opts.efm = ok and val or vim.o.efm
+    local qf_type = opts.loc and 'loc' or 'qf'
+    local qf_open = opts.open or false
+    local qf_jump = opts.jump or false
+
+    opts.loc = nil
+    opts.open = nil
+    opts.jump = nil
+    opts.cmdname = nil
+    opts.lines = require'utils.tables'.clear_lst(opts.lines)
+
+    local win
+    if qf_type ~= 'qf' then
+        win = opts.win or vim.api.nvim_get_current_win()
+    end
+    opts.win = nil
+    qf_funcs.set_list({}, 'r', opts, win)
+
+    local info_tab = opts.tab
+    if info_tab and info_tab ~= nvim.get_current_tabpage() then
+        require'utils.messages'.echomsg(
+            ('%s Updated! with %s info'):format(
+                qf_type == 'qf' and 'Qf' or 'Loc',
+                opts.context
+            ),
+            qf_type == 'qf' and 'QuickFix' or 'LocationList'
+        )
+        return
+    elseif #opts.lines > 0 then
+        if qf_open then
+            qf_funcs.open(win)
         end
 
-        local qf_cmds = opts.loc and qf_funcs['loc'] or qf_funcs['qf']
-        local qf_type = opts.loc and 'loc' or 'qf'
-
-        local qf_open = opts.open or false
-        local qf_jump = opts.jump or false
-
-        opts.loc = nil
-        opts.open = nil
-        opts.jump = nil
-        opts.cmdname = nil
-        opts.lines = require'utils.tables'.clear_lst(opts.lines)
-
-        if qf_type == 'qf' then
-            qf_cmds.set_list({}, 'r', opts)
-        else
-            local win = opts.win or 0
-            opts.win = nil
-            qf_cmds.set_list(win, {}, 'r', opts)
-        end
-
-        local info_tab = opts.tab
-
-        if info_tab and info_tab ~= nvim.get_current_tabpage() then
-            require'utils.messages'.echomsg(
-                ('%s Updated! with %s info'):format(
-                    qf_type == 'qf' and 'Qf' or 'Loc',
-                    opts.context
-                ),
-                qf_type == 'qf' and 'QuickFix' or 'LocationList'
-            )
-            return
-        elseif #opts.lines > 0 then
-            if qf_open then
-                local qf = (vim.o.splitbelow and 'botright' or 'topleft')..' '..qf_cmds.open
-                vim.cmd(qf)
-            end
-
-            if qf_jump then
-                vim.cmd(qf_cmds.first)
-            end
+        if qf_jump then
+            qf_funcs.first(win)
         end
     end
 end
 
-function M.clear_qf(buf)
-    if buf then
-        vim.fn.setloclist(buf, {}, 'r')
-        nvim.ex.lclose()
-    else
-        vim.fn.setqflist({}, 'r')
-        nvim.ex.cclose()
-    end
+function M.clear_qf(win)
+    qf_funcs.set_list({}, 'r', nil, win)
+    qf_funcs.close(win)
 end
 
 return M

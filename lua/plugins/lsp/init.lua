@@ -1,4 +1,3 @@
--- luacheck: max line length 135
 local sys  = require'sys'
 local nvim = require'neovim'
 
@@ -10,7 +9,7 @@ local is_dir      = require'utils.files'.is_dir
 
 local echoerr = require'utils.messages'.echoerr
 
-local plugins = require'neovim'.plugins
+-- local plugins = require'neovim'.plugins
 
 -- local set_autocmd = require'neovim.autocmds'.set_autocmd
 local set_mapping = require'neovim.mappings'.set_mapping
@@ -410,21 +409,6 @@ local function on_attach(client, bufnr)
         -- ['<leader>D'] = '<cmd>lua vim.lsp.buf.type_definition()<CR>',
     }
 
-    -- if has_saga then
-    --     set_mapping {
-    --         mode = 'n',
-    --         lhs = '<C-f>',
-    --         rhs = [[<cmd>lua require('lspsaga.action').smart_scroll_with_saga(1)<CR>]],
-    --         args = { silent = true, buffer = bufnr, noremap = true},
-    --     }
-    --     set_mapping {
-    --         mode = 'n',
-    --         lhs = '<C-b>',
-    --         rhs = [[<cmd>lua require('lspsaga.action').smart_scroll_with_saga(-1)<CR>]],
-    --         args = { silent = true, buffer = bufnr, noremap = true},
-    --     }
-    -- end
-
     for mapping,val in pairs(mappings) do
         if not val.capability or client.resolved_capabilities[val.capability] then
             set_mapping {
@@ -461,14 +445,14 @@ local function on_attach(client, bufnr)
         }
     end
 
-    -- Disable neomake for lsp buffers
-    if plugins['neomake'] then
-        pcall(vim.fn['neomake#CancelJobs'], 0)
-        pcall(vim.fn['neomake#cmd#clean'], 1)
-        pcall(vim.cmd, 'silent call neomake#cmd#disable(b:)')
-    end
+    -- -- Disable neomake for lsp buffers
+    -- if plugins['neomake'] then
+    --     pcall(vim.fn['neomake#CancelJobs'], 0)
+    --     pcall(vim.fn['neomake#cmd#clean'], 1)
+    --     pcall(vim.cmd, 'silent call neomake#cmd#disable(b:)')
+    -- end
 
-    require('vim.lsp.protocol').CompletionItemKind = {
+    vim.lsp.protocol.CompletionItemKind = {
         '';  -- Text          = 1;
         '';  -- Method        = 2;
         'ƒ';  -- Function      = 3;
@@ -495,13 +479,6 @@ local function on_attach(client, bufnr)
         'Ψ';  -- Operator      = 24;
         '';  -- TypeParameter = 25;
     }
-
-    -- set_autocmd{
-    --     event   = 'CursorHold',
-    --     pattern = '<buffer>',
-    --     cmd     = [[lua vim.lsp.buf.hover()]],
-    --     group   = 'LSPAutocmds',
-    -- }
 
 end
 
@@ -631,10 +608,13 @@ end
 -- Expose languages to VimL
 vim.g.lsp_languages = available_languages
 
-vim.cmd('sign define LspDiagnosticsSignError       text='..get_icon('error')..' texthl=LspDiagnosticsSignError linehl= numhl=')
-vim.cmd('sign define LspDiagnosticsSignWarning     text='..get_icon('warn')..'  texthl=LspDiagnosticsSignWarning linehl= numhl=')
-vim.cmd('sign define LspDiagnosticsSignHint        text='..get_icon('hint')..'  texthl=LspDiagnosticsSignHint linehl= numhl=')
-vim.cmd('sign define LspDiagnosticsSignInformation text='..get_icon('info')..'  texthl=LspDiagnosticsSignInformation linehl= numhl=')
+for _, level in pairs({'Error', 'Warning', 'Hint', 'Information'}) do
+    vim.cmd(('sign define LspDiagnosticsSign%s text=%s texthl=LspDiagnosticsSign%s linehl= numhl='):format(
+        level,
+        get_icon(level:lower()),
+        level
+    ))
+end
 
 vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
     vim.lsp.diagnostic.on_publish_diagnostics, {

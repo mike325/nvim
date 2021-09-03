@@ -165,7 +165,7 @@ function M.toggle_comments(first, last)
     end
 
     if allempty then
-        indent_level = 0
+        -- indent_level = 0
         comment = true
     end
 
@@ -222,14 +222,14 @@ end
 
 local function get_files(path, is_git)
     local seeker = require'utils.helpers'.select_filelist(is_git, true)
-    local get_files = RELOAD'jobs':new{
+    local files = RELOAD'jobs':new{
         cmd = seeker,
         silent = true,
     }
-    get_files:callback_on_success(function(job)
+    files:callback_on_success(function(job)
         STORAGE.filelists[path] = job:output()
     end)
-    get_files:start()
+    files:start()
 end
 
 function M.get_path_files()
@@ -280,6 +280,58 @@ function M.get_git_dir(callback)
         pcall(callback, require'utils.files'.realpath(dir))
     end)
     j:start()
+end
+
+function M.external_formatprg(args)
+    assert(
+        type(args) == type({}) and args.cmd,
+        debug.traceback('Missing command')
+    )
+
+    local cmd = args.cmd
+    local buf = args.buffer or vim.api.nvim_get_current_buf()
+
+    local indent = require'utils'.buffers.indent
+
+    local first = args.first or 0
+    local last = args.last or -1
+
+    local lines = vim.api.nvim_buf_get_lines(buf, first, last, false)
+    local indent_level = require'utils'.buffers.get_indent_block_level(lines)
+    local tmpfile = vim.fn.tempname()
+
+    require'utils'.files.writefile(
+        tmpfile,
+        indent(lines, -indent_level)
+    )
+
+    table.insert(cmd, tmpfile)
+
+    local formatprg = RELOAD'jobs':new{
+        cmd = cmd,
+        silent = true,
+        qf = {
+            on_fail = {
+                open = true,
+                jump = false,
+                dump = true,
+            },
+            dump = false,
+            loc = true,
+            win = vim.api.nvim_get_current_win(),
+            context = 'Format',
+            title = 'Format',
+            efm = args.efm,
+        },
+    }
+
+    formatprg:callback_on_success(function(job)
+        local fmt_lines = require'utils'.files.readfile(tmpfile)
+        fmt_lines = indent(fmt_lines, indent_level)
+        vim.api.nvim_buf_set_lines(buf, first, last, false, fmt_lines)
+    end)
+
+    formatprg:start()
 end
 
 return M

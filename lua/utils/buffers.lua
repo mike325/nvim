@@ -74,7 +74,7 @@ function M.get_indent()
 end
 
 function M.get_indent_block(lines)
-    assert(vim.tbl_islist(lines) and #lines > 0, debug.traceback('Lines must be an array'))
+    assert(vim.tbl_islist(lines), debug.traceback('Lines must be an array'))
 
     local indent_level
     for _,line in pairs(lines) do
@@ -90,6 +90,12 @@ function M.get_indent_block(lines)
         end
     end
     return indent_level or 0
+end
+
+function M.get_indent_block_level(lines)
+    assert(vim.tbl_islist(lines), debug.traceback('Lines must be an array'))
+    local indent_level = M.get_indent_block(lines)
+    return math.floor(indent_level / M.get_indent())
 end
 
 function M.get_indent_string(indent)
@@ -120,9 +126,13 @@ end
 function M.indent(lines, level)
     assert(vim.tbl_islist(lines) and #lines > 0, debug.traceback('Lines must be an array'))
     assert(
-        type(level) == type(0) and level ~= 0,
-        debug.traceback('Missing valid level, cannot indent to level 0')
+        type(level) == type(0),
+        debug.traceback('Missing valid level')
     )
+
+    if level == 0 then
+        return lines
+    end
 
     local abslevel = math.abs(level)
 

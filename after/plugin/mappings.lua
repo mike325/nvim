@@ -422,8 +422,8 @@ set_command{
 
 set_command{
     lhs = 'ClearLoc',
-    rhs = function(buf)
-        require'utils'.helpers.clear_qf(buf or nvim.get_current_win())
+    rhs = function(win)
+        require'utils'.helpers.clear_qf(win or nvim.get_current_win())
     end,
     args = {nargs = '?', force=true}
 }
@@ -464,14 +464,14 @@ set_mapping{
 set_mapping{
     mode = 'n',
     lhs = '=l',
-    rhs = [[<cmd>lua require'utils'.helpers.toggle_qf('loc')<CR>]],
+    rhs = [[<cmd>lua require'utils'.helpers.toggle_qf(vim.api.nvim_get_current_win())<CR>]],
     args = noremap_silent
 }
 
 set_mapping{
     mode = 'n',
     lhs = '=q',
-    rhs = [[<cmd>lua require'utils'.helpers.toggle_qf('qf')<CR>]],
+    rhs = [[<cmd>lua require'utils'.helpers.toggle_qf()<CR>]],
     args = noremap_silent
 }
 
@@ -1104,9 +1104,6 @@ if executable('pre-commit') then
         lhs = 'PreCommit',
         rhs = function(...)
             local args = {...}
-            if #args == 0 then
-                table.insert(args, 'run')
-            end
             local errorformats = {
                 '%f:%l:%c:\\ %t%n\\ %m',
                 '%f:%l:%c:%t:\\ %m',

@@ -140,7 +140,7 @@ set_autocmd{
 
 local function list_breakpoints()
     dap.list_breakpoints()
-    require'utils'.helpers.toggle_qf('qf')
+    require'utils'.helpers.toggle_qf()
 end
 
 local args = {noremap = true, silent = true}
@@ -203,7 +203,7 @@ set_mapping{
 
 set_mapping{
     mode = 'n',
-    lhs = '=L',
+    lhs = '<leader>L',
     rhs = list_breakpoints,
     args = args,
 }

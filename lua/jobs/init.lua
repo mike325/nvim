@@ -12,7 +12,7 @@ local jobs = STORAGE.jobs
 
 local plugins = require'neovim'.plugins
 
-local set_autocmd = require'neovim.autocmds'.set_autocmd
+-- local set_autocmd = require'neovim.autocmds'.set_autocmd
 require'jobs.mappings'
 
 local Job = {}
@@ -374,7 +374,7 @@ function Job:start()
             end
         end
 
-        if self._callbacks and #self._callbacks > 0 then
+        if self._callbacks then
             for _, cb in pairs(self._callbacks) do
                 cb(self, rc)
             end

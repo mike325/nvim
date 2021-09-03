@@ -2,6 +2,7 @@ local nvim = require'neovim'
 local sys = require'sys'
 
 local executable = require'utils'.files.executable
+local external_formatprg = require'utils'.functions.external_formatprg
 
 local plugins = require'neovim'.plugins
 
@@ -35,117 +36,37 @@ local M = {
     }
 }
 
--- local function on_data(jobid, data, event)
---     local job = STORAGE.jobs[jobid]
---     if not job.streams then
---         job.streams = {}
---         job.streams[event] = {}
---     elseif not job.streams[event] then
---         job.streams[event] = {}
---     end
-
---     if type(data) == 'string' then
---         data = vim.split(data, '[\r]?\n')
---     end
-
---     vim.list_extend(job.streams[event], data)
--- end
-
-local function parse_diff(output)
-    local chunks = {}
-    local current_chunk = 0
-    for i=3,#output do
-        local first,last = output[i]:match('^@@%s+[+-](%d+),(%d+)%s+[+-]%d+,%d+%s+@@$')
-        -- print('Matching:', output[i])
-        if first then
-            current_chunk = current_chunk + 1
-            chunks[current_chunk] = {}
-            chunks[current_chunk].first = tonumber(first)
-            chunks[current_chunk].last = tonumber(first) + tonumber(last)
-            print('New chunk:',current_chunk, 'First:',first, 'Last:', chunks[current_chunk].last)
-            chunks[current_chunk].lines = {}
-        else
-            if output[i]:sub(1,1) ~= '-' then
-                -- print('New line:', output[i])
-                local size = #chunks[current_chunk].lines
-                chunks[current_chunk].lines[size + 1] = output[i]:sub(2, #output[i])
-            end
-        end
-    end
-    -- print('Chuncks:',vim.inspect(chunks))
-    return chunks
-end
-
-local function external_formatprg(opts)
-    local cmd = opts.cmd
-    local buf = nvim.get_current_buf()
-
-    local Job = RELOAD'job'
-    local formatprg = Job:new{
-        cmd = cmd,
-        qf = {
-            on_fail = {
-                open = true,
-                jump = false,
-            },
-            context = 'PyFormat',
-            title = 'PyFormat',
-        },
-        opts = {
-            on_exit = function(job, rc)
-                if rc == 0 or rc == 1 then
-                    local stdout = job:stdout()
-                    if #stdout > 0 then
-                        local chunks = parse_diff(stdout)
-                        for _,chunk in pairs(chunks) do
-                            local first = chunk.first
-                            local last = chunk.last
-                            local lines = chunk.lines
-                            nvim.buf.set_lines(buf, first, last, false, lines)
-                        end
-                    else
-                        require'utils'.messages.echowarn(
-                            'We should not be here, no format was detected',
-                            'FormatPrg'
-                        )
-                    end
-                else
-                    require'utils'.messages.echoerr(
-                        ('Failed to format code chunk, %s exited with code %s'):format(
-                            job.exe,
-                            rc
-                        ),
-                        'FormatPrg'
-                    )
-                end
-            end,
-        },
-    }
-    formatprg:start()
-end
-
 function M.format()
-    local first = vim.v.lnum
-    local last = first + vim.v.count
-    local bufname = nvim.buf.get_name(0)
-    -- local mode = nvim.get_mode()
+    local buffer = nvim.get_current_buf()
+    local first = vim.v.lnum - 1
+    local last = first + vim.v.count + 1
 
-    if executable('yapf') then
-        external_formatprg({
+    if executable('black') then
+        external_formatprg{
+            cmd = {
+                'black',
+                '-l',
+                '120',
+            },
+            buffer = buffer,
+            first = first,
+            last = last,
+            efm = '%trror: cannot format %f: Cannot parse %l:c: %m,%trror: cannot format %f: %m',
+        }
+    elseif executable('yapf') then
+        external_formatprg{
             cmd = {
                 'yapf',
                 '-d',
-                '-l',
-                first..'-'..last,
                 '--style',
                 'pep8',
-                bufname,
             },
+            buffer = buffer,
             first = first,
             last = last,
-        })
+        }
     elseif executable('autopep8') then
-        external_formatprg({
+        external_formatprg{
             cmd = {
                 'autopep8',
                 '--diff',
@@ -153,12 +74,11 @@ function M.format()
                 '--aggressive',
                 '--max-line-length',
                 '120',
-                '--range',
-                first,
-                last,
-                bufname,
             },
-        })
+            buffer = buffer,
+            first = first,
+            last = last,
+        }
     else
         -- Fallback to internal formater
         return 1
@@ -168,7 +88,7 @@ function M.format()
 end
 
 function M.setup()
-    vim.opt_local.formatexpr = [[luaeval('RELOAD\"filetypes.python\".format()')]]
+    vim.opt_local.formatexpr = [[luaeval('RELOAD"filetypes.python".format()')]]
 
     if executable('flake8') then
         local cmd = {'flake8'}
