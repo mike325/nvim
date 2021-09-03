@@ -32,8 +32,6 @@ local function get_git_dir(cmd)
 end
 
 local function exec_async_gitcmd(data)
-    local Job = RELOAD'jobs'
-
     assert(type(data) == type({}), debug.traceback('Missing data !'))
 
     local cmd = data.cmd
@@ -61,7 +59,7 @@ local function exec_async_gitcmd(data)
         cmd = table.concat(cmd, ' ')
     end
 
-    local async_git = Job:new{
+    local async_git = RELOAD'jobs':new{
         cmd = cmd,
         silent = silent,
         opts = opts,

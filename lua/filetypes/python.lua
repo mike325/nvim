@@ -2,7 +2,6 @@ local nvim = require'neovim'
 local sys = require'sys'
 
 local executable = require'utils'.files.executable
-local external_formatprg = require'utils'.functions.external_formatprg
 
 local plugins = require'neovim'.plugins
 
@@ -37,9 +36,8 @@ local M = {
 }
 
 function M.format()
-    local buffer = nvim.get_current_buf()
-    local first = vim.v.lnum - 1
-    local last = first + vim.v.count + 1
+    local buffer = vim.api.nvim_get_current_buf()
+    local external_formatprg = require'utils'.functions.external_formatprg
 
     if executable('black') then
         external_formatprg{
@@ -49,8 +47,6 @@ function M.format()
                 '120',
             },
             buffer = buffer,
-            first = first,
-            last = last,
             efm = '%trror: cannot format %f: Cannot parse %l:c: %m,%trror: cannot format %f: %m',
         }
     elseif executable('yapf') then
@@ -62,8 +58,6 @@ function M.format()
                 'pep8',
             },
             buffer = buffer,
-            first = first,
-            last = last,
         }
     elseif executable('autopep8') then
         external_formatprg{
@@ -76,8 +70,6 @@ function M.format()
                 '120',
             },
             buffer = buffer,
-            first = first,
-            last = last,
         }
     else
         -- Fallback to internal formater
@@ -121,10 +113,9 @@ function M.setup()
 
         if not vim.b.python_path then
             -- local pypath = {}
-            local Job = RELOAD'jobs'
             local pyprog = vim.g.python3_host_prog or vim.g.python_host_prog or (executable('python3') and 'python3')
 
-            local get_path = Job:new{
+            local get_path = RELOAD'jobs':new{
                 cmd = pyprog,
                 args = {'-c', 'import sys; print(",".join(sys.path), flush=True)'},
                 silent = true,

@@ -329,7 +329,12 @@ function M.readfile(path, callback, split)
         return M.openfile(path, 'r', function(fd)
             local stat = assert(uv.fs_fstat(fd))
             local data = assert(uv.fs_read(fd, stat.size, 0))
-            return split and vim.split(data, '[\r]?\n') or data
+            if split then
+                data = vim.split(data, '[\r]?\n')
+                -- NOTE: This seems to always read an extra linefeed so we remove it
+                data[#data] = nil
+            end
+            return data
         end)
     end
     uv.fs_open(path, "r", 438, function(oerr, fd)
@@ -340,7 +345,11 @@ function M.readfile(path, callback, split)
                 assert(not rerr, rerr)
                 uv.fs_close(fd, function(cerr)
                     assert(not cerr, cerr)
-                    return callback(split and vim.split(data, '[\r]?\n') or data)
+                    if split then
+                        data = vim.split(data, '[\r]?\n')
+                        data[#data] = nil
+                    end
+                    return callback(data)
                 end)
             end)
         end)

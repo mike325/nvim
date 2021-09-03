@@ -293,8 +293,8 @@ function M.external_formatprg(args)
 
     local indent = require'utils'.buffers.indent
 
-    local first = args.first or 0
-    local last = args.last or -1
+    local first = args.first or (vim.v.lnum - 1)
+    local last = args.last or (first + vim.v.count)
 
     local lines = vim.api.nvim_buf_get_lines(buf, first, last, false)
     local indent_level = require'utils'.buffers.get_indent_block_level(lines)
@@ -311,12 +311,12 @@ function M.external_formatprg(args)
         cmd = cmd,
         silent = true,
         qf = {
+            dump = false,
             on_fail = {
                 open = true,
                 jump = false,
                 dump = true,
             },
-            dump = false,
             loc = true,
             win = vim.api.nvim_get_current_win(),
             context = 'Format',

@@ -81,7 +81,7 @@ function M.progress(buffer)
 
         set_autocmd{
             event = 'WinClosed',
-            pattern = ''..vim.t.progress_win,
+            pattern = vim.t.progress_win,
             cmd = 'unlet t:progress_win',
             group = 'JobProgress',
             once    = true,

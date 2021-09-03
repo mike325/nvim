@@ -42,7 +42,6 @@ function M.setup()
 
             build_type = (build_type and build_type ~= '') and build_type or 'RelWithDebInfo'
             local build_dir = 'build'
-            local Job = RELOAD'jobs'
 
             if not is_dir(build_dir) then
                 mkdir(build_dir)
@@ -77,7 +76,7 @@ function M.setup()
                 table.insert(args, cpp_compiler)
             end
 
-            local cmake = Job:new{
+            local cmake = RELOAD'jobs':new{
                 cmd = 'cmake',
                 args = args,
                 qf = {
@@ -113,8 +112,7 @@ function M.setup()
                 build_type,
             }
 
-            local Job = RELOAD'jobs'
-            local cmake = Job:new{
+            local cmake = RELOAD'jobs':new{
                 cmd = 'cmake',
                 args = args,
                 qf = {

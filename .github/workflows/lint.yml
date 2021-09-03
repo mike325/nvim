@@ -16,8 +16,19 @@ jobs:
           ./screenfetch-dev
       - name: Install dependencies
         run: |
-          sudo apt-get install -y curl git python3-setuptools python-setuptools luarocks python3-pip python3-virtualenv
+          sudo apt-get install -y \
+            curl               \
+            git                \
+            shellcheck         \
+            python3-setuptools \
+            python-setuptools  \
+            python3-pip        \
+            python3-virtualenv \
+            luarocks           \
+            golang
+
           sudo luarocks install luacheck
+
           WORK_DIR="$HOME/.local/share"
           mkdir -p "$WORK_DIR" && pushd "$WORK_DIR"
           virtualenv -p python3 vint

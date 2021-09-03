@@ -1121,9 +1121,12 @@ if executable('pre-commit') then
             local precommit = RELOAD'jobs':new{
                 cmd = 'pre-commit',
                 args = args,
+                -- progress = true,
                 qf = {
                     efm = table.concat(errorformats, ','),
+                    dump = false,
                     on_fail = {
+                        dump = true,
                         jump = false,
                         open = true,
                     },
@@ -1132,6 +1135,7 @@ if executable('pre-commit') then
                 },
             }
             precommit:start()
+            -- precommit:progress()
         end,
         args = {nargs = '*', force = true}
     }

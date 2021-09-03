@@ -53,7 +53,11 @@ set_mapping{
     mode = 'n',
     lhs = '=p',
     rhs = function()
-        require'utils'.windows.progress()
+        if not vim.t.progress_win or not vim.api.nvim_win_is_valid(vim.t.progress_win) then
+            require'utils'.windows.progress()
+        else
+            vim.api.nvim_win_close(vim.t.progress_win, true)
+        end
     end,
     args = {noremap = true, silent = true}
 }
