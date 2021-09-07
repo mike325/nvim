@@ -16,6 +16,7 @@ local M = {
     default_flags = {
         ['clang++'] = {
             "-std=c++17",
+            "-O3",
             "-Wall",
             "-Wextra",
             "-Wshadow",
@@ -33,6 +34,7 @@ local M = {
         },
         ['g++'] = {
             "-std=c++17",
+            "-O3",
             "-Wall",
             "-Wextra",
             "-Wno-c++98-compat",
@@ -56,6 +58,7 @@ local M = {
         },
         clang = {
             "-std=c11",
+            "-O3",
             "-Wall",
             "-Wextra",
             "-Wshadow",
@@ -74,6 +77,7 @@ local M = {
         },
         gcc = {
             "-std=c11",
+            "-O3",
             "-Wall",
             "-Wextra",
             "-Wshadow",
@@ -237,7 +241,6 @@ function M.setup()
     local normalize_path  = require'utils'.files.normalize_path
 
     if compiler then
-
         local flags_file = vim.fn.findfile('compile_flags.txt', cwd..';')
         local db_file = vim.fn.findfile('compile_commands.json', cwd..';')
         local clang_tidy = vim.fn.findfile('.clang-tidy', cwd..';')

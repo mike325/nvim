@@ -220,34 +220,6 @@ function M.opfun_comment(_, visual)
     nvim.reg['@'] = reg_save
 end
 
-local function get_files(path, is_git)
-    local seeker = require'utils.helpers'.select_filelist(is_git, true)
-    local files = RELOAD'jobs':new{
-        cmd = seeker,
-        silent = true,
-    }
-    files:callback_on_success(function(job)
-        STORAGE.filelists[path] = job:output()
-    end)
-    files:start()
-end
-
-function M.get_path_files()
-    local paths = split(vim.bo.path or vim.o.path, ',')
-    local cwd = require'utils.files'.realpath(require'utils.files'.getcwd())
-
-    get_files(cwd, vim.b.project_root.is_git)
-    for _,path in pairs(paths) do
-        local rpath = require'utils.files'.realpath(path)
-        if rpath ~= '.' and
-           rpath ~= cwd and
-           not require'utils.files'.subpath_in_path(cwd, rpath) and
-           not STORAGE.filelists[rpath] then
-            get_files(rpath)
-        end
-    end
-end
-
 function M.get_ssh_hosts()
     local ssh_config = sys.home..'/.ssh/config'
     local is_file = require'utils.files'.is_file
@@ -332,6 +304,50 @@ function M.external_formatprg(args)
     end)
 
     formatprg:start()
+end
+
+function M.async_execute(opts)
+    assert(type(opts) == type({}), debug.traceback('Invalid opts'))
+    assert(opts.cmd, debug.traceback('Missing cmd'))
+    -- assert(not opts.args, debug.traceback('Missing args'))
+
+    local cmd = opts.cmd
+    local args = opts.args
+
+    local script = RELOAD('jobs'):new{
+        cmd = cmd,
+        args = args,
+        progress = true,
+        verify_exec = opts.verify_exec,
+        -- opts = {
+        --     cwd = require'utils'.files.getcwd(),
+        --     pty = true,
+        -- },
+        qf = {
+            dump = false,
+            on_fail = {
+                jump = true,
+                open = true,
+                dump = true,
+            },
+            context = 'AsyncExecute',
+            title = 'AsyncExecute',
+        },
+    }
+    if opts.callbacks then
+        script:add_callback(opts.callbacks)
+    end
+
+    if opts.callback_on_failure then
+        script:callback_on_failure(opts.callback_on_failure)
+    end
+
+    if opts.callback_on_success then
+        script:callback_on_success(opts.callback_on_success)
+    end
+
+    script:start()
+    script:progress()
 end
 
 return M

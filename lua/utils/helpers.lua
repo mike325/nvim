@@ -553,10 +553,10 @@ end
 function M.filelist(tool, lst)
     local filetool = {
         git    = 'git --no-pager ls-files -co --exclude-standard',
-        fd     = 'fd ' .. M.ignores('fd') .. ' --type=file --hidden --follow --color=never . .',
+        fd     = 'fd --type=file --hidden --follow --color=never',
         rg     = 'rg --color=never --no-search-zip --hidden --trim --files ',
         ag     = 'ag -l --follow --nocolor --nogroup --hidden '..M.ignores('ag')..'-g ""',
-        find   = "find . -type f -iname '*' "..M.ignores('find') .. ' ',
+        find   = "find . -type f "..M.ignores('find') .. " -iname '*' ",
     }
 
     filetool.fdfind = string.gsub(filetool.fd, '^fd', 'fdfind')
@@ -856,7 +856,7 @@ function M.dump_to_qf(opts)
 
     opts.context = opts.context or 'GenericQfData'
     opts.title = opts.title or 'Generic Qf data'
-    opts.efm = opts.efm or vim.opt_local.efm or vim.opt_global.efm
+    opts.efm = opts.efm or table.concat(vim.opt_local.efm:get(), ',') or table.concat(vim.opt_global.efm:get(), ',')
 
     local qf_type = opts.loc and 'loc' or 'qf'
     local qf_open = opts.open or false

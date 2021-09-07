@@ -465,7 +465,10 @@ function Job:wait(timeout)
         type(timeout) == type(1) or timeout == nil,
         debug.traceback('Timeout must be either nil or a number in ms')
     )
-    return vim.fn.jobwait(self._id, timeout)
+    if timeout then
+        return vim.fn.jobwait({self._id}, timeout)[1]
+    end
+    return vim.fn.jobwait({self._id})[1]
 end
 
 function Job:add_callback(cb)

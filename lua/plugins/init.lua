@@ -601,23 +601,6 @@ packer.startup(function()
     -- }
 
     -- use {
-    --     'pwntester/octo.nvim',
-    --     cond = function()
-    --         return vim.env.VIM_MIN == nil and vim.g.minimal == nil and vim.fn.executable('gh') == 1
-    --     end,
-    --     confg = function() require'octo'.setup() end,
-    --     event = 'CmdlineEnter',
-    -- }
-
-    -- use {
-    --     'tpope/vim-dadbod',
-    --     cmd = 'DB',
-    --     cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
-    -- }
-
-    -- use {'editorconfig/editorconfig-vim'}
-
-    -- use {
     --     'segeljakt/vim-silicon',
     --     cond = function() return vim.fn.executable('silicon') == 1 end,
     --     setup = function()
@@ -638,30 +621,6 @@ packer.startup(function()
     --         }
     --     end,
     -- }
-
-    -- use {
-    --     'ycm-core/YouCompleteMe',
-    --     config = function()
-    --        vim.fn['plugins#youcompleteme#install']()
-    --     end,
-    --     cond = function()
-    --         -- TODO: has lsp
-    --         local ycm = vim.env.YCM ~= nil
-    --         local min = vim.env.VIM_MIN ~= nil
-    --         local executable = function(exe) return vim.fn.executable(exe) == 1 end
-    --         local has_win = vim.fn.has('win32') == 1
-    --         local has_python = vim.fn.has('python3') == 1
-    --         if ycm and not min and executable('cmake') and has_python then
-    --             if has_win and executable('msbuild') then
-    --                 return true
-    --             elseif not has_win and (executable('g++') or executable('clang++')) then
-    --                 return true
-    --             end
-    --         end
-    --         return false
-    --     end,
-    -- }
-
 end)
 
 if vim.fn.executable('gcc') == 1 or vim.fn.executable('clang') == 1 then

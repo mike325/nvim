@@ -459,6 +459,65 @@ function M.get_dirs(expr)
     return M.ls(expr)
 end
 
+function M.find_files(path, globs, cb)
+    assert(type(path) == type(''), debug.traceback('Invalid path: '..vim.inspect(path)))
+    assert(not cb or vim.is_callable(cb), debug.traceback('Invalid callback: '..vim.inspect(cb)))
+    assert(
+        not globs or type(globs) == type({}) or type(globs) == type(''),
+        debug.traceback('Invalid globs: '..vim.inspect(globs))
+    )
+
+    local seeker = require'utils.helpers'.select_filelist(false, true)
+    local cmd = seeker[1]
+    local args = vim.list_slice(seeker, 2, #seeker)
+
+    if globs then
+        globs = type(globs) == type('') and {globs} or globs
+        if cmd == 'find' then
+            args[#args] = nil  -- removes '*'
+            args[#args] = nil  -- removes -iname
+        end
+        -- WARN: due to differences in file searchers, globs only work with extensions
+        for i=1,#globs do
+            if cmd == 'fd' then
+                local extension = globs[i]:gsub('*%.', '')
+                vim.list_extend(args, {'-e', extension})
+            elseif cmd == 'rg' then
+                vim.list_extend(args, {'--glob', globs[i]})
+            elseif cmd == 'find' then
+                vim.list_extend(args, {'-iname', globs[i]})
+                if i < #globs then
+                    table.insert(args, '-or')
+                end
+            end
+        end
+    end
+
+    local files = RELOAD'jobs':new{
+        cmd = cmd,
+        args = args,
+        opts = {
+            cwd = path,
+        },
+        silent = true,
+    }
+
+    files:callback_on_success(function(job)
+        job._output = require'utils'.tables.clear_lst(job:output())
+    end)
+
+    if cb then
+        files:callback_on_success(cb)
+    end
+
+    files:start()
+
+    if not cb then
+        local rc = files:wait()
+        return rc == 0 and files:output() or {}
+    end
+end
+
 function M.rename(old, new, bang)
 
     new = M.normalize_path(new)
