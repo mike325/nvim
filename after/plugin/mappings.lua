@@ -853,7 +853,7 @@ end
 
 if executable('scp') then
     local function convert_path(path, send, host)
-        path = realpath(normalize_path(path))
+        path = normalize_path(path)
 
         local remote_path = './'
         local hosts,paths,projects
@@ -906,21 +906,24 @@ if executable('scp') then
 
     local function remote_cmd(host, send)
 
-        local filename = vim.fn.expand('%')
+        local filename = vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf())
         local virtual_filename
 
         if filename:match('^[%w%d_]+://') then
-            if filename:match('^fugitive://') then
-                filename = filename:gsub('%.git/+%d+/+', '')
-            end
+            local prefix = filename:match('^[%w%d_]+://')
             filename = filename:gsub('^[%w%d_]+://', '')
+            if prefix == 'fugitive://'  then
+                filename = filename:gsub('%.git//?[%w%d]+//?', '')
+            end
             virtual_filename = vim.fn.tempname()
         end
 
-        assert(is_file(filename), 'Not a regular file '..filename)
+        assert(is_file(filename) or virtual_filename, 'Not a regular file '..filename)
 
         if virtual_filename and send then
             writefile(virtual_filename, nvim.buf.get_lines(0, 0, -1, true))
+        else
+            filename = realpath(normalize_path(filename))
         end
 
         local remote_path = ('%s:%s'):format(host, convert_path(filename, send, host))
