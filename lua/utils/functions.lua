@@ -83,7 +83,7 @@ function M.send_grep_job(args)
             jump = true,
             context = 'AsyncGrep',
             title = 'AsyncGrep',
-            efm = vim.o.grepformat,
+            efm = vim.opt.grepformat:get(),
         },
     }
 
@@ -348,6 +348,39 @@ function M.async_execute(opts)
 
     script:start()
     script:progress()
+end
+
+
+function M.open(uri)
+    local cmd
+    local args = {}
+    if sys.name == 'windows' then
+        cmd = 'powershell'
+        vim.list_extend(args, {'-noexit', '-executionpolicy', 'bypass', 'Start-Process'})
+    elseif sys.name == 'linux' then
+        cmd = 'xdg-open'
+    else
+        -- Problably macos
+        cmd = 'open'
+    end
+
+    table.insert(args, uri)
+
+    local open = RELOAD'jobs':new{
+        cmd = cmd,
+        args = args,
+        qf = {
+            dump = false,
+            on_fail = {
+                dump = true,
+                jump = false,
+                open = true,
+            },
+            context = 'Open',
+            title = 'Open',
+        },
+    }
+    open:start()
 end
 
 return M

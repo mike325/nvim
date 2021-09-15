@@ -854,9 +854,19 @@ function M.dump_to_qf(opts)
         'Missing "lines" attr to dump'
     )
 
+    assert(
+        not opts.efm or (type(opts.efm) == type({}) or type(opts.efm) == type('')),
+        debug.traceback('Invalid errorformat arg')
+    )
+
     opts.context = opts.context or 'GenericQfData'
     opts.title = opts.title or 'Generic Qf data'
-    opts.efm = opts.efm or table.concat(vim.opt_local.efm:get(), ',') or table.concat(vim.opt_global.efm:get(), ',')
+    opts.efm = opts.efm or vim.opt_local.efm:get() or vim.opt_global.efm:get()
+
+    if type(opts.efm) == type({}) then
+        opts.efm = table.concat(opts.efm, ',')
+    end
+    -- opts.efm = opts.efm:gsub(' ', '\\ ')
 
     local qf_type = opts.loc and 'loc' or 'qf'
     local qf_open = opts.open or false

@@ -883,13 +883,13 @@ if executable('scp') then
         end
 
         for loc,remote in pairs(paths) do
-            if loc:match('%%PROJECT') then
+            if loc:match'%%PROJECT' then
                 loc = loc:gsub('%%PROJECT', project)
             end
             loc = normalize_path(loc)
             if path:match(loc) then
                 local tail = path:gsub(loc, '')
-                if remote:match('%%PROJECT') then
+                if remote:match'%%PROJECT' then
                     remote = remote:gsub('%%PROJECT', project)
                 end
                 remote_path = remote .. '/' .. tail
@@ -909,9 +909,9 @@ if executable('scp') then
         local filename = vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf())
         local virtual_filename
 
-        if filename:match('^[%w%d_]+://') then
-            local prefix = filename:match('^[%w%d_]+://')
-            filename = filename:gsub('^[%w%d_]+://', '')
+        if filename:match'^%w+://' then
+            local prefix = filename:match'^%w+://'
+            filename = filename:gsub('^%w+://', '')
             if prefix == 'fugitive://'  then
                 filename = filename:gsub('%.git//?[%w%d]+//?', '')
             end
@@ -1081,12 +1081,19 @@ end
 set_command{
     lhs = 'Messages',
     rhs = function(args)
-        local clear = (args and args ~= '') and ' '..args or ''
-        local messages = nvim.exec('messages'..clear, true)
         if not args or args == '' then
+            local messages = nvim.exec('messages', true)
+            messages = clear_lst(vim.split(messages, '\n'))
+
+            -- WARN: This is a WA to avoid EFM detecting ^I as part of a file in lua tracebacks
+            for idx, msg in ipairs(messages) do
+                if msg:match'^%^I' and #msg > 2 then
+                    messages[idx] = msg:sub(3, #msg)
+                end
+            end
+
             vim.fn.setqflist({}, 'r', {
-                lines = clear_lst(vim.split(messages, '\n')),
-                -- efm = '%t%n: %m,%m',
+                lines = messages,
                 title = 'Messages',
                 context = 'Messages',
             })
@@ -1108,25 +1115,25 @@ if executable('pre-commit') then
         rhs = function(...)
             local args = {...}
             local errorformats = {
-                '%f:%l:%c:\\ %t%n\\ %m',
-                '%f:%l:%c:%t:\\ %m',
-                '%f:%l:%c:\\ %m',
-                '%f:%l:\\ %trror:\\ %m',
-                '%f:%l:\\ %tarning:\\ %m',
-                '%f:%l:\\ %tote:\\ %m',
-                '%f:\\ %trror:\\ %m',
-                '%f:\\ %tarning:\\ %m',
-                '%f:\\ %tote:\\ %m',
-                '%E%f:%l:%c:\\ fatal\\ error:\\ %m',
-                '%E%f:%l:%c:\\ error:\\ %m',
-                '%W%f:%l:%c:\\ warning:\\ %m',
+                '%f:%l:%c: %t%n %m',
+                '%f:%l:%c:%t: %m',
+                '%f:%l:%c: %m',
+                '%f:%l: %trror: %m',
+                '%f:%l: %tarning: %m',
+                '%f:%l: %tote: %m',
+                '%f: %trror: %m',
+                '%f: %tarning: %m',
+                '%f: %tote: %m',
+                '%E%f:%l:%c: fatal error: %m',
+                '%E%f:%l:%c: error: %m',
+                '%W%f:%l:%c: warning: %m',
             }
             local precommit = RELOAD'jobs':new{
                 cmd = 'pre-commit',
                 args = args,
                 -- progress = true,
                 qf = {
-                    efm = table.concat(errorformats, ','),
+                    efm = errorformats,
                     dump = false,
                     on_fail = {
                         dump = true,
@@ -1143,3 +1150,51 @@ if executable('pre-commit') then
         args = {nargs = '*', force = true}
     }
 end
+
+if not vim.env.SSH_CONNECTION then
+
+    set_command{
+        lhs = 'Open',
+        rhs = require'utils'.functions.open,
+        args = {nargs = '1', force = true, complete='file'}
+    }
+
+    set_mapping{
+        mode = 'n',
+        lhs = 'gx',
+        rhs = function()
+            local cfile = vim.fn.expand('<cfile>')
+            local cword = vim.fn.expand('<cWORD>')
+            require'utils'.functions.open(cword:match'^[%w]+://' and cword or cfile)
+        end,
+        args = noremap_silent,
+    }
+end
+
+set_command{
+    lhs = 'Repl',
+    rhs = function(...)
+        local cmd = {...}
+
+        if #cmd == 0 then
+            if vim.b.relp_cmd then
+                cmd = vim.b.relp_cmd
+            else
+                cmd = vim.opt_local.filetype:get()
+            end
+        end
+
+        local direction = vim.opt.splitbelow:get() and 'botright' or 'topleft'
+        vim.api.nvim_exec(direction..' 20new', false)
+
+        local win = vim.api.nvim_get_current_win()
+
+        nvim.win.set_option(win, 'number', false)
+        nvim.win.set_option(win, 'relativenumber', false)
+
+        vim.fn.termopen(type(cmd) == type({}) and table.concat(cmd, ' ') or cmd)
+        nvim.ex.startinsert()
+
+    end,
+    args = {nargs = '*', force = true, complete='filetype'}
+}
