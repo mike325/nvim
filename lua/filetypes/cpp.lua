@@ -9,7 +9,7 @@ local compile_flags = STORAGE.compile_flags
 local databases = STORAGE.databases
 local has_cjson = STORAGE.has_cjson
 
--- local set_command = require'neovim.commands'.set_command
+local set_command = require'neovim.commands'.set_command
 -- local set_mapping = require'neovim.mappings'.set_mapping
 
 local M = {
@@ -134,6 +134,23 @@ local function get_compiler()
         end
     end
     return compiler
+end
+
+local function get_args(compiler, bufnum, compiler_flags_file)
+    local bufname = realpath(nvim.buf.get_name(bufnum))
+    local args
+
+    if is_file(bufname) then
+        if databases[bufname] then
+            args = databases[bufname].args
+        elseif compiler_flags_file and
+               compile_flags[compiler_flags_file] and
+               compile_flags[compiler_flags_file].args then
+            args = compile_flags[compiler_flags_file].args
+        end
+    end
+
+    return args or M.default_flags[compiler] or {}
 end
 
 local function set_opts(filename, has_tidy, compiler, bufnum)
@@ -313,6 +330,91 @@ function M.setup()
             -- NOTE: We need to call this multiple times since readfile is async
             set_opts(nil, has_tidy, compiler, bufnum)
         end
+
+        -- BUG: This only build once, giving linking errors in further calls, needs debug
+        set_command{
+            lhs = 'BuildProject',
+            rhs = function(...)
+                local buffer = nvim.buf.get_name(nvim.get_current_buf())
+                local base_cwd = require'utils'.files.getcwd()
+                local ft = vim.bo.filetype
+
+                if not is_file(buffer) then
+                    require'utils.messages'.echoerr('Current buffer is not a file', 'Execute')
+                    return false
+                end
+
+                local compile_output = base_cwd..'/build/main'
+                local args, compiler_flags_file
+
+                if flags_file ~= '' then
+                    compiler_flags_file = realpath(normalize_path(flags_file))
+                end
+
+                args = get_args(compiler, nvim.get_current_buf(), compiler_flags_file)
+                vim.list_extend(args, {'-o', compile_output})
+
+                require'utils'.files.find_files(base_cwd, '*.'..ft, function(job)
+                    vim.list_extend(args, job:output())
+
+                    if not require'utils'.files.is_dir('build') then
+                        require'utils'.files.mkdir('build')
+                    end
+
+                    P(('%s %s'):format(compiler, table.concat(args, ' ')))
+
+                    local build = RELOAD('jobs'):new{
+                        cmd = compiler,
+                        args = args,
+                        progress = true,
+                        opts = {
+                            cwd = require'utils'.files.getcwd(),
+                            -- pty = true,
+                        },
+                        qf = {
+                            dump = false,
+                            on_fail = {
+                                jump = true,
+                                open = true,
+                                dump = true,
+                            },
+                            context = 'BuildProject',
+                            title = 'BuildProject',
+                        },
+                    }
+
+                    build:callback_on_success(function(_)
+                        local execute = RELOAD('jobs'):new{
+                            cmd = compile_output,
+                            progress = true,
+                            verify_exec = false,
+                            opts = {
+                                cwd = require'utils'.files.getcwd(),
+                                -- pty = true,
+                            },
+                            qf = {
+                                dump = false,
+                                on_fail = {
+                                    jump = true,
+                                    open = true,
+                                    dump = true,
+                                },
+                                context = 'ExecuteProject',
+                                title = 'ExecuteProject',
+                            },
+                        }
+                        execute:start()
+                        execute:progress()
+                    end)
+
+                    build:start()
+                    build:progress()
+                end)
+
+            end,
+            args = {nargs = '*', force=true, buffer = true}
+        }
+
     end
 end
 
