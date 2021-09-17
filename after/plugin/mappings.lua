@@ -258,7 +258,7 @@ set_mapping{ mode = 'x', lhs = '¡', rhs = '^', args = noremap }
 -- set_mapping{ mode = 'n', lhs = '<leader>w', rhs = '<cmd>update<CR>', args = noremap }
 
 set_mapping{ mode = 'n', lhs = '<leader>p', rhs = '<C-^>',       args = noremap }
-set_mapping{ mode = 'n', lhs = '<leader>x', rhs = '<cmd>%!xxd<CR>',  args = noremap }
+-- set_mapping{ mode = 'n', lhs = '<leader>x', rhs = '<cmd>%!xxd<CR>',  args = noremap }
 
 set_mapping{
     mode = 'n',
@@ -1099,6 +1099,7 @@ set_command{
             })
             nvim.ex.Qopen()
         else
+            nvim.ex.messages('clear')
             local context = vim.fn.getqflist({context = 1}).context
             if context == 'Messages' then
                 require'utils'.helpers.clear_qf()

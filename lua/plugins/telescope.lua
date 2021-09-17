@@ -1,5 +1,4 @@
--- local utils = require'utils'
-
+local sys = require'sys'
 local executable  = require'utils'.files.executable
 local load_module = require'utils'.helpers.load_module
 
@@ -79,7 +78,7 @@ telescope.setup{
 -- builtin.git_branches
 -- builtin.git_status
 
-local noremap = {noremap = true}
+local noremap = {noremap = true, silent = true}
 
 set_command{
     lhs = 'LuaReloaded',
@@ -156,7 +155,7 @@ set_command{
     lhs = 'GetVimFiles',
     rhs = function()
         require'telescope.builtin'.find_files{
-            cwd = require'sys'.base,
+            cwd = sys.base,
             find_command = require'utils.helpers'.select_filelist(false, true)
         }
     end,

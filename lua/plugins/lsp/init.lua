@@ -334,6 +334,12 @@ local function on_attach(client, bufnr)
     local lua_cmd = '<cmd>lua %s<CR>'
 
     local mappings = {
+        ['<C-]>'] = {
+            capability = 'goto_definition',
+            mapping = lua_cmd:format(
+                'vim.lsp.buf.definition()'
+            ),
+        },
         ['gd'] = {
             capability = 'declaration',
             mapping = lua_cmd:format('vim.lsp.buf.declaration()'),
@@ -389,20 +395,20 @@ local function on_attach(client, bufnr)
                 'vim.lsp.diagnostic.show_line_diagnostics()'
             ),
         },
-        -- [']d'] = {
-        --     mapping = lua_cmd:format(
-        --         has_saga and
-        --         "require'lspsaga.diagnostic'.lsp_jump_diagnostic_next()" or
-        --         'vim.lsp.diagnostic.goto_next{wrap=false}'
-        --     ),
-        -- },
-        -- ['[d'] = {
-        --     mapping = lua_cmd:format(
-        --         has_saga and
-        --         "require'lspsaga.diagnostic'.lsp_jump_diagnostic_prev()" or
-        --         'vim.lsp.diagnostic.goto_prev{wrap=false}'
-        --     ),
-        -- },
+        [']d'] = {
+            mapping = lua_cmd:format(
+                has_saga and
+                "require'lspsaga.diagnostic'.lsp_jump_diagnostic_next()" or
+                'vim.lsp.diagnostic.goto_next{wrap=false}'
+            ),
+        },
+        ['[d'] = {
+            mapping = lua_cmd:format(
+                has_saga and
+                "require'lspsaga.diagnostic'.lsp_jump_diagnostic_prev()" or
+                'vim.lsp.diagnostic.goto_prev{wrap=false}'
+            ),
+        },
         -- ['<space>wa'] = '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>',
         -- ['<space>wr'] = '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>',
         -- ['<space>wl'] = '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>',
@@ -445,12 +451,12 @@ local function on_attach(client, bufnr)
         }
     end
 
-    -- -- Disable neomake for lsp buffers
-    -- if plugins['neomake'] then
-    --     pcall(vim.fn['neomake#CancelJobs'], 0)
-    --     pcall(vim.fn['neomake#cmd#clean'], 1)
-    --     pcall(vim.cmd, 'silent call neomake#cmd#disable(b:)')
-    -- end
+    -- Disable neomake for lsp buffers
+    if require'neovim'.plugins.neomake then
+        pcall(vim.fn['neomake#CancelJobs'], 0)
+        pcall(vim.fn['neomake#cmd#clean'], 1)
+        pcall(vim.cmd, 'silent call neomake#cmd#disable(b:)')
+    end
 
     vim.lsp.protocol.CompletionItemKind = {
         '';  -- Text          = 1;

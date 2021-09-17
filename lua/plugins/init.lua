@@ -1,4 +1,6 @@
 local ok,packer = pcall(require, 'packer')
+local has_compiler = vim.fn.executable('gcc') == 1 or vim.fn.executable('clang') == 1
+-- local has_make = vim.fn.executable('make') == 1
 
 if not ok then
     return false
@@ -22,8 +24,7 @@ packer.init{
 packer.startup(function()
 
     -- BUG: Seems like luarocks is not supported in windows
-    if vim.fn.has('win32') == 0 and
-      (vim.fn.executable('gcc') == 1 or vim.fn.executable('clang') == 1) then
+    if vim.fn.has('win32') == 0 and has_compiler then
         use_rocks { 'luacheck','lua-cjson' }
     end
 
@@ -41,6 +42,19 @@ packer.startup(function()
 
     use {'nvim-lua/popup.nvim'}
     use {'nvim-lua/plenary.nvim'}
+
+    use {
+        'tami5/sqlite.lua',
+        module = 'sqlite',
+        cond = function()
+            local os = jit.os:lower()
+            if os == 'windows' then
+                -- TODO: search for dll
+                return false
+            end
+            return vim.fn.executable('sqlite3') == 1
+        end,
+    }
 
     use {
         'rcarriga/nvim-notify',
@@ -208,7 +222,7 @@ packer.startup(function()
                     ['o ah'] = ':<C-U>lua require"gitsigns.actions".select_hunk()<CR>',
                     ['x ah'] = ':<C-U>lua require"gitsigns.actions".select_hunk()<CR>',
                 },
-                current_line_blame = true,
+                -- current_line_blame = true,
                 current_line_blame_opts = {
                     virt_text = true,
                     virt_text_pos = 'eol',
@@ -561,7 +575,6 @@ packer.startup(function()
     --     wants = 'nvim-dap'
     -- }
 
-
     use {
         'nvim-telescope/telescope.nvim',
         config = function() require'plugins.telescope' end,
@@ -575,12 +588,22 @@ packer.startup(function()
     use {'weilbith/nvim-lsp-smag'}
     use {'weilbith/nvim-floating-tag-preview'}
 
+    local lsp_navigator = {'glepnir/lspsaga.nvim'}
+    -- if has_compiler and has_make then
+    --     lsp_navigator = {
+    --         'ray-x/navigator.lua',
+    --         requires = {'ray-x/guihua.lua', run = 'cd lua/fzy && make'},
+    --         config = function()
+    --         end,
+    --     }
+    -- end
+
     use {
         'neovim/nvim-lspconfig',
         config = function() require'plugins.lsp' end,
         after = 'telescope.nvim',
         requires = {
-            {'glepnir/lspsaga.nvim'},
+            lsp_navigator,
         },
     }
 
@@ -623,7 +646,7 @@ packer.startup(function()
     -- }
 end)
 
-if vim.fn.executable('gcc') == 1 or vim.fn.executable('clang') == 1 then
+if has_compiler then
     local rocks = require'packer.luarocks'
     rocks.install_commands()
 end

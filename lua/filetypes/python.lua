@@ -39,36 +39,39 @@ function M.format()
     local buffer = vim.api.nvim_get_current_buf()
     local external_formatprg = require'utils'.functions.external_formatprg
 
+    local project = vim.fn.findfile('pyproject.toml', '.;')
+
     if executable('black') then
+        local cmd = {'black'}
+        if project == ''  then
+            vim.list_extend(cmd, {'-l', '120',})
+        end
         external_formatprg{
-            cmd = {
-                'black',
-                '-l',
-                '120',
-            },
+            cmd = cmd,
             buffer = buffer,
             efm = '%trror: cannot format %f: Cannot parse %l:c: %m,%trror: cannot format %f: %m',
         }
     elseif executable('yapf') then
+        local cmd = {'yapf', '-i'}
+        if project == ''  then
+            vim.list_extend(cmd, {'--style', 'pep8',})
+        end
         external_formatprg{
-            cmd = {
-                'yapf',
-                '-d',
-                '--style',
-                'pep8',
-            },
+            cmd = cmd,
             buffer = buffer,
         }
     elseif executable('autopep8') then
-        external_formatprg{
-            cmd = {
-                'autopep8',
-                '--diff',
+        local cmd = {'autopep8', '-i'}
+        if project == ''  then
+            vim.list_extend(cmd, {
                 '--experimental',
                 '--aggressive',
                 '--max-line-length',
                 '120',
-            },
+            })
+        end
+        external_formatprg{
+            cmd = cmd,
             buffer = buffer,
         }
     else
