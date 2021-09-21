@@ -135,7 +135,7 @@ function M.progress(buffer)
                 border    = 'rounded',
                 relative  = 'win',
                 anchor    = 'SW',
-                row       = lines - 6,
+                row       = lines - 5,
                 col       = 2,
                 -- bufpos = {lines/2, 15},
                 height    = 15,
@@ -187,12 +187,12 @@ function M.cursor_window(buffer, auto_size)
         local lines = vim.api.nvim_buf_get_lines(buffer, 0, -1, false)
         local width = 0
         for _, line in ipairs(lines) do
-            if #line > 0 then
-                width = line
+            if #line > width then
+                width = #line
             end
         end
 
-        win_width = width <= 120 and width or 80
+        win_width = width <= 150 and width or 150
         win_height = #lines <= 15 and #lines or 15
     end
 
