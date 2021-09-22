@@ -99,7 +99,7 @@ function M.get_indent_block_level(lines)
 end
 
 function M.get_indent_string(indent)
-    assert(not indent or (type(indent) == type(0) and indent > 0), 'Invalid indent number')
+    assert(not indent or type(indent) == type(0), 'Invalid indent number')
     local expand = vim.opt_local.expandtab:get()
     indent = indent or M.get_indent()
     local spaces = not expand and '\t' or string.rep(' ', indent)
