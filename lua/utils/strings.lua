@@ -1,15 +1,5 @@
 local M = {}
 
-function M.regex(str, regex)
-    assert(type(str) == type('') and type(regex) == type(''), debug.traceback('both args must be strings'))
-    return vim.api.nvim_eval(string.format([[ '%s' =~# '%s' ]], str, regex)) == 1
-end
-
-function M.iregex(str, regex)
-    assert(type(str) == type('') and type(regex) == type(''), debug.traceback('both args must be strings'))
-    return vim.api.nvim_eval(string.format([[ '%s' =~? '%s' ]], str, regex)) == 1
-end
-
 function M.split_components(str, pattern)
     assert(type(str) == type(''), debug.traceback('Invalid string '..vim.inspect(str)))
     assert(type(pattern) == type(''), debug.traceback('Invalid pattern '..vim.inspect(pattern)))

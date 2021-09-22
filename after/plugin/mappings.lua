@@ -1,7 +1,6 @@
 local sys  = require'sys'
 local nvim = require'neovim'
 
-local iregex         = require'utils'.strings.iregex
 -- local split          = require'utils'.strings.split
 local clear_lst      = require'utils'.tables.clear_lst
 local executable     = require'utils'.files.executable
@@ -485,14 +484,14 @@ set_command{
         if not is_empty then
             shell = table.concat(cmd, ' ')
         elseif sys.name == 'windows' then
-            if iregex(vim.opt.shell:get(), [[^cmd\(\.exe\)\?$]]) then
+            if vim.regex([[^cmd\(\.exe\)\?$]]):match_str(vim.opt.shell:get()) then
                 shell = 'powershell -noexit -executionpolicy bypass '
             else
                 shell = vim.opt.shell:get()
             end
         else
             shell = vim.fn.fnamemodify(vim.env.SHELL or '', ':t')
-            if iregex(shell, [[\(t\)\?csh]]) then
+            if vim.regex([[\(t\)\?csh]]):match_str(shell) then
                 shell = executable('zsh') and 'zsh' or (executable('bash') and 'bash' or shell)
             end
         end

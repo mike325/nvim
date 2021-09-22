@@ -772,7 +772,7 @@ end
 -- took from the nvim docs
 local function on_change(err, fname, status)
     -- Do work...
-    vim.api.nvim_command('checktime')
+    vim.cmd('checktime')
     -- Debounce: stop/start.
     uv.new_fs_event:stop()
     M.watch_file(fname)
