@@ -185,6 +185,9 @@ function M.pynvim_setup()
     if executable('python3') and executable('pip3') then
         vim.g.python3_host_prog = vim.fn.exepath('python3')
         vim.g.loaded_python_provider = 0
+    elseif not executable('python') and not executable('python3') and not executable('python2') then
+        vim.g.loaded_python3_provider = 0
+        vim.g.loaded_python_provider = 0
     end
 end
 

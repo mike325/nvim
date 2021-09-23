@@ -560,25 +560,32 @@ function M.delete(target, bang)
     target = M.normalize_path(target)
     if M.is_file(target) or bufloaded(target) then
         if M.is_file(target) then
-            if vim.fn.delete(target) == -1 then
+            if not uv.fs_unlink(target) then
                 echoerr('Failed to delete the file: '..target, 'Delete')
+                return false
             end
+            return true
         end
         if bufloaded(target) then
             local command = bang and 'wipeout' or 'delete'
             local ok, error_code = pcall(vim.cmd, ([[b%s! %s]]):format(command, target))
             if not ok and error_code:match('Vim(.%w+.)\\?:E94') then
                 echoerr('Failed to '..command..' buffer '..target, 'Delete')
+                return false
             end
+            return true
         end
     elseif M.is_dir(target) then
         local flag = bang and 'rf' or 'd'
         if vim.fn.delete(target, flag) == -1 then
             echoerr('Failed to remove the directory: '..target, 'Delete')
+            return false
         end
-    else
-        echoerr('Non removable target: '..target, 'Delete')
+        return true
     end
+
+    echoerr('Non removable target: '..target, 'Delete')
+    return false
 end
 
 function M.skeleton_filename(opts)

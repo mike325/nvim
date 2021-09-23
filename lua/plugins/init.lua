@@ -585,10 +585,9 @@ packer.startup(function()
     }
 
     use {'folke/lsp-colors.nvim'}
-    use {'weilbith/nvim-lsp-smag'}
-    use {'weilbith/nvim-floating-tag-preview'}
 
-    local lsp_navigator = {'glepnir/lspsaga.nvim'}
+    use {'folke/lsp-colors.nvim'}
+    -- local lsp_navigator = {'glepnir/lspsaga.nvim'}
     -- if has_compiler and has_make then
     --     lsp_navigator = {
     --         'ray-x/navigator.lua',
@@ -598,12 +597,15 @@ packer.startup(function()
     --     }
     -- end
 
+    use {'folke/lsp-colors.nvim'}
     use {
         'neovim/nvim-lspconfig',
         config = function() require'plugins.lsp' end,
         after = 'telescope.nvim',
         requires = {
-            lsp_navigator,
+            {'glepnir/lspsaga.nvim'},
+            {'weilbith/nvim-lsp-smag'},
+            {'weilbith/nvim-floating-tag-preview'},
         },
     }
 

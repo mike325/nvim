@@ -202,7 +202,7 @@ function M.cursor_window(buffer, auto_size)
         relative  = 'cursor',
         anchor    = 'SW',
         col       = 0,
-        row       = -1,
+        row       = -2,
         height    = win_height,
         width     = win_width,
         -- noautocmd = true,

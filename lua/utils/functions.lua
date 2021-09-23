@@ -235,6 +235,7 @@ function M.get_ssh_hosts()
                     host = ''
                 end
             end
+            -- vim.tbl_add_reverse_lookup(STORAGE.hosts)
         end)
     end
 end
