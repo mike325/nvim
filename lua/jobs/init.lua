@@ -4,7 +4,6 @@ if not nvim.has('nvim-0.5') then
     return false
 end
 
-local echowarn   = require'utils'.messages.echowarn
 local get_icon   = require'utils'.helpers.get_icon
 local executable = require'utils'.files.executable
 
@@ -280,18 +279,20 @@ function Job:start()
 
     local function general_on_exit(_, rc)
         if rc == 0 then
-            require'utils'.messages.echomsg(
+            vim.notify(
                 ('Job %s succeed!! %s'):format(self.exe, get_icon('success')),
-                self.exe
+                'INFO',
+                {title=self.exe}
             )
         else
-            require'utils'.messages.echoerr(
+            vim.notify(
                 ('Job %s failed :c exit with code: %d!! %s'):format(
                     self.exe,
                     rc,
                     get_icon('error')
                 ),
-                self.exe
+                'ERROR',
+                {title=self.exe}
             )
         end
     end
@@ -417,7 +418,11 @@ function Job:start()
 
     if self._timeout and self._timeout > 0 then
         vim.defer_fn(function()
-            echowarn(('Timeout ! stoping job %s'):format(self._id), 'Job Timeout')
+            vim.notify(
+                ('Timeout ! stoping job %s'):format(self._id),
+                'WARN',
+                {title='Job Timeout'}
+            )
             self:stop()
         end, self._timeout)
     end
@@ -446,7 +451,11 @@ function Job:progress()
     assert(self._isalive, debug.traceback( ('Job %s is not running'):format(self._id) ))
 
     if self._tab ~= nvim.get_current_tabpage() then
-        echowarn('Cannot show progress from a different tab !'..get_icon('warn'), 'Job Progress')
+        vim.notify(
+            'Cannot show progress from a different tab !'..get_icon('warn'),
+            'WARN',
+            {title='Job Progress'}
+        )
         return false
     end
 

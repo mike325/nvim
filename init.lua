@@ -33,6 +33,7 @@ vim.g.mapleader = ' '
 vim.cmd[[packadd! cfilter]]
 vim.cmd[[packadd! matchit]]
 
+require'messages'
 require'globals'
 RELOAD'filetypes.python'.pynvim_setup()
 
@@ -40,7 +41,8 @@ if vim.fn.executable('git') == 1 then
     require'setup'()
     pcall(require, 'plugins')
 elseif vim.env.VIM_MIN ~= nil or vim.g.minimal ~= nil or vim.env.VIM_BARE ~= nil or vim.g.bare ~= nil then
-    require'utils.messages'.echowarn('Missing git! cannot install plugins', 'Nvim Setup')
+    vim.notify('Missing git! cannot install plugins', 'WARN', {title='Nvim Setup'})
 end
 
+-- require'storage'
 require'utils'.functions.get_ssh_hosts()

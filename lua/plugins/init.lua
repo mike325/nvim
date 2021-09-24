@@ -25,7 +25,7 @@ packer.startup(function()
 
     -- BUG: Seems like luarocks is not supported in windows
     if vim.fn.has('win32') == 0 and has_compiler then
-        use_rocks { 'luacheck','lua-cjson' }
+        use_rocks { 'luacheck','lua-cjson', 'md5'}
     end
 
     use 'wbthomason/packer.nvim'
@@ -42,6 +42,7 @@ packer.startup(function()
 
     use {'nvim-lua/popup.nvim'}
     use {'nvim-lua/plenary.nvim'}
+    use {'rcarriga/nvim-notify'}
 
     use {
         'tami5/sqlite.lua',
@@ -53,14 +54,6 @@ packer.startup(function()
                 return false
             end
             return vim.fn.executable('sqlite3') == 1
-        end,
-    }
-
-    use {
-        'rcarriga/nvim-notify',
-        config = function()
-            local has_notify, notify = pcall(require, 'notify')
-            vim.notify = has_notify and notify or vim.notify
         end,
     }
 

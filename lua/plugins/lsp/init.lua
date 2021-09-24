@@ -6,9 +6,6 @@ local get_icon    = require'utils.helpers'.get_icon
 local executable  = require'utils.files'.executable
 local is_dir      = require'utils.files'.is_dir
 -- local split       = require'utils.strings'.split
-
-local echoerr = require'utils.messages'.echoerr
-
 -- local plugins = require'neovim'.plugins
 
 -- local set_autocmd = require'neovim.autocmds'.set_autocmd
@@ -28,7 +25,7 @@ elseif sys.name == 'linux' then
 elseif sys.name == 'windows' then
     system_name = "Windows"
 else
-    echoerr('Unsupported system for sumneko', 'LSP')
+    vim.notify('Unsupported system for sumneko', 'ERROR', {title='LSP'})
 end
 
 local diagnostics = true
@@ -41,7 +38,10 @@ local function switch_source_header_splitcmd(bufnr, splitcmd)
     local params = { uri = vim.uri_from_bufnr(bufnr) }
     vim.lsp.buf_request(bufnr, 'textDocument/switchSourceHeader', params, function(err, _, result)
         if err then error(debug.traceback(tostring(err))) end
-        if not result then echoerr('Corresponding file can’t be determined', 'Clangd') return end
+        if not result then
+            vim.notify('Corresponding file can’t be determined', 'ERROR', {title='Clangd'})
+            return
+        end
         vim.cmd(splitcmd..' '..vim.uri_to_fname(result))
     end)
 end

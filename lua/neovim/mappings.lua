@@ -91,9 +91,10 @@ function M.get_mapping(mapping)
 
     local has_attrs = require'utils'.tables.has_attrs
     if not has_attrs(mapping, {'mode', 'lhs'}) then
-        require'utils'.messages.echoerr(
-            'Missing arguments, get_mapping need a mode and a lhs attribbutes',
-            'Nvim Mappings'
+        vim.notify(
+            'Missing arguments!! get_mapping need a mode and a lhs attribbutes',
+            'ERROR',
+            {title='Nvim Mappings'}
         )
         return false
     end
@@ -137,9 +138,10 @@ function M.set_mapping(mapping)
 
     local has_attrs = require'utils'.tables.has_attrs
     if not has_attrs(mapping, {'mode', 'lhs'}) then
-        require'utils'.messages.echoerr(
-            'Missing arguments, set_mapping need a mode and a lhs attribbutes',
-            'Nvim Mappings'
+        vim.notify(
+            'Missing arguments!! set_mapping need a mode and a lhs attribbutes',
+            'ERROR',
+            {title='Nvim Mappings'}
         )
         return false
     end

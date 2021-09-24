@@ -6,8 +6,6 @@ if trouble == nil then
 end
 
 local nvim  = require'neovim'
-local echomsg  = require'utils.messages'.echomsg
-local echowarn = require'utils.messages'.echowarn
 local get_icon = require'utils.helpers'.get_icon
 local has_devicon = pcall(require, 'nvim-web-devicons')
 local set_mapping = require'neovim.mappings'.set_mapping
@@ -58,19 +56,19 @@ set_mapping{
         end
         if not trouble_open then
             if #lsp_document_diagnostics > 0 then
-                echomsg('Document Diagnostics', 'Trouble')
+                vim.notify('Document Diagnostics', 'INFO', {title='Trouble'})
                 nvim.ex.Trouble("lsp_document_diagnostics")
             elseif has_workspace_diagnostics then
-                echomsg('Workspace Diagnostics', 'Trouble')
+                vim.notify('Workspace Diagnostics', 'INFO', {title='Trouble'})
                 nvim.ex.Trouble("lsp_workspace_diagnostics")
             elseif #loc_diagnostics > 0 then
-                echomsg('Location list', 'Trouble')
+                vim.notify('Location list', 'INFO', {title='Trouble'})
                 nvim.ex.Trouble("loclist")
             elseif #qf_diagnostics > 0 then
-                echomsg('Quicfix', 'Trouble')
+                vim.notify('Quicfix', 'INFO', {title='Trouble'})
                 nvim.ex.Trouble("quickfix")
             else
-                echowarn('Nothing to check !', 'Trouble')
+                vim.notify('Nothing to check !', 'WARN', {title='Trouble'})
             end
         end
     end,

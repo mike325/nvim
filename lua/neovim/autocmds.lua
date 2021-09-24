@@ -15,9 +15,10 @@ function M.get_autocmd(autocmd)
 
     local has_attrs = require'utils'.tables.has_attrs
     if not has_attrs(autocmd, {'event'}) and not has_attrs(autocmd, {'group'}) then
-        require'utils'.messages.echoerr(
-            'Missing arguments, get_autocmd need event or group attribbute',
-            'Nvim Autocmd'
+        vim.notify(
+            'Missing arguments!! get_autocmd need event or group attribbute',
+            'ERROR',
+            {title='Nvim Autocmd'}
         )
         return false
     end
@@ -45,9 +46,10 @@ function M.set_autocmd(autocmd)
 
     local has_attrs = require'utils'.tables.has_attrs
     if not has_attrs(autocmd, {'event'}) then
-        require'utils'.messages.echoerr(
-            'Missing arguments, set_autocmd need event attribbute',
-            'Nvim Autocmd'
+        vim.notify(
+            'Missing arguments!! set_autocmd need event attribbute',
+            'ERROR',
+            {title='Nvim Autocmd'}
         )
         return false
     end

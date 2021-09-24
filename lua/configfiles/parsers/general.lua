@@ -78,7 +78,7 @@ function M.parser(data)
                     data_tbl.sections[section][subsection][attr] = val
                 end
             else
-                require'utils'.messages.echowarn('Unmatched line: '..line, 'Config Parser')
+                vim.notify('Unmatched line: '..line, 'WARN', {title='Config Parser'})
                 section = nil
                 subsection = nil
             end

@@ -340,7 +340,7 @@ function M.setup()
                 local ft = vim.bo.filetype
 
                 if not is_file(buffer) then
-                    require'utils.messages'.echoerr('Current buffer is not a file', 'Execute')
+                    vim.notify('Current buffer is not a file', 'ERROR', {title='Execute'})
                     return false
                 end
 

@@ -87,23 +87,21 @@ function M.send_grep_job(args)
         },
     }
 
-    local echowarn = require'utils.messages'.echowarn
-    local echoerr  = require'utils.messages'.echoerr
-
     grep:add_callback(function(job, rc)
         local search = type(args) == type({}) and args[#args] or args
         if rc == 0 and job:is_empty() then
-            echowarn('No matching results '..search, 'Grep')
+            vim.notify('No matching results '..search, 'WARN', {title='Grep'})
         elseif rc ~= 0 then
             if job:is_empty() then
-                echowarn('No matching results '..search, 'Grep')
+                vim.notify('No matching results '..search, 'WARN', {title='Grep'})
             else
-                echoerr(
+                vim.notify(
                     ('%s exited with code %s'):format(
                         cmd[1],
                         rc
                     ),
-                    'Grep'
+                    'ERROR',
+                    {title='Grep'}
                 )
             end
         end

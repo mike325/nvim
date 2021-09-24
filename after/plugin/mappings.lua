@@ -11,8 +11,6 @@ local realpath       = require'utils'.files.realpath
 local basename       = require'utils'.files.basename
 local read_json      = require'utils'.files.read_json
 
-local echoerr = require'utils'.messages.echoerr
-
 local set_abbr    = require'neovim.abbrs'.set_abbr
 local set_command = require'neovim.commands'.set_command
 local set_mapping = require'neovim.mappings'.set_mapping
@@ -687,7 +685,7 @@ else
         lhs = 'Chmod',
         rhs = function(mode)
             if not mode:match('^%d+$') then
-                echoerr('Not a valid permissions mode: '..mode, 'Chmod')
+                vim.notify('Not a valid permissions mode: '..mode, 'ERROR', {title = 'Chmod'})
                 return
             end
             local filename = vim.fn.expand('%')

@@ -9,9 +9,6 @@ function M.setup()
 
     local set_command = require'neovim.commands'.set_command
 
-    local echomsg = require'utils'.messages.echomsg
-    local echoerr = require'utils'.messages.echoerr
-
     set_command{
         lhs = 'CMake',
         rhs = function(...)
@@ -126,7 +123,7 @@ function M.setup()
             }
 
             cmake:callback_on_success(function(_)
-                echomsg('Build completed!', 'CMake')
+                vim.notify('Build completed!', 'INFO', {title='CMake'})
                 if is_file('build/compile_commands.json') then
                     link(
                         'build/compile_commands.json',
@@ -139,7 +136,7 @@ function M.setup()
             end)
 
             cmake:callback_on_failure(function(_, rc)
-                echoerr('CMake Build Failed! :c with exit code: '..rc, 'CMake')
+                vim.notify('CMake Build Failed! :c with exit code: '..rc, 'ERROR', {title='CMake'})
             end)
 
             cmake:start()

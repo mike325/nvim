@@ -1,6 +1,5 @@
 local sys       = require'sys'
 local nvim      = require'neovim'
-local echoerr   = require'utils.messages'.echoerr
 local bufloaded = require'utils.buffers'.bufloaded
 -- local clear_lst = require'utils.tables'.clear_lst
 
@@ -92,17 +91,17 @@ function M.link(src, dest, sym, force)
     local status
 
     if not sym and M.is_dir(src) then
-        echoerr('Cannot hard link a directory', 'Link')
+        vim.notify('Cannot hard link a directory', 'ERROR', {title='Link'})
         return false
     end
 
     if not force and M.exists(dest) then
-        echoerr('Dest already exists in '..dest, 'Link')
+        vim.notify('Dest already exists in '..dest, 'ERROR', {title='Link'})
         return false
     elseif force and M.exists(dest) then
         status = uv.fs_unlink(dest)
         if not status then
-            echoerr('Failed to unlink '..dest, 'Link')
+            vim.notify('Failed to unlink '..dest, 'ERROR', {title='Link'})
             return status
         end
     end
@@ -114,7 +113,7 @@ function M.link(src, dest, sym, force)
     end
 
     if not status then
-        echoerr(('Failed to link "%s" to "%s"'):format(src, dest), 'Link')
+        vim.notify(('Failed to link "%s" to "%s"'):format(src, dest), 'ERROR', {title='Link'})
     end
 
     return status
@@ -547,10 +546,10 @@ function M.rename(old, new, bang)
 
             return true
         else
-            echoerr('Failed to rename '..old, 'Rename')
+            vim.notify('Failed to rename '..old, 'ERROR', {title='Rename'})
         end
     elseif M.exists(new) then
-        echoerr(new..' exists, use ! to override, it', 'Rename')
+        vim.notify(new..' exists, use ! to override it', 'ERROR', {title='Rename'})
     end
 
     return false
@@ -561,7 +560,7 @@ function M.delete(target, bang)
     if M.is_file(target) or bufloaded(target) then
         if M.is_file(target) then
             if not uv.fs_unlink(target) then
-                echoerr('Failed to delete the file: '..target, 'Delete')
+                vim.notify('Failed to delete the file: '..target, 'ERROR', {title='Delete'})
                 return false
             end
             return true
@@ -570,7 +569,7 @@ function M.delete(target, bang)
             local command = bang and 'wipeout' or 'delete'
             local ok, error_code = pcall(vim.cmd, ([[b%s! %s]]):format(command, target))
             if not ok and error_code:match('Vim(.%w+.)\\?:E94') then
-                echoerr('Failed to '..command..' buffer '..target, 'Delete')
+                vim.notify('Failed to '..command..' buffer '..target, 'ERROR', {title='Delete'})
                 return false
             end
             return true
@@ -578,13 +577,13 @@ function M.delete(target, bang)
     elseif M.is_dir(target) then
         local flag = bang and 'rf' or 'd'
         if vim.fn.delete(target, flag) == -1 then
-            echoerr('Failed to remove the directory: '..target, 'Delete')
+            vim.notify('Failed to remove the directory: '..target, 'ERROR', {title='Delete'})
             return false
         end
         return true
     end
 
-    echoerr('Non removable target: '..target, 'Delete')
+    vim.notify('Non removable target: '..target, 'ERROR', {title='Delete'})
     return false
 end
 
@@ -776,21 +775,18 @@ function M.dump_json(filename, data)
     M.writefile(M.normalize_path(filename), vim.fn.json_encode(data))
 end
 
--- took from the nvim docs
+local w = vim.loop.new_fs_event()
 local function on_change(err, fname, status)
     -- Do work...
-    vim.cmd('checktime')
+    vim.api.nvim_command('checktime')
     -- Debounce: stop/start.
-    uv.new_fs_event:stop()
+    w:stop()
     M.watch_file(fname)
 end
 
 function M.watch_file(fname)
-    local fullpath = vim.api.nvim_call_function(
-        'fnamemodify',
-        {fname, ':p'}
-    )
-    uv.new_fs_event:start(
+    local fullpath = vim.api.nvim_call_function('fnamemodify', {fname, ':p'})
+    w:start(
         fullpath,
         {},
         vim.schedule_wrap(function(...)

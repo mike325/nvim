@@ -25,7 +25,7 @@ local function kill_job(jobid)
             local idx = vim.fn.inputlist(cmds)
             jobid = ids[idx]
         else
-            require'utils'.messages.echowarn('No jobs to kill', 'Job Killer')
+            vim.notify('No jobs to kill', 'WARN', {title='Job Killer'})
         end
     end
 

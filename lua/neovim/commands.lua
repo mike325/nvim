@@ -65,10 +65,12 @@ local function func_handle(info)
 end
 
 function M.set_command(command)
-    local echoerr = require'utils'.messages.echoerr
-
     if not require'utils'.tables.has_attrs(command, {'lhs'}) then
-        echoerr('Missing arguments, set_command need a lhs attribbutes', 'Nvim Commands')
+        vim.notify(
+            'Missing arguments!! set_command need a lhs attribbutes',
+            'ERROR',
+            {title='Nvim Commands'}
+        )
         return false
     end
 
@@ -139,12 +141,12 @@ function M.set_command(command)
     end
 
     cmd = table.concat(cmd, ' ')
-    local ok, err = pcall(api.nvim_command, cmd)
 
+    local ok, err = pcall(api.nvim_command, cmd)
     if rhs and not ok then
-        echoerr(err, 'Nvim Autocmd')
+        vim.notify(err, 'ERROR', {title='Nvim Autocmd'})
     elseif not rhs and not ok then
-        require'utils'.messages.echowarn('Command not found: '..lhs, 'Nvim Autocmd')
+        vim.notify('Command not found: '..lhs, 'WARN', {title='Nvim Autocmd'})
     end
 
     if type(rhs) ~= type('') and ok then

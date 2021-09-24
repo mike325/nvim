@@ -829,9 +829,10 @@ function M.python(version, args)
     local pyversion = version == 3 and py3 or py2
 
     if pyversion == nil or pyversion == '' then
-        require'utils.messages'.echoerr(
+        vim.notify(
             'Python'..pyversion..' is not available in the system',
-            'Python'
+            'ERROR',
+            {title='Python'}
         )
         return -1
     end
@@ -887,12 +888,13 @@ function M.dump_to_qf(opts)
 
     local info_tab = opts.tab
     if info_tab and info_tab ~= nvim.get_current_tabpage() then
-        require'utils.messages'.echomsg(
+        vim.notify(
             ('%s Updated! with %s info'):format(
                 qf_type == 'qf' and 'Qf' or 'Loc',
                 opts.context
             ),
-            qf_type == 'qf' and 'QuickFix' or 'LocationList'
+            'INFO',
+            {title = qf_type == 'qf' and 'QuickFix' or 'LocationList'}
         )
         return
     elseif #opts.lines > 0 then

@@ -2,9 +2,6 @@ local nvim = require'neovim'
 local sys  = require'sys'
 
 local executable = require'utils.files'.executable
-local echowarn   = require'utils.messages'.echowarn
-local echoerr    = require'utils.messages'.echoerr
-local echomsg    = require'utils.messages'.echomsg
 
 if not executable('git') then
     return false
@@ -44,9 +41,9 @@ function M.set_commands()
                     pty = true,
                     on_exit = function(_, rc)
                         if rc ~= 0 then
-                            echoerr('Failed to pull changes!!', 'GPull')
+                            vim.notify('Failed to pull changes!!', 'ERROR', {title='GPull'})
                         else
-                            echomsg('Repo updated!', 'GPull')
+                            vim.notify('Repo updated!', 'INFO', {title='GPull'})
                             nvim.ex.checktime()
                         end
                     end
@@ -108,14 +105,14 @@ function M.set_commands()
                             jobopts = {
                                 on_exit = function(_, rc)
                                     if rc ~= 0 then
-                                        echoerr('Failed to Add file: '..bufname, 'GWrite')
+                                        vim.notify('Failed to Add file: '..bufname, 'ERROR', {title='GWrite'})
                                     end
                                 end
                             }
                         }
                     else
                         -- TODO: Improve this, and check for merge conflics
-                        echomsg('Nothing to do', 'GWrite')
+                        vim.notify('Nothing to do', 'INFO', {title='GWrite'})
                     end
                 else
                     for i=1,#args do
@@ -158,11 +155,10 @@ function M.set_commands()
                                             jobopts = {
                                                 on_exit = function(_, ec)
                                                     if ec ~= 0 then
-                                                        echoerr(
-                                                            ('Failed to reset file: %s'):format(
-                                                                bufname
-                                                            ),
-                                                            'GRead'
+                                                        vim.notify(
+                                                            ('Failed to reset file: %s'):format( bufname),
+                                                            'ERROR',
+                                                            {title='GRead'}
                                                         )
                                                     end
                                                     nvim.ex.checktime()
@@ -170,11 +166,10 @@ function M.set_commands()
                                             }
                                         }
                                     else
-                                        echoerr(
-                                            ('Failed to unstage file: %s'):format(
-                                                bufname
-                                            ),
-                                            'GRead'
+                                        vim.notify(
+                                            ('Failed to unstage file: %s'):format( bufname),
+                                            'ERROR',
+                                            {title='GRead'}
                                         )
                                     end
                                 end
@@ -188,10 +183,10 @@ function M.set_commands()
                             args = args,
                         }
                     else
-                        echomsg('Nothing to do', 'GRead')
+                        vim.notify('Nothing to do', 'INFO', {title='GRead'})
                     end
                 else
-                    echowarn('This is still WIP', 'GRead')
+                    vim.notify('This is still WIP', 'WARN', {title='GRead'})
                     utils.launch_gitcmd_job{gitcmd = 'add', args = args}
                 end
             end)
@@ -217,11 +212,10 @@ function M.set_commands()
                             jobopts = {
                                 on_exit = function(_, rc)
                                     if rc ~= 0 then
-                                        echoerr(
-                                            ('Failed to restore file: %s'):format(
-                                                bufname
-                                            ),
-                                            'GRestore'
+                                        vim.notify(
+                                            ('Failed to restore file: %s'):format( bufname),
+                                            'ERROR',
+                                            {title='GRestore'}
                                         )
                                     end
                                     nvim.ex.checktime()
@@ -229,7 +223,7 @@ function M.set_commands()
                             }
                         }
                     else
-                        echomsg('Nothing to do', 'GRestore')
+                        vim.notify('Nothing to do', 'INFO', {title='GRestore'})
                     end
                 else
                     for i=1,#args do
