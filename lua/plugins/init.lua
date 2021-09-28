@@ -577,9 +577,6 @@ packer.startup(function()
         },
     }
 
-    use {'folke/lsp-colors.nvim'}
-
-    use {'folke/lsp-colors.nvim'}
     -- local lsp_navigator = {'glepnir/lspsaga.nvim'}
     -- if has_compiler and has_make then
     --     lsp_navigator = {
