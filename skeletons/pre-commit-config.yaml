@@ -2,7 +2,7 @@
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v3.2.0
+    rev: v4.0.1
     hooks:
       - id: check-xml
       - id: check-yaml
@@ -13,10 +13,15 @@ repos:
       - id: check-added-large-files
       - id: check-case-conflict
       - id: detect-private-key
+      - id: check-docstring-first
+      - id: check-merge-conflict
+      - id: check-shebang-scripts-are-executable
+      - id: check-vcs-permalinks
+      - id: check-symlinks
+      - id: mixed-line-ending
       # - id: pretty-format-json
-      - id: end-of-file-fixer
   - repo: https://github.com/psf/black
-    rev: 21.7b0  # Latest: 21.7b0 or stable
+    rev: 21.9b0  # Latest: 21.7b0 or stable
     hooks:
       - id: black
         language_version: python3
@@ -52,7 +57,7 @@ repos:
             )$
         # args: [ '--whitespaces-count', '2' ]  # defaults to: 4
   - repo: https://github.com/sirosen/check-jsonschema
-    rev: 0.3.0
+    rev: 0.4.1
     hooks:
       - id: check-github-workflows
       - id: check-github-actions
@@ -111,7 +116,14 @@ repos:
       #   name: luacheck
       #   description: Lua check
       #   entry: luacheck
-      #   args: ['--max-cyclomatic-complexity', '15', '--std', 'luajit', '--formatter', 'plain']
+      #   args: ['--max-cyclomatic-complexity', '20', '--std', 'luajit', '--formatter', 'plain']
+      #   language: system
+      #   types: [lua]
+      # - id: stylua
+      #   name: stylua
+      #   description: Format Lua files
+      #   entry: stylua
+      #   args: ['--check', '--verify']
       #   language: system
       #   types: [lua]
       # - id: flake8

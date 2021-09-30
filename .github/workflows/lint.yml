@@ -28,15 +28,6 @@ jobs:
             golang
 
           sudo luarocks install luacheck
-
-          WORK_DIR="$HOME/.local/share"
-          mkdir -p "$WORK_DIR" && pushd "$WORK_DIR"
-          virtualenv -p python3 vint
-          source ./vint/bin/activate
-          pip install vim-vint
-          sudo ln -s "${VIRTUAL_ENV}/bin/vint" /usr/bin/
-          deactivate
-          popd
       - name: Fetch install script
         run: |
           wget https://raw.githubusercontent.com/Mike325/dotfiles/master/install.sh
