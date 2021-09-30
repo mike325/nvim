@@ -28,13 +28,13 @@ local function luajit_version()
 end
 
 local sys = {
-    name  = system_name(),
-    home  = homedir(),
-    base  = basedir(),
-    data  = datadir(),
+    name = system_name(),
+    home = homedir(),
+    base = basedir(),
+    data = datadir(),
     cache = cachedir(),
     luajit = luajit_version(),
-    user = vim.loop.os_get_passwd()
+    user = vim.loop.os_get_passwd(),
 }
 
 sys.user.name = sys.user.username

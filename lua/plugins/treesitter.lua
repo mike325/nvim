@@ -1,12 +1,12 @@
-local nvim        = require'neovim'
-local load_module = require'utils.helpers'.load_module
+local nvim = require 'neovim'
+local load_module = require('utils.helpers').load_module
 
 -- local plugins = nvim.plugins
-local set_autocmd = require'neovim.autocmds'.set_autocmd
+local set_autocmd = require('neovim.autocmds').set_autocmd
 -- local set_command = nvim.commands.set_command
 -- local set_mapping = nvim.mappings.set_mapping
 
-local treesitter = load_module'nvim-treesitter.configs'
+local treesitter = load_module 'nvim-treesitter.configs'
 
 if treesitter == nil then
     return false
@@ -32,7 +32,7 @@ if packer_plugins['vim-textobj-comment'] == nil or min then
     commet_txtobj = '@comment.outer'
 end
 
-treesitter.setup{
+treesitter.setup {
     ensure_installed = ensure_installed,
     indent = {
         enable = true,
@@ -40,10 +40,10 @@ treesitter.setup{
     incremental_selection = {
         enable = true,
         keymaps = {
-            init_selection = "<A-i>",
-            scope_incremental = "<A-c>",
-            node_incremental = "<A-I>",
-            node_decremental = "<A-D>",
+            init_selection = '<A-i>',
+            scope_incremental = '<A-c>',
+            node_incremental = '<A-I>',
+            node_decremental = '<A-D>',
         },
     },
     highlight = {
@@ -54,18 +54,18 @@ treesitter.setup{
             enable = true,
             lookahead = true,
             keymaps = {
-                ["af"] = "@conditional.outer",
-                ["if"] = "@conditional.inner",
-                ["am"] = "@function.outer",    -- Same as [m, ]m "method"
-                ["im"] = "@function.inner",
-                ["ak"] = "@class.outer",
-                ["ik"] = "@class.inner",
-                ["ia"] = "@parameter.inner",
-                ["aa"] = "@parameter.inner",
-                ["ir"] = "@loop.inner",        -- "repeat" mnemonic
-                ["ar"] = "@loop.outer",
-                ["ac"] = commet_txtobj,
-                ["ic"] = commet_txtobj,
+                ['af'] = '@conditional.outer',
+                ['if'] = '@conditional.inner',
+                ['am'] = '@function.outer', -- Same as [m, ]m "method"
+                ['im'] = '@function.inner',
+                ['ak'] = '@class.outer',
+                ['ik'] = '@class.inner',
+                ['ia'] = '@parameter.inner',
+                ['aa'] = '@parameter.inner',
+                ['ir'] = '@loop.inner', -- "repeat" mnemonic
+                ['ar'] = '@loop.outer',
+                ['ac'] = commet_txtobj,
+                ['ic'] = commet_txtobj,
             },
         },
         swap = {
@@ -74,52 +74,52 @@ treesitter.setup{
                 -- ["<leader>k"] = "@class.outer",
                 -- ["<leader>c"] = "@comment.outer",
                 -- ["<leader>f"] = "@loop.outer",
-                ["<leader>f"] = "@conditional.outer",
-                ["<leader>a"] = "@parameter.inner",
-                ["<leader>m"] = "@function.outer",
+                ['<leader>f'] = '@conditional.outer',
+                ['<leader>a'] = '@parameter.inner',
+                ['<leader>m'] = '@function.outer',
             },
             swap_previous = {
                 -- ["<leader><leader>k"] = "@class.outer",
                 -- ["<leader><leader>c"] = "@comment.outer",
                 -- ["<leader><leader>f"] = "@loop.outer",
-                ["<leader><leader>f"] = "@conditional.outer",
-                ["<leader><leader>a"] = "@parameter.inner",
-                ["<leader><leader>m"] = "@function.outer",
+                ['<leader><leader>f'] = '@conditional.outer',
+                ['<leader><leader>a'] = '@parameter.inner',
+                ['<leader><leader>m'] = '@function.outer',
             },
         },
         move = {
             enable = true,
             set_jumps = true,
             goto_previous_start = {
-                ["[f"] = "@conditional.outer",
-                ["[m"] = "@function.outer",
-                ["[k"] = "@class.outer",
-                ["[r"] = "@loop.outer",
-                ["[a"] = "@parameter.inner",
+                ['[f'] = '@conditional.outer',
+                ['[m'] = '@function.outer',
+                ['[k'] = '@class.outer',
+                ['[r'] = '@loop.outer',
+                ['[a'] = '@parameter.inner',
                 -- ["[c"] = commet_txtobj,
             },
             goto_next_start = {
-                ["]f"] = "@conditional.outer",
-                ["]m"] = "@function.outer",
-                ["]k"] = "@class.outer",
-                ["]r"] = "@loop.outer",
-                ["]a"] = "@parameter.inner",
+                [']f'] = '@conditional.outer',
+                [']m'] = '@function.outer',
+                [']k'] = '@class.outer',
+                [']r'] = '@loop.outer',
+                [']a'] = '@parameter.inner',
                 -- ["]c"] = commet_txtobj,  -- TODO: Conflict with diff ]c,[c mappings
             },
             goto_previous_end = {
-                ["[F"] = "@conditional.outer",
-                ["[M"] = "@function.outer",
-                ["]K"] = "@class.outer",
-                ["[R"] = "@loop.outer",
-                ["[A"] = "@parameter.inner",
+                ['[F'] = '@conditional.outer',
+                ['[M'] = '@function.outer',
+                [']K'] = '@class.outer',
+                ['[R'] = '@loop.outer',
+                ['[A'] = '@parameter.inner',
                 -- ["[C"] = commet_txtobj,
             },
             goto_next_end = {
-                ["]F"] = "@conditional.outer",
-                ["]M"] = "@function.outer",
-                ["[K"] = "@class.outer",
-                ["]R"] = "@loop.outer",
-                ["]A"] = "@parameter.inner",
+                [']F'] = '@conditional.outer',
+                [']M'] = '@function.outer',
+                ['[K'] = '@class.outer',
+                [']R'] = '@loop.outer',
+                [']A'] = '@parameter.inner',
                 -- ["]C"] =  commet_txtobj,
             },
         },
@@ -145,14 +145,14 @@ treesitter.setup{
     query_linter = {
         enable = true,
         use_virtual_text = true,
-        lint_events = {"BufWrite", "CursorHold"},
+        lint_events = { 'BufWrite', 'CursorHold' },
     },
     refactor = {
         -- highlight_current_scope = { enable = true },
         smart_rename = {
             enable = true,
             keymaps = {
-                smart_rename = "<A-r>",
+                smart_rename = '<A-r>',
             },
         },
         highlight_definitions = {
@@ -162,20 +162,20 @@ treesitter.setup{
         navigation = {
             enable = true,
             keymaps = {
-                goto_definition      = "<A-d>",
-                list_definitions     = "<A-l>",
-                goto_next_usage      = "<A-n>",
-                goto_previous_usage  = "<A-N>",
+                goto_definition = '<A-d>',
+                list_definitions = '<A-l>',
+                goto_next_usage = '<A-n>',
+                goto_previous_usage = '<A-N>',
                 -- list_definitions_toc = "<A-t>",
             },
         },
     },
 }
 
-local parsers = require'nvim-treesitter.parsers'
+local parsers = require 'nvim-treesitter.parsers'
 local fts = {}
 
-for lang,opts in pairs(parsers.list) do
+for lang, opts in pairs(parsers.list) do
     if parsers.has_parser(lang) then
         if opts.filetype ~= nil then
             lang = opts.filetype
@@ -189,11 +189,11 @@ end
 
 if #fts > 0 then
     -- TODO: Check module availability for each language
-    set_autocmd{
-        event   = 'FileType',
+    set_autocmd {
+        event = 'FileType',
         pattern = fts,
-        cmd     = 'setlocal foldmethod=expr foldexpr=nvim_treesitter#foldexpr() foldenable',
-        group   = 'TreesitterAutocmds',
+        cmd = [[setlocal foldenable foldmethod=expr foldexpr=nvim_treesitter#foldexpr()]],
+        group = 'TreesitterAutocmds',
     }
 end
 

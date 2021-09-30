@@ -1,6 +1,6 @@
-local sys = require'sys'
-local executable = require'utils.files'.executable
-local has_attrs = require'utils.tables'.has_attrs
+local sys = require 'sys'
+local executable = require('utils.files').executable
+local has_attrs = require('utils.tables').has_attrs
 
 local gutentags_modules = vim.g.gutentags_modules or {}
 
@@ -20,7 +20,7 @@ vim.g.gutentags_exclude_filetypes = {
     'fugitive',
 }
 
-if executable('ctags') then
+if executable 'ctags' then
     if not has_attrs(gutentags_modules, 'ctags') then
         gutentags_modules[#gutentags_modules + 1] = 'ctags'
     end
@@ -62,7 +62,7 @@ end
 -- if executable('gtags-cscope') then
 --     gutentags_modules[#gutentags_modules + 1] = 'gtags_cscope'
 -- elseif executable('cscope') then
-if executable('cscope') and not has_attrs(gutentags_modules, 'cscope') then
+if executable 'cscope' and not has_attrs(gutentags_modules, 'cscope') then
     gutentags_modules[#gutentags_modules + 1] = 'cscope'
 end
 
@@ -71,9 +71,9 @@ vim.g.gutentags_modules = gutentags_modules
 local gutentags_exclude_project_root = vim.g.gutentags_exclude_project_root or {}
 
 if sys.name == 'windows' then
-    vim.list_extend(gutentags_exclude_project_root, {'C:/Program Files', 'C:/Program Files (x86)'})
+    vim.list_extend(gutentags_exclude_project_root, { 'C:/Program Files', 'C:/Program Files (x86)' })
 else
-    vim.list_extend(gutentags_exclude_project_root, {'/opt', '/mnt', '/media', '/usr/local'})
+    vim.list_extend(gutentags_exclude_project_root, { '/opt', '/mnt', '/media', '/usr/local' })
 end
 
 vim.g.gutentags_exclude_project_root = gutentags_exclude_project_root

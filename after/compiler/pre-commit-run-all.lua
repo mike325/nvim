@@ -1,11 +1,11 @@
-local nvim = require'neovim'
+local nvim = require 'neovim'
 
 local cmd = {
     'pre-commit',
     'run',
     '--all-files',
 }
-nvim.ex.CompilerSet('makeprg='..table.concat(cmd, '\\ '))
+nvim.ex.CompilerSet('makeprg=' .. table.concat(cmd, '\\ '))
 
 -- local formats = vim.opt_global.errorformat:get()
 local formats = {
@@ -21,5 +21,7 @@ local formats = {
     '%E%f:%l:%c: fatal error: %m',
     '%E%f:%l:%c: error: %m',
     '%W%f:%l:%c: warning: %m',
+    'Diff in %f:',
+    '+++ %f',
 }
-nvim.ex.CompilerSet('errorformat='..table.concat(formats, ','):gsub(' ', '\\ '))
+nvim.ex.CompilerSet('errorformat=' .. table.concat(formats, ','):gsub(' ', '\\ '))

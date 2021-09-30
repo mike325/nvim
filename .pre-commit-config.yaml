@@ -115,6 +115,13 @@ repos:
         args: ['--std', 'luajit', '--formatter', 'plain']
         language: system
         types: [lua]
+      - id: stylua
+        name: stylua
+        description: Format Lua files
+        entry: stylua
+        args: ['--check', '--verify']
+        language: system
+        types: [lua]
       - id: vint
         name: vint
         description: VimL check

@@ -1,105 +1,105 @@
-local nvim = require'neovim'
+local nvim = require 'neovim'
 
-local executable      = require'utils'.files.executable
-local readfile        = require'utils'.files.readfile
-local is_file         = require'utils'.files.is_file
-local realpath        = require'utils'.files.realpath
+local executable = require('utils').files.executable
+local readfile = require('utils').files.readfile
+local is_file = require('utils').files.is_file
+local realpath = require('utils').files.realpath
 
 local compile_flags = STORAGE.compile_flags
 local databases = STORAGE.databases
 local has_cjson = STORAGE.has_cjson
 
-local set_command = require'neovim.commands'.set_command
+local set_command = require('neovim.commands').set_command
 -- local set_mapping = require'neovim.mappings'.set_mapping
 
 local M = {
     default_flags = {
         ['clang++'] = {
-            "-std=c++17",
-            "-O3",
-            "-Wall",
-            "-Wextra",
-            "-Wshadow",
-            "-Wnon-virtual-dtor",
-            "-Wold-style-cast",
-            "-Wcast-align",
-            "-Wunused",
-            "-Woverloaded-virtual",
-            "-Wpedantic",
-            "-Wconversion",
-            "-Wsign-conversion",
-            "-Wnull-dereference",
-            "-Wdouble-promotion",
-            "-Wformat=2",
+            '-std=c++17',
+            '-O3',
+            '-Wall',
+            '-Wextra',
+            '-Wshadow',
+            '-Wnon-virtual-dtor',
+            '-Wold-style-cast',
+            '-Wcast-align',
+            '-Wunused',
+            '-Woverloaded-virtual',
+            '-Wpedantic',
+            '-Wconversion',
+            '-Wsign-conversion',
+            '-Wnull-dereference',
+            '-Wdouble-promotion',
+            '-Wformat=2',
         },
         ['g++'] = {
-            "-std=c++17",
-            "-O3",
-            "-Wall",
-            "-Wextra",
-            "-Wno-c++98-compat",
-            "-Wshadow",
-            "-Wnon-virtual-dtor",
-            "-Wold-style-cast",
-            "-Wcast-align",
-            "-Wunused",
-            "-Woverloaded-virtual",
-            "-Wpedantic",
-            "-Wconversion",
-            "-Wsign-conversion",
-            "-Wnull-dereference",
-            "-Wdouble-promotion",
-            "-Wmisleading-indentation",
-            "-Wduplicated-cond",
-            "-Wduplicated-branches",
-            "-Wlogical-op",
-            "-Wuseless-cast",
-            "-Wformat=2",
+            '-std=c++17',
+            '-O3',
+            '-Wall',
+            '-Wextra',
+            '-Wno-c++98-compat',
+            '-Wshadow',
+            '-Wnon-virtual-dtor',
+            '-Wold-style-cast',
+            '-Wcast-align',
+            '-Wunused',
+            '-Woverloaded-virtual',
+            '-Wpedantic',
+            '-Wconversion',
+            '-Wsign-conversion',
+            '-Wnull-dereference',
+            '-Wdouble-promotion',
+            '-Wmisleading-indentation',
+            '-Wduplicated-cond',
+            '-Wduplicated-branches',
+            '-Wlogical-op',
+            '-Wuseless-cast',
+            '-Wformat=2',
         },
         clang = {
-            "-std=c11",
-            "-O3",
-            "-Wall",
-            "-Wextra",
-            "-Wshadow",
-            "-Wnon-virtual-dtor",
-            "-Wold-style-cast",
-            "-Wcast-align",
-            "-Wunused",
-            "-Woverloaded-virtual",
-            "-Wpedantic",
-            "-Wno-missing-prototypes",
-            "-Wconversion",
-            "-Wsign-conversion",
-            "-Wnull-dereference",
-            "-Wdouble-promotion",
-            "-Wformat=2",
+            '-std=c11',
+            '-O3',
+            '-Wall',
+            '-Wextra',
+            '-Wshadow',
+            '-Wnon-virtual-dtor',
+            '-Wold-style-cast',
+            '-Wcast-align',
+            '-Wunused',
+            '-Woverloaded-virtual',
+            '-Wpedantic',
+            '-Wno-missing-prototypes',
+            '-Wconversion',
+            '-Wsign-conversion',
+            '-Wnull-dereference',
+            '-Wdouble-promotion',
+            '-Wformat=2',
         },
         gcc = {
-            "-std=c11",
-            "-O3",
-            "-Wall",
-            "-Wextra",
-            "-Wshadow",
-            "-Wnon-virtual-dtor",
-            "-Wold-style-cast",
-            "-Wcast-align",
-            "-Wunused",
-            "-Woverloaded-virtual",
-            "-Wpedantic",
-            "-Wno-missing-prototypes",
-            "-Wconversion",
-            "-Wsign-conversion",
-            "-Wnull-dereference",
-            "-Wdouble-promotion",
-            "-Wmisleading-indentation",
-            "-Wduplicated-cond",
-            "-Wduplicated-branches",
-            "-Wlogical-op",
-            "-Wuseless-cast",
-            "-Wformat=2",
+            '-std=c11',
+            '-O3',
+            '-Wall',
+            '-Wextra',
+            '-Wshadow',
+            '-Wnon-virtual-dtor',
+            '-Wold-style-cast',
+            '-Wcast-align',
+            '-Wunused',
+            '-Woverloaded-virtual',
+            '-Wpedantic',
+            '-Wno-missing-prototypes',
+            '-Wconversion',
+            '-Wsign-conversion',
+            '-Wnull-dereference',
+            '-Wdouble-promotion',
+            '-Wmisleading-indentation',
+            '-Wduplicated-cond',
+            '-Wduplicated-branches',
+            '-Wlogical-op',
+            '-Wuseless-cast',
+            '-Wformat=2',
         },
-    }
+    },
 }
 
 local compilers = {
@@ -110,14 +110,13 @@ local compilers = {
     cpp = {
         'clang++',
         'g++',
-    }
+    },
 }
 
 local env = {
     c = 'CC',
     cpp = 'CXX',
 }
-
 
 local function get_compiler()
     local ft = vim.bo.filetype
@@ -127,7 +126,7 @@ local function get_compiler()
     end
 
     local compiler
-    for _,exe in pairs(compilers[ft]) do
+    for _, exe in pairs(compilers[ft]) do
         if executable(exe) then
             compiler = exe
             break
@@ -143,9 +142,11 @@ local function get_args(compiler, bufnum, compiler_flags_file)
     if is_file(bufname) then
         if databases[bufname] then
             args = databases[bufname].args
-        elseif compiler_flags_file and
-               compile_flags[compiler_flags_file] and
-               compile_flags[compiler_flags_file].args then
+        elseif
+            compiler_flags_file
+            and compile_flags[compiler_flags_file]
+            and compile_flags[compiler_flags_file].args
+        then
             args = compile_flags[compiler_flags_file].args
         end
     end
@@ -155,38 +156,36 @@ end
 
 local function set_opts(filename, has_tidy, compiler, bufnum)
     local bufname = nvim.buf.get_name(bufnum)
-    local merge_uniq_list = require'utils'.tables.merge_uniq_list
+    local merge_uniq_list = require('utils').tables.merge_uniq_list
 
     if is_file(bufname) and databases[realpath(bufname)] then
         bufname = realpath(bufname)
         vim.api.nvim_buf_set_option(
             bufnum,
             'makeprg',
-            ('%s %s %%'):format(
-                databases[bufname].compiler,
-                table.concat(databases[bufname].args, ' ')
-            )
+            ('%s %s %%'):format(databases[bufname].compiler, table.concat(databases[bufname].args, ' '))
         )
-        local path = vim.split(vim.api.nvim_buf_get_option(bufnum, 'path'), ',')
+        local has_local, path = pcall(vim.api.nvim_buf_get_option, bufnum, 'path')
+        if not has_local then
+            path = vim.api.nvim_get_option 'path'
+        end
+        path = vim.split(path, ',')
         table.insert(path, '.')
         path = merge_uniq_list(databases[bufname].includes, path)
-        vim.api.nvim_buf_set_option(
-            bufnum,
-            'path',
-            table.concat(path, ',')..','
-        )
+        vim.api.nvim_buf_set_option(bufnum, 'path', table.concat(path, ',') .. ',')
         return
     end
     if filename and compile_flags[filename] then
         if #compile_flags[filename].includes > 0 then
-            local path = vim.split(vim.api.nvim_buf_get_option(bufnum, 'path'), ',')
+            -- BUG: Seems to fail and abort if we call this too early in nvim startup
+            local has_local, path = pcall(vim.api.nvim_buf_get_option, bufnum, 'path')
+            if not has_local then
+                path = vim.api.nvim_get_option 'path'
+            end
+            path = vim.split(path, ',')
             table.insert(path, '.')
             path = merge_uniq_list(compile_flags[filename].includes, path)
-            vim.api.nvim_buf_set_option(
-                bufnum,
-                'path',
-                table.concat(path, ',')..','
-            )
+            vim.api.nvim_buf_set_option(bufnum, 'path', table.concat(path, ',') .. ',')
         end
 
         if #compile_flags[filename].flags > 0 and not has_tidy then
@@ -225,12 +224,12 @@ local function parse_includes(args)
 end
 
 local function parse_compiledb(data)
-    assert(type(data) == type(''), 'Invalid data: '..vim.inspect(data))
-    local json = require'utils'.files.decode_json(data)
+    assert(type(data) == type '', 'Invalid data: ' .. vim.inspect(data))
+    local json = require('utils').files.decode_json(data)
     for _, source in pairs(json) do
         local source_name
-        if not source.file:match('/') then
-            source_name = source.directory..'/'..source.file
+        if not source.file:match '/' then
+            source_name = source.directory .. '/' .. source.file
         else
             source_name = source.file
         end
@@ -254,27 +253,28 @@ function M.setup()
     local compiler = get_compiler()
     local bufnum = nvim.get_current_buf()
     local bufname = nvim.buf.get_name(bufnum)
-    local cwd = is_file(bufname) and require'utils'.files.basedir(bufname) or require'utils'.files.getcwd()
-    local normalize_path  = require'utils'.files.normalize_path
+    local cwd = is_file(bufname) and require('utils').files.basedir(bufname)
+        or require('utils').files.getcwd()
+    local normalize_path = require('utils').files.normalize_path
 
     if compiler then
-        local flags_file = vim.fn.findfile('compile_flags.txt', cwd..';')
-        local db_file = vim.fn.findfile('compile_commands.json', cwd..';')
-        local clang_tidy = vim.fn.findfile('.clang-tidy', cwd..';')
+        local flags_file = vim.fn.findfile('compile_flags.txt', cwd .. ';')
+        local db_file = vim.fn.findfile('compile_commands.json', cwd .. ';')
+        local clang_tidy = vim.fn.findfile('.clang-tidy', cwd .. ';')
 
         -- local makefile = vim.fn.findfile('Makefile', cwd..';')
-        local cmake = vim.fn.findfile('CMakeLists.txt', cwd..';')
+        local cmake = vim.fn.findfile('CMakeLists.txt', cwd .. ';')
 
-        if executable('make') then
-            RELOAD'filetypes.make'.setup()
+        if executable 'make' then
+            RELOAD('filetypes.make').setup()
         end
 
-        if cmake ~= '' and executable('cmake') then
-            RELOAD'filetypes.cmake'.setup()
+        if cmake ~= '' and executable 'cmake' then
+            RELOAD('filetypes.cmake').setup()
         end
 
         local has_tidy = false
-        if executable('clang-tidy') and (flags_file ~= '' or db_file ~= '' or clang_tidy ~= '') then
+        if executable 'clang-tidy' and (flags_file ~= '' or db_file ~= '' or clang_tidy ~= '') then
             has_tidy = true
             vim.bo.makeprg = 'clang-tidy %'
             vim.bo.errorformat = '%E%f:%l:%c: fatal error: %m,%E%f:%l:%c: error: %m,%W%f:%l:%c: warning: %m'
@@ -309,7 +309,7 @@ function M.setup()
                             flags = {},
                             includes = {},
                         }
-                        for _,line in pairs(data) do
+                        for _, line in pairs(data) do
                             if line:sub(1, 1) == '-' or line:sub(1, 1) == '/' then
                                 table.insert(compile_flags[filename].flags, line)
                             end
@@ -332,19 +332,19 @@ function M.setup()
         end
 
         -- BUG: This only build once, giving linking errors in further calls, needs debug
-        set_command{
+        set_command {
             lhs = 'BuildProject',
             rhs = function(...)
                 local buffer = nvim.buf.get_name(nvim.get_current_buf())
-                local base_cwd = require'utils'.files.getcwd()
+                local base_cwd = require('utils').files.getcwd()
                 local ft = vim.bo.filetype
 
                 if not is_file(buffer) then
-                    vim.notify('Current buffer is not a file', 'ERROR', {title='Execute'})
+                    vim.notify('Current buffer is not a file', 'ERROR', { title = 'Execute' })
                     return false
                 end
 
-                local compile_output = base_cwd..'/build/main'
+                local compile_output = base_cwd .. '/build/main'
                 local args, compiler_flags_file
 
                 if flags_file ~= '' then
@@ -352,23 +352,23 @@ function M.setup()
                 end
 
                 args = get_args(compiler, nvim.get_current_buf(), compiler_flags_file)
-                vim.list_extend(args, {'-o', compile_output})
+                vim.list_extend(args, { '-o', compile_output })
 
-                require'utils'.files.find_files(base_cwd, '*.'..ft, function(job)
+                require('utils').files.find_files(base_cwd, '*.' .. ft, function(job)
                     vim.list_extend(args, job:output())
 
-                    if not require'utils'.files.is_dir('build') then
-                        require'utils'.files.mkdir('build')
+                    if not require('utils').files.is_dir 'build' then
+                        require('utils').files.mkdir 'build'
                     end
 
                     P(('%s %s'):format(compiler, table.concat(args, ' ')))
 
-                    local build = RELOAD('jobs'):new{
+                    local build = RELOAD('jobs'):new {
                         cmd = compiler,
                         args = args,
                         progress = true,
                         opts = {
-                            cwd = require'utils'.files.getcwd(),
+                            cwd = require('utils').files.getcwd(),
                             -- pty = true,
                         },
                         qf = {
@@ -384,12 +384,12 @@ function M.setup()
                     }
 
                     build:callback_on_success(function(_)
-                        local execute = RELOAD('jobs'):new{
+                        local execute = RELOAD('jobs'):new {
                             cmd = compile_output,
                             progress = true,
                             verify_exec = false,
                             opts = {
-                                cwd = require'utils'.files.getcwd(),
+                                cwd = require('utils').files.getcwd(),
                                 -- pty = true,
                             },
                             qf = {
@@ -410,11 +410,9 @@ function M.setup()
                     build:start()
                     build:progress()
                 end)
-
             end,
-            args = {nargs = '*', force=true, buffer = true}
+            args = { nargs = '*', force = true, buffer = true },
         }
-
     end
 end
 

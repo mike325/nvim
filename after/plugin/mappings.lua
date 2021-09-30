@@ -1,101 +1,101 @@
-local sys  = require'sys'
-local nvim = require'neovim'
+local sys = require 'sys'
+local nvim = require 'neovim'
 
 -- local split          = require'utils'.strings.split
-local clear_lst      = require'utils'.tables.clear_lst
-local executable     = require'utils'.files.executable
-local is_file        = require'utils'.files.is_file
-local writefile      = require'utils'.files.writefile
-local normalize_path = require'utils'.files.normalize_path
-local realpath       = require'utils'.files.realpath
-local basename       = require'utils'.files.basename
-local read_json      = require'utils'.files.read_json
+local clear_lst = require('utils').tables.clear_lst
+local executable = require('utils').files.executable
+local is_file = require('utils').files.is_file
+local writefile = require('utils').files.writefile
+local normalize_path = require('utils').files.normalize_path
+local realpath = require('utils').files.realpath
+local basename = require('utils').files.basename
+local read_json = require('utils').files.read_json
 
-local set_abbr    = require'neovim.abbrs'.set_abbr
-local set_command = require'neovim.commands'.set_command
-local set_mapping = require'neovim.mappings'.set_mapping
+local set_abbr = require('neovim.abbrs').set_abbr
+local set_command = require('neovim.commands').set_command
+local set_mapping = require('neovim.mappings').set_mapping
 
-local plugins = require'neovim'.plugins
+local plugins = require('neovim').plugins
 
-local noremap = {noremap = true}
-local noremap_silent = {noremap = true, silent = true}
+local noremap = { noremap = true }
+local noremap_silent = { noremap = true, silent = true }
 
 if not vim.g.mapleader then
     vim.g.mapleader = ' '
 end
 
-set_abbr{ mode = 'c', lhs = 'Gti', rhs = 'Git' }
-set_abbr{ mode = 'c', lhs = 'W'  , rhs = 'w' }
-set_abbr{ mode = 'c', lhs = 'Q'  , rhs = 'q' }
-set_abbr{ mode = 'c', lhs = 'q1' , rhs = 'q!' }
-set_abbr{ mode = 'c', lhs = 'qa1', rhs = 'qa!' }
-set_abbr{ mode = 'c', lhs = 'w1' , rhs = 'w!' }
-set_abbr{ mode = 'c', lhs = 'wA!', rhs = 'wa!' }
-set_abbr{ mode = 'c', lhs = 'wa1', rhs = 'wa!' }
-set_abbr{ mode = 'c', lhs = 'Qa1', rhs = 'qa!' }
-set_abbr{ mode = 'c', lhs = 'Qa!', rhs = 'qa!' }
-set_abbr{ mode = 'c', lhs = 'QA!', rhs = 'qa!' }
+set_abbr { mode = 'c', lhs = 'Gti', rhs = 'Git' }
+set_abbr { mode = 'c', lhs = 'W', rhs = 'w' }
+set_abbr { mode = 'c', lhs = 'Q', rhs = 'q' }
+set_abbr { mode = 'c', lhs = 'q1', rhs = 'q!' }
+set_abbr { mode = 'c', lhs = 'qa1', rhs = 'qa!' }
+set_abbr { mode = 'c', lhs = 'w1', rhs = 'w!' }
+set_abbr { mode = 'c', lhs = 'wA!', rhs = 'wa!' }
+set_abbr { mode = 'c', lhs = 'wa1', rhs = 'wa!' }
+set_abbr { mode = 'c', lhs = 'Qa1', rhs = 'qa!' }
+set_abbr { mode = 'c', lhs = 'Qa!', rhs = 'qa!' }
+set_abbr { mode = 'c', lhs = 'QA!', rhs = 'qa!' }
 
-set_mapping{ mode = 'c', lhs = '<C-n>', rhs = '<down>', args = noremap }
-set_mapping{ mode = 'c', lhs = '<C-p>', rhs = '<up>', args = noremap }
-set_mapping{
+set_mapping { mode = 'c', lhs = '<C-n>', rhs = '<down>', args = noremap }
+set_mapping { mode = 'c', lhs = '<C-p>', rhs = '<up>', args = noremap }
+set_mapping {
     mode = 'c',
     lhs = '<C-r><C-w>',
     rhs = "<C-r>=escape(expand('<cword>'), '#')<CR>",
-    args = noremap
+    args = noremap,
 }
 
-set_mapping{ mode = 'n', lhs = ',',    rhs = ':',  args = noremap }
-set_mapping{ mode = 'x', lhs = ',',    rhs = ':',  args = noremap }
-set_mapping{ mode = 'n', lhs = 'Y',    rhs = 'y$', args = noremap }
-set_mapping{ mode = 'x', lhs = '$',    rhs = '$h', args = noremap }
-set_mapping{ mode = 'n', lhs = 'Q',    rhs = 'o<ESC>', args = noremap }
-set_mapping{ mode = 'n', lhs = 'J',    rhs = 'm`J``', args = noremap }
-set_mapping{ mode = 'i', lhs = 'jj',   rhs = '<ESC>' }
-set_mapping{ mode = 'x', lhs = '<BS>', rhs = '<ESC>', args = noremap }
+set_mapping { mode = 'n', lhs = ',', rhs = ':', args = noremap }
+set_mapping { mode = 'x', lhs = ',', rhs = ':', args = noremap }
+set_mapping { mode = 'n', lhs = 'Y', rhs = 'y$', args = noremap }
+set_mapping { mode = 'x', lhs = '$', rhs = '$h', args = noremap }
+set_mapping { mode = 'n', lhs = 'Q', rhs = 'o<ESC>', args = noremap }
+set_mapping { mode = 'n', lhs = 'J', rhs = 'm`J``', args = noremap }
+set_mapping { mode = 'i', lhs = 'jj', rhs = '<ESC>' }
+set_mapping { mode = 'x', lhs = '<BS>', rhs = '<ESC>', args = noremap }
 
-set_mapping{ mode = 'n', lhs = '<leader>h', rhs = '<C-w>h', args = noremap }
-set_mapping{ mode = 'n', lhs = '<leader>j', rhs = '<C-w>j', args = noremap }
-set_mapping{ mode = 'n', lhs = '<leader>k', rhs = '<C-w>k', args = noremap }
-set_mapping{ mode = 'n', lhs = '<leader>l', rhs = '<C-w>l', args = noremap }
+set_mapping { mode = 'n', lhs = '<leader>h', rhs = '<C-w>h', args = noremap }
+set_mapping { mode = 'n', lhs = '<leader>j', rhs = '<C-w>j', args = noremap }
+set_mapping { mode = 'n', lhs = '<leader>k', rhs = '<C-w>k', args = noremap }
+set_mapping { mode = 'n', lhs = '<leader>l', rhs = '<C-w>l', args = noremap }
 -- set_mapping{ mode = 'n', lhs = '<leader>b', rhs = '<C-w>b', args = noremap }
 -- set_mapping{ mode = 'n', lhs = '<leader>t', rhs = '<C-w>t', args = noremap }
 
-set_mapping{ mode = 'n', lhs = '<leader>e', rhs = '<C-w>=', args = noremap }
+set_mapping { mode = 'n', lhs = '<leader>e', rhs = '<C-w>=', args = noremap }
 
-set_mapping{ mode = 'n', lhs = '<leader>1', rhs = '1gt', args = noremap }
-set_mapping{ mode = 'n', lhs = '<leader>2', rhs = '2gt', args = noremap }
-set_mapping{ mode = 'n', lhs = '<leader>3', rhs = '3gt', args = noremap }
-set_mapping{ mode = 'n', lhs = '<leader>4', rhs = '4gt', args = noremap }
-set_mapping{ mode = 'n', lhs = '<leader>5', rhs = '5gt', args = noremap }
-set_mapping{ mode = 'n', lhs = '<leader>6', rhs = '6gt', args = noremap }
-set_mapping{ mode = 'n', lhs = '<leader>7', rhs = '7gt', args = noremap }
-set_mapping{ mode = 'n', lhs = '<leader>8', rhs = '8gt', args = noremap }
-set_mapping{ mode = 'n', lhs = '<leader>9', rhs = '9gt', args = noremap }
-set_mapping{ mode = 'n', lhs = '<leader>0', rhs = '<cmd>tablast<CR>', args = noremap }
-set_mapping{ mode = 'n', lhs = '<leader><leader>n', rhs = '<cmd>tabnew<CR>', args = noremap }
+set_mapping { mode = 'n', lhs = '<leader>1', rhs = '1gt', args = noremap }
+set_mapping { mode = 'n', lhs = '<leader>2', rhs = '2gt', args = noremap }
+set_mapping { mode = 'n', lhs = '<leader>3', rhs = '3gt', args = noremap }
+set_mapping { mode = 'n', lhs = '<leader>4', rhs = '4gt', args = noremap }
+set_mapping { mode = 'n', lhs = '<leader>5', rhs = '5gt', args = noremap }
+set_mapping { mode = 'n', lhs = '<leader>6', rhs = '6gt', args = noremap }
+set_mapping { mode = 'n', lhs = '<leader>7', rhs = '7gt', args = noremap }
+set_mapping { mode = 'n', lhs = '<leader>8', rhs = '8gt', args = noremap }
+set_mapping { mode = 'n', lhs = '<leader>9', rhs = '9gt', args = noremap }
+set_mapping { mode = 'n', lhs = '<leader>0', rhs = '<cmd>tablast<CR>', args = noremap }
+set_mapping { mode = 'n', lhs = '<leader><leader>n', rhs = '<cmd>tabnew<CR>', args = noremap }
 
-set_mapping{ mode = 'n', lhs = '-', rhs = '<cmd>Explore<CR>', args = noremap}
+set_mapping { mode = 'n', lhs = '-', rhs = '<cmd>Explore<CR>', args = noremap }
 
-set_mapping{ mode = 'n', lhs = '&', rhs = '<cmd>&&<CR>', args = noremap }
-set_mapping{ mode = 'x', lhs = '&', rhs = '<cmd>&&<CR>', args = noremap }
+set_mapping { mode = 'n', lhs = '&', rhs = '<cmd>&&<CR>', args = noremap }
+set_mapping { mode = 'x', lhs = '&', rhs = '<cmd>&&<CR>', args = noremap }
 
-set_mapping{ mode = 'n', lhs = '/',  rhs = 'ms/',    args = noremap }
-set_mapping{ mode = 'n', lhs = 'g/', rhs = 'ms/\\v', args = noremap }
-set_mapping{ mode = 'n', lhs = '0',  rhs = '^',      args = noremap }
-set_mapping{ mode = 'n', lhs = '^',  rhs = '0',      args = noremap }
+set_mapping { mode = 'n', lhs = '/', rhs = 'ms/', args = noremap }
+set_mapping { mode = 'n', lhs = 'g/', rhs = 'ms/\\v', args = noremap }
+set_mapping { mode = 'n', lhs = '0', rhs = '^', args = noremap }
+set_mapping { mode = 'n', lhs = '^', rhs = '0', args = noremap }
 
-set_mapping{ mode = 'n', lhs = 'gV', rhs = '`[v`]', args = noremap }
+set_mapping { mode = 'n', lhs = 'gV', rhs = '`[v`]', args = noremap }
 
-set_mapping{ mode = 't', lhs = '<ESC>', rhs = '<C-\\><C-n>', args = noremap }
+set_mapping { mode = 't', lhs = '<ESC>', rhs = '<C-\\><C-n>', args = noremap }
 
-set_mapping{
+set_mapping {
     mode = 'n',
     lhs = '<BS>',
     rhs = function()
         local ok, _ = pcall(nvim.ex.pop)
         if not ok then
-            local key = nvim.replace_termcodes("<C-o>", true, false, true)
+            local key = nvim.replace_termcodes('<C-o>', true, false, true)
             nvim.feedkeys(key, 'n', true)
             -- local jumps
             -- ok, jumps = pcall(nvim.exec, 'jumps', true)
@@ -130,86 +130,90 @@ set_mapping{
 
 local function nicenext(dir)
     local view = vim.fn.winsaveview()
-    vim.cmd('silent! normal! '..dir)
+    vim.cmd('silent! normal! ' .. dir)
     if view.topline ~= vim.fn.winsaveview().topline then
-        vim.cmd('silent! normal! zz')
+        vim.cmd 'silent! normal! zz'
     end
 end
 
-set_mapping{
+set_mapping {
     mode = 'n',
     lhs = 'n',
-    rhs = function() nicenext('n') end,
-    args = noremap_silent
+    rhs = function()
+        nicenext 'n'
+    end,
+    args = noremap_silent,
 }
 
-set_mapping{
+set_mapping {
     mode = 'n',
     lhs = 'N',
-    rhs = function() nicenext('N') end,
-    args = noremap_silent
-}
-
--- TODO: Migrate to lua functions
-set_mapping{
-    mode = 'i',
-    lhs  = '<TAB>',
-    rhs  = [[<C-R>=neovim#tab()<CR>]],
+    rhs = function()
+        nicenext 'N'
+    end,
     args = noremap_silent,
 }
 
 -- TODO: Migrate to lua functions
-set_mapping{
+set_mapping {
     mode = 'i',
-    lhs  = '<S-TAB>',
-    rhs  = [[<C-R>=neovim#shifttab()<CR>]],
+    lhs = '<TAB>',
+    rhs = [[<C-R>=neovim#tab()<CR>]],
     args = noremap_silent,
 }
 
 -- TODO: Migrate to lua functions
-set_mapping{
+set_mapping {
     mode = 'i',
-    lhs  = '<CR>',
-    rhs  = [[<C-R>=neovim#enter()<CR>]],
+    lhs = '<S-TAB>',
+    rhs = [[<C-R>=neovim#shifttab()<CR>]],
     args = noremap_silent,
 }
 
-set_mapping{
+-- TODO: Migrate to lua functions
+set_mapping {
+    mode = 'i',
+    lhs = '<CR>',
+    rhs = [[<C-R>=neovim#enter()<CR>]],
+    args = noremap_silent,
+}
+
+set_mapping {
     mode = 'n',
     lhs = '<S-tab>',
     rhs = '<C-o>',
     args = noremap,
 }
 
-set_mapping{
+set_mapping {
     mode = 'x',
     lhs = '<',
     rhs = '<gv',
     args = noremap,
 }
 
-set_mapping{
+set_mapping {
     mode = 'x',
     lhs = '>',
     rhs = '>gv',
     args = noremap,
 }
 
-set_mapping{
+set_mapping {
     mode = 'n',
     lhs = 'j',
     rhs = [[v:count ? (v:count >= 3 ? "m'" . v:count : '') . 'j' : 'gj']],
-    args = {noremap = true, expr = true},
+    args = { noremap = true, expr = true },
 }
 
-set_mapping{
+set_mapping {
     mode = 'n',
     lhs = 'k',
     rhs = [[v:count ? (v:count >= 3 ? "m'" . v:count : '') . 'k' : 'gk']],
-    args = {noremap = true, expr = true},
+    args = { noremap = true, expr = true },
 }
 
-set_mapping{
+set_mapping {
     mode = 'n',
     lhs = '<leader><leader>e',
     rhs = '<cmd>echo expand("%")<CR>',
@@ -223,47 +227,47 @@ set_mapping{
 --     args = noremap,
 -- }
 
-set_mapping{
+set_mapping {
     mode = 'n',
     lhs = 'i',
     rhs = function()
-        local current_line = vim.fn.line('.')
-        local last_line = vim.fn.line('$')
+        local current_line = vim.fn.line '.'
+        local last_line = vim.fn.line '$'
         local buftype = vim.bo.buftype
-        if #vim.fn.getline('.') == 0 and last_line ~= current_line and buftype ~= 'terminal' then
+        if #vim.fn.getline '.' == 0 and last_line ~= current_line and buftype ~= 'terminal' then
             return '"_ddO'
         end
         return 'i'
     end,
-    args = {noremap = true, expr = true},
+    args = { noremap = true, expr = true },
 }
 
-set_mapping{ mode = 'n', lhs = 'c*',  rhs = 'm`*``cgn',             args = noremap }
-set_mapping{ mode = 'n', lhs = 'c#',  rhs = 'm`#``cgN',             args = noremap }
-set_mapping{ mode = 'n', lhs = 'cg*', rhs = 'm`g*``cgn',            args = noremap }
-set_mapping{ mode = 'n', lhs = 'cg#', rhs = 'm`#``cgN',             args = noremap }
-set_mapping{ mode = 'x', lhs = 'c',   rhs = [["cy/<C-r>c<CR>Ncgn]], args = noremap }
+set_mapping { mode = 'n', lhs = 'c*', rhs = 'm`*``cgn', args = noremap }
+set_mapping { mode = 'n', lhs = 'c#', rhs = 'm`#``cgN', args = noremap }
+set_mapping { mode = 'n', lhs = 'cg*', rhs = 'm`g*``cgn', args = noremap }
+set_mapping { mode = 'n', lhs = 'cg#', rhs = 'm`#``cgN', args = noremap }
+set_mapping { mode = 'x', lhs = 'c', rhs = [["cy/<C-r>c<CR>Ncgn]], args = noremap }
 
-set_mapping{ mode = 'n', lhs = '¿',  rhs = '`',  args = noremap }
-set_mapping{ mode = 'x', lhs = '¿',  rhs = '`',  args = noremap }
-set_mapping{ mode = 'n', lhs = '¿¿', rhs = '``', args = noremap }
-set_mapping{ mode = 'x', lhs = '¿¿', rhs = '``', args = noremap }
+set_mapping { mode = 'n', lhs = '¿', rhs = '`', args = noremap }
+set_mapping { mode = 'x', lhs = '¿', rhs = '`', args = noremap }
+set_mapping { mode = 'n', lhs = '¿¿', rhs = '``', args = noremap }
+set_mapping { mode = 'x', lhs = '¿¿', rhs = '``', args = noremap }
 
-set_mapping{ mode = 'n', lhs = '¡', rhs = '^', args = noremap }
-set_mapping{ mode = 'x', lhs = '¡', rhs = '^', args = noremap }
+set_mapping { mode = 'n', lhs = '¡', rhs = '^', args = noremap }
+set_mapping { mode = 'x', lhs = '¡', rhs = '^', args = noremap }
 
 -- set_mapping{ mode = 'n', lhs = '<leader>w', rhs = '<cmd>update<CR>', args = noremap }
 
-set_mapping{ mode = 'n', lhs = '<leader>p', rhs = '<C-^>',       args = noremap }
+set_mapping { mode = 'n', lhs = '<leader>p', rhs = '<C-^>', args = noremap }
 -- set_mapping{ mode = 'n', lhs = '<leader>x', rhs = '<cmd>%!xxd<CR>',  args = noremap }
 
-set_mapping{
+set_mapping {
     mode = 'n',
     lhs = '<leader>q',
     rhs = function()
         local tabs = nvim.list_tabpages()
         local wins = nvim.tab.list_wins(0)
-        if #wins > 1 and vim.fn.expand('%') ~= '[Command Line]' then
+        if #wins > 1 and vim.fn.expand '%' ~= '[Command Line]' then
             nvim.win.hide(0)
         elseif #tabs > 1 then
             nvim.ex['tabclose!']()
@@ -274,164 +278,163 @@ set_mapping{
     args = noremap_silent,
 }
 
-set_mapping{
+set_mapping {
     mode = 'i',
-    lhs  = '<C-U>',
-    rhs  = '<C-G>u<C-U>',
+    lhs = '<C-U>',
+    rhs = '<C-G>u<C-U>',
     args = noremap,
 }
 
-
-set_mapping{
+set_mapping {
     mode = 'n',
     lhs = '<leader>d',
     rhs = function()
-        require'utils'.buffers.delete()
+        require('utils').buffers.delete()
     end,
 }
 
-set_mapping{
+set_mapping {
     mode = 'n',
     lhs = '[Q',
     rhs = ':<C-U>cfirst<CR>zvzz',
-    args = noremap_silent
+    args = noremap_silent,
 }
 
-set_mapping{
+set_mapping {
     mode = 'n',
     lhs = ']Q',
     rhs = ':<C-U>clast<CR>zvzz',
-    args = noremap_silent
+    args = noremap_silent,
 }
 
-set_mapping{
+set_mapping {
     mode = 'n',
     lhs = '[q',
     rhs = ':<C-U>exe "".(v:count ? v:count : "")."cprevious"<CR>zvzz',
-    args = noremap_silent
+    args = noremap_silent,
 }
 
-set_mapping{
+set_mapping {
     mode = 'n',
     lhs = ']q',
     rhs = ':<C-U>exe "".(v:count ? v:count : "")."cnext"<CR>zvzz',
-    args = noremap_silent
+    args = noremap_silent,
 }
 
-set_mapping{
+set_mapping {
     mode = 'n',
     lhs = '[L',
     rhs = ':<C-U>lfirst<CR>zvzz',
-    args = noremap_silent
+    args = noremap_silent,
 }
 
-set_mapping{
+set_mapping {
     mode = 'n',
     lhs = ']L',
     rhs = ':<C-U>llast<CR>zvzz',
-    args = noremap_silent
+    args = noremap_silent,
 }
 
-set_mapping{
+set_mapping {
     mode = 'n',
     lhs = '[l',
     rhs = ':<C-U>exe "".(v:count ? v:count : "")."lprevious"<CR>zvzz',
-    args = noremap_silent
+    args = noremap_silent,
 }
 
-set_mapping{
+set_mapping {
     mode = 'n',
     lhs = ']l',
     rhs = ':<C-U>exe "".(v:count ? v:count : "")."lnext"<CR>zvzz',
-    args = noremap_silent
+    args = noremap_silent,
 }
 
-set_mapping{
+set_mapping {
     mode = 'n',
     lhs = '[B',
     rhs = ':<C-U>bfirst<CR>zvzz',
-    args = noremap_silent
+    args = noremap_silent,
 }
 
-set_mapping{
+set_mapping {
     mode = 'n',
     lhs = ']B',
     rhs = ':<C-U>blast<CR>zvzz',
-    args = noremap_silent
+    args = noremap_silent,
 }
 
-set_mapping{
+set_mapping {
     mode = 'n',
     lhs = '[b',
     rhs = ':<C-U>exe "".(v:count ? v:count : "")."bprevious"<CR>',
-    args = noremap_silent
+    args = noremap_silent,
 }
 
-set_mapping{
+set_mapping {
     mode = 'n',
     lhs = ']b',
     rhs = ':<C-U>exe "".(v:count ? v:count : "")."bnext"<CR>',
-    args = noremap_silent
+    args = noremap_silent,
 }
 
-set_mapping{
+set_mapping {
     mode = 'n',
     lhs = ']<Space>',
     rhs = [[:<C-U>lua require'utils'.helpers.add_nl(true)<CR>]],
-    args = noremap_silent
+    args = noremap_silent,
 }
 
-set_mapping{
+set_mapping {
     mode = 'n',
     lhs = '[<Space>',
     rhs = [[:<C-U>lua require'utils'.helpers.add_nl(false)<CR>]],
     args = noremap_silent,
 }
 
-set_mapping{
+set_mapping {
     mode = 'n',
     lhs = ']e',
     rhs = [[:<C-U>lua require'utils'.helpers.move_line(true)<CR>]],
-    args = noremap_silent
+    args = noremap_silent,
 }
 
-set_mapping{
+set_mapping {
     mode = 'n',
     lhs = '[e',
     rhs = [[:<C-U>lua require'utils'.helpers.move_line(false)<CR>]],
     args = noremap_silent,
 }
 
-set_mapping{
+set_mapping {
     mode = 'n',
-    lhs  = '<C-L>',
-    rhs  = '<cmd>nohlsearch|diffupdate<CR>',
+    lhs = '<C-L>',
+    rhs = '<cmd>nohlsearch|diffupdate<CR>',
     args = noremap_silent,
 }
 
-set_command{
+set_command {
     lhs = 'ClearQf',
     rhs = function()
-        require'utils'.helpers.clear_qf()
+        require('utils').helpers.clear_qf()
     end,
-    args = {force=true}
+    args = { force = true },
 }
 
-set_command{
+set_command {
     lhs = 'ClearLoc',
     rhs = function(win)
-        require'utils'.helpers.clear_qf(win or nvim.get_current_win())
+        require('utils').helpers.clear_qf(win or nvim.get_current_win())
     end,
-    args = {nargs = '?', force=true}
+    args = { nargs = '?', force = true },
 }
 
-set_mapping{
+set_mapping {
     mode = 'n',
     lhs = '<leader><leader>p',
     rhs = function()
         if nvim.t.swap_window == nil then
-            nvim.t.swap_window   = 1
-            nvim.t.swap_cursor   = nvim.win.get_cursor(0)
+            nvim.t.swap_window = 1
+            nvim.t.swap_cursor = nvim.win.get_cursor(0)
             nvim.t.swap_base_tab = nvim.tab.get_number(0)
             nvim.t.swap_base_win = nvim.tab.get_win(0)
             nvim.t.swap_base_buf = nvim.win.get_buf(0)
@@ -439,43 +442,44 @@ set_mapping{
             local swap_new_tab = nvim.tab.get_number(0)
             local swap_new_win = nvim.tab.get_win(0)
             local swap_new_buf = nvim.win.get_buf(0)
-            if swap_new_tab == nvim.t.swap_base_tab and
-            swap_new_win ~= nvim.t.swap_base_win and
-            swap_new_buf ~= nvim.t.swap_base_buf
+            if
+                swap_new_tab == nvim.t.swap_base_tab
+                and swap_new_win ~= nvim.t.swap_base_win
+                and swap_new_buf ~= nvim.t.swap_base_buf
             then
                 nvim.win.set_buf(0, nvim.t.swap_base_buf)
                 nvim.win.set_buf(nvim.t.swap_base_win, swap_new_buf)
                 nvim.win.set_cursor(0, nvim.t.swap_cursor)
-                nvim.ex['normal!']('zz')
+                nvim.ex['normal!'] 'zz'
             end
-            nvim.t.swap_window   = nil
-            nvim.t.swap_cursor   = nil
+            nvim.t.swap_window = nil
+            nvim.t.swap_cursor = nil
             nvim.t.swap_base_tab = nil
             nvim.t.swap_base_win = nil
             nvim.t.swap_base_buf = nil
         end
     end,
-    args = noremap_silent
+    args = noremap_silent,
 }
 
-set_mapping{
+set_mapping {
     mode = 'n',
     lhs = '=l',
     rhs = [[<cmd>lua require'utils'.helpers.toggle_qf(vim.api.nvim_get_current_win())<CR>]],
-    args = noremap_silent
+    args = noremap_silent,
 }
 
-set_mapping{
+set_mapping {
     mode = 'n',
     lhs = '=q',
     rhs = [[<cmd>lua require'utils'.helpers.toggle_qf()<CR>]],
-    args = noremap_silent
+    args = noremap_silent,
 }
 
-set_command{
+set_command {
     lhs = 'Terminal',
     rhs = function(...)
-        local cmd = {...}
+        local cmd = { ... }
         local is_empty = #cmd == 0
         local shell
 
@@ -490,11 +494,11 @@ set_command{
         else
             shell = vim.fn.fnamemodify(vim.env.SHELL or '', ':t')
             if vim.regex([[\(t\)\?csh]]):match_str(shell) then
-                shell = executable('zsh') and 'zsh' or (executable('bash') and 'bash' or shell)
+                shell = executable 'zsh' and 'zsh' or (executable 'bash' and 'bash' or shell)
             end
         end
 
-        local win = require'utils'.windows.big_center()
+        local win = require('utils').windows.big_center()
 
         nvim.win.set_option(win, 'number', false)
         nvim.win.set_option(win, 'relativenumber', false)
@@ -506,27 +510,27 @@ set_command{
             nvim.ex.startinsert()
         end
     end,
-    args = {nargs='*', force=true}
+    args = { nargs = '*', force = true },
 }
 
-set_command{
+set_command {
     lhs = 'RelativeNumbersToggle',
     rhs = 'set relativenumber! relativenumber?',
-    args = {force=true}
+    args = { force = true },
 }
 
-set_command{
+set_command {
     lhs = 'MouseToggle',
     rhs = function()
         if vim.o.mouse == '' then
             vim.o.mouse = 'a'
-            print('Mouse Enabled')
+            print 'Mouse Enabled'
         else
             vim.o.mouse = ''
-            print('Mouse Disbled')
+            print 'Mouse Disbled'
         end
     end,
-    args = {force=true}
+    args = { force = true },
 }
 
 -- set_command{
@@ -536,7 +540,7 @@ set_command{
 --     args = {force=true}
 -- }
 
-set_command{
+set_command {
     lhs = 'BufKill',
     rhs = function(bang)
         local count = 0
@@ -550,74 +554,74 @@ set_command{
             print(count, 'buffers deleted')
         end
     end,
-    args = {bang = true, force = true, nargs = 0}
+    args = { bang = true, force = true, nargs = 0 },
 }
 
-set_command{
+set_command {
     lhs = 'ModifiableToggle',
     rhs = 'setlocal modifiable! modifiable?',
-    args = {force=true}
+    args = { force = true },
 }
 
-set_command{
+set_command {
     lhs = 'CursorLineToggle',
     rhs = 'setlocal cursorline! cursorline?',
-    args = {force=true}
+    args = { force = true },
 }
 
-set_command{
+set_command {
     lhs = 'ScrollBindToggle',
     rhs = 'setlocal scrollbind! scrollbind?',
-    args = {force=true}
+    args = { force = true },
 }
 
-set_command{
+set_command {
     lhs = 'HlSearchToggle',
     rhs = 'setlocal hlsearch! hlsearch?',
-    args = {force=true}
+    args = { force = true },
 }
 
-set_command{
+set_command {
     lhs = 'NumbersToggle',
     rhs = 'setlocal number! number?',
-    args = {force=true}
+    args = { force = true },
 }
 
-set_command{
+set_command {
     lhs = 'SpellToggle',
     rhs = 'setlocal spell! spell?',
-    args = {force=true}
+    args = { force = true },
 }
 
-set_command{
+set_command {
     lhs = 'WrapToggle',
     rhs = 'setlocal wrap! wrap?',
-    args = {force=true}
+    args = { force = true },
 }
 
-set_command{
+set_command {
     lhs = 'VerboseToggle',
     rhs = 'let &verbose=!&verbose | echo "Verbose " . &verbose',
-    args = {force=true}
+    args = { force = true },
 }
 
-set_command{
+set_command {
     lhs = 'TrimToggle',
-    rhs = function ()
+    rhs = function()
         if not vim.b.trim then
-            print('Trim')
+            print 'Trim'
         else
-            print('NoTrim')
+            print 'NoTrim'
         end
         vim.b.trim = not vim.b.trim
     end,
-    args = {force=true}
+    args = { force = true },
 }
 
-set_command{
+set_command {
     lhs = 'GonvimSettngs',
     rhs = "execute('edit ~/.gonvim/setting.toml')",
-    args = {nargs='*', force = true}
+    args = { nargs = '*', force = true },
 }
 
 -- set_command{
@@ -644,10 +648,10 @@ set_command{
 --     args = {nargs='?', force = true}
 -- }
 
-set_command{
+set_command {
     lhs = 'Qopen',
     rhs = "execute((&splitbelow) ? 'botright' : 'topleft' ) . ' copen ' . expand(<q-args>)",
-    args = {nargs='?', force = true}
+    args = { nargs = '?', force = true },
 }
 
 -- if executable('powershell') then
@@ -660,20 +664,20 @@ set_command{
 
 -- TODO: Check for GUIs
 if sys.name == 'windows' then
-    set_mapping{
+    set_mapping {
         mode = 'n',
         lhs = '<C-h>',
         rhs = '<cmd>call neovim#bs()<CR>',
         args = noremap_silent,
     }
-    set_mapping{
+    set_mapping {
         mode = 'x',
         lhs = '<C-h>',
         rhs = '<cmd><ESC>',
         args = noremap,
     }
     if not vim.g.started_by_firenvim then
-        set_mapping{
+        set_mapping {
             mode = 'n',
             lhs = '<C-z>',
             rhs = '<nop>',
@@ -681,92 +685,92 @@ if sys.name == 'windows' then
         }
     end
 else
-    set_command{
+    set_command {
         lhs = 'Chmod',
         rhs = function(mode)
-            if not mode:match('^%d+$') then
-                vim.notify('Not a valid permissions mode: '..mode, 'ERROR', {title = 'Chmod'})
+            if not mode:match '^%d+$' then
+                vim.notify('Not a valid permissions mode: ' .. mode, 'ERROR', { title = 'Chmod' })
                 return
             end
-            local filename = vim.fn.expand('%')
-            local chmod = require'utils'.files.chmod
+            local filename = vim.fn.expand '%'
+            local chmod = require('utils').files.chmod
             if is_file(filename) then
                 chmod(filename, mode)
             end
         end,
-        args = {nargs=1, force=true}
+        args = { nargs = 1, force = true },
     }
 end
 
-set_command{
+set_command {
     lhs = 'MoveFile',
     rhs = function(bang, new_path)
-        local current_path = vim.fn.expand('%:p')
-        local is_dir = require'utils'.files.is_dir
+        local current_path = vim.fn.expand '%:p'
+        local is_dir = require('utils').files.is_dir
 
         if is_file(current_path) and is_dir(new_path) then
             new_path = new_path .. '/' .. vim.fn.fnamemodify(current_path, ':t')
         end
 
-        require'utils'.files.rename(current_path, new_path, bang)
+        require('utils').files.rename(current_path, new_path, bang)
     end,
-    args = {force = true, bang = true, nargs = 1, complete = 'file'}
+    args = { force = true, bang = true, nargs = 1, complete = 'file' },
 }
 
-set_command{
+set_command {
     lhs = 'RenameFile',
     rhs = function(bang, args)
-        local current_path = vim.fn.expand('%:p')
-        local current_dir = vim.fn.expand('%:h')
-        require'utils'.files.rename(current_path, current_dir..'/'..args, bang)
+        local current_path = vim.fn.expand '%:p'
+        local current_dir = vim.fn.expand '%:h'
+        require('utils').files.rename(current_path, current_dir .. '/' .. args, bang)
     end,
-    args = {force = true, bang = true, nargs = 1, complete = 'file'}
+    args = { force = true, bang = true, nargs = 1, complete = 'file' },
 }
 
-set_command{
+set_command {
     lhs = 'Mkdir',
     rhs = function(args)
         vim.fn.mkdir(vim.fn.fnameescape(args), 'p')
     end,
-    args = {force = true, nargs = 1, complete = 'dir'}
+    args = { force = true, nargs = 1, complete = 'dir' },
 }
 
-set_command{
+set_command {
     lhs = 'RemoveFile',
     rhs = function(bang, args)
-        local target = args ~= '' and args or vim.fn.expand('%')
-        require'utils'.files.delete(vim.fn.fnamemodify(target, ":p"), bang)
+        local target = args ~= '' and args or vim.fn.expand '%'
+        require('utils').files.delete(vim.fn.fnamemodify(target, ':p'), bang)
     end,
-    args = {force = true, bang = true, nargs = '?', complete = 'file'}
+    args = { force = true, bang = true, nargs = '?', complete = 'file' },
 }
 
 set_command {
     lhs = 'Grep',
     rhs = function(...)
-        require'utils'.functions.send_grep_job({...})
+        require('utils').functions.send_grep_job { ... }
     end,
-    args = {nargs = '+', force = true}
+    args = { nargs = '+', force = true },
 }
 
-set_mapping{
+set_mapping {
     mode = 'n',
     lhs = 'gs',
     rhs = '<cmd>set opfunc=neovim#grep<CR>g@',
     args = noremap_silent,
 }
 
-set_mapping{
+set_mapping {
     mode = 'v',
     lhs = 'gs',
     rhs = ':<C-U>call neovim#grep(visualmode(), v:true)<CR>',
     args = noremap_silent,
 }
 
-set_mapping{
+set_mapping {
     mode = 'n',
     lhs = 'gss',
     rhs = function()
-        require'utils'.functions.send_grep_job(vim.fn.expand('<cword>'))
+        require('utils').functions.send_grep_job(vim.fn.expand '<cword>')
     end,
     args = noremap_silent,
 }
@@ -774,17 +778,17 @@ set_mapping{
 set_command {
     lhs = 'Lint',
     rhs = function(...)
-        local args = {...}
+        local args = { ... }
 
         local ok, val = pcall(nvim.buf.get_option, 0, 'makeprg')
         local cmd = ok and val or vim.o.makeprg
 
         if cmd:sub(#cmd, #cmd) == '%' then
-            cmd = cmd:gsub('%%', vim.fn.expand('%'))
+            cmd = cmd:gsub('%%', vim.fn.expand '%')
         end
 
         cmd = cmd .. table.concat(args, ' ')
-        local lint = RELOAD('jobs'):new{
+        local lint = RELOAD('jobs'):new {
             cmd = cmd,
             qf = {
                 on_fail = {
@@ -799,10 +803,10 @@ set_command {
         }
         lint:start()
     end,
-    args = {nargs = '*', force = true}
+    args = { nargs = '*', force = true },
 }
 
-if executable('cscope') then
+if executable 'cscope' then
     local function cscope(cword, action)
         local actions = {
             definition = 'find g',
@@ -810,66 +814,66 @@ if executable('cscope') then
             file = 'find f',
             text = 'find t',
         }
-        cword = (cword and cword ~= '') and cword or vim.fn.expand('<cword>')
+        cword = (cword and cword ~= '') and cword or vim.fn.expand '<cword>'
         action = actions[action] or 'g'
-        nvim.ex.cscope(action..' '..cword)
+        nvim.ex.cscope(action .. ' ' .. cword)
     end
 
-    set_command{
+    set_command {
         lhs = 'CDefinition',
         rhs = function(cword)
             cscope(cword, 'definition')
         end,
-        args = {nargs='?', force = true}
+        args = { nargs = '?', force = true },
     }
 
-    set_command{
+    set_command {
         lhs = 'CCallers',
         rhs = function(cword)
             cscope(cword, 'callers')
         end,
-        args = {nargs='?', force = true}
+        args = { nargs = '?', force = true },
     }
 
-    set_command{
+    set_command {
         lhs = 'CFile',
         rhs = function(cword)
             cscope(cword, 'file')
         end,
-        args = {complete='file', nargs='?', force = true}
+        args = { complete = 'file', nargs = '?', force = true },
     }
 
-    set_command{
+    set_command {
         lhs = 'CText',
         rhs = function(cword)
             cscope(cword, 'text')
         end,
-        args = {nargs='?', force = true}
+        args = { nargs = '?', force = true },
     }
 end
 
-if executable('scp') then
+if executable 'scp' then
     local function convert_path(path, send, host)
         path = normalize_path(path)
 
         local remote_path = './'
-        local hosts,paths,projects
+        local hosts, paths, projects
 
-        local path_json = normalize_path('~/.config/remotes/paths.json')
+        local path_json = normalize_path '~/.config/remotes/paths.json'
         if is_file(path_json) then
             local configs = read_json(path_json) or {}
             hosts = configs.hosts or {}
             paths = hosts[host] or configs.paths or {}
-            projects = configs.projects or  {}
+            projects = configs.projects or {}
         else
             paths = {}
             projects = {}
         end
 
-        local project = path:match('projects/([%w%d%.-_]+)')
+        local project = path:match 'projects/([%w%d%.-_]+)'
         if not project then
-            for short,full in pairs(projects) do
-                if short ~= 'default' and path:match('/('..short..')[%w%d%.-_]*') then
+            for short, full in pairs(projects) do
+                if short ~= 'default' and path:match('/(' .. short .. ')[%w%d%.-_]*') then
                     project = full
                     break
                 end
@@ -879,14 +883,14 @@ if executable('scp') then
             end
         end
 
-        for loc,remote in pairs(paths) do
-            if loc:match'%%PROJECT' then
+        for loc, remote in pairs(paths) do
+            if loc:match '%%PROJECT' then
                 loc = loc:gsub('%%PROJECT', project)
             end
             loc = normalize_path(loc)
             if path:match(loc) then
                 local tail = path:gsub(loc, '')
-                if remote:match'%%PROJECT' then
+                if remote:match '%%PROJECT' then
                     remote = remote:gsub('%%PROJECT', project)
                 end
                 remote_path = remote .. '/' .. tail
@@ -902,20 +906,19 @@ if executable('scp') then
     end
 
     local function remote_cmd(host, send)
-
         local filename = vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf())
         local virtual_filename
 
-        if filename:match'^%w+://' then
-            local prefix = filename:match'^%w+://'
+        if filename:match '^%w+://' then
+            local prefix = filename:match '^%w+://'
             filename = filename:gsub('^%w+://', '')
-            if prefix == 'fugitive://'  then
+            if prefix == 'fugitive://' then
                 filename = filename:gsub('%.git//?[%w%d]+//?', '')
             end
             virtual_filename = vim.fn.tempname()
         end
 
-        assert(is_file(filename) or virtual_filename, 'Not a regular file '..filename)
+        assert(is_file(filename) or virtual_filename, 'Not a regular file ' .. filename)
 
         if virtual_filename and send then
             writefile(virtual_filename, nvim.buf.get_lines(0, 0, -1, true))
@@ -941,64 +944,63 @@ if executable('scp') then
         return host
     end
 
-    set_command{
+    set_command {
         lhs = 'SendFile',
         rhs = function(host)
             host = get_host(host)
             local cmd = remote_cmd(host, true)
-            local send_file = RELOAD'jobs':new{
+            local send_file = RELOAD('jobs'):new {
                 cmd = cmd,
                 opts = {
-                    pty = true
-                }
+                    pty = true,
+                },
             }
             send_file:start()
         end,
         args = {
             nargs = '*',
             force = true,
-            complete = 'customlist,neovim#ssh_hosts_completion'
-        }
+            complete = 'customlist,neovim#ssh_hosts_completion',
+        },
     }
 
-    set_command{
+    set_command {
         lhs = 'GetFile',
         rhs = function(host)
             host = get_host(host)
             local cmd = remote_cmd(host, false)
-            local Job = RELOAD'jobs'
-            local get_file = Job:new{
+            local Job = RELOAD 'jobs'
+            local get_file = Job:new {
                 cmd = cmd,
                 opts = {
-                    pty = true
-                }
+                    pty = true,
+                },
             }
             get_file:start()
         end,
         args = {
             nargs = '*',
             force = true,
-            complete = 'customlist,neovim#ssh_hosts_completion'
-        }
+            complete = 'customlist,neovim#ssh_hosts_completion',
+        },
     }
 
-    set_mapping{
+    set_mapping {
         mode = 'n',
         lhs = '<leader><leader>s',
         rhs = '<cmd>SendFile<CR>',
-        args = {noremap = true, silent = true},
+        args = { noremap = true, silent = true },
     }
 
-    set_mapping{
+    set_mapping {
         mode = 'n',
         lhs = '<leader><leader>g',
         rhs = '<cmd>GetFile<CR>',
-        args = {noremap = true, silent = true},
+        args = { noremap = true, silent = true },
     }
-
 end
 
-set_command{
+set_command {
     lhs = 'Scratch',
     rhs = function(ft)
         ft = (ft and ft ~= '') and ft or vim.bo.filetype
@@ -1014,7 +1016,7 @@ set_command{
         local wins = nvim.tab.list_wins(0)
         local scratch_win
 
-        for _,win in pairs(wins) do
+        for _, win in pairs(wins) do
             if nvim.win.get_buf(win) == buf then
                 scratch_win = win
                 break
@@ -1025,57 +1027,57 @@ set_command{
             scratch_win = nvim.open_win(
                 buf,
                 true,
-                {relative='editor', width=1, height=1, row=1, col=1}
+                { relative = 'editor', width = 1, height = 1, row = 1, col = 1 }
             )
         end
 
         nvim.set_current_win(scratch_win)
-        nvim.ex.wincmd('K')
+        nvim.ex.wincmd 'K'
     end,
     args = {
         nargs = '?',
         force = true,
-        complete = 'filetype'
-    }
+        complete = 'filetype',
+    },
 }
 
-set_command{
+set_command {
     lhs = 'ConncallLevel',
     rhs = function()
         local conncall = vim.opt_local.conceallevel:get() or 0
         vim.opt_local.conceallevel = conncall > 0 and 0 or 2
     end,
-    args = {force = true}
+    args = { force = true },
 }
 
 if not plugins['vim-commentary'] then
-    set_mapping{
+    set_mapping {
         mode = 'n',
         lhs = 'gc',
         rhs = '<cmd>set opfunc=neovim#comment<CR>g@',
         args = noremap_silent,
     }
 
-    set_mapping{
+    set_mapping {
         mode = 'v',
         lhs = 'gc',
         rhs = ':<C-U>call neovim#comment(visualmode(), v:true)<CR>',
         args = noremap_silent,
     }
 
-    set_mapping{
+    set_mapping {
         mode = 'n',
         lhs = 'gcc',
         rhs = function()
             local cursor = nvim.win.get_cursor(0)
-            require'utils'.functions.toggle_comments(cursor[1] - 1, cursor[1])
+            require('utils').functions.toggle_comments(cursor[1] - 1, cursor[1])
             nvim.win.set_cursor(0, cursor)
         end,
         args = noremap_silent,
     }
 end
 
-set_command{
+set_command {
     lhs = 'Messages',
     rhs = function(args)
         if not args or args == '' then
@@ -1084,7 +1086,7 @@ set_command{
 
             -- WARN: This is a WA to avoid EFM detecting ^I as part of a file in lua tracebacks
             for idx, msg in ipairs(messages) do
-                if msg:match'^%^I' and #msg > 2 then
+                if msg:match '^%^I' and #msg > 2 then
                     messages[idx] = msg:sub(3, #msg)
                 end
             end
@@ -1096,22 +1098,22 @@ set_command{
             })
             nvim.ex.Qopen()
         else
-            nvim.ex.messages('clear')
-            local context = vim.fn.getqflist({context = 1}).context
+            nvim.ex.messages 'clear'
+            local context = vim.fn.getqflist({ context = 1 }).context
             if context == 'Messages' then
-                require'utils'.helpers.clear_qf()
+                require('utils').helpers.clear_qf()
                 nvim.ex.cclose()
             end
         end
     end,
-    args = {nargs = '?', force = true, complete='messages'}
+    args = { nargs = '?', force = true, complete = 'messages' },
 }
 
-if executable('pre-commit') then
-    set_command{
+if executable 'pre-commit' then
+    set_command {
         lhs = 'PreCommit',
         rhs = function(...)
-            local args = {...}
+            local args = { ... }
             local errorformats = {
                 '%f:%l:%c: %t%n %m',
                 '%f:%l:%c:%t: %m',
@@ -1125,8 +1127,10 @@ if executable('pre-commit') then
                 '%E%f:%l:%c: fatal error: %m',
                 '%E%f:%l:%c: error: %m',
                 '%W%f:%l:%c: warning: %m',
+                'Diff in %f:',
+                '+++ %f',
             }
-            local precommit = RELOAD'jobs':new{
+            local precommit = RELOAD('jobs'):new {
                 cmd = 'pre-commit',
                 args = args,
                 -- progress = true,
@@ -1145,34 +1149,33 @@ if executable('pre-commit') then
             precommit:start()
             -- precommit:progress()
         end,
-        args = {nargs = '*', force = true}
+        args = { nargs = '*', force = true },
     }
 end
 
 if not vim.env.SSH_CONNECTION then
-
-    set_command{
+    set_command {
         lhs = 'Open',
-        rhs = require'utils'.functions.open,
-        args = {nargs = '1', force = true, complete='file'}
+        rhs = require('utils').functions.open,
+        args = { nargs = '1', force = true, complete = 'file' },
     }
 
-    set_mapping{
+    set_mapping {
         mode = 'n',
         lhs = 'gx',
         rhs = function()
-            local cfile = vim.fn.expand('<cfile>')
-            local cword = vim.fn.expand('<cWORD>')
-            require'utils'.functions.open(cword:match'^[%w]+://' and cword or cfile)
+            local cfile = vim.fn.expand '<cfile>'
+            local cword = vim.fn.expand '<cWORD>'
+            require('utils').functions.open(cword:match '^[%w]+://' and cword or cfile)
         end,
         args = noremap_silent,
     }
 end
 
-set_command{
+set_command {
     lhs = 'Repl',
     rhs = function(...)
-        local cmd = {...}
+        local cmd = { ... }
 
         if #cmd == 0 then
             if vim.b.relp_cmd then
@@ -1183,16 +1186,15 @@ set_command{
         end
 
         local direction = vim.opt.splitbelow:get() and 'botright' or 'topleft'
-        vim.api.nvim_exec(direction..' 20new', false)
+        vim.api.nvim_exec(direction .. ' 20new', false)
 
         local win = vim.api.nvim_get_current_win()
 
         nvim.win.set_option(win, 'number', false)
         nvim.win.set_option(win, 'relativenumber', false)
 
-        vim.fn.termopen(type(cmd) == type({}) and table.concat(cmd, ' ') or cmd)
+        vim.fn.termopen(type(cmd) == type {} and table.concat(cmd, ' ') or cmd)
         nvim.ex.startinsert()
-
     end,
-    args = {nargs = '*', force = true, complete='filetype'}
+    args = { nargs = '*', force = true, complete = 'filetype' },
 }

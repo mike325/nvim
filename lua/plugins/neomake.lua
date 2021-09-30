@@ -1,22 +1,22 @@
 -- local sys = require'sys'
-local get_icon = require'utils.helpers'.get_icon
+local get_icon = require('utils.helpers').get_icon
 
 -- vim.g.neomake_ft_maker_remove_invalid_entries = 1
 
 vim.g.neomake_error_sign = {
-    text = get_icon('error'),
+    text = get_icon 'error',
     texthl = 'NeomakeErrorSign',
 }
 vim.g.neomake_warning_sign = {
-    text = get_icon('warn'),
+    text = get_icon 'warn',
     texthl = 'NeomakeWarningSign',
 }
 vim.g.neomake_info_sign = {
-    text = get_icon('info'),
-    texthl = 'NeomakeInfoSign'
+    text = get_icon 'info',
+    texthl = 'NeomakeInfoSign',
 }
 vim.g.neomake_message_sign = {
-    text =  get_icon('message'),
+    text = get_icon 'message',
     texthl = 'NeomakeMessageSign',
 }
 
@@ -25,7 +25,7 @@ vim.g.neomake_open_list = 0
 
 vim.g.neomake_echo_current_error = 0
 vim.g.neomake_virtualtext_current_error = 1
-vim.g.neomake_virtualtext_prefix = get_icon('virtual_text')..' '
+vim.g.neomake_virtualtext_prefix = get_icon 'virtual_text' .. ' '
 
 -- function! plugins#neomake#makeprg() abort
 --     if empty(&makeprg)

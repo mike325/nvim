@@ -1,14 +1,14 @@
-local nvim = require'neovim'
-local set_autocmd = require'neovim.autocmds'.set_autocmd
-local set_mapping = require'neovim.mappings'.set_mapping
+local nvim = require 'neovim'
+local set_autocmd = require('neovim.autocmds').set_autocmd
+local set_mapping = require('neovim.mappings').set_mapping
 
 local M = {}
 
 local function autowipe(win, buffer)
-    assert(win and buffer, debug.traceback('Buffer and window are necessary'))
+    assert(win and buffer, debug.traceback 'Buffer and window are necessary')
 
-    set_autocmd{
-        event = {'WinClosed'},
+    set_autocmd {
+        event = { 'WinClosed' },
         pattern = win,
         cmd = ('lua if vim.api.nvim_buf_is_valid(%s) then vim.api.nvim_buf_delete(%s, {force=true}) end'):format(
             buffer,
@@ -21,49 +21,49 @@ local function autowipe(win, buffer)
 end
 
 local function close_on_move(win, buffer)
-    assert(win, debug.traceback('Missing window'))
+    assert(win, debug.traceback 'Missing window')
 
-    set_autocmd{
-        event   = {'CursorMoved'},
+    set_autocmd {
+        event = { 'CursorMoved' },
         pattern = ('<buffer=%s>'):format(buffer or vim.api.nvim_get_current_buf()),
-        cmd     = ('lua if vim.api.nvim_win_is_valid(%s) then vim.api.nvim_win_close(%s, true) end'):format(
+        cmd = ('lua if vim.api.nvim_win_is_valid(%s) then vim.api.nvim_win_close(%s, true) end'):format(
             win,
             win
         ),
-        group   = 'AutoCloseWindow',
-        once    = true,
-        nested  = true,
+        group = 'AutoCloseWindow',
+        once = true,
+        nested = true,
     }
 end
 
 local function close_on_leave(win, buffer)
-    assert(win, debug.traceback('Missing window'))
+    assert(win, debug.traceback 'Missing window')
 
     if win then
-        set_autocmd{
-            event   = {'WinLeave'},
+        set_autocmd {
+            event = { 'WinLeave' },
             pattern = win,
-            cmd     = ('lua if vim.api.nvim_win_is_valid(%s) then vim.api.nvim_win_close(%s, true) end'):format(
+            cmd = ('lua if vim.api.nvim_win_is_valid(%s) then vim.api.nvim_win_close(%s, true) end'):format(
                 win,
                 win
             ),
-            group   = 'AutoCloseWindow',
-            once    = true,
-            nested  = true,
+            group = 'AutoCloseWindow',
+            once = true,
+            nested = true,
         }
     end
 
     if buffer then
-        set_autocmd{
-            event   = {'BufLeave'},
+        set_autocmd {
+            event = { 'BufLeave' },
             pattern = ('<buffer=%s>'):format(buffer),
-            cmd     = ('lua if vim.api.nvim_win_is_valid(%s) then vim.api.nvim_win_close(%s, true) end'):format(
+            cmd = ('lua if vim.api.nvim_win_is_valid(%s) then vim.api.nvim_win_close(%s, true) end'):format(
                 win,
                 win
             ),
-            group   = 'AutoCloseWindow',
-            once    = true,
-            nested  = true,
+            group = 'AutoCloseWindow',
+            once = true,
+            nested = true,
         }
     end
 end
@@ -71,7 +71,7 @@ end
 function M.big_center(buffer)
     assert(
         not buffer or (type(buffer) == type(0) and buffer >= 0),
-        debug.traceback('Invalid buffer: '..vim.inspect(buffer))
+        debug.traceback('Invalid buffer: ' .. vim.inspect(buffer))
     )
 
     local columns = vim.opt.columns:get()
@@ -87,34 +87,34 @@ function M.big_center(buffer)
     end
 
     -- if the editor is big enough
-    if (columns > 100 or lines > 35) then
+    if columns > 100 or lines > 35 then
         -- fzf's window height is 3/4 of the max height, but not more than 70
         local win_height = math.min(math.ceil(lines * 3 / 4), 70)
         local win_width = (columns < 100) and math.ceil(columns - 8) or math.ceil(columns * 0.9)
 
         -- create a new floating window, centered in the editor
         local win = vim.api.nvim_open_win(buffer, true, {
-            style     = "minimal",
-            border    = 'rounded',
-            relative  = "editor",
-            row       = math.ceil(lines * height_percentage),
-            col       = math.ceil(columns * width_percentage),
-            width     = win_width,
-            height    = win_height,
+            style = 'minimal',
+            border = 'rounded',
+            relative = 'editor',
+            row = math.ceil(lines * height_percentage),
+            col = math.ceil(columns * width_percentage),
+            width = win_width,
+            height = win_height,
             noautocmd = true,
             focusable = true,
-            zindex    = 10,
+            zindex = 10,
         })
         return win
     else
-        error(debug.traceback('Current neovim window is too small'))
+        error(debug.traceback 'Current neovim window is too small')
     end
 end
 
 function M.progress(buffer)
     assert(
         not buffer or (type(buffer) == type(0) and buffer >= 0),
-        debug.traceback('Invalid buffer: '..vim.inspect(buffer))
+        debug.traceback('Invalid buffer: ' .. vim.inspect(buffer))
     )
 
     local columns = vim.opt.columns:get()
@@ -127,31 +127,27 @@ function M.progress(buffer)
     end
 
     if not vim.t.progress_win then
-        vim.t.progress_win = vim.api.nvim_open_win(
-            buffer,
-            false,
-            {
-                style     = 'minimal',
-                border    = 'rounded',
-                relative  = 'win',
-                anchor    = 'SW',
-                row       = lines - 5,
-                col       = 2,
-                -- bufpos = {lines/2, 15},
-                height    = 15,
-                width     = columns - 5,
-                noautocmd = true,
-                focusable = true,
-                zindex    = 1, -- very low priority
-            }
-        )
+        vim.t.progress_win = vim.api.nvim_open_win(buffer, false, {
+            style = 'minimal',
+            border = 'rounded',
+            relative = 'win',
+            anchor = 'SW',
+            row = lines - 5,
+            col = 2,
+            -- bufpos = {lines/2, 15},
+            height = 15,
+            width = columns - 5,
+            noautocmd = true,
+            focusable = true,
+            zindex = 1, -- very low priority
+        })
 
-        set_autocmd{
-            event   = 'WinClosed',
+        set_autocmd {
+            event = 'WinClosed',
             pattern = vim.t.progress_win,
-            cmd     = 'unlet t:progress_win',
-            group   = 'JobProgress',
-            once    = true,
+            cmd = 'unlet t:progress_win',
+            group = 'JobProgress',
+            once = true,
         }
 
         if scratch then
@@ -167,7 +163,7 @@ end
 function M.cursor_window(buffer, auto_size)
     assert(
         not buffer or (type(buffer) == type(0) and buffer >= 0),
-        debug.traceback('Invalid buffer: '..vim.inspect(buffer))
+        debug.traceback('Invalid buffer: ' .. vim.inspect(buffer))
     )
 
     -- local columns = vim.opt.columns:get()
@@ -197,17 +193,17 @@ function M.cursor_window(buffer, auto_size)
     end
 
     local win = vim.api.nvim_open_win(buffer, false, {
-        style     = 'minimal',
-        border    = 'rounded',
-        relative  = 'cursor',
-        anchor    = 'SW',
-        col       = 0,
-        row       = -2,
-        height    = win_height,
-        width     = win_width,
+        style = 'minimal',
+        border = 'rounded',
+        relative = 'cursor',
+        anchor = 'SW',
+        col = 0,
+        row = -2,
+        height = win_height,
+        width = win_width,
         -- noautocmd = true,
         focusable = true,
-        zindex    = 10,
+        zindex = 10,
     })
 
     close_on_move(win)
@@ -223,7 +219,7 @@ end
 function M.ask_window(callback)
     assert(
         not callback or vim.is_callable(callback),
-        debug.traceback('Invalid callback: '..vim.inspect(callback))
+        debug.traceback('Invalid callback: ' .. vim.inspect(callback))
     )
 
     -- local columns = vim.opt.columns:get()
@@ -237,32 +233,32 @@ function M.ask_window(callback)
     local win_height = 1
 
     local win = vim.api.nvim_open_win(buffer, true, {
-        style     = 'minimal',
-        border    = 'rounded',
-        relative  = 'cursor',
-        anchor    = 'SW',
-        col       = 0,
-        row       = -1,
-        height    = win_height,
-        width     = win_width,
+        style = 'minimal',
+        border = 'rounded',
+        relative = 'cursor',
+        anchor = 'SW',
+        col = 0,
+        row = -1,
+        height = win_height,
+        width = win_width,
         -- noautocmd = true,
         focusable = true,
-        zindex    = 10,
+        zindex = 10,
     })
 
     autowipe(win, buffer)
     close_on_leave(win, buffer)
 
-    set_autocmd{
-        event   = {'BufWipeout', 'BufUnload', 'BufLeave', 'BufWinLeave'},
+    set_autocmd {
+        event = { 'BufWipeout', 'BufUnload', 'BufLeave', 'BufWinLeave' },
         pattern = ('<buffer=%s>'):format(buffer),
-        cmd     = 'stopinsert',
-        group   = 'AutoCloseWindow',
-        once    = true,
-        nested  = true,
+        cmd = 'stopinsert',
+        group = 'AutoCloseWindow',
+        once = true,
+        nested = true,
     }
 
-    set_mapping{
+    set_mapping {
         mode = 'i',
         lhs = '<ESC>',
         rhs = function()
@@ -270,10 +266,10 @@ function M.ask_window(callback)
                 vim.api.nvim_win_close(win, true)
             end
         end,
-        args = {silent = true, buffer = buffer},
+        args = { silent = true, buffer = buffer },
     }
 
-    set_mapping{
+    set_mapping {
         mode = 'i',
         lhs = '<CR>',
         rhs = function()
@@ -288,7 +284,7 @@ function M.ask_window(callback)
                 callback(result)
             end
         end,
-        args = {silent = true, buffer = buffer},
+        args = { silent = true, buffer = buffer },
     }
 
     nvim.ex.startinsert()

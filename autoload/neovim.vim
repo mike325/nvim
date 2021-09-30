@@ -112,6 +112,13 @@ function! neovim#enter() abort
         if has#plugin('YouCompleteMe')
             call feedkeys("\<C-y>")
             return ''
+        elseif has#plugin('nvim-cmp')
+            if l:selected
+                call luaeval('require"cmp".mapping.confirm({ select = true })()')
+            else
+                call luaeval('require"cmp".mapping.close()()')
+            endif
+            return ''
         elseif has#plugin('nvim-compe')
             if l:selected
                 call compe#confirm('<C-y>')

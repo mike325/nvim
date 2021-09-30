@@ -1,31 +1,31 @@
-local load_module = require'utils.helpers'.load_module
+local load_module = require('utils.helpers').load_module
 
-local diffview = load_module'diffview'
+local diffview = load_module 'diffview'
 
 if diffview == nil then
     return false
 end
 
-local nvim = require'neovim'
+local nvim = require 'neovim'
 
 -- local set_command = require'neovim.commands'.set_command
-local set_mapping = require'neovim.mappings'.set_mapping
-local get_mapping = require'neovim.mappings'.get_mapping
+local set_mapping = require('neovim.mappings').set_mapping
+local get_mapping = require('neovim.mappings').get_mapping
 
-local cb = require'diffview.config'.diffview_callback
-local has_devicons = load_module'nvim-web-devicons'
+local cb = require('diffview.config').diffview_callback
+local has_devicons = load_module 'nvim-web-devicons'
 
 local M = {}
 
 local mappings = {
     ['<leader>c'] = {
         rhs = '<cmd>DiffviewClose<CR>',
-        args = {noremap = true, silent = true, nowait = true}
+        args = { noremap = true, silent = true, nowait = true },
     },
     ['<leader>q'] = {
         rhs = '<cmd>DiffviewClose<CR>',
-        args = {noremap = true, silent = true, nowait = true}
-    }
+        args = { noremap = true, silent = true, nowait = true },
+    },
 }
 
 local function is_diffview()
@@ -53,9 +53,9 @@ function M.set_mappings()
         local diff_mappings = {}
 
         for map, args in pairs(mappings) do
-            table.insert(diff_mappings, get_mapping{mode = 'n', lhs = map})
-            pcall(set_mapping, { mode = 'n', lhs = map})
-            set_mapping{
+            table.insert(diff_mappings, get_mapping { mode = 'n', lhs = map })
+            pcall(set_mapping, { mode = 'n', lhs = map })
+            set_mapping {
                 mode = 'n',
                 lhs = map,
                 rhs = args.rhs,
@@ -66,15 +66,14 @@ function M.set_mappings()
         vim.g.restore_diffview_maps = diff_mappings
         local diff_ft = vim.opt_local.filetype:get()
         if diff_ft == 'DiffviewFiles' or diff_ft == 'DiffFileHistory' then
-            set_mapping{ mode = 'n', lhs = 'q', }
-            set_mapping{
+            set_mapping { mode = 'n', lhs = 'q' }
+            set_mapping {
                 mode = 'n',
                 lhs = 'q',
                 rhs = '<cmd>DiffviewClose<CR>',
-                args = {noremap = true, silent = true, nowait = true, buffer = true},
+                args = { noremap = true, silent = true, nowait = true, buffer = true },
             }
         end
-
     elseif vim.g.restore_diffview_maps then
         for _, map in pairs(vim.g.restore_diffview_maps) do
             local args = {
@@ -85,7 +84,7 @@ function M.set_mappings()
                 script = map.script,
             }
             pcall(set_mapping, { mode = map.mode, lhs = map.lhs })
-            set_mapping{
+            set_mapping {
                 mode = map.mode,
                 lhs = map.lhs,
                 rhs = map.rhs,
@@ -97,44 +96,46 @@ function M.set_mappings()
 end
 
 diffview.setup {
-    diff_binaries = false,    -- Show diffs for binaries
+    diff_binaries = false, -- Show diffs for binaries
     use_icons = has_devicons ~= nil, -- Requires nvim-web-devicons
     file_panel = {
         width = 35,
     },
     key_bindings = {
-        disable_defaults = false,                   -- Disable the default key bindings
+        disable_defaults = false, -- Disable the default key bindings
         -- The `view` bindings are active in the diff buffers, only when the current
         -- tabpage is a Diffview.
+        -- stylua: ignore
         view = {
-            ["<tab>"]     = cb("select_next_entry"), -- Open the diff for the next file
-            ["<s-tab>"]   = cb("select_prev_entry"), -- Open the diff for the previous file
-            ["<C-j>"]     = cb("select_next_entry"),
-            ["<C-k>"]     = cb("select_prev_entry"),
-            ["<leader>p"] = cb("focus_files"),       -- Bring focus to the files panel
-            ["<leader>f"] = cb("toggle_files"),      -- Toggle the files panel.
+            ['<tab>'] = cb 'select_next_entry', -- Open the diff for the next file
+            ['<s-tab>'] = cb 'select_prev_entry', -- Open the diff for the previous file
+            ['<C-j>'] = cb 'select_next_entry',
+            ['<C-k>'] = cb 'select_prev_entry',
+            ['<leader>p'] = cb 'focus_files', -- Bring focus to the files panel
+            ['<leader>f'] = cb 'toggle_files', -- Toggle the files panel.
         },
+        -- stylua: ignore
         file_panel = {
-            ["j"]             = cb("next_entry"),         -- Bring the cursor to the next file entry
-            ["<down>"]        = cb("next_entry"),
-            ["k"]             = cb("prev_entry"),         -- Bring the cursor to the previous file entry.
-            ["<up>"]          = cb("prev_entry"),
-            ["<cr>"]          = cb("select_entry"),       -- Open the diff for the selected entry.
-            ["o"]             = cb("select_entry"),
-            ["<2-LeftMouse>"] = cb("select_entry"),
-            ["-"]             = cb("toggle_stage_entry"), -- Stage / unstage the selected entry.
-            ["S"]             = cb("stage_all"),          -- Stage all entries.
-            ["U"]             = cb("unstage_all"),        -- Unstage all entries.
-            ["R"]             = cb("refresh_files"),      -- Update stats and entries in the file list.
-            ["<tab>"]         = cb("select_next_entry"),
-            ["<s-tab>"]       = cb("select_prev_entry"),
-            ["<bs>"]          = cb("select_prev_entry"),
-            ["<C-j>"]         = cb("select_next_entry"),
-            ["<C-k>"]         = cb("select_prev_entry"),
-            ["<leader>p"]     = cb("focus_files"),        -- Bring focus to the files panel
-            ["<leader>f"]     = cb("toggle_files"),       -- Toggle the files panel.
-        }
-    }
+            ['j'] = cb 'next_entry', -- Bring the cursor to the next file entry
+            ['<down>'] = cb 'next_entry',
+            ['k'] = cb 'prev_entry', -- Bring the cursor to the previous file entry.
+            ['<up>'] = cb 'prev_entry',
+            ['<cr>'] = cb 'select_entry', -- Open the diff for the selected entry.
+            ['o'] = cb 'select_entry',
+            ['<2-LeftMouse>'] = cb 'select_entry',
+            ['-'] = cb 'toggle_stage_entry', -- Stage / unstage the selected entry.
+            ['S'] = cb 'stage_all', -- Stage all entries.
+            ['U'] = cb 'unstage_all', -- Unstage all entries.
+            ['R'] = cb 'refresh_files', -- Update stats and entries in the file list.
+            ['<tab>'] = cb 'select_next_entry',
+            ['<s-tab>'] = cb 'select_prev_entry',
+            ['<bs>'] = cb 'select_prev_entry',
+            ['<C-j>'] = cb 'select_next_entry',
+            ['<C-k>'] = cb 'select_prev_entry',
+            ['<leader>p'] = cb 'focus_files', -- Bring focus to the files panel
+            ['<leader>f'] = cb 'toggle_files', -- Toggle the files panel.
+        },
+    },
 }
 
 return M

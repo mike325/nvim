@@ -1,32 +1,31 @@
-local nvim = require'neovim'
-local sys  = require'sys'
+local nvim = require 'neovim'
+local sys = require 'sys'
 
-local split = require'utils.strings'.split
-local set_autocmd = require'neovim.autocmds'.set_autocmd
+local split = require('utils.strings').split
+local set_autocmd = require('neovim.autocmds').set_autocmd
 
 local M = {}
 
 function M.make_executable()
-
     if sys.name == 'windows' then
         return
     end
 
-    local is_file = require'utils.files'.is_file
+    local is_file = require('utils.files').is_file
 
     local shebang = nvim.buf.get_lines(0, 0, 1, true)[1]
-    if not shebang or not shebang:match('^#!.+') then
-        set_autocmd{
-            event   = 'BufWritePre',
+    if not shebang or not shebang:match '^#!.+' then
+        set_autocmd {
+            event = 'BufWritePre',
             pattern = ('<buffer=%d>'):format(nvim.win.get_buf(0)),
-            cmd     = [[lua require'utils'.functions.make_executable()]],
-            group   = 'MakeExecutable',
-            once    = true,
+            cmd = [[lua require'utils'.functions.make_executable()]],
+            group = 'MakeExecutable',
+            once = true,
         }
         return
     end
 
-    local filename = vim.fn.expand('%')
+    local filename = vim.fn.expand '%'
     if is_file(filename) then
         local fileinfo = vim.loop.fs_stat(filename)
         local filemode = fileinfo.mode - 32768
@@ -36,18 +35,18 @@ function M.make_executable()
         end
     end
 
-    set_autocmd{
-        event   = 'BufWritePost',
+    set_autocmd {
+        event = 'BufWritePost',
         pattern = ('<buffer=%d>'):format(nvim.win.get_buf(0)),
-        cmd     = [[lua require'utils'.functions.chmod_exec()]],
-        group   = 'MakeExecutable',
-        once    = true,
+        cmd = [[lua require'utils'.functions.chmod_exec()]],
+        group = 'MakeExecutable',
+        once = true,
     }
 end
 
 function M.chmod_exec()
-    local filename = vim.fn.expand('%')
-    local is_file = require'utils.files'.is_file
+    local filename = vim.fn.expand '%'
+    local is_file = require('utils.files').is_file
 
     if not is_file(filename) or sys.name == 'windows' then
         return
@@ -55,24 +54,24 @@ function M.chmod_exec()
 
     local fileinfo = vim.loop.fs_stat(filename)
     local filemode = fileinfo.mode - 32768
-    require'utils.files'.chmod(filename, bit.bor(filemode, 0x48), 10)
+    require('utils.files').chmod(filename, bit.bor(filemode, 0x48), 10)
 end
 
 function M.send_grep_job(args)
     assert(
-        type(args) == type('') or type(args) == type({}),
-        debug.traceback('Invalid args'..vim.inspect(args))
+        type(args) == type '' or type(args) == type {},
+        debug.traceback('Invalid args' .. vim.inspect(args))
     )
 
     local cmd = split(vim.bo.grepprg or vim.o.grepprg, ' ')
 
-    if type(args) == type({}) then
+    if type(args) == type {} then
         vim.list_extend(cmd, args)
     else
         table.insert(cmd, args)
     end
 
-    local grep = RELOAD'jobs':new{
+    local grep = RELOAD('jobs'):new {
         cmd = cmd,
         silent = true,
         qf = {
@@ -88,26 +87,18 @@ function M.send_grep_job(args)
     }
 
     grep:add_callback(function(job, rc)
-        local search = type(args) == type({}) and args[#args] or args
+        local search = type(args) == type {} and args[#args] or args
         if rc == 0 and job:is_empty() then
-            vim.notify('No matching results '..search, 'WARN', {title='Grep'})
+            vim.notify('No matching results ' .. search, 'WARN', { title = 'Grep' })
         elseif rc ~= 0 then
             if job:is_empty() then
-                vim.notify('No matching results '..search, 'WARN', {title='Grep'})
+                vim.notify('No matching results ' .. search, 'WARN', { title = 'Grep' })
             else
-                vim.notify(
-                    ('%s exited with code %s'):format(
-                        cmd[1],
-                        rc
-                    ),
-                    'ERROR',
-                    {title='Grep'}
-                )
+                vim.notify(('%s exited with code %s'):format(cmd[1], rc), 'ERROR', { title = 'Grep' })
             end
         end
     end)
     grep:start()
-
 end
 
 function M.opfun_grep(select, visual)
@@ -117,11 +108,11 @@ function M.opfun_grep(select, visual)
 
     -- TODO: migrate to neovim's api functions ?
     if visual then
-        nvim.ex['normal!']('gvy')
+        nvim.ex['normal!'] 'gvy'
     elseif select == 'line' then
-        nvim.ex['normal!']("'[V']y")
+        nvim.ex['normal!'] "'[V']y"
     else -- char/block
-        nvim.ex['normal!']("`[v`]y")
+        nvim.ex['normal!'] '`[v`]y'
     end
 
     M.send_grep_job(nvim.reg['@'])
@@ -150,9 +141,10 @@ function M.toggle_comments(first, last)
     local comment = false
     local allempty = true
 
-    local comment_match = '^%s*'..commentstring:format('.*'):gsub('%-', '%%-'):gsub('/%*', '/%%*'):gsub('%*/', '%%*/')
+    local comment_match = '^%s*'
+        .. commentstring:format('.*'):gsub('%-', '%%-'):gsub('/%*', '/%%*'):gsub('%*/', '%%*/')
 
-    for _,line in pairs(lines) do
+    for _, line in pairs(lines) do
         if #line > 0 then
             allempty = false
             if not comment and not line:match(comment_match) then
@@ -167,27 +159,26 @@ function M.toggle_comments(first, last)
         comment = true
     end
 
-    indent_level = require'utils.buffers'.get_indent_block(lines) + 1
+    indent_level = require('utils.buffers').get_indent_block(lines) + 1
 
     local spaces = ''
     if comment then
-        for _=1,indent_level - 1 do
+        for _ = 1, indent_level - 1 do
             spaces = spaces .. ' '
         end
     end
 
-    for i=1,#lines do
+    for i = 1, #lines do
         if comment then
             local tocomment = lines[i]:sub(indent_level, #lines[i])
-            local uncomment = (#lines[i] == 0 and indent_level > 1) and spaces or lines[i]:sub(1, indent_level - 1)
-            local format = #lines[i] == 0 and tocomment or ' '..tocomment
+            local uncomment = (#lines[i] == 0 and indent_level > 1) and spaces
+                or lines[i]:sub(1, indent_level - 1)
+            local format = #lines[i] == 0 and tocomment or ' ' .. tocomment
             lines[i] = uncomment .. commentstring:format(format)
         else
             local indent_match = '^%s+'
-            local uncomment_match = '^%s*'..commentstring:format('%s?(.*)')
-                                                         :gsub('%-', '%%-')
-                                                         :gsub('/%*', '/%%*')
-                                                         :gsub('%*/', '%%*/')
+            local uncomment_match = '^%s*'
+                .. commentstring:format('%s?(.*)'):gsub('%-', '%%-'):gsub('/%*', '/%%*'):gsub('%*/', '%%*/')
             local indent = lines[i]:match(indent_match) or ''
             local data = lines[i]:match(uncomment_match)
             lines[i] = #data > 0 and indent .. data or ''
@@ -204,9 +195,9 @@ function M.opfun_comment(_, visual)
     local reg_save = nvim.reg['@']
 
     if visual then
-        nvim.ex['normal!']('gvy')
+        nvim.ex['normal!'] 'gvy'
     else
-        nvim.ex['normal!']("'[V']y")
+        nvim.ex['normal!'] "'[V']y"
     end
 
     local sel_start = nvim.buf.get_mark(0, '[')
@@ -219,16 +210,16 @@ function M.opfun_comment(_, visual)
 end
 
 function M.get_ssh_hosts()
-    local ssh_config = sys.home..'/.ssh/config'
-    local is_file = require'utils.files'.is_file
+    local ssh_config = sys.home .. '/.ssh/config'
+    local is_file = require('utils.files').is_file
 
     if is_file(ssh_config) then
         local host = ''
-        require'utils.files'.readfile(ssh_config, function(data)
-            for _,line in pairs(data) do
-                if line and line ~= '' and line:match('Host [a-zA-Z0-9_-%.]+') then
+        require('utils.files').readfile(ssh_config, function(data)
+            for _, line in pairs(data) do
+                if line and line ~= '' and line:match 'Host [a-zA-Z0-9_-%.]+' then
                     host = split(line, ' ')[2]
-                elseif line:match('%s+Hostname [a-zA-Z0-9_-%.]+') and host ~= '' then
+                elseif line:match '%s+Hostname [a-zA-Z0-9_-%.]+' and host ~= '' then
                     STORAGE.hosts[host] = split(line, ' ')[2]
                     host = ''
                 end
@@ -239,46 +230,40 @@ function M.get_ssh_hosts()
 end
 
 function M.get_git_dir(callback)
-    assert(require'utils.files'.executable('git'), 'Missing git')
+    assert(require('utils.files').executable 'git', 'Missing git')
     -- assert(type(callback) == 'function', 'Missing callback function')
 
-    local j = RELOAD'jobs':new{
-        cmd = {'git', 'rev-parse', '--git-dir' },
+    local j = RELOAD('jobs'):new {
+        cmd = { 'git', 'rev-parse', '--git-dir' },
         silent = true,
     }
     j:callback_on_success(function(job)
         local dir = table.concat(job:output(), '')
-        pcall(callback, require'utils.files'.realpath(dir))
+        pcall(callback, require('utils.files').realpath(dir))
     end)
     j:start()
 end
 
 function M.external_formatprg(args)
-    assert(
-        type(args) == type({}) and args.cmd,
-        debug.traceback('Missing command')
-    )
+    assert(type(args) == type {} and args.cmd, debug.traceback 'Missing command')
 
     local cmd = args.cmd
     local buf = args.buffer or vim.api.nvim_get_current_buf()
 
-    local indent = require'utils'.buffers.indent
+    local indent = require('utils').buffers.indent
 
     local first = args.first or (vim.v.lnum - 1)
     local last = args.last or (first + vim.v.count)
 
     local lines = vim.api.nvim_buf_get_lines(buf, first, last, false)
-    local indent_level = require'utils'.buffers.get_indent_block_level(lines)
+    local indent_level = require('utils').buffers.get_indent_block_level(lines)
     local tmpfile = vim.fn.tempname()
 
-    require'utils'.files.writefile(
-        tmpfile,
-        indent(lines, -indent_level)
-    )
+    require('utils').files.writefile(tmpfile, indent(lines, -indent_level))
 
     table.insert(cmd, tmpfile)
 
-    local formatprg = RELOAD'jobs':new{
+    local formatprg = RELOAD('jobs'):new {
         cmd = cmd,
         silent = true,
         qf = {
@@ -297,7 +282,7 @@ function M.external_formatprg(args)
     }
 
     formatprg:callback_on_success(function(job)
-        local fmt_lines = require'utils'.files.readfile(tmpfile)
+        local fmt_lines = require('utils').files.readfile(tmpfile)
         fmt_lines = indent(fmt_lines, indent_level)
         vim.api.nvim_buf_set_lines(buf, first, last, false, fmt_lines)
     end)
@@ -306,14 +291,14 @@ function M.external_formatprg(args)
 end
 
 function M.async_execute(opts)
-    assert(type(opts) == type({}), debug.traceback('Invalid opts'))
-    assert(opts.cmd, debug.traceback('Missing cmd'))
+    assert(type(opts) == type {}, debug.traceback 'Invalid opts')
+    assert(opts.cmd, debug.traceback 'Missing cmd')
     -- assert(not opts.args, debug.traceback('Missing args'))
 
     local cmd = opts.cmd
     local args = opts.args
 
-    local script = RELOAD('jobs'):new{
+    local script = RELOAD('jobs'):new {
         cmd = cmd,
         args = args,
         progress = true,
@@ -349,13 +334,12 @@ function M.async_execute(opts)
     script:progress()
 end
 
-
 function M.open(uri)
     local cmd
     local args = {}
     if sys.name == 'windows' then
         cmd = 'powershell'
-        vim.list_extend(args, {'-noexit', '-executionpolicy', 'bypass', 'Start-Process'})
+        vim.list_extend(args, { '-noexit', '-executionpolicy', 'bypass', 'Start-Process' })
     elseif sys.name == 'linux' then
         cmd = 'xdg-open'
     else
@@ -365,7 +349,7 @@ function M.open(uri)
 
     table.insert(args, uri)
 
-    local open = RELOAD'jobs':new{
+    local open = RELOAD('jobs'):new {
         cmd = cmd,
         args = args,
         qf = {

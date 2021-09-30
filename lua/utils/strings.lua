@@ -1,9 +1,9 @@
 local M = {}
 
 function M.split_components(str, pattern)
-    assert(type(str) == type(''), debug.traceback('Invalid string '..vim.inspect(str)))
-    assert(type(pattern) == type(''), debug.traceback('Invalid pattern '..vim.inspect(pattern)))
-     local t = {}
+    assert(type(str) == type '', debug.traceback('Invalid string ' .. vim.inspect(str)))
+    assert(type(pattern) == type '', debug.traceback('Invalid pattern ' .. vim.inspect(pattern)))
+    local t = {}
     for v in string.gmatch(str, pattern) do
         t[#t + 1] = v
     end
@@ -13,15 +13,14 @@ end
 function M.split(str, sep)
     sep = sep or '%s'
     local t = {}
-    for s in string.gmatch(str, "([^"..sep.."]+)") do
+    for s in string.gmatch(str, '([^' .. sep .. ']+)') do
         table.insert(t, s)
     end
     return t
 end
 
-
 function M.str_to_clean_tbl(cmd_string)
-    return require'utils.tables'.str_to_clean_tbl(cmd_string)
+    return require('utils.tables').str_to_clean_tbl(cmd_string)
 end
 
 function M.empty(str)

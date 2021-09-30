@@ -1,48 +1,47 @@
-local ok,packer = pcall(require, 'packer')
-local has_compiler = vim.fn.executable('gcc') == 1 or vim.fn.executable('clang') == 1
+local ok, packer = pcall(require, 'packer')
+local has_compiler = vim.fn.executable 'gcc' == 1 or vim.fn.executable 'clang' == 1
 -- local has_make = vim.fn.executable('make') == 1
 
 if not ok then
     return false
 end
 
-packer.init{
+packer.init {
     -- log = {level = 'debug'},
     luarocks = { python_cmd = 'python3' },
     profile = {
         enable = false,
-        threshold = 1 -- the amount in ms that a plugins load time must be over for it to be included in the profile
+        threshold = 1, -- the amount in ms that a plugins load time must be over for it to be included in the profile
     },
     display = {
         open_fn = require('packer.util').float,
     },
     git = {
         clone_timeout = 90, -- Timeout, in seconds, for git clones
-    }
+    },
 }
 
 packer.startup(function()
-
     -- BUG: Seems like luarocks is not supported in windows
-    if vim.fn.has('win32') == 0 and has_compiler then
-        use_rocks { 'luacheck','lua-cjson', 'md5'}
+    if vim.fn.has 'win32' == 0 and has_compiler then
+        use_rocks { 'luacheck', 'lua-cjson', 'md5' }
     end
 
     use 'wbthomason/packer.nvim'
 
-    use {'PProvost/vim-ps1'}
-    use {'kurayama/systemd-vim-syntax'}
-    use {'raimon49/requirements.txt.vim'}
+    use { 'PProvost/vim-ps1' }
+    use { 'kurayama/systemd-vim-syntax' }
+    use { 'raimon49/requirements.txt.vim' }
 
-    use {'nanotee/luv-vimdocs', event = 'CmdlineEnter' }
-    use {'tweekmonster/startuptime.vim', cmd = {'StartupTime'} }
+    use { 'nanotee/luv-vimdocs', event = 'CmdlineEnter' }
+    use { 'tweekmonster/startuptime.vim', cmd = { 'StartupTime' } }
 
-    use {'kyazdani42/nvim-web-devicons'}
-    use {'kevinhwang91/nvim-bqf'}
+    use { 'kyazdani42/nvim-web-devicons' }
+    use { 'kevinhwang91/nvim-bqf' }
 
-    use {'nvim-lua/popup.nvim'}
-    use {'nvim-lua/plenary.nvim'}
-    use {'rcarriga/nvim-notify'}
+    use { 'nvim-lua/popup.nvim' }
+    use { 'nvim-lua/plenary.nvim' }
+    use { 'rcarriga/nvim-notify' }
 
     use {
         'tami5/sqlite.lua',
@@ -53,134 +52,152 @@ packer.startup(function()
                 -- TODO: search for dll
                 return false
             end
-            return vim.fn.executable('sqlite3') == 1
+            return vim.fn.executable 'sqlite3' == 1
         end,
     }
 
     use {
         'lervag/vimtex',
         cond = function()
-            return vim.fn.executable('latexmk') == 1 and vim.env.VIM_MIN == nil and vim.g.minimal == nil
+            return vim.fn.executable 'latexmk' == 1 and vim.env.VIM_MIN == nil and vim.g.minimal == nil
         end,
-        setup = function() require'plugins.vimtex' end,
-        ft = {'bib', 'tex', 'latex', 'bibtex'},
+        setup = function()
+            require 'plugins.vimtex'
+        end,
+        ft = { 'bib', 'tex', 'latex', 'bibtex' },
     }
 
     use {
         'norcalli/nvim-colorizer.lua',
         config = function()
             vim.opt.termguicolors = true
-            require'colorizer'.setup()
+            require('colorizer').setup()
         end,
-        event = {'CursorHold', 'CursorMoved', 'InsertEnter'},
+        event = { 'CursorHold', 'CursorMoved', 'InsertEnter' },
     }
 
-    use {'tpope/vim-repeat', event = 'VimEnter'}
-    use {'tpope/vim-apathy', event = 'VimEnter'}
+    use { 'tpope/vim-repeat', event = 'VimEnter' }
+    use { 'tpope/vim-apathy', event = 'VimEnter' }
     -- use {'tpope/vim-commentary', event = 'VimEnter'}
 
     use {
         'ojroques/vim-oscyank',
         event = 'VimEnter',
-        config = function() require'plugins.oscyank' end,
+        config = function()
+            require 'plugins.oscyank'
+        end,
     }
 
     use {
         'windwp/nvim-autopairs',
         event = 'InsertEnter',
-        config = function() require'plugins.pairs' end,
+        config = function()
+            require 'plugins.pairs'
+        end,
     }
 
     use {
         'tpope/vim-surround',
         event = 'VimEnter',
-        config = function()
-            vim.g['surround_'..vim.fn.char2nr("¿")] = '¿\r?'
-            vim.g['surround_'..vim.fn.char2nr("?")] = '¿\r?'
-            vim.g['surround_'..vim.fn.char2nr("¡")] = '¡\r!'
-            vim.g['surround_'..vim.fn.char2nr("!")] = '¡\r!'
-            vim.g['surround_'..vim.fn.char2nr(";")] = ':\r:'
-            vim.g['surround_'..vim.fn.char2nr(":")] = ':\r:'
-            vim.g['surround_'..vim.fn.char2nr('q')] = [[``\r'']]
+        setup = function()
+            vim.g['surround_' .. vim.fn.char2nr '¿'] = '¿\r?'
+            vim.g['surround_' .. vim.fn.char2nr '?'] = '¿\r?'
+            vim.g['surround_' .. vim.fn.char2nr '¡'] = '¡\r!'
+            vim.g['surround_' .. vim.fn.char2nr '!'] = '¡\r!'
+            vim.g['surround_' .. vim.fn.char2nr ';'] = ':\r:'
+            vim.g['surround_' .. vim.fn.char2nr ':'] = ':\r:'
+            vim.g['surround_' .. vim.fn.char2nr 'q'] = [[``\r'']]
         end,
     }
 
     use {
         'tpope/vim-projectionist',
         config = function()
-            local set_autocmd = require'neovim.autocmds'.set_autocmd
+            local set_autocmd = require('neovim.autocmds').set_autocmd
             -- TODO: Make this more "project" tailored, set git and language specific
             --       projections depending of what's in the cwd
+            -- stylua: ignore
             vim.g.common_projections = {
-                ['.projections.json']          = {type = 'Projections'},
-                ['.gitignore']                 = {type = 'Gitignore'},
-                ['.git/hooks/*']               = {type = 'GitHooks'},
-                ['.git/config']                = {type = 'Git'},
-                ['.git/info/*']                = {type = 'Git'},
-                ['.github/workflows/main.yml'] = {type = 'Github'},
-                ['.github/workflows/*.yml']    = {type = 'Github'},
-                ['.travis.yml']                = {type = 'Travis' },
-                ['.pre-commit-config.yaml']    = {type = 'PreCommit'},
-                ['.ycm_extra_conf.py']         = {type = 'YCM'},
-                ['.project.vim']               = {type = 'Project'},
-                ['.clang-format']              = {type = 'Clang'},
-                ['.clang-*']                   = {type = 'Clang'},
-                ['compile_flags.txt']          = {type = 'CompileFlags'},
-                ['compile_commands.json']      = {type = 'CompileDB'},
-                ['UltiSnips/*.snippets']       = {type = 'UltiSnips'},
-                ['README.md']                  = {type = 'Readme'},
-                ['LICENSE']                    = {type = 'License'},
-                ['Makefile']                   = {type = 'Makefile'},
-                ['CMakeLists.txt']             = {type = 'CMake'},
-                ['*.cmake']                    = {type = 'CMake'},
+                ['.projections.json']          = { type = 'Projections' },
+                ['.gitignore']                 = { type = 'Gitignore' },
+                ['.git/hooks/*']               = { type = 'GitHooks' },
+                ['.git/config']                = { type = 'Git' },
+                ['.git/info/*']                = { type = 'Git' },
+                ['.github/workflows/main.yml'] = { type = 'Github' },
+                ['.github/workflows/*.yml']    = { type = 'Github' },
+                ['.travis.yml']                = { type = 'Travis' },
+                ['.pre-commit-config.yaml']    = { type = 'PreCommit' },
+                ['.ycm_extra_conf.py']         = { type = 'YCM' },
+                ['pyproject.toml']             = { type = 'PyProject' },
+                ['stylua.toml']                = { type = 'Stylua' },
+                ['.project.vim']               = { type = 'Project' },
+                ['.clang-format']              = { type = 'Clang' },
+                ['.clang-*']                   = { type = 'Clang' },
+                ['compile_flags.txt']          = { type = 'CompileFlags' },
+                ['compile_commands.json']      = { type = 'CompileDB' },
+                ['UltiSnips/*.snippets']       = { type = 'UltiSnips' },
+                ['README.md']                  = { type = 'Readme' },
+                ['LICENSE']                    = { type = 'License' },
+                ['Makefile']                   = { type = 'Makefile' },
+                ['CMakeLists.txt']             = { type = 'CMake' },
+                ['*.cmake']                    = { type = 'CMake' },
             }
-            set_autocmd{
-                event   = 'User',
+            set_autocmd {
+                event = 'User',
                 pattern = 'ProjectionistDetect',
-                cmd     = 'call projectionist#append(getcwd(), g:common_projections)',
-                group   = 'CommonProjections',
+                cmd = 'call projectionist#append(getcwd(), g:common_projections)',
+                group = 'CommonProjections',
             }
         end,
     }
 
-    use {'tpope/vim-fugitive',}
-    use {'junegunn/gv.vim', cmd = 'GV', wants = 'vim-fugitive'}
+    -- use {
+    --     'TimUntersberger/neogit',
+    --     config = function()
+    --         require 'plugins.neogit'
+    --     end,
+    --     wants = { 'plenary.nvim', 'diffview.nvim' },
+    -- }
+
+    use { 'tpope/vim-fugitive' }
+    use { 'junegunn/gv.vim', cmd = 'GV', wants = 'vim-fugitive' }
 
     use {
         'sindrets/diffview.nvim',
-        cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
+        cond = function()
+            return vim.env.VIM_MIN == nil and vim.g.minimal == nil
+        end,
         config = function()
-            require'plugins.diffview'
+            require 'plugins.diffview'
 
-            local set_autocmd = require'neovim.autocmds'.set_autocmd
+            local set_autocmd = require('neovim.autocmds').set_autocmd
 
-            set_autocmd{
-                event   = 'Filetype',
+            set_autocmd {
+                event = 'Filetype',
                 pattern = 'Diff{viewFiles,FileHistory}',
-                cmd     = 'lua require"plugins.diffview".set_mappings()',
-                group   = 'DiffViewMappings',
+                cmd = 'lua require"plugins.diffview".set_mappings()',
+                group = 'DiffViewMappings',
             }
 
-            set_autocmd{
-                event   = 'TabEnter',
+            set_autocmd {
+                event = 'TabEnter',
                 pattern = '*',
-                cmd     = 'lua require"plugins.diffview".set_mappings()',
-                group   = 'DiffViewMappings',
+                cmd = 'lua require"plugins.diffview".set_mappings()',
+                group = 'DiffViewMappings',
             }
         end,
     }
 
     use {
         'rhysd/git-messenger.vim',
-        cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
-        setup = function() vim.g.git_messenger_no_default_mappings = 1 end,
+        cond = function()
+            return vim.env.VIM_MIN == nil and vim.g.minimal == nil
+        end,
+        setup = function()
+            vim.g.git_messenger_no_default_mappings = 1
+        end,
         config = function()
-            vim.api.nvim_set_keymap(
-                'n',
-                '=m',
-                '<Plug>(git-messenger)',
-                {silent = true, nowait = true}
-            )
+            vim.api.nvim_set_keymap('n', '=m', '<Plug>(git-messenger)', { silent = true, nowait = true })
         end,
     }
 
@@ -188,7 +205,9 @@ packer.startup(function()
 
     use {
         'lewis6991/gitsigns.nvim',
-        cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
+        cond = function()
+            return vim.env.VIM_MIN == nil and vim.g.minimal == nil
+        end,
         wants = 'plenary.nvim',
         config = function()
             require('gitsigns').setup {
@@ -197,8 +216,14 @@ packer.startup(function()
                     noremap = true,
                     buffer = true,
 
-                    ['n ]c'] = { expr = true, "&diff ? ']c' : '<cmd>lua require\"gitsigns.actions\".next_hunk()<CR>'"},
-                    ['n [c'] = { expr = true, "&diff ? '[c' : '<cmd>lua require\"gitsigns.actions\".prev_hunk()<CR>'"},
+                    ['n ]c'] = {
+                        expr = true,
+                        "&diff ? ']c' : '<cmd>lua require\"gitsigns.actions\".next_hunk()<CR>'",
+                    },
+                    ['n [c'] = {
+                        expr = true,
+                        "&diff ? '[c' : '<cmd>lua require\"gitsigns.actions\".prev_hunk()<CR>'",
+                    },
 
                     ['n =s'] = '<cmd>lua require"gitsigns".stage_hunk()<CR>',
                     ['v =s'] = '<cmd>lua require"gitsigns".stage_hunk({vim.fn.line("."), vim.fn.line("v")})<CR>',
@@ -219,19 +244,21 @@ packer.startup(function()
                 current_line_blame_opts = {
                     virt_text = true,
                     virt_text_pos = 'eol',
-                    delay = 1000
+                    delay = 1000,
                 },
                 -- numhl = false,
                 -- linehl = false,
                 -- status_formatter = nil, -- Use default
                 -- word_diff = false,
             }
-        end
+        end,
     }
 
     use {
         'sainnhe/sonokai',
-        cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
+        cond = function()
+            return vim.env.VIM_MIN == nil and vim.g.minimal == nil
+        end,
         config = function()
             vim.opt.termguicolors = true
 
@@ -244,21 +271,27 @@ packer.startup(function()
 
             vim.g.airline_theme = 'sonokai'
 
-            vim.cmd[[colorscheme sonokai]]
+            vim.cmd [[colorscheme sonokai]]
         end,
     }
 
     use {
         'tommcdo/vim-lion',
         event = 'VimEnter',
-        cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
-        config = function() vim.g.lion_squeeze_spaces = 1 end,
+        cond = function()
+            return vim.env.VIM_MIN == nil and vim.g.minimal == nil
+        end,
+        config = function()
+            vim.g.lion_squeeze_spaces = 1
+        end,
     }
 
     use {
         'tpope/vim-abolish',
-        cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
-        event = {'InsertEnter', 'CmdwinEnter'},
+        cond = function()
+            return vim.env.VIM_MIN == nil and vim.g.minimal == nil
+        end,
+        event = { 'InsertEnter', 'CmdwinEnter' },
         -- TODO: configs
         -- config = function() require'plugins.abolish' end,
     }
@@ -266,13 +299,17 @@ packer.startup(function()
     use {
         'tpope/vim-markdown',
         ft = 'markdown',
-        cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
+        cond = function()
+            return vim.env.VIM_MIN == nil and vim.g.minimal == nil
+        end,
     }
 
     use {
         'Yggdroot/indentLine',
         event = 'VimEnter',
-        cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
+        cond = function()
+            return vim.env.VIM_MIN == nil and vim.g.minimal == nil
+        end,
         setup = function()
             vim.g.indentLine_fileTypeExclude = {
                 'Telescope',
@@ -309,115 +346,87 @@ packer.startup(function()
                     'n',
                     '<C-z>',
                     '<cmd>call firenvim#hide_frame()<CR>',
-                    {noremap = true}
+                    { noremap = true }
                 )
             end
         end,
-        run = function() vim.fn['firenvim#install'](0) end,
-    }
-
-    use {
-        'ludovicchabant/vim-gutentags',
-        cond = function()
-            local executable = function(exe) return vim.fn.executable(exe) == 1 end
-            local min = vim.env.VIM_MIN ~= nil or vim.g.minimal ~= nil
-            local is_firenvim = vim.g.started_by_firenvim
-            return not min and not is_firenvim and (executable('ctags') or executable('cscope'))
+        run = function()
+            vim.fn['firenvim#install'](0)
         end,
-        config = function() require'plugins.gutentags' end,
     }
 
+    -- use {
+    --     'ludovicchabant/vim-gutentags',
+    --     cond = function()
+    --         local executable = function(exe) return vim.fn.executable(exe) == 1 end
+    --         local min = vim.env.VIM_MIN ~= nil or vim.g.minimal ~= nil
+    --         local is_firenvim = vim.g.started_by_firenvim
+    --         return not min and not is_firenvim and (executable('ctags') or executable('cscope'))
+    --     end,
+    --     config = function() require'plugins.gutentags' end,
+    -- }
 
     use {
         'kana/vim-textobj-user',
-        cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
-        event = 'VimEnter',
         requires = {
-            {
-                'kana/vim-textobj-line',
-                cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
-                event = 'VimEnter',
-            },
-            {
-                'kana/vim-textobj-entire',
-                cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
-                event = 'VimEnter',
-            },
-            {
-                'michaeljsmith/vim-indent-object',
-                cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
-                event = 'VimEnter',
-            },
-            {
-                'glts/vim-textobj-comment',
-                cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
-                event = 'VimEnter',
-            },
-        }
+            { 'kana/vim-textobj-line' },
+            { 'kana/vim-textobj-entire' },
+            { 'michaeljsmith/vim-indent-object' },
+            { 'glts/vim-textobj-comment' },
+        },
     }
 
     use {
         'phaazon/hop.nvim',
-        cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
-        config = function() require'plugins.hop' end,
+        cond = function()
+            return vim.env.VIM_MIN == nil and vim.g.minimal == nil
+        end,
+        config = function()
+            require 'plugins.hop'
+        end,
     }
 
     use {
         'folke/trouble.nvim',
-        cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
-        config = function() require'plugins.trouble' end,
+        cond = function()
+            return vim.env.VIM_MIN == nil and vim.g.minimal == nil
+        end,
+        config = function()
+            require 'plugins.trouble'
+        end,
     }
 
     use {
         'folke/todo-comments.nvim',
         cond = function()
             local no_min = vim.env.VIM_MIN == nil and vim.g.minimal == nil
-            local has_rg = vim.fn.executable('rg') == 1
+            local has_rg = vim.fn.executable 'rg' == 1
             return no_min and has_rg
         end,
-        config = function() require'plugins.todos' end,
+        config = function()
+            require 'plugins.todos'
+        end,
         wants = 'trouble.nvim',
     }
 
     use {
         'vim-airline/vim-airline',
-        cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
-        config = function() require'plugins.airline' end,
+        cond = function()
+            return vim.env.VIM_MIN == nil and vim.g.minimal == nil
+        end,
+        config = function()
+            require 'plugins.airline'
+        end,
         requires = {
             {
                 'vim-airline/vim-airline-themes',
-                cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
-            }
+                cond = function()
+                    return vim.env.VIM_MIN == nil and vim.g.minimal == nil
+                end,
+            },
         },
         after = 'firenvim',
     }
-
-    -- use{
-    --     "vhyrro/neorg",
-    --     config = function()
-    --         require('neorg').setup {
-    --             -- Tell Neorg what modules to load
-    --             load = {
-    --                 ["core.defaults"] = {}, -- Load all the default modules
-    --                 ["core.keybinds"] = { -- Configure core.keybinds
-    --                     config = {
-    --                         default_keybinds = true, -- Generate the default keybinds
-    --                         neorg_leader = "<Leader>o" -- This is the default if unspecified
-    --                     }
-    --                 },
-    --                 ["core.norg.concealer"] = {}, -- Allows for use of icons
-    --                 ["core.norg.dirman"] = { -- Manage your directories with Neorg
-    --                     config = {
-    --                         workspaces = {
-    --                             my_workspace = "~/neorg"
-    --                         }
-    --                     }
-    --                 }
-    --             },
-    --         }
-    --     end,
-    --     wants = 'plenary.nvim'
-    -- }
 
     -- use {
     --     'vimwiki/vimwiki',
@@ -462,7 +471,7 @@ packer.startup(function()
     use {
         'neomake/neomake',
         cond = function()
-            return vim.env.VIM_MIN == nil and vim.g.minimal == nil and vim.fn.has('python3') == 1
+            return vim.env.VIM_MIN == nil and vim.g.minimal == nil and vim.fn.has 'python3' == 1
         end,
         event = 'VimEnter',
     }
@@ -470,11 +479,11 @@ packer.startup(function()
     use {
         'SirVer/ultisnips',
         cond = function()
-            return vim.env.VIM_MIN == nil and vim.g.minimal == nil and vim.fn.has('python3') == 1
+            return vim.env.VIM_MIN == nil and vim.g.minimal == nil and vim.fn.has 'python3' == 1
         end,
         event = 'VimEnter',
         setup = function()
-            vim.g.UltiSnipsEditSplit     = 'context'
+            vim.g.UltiSnipsEditSplit = 'context'
             vim.g.UltiSnipsExpandTrigger = '<C-,>'
 
             -- Remove all select mappigns in expanded snip
@@ -483,8 +492,8 @@ packer.startup(function()
 
             vim.g.ulti_expand_or_jump_res = 0
             vim.g.ulti_jump_backwards_res = 0
-            vim.g.ulti_jump_forwards_res  = 0
-            vim.g.ulti_expand_res         = 0
+            vim.g.ulti_jump_forwards_res = 0
+            vim.g.ulti_expand_res = 0
 
             vim.g.ultisnips_python_quoting_style = 'single'
             vim.g.ultisnips_python_triple_quoting_style = 'double'
@@ -496,51 +505,55 @@ packer.startup(function()
                 'x',
                 '<CR>',
                 ':call UltiSnips#SaveLastVisualSelection()<CR>gv"_s',
-                {silent = true}
+                { silent = true }
             )
         end,
         requires = {
             {
                 'honza/vim-snippets',
                 cond = function()
-                    return vim.env.VIM_MIN == nil and vim.g.minimal == nil and vim.fn.has('python3') == 1
+                    return vim.env.VIM_MIN == nil and vim.g.minimal == nil and vim.fn.has 'python3' == 1
                 end,
             },
         },
     }
 
     use {
-        'hrsh7th/nvim-compe',
-        config = function() require'plugins.completion' end,
-        cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
-        event = 'VimEnter', -- NOTE: Nees to defer this as much as possible because it needs info from other plugins
-    }
-
-    use {
         'nvim-treesitter/nvim-treesitter',
         run = ':TSUpdate',
-        config = function() require'plugins.treesitter' end,
+        config = function()
+            require 'plugins.treesitter'
+        end,
         cond = function()
-            return vim.fn.executable('gcc') == 1 or vim.fn.executable('clang') == 1
+            return vim.fn.executable 'gcc' == 1 or vim.fn.executable 'clang' == 1
         end,
         requires = {
-            {'nvim-treesitter/playground'},
-            {'nvim-treesitter/nvim-treesitter-refactor'},
-            {'nvim-treesitter/nvim-treesitter-textobjects'},
-        }
+            { 'nvim-treesitter/playground' },
+            { 'nvim-treesitter/nvim-treesitter-refactor' },
+            { 'nvim-treesitter/nvim-treesitter-textobjects' },
+            { 'David-Kunz/treesitter-unit' },
+        },
     }
 
     use {
         'mfussenegger/nvim-dap',
-        cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
-        config = function() require'plugins.dap' end,
+        cond = function()
+            return vim.env.VIM_MIN == nil and vim.g.minimal == nil
+        end,
+        config = function()
+            require 'plugins.dap'
+        end,
         requires = {
             {
                 'theHamsta/nvim-dap-virtual-text',
-                cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
-                setup = function() vim.g.dap_virtual_text = true end,
+                cond = function()
+                    return vim.env.VIM_MIN == nil and vim.g.minimal == nil
+                end,
+                setup = function()
+                    vim.g.dap_virtual_text = true
+                end,
             },
-        }
+        },
     }
 
     -- use {
@@ -568,12 +581,48 @@ packer.startup(function()
     --     wants = 'nvim-dap'
     -- }
 
+    -- use {
+    --     'nvim-telescope/telescope-smart-history.nvim',
+    --     cond = function()
+    --         local os = jit.os:lower()
+    --         if os == 'windows' then
+    --             -- TODO: search for dll
+    --             return false
+    --         end
+    --         return vim.fn.executable 'sqlite3' == 1
+    --     end,
+    --     module = 'telescope',
+    --     config = function()
+    --         require('telescope').load_extension 'smart_history'
+    --     end,
+    --     wants = { 'sqlite.lua' },
+    -- }
+
+    -- use {
+    --     'nvim-telescope/telescope-frecency.nvim',
+    --     cond = function()
+    --         local os = jit.os:lower()
+    --         if os == 'windows' then
+    --             -- TODO: search for dll
+    --             return false
+    --         end
+    --         return vim.fn.executable 'sqlite3' == 1
+    --     end,
+    --     module = 'telescope',
+    --     config = function()
+    --         require('telescope').load_extension 'frecency'
+    --     end,
+    --     wants = { 'sqlite.lua' },
+    -- }
+
     use {
         'nvim-telescope/telescope.nvim',
-        config = function() require'plugins.telescope' end,
+        config = function()
+            require 'plugins.telescope'
+        end,
         wants = {
             'plenary.nvim',
-            'popup.nvim'
+            'popup.nvim',
         },
     }
 
@@ -587,22 +636,59 @@ packer.startup(function()
     --     }
     -- end
 
-    use {'folke/lsp-colors.nvim'}
+    use { 'folke/lsp-colors.nvim' }
     use {
         'neovim/nvim-lspconfig',
-        config = function() require'plugins.lsp' end,
+        config = function()
+            require 'plugins.lsp'
+        end,
         after = 'telescope.nvim',
         requires = {
-            {'glepnir/lspsaga.nvim'},
-            {'weilbith/nvim-lsp-smag'},
-            {'weilbith/nvim-floating-tag-preview'},
+            { 'weilbith/nvim-lsp-smag' },
+            { 'weilbith/nvim-floating-tag-preview' },
         },
     }
 
     use {
         'norcalli/nvim-terminal.lua',
-        config = function() require'terminal'.setup() end,
+        config = function()
+            require('terminal').setup()
+        end,
     }
+
+    -- use {
+    --     'hrsh7th/nvim-compe',
+    --     config = function() require'plugins.completion' end,
+    --     cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
+    --     event = 'VimEnter', -- NOTE: Nees to defer this as much as possible because it needs info from other plugins
+    -- }
+
+    use {
+        'hrsh7th/nvim-cmp',
+        requires = {
+            { 'hrsh7th/cmp-nvim-lsp' },
+            { 'hrsh7th/cmp-buffer' },
+        },
+        config = function()
+            require 'plugins.completion'
+        end,
+    }
+
+    -- -- TODO: Check for python 3.8.5
+    -- use {
+    --     'ms-jpq/coq_nvim',
+    --     branch = 'coq',
+    --     cond = function() return vim.fn.has('python3') == 1 end,
+    --     setup = function()
+    --         vim.g.coq_settings = {
+    --             auto_start = true,
+    --             ['keymap.recommended'] = false,
+    --         }
+    --     end,
+    --     -- config = function()
+    --     --     vim.cmd('COQdeps')
+    --     -- end,
+    -- }
 
     -- use {
     --     'lewis6991/spellsitter.nvim',
@@ -639,6 +725,6 @@ packer.startup(function()
 end)
 
 if has_compiler then
-    local rocks = require'packer.luarocks'
+    local rocks = require 'packer.luarocks'
     rocks.install_commands()
 end

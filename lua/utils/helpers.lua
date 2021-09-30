@@ -1,11 +1,11 @@
-local sys = require'sys'
-local nvim = require'neovim'
+local sys = require 'sys'
+local nvim = require 'neovim'
 -- local plugins = require'neovim'.plugins
 
-local executable       = require'utils.files'.executable
-local normalize_path   = require'utils.files'.normalize_path
-local getcwd           = require'utils.files'.getcwd
-local split            = require'utils.strings'.split
+local executable = require('utils.files').executable
+local normalize_path = require('utils.files').normalize_path
+local getcwd = require('utils.files').getcwd
+local split = require('utils.strings').split
 
 local system = vim.fn.system
 local line = vim.fn.line
@@ -14,6 +14,7 @@ local M = {}
 
 local abolish = {}
 
+-- stylua: ignore
 local langservers = {
     python     = {'pyls', 'jedi-language-server'},
     c          = {'clangd', 'ccls', 'cquery'},
@@ -33,6 +34,7 @@ local langservers = {
     Dockerfile = {'docker-langserver'},
 }
 
+-- stylua: ignore
 abolish['en'] = {
     ['flase']                                = 'false',
     ['syntaxis']                             = 'syntax',
@@ -69,6 +71,7 @@ abolish['en'] = {
     ['cal{a,e}nder{,s}']                     = 'cal{e}ndar{}'
 }
 
+-- stylua: ignore
 abolish['es'] = {
     ['analisis']                      = 'análisis',
     ['artifial']                      = 'artificial',
@@ -133,9 +136,9 @@ local qf_funcs = {
     open = function(win)
         local cmd = vim.o.splitbelow and 'botright' or 'topleft'
         if win then
-            vim.cmd(cmd..' lopen')
+            vim.cmd(cmd .. ' lopen')
         else
-            vim.cmd(cmd..' copen')
+            vim.cmd(cmd .. ' copen')
         end
     end,
     close = function(win)
@@ -273,7 +276,6 @@ function M.get_icon(icon)
 end
 
 function M.project_config(event)
-
     local cwd = event.cwd or getcwd()
     cwd = cwd:gsub('\\', '/')
 
@@ -305,8 +307,8 @@ function M.project_config(event)
         git_dir = git_dir,
     }
 
-    if is_git and not git_dir and nvim.has('nvim-0.5') then
-        require'utils.functions'.get_git_dir(function(dir)
+    if is_git and not git_dir and nvim.has 'nvim-0.5' then
+        require('utils.functions').get_git_dir(function(dir)
             local project = vim.b.project_root
             project.git_dir = dir
             git_dirs[cwd] = dir
@@ -315,14 +317,14 @@ function M.project_config(event)
     end
 
     if is_git then
-        pcall(require'git.commands'.set_commands)
+        pcall(require('git.commands').set_commands)
     else
-        pcall(require'git.commands'.rm_commands)
+        pcall(require('git.commands').rm_commands)
     end
 
     M.set_grep(is_git, true)
 
-    local project = vim.fn.findfile('.project.vim', cwd..';')
+    local project = vim.fn.findfile('.project.vim', cwd .. ';')
     if #project > 0 then
         -- print('Sourcing Project ', project)
         nvim.ex.source(project)
@@ -331,10 +333,10 @@ end
 
 function M.add_nl(down)
     local cursor_pos = nvim.win.get_cursor(0)
-    local lines = {''}
+    local lines = { '' }
     local count = vim.v['count1']
     if count > 1 then
-        for _=2,count,1 do
+        for _ = 2, count, 1 do
             lines[#lines + 1] = ''
         end
     end
@@ -349,26 +351,26 @@ function M.add_nl(down)
 
     nvim.put(lines, 'l', down, true)
     nvim.win.set_cursor(0, cursor_pos)
-    vim.cmd('silent! call repeat#set("'..cmd..'",'..count..')')
+    vim.cmd('silent! call repeat#set("' .. cmd .. '",' .. count .. ')')
 end
 
 function M.move_line(down)
     -- local cmd
-    local lines = {''}
+    local lines = { '' }
     local count = vim.v.count1
 
     if count > 1 then
-        for _=2,count,1 do
+        for _ = 2, count, 1 do
             lines[#lines + 1] = ''
         end
     end
 
     if down then
         -- cmd = ']e'
-        count = line('$') < line('.') + count and line('$') or line('.') + count
+        count = line '$' < line '.' + count and line '$' or line '.' + count
     else
         -- cmd = '[e'
-        count = line('.') - count - 1 < 1 and 1 or line('.') - count - 1
+        count = line '.' - count - 1 < 1 and 1 or line '.' - count - 1
     end
 
     vim.cmd(string.format([[move %s | normal! ==]], count))
@@ -379,15 +381,15 @@ end
 function M.find_project_root(path)
     assert(type(path) == 'string' and path ~= '', ([[Not a path: "%s"]]):format(path))
     local root
-    local vcs_markers = {'.git', '.svn', '.hg',}
+    local vcs_markers = { '.git', '.svn', '.hg' }
     local dir = vim.fn.fnamemodify(path, ':p')
 
-    for _,marker in pairs(vcs_markers) do
-        root = vim.fn.finddir(marker, dir..';')
+    for _, marker in pairs(vcs_markers) do
+        root = vim.fn.finddir(marker, dir .. ';')
 
         if #root == 0 and marker == '.git' then
-            root = vim.fn.findfile(marker, dir..';')
-            root = #root > 0 and root..'/' or root
+            root = vim.fn.findfile(marker, dir .. ';')
+            root = #root > 0 and root .. '/' or root
         end
 
         if root ~= '' then
@@ -401,11 +403,8 @@ function M.find_project_root(path)
 end
 
 function M.is_git_repo(root)
-    assert(
-        type(root) == type('') and root ~= '',
-        debug.traceback(([[Not a path: "%s"]]):format(root))
-    )
-    if not executable('git') then
+    assert(type(root) == type '' and root ~= '', debug.traceback(([[Not a path: "%s"]]):format(root)))
+    if not executable 'git' then
         return false
     end
 
@@ -413,18 +412,17 @@ function M.is_git_repo(root)
 
     local git = root .. '/.git'
 
-    if require'utils.files'.is_dir(git) or require'utils.files'.is_file(git) then
+    if require('utils.files').is_dir(git) or require('utils.files').is_file(git) then
         return true
     end
-    return vim.fn.findfile('.git', root..';') ~= ''
+    return vim.fn.findfile('.git', root .. ';') ~= ''
 end
 
 function M.check_version(sys_version, version_target)
-    assert(type(sys_version) == type({}), debug.traceback('System version must be an array'))
-    assert(type(version_target) == type({}), debug.traceback('Checking version must be an array'))
+    assert(type(sys_version) == type {}, debug.traceback 'System version must be an array')
+    assert(type(version_target) == type {}, debug.traceback 'Checking version must be an array')
 
-    for i,_ in pairs(version_target) do
-
+    for i, _ in pairs(version_target) do
         if type(version_target[i]) == 'string' then
             version_target[i] = tonumber(version_target[i])
         end
@@ -445,26 +443,26 @@ function M.check_version(sys_version, version_target)
 end
 
 function M.has_git_version(...)
-    if not executable('git') then
+    if not executable 'git' then
         return false
     end
 
     local args
     if ... == nil or type(...) ~= 'table' then
-        args = {...}
+        args = { ... }
     else
         args = ...
     end
 
     if #STORAGE.git_version == 0 then
-        STORAGE.git_version = string.match(system('git --version'), '%d+%p%d+%p%d+')
+        STORAGE.git_version = string.match(system 'git --version', '%d+%p%d+%p%d+')
     end
 
     if #args == 0 then
         return STORAGE.git_version
     end
 
-    local components = require'utils.strings'.split_components(STORAGE.git_version, '%d+')
+    local components = require('utils.strings').split_components(STORAGE.git_version, '%d+')
 
     return M.check_version(components, args)
 end
@@ -474,29 +472,27 @@ function M.ignores(tool)
 
     local ignores = {
         fd = {},
-        find = {'-regextype', 'egrep', '!', [[\(]]},
+        find = { '-regextype', 'egrep', '!', [[\(]] },
         -- rg = {},
         ag = {},
         grep = {},
         -- findstr = {},
     }
 
-
     if #excludes == 0 or not ignores[tool] then
         return ''
     end
 
-    for i=1,#excludes do
+    for i = 1, #excludes do
         -- excludes[i] = "'" .. excludes[i] .. "'"
 
-        ignores.fd[#ignores.fd + 1] = '--exclude='..excludes[i]
-        ignores.find[#ignores.find + 1] = '-iwholename '..excludes[i]
+        ignores.fd[#ignores.fd + 1] = '--exclude=' .. excludes[i]
+        ignores.find[#ignores.find + 1] = '-iwholename ' .. excludes[i]
         if i < #excludes then
             ignores.find[#ignores.find + 1] = '-or'
         end
-        ignores.ag[#ignores.ag + 1] = ' --ignore '..excludes[i]
-        ignores.grep[#ignores.grep + 1] = '--exclude='..excludes[i]
-
+        ignores.ag[#ignores.ag + 1] = ' --ignore ' .. excludes[i]
+        ignores.grep[#ignores.grep + 1] = '--exclude=' .. excludes[i]
     end
 
     ignores.find[#ignores.find + 1] = [[\)]]
@@ -510,8 +506,7 @@ function M.ignores(tool)
 end
 
 function M.grep(tool, attr, lst)
-
-    local property = (attr and attr ~= '') and  attr or 'grepprg'
+    local property = (attr and attr ~= '') and attr or 'grepprg'
 
     if STORAGE.modern_git == -1 then
         STORAGE.modern_git = M.has_git_version('2', '19')
@@ -520,20 +515,20 @@ function M.grep(tool, attr, lst)
 
     local greplist = {
         git = {
-            grepprg = 'git --no-pager grep '.. (modern_git and '--column' or '') ..' --no-color -Iin ',
+            grepprg = 'git --no-pager grep ' .. (modern_git and '--column' or '') .. ' --no-color -Iin ',
             grepformat = '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m',
         },
         rg = {
             grepprg = 'rg -SHn --trim --color=never --no-heading --column ',
-            grepformat = '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m'
+            grepformat = '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m',
         },
         ag = {
-            grepprg = 'ag -S --follow --nogroup --nocolor --hidden --vimgrep '..M.ignores('ag')..' ',
-            grepformat = '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m'
+            grepprg = 'ag -S --follow --nogroup --nocolor --hidden --vimgrep ' .. M.ignores 'ag' .. ' ',
+            grepformat = '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m',
         },
         grep = {
-            grepprg = 'grep -RHiIn --color=never '..M.ignores('grep')..' ',
-            grepformat = '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m'
+            grepprg = 'grep -RHiIn --color=never ' .. M.ignores 'grep' .. ' ',
+            grepformat = '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m',
         },
         findstr = {
             grepprg = 'findstr -rspn ',
@@ -552,11 +547,11 @@ end
 
 function M.filelist(tool, lst)
     local filetool = {
-        git    = 'git --no-pager ls-files -co --exclude-standard',
-        fd     = 'fd --type=file --hidden --follow --color=never',
-        rg     = 'rg --color=never --no-search-zip --hidden --trim --files ',
-        ag     = 'ag -l --follow --nocolor --nogroup --hidden '..M.ignores('ag')..'-g ""',
-        find   = "find . -type f "..M.ignores('find') .. " -iname '*' ",
+        git = 'git --no-pager ls-files -co --exclude-standard',
+        fd = 'fd --type=file --hidden --follow --color=never',
+        rg = 'rg --color=never --no-search-zip --hidden --trim --files ',
+        ag = 'ag -l --follow --nocolor --nogroup --hidden ' .. M.ignores 'ag' .. '-g ""',
+        find = 'find . -type f ' .. M.ignores 'find' .. " -iname '*' ",
     }
 
     filetool.fdfind = string.gsub(filetool.fd, '^fd', 'fdfind')
@@ -564,7 +559,7 @@ function M.filelist(tool, lst)
     local filelist = lst and {} or ''
     if executable(tool) and filetool[tool] ~= nil then
         filelist = filetool[tool]
-    elseif tool == 'fd' and not executable('fd') and executable('fdfind') then
+    elseif tool == 'fd' and not executable 'fd' and executable 'fdfind' then
         filelist = filetool.fdfind
     end
 
@@ -584,10 +579,10 @@ function M.select_filelist(is_git, lst)
         'find',
     }
 
-    if executable('git') and is_git then
+    if executable 'git' and is_git then
         filelist = M.filelist('git', lst)
     else
-        for _,lister in pairs(utils) do
+        for _, lister in pairs(utils) do
             filelist = M.filelist(lister, lst)
             if #filelist > 0 then
                 break
@@ -599,7 +594,7 @@ function M.select_filelist(is_git, lst)
 end
 
 function M.select_grep(is_git, attr, lst)
-    local property = (attr and attr ~= '') and  attr or 'grepprg'
+    local property = (attr and attr ~= '') and attr or 'grepprg'
 
     local grepprg = ''
 
@@ -610,10 +605,10 @@ function M.select_grep(is_git, attr, lst)
         'findstr',
     }
 
-    if executable('git') and is_git then
+    if executable 'git' and is_git then
         grepprg = M.grep('git', property, lst)
     else
-        for _,grep in pairs(utils) do
+        for _, grep in pairs(utils) do
             grepprg = M.grep(grep, property, lst)
             if #grepprg > 0 then
                 break
@@ -644,63 +639,61 @@ function M.get_abbrs(language)
 end
 
 function M.abolish(language)
-
     local current = vim.bo.spelllang
-    local set_abbr = require'neovim.abbrs'.set_abbr
+    local set_abbr = require('neovim.abbrs').set_abbr
 
-    if nvim.has.cmd('Abolish') == 2 then
+    if nvim.has.cmd 'Abolish' == 2 then
         if abolish[current] ~= nil then
-            for base,_ in pairs(abolish[current]) do
-                vim.cmd('Abolish -delete -buffer '..base)
+            for base, _ in pairs(abolish[current]) do
+                vim.cmd('Abolish -delete -buffer ' .. base)
             end
         end
         if abolish[language] ~= nil then
-            for base,replace in pairs(abolish[language]) do
-                vim.cmd('Abolish -buffer '..base..' '..replace)
+            for base, replace in pairs(abolish[language]) do
+                vim.cmd('Abolish -buffer ' .. base .. ' ' .. replace)
             end
         end
     else
         local function remove_abbr(base)
-            set_abbr{
+            set_abbr {
                 mode = 'i',
                 lhs = base,
-                args = {silent = true, buffer = true},
+                args = { silent = true, buffer = true },
             }
 
-            set_abbr{
+            set_abbr {
                 mode = 'i',
                 lhs = base:upper(),
-                args = {silent = true, buffer = true},
+                args = { silent = true, buffer = true },
             }
 
-            set_abbr{
+            set_abbr {
                 mode = 'i',
-                lhs = base:gsub('%a',  string.upper, 1),
-                args = {silent = true, buffer = true}
+                lhs = base:gsub('%a', string.upper, 1),
+                args = { silent = true, buffer = true },
             }
-
         end
 
         local function change_abbr(base, replace)
-            set_abbr{
+            set_abbr {
                 mode = 'i',
                 lhs = base,
                 rhs = replace,
-                args = {buffer = true},
+                args = { buffer = true },
             }
 
-            set_abbr{
+            set_abbr {
                 mode = 'i',
                 lhs = base:upper(),
                 rhs = replace:upper(),
-                args = {buffer = true},
+                args = { buffer = true },
             }
 
-            set_abbr{
+            set_abbr {
                 mode = 'i',
                 lhs = base:gsub('%a', string.upper, 1),
                 rhs = replace:gsub('%a', string.upper, 1),
-                args = {buffer = true},
+                args = { buffer = true },
             }
         end
 
@@ -712,19 +705,18 @@ function M.abolish(language)
             end
         end
         if abolish[language] ~= nil then
-            for base,replace in pairs(abolish[language]) do
+            for base, replace in pairs(abolish[language]) do
                 if not string.match(base, '{.+}') then
                     change_abbr(base, replace)
                 end
             end
         end
     end
-
 end
 
 local function check_lsp(servers)
     for _, server in pairs(servers) do
-        if executable(server) or require'utils.files'.is_dir(sys.cache..'/lspconfig/'..server) then
+        if executable(server) or require('utils.files').is_dir(sys.cache .. '/lspconfig/' .. server) then
             return true
         end
     end
@@ -733,7 +725,6 @@ local function check_lsp(servers)
 end
 
 function M.check_language_server(languages)
-
     if languages == nil or #languages == 0 then
         for _, server in pairs(langservers) do
             if check_lsp(server) then
@@ -754,18 +745,17 @@ function M.check_language_server(languages)
 end
 
 function M.get_language_server(language)
-
     if not M.check_language_server(language) then
         return {}
     end
 
     local cmds = {
-        ['pyls']   = {
+        ['pyls'] = {
             'pyls',
             '--check-parent-process',
-            '--log-file=' .. sys.tmp('pyls.log'),
+            '--log-file=' .. sys.tmp 'pyls.log',
         },
-        ['jedi-language-server']   = { 'jedi-language-server' },
+        ['jedi-language-server'] = { 'jedi-language-server' },
         ['clangd'] = {
             'clangd',
             '--index',
@@ -777,41 +767,45 @@ function M.get_language_server(language)
             '--completion-style=detailed',
             '--log=verbose',
         },
-        ['ccls']   = {
+        ['ccls'] = {
             'ccls',
-            '--log-file=' .. sys.tmp('ccls.log'),
-            '--init={'..
-                '"cache": {"directory": "' .. sys.cache .. '/ccls"},'..
-                '"completion": {"filterAndSort": false},'..
-                '"highlight": {"lsRanges" : true }'..
-            '}'
+            '--log-file=' .. sys.tmp 'ccls.log',
+            '--init={'
+                .. '"cache": {"directory": "'
+                .. sys.cache
+                .. '/ccls"},'
+                .. '"completion": {"filterAndSort": false},'
+                .. '"highlight": {"lsRanges" : true }'
+                .. '}',
         },
         ['cquery'] = {
             'cquery',
-            '--log-file=' .. sys.tmp('cquery.log'),
-            '--init={'..
-                '"cache": {"directory": "' .. sys.cache .. '/cquery"},'..
-                '"completion": {"filterAndSort": false},'..
-                '"highlight": { "enabled" : true },'..
-                '"emitInactiveRegions" : true'..
-            '}'
+            '--log-file=' .. sys.tmp 'cquery.log',
+            '--init={'
+                .. '"cache": {"directory": "'
+                .. sys.cache
+                .. '/cquery"},'
+                .. '"completion": {"filterAndSort": false},'
+                .. '"highlight": { "enabled" : true },'
+                .. '"emitInactiveRegions" : true'
+                .. '}',
         },
-        ['gopls']  = {'gopls' },
-        ['texlab'] = {'texlab' },
-        ['bash-language-server'] = {'bash-language-server', 'start'},
-        ['vim-language-server']  = {'vim-language-server', '--stdio'},
-        ['docker-langserver']    = {'docker-langserver', '--stdio'},
-        ['sumneko_lua']    = {
-            sys.cache..'/lspconfig/sumneko_lua/lua-language-server/bin/Linux/lua-language-server',
+        ['gopls'] = { 'gopls' },
+        ['texlab'] = { 'texlab' },
+        ['bash-language-server'] = { 'bash-language-server', 'start' },
+        ['vim-language-server'] = { 'vim-language-server', '--stdio' },
+        ['docker-langserver'] = { 'docker-langserver', '--stdio' },
+        ['sumneko_lua'] = {
+            sys.cache .. '/lspconfig/sumneko_lua/lua-language-server/bin/Linux/lua-language-server',
             '-E',
-            sys.cache..'/lspconfig/sumneko_lua/lua-language-server/main.lua',
+            sys.cache .. '/lspconfig/sumneko_lua/lua-language-server/main.lua',
         },
     }
 
     local cmd = {}
 
     if langservers[language] ~= nil then
-        for _,server in pairs(langservers[language]) do
+        for _, server in pairs(langservers[language]) do
             if cmds[server] ~= nil then
                 cmd = cmds[server]
                 break
@@ -829,42 +823,33 @@ function M.python(version, args)
     local pyversion = version == 3 and py3 or py2
 
     if pyversion == nil or pyversion == '' then
-        vim.notify(
-            'Python'..pyversion..' is not available in the system',
-            'ERROR',
-            {title='Python'}
-        )
+        vim.notify('Python' .. pyversion .. ' is not available in the system', 'ERROR', { title = 'Python' })
         return -1
     end
 
     local split_type = vim.o.splitbelow and 'botright' or 'topleft'
-    vim.cmd(split_type..' split term://'..pyversion..' '..args)
+    vim.cmd(split_type .. ' split term://' .. pyversion .. ' ' .. args)
 end
 
 function M.toggle_qf(win)
-
-    local qf_winid = qf_funcs.get_list({winid = 0}, win).winid
+    local qf_winid = qf_funcs.get_list({ winid = 0 }, win).winid
     local action = qf_winid > 0 and 'close' or 'open'
     qf_funcs[action](win)
-
 end
 
 function M.dump_to_qf(opts)
-    assert(
-        type(opts) == type({}) and type(opts.lines) == type({}),
-        'Missing "lines" attr to dump'
-    )
+    assert(type(opts) == type {} and type(opts.lines) == type {}, 'Missing "lines" attr to dump')
 
     assert(
-        not opts.efm or (type(opts.efm) == type({}) or type(opts.efm) == type('')),
-        debug.traceback('Invalid errorformat arg')
+        not opts.efm or (type(opts.efm) == type {} or type(opts.efm) == type ''),
+        debug.traceback 'Invalid errorformat arg'
     )
 
     opts.context = opts.context or 'GenericQfData'
     opts.title = opts.title or 'Generic Qf data'
     opts.efm = opts.efm or vim.opt_local.efm:get() or vim.opt_global.efm:get()
 
-    if type(opts.efm) == type({}) then
+    if type(opts.efm) == type {} then
         opts.efm = table.concat(opts.efm, ',')
     end
     -- opts.efm = opts.efm:gsub(' ', '\\ ')
@@ -877,7 +862,7 @@ function M.dump_to_qf(opts)
     opts.open = nil
     opts.jump = nil
     opts.cmdname = nil
-    opts.lines = require'utils.tables'.clear_lst(opts.lines)
+    opts.lines = require('utils.tables').clear_lst(opts.lines)
 
     local win
     if qf_type ~= 'qf' then
@@ -889,12 +874,9 @@ function M.dump_to_qf(opts)
     local info_tab = opts.tab
     if info_tab and info_tab ~= nvim.get_current_tabpage() then
         vim.notify(
-            ('%s Updated! with %s info'):format(
-                qf_type == 'qf' and 'Qf' or 'Loc',
-                opts.context
-            ),
+            ('%s Updated! with %s info'):format(qf_type == 'qf' and 'Qf' or 'Loc', opts.context),
             'INFO',
-            {title = qf_type == 'qf' and 'QuickFix' or 'LocationList'}
+            { title = qf_type == 'qf' and 'QuickFix' or 'LocationList' }
         )
         return
     elseif #opts.lines > 0 then

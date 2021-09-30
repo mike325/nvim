@@ -1,7 +1,7 @@
 _G['P'] = function(...)
-    local vars = vim.tbl_map(vim.inspect, {...})
+    local vars = vim.tbl_map(vim.inspect, { ... })
     print(unpack(vars))
-    return {...}
+    return { ... }
 end
 
 _G['PRINT'] = _G['P']
@@ -12,19 +12,19 @@ _G['RELOAD'] = function(pkg)
 end
 
 _G['PASTE'] = function(data)
-    if type(data) == type('') then
+    if type(data) == type '' then
         data = vim.split(data, '\n')
     end
-    if type(data) ~= type({}) then
+    if type(data) ~= type {} then
         data = vim.inspect(vim.split(data, '\n'))
     end
     vim.paste(data, -1)
 end
 
 _G['PERF'] = function(msg, ...)
-    local args = {...}
+    local args = { ... }
     assert(#args > 0 and vim.is_callable(args[1]), 'Invalid func ref')
-    assert(not msg or type(msg) == type(''), 'Invalid message: '..vim.inspect(msg))
+    assert(not msg or type(msg) == type '', 'Invalid message: ' .. vim.inspect(msg))
     local func = args[1]
     table.remove(args, 1)
     -- local start = os.time()

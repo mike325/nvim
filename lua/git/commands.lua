@@ -1,20 +1,20 @@
-local nvim = require'neovim'
-local sys  = require'sys'
+local nvim = require 'neovim'
+local sys = require 'sys'
 
-local executable = require'utils.files'.executable
+local executable = require('utils.files').executable
 
-if not executable('git') then
+if not executable 'git' then
     return false
 end
 
-local plugins = require'neovim'.plugins
-local set_command = require'neovim.commands'.set_command
-local rm_command = require'neovim.commands'.rm_command
+local plugins = require('neovim').plugins
+local set_command = require('neovim.commands').set_command
+local rm_command = require('neovim.commands').rm_command
 
 local M = {}
 
 function M.rm_commands()
-    rm_command{
+    rm_command {
         'GPush',
         'GPull',
         'GReview',
@@ -27,13 +27,12 @@ function M.rm_commands()
 end
 
 function M.set_commands()
-
     set_command {
         lhs = 'GPull',
         rhs = function(...)
-            local args = {...}
-            local utils = RELOAD'git.utils'
-            utils.launch_gitcmd_job{
+            local args = { ... }
+            local utils = RELOAD 'git.utils'
+            utils.launch_gitcmd_job {
                 gitcmd = 'pull',
                 args = args,
                 progress = true,
@@ -41,101 +40,110 @@ function M.set_commands()
                     pty = true,
                     on_exit = function(_, rc)
                         if rc ~= 0 then
-                            vim.notify('Failed to pull changes!!', 'ERROR', {title='GPull'})
+                            vim.notify('Failed to pull changes!!', 'ERROR', { title = 'GPull' })
                         else
-                            vim.notify('Repo updated!', 'INFO', {title='GPull'})
+                            vim.notify('Repo updated!', 'INFO', { title = 'GPull' })
                             nvim.ex.checktime()
                         end
-                    end
-                }
+                    end,
+                },
             }
         end,
-        args = {nargs = '*', force = true, buffer = true}
+        args = { nargs = '*', force = true, buffer = true },
     }
 
     set_command {
         lhs = 'GPush',
         rhs = function(...)
-            local args = {...}
-            local utils = RELOAD'git.utils'
-            utils.launch_gitcmd_job{
+            local args = { ... }
+            local utils = RELOAD 'git.utils'
+            utils.launch_gitcmd_job {
                 gitcmd = 'push',
                 args = args,
                 progress = true,
             }
         end,
-        args = {nargs = '*', force = true, buffer = true}
+        args = { nargs = '*', force = true, buffer = true },
     }
 
     set_command {
         lhs = 'GFetch',
         rhs = function(...)
-            local args = {...}
-            local utils = RELOAD'git.utils'
-            utils.launch_gitcmd_job{
+            local args = { ... }
+            local utils = RELOAD 'git.utils'
+            utils.launch_gitcmd_job {
                 gitcmd = 'fetch',
                 args = args,
                 progress = true,
             }
         end,
-        args = {nargs = '*', force = true, buffer = true}
+        args = { nargs = '*', force = true, buffer = true },
     }
 
     set_command {
         lhs = 'GWrite',
         rhs = function(...)
-            local args = {...}
+            local args = { ... }
             local bufname = vim.fn.bufname(nvim.get_current_buf())
             if sys.name == 'windows' then
                 bufname = bufname:gsub('\\', '/')
             end
             RELOAD('git.utils').status(function(status)
-                local utils = RELOAD'git.utils'
+                local utils = RELOAD 'git.utils'
                 if #args == 0 then
                     local workspace = status.workspace or {}
                     local untracked = status.untracked or {}
-                    local has_attrs  = require'utils.tables'.has_attrs
+                    local has_attrs = require('utils.tables').has_attrs
 
                     if workspace[bufname] or has_attrs(untracked, bufname) then
                         nvim.ex.update()
                         args = { bufname }
-                        utils.launch_gitcmd_job{
+                        utils.launch_gitcmd_job {
                             gitcmd = 'add',
                             args = args,
                             jobopts = {
                                 on_exit = function(_, rc)
                                     if rc ~= 0 then
-                                        vim.notify('Failed to Add file: '..bufname, 'ERROR', {title='GWrite'})
+                                        vim.notify(
+                                            'Failed to Add file: ' .. bufname,
+                                            'ERROR',
+                                            { title = 'GWrite' }
+                                        )
                                     end
-                                end
-                            }
+                                end,
+                            },
                         }
                     else
                         -- TODO: Improve this, and check for merge conflics
-                        vim.notify('Nothing to do', 'INFO', {title='GWrite'})
+                        vim.notify('Nothing to do', 'INFO', { title = 'GWrite' })
                     end
                 else
-                    for i=1,#args do
+                    for i = 1, #args do
                         if args[i] == '%' then
-                            args = require'utils.files'.normalize_path(args[i])
+                            args = require('utils.files').normalize_path(args[i])
                         end
                     end
-                    utils.launch_gitcmd_job{
+                    utils.launch_gitcmd_job {
                         gitcmd = 'add',
                         args = args,
                     }
                 end
             end)
         end,
-        args = {nargs = '*', force = true, buffer = true, complete = [[customlist,neovim#gitfiles_workspace]]}
+        args = {
+            nargs = '*',
+            force = true,
+            buffer = true,
+            complete = [[customlist,neovim#gitfiles_workspace]],
+        },
     }
 
     set_command {
         lhs = 'GRead',
         rhs = function(...)
-            local args = {...}
+            local args = { ... }
             RELOAD('git.utils').status(function(status)
-                local utils = RELOAD'git.utils'
+                local utils = RELOAD 'git.utils'
                 if #args == 0 then
                     local bufname = vim.fn.bufname(nvim.get_current_buf())
                     if sys.name == 'windows' then
@@ -143,138 +151,132 @@ function M.set_commands()
                     end
                     if status.stage and status.stage[bufname] then
                         nvim.ex.update()
-                        utils.launch_gitcmd_job{
+                        utils.launch_gitcmd_job {
                             gitcmd = 'reset',
-                            args = {'HEAD', bufname },
+                            args = { 'HEAD', bufname },
                             jobopts = {
                                 on_exit = function(_, rc)
                                     if rc == 0 then
-                                        utils.launch_gitcmd_job{
+                                        utils.launch_gitcmd_job {
                                             gitcmd = 'checkout',
-                                            args = {'--', bufname},
+                                            args = { '--', bufname },
                                             jobopts = {
                                                 on_exit = function(_, ec)
                                                     if ec ~= 0 then
                                                         vim.notify(
-                                                            ('Failed to reset file: %s'):format( bufname),
+                                                            ('Failed to reset file: %s'):format(bufname),
                                                             'ERROR',
-                                                            {title='GRead'}
+                                                            { title = 'GRead' }
                                                         )
                                                     end
                                                     nvim.ex.checktime()
-                                                end
-                                            }
+                                                end,
+                                            },
                                         }
                                     else
                                         vim.notify(
-                                            ('Failed to unstage file: %s'):format( bufname),
+                                            ('Failed to unstage file: %s'):format(bufname),
                                             'ERROR',
-                                            {title='GRead'}
+                                            { title = 'GRead' }
                                         )
                                     end
-                                end
-                            }
+                                end,
+                            },
                         }
                     elseif status.workspace and status.workspace[bufname] then
                         nvim.ex.update()
-                        args = {'--', bufname }
-                        utils.launch_gitcmd_job{
+                        args = { '--', bufname }
+                        utils.launch_gitcmd_job {
                             gitcmd = 'checkout',
                             args = args,
                         }
                     else
-                        vim.notify('Nothing to do', 'INFO', {title='GRead'})
+                        vim.notify('Nothing to do', 'INFO', { title = 'GRead' })
                     end
                 else
-                    vim.notify('This is still WIP', 'WARN', {title='GRead'})
-                    utils.launch_gitcmd_job{gitcmd = 'add', args = args}
+                    vim.notify('This is still WIP', 'WARN', { title = 'GRead' })
+                    utils.launch_gitcmd_job { gitcmd = 'add', args = args }
                 end
             end)
         end,
-        args = {nargs = '*', force = true, buffer = true}
+        args = { nargs = '*', force = true, buffer = true },
     }
 
     set_command {
         lhs = 'GRestore',
         rhs = function(...)
-            local args = {...}
+            local args = { ... }
             RELOAD('git.utils').status(function(status)
-                local utils = RELOAD'git.utils'
+                local utils = RELOAD 'git.utils'
                 if #args == 0 then
                     local bufname = vim.fn.bufname(nvim.get_current_buf())
                     if sys.name == 'windows' then
                         bufname = bufname:gsub('\\', '/')
                     end
                     if status.stage and status.stage[bufname] then
-                        utils.launch_gitcmd_job{
+                        utils.launch_gitcmd_job {
                             gitcmd = 'reset',
                             args = { 'HEAD', bufname },
                             jobopts = {
                                 on_exit = function(_, rc)
                                     if rc ~= 0 then
                                         vim.notify(
-                                            ('Failed to restore file: %s'):format( bufname),
+                                            ('Failed to restore file: %s'):format(bufname),
                                             'ERROR',
-                                            {title='GRestore'}
+                                            { title = 'GRestore' }
                                         )
                                     end
                                     nvim.ex.checktime()
-                                end
-                            }
+                                end,
+                            },
                         }
                     else
-                        vim.notify('Nothing to do', 'INFO', {title='GRestore'})
+                        vim.notify('Nothing to do', 'INFO', { title = 'GRestore' })
                     end
                 else
-                    for i=1,#args do
+                    for i = 1, #args do
                         if args[i] == '%' then
-                            args = require'utils.files'.normalize_path(args[i])
+                            args = require('utils.files').normalize_path(args[i])
                         end
                     end
                     if sys.name == 'windows' then
                         args = args:gsub('\\', '/')
                     end
-                    utils.launch_gitcmd_job{
+                    utils.launch_gitcmd_job {
                         gitcmd = 'reset',
-                        args = vim.list_extend({'HEAD'}, args),
+                        args = vim.list_extend({ 'HEAD' }, args),
                         jobopts = {
                             on_exit = function(_, rc)
                                 if rc ~= 0 then
-                                    error(('Failed to restore file: %s'):format(
-                                        args
-                                    ))
+                                    error(('Failed to restore file: %s'):format(args))
                                 end
                                 nvim.ex.checktime()
-                            end
-                        }
+                            end,
+                        },
                     }
                 end
             end)
         end,
-        args = {nargs = '?', force = true, complete = [[customlist,neovim#gitfiles_stage]]}
+        args = { nargs = '?', force = true, complete = [[customlist,neovim#gitfiles_stage]] },
     }
 
     if plugins['vim-fugitive'] then
         return
     end
 
-    set_command{
+    set_command {
         lhs = 'G',
         rhs = function(...)
-            local args = {...}
-            assert(
-                vim.tbl_islist(args) and #args > 0,
-                debug.traceback('Invalid args '..vim.inspect(args))
-            )
-            local utils = RELOAD'git.utils'
-            utils.launch_gitcmd_job{
+            local args = { ... }
+            assert(vim.tbl_islist(args) and #args > 0, debug.traceback('Invalid args ' .. vim.inspect(args)))
+            local utils = RELOAD 'git.utils'
+            utils.launch_gitcmd_job {
                 gitcmd = args[1],
                 args = vim.list_slice(args, 2, #args),
             }
         end,
-        args = {nargs = '+', force = true}
+        args = { nargs = '+', force = true },
     }
-
 end
 
 return M

@@ -1,11 +1,11 @@
-local nvim = require'neovim'
-local sys = require'sys'
+local nvim = require 'neovim'
+local sys = require 'sys'
 
-local executable = require'utils'.files.executable
+local executable = require('utils').files.executable
 
-local plugins = require'neovim'.plugins
+local plugins = require('neovim').plugins
 
-local set_command = require'neovim.commands'.set_command
+local set_command = require('neovim.commands').set_command
 -- local rm_command = require'neovim.commands'.rm_command
 
 local M = {
@@ -32,37 +32,37 @@ local M = {
         'W391', -- Blank line and the EOF
         -- 'W503', --
         -- 'W504', --
-    }
+    },
 }
 
 function M.format()
     local buffer = vim.api.nvim_get_current_buf()
-    local external_formatprg = require'utils'.functions.external_formatprg
+    local external_formatprg = require('utils').functions.external_formatprg
 
     local project = vim.fn.findfile('pyproject.toml', '.;')
 
-    if executable('black') then
-        local cmd = {'black'}
-        if project == ''  then
-            vim.list_extend(cmd, {'-l', '120',})
+    if executable 'black' then
+        local cmd = { 'black' }
+        if project == '' then
+            vim.list_extend(cmd, { '-l', '120' })
         end
-        external_formatprg{
+        external_formatprg {
             cmd = cmd,
             buffer = buffer,
             efm = '%trror: cannot format %f: Cannot parse %l:c: %m,%trror: cannot format %f: %m',
         }
-    elseif executable('yapf') then
-        local cmd = {'yapf', '-i'}
-        if project == ''  then
-            vim.list_extend(cmd, {'--style', 'pep8',})
+    elseif executable 'yapf' then
+        local cmd = { 'yapf', '-i' }
+        if project == '' then
+            vim.list_extend(cmd, { '--style', 'pep8' })
         end
-        external_formatprg{
+        external_formatprg {
             cmd = cmd,
             buffer = buffer,
         }
-    elseif executable('autopep8') then
-        local cmd = {'autopep8', '-i'}
-        if project == ''  then
+    elseif executable 'autopep8' then
+        local cmd = { 'autopep8', '-i' }
+        if project == '' then
             vim.list_extend(cmd, {
                 '--experimental',
                 '--aggressive',
@@ -70,7 +70,7 @@ function M.format()
                 '120',
             })
         end
-        external_formatprg{
+        external_formatprg {
             cmd = cmd,
             buffer = buffer,
         }
@@ -85,42 +85,48 @@ end
 function M.setup()
     vim.opt_local.formatexpr = [[luaeval('RELOAD"filetypes.python".format()')]]
 
-    if executable('flake8') then
-        local cmd = {'flake8'}
-        local global_settings = vim.fn.expand( sys.name == 'windows' and '~/.flake8' or '~/.config/flake8' )
+    if executable 'flake8' then
+        local cmd = { 'flake8' }
+        local global_settings = vim.fn.expand(sys.name == 'windows' and '~/.flake8' or '~/.config/flake8')
 
-        local is_file = require'utils'.files.is_file
+        local is_file = require('utils').files.is_file
 
-        if not is_file(global_settings) and
-           not is_file('./tox.ini') and
-           not is_file('./.flake8') and
-           not is_file('./setup.cfg') then
-            vim.list_extend(cmd, {'--max-line-length=120', '--ignore='..table.concat(M.pyignores, ',')})
+        if
+            not is_file(global_settings)
+            and not is_file './tox.ini'
+            and not is_file './.flake8'
+            and not is_file './setup.cfg'
+        then
+            vim.list_extend(cmd, { '--max-line-length=120', '--ignore=' .. table.concat(M.pyignores, ',') })
         end
         table.insert(cmd, '%')
 
         vim.opt_local.makeprg = table.concat(cmd, ' ')
         vim.opt_local.errorformat = '%f:%l:%c: %t%n %m'
-
-    elseif executable('pycodestyle') then
-        vim.opt_local.makeprg = 'pycodestyle --max-line-length=120 --ignore='..table.concat(M.pyignores, ',')..' %'
+    elseif executable 'pycodestyle' then
+        vim.opt_local.makeprg = 'pycodestyle --max-line-length=120 --ignore='
+            .. table.concat(M.pyignores, ',')
+            .. ' %'
         vim.opt_local.errorformat = '%f:%l:%c: %t%n %m'
     else
-        vim.opt_local.makeprg = [[python3 -c "import py_compile,sys; sys.stderr=sys.stdout; py_compile.compile(r'%')"]]
+        vim.opt_local.makeprg =
+            [[python3 -c "import py_compile,sys; sys.stderr=sys.stdout; py_compile.compile(r'%')"]]
         vim.opt_local.errorformat = '%C %.%#,%A  File "%f", line %l%.%#,%Z%[%^ ]%@=%m'
     end
 
     if not plugins['vim-apathy'] then
         local buf = nvim.get_current_buf()
-        local merge_uniq_list = require'utils'.tables.merge_uniq_list
+        local merge_uniq_list = require('utils').tables.merge_uniq_list
 
         if not vim.b.python_path then
             -- local pypath = {}
-            local pyprog = vim.g.python3_host_prog or vim.g.python_host_prog or (executable('python3') and 'python3')
+            local pyprog = vim.g.python3_host_prog
+                or vim.g.python_host_prog
+                or (executable 'python3' and 'python3')
 
-            local get_path = RELOAD'jobs':new{
+            local get_path = RELOAD('jobs'):new {
                 cmd = pyprog,
-                args = {'-c', 'import sys; print(",".join(sys.path), flush=True)'},
+                args = { '-c', 'import sys; print(",".join(sys.path), flush=True)' },
                 silent = true,
             }
             get_path:callback_on_success(function(job)
@@ -130,7 +136,7 @@ function M.setup()
                 -- BUG: No idea why this fails
                 -- local path = vim.split(vim.api.nvim_buf_get_option(buf, 'path'), ',')
                 local path = vim.opt_local.path:get()
-                if type(path) == type('') then
+                if type(path) == type '' then
                     path = vim.split(path, ',')
                 end
                 path = merge_uniq_list(path, output)
@@ -139,10 +145,10 @@ function M.setup()
             get_path:start()
         else
             assert(
-                type(vim.b.python_path) == type('') or type(vim.b.python_path) == type({}),
-                debug.traceback('b:python_path must be either a string or list')
+                type(vim.b.python_path) == type '' or type(vim.b.python_path) == type {},
+                debug.traceback 'b:python_path must be either a string or list'
             )
-            if type(vim.b.python_path) == type('')  then
+            if type(vim.b.python_path) == type '' then
                 vim.b.python_path = vim.split(vim.b.python_path, ',')
             end
             local path = vim.split(vim.api.nvim_buf_get_option(buf, 'path'), ',')
@@ -151,41 +157,40 @@ function M.setup()
         end
     end
 
-    set_command{
+    set_command {
         lhs = 'Execute',
         rhs = function(...)
-            local is_file = require'utils'.files.is_file
+            local is_file = require('utils').files.is_file
             local exepath = vim.fn.exepath
 
             local buffer = nvim.buf.get_name(nvim.get_current_buf())
             local filename = is_file(buffer) and buffer or vim.fn.tempname()
 
             if not is_file(buffer) then
-                require'utils'.files.writefile(filename, nvim.buf.get_lines(0, 0, -1, true))
+                require('utils').files.writefile(filename, nvim.buf.get_lines(0, 0, -1, true))
             end
 
             local opts = {
-                cmd = executable('python3') and exepath('python3') or exepath('python'),
+                cmd = executable 'python3' and exepath 'python3' or exepath 'python',
                 args = {
                     '-u',
                     filename,
                 },
             }
-            vim.list_extend(opts.args, {...})
-            require'utils'.functions.async_execute(opts)
+            vim.list_extend(opts.args, { ... })
+            require('utils').functions.async_execute(opts)
         end,
-        args = {nargs = '*', force=true, buffer = true}
+        args = { nargs = '*', force = true, buffer = true },
     }
-
 end
 
 function M.pynvim_setup()
     -- NOTE: This should speed up startup times
     -- lets just asume that if we have this two, any user could install pynvim
-    if executable('python3') and executable('pip3') then
-        vim.g.python3_host_prog = vim.fn.exepath('python3')
+    if executable 'python3' and executable 'pip3' then
+        vim.g.python3_host_prog = vim.fn.exepath 'python3'
         vim.g.loaded_python_provider = 0
-    elseif not executable('python') and not executable('python3') and not executable('python2') then
+    elseif not executable 'python' and not executable 'python3' and not executable 'python2' then
         vim.g.loaded_python3_provider = 0
         vim.g.loaded_python_provider = 0
     end

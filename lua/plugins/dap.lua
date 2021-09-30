@@ -1,16 +1,16 @@
-local exepath     = require'utils.files'.exepath
-local load_module = require'utils.helpers'.load_module
-local getcwd      = require'utils.files'.getcwd
+local exepath = require('utils.files').exepath
+local load_module = require('utils.helpers').load_module
+local getcwd = require('utils.files').getcwd
 
-local dap = load_module'dap'
+local dap = load_module 'dap'
 
 if not dap then
     return false
 end
 
-local set_autocmd = require'neovim.autocmds'.set_autocmd
-local set_command = require'neovim.commands'.set_command
-local set_mapping = require'neovim.mappings'.set_mapping
+local set_autocmd = require('neovim.autocmds').set_autocmd
+local set_command = require('neovim.commands').set_command
+local set_mapping = require('neovim.mappings').set_mapping
 
 local function pythonPath()
     -- debugpy supports launching an application with a different interpreter
@@ -28,61 +28,61 @@ local function pythonPath()
         return cwd .. '/.venv/bin/python'
     end
 
-    return exepath('python3') or exepath('python')
+    return exepath 'python3' or exepath 'python'
 end
 
 dap.adapters.python = {
-    type = 'executable';
-    command = pythonPath();
-    args = { '-m', 'debugpy.adapter' };
+    type = 'executable',
+    command = pythonPath(),
+    args = { '-m', 'debugpy.adapter' },
 }
 
 dap.configurations.python = {
     {
         -- The first three options are required by nvim-dap
-        type = 'python'; -- the type here established the link to the adapter definition: `dap.adapters.python`
-        request = 'launch';
-        name = "Launch file";
+        type = 'python', -- the type here established the link to the adapter definition: `dap.adapters.python`
+        request = 'launch',
+        name = 'Launch file',
         -- Options below are for debugpy, see
         -- https://github.com/microsoft/debugpy/wiki/Debug-configuration-settings for supported options
-        program = "${file}"; -- This configuration will launch the current file if used.
-        pythonPath = pythonPath;
+        program = '${file}', -- This configuration will launch the current file if used.
+        pythonPath = pythonPath,
     },
 }
 
-local lldb = exepath('lldb-vscode') or exepath('lldb-vscode-11')
+local lldb = exepath 'lldb-vscode' or exepath 'lldb-vscode-11'
 
 if lldb then
     dap.adapters.lldb = {
         type = 'executable',
         command = lldb,
-        name = "lldb"
+        name = 'lldb',
     }
 
     dap.configurations.cpp = {
-      {
-        name = "Launch",
-        type = "lldb",
-        request = "launch",
-        program = function()
-          return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
-        end,
-        cwd = '${workspaceFolder}',
-        stopOnEntry = false,
-        args = {},
+        {
+            name = 'Launch',
+            type = 'lldb',
+            request = 'launch',
+            program = function()
+                return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+            end,
+            cwd = '${workspaceFolder}',
+            stopOnEntry = false,
+            args = {},
 
-        -- if you change `runInTerminal` to true, you might need to change the yama/ptrace_scope setting:
-        --
-        --    echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope
-        --
-        -- Otherwise you might get the following error:
-        --
-        --    Error on launch: Failed to attach to the target process
-        --
-        -- But you should be aware of the implications:
-        -- https://www.kernel.org/doc/html/latest/admin-guide/LSM/Yama.html
-        runInTerminal = false,
-      },
+            -- if you change `runInTerminal` to true, you might need to change the yama/ptrace_scope setting:
+            --
+            --    echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope
+            --
+            -- Otherwise you might get the following error:
+            --
+            --    Error on launch: Failed to attach to the target process
+            --
+            -- But you should be aware of the implications:
+            -- https://www.kernel.org/doc/html/latest/admin-guide/LSM/Yama.html
+            runInTerminal = false,
+        },
     }
 
     -- If you want to use this for rust and c, add something like this:
@@ -90,12 +90,12 @@ if lldb then
     dap.configurations.rust = dap.configurations.cpp
 end
 
-vim.fn.sign_define('DapBreakpoint', {text='🛑', texthl='', linehl='', numhl=''})
+vim.fn.sign_define('DapBreakpoint', { text = '🛑', texthl = '', linehl = '', numhl = '' })
 -- vim.fn.sign_define('DapLogPoint', {text='🛑', texthl='', linehl='', numhl=''})
 -- vim.fn.sign_define('DapStopped', {text='🛑', texthl='', linehl='', numhl=''})
 -- vim.fn.sign_define('DapBreakpointRejected', {text='🛑', texthl='', linehl='', numhl=''})
 
-set_autocmd{
+set_autocmd {
     event = 'Filetype',
     pattern = 'dap-repl',
     cmd = "lua require('dap.ext.autocompl').attach()",
@@ -140,157 +140,157 @@ set_autocmd{
 
 local function list_breakpoints()
     dap.list_breakpoints()
-    require'utils'.helpers.toggle_qf()
+    require('utils').helpers.toggle_qf()
 end
 
-local args = {noremap = true, silent = true}
+local args = { noremap = true, silent = true }
 
-set_mapping{
+set_mapping {
     mode = 'n',
     lhs = '<F5>',
-    rhs = require'dap'.continue,
+    rhs = require('dap').continue,
     args = args,
 }
 
-set_mapping{
+set_mapping {
     mode = 'n',
     lhs = '<F4>',
-    rhs = require'dap'.close,
+    rhs = require('dap').close,
     args = args,
 }
 
-set_mapping{
+set_mapping {
     mode = 'n',
     lhs = '<F10>',
-    rhs = require'dap'.run_to_cursor,
+    rhs = require('dap').run_to_cursor,
     args = args,
 }
 
-set_mapping{
+set_mapping {
     mode = 'n',
     lhs = ']s',
-    rhs = require'dap'.step_over,
+    rhs = require('dap').step_over,
     args = args,
 }
 
-set_mapping{
+set_mapping {
     mode = 'n',
     lhs = ']S',
-    rhs = require'dap'.step_into,
+    rhs = require('dap').step_into,
     args = args,
 }
 
-set_mapping{
+set_mapping {
     mode = 'n',
     lhs = '[s',
-    rhs = require'dap'.step_out,
+    rhs = require('dap').step_out,
     args = args,
 }
 
-set_mapping{
+set_mapping {
     mode = 'n',
     lhs = '=b',
-    rhs = require'dap'.toggle_breakpoint,
+    rhs = require('dap').toggle_breakpoint,
     args = args,
 }
 
-set_mapping{
+set_mapping {
     mode = 'n',
     lhs = '=r',
-    rhs = require'dap'.repl.toggle,
+    rhs = require('dap').repl.toggle,
     args = args,
 }
 
-set_mapping{
+set_mapping {
     mode = 'n',
     lhs = '<leader>L',
     rhs = list_breakpoints,
     args = args,
 }
 
-set_mapping{
+set_mapping {
     mode = 'n',
     lhs = 'gK',
     rhs = require('dap.ui.widgets').hover,
     args = args,
 }
 
-set_command{
+set_command {
     lhs = 'DapToggleBreakpoint',
-    rhs = require'dap'.toggle_breakpoint,
-    args = { force = true, }
+    rhs = require('dap').toggle_breakpoint,
+    args = { force = true },
 }
 
-set_command{
+set_command {
     lhs = 'DapRun2Cursor',
-    rhs = require'dap'.run_to_cursor,
-    args = { force = true, }
+    rhs = require('dap').run_to_cursor,
+    args = { force = true },
 }
 
-set_command{
+set_command {
     lhs = 'DapBreakpoint',
-    rhs = require'dap'.set_breakpoint,
-    args = { force = true, }
+    rhs = require('dap').set_breakpoint,
+    args = { force = true },
 }
 
-set_command{
+set_command {
     lhs = 'DapListBreakpoint',
     rhs = list_breakpoints,
-    args = { force = true, }
+    args = { force = true },
 }
 
-set_command{
+set_command {
     lhs = 'DapStart',
-    rhs = require'dap'.continue,
-    args = { force = true, }
+    rhs = require('dap').continue,
+    args = { force = true },
 }
 
-set_command{
+set_command {
     lhs = 'DapStop',
-    rhs = require'dap'.stop,
-    args = { force = true, }
+    rhs = require('dap').stop,
+    args = { force = true },
 }
 
-set_command{
+set_command {
     lhs = 'DapContinue',
-    rhs = require'dap'.continue,
-    args = { force = true, }
+    rhs = require('dap').continue,
+    args = { force = true },
 }
 
-set_command{
+set_command {
     lhs = 'DapRepl',
-    rhs = require'dap'.repl.toggle,
-    args = { force = true, }
+    rhs = require('dap').repl.toggle,
+    args = { force = true },
 }
 
-set_command{
+set_command {
     lhs = 'DapInfo',
     rhs = require('dap.ui.widgets').hover,
-    args = { force = true, }
+    args = { force = true },
 }
 
-set_command{
+set_command {
     lhs = 'DapStepOver',
     rhs = function(_)
-        require'dap'.step_over()
+        require('dap').step_over()
     end,
-    args = {nargs = '?', force = true, }
+    args = { nargs = '?', force = true },
 }
 
-set_command{
+set_command {
     lhs = 'DapStepInto',
     rhs = function(_)
-        require'dap'.step_into()
+        require('dap').step_into()
     end,
-    args = {nargs = '?', force = true, }
+    args = { nargs = '?', force = true },
 }
 
-set_command{
+set_command {
     lhs = 'DapStepOut',
     rhs = function(_)
-        require'dap'.step_out()
+        require('dap').step_out()
     end,
-    args = {nargs = '?', force = true, }
+    args = { nargs = '?', force = true },
 }
 
 return true

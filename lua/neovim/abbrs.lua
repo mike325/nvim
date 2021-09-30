@@ -5,12 +5,11 @@ local api = vim.api
 local M = {}
 
 function M.set_abbr(abbr)
-
-    if not require'utils'.tables.has_attrs(abbr, {'mode', 'lhs'}) then
+    if not require('utils').tables.has_attrs(abbr, { 'mode', 'lhs' }) then
         vim.notify(
             'Missing arguments!! set_abbr need a mode and a lhs attribbutes',
             'ERROR',
-            {title='Nvim Abbrs'}
+            { title = 'Nvim Abbrs' }
         )
         return false
     end
@@ -19,16 +18,16 @@ function M.set_abbr(abbr)
     local extras = {}
 
     local modes = {
-        insert  = "i",
-        command = "c",
+        insert = 'i',
+        command = 'c',
     }
 
     local lhs = abbr.lhs
     local rhs = abbr.rhs
-    local args = type(abbr.args) == 'table' and abbr.args or {abbr.args}
+    local args = type(abbr.args) == 'table' and abbr.args or { abbr.args }
     local mode = modes[abbr.mode] or abbr.mode
 
-    if args.buffer ~= nil  then
+    if args.buffer ~= nil then
         table.insert(extras, '<buffer>')
     end
 
@@ -59,7 +58,7 @@ function M.set_abbr(abbr)
             table.insert(command, rhs)
         end
     else
-        vim.notify('Unsupported mode: '..vim.inspect(mode), 'ERROR', {title='Nvim Abbrs'})
+        vim.notify('Unsupported mode: ' .. vim.inspect(mode), 'ERROR', { title = 'Nvim Abbrs' })
         return false
     end
 

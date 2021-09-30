@@ -1,10 +1,10 @@
-local nvim = require'neovim'
+local nvim = require 'neovim'
 
 local cmd = {
-    'g++'
+    'g++',
 }
 
-vim.list_extend(cmd, RELOAD'filetypes.cpp'.default_flags['g++'])
+vim.list_extend(cmd, RELOAD('filetypes.cpp').default_flags['g++'])
 table.insert(cmd, '%')
 
-nvim.ex.CompilerSet('makeprg='..table.concat(cmd, '\\ '))
+nvim.ex.CompilerSet('makeprg=' .. table.concat(cmd, '\\ '))

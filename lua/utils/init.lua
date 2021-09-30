@@ -1,6 +1,6 @@
 local M = {}
 
-require'globals'
+require 'globals'
 
 setmetatable(M, {
     __index = function(self, k)
@@ -9,14 +9,14 @@ setmetatable(M, {
             return mt[k]
         end
 
-        local ok, x = pcall(RELOAD, 'utils.'..k)
+        local ok, x = pcall(RELOAD, 'utils.' .. k)
         if not ok then
-            error('Missing utils module '..k..' Error: '..x)
+            error('Missing utils module ' .. k .. ' Error: ' .. x)
             x = nil
         end
 
         return x
-    end
+    end,
 })
 
 return M

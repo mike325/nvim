@@ -1,12 +1,13 @@
-local load_module = require'utils.helpers'.load_module
+local load_module = require('utils.helpers').load_module
 
-local colorizer = load_module'colorizer'
+local colorizer = load_module 'colorizer'
 
 if colorizer then
     vim.o.termguicolors = true
     colorizer.setup()
 end
 
+-- stylua: ignore
 local colors = {
     white        = '#FFFFFF',
     black        = '#000000',

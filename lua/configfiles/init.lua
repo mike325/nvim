@@ -7,14 +7,14 @@ local Config = {
 
 local function read_config(config)
     local configfile = config.filename
-    local data = require'utils'.files.readfile(configfile)
-    local parsers = require'configfiles.parsers'
+    local data = require('utils').files.readfile(configfile)
+    local parsers = require 'configfiles.parsers'
 
-    local ext = require'utils'.files.extension(configfile)
-    local basename = require'utils'.files.basename
+    local ext = require('utils').files.extension(configfile)
+    local basename = require('utils').files.basename
 
     local base_filename = basename(configfile)
-    local base_dir = basename(require'utils'.files.basedir(config.path))
+    local base_dir = basename(require('utils').files.basedir(config.path))
 
     if ext == 'toml' then
         return parsers.toml(data)
@@ -26,14 +26,14 @@ local function read_config(config)
 end
 
 function Config:new(configfile)
-    configfile = require'utils'.files.normalize_path(configfile)
-    assert(require'utils'.files.is_file(configfile), 'Not a valid configfile: '..configfile)
+    configfile = require('utils').files.normalize_path(configfile)
+    assert(require('utils').files.is_file(configfile), 'Not a valid configfile: ' .. configfile)
 
     local obj = {}
     setmetatable(obj, self)
     self.__index = self
     self.filename = configfile
-    self.path = require'utils'.files.realpath(configfile)
+    self.path = require('utils').files.realpath(configfile)
 
     local data = read_config(self)
     self.global = data.global

@@ -1,11 +1,11 @@
-local nvim = require'neovim'
+local nvim = require 'neovim'
 
-if not nvim.has('nvim-0.5') then
+if not nvim.has 'nvim-0.5' then
     return false
 end
 
-local set_command = require'neovim.commands'.set_command
-local set_mapping = require'neovim.mappings'.set_mapping
+local set_command = require('neovim.commands').set_command
+local set_mapping = require('neovim.mappings').set_mapping
 -- local set_autocmd = require'neovim.autocmds'.set_autocmd
 
 local jobs = STORAGE.jobs
@@ -15,9 +15,9 @@ local function kill_job(jobid)
         local ids = {}
         local cmds = {}
         local jobidx = 1
-        for idx,job in pairs(jobs) do
+        for idx, job in pairs(jobs) do
             ids[#ids + 1] = idx
-            local cmd = type(job._cmd) == type('') and job._cmd or table.concat(job._cmd , ' ')
+            local cmd = type(job._cmd) == type '' and job._cmd or table.concat(job._cmd, ' ')
             cmds[#cmds + 1] = ('%s: %s'):format(jobidx, cmd)
             jobidx = jobidx + 1
         end
@@ -25,11 +25,11 @@ local function kill_job(jobid)
             local idx = vim.fn.inputlist(cmds)
             jobid = ids[idx]
         else
-            vim.notify('No jobs to kill', 'WARN', {title='Job Killer'})
+            vim.notify('No jobs to kill', 'WARN', { title = 'Job Killer' })
         end
     end
 
-    if type(jobid) == type('') and jobid:match('^%d+$') then
+    if type(jobid) == type '' and jobid:match '^%d+$' then
         jobid = tonumber(jobid)
     end
 
@@ -38,7 +38,7 @@ local function kill_job(jobid)
     end
 end
 
-set_command{
+set_command {
     lhs = 'KillJob',
     rhs = function(_, jobid)
         if jobid == '' then
@@ -46,18 +46,18 @@ set_command{
         end
         kill_job(jobid)
     end,
-    args = {nargs = '?', bang = true, force = true},
+    args = { nargs = '?', bang = true, force = true },
 }
 
-set_mapping{
+set_mapping {
     mode = 'n',
     lhs = '=p',
     rhs = function()
         if not vim.t.progress_win or not vim.api.nvim_win_is_valid(vim.t.progress_win) then
-            require'utils'.windows.progress()
+            require('utils').windows.progress()
         else
             vim.api.nvim_win_close(vim.t.progress_win, true)
         end
     end,
-    args = {noremap = true, silent = true}
+    args = { noremap = true, silent = true },
 }

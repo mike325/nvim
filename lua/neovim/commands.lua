@@ -11,30 +11,30 @@ local function get_wrapper(info)
     local nparams = info.nparams
     local varargs = info.varargs
     local bang = info.bang
-    local bufnr = require'neovim'.win.get_buf(0)
+    local bufnr = require('neovim').win.get_buf(0)
 
     local cmd = [[lua STORAGE.commands]]
 
-    cmd = cmd..("['%s']"):format(scope)
+    cmd = cmd .. ("['%s']"):format(scope)
 
     if scope == 'b' then
-        cmd = cmd..("['%s']"):format(bufnr)
+        cmd = cmd .. ("['%s']"):format(bufnr)
     end
 
-    cmd = cmd..("['%s']"):format(lhs)
+    cmd = cmd .. ("['%s']"):format(lhs)
 
     if bang and nparams == 1 and not varargs then
-        cmd = cmd..("(%s)"):format([['<bang>' == '!']])
+        cmd = cmd .. ('(%s)'):format [['<bang>' == '!']]
     elseif not bang and nparams == 1 and not varargs then
-        cmd = cmd..("(%s)"):format('<q-args>')
+        cmd = cmd .. ('(%s)'):format '<q-args>'
     elseif not bang and (nparams > 1 or varargs) then
-        cmd = cmd..("(%s)"):format('<f-args>')
+        cmd = cmd .. ('(%s)'):format '<f-args>'
     elseif bang and nparams == 2 and not varargs then
-        cmd = cmd..("(%s, %s)"):format([['<bang>' == '!']], [[#{<q-args>} > 0 and <q-args> or ""]])
+        cmd = cmd .. ('(%s, %s)'):format([['<bang>' == '!']], [[#{<q-args>} > 0 and <q-args> or ""]])
     elseif bang and (nparams > 2 or varargs) then
-        cmd = cmd..("(%s, %s)"):format([['<bang>' == '!']], [[#{<f-args>} > 0 and <f-args> or ""]])
+        cmd = cmd .. ('(%s, %s)'):format([['<bang>' == '!']], [[#{<f-args>} > 0 and <f-args> or ""]])
     else
-        cmd = cmd..'()'
+        cmd = cmd .. '()'
     end
 
     return cmd
@@ -44,7 +44,7 @@ local function func_handle(info)
     local scope = info.scope
     local lhs = info.lhs
     local rhs = info.rhs
-    local bufnr = tostring(require'neovim'.win.get_buf(0))
+    local bufnr = tostring(require('neovim').win.get_buf(0))
 
     if scope == 'b' then
         if funcs.b[bufnr] == nil then
@@ -58,18 +58,17 @@ local function func_handle(info)
             )
             vim.b.wipe_cmds = true
         end
-
     else
         funcs.g[lhs] = rhs
     end
 end
 
 function M.set_command(command)
-    if not require'utils'.tables.has_attrs(command, {'lhs'}) then
+    if not require('utils').tables.has_attrs(command, { 'lhs' }) then
         vim.notify(
             'Missing arguments!! set_command need a lhs attribbutes',
             'ERROR',
-            {title='Nvim Commands'}
+            { title = 'Nvim Commands' }
         )
         return false
     end
@@ -77,29 +76,29 @@ function M.set_command(command)
     local cmd, nargs
     local scope = 'g'
     local bang = false
-    local lhs  = command.lhs
-    local rhs  = command.rhs
-    local args = type(command.args) == 'table' and command.args or {command.args}
+    local lhs = command.lhs
+    local rhs = command.rhs
+    local args = type(command.args) == 'table' and command.args or { command.args }
 
     if rhs == nil then
-        cmd = {'delcommand'}
+        cmd = { 'delcommand' }
     elseif args.force then
-        cmd = {'command!'}
+        cmd = { 'command!' }
         args.force = nil
     else
-        cmd = {'command'}
+        cmd = { 'command' }
     end
 
     local attr
     if rhs then
-        for name,val in pairs(args) do
+        for name, val in pairs(args) do
             if val then
-                attr = '-'..name
+                attr = '-' .. name
                 if type(val) ~= 'boolean' then
                     if attr == '-nargs' then
                         nargs = val
                     end
-                    attr = attr..'='..val
+                    attr = attr .. '=' .. val
                 end
                 if attr == '-buffer' then
                     scope = 'b'
@@ -112,24 +111,24 @@ function M.set_command(command)
     end
     cmd[#cmd + 1] = lhs
 
-    if type(rhs) == type('') then
+    if type(rhs) == type '' then
         cmd[#cmd + 1] = rhs
     elseif type(rhs) == 'function' then
         local nparams = debug.getinfo(rhs).nparams
         local varargs = debug.getinfo(rhs).isvararg
 
         local wrapper = get_wrapper {
-            lhs     = lhs,
+            lhs = lhs,
             nparams = nparams,
             varargs = varargs,
-            scope   = scope,
-            bang    = bang,
+            scope = scope,
+            bang = bang,
         }
 
         if nargs == nil then
             if nparams == 1 and not varargs then
                 nargs = '-nargs=1'
-            elseif  nparams > 1 or varargs then
+            elseif nparams > 1 or varargs then
                 nargs = '-nargs=*'
             end
             if nargs ~= nil then
@@ -144,38 +143,37 @@ function M.set_command(command)
 
     local ok, err = pcall(api.nvim_command, cmd)
     if rhs and not ok then
-        vim.notify(err, 'ERROR', {title='Nvim Autocmd'})
+        vim.notify(err, 'ERROR', { title = 'Nvim Autocmd' })
     elseif not rhs and not ok then
-        vim.notify('Command not found: '..lhs, 'WARN', {title='Nvim Autocmd'})
+        vim.notify('Command not found: ' .. lhs, 'WARN', { title = 'Nvim Autocmd' })
     end
 
-    if type(rhs) ~= type('') and ok then
+    if type(rhs) ~= type '' and ok then
         func_handle {
-            rhs   = rhs,
-            lhs   = lhs,
+            rhs = rhs,
+            lhs = lhs,
             scope = scope,
         }
     end
 end
 
-
 function M.rm_command(command, buffer)
     assert(
-        type(command) == type('') or type(command) == type({}),
-        debug.traceback('Invalid command: '..vim.inspect(command))
+        type(command) == type '' or type(command) == type {},
+        debug.traceback('Invalid command: ' .. vim.inspect(command))
     )
 
     assert(
         type(buffer) == type(true) or type(buffer) == type(1) or buffer == nil,
-        debug.traceback('Invalid buffer: '..vim.inspect(buffer))
+        debug.traceback('Invalid buffer: ' .. vim.inspect(buffer))
     )
 
-    if type(command) == type('') then
-        command = {command}
+    if type(command) == type '' then
+        command = { command }
     end
 
-    for _,cmd in pairs(command) do
-        if vim.api.nvim_call_function('exists', {':'..cmd}) == 2 then
+    for _, cmd in pairs(command) do
+        if vim.api.nvim_call_function('exists', { ':' .. cmd }) == 2 then
             M.set_command { lhs = cmd }
         end
     end

@@ -1,48 +1,70 @@
-local sys = require'sys'
-local executable  = require'utils'.files.executable
-local load_module = require'utils'.helpers.load_module
+local sys = require 'sys'
+local executable = require('utils').files.executable
+local load_module = require('utils').helpers.load_module
 
-local set_autocmd = require'neovim.autocmds'.set_autocmd
-local set_mapping = require'neovim.mappings'.set_mapping
-local set_command = require'neovim.commands'.set_command
+local set_autocmd = require('neovim.autocmds').set_autocmd
+local set_mapping = require('neovim.mappings').set_mapping
+local set_command = require('neovim.commands').set_command
 
-local telescope = load_module'telescope'
+local telescope = load_module 'telescope'
 
 if not telescope then
     return false
 end
 
--- local lsp_langs = require'plugins.lsp'
-local ts_langs = require'plugins.treesitter'
-local actions = require'telescope.actions'
+local plugins = require('neovim').plugins
 
-telescope.setup{
+-- local lsp_langs = require'plugins.lsp'
+local ts_langs = require 'plugins.treesitter'
+local actions = require 'telescope.actions'
+local has_sqlite, _ = pcall(require, 'sqlite')
+local extensions = {}
+local history
+if has_sqlite then
+    extensions.frecency = {
+        -- disable_devicons = false,
+        db_root = sys.data,
+        workspaces = {
+            ['nvim'] = sys.base,
+            ['dotfiles'] = sys.home .. '/dotfiles/',
+        },
+    }
+
+    history = {
+        path = sys.data .. '/telescope_history.sqlite3',
+        limit = 100,
+    }
+end
+
+telescope.setup {
+    extensions = extensions,
     layout_config = {
-        prompt_position = "bottom",
-        prompt_prefix = ">",
+        prompt_position = 'bottom',
+        prompt_prefix = '>',
     },
     defaults = {
-        vimgrep_arguments = require'utils.helpers'.select_grep(false, 'grepprg', true),
-        mappings = {
-            i = {
-                ["<ESC>"] = actions.close,
-                -- ["<CR>"]  = actions.goto_file_selection_edit + actions.center,
-                ["<C-j>"] = actions.move_selection_next,
-                ["<C-k>"] = actions.move_selection_previous,
-            },
-            n = {
-                ["<ESC>"] = actions.close,
-            },
-        },
-        selection_strategy = "reset",
-        sorting_strategy = "descending",
-        layout_strategy = "horizontal",
+        history = history,
+        vimgrep_arguments = require('utils.helpers').select_grep(false, 'grepprg', true),
+        selection_strategy = 'reset',
+        sorting_strategy = 'descending',
+        layout_strategy = 'horizontal',
         -- file_ignore_patterns = {},
-        file_sorter =  require'telescope.sorters'.get_fzy_sorter ,
-        generic_sorter =  require'telescope.sorters'.get_fzy_sorter,
+        file_sorter = require('telescope.sorters').get_fzy_sorter,
+        generic_sorter = require('telescope.sorters').get_fzy_sorter,
         -- shorten_path = true,
         winblend = 0,
         set_env = { ['COLORTERM'] = 'truecolor' },
+        mappings = {
+            i = {
+                ['<ESC>'] = actions.close,
+                -- ["<CR>"]  = actions.goto_file_selection_edit + actions.center,
+                ['<C-j>'] = actions.move_selection_next,
+                ['<C-k>'] = actions.move_selection_previous,
+            },
+            n = {
+                ['<ESC>'] = actions.close,
+            },
+        },
     },
 }
 
@@ -78,91 +100,91 @@ telescope.setup{
 -- builtin.git_branches
 -- builtin.git_status
 
-local noremap = {noremap = true, silent = true}
+local noremap = { noremap = true, silent = true }
 
-set_command{
+set_command {
     lhs = 'LuaReloaded',
     rhs = [[lua require'telescope.builtin'.reloader()]],
-    args = {force=true}
+    args = { force = true },
 }
 
-set_command{
+set_command {
     lhs = 'HelpTags',
     rhs = function()
-        require'telescope.builtin'.help_tags{}
+        require('telescope.builtin').help_tags {}
     end,
-    args = {force=true}
+    args = { force = true },
 }
 
-set_mapping{
+set_mapping {
     mode = 'n',
     lhs = '<C-p>',
     rhs = function()
         local is_git = vim.b.project_root and vim.b.project_root.is_git or false
-        require'telescope.builtin'.find_files {
-            find_command = require'utils'.helpers.select_filelist(is_git, true)
+        require('telescope.builtin').find_files {
+            find_command = require('utils').helpers.select_filelist(is_git, true),
         }
     end,
-    args = {noremap = true}
+    args = { noremap = true },
 }
 
-set_mapping{
+set_mapping {
     mode = 'n',
     lhs = '<C-b>',
     rhs = [[<cmd>lua require'telescope.builtin'.current_buffer_fuzzy_find{}<CR>]],
     args = noremap,
 }
 
-set_mapping{
+set_mapping {
     mode = 'n',
     lhs = '<leader>g',
     rhs = [[<cmd>lua require'telescope.builtin'.live_grep{}<CR>]],
     args = noremap,
 }
 
-set_mapping{
+set_mapping {
     mode = 'n',
     lhs = '<C-q>',
     rhs = [[<cmd>lua require'telescope.builtin'.quickfix{}<CR>]],
     args = noremap,
 }
 
-set_command{
+set_command {
     lhs = 'Oldfiles',
     rhs = [[lua require'telescope.builtin'.oldfiles{}]],
-    args = {force=true}
+    args = { force = true },
 }
 
-set_command{
+set_command {
     lhs = 'Registers',
     rhs = [[lua require'telescope.builtin'.registers{}]],
-    args = {force=true}
+    args = { force = true },
 }
 
-set_command{
+set_command {
     lhs = 'Marks',
     rhs = [[lua require'telescope.builtin'.marks{}]],
-    args = {force=true}
+    args = { force = true },
 }
 
-set_command{
+set_command {
     lhs = 'Manpages',
     rhs = [[lua require'telescope.builtin'.man_pages{}]],
-    args = {force=true}
+    args = { force = true },
 }
 
-set_command{
+set_command {
     lhs = 'GetVimFiles',
     rhs = function()
-        require'telescope.builtin'.find_files{
+        require('telescope.builtin').find_files {
             cwd = sys.base,
-            find_command = require'utils.helpers'.select_filelist(false, true)
+            find_command = require('utils.helpers').select_filelist(false, true),
         }
     end,
-    args = {force=true}
+    args = { force = true },
 }
 
-if executable('git') then
+if executable 'git' then
     -- set_mapping{
     --     mode = 'n',
     --     lhs = '<leader>s',
@@ -170,21 +192,21 @@ if executable('git') then
     --     args = noremap,
     -- }
 
-    set_mapping{
+    set_mapping {
         mode = 'n',
         lhs = '<leader>c',
         rhs = [[<cmd>lua require'telescope.builtin'.git_bcommits{}<CR>]],
         args = noremap,
     }
 
-    set_mapping{
+    set_mapping {
         mode = 'n',
         lhs = '<leader>C',
         rhs = [[<cmd>lua require'telescope.builtin'.git_commits{}<CR>]],
         args = noremap,
     }
 
-    set_mapping{
+    set_mapping {
         mode = 'n',
         lhs = '<leader>b',
         rhs = [[<cmd>lua require'telescope.builtin'.git_branches{}<CR>]],
@@ -193,17 +215,26 @@ if executable('git') then
 end
 
 if ts_langs then
-    set_autocmd{
-        event   = 'FileType',
+    set_autocmd {
+        event = 'FileType',
         pattern = ts_langs,
-        cmd     = [[nnoremap <A-s> <cmd>lua require'telescope.builtin'.treesitter{}<CR>]],
-        group   = 'TreesitterAutocmds'
+        cmd = [[nnoremap <A-s> <cmd>lua require'telescope.builtin'.treesitter{}<CR>]],
+        group = 'TreesitterAutocmds',
     }
-    set_autocmd{
-        event   = 'FileType',
+    set_autocmd {
+        event = 'FileType',
         pattern = ts_langs,
-        cmd     = [[command! -buffer TSSymbols lua require'telescope.builtin'.treesitter{}]],
-        group   = 'TreesitterAutocmds'
+        cmd = [[command! -buffer TSSymbols lua require'telescope.builtin'.treesitter{}]],
+        group = 'TreesitterAutocmds',
+    }
+end
+
+if has_sqlite and plugins['telescope-frecency.nvim'] then
+    set_mapping {
+        mode = 'n',
+        lhs = '<leader>x',
+        rhs = [[<cmd>lua require('telescope').extensions.frecency.frecency()<CR>]],
+        args = noremap,
     }
 end
 

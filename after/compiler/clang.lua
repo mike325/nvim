@@ -1,10 +1,10 @@
-local nvim = require'neovim'
+local nvim = require 'neovim'
 
 local cmd = {
-    'clang'
+    'clang',
 }
 
-vim.list_extend(cmd, RELOAD'filetypes.cpp'.default_flags.clang)
+vim.list_extend(cmd, RELOAD('filetypes.cpp').default_flags.clang)
 table.insert(cmd, '%')
 
-nvim.ex.CompilerSet('makeprg='..table.concat(cmd, '\\ '))
+nvim.ex.CompilerSet('makeprg=' .. table.concat(cmd, '\\ '))

@@ -1,23 +1,23 @@
 local api = vim.api
 
-local transform_mapping = require'neovim.utils'.transform_mapping
+local transform_mapping = require('neovim.utils').transform_mapping
 local funcs = STORAGE.mappings
 
 local modes = {
-    normal   = "n",
-    insert   = "i",
-    vis_sel  = "v",
-    visual   = "x",
-    select   = "s",
-    operator = "o",
-    command  = "c",
-    terminal = "t",
+    normal = 'n',
+    insert = 'i',
+    vis_sel = 'v',
+    visual = 'x',
+    select = 's',
+    operator = 'o',
+    command = 'c',
+    terminal = 't',
 }
 
 local M = {}
 
 local function set_modes(obj)
-    for _,mode in pairs(modes) do
+    for _, mode in pairs(modes) do
         if obj[mode] == nil then
             obj[mode] = {}
         end
@@ -36,22 +36,22 @@ local function get_wrapper(info)
 
     cmd = expr and [=[luaeval("]=] or [[<cmd>lua ]]
 
-    cmd = cmd..[[STORAGE.mappings]]
-    cmd = cmd..("['%s']"):format(scope)
+    cmd = cmd .. [[STORAGE.mappings]]
+    cmd = cmd .. ("['%s']"):format(scope)
 
     if scope == 'b' then
-        local bufnr = type(info.buf) == 'number' and info.buf or require'neovim'.get_current_buf()
-        cmd = cmd..("['%s']"):format(bufnr)
+        local bufnr = type(info.buf) == 'number' and info.buf or require('neovim').get_current_buf()
+        cmd = cmd .. ("['%s']"):format(bufnr)
     end
 
-    lhs = lhs:gsub('<leader>', api.nvim_get_var('mapleader'))
+    lhs = lhs:gsub('<leader>', api.nvim_get_var 'mapleader')
     lhs = lhs:gsub('<C-', '^')
 
-    cmd = cmd..("['%s']"):format(mode)
-    cmd = cmd..("['%s']"):format(lhs)
-    cmd = cmd..'()'
+    cmd = cmd .. ("['%s']"):format(mode)
+    cmd = cmd .. ("['%s']"):format(lhs)
+    cmd = cmd .. '()'
 
-    cmd = expr and cmd..[=[")]=] or cmd..'<CR>'
+    cmd = expr and cmd .. [=[")]=] or cmd .. '<CR>'
 
     return cmd
 end
@@ -62,11 +62,11 @@ local function func_handle(info)
     local lhs = info.lhs
     local rhs = info.rhs
 
-    lhs = lhs:gsub('<leader>', api.nvim_get_var('mapleader'))
+    lhs = lhs:gsub('<leader>', api.nvim_get_var 'mapleader')
     lhs = lhs:gsub('<C-', '^')
 
     if scope == 'b' then
-        local bufnr = type(info.buf) == 'number' and info.buf or require'neovim'.get_current_buf()
+        local bufnr = type(info.buf) == 'number' and info.buf or require('neovim').get_current_buf()
         bufnr = tostring(bufnr)
         if funcs.b[bufnr] == nil then
             funcs.b[bufnr] = {}
@@ -80,21 +80,18 @@ local function func_handle(info)
             )
             vim.b.wipe_maps = true
         end
-
     else
         funcs.g[mode][lhs] = rhs
     end
-
 end
 
 function M.get_mapping(mapping)
-
-    local has_attrs = require'utils'.tables.has_attrs
-    if not has_attrs(mapping, {'mode', 'lhs'}) then
+    local has_attrs = require('utils').tables.has_attrs
+    if not has_attrs(mapping, { 'mode', 'lhs' }) then
         vim.notify(
             'Missing arguments!! get_mapping need a mode and a lhs attribbutes',
             'ERROR',
-            {title='Nvim Mappings'}
+            { title = 'Nvim Mappings' }
         )
         return false
     end
@@ -103,9 +100,9 @@ function M.get_mapping(mapping)
     local result = nil
 
     local lhs = transform_mapping(mapping.lhs)
-    lhs= lhs:gsub('<leader>', vim.g.mapleader)
+    lhs = lhs:gsub('<leader>', vim.g.mapleader)
 
-    local args = type(mapping.args) == type({}) and mapping.args or {mapping.args}
+    local args = type(mapping.args) == type {} and mapping.args or { mapping.args }
     local mode = modes[mapping.mode] or mapping.mode
 
     if args.buffer then
@@ -115,7 +112,7 @@ function M.get_mapping(mapping)
         mappings = api.nvim_get_keymap(mode)
     end
 
-    for _,map in pairs(mappings) do
+    for _, map in pairs(mappings) do
         if map['lhs'] == lhs then
             result = map
             break
@@ -126,7 +123,7 @@ function M.get_mapping(mapping)
 end
 
 local function fix_mappings(args)
-    for attr,val in pairs(args) do
+    for attr, val in pairs(args) do
         if type(val) == type(1) and (val == 1 or val == 0) then
             args[attr] = val == 1
         end
@@ -135,23 +132,22 @@ local function fix_mappings(args)
 end
 
 function M.set_mapping(mapping)
-
-    local has_attrs = require'utils'.tables.has_attrs
-    if not has_attrs(mapping, {'mode', 'lhs'}) then
+    local has_attrs = require('utils').tables.has_attrs
+    if not has_attrs(mapping, { 'mode', 'lhs' }) then
         vim.notify(
             'Missing arguments!! set_mapping need a mode and a lhs attribbutes',
             'ERROR',
-            {title='Nvim Mappings'}
+            { title = 'Nvim Mappings' }
         )
         return false
     end
 
     assert(
-        type(mapping.mode) == type('') or type(mapping.mode) == type({}),
+        type(mapping.mode) == type '' or type(mapping.mode) == type {},
         'Mode must be a string or a list of strings'
     )
 
-    local args = type(mapping.args) == 'table' and mapping.args or {mapping.args}
+    local args = type(mapping.args) == 'table' and mapping.args or { mapping.args }
     -- local mode = modes[mapping.mode] ~= nil and modes[mapping.mode] or mapping.mode
     local lhs = mapping.lhs
     if lhs:find(vim.g.mapleader) then
@@ -160,7 +156,7 @@ function M.set_mapping(mapping)
     local rhs = mapping.rhs
     local expr = false
     local scope, buf
-    local mapping_modes = type(mapping.mode) == type('') and {mapping.mode} or mapping.mode
+    local mapping_modes = type(mapping.mode) == type '' and { mapping.mode } or mapping.mode
 
     for attr, val in pairs(args) do
         if attr == 'expr' then
@@ -170,7 +166,7 @@ function M.set_mapping(mapping)
         end
     end
 
-    for _,mode in pairs(mapping_modes) do
+    for _, mode in pairs(mapping_modes) do
         mode = modes[mode] or mode
         if buf ~= nil then
             scope = 'b'
@@ -180,8 +176,8 @@ function M.set_mapping(mapping)
                 api.nvim_buf_set_keymap(buf, mode, lhs, rhs, fix_mappings(args))
             elseif rhs and type(rhs) == 'function' then
                 local wrapper = get_wrapper {
-                    lhs   = lhs,
-                    mode  = mode,
+                    lhs = lhs,
+                    mode = mode,
                     scope = scope,
                     expr = expr,
                     buf = buf,
@@ -197,8 +193,8 @@ function M.set_mapping(mapping)
                 api.nvim_set_keymap(mode, lhs, rhs, fix_mappings(args))
             elseif rhs and type(rhs) == 'function' then
                 local wrapper = get_wrapper {
-                    lhs   = lhs,
-                    mode  = mode,
+                    lhs = lhs,
+                    mode = mode,
                     scope = scope,
                     expr = expr,
                 }
@@ -210,17 +206,15 @@ function M.set_mapping(mapping)
 
         if rhs and type(rhs) == 'function' then
             func_handle {
-                rhs   = rhs,
-                lhs   = lhs,
-                mode  = mode,
+                rhs = rhs,
+                lhs = lhs,
+                mode = mode,
                 scope = scope,
                 buf = buf,
             }
         end
     end
-
 end
-
 
 setmetatable(M, {
     __index = function(self, k)

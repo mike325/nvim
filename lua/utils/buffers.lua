@@ -1,12 +1,12 @@
-local nvim = require'neovim'
+local nvim = require 'neovim'
 
 local M = {}
 
 function M.last_position()
-    local sc_mark   = nvim.buf.get_mark(0, "'")
-    local dc_mark   = nvim.buf.get_mark(0, '"')
-    local last_line = nvim.fn.line('$')
-    local filetype  = nvim.bo.filetype
+    local sc_mark = nvim.buf.get_mark(0, "'")
+    local dc_mark = nvim.buf.get_mark(0, '"')
+    local last_line = nvim.fn.line '$'
+    local filetype = nvim.bo.filetype
 
     local black_list = {
         git = 1,
@@ -35,7 +35,7 @@ function M.delete(buffer, wipe)
     assert(not buffer or (type(buffer) == type(1) and buffer > 0), 'Invalid buffer')
     buffer = buffer or nvim.get_current_buf()
     local is_wipe = nvim.buf.get_option(buffer, 'bufhidden') == 'wipe'
-    local prev_buf = vim.fn.expand('#') ~= '' and vim.fn.bufnr(vim.fn.expand('#')) or -1
+    local prev_buf = vim.fn.expand '#' ~= '' and vim.fn.bufnr(vim.fn.expand '#') or -1
     local is_loaded = nvim.buf.is_loaded
 
     if nvim.get_current_buf() == buffer then
@@ -45,7 +45,7 @@ function M.delete(buffer, wipe)
 
     if not is_wipe then
         if nvim.buf.is_valid(buffer) then
-            local action = not wipe and {unload = true} or {force = true}
+            local action = not wipe and { unload = true } or { force = true }
             nvim.buf.delete(buffer, action)
         end
     end
@@ -74,12 +74,12 @@ function M.get_indent()
 end
 
 function M.get_indent_block(lines)
-    assert(vim.tbl_islist(lines), debug.traceback('Lines must be an array: '..vim.inspect(lines)))
+    assert(vim.tbl_islist(lines), debug.traceback('Lines must be an array: ' .. vim.inspect(lines)))
 
     local indent_level
-    for _,line in pairs(lines) do
+    for _, line in pairs(lines) do
         if #line > 0 then
-            local level = line:match('^%s+')
+            local level = line:match '^%s+'
             level = level and #level or nil
             if not level then
                 indent_level = 0
@@ -93,7 +93,7 @@ function M.get_indent_block(lines)
 end
 
 function M.get_indent_block_level(lines)
-    assert(vim.tbl_islist(lines), debug.traceback('Lines must be an array: '..vim.inspect(lines)))
+    assert(vim.tbl_islist(lines), debug.traceback('Lines must be an array: ' .. vim.inspect(lines)))
     local indent_level = M.get_indent_block(lines)
     return math.floor(indent_level / M.get_indent())
 end
@@ -110,8 +110,8 @@ local function normalize_indent(lines, indent)
     local expand = vim.opt_local.expandtab:get()
     local spaces = M.get_indent_string(indent)
 
-    for i=1,#lines do
-        if #lines[i] > 0 and not lines[i]:match('^%s+$') then
+    for i = 1, #lines do
+        if #lines[i] > 0 and not lines[i]:match '^%s+$' then
             if expand then
                 lines[i] = lines[i]:gsub('\t', spaces)
             else
@@ -124,11 +124,8 @@ local function normalize_indent(lines, indent)
 end
 
 function M.indent(lines, level)
-    assert(vim.tbl_islist(lines), debug.traceback('Lines must be an array: '..vim.inspect(lines)))
-    assert(
-        type(level) == type(0),
-        debug.traceback('Missing valid level: '..vim.inspect(level))
-    )
+    assert(vim.tbl_islist(lines), debug.traceback('Lines must be an array: ' .. vim.inspect(lines)))
+    assert(type(level) == type(0), debug.traceback('Missing valid level: ' .. vim.inspect(level)))
 
     if level == 0 or #lines == 0 then
         return lines
@@ -141,7 +138,7 @@ function M.indent(lines, level)
 
     lines = normalize_indent(lines, abslevel)
 
-    local spaces = not expand and string.rep('\t', abslevel) or string.rep(' ', indent*abslevel)
+    local spaces = not expand and string.rep('\t', abslevel) or string.rep(' ', indent * abslevel)
 
     if level < 0 then
         local block_indent = M.get_indent_block(lines)
@@ -152,19 +149,19 @@ function M.indent(lines, level)
                 block_indent = block_indent * indent
             end
 
-            if block_indent < abslevel*indent then
+            if block_indent < abslevel * indent then
                 return lines
             end
         end
-        spaces = '^'..spaces
+        spaces = '^' .. spaces
     end
 
-    for i=1,#lines do
-        if #lines[i] > 0 and not lines[i]:match('^%s+$') then
+    for i = 1, #lines do
+        if #lines[i] > 0 and not lines[i]:match '^%s+$' then
             if level < 0 then
                 lines[i] = lines[i]:gsub(spaces, '')
             else
-                lines[i] = spaces..lines[i]
+                lines[i] = spaces .. lines[i]
             end
         end
     end
