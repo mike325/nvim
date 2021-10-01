@@ -366,4 +366,19 @@ function M.open(uri)
     open:start()
 end
 
+-- TODO: Improve python folding text
+function M.foldtext()
+    local indent_level = require('utils.buffers').get_indent_block(
+        vim.api.nvim_buf_get_lines(0, vim.v.foldstart, vim.v.foldend, false)
+    )
+    local indent_string = require('utils.buffers').get_indent_string(indent_level)
+    local foldtext = '%s %s %s %s'
+    return foldtext:format(
+        indent_string .. '+-',
+        vim.trim(vim.fn.getline(vim.v.foldstart)),
+        ('-- %s lines folded --'):format(vim.v.foldend - vim.v.foldstart),
+        vim.trim(vim.fn.getline(vim.v.foldend))
+    )
+end
+
 return M

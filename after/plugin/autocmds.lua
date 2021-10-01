@@ -134,3 +134,10 @@ set_autocmd {
     cmd = 'source lua/plugins/init.lua | PackerCompile',
     group = 'Reload',
 }
+
+set_autocmd {
+    event = 'FileType',
+    pattern = '*',
+    cmd = [[setlocal foldtext=luaeval('require\"utils\".functions.foldtext()')]],
+    group = 'FoldText',
+}
