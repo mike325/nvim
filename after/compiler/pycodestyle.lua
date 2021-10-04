@@ -6,3 +6,5 @@ vim.list_extend(cmd, { '--max-line-length=120', '--ignore=' .. table.concat(pyig
 table.insert(cmd, '%')
 
 nvim.ex.CompilerSet('makeprg=' .. table.concat(cmd, '\\ '))
+
+vim.b.current_compiler = 'pycodestyle'

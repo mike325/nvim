@@ -21,3 +21,5 @@ end
 table.insert(cmd, '%')
 
 nvim.ex.CompilerSet('makeprg=' .. table.concat(cmd, '\\ '))
+
+vim.b.current_compiler = 'flake8'

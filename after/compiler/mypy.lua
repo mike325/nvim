@@ -17,4 +17,7 @@ vim.list_extend(formats, {
     '%f:%l:%c:%t: %m',
     '%f:%l:%c: %m',
 })
+
 nvim.ex.CompilerSet('errorformat=' .. table.concat(formats, ','):gsub(' ', '\\ '))
+
+vim.b.current_compiler = 'mypy'

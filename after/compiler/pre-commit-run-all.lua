@@ -24,4 +24,7 @@ local formats = {
     'Diff in %f:',
     '+++ %f',
 }
+
 nvim.ex.CompilerSet('errorformat=' .. table.concat(formats, ','):gsub(' ', '\\ '))
+
+vim.b.current_compiler = 'pre-commit-run-all'
