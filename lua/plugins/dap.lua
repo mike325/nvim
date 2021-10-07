@@ -140,7 +140,7 @@ set_autocmd {
 
 local function list_breakpoints()
     dap.list_breakpoints()
-    require('utils').helpers.toggle_qf()
+    require('utils.helpers').toggle_qf()
 end
 
 local args = { noremap = true, silent = true }

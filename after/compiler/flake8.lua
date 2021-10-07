@@ -1,6 +1,6 @@
 local nvim = require 'neovim'
 local sys = require 'sys'
-local is_file = require('utils').files.is_file
+local is_file = require('utils.files').is_file
 local pyignores = RELOAD('filetypes.python').pyignores
 
 local cmd = { 'flake8' }

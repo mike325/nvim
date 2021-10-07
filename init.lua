@@ -45,4 +45,4 @@ elseif vim.env.VIM_MIN ~= nil or vim.g.minimal ~= nil or vim.env.VIM_BARE ~= nil
 end
 
 -- require'storage'
-require('utils').functions.get_ssh_hosts()
+require('utils.functions').get_ssh_hosts()

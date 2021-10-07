@@ -1,7 +1,7 @@
 local nvim = require 'neovim'
 local sys = require 'sys'
 
-local executable = require('utils').files.executable
+local executable = require('utils.files').executable
 
 local plugins = require('neovim').plugins
 
@@ -37,7 +37,7 @@ local M = {
 
 function M.format()
     local buffer = vim.api.nvim_get_current_buf()
-    local external_formatprg = require('utils').functions.external_formatprg
+    local external_formatprg = require('utils.functions').external_formatprg
 
     local project = vim.fn.findfile('pyproject.toml', '.;')
 
@@ -89,7 +89,7 @@ function M.setup()
         local cmd = { 'flake8' }
         local global_settings = vim.fn.expand(sys.name == 'windows' and '~/.flake8' or '~/.config/flake8')
 
-        local is_file = require('utils').files.is_file
+        local is_file = require('utils.files').is_file
 
         if
             not is_file(global_settings)
@@ -116,7 +116,7 @@ function M.setup()
 
     if not plugins['vim-apathy'] then
         local buf = nvim.get_current_buf()
-        local merge_uniq_list = require('utils').tables.merge_uniq_list
+        local merge_uniq_list = require('utils.tables').merge_uniq_list
 
         if not vim.b.python_path then
             -- local pypath = {}
@@ -160,14 +160,14 @@ function M.setup()
     set_command {
         lhs = 'Execute',
         rhs = function(...)
-            local is_file = require('utils').files.is_file
+            local is_file = require('utils.files').is_file
             local exepath = vim.fn.exepath
 
             local buffer = nvim.buf.get_name(nvim.get_current_buf())
             local filename = is_file(buffer) and buffer or vim.fn.tempname()
 
             if not is_file(buffer) then
-                require('utils').files.writefile(filename, nvim.buf.get_lines(0, 0, -1, true))
+                require('utils.files').writefile(filename, nvim.buf.get_lines(0, 0, -1, true))
             end
 
             local opts = {
@@ -178,7 +178,7 @@ function M.setup()
                 },
             }
             vim.list_extend(opts.args, { ... })
-            require('utils').functions.async_execute(opts)
+            require('utils.functions').async_execute(opts)
         end,
         args = { nargs = '*', force = true, buffer = true },
     }

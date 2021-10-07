@@ -1,9 +1,9 @@
 local nvim = require 'neovim'
 
-local executable = require('utils').files.executable
-local readfile = require('utils').files.readfile
-local is_file = require('utils').files.is_file
-local realpath = require('utils').files.realpath
+local executable = require('utils.files').executable
+local readfile = require('utils.files').readfile
+local is_file = require('utils.files').is_file
+local realpath = require('utils.files').realpath
 
 local compile_flags = STORAGE.compile_flags
 local databases = STORAGE.databases
@@ -156,7 +156,7 @@ end
 
 local function set_opts(filename, has_tidy, compiler, bufnum)
     local bufname = nvim.buf.get_name(bufnum)
-    local merge_uniq_list = require('utils').tables.merge_uniq_list
+    local merge_uniq_list = require('utils.tables').merge_uniq_list
 
     if is_file(bufname) and databases[realpath(bufname)] then
         bufname = realpath(bufname)
@@ -225,7 +225,7 @@ end
 
 local function parse_compiledb(data)
     assert(type(data) == type '', 'Invalid data: ' .. vim.inspect(data))
-    local json = require('utils').files.decode_json(data)
+    local json = require('utils.files').decode_json(data)
     for _, source in pairs(json) do
         local source_name
         if not source.file:match '/' then
@@ -253,9 +253,9 @@ function M.setup()
     local compiler = get_compiler()
     local bufnum = nvim.get_current_buf()
     local bufname = nvim.buf.get_name(bufnum)
-    local cwd = is_file(bufname) and require('utils').files.basedir(bufname)
-        or require('utils').files.getcwd()
-    local normalize_path = require('utils').files.normalize_path
+    local cwd = is_file(bufname) and require('utils.files').basedir(bufname)
+        or require('utils.files').getcwd()
+    local normalize_path = require('utils.files').normalize_path
 
     if compiler then
         local flags_file = vim.fn.findfile('compile_flags.txt', cwd .. ';')
@@ -336,7 +336,7 @@ function M.setup()
             lhs = 'BuildProject',
             rhs = function(...)
                 local buffer = nvim.buf.get_name(nvim.get_current_buf())
-                local base_cwd = require('utils').files.getcwd()
+                local base_cwd = require('utils.files').getcwd()
                 local ft = vim.bo.filetype
 
                 if not is_file(buffer) then
@@ -354,11 +354,11 @@ function M.setup()
                 args = get_args(compiler, nvim.get_current_buf(), compiler_flags_file)
                 vim.list_extend(args, { '-o', compile_output })
 
-                require('utils').files.find_files(base_cwd, '*.' .. ft, function(job)
+                require('utils.files').find_files(base_cwd, '*.' .. ft, function(job)
                     vim.list_extend(args, job:output())
 
-                    if not require('utils').files.is_dir 'build' then
-                        require('utils').files.mkdir 'build'
+                    if not require('utils.files').is_dir 'build' then
+                        require('utils.files').mkdir 'build'
                     end
 
                     P(('%s %s'):format(compiler, table.concat(args, ' ')))
@@ -368,7 +368,7 @@ function M.setup()
                         args = args,
                         progress = true,
                         opts = {
-                            cwd = require('utils').files.getcwd(),
+                            cwd = require('utils.files').getcwd(),
                             -- pty = true,
                         },
                         qf = {
@@ -389,7 +389,7 @@ function M.setup()
                             progress = true,
                             verify_exec = false,
                             opts = {
-                                cwd = require('utils').files.getcwd(),
+                                cwd = require('utils.files').getcwd(),
                                 -- pty = true,
                             },
                             qf = {

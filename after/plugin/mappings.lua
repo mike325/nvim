@@ -1,15 +1,15 @@
 local sys = require 'sys'
 local nvim = require 'neovim'
 
--- local split          = require'utils'.strings.split
-local clear_lst = require('utils').tables.clear_lst
-local executable = require('utils').files.executable
-local is_file = require('utils').files.is_file
-local writefile = require('utils').files.writefile
-local normalize_path = require('utils').files.normalize_path
-local realpath = require('utils').files.realpath
-local basename = require('utils').files.basename
-local read_json = require('utils').files.read_json
+-- local split = require'utils'.strings.split
+local clear_lst = require('utils.tables').clear_lst
+local executable = require('utils.files').executable
+local is_file = require('utils.files').is_file
+local writefile = require('utils.files').writefile
+local normalize_path = require('utils.files').normalize_path
+local realpath = require('utils.files').realpath
+local basename = require('utils.files').basename
+local read_json = require('utils.files').read_json
 
 local set_abbr = require('neovim.abbrs').set_abbr
 local set_command = require('neovim.commands').set_command
@@ -289,7 +289,7 @@ set_mapping {
     mode = 'n',
     lhs = '<leader>d',
     rhs = function()
-        require('utils').buffers.delete()
+        require('utils.buffers').delete()
     end,
 }
 
@@ -415,7 +415,7 @@ set_mapping {
 set_command {
     lhs = 'ClearQf',
     rhs = function()
-        require('utils').helpers.clear_qf()
+        require('utils.helpers').clear_qf()
     end,
     args = { force = true },
 }
@@ -423,7 +423,7 @@ set_command {
 set_command {
     lhs = 'ClearLoc',
     rhs = function(win)
-        require('utils').helpers.clear_qf(win or nvim.get_current_win())
+        require('utils.helpers').clear_qf(win or nvim.get_current_win())
     end,
     args = { nargs = '?', force = true },
 }
@@ -498,7 +498,7 @@ set_command {
             end
         end
 
-        local win = require('utils').windows.big_center()
+        local win = require('utils.windows').big_center()
 
         nvim.win.set_option(win, 'number', false)
         nvim.win.set_option(win, 'relativenumber', false)
@@ -693,7 +693,7 @@ else
                 return
             end
             local filename = vim.fn.expand '%'
-            local chmod = require('utils').files.chmod
+            local chmod = require('utils.files').chmod
             if is_file(filename) then
                 chmod(filename, mode)
             end
@@ -706,13 +706,13 @@ set_command {
     lhs = 'MoveFile',
     rhs = function(bang, new_path)
         local current_path = vim.fn.expand '%:p'
-        local is_dir = require('utils').files.is_dir
+        local is_dir = require('utils.files').is_dir
 
         if is_file(current_path) and is_dir(new_path) then
             new_path = new_path .. '/' .. vim.fn.fnamemodify(current_path, ':t')
         end
 
-        require('utils').files.rename(current_path, new_path, bang)
+        require('utils.files').rename(current_path, new_path, bang)
     end,
     args = { force = true, bang = true, nargs = 1, complete = 'file' },
 }
@@ -722,7 +722,7 @@ set_command {
     rhs = function(bang, args)
         local current_path = vim.fn.expand '%:p'
         local current_dir = vim.fn.expand '%:h'
-        require('utils').files.rename(current_path, current_dir .. '/' .. args, bang)
+        require('utils.files').rename(current_path, current_dir .. '/' .. args, bang)
     end,
     args = { force = true, bang = true, nargs = 1, complete = 'file' },
 }
@@ -739,7 +739,7 @@ set_command {
     lhs = 'RemoveFile',
     rhs = function(bang, args)
         local target = args ~= '' and args or vim.fn.expand '%'
-        require('utils').files.delete(vim.fn.fnamemodify(target, ':p'), bang)
+        require('utils.files').delete(vim.fn.fnamemodify(target, ':p'), bang)
     end,
     args = { force = true, bang = true, nargs = '?', complete = 'file' },
 }
@@ -747,7 +747,7 @@ set_command {
 set_command {
     lhs = 'Grep',
     rhs = function(...)
-        require('utils').functions.send_grep_job { ... }
+        require('utils.functions').send_grep_job { ... }
     end,
     args = { nargs = '+', force = true },
 }
@@ -770,7 +770,7 @@ set_mapping {
     mode = 'n',
     lhs = 'gss',
     rhs = function()
-        require('utils').functions.send_grep_job(vim.fn.expand '<cword>')
+        require('utils.functions').send_grep_job(vim.fn.expand '<cword>')
     end,
     args = noremap_silent,
 }
@@ -1070,7 +1070,7 @@ if not plugins['vim-commentary'] then
         lhs = 'gcc',
         rhs = function()
             local cursor = nvim.win.get_cursor(0)
-            require('utils').functions.toggle_comments(cursor[1] - 1, cursor[1])
+            require('utils.functions').toggle_comments(cursor[1] - 1, cursor[1])
             nvim.win.set_cursor(0, cursor)
         end,
         args = noremap_silent,
@@ -1101,7 +1101,7 @@ set_command {
             nvim.ex.messages 'clear'
             local context = vim.fn.getqflist({ context = 1 }).context
             if context == 'Messages' then
-                require('utils').helpers.clear_qf()
+                require('utils.helpers').clear_qf()
                 nvim.ex.cclose()
             end
         end
@@ -1156,7 +1156,7 @@ end
 if not vim.env.SSH_CONNECTION then
     set_command {
         lhs = 'Open',
-        rhs = require('utils').functions.open,
+        rhs = require('utils.functions').open,
         args = { nargs = '1', force = true, complete = 'file' },
     }
 
@@ -1166,7 +1166,7 @@ if not vim.env.SSH_CONNECTION then
         rhs = function()
             local cfile = vim.fn.expand '<cfile>'
             local cword = vim.fn.expand '<cWORD>'
-            require('utils').functions.open(cword:match '^[%w]+://' and cword or cfile)
+            require('utils.functions').open(cword:match '^[%w]+://' and cword or cfile)
         end,
         args = noremap_silent,
     }

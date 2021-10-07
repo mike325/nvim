@@ -38,7 +38,6 @@ end
 
 if not STORAGE then
     _G['STORAGE'] = {
-        git_version = '',
         modern_git = -1,
         scratchs = {},
         compile_flags = {},

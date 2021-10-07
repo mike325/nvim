@@ -250,16 +250,16 @@ function M.external_formatprg(args)
     local cmd = args.cmd
     local buf = args.buffer or vim.api.nvim_get_current_buf()
 
-    local indent = require('utils').buffers.indent
+    local indent = require('utils.buffers').indent
 
     local first = args.first or (vim.v.lnum - 1)
     local last = args.last or (first + vim.v.count)
 
     local lines = vim.api.nvim_buf_get_lines(buf, first, last, false)
-    local indent_level = require('utils').buffers.get_indent_block_level(lines)
+    local indent_level = require('utils.buffers').get_indent_block_level(lines)
     local tmpfile = vim.fn.tempname()
 
-    require('utils').files.writefile(tmpfile, indent(lines, -indent_level))
+    require('utils.files').writefile(tmpfile, indent(lines, -indent_level))
 
     table.insert(cmd, tmpfile)
 
@@ -282,7 +282,7 @@ function M.external_formatprg(args)
     }
 
     formatprg:callback_on_success(function(job)
-        local fmt_lines = require('utils').files.readfile(tmpfile)
+        local fmt_lines = require('utils.files').readfile(tmpfile)
         fmt_lines = indent(fmt_lines, indent_level)
         vim.api.nvim_buf_set_lines(buf, first, last, false, fmt_lines)
     end)

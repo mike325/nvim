@@ -4,8 +4,8 @@ if not nvim.has 'nvim-0.5' then
     return false
 end
 
-local get_icon = require('utils').helpers.get_icon
-local executable = require('utils').files.executable
+local get_icon = require('utils.helpers').get_icon
+local executable = require('utils.files').executable
 
 local jobs = STORAGE.jobs
 
@@ -323,9 +323,9 @@ function Job:start()
     local _user_on_stdout = self._opts.on_stdout
     local _user_on_stderr = self._opts.on_stderr
     local _user_on_exit = self._opts.on_exit
-    local _cwd = self._opts.cwd or require('utils').files.getcwd()
+    local _cwd = self._opts.cwd or require('utils.files').getcwd()
 
-    self._opts.cwd = require('utils').files.realpath(_cwd)
+    self._opts.cwd = require('utils.files').realpath(_cwd)
 
     local function on_exit_wrapper(_, rc, event)
         self._isalive = false
@@ -362,11 +362,11 @@ function Job:start()
                 if vim.t.progress_win and self._tab == nvim.get_current_tabpage() then
                     nvim.win.close(vim.t.progress_win, false)
                 end
-                require('utils').helpers.dump_to_qf(qf_opts)
+                require('utils.helpers').dump_to_qf(qf_opts)
             elseif qf_opts.clear and qf_opts.on_fail then
                 local context = vim.fn.getqflist({ context = 1 }).context
                 if context == (qf_opts.context or '') then
-                    require('utils').helpers.clear_qf()
+                    require('utils.helpers').clear_qf()
                 end
             end
         end
@@ -452,7 +452,7 @@ function Job:progress()
         self._buffer = get_buffer(self)
     end
 
-    require('utils').windows.progress(self._buffer)
+    require('utils.windows').progress(self._buffer)
 end
 
 function Job:wait(timeout)

@@ -470,7 +470,7 @@ function M.find_files(path, globs, cb)
     }
 
     files:callback_on_success(function(job)
-        job._output = require('utils').tables.clear_lst(job:output())
+        job._output = require('utils.tables').clear_lst(job:output())
     end)
 
     if cb then

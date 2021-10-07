@@ -7,7 +7,6 @@ local normalize_path = require('utils.files').normalize_path
 local getcwd = require('utils.files').getcwd
 local split = require('utils.strings').split
 
-local system = vim.fn.system
 local line = vim.fn.line
 
 local M = {}
@@ -418,55 +417,6 @@ function M.is_git_repo(root)
     return vim.fn.findfile('.git', root .. ';') ~= ''
 end
 
-function M.check_version(sys_version, version_target)
-    assert(type(sys_version) == type {}, debug.traceback 'System version must be an array')
-    assert(type(version_target) == type {}, debug.traceback 'Checking version must be an array')
-
-    for i, _ in pairs(version_target) do
-        if type(version_target[i]) == 'string' then
-            version_target[i] = tonumber(version_target[i])
-        end
-
-        if type(sys_version[i]) == 'string' then
-            sys_version[i] = tonumber(sys_version[i])
-        end
-
-        if version_target[i] > sys_version[i] then
-            return false
-        elseif version_target[i] < sys_version[i] then
-            return true
-        elseif #version_target == i and version_target[i] == sys_version[i] then
-            return true
-        end
-    end
-    return false
-end
-
-function M.has_git_version(...)
-    if not executable 'git' then
-        return false
-    end
-
-    local args
-    if ... == nil or type(...) ~= 'table' then
-        args = { ... }
-    else
-        args = ...
-    end
-
-    if #STORAGE.git_version == 0 then
-        STORAGE.git_version = string.match(system 'git --version', '%d+%p%d+%p%d+')
-    end
-
-    if #args == 0 then
-        return STORAGE.git_version
-    end
-
-    local components = require('utils.strings').split_components(STORAGE.git_version, '%d+')
-
-    return M.check_version(components, args)
-end
-
 function M.ignores(tool)
     local excludes = split(vim.o.backupskip, ',')
 
@@ -508,9 +458,6 @@ end
 function M.grep(tool, attr, lst)
     local property = (attr and attr ~= '') and attr or 'grepprg'
 
-    if STORAGE.modern_git == -1 then
-        STORAGE.modern_git = M.has_git_version('2', '19')
-    end
     local modern_git = STORAGE.modern_git
 
     local greplist = {
@@ -893,6 +840,10 @@ end
 function M.clear_qf(win)
     qf_funcs.set_list({}, 'r', nil, win)
     qf_funcs.close(win)
+end
+
+if STORAGE.modern_git == -1 then
+    STORAGE.modern_git = require('storage').has_version('git', { '2', '19' })
 end
 
 return M

@@ -86,7 +86,7 @@ local function func_handle(info)
 end
 
 function M.get_mapping(mapping)
-    local has_attrs = require('utils').tables.has_attrs
+    local has_attrs = require('utils.tables').has_attrs
     if not has_attrs(mapping, { 'mode', 'lhs' }) then
         vim.notify(
             'Missing arguments!! get_mapping need a mode and a lhs attribbutes',
@@ -132,7 +132,7 @@ local function fix_mappings(args)
 end
 
 function M.set_mapping(mapping)
-    local has_attrs = require('utils').tables.has_attrs
+    local has_attrs = require('utils.tables').has_attrs
     if not has_attrs(mapping, { 'mode', 'lhs' }) then
         vim.notify(
             'Missing arguments!! set_mapping need a mode and a lhs attribbutes',

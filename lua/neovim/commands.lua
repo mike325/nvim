@@ -64,7 +64,7 @@ local function func_handle(info)
 end
 
 function M.set_command(command)
-    if not require('utils').tables.has_attrs(command, { 'lhs' }) then
+    if not require('utils.tables').has_attrs(command, { 'lhs' }) then
         vim.notify(
             'Missing arguments!! set_command need a lhs attribbutes',
             'ERROR',

@@ -1,10 +1,10 @@
 local M = {}
 
 function M.setup()
-    local mkdir = require('utils').files.mkdir
-    local is_dir = require('utils').files.is_dir
-    local is_file = require('utils').files.is_file
-    local link = require('utils').files.link
+    local mkdir = require('utils.files').mkdir
+    local is_dir = require('utils.files').is_dir
+    local is_file = require('utils.files').is_file
+    local link = require('utils.files').link
 
     local set_command = require('neovim.commands').set_command
 

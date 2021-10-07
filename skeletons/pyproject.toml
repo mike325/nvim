@@ -37,3 +37,16 @@ exclude = '''
     )/
     )
 '''
+
+[tool.mypy]
+python_version = "3.6"
+ignore_missing_imports = true
+sqlite_cache = true
+# warn_return_any = true
+# warn_unused_configs = true
+
+# mypy per-module options:
+
+# [[tool.mypy.overrides]]
+# module = "mycode.foo.*"
+# disallow_untyped_defs = true

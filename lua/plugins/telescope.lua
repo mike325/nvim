@@ -1,6 +1,6 @@
 local sys = require 'sys'
-local executable = require('utils').files.executable
-local load_module = require('utils').helpers.load_module
+local executable = require('utils.files').executable
+local load_module = require('utils.helpers').load_module
 
 local set_autocmd = require('neovim.autocmds').set_autocmd
 local set_mapping = require('neovim.mappings').set_mapping
@@ -122,7 +122,7 @@ set_mapping {
     rhs = function()
         local is_git = vim.b.project_root and vim.b.project_root.is_git or false
         require('telescope.builtin').find_files {
-            find_command = require('utils').helpers.select_filelist(is_git, true),
+            find_command = require('utils.helpers').select_filelist(is_git, true),
         }
     end,
     args = { noremap = true },
