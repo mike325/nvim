@@ -2,6 +2,7 @@ local _, sqlite = pcall(require, 'sqlite')
 
 local M = {}
 
+-- TODO: Add support to pass db objects
 function M.insert_row(tbl_name, data, db_path)
     vim.validate {
         tbl_name = { tbl_name, 'string' },

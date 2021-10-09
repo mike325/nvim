@@ -34,8 +34,10 @@ function M.is_modified(bufnr)
 end
 
 function M.delete(bufnr, wipe)
-    vim.validate { buffer = { bufnr, 'number' } }
-    assert(bufnr > 0, debug.traceback 'Buffer must be greater than 0')
+    vim.validate { buffer = { bufnr, 'number', true }, wipe = { wipe, 'boolean', true } }
+    assert(not bufnr or bufnr > 0, debug.traceback 'Buffer must be greater than 0')
+
+    bufnr = bufnr or vim.api.nvim_get_current_buf()
 
     local is_wipe = nvim.buf.get_option(bufnr, 'bufhidden') == 'wipe'
     local prev_buf = vim.fn.expand '#' ~= '' and vim.fn.bufnr(vim.fn.expand '#') or -1
