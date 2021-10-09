@@ -672,6 +672,7 @@ packer.startup(function()
         config = function()
             require 'plugins.completion'
         end,
+        after = 'nvim-lspconfig',
     }
 
     -- -- TODO: Check for python 3.8.5

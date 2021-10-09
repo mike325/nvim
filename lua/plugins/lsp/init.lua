@@ -12,6 +12,7 @@ local is_dir = require('utils.files').is_dir
 local set_mapping = require('neovim.mappings').set_mapping
 
 local lsp = load_module 'lspconfig'
+local cmp = load_module 'cmp'
 
 if lsp == nil then
     return false
@@ -625,6 +626,11 @@ for language, options in pairs(servers) do
             end
             init.commands = cmds
             init.on_attach = on_attach
+            if cmp then
+                init.capability = require('cmp_nvim_lsp').update_capabilities(
+                    vim.lsp.protocol.make_client_capabilities()
+                )
+            end
             lsp[config].setup(init)
             available_languages[#available_languages + 1] = language
             if language == 'c' then

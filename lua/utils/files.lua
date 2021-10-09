@@ -6,7 +6,7 @@ local bufloaded = require('utils.buffers').bufloaded
 local uv = vim.loop
 
 local has_cjson, _ = pcall(require, 'cjson')
-STORAGE.has_cjson = has_cjson
+STORAGE.has_cjson = vim.json ~= nil or has_cjson
 
 local M = {}
 
@@ -695,7 +695,9 @@ function M.decode_json(data)
     if type(data) == type {} then
         data = table.concat(data, '\n')
     end
-    if has_cjson then
+    if vim.json then
+        return vim.json.decode(data)
+    elseif has_cjson then
         return require('cjson').decode(data)
     elseif vim.in_fast_event() then
         error 'Decode json in fast event is not yet supported!!'
@@ -706,7 +708,9 @@ end
 
 function M.encode_json(data)
     assert(type(data) == type {}, debug.traceback('Invalid Json data: ' .. vim.inspect(data)))
-    if has_cjson then
+    if vim.json then
+        return vim.json.encode(data)
+    elseif has_cjson then
         return require('cjson').encode(data)
     elseif vim.in_fast_event() then
         error(debug.traceback 'Encode json in fast event is not yet supported!!')
