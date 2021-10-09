@@ -100,7 +100,7 @@ vim.opt.winblend = 10
 vim.opt.showbreak = '↪\\'
 vim.opt.listchars = { tab = '▸ ', trail = '•', extends = '❯', precedes = '❮' }
 vim.opt.cpoptions = 'aAceFs_B'
-vim.opt.shortmess:append { 'a', 'c' }
+vim.opt.shortmess:append { a = true, c = true }
 
 vim.opt.lazyredraw = true
 vim.opt.showmatch = true
