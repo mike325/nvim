@@ -47,10 +47,7 @@ end
 vim.opt.shada = { '!', '/1000', "'1000", '<1000', ':1000', 's10000', 'h' }
 
 if sys.name == 'windows' then
-    vim.opt.shada:append 'rA:'
-    vim.opt.shada:append 'rB:'
-    vim.opt.shada:append 'rC:'
-    vim.opt.shada:append 'rC:/Temp'
+    vim.opt.shada:append { 'rA:', 'rB:', 'rC:', 'rC:/Temp' }
 else
     vim.opt.shada:append 'r/tmp/'
 end
@@ -103,8 +100,7 @@ vim.opt.winblend = 10
 vim.opt.showbreak = '↪\\'
 vim.opt.listchars = { tab = '▸ ', trail = '•', extends = '❯', precedes = '❮' }
 vim.opt.cpoptions = 'aAceFs_B'
-vim.opt.shortmess:append 'a'
-vim.opt.shortmess:append 'c'
+vim.opt.shortmess:append { 'a', 'c' }
 
 vim.opt.lazyredraw = true
 vim.opt.showmatch = true
@@ -143,7 +139,7 @@ else
     vim.opt.title = true
 end
 
-local diff_opts = {
+vim.opt.diffopt:append {
     'vertical',
     'iwhiteall',
     'iwhiteeol',
@@ -151,10 +147,6 @@ local diff_opts = {
     'algorithm:patience',
     'hiddenoff',
 }
-
-for _, opt in pairs(diff_opts) do
-    vim.opt.diffopt:append(opt)
-end
 
 vim.opt.relativenumber = true
 vim.opt.number = true

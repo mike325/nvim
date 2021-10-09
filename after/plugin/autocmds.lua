@@ -121,12 +121,12 @@ set_autocmd {
     group = 'CloseMenu',
 }
 
-set_autocmd {
-    event = 'Filetype',
-    pattern = 'lua',
-    cmd = [[nnoremap <buffer><silent> <leader><leader>r :luafile %<cr>:echo "File reloaded"<cr>]],
-    group = 'Reload',
-}
+-- set_autocmd {
+--     event = 'Filetype',
+--     pattern = 'lua',
+--     cmd = [[nnoremap <buffer><silent> <leader><leader>r :luafile %<cr>:echo "File reloaded"<cr>]],
+--     group = 'Reload',
+-- }
 
 set_autocmd {
     event = 'BufWritePost',

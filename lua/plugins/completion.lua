@@ -1,5 +1,4 @@
 local load_module = require('utils.helpers').load_module
-local has_attrs = require('utils.tables').has_attrs
 
 local plugins = require('neovim').plugins
 
@@ -265,7 +264,7 @@ elseif completion ~= nil then
         group = 'Completion',
     }
 
-    if has_attrs(lsp, 'cpp') or has_attrs(treesitter, 'cpp') then
+    if vim.tbl_contains(lsp, 'cpp') or vim.tbl_contains(treesitter, 'cpp') then
         set_autocmd {
             event = 'BufEnter',
             pattern = { '*.c', '*.h', '*.cpp', '*.hpp', '*.cc', '*.cxx' },
@@ -274,7 +273,7 @@ elseif completion ~= nil then
         }
     end
 
-    if has_attrs(lsp, 'lua') or has_attrs(treesitter, 'lua') then
+    if vim.tbl_contains(lsp, 'lua') or vim.tbl_contains(treesitter, 'lua') then
         set_autocmd {
             event = 'BufEnter',
             pattern = { '*.lua' },

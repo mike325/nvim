@@ -12,8 +12,8 @@ function M.create_autogrp(autogrp)
 end
 
 function M.get_autocmd(autocmd)
-    local has_attrs = require('utils.tables').has_attrs
-    if not has_attrs(autocmd, { 'event' }) and not has_attrs(autocmd, { 'group' }) then
+    vim.validate { autocmd = { autocmd, 'table' } }
+    if not autocmd.event and not autocmd.group then
         vim.notify(
             'Missing arguments!! get_autocmd need event or group attribbute',
             'ERROR',
@@ -42,8 +42,8 @@ function M.has_autocmd(autocmd)
 end
 
 function M.set_autocmd(autocmd)
-    local has_attrs = require('utils.tables').has_attrs
-    if not has_attrs(autocmd, { 'event' }) then
+    vim.validate { autocmd = { autocmd, 'table' } }
+    if not autocmd.event then
         vim.notify(
             'Missing arguments!! set_autocmd need event attribbute',
             'ERROR',

@@ -26,8 +26,17 @@ local function read_config(config)
 end
 
 function Config:new(configfile)
+    vim.validate { configfile = { configfile, 'string' } }
     configfile = require('utils.files').normalize_path(configfile)
-    assert(require('utils.files').is_file(configfile), 'Not a valid configfile: ' .. configfile)
+    vim.validate {
+        configfile = {
+            configfile,
+            function(c)
+                return require('utils.files').is_file(c)
+            end,
+            'config file',
+        },
+    }
 
     local obj = {}
     setmetatable(obj, self)

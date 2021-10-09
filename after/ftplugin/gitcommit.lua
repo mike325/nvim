@@ -11,8 +11,7 @@ vim.opt_local.swapfile = false
 
 vim.opt_local.spell = true
 
-vim.opt_local.complete:append 'k'
-vim.opt_local.complete:append 'kspell'
+vim.opt_local.complete:append { 'k', 'kspell' }
 
 vim.opt_local.textwidth = 80
 

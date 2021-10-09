@@ -230,8 +230,8 @@ function M.get_ssh_hosts()
 end
 
 function M.get_git_dir(callback)
+    vim.validate { callback = { callback, 'function' } }
     assert(require('utils.files').executable 'git', 'Missing git')
-    -- assert(type(callback) == 'function', 'Missing callback function')
 
     local j = RELOAD('jobs'):new {
         cmd = { 'git', 'rev-parse', '--git-dir' },

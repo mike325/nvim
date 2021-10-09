@@ -64,7 +64,8 @@ local function func_handle(info)
 end
 
 function M.set_command(command)
-    if not require('utils.tables').has_attrs(command, { 'lhs' }) then
+    vim.validate { command = { command, 'table' } }
+    if not command.lhs then
         vim.notify(
             'Missing arguments!! set_command need a lhs attribbutes',
             'ERROR',
@@ -158,15 +159,22 @@ function M.set_command(command)
 end
 
 function M.rm_command(command, buffer)
-    assert(
-        type(command) == type '' or type(command) == type {},
-        debug.traceback('Invalid command: ' .. vim.inspect(command))
-    )
-
-    assert(
-        type(buffer) == type(true) or type(buffer) == type(1) or buffer == nil,
-        debug.traceback('Invalid buffer: ' .. vim.inspect(buffer))
-    )
+    vim.validate {
+        command = {
+            command,
+            function(c)
+                return type(c) == type '' or type(c) == type {}
+            end,
+            'vim command',
+        },
+        buffer = {
+            buffer,
+            function(b)
+                return not b or type(b) == type(true) or type(b) == type(1)
+            end,
+            'vim buffer',
+        },
+    }
 
     if type(command) == type '' then
         command = { command }

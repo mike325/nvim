@@ -5,7 +5,7 @@ local set_mapping = require('neovim.mappings').set_mapping
 local M = {}
 
 local function autowipe(win, buffer)
-    assert(win and buffer, debug.traceback 'Buffer and window are necessary')
+    vim.validate { window = { win, 'number' }, buffer = { buffer, 'number' } }
 
     set_autocmd {
         event = { 'WinClosed' },
@@ -21,7 +21,7 @@ local function autowipe(win, buffer)
 end
 
 local function close_on_move(win, buffer)
-    assert(win, debug.traceback 'Missing window')
+    vim.validate { window = { win, 'number' } }
 
     set_autocmd {
         event = { 'CursorMoved' },
@@ -37,7 +37,7 @@ local function close_on_move(win, buffer)
 end
 
 local function close_on_leave(win, buffer)
-    assert(win, debug.traceback 'Missing window')
+    vim.validate { window = { win, 'number' } }
 
     if win then
         set_autocmd {
@@ -217,10 +217,7 @@ function M.cursor_window(buffer, auto_size)
 end
 
 function M.ask_window(callback)
-    assert(
-        not callback or vim.is_callable(callback),
-        debug.traceback('Invalid callback: ' .. vim.inspect(callback))
-    )
+    vim.validate { callback = { callback, 'function', true } }
 
     -- local columns = vim.opt.columns:get()
     -- local lines = vim.opt.lines:get()

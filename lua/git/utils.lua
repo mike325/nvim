@@ -33,16 +33,21 @@ local function get_git_dir(cmd)
 end
 
 local function exec_async_gitcmd(data)
-    assert(type(data) == type {}, debug.traceback 'Missing data !')
+    vim.validate { data = { data, 'table' } }
 
     local cmd = data.cmd
-    assert(type(cmd) == type {}, debug.traceback 'Missing cmd !')
+    vim.validate { cmd = { cmd, 'table' } }
 
     local callbacks = data.callbacks
-    assert(
-        not callbacks or vim.is_callable(callbacks) or type(callbacks) == type {},
-        debug.traceback('Invalid callbacks ' .. vim.inspect(callbacks))
-    )
+    vim.validate {
+        callbacks = {
+            callbacks,
+            function(c)
+                return not c or vim.is_callable(c) or type(c) == type {}
+            end,
+            'valid callback or an array of callbacks',
+        },
+    }
 
     local silent = data.silent
     local gitcmd
@@ -103,16 +108,30 @@ function M.get_git_cmd(gitcmd, args)
 end
 
 function M.launch_gitcmd_job(opts)
-    assert(type(opts) == type {}, debug.traceback 'Options must be a table')
-    assert(type(opts.gitcmd) == type '' and opts.gitcmd ~= '', debug.traceback 'Invalid gitcmd')
-    assert(
-        not opts.args or vim.tbl_islist(opts.args),
-        debug.traceback 'Invalid commad args, must be an array'
-    )
-    assert(
-        not opts.jobopts or type(opts.jobopts) == type {},
-        debug.traceback 'Invalid commad job options, must be a table'
-    )
+    vim.validate { opts = { opts, 'table' } }
+    vim.validate {
+        gitcmd = {
+            opts.gitcmd,
+            function(g)
+                return type(g) == type '' and g ~= ''
+            end,
+            'git cmd',
+        },
+        args = {
+            opts.args,
+            function(a)
+                return not a or vim.tbl_islist(a)
+            end,
+            'git arguments',
+        },
+        jobopts = {
+            opts.jobopts,
+            function(j)
+                return not j or type(j) == type {}
+            end,
+            'job opts',
+        },
+    }
 
     local gitcmd = opts.gitcmd
     local args = opts.args
@@ -128,10 +147,15 @@ function M.launch_gitcmd_job(opts)
 end
 
 local function parse_status(status)
-    assert(
-        type(status) == 'string' or vim.tbl_islist(status),
-        debug.traceback('Invalid status type: ' .. type(status))
-    )
+    vim.validate {
+        status = {
+            status,
+            function(s)
+                return type(s) == type '' or vim.tbl_islist(s)
+            end,
+            'valid git status format',
+        },
+    }
 
     local split = require('utils.strings').split
 
@@ -194,7 +218,15 @@ local function parse_status(status)
 end
 
 function M.status(callback)
-    assert(not callback or vim.is_callable(callback), debug.traceback 'Invalid callback')
+    vim.validate {
+        callback = {
+            callback,
+            function(c)
+                return not callback or vim.is_callable(callback)
+            end,
+            'a callback function or nil',
+        },
+    }
 
     local gitcmd = 'status'
     local cmd = M.get_git_cmd(gitcmd, {

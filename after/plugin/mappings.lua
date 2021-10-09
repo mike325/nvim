@@ -918,7 +918,15 @@ if executable 'scp' then
             virtual_filename = vim.fn.tempname()
         end
 
-        assert(is_file(filename) or virtual_filename, 'Not a regular file ' .. filename)
+        vim.validate {
+            filename = {
+                filename,
+                function(f)
+                    return is_file(filename) or virtual_filename
+                end,
+                'a valid file',
+            },
+        }
 
         if virtual_filename and send then
             writefile(virtual_filename, nvim.buf.get_lines(0, 0, -1, true))
@@ -939,7 +947,15 @@ if executable 'scp' then
     local function get_host(host)
         if not host or host == '' then
             host = vim.fn.input('Enter hostname > ', '', 'customlist,neovim#ssh_hosts_completion')
-            assert(type(host) == 'string' and host ~= '', 'Invalid hostname')
+            vim.validate {
+                host = {
+                    host,
+                    function(h)
+                        return type(h) == type '' and h ~= ''
+                    end,
+                    'hostname',
+                },
+            }
         end
         return host
     end

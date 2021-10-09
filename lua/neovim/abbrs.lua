@@ -5,7 +5,8 @@ local api = vim.api
 local M = {}
 
 function M.set_abbr(abbr)
-    if not require('utils.tables').has_attrs(abbr, { 'mode', 'lhs' }) then
+    vim.validate { abbrevation = { abbr, 'table' } }
+    if not abbr.mode or not abbr.lhs then
         vim.notify(
             'Missing arguments!! set_abbr need a mode and a lhs attribbutes',
             'ERROR',

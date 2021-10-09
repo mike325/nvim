@@ -224,7 +224,7 @@ local function parse_includes(args)
 end
 
 local function parse_compiledb(data)
-    assert(type(data) == type '', 'Invalid data: ' .. vim.inspect(data))
+    vim.validate { data = { data, 'string' } }
     local json = require('utils.files').decode_json(data)
     for _, source in pairs(json) do
         local source_name

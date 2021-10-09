@@ -51,7 +51,15 @@ local function sync_insert_version(prg)
 end
 
 function M.get_prg_info(prg)
-    assert(type(prg) == type '' and prg ~= '', debug.traceback('Invalid program: ' .. vim.inspect(prg)))
+    vim.validate {
+        program = {
+            prg,
+            function(p)
+                return type(p) == type '' and p ~= ''
+            end,
+            'valid program executable',
+        },
+    }
     if sqlite then
         return sqlite.with_open(db_path, function(db)
             return db:select('versions', { where = { name = prg } })
@@ -60,24 +68,23 @@ function M.get_prg_info(prg)
     return STORAGE.versions[prg]
 end
 
-function M.check_version(sys_version, version_target)
-    assert(type(sys_version) == type {}, debug.traceback 'System version must be an array')
-    assert(type(version_target) == type {}, debug.traceback 'Checking version must be an array')
+function M.check_version(sys_version, target_version)
+    vim.validate { system_version = { sys_version, 'table' }, target_version = { target_version, 'table' } }
 
-    for i, _ in pairs(version_target) do
-        if type(version_target[i]) == 'string' then
-            version_target[i] = tonumber(version_target[i])
+    for i, _ in pairs(target_version) do
+        if type(target_version[i]) == 'string' then
+            target_version[i] = tonumber(target_version[i])
         end
 
         if type(sys_version[i]) == 'string' then
             sys_version[i] = tonumber(sys_version[i])
         end
 
-        if version_target[i] > sys_version[i] then
+        if target_version[i] > sys_version[i] then
             return false
-        elseif version_target[i] < sys_version[i] then
+        elseif target_version[i] < sys_version[i] then
             return true
-        elseif #version_target == i and version_target[i] == sys_version[i] then
+        elseif #target_version == i and target_version[i] == sys_version[i] then
             return true
         end
     end
@@ -85,11 +92,16 @@ function M.check_version(sys_version, version_target)
 end
 
 function M.get_version(prg, force)
-    assert(type(prg) == type '' and prg ~= '', debug.traceback('Invalid program' .. vim.inspect(prg)))
-    assert(
-        not force or type(force) == type(true),
-        debug.traceback('Invalid force value' .. vim.inspect(force))
-    )
+    vim.validate {
+        force = { force, 'boolean', true },
+        program = {
+            prg,
+            function(p)
+                return type(p) == type '' and p ~= ''
+            end,
+            'valid program executable',
+        },
+    }
     local entries = M.get_prg_info(prg)
     if not entries and force then
         entries = sync_insert_version(prg)
@@ -98,11 +110,22 @@ function M.get_version(prg, force)
 end
 
 function M.set_version(prg, version)
-    assert(type(prg) == type '' and prg ~= '', debug.traceback('Invalid program' .. vim.inspect(prg)))
-    assert(
-        not version or (type(version) == type '' and version ~= ''),
-        debug.traceback('Invalid version' .. vim.inspect(version))
-    )
+    vim.validate {
+        version = {
+            version,
+            function(v)
+                return not v or (type(v) == type '' and v ~= '')
+            end,
+            'valid version string',
+        },
+        program = {
+            prg,
+            function(p)
+                return type(p) == type '' and p ~= ''
+            end,
+            'valid program executable',
+        },
+    }
 
     if not version then
         async_insert_version(prg)
@@ -112,13 +135,24 @@ function M.set_version(prg, version)
 end
 
 function M.has_version(prg, target_version)
-    assert(type(prg) == type '' and prg ~= '', debug.traceback('Invalid program' .. vim.inspect(prg)))
-    assert(
-        not target_version or (type(target_version) == type {} and vim.tbl_islist(target_version)),
-        debug.traceback('Invalid version' .. vim.inspect(target_version))
-    )
+    vim.validate {
+        program = {
+            prg,
+            function(p)
+                return type(p) == type '' and p ~= ''
+            end,
+            'valid program executable',
+        },
+        target_version = {
+            target_version,
+            function(v)
+                return not v or (type(v) == type {} and vim.tbl_islist(v))
+            end,
+            'valid target version table',
+        },
+    }
 
-    if not vim.fn.executable(prg) ~= 1 then
+    if vim.fn.executable(prg) ~= 1 then
         return false
     end
 

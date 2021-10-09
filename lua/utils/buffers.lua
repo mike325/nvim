@@ -21,32 +21,35 @@ function M.last_position()
 end
 
 function M.bufloaded(bufnr)
-    -- assert(type(bufnr) == type(1) and bufnr > 0, 'Invalid buffer')
+    vim.validate { buffer = { bufnr, 'number' } }
+
     return vim.fn.bufloaded(bufnr) == 1
 end
 
 function M.is_modified(bufnr)
-    assert(not bufnr or (type(bufnr) == type(1) and bufnr > 0), 'Invalid buffer')
+    vim.validate { buffer = { bufnr, 'number', true } }
+
     bufnr = bufnr or nvim.get_current_buf()
     return nvim.buf.get_option(bufnr, 'modified')
 end
 
-function M.delete(buffer, wipe)
-    assert(not buffer or (type(buffer) == type(1) and buffer > 0), 'Invalid buffer')
-    buffer = buffer or nvim.get_current_buf()
-    local is_wipe = nvim.buf.get_option(buffer, 'bufhidden') == 'wipe'
+function M.delete(bufnr, wipe)
+    vim.validate { buffer = { bufnr, 'number' } }
+    assert(bufnr > 0, debug.traceback 'Buffer must be greater than 0')
+
+    local is_wipe = nvim.buf.get_option(bufnr, 'bufhidden') == 'wipe'
     local prev_buf = vim.fn.expand '#' ~= '' and vim.fn.bufnr(vim.fn.expand '#') or -1
     local is_loaded = nvim.buf.is_loaded
 
-    if nvim.get_current_buf() == buffer then
+    if nvim.get_current_buf() == bufnr then
         local new_view = is_loaded(prev_buf) and prev_buf or nvim.create_buf(true, false)
         nvim.win.set_buf(0, new_view)
     end
 
     if not is_wipe then
-        if nvim.buf.is_valid(buffer) then
+        if nvim.buf.is_valid(bufnr) then
             local action = not wipe and { unload = true } or { force = true }
-            nvim.buf.delete(buffer, action)
+            nvim.buf.delete(bufnr, action)
         end
     end
 end
@@ -74,7 +77,8 @@ function M.get_indent()
 end
 
 function M.get_indent_block(lines)
-    assert(vim.tbl_islist(lines), debug.traceback('Lines must be an array: ' .. vim.inspect(lines)))
+    vim.validate { lines = { lines, 'table' } }
+    assert(vim.tbl_islist(lines), debug.traceback 'Lines must be an array')
 
     local indent_level
     for _, line in pairs(lines) do
@@ -93,13 +97,16 @@ function M.get_indent_block(lines)
 end
 
 function M.get_indent_block_level(lines)
-    assert(vim.tbl_islist(lines), debug.traceback('Lines must be an array: ' .. vim.inspect(lines)))
+    vim.validate { lines = { lines, 'table' } }
+    assert(vim.tbl_islist(lines), debug.traceback 'Lines must be an array')
+
     local indent_level = M.get_indent_block(lines)
     return math.floor(indent_level / M.get_indent())
 end
 
 function M.get_indent_string(indent)
-    assert(not indent or type(indent) == type(0), 'Invalid indent number')
+    vim.validate { indent = { indent, 'number', true } }
+
     local expand = vim.opt_local.expandtab:get()
     indent = indent or M.get_indent()
     local spaces = not expand and '\t' or string.rep(' ', indent)
@@ -124,8 +131,8 @@ local function normalize_indent(lines, indent)
 end
 
 function M.indent(lines, level)
-    assert(vim.tbl_islist(lines), debug.traceback('Lines must be an array: ' .. vim.inspect(lines)))
-    assert(type(level) == type(0), debug.traceback('Missing valid level: ' .. vim.inspect(level)))
+    vim.validate { lines = { lines, 'table' }, level = { level, 'number' } }
+    assert(vim.tbl_islist(lines), debug.traceback 'Lines must be an array')
 
     if level == 0 or #lines == 0 then
         return lines

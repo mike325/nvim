@@ -1,6 +1,5 @@
 local sys = require 'sys'
 local executable = require('utils.files').executable
-local has_attrs = require('utils.tables').has_attrs
 
 local gutentags_modules = vim.g.gutentags_modules or {}
 
@@ -21,7 +20,7 @@ vim.g.gutentags_exclude_filetypes = {
 }
 
 if executable 'ctags' then
-    if not has_attrs(gutentags_modules, 'ctags') then
+    if not vim.tbl_contains(gutentags_modules, 'ctags') then
         gutentags_modules[#gutentags_modules + 1] = 'ctags'
     end
 
@@ -62,7 +61,7 @@ end
 -- if executable('gtags-cscope') then
 --     gutentags_modules[#gutentags_modules + 1] = 'gtags_cscope'
 -- elseif executable('cscope') then
-if executable 'cscope' and not has_attrs(gutentags_modules, 'cscope') then
+if executable 'cscope' and not vim.tbl_contains(gutentags_modules, 'cscope') then
     gutentags_modules[#gutentags_modules + 1] = 'cscope'
 end
 

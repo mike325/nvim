@@ -86,8 +86,8 @@ local function func_handle(info)
 end
 
 function M.get_mapping(mapping)
-    local has_attrs = require('utils.tables').has_attrs
-    if not has_attrs(mapping, { 'mode', 'lhs' }) then
+    vim.validate { mapping = { mapping, 'table' } }
+    if not mapping.mode and not mapping.lhs then
         vim.notify(
             'Missing arguments!! get_mapping need a mode and a lhs attribbutes',
             'ERROR',
@@ -132,8 +132,8 @@ local function fix_mappings(args)
 end
 
 function M.set_mapping(mapping)
-    local has_attrs = require('utils.tables').has_attrs
-    if not has_attrs(mapping, { 'mode', 'lhs' }) then
+    vim.validate { mapping = { mapping, 'table' } }
+    if not mapping.mode and not mapping.lhs then
         vim.notify(
             'Missing arguments!! set_mapping need a mode and a lhs attribbutes',
             'ERROR',
@@ -142,10 +142,15 @@ function M.set_mapping(mapping)
         return false
     end
 
-    assert(
-        type(mapping.mode) == type '' or type(mapping.mode) == type {},
-        'Mode must be a string or a list of strings'
-    )
+    vim.validate {
+        mapping = {
+            mapping.mode,
+            function(m)
+                return type(m) == type '' or type(m) == type {}
+            end,
+            'valid vim mapping string or table',
+        },
+    }
 
     local args = type(mapping.args) == 'table' and mapping.args or { mapping.args }
     -- local mode = modes[mapping.mode] ~= nil and modes[mapping.mode] or mapping.mode

@@ -23,8 +23,7 @@ end
 
 _G['PERF'] = function(msg, ...)
     local args = { ... }
-    assert(#args > 0 and vim.is_callable(args[1]), 'Invalid func ref')
-    assert(not msg or type(msg) == type '', 'Invalid message: ' .. vim.inspect(msg))
+    vim.validate { func = { args[1], 'function' }, message = { msg, 'string', true } }
     local func = args[1]
     table.remove(args, 1)
     -- local start = os.time()

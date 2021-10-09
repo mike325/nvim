@@ -785,12 +785,19 @@ function M.toggle_qf(win)
 end
 
 function M.dump_to_qf(opts)
-    assert(type(opts) == type {} and type(opts.lines) == type {}, 'Missing "lines" attr to dump')
-
-    assert(
-        not opts.efm or (type(opts.efm) == type {} or type(opts.efm) == type ''),
-        debug.traceback 'Invalid errorformat arg'
-    )
+    vim.validate {
+        opts = { opts, 'table' },
+        lines = { opts.lines, 'table' },
+        context = { opts.context, 'string', true },
+        title = { opts.title, 'string', true },
+        efm = {
+            opts.efm,
+            function(e)
+                return not e or type(e) == type '' or type(e) == type {}
+            end,
+            'error format must be a string or a table',
+        },
+    }
 
     opts.context = opts.context or 'GenericQfData'
     opts.title = opts.title or 'Generic Qf data'

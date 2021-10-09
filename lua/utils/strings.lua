@@ -1,8 +1,7 @@
 local M = {}
 
 function M.split_components(str, pattern)
-    assert(type(str) == type '', debug.traceback('Invalid string ' .. vim.inspect(str)))
-    assert(type(pattern) == type '', debug.traceback('Invalid pattern ' .. vim.inspect(pattern)))
+    vim.validate { str = { str, 'string' }, pattern = { pattern, 'string' } }
     local t = {}
     for v in string.gmatch(str, pattern) do
         t[#t + 1] = v

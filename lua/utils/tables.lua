@@ -1,7 +1,7 @@
 local M = {}
 
 function M.has_attrs(tbl, attrs)
-    assert(type(tbl) == type {}, debug.traceback 'TBL must be a table')
+    vim.validate { table = { tbl, 'table' } }
 
     if type(attrs) ~= type(tbl) then
         if tbl[attrs] ~= nil then
@@ -28,8 +28,8 @@ function M.has_attrs(tbl, attrs)
 end
 
 function M.merge_uniq_list(dest, src)
-    assert(vim.tbl_islist(dest), debug.traceback 'Dest must be an array')
-    assert(vim.tbl_islist(src), debug.traceback 'Src must be an array')
+    vim.validate { source = { src, 'table' }, destination = { dest, 'table' } }
+    assert(vim.tbl_islist(dest) and vim.tbl_islist(src), debug.traceback 'Source and dest must be arrays')
 
     local tmp = vim.deepcopy(dest)
     for _, node in pairs(src) do
@@ -41,7 +41,8 @@ function M.merge_uniq_list(dest, src)
 end
 
 function M.clear_lst(lst)
-    assert(vim.tbl_islist(lst), debug.traceback 'clear_lst works only with array like tables')
+    vim.validate { list = { lst, 'table' } }
+    assert(vim.tbl_islist(lst), debug.traceback 'List must be an array')
     local tmp = {}
 
     for _, val in pairs(lst) do
@@ -55,13 +56,13 @@ function M.clear_lst(lst)
 end
 
 function M.str_to_clean_tbl(cmd_string)
-    assert(type(cmd_string) == type '', debug.traceback 'cmd must be a string')
+    vim.validate { cmd = { cmd_string, 'string' } }
     return M.clear_lst(vim.split(vim.trim(cmd_string), ' ', true))
 end
 
 -- NOTE: Took from http://lua-users.org/wiki/CopyTable
 function M.shallowcopy(orig)
-    assert(type(orig) == type {}, debug.traceback 'shallowcopy receives a table')
+    vim.validate { table = { orig, 'table' } }
     local copy
     if type(orig) == type {} then
         copy = {}
@@ -75,7 +76,7 @@ function M.shallowcopy(orig)
 end
 
 function M.deepcopy(orig)
-    assert(type(orig) == type {}, debug.traceback 'deepcopy receives a table')
+    vim.validate { table = { orig, 'table' } }
     local copy
     if type(orig) == type {} then
         copy = {}

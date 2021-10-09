@@ -18,7 +18,16 @@ local Job = {}
 Job.__index = Job
 
 local function general_output_parser(job, data)
-    assert(type(data) == 'string' or type(data) == 'table', 'Not valid data: ' .. type(data))
+    vim.validate {
+        data = {
+            data,
+            function(d)
+                return type(d) == type '' or type(d) == type {}
+            end,
+            'job stdout data string or table',
+        },
+    }
+
     local input = ''
     local requested_input = false
 
@@ -75,16 +84,21 @@ local function get_buffer(job)
 end
 
 function Job:new(job)
-    assert(
-        (type(job) == type {} and next(job) ~= nil) or (type(job) == type '' and #job > 0),
-        debug.traceback('Missing job data ' .. vim.inspect(job))
-    )
+    vim.validate {
+        job = {
+            job,
+            function(j)
+                return (type(j) == type {} and next(j) ~= nil) or (type(j) == type '' and j ~= '')
+            end,
+            'table with args or a cmd string',
+        },
+    }
 
     local exe, args, cmd, verify_exec
     verify_exec = true
 
     if type(job) == type '' then
-        assert(#job > 0, debug.traceback 'Missing command')
+        assert(job ~= '', debug.traceback 'Missing command')
         cmd = job
         local space = cmd:find ' '
         if space then
@@ -430,6 +444,7 @@ function Job:pid()
 end
 
 function Job:send(data)
+    vim.validate { data = { data, 'table' } }
     assert(self._isalive, debug.traceback(('Job %s is not running'):format(self._id)))
     vim.fn.chansend(self._id, data)
 end
@@ -456,11 +471,8 @@ function Job:progress()
 end
 
 function Job:wait(timeout)
+    vim.validate { timeout = { timeout, 'number', true } }
     assert(self._isalive, debug.traceback(('Job %s is not running'):format(self._id)))
-    assert(
-        type(timeout) == type(1) or timeout == nil,
-        debug.traceback 'Timeout must be either nil or a number in ms'
-    )
     if timeout then
         return vim.fn.jobwait({ self._id }, timeout)[1]
     end
@@ -468,12 +480,12 @@ function Job:wait(timeout)
 end
 
 function Job:add_callback(cb)
-    assert(vim.is_callable(cb), debug.traceback 'Callback must be a function')
+    vim.validate { callback = { cb, 'function' } }
     table.insert(self._callbacks, cb)
 end
 
 function Job:callback_on_failure(cb)
-    assert(vim.is_callable(cb), debug.traceback 'Callback must be a function')
+    vim.validate { callback = { cb, 'function' } }
     self:add_callback(function(job, rc)
         if rc ~= 0 then
             cb(job, rc)
@@ -482,7 +494,7 @@ function Job:callback_on_failure(cb)
 end
 
 function Job:callback_on_success(cb)
-    assert(vim.is_callable(cb), debug.traceback 'Callback must be a function')
+    vim.validate { callback = { cb, 'function' } }
     self:add_callback(function(job, rc)
         if rc == 0 then
             cb(job)

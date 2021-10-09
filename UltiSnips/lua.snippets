@@ -60,3 +60,7 @@ endsnippet
 snippet req "require(module)"
 require'${1:mod}'
 endsnippet
+
+snippet val "vim.validate()"
+vim.validate { ${1:arg} = { $1, '${2:table}' $3}$0 }
+endsnippet

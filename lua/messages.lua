@@ -1,13 +1,21 @@
 local function notify(msg, level, opts)
-    assert(type(msg) == type '', debug.traceback('Invalid message: ' .. vim.inspect(msg)))
-    assert(
-        level == nil or type(level) == type '' or type(level) == type(0),
-        debug.traceback('Invalid log level: ' .. vim.inspect(level))
-    )
-    assert(
-        opts == nil or (type(opts) == type {} and not vim.tbl_islist(opts)),
-        debug.traceback('Invalid opts: ' .. vim.inspect(opts))
-    )
+    vim.validate {
+        message = { msg, 'string' },
+        level = {
+            level,
+            function(l)
+                return not l or type(l) == type '' or type(l) == type(1)
+            end,
+            'string or integer log level',
+        },
+        options = {
+            opts,
+            function(o)
+                return not o or (type(o) == type {} and not vim.tbl_islist(o))
+            end,
+            'table of options',
+        },
+    }
 
     if level and type(level) == type '' then
         level = level:upper()

@@ -34,47 +34,40 @@ local function separator()
 end
 
 function M.exists(filename)
-    assert(
-        type(filename) == type '' and filename ~= '',
-        debug.traceback((([[Not a filename: "%s"]]):format(filename)))
-    )
+    vim.validate { filename = { filename, 'string' } }
+    assert(filename ~= '', debug.traceback 'Empty filename')
     local stat = uv.fs_stat(filename)
     return stat and stat.type or false
 end
 
 function M.is_dir(filename)
-    assert(
-        type(filename) == type '' and filename ~= '',
-        debug.traceback(([[Not a filename: "%s"]]):format(filename))
-    )
+    vim.validate { filename = { filename, 'string' } }
+    assert(filename ~= '', debug.traceback 'Empty filename')
     return M.exists(filename) == 'directory'
 end
 
 function M.is_file(filename)
-    assert(
-        type(filename) == type '' and filename ~= '',
-        debug.traceback(([[Not a filename: "%s"]]):format(filename))
-    )
+    vim.validate { filename = { filename, 'string' } }
+    assert(filename ~= '', debug.traceback 'Empty filename')
     return M.exists(filename) == 'file'
 end
 
 function M.mkdir(dirname)
-    assert(
-        type(dirname) == type '' and dirname ~= '',
-        debug.traceback(([[Not a dirname: "%s"]]):format(dirname))
-    )
+    vim.validate { dirname = { dirname, 'string' } }
+    assert(dirname ~= '', debug.traceback 'Empty dirname')
     uv.fs_mkdir(M.normalize_path(dirname), 511)
 end
 
 function M.link(src, dest, sym, force)
-    assert(type(src) == type '' and src ~= '', debug.traceback(([[Not a src: "%s"]]):format(src)))
-    assert(not sym or type(sym) == type(true), debug.traceback(([[Invalid sym value: "%s"]]):format(sym)))
-    assert(
-        not force or type(force) == type(true),
-        debug.traceback(([[Invalid force value: "%s"]]):format(force))
-    )
-    assert(M.exists(src), debug.traceback('Src ' .. src .. ' does not exists'))
-    assert(type(dest) == type '' and dest ~= '', debug.traceback(([[Not a dest: "%s"]]):format(dest)))
+    vim.validate {
+        source = { src, 'string' },
+        destination = { dest, 'string' },
+        use_symbolic = { sym, 'boolean', true },
+        force = { force, 'boolean', true },
+    }
+    assert(src ~= '', debug.traceback 'Empty source')
+    assert(dest ~= '', debug.traceback 'Empty destination')
+    assert(M.exists(src), debug.traceback('link source ' .. src .. ' does not exists'))
 
     if dest == '.' then
         dest = M.basename(src)
@@ -125,16 +118,21 @@ end
 -- end
 
 function M.executable(exec)
+    vim.validate { exec = { exec, 'string' } }
+    assert(exec ~= '', debug.traceback 'Empty executable string')
     return vim.fn.executable(exec) == 1
 end
 
 function M.exepath(exec)
+    vim.validate { exec = { exec, 'string' } }
+    assert(exec ~= '', debug.traceback 'Empty executable string')
     local path = vim.fn.exepath(exec)
     return path ~= '' and path or false
 end
 
 function M.is_absolute(path)
-    assert(type(path) == type '' and path ~= '', debug.traceback(([[Not a path: "%s"]]):format(path)))
+    vim.validate { path = { path, 'string' } }
+    assert(path ~= '', debug.traceback 'Empty path')
     path = M.normalize_path(path)
     local is_abs = false
     if is_windows and #path >= 2 then
@@ -146,7 +144,8 @@ function M.is_absolute(path)
 end
 
 function M.is_root(path)
-    assert(type(path) == type '' and path ~= '', debug.traceback(([[Not a path: "%s"]]):format(path)))
+    vim.validate { path = { path, 'string' } }
+    assert(path ~= '', debug.traceback 'Empty path')
     local root = false
     if is_windows and #path >= 2 then
         path = forward_path(path)
@@ -158,13 +157,15 @@ function M.is_root(path)
 end
 
 function M.realpath(path)
-    assert(M.exists(path), debug.traceback(([[Not a path: "%s"]]):format(path)))
+    vim.validate { path = { path, 'string' } }
+    assert(M.exists(path), debug.traceback(([[Path "%s" doesn't exists]]):format(path)))
     local rpath = uv.fs_realpath(path)
     return forward_path(rpath or path)
 end
 
 function M.normalize_path(path)
-    assert(type(path) == type '' and path ~= '', debug.traceback(([[Not a path: "%s"]]):format(path)))
+    vim.validate { path = { path, 'string' } }
+    assert(path ~= '', debug.traceback 'Empty path')
     if path:sub(1, 1) == '~' then
         path = path:gsub('~', sys.home)
     elseif path == '%' then
@@ -174,11 +175,14 @@ function M.normalize_path(path)
 end
 
 function M.basename(path)
+    vim.validate { path = { path, 'string' } }
     path = M.normalize_path(path)
     return path:match(('[^%s]+$'):format(separator()))
 end
 
 function M.extension(path)
+    vim.validate { path = { path, 'string' } }
+    assert(path ~= '', debug.traceback 'Empty path')
     local extension = ''
     path = M.normalize_path(path)
     if not M.is_dir(path) then
@@ -190,6 +194,7 @@ function M.extension(path)
 end
 
 function M.basedir(path)
+    vim.validate { path = { path, 'string' } }
     path = M.normalize_path(path)
     if not M.is_dir(path) then
         local path_components = split_path(path)
@@ -215,6 +220,7 @@ function M.basedir(path)
 end
 
 function M.subpath_in_path(parent, child)
+    vim.validate { parent = { parent, 'string' }, child = { child, 'string' } }
     assert(M.is_dir(parent), debug.traceback(('Parent path is not a directory "%s"'):format(parent)))
     assert(M.is_dir(child), debug.traceback(('Child path is not a directory "%s"'):format(child)))
 
@@ -231,9 +237,13 @@ function M.subpath_in_path(parent, child)
 end
 
 function M.openfile(path, flags, callback)
-    assert(type(path) == type '' and path ~= '', debug.traceback(([[Not a path: "%s"]]):format(path)))
-    assert(flags, debug.traceback 'Missing flags')
-    assert(vim.is_callable(callback), debug.traceback 'Missing valid callback')
+    vim.validate {
+        path = { path, 'string' },
+        flags = { flags, 'string' },
+        callback = { callback, 'function' },
+    }
+    assert(path ~= '', debug.traceback 'Empty path')
+
     local fd = assert(uv.fs_open(path, flags, 438))
     local ok, rst = pcall(callback, fd)
     assert(uv.fs_close(fd))
@@ -284,12 +294,12 @@ function M.updatefile(path, data, callback)
 end
 
 function M.readfile(path, callback, split)
-    assert(not callback or vim.is_callable(callback), debug.traceback 'Missing valid callback')
+    vim.validate {
+        path = { path, 'string' },
+        callback = { callback, 'function', true },
+        split = { split, 'boolean', true },
+    }
     assert(M.is_file(path), debug.traceback('Not a file: ' .. path))
-    assert(
-        split == nil or type(split) == type(true),
-        debug.traceback('Mismatch of split value ' .. vim.inspect(split))
-    )
     if split == nil then
         split = true
     end
@@ -326,11 +336,20 @@ end
 
 function M.chmod(path, mode, base)
     if not is_windows then
-        assert(type(path) == type '' and path ~= '', debug.traceback 'Missing path')
-        assert(
-            (type(mode) == type '' and path ~= '') or type(mode) == type(0),
-            debug.traceback 'Missing permissions'
-        )
+        vim.validate {
+            path = { path, 'string' },
+            mode = {
+                mode,
+                function(m)
+                    local isnumber = type(m) == type(1)
+                    -- TODO: check for hex and bin ?
+                    local isrepr = type(m) == type '' and m ~= ''
+                    return isnumber or isrepr
+                end,
+                'valid integer representation',
+            },
+        }
+        assert(path ~= '', debug.traceback 'Empty path')
         base = base == nil and 8 or base
         uv.fs_chmod(path, tonumber(mode, base))
     end
@@ -709,14 +728,11 @@ function M.read_json(filename)
 end
 
 function M.dump_json(filename, data)
+    vim.validate { filename = { filename, 'string' }, data = { data = 'table' } }
+    assert(filename ~= '', debug.traceback 'Empty filename')
     if filename:sub(1, 1) == '~' then
         filename = filename:gsub('~', sys.home)
     end
-    assert(type(data) == type {}, debug.traceback('Not a json data: ' .. type(data)))
-    assert(
-        type(filename) == type '' and filename ~= '',
-        debug.traceback(([[Not a filename: "%s"]]):format(vim.inspect(filename)))
-    )
     M.writefile(filename, M.encode_json(data))
 end
 

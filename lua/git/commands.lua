@@ -31,7 +31,7 @@ function M.set_commands()
         lhs = 'GPull',
         rhs = function(...)
             local args = { ... }
-            local utils = RELOAD 'git.utils'
+            local utils = require 'git.utils'
             utils.launch_gitcmd_job {
                 gitcmd = 'pull',
                 args = args,
@@ -56,7 +56,7 @@ function M.set_commands()
         lhs = 'GPush',
         rhs = function(...)
             local args = { ... }
-            local utils = RELOAD 'git.utils'
+            local utils = require 'git.utils'
             utils.launch_gitcmd_job {
                 gitcmd = 'push',
                 args = args,
@@ -70,7 +70,7 @@ function M.set_commands()
         lhs = 'GFetch',
         rhs = function(...)
             local args = { ... }
-            local utils = RELOAD 'git.utils'
+            local utils = require 'git.utils'
             utils.launch_gitcmd_job {
                 gitcmd = 'fetch',
                 args = args,
@@ -88,14 +88,13 @@ function M.set_commands()
             if sys.name == 'windows' then
                 bufname = bufname:gsub('\\', '/')
             end
-            RELOAD('git.utils').status(function(status)
-                local utils = RELOAD 'git.utils'
+            require('git.utils').status(function(status)
+                local utils = require 'git.utils'
                 if #args == 0 then
                     local workspace = status.workspace or {}
                     local untracked = status.untracked or {}
-                    local has_attrs = require('utils.tables').has_attrs
 
-                    if workspace[bufname] or has_attrs(untracked, bufname) then
+                    if workspace[bufname] or vim.tbl_contains(untracked, bufname) then
                         nvim.ex.update()
                         args = { bufname }
                         utils.launch_gitcmd_job {
@@ -142,8 +141,8 @@ function M.set_commands()
         lhs = 'GRead',
         rhs = function(...)
             local args = { ... }
-            RELOAD('git.utils').status(function(status)
-                local utils = RELOAD 'git.utils'
+            require('git.utils').status(function(status)
+                local utils = require 'git.utils'
                 if #args == 0 then
                     local bufname = vim.fn.bufname(nvim.get_current_buf())
                     if sys.name == 'windows' then
@@ -206,8 +205,8 @@ function M.set_commands()
         lhs = 'GRestore',
         rhs = function(...)
             local args = { ... }
-            RELOAD('git.utils').status(function(status)
-                local utils = RELOAD 'git.utils'
+            require('git.utils').status(function(status)
+                local utils = require 'git.utils'
                 if #args == 0 then
                     local bufname = vim.fn.bufname(nvim.get_current_buf())
                     if sys.name == 'windows' then
@@ -268,8 +267,16 @@ function M.set_commands()
         lhs = 'G',
         rhs = function(...)
             local args = { ... }
-            assert(vim.tbl_islist(args) and #args > 0, debug.traceback('Invalid args ' .. vim.inspect(args)))
-            local utils = RELOAD 'git.utils'
+            vim.validate {
+                args = {
+                    args,
+                    function(a)
+                        return vim.tbl_islist(a) and #a > 0
+                    end,
+                    'array of git arguments',
+                },
+            }
+            local utils = require 'git.utils'
             utils.launch_gitcmd_job {
                 gitcmd = args[1],
                 args = vim.list_slice(args, 2, #args),
