@@ -57,6 +57,25 @@ function M.insert_row(tbl_name, data, db_path)
     return STORAGE[tbl_name][next(data)]
 end
 
+function M.tbl_exists(tbl_name, db_path)
+    vim.validate {
+        tbl_name = { tbl_name, 'string' },
+        db_path = { db_path, 'string', true },
+    }
+
+    local exists
+    db_path = db_path or STORAGE.db_path
+
+    if sqlite then
+        exists = sqlite.with_open(db_path, function(db)
+            return db:exists(tbl_name)
+        end)
+    else
+        exists = STORAGE[tbl_name]
+    end
+    return exists and true or false
+end
+
 function M.create_tbl(tbl_name, tbl_schema, init_data, db_path)
     vim.validate {
         tbl_name = { tbl_name, 'string' },
@@ -67,15 +86,7 @@ function M.create_tbl(tbl_name, tbl_schema, init_data, db_path)
 
     db_path = db_path or STORAGE.db_path
 
-    local tbl_exists
-    if sqlite then
-        tbl_exists = sqlite.with_open(db_path, function(db)
-            return db:exists(tbl_name)
-        end)
-    else
-        tbl_exists = STORAGE[tbl_name]
-    end
-
+    local tbl_exists = M.tbl_exists(tbl_name, db_path)
     if not tbl_exists then
         if sqlite then
             sqlite.with_open(db_path, function(db)

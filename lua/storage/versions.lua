@@ -1,4 +1,7 @@
 local _, sqlite = pcall(require, 'sqlite')
+-- local tbl = require 'sqlite.tbl'
+local create_tbl = require('storage.utils').create_tbl
+local insert_row = require('storage.utils').insert_row
 
 local db_path = STORAGE.db_path
 
@@ -8,31 +11,6 @@ local function get_prg_version(output)
     return table.concat(require('utils.strings').split_components(output, '%d+'), '.')
 end
 
-local function insert_version(prg, version)
-    if sqlite then
-        return sqlite.with_open(db_path, function(db)
-            local row = db:select('versions', { where = { name = prg } })[1]
-
-            if not row then
-                db:insert('versions', {
-                    name = prg,
-                    version = version,
-                })
-            elseif version ~= row.version then
-                db:update('versions', {
-                    where = { name = prg },
-                    set = { version = version },
-                })
-            end
-
-            return db:select('versions', { where = { name = prg } })[1]
-        end)
-    end
-
-    STORAGE.versions[prg] = { name = prg, version = version }
-    return STORAGE.versions[prg]
-end
-
 local function async_insert_version(prg)
     local versioner = RELOAD('jobs'):new {
         cmd = prg .. ' --version',
@@ -40,14 +18,14 @@ local function async_insert_version(prg)
     }
     versioner:callback_on_success(function(job)
         local version = get_prg_version(table.concat(job:output(), ' '))
-        insert_version(prg, version)
+        insert_row('versions', { name = prg, version = version })
     end)
     versioner:start()
 end
 
 local function sync_insert_version(prg)
     local output = vim.fn.system(prg .. ' --version')
-    return insert_version(prg, get_prg_version(output))
+    return insert_row('versions', { name = prg, version = get_prg_version(output) })
 end
 
 function M.get_prg_info(prg)
@@ -130,7 +108,7 @@ function M.set_version(prg, version)
     if not version then
         async_insert_version(prg)
     else
-        insert_version(prg, version)
+        insert_row('versions', { name = prg, version = version })
     end
 end
 
@@ -168,29 +146,9 @@ function M.has_version(prg, target_version)
 end
 
 function M.setup()
-    local tbl_exists
-    if sqlite then
-        tbl_exists = sqlite.with_open(db_path, function(db)
-            return db:exists 'versions'
-        end)
-    else
-        tbl_exists = STORAGE.versions
-    end
-
+    local tbl_exists = require('storage.utils').tbl_exists 'versions'
     if not tbl_exists then
-        if sqlite then
-            sqlite.with_open(db_path, function(db)
-                if not db:exists 'versions' then
-                    db:create('versions', {
-                        name = { 'text', 'primary', 'key' },
-                        version = { 'text' },
-                    })
-                end
-            end)
-        elseif not STORAGE.versions then
-            STORAGE.versions = {}
-        end
-
+        create_tbl('versions', { name = { 'text', 'primary', 'key' }, version = { 'text' } })
         for _, prg in pairs { 'git', 'python3' } do
             async_insert_version(prg)
         end

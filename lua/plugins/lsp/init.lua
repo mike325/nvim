@@ -5,7 +5,6 @@ local load_module = require('utils.helpers').load_module
 local get_icon = require('utils.helpers').get_icon
 local executable = require('utils.files').executable
 local is_dir = require('utils.files').is_dir
--- local split       = require'utils.strings'.split
 -- local plugins = require'neovim'.plugins
 
 -- local set_autocmd = require'neovim.autocmds'.set_autocmd

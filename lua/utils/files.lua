@@ -1,7 +1,6 @@
 local sys = require 'sys'
 local nvim = require 'neovim'
 local bufloaded = require('utils.buffers').bufloaded
--- local clear_lst = require'utils.tables'.clear_lst
 
 local uv = vim.loop
 

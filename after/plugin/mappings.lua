@@ -1,7 +1,6 @@
 local sys = require 'sys'
 local nvim = require 'neovim'
 
--- local split = require'utils'.strings.split
 local clear_lst = require('utils.tables').clear_lst
 local executable = require('utils.files').executable
 local is_file = require('utils.files').is_file
@@ -380,28 +379,28 @@ set_mapping {
 set_mapping {
     mode = 'n',
     lhs = ']<Space>',
-    rhs = [[:<C-U>lua require'utils'.helpers.add_nl(true)<CR>]],
+    rhs = [[:<C-U>lua require"utils.helpers".add_nl(true)<CR>]],
     args = noremap_silent,
 }
 
 set_mapping {
     mode = 'n',
     lhs = '[<Space>',
-    rhs = [[:<C-U>lua require'utils'.helpers.add_nl(false)<CR>]],
+    rhs = [[:<C-U>lua require"utils.helpers".add_nl(false)<CR>]],
     args = noremap_silent,
 }
 
 set_mapping {
     mode = 'n',
     lhs = ']e',
-    rhs = [[:<C-U>lua require'utils'.helpers.move_line(true)<CR>]],
+    rhs = [[:<C-U>lua require"utils.helpers".move_line(true)<CR>]],
     args = noremap_silent,
 }
 
 set_mapping {
     mode = 'n',
     lhs = '[e',
-    rhs = [[:<C-U>lua require'utils'.helpers.move_line(false)<CR>]],
+    rhs = [[:<C-U>lua require"utils.helpers".move_line(false)<CR>]],
     args = noremap_silent,
 }
 
@@ -465,14 +464,14 @@ set_mapping {
 set_mapping {
     mode = 'n',
     lhs = '=l',
-    rhs = [[<cmd>lua require'utils'.helpers.toggle_qf(vim.api.nvim_get_current_win())<CR>]],
+    rhs = [[<cmd>lua require"utils.helpers".toggle_qf(vim.api.nvim_get_current_win())<CR>]],
     args = noremap_silent,
 }
 
 set_mapping {
     mode = 'n',
     lhs = '=q',
-    rhs = [[<cmd>lua require'utils'.helpers.toggle_qf()<CR>]],
+    rhs = [[<cmd>lua require"utils.helpers".toggle_qf()<CR>]],
     args = noremap_silent,
 }
 
@@ -638,7 +637,7 @@ set_command {
 
 -- set_command{
 --     lhs = 'SpellLang',
---     rhs = 'lua require"utils".helpers.spelllangs(<q-args>)',
+--     rhs = 'lua require"utils.helpers".spelllangs(<q-args>)',
 --     args = {force = true, nargs = '?', complete = 'customlist,neovim#spells'}
 -- }
 

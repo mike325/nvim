@@ -18,7 +18,7 @@ function M.make_executable()
         set_autocmd {
             event = 'BufWritePre',
             pattern = ('<buffer=%d>'):format(nvim.win.get_buf(0)),
-            cmd = [[lua require'utils'.functions.make_executable()]],
+            cmd = [[lua require"utils.functions".make_executable()]],
             group = 'MakeExecutable',
             once = true,
         }
@@ -38,7 +38,7 @@ function M.make_executable()
     set_autocmd {
         event = 'BufWritePost',
         pattern = ('<buffer=%d>'):format(nvim.win.get_buf(0)),
-        cmd = [[lua require'utils'.functions.chmod_exec()]],
+        cmd = [[lua require"utils.functions".chmod_exec()]],
         group = 'MakeExecutable',
         once = true,
     }
@@ -304,7 +304,7 @@ function M.async_execute(opts)
         progress = true,
         verify_exec = opts.verify_exec,
         -- opts = {
-        --     cwd = require'utils'.files.getcwd(),
+        --     cwd = require"utils.files".getcwd(),
         --     pty = true,
         -- },
         qf = {

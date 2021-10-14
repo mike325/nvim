@@ -14,5 +14,3 @@ vim.opt_local.spell = true
 vim.opt_local.complete:append { 'k', 'kspell' }
 
 vim.opt_local.textwidth = 80
-
--- require"utils.helpers".abolish(vim.opt_local.spelllang)

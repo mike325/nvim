@@ -27,17 +27,17 @@ endfunction
 
 function! neovim#grep(type, ...) abort
     let l:visual = a:0 ? v:true : v:false
-    call luaeval('require"utils".functions.opfun_grep(_A[1], _A[2])', [a:type, l:visual])
+    call luaeval('require"utils.functions".opfun_grep(_A[1], _A[2])', [a:type, l:visual])
 endfunction
 
 function! neovim#lsp_format(type, ...) abort
     " let l:visual = a:0 ? v:true : v:false
-    call luaeval('require"utils".functions.opfun_lsp_format()')
+    call luaeval('require"utils.functions".opfun_lsp_format()')
 endfunction
 
 function! neovim#comment(type, ...) abort
     let l:visual = a:0 ? v:true : v:false
-    call luaeval('require"utils".functions.opfun_comment(_A[1], _A[2])', [a:type, l:visual])
+    call luaeval('require"utils.functions".opfun_comment(_A[1], _A[2])', [a:type, l:visual])
 endfunction
 
 function! neovim#gitfiles_status(gittype) abort
@@ -170,6 +170,9 @@ function! neovim#tab() abort
         if get(g:, 'ulti_jump_forwards_res', 0) > 0
             return ''
         endif
+    elseif has#plugin('nvim-cmp')
+        call v:lua.cmp.utils.keymap.listen.run('i', '<Tab>')
+        return ''
     endif
     return "\<TAB>"
 endfunction

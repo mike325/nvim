@@ -4,14 +4,14 @@ if require('sys').name ~= 'windows' then
     set_autocmd {
         event = { 'BufReadPost' },
         pattern = '*',
-        cmd = [[lua require'utils'.functions.make_executable()]],
+        cmd = [[lua require"utils.functions".make_executable()]],
         group = 'MakeExecutable',
     }
 
     set_autocmd {
         event = 'Filetype',
         pattern = 'python,lua,sh,bash,zsh,tcsh,csh,ruby,perl',
-        cmd = [[lua require'utils'.functions.make_executable()]],
+        cmd = [[lua require"utils.functions".make_executable()]],
         group = 'MakeExecutable',
     }
 end
@@ -26,7 +26,7 @@ set_autocmd {
 set_autocmd {
     event = 'BufWritePre',
     pattern = '*',
-    cmd = 'lua require"utils".files.clean_file()',
+    cmd = 'lua require"utils.files".clean_file()',
     group = 'CleanFile',
 }
 
@@ -61,21 +61,21 @@ set_autocmd {
 set_autocmd {
     event = 'BufReadPost',
     pattern = '*',
-    cmd = 'lua require"utils".buffers.last_position()',
+    cmd = 'lua require"utils.buffers".last_position()',
     group = 'LastEditPosition',
 }
 
 set_autocmd {
     event = 'BufNewFile',
     pattern = '*',
-    cmd = 'lua require"utils".files.skeleton_filename()',
+    cmd = 'lua require"utils.files".skeleton_filename()',
     group = 'Skeletons',
 }
 
 set_autocmd {
     event = { 'DirChanged', 'BufNewFile', 'BufReadPre', 'BufEnter', 'VimEnter' },
     pattern = '*',
-    cmd = 'lua require"utils".helpers.project_config(vim.fn.deepcopy(vim.v.event))',
+    cmd = 'lua require"utils.helpers".project_config(vim.fn.deepcopy(vim.v.event))',
     group = 'ProjectConfig',
 }
 

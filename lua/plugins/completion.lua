@@ -159,23 +159,15 @@ if cmp ~= nil then
             end,
         },
         mapping = {
+            ['<C-Space>'] = cmp.mapping.complete(),
+            ['<C-e>'] = cmp.mapping.close(),
+            ['<CR>'] = cmp.mapping.confirm { select = true },
+            ['<Tab>'] = cmp.mapping(cmp.mapping.select_next_item(), { 'i', 's' }),
             -- ['<C-d>'] = cmp.mapping.scroll_docs(-4),
             -- ['<C-f>'] = cmp.mapping.scroll_docs(4),
-            -- ['<C-Space>'] = cmp.mapping.complete(),
-            -- ['<C-e>'] = cmp.mapping.close(),
-            -- ['<CR>'] = cmp.mapping.confirm({ select = true }),
         },
         sources = sources,
     }
-
-    -- if lsp then
-    --     -- Setup lspconfig.
-    --     require('lspconfig')[%YOUR_LSP_SERVER%].setup {
-    --         capabilities = require('cmp_nvim_lsp').update_capabilities(
-    --             vim.lsp.protocol.make_client_capabilities()
-    --         )
-    --     }
-    -- end
 elseif compe ~= nil then
     compe.setup {
         enabled = true,
