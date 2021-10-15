@@ -664,11 +664,21 @@ end
 -- Expose languages to VimL
 vim.g.lsp_languages = available_languages
 
-for _, level in pairs { 'Error', 'Warning', 'Hint', 'Information' } do
+local lsp_sign = vim.fn.has 'nvim-0.6' == 1 and 'DiagnosticSign' or 'LspDiagnosticsSign'
+local levels = { 'Error', 'Hint' }
+if vim.fn.has 'nvim-0.6' == 1 then
+    vim.list_extend(levels, { 'Warn', 'Info' })
+else
+    vim.list_extend(levels, { 'Warning', 'Information' })
+end
+
+for _, level in pairs(levels) do
     vim.cmd(
-        ('sign define LspDiagnosticsSign%s text=%s texthl=LspDiagnosticsSign%s linehl= numhl='):format(
+        ('sign define %s%s text=%s texthl=%s%s linehl= numhl='):format(
+            lsp_sign,
             level,
             get_icon(level:lower()),
+            lsp_sign,
             level
         )
     )

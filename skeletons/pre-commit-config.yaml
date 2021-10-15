@@ -116,7 +116,7 @@ repos:
       #   name: luacheck
       #   description: Lua check
       #   entry: luacheck
-      #   args: ['--max-cyclomatic-complexity', '20', '--std', 'luajit', '--formatter', 'plain']
+      #   args: ['--std', 'luajit', '--formatter', 'plain', '--codes', '--ranges']
       #   language: system
       #   types: [lua]
       # - id: stylua

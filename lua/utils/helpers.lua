@@ -196,7 +196,6 @@ if not vim.env['NO_COOL_FONTS'] then
         wait = '☕',
         build = '⛭',
         success = '✔',
-        message = 'M',
         virtual_text = '❯',
         diff_add = '',
         diff_modified = '',
@@ -221,7 +220,6 @@ else
         build = 'W',
         wait = '...',
         success = ':)',
-        message = 'M',
         virtual_text = '➤',
         diff_add = '+',
         diff_modified = '~',
@@ -238,6 +236,9 @@ else
     }
 end
 
+icons.err = icons.error
+icons.msg = icons.hint
+icons.message = icons.hint
 icons.warning = icons.warn
 icons.information = icons.info
 

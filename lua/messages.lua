@@ -1,3 +1,17 @@
+local lsp_sign = vim.fn.has 'nvim-0.6' == 1 and 'DiagnosticSign' or 'LspDiagnosticsSign'
+local names = { 'error', 'hint', 'warn', 'info' }
+local levels = { 'Error', 'Hint' }
+if vim.fn.has 'nvim-0.6' == 1 then
+    vim.list_extend(levels, { 'Warn', 'Info' })
+else
+    vim.list_extend(levels, { 'Warning', 'Information' })
+end
+
+local hl_group = {}
+for idx, level in ipairs(levels) do
+    hl_group[names[idx]] = lsp_sign .. level
+end
+
 local function notify(msg, level, opts)
     vim.validate {
         message = { msg, 'string' },
@@ -34,17 +48,17 @@ local function notify(msg, level, opts)
         end
 
         local msg_hl = {
-            'ErrorMsg',
-            'WarningMsg',
-            'LspDiagnosticsSignHint',
-            'LspDiagnosticsSignInformation',
-            [0] = 'ErrorMsg',
-            TRACE = 'ErrorMsg',
-            ERROR = 'ErrorMsg',
-            WARN = 'WarningMsg',
-            WARNING = 'WarningMsg',
-            INFO = 'LspDiagnosticsSignHint',
-            DEBUG = 'LspDiagnosticsSignInformation',
+            hl_group['error'],
+            hl_group['warn'],
+            hl_group['info'],
+            hl_group['hint'],
+            [0] = hl_group['error'],
+            TRACE = hl_group['error'],
+            ERROR = hl_group['error'],
+            WARN = hl_group['warn'],
+            WARNING = hl_group['warn'],
+            INFO = hl_group['info'],
+            DEBUG = hl_group['hint'],
         }
 
         vim.api.nvim_echo({ { msg, level and msg_hl[level] or msg_hl.INFO } }, true, {})

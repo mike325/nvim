@@ -1,4 +1,3 @@
--- luacheck: globals unpack vim
 -- local i = vim.inspect
 local api = vim.api
 

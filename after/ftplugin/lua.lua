@@ -24,6 +24,8 @@ local luacheck_args = {
     'luajit',
     '--formatter',
     'plain',
+    '--codes',
+    '--ranges',
     '%',
 }
 

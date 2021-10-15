@@ -1,4 +1,3 @@
--- luacheck: globals unpack vim
 local stdpath = vim.fn.stdpath
 
 local function system_name()

@@ -473,6 +473,52 @@ packer.startup(function()
         cond = function()
             return vim.env.VIM_MIN == nil and vim.g.minimal == nil and vim.fn.has 'python3' == 1
         end,
+        setup = function()
+            local get_icon = require('utils.helpers').get_icon
+
+            local lsp_sign = vim.fn.has 'nvim-0.6' == 1 and 'DiagnosticSign' or 'LspDiagnosticsSign'
+            local names = { 'error', 'hint', 'warn', 'info' }
+            local levels = { 'Error', 'Hint' }
+            if vim.fn.has 'nvim-0.6' == 1 then
+                vim.list_extend(levels, { 'Warn', 'Info' })
+            else
+                vim.list_extend(levels, { 'Warning', 'Information' })
+            end
+
+            local hl_group = {}
+            for idx, level in ipairs(levels) do
+                hl_group[names[idx]] = lsp_sign .. level
+            end
+
+            vim.g.neomake_error_sign = {
+                text = get_icon 'error',
+                texthl = hl_group['error'],
+            }
+            vim.g.neomake_warning_sign = {
+                text = get_icon 'warn',
+                texthl = hl_group['warn'],
+            }
+            vim.g.neomake_info_sign = {
+                text = get_icon 'info',
+                texthl = hl_group['info'],
+            }
+            vim.g.neomake_message_sign = {
+                text = get_icon 'hint',
+                texthl = hl_group['hint'],
+            }
+
+            -- Don't show the location list, silently run Neomake
+            vim.g.neomake_open_list = 0
+
+            vim.g.neomake_echo_current_error = 0
+            vim.g.neomake_virtualtext_current_error = 1
+            vim.g.neomake_virtualtext_prefix = get_icon 'virtual_text' .. ' '
+
+            -- vim.g.neomake_ft_maker_remove_invalid_entries = 1
+        end,
+        config = function()
+            vim.fn['neomake#configure#automake']('nrw', 200)
+        end,
         event = 'VimEnter',
     }
 
@@ -663,33 +709,35 @@ packer.startup(function()
     --     event = 'VimEnter', -- NOTE: Nees to defer this as much as possible because it needs info from other plugins
     -- }
 
-    use {
-        'hrsh7th/nvim-cmp',
-        requires = {
-            { 'hrsh7th/cmp-nvim-lsp' },
-            { 'hrsh7th/cmp-buffer' },
-        },
-        config = function()
-            require 'plugins.completion'
-        end,
-        after = 'nvim-lspconfig',
-    }
-
-    -- -- TODO: Check for python 3.8.5
     -- use {
-    --     'ms-jpq/coq_nvim',
-    --     branch = 'coq',
-    --     cond = function() return vim.fn.has('python3') == 1 end,
-    --     setup = function()
-    --         vim.g.coq_settings = {
-    --             auto_start = true,
-    --             ['keymap.recommended'] = false,
-    --         }
+    --     'hrsh7th/nvim-cmp',
+    --     requires = {
+    --         { 'hrsh7th/cmp-nvim-lsp' },
+    --         { 'hrsh7th/cmp-buffer' },
+    --     },
+    --     config = function()
+    --         require 'plugins.completion'
     --     end,
-    --     -- config = function()
-    --     --     vim.cmd('COQdeps')
-    --     -- end,
+    --     after = 'nvim-lspconfig',
     -- }
+
+    -- TODO: Check for python 3.8.5
+    use {
+        'ms-jpq/coq_nvim',
+        branch = 'coq',
+        cond = function()
+            return vim.fn.has 'python3' == 1
+        end,
+        setup = function()
+            vim.g.coq_settings = {
+                auto_start = true,
+                ['keymap.recommended'] = false,
+            }
+        end,
+        -- config = function()
+        --     vim.cmd('COQdeps')
+        -- end,
+    }
 
     -- use {
     --     'lewis6991/spellsitter.nvim',
