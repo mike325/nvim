@@ -1,4 +1,8 @@
-local _, sqlite = pcall(require, 'sqlite')
+local has_sqlite, sqlite = pcall(require, 'sqlite')
+local has_lib, _ = pcall(require, 'sqlite.defs')
+if not has_lib or not has_sqlite then
+    sqlite = false
+end
 
 local M = {}
 
@@ -51,10 +55,21 @@ function M.insert_row(tbl_name, data, db_path)
         end)
     end
 
+    local rt_node
     for _, node in pairs(data) do
-        STORAGE[tbl_name][next(node)] = data
+        if node.id then
+            STORAGE[tbl_name][node.id] = node
+        elseif node.name then
+            STORAGE[tbl_name][node.name] = node
+        elseif node.hash then
+            STORAGE[tbl_name][node.hash] = node
+        else
+            local _, val = next(node)
+            STORAGE[tbl_name][val] = node
+        end
+        rt_node = node
     end
-    return STORAGE[tbl_name][next(data)]
+    return rt_node
 end
 
 function M.tbl_exists(tbl_name, db_path)

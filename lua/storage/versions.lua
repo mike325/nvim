@@ -1,5 +1,9 @@
-local _, sqlite = pcall(require, 'sqlite')
--- local tbl = require 'sqlite.tbl'
+local has_sqlite, sqlite = pcall(require, 'sqlite')
+local has_lib, _ = pcall(require, 'sqlite.defs')
+if not has_lib or not has_sqlite then
+    sqlite = false
+end
+
 local create_tbl = require('storage.utils').create_tbl
 local insert_row = require('storage.utils').insert_row
 
