@@ -38,21 +38,52 @@ function M.delete(bufnr, wipe)
     assert(not bufnr or bufnr > 0, debug.traceback 'Buffer must be greater than 0')
 
     bufnr = bufnr or vim.api.nvim_get_current_buf()
-
+    local is_duplicated = false
     local is_wipe = nvim.buf.get_option(bufnr, 'bufhidden') == 'wipe'
     local prev_buf = vim.fn.expand '#' ~= '' and vim.fn.bufnr(vim.fn.expand '#') or -1
-    local is_loaded = nvim.buf.is_loaded
+    prev_buf = prev_buf == bufnr and -1 or prev_buf
 
+    if prev_buf == -1 then
+        local wins = nvim.tab.list_wins(0)
+        if #wins > 1 then
+            local current_win = nvim.get_current_win()
+            for _, win in pairs(wins) do
+                local buf = nvim.win.get_buf(win)
+                if win ~= current_win and buf ~= bufnr then
+                    prev_buf = buf
+                    break
+                end
+            end
+        end
+        local bufs = nvim.list_bufs()
+        if #bufs > 1 and prev_buf == -1 then
+            for _, buf in pairs(bufs) do
+                if nvim.buf.is_loaded(buf) and buf ~= bufnr then
+                    prev_buf = buf
+                    break
+                end
+            end
+        end
+    end
+
+    -- TODO: Don't create multiple empty buffers just do nothing here if buf == [No Name]
     if nvim.get_current_buf() == bufnr then
-        local new_view = is_loaded(prev_buf) and prev_buf or nvim.create_buf(true, false)
+        local new_view = nvim.buf.is_loaded(prev_buf) and prev_buf or nvim.create_buf(true, false)
         nvim.win.set_buf(0, new_view)
     end
 
-    if not is_wipe then
-        if nvim.buf.is_valid(bufnr) then
-            local action = not wipe and { unload = true } or { force = true }
-            nvim.buf.delete(bufnr, action)
+    for _, tab in pairs(nvim.list_tabpages()) do
+        for _, win in pairs(nvim.tab.list_wins(tab)) do
+            if nvim.win.get_buf(win) == bufnr then
+                is_duplicated = true
+                break
+            end
         end
+    end
+
+    if not is_duplicated and not is_wipe and nvim.buf.is_valid(bufnr) then
+        local action = not wipe and { unload = true } or { force = true }
+        nvim.buf.delete(bufnr, action)
     end
 end
 
