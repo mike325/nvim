@@ -141,3 +141,10 @@ set_autocmd {
     cmd = [[setlocal foldtext=luaeval('require\"utils\".functions.foldtext()')]],
     group = 'FoldText',
 }
+
+set_autocmd {
+    event = 'BufReadPost',
+    pattern = '*',
+    cmd = [[lua require'utils.buffers'.detect_indent(vim.api.nvim_get_current_buf())]],
+    group = 'Indent',
+}

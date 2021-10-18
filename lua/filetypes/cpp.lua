@@ -284,7 +284,7 @@ function M.setup()
             filename = realpath(normalize_path(db_file))
             if is_file(bufname) and not databases[realpath(bufname)] then
                 -- bufname = realpath(bufname)
-                readfile(db_file, function(data)
+                readfile(db_file, false, function(data)
                     if has_cjson == true then
                         parse_compiledb(data)
                         vim.schedule(function()
@@ -296,14 +296,14 @@ function M.setup()
                             set_opts(filename, has_tidy, compiler, bufnum)
                         end)
                     end
-                end, false)
+                end)
             else
                 set_opts(filename, has_tidy, compiler, bufnum)
             end
         elseif flags_file ~= '' then
             filename = realpath(normalize_path(flags_file))
             if not compile_flags[filename] then
-                readfile(filename, function(data)
+                readfile(filename, true, function(data)
                     if data and #data > 0 then
                         compile_flags[filename] = {
                             flags = {},
@@ -327,7 +327,7 @@ function M.setup()
                 set_opts(filename, has_tidy, compiler, bufnum)
             end
         elseif not has_tidy then
-            -- NOTE: We need to call this multiple times since readfile is async
+            -- NOTE: We need to call this multiple times since readfile can be async
             set_opts(nil, has_tidy, compiler, bufnum)
         end
 

@@ -292,7 +292,7 @@ function M.updatefile(path, data, callback)
     fs_write(path, data, true, callback)
 end
 
-function M.readfile(path, callback, split)
+function M.readfile(path, split, callback)
     vim.validate {
         path = { path, 'string' },
         callback = { callback, 'function', true },
@@ -727,7 +727,7 @@ function M.read_json(filename)
         filename = filename:gsub('~', sys.home)
     end
     assert(M.is_file(filename), debug.traceback('Not a file: ' .. filename))
-    return M.decode_json(M.readfile(filename, nil, false))
+    return M.decode_json(M.readfile(filename, false))
 end
 
 function M.dump_json(filename, data)

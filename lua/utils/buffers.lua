@@ -209,4 +209,52 @@ function M.indent(lines, level)
     return lines
 end
 
+-- TODO: Make this function async, maybe using readfile
+-- TODO: Respect indent format from editorconfig and other files
+-- TODO: Use treesitter to detect comments and strings
+function M.detect_indent(buf)
+    vim.validate { buffer = { buf, 'number' } }
+
+    if not vim.api.nvim_buf_is_valid(buf) then
+        return
+    end
+
+    local indent = vim.api.nvim_buf_get_option(buf, 'tabstop')
+    local expandtab = vim.api.nvim_buf_get_option(buf, 'expandtab')
+
+    local line_idx = 0
+    local last_line = vim.fn.line '$'
+    -- NOTE: Should we ignore comments ?
+    while true do
+        local line = vim.api.nvim_buf_get_lines(buf, line_idx, line_idx + 1, true)[1]
+        if #line > 0 and not line:match '^%s*$' then
+            local indent_str = line:match '^(%s+)[^%s]+'
+            if indent_str then
+                -- NOTE: we may need to confirm tab indent with more than 1 line
+                --       and avoid mix indent
+                if indent_str:match '^\t+$' then
+                    expandtab = false
+                    break
+                    -- TODO: this accept indent == 6
+                elseif indent_str:match '^ +$' and #indent_str % 2 == 0 and #indent_str < 9 then
+                    indent = #indent_str
+                    expandtab = true
+                    break
+                end
+            end
+        end
+        line_idx = line_idx + 1
+        if line_idx == last_line then
+            break
+        end
+    end
+
+    vim.api.nvim_buf_set_option(buf, 'expandtab', expandtab)
+    if not expandtab then
+        vim.api.nvim_buf_set_option(buf, 'softtabstop', -1)
+        vim.api.nvim_buf_set_option(buf, 'shiftwidth', 0)
+        vim.api.nvim_buf_set_option(buf, 'tabstop', indent)
+    end
+end
+
 return M

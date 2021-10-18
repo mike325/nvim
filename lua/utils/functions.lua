@@ -215,7 +215,7 @@ function M.get_ssh_hosts()
 
     if is_file(ssh_config) then
         local host = ''
-        require('utils.files').readfile(ssh_config, function(data)
+        require('utils.files').readfile(ssh_config, true, function(data)
             for _, line in pairs(data) do
                 if line and line ~= '' and line:match 'Host [a-zA-Z0-9_-%.]+' then
                     host = split(line, ' ')[2]
