@@ -444,7 +444,15 @@ function Job:pid()
 end
 
 function Job:send(data)
-    vim.validate { data = { data, 'table' } }
+    vim.validate {
+        data = {
+            data,
+            function(d)
+                return type(d) == type '' or (type(d) == type {} and vim.tbl_islist(d))
+            end,
+            'string or string convertible data',
+        },
+    }
     assert(self._isalive, debug.traceback(('Job %s is not running'):format(self._id)))
     vim.fn.chansend(self._id, data)
 end
