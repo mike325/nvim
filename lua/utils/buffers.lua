@@ -20,10 +20,18 @@ function M.last_position()
     end
 end
 
-function M.bufloaded(bufnr)
-    vim.validate { buffer = { bufnr, 'number' } }
-
-    return vim.fn.bufloaded(bufnr) == 1
+function M.bufloaded(buffer)
+    vim.validate {
+        buffer = {
+            buffer,
+            function(b)
+                return type(b) == type '' or type(b) == type(1)
+            end,
+            'filepath string or a buffer number',
+        },
+    }
+    -- return vim.api.nvim_buf_is_loaded(bufnr)
+    return vim.fn.bufloaded(buffer) == 1
 end
 
 function M.is_modified(bufnr)

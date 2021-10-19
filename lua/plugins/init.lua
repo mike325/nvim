@@ -314,6 +314,7 @@ packer.startup(function()
             vim.g.indentLine_fileTypeExclude = {
                 'Telescope',
                 'TelescopePrompt',
+                'TelescopeResults',
                 'log',
                 'help',
                 'packer',

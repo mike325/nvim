@@ -16,6 +16,7 @@ vim.g.gutentags_exclude_filetypes = {
     'log',
     'Telescope',
     'TelescopePrompt',
+    'TelescopeResults',
     'fugitive',
 }
 
