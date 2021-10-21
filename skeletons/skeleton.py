@@ -1,21 +1,21 @@
 #!/usr/bin/env python3
 
+# from datetime import datetime
 import argparse
 import logging
 import os
+import subprocess
 import sys
 
-from typing import Union
-from typing import Any
-
 # from typing import Dict
-# from typing import Optional
-# from typing import Sequence
-# from typing import TextIO
+from typing import Optional
+from typing import List
+from typing import Sequence
+from typing import TextIO
+from typing import Any
+from typing import Union
 from typing import cast
-
-# from subprocess import PIPE, Popen
-# from datetime import datetime
+from dataclasses import dataclass, field
 
 _header = """
                         -`
@@ -42,13 +42,92 @@ _header = """
 _VERSION = "0.1.0"
 _AUTHOR = "Mike"
 
-_log = None
+_log: logging.Logger
 # _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 _SCRIPTNAME = os.path.basename(__file__)
 _log_file = os.path.splitext(_SCRIPTNAME)[0] + ".log"
 
+_verbose = False
+# _is_windows = os.name == 'nt'
+# _home = os.environ['USERPROFILE' if _is_windows else 'HOME']
 
-def _createLogger(
+
+@dataclass
+class Job(object):
+    """docstring for Job"""
+
+    cmd: Sequence[str]
+    stdout: List[str] = field(init=False, repr=False)
+    stderr: List[str] = field(init=False, repr=False)
+    pid: int = field(init=False)
+    rc: int = field(init=False)
+
+    # NOTE: Needed it with python < 3.7
+    # def __init__(self, cmd: Sequence[str]):
+    #     """TODO: Docstring for __init__.
+    #
+    #     Args:
+    #         cmd: TODO
+    #
+    #     Returns: TODO
+    #
+    #     """
+    #     self.cmd = cmd
+
+    def execute(self, background: bool = True, cwd: Optional[str] = None) -> int:
+        """TODO: Docstring for execute.
+
+        Args:
+            background: TODO
+
+        Returns: TODO
+
+        """
+        # Verbose always overrides background output
+        background = background if not _verbose else False
+        cwd = "." if cwd is None else cwd
+
+        _log.debug(f"Executing cmd: {self.cmd}")
+        _log.debug("Sending job to background" if background else "Running in foreground")
+        process = subprocess.Popen(self.cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd=cwd)
+        self.pid = process.pid
+
+        self.stdout = []
+        self.stderr = []
+
+        while True:
+            stdout = cast(TextIO, process.stdout).readline()
+            stderr = cast(TextIO, process.stderr).readline()
+            if (stdout == "" and stderr == "") and process.poll() is not None:
+                break
+            elif stdout:
+                stdout = stdout.strip().replace("\n", "")
+                self.stdout.append(stdout)
+                if background:
+                    _log.debug(stdout)
+                else:
+                    _log.info(stdout)
+            elif stderr:
+                stderr = stderr.strip().replace("\n", "")
+                self.stderr.append(stderr)
+                _log.error(stderr)
+
+        # self.rc = process.poll()
+        self.rc = process.returncode
+
+        if self.rc != 0:
+            _log.error(f"Command exited with {self.rc}")
+
+        if self.stdout is not None and len(self.stdout) > 0:
+            _log.debug(f"stdout: {self.stdout}")
+
+        if self.stderr is not None and len(self.stderr) > 0:
+            _log.error(f"stderr: {self.stderr}")
+
+        return self.rc
+
+
+def createLogger(
     stdout_level: int = logging.INFO,
     file_level: int = logging.DEBUG,
     color: bool = True,
@@ -57,9 +136,13 @@ def _createLogger(
 ):
     """Creaters logging obj
 
-    stdout_level: int: logging level displayed into the terminal
-    file_level: int: logging level saved into the logging file
-    color: bool: Enable/Disable color console output
+    Args:
+        stdout_level: logging level displayed into the terminal
+        file_level: logging level saved into the logging file
+        color: Enable/Disable color console output
+
+    Returns:
+        Logger with file and tty handlers
 
     """
     logger = logging.getLogger(name)
@@ -163,15 +246,17 @@ def _createLogger(
 def _str_to_logging(level: Union[int, str]) -> int:
     """Convert logging level string to a logging number
 
-    :level: str: integer representation or a valid logging string
-                - debug/verbose
-                - info
-                - warn/warning
-                - error
-                - critical
-            All non valid integer or logging strings defaults to 0 logging
-    :returns: int: logging level from the given string
+    Args:
+        level: integer representation or a valid logging string
+                    - debug/verbose
+                    - info
+                    - warn/warning
+                    - error
+                    - critical
+                All non valid integer or logging strings defaults to 0 logging
 
+    Returns:
+        logging level of the given string
     """
 
     if isinstance(level, int):
@@ -199,10 +284,32 @@ def _str_to_logging(level: Union[int, str]) -> int:
 
 def _parseArgs():
     """Parse CLI arguments
-    :returns: argparse.ArgumentParser class instance
+
+    Returns
+        argparse.ArgumentParser class instance
 
     """
+
+    class NegateAction(argparse.Action):
+        def __call__(self, parser, ns, values, option):
+            global _protocol
+            if len(option) == 2:
+                setattr(ns, self.dest, True)
+            else:
+                setattr(ns, self.dest, option[2:4] != "no")
+
     parser = argparse.ArgumentParser()
+
+    parser.add_argument(
+        "--color",
+        "--nocolor",
+        "--no-color",
+        dest="color",
+        action=NegateAction,
+        default=True,
+        nargs=0,
+        help="Disable colored output",
+    )
 
     parser.add_argument(
         "--version",
@@ -237,40 +344,22 @@ def _parseArgs():
     )
 
     parser.add_argument(
-        "-f", "--file-logging", dest="file_logging", default="debug", type=str, help="File logger verbosity"
+        "-f",
+        "--file-logging",
+        dest="file_logging",
+        default="debug",
+        type=str,
+        help="File logger verbosity",
     )
-
-    parser.add_argument("--no-color", dest="no_color", action="store_false", help="Disable colored output")
 
     return parser.parse_args()
 
 
-# def _execute(cmd: Sequence[str], background: bool):
-#     """Execute a synchronous command
-#
-#     :cmd: AnyStr: command to execute
-#     :returns: Popen obj: command object after execution
-#
-#     """
-#     rc = 0
-#     stdout: TextIO = sys.stdout if not background else cast(TextIO, PIPE)
-#     stderr: TextIO = sys.stderr if not background else cast(TextIO, PIPE)
-#     _log.debug(f"Executing cmd: {cmd}")
-#     cmd_obj = Popen(" ".join(cmd), stdout=stdout, stderr=stderr, text=True)
-#     out, err = cmd_obj.communicate()
-#     if out is not None and len(out) > 0:
-#         _log.debug(out)
-#     if cmd_obj.returncode != 0:
-#         rc = 1
-#         _log.error(f"Command exited with {cmd_obj.returncode}")
-#         if err is not None:
-#             _log.error(err)
-#     return rc
-
-
 def main():
     """Main function
-    :returns: int: exit code, 0 in success any other integer in failure
+
+    Returns
+        exit code, 0 in success any other integer in failure
 
     """
     global _log
@@ -287,10 +376,10 @@ def main():
     stdout_level = stdout_level if not args.quiet else 0
     file_level = file_level if not args.quiet else 0
 
-    _log = _createLogger(
+    _log = createLogger(
         stdout_level=_str_to_logging(stdout_level),
         file_level=_str_to_logging(file_level),
-        color=args.no_color,
+        color=args.color,
         filename=_log_file,
     )
 
@@ -312,7 +401,7 @@ def main():
 if __name__ == "__main__":
     exit(main())
 else:
-    _log = _createLogger(
+    _log = createLogger(
         stdout_level=_str_to_logging("INFO"),
         file_level=_str_to_logging("DEBUG"),
         color=True,

@@ -129,6 +129,7 @@ packer.startup(function()
                 ['.pre-commit-config.yaml']    = { type = 'PreCommit' },
                 ['.ycm_extra_conf.py']         = { type = 'YCM' },
                 ['pyproject.toml']             = { type = 'PyProject' },
+                ['.flake8']                    = { type = 'Flake' },
                 ['stylua.toml']                = { type = 'Stylua' },
                 ['.project.vim']               = { type = 'Project' },
                 ['.clang-format']              = { type = 'Clang' },

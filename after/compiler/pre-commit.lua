@@ -21,6 +21,7 @@ local formats = {
     '%W%f:%l:%c: warning: %m',
     'Diff in %f:',
     '+++ %f',
+    'reformatted %f',
 }
 
 nvim.ex.CompilerSet('errorformat=' .. table.concat(formats, ','):gsub(' ', '\\ '))

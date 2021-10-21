@@ -96,6 +96,8 @@ function M.setup()
             and not is_file './tox.ini'
             and not is_file './.flake8'
             and not is_file './setup.cfg'
+            -- and not is_file './setup.py'
+            -- and not is_file './pyproject.toml'
         then
             vim.list_extend(cmd, { '--max-line-length=120', '--ignore=' .. table.concat(M.pyignores, ',') })
         end

@@ -1144,6 +1144,7 @@ if executable 'pre-commit' then
                 '%W%f:%l:%c: warning: %m',
                 'Diff in %f:',
                 '+++ %f',
+                'reformatted %f',
             }
             local precommit = RELOAD('jobs'):new {
                 cmd = 'pre-commit',
