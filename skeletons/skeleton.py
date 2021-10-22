@@ -45,7 +45,7 @@ _AUTHOR = "Mike"
 _log: logging.Logger
 # _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 _SCRIPTNAME = os.path.basename(__file__)
-_log_file = os.path.splitext(_SCRIPTNAME)[0] + ".log"
+_log_file: Optional[str] = os.path.splitext(_SCRIPTNAME)[0] + ".log"
 
 _verbose = False
 # _is_windows = os.name == 'nt'
@@ -131,7 +131,7 @@ def createLogger(
     stdout_level: int = logging.INFO,
     file_level: int = logging.DEBUG,
     color: bool = True,
-    filename: str = "dummy.log",
+    filename: Optional[str] = "dummy.log",
     name: str = "MainLogger",
 ):
     """Creaters logging obj
@@ -226,7 +226,7 @@ def createLogger(
 
     logger.addHandler(stdout_handler)
 
-    if file_level > 0 and file_level < 100:
+    if file_level > 0 and file_level < 100 and filename is not None:
 
         with open(filename, "a") as log:
             log.write(_header)
@@ -298,6 +298,14 @@ def _parseArgs():
             else:
                 setattr(ns, self.dest, option[2:4] != "no")
 
+    class ChangeLogFile(argparse.Action):
+        def __call__(self, parser, ns, values, option):
+            if option[2:4] == "no":
+                setattr(ns, self.dest, None)
+            else:
+                pass
+                setattr(ns, self.dest, values)
+
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
@@ -312,10 +320,22 @@ def _parseArgs():
     )
 
     parser.add_argument(
+        "--log",
+        "--nolog",
+        "--no-log",
+        dest="logfile",
+        action=ChangeLogFile,
+        default=_log_file,
+        nargs="?",
+        type=str,
+        help="Log filename or disable log file",
+    )
+
+    parser.add_argument(
         "--version",
         dest="show_version",
         action="store_true",
-        help="print script version and exit",
+        help="Print script version and exit",
     )
 
     parser.add_argument(
@@ -323,7 +343,7 @@ def _parseArgs():
         dest="verbose",
         action="store_true",
         default=False,
-        help="Turn on Debug messages",
+        help="Turn on console debug messages",
     )
 
     parser.add_argument(
@@ -331,7 +351,7 @@ def _parseArgs():
         dest="quiet",
         action="store_true",
         default=False,
-        help="Turn off all messages",
+        help="Turn off all console messages",
     )
 
     parser.add_argument(
@@ -340,7 +360,7 @@ def _parseArgs():
         dest="stdout_logging",
         default="info",
         type=str,
-        help="File logger verbosity",
+        help="Console logger verbosity",
     )
 
     parser.add_argument(
@@ -380,7 +400,7 @@ def main():
         stdout_level=_str_to_logging(stdout_level),
         file_level=_str_to_logging(file_level),
         color=args.color,
-        filename=_log_file,
+        filename=args.logfile,
     )
 
     # _log.debug('This is a DEBUG message')
