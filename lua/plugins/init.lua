@@ -711,35 +711,39 @@ packer.startup(function()
     --     event = 'VimEnter', -- NOTE: Nees to defer this as much as possible because it needs info from other plugins
     -- }
 
-    -- use {
-    --     'hrsh7th/nvim-cmp',
-    --     requires = {
-    --         { 'hrsh7th/cmp-nvim-lsp' },
-    --         { 'hrsh7th/cmp-buffer' },
-    --     },
-    --     config = function()
-    --         require 'plugins.completion'
-    --     end,
-    --     after = 'nvim-lspconfig',
-    -- }
-
-    -- TODO: Check for python 3.8.5
     use {
-        'ms-jpq/coq_nvim',
-        branch = 'coq',
-        cond = function()
-            return vim.fn.has 'python3' == 1
+        'hrsh7th/nvim-cmp',
+        requires = {
+            { 'hrsh7th/cmp-nvim-lsp' },
+            { 'hrsh7th/cmp-buffer' },
+            { 'hrsh7th/cmp-path' },
+            { 'hrsh7th/cmp-nvim-lua' },
+            { 'onsails/lspkind-nvim' },
+            -- { 'saadparwaizl/cmp_luasnips' },
+        },
+        config = function()
+            require 'plugins.completion'
         end,
-        setup = function()
-            vim.g.coq_settings = {
-                auto_start = true,
-                ['keymap.recommended'] = false,
-            }
-        end,
-        -- config = function()
-        --     vim.cmd('COQdeps')
-        -- end,
+        -- after = 'nvim-lspconfig',
     }
+
+    -- -- TODO: Check for python 3.8.5
+    -- use {
+    --     'ms-jpq/coq_nvim',
+    --     branch = 'coq',
+    --     cond = function()
+    --         return vim.fn.has 'python3' == 1
+    --     end,
+    --     setup = function()
+    --         vim.g.coq_settings = {
+    --             auto_start = true,
+    --             ['keymap.recommended'] = false,
+    --         }
+    --     end,
+    --     -- config = function()
+    --     --     vim.cmd('COQdeps')
+    --     -- end,
+    -- }
 
     -- use {
     --     'lewis6991/spellsitter.nvim',
