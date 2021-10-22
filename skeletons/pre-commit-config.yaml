@@ -121,7 +121,7 @@ repos:
       #   name: luacheck
       #   description: Lua check
       #   entry: luacheck
-      #   args: ['--std', 'luajit', '--formatter', 'plain', '--codes', '--ranges']
+      #   args: ['--std', 'luajit', '--formatter', 'plain', '--codes']
       #   language: system
       #   types: [lua]
       # - id: stylua

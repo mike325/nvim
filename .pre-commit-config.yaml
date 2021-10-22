@@ -121,7 +121,7 @@ repos:
         description: Lua check
         entry: luacheck
         # TODO: Fix completxity before adding this back '--max-cyclomatic-complexity', '20',
-        args: ['--std', 'luajit', '--formatter', 'plain', '--codes', '--ranges']
+        args: ['--std', 'luajit', '--formatter', 'plain', '--codes']
         language: system
         types: [lua]
       - id: stylua

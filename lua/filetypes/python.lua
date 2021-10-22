@@ -1,6 +1,8 @@
 local nvim = require 'neovim'
 local sys = require 'sys'
 
+local is_file = require('utils.files').is_file
+local realpath = require('utils.files').realpath
 local executable = require('utils.files').executable
 
 local plugins = require('neovim').plugins
@@ -40,11 +42,14 @@ function M.format()
     local external_formatprg = require('utils.functions').external_formatprg
 
     local project = vim.fn.findfile('pyproject.toml', '.;')
+    project = project ~= '' and realpath(project) or nil
 
     if executable 'black' then
         local cmd = { 'black' }
-        if project == '' then
+        if not project then
             vim.list_extend(cmd, { '-l', '120' })
+        else
+            vim.list_extend(cmd, { '--config', project })
         end
         external_formatprg {
             cmd = cmd,
@@ -53,7 +58,7 @@ function M.format()
         }
     elseif executable 'yapf' then
         local cmd = { 'yapf', '-i' }
-        if project == '' then
+        if not project then
             vim.list_extend(cmd, { '--style', 'pep8' })
         end
         external_formatprg {
@@ -62,7 +67,7 @@ function M.format()
         }
     elseif executable 'autopep8' then
         local cmd = { 'autopep8', '-i' }
-        if project == '' then
+        if not project then
             vim.list_extend(cmd, {
                 '--experimental',
                 '--aggressive',
@@ -88,8 +93,6 @@ function M.setup()
     if executable 'flake8' then
         local cmd = { 'flake8' }
         local global_settings = vim.fn.expand(sys.name == 'windows' and '~/.flake8' or '~/.config/flake8')
-
-        local is_file = require('utils.files').is_file
 
         if
             not is_file(global_settings)
@@ -162,7 +165,6 @@ function M.setup()
     set_command {
         lhs = 'Execute',
         rhs = function(...)
-            local is_file = require('utils.files').is_file
             local exepath = vim.fn.exepath
 
             local buffer = nvim.buf.get_name(nvim.get_current_buf())

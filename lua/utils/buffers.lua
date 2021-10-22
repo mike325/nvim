@@ -235,7 +235,7 @@ function M.detect_indent(buf)
     -- NOTE: Should we ignore comments ?
     while true do
         local line = vim.api.nvim_buf_get_lines(buf, line_idx, line_idx + 1, true)[1]
-        if #line > 0 and not line:match '^%s*$' then
+        if line and #line > 0 and not line:match '^%s*$' then
             local indent_str = line:match '^(%s+)[^%s]+'
             if indent_str then
                 -- NOTE: we may need to confirm tab indent with more than 1 line
