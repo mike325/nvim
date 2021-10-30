@@ -1,14 +1,16 @@
 local M = {}
 
 function M.format()
-    local buffer = vim.api.nvim_get_current_buf()
-    local external_formatprg = require('utils.functions').external_formatprg
-
-    local project = vim.fn.findfile('stylua.toml', '.;')
-
     if require('utils.files').executable 'stylua' then
+        local buffer = vim.api.nvim_get_current_buf()
+        local external_formatprg = require('utils.functions').external_formatprg
+        local realpath = require('utils.files').realpath
+
+        local project = vim.fn.findfile('stylua.toml', '.;')
+        project = project ~= '' and realpath(project) or nil
+
         local cmd = { 'stylua' }
-        if project == '' then
+        if not project then
             vim.list_extend(cmd, {
                 '--indent-type',
                 'Spaces',
@@ -17,9 +19,10 @@ function M.format()
                 '--quote-style',
                 'AutoPreferSingle',
                 '--column-width',
-                '110',
+                '120',
             })
         end
+
         external_formatprg {
             cmd = cmd,
             buffer = buffer,

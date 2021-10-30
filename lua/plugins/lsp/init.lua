@@ -228,6 +228,9 @@ local servers = {
                 settings = {
                     pylsp = {
                         plugins = {
+                            jedi_completion = {
+                                include_params = true,
+                            },
                             mccabe = {
                                 threshold = 20,
                             },

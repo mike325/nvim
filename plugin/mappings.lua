@@ -14,8 +14,6 @@ local set_abbr = require('neovim.abbrs').set_abbr
 local set_command = require('neovim.commands').set_command
 local set_mapping = require('neovim.mappings').set_mapping
 
-local plugins = require('neovim').plugins
-
 local noremap = { noremap = true }
 local noremap_silent = { noremap = true, silent = true }
 
@@ -150,30 +148,6 @@ set_mapping {
     rhs = function()
         nicenext 'N'
     end,
-    args = noremap_silent,
-}
-
--- TODO: Migrate to lua functions
-set_mapping {
-    mode = 'i',
-    lhs = '<TAB>',
-    rhs = [[<C-R>=neovim#tab()<CR>]],
-    args = noremap_silent,
-}
-
--- TODO: Migrate to lua functions
-set_mapping {
-    mode = 'i',
-    lhs = '<S-TAB>',
-    rhs = [[<C-R>=neovim#shifttab()<CR>]],
-    args = noremap_silent,
-}
-
--- TODO: Migrate to lua functions
-set_mapping {
-    mode = 'i',
-    lhs = '<CR>',
-    rhs = [[<C-R>=neovim#enter()<CR>]],
     args = noremap_silent,
 }
 
@@ -906,6 +880,10 @@ if executable 'scp' then
 
     local function remote_cmd(host, send)
         local filename = vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf())
+        local foward_slash = sys.name == 'windows' and not vim.opt.shellslash:get()
+        if foward_slash then
+            filename = filename:gsub('\\', '/')
+        end
         local virtual_filename
 
         if filename:match '^%w+://' then
@@ -915,6 +893,9 @@ if executable 'scp' then
                 filename = filename:gsub('%.git//?[%w%d]+//?', '')
             end
             virtual_filename = vim.fn.tempname()
+            if foward_slash then
+                virtual_filename = virtual_filename:gsub('\\', '/')
+            end
         end
 
         vim.validate {
@@ -931,6 +912,9 @@ if executable 'scp' then
             writefile(virtual_filename, nvim.buf.get_lines(0, 0, -1, true))
         else
             filename = realpath(normalize_path(filename))
+            if foward_slash then
+                filename = filename:gsub('\\', '/')
+            end
         end
 
         local remote_path = ('%s:%s'):format(host, convert_path(filename, send, host))
@@ -1064,33 +1048,6 @@ set_command {
     end,
     args = { force = true },
 }
-
-if not plugins['vim-commentary'] then
-    set_mapping {
-        mode = 'n',
-        lhs = 'gc',
-        rhs = '<cmd>set opfunc=neovim#comment<CR>g@',
-        args = noremap_silent,
-    }
-
-    set_mapping {
-        mode = 'v',
-        lhs = 'gc',
-        rhs = ':<C-U>call neovim#comment(visualmode(), v:true)<CR>',
-        args = noremap_silent,
-    }
-
-    set_mapping {
-        mode = 'n',
-        lhs = 'gcc',
-        rhs = function()
-            local cursor = nvim.win.get_cursor(0)
-            require('utils.functions').toggle_comments(cursor[1] - 1, cursor[1])
-            nvim.win.set_cursor(0, cursor)
-        end,
-        args = noremap_silent,
-    }
-end
 
 set_command {
     lhs = 'Messages',

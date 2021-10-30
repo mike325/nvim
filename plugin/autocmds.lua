@@ -9,7 +9,7 @@ if require('sys').name ~= 'windows' then
     }
 
     set_autocmd {
-        event = 'Filetype',
+        event = 'FileType',
         pattern = 'python,lua,sh,bash,zsh,tcsh,csh,ruby,perl',
         cmd = [[lua require"utils.functions".make_executable()]],
         group = 'MakeExecutable',
@@ -122,7 +122,7 @@ set_autocmd {
 }
 
 -- set_autocmd {
---     event = 'Filetype',
+--     event = 'FileType',
 --     pattern = 'lua',
 --     cmd = [[nnoremap <buffer><silent> <leader><leader>r :luafile %<cr>:echo "File reloaded"<cr>]],
 --     group = 'Reload',
@@ -143,7 +143,7 @@ set_autocmd {
 }
 
 set_autocmd {
-    event = 'BufReadPost',
+    event = 'FileType',
     pattern = '*',
     cmd = [[lua require'utils.buffers'.detect_indent(vim.api.nvim_get_current_buf())]],
     group = 'Indent',

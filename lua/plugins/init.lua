@@ -524,47 +524,47 @@ packer.startup(function()
         event = 'VimEnter',
     }
 
-    use {
-        'SirVer/ultisnips',
-        cond = function()
-            return vim.env.VIM_MIN == nil and vim.g.minimal == nil and vim.fn.has 'python3' == 1
-        end,
-        event = 'VimEnter',
-        setup = function()
-            vim.g.UltiSnipsEditSplit = 'context'
-            vim.g.UltiSnipsExpandTrigger = '<C-,>'
-
-            -- Remove all select mappigns in expanded snip
-            -- vim.g.UltiSnipsRemoveSelectModeMappings = 0
-            vim.g.UltiSnipsUsePythonVersion = 3
-
-            vim.g.ulti_expand_or_jump_res = 0
-            vim.g.ulti_jump_backwards_res = 0
-            vim.g.ulti_jump_forwards_res = 0
-            vim.g.ulti_expand_res = 0
-
-            vim.g.ultisnips_python_quoting_style = 'single'
-            vim.g.ultisnips_python_triple_quoting_style = 'double'
-            vim.g.ultisnips_python_style = 'google'
-
-            -- vim.g.UltiSnipsSnippetDirectories = {}
-
-            vim.api.nvim_set_keymap(
-                'x',
-                '<CR>',
-                ':call UltiSnips#SaveLastVisualSelection()<CR>gv"_s',
-                { silent = true }
-            )
-        end,
-        requires = {
-            {
-                'honza/vim-snippets',
-                cond = function()
-                    return vim.env.VIM_MIN == nil and vim.g.minimal == nil and vim.fn.has 'python3' == 1
-                end,
-            },
-        },
-    }
+    -- use {
+    --     'SirVer/ultisnips',
+    --     cond = function()
+    --         return vim.env.VIM_MIN == nil and vim.g.minimal == nil and vim.fn.has 'python3' == 1
+    --     end,
+    --     event = 'VimEnter',
+    --     setup = function()
+    --         vim.g.UltiSnipsEditSplit = 'context'
+    --         vim.g.UltiSnipsExpandTrigger = '<C-,>'
+    --
+    --         -- Remove all select mappigns in expanded snip
+    --         -- vim.g.UltiSnipsRemoveSelectModeMappings = 0
+    --         vim.g.UltiSnipsUsePythonVersion = 3
+    --
+    --         vim.g.ulti_expand_or_jump_res = 0
+    --         vim.g.ulti_jump_backwards_res = 0
+    --         vim.g.ulti_jump_forwards_res = 0
+    --         vim.g.ulti_expand_res = 0
+    --
+    --         vim.g.ultisnips_python_quoting_style = 'single'
+    --         vim.g.ultisnips_python_triple_quoting_style = 'double'
+    --         vim.g.ultisnips_python_style = 'google'
+    --
+    --         -- vim.g.UltiSnipsSnippetDirectories = {}
+    --
+    --         vim.api.nvim_set_keymap(
+    --             'x',
+    --             '<CR>',
+    --             ':call UltiSnips#SaveLastVisualSelection()<CR>gv"_s',
+    --             { silent = true }
+    --         )
+    --     end,
+    --     requires = {
+    --         {
+    --             'honza/vim-snippets',
+    --             cond = function()
+    --                 return vim.env.VIM_MIN == nil and vim.g.minimal == nil and vim.fn.has 'python3' == 1
+    --             end,
+    --         },
+    --     },
+    -- }
 
     use {
         'nvim-treesitter/nvim-treesitter',
@@ -704,12 +704,12 @@ packer.startup(function()
         end,
     }
 
-    -- use {
-    --     'hrsh7th/nvim-compe',
-    --     config = function() require'plugins.completion' end,
-    --     cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
-    --     event = 'VimEnter', -- NOTE: Nees to defer this as much as possible because it needs info from other plugins
-    -- }
+    use {
+        'L3MON4D3/LuaSnip',
+        config = function()
+            require 'plugins.snippets'
+        end,
+    }
 
     use {
         'hrsh7th/nvim-cmp',
@@ -719,7 +719,8 @@ packer.startup(function()
             { 'hrsh7th/cmp-path' },
             { 'hrsh7th/cmp-nvim-lua' },
             { 'onsails/lspkind-nvim' },
-            -- { 'saadparwaizl/cmp_luasnips' },
+            { 'saadparwaiz1/cmp_luasnip' },
+            { 'quangnguyen30192/cmp-nvim-ultisnips' },
         },
         config = function()
             require 'plugins.completion'
