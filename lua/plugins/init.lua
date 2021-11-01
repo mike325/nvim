@@ -597,8 +597,8 @@ packer.startup(function()
                 cond = function()
                     return vim.env.VIM_MIN == nil and vim.g.minimal == nil
                 end,
-                setup = function()
-                    vim.g.dap_virtual_text = true
+                config = function()
+                    require('nvim-dap-virtual-text').setup()
                 end,
             },
         },

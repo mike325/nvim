@@ -44,13 +44,13 @@ end
 -- end
 
 local next_item = function(fallback)
-    if luasnip and luasnip.jumpable(1) then
+    if cmp.visible() then
+        cmp.select_next_item()
+    elseif luasnip and luasnip.jumpable(1) then
         luasnip.jump(1)
     elseif ultisnips and vim.fn['UltiSnips#CanJumpForwards']() == 1 then
         vim.fn['UltiSnips#JumpForwards']()
         -- vim.api.nvim_feedkeys(t '<Plug>(ultisnips_jump_forward)', 'm', true)
-    elseif cmp.visible() then
-        cmp.select_next_item()
     elseif has_words_before() then
         cmp.complete()
     else
@@ -60,13 +60,13 @@ local next_item = function(fallback)
 end
 
 local prev_item = function(fallback)
-    if luasnip and luasnip.jumpable(-1) then
+    if cmp.visible() then
+        cmp.select_prev_item()
+    elseif luasnip and luasnip.jumpable(-1) then
         luasnip.jump(-1)
     elseif ultisnips and vim.fn['UltiSnips#CanJumpBackwards']() == 1 then
         vim.fn['UltiSnips#JumpBackwards']()
         -- vim.api.nvim_feedkeys(t '<Plug>(ultisnips_jump_backward)', 'm', true)
-    elseif cmp.visible() then
-        cmp.select_prev_item()
     else
         fallback()
     end

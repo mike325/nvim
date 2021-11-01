@@ -5,12 +5,12 @@ if not ls then
 end
 
 local s = ls.snippet
--- local sn = ls.snippet_node
+local sn = ls.snippet_node
 local t = ls.text_node
 -- local isn = ls.indent_snippet_node
 local i = ls.insert_node
 -- local f = ls.function_node
--- local c = ls.choice_node
+local c = ls.choice_node
 local d = ls.dynamic_node
 -- local l = require("luasnip.extras").lambda
 -- local r = require("luasnip.extras").rep
@@ -26,6 +26,7 @@ local d = ls.dynamic_node
 
 local saved_text = RELOAD('plugins.snippets.utils').saved_text
 local get_comment = require('plugins.snippets.utils').get_comment
+local surround_with_func = require('plugins.snippets.utils').surround_with_func
 
 -- TODO: Improve snippets like fun/lfun, map/set_m, cmd/set_c and au/set_au using regex and dynamic_node
 -- stylua: ignore
@@ -68,7 +69,7 @@ ls.snippets.lua = {
         t({"", "end"}),
     }),
     s("err", {
-        t({"error(debug.traceback("}), i(1, 'msg'), t({"))"})
+        t({"error(debug.traceback("}), d(1, surround_with_func, {}, {text = 'msg'}), t({"))"})
     }),
     s("req", {
         t({"require '"}), i(1, 'module'), t({"'"})
@@ -104,5 +105,25 @@ ls.snippets.lua = {
             t({"\tcmd = '"}),     i(3, 'lua P(true)'), t({"',", ""}),
             t({"\tgroup = '"}),   i(4, 'NewGroup'), t({"',", ""}),
         t({"}"}),
+    }),
+    s("lext", {
+        t({"vim.list_extend("}),
+            d(1, surround_with_func, {}, {text = 'tbl'}),
+        t({', {'}), i(2, "'node'"), t({'})'})
+    }),
+    s("text", {
+        t({"vim.tbl_extend("}),
+            c(1, { t({"'force'"}), t({"'keep'"}), t({"'error'"}) }),
+            t({', '}),
+            d(2, surround_with_func, {}, {text = 'tbl'}),
+         t({', '}), i(3, "ext_tbl"), t({')'})
+    }),
+    s("not", {
+        t({"vim.notify("}),
+            d(1, surround_with_func, {}, {text = 'msg'}),
+            t({', '}),
+            c(2, { t({"'INFO'"}), t({"'WARN'"}), t({"'ERROR'"}), t({"'DEBUG'"}) }),
+            c(3, { t{''}, sn(nil, { t{', { title = '}, i(1, "'title'"), t{' }'} }) } ),
+         t({')'})
     }),
 }

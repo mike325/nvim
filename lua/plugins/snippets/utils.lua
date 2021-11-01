@@ -73,6 +73,28 @@ function M.saved_text(args, snip, old_state, placeholder)
     return snip_node
 end
 
+function M.surround_with_func(args, snip, old_state, placeholder)
+    local nodes = {}
+    if not old_state then
+        old_state = {}
+    end
+    if not placeholder then
+        placeholder = {}
+    end
+
+    if snip.env and snip.env.SELECT_RAW and #snip.env.SELECT_RAW == 1 then
+        local node = snip.env.SELECT_RAW[1]
+        table.insert(nodes, t(node))
+    else
+        local text = placeholder.text or 'placeholder'
+        table.insert(nodes, i(1, text))
+    end
+
+    local snip_node = sn(nil, nodes)
+    snip_node.old_state = old_state
+    return snip_node
+end
+
 function M.copy(args)
     return args[1]
 end

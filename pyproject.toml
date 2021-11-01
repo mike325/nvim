@@ -5,17 +5,17 @@ description = "neovim's config files"
 readme = "README.md"
 authors = [{ name = "mike325", email = "mike325@users.noreply.github.com" }]
 license = { text = "MIT" }
-# dependencies = [
-#     'httpie',
-#     'debugpy',
-#     'black[d]',
-#     'jedi',
-#     'mypy',
-#     'flake8',
-#     'flake8-mypy',
-#     'yapf',
-#     'mccabe',
+
+# [build-system]
+# requires = [
+#     "mypy",
+#     "flake8",
+#     "flake8-mypy",
+#     "black",
+#     "mccabe",
+#     "virtualenv",
 # ]
+# build-backend = "setuptools.build_meta"
 
 # # NOTE: flake8 does not support pyproject use .flake8 config
 # [tool.flake8]

@@ -5,17 +5,17 @@ description = "Project description"
 readme = "README.md"
 authors = [{ name = "Foo", email = "EXAMPLE@gmail.com" }]
 license = { text = "MIT" }
-# dependencies = [
-#     'httpie',
-#     'debugpy',
-#     'black[d]',
-#     'jedi',
-#     'mypy',
-#     'flake8',
-#     'flake8-mypy',
-#     'yapf',
-#     'mccabe',
+
+# [build-system]
+# requires = [
+#     "mypy",
+#     "flake8",
+#     "flake8-mypy",
+#     "black",
+#     "mccabe",
+#     "virtualenv",
 # ]
+# build-backend = "setuptools.build_meta"
 
 # # NOTE: flake8 does not support pyproject use .flake8 config
 # [tool.flake8]

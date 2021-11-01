@@ -74,6 +74,7 @@ repos:
         args: [
           --check,
           --diff,
+          # --line-length=120
         ]
         language_version: python3
   - repo: https://github.com/Vimjas/vint
