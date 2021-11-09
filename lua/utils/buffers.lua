@@ -309,7 +309,7 @@ function M.detect_indent(buf)
     }
 
     local line_idx = 0
-    local last_line = vim.fn.line '$'
+    local last_line = vim.api.nvim_buf_line_count(buf)
     while true do
         local line = vim.api.nvim_buf_get_lines(buf, line_idx, line_idx + 1, true)[1]
         if line and #line > 0 and not line:match '^%s*$' then
