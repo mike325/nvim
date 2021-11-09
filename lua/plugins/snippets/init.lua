@@ -5,65 +5,49 @@ if not ls then
 end
 
 local set_autocmd = require('neovim.autocmds').set_autocmd
-local set_mapping = require('neovim.mappings').set_mapping
+-- local set_mapping = require('neovim.mappings').set_mapping
+local set_command = require('neovim.commands').set_command
 
-local s = ls.snippet
--- local sn = ls.snippet_node
--- local t = ls.text_node
--- local isn = ls.indent_snippet_node
--- local i = ls.insert_node
-local f = ls.function_node
--- local c = ls.choice_node
--- local d = ls.dynamic_node
--- local l = require("luasnip.extras").lambda
--- local r = require("luasnip.extras").rep
-local p = require('luasnip.extras').partial
--- local m = require("luasnip.extras").match
--- local n = require("luasnip.extras").nonempty
--- local dl = require("luasnip.extras").dynamic_lambda
--- local fmt = require("luasnip.extras.fmt").fmt
--- local fmta = require("luasnip.extras.fmt").fmta
--- local types = require("luasnip.util.types")
--- local events = require("luasnip.util.events")
--- local conds = require("luasnip.extras.expand_conditions")
+local types = require 'luasnip.util.types'
 
 ls.config.set_config {
     history = true,
     -- Update more often, :h events for more info.
     updateevents = 'TextChanged,TextChangedI',
     store_selection_keys = '<CR>',
-    -- enable_autosnippets = true,
-    -- ext_base_prio = 300,
-    -- ext_prio_increase = 1,
-}
-
-local function notes(note)
-    note = note:upper()
-    if note:sub(#note, #note) ~= ':' then
-        note = note .. ': '
-    end
-    return require('plugins.snippets.utils').get_comment(note)
-end
-
--- stylua: ignore
-ls.snippets = {
-    all = {
-        s('note', p(notes, 'note')),
-        s('todo', p(notes, 'todo')),
-        s('fix', p(notes, 'fix')),
-        s('fixme', p(notes, 'fixme')),
-        s('warn', p(notes, 'warn')),
-        s('bug', p(notes, 'bug')),
-        s('improve', p(notes, 'improve')),
-        s(
-            'date',
-            f(function(args, snip)
-                -- stylua: ignore
-                return os.date '%D'
-            end, {})),
+    ext_opts = {
+        -- [types.textNode] = {
+        --     snippet_passive = {
+        --         hl_group = "GruvboxGreen"
+        --     }
+        -- },
+        -- [types.insertNode] = {
+        --     active = {
+        --         virt_text = {{"InsertNode", "Comment"}}
+        --     },
+        --     -- active = {
+        --     --     hl_group = "WarningMsg"
+        --     -- },
+        --     -- pasive = {
+        --     --     hl_group = "Comment"
+        --     -- }
+        -- },
+        [types.choiceNode] = {
+            active = {
+                virt_text = { { 'choiceNode', 'Comment' } },
+            },
+        },
     },
+    -- treesitter-hl has 100, use something higher (default is 200).
+    -- ext_base_prio = 300,
+    -- minimal increase in priority.
+    -- ext_prio_increase = 1,
+    -- enable_autosnippets = true,
 }
 
+RELOAD 'plugins.snippets.all'
+
+set_autocmd { event = 'FileType', pattern = '*', group = 'Snippets' }
 set_autocmd {
     event = 'FileType',
     pattern = '*',
@@ -71,11 +55,21 @@ set_autocmd {
     group = 'Snippets',
 }
 
-set_mapping {
-    mode = 'n',
-    lhs = '<leader>s',
-    rhs = "lua require'luasnip'.cleanup()",
-    args = { noremap = true, silent = true },
+set_command {
+    lhs = 'SnippetCleanup',
+    rhs = 'lua require"luasnip".cleanup()',
+    args = { force = true },
+}
+
+set_command {
+    lhs = 'SnippetReload',
+    rhs = function()
+        RELOAD 'plugins.snippets.all'
+        if pcall(RELOAD, 'plugins.snippets.' .. vim.opt_local.filetype:get()) then
+            vim.notify 'Snippets Reloaded!'
+        end
+    end,
+    args = { force = true },
 }
 
 return true

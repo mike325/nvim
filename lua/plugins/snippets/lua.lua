@@ -9,7 +9,7 @@ local sn = ls.snippet_node
 local t = ls.text_node
 -- local isn = ls.indent_snippet_node
 local i = ls.insert_node
--- local f = ls.function_node
+local f = ls.function_node
 local c = ls.choice_node
 local d = ls.dynamic_node
 -- local l = require("luasnip.extras").lambda
@@ -24,50 +24,64 @@ local d = ls.dynamic_node
 -- local events = require("luasnip.util.events")
 -- local conds = require("luasnip.extras.expand_conditions")
 
-local saved_text = RELOAD('plugins.snippets.utils').saved_text
-local get_comment = require('plugins.snippets.utils').get_comment
-local surround_with_func = require('plugins.snippets.utils').surround_with_func
+local utils = RELOAD 'plugins.snippets.utils'
+local saved_text = utils.saved_text
+local get_comment = utils.get_comment
+local surround_with_func = utils.surround_with_func
 
--- TODO: Improve snippets like fun/lfun, map/set_m, cmd/set_c and au/set_au using regex and dynamic_node
+local function else_clause(args, snip, old_state, placeholder)
+    local nodes = {}
+
+    if snip.captures[1] == 'e' then
+        table.insert(nodes, t { '', 'else', '\t' })
+        table.insert(nodes, i(1, get_comment 'code'))
+    else
+        table.insert(nodes, t { '' })
+    end
+
+    local snip_node = sn(nil, nodes)
+    snip_node.old_state = old_state
+    return snip_node
+end
+
 -- stylua: ignore
 ls.snippets.lua = {
     s("for", {
         t({"for "}), i(1, 'idx'), t({", "}), i(2, 'v'), t({" in ipairs("}), i(3, 'tbl'), t({") do", ""}),
-           d(4, saved_text, {}, {indent = true}),
+            d(4, saved_text, {}, {indent = true}),
         t({"", "end"}),
     }),
     s("forp", {
         t({"for "}), i(1, 'k'), t({", "}), i(2, 'v'), t({" in pairs("}), i(3, 'tbl'), t({") do", ""}),
-           d(4, saved_text, {}, {indent = true}),
+            d(4, saved_text, {}, {indent = true}),
         t({"", "end"}),
     }),
     s("fori", {
         t({"for idx = "}), i(1, '1'), t({", "}), i(2, '#limit'), t({" do", ""}),
-           d(3, saved_text, {}, {indent = true}),
+            d(3, saved_text, {}, {indent = true}),
         t({"", "end"}),
     }),
-    s("if", {
-        t({"if "}), i(1, 'condition'), t({" then", ""}),
-           d(2, saved_text, {}, {indent = true}),
-        t({"", "end"}),
-    }),
-    s("ife", {
-        t({"if "}), i(1, 'condition'), t({" then", ""}),
-           d(2, saved_text, {}, {indent = true}),
-        t({"", "else", ""}),
-            t({'\t'}), i(3, get_comment('code')),
-        t({"", "end"}),
-    }),
-    s("fun", {
-        t({"function "}), i(1, 'name'), t({"("}), i(2, 'args'), t({")", ""}),
-           d(3, saved_text, {}, {indent = true}),
-        t({"", "end"}),
-    }),
-    s("lfun", {
-        t({"local function "}), i(1, 'name'), t({"("}), i(2, 'args'), t({")", ""}),
-           d(3, saved_text, {}, {indent = true}),
-        t({"", "end"}),
-    }),
+    s(
+        { trig = "if(e?)", regTrig = true },
+        {
+            t({"if "}), i(1, 'condition'), t({" then", ""}),
+                d(2, saved_text, {}, {indent = true}),
+            d(3, else_clause, {}, {}),
+            t({"", "end"}),
+        }
+    ),
+    s(
+        { trig = "(l?)fun", regTrig = true },
+        {
+            f(function(_, snip)
+                -- stylua: ignore
+                return snip.captures[1] == 'l' and 'local ' or ''
+            end, {}),
+            t({"function "}), i(1, 'name'), t({"("}), i(2, 'args'), t({")", ""}),
+                d(3, saved_text, {}, {indent = true}),
+            t({"", "end"}),
+        }
+    ),
     s("err", {
         t({"error(debug.traceback("}), d(1, surround_with_func, {}, {text = 'msg'}), t({"))"})
     }),
@@ -75,7 +89,7 @@ ls.snippets.lua = {
         t({"require '"}), i(1, 'module'), t({"'"})
     }),
     s("l", {
-        t({"local "}), i(1, 'var'), t({" = "}), i(2, 'value'),
+        t({"local "}), i(1, 'var'), t({" = "}), i(2, '{}'),
     }),
     s("ign", {
         t({"-- stylua: ignore"})
@@ -113,7 +127,11 @@ ls.snippets.lua = {
     }),
     s("text", {
         t({"vim.tbl_extend("}),
-            c(1, { t({"'force'"}), t({"'keep'"}), t({"'error'"}) }),
+            c(1, {
+                t({"'force'"}),
+                t({"'keep'"}),
+                t({"'error'"}),
+            }),
             t({', '}),
             d(2, surround_with_func, {}, {text = 'tbl'}),
          t({', '}), i(3, "ext_tbl"), t({')'})
@@ -122,8 +140,16 @@ ls.snippets.lua = {
         t({"vim.notify("}),
             d(1, surround_with_func, {}, {text = 'msg'}),
             t({', '}),
-            c(2, { t({"'INFO'"}), t({"'WARN'"}), t({"'ERROR'"}), t({"'DEBUG'"}) }),
-            c(3, { t{''}, sn(nil, { t{', { title = '}, i(1, "'title'"), t{' }'} }) } ),
+            c(2, {
+                t{"'INFO'"},
+                t{"'WARN'"},
+                t{"'ERROR'"},
+                t{"'DEBUG'"},
+            }),
+            c(3, {
+                t{''},
+                sn(nil, { t{', { title = '}, i(1, "'title'"), t{' }'} }),
+            }),
          t({')'})
     }),
 }

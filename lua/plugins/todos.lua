@@ -20,7 +20,7 @@ todo.setup {
 if has_trouble then
     set_mapping {
         mode = 'n',
-        lhs = '=T',
+        lhs = '=t',
         rhs = function()
             local trouble_open = false
             for _, win in pairs(nvim.tab.list_wins(0)) do

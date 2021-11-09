@@ -308,8 +308,10 @@ function M.readfile(path, split, callback)
             local data = assert(uv.fs_read(fd, stat.size, 0))
             if split then
                 data = vim.split(data, '[\r]?\n')
-                -- NOTE: This seems to always read an extra linefeed so we remove it
-                data[#data] = nil
+                -- NOTE: This seems to always read an extra linefeed so we remove it if it's empty
+                if data[#data] == '' then
+                    data[#data] = nil
+                end
             end
             return data
         end)

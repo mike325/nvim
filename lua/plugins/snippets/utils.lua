@@ -31,12 +31,32 @@ local M = {}
 
 -- TODO: Update this with TS support
 function M.get_comment(text)
-    vim.validate { text = { text, 'string', true } }
+    vim.validate {
+        text = {
+            text,
+            function(x)
+                return not x or type(x) == type '' or vim.tbl_islist(x)
+            end,
+            'text must be either a string or an array of lines',
+        },
+    }
     local comment = vim.opt_local.commentstring:get()
     if not comment:match '%s%%s' then
         comment = comment:format ' %s'
     end
-    return text and comment:format(text) or comment
+    local comment_str
+    if text then
+        if vim.tbl_islist(text) then
+            comment_str = {}
+            for _, line in ipairs(text) do
+                table.insert(comment_str, comment:format(line))
+            end
+            comment_str = table.concat(comment_str, '\n')
+        else
+            comment_str = comment:format(text)
+        end
+    end
+    return comment_str or comment
 end
 
 function M.saved_text(args, snip, old_state, placeholder)
@@ -49,20 +69,19 @@ function M.saved_text(args, snip, old_state, placeholder)
     end
     local indent = placeholder.indent and '\t' or ''
 
-    if snip.env and snip.env.SELECT_RAW and #snip.env.SELECT_RAW > 0 then
-        local lines = vim.deepcopy(snip.env.SELECT_RAW)
-        if #indent ~= 0 then
-            for idx = 1, #lines do
-                lines[idx] = indent .. lines[idx]
-            end
-        end
+    if snip.env and snip.env.SELECT_DEDENT and #snip.env.SELECT_DEDENT > 0 then
+        local lines = vim.deepcopy(snip.env.SELECT_DEDENT)
+        -- local indent_level = require'utils.buffers'.get_indent_block_level(lines)
+        -- lines = require'utils.buffers'.indent(lines, -indent_level)
+        -- TODO: We may need to use an indent indepente node to avoid indenting empty lines
         for idx = 1, #lines do
-            local node = idx == #lines and { lines[idx] } or { lines[idx], '' }
+            local line = indent .. lines[idx]
+            local node = idx == #lines and { line } or { line, '' }
             table.insert(nodes, t(node))
         end
     else
-        local text = placeholder.text or M.get_comment():format 'code'
-        if #indent ~= 0 then
+        local text = placeholder.text or M.get_comment 'code'
+        if indent ~= '' then
             table.insert(nodes, t(indent))
         end
         table.insert(nodes, i(1, text))

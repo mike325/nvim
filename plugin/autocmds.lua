@@ -142,9 +142,11 @@ set_autocmd {
     group = 'FoldText',
 }
 
+-- BufReadPost is triggered after FileType detection, TS may not be attatch yet after
+-- FileType event, but should be fine to use BufReadPost
 set_autocmd {
-    event = 'FileType',
+    event = 'BufReadPost',
     pattern = '*',
-    cmd = [[lua require'utils.buffers'.detect_indent(vim.api.nvim_get_current_buf())]],
+    cmd = [[lua require'utils.buffers'.detect_indent()]],
     group = 'Indent',
 }

@@ -12,20 +12,6 @@ if treesitter == nil then
     return false
 end
 
-local ensure_installed = {
-    'c',
-    'cpp',
-    'cmake',
-    'python',
-    'vim',
-    'bash',
-    'lua',
-    'jsonc',
-    'latex',
-    'query',
-    'toml',
-}
-
 local min = vim.env.VIM_MIN ~= nil or vim.g.minimal ~= nil
 local commet_txtobj = nil
 if packer_plugins['vim-textobj-comment'] == nil or min then
@@ -33,7 +19,7 @@ if packer_plugins['vim-textobj-comment'] == nil or min then
 end
 
 treesitter.setup {
-    ensure_installed = ensure_installed,
+    ensure_installed = 'maintained',
     indent = {
         enable = true,
     },

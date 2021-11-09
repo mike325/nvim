@@ -100,7 +100,6 @@ local close = function(fallback)
     end
 end
 
--- TODO: improve snippets support
 cmp.setup {
     snippet = {
         expand = function(args)

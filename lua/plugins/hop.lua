@@ -11,7 +11,28 @@ hop.setup {}
 
 set_mapping {
     mode = 'n',
-    lhs = [[\]],
+    lhs = 'f',
+    rhs = "<cmd>lua require'hop'.hint_char1()<CR>",
+    args = { noremap = true },
+}
+
+set_mapping {
+    mode = 'n',
+    lhs = 'F',
+    rhs = "<cmd>lua require'hop'.hint_char1()<CR>",
+    args = { noremap = true },
+}
+
+set_mapping {
+    mode = 'n',
+    lhs = 't',
+    rhs = "<cmd>lua require'hop'.hint_char1()<CR>",
+    args = { noremap = true },
+}
+
+set_mapping {
+    mode = 'n',
+    lhs = 'T',
     rhs = "<cmd>lua require'hop'.hint_char1()<CR>",
     args = { noremap = true },
 }

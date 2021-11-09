@@ -71,11 +71,7 @@ repos:
     rev: 21.9b0  # Latest: 21.7b0 or stable
     hooks:
       - id: black
-        args: [
-          --check,
-          --diff,
-          # --line-length=120
-        ]
+        args: [ --check, --diff ]
         language_version: python3
   - repo: https://github.com/Vimjas/vint
     rev: v0.4a3  # Use the sha / tag you want to point at

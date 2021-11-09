@@ -1093,6 +1093,7 @@ if executable 'pre-commit' then
                 '%f:%l: %trror: %m',
                 '%f:%l: %tarning: %m',
                 '%f:%l: %tote: %m',
+                '%f:%l:%m',
                 '%f: %trror: %m',
                 '%f: %tarning: %m',
                 '%f: %tote: %m',

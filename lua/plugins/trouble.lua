@@ -32,7 +32,7 @@ trouble.setup {
 
 set_mapping {
     mode = 'n',
-    lhs = '=t',
+    lhs = '=T',
     rhs = function()
         local lsp_document_diagnostics = vim.lsp.diagnostic.get(nvim.get_current_buf())
         local lsp_workspace_diagnostics = vim.lsp.diagnostic.get_all()
