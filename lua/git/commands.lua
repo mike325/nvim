@@ -7,7 +7,7 @@ if not executable 'git' then
     return false
 end
 
-local plugins = require('neovim').plugins
+-- local plugins = require('neovim').plugins
 local set_command = require('neovim.commands').set_command
 local rm_command = require('neovim.commands').rm_command
 
@@ -259,7 +259,7 @@ function M.set_commands()
         args = { nargs = '?', force = true, complete = [[customlist,neovim#gitfiles_stage]] },
     }
 
-    if plugins['vim-fugitive'] then
+    if packer_plugins['vim-fugitive'] then
         return
     end
 
