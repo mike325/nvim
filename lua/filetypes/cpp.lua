@@ -121,6 +121,11 @@ local env = {
 local function get_compiler()
     local ft = vim.bo.filetype
 
+    -- safe check
+    if not compilers[ft] then
+        return
+    end
+
     if vim.env[env[ft]] and executable(vim.env[env[ft]]) then
         return vim.env[env[ft]]
     end
@@ -251,122 +256,150 @@ end
 
 function M.setup()
     local compiler = get_compiler()
+    if not compiler then
+        return
+    end
+
     local bufnum = nvim.get_current_buf()
     local bufname = nvim.buf.get_name(bufnum)
-    local cwd = is_file(bufname) and require('utils.files').basedir(bufname)
-        or require('utils.files').getcwd()
+    local cwd
+    if bufname and bufname ~= '' and is_file(bufnum) then
+        cwd = require('utils.files').basedir(bufname)
+    else
+        cwd = require('utils.files').getcwd()
+    end
     local normalize_path = require('utils.files').normalize_path
 
-    if compiler then
-        local flags_file = vim.fn.findfile('compile_flags.txt', cwd .. ';')
-        local db_file = vim.fn.findfile('compile_commands.json', cwd .. ';')
-        local clang_tidy = vim.fn.findfile('.clang-tidy', cwd .. ';')
+    local flags_file = vim.fn.findfile('compile_flags.txt', cwd .. ';')
+    local db_file = vim.fn.findfile('compile_commands.json', cwd .. ';')
+    local clang_tidy = vim.fn.findfile('.clang-tidy', cwd .. ';')
 
-        -- local makefile = vim.fn.findfile('Makefile', cwd..';')
-        local cmake = vim.fn.findfile('CMakeLists.txt', cwd .. ';')
+    -- local makefile = vim.fn.findfile('Makefile', cwd..';')
+    local cmake = vim.fn.findfile('CMakeLists.txt', cwd .. ';')
 
-        if executable 'make' then
-            RELOAD('filetypes.make').setup()
-        end
+    if executable 'make' then
+        RELOAD('filetypes.make').setup()
+    end
 
-        if cmake ~= '' and executable 'cmake' then
-            RELOAD('filetypes.cmake').setup()
-        end
+    if cmake ~= '' and executable 'cmake' then
+        RELOAD('filetypes.cmake').setup()
+    end
 
-        local has_tidy = false
-        if executable 'clang-tidy' and (flags_file ~= '' or db_file ~= '' or clang_tidy ~= '') then
-            has_tidy = true
-            vim.bo.makeprg = 'clang-tidy %'
-            vim.bo.errorformat = '%E%f:%l:%c: fatal error: %m,%E%f:%l:%c: error: %m,%W%f:%l:%c: warning: %m'
-        end
-        local filename
-        if db_file ~= '' then
-            filename = realpath(normalize_path(db_file))
-            if is_file(bufname) and not databases[realpath(bufname)] then
-                -- bufname = realpath(bufname)
-                readfile(db_file, false, function(data)
-                    if has_cjson == true then
+    local has_tidy = false
+    if executable 'clang-tidy' and (flags_file ~= '' or db_file ~= '' or clang_tidy ~= '') then
+        has_tidy = true
+        vim.bo.makeprg = 'clang-tidy %'
+        vim.bo.errorformat = '%E%f:%l:%c: fatal error: %m,%E%f:%l:%c: error: %m,%W%f:%l:%c: warning: %m'
+    end
+    local filename
+    if db_file ~= '' then
+        filename = realpath(normalize_path(db_file))
+        if is_file(bufname) and not databases[realpath(bufname)] then
+            -- bufname = realpath(bufname)
+            readfile(db_file, false, function(data)
+                if has_cjson == true then
+                    parse_compiledb(data)
+                    vim.schedule(function()
+                        set_opts(filename, has_tidy, compiler, bufnum)
+                    end)
+                else
+                    vim.schedule(function()
                         parse_compiledb(data)
-                        vim.schedule(function()
-                            set_opts(filename, has_tidy, compiler, bufnum)
-                        end)
-                    else
-                        vim.schedule(function()
-                            parse_compiledb(data)
-                            set_opts(filename, has_tidy, compiler, bufnum)
-                        end)
-                    end
-                end)
-            else
-                set_opts(filename, has_tidy, compiler, bufnum)
-            end
-        elseif flags_file ~= '' then
-            filename = realpath(normalize_path(flags_file))
-            if not compile_flags[filename] then
-                readfile(filename, true, function(data)
-                    if data and #data > 0 then
-                        compile_flags[filename] = {
-                            flags = {},
-                            includes = {},
-                        }
-                        for _, line in pairs(data) do
-                            if line:sub(1, 1) == '-' or line:sub(1, 1) == '/' then
-                                table.insert(compile_flags[filename].flags, line)
-                            end
-                            if line:sub(1, 2) == '-I' or line:sub(1, 2) == '/I' then
-                                local path = line:sub(3, #line):gsub('^%s+', '')
-                                table.insert(compile_flags[filename].includes, path)
-                            end
-                        end
-                        vim.schedule(function()
-                            set_opts(filename, has_tidy, compiler, bufnum)
-                        end)
-                    end
-                end)
-            else
-                set_opts(filename, has_tidy, compiler, bufnum)
-            end
-        elseif not has_tidy then
-            -- NOTE: We need to call this multiple times since readfile can be async
-            set_opts(nil, has_tidy, compiler, bufnum)
+                        set_opts(filename, has_tidy, compiler, bufnum)
+                    end)
+                end
+            end)
+        else
+            set_opts(filename, has_tidy, compiler, bufnum)
         end
-
-        -- BUG: This only build once, giving linking errors in further calls, needs debug
-        set_command {
-            lhs = 'BuildProject',
-            rhs = function(...)
-                local buffer = nvim.buf.get_name(nvim.get_current_buf())
-                local base_cwd = require('utils.files').getcwd()
-                local ft = vim.bo.filetype
-
-                if not is_file(buffer) then
-                    vim.notify('Current buffer is not a file', 'ERROR', { title = 'Execute' })
-                    return false
-                end
-
-                local compile_output = base_cwd .. '/build/main'
-                local args, compiler_flags_file
-
-                if flags_file ~= '' then
-                    compiler_flags_file = realpath(normalize_path(flags_file))
-                end
-
-                args = get_args(compiler, nvim.get_current_buf(), compiler_flags_file)
-                vim.list_extend(args, { '-o', compile_output })
-
-                require('utils.files').find_files(base_cwd, '*.' .. ft, function(job)
-                    vim.list_extend(args, job:output())
-
-                    if not require('utils.files').is_dir 'build' then
-                        require('utils.files').mkdir 'build'
+    elseif flags_file ~= '' then
+        filename = realpath(normalize_path(flags_file))
+        if not compile_flags[filename] then
+            readfile(filename, true, function(data)
+                if data and #data > 0 then
+                    compile_flags[filename] = {
+                        flags = {},
+                        includes = {},
+                    }
+                    for _, line in pairs(data) do
+                        if line:sub(1, 1) == '-' or line:sub(1, 1) == '/' then
+                            table.insert(compile_flags[filename].flags, line)
+                        end
+                        if line:sub(1, 2) == '-I' or line:sub(1, 2) == '/I' then
+                            local path = line:sub(3, #line):gsub('^%s+', '')
+                            table.insert(compile_flags[filename].includes, path)
+                        end
                     end
+                    vim.schedule(function()
+                        set_opts(filename, has_tidy, compiler, bufnum)
+                    end)
+                end
+            end)
+        else
+            set_opts(filename, has_tidy, compiler, bufnum)
+        end
+    elseif not has_tidy then
+        -- NOTE: We need to call this multiple times since readfile can be async
+        set_opts(nil, has_tidy, compiler, bufnum)
+    end
 
-                    P(('%s %s'):format(compiler, table.concat(args, ' ')))
+    -- BUG: This only build once, giving linking errors in further calls, needs debug
+    set_command {
+        lhs = 'BuildProject',
+        rhs = function(...)
+            local buffer = nvim.buf.get_name(nvim.get_current_buf())
+            local base_cwd = require('utils.files').getcwd()
+            local ft = vim.bo.filetype
 
-                    local build = RELOAD('jobs'):new {
-                        cmd = compiler,
-                        args = args,
+            if not is_file(buffer) then
+                vim.notify('Current buffer is not a file', 'ERROR', { title = 'Execute' })
+                return false
+            end
+
+            local compile_output = base_cwd .. '/build/main'
+            local args, compiler_flags_file
+
+            if flags_file ~= '' then
+                compiler_flags_file = realpath(normalize_path(flags_file))
+            end
+
+            args = get_args(compiler, nvim.get_current_buf(), compiler_flags_file)
+            vim.list_extend(args, { '-o', compile_output })
+
+            require('utils.files').find_files(base_cwd, '*.' .. ft, function(job)
+                vim.list_extend(args, job:output())
+
+                if not require('utils.files').is_dir 'build' then
+                    require('utils.files').mkdir 'build'
+                end
+
+                P(('%s %s'):format(compiler, table.concat(args, ' ')))
+
+                local build = RELOAD('jobs'):new {
+                    cmd = compiler,
+                    args = args,
+                    progress = true,
+                    opts = {
+                        cwd = require('utils.files').getcwd(),
+                        -- pty = true,
+                    },
+                    qf = {
+                        dump = false,
+                        on_fail = {
+                            jump = true,
+                            open = true,
+                            dump = true,
+                        },
+                        context = 'BuildProject',
+                        title = 'BuildProject',
+                    },
+                }
+
+                build:callback_on_success(function(_)
+                    local execute = RELOAD('jobs'):new {
+                        cmd = compile_output,
                         progress = true,
+                        verify_exec = false,
                         opts = {
                             cwd = require('utils.files').getcwd(),
                             -- pty = true,
@@ -378,42 +411,20 @@ function M.setup()
                                 open = true,
                                 dump = true,
                             },
-                            context = 'BuildProject',
-                            title = 'BuildProject',
+                            context = 'ExecuteProject',
+                            title = 'ExecuteProject',
                         },
                     }
-
-                    build:callback_on_success(function(_)
-                        local execute = RELOAD('jobs'):new {
-                            cmd = compile_output,
-                            progress = true,
-                            verify_exec = false,
-                            opts = {
-                                cwd = require('utils.files').getcwd(),
-                                -- pty = true,
-                            },
-                            qf = {
-                                dump = false,
-                                on_fail = {
-                                    jump = true,
-                                    open = true,
-                                    dump = true,
-                                },
-                                context = 'ExecuteProject',
-                                title = 'ExecuteProject',
-                            },
-                        }
-                        execute:start()
-                        execute:progress()
-                    end)
-
-                    build:start()
-                    build:progress()
+                    execute:start()
+                    execute:progress()
                 end)
-            end,
-            args = { nargs = '*', force = true, buffer = true },
-        }
-    end
+
+                build:start()
+                build:progress()
+            end)
+        end,
+        args = { nargs = '*', force = true, buffer = true },
+    }
 end
 
 return M
