@@ -112,6 +112,7 @@ packer.startup(function()
 
     use {
         'tpope/vim-projectionist',
+        event = 'CmdlineEnter',
         config = function()
             local set_autocmd = require('neovim.autocmds').set_autocmd
             -- TODO: Make this more "project" tailored, set git and language specific
@@ -160,11 +161,13 @@ packer.startup(function()
     --     wants = { 'plenary.nvim', 'diffview.nvim' },
     -- }
 
-    use { 'tpope/vim-fugitive' }
+    use { 'tpope/vim-fugitive', event = { 'CmdlineEnter', 'CursorHold' } }
     use { 'junegunn/gv.vim', cmd = 'GV', wants = 'vim-fugitive' }
 
     use {
         'sindrets/diffview.nvim',
+        event = 'CmdlineEnter',
+        cmd = { 'DiffviewToggle', 'DiffviewFileHistory' },
         cond = function()
             return vim.env.VIM_MIN == nil and vim.g.minimal == nil
         end,
@@ -206,6 +209,7 @@ packer.startup(function()
 
     use {
         'lewis6991/gitsigns.nvim',
+        event = { 'CursorHold', 'CursorHoldI' },
         cond = function()
             return vim.env.VIM_MIN == nil and vim.g.minimal == nil
         end,
@@ -307,7 +311,7 @@ packer.startup(function()
 
     use {
         'Yggdroot/indentLine',
-        event = 'VimEnter',
+        event = { 'VimEnter' },
         cond = function()
             return vim.env.VIM_MIN == nil and vim.g.minimal == nil
         end,
@@ -390,6 +394,8 @@ packer.startup(function()
 
     use {
         'folke/trouble.nvim',
+        event = { 'CmdlineEnter', 'CursorHold' },
+        cmd = { 'Trouble' },
         cond = function()
             return vim.env.VIM_MIN == nil and vim.g.minimal == nil
         end,
@@ -398,18 +404,18 @@ packer.startup(function()
         end,
     }
 
-    use {
-        'folke/todo-comments.nvim',
-        cond = function()
-            local no_min = vim.env.VIM_MIN == nil and vim.g.minimal == nil
-            local has_rg = vim.fn.executable 'rg' == 1
-            return no_min and has_rg
-        end,
-        config = function()
-            require 'plugins.todos'
-        end,
-        wants = 'trouble.nvim',
-    }
+    -- use {
+    --     'folke/todo-comments.nvim',
+    --     cond = function()
+    --         local no_min = vim.env.VIM_MIN == nil and vim.g.minimal == nil
+    --         local has_rg = vim.fn.executable 'rg' == 1
+    --         return no_min and has_rg
+    --     end,
+    --     config = function()
+    --         require 'plugins.todos'
+    --     end,
+    --     wants = 'trouble.nvim',
+    -- }
 
     use {
         'vim-airline/vim-airline',
@@ -585,6 +591,8 @@ packer.startup(function()
 
     use {
         'mfussenegger/nvim-dap',
+        event = { 'CursorHold', 'CmdlineEnter' },
+        cmd = { 'DapStart', 'DapContinue' },
         cond = function()
             return vim.env.VIM_MIN == nil and vim.g.minimal == nil
         end,
