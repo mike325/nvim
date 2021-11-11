@@ -1094,6 +1094,8 @@ if executable 'pre-commit' then
                 '%f: %trror: %m',
                 '%f: %tarning: %m',
                 '%f: %tote: %m',
+                '%f: Failed to json decode (%m: line %l column %c (char %*\\\\d))',
+                '%f: Failed to json decode (%m)',
                 '%E%f:%l:%c: fatal error: %m',
                 '%E%f:%l:%c: error: %m',
                 '%W%f:%l:%c: warning: %m',
