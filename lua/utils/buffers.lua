@@ -218,58 +218,6 @@ function M.indent(lines, level)
     return tmp_lines
 end
 
--- luacheck: ignore 631
--- Took from: https://github.com/folke/todo-comments.nvim/blob/9983edc5ef38c7a035c17c85f60ee13dbd75dcc8/lua/todo-comments/highlight.lua#L43,#L71
--- This method returns nil if this buf doesn't have a treesitter parser
--- @return true or false otherwise
-function M.is_node(line, node, buf)
-    vim.validate {
-        buf = { buf, 'number', true },
-        line = { line, 'number' },
-        node = {
-            node,
-            function(n)
-                return not n or type(n) == type '' or vim.tbl_islist(n)
-            end,
-            'should be a string or an array',
-        },
-    }
-    buf = buf or vim.api.nvim_get_current_buf()
-    node = node or { 'comment' }
-
-    if not vim.tbl_islist(node) then
-        node = { node }
-    end
-
-    local highlighter = require 'vim.treesitter.highlighter'
-    local hl = highlighter.active[buf]
-
-    if not hl then
-        return
-    end
-
-    local found_node = false
-    hl.tree:for_each_tree(function(tree, lang_tree)
-        if found_node then
-            return
-        end
-
-        local query = hl:get_query(lang_tree:lang())
-        if not (query and query:query()) then
-            return
-        end
-
-        local iter = query:query():iter_captures(tree:root(), buf, line, line + 1)
-
-        for capture, _ in iter do
-            if vim.tbl_contains(node, query._query.captures[capture]) then
-                found_node = true
-            end
-        end
-    end)
-    return found_node
-end
-
 -- TODO: Make this function async, maybe using readfile
 -- TODO: Respect indent format from editorconfig and other files
 -- TODO: Cache indent settings using SQLite?
@@ -292,12 +240,25 @@ function M.detect_indent(buf)
     }
 
     local ft = vim.api.nvim_buf_get_option(buf, 'filetype')
+    local buftype = vim.api.nvim_buf_get_option(buf, 'buftype')
     local ok, indent_set = pcall(vim.api.nvim_buf_get_var, buf, 'indent_set')
     indent_set = ok and indent_set or false
 
-    if ignore_fts[ft] or indent_set then
+    if ignore_fts[ft] or indent_set or buftype ~= '' then
         return
     end
+
+    -- -- Respect modaline
+    -- if vim.api.nvim_buf_get_option(buf, 'modeline') then
+    --     local last_line = vim.api.nvim_buf_get_lines(buf, -2, -1, false)[1]
+    --     if last_line and last_line:match '^%s*vim:' then
+    --         for _, val in ipairs(vim.split(last_line, ':')) do
+    --             if val:match 'ts%=%d+' or val:match 'tabstop%=%d+' then
+    --                 return
+    --             end
+    --         end
+    --     end
+    -- end
 
     local indent = vim.api.nvim_buf_get_option(buf, 'tabstop')
     local expandtab = vim.api.nvim_buf_get_option(buf, 'expandtab')
@@ -309,25 +270,30 @@ function M.detect_indent(buf)
     }
 
     local line_idx = 0
+    local is_node = require('utils.treesitter').is_node
+
     -- BUG: This hangs neovim's startup, seems to be a race condition, tested in windows 10
-    -- local last_line = vim.api.nvim_buf_line_count(buf)
-    local last_line = vim.fn.line '$'
+    -- local line_count = vim.api.nvim_buf_line_count(buf)
+    local line_count = vim.fn.line '$'
     while true do
         local line = vim.api.nvim_buf_get_lines(buf, line_idx, line_idx + 1, true)[1]
         if line and #line > 0 and not line:match '^%s*$' then
-            -- Use TS to avoid multiline strings and comments
-            if
-                bypass_ft[ft] or (not M.is_node(line_idx, 'string') and not M.is_node(line_idx, 'comment'))
-            then
-                local indent_str = line:match '^(%s+)[^%s]+'
-                if indent_str then
+            local indent_str = line:match '^(%s+)[^%s]+'
+            if indent_str then
+                -- Use TS to avoid multiline strings and comments
+                if
+                    bypass_ft[ft]
+                    or not is_node(
+                        { line_idx, 1, line_idx + 1, #line },
+                        { 'string', 'comment', 'block_quote' }
+                    )
+                then
                     -- NOTE: we may need to confirm tab indent with more than 1 line and avoid mix indent
                     if indent_str:match '^\t+$' then
                         expandtab = false
                         break
                         -- TODO: this accepts indent == 6
                     elseif indent_str:match '^ +$' and #indent_str % 2 == 0 and #indent_str < 9 then
-                        -- vim.notify('Setting stuff using indent in line for not TS: '..line_idx)
                         indent = #indent_str
                         expandtab = true
                         break
@@ -336,7 +302,7 @@ function M.detect_indent(buf)
             end
         end
         line_idx = line_idx + 1
-        if line_idx == last_line then
+        if line_idx == line_count then
             break
         end
     end

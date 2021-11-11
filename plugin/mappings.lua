@@ -930,15 +930,6 @@ if executable 'scp' then
     local function get_host(host)
         if not host or host == '' then
             host = vim.fn.input('Enter hostname > ', '', 'customlist,neovim#ssh_hosts_completion')
-            vim.validate {
-                host = {
-                    host,
-                    function(h)
-                        return type(h) == type '' and h ~= ''
-                    end,
-                    'hostname',
-                },
-            }
         end
         return host
     end
@@ -947,6 +938,9 @@ if executable 'scp' then
         lhs = 'SendFile',
         rhs = function(host)
             host = get_host(host)
+            if not host or host == '' then
+                return
+            end
             local cmd = remote_cmd(host, true)
             local send_file = RELOAD('jobs'):new {
                 cmd = cmd,
@@ -967,6 +961,9 @@ if executable 'scp' then
         lhs = 'GetFile',
         rhs = function(host)
             host = get_host(host)
+            if not host or host == '' then
+                return
+            end
             local cmd = remote_cmd(host, false)
             local Job = RELOAD 'jobs'
             local get_file = Job:new {

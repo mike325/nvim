@@ -263,7 +263,7 @@ function M.setup()
     local bufnum = nvim.get_current_buf()
     local bufname = nvim.buf.get_name(bufnum)
     local cwd
-    if bufname and bufname ~= '' and is_file(bufnum) then
+    if bufname and bufname ~= '' and is_file(bufname) then
         cwd = require('utils.files').basedir(bufname)
     else
         cwd = require('utils.files').getcwd()
