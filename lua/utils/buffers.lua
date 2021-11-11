@@ -260,33 +260,29 @@ function M.detect_indent(buf)
     --     end
     -- end
 
-    local indent = vim.api.nvim_buf_get_option(buf, 'tabstop')
-    local expandtab = vim.api.nvim_buf_get_option(buf, 'expandtab')
-
     -- NOTE: JSON/Yaml can be detected as mostly string nodes, so we bypass this that check
     local bypass_ft = {
         json = true,
         yaml = true,
     }
 
-    local line_idx = 0
+    local indent = vim.api.nvim_buf_get_option(buf, 'tabstop')
+    local expandtab = vim.api.nvim_buf_get_option(buf, 'expandtab')
     local is_node = require('utils.treesitter').is_node
 
     -- BUG: This hangs neovim's startup, seems to be a race condition, tested in windows 10
     -- local line_count = vim.api.nvim_buf_line_count(buf)
     local line_count = vim.fn.line '$'
-    while true do
-        local line = vim.api.nvim_buf_get_lines(buf, line_idx, line_idx + 1, true)[1]
+    local lines = vim.api.nvim_buf_get_lines(buf, 0, line_count < 1024 and line_count or 1024, true)
+    for idx, line in ipairs(lines) do
         if line and #line > 0 and not line:match '^%s*$' then
             local indent_str = line:match '^(%s+)[^%s]+'
             if indent_str then
                 -- Use TS to avoid multiline strings and comments
+                -- We may need to fallback to lua pattern matching if TS is not available
                 if
                     bypass_ft[ft]
-                    or not is_node(
-                        { line_idx, 1, line_idx + 1, #line },
-                        { 'string', 'comment', 'block_quote' }
-                    )
+                    or not is_node({ idx, 1, idx + 1, #line }, { 'string', 'comment', 'block_quote' })
                 then
                     -- NOTE: we may need to confirm tab indent with more than 1 line and avoid mix indent
                     if indent_str:match '^\t+$' then
@@ -300,10 +296,6 @@ function M.detect_indent(buf)
                     end
                 end
             end
-        end
-        line_idx = line_idx + 1
-        if line_idx == line_count then
-            break
         end
     end
 
