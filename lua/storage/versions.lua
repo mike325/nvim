@@ -153,9 +153,10 @@ function M.setup()
     local tbl_exists = require('storage.utils').tbl_exists 'versions'
     if not tbl_exists then
         create_tbl('versions', { name = { 'text', 'primary', 'key' }, version = { 'text' } })
-        for _, prg in pairs { 'git', 'python3' } do
-            async_insert_version(prg)
-        end
+        -- BUG: This creates a race condition and throw startup errors when sqlite is missing
+        -- for _, prg in pairs { 'git', 'python3' } do
+        --     async_insert_version(prg)
+        -- end
     end
 end
 

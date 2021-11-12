@@ -7,6 +7,7 @@ end
 local M = {}
 
 -- TODO: Add support to pass db objects
+-- TODO: Add support for persistent db using json
 function M.insert_row(tbl_name, data, db_path)
     vim.validate {
         tbl_name = { tbl_name, 'string' },

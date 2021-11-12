@@ -23,7 +23,7 @@ packer.init {
 
 packer.startup(function()
     -- BUG: Seems like luarocks is not supported in windows
-    if vim.fn.has 'win32' == 0 and has_compiler then
+    if has_compiler then
         use_rocks { 'luacheck', 'lua-cjson', 'md5' }
     end
 
@@ -48,8 +48,13 @@ packer.startup(function()
         module = 'sqlite',
         cond = function()
             local os = jit.os:lower()
+            -- TODO: search for dll in windows, so in linux and dlib
             if os == 'windows' then
-                -- TODO: search for dll
+                local sqlite_path = (vim.fn.stdpath 'cache' .. '/sqlite3.dll'):gsub('\\', '/')
+                if vim.fn.filereadable(sqlite_path) == 1 then
+                    vim.g.sqlite_clib_path = sqlite_path
+                    return true
+                end
                 return false
             end
             return vim.fn.executable 'sqlite3' == 1
