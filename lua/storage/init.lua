@@ -1,7 +1,8 @@
 -- local _, sqlite = pcall(require, 'sqlite')
+local sys = require 'sys'
 
 if not STORAGE.db_path then
-    STORAGE.db_path = ('%s/aztlan.db'):format(vim.fn.stdpath('data'):gsub('\\', '/'))
+    STORAGE.db_path = sys.db_root .. '/aztlan.db'
 end
 
 require('storage.versions').setup()

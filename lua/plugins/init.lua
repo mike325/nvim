@@ -47,17 +47,7 @@ packer.startup(function()
         'tami5/sqlite.lua',
         module = 'sqlite',
         cond = function()
-            local os = jit.os:lower()
-            -- TODO: search for dll in windows, so in linux and dlib
-            if os == 'windows' then
-                local sqlite_path = (vim.fn.stdpath 'cache' .. '/sqlite3.dll'):gsub('\\', '/')
-                if vim.fn.filereadable(sqlite_path) == 1 then
-                    vim.g.sqlite_clib_path = sqlite_path
-                    return true
-                end
-                return false
-            end
-            return vim.fn.executable 'sqlite3' == 1
+            return require('sys').has_sqlite
         end,
     }
 
@@ -117,7 +107,7 @@ packer.startup(function()
 
     use {
         'tpope/vim-projectionist',
-        event = 'CmdlineEnter',
+        event = { 'CmdlineEnter', 'CursorHold' },
         config = function()
             local set_autocmd = require('neovim.autocmds').set_autocmd
             -- TODO: Make this more "project" tailored, set git and language specific
@@ -157,14 +147,6 @@ packer.startup(function()
             }
         end,
     }
-
-    -- use {
-    --     'TimUntersberger/neogit',
-    --     config = function()
-    --         require 'plugins.neogit'
-    --     end,
-    --     wants = { 'plenary.nvim', 'diffview.nvim' },
-    -- }
 
     use { 'tpope/vim-fugitive', event = { 'CmdlineEnter', 'CursorHold' } }
     use { 'junegunn/gv.vim', cmd = 'GV', wants = 'vim-fugitive' }
@@ -209,8 +191,6 @@ packer.startup(function()
             vim.api.nvim_set_keymap('n', '=m', '<Plug>(git-messenger)', { silent = true, nowait = true })
         end,
     }
-
-    -- use {'rhysd/committia.vim'}
 
     use {
         'lewis6991/gitsigns.nvim',
@@ -366,17 +346,6 @@ packer.startup(function()
         end,
     }
 
-    -- use {
-    --     'ludovicchabant/vim-gutentags',
-    --     cond = function()
-    --         local executable = function(exe) return vim.fn.executable(exe) == 1 end
-    --         local min = vim.env.VIM_MIN ~= nil or vim.g.minimal ~= nil
-    --         local is_firenvim = vim.g.started_by_firenvim
-    --         return not min and not is_firenvim and (executable('ctags') or executable('cscope'))
-    --     end,
-    --     config = function() require'plugins.gutentags' end,
-    -- }
-
     use {
         'kana/vim-textobj-user',
         requires = {
@@ -409,19 +378,6 @@ packer.startup(function()
         end,
     }
 
-    -- use {
-    --     'folke/todo-comments.nvim',
-    --     cond = function()
-    --         local no_min = vim.env.VIM_MIN == nil and vim.g.minimal == nil
-    --         local has_rg = vim.fn.executable 'rg' == 1
-    --         return no_min and has_rg
-    --     end,
-    --     config = function()
-    --         require 'plugins.todos'
-    --     end,
-    --     wants = 'trouble.nvim',
-    -- }
-
     use {
         'vim-airline/vim-airline',
         cond = function()
@@ -440,46 +396,6 @@ packer.startup(function()
         },
         after = 'firenvim',
     }
-
-    -- use {
-    --     'vimwiki/vimwiki',
-    --     setup = function()
-    --         local general_wiki = {
-    --             auto_tags = 1,
-    --             syntax = 'markdown',
-    --             ext = '.md',
-    --             nested_syntaxes = {
-    --                 python  = 'python',
-    --                 lua     = 'lua',
-    --                 ['c++'] = 'cpp',
-    --                 sh      = 'sh',
-    --                 bash    = 'sh' ,
-    --             },
-    --
-    --         }
-    --
-    --         local personal_wiki = { path = '~/notes/', }
-    --         local work_wiki = { path = '~/vimwiki/', }
-    --
-    --         vim.g.vimwiki_table_mappings = 0
-    --         vim.g.vimwiki_list = {
-    --             vim.tbl_extend('force', personal_wiki, general_wiki),
-    --             vim.tbl_extend('force', work_wiki, general_wiki),
-    --         }
-    --         vim.g.vimwiki_ext2syntax = {
-    --             ['.md']   = 'markdown',
-    --             ['.mkd']  = 'markdown',
-    --             ['.wiki'] = 'media'
-    --         }
-    --     end,
-    --     -- config = function()
-    --     --     vim.cmd [[nmap gww <Plug>VimwikiIndex]]
-    --     --     vim.cmd [[nmap gwt <Plug>VimwikiTabIndex]]
-    --     --     vim.cmd [[nmap gwd <Plug>VimwikiDiaryIndex]]
-    --     --     vim.cmd [[nmap gwn <Plug>VimwikiMakeDiaryNote]]
-    --     --     vim.cmd [[nmap gwu <Plug>VimwikiUISelect]]
-    --     -- end,
-    -- }
 
     use {
         'neomake/neomake',
@@ -642,40 +558,6 @@ packer.startup(function()
     --     wants = 'nvim-dap'
     -- }
 
-    -- use {
-    --     'nvim-telescope/telescope-smart-history.nvim',
-    --     cond = function()
-    --         local os = jit.os:lower()
-    --         if os == 'windows' then
-    --             -- TODO: search for dll
-    --             return false
-    --         end
-    --         return vim.fn.executable 'sqlite3' == 1
-    --     end,
-    --     module = 'telescope',
-    --     config = function()
-    --         require('telescope').load_extension 'smart_history'
-    --     end,
-    --     wants = { 'sqlite.lua' },
-    -- }
-
-    -- use {
-    --     'nvim-telescope/telescope-frecency.nvim',
-    --     cond = function()
-    --         local os = jit.os:lower()
-    --         if os == 'windows' then
-    --             -- TODO: search for dll
-    --             return false
-    --         end
-    --         return vim.fn.executable 'sqlite3' == 1
-    --     end,
-    --     module = 'telescope',
-    --     config = function()
-    --         require('telescope').load_extension 'frecency'
-    --     end,
-    --     wants = { 'sqlite.lua' },
-    -- }
-
     use {
         'nvim-telescope/telescope.nvim',
         config = function()
@@ -687,15 +569,29 @@ packer.startup(function()
         },
     }
 
-    -- local lsp_navigator = {'glepnir/lspsaga.nvim'}
-    -- if has_compiler and has_make then
-    --     lsp_navigator = {
-    --         'ray-x/navigator.lua',
-    --         requires = {'ray-x/guihua.lua', run = 'cd lua/fzy && make'},
-    --         config = function()
-    --         end,
-    --     }
-    -- end
+    -- use {
+    --     'nvim-telescope/telescope-smart-history.nvim',
+    --     cond = function()
+    --         return require('sys').has_sqlite
+    --     end,
+    --     module = 'telescope',
+    --     config = function()
+    --         require('telescope').load_extension 'smart_history'
+    --     end,
+    --     wants = { 'sqlite.lua', 'telescope.nvim' },
+    -- }
+
+    -- use {
+    --     'nvim-telescope/telescope-frecency.nvim',
+    --     cond = function()
+    --         return require('sys').has_sqlite
+    --     end,
+    --     module = 'telescope',
+    --     config = function()
+    --         require('telescope').load_extension 'frecency'
+    --     end,
+    --     wants = { 'sqlite.lua', 'telescope.nvim' },
+    -- }
 
     use { 'folke/lsp-colors.nvim' }
     use {
@@ -768,28 +664,6 @@ packer.startup(function()
     --         }
     --     end,
     --     after = 'nvim-treesitter',
-    -- }
-
-    -- use {
-    --     'segeljakt/vim-silicon',
-    --     cond = function() return vim.fn.executable('silicon') == 1 end,
-    --     setup = function()
-    --         vim.g.silicon = {
-    --             theme                  = 'Dracula',
-    --             font                   = 'Hack',
-    --             background             = '#000000',
-    --             ['shadow-color']       = '#555555',
-    --             ['line-pad']           = 2,
-    --             ['pad-horiz']          = 80,
-    --             ['pad-vert']           = 100,
-    --             ['shadow-blur-radius'] = 0,
-    --             ['shadow-offset-x']    = 0,
-    --             ['shadow-offset-y']    = 0,
-    --             ['line-number']        = true,
-    --             ['round-corner']       = true,
-    --             ['window-controls']    = true,
-    --         }
-    --     end,
     -- }
 end)
 

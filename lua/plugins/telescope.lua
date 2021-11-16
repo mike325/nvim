@@ -14,26 +14,38 @@ end
 
 local plugins = require('neovim').plugins
 
+local noremap = { noremap = true, silent = true }
+
 -- local lsp_langs = require'plugins.lsp'
 local ts_langs = require 'plugins.treesitter'
 local actions = require 'telescope.actions'
-local has_sqlite, _ = pcall(require, 'sqlite')
+local has_sqlite = sys.has_sqlite
 local extensions = {}
 local history
 if has_sqlite then
-    extensions.frecency = {
-        -- disable_devicons = false,
-        db_root = sys.data,
-        workspaces = {
-            ['nvim'] = sys.base,
-            ['dotfiles'] = sys.home .. '/dotfiles/',
-        },
-    }
+    if plugins['telescope-smart-history.nvim'] then
+        history = {
+            path = sys.db_root .. '/telescope_history.sqlite3',
+            limit = 100,
+        }
+    end
 
-    history = {
-        path = sys.data .. '/telescope_history.sqlite3',
-        limit = 100,
-    }
+    if plugins['telescope-frecency.nvim'] then
+        extensions.frecency = {
+            -- disable_devicons = false,
+            db_root = sys.db_root,
+            workspaces = {
+                ['nvim'] = sys.base,
+                ['dotfiles'] = sys.home .. '/dotfiles/',
+            },
+        }
+        set_mapping {
+            mode = 'n',
+            lhs = '<leader>x',
+            rhs = [[<cmd>lua require('telescope').extensions.frecency.frecency()<CR>]],
+            args = noremap,
+        }
+    end
 end
 
 telescope.setup {
@@ -99,8 +111,6 @@ telescope.setup {
 -- builtin.git_bcommits
 -- builtin.git_branches
 -- builtin.git_status
-
-local noremap = { noremap = true, silent = true }
 
 set_command {
     lhs = 'LuaReloaded',
@@ -226,15 +236,6 @@ if ts_langs then
         pattern = ts_langs,
         cmd = [[command! -buffer TSSymbols lua require'telescope.builtin'.treesitter{}]],
         group = 'TreesitterAutocmds',
-    }
-end
-
-if has_sqlite and plugins['telescope-frecency.nvim'] then
-    set_mapping {
-        mode = 'n',
-        lhs = '<leader>x',
-        rhs = [[<cmd>lua require('telescope').extensions.frecency.frecency()<CR>]],
-        args = noremap,
     }
 end
 
