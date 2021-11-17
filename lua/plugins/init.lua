@@ -637,6 +637,36 @@ packer.startup(function()
         -- after = 'nvim-lspconfig',
     }
 
+    use {
+        'AckslD/nvim-neoclip.lua',
+        config = function()
+            local db_path
+            local has_sqlite = require('sys').has_sqlite
+            if has_sqlite then
+                db_path = require('sys').db_root .. '/neoclip.sqlite3'
+            end
+            require('neoclip').setup {
+                enable_persistant_history = has_sqlite,
+                db_path = db_path,
+                keys = {
+                    i = {
+                        select = '<CR>',
+                        paste = '<A-p>',
+                        paste_behind = '<A-P>',
+                    },
+                    n = {
+                        select = '<CR>',
+                        paste = 'p',
+                        paste_behind = 'P',
+                    },
+                },
+            }
+            -- Since we need to load after telescope, it should be safe to call this here
+            require('telescope').load_extension 'neoclip'
+        end,
+        wants = { 'telescope.nvim', (require('sys').has_sqlite and 'sqlite.lua' or nil) },
+    }
+
     -- -- TODO: Check for python 3.8.5
     -- use {
     --     'ms-jpq/coq_nvim',
