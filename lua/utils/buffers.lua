@@ -260,15 +260,10 @@ function M.detect_indent(buf)
     --     end
     -- end
 
-    -- NOTE: JSON/Yaml can be detected as mostly string nodes, so we bypass this that check
-    local bypass_ft = {
-        json = true,
-        yaml = true,
-    }
-
     local indent = vim.api.nvim_buf_get_option(buf, 'tabstop')
     local expandtab = vim.api.nvim_buf_get_option(buf, 'expandtab')
     local is_node = require('utils.treesitter').is_node
+    local has_ts = require('utils.treesitter').has_ts(buf)
 
     -- BUG: This hangs neovim's startup, seems to be a race condition, tested in windows 10
     -- local line_count = vim.api.nvim_buf_line_count(buf)
@@ -281,8 +276,11 @@ function M.detect_indent(buf)
                 -- Use TS to avoid multiline strings and comments
                 -- We may need to fallback to lua pattern matching if TS is not available
                 if
-                    bypass_ft[ft]
-                    or not is_node({ idx, 1, idx + 1, #line }, { 'string', 'comment', 'block_quote' })
+                    not has_ts
+                    or not is_node(
+                        { idx - 1, #indent_str, idx - 1, #line },
+                        { 'string', 'comment', 'paragraph', 'document' }
+                    )
                 then
                     -- NOTE: we may need to confirm tab indent with more than 1 line and avoid mix indent
                     if indent_str:match '^\t+$' then

@@ -38,32 +38,23 @@ function M.is_node(range, node, buf)
     end
 
     local langtree = parser:language_for_range(range)
-    local query = vim.treesitter.get_query(langtree:lang(), 'highlights')
+    local ts_lang = langtree:lang()
 
     local found_node = false
-    -- TODO: This has poor perfmance (at least on windows), need to find a way to improve it
-    langtree:for_each_tree(function(tree, lang_tree)
-        if found_node then
-            return
-        end
+    local root = langtree:trees()[1]:root()
+    local tnode = root:named_descendant_for_range(unpack(range))
+    -- NOTE: langtree can be "comment" so we do a safe check to avoid "comment" treesitter language
+    if vim.tbl_contains(node, ts_lang) or vim.tbl_contains(node, tnode:type()) then
+        found_node = true
+    end
 
-        local i = 0
-
-        -- _ is id and metadata is not necesary
-        for _, tsnode in query:iter_captures(tree:root(), buf, range[1], range[1] + 1) do
-            -- local name = query.captures[id]
-            local ntype = tsnode:type()
-            if vim.tbl_contains(node, ntype) then
-                found_node = true
-                break
-            end
-            i = i + 1
-            if i == 4 then
-                break
-            end
-        end
-    end)
     return found_node
+end
+
+function M.has_ts(buf)
+    vim.validate { buf = { buf, 'number', true } }
+    local ok, _ = pcall(vim.treesitter.get_parser, buf)
+    return ok
 end
 
 return M
