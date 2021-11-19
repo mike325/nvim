@@ -37,8 +37,14 @@ function M.is_node(range, node, buf)
         return
     end
 
+    local ts_to_ft = {
+        bash = 'sh',
+    }
+
     local langtree = parser:language_for_range(range)
+    -- local buf_lang = vim.api.nvim_buf_get_option(buf, 'filetype')
     local ts_lang = langtree:lang()
+    ts_lang = ts_to_ft[ts_lang] or ts_lang
 
     local found_node = false
     local root = langtree:trees()[1]:root()
@@ -53,6 +59,7 @@ end
 
 function M.has_ts(buf)
     vim.validate { buf = { buf, 'number', true } }
+    buf = buf or vim.api.nvim_get_current_buf()
     local ok, _ = pcall(vim.treesitter.get_parser, buf)
     return ok
 end

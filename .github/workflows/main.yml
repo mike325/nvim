@@ -9,11 +9,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [
-          ubuntu-latest,
-          ubuntu-20.04,
-          ubuntu-18.04,
-        ]
+        os: [ ubuntu-latest, ubuntu-20.04, ubuntu-18.04 ]
 
     env:
       GITHUB: true
@@ -58,9 +54,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [
-          macOS-latest,
-        ]
+        os: [ macOS-latest ]
 
     env:
       GITHUB: true
@@ -99,11 +93,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [
-          windows-latest,
-          windows-2019,
-          windows-2016
-        ]
+        os: [ windows-latest, windows-2019, windows-2016 ]
 
     env:
       GITHUB: true
