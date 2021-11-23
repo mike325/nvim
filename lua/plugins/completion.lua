@@ -29,7 +29,7 @@ if ultisnips then
 elseif vsnip then
     table.insert(sources, { name = 'vsnip' })
 elseif luasnip then
-    table.insert(sources, { name = 'luasnip', opts = { use_show_condition = false } })
+    table.insert(sources, { name = 'luasnip', option = { use_show_condition = false } })
 end
 
 vim.list_extend(sources, { { name = 'buffer' }, { name = 'path' } })
