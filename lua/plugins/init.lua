@@ -76,22 +76,6 @@ packer.startup(function()
     -- use {'tpope/vim-commentary', event = 'VimEnter'}
 
     use {
-        'ojroques/vim-oscyank',
-        event = 'VimEnter',
-        config = function()
-            require 'plugins.oscyank'
-        end,
-    }
-
-    use {
-        'windwp/nvim-autopairs',
-        event = 'InsertEnter',
-        config = function()
-            require 'plugins.pairs'
-        end,
-    }
-
-    use {
         'tpope/vim-surround',
         event = 'VimEnter',
         setup = function()
@@ -150,6 +134,82 @@ packer.startup(function()
 
     use { 'tpope/vim-fugitive', event = { 'CmdlineEnter', 'CursorHold' } }
     use { 'junegunn/gv.vim', cmd = 'GV', wants = 'vim-fugitive' }
+
+    use {
+        'kana/vim-textobj-user',
+        requires = {
+            { 'kana/vim-textobj-line' },
+            { 'kana/vim-textobj-entire' },
+            { 'michaeljsmith/vim-indent-object' },
+            { 'glts/vim-textobj-comment' },
+        },
+    }
+
+    use {
+        'ojroques/vim-oscyank',
+        event = 'VimEnter',
+        config = function()
+            require 'plugins.oscyank'
+        end,
+    }
+
+    use {
+        'windwp/nvim-autopairs',
+        event = 'InsertEnter',
+        config = function()
+            require 'plugins.pairs'
+        end,
+    }
+
+    use {
+        'tommcdo/vim-lion',
+        event = 'VimEnter',
+        cond = function()
+            return vim.env.VIM_MIN == nil and vim.g.minimal == nil
+        end,
+        config = function()
+            vim.g.lion_squeeze_spaces = 1
+        end,
+    }
+
+    use {
+        'tpope/vim-abolish',
+        cond = function()
+            return vim.env.VIM_MIN == nil and vim.g.minimal == nil
+        end,
+        event = { 'InsertEnter', 'CmdwinEnter' },
+        -- TODO: configs
+        -- config = function() require'plugins.abolish' end,
+    }
+
+    use {
+        'Yggdroot/indentLine',
+        event = { 'VimEnter' },
+        cond = function()
+            return vim.env.VIM_MIN == nil and vim.g.minimal == nil
+        end,
+        setup = function()
+            vim.g.indentLine_fileTypeExclude = {
+                'Telescope',
+                'TelescopePrompt',
+                'TelescopeResults',
+                'log',
+                'help',
+                'packer',
+            }
+
+            vim.g.indentLine_bufTypeExclude = {
+                'terminal',
+                'man',
+                'nofile',
+            }
+
+            vim.g.indentLine_bufNameExclude = {
+                'term://.*',
+                'man://.*',
+            }
+        end,
+    }
 
     use {
         'sindrets/diffview.nvim',
@@ -266,64 +326,6 @@ packer.startup(function()
     }
 
     use {
-        'tommcdo/vim-lion',
-        event = 'VimEnter',
-        cond = function()
-            return vim.env.VIM_MIN == nil and vim.g.minimal == nil
-        end,
-        config = function()
-            vim.g.lion_squeeze_spaces = 1
-        end,
-    }
-
-    use {
-        'tpope/vim-abolish',
-        cond = function()
-            return vim.env.VIM_MIN == nil and vim.g.minimal == nil
-        end,
-        event = { 'InsertEnter', 'CmdwinEnter' },
-        -- TODO: configs
-        -- config = function() require'plugins.abolish' end,
-    }
-
-    use {
-        'tpope/vim-markdown',
-        ft = 'markdown',
-        cond = function()
-            return vim.env.VIM_MIN == nil and vim.g.minimal == nil
-        end,
-    }
-
-    use {
-        'Yggdroot/indentLine',
-        event = { 'VimEnter' },
-        cond = function()
-            return vim.env.VIM_MIN == nil and vim.g.minimal == nil
-        end,
-        setup = function()
-            vim.g.indentLine_fileTypeExclude = {
-                'Telescope',
-                'TelescopePrompt',
-                'TelescopeResults',
-                'log',
-                'help',
-                'packer',
-            }
-
-            vim.g.indentLine_bufTypeExclude = {
-                'terminal',
-                'man',
-                'nofile',
-            }
-
-            vim.g.indentLine_bufNameExclude = {
-                'term://.*',
-                'man://.*',
-            }
-        end,
-    }
-
-    use {
         'glacambre/firenvim',
         cond = function()
             local ssh = vim.env.SSH_CONNECTION or false
@@ -344,16 +346,6 @@ packer.startup(function()
         run = function()
             vim.fn['firenvim#install'](0)
         end,
-    }
-
-    use {
-        'kana/vim-textobj-user',
-        requires = {
-            { 'kana/vim-textobj-line' },
-            { 'kana/vim-textobj-entire' },
-            { 'michaeljsmith/vim-indent-object' },
-            { 'glts/vim-textobj-comment' },
-        },
     }
 
     use {
@@ -394,104 +386,8 @@ packer.startup(function()
                 end,
             },
         },
-        after = 'firenvim',
+        -- after = 'firenvim',
     }
-
-    use {
-        'neomake/neomake',
-        cond = function()
-            return vim.env.VIM_MIN == nil and vim.g.minimal == nil and vim.fn.has 'python3' == 1
-        end,
-        setup = function()
-            local get_icon = require('utils.helpers').get_icon
-
-            local lsp_sign = vim.fn.has 'nvim-0.6' == 1 and 'DiagnosticSign' or 'LspDiagnosticsSign'
-            local names = { 'error', 'hint', 'warn', 'info' }
-            local levels = { 'Error', 'Hint' }
-            if vim.fn.has 'nvim-0.6' == 1 then
-                vim.list_extend(levels, { 'Warn', 'Info' })
-            else
-                vim.list_extend(levels, { 'Warning', 'Information' })
-            end
-
-            local hl_group = {}
-            for idx, level in ipairs(levels) do
-                hl_group[names[idx]] = lsp_sign .. level
-            end
-
-            vim.g.neomake_error_sign = {
-                text = get_icon 'error',
-                texthl = hl_group['error'],
-            }
-            vim.g.neomake_warning_sign = {
-                text = get_icon 'warn',
-                texthl = hl_group['warn'],
-            }
-            vim.g.neomake_info_sign = {
-                text = get_icon 'info',
-                texthl = hl_group['info'],
-            }
-            vim.g.neomake_message_sign = {
-                text = get_icon 'hint',
-                texthl = hl_group['hint'],
-            }
-
-            -- Don't show the location list, silently run Neomake
-            vim.g.neomake_open_list = 0
-
-            vim.g.neomake_echo_current_error = 0
-            vim.g.neomake_virtualtext_current_error = 1
-            vim.g.neomake_virtualtext_prefix = get_icon 'virtual_text' .. ' '
-
-            -- vim.g.neomake_ft_maker_remove_invalid_entries = 1
-        end,
-        config = function()
-            vim.fn['neomake#configure#automake']('nrw', 200)
-        end,
-        event = 'VimEnter',
-    }
-
-    -- use {
-    --     'SirVer/ultisnips',
-    --     cond = function()
-    --         return vim.env.VIM_MIN == nil and vim.g.minimal == nil and vim.fn.has 'python3' == 1
-    --     end,
-    --     event = 'VimEnter',
-    --     setup = function()
-    --         vim.g.UltiSnipsEditSplit = 'context'
-    --         vim.g.UltiSnipsExpandTrigger = '<C-,>'
-    --
-    --         -- Remove all select mappigns in expanded snip
-    --         -- vim.g.UltiSnipsRemoveSelectModeMappings = 0
-    --         vim.g.UltiSnipsUsePythonVersion = 3
-    --
-    --         vim.g.ulti_expand_or_jump_res = 0
-    --         vim.g.ulti_jump_backwards_res = 0
-    --         vim.g.ulti_jump_forwards_res = 0
-    --         vim.g.ulti_expand_res = 0
-    --
-    --         vim.g.ultisnips_python_quoting_style = 'single'
-    --         vim.g.ultisnips_python_triple_quoting_style = 'double'
-    --         vim.g.ultisnips_python_style = 'google'
-    --
-    --         -- vim.g.UltiSnipsSnippetDirectories = {}
-    --
-    --         vim.api.nvim_set_keymap(
-    --             'x',
-    --             '<CR>',
-    --             ':call UltiSnips#SaveLastVisualSelection()<CR>gv"_s',
-    --             { silent = true }
-    --         )
-    --     end,
-    --     requires = {
-    --         {
-    --             'honza/vim-snippets',
-    --             cond = function()
-    --                 return vim.env.VIM_MIN == nil and vim.g.minimal == nil and vim.fn.has 'python3' == 1
-    --             end,
-    --         },
-    --     },
-    -- }
 
     use {
         'nvim-treesitter/nvim-treesitter',
@@ -510,53 +406,42 @@ packer.startup(function()
         },
     }
 
-    use {
-        'mfussenegger/nvim-dap',
-        event = { 'CursorHold', 'CmdlineEnter' },
-        cmd = { 'DapStart', 'DapContinue' },
-        cond = function()
-            return vim.env.VIM_MIN == nil and vim.g.minimal == nil
-        end,
-        config = function()
-            require 'plugins.dap'
-        end,
-        requires = {
-            {
-                'theHamsta/nvim-dap-virtual-text',
-                cond = function()
-                    return vim.env.VIM_MIN == nil and vim.g.minimal == nil
-                end,
-                config = function()
-                    require('nvim-dap-virtual-text').setup()
-                end,
-            },
-        },
-    }
-
     -- use {
-    --     'rcarriga/nvim-dap-ui',
-    --     cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
-    --     config = function()
-    --         require'dapui'.setup{}
-    --         local set_command = require'neovim.commands'.set_command
-    --         local set_mapping = require'neovim.mappings'.set_mapping
-    --         -- require("dapui").open()
-    --         -- require("dapui").close()
-    --         -- require("dapui").toggle()
-    --         set_command{
-    --             lhs = 'DapUI',
-    --             rhs = require("dapui").toggle,
-    --             args = { force = true, }
-    --         }
-    --         set_mapping{
-    --             mode = 'n',
-    --             lhs = '=I',
-    --             rhs = require("dapui").toggle,
-    --             args = {noremap = true, silent = true},
-    --         }
+    --     'mfussenegger/nvim-dap',
+    --     event = { 'CursorHold', 'CmdlineEnter' },
+    --     cmd = { 'DapStart', 'DapContinue' },
+    --     cond = function()
+    --         return vim.env.VIM_MIN == nil and vim.g.minimal == nil
     --     end,
-    --     wants = 'nvim-dap'
+    --     config = function()
+    --         require 'plugins.dap'
+    --     end,
     -- }
+    --
+    -- -- use {
+    -- --     'rcarriga/nvim-dap-ui',
+    -- --     cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
+    -- --     config = function()
+    -- --         require'dapui'.setup{}
+    -- --         local set_command = require'neovim.commands'.set_command
+    -- --         local set_mapping = require'neovim.mappings'.set_mapping
+    -- --         -- require("dapui").open()
+    -- --         -- require("dapui").close()
+    -- --         -- require("dapui").toggle()
+    -- --         set_command{
+    -- --             lhs = 'DapUI',
+    -- --             rhs = require("dapui").toggle,
+    -- --             args = { force = true, }
+    -- --         }
+    -- --         set_mapping{
+    -- --             mode = 'n',
+    -- --             lhs = '=I',
+    -- --             rhs = require("dapui").toggle,
+    -- --             args = {noremap = true, silent = true},
+    -- --         }
+    -- --     end,
+    -- --     wants = 'nvim-dap'
+    -- -- }
 
     use {
         'nvim-telescope/telescope.nvim',
@@ -569,29 +454,29 @@ packer.startup(function()
         },
     }
 
-    -- use {
-    --     'nvim-telescope/telescope-smart-history.nvim',
-    --     cond = function()
-    --         return require('sys').has_sqlite
-    --     end,
-    --     module = 'telescope',
-    --     config = function()
-    --         require('telescope').load_extension 'smart_history'
-    --     end,
-    --     wants = { 'sqlite.lua', 'telescope.nvim' },
-    -- }
+    use {
+        'nvim-telescope/telescope-smart-history.nvim',
+        cond = function()
+            return require('sys').has_sqlite
+        end,
+        module = 'telescope',
+        config = function()
+            require('telescope').load_extension 'smart_history'
+        end,
+        wants = { 'sqlite.lua', 'telescope.nvim' },
+    }
 
-    -- use {
-    --     'nvim-telescope/telescope-frecency.nvim',
-    --     cond = function()
-    --         return require('sys').has_sqlite
-    --     end,
-    --     module = 'telescope',
-    --     config = function()
-    --         require('telescope').load_extension 'frecency'
-    --     end,
-    --     wants = { 'sqlite.lua', 'telescope.nvim' },
-    -- }
+    use {
+        'nvim-telescope/telescope-frecency.nvim',
+        cond = function()
+            return require('sys').has_sqlite
+        end,
+        module = 'telescope',
+        config = function()
+            require('telescope').load_extension 'frecency'
+        end,
+        wants = { 'sqlite.lua', 'telescope.nvim' },
+    }
 
     use { 'folke/lsp-colors.nvim' }
     use {
@@ -664,8 +549,41 @@ packer.startup(function()
             -- Since we need to load after telescope, it should be safe to call this here
             require('telescope').load_extension 'neoclip'
         end,
+        cond = function()
+            -- Windows throws an error complaining it has an invalid syntax, I look in to it later
+            return vim.fn.has 'win32' == 0
+        end,
         wants = { 'telescope.nvim', (require('sys').has_sqlite and 'sqlite.lua' or nil) },
     }
+
+    -- use {
+    --     'jose-elias-alvarez/null-ls.nvim',
+    --     config = function()
+    --         local null_ls = require 'null-ls'
+    --         null_ls.config {
+    --             sources = {
+    --                 -- null_ls.builtins.formatting.stylua.with{
+    --                 --     '--indent-type',
+    --                 --     'Spaces',
+    --                 --     '--indent-width',
+    --                 --     '4',
+    --                 --     '--quote-style',
+    --                 --     'AutoPreferSingle',
+    --                 --     '--column-width',
+    --                 --     '120',
+    --                 -- },
+    --                 null_ls.builtins.code_actions.gitsigns,
+    --                 -- null_ls.builtins.completion.spell,
+    --                 -- null_ls.builtins.formatting.shfmt.with{
+    --                 --     extra_args = { "-i", "2", "-ci" }
+    --                 -- }
+    --             },
+    --         }
+    --         require('lspconfig')['null-ls'].setup {}
+    --     end,
+    --     wants = { 'nvim-lspconfig', 'plenary.nvim' },
+    --     after = 'nvim-lspconfig',
+    -- }
 
     -- -- TODO: Check for python 3.8.5
     -- use {

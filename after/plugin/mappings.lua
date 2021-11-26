@@ -5,7 +5,7 @@ local set_mapping = require('neovim.mappings').set_mapping
 -- local noremap = { noremap = true }
 local noremap_silent = { noremap = true, silent = true }
 
-if not packer_plugins['vim-commentary'] then
+if packer_plugins and not packer_plugins['vim-commentary'] then
     set_mapping {
         mode = 'n',
         lhs = 'gc',
@@ -32,7 +32,7 @@ if not packer_plugins['vim-commentary'] then
     }
 end
 
-if not packer_plugins['nvim-cmp'] then
+if packer_plugins and not packer_plugins['nvim-cmp'] then
     -- TODO: Migrate to lua functions
     set_mapping {
         mode = 'i',
