@@ -1,5 +1,13 @@
 local ok, packer = pcall(require, 'packer')
-local has_compiler = vim.fn.executable 'gcc' == 1 or vim.fn.executable 'clang' == 1
+
+local has_compiler
+if vim.fn.has 'win32' or vim.fn.has 'win64' then
+    -- NOTE: windows' clang by default needs msbuild to compile treesitter parsers,
+    has_compiler = vim.fn.executable 'gcc' == 1
+else
+    has_compiler = vim.fn.executable 'gcc' == 1 or vim.fn.executable 'clang' == 1
+end
+
 -- local has_make = vim.fn.executable('make') == 1
 
 if not ok then
@@ -396,13 +404,63 @@ packer.startup(function()
             require 'plugins.treesitter'
         end,
         cond = function()
-            return vim.fn.executable 'gcc' == 1 or vim.fn.executable 'clang' == 1
+            local compiler
+            if vim.fn.has 'win32' or vim.fn.has 'win64' then
+                compiler = vim.fn.executable 'gcc' == 1
+            else
+                compiler = vim.fn.executable 'gcc' == 1 or vim.fn.executable 'clang' == 1
+            end
+            return compiler
         end,
         requires = {
-            { 'nvim-treesitter/playground' },
-            { 'nvim-treesitter/nvim-treesitter-refactor' },
-            { 'nvim-treesitter/nvim-treesitter-textobjects' },
-            { 'David-Kunz/treesitter-unit' },
+            {
+                'nvim-treesitter/playground',
+                cond = function()
+                    local compiler
+                    if vim.fn.has 'win32' or vim.fn.has 'win64' then
+                        compiler = vim.fn.executable 'gcc' == 1
+                    else
+                        compiler = vim.fn.executable 'gcc' == 1 or vim.fn.executable 'clang' == 1
+                    end
+                    return compiler
+                end,
+            },
+            {
+                'nvim-treesitter/nvim-treesitter-refactor',
+                cond = function()
+                    local compiler
+                    if vim.fn.has 'win32' or vim.fn.has 'win64' then
+                        compiler = vim.fn.executable 'gcc' == 1
+                    else
+                        compiler = vim.fn.executable 'gcc' == 1 or vim.fn.executable 'clang' == 1
+                    end
+                    return compiler
+                end,
+            },
+            {
+                'nvim-treesitter/nvim-treesitter-textobjects',
+                cond = function()
+                    local compiler
+                    if vim.fn.has 'win32' or vim.fn.has 'win64' then
+                        compiler = vim.fn.executable 'gcc' == 1
+                    else
+                        compiler = vim.fn.executable 'gcc' == 1 or vim.fn.executable 'clang' == 1
+                    end
+                    return compiler
+                end,
+            },
+            {
+                'David-Kunz/treesitter-unit',
+                cond = function()
+                    local compiler
+                    if vim.fn.has 'win32' or vim.fn.has 'win64' then
+                        compiler = vim.fn.executable 'gcc' == 1
+                    else
+                        compiler = vim.fn.executable 'gcc' == 1 or vim.fn.executable 'clang' == 1
+                    end
+                    return compiler
+                end,
+            },
         },
     }
 
