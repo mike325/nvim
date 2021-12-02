@@ -37,12 +37,15 @@ require 'messages'
 require 'globals'
 RELOAD('filetypes.python').pynvim_setup()
 
-if vim.fn.executable 'git' == 1 then
+local is_min = vim.env.VIM_MIN ~= nil or vim.g.minimal ~= nil
+local is_bare = vim.env.VIM_BARE ~= nil or vim.g.bare ~= nil
+
+if vim.fn.executable 'git' == 1 and not is_bare then
     if vim.fn.filereadable './plugin/packer_compiled.lua' ~= 1 then
         require 'setup'()
         pcall(require, 'plugins')
     end
-elseif vim.env.VIM_MIN ~= nil or vim.g.minimal ~= nil or vim.env.VIM_BARE ~= nil or vim.g.bare ~= nil then
+elseif not is_min and not is_bare then
     vim.notify('Missing git! cannot install plugins', 'WARN', { title = 'Nvim Setup' })
 end
 
