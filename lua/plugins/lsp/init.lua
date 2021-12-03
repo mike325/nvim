@@ -18,7 +18,7 @@ if lsp == nil then
 end
 
 local system_name = ''
-if sys.name == 'mac' then
+if sys.name == 'osx' then
     system_name = 'macOS'
 elseif sys.name == 'linux' then
     system_name = 'Linux'
