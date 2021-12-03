@@ -28,7 +28,9 @@ else
     vim.notify('Unsupported system for sumneko', 'ERROR', { title = 'LSP' })
 end
 
-local diagnostics = true
+local show_diagnostics = true
+local has_6 = vim.fn.has 'nvim-0.6' == 1
+local diagnostic = has_6 and vim.diagnostic or vim.lsp.diagnostic
 
 local has_saga, saga = pcall(require, 'lspsaga')
 -- local has_navigator, navigator = pcall(require,'navigator')
@@ -351,6 +353,8 @@ local function on_attach(client, bufnr)
     bufnr = bufnr or nvim.get_current_buf()
     local lua_cmd = '<cmd>lua %s<CR>'
 
+    local diag_str = has_6 and 'vim.diagnostic' or 'vim.lsp.diagnostic'
+
     local mappings = {
         ['<C-]>'] = {
             capability = 'goto_definition',
@@ -397,7 +401,7 @@ local function on_attach(client, bufnr)
                     or 'vim.lsp.buf.signature_help()'
             ),
         },
-        ['=L'] = { mapping = lua_cmd:format 'vim.lsp.diagnostic.set_loclist()' },
+        ['=L'] = { mapping = lua_cmd:format(diag_str .. (has_6 and '.setloclist()' or '.set_loclist()')) },
         ['<leader>s'] = {
             mapping = lua_cmd:format(
                 (has_telescope and "require'telescope.builtin'.lsp_document_symbols{}")
@@ -407,19 +411,19 @@ local function on_attach(client, bufnr)
         ['=d'] = {
             mapping = lua_cmd:format(
                 has_saga and "require'lspsaga.diagnostic'.show_line_diagnostics()"
-                    or 'vim.lsp.diagnostic.show_line_diagnostics()'
+                    or diag_str .. '.show_line_diagnostics()'
             ),
         },
         [']d'] = {
             mapping = lua_cmd:format(
                 has_saga and "require'lspsaga.diagnostic'.lsp_jump_diagnostic_next()"
-                    or 'vim.lsp.diagnostic.goto_next{wrap=false}'
+                    or diag_str .. '.goto_next{wrap=false}'
             ),
         },
         ['[d'] = {
             mapping = lua_cmd:format(
                 has_saga and "require'lspsaga.diagnostic'.lsp_jump_diagnostic_prev()"
-                    or 'vim.lsp.diagnostic.goto_prev{wrap=false}'
+                    or diag_str .. '.goto_prev{wrap=false}'
             ),
         },
         -- ['<space>wa'] = '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>',
@@ -510,19 +514,31 @@ local commands = {
     Format = { vim.lsp.buf.formatting },
     LSPToggleDiagnostics = {
         function()
-            diagnostics = not diagnostics
-            _G['vim'].lsp.handlers['textDocument/publishDiagnostics'] = vim.lsp.with(
-                vim.lsp.diagnostic.on_publish_diagnostics,
-                {
-                    underline = diagnostics,
-                    signs = diagnostics,
-                    virtual_text = diagnostics and {
+            show_diagnostics = not show_diagnostics
+            if has_6 then
+                vim.diagnostic.config {
+                    update_in_insert = false,
+                    underline = show_diagnostics,
+                    signs = show_diagnostics,
+                    virtual_text = show_diagnostics and {
                         spacing = 2,
                         prefix = '❯',
                     } or false,
-                    update_in_insert = true,
                 }
-            )
+            else
+                _G['vim'].lsp.handlers['textDocument/publishDiagnostics'] = vim.lsp.with(
+                    vim.lsp.diagnostic.on_publish_diagnostics,
+                    {
+                        update_in_insert = false,
+                        underline = show_diagnostics,
+                        signs = show_diagnostics,
+                        virtual_text = show_diagnostics and {
+                            spacing = 2,
+                            prefix = '❯',
+                        } or false,
+                    }
+                )
+            end
         end,
     },
     Rename = {
@@ -579,7 +595,8 @@ local commands = {
             if has_telescope then
                 require('telescope.builtin').lsp_document_diagnostics {}
             else
-                vim.lsp.buf.set_loclist()
+                local loclist = has_6 and 'setloclist' or 'set_loclist'
+                diagnostic[loclist]()
             end
         end,
     },
@@ -667,15 +684,37 @@ end
 -- Expose languages to VimL
 vim.g.lsp_languages = available_languages
 
-local lsp_sign = vim.fn.has 'nvim-0.6' == 1 and 'DiagnosticSign' or 'LspDiagnosticsSign'
+local lsp_sign = has_6 and 'DiagnosticSign' or 'LspDiagnosticsSign'
 local levels = { 'Error', 'Hint' }
-if vim.fn.has 'nvim-0.6' == 1 then
+if has_6 then
     vim.list_extend(levels, { 'Warn', 'Info' })
+    vim.diagnostic.config {
+        signs = true,
+        underline = true,
+        update_in_insert = false,
+        virtual_text = {
+            spacing = 2,
+            prefix = '❯',
+        },
+    }
 else
     vim.list_extend(levels, { 'Warning', 'Information' })
+    vim.lsp.handlers['textDocument/publishDiagnostics'] = vim.lsp.with(
+        vim.lsp.diagnostic.on_publish_diagnostics,
+        {
+            signs = true,
+            underline = true,
+            update_in_insert = false,
+            virtual_text = {
+                spacing = 2,
+                prefix = '❯',
+            },
+        }
+    )
 end
 
 for _, level in pairs(levels) do
+    vim.fn.sign_define(lsp_sign .. level, { text = get_icon(level:lower()), texthl = lsp_sign .. level })
     vim.cmd(
         ('sign define %s%s text=%s texthl=%s%s linehl= numhl='):format(
             lsp_sign,
@@ -687,37 +726,13 @@ for _, level in pairs(levels) do
     )
 end
 
-vim.lsp.handlers['textDocument/publishDiagnostics'] =
-    vim.lsp.with(
-        vim.lsp.diagnostic.on_publish_diagnostics,
-        {
-            underline = true,
-            virtual_text = {
-                spacing = 2,
-                prefix = '❯',
-            },
-            signs = true,
-            update_in_insert = true,
-        }
-    )
-
--- set which codelens text levels to show
-
-local original_set_virtual_text = vim.lsp.diagnostic.set_virtual_text
+local original_set_virtual_text = diagnostic.set_virtual_text
 local set_virtual_text_custom = function(lsp_diagnostics, bufnr, client_id, sign_ns, opts)
     opts = opts or {}
     -- show all messages that are Warning and above (Warning, Error)
     opts.severity_limit = 'Error'
     original_set_virtual_text(lsp_diagnostics, bufnr, client_id, sign_ns, opts)
 end
-vim.lsp.diagnostic.set_virtual_text = set_virtual_text_custom
-
--- local orig_et_signs = vim.lsp.diagnostic.set_signs
--- local set_signs_limited = function(diagnostics, bufnr, client_id, sign_ns, opts)
---     opts = opts or {}
---     opts.severity_limit = "Error"
---     orig_set_signs(diagnostics, bufnr, client_id, sign_ns, opts)
--- end
--- vim.lsp.diagnostic.set_signs = set_signs_limiteds
+diagnostic.set_virtual_text = set_virtual_text_custom
 
 return #available_languages > 0 and available_languages or false
