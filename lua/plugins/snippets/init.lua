@@ -62,6 +62,16 @@ set_command {
 }
 
 set_command {
+    lhs = 'SnippetEdit',
+    rhs = function()
+        local ft = vim.opt_local.filetype:get()
+        local base = require('sys').base
+        vim.cmd(('edit %s/lua/plugins/snippets/%s.lua'):format(base, ft))
+    end,
+    args = { force = true },
+}
+
+set_command {
     lhs = 'SnippetReload',
     rhs = function()
         RELOAD 'plugins.snippets.all'
