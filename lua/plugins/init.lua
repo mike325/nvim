@@ -510,6 +510,7 @@ packer.startup(function()
             'plenary.nvim',
             'popup.nvim',
         },
+        commit = (vim.fn.has 'nvim-0.6' == 0 and '80cdb00b221f69348afc4fb4b701f51eb8dd3120' or nil),
     }
 
     use {
@@ -572,7 +573,7 @@ packer.startup(function()
             { 'hrsh7th/cmp-nvim-lua' },
             { 'onsails/lspkind-nvim' },
             { 'saadparwaiz1/cmp_luasnip' },
-            { 'quangnguyen30192/cmp-nvim-ultisnips' },
+            -- { 'quangnguyen30192/cmp-nvim-ultisnips' },
         },
         config = function()
             require 'plugins.completion'

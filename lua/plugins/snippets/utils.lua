@@ -69,8 +69,8 @@ function M.saved_text(args, snip, old_state, placeholder)
     end
     local indent = placeholder.indent and '\t' or ''
 
-    if snip.env and snip.env.SELECT_DEDENT and #snip.env.SELECT_DEDENT > 0 then
-        local lines = vim.deepcopy(snip.env.SELECT_DEDENT)
+    if snip.snippet.env and snip.snippet.env.SELECT_DEDENT and #snip.snippet.env.SELECT_DEDENT > 0 then
+        local lines = vim.deepcopy(snip.snippet.env.SELECT_DEDENT)
         -- local indent_level = require'utils.buffers'.get_indent_block_level(lines)
         -- lines = require'utils.buffers'.indent(lines, -indent_level)
         -- TODO: We may need to use an indent indepente node to avoid indenting empty lines
@@ -101,8 +101,8 @@ function M.surround_with_func(args, snip, old_state, placeholder)
         placeholder = {}
     end
 
-    if snip.env and snip.env.SELECT_RAW and #snip.env.SELECT_RAW == 1 then
-        local node = snip.env.SELECT_RAW[1]
+    if snip.snippet.env and snip.snippet.env.SELECT_RAW and #snip.snippet.env.SELECT_RAW == 1 then
+        local node = snip.snippet.env.SELECT_RAW[1]
         table.insert(nodes, t(node))
     else
         local text = placeholder.text or 'placeholder'

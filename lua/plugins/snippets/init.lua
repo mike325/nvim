@@ -16,25 +16,9 @@ ls.config.set_config {
     updateevents = 'TextChanged,TextChangedI',
     store_selection_keys = '<CR>',
     ext_opts = {
-        -- [types.textNode] = {
-        --     snippet_passive = {
-        --         hl_group = "GruvboxGreen"
-        --     }
-        -- },
-        -- [types.insertNode] = {
-        --     active = {
-        --         virt_text = {{"InsertNode", "Comment"}}
-        --     },
-        --     -- active = {
-        --     --     hl_group = "WarningMsg"
-        --     -- },
-        --     -- pasive = {
-        --     --     hl_group = "Comment"
-        --     -- }
-        -- },
         [types.choiceNode] = {
-            active = {
-                virt_text = { { 'choiceNode', 'Comment' } },
+            snippet_passive = {
+                virt_text = { { '●', 'Comment' } },
             },
         },
     },
