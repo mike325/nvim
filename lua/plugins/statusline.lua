@@ -94,9 +94,12 @@ end
 
 local function has_diagnostics()
     if not vim.tbl_isempty(vim.lsp.buf_get_clients(0)) then
-        local errors = vim.lsp.diagnostic.get_count(0, [[Error]])
-        local warns = vim.lsp.diagnostic.get_count(0, [[Warning]])
-        local hints = vim.lsp.diagnostic.get_count(0, [[Hint]])
+        local errors = vim.diagnostic and #(vim.diagnostic.get(0, { severity = 'Error' }))
+            or vim.lsp.diagnostic.get_count(0, 'Error')
+        local warns = vim.diagnostic and #(vim.diagnostic.get(0, { severity = 'Warning' }))
+            or vim.lsp.diagnostic.get_count(0, 'Warning')
+        local hints = vim.diagnostic and #(vim.diagnostic.get(0, { severity = 'Hint' }))
+            or vim.lsp.diagnostic.get_count(0, 'Hint')
 
         if errors > 0 or warns > 0 or hints > 0 then
             return true

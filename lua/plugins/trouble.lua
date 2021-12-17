@@ -34,8 +34,9 @@ set_mapping {
     mode = 'n',
     lhs = '=T',
     rhs = function()
-        local lsp_document_diagnostics = vim.lsp.diagnostic.get(nvim.get_current_buf())
-        local lsp_workspace_diagnostics = vim.lsp.diagnostic.get_all()
+        local lsp_document_diagnostics = vim.diagnostic and vim.diagnostic.get(0) or vim.lsp.diagnostic.get(0)
+        local lsp_workspace_diagnostics = vim.diagnostic and vim.diagnostic.get()
+            or vim.lsp.diagnostic.get_all()
         local has_workspace_diagnostics = false
         for _, diagnostics in pairs(lsp_workspace_diagnostics) do
             if #diagnostics > 0 then

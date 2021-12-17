@@ -30,7 +30,7 @@ end
 
 local show_diagnostics = true
 local has_6 = vim.fn.has 'nvim-0.6' == 1
-local diagnostic = has_6 and vim.diagnostic or vim.lsp.diagnostic
+local diagnostic = vim.diagnostic or vim.lsp.diagnostic
 
 local has_saga, saga = pcall(require, 'lspsaga')
 -- local has_navigator, navigator = pcall(require,'navigator')
@@ -515,28 +515,21 @@ local commands = {
     LSPToggleDiagnostics = {
         function()
             show_diagnostics = not show_diagnostics
+            local config = {
+                update_in_insert = false,
+                underline = show_diagnostics,
+                signs = show_diagnostics,
+                virtual_text = show_diagnostics and {
+                    spacing = 2,
+                    prefix = '❯',
+                } or false,
+            }
             if has_6 then
-                vim.diagnostic.config {
-                    update_in_insert = false,
-                    underline = show_diagnostics,
-                    signs = show_diagnostics,
-                    virtual_text = show_diagnostics and {
-                        spacing = 2,
-                        prefix = '❯',
-                    } or false,
-                }
+                diagnostic.config = config
             else
                 _G['vim'].lsp.handlers['textDocument/publishDiagnostics'] = vim.lsp.with(
-                    vim.lsp.diagnostic.on_publish_diagnostics,
-                    {
-                        update_in_insert = false,
-                        underline = show_diagnostics,
-                        signs = show_diagnostics,
-                        virtual_text = show_diagnostics and {
-                            spacing = 2,
-                            prefix = '❯',
-                        } or false,
-                    }
+                    diagnostic.on_publish_diagnostics,
+                    config
                 )
             end
         end,
