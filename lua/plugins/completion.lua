@@ -19,17 +19,28 @@ local luasnip = load_module 'luasnip'
 local ultisnips = plugins.ultisnips
 local lspkind = require 'lspkind'
 
+local function has_treesitter()
+    if vim.fn.has 'win32' or vim.fn.has 'win64' then
+        return vim.fn.executable 'gcc' == 1
+    end
+    return vim.fn.executable 'gcc' == 1 or vim.fn.executable 'clang' == 1
+end
+
 local sources = {
-    { name = 'nvim_lsp' },
     { name = 'nvim_lua' },
+    { name = 'nvim_lsp' },
 }
 
-if ultisnips then
+if has_treesitter() then
+    table.insert(sources, { name = 'treesitter' })
+end
+
+if luasnip then
+    table.insert(sources, { name = 'luasnip', option = { use_show_condition = false } })
+elseif ultisnips then
     table.insert(sources, { name = 'ultisnips' })
 elseif vsnip then
     table.insert(sources, { name = 'vsnip' })
-elseif luasnip then
-    table.insert(sources, { name = 'luasnip', option = { use_show_condition = false } })
 end
 
 vim.list_extend(sources, { { name = 'buffer' }, { name = 'path' } })
@@ -38,10 +49,6 @@ local has_words_before = function()
     local line, col = unpack(vim.api.nvim_win_get_cursor(0))
     return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match '%s' == nil
 end
-
--- local t = function(str)
---     return vim.api.nvim_replace_termcodes(str, true, true, true)
--- end
 
 local next_item = function(fallback)
     if cmp.visible() then
@@ -131,13 +138,14 @@ cmp.setup {
         format = lspkind.cmp_format {
             with_text = true,
             menu = {
-                buffer = '[buffer]',
+                buffer = '[BUFFER]',
+                treesitter = '[TS]',
                 nvim_lsp = '[LSP]',
                 nvim_lua = '[API]',
-                path = '[path]',
-                luasnip = '[snip]',
-                ultisnips = '[snip]',
-                vsnip = '[snip]',
+                path = '[PATH]',
+                luasnip = '[SNIP]',
+                ultisnips = '[SNIP]',
+                vsnip = '[SNIP]',
             },
         },
     },

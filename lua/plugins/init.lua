@@ -573,6 +573,7 @@ packer.startup(function()
             { 'hrsh7th/cmp-nvim-lua' },
             { 'onsails/lspkind-nvim' },
             { 'saadparwaiz1/cmp_luasnip' },
+            { 'ray-x/cmp-treesitter' },
             -- { 'quangnguyen30192/cmp-nvim-ultisnips' },
         },
         config = function()
