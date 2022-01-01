@@ -102,7 +102,7 @@ case "$SHELL_PLATFORM" in
         ;;
 esac
 
-if ! hash is_windows 2>/dev/null; then
+if ! which is_windows >/dev/null; then
     function is_windows() {
         if [[ $SHELL_PLATFORM =~ (msys|cygwin|windows) ]]; then
             return 0
@@ -111,7 +111,7 @@ if ! hash is_windows 2>/dev/null; then
     }
 fi
 
-if ! hash is_wls 2>/dev/null; then
+if ! which is_wls >/dev/null; then
     function is_wls() {
         if [[ "$(uname -r)" =~ Microsoft ]]; then
             return 0
@@ -120,7 +120,7 @@ if ! hash is_wls 2>/dev/null; then
     }
 fi
 
-if ! hash is_osx 2>/dev/null; then
+if ! which is_osx >/dev/null; then
     function is_osx() {
         if [[ $SHELL_PLATFORM == 'osx' ]]; then
             return 0
@@ -129,10 +129,29 @@ if ! hash is_osx 2>/dev/null; then
     }
 fi
 
-if ! hash is_64bits 2>/dev/null; then
-    # TODO: This should work with ARM 64bits
+if which is_root >/dev/null; then
+    function is_root() {
+        if ! is_windows && [[ $EUID -eq 0 ]]; then
+            return 0
+        fi
+        return 1
+    }
+fi
+
+if which has_sudo >/dev/null; then
+    function has_sudo() {
+        if ! is_windows && hash sudo 2>/dev/null && [[ "$(groups)" =~ sudo ]]; then
+            return 0
+        fi
+        return 1
+    }
+fi
+
+if ! which is_64bits >/dev/null; then
     function is_64bits() {
-        if [[ $ARCH == 'x86_64' ]]; then
+        local arch
+        arch="$(uname -m)"
+        if [[ $arch == 'x86_64' ]] || [[ $arch == 'arm64' ]]; then
             return 0
         fi
         return 1
