@@ -299,11 +299,11 @@ packer.startup(function()
                     ['x ah'] = ':<C-U>lua require"gitsigns.actions".select_hunk()<CR>',
                 },
                 -- current_line_blame = true,
-                current_line_blame_opts = {
-                    virt_text = true,
-                    virt_text_pos = 'eol',
-                    delay = 1000,
-                },
+                -- current_line_blame_opts = {
+                --     virt_text = true,
+                --     virt_text_pos = 'eol',
+                --     delay = 1000,
+                -- },
                 -- numhl = false,
                 -- linehl = false,
                 -- status_formatter = nil, -- Use default
@@ -366,17 +366,17 @@ packer.startup(function()
         end,
     }
 
-    use {
-        'folke/trouble.nvim',
-        event = { 'CmdlineEnter', 'CursorHold' },
-        cmd = { 'Trouble' },
-        cond = function()
-            return vim.env.VIM_MIN == nil and vim.g.minimal == nil
-        end,
-        config = function()
-            require 'plugins.trouble'
-        end,
-    }
+    -- use {
+    --     'folke/trouble.nvim',
+    --     event = { 'CmdlineEnter', 'CursorHold' },
+    --     cmd = { 'Trouble' },
+    --     cond = function()
+    --         return vim.env.VIM_MIN == nil and vim.g.minimal == nil
+    --     end,
+    --     config = function()
+    --         require 'plugins.trouble'
+    --     end,
+    -- }
 
     use {
         'vim-airline/vim-airline',
@@ -594,15 +594,17 @@ packer.startup(function()
                 enable_persistant_history = has_sqlite,
                 db_path = db_path,
                 keys = {
-                    i = {
-                        select = '<CR>',
-                        paste = '<A-p>',
-                        paste_behind = '<A-P>',
-                    },
-                    n = {
-                        select = '<CR>',
-                        paste = 'p',
-                        paste_behind = 'P',
+                    telescope = {
+                        i = {
+                            select = '<CR>',
+                            paste = '<A-p>',
+                            paste_behind = '<A-P>',
+                        },
+                        n = {
+                            select = '<CR>',
+                            paste = 'p',
+                            paste_behind = 'P',
+                        },
                     },
                 },
             }
