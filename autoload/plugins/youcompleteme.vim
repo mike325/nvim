@@ -101,8 +101,8 @@ function! plugins#youcompleteme#setup() abort
     let g:ycm_key_list_previous_completion = ['<C-p>', '<Up>']
     " let g:ycm_key_list_stop_completion     = ['<C-y>', '<CR>']
 
-    let g:ycm_error_symbol   = luaeval('require"utils.helpers".get_icon("error")')
-    let g:ycm_warning_symbol = luaeval('require"utils.helpers".get_icon("warn")')
+    let g:ycm_error_symbol   = luaeval('require"plugins.lsp.utils".get_icon("error")')
+    let g:ycm_warning_symbol = luaeval('require"plugins.lsp.utils".get_icon("warn")')
 
     let g:ycm_extra_conf_globlist   = ['~/.vim/*', '~/.config/nvim/*', '~/AppData/nvim/*']
 
@@ -132,51 +132,51 @@ function! plugins#youcompleteme#setup() abort
         let g:ycm_languages += ['java']
     endif
 
-    if luaeval('require"utils.helpers".CheckLanguageServer("tex")')
+    if luaeval('require"plugins.lsp.utils".check_language_server("tex")')
         let s:ft = ['tex', 'bib']
         let g:ycm_language_server += [{
             \     'name': 'tex',
-            \     'cmdline': luaeval('require"utils.helpers".getLanguageServer("tex")'),
+            \     'cmdline': luaeval('require"plugins.lsp.utils".getLanguageServer("tex")'),
             \     'filetypes': s:ft,
             \ }]
         let g:ycm_languages += s:ft
     endif
 
-    if luaeval('require"utils.helpers".CheckLanguageServer("sh")')
+    if luaeval('require"plugins.lsp.utils".check_language_server("sh")')
         let s:ft = ['bash', 'sh']
         let g:ycm_language_server += [{
             \     'name': 'sh',
-            \     'cmdline': luaeval('require"utils.helpers".CheckLanguageServer("sh")'),
+            \     'cmdline': luaeval('require"plugins.lsp.utils".check_language_server("sh")'),
             \     'filetypes': s:ft
             \ }]
         let g:ycm_languages += s:ft
     endif
 
-    if luaeval('require"utils.helpers".CheckLanguageServer("vim")')
+    if luaeval('require"plugins.lsp.utils".check_language_server("vim")')
         let s:ft = ['vim']
         let g:ycm_language_server += [{
             \     'name': 'vim',
-            \     'cmdline': luaeval('require"utils.helpers".CheckLanguageServer("vim")'),
+            \     'cmdline': luaeval('require"plugins.lsp.utils".check_language_server("vim")'),
             \     'filetypes': s:ft
             \ }]
         let g:ycm_languages += s:ft
     endif
 
-    if luaeval('require"utils.helpers".CheckLanguageServer("dockerfile")')
+    if luaeval('require"plugins.lsp.utils".check_language_server("dockerfile")')
         let s:ft = ['dockerfile', 'Dockerfile']
         let g:ycm_language_server += [{
             \     'name': 'docker',
-            \     'cmdline': luaeval('require"utils.helpers".CheckLanguageServer("dockerfile")'),
+            \     'cmdline': luaeval('require"plugins.lsp.utils".check_language_server("dockerfile")'),
             \     'filetypes': s:ft
             \ }]
         let g:ycm_languages += s:ft
     endif
 
-    if luaeval('require"utils.helpers".CheckLanguageServer("lua")')
+    if luaeval('require"plugins.lsp.utils".check_language_server("lua")')
         let s:ft = ['lua']
         let g:ycm_language_server += [{
             \     'name': 'lua',
-            \     'cmdline': luaeval('require"utils.helpers".CheckLanguageServer("lua")'),
+            \     'cmdline': luaeval('require"plugins.lsp.utils".check_language_server("lua")'),
             \     'filetypes': s:ft
             \ }]
         let g:ycm_languages += s:ft
@@ -185,7 +185,7 @@ function! plugins#youcompleteme#setup() abort
     " if executable('ccls')
     "     let g:ycm_language_server += [{
     "         \   'name': 'ccls',
-    "         \   'cmdline': luaeval('require"utils.helpers".getLanguageServer("c")'),
+    "         \   'cmdline': luaeval('require"plugins.lsp.utils".getLanguageServer("c")'),
     "         \   'filetypes': [ 'c', 'cpp', 'cuda', 'objc', 'objcpp'  ],
     "         \   'project_root_files': [ '.ccls-root', 'compile_commands.json', 'compile_flags.txt', '.git']
     "         \ }]

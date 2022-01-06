@@ -645,6 +645,7 @@ packer.startup(function()
     --     end,
     --     wants = { 'nvim-lspconfig', 'plenary.nvim' },
     --     after = 'nvim-lspconfig',
+    --     branch = (vim.fn.has('nvim-0.6') == 0 and '0.5.1-compat' or nil),
     -- }
 
     -- -- TODO: Check for python 3.8.5

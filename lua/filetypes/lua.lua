@@ -1,4 +1,29 @@
-local M = {}
+local M = {
+    makeprgs = {
+        luacheck = {
+            '--max-cyclomatic-complexity',
+            '20',
+            '--std',
+            'luajit',
+            '--formatter',
+            'plain',
+            '--codes',
+            '--ranges',
+        },
+    },
+    formatprgs = {
+        stylua = {
+            '--indent-type',
+            'Spaces',
+            '--indent-width',
+            '4',
+            '--quote-style',
+            'AutoPreferSingle',
+            '--column-width',
+            '120',
+        },
+    },
+}
 
 function M.format()
     if require('utils.files').executable 'stylua' then
@@ -11,16 +36,7 @@ function M.format()
 
         local cmd = { 'stylua' }
         if not project then
-            vim.list_extend(cmd, {
-                '--indent-type',
-                'Spaces',
-                '--indent-width',
-                '4',
-                '--quote-style',
-                'AutoPreferSingle',
-                '--column-width',
-                '120',
-            })
+            vim.list_extend(cmd, M.formatprgs.stylua)
         end
 
         external_formatprg {

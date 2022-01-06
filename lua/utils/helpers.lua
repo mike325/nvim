@@ -1,4 +1,4 @@
-local sys = require 'sys'
+-- local sys = require 'sys'
 local nvim = require 'neovim'
 -- local plugins = require'neovim'.plugins
 
@@ -12,26 +12,6 @@ local line = vim.fn.line
 local M = {}
 
 local abolish = {}
-
--- stylua: ignore
-local langservers = {
-    python     = {'pyls', 'jedi-language-server'},
-    c          = {'clangd', 'ccls', 'cquery'},
-    cpp        = {'clangd', 'ccls', 'cquery'},
-    cuda       = {'clangd', 'ccls', 'cquery'},
-    objc       = {'clangd', 'ccls', 'cquery'},
-    objcpp     = {'clangd', 'ccls', 'cquery'},
-    sh         = {'bash-language-server'},
-    bash       = {'bash-language-server'},
-    go         = {'gopls'},
-    latex      = {'texlab'},
-    tex        = {'texlab'},
-    bib        = {'texlab'},
-    vim        = {'vim-language-server'},
-    lua        = {'sumneko_lua'},
-    dockerfile = {'docker-langserver'},
-    Dockerfile = {'docker-langserver'},
-}
 
 -- stylua: ignore
 abolish['en'] = {
@@ -660,108 +640,6 @@ function M.abolish(language)
             end
         end
     end
-end
-
-local function check_lsp(servers)
-    for _, server in pairs(servers) do
-        if executable(server) or require('utils.files').is_dir(sys.cache .. '/lspconfig/' .. server) then
-            return true
-        end
-    end
-
-    return false
-end
-
-function M.check_language_server(languages)
-    if languages == nil or #languages == 0 then
-        for _, server in pairs(langservers) do
-            if check_lsp(server) then
-                return true
-            end
-        end
-    elseif type(languages) == 'table' then
-        for _, language in pairs(languages) do
-            if check_lsp(langservers[language]) then
-                return true
-            end
-        end
-    elseif langservers[languages] ~= nil then
-        return check_lsp(langservers[languages])
-    end
-
-    return false
-end
-
-function M.get_language_server(language)
-    if not M.check_language_server(language) then
-        return {}
-    end
-
-    local cmds = {
-        ['pyls'] = {
-            'pyls',
-            '--check-parent-process',
-            '--log-file=' .. sys.tmp 'pyls.log',
-        },
-        ['jedi-language-server'] = { 'jedi-language-server' },
-        ['clangd'] = {
-            'clangd',
-            '--index',
-            '--background-index',
-            '--suggest-missing-includes',
-            '--clang-tidy',
-            '--header-insertion=iwyu',
-            '--function-arg-placeholders',
-            '--completion-style=detailed',
-            '--log=verbose',
-        },
-        ['ccls'] = {
-            'ccls',
-            '--log-file=' .. sys.tmp 'ccls.log',
-            '--init={'
-                .. '"cache": {"directory": "'
-                .. sys.cache
-                .. '/ccls"},'
-                .. '"completion": {"filterAndSort": false},'
-                .. '"highlight": {"lsRanges" : true }'
-                .. '}',
-        },
-        ['cquery'] = {
-            'cquery',
-            '--log-file=' .. sys.tmp 'cquery.log',
-            '--init={'
-                .. '"cache": {"directory": "'
-                .. sys.cache
-                .. '/cquery"},'
-                .. '"completion": {"filterAndSort": false},'
-                .. '"highlight": { "enabled" : true },'
-                .. '"emitInactiveRegions" : true'
-                .. '}',
-        },
-        ['gopls'] = { 'gopls' },
-        ['texlab'] = { 'texlab' },
-        ['bash-language-server'] = { 'bash-language-server', 'start' },
-        ['vim-language-server'] = { 'vim-language-server', '--stdio' },
-        ['docker-langserver'] = { 'docker-langserver', '--stdio' },
-        ['sumneko_lua'] = {
-            sys.cache .. '/lspconfig/sumneko_lua/lua-language-server/bin/Linux/lua-language-server',
-            '-E',
-            sys.cache .. '/lspconfig/sumneko_lua/lua-language-server/main.lua',
-        },
-    }
-
-    local cmd = {}
-
-    if langservers[language] ~= nil then
-        for _, server in pairs(langservers[language]) do
-            if cmds[server] ~= nil then
-                cmd = cmds[server]
-                break
-            end
-        end
-    end
-
-    return cmd
 end
 
 function M.python(version, args)

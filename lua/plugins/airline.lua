@@ -51,6 +51,8 @@ for _, i in pairs(plugins) do
     vim.g['airline#extensions#' .. i .. '#warning_symbol'] = get_icon 'warn'
 end
 
+vim.g['airline#extensions#branch#enabled'] = 1
+
 -- vim.g['airline#extensions#hunks#hunk_symbols'] = {
 --     get_icon('diff_add')..' ',
 --     get_icon('diff_modified')..' ',
