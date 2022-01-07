@@ -16,7 +16,7 @@ vim.opt_local.suffixesadd:prepend '.lua'
 vim.opt_local.suffixesadd:prepend 'init.lua'
 vim.opt_local.path:prepend(require('sys').base .. '/lua')
 
-local luacheck_args = require('filetypes.lua').makeprgs.luacheck
+local luacheck_args = require('filetypes.lua').makeprg.luacheck
 table.insert(luacheck_args, '%')
 
 if executable 'luacheck' then

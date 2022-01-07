@@ -1,5 +1,5 @@
 local M = {
-    makeprgs = {
+    makeprg = {
         luacheck = {
             '--max-cyclomatic-complexity',
             '20',
@@ -11,7 +11,7 @@ local M = {
             '--ranges',
         },
     },
-    formatprgs = {
+    formatprg = {
         stylua = {
             '--indent-type',
             'Spaces',
@@ -36,7 +36,7 @@ function M.format()
 
         local cmd = { 'stylua' }
         if not project then
-            vim.list_extend(cmd, M.formatprgs.stylua)
+            vim.list_extend(cmd, M.formatprg.stylua)
         end
 
         external_formatprg {

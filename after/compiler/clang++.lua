@@ -4,7 +4,7 @@ local cmd = {
     'clang++',
 }
 
-vim.list_extend(cmd, RELOAD('filetypes.cpp').default_flags['clang++'])
+vim.list_extend(cmd, RELOAD('filetypes.cpp').makeprg['clang++'])
 table.insert(cmd, '%')
 
 nvim.ex.CompilerSet('makeprg=' .. table.concat(cmd, '\\ '))

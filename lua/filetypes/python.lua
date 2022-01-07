@@ -35,7 +35,29 @@ local M = {
         -- 'W503', --
         -- 'W504', --
     },
+    formatprg = {
+        black = {
+            '-l',
+            '120',
+        },
+        autopep8 = {
+            '-i',
+            '--experimental',
+            '--aggressive',
+            '--max-line-length',
+            '120',
+        },
+        yapf = {
+            '-i',
+            '--style',
+            'pep8',
+        },
+    },
+    makeprg = {},
 }
+
+M.makeprg.flake8 = { '--max-line-length=120', '--ignore=' .. table.concat(M.pyignores, ',') }
+M.makeprg.pycodestyle = M.makeprg.flake8
 
 function M.format()
     local buffer = vim.api.nvim_get_current_buf()
@@ -47,7 +69,7 @@ function M.format()
     if executable 'black' then
         local cmd = { 'black' }
         if not project then
-            vim.list_extend(cmd, { '-l', '120' })
+            vim.list_extend(cmd, M.formatprg.black)
         else
             vim.list_extend(cmd, { '--config', project })
         end
@@ -57,23 +79,22 @@ function M.format()
             efm = '%trror: cannot format %f: Cannot parse %l:c: %m,%trror: cannot format %f: %m',
         }
     elseif executable 'yapf' then
-        local cmd = { 'yapf', '-i' }
+        local cmd = { 'yapf' }
         if not project then
-            vim.list_extend(cmd, { '--style', 'pep8' })
+            vim.list_extend(cmd, M.formatprg.yapf)
+        else
+            table.insert(cmd, 'i')
         end
         external_formatprg {
             cmd = cmd,
             buffer = buffer,
         }
     elseif executable 'autopep8' then
-        local cmd = { 'autopep8', '-i' }
+        local cmd = { 'autopep8' }
         if not project then
-            vim.list_extend(cmd, {
-                '--experimental',
-                '--aggressive',
-                '--max-line-length',
-                '120',
-            })
+            vim.list_extend(cmd, M.formatprg.autopep8)
+        else
+            table.insert(cmd, 'i')
         end
         external_formatprg {
             cmd = cmd,
@@ -102,16 +123,17 @@ function M.setup()
             -- and not is_file './setup.py'
             -- and not is_file './pyproject.toml'
         then
-            vim.list_extend(cmd, { '--max-line-length=120', '--ignore=' .. table.concat(M.pyignores, ',') })
+            vim.list_extend(cmd, M.makeprg.flake8)
         end
         table.insert(cmd, '%')
 
         vim.opt_local.makeprg = table.concat(cmd, ' ')
         vim.opt_local.errorformat = '%f:%l:%c: %t%n %m'
     elseif executable 'pycodestyle' then
-        vim.opt_local.makeprg = 'pycodestyle --max-line-length=120 --ignore='
-            .. table.concat(M.pyignores, ',')
-            .. ' %'
+        local cmd = { 'pycodestyle' }
+        vim.list_extend(cmd, M.makeprg.pycodestyle)
+        table.insert(cmd, '%')
+        vim.opt_local.makeprg = table.concat(cmd, ' ')
         vim.opt_local.errorformat = '%f:%l:%c: %t%n %m'
     else
         vim.opt_local.makeprg =

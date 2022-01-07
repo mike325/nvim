@@ -8,7 +8,10 @@ local executable = require('utils.files').executable
 vim.opt_local.define = [[^\(\(function\s\+\)\?\ze\i\+()\|\s*\(local\s\+\)\?\ze\k\+=.*\)]]
 
 if executable 'shellcheck' then
-    vim.opt_local.makeprg = 'shellcheck -f gcc -x -e 1117 %'
+    local cmd = { 'shellcheck' }
+    vim.list_extend(cmd, require('filetypes.sh').makeprg.shellcheck)
+    table.insert(cmd, '%')
+    vim.opt_local.makeprg = table.concat(cmd, ' ')
 end
 
 if executable 'shfmt' then

@@ -4,7 +4,7 @@ local cmd = {
     'gcc',
 }
 
-vim.list_extend(cmd, RELOAD('filetypes.cpp').default_flags.gcc)
+vim.list_extend(cmd, RELOAD('filetypes.cpp').makeprg.gcc)
 table.insert(cmd, '%')
 
 nvim.ex.CompilerSet('makeprg=' .. table.concat(cmd, '\\ '))

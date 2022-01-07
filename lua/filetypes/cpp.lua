@@ -13,7 +13,7 @@ local set_command = require('neovim.commands').set_command
 -- local set_mapping = require'neovim.mappings'.set_mapping
 
 local M = {
-    default_flags = {
+    makeprg = {
         ['clang++'] = {
             '-std=c++17',
             '-O3',
@@ -156,7 +156,7 @@ local function get_args(compiler, bufnum, compiler_flags_file)
         end
     end
 
-    return args or M.default_flags[compiler] or {}
+    return args or M.makeprg[compiler] or {}
 end
 
 local function set_opts(filename, has_tidy, compiler, bufnum)
@@ -202,7 +202,7 @@ local function set_opts(filename, has_tidy, compiler, bufnum)
             )
         end
     elseif not has_tidy then
-        local config_flags = table.concat(M.default_flags[compiler] or {}, ' ')
+        local config_flags = table.concat(M.makeprg[compiler] or {}, ' ')
         vim.api.nvim_buf_set_option(
             bufnum,
             'makeprg',
