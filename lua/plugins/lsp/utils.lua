@@ -10,6 +10,13 @@ local langservers = require 'plugins.lsp.servers'
 
 local lsp = load_module 'lspconfig'
 local cmp = load_module 'cmp'
+local null_ls = load_module 'null-ls'
+local null_sources = {}
+
+if null_ls then
+    -- local null_configs = require 'plugins.lsp.null'
+    table.insert(null_sources, null_ls.builtins.code_actions.gitsigns)
+end
 
 local M = {}
 
@@ -100,9 +107,12 @@ function M.setup(ft)
             )
         end
         lsp[config].setup(init)
-        -- else
-        --     -- TODO: Config available null-ls languages
+        -- elseif null_ls and null_configs[ft] then
     end
+end
+
+if null_ls and next(null_sources) ~= nil then
+    null_ls.setup { sources = null_sources }
 end
 
 return M

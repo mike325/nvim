@@ -618,14 +618,14 @@ packer.startup(function()
         wants = { 'telescope.nvim', (require('sys').has_sqlite and 'sqlite.lua' or nil) },
     }
 
-    -- use {
-    --     'jose-elias-alvarez/null-ls.nvim',
-    --     config = function()
-    --         local null_ls = require 'null-ls'
-    --         null_ls.config {
-    --             sources = {
-    --                 -- null_ls.builtins.formatting.stylua.with{
-    --                 --     '--indent-type',
+    -- TODO: Add neovim 0.5 compatibility layer/setup
+    use {
+        'jose-elias-alvarez/null-ls.nvim',
+        wants = { 'nvim-lspconfig', 'plenary.nvim' },
+        -- after = 'nvim-lspconfig',
+        branch = (vim.fn.has 'nvim-0.6' == 0 and '0.5.1-compat' or nil),
+    }
+
     --                 --     'Spaces',
     --                 --     '--indent-width',
     --                 --     '4',
