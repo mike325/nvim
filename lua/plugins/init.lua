@@ -626,28 +626,6 @@ packer.startup(function()
         branch = (vim.fn.has 'nvim-0.6' == 0 and '0.5.1-compat' or nil),
     }
 
-    --                 --     'Spaces',
-    --                 --     '--indent-width',
-    --                 --     '4',
-    --                 --     '--quote-style',
-    --                 --     'AutoPreferSingle',
-    --                 --     '--column-width',
-    --                 --     '120',
-    --                 -- },
-    --                 null_ls.builtins.code_actions.gitsigns,
-    --                 -- null_ls.builtins.completion.spell,
-    --                 -- null_ls.builtins.formatting.shfmt.with{
-    --                 --     extra_args = { "-i", "2", "-ci" }
-    --                 -- }
-    --             },
-    --         }
-    --         require('lspconfig')['null-ls'].setup {}
-    --     end,
-    --     wants = { 'nvim-lspconfig', 'plenary.nvim' },
-    --     after = 'nvim-lspconfig',
-    --     branch = (vim.fn.has('nvim-0.6') == 0 and '0.5.1-compat' or nil),
-    -- }
-
     -- -- TODO: Check for python 3.8.5
     -- use {
     --     'ms-jpq/coq_nvim',
