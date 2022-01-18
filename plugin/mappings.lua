@@ -17,6 +17,8 @@ local set_mapping = require('neovim.mappings').set_mapping
 local noremap = { noremap = true }
 local noremap_silent = { noremap = true, silent = true }
 
+local has_6 = vim.fn.has 'nvim-0.6' == 1
+
 if not vim.g.mapleader then
     vim.g.mapleader = ' '
 end
@@ -1171,3 +1173,15 @@ set_command {
     end,
     args = { nargs = '*', force = true, complete = 'filetype' },
 }
+
+if has_6 then
+    set_mapping {
+        mode = 'n',
+        lhs = '=D',
+        rhs = function()
+            vim.diagnostic.setqflist()
+            vim.cmd 'wincmd J'
+        end,
+        args = noremap_silent,
+    }
+end

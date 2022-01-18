@@ -16,7 +16,7 @@ local M = {
             '--indent-type',
             'Spaces',
             '--indent-width',
-            '4',
+            'WIDTH',
             '--quote-style',
             'AutoPreferSingle',
             '--column-width',
@@ -37,6 +37,15 @@ function M.format()
         local cmd = { 'stylua' }
         if not project then
             vim.list_extend(cmd, M.formatprg.stylua)
+        else
+            table.insert(cmd, '-s')
+        end
+
+        for idx, arg in ipairs(cmd) do
+            if arg == 'WIDTH' then
+                cmd[idx] = require('utils.buffers').get_indent()
+                break
+            end
         end
 
         external_formatprg {

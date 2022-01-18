@@ -8,6 +8,14 @@ if lsp == nil then
     return false
 end
 
+local null_ls = load_module 'null-ls'
+local null_sources = {}
+local null_configs = require 'plugins.lsp.null'
+
+if null_ls then
+    table.insert(null_sources, null_ls.builtins.code_actions.gitsigns)
+end
+
 local has_6 = vim.fn.has 'nvim-0.6' == 1
 local diagnostic = vim.diagnostic or vim.lsp.diagnostic
 
@@ -59,8 +67,47 @@ diagnostic.set_virtual_text = set_virtual_text_custom
 local lsp_configs = require 'plugins.lsp.servers'
 local lsp_setup = require('plugins.lsp.utils').setup
 
+vim.lsp.protocol.CompletionItemKind = {
+    '', -- Text          = 1;
+    '', -- Method        = 2;
+    'ƒ', -- Function      = 3;
+    '', -- Constructor   = 4;
+    '識', -- Field         = 5;
+    '', -- Variable      = 6;
+    '', -- Class         = 7;
+    'ﰮ', -- Interface     = 8;
+    '', -- Module        = 9;
+    '', -- Property      = 10;
+    '', -- Unit          = 11;
+    '', -- Value         = 12;
+    '了', -- Enum          = 13;
+    '', -- Keyword       = 14;
+    '﬌', -- Snippet       = 15;
+    '', -- Color         = 16;
+    '', -- File          = 17;
+    '渚', -- Reference     = 18;
+    '', -- Folder        = 19;
+    '', -- EnumMember    = 20;
+    '', -- Constant      = 21;
+    '', -- Struct        = 22;
+    '鬒', -- Event         = 23;
+    'Ψ', -- Operator      = 24;
+    '', -- TypeParameter = 25;
+}
+
 for filetype, _ in pairs(lsp_configs) do
-    lsp_setup(filetype)
+    if not lsp_setup(filetype) and null_configs[filetype] then
+        vim.list_extend(null_sources, null_configs[filetype])
+    end
+end
+
+if null_ls and next(null_sources) ~= nil then
+    null_ls.setup {
+        sources = null_sources,
+        on_attach = function(client, bufnr)
+            require('plugins.lsp.config').on_attach(client, bufnr, true)
+        end,
+    }
 end
 
 return {

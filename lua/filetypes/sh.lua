@@ -13,7 +13,7 @@ local M = {
     formatprg = {
         shfmt = {
             '-i',
-            '4',
+            'WITHD',
             '-s',
             '-ci',
             '-kp',
@@ -29,6 +29,14 @@ function M.format()
     if executable 'shfmt' then
         local cmd = { 'shfmt' }
         vim.list_extend(cmd, M.formatprg.shfmt)
+
+        for idx, arg in ipairs(cmd) do
+            if arg == 'WIDTH' then
+                cmd[idx] = require('utils.buffers').get_indent()
+                break
+            end
+        end
+
         external_formatprg {
             cmd = cmd,
             buffer = buffer,

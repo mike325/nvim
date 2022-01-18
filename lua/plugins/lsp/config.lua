@@ -8,6 +8,7 @@ local load_module = require('utils.helpers').load_module
 
 -- local set_autocmd = require'neovim.autocmds'.set_autocmd
 local set_mapping = require('neovim.mappings').set_mapping
+local set_command = require('neovim.commands').set_command
 
 local lsp = load_module 'lspconfig'
 
@@ -24,7 +25,124 @@ local has_telescope, _ = pcall(require, 'telescope')
 
 local M = {}
 
-function M.on_attach(client, bufnr)
+M.commands = {
+    Type = { vim.lsp.buf.type_definition },
+    Declaration = { vim.lsp.buf.declaration },
+    OutgoingCalls = { vim.lsp.buf.outgoing_calls },
+    IncommingCalls = { vim.lsp.buf.incoming_calls },
+    Implementation = { vim.lsp.buf.implementation },
+    Format = {
+        function()
+            vim.lsp.buf.formatting()
+        end,
+    },
+    RangeFormat = {
+        function()
+            vim.lsp.buf.range_formatting()
+        end,
+    },
+    LSPToggleDiagnostics = {
+        function()
+            show_diagnostics = not show_diagnostics
+            local diagnostic_config = {
+                update_in_insert = false,
+                underline = show_diagnostics,
+                signs = show_diagnostics,
+                virtual_text = show_diagnostics and {
+                    spacing = 2,
+                    prefix = '❯',
+                } or false,
+            }
+            if has_6 then
+                vim.diagnostic.config = diagnostic_config
+            else
+                _G['vim'].lsp.handlers['textDocument/publishDiagnostics'] = vim.lsp.with(
+                    vim.lsp.diagnostic.on_publish_diagnostics,
+                    diagnostic_config
+                )
+            end
+        end,
+    },
+    Rename = {
+        function()
+            vim.lsp.buf.rename {}
+        end,
+    },
+    Signature = {
+        function()
+            vim.lsp.buf.signature_help {}
+        end,
+    },
+    Hover = {
+        function()
+            vim.lsp.buf.hover {}
+        end,
+    },
+    Definition = {
+        function()
+            if has_telescope then
+                require('telescope.builtin').lsp_definitions {}
+            else
+                vim.lsp.buf.definition()
+            end
+        end,
+    },
+    References = {
+        function()
+            if has_telescope then
+                require('telescope.builtin').lsp_references {}
+            else
+                vim.lsp.buf.references()
+            end
+        end,
+    },
+    Diagnostic = {
+        function()
+            if has_telescope then
+                local diagnostics_func = has_6 and 'diagnostics' or 'lsp_document_diagnostics'
+                require('telescope.builtin')[diagnostics_func] {}
+            else
+                local loclist = has_6 and 'setloclist' or 'set_loclist'
+                diagnostic[loclist]()
+            end
+        end,
+    },
+    DocSymbols = {
+        function()
+            if has_telescope then
+                require('telescope.builtin').lsp_document_symbols {}
+            else
+                vim.lsp.buf.document_symbol()
+            end
+        end,
+    },
+    WorkSymbols = {
+        function()
+            if has_telescope then
+                require('telescope.builtin').lsp_workspace_symbols {}
+            else
+                vim.lsp.buf.workspace_symbol()
+            end
+        end,
+    },
+    CodeAction = {
+        function()
+            if has_telescope then
+                require('telescope.builtin').lsp_code_actions {}
+            else
+                vim.lsp.buf.lsp_code_actions()
+            end
+        end,
+    },
+}
+
+function M.on_attach(client, bufnr, is_null)
+    vim.validate {
+        client = { client, 'table' },
+        bufnr = { bufnr, 'number', true },
+        is_null = { is_null, 'boolean', true },
+    }
+
     vim.bo.omnifunc = 'v:lua.vim.lsp.omnifunc'
     bufnr = bufnr or nvim.get_current_buf()
     local lua_cmd = '<cmd>lua %s<CR>'
@@ -132,134 +250,17 @@ function M.on_attach(client, bufnr)
         pcall(vim.cmd, 'silent call neomake#cmd#disable(b:)')
     end
 
-    vim.lsp.protocol.CompletionItemKind = {
-        '', -- Text          = 1;
-        '', -- Method        = 2;
-        'ƒ', -- Function      = 3;
-        '', -- Constructor   = 4;
-        '識', -- Field         = 5;
-        '', -- Variable      = 6;
-        '', -- Class         = 7;
-        'ﰮ', -- Interface     = 8;
-        '', -- Module        = 9;
-        '', -- Property      = 10;
-        '', -- Unit          = 11;
-        '', -- Value         = 12;
-        '了', -- Enum          = 13;
-        '', -- Keyword       = 14;
-        '﬌', -- Snippet       = 15;
-        '', -- Color         = 16;
-        '', -- File          = 17;
-        '渚', -- Reference     = 18;
-        '', -- Folder        = 19;
-        '', -- EnumMember    = 20;
-        '', -- Constant      = 21;
-        '', -- Struct        = 22;
-        '鬒', -- Event         = 23;
-        'Ψ', -- Operator      = 24;
-        '', -- TypeParameter = 25;
-    }
+    if is_null then
+        for command, values in pairs(M.commands) do
+            if type(values[1]) == 'function' then
+                set_command {
+                    lhs = command,
+                    rhs = values[1],
+                    args = { force = true, buffer = true },
+                }
+            end
+        end
+    end
 end
-
-M.commands = {
-    Type = { vim.lsp.buf.type_definition },
-    Declaration = { vim.lsp.buf.declaration },
-    OutgoingCalls = { vim.lsp.buf.outgoing_calls },
-    IncommingCalls = { vim.lsp.buf.incoming_calls },
-    Implementation = { vim.lsp.buf.implementation },
-    Format = { vim.lsp.buf.formatting },
-    LSPToggleDiagnostics = {
-        function()
-            show_diagnostics = not show_diagnostics
-            local diagnostic_config = {
-                update_in_insert = false,
-                underline = show_diagnostics,
-                signs = show_diagnostics,
-                virtual_text = show_diagnostics and {
-                    spacing = 2,
-                    prefix = '❯',
-                } or false,
-            }
-            if has_6 then
-                vim.diagnostic.config = diagnostic_config
-            else
-                _G['vim'].lsp.handlers['textDocument/publishDiagnostics'] = vim.lsp.with(
-                    vim.lsp.diagnostic.on_publish_diagnostics,
-                    diagnostic_config
-                )
-            end
-        end,
-    },
-    Rename = {
-        function()
-            vim.lsp.buf.rename {}
-        end,
-    },
-    Signature = {
-        function()
-            vim.lsp.buf.signature_help {}
-        end,
-    },
-    Hover = {
-        function()
-            vim.lsp.buf.hover {}
-        end,
-    },
-    Definition = {
-        function()
-            if has_telescope then
-                require('telescope.builtin').lsp_definitions {}
-            else
-                vim.lsp.buf.definition()
-            end
-        end,
-    },
-    References = {
-        function()
-            if has_telescope then
-                require('telescope.builtin').lsp_references {}
-            else
-                vim.lsp.buf.references()
-            end
-        end,
-    },
-    Diagnostic = {
-        function()
-            if has_telescope then
-                require('telescope.builtin').lsp_document_diagnostics {}
-            else
-                local loclist = has_6 and 'setloclist' or 'set_loclist'
-                diagnostic[loclist]()
-            end
-        end,
-    },
-    DocSymbols = {
-        function()
-            if has_telescope then
-                require('telescope.builtin').lsp_document_symbols {}
-            else
-                vim.lsp.buf.document_symbol()
-            end
-        end,
-    },
-    WorkSymbols = {
-        function()
-            if has_telescope then
-                require('telescope.builtin').lsp_workspace_symbols {}
-            else
-                vim.lsp.buf.workspace_symbol()
-            end
-        end,
-    },
-    CodeAction = {
-        function()
-            if has_telescope then
-                require('telescope.builtin').lsp_code_actions {}
-            else
-                vim.lsp.buf.lsp_code_actions()
-            end
-        end,
-    },
-}
 
 return M
