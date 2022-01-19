@@ -1,19 +1,4 @@
-local executable = require('utils.files').executable
-
--- vim.opt_local.expandtab = true
--- vim.opt_local.tabstop = 4
--- vim.opt_local.shiftwidth = 0
--- vim.opt_local.softtabstop = -1
-
-vim.opt_local.define = [[^\(\(function\s\+\)\?\ze\i\+()\|\s*\(local\s\+\)\?\ze\k\+=.*\)]]
-
-if executable 'shellcheck' then
-    local cmd = { 'shellcheck' }
-    vim.list_extend(cmd, require('filetypes.sh').makeprg.shellcheck)
-    table.insert(cmd, '%')
-    vim.opt_local.makeprg = table.concat(cmd, ' ')
-end
-
-if executable 'shfmt' then
-    vim.opt_local.formatexpr = [[luaeval('RELOAD"filetypes.sh".format()')]]
-end
+local ft = vim.opt_local.filetype:get()
+require('utils.buffers').setup(ft, {
+    define = [[^\(\(function\s\+\)\?\ze\i\+()\|\s*\(local\s\+\)\?\ze\k\+=.*\)]],
+})

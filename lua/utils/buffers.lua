@@ -308,4 +308,50 @@ function M.detect_indent(buf)
     return indent
 end
 
+function M.replace_indent(cmd)
+    vim.validate { cmd = { cmd, 'table' } }
+    for idx, arg in ipairs(cmd) do
+        if arg == 'WIDTH' then
+            cmd[idx] = M.get_indent()
+            break
+        end
+    end
+    return cmd
+end
+
+function M.setup(ft, opts)
+    vim.validate { ft = { ft, 'string', true }, opts = { opts, 'table', true } }
+    ft = ft or vim.opt_local.filetype:get()
+    local ok, utils = pcall(require, 'filetypes.' .. ft)
+    opts = opts or {}
+    if ok then
+        if utils.get_linter then
+            local linter = utils.get_linter()
+            if linter then
+                table.insert(linter, '%')
+                vim.opt_local.makeprg = table.concat(linter, ' ')
+                -- vim.opt_local.errorformat = '%f:%l:%c: %t%n %m'
+            end
+            opts.makeprg = nil
+            opts.errorformat = nil
+        end
+
+        if utils.get_formatter and utils.format then
+            local formatter = utils.get_formatter()
+            if formatter then
+                vim.opt_local.formatexpr = ([[luaeval('require"filetypes.%s".format()')]]):format(ft)
+            end
+            opts.formatexpr = nil
+        end
+
+        if utils.setup then
+            utils.setup()
+        end
+    end
+
+    for option, value in pairs(opts) do
+        vim.opt_local[option] = value
+    end
+end
+
 return M

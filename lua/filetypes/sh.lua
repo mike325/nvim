@@ -13,7 +13,7 @@ local M = {
     formatprg = {
         shfmt = {
             '-i',
-            'WITHD',
+            'WIDTH',
             '-s',
             '-ci',
             '-kp',
@@ -21,6 +21,25 @@ local M = {
         },
     },
 }
+
+function M.get_formatter()
+    local cmd
+    if executable 'shfmt' then
+        cmd = { 'shfmt' }
+        vim.list_extend(cmd, M.formatprg[cmd[1]])
+        cmd = require('utils.buffers').replace_indent(cmd)
+    end
+    return cmd
+end
+
+function M.get_linter()
+    local cmd
+    if executable 'shellcheck' then
+        cmd = { 'shellcheck' }
+        vim.list_extend(cmd, M.makeprg[cmd[1]])
+    end
+    return cmd
+end
 
 function M.format()
     local buffer = vim.api.nvim_get_current_buf()
@@ -30,19 +49,11 @@ function M.format()
         local cmd = { 'shfmt' }
         vim.list_extend(cmd, M.formatprg.shfmt)
 
-        for idx, arg in ipairs(cmd) do
-            if arg == 'WIDTH' then
-                cmd[idx] = require('utils.buffers').get_indent()
-                break
-            end
-        end
-
         external_formatprg {
-            cmd = cmd,
+            cmd = require('utils.buffers').replace_indent(cmd),
             buffer = buffer,
         }
     else
-        -- Fallback to internal formater
         return 1
     end
 

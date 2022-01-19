@@ -59,60 +59,34 @@ local M = {
 M.makeprg.flake8 = { '--max-line-length=120', '--ignore=' .. table.concat(M.pyignores, ',') }
 M.makeprg.pycodestyle = M.makeprg.flake8
 
-function M.format()
-    local buffer = vim.api.nvim_get_current_buf()
-    local external_formatprg = require('utils.functions').external_formatprg
-
+function M.get_formatter()
     local project = vim.fn.findfile('pyproject.toml', '.;')
     project = project ~= '' and realpath(project) or nil
 
+    local cmd
     if executable 'black' then
-        local cmd = { 'black' }
+        cmd = { 'black' }
         if not project then
-            vim.list_extend(cmd, M.formatprg.black)
+            vim.list_extend(cmd, M.formatprg[cmd[1]])
         else
             vim.list_extend(cmd, { '--config', project })
         end
-        external_formatprg {
-            cmd = cmd,
-            buffer = buffer,
-            efm = '%trror: cannot format %f: Cannot parse %l:c: %m,%trror: cannot format %f: %m',
-        }
-    elseif executable 'yapf' then
-        local cmd = { 'yapf' }
+    elseif executable 'yapf' or executable 'autopep8' then
+        cmd = { executable 'yapf' and 'yapf' or 'autopep8' }
         if not project then
-            vim.list_extend(cmd, M.formatprg.yapf)
+            vim.list_extend(cmd, M.formatprg[cmd[1]])
         else
-            table.insert(cmd, 'i')
+            table.insert(cmd, '-i')
         end
-        external_formatprg {
-            cmd = cmd,
-            buffer = buffer,
-        }
-    elseif executable 'autopep8' then
-        local cmd = { 'autopep8' }
-        if not project then
-            vim.list_extend(cmd, M.formatprg.autopep8)
-        else
-            table.insert(cmd, 'i')
-        end
-        external_formatprg {
-            cmd = cmd,
-            buffer = buffer,
-        }
-    else
-        -- Fallback to internal formater
-        return 1
     end
 
-    return 0
+    return cmd
 end
 
-function M.setup()
-    vim.opt_local.formatexpr = [[luaeval('RELOAD"filetypes.python".format()')]]
-
+function M.get_linter()
+    local cmd
     if executable 'flake8' then
-        local cmd = { 'flake8' }
+        cmd = { 'flake8' }
         local global_settings = vim.fn.expand(sys.name == 'windows' and '~/.flake8' or '~/.config/flake8')
 
         if
@@ -123,24 +97,44 @@ function M.setup()
             -- and not is_file './setup.py'
             -- and not is_file './pyproject.toml'
         then
-            vim.list_extend(cmd, M.makeprg.flake8)
+            vim.list_extend(cmd, M.makeprg[cmd[1]])
         end
-        table.insert(cmd, '%')
-
-        vim.opt_local.makeprg = table.concat(cmd, ' ')
-        vim.opt_local.errorformat = '%f:%l:%c: %t%n %m'
     elseif executable 'pycodestyle' then
-        local cmd = { 'pycodestyle' }
-        vim.list_extend(cmd, M.makeprg.pycodestyle)
-        table.insert(cmd, '%')
-        vim.opt_local.makeprg = table.concat(cmd, ' ')
-        vim.opt_local.errorformat = '%f:%l:%c: %t%n %m'
-    else
-        vim.opt_local.makeprg =
-            [[python3 -c "import py_compile,sys; sys.stderr=sys.stdout; py_compile.compile(r'%')"]]
-        vim.opt_local.errorformat = '%C %.%#,%A  File "%f", line %l%.%#,%Z%[%^ ]%@=%m'
+        cmd = { 'pycodestyle' }
+        vim.list_extend(cmd, M.makeprg[cmd[1]])
+        -- else
+        --     cmd = {'python3', '-c', [["import py_compile,sys; sys.stderr=sys.stdout; py_compile.compile(r'%')"]]}
     end
 
+    return cmd
+end
+
+function M.format()
+    local buffer = vim.api.nvim_get_current_buf()
+    local external_formatprg = require('utils.functions').external_formatprg
+
+    local cmd = M.get_formatter()
+
+    if cmd then
+        table.insert(cmd, '%')
+        local efm
+        if cmd[1] == 'black' then
+            efm = '%trror: cannot format %f: Cannot parse %l:c: %m,%trror: cannot format %f: %m'
+        end
+        external_formatprg {
+            cmd = cmd,
+            buffer = buffer,
+            efm = efm,
+        }
+    else
+        -- Fallback to internal formater
+        return 1
+    end
+
+    return 0
+end
+
+function M.setup()
     if not plugins['vim-apathy'] then
         local buf = nvim.get_current_buf()
         local merge_uniq_list = require('utils.tables').merge_uniq_list
