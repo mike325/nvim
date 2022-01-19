@@ -2,7 +2,7 @@
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.0.1
+    rev: v4.1.0
     hooks:
       - id: check-xml
       - id: check-yaml
@@ -51,7 +51,7 @@ repos:
             )$
         # args: [ '--whitespaces-count', '2' ]  # defaults to: 4
   - repo: https://github.com/sirosen/check-jsonschema
-    rev: 0.5.1
+    rev: 0.10.0
     hooks:
       - id: check-github-workflows
       - id: check-github-actions
@@ -67,7 +67,7 @@ repos:
         #   '--ignore=E203,E226,E231,E261,E262,E265,E302,W391'
         # ]
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: 'v0.910-1'  # Use the sha / tag you want to point at
+    rev: 'v0.931'  # Use the sha / tag you want to point at
     hooks:
       - id: mypy
         # args: [
@@ -77,11 +77,21 @@ repos:
         #   # '--follow-imports', 'silent',  # {normal,silent,skip,error}
         # ]
   - repo: https://github.com/psf/black
-    rev: 21.9b0  # Latest: 21.7b0 or stable
+    rev: 21.12b0  # or stable
     hooks:
       - id: black
-        language_version: python3
         args: [ --check, --diff ]
+        language_version: python3
+  - repo: https://github.com/Vimjas/vint
+    rev: v0.4a3  # Use the sha / tag you want to point at
+    hooks:
+      - id: vint
+        args: ['--enable-neovim', '-t', '-w']
+        exclude: |
+            (?x)^(
+                plug/.*|
+                ftdetect/.*
+            )$
   - repo: local
     hooks:
       - id: shellcheck
