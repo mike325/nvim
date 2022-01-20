@@ -8,12 +8,19 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
+      - name: Cache precommit virutalenvs
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cache/pre-commit/
+          key: ${{runner.os}}-${{hashFiles('.pre-commit-config.yaml')}}
       - name: OS Info
         run: |
           sudo apt-get install wget
-          wget -O screenfetch-dev https://git.io/vaHfR
-          chmod +x screenfetch-dev
-          ./screenfetch-dev
+          mkdir -p ~/.local/bin/
+          wget -O ~/.local/bin/screenfetch https://git.io/vaHfR
+          chmod +x ~/.local/bin/screenfetch
+          ~/.local/bin/screenfetch
       - name: Install dependencies
         run: |
           sudo apt-get install -y \
