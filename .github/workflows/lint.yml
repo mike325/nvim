@@ -13,7 +13,8 @@ jobs:
         with:
           path: |
             ~/.cache/pre-commit/
-          key: ${{runner.os}}-${{hashFiles('.pre-commit-config.yaml')}}
+            ~/.cache/pip/
+          key: ${{runner.os}}-pre-commit-${{hashFiles('.pre-commit-config.yaml')}}
       - name: OS Info
         run: |
           sudo apt-get install wget
