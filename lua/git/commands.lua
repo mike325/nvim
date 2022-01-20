@@ -259,7 +259,7 @@ function M.set_commands()
         args = { nargs = '?', force = true, complete = [[customlist,neovim#gitfiles_stage]] },
     }
 
-    if packer_plugins['vim-fugitive'] then
+    if packer_plugins and packer_plugins['vim-fugitive'] then
         return
     end
 

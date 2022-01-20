@@ -14,7 +14,7 @@ end
 
 local min = vim.env.VIM_MIN ~= nil or vim.g.minimal ~= nil
 local commet_txtobj = nil
-if (packer_plugins and packer_plugins['vim-textobj-comment'] == nil) or min then
+if not packer_plugins or (packer_plugins and not packer_plugins['vim-textobj-comment']) or min then
     commet_txtobj = '@comment.outer'
 end
 
