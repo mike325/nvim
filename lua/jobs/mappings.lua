@@ -5,7 +5,6 @@ if not nvim.has 'nvim-0.5' then
 end
 
 local set_command = require('neovim.commands').set_command
-local set_mapping = require('neovim.mappings').set_mapping
 -- local set_autocmd = require'neovim.autocmds'.set_autocmd
 
 local jobs = STORAGE.jobs
@@ -49,15 +48,10 @@ set_command {
     args = { nargs = '?', bang = true, force = true },
 }
 
-set_mapping {
-    mode = 'n',
-    lhs = '=p',
-    rhs = function()
-        if not vim.t.progress_win or not vim.api.nvim_win_is_valid(vim.t.progress_win) then
-            require('utils.windows').progress()
-        else
-            vim.api.nvim_win_close(vim.t.progress_win, true)
-        end
-    end,
-    args = { noremap = true, silent = true },
-}
+vim.keymap.set('n', '=p', function()
+    if not vim.t.progress_win or not vim.api.nvim_win_is_valid(vim.t.progress_win) then
+        require('utils.windows').progress()
+    else
+        vim.api.nvim_win_close(vim.t.progress_win, true)
+    end
+end, { noremap = true, silent = true })

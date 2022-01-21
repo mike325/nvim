@@ -10,7 +10,6 @@ local databases = STORAGE.databases
 local has_cjson = STORAGE.has_cjson
 
 local set_command = require('neovim.commands').set_command
--- local set_mapping = require'neovim.mappings'.set_mapping
 
 local M = {
     makeprg = {

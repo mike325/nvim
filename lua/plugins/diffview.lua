@@ -9,7 +9,6 @@ end
 local nvim = require 'neovim'
 
 -- local set_command = require'neovim.commands'.set_command
-local set_mapping = require('neovim.mappings').set_mapping
 local get_mapping = require('neovim.mappings').get_mapping
 
 local cb = require('diffview.config').diffview_callback
@@ -54,25 +53,20 @@ function M.set_mappings()
 
         for map, args in pairs(mappings) do
             table.insert(diff_mappings, get_mapping { mode = 'n', lhs = map })
-            pcall(set_mapping, { mode = 'n', lhs = map })
-            set_mapping {
-                mode = 'n',
-                lhs = map,
-                rhs = args.rhs,
-                args = args.args,
-            }
+            pcall(vim.keymap.del, 'n', map)
+            vim.keymap.set('n', map, args.rhs, args.args)
         end
 
         vim.g.restore_diffview_maps = diff_mappings
         local diff_ft = vim.opt_local.filetype:get()
         if diff_ft == 'DiffviewFiles' or diff_ft == 'DiffFileHistory' then
-            set_mapping { mode = 'n', lhs = 'q' }
-            set_mapping {
-                mode = 'n',
-                lhs = 'q',
-                rhs = '<cmd>DiffviewClose<CR>',
-                args = { noremap = true, silent = true, nowait = true, buffer = true },
-            }
+            pcall(vim.keymap.del, 'n', 'q')
+            vim.keymap.set(
+                'n',
+                'q',
+                '<cmd>DiffviewClose<CR>',
+                { noremap = true, silent = true, nowait = true, buffer = true }
+            )
         end
     elseif vim.g.restore_diffview_maps then
         for _, map in pairs(vim.g.restore_diffview_maps) do
@@ -83,13 +77,8 @@ function M.set_mappings()
                 silent = map.silent,
                 script = map.script,
             }
-            pcall(set_mapping, { mode = map.mode, lhs = map.lhs })
-            set_mapping {
-                mode = map.mode,
-                lhs = map.lhs,
-                rhs = map.rhs,
-                args = args,
-            }
+            pcall(vim.keymap.del, map.mode, map.lhs)
+            vim.keymap.set(map.mode, map.lhs, map.rhs, args)
         end
         vim.g.restore_diffview_maps = nil
     end

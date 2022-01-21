@@ -152,6 +152,7 @@ local nvim = {
             pcall(api.nvim_call_function, 'setreg', { k, v })
         end,
     }),
+    keymap = require('neovim.mappings').keymap,
 }
 
 setmetatable(nvim, {

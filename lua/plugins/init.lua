@@ -118,7 +118,7 @@ packer.startup(function()
                 ['.ycm_extra_conf.py']         = { type = 'YCM' },
                 ['pyproject.toml']             = { type = 'PyProject' },
                 ['.flake8']                    = { type = 'Flake' },
-                ['stylua.toml']                = { type = 'Stylua' },
+                ['.stylua.toml']               = { type = 'Stylua' },
                 ['.project.vim']               = { type = 'Project' },
                 ['.clang-format']              = { type = 'Clang' },
                 ['.clang-*']                   = { type = 'Clang' },
@@ -622,7 +622,6 @@ packer.startup(function()
     use {
         'jose-elias-alvarez/null-ls.nvim',
         wants = { 'nvim-lspconfig', 'plenary.nvim' },
-        -- after = 'nvim-lspconfig',
         branch = (vim.fn.has 'nvim-0.6' == 0 and '0.5.1-compat' or nil),
     }
 

@@ -2,10 +2,6 @@ local load_module = require('utils.helpers').load_module
 
 local plugins = require('neovim').plugins
 
--- local set_autocmd = require('neovim.autocmds').set_autocmd
--- local set_command = require'neovim.commands'.set_command
--- local set_mapping = require'neovim.mappings'.set_mapping
-
 local cmp = load_module 'cmp'
 if not cmp then
     return false

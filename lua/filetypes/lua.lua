@@ -24,8 +24,7 @@ local M = {
             '--quote-style',
             'AutoPreferSingle',
             '--column-width',
-            '120',
-            -- '-',
+            '110',
         },
     },
 }
@@ -34,8 +33,14 @@ function M.get_formatter()
     local cmd
     if executable 'stylua' then
         cmd = { 'stylua' }
-        vim.list_extend(cmd, M.formatprg[cmd[1]])
-        cmd = require('utils.buffers').replace_indent(cmd)
+        local config = vim.fn.findfile('.stylua.toml', '.;')
+        if config == '' then
+            config = vim.fn.findfile('stylua.toml', '.;')
+            if config == '' then
+                vim.list_extend(cmd, M.formatprg[cmd[1]])
+                cmd = require('utils.buffers').replace_indent(cmd)
+            end
+        end
     end
     return cmd
 end

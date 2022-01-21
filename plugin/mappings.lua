@@ -12,7 +12,6 @@ local read_json = require('utils.files').read_json
 
 local set_abbr = require('neovim.abbrs').set_abbr
 local set_command = require('neovim.commands').set_command
-local set_mapping = require('neovim.mappings').set_mapping
 
 local noremap = { noremap = true }
 local noremap_silent = { noremap = true, silent = true }
@@ -35,97 +34,84 @@ set_abbr { mode = 'c', lhs = 'Qa1', rhs = 'qa!' }
 set_abbr { mode = 'c', lhs = 'Qa!', rhs = 'qa!' }
 set_abbr { mode = 'c', lhs = 'QA!', rhs = 'qa!' }
 
-set_mapping { mode = 'c', lhs = '<C-n>', rhs = '<down>', args = noremap }
-set_mapping { mode = 'c', lhs = '<C-p>', rhs = '<up>', args = noremap }
-set_mapping {
-    mode = 'c',
-    lhs = '<C-r><C-w>',
-    rhs = "<C-r>=escape(expand('<cword>'), '#')<CR>",
-    args = noremap,
-}
+vim.keymap.set('c', '<C-n>', '<down>', noremap)
+vim.keymap.set('c', '<C-p>', '<up>', noremap)
+vim.keymap.set('c', '<C-r><C-w>', "<C-r>=escape(expand('<cword>'), '#')<CR>", noremap)
 
-set_mapping { mode = 'n', lhs = ',', rhs = ':', args = noremap }
-set_mapping { mode = 'x', lhs = ',', rhs = ':', args = noremap }
-set_mapping { mode = 'n', lhs = 'Y', rhs = 'y$', args = noremap }
-set_mapping { mode = 'x', lhs = '$', rhs = '$h', args = noremap }
-set_mapping { mode = 'n', lhs = 'Q', rhs = 'o<ESC>', args = noremap }
-set_mapping { mode = 'n', lhs = 'J', rhs = 'm`J``', args = noremap }
-set_mapping { mode = 'i', lhs = 'jj', rhs = '<ESC>' }
-set_mapping { mode = 'x', lhs = '<BS>', rhs = '<ESC>', args = noremap }
+vim.keymap.set('n', ',', ':', noremap)
+vim.keymap.set('x', ',', ':', noremap)
+vim.keymap.set('n', 'Y', 'y$', noremap)
+vim.keymap.set('x', '$', '$h', noremap)
+vim.keymap.set('n', 'Q', 'o<ESC>', noremap)
+vim.keymap.set('n', 'J', 'm`J``', noremap)
+vim.keymap.set('i', 'jj', '<ESC>')
+vim.keymap.set('x', '<BS>', '<ESC>', noremap)
 
-set_mapping { mode = 'n', lhs = '<leader>h', rhs = '<C-w>h', args = noremap }
-set_mapping { mode = 'n', lhs = '<leader>j', rhs = '<C-w>j', args = noremap }
-set_mapping { mode = 'n', lhs = '<leader>k', rhs = '<C-w>k', args = noremap }
-set_mapping { mode = 'n', lhs = '<leader>l', rhs = '<C-w>l', args = noremap }
--- set_mapping{ mode = 'n', lhs = '<leader>b', rhs = '<C-w>b', args = noremap }
--- set_mapping{ mode = 'n', lhs = '<leader>t', rhs = '<C-w>t', args = noremap }
+vim.keymap.set('n', '<leader>h', '<C-w>h', noremap)
+vim.keymap.set('n', '<leader>j', '<C-w>j', noremap)
+vim.keymap.set('n', '<leader>k', '<C-w>k', noremap)
+vim.keymap.set('n', '<leader>l', '<C-w>l', noremap)
 
-set_mapping { mode = 'n', lhs = '<leader>e', rhs = '<C-w>=', args = noremap }
+vim.keymap.set('n', '<leader>e', '<C-w>=', noremap)
+vim.keymap.set('n', '<leader>1', '1gt', noremap)
+vim.keymap.set('n', '<leader>2', '2gt', noremap)
+vim.keymap.set('n', '<leader>3', '3gt', noremap)
+vim.keymap.set('n', '<leader>4', '4gt', noremap)
+vim.keymap.set('n', '<leader>5', '5gt', noremap)
+vim.keymap.set('n', '<leader>6', '6gt', noremap)
+vim.keymap.set('n', '<leader>7', '7gt', noremap)
+vim.keymap.set('n', '<leader>8', '8gt', noremap)
+vim.keymap.set('n', '<leader>9', '9gt', noremap)
+vim.keymap.set('n', '<leader>0', '<cmd>tablast<CR>', noremap)
+vim.keymap.set('n', '<leader><leader>n', '<cmd>tabnew<CR>', noremap)
 
-set_mapping { mode = 'n', lhs = '<leader>1', rhs = '1gt', args = noremap }
-set_mapping { mode = 'n', lhs = '<leader>2', rhs = '2gt', args = noremap }
-set_mapping { mode = 'n', lhs = '<leader>3', rhs = '3gt', args = noremap }
-set_mapping { mode = 'n', lhs = '<leader>4', rhs = '4gt', args = noremap }
-set_mapping { mode = 'n', lhs = '<leader>5', rhs = '5gt', args = noremap }
-set_mapping { mode = 'n', lhs = '<leader>6', rhs = '6gt', args = noremap }
-set_mapping { mode = 'n', lhs = '<leader>7', rhs = '7gt', args = noremap }
-set_mapping { mode = 'n', lhs = '<leader>8', rhs = '8gt', args = noremap }
-set_mapping { mode = 'n', lhs = '<leader>9', rhs = '9gt', args = noremap }
-set_mapping { mode = 'n', lhs = '<leader>0', rhs = '<cmd>tablast<CR>', args = noremap }
-set_mapping { mode = 'n', lhs = '<leader><leader>n', rhs = '<cmd>tabnew<CR>', args = noremap }
+vim.keymap.set('n', '-', '<cmd>Explore<CR>', noremap)
 
-set_mapping { mode = 'n', lhs = '-', rhs = '<cmd>Explore<CR>', args = noremap }
+vim.keymap.set('n', '&', '<cmd>&&<CR>', noremap)
+vim.keymap.set('x', '&', '<cmd>&&<CR>', noremap)
 
-set_mapping { mode = 'n', lhs = '&', rhs = '<cmd>&&<CR>', args = noremap }
-set_mapping { mode = 'x', lhs = '&', rhs = '<cmd>&&<CR>', args = noremap }
+vim.keymap.set('n', '/', 'ms/', noremap)
+vim.keymap.set('n', 'g/', 'ms/\\v', noremap)
+vim.keymap.set('n', '0', '^', noremap)
+vim.keymap.set('n', '^', '0', noremap)
 
-set_mapping { mode = 'n', lhs = '/', rhs = 'ms/', args = noremap }
-set_mapping { mode = 'n', lhs = 'g/', rhs = 'ms/\\v', args = noremap }
-set_mapping { mode = 'n', lhs = '0', rhs = '^', args = noremap }
-set_mapping { mode = 'n', lhs = '^', rhs = '0', args = noremap }
+vim.keymap.set('n', 'gV', '`[v`]', noremap)
 
-set_mapping { mode = 'n', lhs = 'gV', rhs = '`[v`]', args = noremap }
+vim.keymap.set('t', '<ESC>', '<C-\\><C-n>', noremap)
 
-set_mapping { mode = 't', lhs = '<ESC>', rhs = '<C-\\><C-n>', args = noremap }
-
-set_mapping {
-    mode = 'n',
-    lhs = '<BS>',
-    rhs = function()
-        local ok, _ = pcall(nvim.ex.pop)
-        if not ok then
-            local key = nvim.replace_termcodes('<C-o>', true, false, true)
-            nvim.feedkeys(key, 'n', true)
-            -- local jumps
-            -- ok, jumps = pcall(nvim.exec, 'jumps', true)
-            -- if ok and #jumps > 0 then
-            --     jumps = vim.split(jumps, '\n')
-            --     table.remove(jumps, 1)
-            --     table.remove(jumps, #jumps)
-            --     local current_jump
-            --     for i=1,#jumps do
-            --         local jump = vim.trim(jumps[i]);
-            --         jump = split(jump, ' ');
-            --         if jump[1] == 0 then
-            --             current_jump = i;
-            --         end
-            --         jumps[i] = jump;
-            --     end
-            --     if current_jump > 1 then
-            --         local current_buf = nvim.win.get_buf(0)
-            --         local jump_buf = jumps[current_jump - 1][4]
-            --         if current_buf ~= jump_buf then
-            --             if not nvim.buf.is_valid(jump_buf) or not nvim.buf.is_loaded(jump_buf) then
-            --                 nvim.ex.edit(jump_buf)
-            --             end
-            --         end
-            --         nvim.win.set_cursor(0, jumps[current_jump - 1][2], jumps[current_jump - 1][3])
-            --     end
-            -- end
-        end
-    end,
-    args = noremap_silent,
-}
+vim.keymap.set('n', '<BS>', function()
+    local ok, _ = pcall(nvim.ex.pop)
+    if not ok then
+        local key = nvim.replace_termcodes('<C-o>', true, false, true)
+        nvim.feedkeys(key, 'n', true)
+        -- local jumps
+        -- ok, jumps = pcall(nvim.exec, 'jumps', true)
+        -- if ok and #jumps > 0 then
+        --     jumps = vim.split(jumps, '\n')
+        --     table.remove(jumps, 1)
+        --     table.remove(jumps, #jumps)
+        --     local current_jump
+        --     for i=1,#jumps do
+        --         local jump = vim.trim(jumps[i]);
+        --         jump = split(jump, ' ');
+        --         if jump[1] == 0 then
+        --             current_jump = i;
+        --         end
+        --         jumps[i] = jump;
+        --     end
+        --     if current_jump > 1 then
+        --         local current_buf = nvim.win.get_buf(0)
+        --         local jump_buf = jumps[current_jump - 1][4]
+        --         if current_buf ~= jump_buf then
+        --             if not nvim.buf.is_valid(jump_buf) or not nvim.buf.is_loaded(jump_buf) then
+        --                 nvim.ex.edit(jump_buf)
+        --             end
+        --         end
+        --         nvim.win.set_cursor(0, jumps[current_jump - 1][2], jumps[current_jump - 1][3])
+        --     end
+        -- end
+    end
+end, noremap_silent)
 
 local function nicenext(dir)
     local view = vim.fn.winsaveview()
@@ -135,257 +121,93 @@ local function nicenext(dir)
     end
 end
 
-set_mapping {
-    mode = 'n',
-    lhs = 'n',
-    rhs = function()
-        nicenext 'n'
-    end,
-    args = noremap_silent,
-}
+vim.keymap.set('n', 'n', function()
+    nicenext 'n'
+end, noremap_silent)
 
-set_mapping {
-    mode = 'n',
-    lhs = 'N',
-    rhs = function()
-        nicenext 'N'
-    end,
-    args = noremap_silent,
-}
+vim.keymap.set('n', 'N', function()
+    nicenext 'N'
+end, noremap_silent)
 
-set_mapping {
-    mode = 'n',
-    lhs = '<S-tab>',
-    rhs = '<C-o>',
-    args = noremap,
-}
+vim.keymap.set('n', '<S-tab>', '<C-o>', noremap)
+vim.keymap.set('x', '<', '<gv', noremap)
+vim.keymap.set('x', '>', '>gv', noremap)
 
-set_mapping {
-    mode = 'x',
-    lhs = '<',
-    rhs = '<gv',
-    args = noremap,
-}
+vim.keymap.set(
+    'n',
+    'j',
+    [[v:count ? (v:count >= 3 ? "m'" . v:count : '') . 'j' : 'gj']],
+    { noremap = true, expr = true }
+)
 
-set_mapping {
-    mode = 'x',
-    lhs = '>',
-    rhs = '>gv',
-    args = noremap,
-}
+vim.keymap.set(
+    'n',
+    'k',
+    [[v:count ? (v:count >= 3 ? "m'" . v:count : '') . 'k' : 'gk']],
+    { noremap = true, expr = true }
+)
 
-set_mapping {
-    mode = 'n',
-    lhs = 'j',
-    rhs = [[v:count ? (v:count >= 3 ? "m'" . v:count : '') . 'j' : 'gj']],
-    args = { noremap = true, expr = true },
-}
+vim.keymap.set('n', '<leader><leader>e', '<cmd>echo expand("%")<CR>', noremap)
 
-set_mapping {
-    mode = 'n',
-    lhs = 'k',
-    rhs = [[v:count ? (v:count >= 3 ? "m'" . v:count : '') . 'k' : 'gk']],
-    args = { noremap = true, expr = true },
-}
+vim.keymap.set('n', 'i', function()
+    local current_line = vim.fn.line '.'
+    local last_line = vim.fn.line '$'
+    local buftype = vim.bo.buftype
+    if #vim.fn.getline '.' == 0 and last_line ~= current_line and buftype ~= 'terminal' then
+        return '"_ddO'
+    end
+    return 'i'
+end, { noremap = true, expr = true })
 
-set_mapping {
-    mode = 'n',
-    lhs = '<leader><leader>e',
-    rhs = '<cmd>echo expand("%")<CR>',
-    args = noremap,
-}
+vim.keymap.set('n', 'c*', 'm`*``cgn', noremap)
+vim.keymap.set('n', 'c#', 'm`#``cgN', noremap)
+vim.keymap.set('n', 'cg*', 'm`g*``cgn', noremap)
+vim.keymap.set('n', 'cg#', 'm`#``cgN', noremap)
+vim.keymap.set('x', 'c', [["cy/<C-r>c<CR>Ncgn]], noremap)
+vim.keymap.set('n', '¿', '`', noremap)
+vim.keymap.set('x', '¿', '`', noremap)
+vim.keymap.set('n', '¿¿', '``', noremap)
+vim.keymap.set('x', '¿¿', '``', noremap)
+vim.keymap.set('n', '¡', '^', noremap)
+vim.keymap.set('x', '¡', '^', noremap)
 
--- set_mapping{
---     mode = 'n',
---     lhs = '<leader>c',
---     rhs = '<cmd>pclose<CR>',
---     args = noremap,
--- }
+vim.keymap.set('n', '<leader>p', '<C-^>', noremap)
 
-set_mapping {
-    mode = 'n',
-    lhs = 'i',
-    rhs = function()
-        local current_line = vim.fn.line '.'
-        local last_line = vim.fn.line '$'
-        local buftype = vim.bo.buftype
-        if #vim.fn.getline '.' == 0 and last_line ~= current_line and buftype ~= 'terminal' then
-            return '"_ddO'
-        end
-        return 'i'
-    end,
-    args = { noremap = true, expr = true },
-}
+vim.keymap.set('n', '<leader>q', function()
+    local tabs = nvim.list_tabpages()
+    local wins = nvim.tab.list_wins(0)
+    if #wins > 1 and vim.fn.expand '%' ~= '[Command Line]' then
+        nvim.win.hide(0)
+    elseif #tabs > 1 then
+        nvim.ex['tabclose!']()
+    else
+        nvim.exec('quit!', false)
+    end
+end, noremap_silent)
 
-set_mapping { mode = 'n', lhs = 'c*', rhs = 'm`*``cgn', args = noremap }
-set_mapping { mode = 'n', lhs = 'c#', rhs = 'm`#``cgN', args = noremap }
-set_mapping { mode = 'n', lhs = 'cg*', rhs = 'm`g*``cgn', args = noremap }
-set_mapping { mode = 'n', lhs = 'cg#', rhs = 'm`#``cgN', args = noremap }
-set_mapping { mode = 'x', lhs = 'c', rhs = [["cy/<C-r>c<CR>Ncgn]], args = noremap }
+vim.keymap.set('i', '<C-U>', '<C-G>u<C-U>', noremap)
 
-set_mapping { mode = 'n', lhs = '¿', rhs = '`', args = noremap }
-set_mapping { mode = 'x', lhs = '¿', rhs = '`', args = noremap }
-set_mapping { mode = 'n', lhs = '¿¿', rhs = '``', args = noremap }
-set_mapping { mode = 'x', lhs = '¿¿', rhs = '``', args = noremap }
+vim.keymap.set('n', '<leader>d', function()
+    require('utils.buffers').delete()
+end)
 
-set_mapping { mode = 'n', lhs = '¡', rhs = '^', args = noremap }
-set_mapping { mode = 'x', lhs = '¡', rhs = '^', args = noremap }
-
--- set_mapping{ mode = 'n', lhs = '<leader>w', rhs = '<cmd>update<CR>', args = noremap }
-
-set_mapping { mode = 'n', lhs = '<leader>p', rhs = '<C-^>', args = noremap }
--- set_mapping{ mode = 'n', lhs = '<leader>x', rhs = '<cmd>%!xxd<CR>',  args = noremap }
-
-set_mapping {
-    mode = 'n',
-    lhs = '<leader>q',
-    rhs = function()
-        local tabs = nvim.list_tabpages()
-        local wins = nvim.tab.list_wins(0)
-        if #wins > 1 and vim.fn.expand '%' ~= '[Command Line]' then
-            nvim.win.hide(0)
-        elseif #tabs > 1 then
-            nvim.ex['tabclose!']()
-        else
-            nvim.exec('quit!', false)
-        end
-    end,
-    args = noremap_silent,
-}
-
-set_mapping {
-    mode = 'i',
-    lhs = '<C-U>',
-    rhs = '<C-G>u<C-U>',
-    args = noremap,
-}
-
-set_mapping {
-    mode = 'n',
-    lhs = '<leader>d',
-    rhs = function()
-        require('utils.buffers').delete()
-    end,
-}
-
-set_mapping {
-    mode = 'n',
-    lhs = '[Q',
-    rhs = ':<C-U>cfirst<CR>zvzz',
-    args = noremap_silent,
-}
-
-set_mapping {
-    mode = 'n',
-    lhs = ']Q',
-    rhs = ':<C-U>clast<CR>zvzz',
-    args = noremap_silent,
-}
-
-set_mapping {
-    mode = 'n',
-    lhs = '[q',
-    rhs = ':<C-U>exe "".(v:count ? v:count : "")."cprevious"<CR>zvzz',
-    args = noremap_silent,
-}
-
-set_mapping {
-    mode = 'n',
-    lhs = ']q',
-    rhs = ':<C-U>exe "".(v:count ? v:count : "")."cnext"<CR>zvzz',
-    args = noremap_silent,
-}
-
-set_mapping {
-    mode = 'n',
-    lhs = '[L',
-    rhs = ':<C-U>lfirst<CR>zvzz',
-    args = noremap_silent,
-}
-
-set_mapping {
-    mode = 'n',
-    lhs = ']L',
-    rhs = ':<C-U>llast<CR>zvzz',
-    args = noremap_silent,
-}
-
-set_mapping {
-    mode = 'n',
-    lhs = '[l',
-    rhs = ':<C-U>exe "".(v:count ? v:count : "")."lprevious"<CR>zvzz',
-    args = noremap_silent,
-}
-
-set_mapping {
-    mode = 'n',
-    lhs = ']l',
-    rhs = ':<C-U>exe "".(v:count ? v:count : "")."lnext"<CR>zvzz',
-    args = noremap_silent,
-}
-
-set_mapping {
-    mode = 'n',
-    lhs = '[B',
-    rhs = ':<C-U>bfirst<CR>zvzz',
-    args = noremap_silent,
-}
-
-set_mapping {
-    mode = 'n',
-    lhs = ']B',
-    rhs = ':<C-U>blast<CR>zvzz',
-    args = noremap_silent,
-}
-
-set_mapping {
-    mode = 'n',
-    lhs = '[b',
-    rhs = ':<C-U>exe "".(v:count ? v:count : "")."bprevious"<CR>',
-    args = noremap_silent,
-}
-
-set_mapping {
-    mode = 'n',
-    lhs = ']b',
-    rhs = ':<C-U>exe "".(v:count ? v:count : "")."bnext"<CR>',
-    args = noremap_silent,
-}
-
-set_mapping {
-    mode = 'n',
-    lhs = ']<Space>',
-    rhs = [[:<C-U>lua require"utils.helpers".add_nl(true)<CR>]],
-    args = noremap_silent,
-}
-
-set_mapping {
-    mode = 'n',
-    lhs = '[<Space>',
-    rhs = [[:<C-U>lua require"utils.helpers".add_nl(false)<CR>]],
-    args = noremap_silent,
-}
-
-set_mapping {
-    mode = 'n',
-    lhs = ']e',
-    rhs = [[:<C-U>lua require"utils.helpers".move_line(true)<CR>]],
-    args = noremap_silent,
-}
-
-set_mapping {
-    mode = 'n',
-    lhs = '[e',
-    rhs = [[:<C-U>lua require"utils.helpers".move_line(false)<CR>]],
-    args = noremap_silent,
-}
-
-set_mapping {
-    mode = 'n',
-    lhs = '<C-L>',
-    rhs = '<cmd>nohlsearch|diffupdate<CR>',
-    args = noremap_silent,
-}
+vim.keymap.set('n', '[Q', ':<C-U>cfirst<CR>zvzz', noremap_silent)
+vim.keymap.set('n', ']Q', ':<C-U>clast<CR>zvzz', noremap_silent)
+vim.keymap.set('n', '[q', ':<C-U>exe "".(v:count ? v:count : "")."cprevious"<CR>zvzz', noremap_silent)
+vim.keymap.set('n', ']q', ':<C-U>exe "".(v:count ? v:count : "")."cnext"<CR>zvzz', noremap_silent)
+vim.keymap.set('n', '[L', ':<C-U>lfirst<CR>zvzz', noremap_silent)
+vim.keymap.set('n', ']L', ':<C-U>llast<CR>zvzz', noremap_silent)
+vim.keymap.set('n', '[l', ':<C-U>exe "".(v:count ? v:count : "")."lprevious"<CR>zvzz', noremap_silent)
+vim.keymap.set('n', ']l', ':<C-U>exe "".(v:count ? v:count : "")."lnext"<CR>zvzz', noremap_silent)
+vim.keymap.set('n', '[B', ':<C-U>bfirst<CR>zvzz', noremap_silent)
+vim.keymap.set('n', ']B', ':<C-U>blast<CR>zvzz', noremap_silent)
+vim.keymap.set('n', '[b', ':<C-U>exe "".(v:count ? v:count : "")."bprevious"<CR>', noremap_silent)
+vim.keymap.set('n', ']b', ':<C-U>exe "".(v:count ? v:count : "")."bnext"<CR>', noremap_silent)
+vim.keymap.set('n', ']<Space>', [[:<C-U>lua require"utils.helpers".add_nl(true)<CR>]], noremap_silent)
+vim.keymap.set('n', '[<Space>', [[:<C-U>lua require"utils.helpers".add_nl(false)<CR>]], noremap_silent)
+vim.keymap.set('n', ']e', [[:<C-U>lua require"utils.helpers".move_line(true)<CR>]], noremap_silent)
+vim.keymap.set('n', '[e', [[:<C-U>lua require"utils.helpers".move_line(false)<CR>]], noremap_silent)
+vim.keymap.set('n', '<C-L>', '<cmd>nohlsearch|diffupdate<CR>', noremap_silent)
 
 set_command {
     lhs = 'ClearQf',
@@ -403,53 +225,43 @@ set_command {
     args = { nargs = '?', force = true },
 }
 
-set_mapping {
-    mode = 'n',
-    lhs = '<leader><leader>p',
-    rhs = function()
-        if nvim.t.swap_window == nil then
-            nvim.t.swap_window = 1
-            nvim.t.swap_cursor = nvim.win.get_cursor(0)
-            nvim.t.swap_base_tab = nvim.tab.get_number(0)
-            nvim.t.swap_base_win = nvim.tab.get_win(0)
-            nvim.t.swap_base_buf = nvim.win.get_buf(0)
-        else
-            local swap_new_tab = nvim.tab.get_number(0)
-            local swap_new_win = nvim.tab.get_win(0)
-            local swap_new_buf = nvim.win.get_buf(0)
-            if
-                swap_new_tab == nvim.t.swap_base_tab
-                and swap_new_win ~= nvim.t.swap_base_win
-                and swap_new_buf ~= nvim.t.swap_base_buf
-            then
-                nvim.win.set_buf(0, nvim.t.swap_base_buf)
-                nvim.win.set_buf(nvim.t.swap_base_win, swap_new_buf)
-                nvim.win.set_cursor(0, nvim.t.swap_cursor)
-                nvim.ex['normal!'] 'zz'
-            end
-            nvim.t.swap_window = nil
-            nvim.t.swap_cursor = nil
-            nvim.t.swap_base_tab = nil
-            nvim.t.swap_base_win = nil
-            nvim.t.swap_base_buf = nil
+vim.keymap.set('n', '<leader><leader>p', function()
+    if nvim.t.swap_window == nil then
+        nvim.t.swap_window = 1
+        nvim.t.swap_cursor = nvim.win.get_cursor(0)
+        nvim.t.swap_base_tab = nvim.tab.get_number(0)
+        nvim.t.swap_base_win = nvim.tab.get_win(0)
+        nvim.t.swap_base_buf = nvim.win.get_buf(0)
+    else
+        local swap_new_tab = nvim.tab.get_number(0)
+        local swap_new_win = nvim.tab.get_win(0)
+        local swap_new_buf = nvim.win.get_buf(0)
+        if
+            swap_new_tab == nvim.t.swap_base_tab
+            and swap_new_win ~= nvim.t.swap_base_win
+            and swap_new_buf ~= nvim.t.swap_base_buf
+        then
+            nvim.win.set_buf(0, nvim.t.swap_base_buf)
+            nvim.win.set_buf(nvim.t.swap_base_win, swap_new_buf)
+            nvim.win.set_cursor(0, nvim.t.swap_cursor)
+            nvim.ex['normal!'] 'zz'
         end
-    end,
-    args = noremap_silent,
-}
+        nvim.t.swap_window = nil
+        nvim.t.swap_cursor = nil
+        nvim.t.swap_base_tab = nil
+        nvim.t.swap_base_win = nil
+        nvim.t.swap_base_buf = nil
+    end
+end, noremap_silent)
 
-set_mapping {
-    mode = 'n',
-    lhs = '=l',
-    rhs = [[<cmd>lua require"utils.helpers".toggle_qf(vim.api.nvim_get_current_win())<CR>]],
-    args = noremap_silent,
-}
+vim.keymap.set(
+    'n',
+    '=l',
+    [[<cmd>lua require"utils.helpers".toggle_qf(vim.api.nvim_get_current_win())<CR>]],
+    noremap_silent
+)
 
-set_mapping {
-    mode = 'n',
-    lhs = '=q',
-    rhs = [[<cmd>lua require"utils.helpers".toggle_qf()<CR>]],
-    args = noremap_silent,
-}
+vim.keymap.set('n', '=q', [[<cmd>lua require"utils.helpers".toggle_qf()<CR>]], noremap_silent)
 
 set_command {
     lhs = 'Terminal',
@@ -639,25 +451,10 @@ set_command {
 
 -- TODO: Check for GUIs
 if sys.name == 'windows' then
-    set_mapping {
-        mode = 'n',
-        lhs = '<C-h>',
-        rhs = '<cmd>call neovim#bs()<CR>',
-        args = noremap_silent,
-    }
-    set_mapping {
-        mode = 'x',
-        lhs = '<C-h>',
-        rhs = '<cmd><ESC>',
-        args = noremap,
-    }
+    vim.keymap.set('n', '<C-h>', '<cmd>call neovim#bs()<CR>', noremap_silent)
+    vim.keymap.set('x', '<C-h>', '<cmd><ESC>', noremap)
     if not vim.g.started_by_firenvim then
-        set_mapping {
-            mode = 'n',
-            lhs = '<C-z>',
-            rhs = '<nop>',
-            args = noremap,
-        }
+        vim.keymap.set('n', '<C-z>', '<nop>', noremap)
     end
 else
     set_command {
@@ -727,28 +524,11 @@ set_command {
     args = { nargs = '+', force = true },
 }
 
-set_mapping {
-    mode = 'n',
-    lhs = 'gs',
-    rhs = '<cmd>set opfunc=neovim#grep<CR>g@',
-    args = noremap_silent,
-}
-
-set_mapping {
-    mode = 'v',
-    lhs = 'gs',
-    rhs = ':<C-U>call neovim#grep(visualmode(), v:true)<CR>',
-    args = noremap_silent,
-}
-
-set_mapping {
-    mode = 'n',
-    lhs = 'gss',
-    rhs = function()
-        require('utils.functions').send_grep_job(vim.fn.expand '<cword>')
-    end,
-    args = noremap_silent,
-}
+vim.keymap.set('n', 'gs', '<cmd>set opfunc=neovim#grep<CR>g@', noremap_silent)
+vim.keymap.set('v', 'gs', ':<C-U>call neovim#grep(visualmode(), v:true)<CR>', noremap_silent)
+vim.keymap.set('n', 'gss', function()
+    require('utils.functions').send_grep_job(vim.fn.expand '<cword>')
+end, noremap_silent)
 
 set_command {
     lhs = 'Lint',
@@ -983,19 +763,8 @@ if executable 'scp' then
         },
     }
 
-    set_mapping {
-        mode = 'n',
-        lhs = '<leader><leader>s',
-        rhs = '<cmd>SendFile<CR>',
-        args = { noremap = true, silent = true },
-    }
-
-    set_mapping {
-        mode = 'n',
-        lhs = '<leader><leader>g',
-        rhs = '<cmd>GetFile<CR>',
-        args = { noremap = true, silent = true },
-    }
+    vim.keymap.set('n', '<leader><leader>s', '<cmd>SendFile<CR>', { noremap = true, silent = true })
+    vim.keymap.set('n', '<leader><leader>g', '<cmd>GetFile<CR>', { noremap = true, silent = true })
 end
 
 set_command {
@@ -1135,16 +904,11 @@ if not vim.env.SSH_CONNECTION then
         args = { nargs = '1', force = true, complete = 'file' },
     }
 
-    set_mapping {
-        mode = 'n',
-        lhs = 'gx',
-        rhs = function()
-            local cfile = vim.fn.expand '<cfile>'
-            local cword = vim.fn.expand '<cWORD>'
-            require('utils.functions').open(cword:match '^[%w]+://' and cword or cfile)
-        end,
-        args = noremap_silent,
-    }
+    vim.keymap.set('n', 'gx', function()
+        local cfile = vim.fn.expand '<cfile>'
+        local cword = vim.fn.expand '<cWORD>'
+        require('utils.functions').open(cword:match '^[%w]+://' and cword or cfile)
+    end, noremap_silent)
 end
 
 set_command {
@@ -1175,13 +939,8 @@ set_command {
 }
 
 if has_6 then
-    set_mapping {
-        mode = 'n',
-        lhs = '=D',
-        rhs = function()
-            vim.diagnostic.setqflist()
-            vim.cmd 'wincmd J'
-        end,
-        args = noremap_silent,
-    }
+    vim.keymap.set('n', '=D', function()
+        vim.diagnostic.setqflist()
+        vim.cmd 'wincmd J'
+    end, noremap_silent)
 end

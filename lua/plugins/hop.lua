@@ -1,5 +1,4 @@
 local load_module = require('utils.helpers').load_module
-local set_mapping = require('neovim.mappings').set_mapping
 
 local hop = load_module 'hop'
 
@@ -9,32 +8,9 @@ end
 
 hop.setup {}
 
-set_mapping {
-    mode = 'n',
-    lhs = 'f',
-    rhs = "<cmd>lua require'hop'.hint_char1()<CR>",
-    args = { noremap = true },
-}
-
-set_mapping {
-    mode = 'n',
-    lhs = 'F',
-    rhs = "<cmd>lua require'hop'.hint_char1()<CR>",
-    args = { noremap = true },
-}
-
-set_mapping {
-    mode = 'n',
-    lhs = 't',
-    rhs = "<cmd>lua require'hop'.hint_char1()<CR>",
-    args = { noremap = true },
-}
-
-set_mapping {
-    mode = 'n',
-    lhs = 'T',
-    rhs = "<cmd>lua require'hop'.hint_char1()<CR>",
-    args = { noremap = true },
-}
+vim.keymap.set('n', 'f', "<cmd>lua require'hop'.hint_char1()<CR>", { noremap = true })
+vim.keymap.set('n', 'F', "<cmd>lua require'hop'.hint_char1()<CR>", { noremap = true })
+vim.keymap.set('n', 't', "<cmd>lua require'hop'.hint_char1()<CR>", { noremap = true })
+vim.keymap.set('n', 'T', "<cmd>lua require'hop'.hint_char1()<CR>", { noremap = true })
 
 return true

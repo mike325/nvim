@@ -10,7 +10,6 @@ end
 
 local set_autocmd = require('neovim.autocmds').set_autocmd
 local set_command = require('neovim.commands').set_command
-local set_mapping = require('neovim.mappings').set_mapping
 
 local function pythonPath()
     -- debugpy supports launching an application with a different interpreter
@@ -145,75 +144,16 @@ end
 
 local args = { noremap = true, silent = true }
 
-set_mapping {
-    mode = 'n',
-    lhs = '<F5>',
-    rhs = require('dap').continue,
-    args = args,
-}
-
-set_mapping {
-    mode = 'n',
-    lhs = '<F4>',
-    rhs = require('dap').close,
-    args = args,
-}
-
-set_mapping {
-    mode = 'n',
-    lhs = '<F10>',
-    rhs = require('dap').run_to_cursor,
-    args = args,
-}
-
-set_mapping {
-    mode = 'n',
-    lhs = ']s',
-    rhs = require('dap').step_over,
-    args = args,
-}
-
-set_mapping {
-    mode = 'n',
-    lhs = ']S',
-    rhs = require('dap').step_into,
-    args = args,
-}
-
-set_mapping {
-    mode = 'n',
-    lhs = '[s',
-    rhs = require('dap').step_out,
-    args = args,
-}
-
-set_mapping {
-    mode = 'n',
-    lhs = '=b',
-    rhs = require('dap').toggle_breakpoint,
-    args = args,
-}
-
-set_mapping {
-    mode = 'n',
-    lhs = '=r',
-    rhs = require('dap').repl.toggle,
-    args = args,
-}
-
-set_mapping {
-    mode = 'n',
-    lhs = '<leader>L',
-    rhs = list_breakpoints,
-    args = args,
-}
-
-set_mapping {
-    mode = 'n',
-    lhs = 'gK',
-    rhs = require('dap.ui.widgets').hover,
-    args = args,
-}
+vim.keymap.set('n', '<F5>', require('dap').continue, args)
+vim.keymap.set('n', '<F4>', require('dap').close, args)
+vim.keymap.set('n', '<F10>', require('dap').run_to_cursor, args)
+vim.keymap.set('n', ']s', require('dap').step_over, args)
+vim.keymap.set('n', ']S', require('dap').step_into, args)
+vim.keymap.set('n', '[s', require('dap').step_out, args)
+vim.keymap.set('n', '=b', require('dap').toggle_breakpoint, args)
+vim.keymap.set('n', '=r', require('dap').repl.toggle, args)
+vim.keymap.set('n', '<leader>L', list_breakpoints, args)
+vim.keymap.set('n', 'gK', require('dap.ui.widgets').hover, args)
 
 set_command {
     lhs = 'DapToggleBreakpoint',

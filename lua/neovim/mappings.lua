@@ -14,7 +14,9 @@ local modes = {
     terminal = 't',
 }
 
-local M = {}
+local M = {
+    keymap = {},
+}
 
 local function set_modes(obj)
     for _, mode in pairs(modes) do
@@ -219,6 +221,58 @@ function M.set_mapping(mapping)
             }
         end
     end
+end
+
+local function keymap(mapping)
+    if type(mapping.mode) ~= type {} then
+        mapping.mode = { mapping.mode }
+    end
+
+    for _, m in ipairs(mapping.mode) do
+        M.set_mapping {
+            mode = m,
+            lhs = mapping.lhs,
+            rhs = mapping.rhs,
+            args = mapping.opts,
+        }
+    end
+end
+
+function M.keymap.set(mode, lhs, rhs, opts)
+    vim.validate {
+        mode = {
+            mode,
+            function(m)
+                return type(m) == type '' or vim.tbl_islist(m)
+            end,
+            'string mode or a table mode',
+        },
+        lhs = { lhs, 'string' },
+        rhs = {
+            rhs,
+            function(r)
+                return type(r) == type '' or type(r) == 'function'
+            end,
+            'RHS string or function',
+        },
+        opts = { opts, 'table', true },
+    }
+    keymap { mode = mode, lhs = lhs, rhs = rhs, opts = opts }
+end
+
+function M.keymap.del(mode, lhs, opts)
+    vim.validate {
+        mode = {
+            mode,
+            function(m)
+                return type(m) == type '' or vim.tbl_islist(m)
+            end,
+            'MODE string or a table',
+        },
+        lhs = { lhs, 'string' },
+        opts = { opts, 'table', true },
+    }
+    keymap { mode = mode, lhs = lhs, opts = opts }
 end
 
 setmetatable(M, {

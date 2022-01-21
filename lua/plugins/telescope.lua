@@ -3,7 +3,6 @@ local executable = require('utils.files').executable
 local load_module = require('utils.helpers').load_module
 
 local set_autocmd = require('neovim.autocmds').set_autocmd
-local set_mapping = require('neovim.mappings').set_mapping
 local set_command = require('neovim.commands').set_command
 
 local telescope = load_module 'telescope'
@@ -39,12 +38,7 @@ if has_sqlite then
                 ['dotfiles'] = sys.home .. '/dotfiles/',
             },
         }
-        set_mapping {
-            mode = 'n',
-            lhs = '<leader>x',
-            rhs = [[<cmd>lua require('telescope').extensions.frecency.frecency()<CR>]],
-            args = noremap,
-        }
+        vim.keymap.set('n', '<leader>x', require('telescope').extensions.frecency.frecency, noremap)
     end
 end
 
@@ -126,38 +120,16 @@ set_command {
     args = { force = true },
 }
 
-set_mapping {
-    mode = 'n',
-    lhs = '<C-p>',
-    rhs = function()
-        local is_git = vim.b.project_root and vim.b.project_root.is_git or false
-        require('telescope.builtin').find_files {
-            find_command = require('utils.helpers').select_filelist(is_git, true),
-        }
-    end,
-    args = { noremap = true },
-}
+vim.keymap.set('n', '<C-p>', function()
+    local is_git = vim.b.project_root and vim.b.project_root.is_git or false
+    require('telescope.builtin').find_files {
+        find_command = require('utils.helpers').select_filelist(is_git, true),
+    }
+end, { noremap = true })
 
-set_mapping {
-    mode = 'n',
-    lhs = '<C-b>',
-    rhs = [[<cmd>lua require'telescope.builtin'.current_buffer_fuzzy_find{}<CR>]],
-    args = noremap,
-}
-
-set_mapping {
-    mode = 'n',
-    lhs = '<leader>g',
-    rhs = [[<cmd>lua require'telescope.builtin'.live_grep{}<CR>]],
-    args = noremap,
-}
-
-set_mapping {
-    mode = 'n',
-    lhs = '<C-q>',
-    rhs = [[<cmd>lua require'telescope.builtin'.quickfix{}<CR>]],
-    args = noremap,
-}
+vim.keymap.set('n', '<C-b>', require('telescope.builtin').current_buffer_fuzzy_find, noremap)
+vim.keymap.set('n', '<leader>g', require('telescope.builtin').live_grep, noremap)
+vim.keymap.set('n', '<C-q>', require('telescope.builtin').quickfix, noremap)
 
 set_command {
     lhs = 'Oldfiles',
@@ -195,33 +167,9 @@ set_command {
 }
 
 if executable 'git' then
-    -- set_mapping{
-    --     mode = 'n',
-    --     lhs = '<leader>s',
-    --     rhs = [[<cmd>lua require'telescope.builtin'.git_status{}<CR>]],
-    --     args = noremap,
-    -- }
-
-    set_mapping {
-        mode = 'n',
-        lhs = '<leader>c',
-        rhs = [[<cmd>lua require'telescope.builtin'.git_bcommits{}<CR>]],
-        args = noremap,
-    }
-
-    set_mapping {
-        mode = 'n',
-        lhs = '<leader>C',
-        rhs = [[<cmd>lua require'telescope.builtin'.git_commits{}<CR>]],
-        args = noremap,
-    }
-
-    set_mapping {
-        mode = 'n',
-        lhs = '<leader>b',
-        rhs = [[<cmd>lua require'telescope.builtin'.git_branches{}<CR>]],
-        args = noremap,
-    }
+    vim.keymap.set('n', '<leader>c', require('telescope.builtin').git_bcommits, noremap)
+    vim.keymap.set('n', '<leader>C', require('telescope.builtin').git_commits, noremap)
+    vim.keymap.set('n', '<leader>b', require('telescope.builtin').git_branches, noremap)
 end
 
 if ts_langs then

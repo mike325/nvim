@@ -86,11 +86,11 @@ end
 -- stylua: ignore
 ls.snippets.python = {
     s("for", {
-        t({"for "}), i(1, 'i'), t({" in "}), i(2, 'Iterator'), t({":", ""}),
+        t{"for "}, i(1, 'i'), t{" in "}, i(2, 'Iterator'), t{":", ""},
             d(3, saved_text, {}, {text = 'pass', indent = true}),
     }),
     s("ran", {
-        t({"range("}), i(1, '0'), t({", "}), i(2, 'limit'), t({")"}),
+        t{"range("}, i(1, '0'), t{", "}, i(2, 'limit'), t{")"},
     }),
     s("imp", {
         t{'import '}, i(1, 'sys')
@@ -104,48 +104,48 @@ ls.snippets.python = {
     s(
         { trig = "if(e?)", regTrig = true },
         {
-            t({"if "}), i(1, 'condition'), t({":", ""}),
+            t{"if "}, i(1, 'condition'), t{":", ""},
                 d(2, saved_text, {}, {text = 'pass', indent = true}),
             d(3, else_clause, {}, {}),
         }
     ),
     s("def", {
-        t({"def "}), i(1, 'name'), t({"("}), i(2, 'args'), t({"):", ""}),
+        t{"def "}, i(1, 'name'), t{"("}, i(2, 'args'), t{"):", ""},
             d(3, saved_text, {}, {text = 'pass', indent = true}),
     }),
     s("try", {
-        t({"try:", "",}),
+        t{"try:", "",},
             d(1, saved_text, {}, {text = 'pass', indent = true}),
-        t({"", "except "}),
+        t{"", "except "},
             c(2, {
                 t{'Exception as e'},
                 t{'KeyboardInterrupt as e'},
                 sn(nil, { i(1, 'Exception') }),
             }),
-        t({":", "\t"}),
+        t{":", "\t"},
             i(3, 'pass'),
     }),
     s("ifmain", {
-        t({'if __name__ == "__main__":', '\t'}),
+        t{'if __name__ == "__main__":', '\t'},
             c(1, {
-                sn(nil, { t({'exit('}), i(1, 'main()'), t({')'}) }),
+                sn(nil, { t{'exit('}, i(1, 'main()'), t{')'} }),
                 t{'pass'},
             }),
-        t({"", "else:", "\t"}),
+        t{"", "else:", "\t"},
             i(2, 'pass'),
     }),
     s("with", {
-        t({"with open("}), i(1, 'filename'), t({', '}),
+        t{"with open("}, i(1, 'filename'), t{', '},
         c(2, {
             i(1, '"r"'),
             i(1, '"a"'),
             i(1, '"w"'),
         }),
-        t({') as '}), i(3, 'data'), t({':', ''}),
+        t{') as '}, i(3, 'data'), t{':', ''},
             d(4, saved_text, {}, {text = 'pass', indent = true}),
     }),
     s("w", {
-        t({"while "}), i(1, 'True'), t({":", ""}),
+        t{"while "}, i(1, 'True'), t{":", ""},
             d(2, saved_text, {}, {text = 'pass', indent = true}),
     }),
     s(

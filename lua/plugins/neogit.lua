@@ -7,10 +7,7 @@ if neogit == nil then
 end
 
 local plugins = require('neovim').plugins
-
 local set_command = require('neovim.commands').set_command
-local set_mapping = require('neovim.mappings').set_mapping
-
 local has_diffview = load_module 'diffview'
 
 neogit.setup {
@@ -40,11 +37,11 @@ if not plugins['vim-fugitive'] then
     }
 end
 
-set_mapping {
-    mode = 'n',
-    lhs = '=n',
-    rhs = '<cmd>lua require"neogit".open({ kind = "vsplit" })<cr>',
-    args = { silent = true, noremap = true },
-}
+vim.keymap.set(
+    'n',
+    '=n',
+    '<cmd>lua require"neogit".open({ kind = "vsplit" })<cr>',
+    { silent = true, noremap = true }
+)
 
 return true

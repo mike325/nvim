@@ -7,7 +7,6 @@ local load_module = require('utils.helpers').load_module
 -- local plugins = require'neovim'.plugins
 
 -- local set_autocmd = require'neovim.autocmds'.set_autocmd
-local set_mapping = require('neovim.mappings').set_mapping
 local set_command = require('neovim.commands').set_command
 
 local lsp = load_module 'lspconfig'
@@ -209,38 +208,28 @@ function M.on_attach(client, bufnr, is_null)
 
     for mapping, val in pairs(mappings) do
         if not val.capability or client.resolved_capabilities[val.capability] then
-            set_mapping {
-                mode = 'n',
-                lhs = mapping,
-                rhs = val.mapping,
-                args = { silent = true, buffer = bufnr, noremap = true },
-            }
+            vim.keymap.set('n', mapping, val.mapping, { silent = true, buffer = bufnr, noremap = true })
         end
     end
 
     if client.resolved_capabilities.document_formatting then
-        set_mapping {
-            mode = 'n',
-            lhs = '=F',
-            rhs = vim.lsp.buf.formatting,
-            args = { silent = true, buffer = bufnr, noremap = true },
-        }
+        vim.keymap.set('n', '=F', vim.lsp.buf.formatting, { silent = true, buffer = bufnr, noremap = true })
     end
 
     if client.resolved_capabilities.document_range_formatting then
-        set_mapping {
-            mode = 'n',
-            lhs = 'gq',
-            rhs = '<cmd>set opfunc=neovim#lsp_format<CR>g@',
-            args = { silent = true, buffer = bufnr, noremap = true },
-        }
+        vim.keymap.set(
+            'n',
+            'gq',
+            '<cmd>set opfunc=neovim#lsp_format<CR>g@',
+            { silent = true, buffer = bufnr, noremap = true }
+        )
 
-        set_mapping {
-            mode = 'v',
-            lhs = 'gq',
-            rhs = ':<C-U>call neovim#lsp_format(visualmode(), v:true)<CR>',
-            args = { silent = true, buffer = bufnr, noremap = true },
-        }
+        vim.keymap.set(
+            'v',
+            'gq',
+            ':<C-U>call neovim#lsp_format(visualmode(), v:true)<CR>',
+            { silent = true, buffer = bufnr, noremap = true }
+        )
     end
 
     -- Disable neomake for lsp buffers

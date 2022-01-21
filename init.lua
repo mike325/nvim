@@ -33,6 +33,10 @@ vim.g.mapleader = ' '
 vim.cmd [[packadd! cfilter]]
 vim.cmd [[packadd! matchit]]
 
+if not vim.keymap then
+    vim.keymap = require('neovim').keymap
+end
+
 require 'messages'
 require 'globals'
 RELOAD('filetypes.python').pynvim_setup()

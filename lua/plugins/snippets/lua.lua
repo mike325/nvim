@@ -12,17 +12,17 @@ local i = ls.insert_node
 local f = ls.function_node
 local c = ls.choice_node
 local d = ls.dynamic_node
--- local l = require("luasnip.extras").lambda
--- local r = require("luasnip.extras").rep
+-- local l = require('luasnip.extras').lambda
+local r = require('luasnip.extras').rep
 -- local p = require('luasnip.extras').partial
--- local m = require("luasnip.extras").match
--- local n = require("luasnip.extras").nonempty
--- local dl = require("luasnip.extras").dynamic_lambda
--- local fmt = require("luasnip.extras.fmt").fmt
--- local fmta = require("luasnip.extras.fmt").fmta
--- local types = require("luasnip.util.types")
--- local events = require("luasnip.util.events")
--- local conds = require("luasnip.extras.expand_conditions")
+-- local m = require('luasnip.extras').match
+-- local n = require('luasnip.extras').nonempty
+-- local dl = require('luasnip.extras').dynamic_lambda
+-- local fmt = require('luasnip.extras.fmt').fmt
+-- local fmta = require('luasnip.extras.fmt').fmta
+-- local types = require 'luasnip.util.types'
+-- local events = require 'luasnip.util.events'
+-- local conds = require 'luasnip.extras.expand_conditions'
 
 local utils = RELOAD 'plugins.snippets.utils'
 local saved_text = utils.saved_text
@@ -47,27 +47,27 @@ end
 -- stylua: ignore
 ls.snippets.lua = {
     s("for", {
-        t({"for "}), i(1, 'idx'), t({", "}), i(2, 'v'), t({" in ipairs("}), i(3, 'tbl'), t({") do", ""}),
+        t{"for "}, i(1, 'idx'), t{", "}, i(2, 'v'), t{" in ipairs("}, i(3, 'tbl'), t{") do", ""},
             d(4, saved_text, {}, {indent = true}),
-        t({"", "end"}),
+        t{"", "end"},
     }),
     s("forp", {
-        t({"for "}), i(1, 'k'), t({", "}), i(2, 'v'), t({" in pairs("}), i(3, 'tbl'), t({") do", ""}),
+        t{"for "}, i(1, 'k'), t{", "}, i(2, 'v'), t{" in pairs"}, i(3, 'tbl'), t({" do", ""}),
             d(4, saved_text, {}, {indent = true}),
-        t({"", "end"}),
+        t{"", "end"},
     }),
     s("fori", {
-        t({"for idx = "}), i(1, '1'), t({", "}), i(2, '#limit'), t({" do", ""}),
+        t{"for idx = "}, i(1, '1'), t{", "}, i(2, '#limit'), t{" do", ""},
             d(3, saved_text, {}, {indent = true}),
-        t({"", "end"}),
+        t{"", "end"},
     }),
     s(
         { trig = "if(e?)", regTrig = true },
         {
-            t({"if "}), i(1, 'condition'), t({" then", ""}),
+            t{"if "}, i(1, 'condition'), t{" then", ""},
                 d(2, saved_text, {}, {indent = true}),
             d(3, else_clause, {}, {}),
-            t({"", "end"}),
+            t{"", "end"},
         }
     ),
     s(
@@ -77,69 +77,86 @@ ls.snippets.lua = {
                 -- stylua: ignore
                 return snip.captures[1] == 'l' and 'local ' or ''
             end, {}),
-            t({"function "}), i(1, 'name'), t({"("}), i(2, 'args'), t({")", ""}),
+            t{"function "}, i(1, 'name'), t{"("}, i(2, 'args'), t{")", ""},
                 d(3, saved_text, {}, {indent = true}),
-            t({"", "end"}),
+            t{"", "end"},
         }
     ),
     s("err", {
-        t({"error(debug.traceback("}), d(1, surround_with_func, {}, {text = 'msg'}), t({"))"})
+        t{"error(debug.traceback("}, d(1, surround_with_func, {}, {text = 'msg'}), t{"))"}
     }),
     s("req", {
-        t({"require '"}), i(1, 'module'), t({"'"})
+        t{"require '"}, i(1, 'module'), t{"'"}
     }),
     s("l", {
-        t({"local "}), i(1, 'var'), t({" = "}), i(2, '{}'),
+        t{"local "}, i(1, 'var'), t{" = "}, i(2, '{}'),
     }),
     s("ign", {
-        t({"-- stylua: ignore"})
+        t{"-- stylua: ignore"}
     }),
     s("sty", {
-        t({"-- stylua: ignore"})
+        t{"-- stylua: ignore"}
     }),
     s("map", {
-        t({"set_mapping {", ""}),
-            t({"\tmode = '"}), i(1, 'n'), t({"',", ""}),
-            t({"\tlhs = '"}),  i(2, '<C-q>'), t({"',", ""}),
-            t({"\trhs = '"}),  i(3, 'lua P(true)'), t({"',", ""}),
-            t({"\targs = { "}), i(4, 'noremap = true'), t({"},", ""}),
-        t({"}"}),
+        t{"vim.keymap.set("},
+            t{"'"}, i(1, 'n'), t{"', "},
+            t{"\t'"}, i(2, 'LHS'), t{"', "},
+            t{"\t'"}, i(3, 'RHS'), t{"', "},
+            t{"\t{"}, i(4, 'noremap = true'), t{"}"},
+        t{")"},
+    }),
+    s("val", {
+        t({"vim.validate{"}),
+            t{'', "\t"}, i(1, 'arg'), t{" = { "}, r(1), t{", "},
+            c(2, {
+                t{"'string'"},
+                t{"'table'"},
+                t{"'function'"},
+                t{"'number'"},
+                t{"'boolean'"},
+            }),
+            c(3, {
+                t{""},
+                t{", true"},
+            }),
+            t({" }"}),
+        t({'', "}"}),
     }),
     s("com", {
-        t({"set_command {", ""}),
-            t({"\tlhs = '"}),  i(1, 'Command'), t({"',", ""}),
-            t({"\trhs = '"}),  i(2, 'lua P(true)'), t({"',", ""}),
-            t({"\targs = { force = true, "}), i(3, "nargs = '?', "), t({"},", ""}),
-        t({"}"}),
+        t{"set_command {", ""},
+            t{"\tlhs = '"},  i(1, 'Command'), t{"',", ""},
+            t{"\trhs = '"},  i(2, 'lua P(true)'), t{"',", ""},
+            t{"\targs = { force = true, "}, i(3, "nargs = '?', "), t{"},", ""},
+        t{"}"},
     }),
     s("au", {
-        t({"set_autocmd {", ""}),
-            t({"\tevent = '"}),   i(1, 'FileType'), t({"',", ""}),
-            t({"\tpattern = '"}), i(2, '*'), t({"',", ""}),
-            t({"\tcmd = '"}),     i(3, 'lua P(true)'), t({"',", ""}),
-            t({"\tgroup = '"}),   i(4, 'NewGroup'), t({"',", ""}),
-        t({"}"}),
+        t{"set_autocmd {", ""},
+            t{"\tevent = '"},   i(1, 'FileType'), t{"',", ""},
+            t{"\tpattern = '"}, i(2, '*'), t{"',", ""},
+            t{"\tcmd = '"},     i(3, 'lua P(true)'), t{"',", ""},
+            t{"\tgroup = '"},   i(4, 'NewGroup'), t{"',", ""},
+        t{"}"},
     }),
     s("lext", {
-        t({"vim.list_extend("}),
+        t{"vim.list_extend("},
             d(1, surround_with_func, {}, {text = 'tbl'}),
-        t({', {'}), i(2, "'node'"), t({'})'})
+        t{', {'}, i(2, "'node'"), t{'})'},
     }),
     s("text", {
-        t({"vim.tbl_extend("}),
+        t{"vim.tbl_extend("},
             c(1, {
-                t({"'force'"}),
-                t({"'keep'"}),
-                t({"'error'"}),
+                t{"'force'"},
+                t{"'keep'"},
+                t{"'error'"},
             }),
-            t({', '}),
+            t{', '},
             d(2, surround_with_func, {}, {text = 'tbl'}),
-         t({', '}), i(3, "ext_tbl"), t({')'})
+         t{', '}, i(3, "ext_tbl"), t({')'})
     }),
     s("not", {
-        t({"vim.notify("}),
+        t{"vim.notify("},
             d(1, surround_with_func, {}, {text = 'msg'}),
-            t({', '}),
+            t{', '},
             c(2, {
                 t{"'INFO'"},
                 t{"'WARN'"},
@@ -150,6 +167,6 @@ ls.snippets.lua = {
                 t{''},
                 sn(nil, { t{', { title = '}, i(1, "'title'"), t{' }'} }),
             }),
-         t({')'})
+         t{')'},
     }),
 }

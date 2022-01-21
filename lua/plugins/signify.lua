@@ -11,13 +11,11 @@ vim.g.signify_skip_filename_pattern = {
     '*.log',
 }
 
-vim.api.nvim_set_keymap('n', ']h', '<plug>(signify-next-hunk)', {})
-vim.api.nvim_set_keymap('n', '[h', '<plug>(signify-prev-hunk)', {})
-
-vim.api.nvim_set_keymap('o', 'ih', '<plug>(signify-motion-inner-pending)', {})
-vim.api.nvim_set_keymap('x', 'ih', '<plug>(signify-motion-inner-visual)', {})
-vim.api.nvim_set_keymap('o', 'ah', '<plug>(signify-motion-outer-pending)', {})
-vim.api.nvim_set_keymap('x', 'ah', '<plug>(signify-motion-outer-visual)', {})
-
-vim.api.nvim_set_keymap('n', '=f', '<cmd>SignifyHunkDiff<CR>', { silent = true, noremap = true })
-vim.api.nvim_set_keymap('n', '=u', '<cmd>SignifyHunkUndo<CR>', { silent = true, noremap = true })
+vim.keymap.set('n', ']h', '<plug>(signify-next-hunk)')
+vim.keymap.set('n', '[h', '<plug>(signify-prev-hunk)')
+vim.keymap.set('o', 'ih', '<plug>(signify-motion-inner-pending)')
+vim.keymap.set('x', 'ih', '<plug>(signify-motion-inner-visual)')
+vim.keymap.set('o', 'ah', '<plug>(signify-motion-outer-pending)')
+vim.keymap.set('x', 'ah', '<plug>(signify-motion-outer-visual)')
+vim.keymap.set('n', '=f', '<cmd>SignifyHunkDiff<CR>', { silent = true, noremap = true })
+vim.keymap.set('n', '=u', '<cmd>SignifyHunkUndo<CR>', { silent = true, noremap = true })

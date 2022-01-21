@@ -7,7 +7,6 @@ if not todo then
 end
 
 local nvim = require 'neovim'
-local set_mapping = require('neovim.mappings').set_mapping
 local has_trouble = load_module 'trouble'
 
 todo.setup {
@@ -18,25 +17,20 @@ todo.setup {
 }
 
 if has_trouble then
-    set_mapping {
-        mode = 'n',
-        lhs = '=t',
-        rhs = function()
-            local trouble_open = false
-            for _, win in pairs(nvim.tab.list_wins(0)) do
-                local buf = nvim.win.get_buf(win)
-                if nvim.buf.get_option(buf, 'filetype') == 'Trouble' then
-                    trouble_open = true
-                    nvim.ex.TroubleClose()
-                    break
-                end
+    vim.keymap.set('n', '=t', function()
+        local trouble_open = false
+        for _, win in pairs(nvim.tab.list_wins(0)) do
+            local buf = nvim.win.get_buf(win)
+            if nvim.buf.get_option(buf, 'filetype') == 'Trouble' then
+                trouble_open = true
+                nvim.ex.TroubleClose()
+                break
             end
-            if not trouble_open then
-                nvim.ex.TodoTrouble()
-            end
-        end,
-        args = { noremap = true, silent = true },
-    }
+        end
+        if not trouble_open then
+            nvim.ex.TodoTrouble()
+        end
+    end, { noremap = true, silent = true })
 end
 
 return true

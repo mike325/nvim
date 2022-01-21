@@ -1,6 +1,5 @@
 local nvim = require 'neovim'
 local set_autocmd = require('neovim.autocmds').set_autocmd
-local set_mapping = require('neovim.mappings').set_mapping
 
 local M = {}
 
@@ -255,34 +254,24 @@ function M.ask_window(callback)
         nested = true,
     }
 
-    set_mapping {
-        mode = 'i',
-        lhs = '<ESC>',
-        rhs = function()
-            if vim.api.nvim_win_is_valid(win) then
-                vim.api.nvim_win_close(win, true)
-            end
-        end,
-        args = { silent = true, buffer = buffer },
-    }
+    vim.keymap.set('i', '<ESC>', function()
+        if vim.api.nvim_win_is_valid(win) then
+            vim.api.nvim_win_close(win, true)
+        end
+    end, { silent = true, buffer = buffer })
 
-    set_mapping {
-        mode = 'i',
-        lhs = '<CR>',
-        rhs = function()
-            local result
-            if vim.api.nvim_win_is_valid(win) then
-                vim.api.nvim_win_close(win, true)
-            end
-            if vim.api.nvim_buf_is_valid(win) then
-                result = vim.api.nvim_buf_get_lines(buffer, 0, -1, false)[1]
-            end
-            if callback then
-                callback(result)
-            end
-        end,
-        args = { silent = true, buffer = buffer },
-    }
+    vim.keymap.set('i', '<CR>', function()
+        local result
+        if vim.api.nvim_win_is_valid(win) then
+            vim.api.nvim_win_close(win, true)
+        end
+        if vim.api.nvim_buf_is_valid(win) then
+            result = vim.api.nvim_buf_get_lines(buffer, 0, -1, false)[1]
+        end
+        if callback then
+            callback(result)
+        end
+    end, { silent = true, buffer = buffer })
 
     nvim.ex.startinsert()
 
