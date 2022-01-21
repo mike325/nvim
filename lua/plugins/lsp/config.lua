@@ -16,8 +16,8 @@ if lsp == nil then
 end
 
 local show_diagnostics = true
-local has_6 = vim.fn.has 'nvim-0.6' == 1
-local diagnostic = has_6 and vim.diagnostic or vim.lsp.diagnostic
+local has_nvim_6 = nvim.has { 0, 6 }
+local diagnostic = has_nvim_6 and vim.diagnostic or vim.lsp.diagnostic
 
 local has_telescope, _ = pcall(require, 'telescope')
 -- local servers = require 'plugins.lsp.servers'
@@ -52,7 +52,7 @@ M.commands = {
                     prefix = '❯',
                 } or false,
             }
-            if has_6 then
+            if has_nvim_6 then
                 vim.diagnostic.config = diagnostic_config
             else
                 _G['vim'].lsp.handlers['textDocument/publishDiagnostics'] = vim.lsp.with(
@@ -98,10 +98,10 @@ M.commands = {
     Diagnostic = {
         function()
             if has_telescope then
-                local diagnostics_func = has_6 and 'diagnostics' or 'lsp_document_diagnostics'
+                local diagnostics_func = has_nvim_6 and 'diagnostics' or 'lsp_document_diagnostics'
                 require('telescope.builtin')[diagnostics_func] {}
             else
-                local loclist = has_6 and 'setloclist' or 'set_loclist'
+                local loclist = has_nvim_6 and 'setloclist' or 'set_loclist'
                 diagnostic[loclist]()
             end
         end,
@@ -146,7 +146,7 @@ function M.on_attach(client, bufnr, is_null)
     bufnr = bufnr or nvim.get_current_buf()
     local lua_cmd = '<cmd>lua %s<CR>'
 
-    local diag_str = has_6 and 'vim.diagnostic' or 'vim.lsp.diagnostic'
+    local diag_str = has_nvim_6 and 'vim.diagnostic' or 'vim.lsp.diagnostic'
 
     local mappings = {
         ['<C-]>'] = {
@@ -184,7 +184,9 @@ function M.on_attach(client, bufnr, is_null)
             capability = 'signature_help',
             mapping = lua_cmd:format 'vim.lsp.buf.signature_help()',
         },
-        ['=L'] = { mapping = lua_cmd:format(diag_str .. (has_6 and '.setloclist()' or '.set_loclist()')) },
+        ['=L'] = {
+            mapping = lua_cmd:format(diag_str .. (has_nvim_6 and '.setloclist()' or '.set_loclist()')),
+        },
         ['<leader>s'] = {
             mapping = lua_cmd:format(
                 (has_telescope and "require'telescope.builtin'.lsp_document_symbols{}")

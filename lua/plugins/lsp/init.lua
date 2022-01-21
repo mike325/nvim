@@ -1,3 +1,4 @@
+local nvim = require 'neovim'
 local load_module = require('utils.helpers').load_module
 local get_icon = require('utils.helpers').get_icon
 -- local plugins = require'neovim'.plugins
@@ -16,10 +17,10 @@ if null_ls then
     table.insert(null_sources, null_ls.builtins.code_actions.gitsigns)
 end
 
-local has_6 = vim.fn.has 'nvim-0.6' == 1
+local has_nvim_6 = nvim.has { 0, 6 }
 local diagnostic = vim.diagnostic or vim.lsp.diagnostic
 
-local lsp_sign = has_6 and 'DiagnosticSign' or 'LspDiagnosticsSign'
+local lsp_sign = has_nvim_6 and 'DiagnosticSign' or 'LspDiagnosticsSign'
 local levels = { 'Error', 'Hint' }
 local diagnostic_config = {
     signs = true,
@@ -31,7 +32,7 @@ local diagnostic_config = {
     },
 }
 
-if has_6 then
+if has_nvim_6 then
     vim.list_extend(levels, { 'Warn', 'Info' })
     vim.diagnostic.config(diagnostic_config)
 else
@@ -102,7 +103,7 @@ for filetype, _ in pairs(lsp_configs) do
 end
 
 if null_ls and next(null_sources) ~= nil then
-    if vim.fn.has 'nvim-0.6' == 0 then
+    if not nvim.has { 0, 6 } then
         null_ls.setup = null_ls.config
     end
     null_ls.setup {

@@ -1,7 +1,11 @@
-local lsp_sign = vim.fn.has 'nvim-0.6' == 1 and 'DiagnosticSign' or 'LspDiagnosticsSign'
+local nvim = require 'neovim'
+
+local has_nvim_6 = nvim.has { 0, 6 }
+
+local lsp_sign = has_nvim_6 and 'DiagnosticSign' or 'LspDiagnosticsSign'
 local names = { 'error', 'hint', 'warn', 'info' }
 local levels = { 'Error', 'Hint' }
-if vim.fn.has 'nvim-0.6' == 1 then
+if has_nvim_6 then
     vim.list_extend(levels, { 'Warn', 'Info' })
 else
     vim.list_extend(levels, { 'Warning', 'Information' })

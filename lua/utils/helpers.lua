@@ -287,7 +287,7 @@ function M.project_config(event)
         git_dir = git_dir,
     }
 
-    if is_git and not git_dir and nvim.has 'nvim-0.5' then
+    if is_git and not git_dir and nvim.has { 0, 5 } then
         require('utils.functions').get_git_dir(function(dir)
             local project = vim.b.project_root
             project.git_dir = dir

@@ -48,6 +48,17 @@ local nvim = {
         end,
     }, {
         __call = function(_, feature)
+            if type(feature) == type {} then
+                vim.validate {
+                    version = { feature, vim.tbl_islist, 'a nvim version string to list' },
+                }
+                local nvim_version = {
+                    vim.version().major,
+                    vim.version().minor,
+                    vim.version().patch,
+                }
+                return require('storage').check_version(nvim_version, feature)
+            end
             return api.nvim_call_function('has', { feature }) == 1
         end,
     }),
@@ -162,7 +173,7 @@ setmetatable(nvim, {
             return mt[k]
         end
 
-        local ok, x = pcall(RELOAD, 'nvim.' .. k)
+        local ok, x = pcall(RELOAD, 'neovim.' .. k)
 
         if not ok then
             x = api['nvim_' .. k]

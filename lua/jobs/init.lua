@@ -1,6 +1,6 @@
 local nvim = require 'neovim'
 
-if not nvim.has 'nvim-0.5' then
+if not nvim.has { 0, 5 } then
     return false
 end
 

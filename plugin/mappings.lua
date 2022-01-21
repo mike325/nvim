@@ -16,7 +16,7 @@ local set_command = require('neovim.commands').set_command
 local noremap = { noremap = true }
 local noremap_silent = { noremap = true, silent = true }
 
-local has_6 = vim.fn.has 'nvim-0.6' == 1
+local has_nvim_6 = nvim.has { 0, 6 }
 
 if not vim.g.mapleader then
     vim.g.mapleader = ' '
@@ -938,7 +938,7 @@ set_command {
     args = { nargs = '*', force = true, complete = 'filetype' },
 }
 
-if has_6 then
+if has_nvim_6 then
     vim.keymap.set('n', '=D', function()
         vim.diagnostic.setqflist()
         vim.cmd 'wincmd J'

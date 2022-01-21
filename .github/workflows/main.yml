@@ -60,7 +60,7 @@ jobs:
       GITHUB: true
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: OS Info
         run: |
           brew install git shellcheck neovim cmake wget python
@@ -99,7 +99,13 @@ jobs:
       GITHUB: true
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
+      - name: Cache packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            C:\Python310
+          key: ${{runner.os}}-neovim-${{.github/workflows/main.yml}}
       - name: Enable Chocolatey
         shell: powershell
         run: |
@@ -107,7 +113,7 @@ jobs:
       - name: Install system packages
         shell: powershell
         run: |
-          choco install -y python git curl vim neovim mingw cmake
+          choco install -y python curl neovim cmake
       - name: Fetch script
         shell: bash
         run: |
