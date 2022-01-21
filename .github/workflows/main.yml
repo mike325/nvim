@@ -105,7 +105,7 @@ jobs:
         with:
           path: |
             C:\Python310
-          key: ${{runner.os}}-neovim-${{.github/workflows/main.yml}}
+          key: ${{runner.os}}-pre-commit-${{hashFiles('.github/workflows/main.yml')}}
       - name: Enable Chocolatey
         shell: powershell
         run: |
