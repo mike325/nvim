@@ -5,7 +5,10 @@ end
 -- local noremap = { noremap = true }
 local noremap_silent = { noremap = true, silent = true }
 
-if not packer_plugins or (packer_plugins and not packer_plugins['vim-commentary']) then
+if
+    not packer_plugins
+    or (packer_plugins and not packer_plugins['vim-commentary'] and not packer_plugins['Comment.nvim'])
+then
     vim.keymap.set('n', 'gc', '<cmd>set opfunc=neovim#comment<CR>g@', noremap_silent)
 
     vim.keymap.set('v', 'gc', ':<C-U>call neovim#comment(visualmode(), v:true)<CR>', noremap_silent)
