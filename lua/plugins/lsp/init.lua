@@ -102,6 +102,9 @@ for filetype, _ in pairs(lsp_configs) do
 end
 
 if null_ls and next(null_sources) ~= nil then
+    if vim.fn.has 'nvim-0.6' == 0 then
+        null_ls.setup = null_ls.config
+    end
     null_ls.setup {
         sources = null_sources,
         on_attach = function(client, bufnr)

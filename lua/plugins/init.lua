@@ -510,7 +510,7 @@ packer.startup(function()
             'plenary.nvim',
             'popup.nvim',
         },
-        commit = (vim.fn.has 'nvim-0.6' == 0 and '80cdb00b221f69348afc4fb4b701f51eb8dd3120' or nil),
+        tag = (vim.fn.has 'nvim-0.6' == 0 and 'nvim-0.5.0' or nil),
     }
 
     use {
