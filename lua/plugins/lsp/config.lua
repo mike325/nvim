@@ -22,6 +22,9 @@ local diagnostic = has_nvim_6 and vim.diagnostic or vim.lsp.diagnostic
 local has_telescope, _ = pcall(require, 'telescope')
 -- local servers = require 'plugins.lsp.servers'
 
+local builtin = require 'telescope.builtin'
+local themes = require 'telescope.themes'
+
 local M = {}
 
 M.commands = {
@@ -80,7 +83,7 @@ M.commands = {
     Definition = {
         function()
             if has_telescope then
-                require('telescope.builtin').lsp_definitions {}
+                builtin.lsp_definitions(themes.get_cursor {})
             else
                 vim.lsp.buf.definition()
             end
@@ -89,17 +92,17 @@ M.commands = {
     References = {
         function()
             if has_telescope then
-                require('telescope.builtin').lsp_references {}
+                builtin.lsp_references(themes.get_cursor {})
             else
                 vim.lsp.buf.references()
             end
         end,
     },
-    Diagnostic = {
+    Diagnostics = {
         function()
             if has_telescope then
                 local diagnostics_func = has_nvim_6 and 'diagnostics' or 'lsp_document_diagnostics'
-                require('telescope.builtin')[diagnostics_func] {}
+                builtin[diagnostics_func](themes.get_dropdown {})
             else
                 local loclist = has_nvim_6 and 'setloclist' or 'set_loclist'
                 diagnostic[loclist]()
@@ -109,7 +112,7 @@ M.commands = {
     DocSymbols = {
         function()
             if has_telescope then
-                require('telescope.builtin').lsp_document_symbols {}
+                builtin.lsp_document_symbols(themes.get_dropdown {})
             else
                 vim.lsp.buf.document_symbol()
             end
@@ -118,7 +121,7 @@ M.commands = {
     WorkSymbols = {
         function()
             if has_telescope then
-                require('telescope.builtin').lsp_workspace_symbols {}
+                builtin.lsp_workspace_symbols(themes.get_dropdown {})
             else
                 vim.lsp.buf.workspace_symbol()
             end
@@ -127,7 +130,7 @@ M.commands = {
     CodeAction = {
         function()
             if has_telescope then
-                require('telescope.builtin').lsp_code_actions {}
+                builtin.lsp_code_actions(themes.get_cursor {})
             else
                 vim.lsp.buf.lsp_code_actions()
             end
@@ -151,7 +154,12 @@ function M.on_attach(client, bufnr, is_null)
     local mappings = {
         ['<C-]>'] = {
             capability = 'goto_definition',
-            mapping = lua_cmd:format 'vim.lsp.buf.definition()',
+            mapping = lua_cmd:format(
+                (
+                        has_telescope
+                        and "require'telescope.builtin'.lsp_definitions(require'telescope.themes'.get_cursor{})"
+                    ) or 'vim.lsp.buf.definition()'
+            ),
         },
         ['gd'] = {
             capability = 'declaration',
@@ -164,8 +172,10 @@ function M.on_attach(client, bufnr, is_null)
         ['gr'] = {
             capability = 'find_references',
             mapping = lua_cmd:format(
-                (has_telescope and "require'telescope.builtin'.lsp_references{}")
-                    or 'vim.lsp.buf.references()'
+                (
+                        has_telescope
+                        and "require'telescope.builtin'.lsp_references(require'telescope.themes'.get_cursor{})"
+                    ) or 'vim.lsp.buf.references()'
             ),
         },
         ['K'] = {
@@ -178,7 +188,12 @@ function M.on_attach(client, bufnr, is_null)
         },
         ['ga'] = {
             capability = 'code_action',
-            mapping = lua_cmd:format 'vim.lsp.buf.code_action()',
+            mapping = lua_cmd:format(
+                (
+                        has_telescope
+                        and "require'telescope.builtin'.lsp_code_actions(require'telescope.themes'.get_cursor{})"
+                    ) or 'vim.lsp.buf.code_action()'
+            ),
         },
         ['gh'] = {
             capability = 'signature_help',
@@ -189,12 +204,16 @@ function M.on_attach(client, bufnr, is_null)
         },
         ['<leader>s'] = {
             mapping = lua_cmd:format(
-                (has_telescope and "require'telescope.builtin'.lsp_document_symbols{}")
-                    or 'vim.lsp.buf.document_symbol{}'
+                (
+                        has_telescope
+                        and "require'telescope.builtin'.lsp_document_symbols(require'telescope.themes'.get_dropdown{})"
+                    ) or 'vim.lsp.buf.document_symbol{}'
             ),
         },
         ['=d'] = {
-            mapping = lua_cmd:format(diag_str .. '.show_line_diagnostics()'),
+            mapping = lua_cmd:format(
+                diag_str .. (has_nvim_6 and '.open_float()' or '.show_line_diagnostics()')
+            ),
         },
         [']d'] = {
             mapping = lua_cmd:format(diag_str .. '.goto_next{wrap=false}'),

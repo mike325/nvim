@@ -2,7 +2,7 @@ local sys = require 'sys'
 local executable = require('utils.files').executable
 local load_module = require('utils.helpers').load_module
 
-local set_autocmd = require('neovim.autocmds').set_autocmd
+-- local set_autocmd = require('neovim.autocmds').set_autocmd
 local set_command = require('neovim.commands').set_command
 
 local telescope = load_module 'telescope'
@@ -12,11 +12,13 @@ if not telescope then
 end
 
 local plugins = require('neovim').plugins
+local builtin = require 'telescope.builtin'
+local themes = require 'telescope.themes'
 
 local noremap = { noremap = true, silent = true }
 
 -- local lsp_langs = require'plugins.lsp'
-local ts_langs = require 'plugins.treesitter'
+-- local ts_langs = require 'plugins.treesitter'
 local actions = require 'telescope.actions'
 local has_sqlite = sys.has_sqlite
 local extensions = {}
@@ -74,38 +76,6 @@ telescope.setup {
     },
 }
 
--- *** Builtins ***
--- builtin.planets
--- builtin.builtin
--- builtin.find_files
--- builtin.git_files
--- builtin.buffers
--- builtin.oldfiles
--- builtin.commands
--- builtin.tags
--- builtin.command_history
--- builtin.help_tags
--- builtin.man_pages
--- builtin.marks
--- builtin.colorscheme
--- builtin.treesitter
--- builtin.live_grep
--- builtin.current_buffer_fuzzy_find
--- builtin.current_buffer_tags
--- builtin.grep_string
--- builtin.quickfix
--- builtin.loclist
--- builtin.reloader
--- builtin.vim_options
--- builtin.registers
--- builtin.keymaps
--- builtin.filetypes
--- builtin.highlights
--- builtin.git_commits
--- builtin.git_bcommits
--- builtin.git_branches
--- builtin.git_status
-
 set_command {
     lhs = 'LuaReloaded',
     rhs = [[lua require'telescope.builtin'.reloader()]],
@@ -115,21 +85,23 @@ set_command {
 set_command {
     lhs = 'HelpTags',
     rhs = function()
-        require('telescope.builtin').help_tags {}
+        builtin.help_tags {}
     end,
     args = { force = true },
 }
 
 vim.keymap.set('n', '<C-p>', function()
     local is_git = vim.b.project_root and vim.b.project_root.is_git or false
-    require('telescope.builtin').find_files {
+    builtin.find_files(themes.get_ivy {
         find_command = require('utils.helpers').select_filelist(is_git, true),
-    }
-end, { noremap = true })
+    })
+end, noremap)
 
-vim.keymap.set('n', '<C-b>', require('telescope.builtin').current_buffer_fuzzy_find, noremap)
-vim.keymap.set('n', '<leader>g', require('telescope.builtin').live_grep, noremap)
-vim.keymap.set('n', '<C-q>', require('telescope.builtin').quickfix, noremap)
+vim.keymap.set('n', '<C-b>', function()
+    builtin.current_buffer_fuzzy_find(themes.get_ivy {})
+end, noremap)
+vim.keymap.set('n', '<leader>g', builtin.live_grep, noremap)
+vim.keymap.set('n', '<C-q>', builtin.quickfix, noremap)
 
 set_command {
     lhs = 'Oldfiles',
@@ -139,13 +111,13 @@ set_command {
 
 set_command {
     lhs = 'Registers',
-    rhs = [[lua require'telescope.builtin'.registers{}]],
+    rhs = [[lua require'telescope.builtin'.registers(require'telescope.themes'.get_dropdown{})]],
     args = { force = true },
 }
 
 set_command {
     lhs = 'Marks',
-    rhs = [[lua require'telescope.builtin'.marks{}]],
+    rhs = [[lua require'telescope.builtin'.marks(require'telescope.themes'.get_dropdown{})]],
     args = { force = true },
 }
 
@@ -158,7 +130,7 @@ set_command {
 set_command {
     lhs = 'GetVimFiles',
     rhs = function()
-        require('telescope.builtin').find_files {
+        builtin.find_files {
             cwd = sys.base,
             find_command = require('utils.helpers').select_filelist(false, true),
         }
@@ -167,24 +139,9 @@ set_command {
 }
 
 if executable 'git' then
-    vim.keymap.set('n', '<leader>c', require('telescope.builtin').git_bcommits, noremap)
-    vim.keymap.set('n', '<leader>C', require('telescope.builtin').git_commits, noremap)
-    vim.keymap.set('n', '<leader>b', require('telescope.builtin').git_branches, noremap)
-end
-
-if ts_langs then
-    set_autocmd {
-        event = 'FileType',
-        pattern = ts_langs,
-        cmd = [[nnoremap <A-s> <cmd>lua require'telescope.builtin'.treesitter{}<CR>]],
-        group = 'TreesitterAutocmds',
-    }
-    set_autocmd {
-        event = 'FileType',
-        pattern = ts_langs,
-        cmd = [[command! -buffer TSSymbols lua require'telescope.builtin'.treesitter{}]],
-        group = 'TreesitterAutocmds',
-    }
+    vim.keymap.set('n', '<leader>c', builtin.git_bcommits, noremap)
+    vim.keymap.set('n', '<leader>C', builtin.git_commits, noremap)
+    vim.keymap.set('n', '<leader>b', builtin.git_branches, noremap)
 end
 
 return true
