@@ -618,6 +618,13 @@ packer.startup(function()
         wants = { 'telescope.nvim', (require('sys').has_sqlite and 'sqlite.lua' or nil) },
     }
 
+    use {
+        'numToStr/Comment.nvim',
+        config = function()
+            require 'plugins.comments'
+        end,
+    }
+
     -- TODO: Add neovim 0.5 compatibility layer/setup
     use {
         'jose-elias-alvarez/null-ls.nvim',
