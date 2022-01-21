@@ -1,25 +1,23 @@
 local load_module = require('utils.helpers').load_module
 
-local plugins = require('neovim').plugins
+local nvim = require 'neovim'
+local executable = require('utils.files').executable
 
 local cmp = load_module 'cmp'
 if not cmp then
     return false
 end
 
--- local lsp = require 'plugins.lsp'
--- local treesitter = require 'plugins.treesitter'
-
 local vsnip = load_module 'vsnip'
 local luasnip = load_module 'luasnip'
-local ultisnips = plugins.ultisnips
+local ultisnips = nvim.plugins.ultisnips
 local lspkind = require 'lspkind'
 
 local function has_treesitter()
-    if vim.fn.has 'win32' or vim.fn.has 'win64' then
-        return vim.fn.executable 'gcc' == 1
+    if nvim.has 'win32' or nvim.has 'win64' then
+        return executable 'gcc'
     end
-    return vim.fn.executable 'gcc' == 1 or vim.fn.executable 'clang' == 1
+    return executable 'gcc' or executable 'clang'
 end
 
 local sources = {

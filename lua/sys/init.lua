@@ -1,5 +1,9 @@
 local stdpath = vim.fn.stdpath
 
+local executable = function(exe)
+    return vim.fn.executable(exe) == 1
+end
+
 local function system_name()
     local name = jit.os:lower()
     return name
@@ -37,7 +41,7 @@ local function has_sqlite()
         end
         return false
     end
-    return vim.fn.executable 'sqlite3' == 1
+    return executable 'sqlite3'
 end
 
 local function db_root_path()

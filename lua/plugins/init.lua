@@ -624,35 +624,6 @@ packer.startup(function()
         wants = { 'nvim-lspconfig', 'plenary.nvim' },
         branch = (vim.fn.has 'nvim-0.6' == 0 and '0.5.1-compat' or nil),
     }
-
-    -- -- TODO: Check for python 3.8.5
-    -- use {
-    --     'ms-jpq/coq_nvim',
-    --     branch = 'coq',
-    --     cond = function()
-    --         return vim.fn.has 'python3' == 1
-    --     end,
-    --     setup = function()
-    --         vim.g.coq_settings = {
-    --             auto_start = true,
-    --             ['keymap.recommended'] = false,
-    --         }
-    --     end,
-    --     -- config = function()
-    --     --     vim.cmd('COQdeps')
-    --     -- end,
-    -- }
-
-    -- use {
-    --     'lewis6991/spellsitter.nvim',
-    --     config = function()
-    --         require('spellsitter').setup{
-    --             hl = 'Error',
-    --             captures = {'comment', 'string'},
-    --         }
-    --     end,
-    --     after = 'nvim-treesitter',
-    -- }
 end)
 
 if has_compiler then

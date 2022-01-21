@@ -8,6 +8,8 @@ if not dap then
     return false
 end
 
+local executable = require('utils.files').executable
+
 local set_autocmd = require('neovim.autocmds').set_autocmd
 local set_command = require('neovim.commands').set_command
 
@@ -21,9 +23,9 @@ local function pythonPath()
 
     if vim.env.VIRTUAL_ENV then
         return vim.env.VIRTUAL_ENV .. '/bin/python'
-    elseif vim.fn.executable(cwd .. '/venv/bin/python') == 1 then
+    elseif executable(cwd .. '/venv/bin/python') then
         return cwd .. '/venv/bin/python'
-    elseif vim.fn.executable(cwd .. '/.venv/bin/python') == 1 then
+    elseif executable(cwd .. '/.venv/bin/python') then
         return cwd .. '/.venv/bin/python'
     end
 

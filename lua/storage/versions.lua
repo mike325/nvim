@@ -1,5 +1,6 @@
 local has_sqlite, sqlite = pcall(require, 'sqlite')
 local has_lib, _ = pcall(require, 'sqlite.defs')
+
 if not has_lib or not has_sqlite then
     sqlite = false
 end
@@ -134,7 +135,7 @@ function M.has_version(prg, target_version)
         },
     }
 
-    if vim.fn.executable(prg) ~= 1 then
+    if require('utils.files').executable(prg) then
         return false
     end
 

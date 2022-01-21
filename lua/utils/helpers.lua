@@ -570,7 +570,7 @@ function M.abolish(language)
     local current = vim.bo.spelllang
     local set_abbr = require('neovim.abbrs').set_abbr
 
-    if nvim.has.cmd 'Abolish' == 2 then
+    if nvim.has.cmd 'Abolish' then
         if abolish[current] ~= nil then
             for base, _ in pairs(abolish[current]) do
                 vim.cmd('Abolish -delete -buffer ' .. base)
