@@ -1,16 +1,5 @@
 local sys = require 'sys'
 
-local system_name = ''
-if sys.name == 'osx' then
-    system_name = 'macOS'
-elseif sys.name == 'linux' then
-    system_name = 'Linux'
-elseif sys.name == 'windows' then
-    system_name = 'Windows'
-else
-    vim.notify('Unsupported system for sumneko', 'ERROR', { title = 'LSP' })
-end
-
 local function switch_source_header_splitcmd(bufnr, splitcmd)
     bufnr = require('lspconfig').util.validate_bufnr(bufnr)
     local params = { uri = vim.uri_from_bufnr(bufnr) }
@@ -26,11 +15,9 @@ local function switch_source_header_splitcmd(bufnr, splitcmd)
     end)
 end
 
-local sumneko_root_path = sys.cache .. '/lspconfig/sumneko_lua/lua-language-server'
-local sumneko_binary = sumneko_root_path .. '/bin/' .. system_name .. '/lua-language-server'
-local sumneko_runtime = vim.split(package.path, ';')
-table.insert(sumneko_runtime, 'lua/?.lua')
-table.insert(sumneko_runtime, 'lua/?/init.lua')
+local lua_runtime = vim.split(package.path, ';')
+table.insert(lua_runtime, 'lua/?.lua')
+table.insert(lua_runtime, 'lua/?/init.lua')
 
 local servers = {
     go = { { exec = 'gopls' } },
@@ -96,32 +83,28 @@ local servers = {
     },
     lua = {
         {
+            exec = 'lua-language-server',
             config = 'sumneko_lua',
             options = {
-                cmd = { sumneko_binary, '-E', sumneko_root_path .. '/main.lua' },
-                capabilities = {
-                    textDocument = {
-                        completion = {
-                            completionItem = { snippetSupport = true },
-                        },
-                    },
-                },
                 settings = {
                     Lua = {
-                        completion = {
-                            keywordSnippet = 'Enable',
-                            callSnippet = 'Both',
-                        },
+                        -- completion = {
+                        --     keywordSnippet = 'Enable',
+                        --     callSnippet = 'Both',
+                        -- },
                         runtime = {
                             -- Tell the language server which version of Lua you're using
                             -- (most likely LuaJIT in the case of Neovim)
                             version = 'LuaJIT',
                             -- Setup your lua path
-                            path = sumneko_runtime,
+                            path = lua_runtime,
                         },
                         workspace = {
                             -- Make the server aware of Neovim runtime files
                             library = vim.api.nvim_get_runtime_file('', true),
+                        },
+                        telemetry = {
+                            enable = false,
                         },
                         diagnostics = {
                             globals = {
