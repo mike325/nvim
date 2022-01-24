@@ -29,11 +29,38 @@ snippet l "local ..."
 local ${1:name} = ${2:x}
 endsnippet
 
-# Neovim api shortcuts
-snippet bufnr "get current window buffer"
-local ${1:bufnr} = require'nvim'.win.get_buf(${2:0})
-endsnippet
-
 snippet pvi "print(vim.inspect(...))"
 print(vim.inspect(${0:${VISUAL:1}}))
+endsnippet
+
+snippet use "use {...}"
+use { '${1:plugin}' }
+endsnippet
+
+snippet for "for k,v in pairs(tbl) do ... end"
+for ${1:k}, ${2:v} in pairs(${3:tbl}) do
+	${0:${VISUAL:-- Code}}
+end
+endsnippet
+
+snippet fori "for k,v in pairs(tbl) do ... end"
+for ${1:i}=1,${2:#var} do
+	${0:${VISUAL:-- Code}}
+end
+endsnippet
+
+snippet as "assert()"
+assert(${1:cond}, debug.traceback(${2:'msg'}))
+endsnippet
+
+snippet err "error()"
+error(debug.traceback(${1:'msg'}))
+endsnippet
+
+snippet req "require(module)"
+require'${1:mod}'
+endsnippet
+
+snippet val "vim.validate()"
+vim.validate { ${1:arg} = { $1, '${2:table}' $3}$0 }
 endsnippet

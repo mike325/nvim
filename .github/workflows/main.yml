@@ -9,27 +9,22 @@ jobs:
 
     strategy:
       matrix:
-        os: [
-          ubuntu-latest,
-          ubuntu-20.04,
-          ubuntu-18.04,
-        ]
+        os: [ ubuntu-latest, ubuntu-20.04, ubuntu-18.04 ]
 
     env:
       GITHUB: true
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: OS Info
         run: |
-          sudo apt install -y wget
+          sudo apt-get install -y wget
           wget -O screenfetch-dev https://git.io/vaHfR
           chmod +x screenfetch-dev
           ./screenfetch-dev
       - name: Install system packages
         run: |
-          sudo apt install -y curl git shellcheck python3-setuptools python-setuptools build-essential cmake python3-dev
-          sudo apt install -y python3-pip
+          sudo apt-get install -y curl git shellcheck python3-setuptools python-setuptools build-essential cmake python3-dev python3-pip
       - name: Fetch script
         run: |
           curl -OL https://raw.githubusercontent.com/Mike325/dotfiles/master/install.sh
@@ -44,7 +39,7 @@ jobs:
           ./test/test.sh
       - name: Test latest vim
         run: |
-          sudo apt install -y vim
+          sudo apt-get install -y vim
           export PATH="$HOME/.local/bin:$PATH"
           ./test/test.sh --vim
       - name: Test latest neovim
@@ -59,15 +54,13 @@ jobs:
 
     strategy:
       matrix:
-        os: [
-          macOS-latest,
-        ]
+        os: [ macOS-latest ]
 
     env:
       GITHUB: true
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: OS Info
         run: |
           brew install git shellcheck neovim cmake wget python
@@ -100,17 +93,19 @@ jobs:
 
     strategy:
       matrix:
-        os: [
-          windows-latest,
-          windows-2019,
-          windows-2016
-        ]
+        os: [ windows-latest, windows-2019, windows-2016 ]
 
     env:
       GITHUB: true
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
+      - name: Cache packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            C:\Python310
+          key: ${{runner.os}}-pre-commit-${{hashFiles('.github/workflows/main.yml')}}
       - name: Enable Chocolatey
         shell: powershell
         run: |
@@ -118,7 +113,7 @@ jobs:
       - name: Install system packages
         shell: powershell
         run: |
-          choco install -y python git curl vim neovim mingw cmake
+          choco install -y python curl neovim cmake
       - name: Fetch script
         shell: bash
         run: |

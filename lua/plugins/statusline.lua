@@ -1,10 +1,8 @@
--- local nvim        = require'nvim'
--- local has_attrs   = require'tools'.tables.has_attrs
-local load_module = require'tools'.helpers.load_module
-local get_icon = require'tools'.helpers.get_icon
-local get_separators = require'tools'.helpers.get_separators
+local load_module = require('utils.helpers').load_module
+local get_icon = require('utils.helpers').get_icon
+local get_separators = require('utils.helpers').get_separators
 
-local galaxyline = load_module'galaxyline'
+local galaxyline = load_module 'galaxyline'
 
 if not galaxyline then
     return false
@@ -13,13 +11,13 @@ end
 -- local extension = require('galaxyline.provider_extensions')
 -- local buffer = require('galaxyline.provider_buffer')
 -- local diagnostic = require('galaxyline.provider_diagnostic')
-local vcs = require('galaxyline.provider_vcs')
-local fileinfo = require('galaxyline.provider_fileinfo')
-local devicon = require'nvim-web-devicons'.get_icon
+local vcs = require 'galaxyline.provider_vcs'
+local fileinfo = require 'galaxyline.provider_fileinfo'
+local devicon = require('nvim-web-devicons').get_icon
 
-local colors = require'plugins/colors'
+local colors = require 'plugins/colors'
 
-local separators = get_separators('circle')
+local separators = get_separators 'circle'
 
 galaxyline.section.left = {}
 galaxyline.section.right = {}
@@ -32,6 +30,7 @@ galaxyline.section.right = {}
 -- * Add support for Neomake and YCM errors
 -- * Fix
 
+-- stylua: ignore
 local modes = {
     n        = {'N',  colors.purple},
     no       = {'N',  colors.purple},
@@ -81,7 +80,7 @@ local function highlight(group, fg, bg, gui)
 end
 
 local function buffer_not_empty()
-    if vim.fn.empty(vim.fn.expand('%:t')) ~= 1 then
+    if vim.fn.empty(vim.fn.expand '%:t') ~= 1 then
         return true
     end
     return false
@@ -95,9 +94,12 @@ end
 
 local function has_diagnostics()
     if not vim.tbl_isempty(vim.lsp.buf_get_clients(0)) then
-        local errors = vim.lsp.diagnostic.get_count(0, [[Error]])
-        local warns = vim.lsp.diagnostic.get_count(0, [[Warning]])
-        local hints = vim.lsp.diagnostic.get_count(0, [[Hint]])
+        local errors = vim.diagnostic and #(vim.diagnostic.get(0, { severity = 'Error' }))
+            or vim.lsp.diagnostic.get_count(0, 'Error')
+        local warns = vim.diagnostic and #(vim.diagnostic.get(0, { severity = 'Warning' }))
+            or vim.lsp.diagnostic.get_count(0, 'Warning')
+        local hints = vim.diagnostic and #(vim.diagnostic.get(0, { severity = 'Hint' }))
+            or vim.lsp.diagnostic.get_count(0, 'Hint')
 
         if errors > 0 or warns > 0 or hints > 0 then
             return true
@@ -115,11 +117,13 @@ end
 
 galaxyline.section.left[#galaxyline.section.left + 1] = {
     LeftBegin = {
-        provider = function() return separators.right end,
+        provider = function()
+            return separators.right
+        end,
         separator = '',
         highlight = 'GalaxyViModeInv',
         separator_highlight = 'GalaxyViModeInv',
-    }
+    },
 }
 
 galaxyline.section.left[#galaxyline.section.left + 1] = {
@@ -144,8 +148,8 @@ galaxyline.section.left[#galaxyline.section.left + 1] = {
     GitBranch = {
         provider = 'GitBranch',
         condition = is_vcs_repo,
-        icon = ('%s '):format(get_icon('git_branch')),
-        highlight = {colors.white, colors.light_gray},
+        icon = ('%s '):format(get_icon 'git_branch'),
+        highlight = { colors.white, colors.light_gray },
     },
 }
 
@@ -158,8 +162,8 @@ galaxyline.section.left[#galaxyline.section.left + 1] = {
             end
             return false
         end,
-        icon = ('%s '):format(get_icon('diff_modified')),
-        highlight = {colors.light_yellow, colors.light_gray},
+        icon = ('%s '):format(get_icon 'diff_modified'),
+        highlight = { colors.light_yellow, colors.light_gray },
     },
     DiffAdd = {
         provider = 'DiffAdd',
@@ -169,8 +173,8 @@ galaxyline.section.left[#galaxyline.section.left + 1] = {
             end
             return false
         end,
-        icon = ('%s '):format(get_icon('diff_add')),
-        highlight = {colors.light_green, colors.light_gray},
+        icon = ('%s '):format(get_icon 'diff_add'),
+        highlight = { colors.light_green, colors.light_gray },
     },
     DiffRemove = {
         provider = 'DiffRemove',
@@ -180,28 +184,34 @@ galaxyline.section.left[#galaxyline.section.left + 1] = {
             end
             return false
         end,
-        icon = ('%s '):format(get_icon('diff_remove')),
-        highlight = {colors.light_red, colors.light_gray},
+        icon = ('%s '):format(get_icon 'diff_remove'),
+        highlight = { colors.light_red, colors.light_gray },
     },
 }
 
 galaxyline.section.left[#galaxyline.section.left + 1] = {
     SepDiffEnd = {
-        provider = function() return '' end,
+        provider = function()
+            return ''
+        end,
         separator = separators.left,
-        separator_highlight = {colors.light_gray, colors.dark_gray},
-        condition = function() return not has_diagnostics() and is_vcs_repo() end,
-    }
+        separator_highlight = { colors.light_gray, colors.dark_gray },
+        condition = function()
+            return not has_diagnostics() and is_vcs_repo()
+        end,
+    },
 }
 
 galaxyline.section.left[#galaxyline.section.left + 1] = {
     SepDiagBeg = {
-        provider = function() return separators.left end,
-        highlight = {colors.light_gray, colors.purple},
+        provider = function()
+            return separators.left
+        end,
+        highlight = { colors.light_gray, colors.purple },
         separator = ' ',
-        separator_highlight = {colors.purple, colors.purple},
+        separator_highlight = { colors.purple, colors.purple },
         condition = has_diagnostics,
-    }
+    },
 }
 
 galaxyline.section.left[#galaxyline.section.left + 1] = {
@@ -210,7 +220,7 @@ galaxyline.section.left[#galaxyline.section.left + 1] = {
             if not vim.tbl_isempty(vim.lsp.buf_get_clients(0)) then
                 local errors = vim.lsp.diagnostic.get_count(0, [[Error]])
                 if errors > 0 then
-                    return errors..' '
+                    return errors .. ' '
                 end
             end
             return ''
@@ -224,15 +234,15 @@ galaxyline.section.left[#galaxyline.section.left + 1] = {
             end
             return false
         end,
-        icon = ('%s '):format(get_icon('error')),
-        highlight = {colors.light_red, colors.purple},
+        icon = ('%s '):format(get_icon 'error'),
+        highlight = { colors.light_red, colors.purple },
     },
     DiagnosticWarn = {
         provider = function()
             if not vim.tbl_isempty(vim.lsp.buf_get_clients(0)) then
                 local warns = vim.lsp.diagnostic.get_count(0, [[Warning]])
                 if warns > 0 then
-                    return warns..' '
+                    return warns .. ' '
                 end
             end
             return ''
@@ -246,15 +256,15 @@ galaxyline.section.left[#galaxyline.section.left + 1] = {
             end
             return false
         end,
-        icon = ('%s '):format(get_icon('warn')),
-        highlight = {colors.light_yellow, colors.purple},
+        icon = ('%s '):format(get_icon 'warn'),
+        highlight = { colors.light_yellow, colors.purple },
     },
     DiagnosticHint = {
         provider = function()
             if not vim.tbl_isempty(vim.lsp.buf_get_clients(0)) then
                 local hints = vim.lsp.diagnostic.get_count(0, [[Hint]])
                 if hints > 0 then
-                    return hints..' '
+                    return hints .. ' '
                 end
             end
             return ''
@@ -268,18 +278,20 @@ galaxyline.section.left[#galaxyline.section.left + 1] = {
             end
             return false
         end,
-        icon = ('%s '):format(get_icon('info')),
-        highlight = {colors.cyan, colors.purple},
+        icon = ('%s '):format(get_icon 'info'),
+        highlight = { colors.cyan, colors.purple },
     },
 }
 
 galaxyline.section.left[#galaxyline.section.left + 1] = {
     SepDiagEnd = {
-        provider = function() return '' end,
+        provider = function()
+            return ''
+        end,
         separator = separators.left,
-        separator_highlight = {colors.purple, colors.dark_gray},
+        separator_highlight = { colors.purple, colors.dark_gray },
         condition = has_diagnostics,
-    }
+    },
 }
 
 galaxyline.section.left[#galaxyline.section.left + 1] = {
@@ -288,8 +300,8 @@ galaxyline.section.left[#galaxyline.section.left + 1] = {
             local filetypes = {
                 help = '',
                 log = '',
-                fugitive = devicon('git'),
-                gitcommit = devicon('git'),
+                fugitive = devicon 'git',
+                gitcommit = devicon 'git',
             }
 
             local filename = fileinfo.get_current_file_name()
@@ -303,33 +315,34 @@ galaxyline.section.left[#galaxyline.section.left + 1] = {
         condition = buffer_not_empty,
         -- separator = ('%s'):format(separators.rights),
         -- separator_highlight = {colors.purple, colors.light_gray},
-        highlight = {colors.white, colors.dark_gray},
-    }
+        highlight = { colors.white, colors.dark_gray },
+    },
 }
 
 galaxyline.section.right[#galaxyline.section.right + 1] = {
     RightBegin = {
-        provider = function() return ' ' end,
+        provider = function()
+            return ' '
+        end,
         separator = separators.right,
-        highlight = {colors.purple, colors.purple},
-        separator_highlight = {colors.purple, colors.dark_gray},
-    }
+        highlight = { colors.purple, colors.purple },
+        separator_highlight = { colors.purple, colors.dark_gray },
+    },
 }
 
 galaxyline.section.right[#galaxyline.section.right + 1] = {
     FileFormat = {
         provider = function()
-            local filesize   = vim.trim(fileinfo.get_file_size())
+            local filesize = vim.trim(fileinfo.get_file_size())
             local fileencode = vim.trim(fileinfo.get_file_encode())
             local fileformat = vim.trim(fileinfo.get_file_format())
 
             return ('%s [%s] %s '):format(fileformat, fileencode, filesize)
         end,
         condition = buffer_not_empty,
-        highlight = {colors.white, colors.purple},
+        highlight = { colors.white, colors.purple },
     },
 }
-
 
 galaxyline.load_galaxyline()
 

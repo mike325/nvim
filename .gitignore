@@ -37,3 +37,5 @@ TAGS
 /lua/work/
 /lua/host/
 /after/plugin/host/
+
+/plugin/packer_compiled.*

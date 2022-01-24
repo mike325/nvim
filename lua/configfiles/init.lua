@@ -1,10 +1,3 @@
-local realpath       = require'tools'.files.realpath
-local is_file        = require'tools'.files.is_file
-local readfile       = require'tools'.files.readfile
-local extension      = require'tools'.files.extension
-local basename       = require'tools'.files.basename
-local normalize_path = require'tools'.files.normalize_path
-
 local Config = {
     path = '',
     filename = '',
@@ -14,12 +7,14 @@ local Config = {
 
 local function read_config(config)
     local configfile = config.filename
-    local data = readfile(configfile)
-    local parsers = require'configfiles.parsers'
+    local data = require('utils.files').readfile(configfile)
+    local parsers = require 'configfiles.parsers'
 
-    local ext = extension(configfile)
+    local ext = require('utils.files').extension(configfile)
+    local basename = require('utils.files').basename
+
     local base_filename = basename(configfile)
-    local base_dir = basename(basedir(config.path))
+    local base_dir = basename(require('utils.files').basedir(config.path))
 
     if ext == 'toml' then
         return parsers.toml(data)
@@ -31,14 +26,23 @@ local function read_config(config)
 end
 
 function Config:new(configfile)
-    configfile = normalize_path(configfile)
-    assert(is_file(configfile), 'Not a valid configfile: '..configfile)
+    vim.validate { configfile = { configfile, 'string' } }
+    configfile = require('utils.files').normalize_path(configfile)
+    vim.validate {
+        configfile = {
+            configfile,
+            function(c)
+                return require('utils.files').is_file(c)
+            end,
+            'config file',
+        },
+    }
 
-    obj = obj or {}
+    local obj = {}
     setmetatable(obj, self)
     self.__index = self
     self.filename = configfile
-    self.path = realpath(configfile)
+    self.path = require('utils.files').realpath(configfile)
 
     local data = read_config(self)
     self.global = data.global

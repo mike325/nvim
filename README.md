@@ -1,7 +1,7 @@
 # Dotvim files
 
-
 [![Github Status](https://github.com/Mike325/.vim/workflows/neovimfiles/badge.svg)](https://github.com/Mike325/.vim/actions)
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 
 ---
 
@@ -36,7 +36,6 @@ I have personally tested this configurations in the following environment:
 | Git bash (msys)  | v8.0/v7.4.143  | N/A      | N/A             | N/A       |
 | Native (64 bits) | N/A            | v8.0.398 | N/A             | v0.2.0    |
 
-
 **Note**: Even though I have made some limited test with Vim 7.3 they have been
 mostly simple editions, the recommend Vim version is still 7.4 or Neovim 0.17
 
@@ -44,6 +43,7 @@ mostly simple editions, the recommend Vim version is still 7.4 or Neovim 0.17
 free to use my vim files and tell me if they worked for you.
 
 ## Install
+
 ---
 
 You can test my settings by cloning this repo into your `$HOME`
@@ -56,6 +56,7 @@ ln -s ~/.vim/init.vim ~/.vimrc
 
 If you are using gVim in Windows you may want to use the following procedure:
 (inside git bash)
+
 ```sh
 git clone --recursive https://github.com/mike325/.vim.git ~/vimfiles
 
@@ -81,6 +82,7 @@ in the following location
 ```sh
 git clone --recursive https://github.com/mike325/.vim.git ~/AppData/Local/nvim/
 ```
+
 Once you have cloned the repo just run `:PlugInstall` inside Vim/Neovim to
 complete the installation process or start (n)vim as `vim +PlugInstall`
 

@@ -2,19 +2,19 @@
 
 priority 5
 
-snippet ifin "if word in iterator: ..."
+snippet ifin "if word in iterator: ..." b
 if ${1:word} in ${2:iterator}:
 	${0:${VISUAL:pass}}
 endsnippet
 
-snippet /ifel(se)?/ "if ... else ..." r
+snippet /ifel(se)?/ "if ... else ..." rb
 if ${1:condition}:
 	${2:${VISUAL:pass}}
 else:
 	${3:pass}
 endsnippet
 
-snippet /ra(ise)?/ "raise Exception(...)" r
+snippet /ra(ise)?/ "raise Exception(...)" rb
 raise Exception($0)
 endsnippet
 
@@ -23,7 +23,22 @@ elif ${1:condition}:
 	${2:${VISUAL:pass}}
 endsnippet
 
-snippet /w(h(ile)?)?/ "while : ... pass" r
+snippet /w(h(ile)?)?/ "while : ... pass" rb
 while ${1:condition}:
-	${0:pass}
+	${0:${VISUAL:pass}}
+endsnippet
+
+snippet for "for i in obj: ... pass"
+for ${1:i} in ${2:str}:
+	${0:${VISUAL:pass}}
+endsnippet
+
+snippet forr "for i in range(...): ... pass"
+for ${1:i} in range(${2:0}, ${3:len(obj)}):
+	${0:${VISUAL:pass}}
+endsnippet
+
+snippet ford "for i in dict.items(): ... pass"
+for ${1:k}, ${2:v} in ${3:dict}.items():
+	${0:${VISUAL:pass}}
 endsnippet

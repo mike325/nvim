@@ -26,7 +26,7 @@ NOCOLOR=0
 NOLOG=0
 WARN_COUNT=0
 ERR_COUNT=0
-FROM_STDIN=()
+# FROM_STDIN=()
 
 NAME="$0"
 NAME="${NAME##*/}"
@@ -44,18 +44,18 @@ trap '{ exit_append; }' EXIT
 if hash realpath 2>/dev/null; then
     SCRIPT_PATH=$(realpath "$SCRIPT_PATH")
 else
-    pushd "$SCRIPT_PATH" 1> /dev/null || exit 1
+    pushd "$SCRIPT_PATH" 1>/dev/null  || exit 1
     SCRIPT_PATH="$(pwd -P)"
-    popd 1> /dev/null || exit 1
+    popd 1>/dev/null  || exit 1
 fi
 
-if [[ -n "$ZSH_NAME" ]]; then
+if [[ -n $ZSH_NAME ]]; then
     CURRENT_SHELL="zsh"
-elif [[ -n "$BASH" ]]; then
+elif [[ -n $BASH ]]; then
     CURRENT_SHELL="bash"
 else
     # shellcheck disable=SC2009,SC2046
-    if [[ -z "$CURRENT_SHELL" ]]; then
+    if [[ -z $CURRENT_SHELL ]]; then
         CURRENT_SHELL="${SHELL##*/}"
     fi
 fi
@@ -65,13 +65,13 @@ if [ -z "$SHELL_PLATFORM" ]; then
         export SHELL_PLATFORM="$TRAVIS_OS_NAME"
     else
         case "$OSTYPE" in
-            *'linux'*   ) export SHELL_PLATFORM='linux' ;;
-            *'darwin'*  ) export SHELL_PLATFORM='osx' ;;
-            *'freebsd'* ) export SHELL_PLATFORM='bsd' ;;
-            *'cygwin'*  ) export SHELL_PLATFORM='cygwin' ;;
-            *'msys'*    ) export SHELL_PLATFORM='msys' ;;
-            *'windows'* ) export SHELL_PLATFORM='windows' ;;
-            *           ) export SHELL_PLATFORM='unknown' ;;
+            *'linux'*)    export SHELL_PLATFORM='linux' ;;
+            *'darwin'*)   export SHELL_PLATFORM='osx' ;;
+            *'freebsd'*)  export SHELL_PLATFORM='bsd' ;;
+            *'cygwin'*)   export SHELL_PLATFORM='cygwin' ;;
+            *'msys'*)     export SHELL_PLATFORM='msys' ;;
+            *'windows'*)  export SHELL_PLATFORM='windows' ;;
+            *)            export SHELL_PLATFORM='unknown' ;;
         esac
     fi
 fi
@@ -91,7 +91,7 @@ case "$SHELL_PLATFORM" in
             fi
         fi
         ;;
-    cygwin|msys|windows)
+    cygwin | msys | windows)
         OS='windows'
         ;;
     osx)
@@ -102,7 +102,7 @@ case "$SHELL_PLATFORM" in
         ;;
 esac
 
-if ! hash is_windows 2>/dev/null; then
+if ! which is_windows >/dev/null; then
     function is_windows() {
         if [[ $SHELL_PLATFORM =~ (msys|cygwin|windows) ]]; then
             return 0
@@ -111,16 +111,16 @@ if ! hash is_windows 2>/dev/null; then
     }
 fi
 
-if ! hash is_wls 2>/dev/null; then
+if ! which is_wls >/dev/null; then
     function is_wls() {
-        if [[ "$(uname -r)" =~ Microsoft ]] ; then
+        if [[ "$(uname -r)" =~ Microsoft ]]; then
             return 0
         fi
         return 1
     }
 fi
 
-if ! hash is_osx 2>/dev/null; then
+if ! which is_osx >/dev/null; then
     function is_osx() {
         if [[ $SHELL_PLATFORM == 'osx' ]]; then
             return 0
@@ -129,10 +129,29 @@ if ! hash is_osx 2>/dev/null; then
     }
 fi
 
-if ! hash is_64bits 2>/dev/null; then
-    # TODO: This should work with ARM 64bits
+if which is_root >/dev/null; then
+    function is_root() {
+        if ! is_windows && [[ $EUID -eq 0 ]]; then
+            return 0
+        fi
+        return 1
+    }
+fi
+
+if which has_sudo >/dev/null; then
+    function has_sudo() {
+        if ! is_windows && hash sudo 2>/dev/null && [[ "$(groups)" =~ sudo ]]; then
+            return 0
+        fi
+        return 1
+    }
+fi
+
+if ! which is_64bits >/dev/null; then
     function is_64bits() {
-        if [[ $ARCH == 'x86_64' ]]; then
+        local arch
+        arch="$(uname -m)"
+        if [[ $arch == 'x86_64' ]] || [[ $arch == 'arm64' ]]; then
             return 0
         fi
         return 1
@@ -164,7 +183,7 @@ normal="\033[0m"
 reset_color="\033[39m"
 
 function help_user() {
-    cat<<EOF
+    cat <<EOF
 Description
 
 Usage:
@@ -187,57 +206,57 @@ EOF
 }
 
 function warn_msg() {
-    local warn_message="$1"
+    local msg="$1"
     if [[ $NOCOLOR -eq 0 ]]; then
-        printf "${yellow}[!] Warning:${reset_color}\t %s\n" "$warn_message"
+        printf "${yellow}[!] Warning:${reset_color}\t %s\n" "$msg"
     else
-        printf "[!] Warning:\t %s\n" "$warn_message"
+        printf "[!] Warning:\t %s\n" "$msg"
     fi
-    WARN_COUNT=$(( WARN_COUNT + 1 ))
+    WARN_COUNT=$((WARN_COUNT + 1))
     if [[ $NOLOG -eq 0 ]]; then
-        printf "[!] Warning:\t %s\n" "$warn_message" >> "${LOG}"
+        printf "[!] Warning:\t %s\n" "$msg" >>"${LOG}"
     fi
     return 0
 }
 
 function error_msg() {
-    local error_message="$1"
+    local msg="$1"
     if [[ $NOCOLOR -eq 0 ]]; then
-        printf "${red}[X] Error:${reset_color}\t %s\n" "$error_message" 1>&2
+        printf "${red}[X] Error:${reset_color}\t %s\n" "$msg" 1>&2
     else
-        printf "[X] Error:\t %s\n" "$error_message" 1>&2
+        printf "[X] Error:\t %s\n" "$msg" 1>&2
     fi
-    ERR_COUNT=$(( ERR_COUNT + 1 ))
+    ERR_COUNT=$((ERR_COUNT + 1))
     if [[ $NOLOG -eq 0 ]]; then
-        printf "[X] Error:\t %s\n" "$error_message" >> "${LOG}"
+        printf "[X] Error:\t %s\n" "$msg" >>"${LOG}"
     fi
     return 0
 }
 
 function status_msg() {
-    local status_message="$1"
+    local msg="$1"
     if [[ $NOCOLOR -eq 0 ]]; then
-        printf "${green}[*] Info:${reset_color}\t %s\n" "$status_message"
+        printf "${green}[*] Info:${reset_color}\t %s\n" "$msg"
     else
-        printf "[*] Info:\t %s\n" "$status_message"
+        printf "[*] Info:\t %s\n" "$msg"
     fi
     if [[ $NOLOG -eq 0 ]]; then
-        printf "[*] Info:\t\t %s\n" "$status_message" >> "${LOG}"
+        printf "[*] Info:\t\t %s\n" "$msg" >>"${LOG}"
     fi
     return 0
 }
 
 function verbose_msg() {
-    local debug_message="$1"
+    local msg="$1"
     if [[ $VERBOSE -eq 1 ]]; then
         if [[ $NOCOLOR -eq 0 ]]; then
-            printf "${purple}[+] Debug:${reset_color}\t %s\n" "$debug_message"
+            printf "${purple}[+] Debug:${reset_color}\t %s\n" "$msg"
         else
-            printf "[+] Debug:\t %s\n" "$debug_message"
+            printf "[+] Debug:\t %s\n" "$msg"
         fi
     fi
     if [[ $NOLOG -eq 0 ]]; then
-        printf "[+] Debug:\t\t %s\n" "$debug_message" >> "${LOG}"
+        printf "[+] Debug:\t\t %s\n" "$msg" >>"${LOG}"
     fi
     return 0
 }
@@ -253,7 +272,7 @@ function __parse_args() {
 
     local pattern="^--${flag}=[a-zA-Z0-9.:@_/~-]+$"
 
-    if [[ -n "$3" ]]; then
+    if [[ -n $3   ]]; then
         local pattern="^--${flag}=$3$"
     fi
 
@@ -274,7 +293,7 @@ function initlog() {
             return 1
         fi
         if [[ -f "${SCRIPT_PATH}/shell/banner" ]]; then
-            cat "${SCRIPT_PATH}/shell/banner" > "${LOG}"
+            cat "${SCRIPT_PATH}/shell/banner" >"${LOG}"
         fi
         if ! is_osx; then
             LOG=$(readlink -e "${LOG}")
@@ -287,14 +306,14 @@ function initlog() {
 function exit_append() {
     if [[ $NOLOG -eq 0 ]]; then
         if [[ $WARN_COUNT -gt 0 ]] || [[ $ERR_COUNT -gt 0 ]]; then
-            printf "\n\n" >> "${LOG}"
+            printf "\n\n" >>"${LOG}"
         fi
 
         if [[ $WARN_COUNT -gt 0 ]]; then
-            printf "[*] Warnings:\t%s\n" "$WARN_COUNT" >> "${LOG}"
+            printf "[*] Warnings:\t%s\n" "$WARN_COUNT" >>"${LOG}"
         fi
         if [[ $ERR_COUNT -gt 0 ]]; then
-            printf "[*] Errors:\t%s\n" "$ERR_COUNT" >> "${LOG}"
+            printf "[*] Errors:\t%s\n" "$ERR_COUNT" >>"${LOG}"
         fi
     fi
     return 0
@@ -309,19 +328,19 @@ while [[ $# -gt 0 ]]; do
         --nocolor)
             NOCOLOR=1
             ;;
-        -v|--verbose)
+        -v | --verbose)
             VERBOSE=1
             ;;
-        -h|--help)
+        -h | --help)
             help_user
             exit 0
             ;;
-        -)
-            while read -r from_stdin; do
-                FROM_STDIN=("$from_stdin")
-            done
-            break
-            ;;
+        # -)
+        #     while read -r from_stdin; do
+        #         FROM_STDIN=("$from_stdin")
+        #     done
+        #     break
+        #     ;;
         *)
             initlog
             error_msg "Unknown argument $key"
@@ -343,7 +362,9 @@ verbose_msg "OS            : ${OS}"
 #                           CODE Goes Here                            #
 #######################################################################
 
-
+#######################################################################
+#                           CODE Goes Here                            #
+#######################################################################
 if [[ $ERR_COUNT -gt 0 ]]; then
     exit 1
 fi

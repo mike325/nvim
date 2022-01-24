@@ -56,9 +56,9 @@ trap '{ exit_append; }' EXIT
 if hash realpath 2>/dev/null; then
     SCRIPT_PATH=$(realpath "$SCRIPT_PATH")
 else
-    pushd "$SCRIPT_PATH" 1> /dev/null || exit 1
+    pushd "$SCRIPT_PATH" 1>/dev/null  || exit 1
     SCRIPT_PATH="$(pwd -P)"
-    popd 1> /dev/null || exit 1
+    popd 1>/dev/null  || exit 1
 fi
 
 if [ -z "$SHELL_PLATFORM" ]; then
@@ -66,13 +66,13 @@ if [ -z "$SHELL_PLATFORM" ]; then
         export SHELL_PLATFORM="$TRAVIS_OS_NAME"
     else
         case "$OSTYPE" in
-            *'linux'*   ) export SHELL_PLATFORM='linux' ;;
-            *'darwin'*  ) export SHELL_PLATFORM='osx' ;;
-            *'freebsd'* ) export SHELL_PLATFORM='bsd' ;;
-            *'cygwin'*  ) export SHELL_PLATFORM='cygwin' ;;
-            *'msys'*    ) export SHELL_PLATFORM='msys' ;;
-            *'windows'* ) export SHELL_PLATFORM='windows' ;;
-            *           ) export SHELL_PLATFORM='unknown' ;;
+            *'linux'*)    export SHELL_PLATFORM='linux' ;;
+            *'darwin'*)   export SHELL_PLATFORM='osx' ;;
+            *'freebsd'*)  export SHELL_PLATFORM='bsd' ;;
+            *'cygwin'*)   export SHELL_PLATFORM='cygwin' ;;
+            *'msys'*)     export SHELL_PLATFORM='msys' ;;
+            *'windows'*)  export SHELL_PLATFORM='windows' ;;
+            *)            export SHELL_PLATFORM='unknown' ;;
         esac
     fi
 fi
@@ -92,7 +92,7 @@ case "$SHELL_PLATFORM" in
             fi
         fi
         ;;
-    cygwin|msys|windows)
+    cygwin | msys | windows)
         OS='windows'
         ;;
     osx)
@@ -121,16 +121,16 @@ if ! hash is_osx 2>/dev/null; then
     }
 fi
 
-if [[ -n "$ZSH_NAME" ]]; then
+if [[ -n $ZSH_NAME ]]; then
     CURRENT_SHELL="zsh"
-elif [[ -n "$BASH" ]]; then
+elif [[ -n $BASH ]]; then
     CURRENT_SHELL="bash"
 else
     # shellcheck disable=SC2009,SC2046
     # _CURRENT_SHELL="$(ps | grep $$ | grep -Eo '(ba|z|tc|c)?sh')"
     # _CURRENT_SHELL="${_CURRENT_SHELL##*/}"
     # _CURRENT_SHELL="${_CURRENT_SHELL##*:}"
-    if [[ -z "$CURRENT_SHELL" ]]; then
+    if [[ -z $CURRENT_SHELL ]]; then
         CURRENT_SHELL="${SHELL##*/}"
     fi
 fi
@@ -160,7 +160,7 @@ normal="\033[0m"
 reset_color="\033[39m"
 
 function help_user() {
-    cat<<EOF
+    cat <<EOF
 Description
 
 Usage:
@@ -193,7 +193,7 @@ function __parse_args() {
 
     local pattern="^--${name}=[a-zA-Z0-9.:@_/~-]+$"
 
-    if [[ -n "$3" ]]; then
+    if [[ -n $3   ]]; then
         local pattern="^--${name}=$3$"
     fi
 
@@ -212,9 +212,9 @@ function warn_msg() {
     else
         printf "\n[!] Warning:\t %s" "$warn_message"
     fi
-    WARN_COUNT=$(( WARN_COUNT + 1 ))
+    WARN_COUNT=$((WARN_COUNT + 1))
     if [[ $NOLOG -eq 0 ]]; then
-        printf "[!] Warning:\t %s\n" "$warn_message" >> "${LOG}"
+        printf "[!] Warning:\t %s\n" "$warn_message" >>"${LOG}"
     fi
     return 0
 }
@@ -226,9 +226,9 @@ function error_msg() {
     else
         printf "\n[X] Error:\t %s" "$error_message" 1>&2
     fi
-    ERR_COUNT=$(( ERR_COUNT + 1 ))
+    ERR_COUNT=$((ERR_COUNT + 1))
     if [[ $NOLOG -eq 0 ]]; then
-        printf "[X] Error:\t\t %s\n" "$error_message" >> "${LOG}"
+        printf "[X] Error:\t\t %s\n" "$error_message" >>"${LOG}"
     fi
     return 0
 }
@@ -241,7 +241,7 @@ function status_msg() {
         printf "\n[*] Info:\t %s" "$status_message"
     fi
     if [[ $NOLOG -eq 0 ]]; then
-        printf "[*] Info:\t\t %s\n" "$status_message" >> "${LOG}"
+        printf "[*] Info:\t\t %s\n" "$status_message" >>"${LOG}"
     fi
     return 0
 }
@@ -256,7 +256,7 @@ function verbose_msg() {
         fi
     fi
     if [[ $NOLOG -eq 0 ]]; then
-        printf "[+] Debug:\t\t %s\n" "$debug_message" >> "${LOG}"
+        printf "[+] Debug:\t\t %s\n" "$debug_message" >>"${LOG}"
     fi
     return 0
 }
@@ -266,7 +266,7 @@ function initlog() {
         rm -f "${LOG}" 2>/dev/null
         touch "${LOG}" &>/dev/null
         if [[ -f "${SCRIPT_PATH}/shell/banner" ]]; then
-            cat "${SCRIPT_PATH}/shell/banner" > "${LOG}"
+            cat "${SCRIPT_PATH}/shell/banner" >"${LOG}"
         fi
     fi
     return 0
@@ -275,14 +275,14 @@ function initlog() {
 function exit_append() {
     if [[ $NOLOG -eq 0 ]]; then
         if [[ $WARN_COUNT -gt 0 ]] || [[ $ERR_COUNT -gt 0 ]]; then
-            printf "\n\n" >> "${LOG}"
+            printf "\n\n" >>"${LOG}"
         fi
 
         if [[ $WARN_COUNT -gt 0 ]]; then
-            printf "[*] Warnings:\t%s\n" "$WARN_COUNT" >> "${LOG}"
+            printf "[*] Warnings:\t%s\n" "$WARN_COUNT" >>"${LOG}"
         fi
         if [[ $ERR_COUNT -gt 0 ]]; then
-            printf "[*] Errors:\t\t%s\n" "$ERR_COUNT" >> "${LOG}"
+            printf "[*] Errors:\t\t%s\n" "$ERR_COUNT" >>"${LOG}"
             echo
             cat "${LOG}"
         fi
@@ -397,15 +397,15 @@ while [[ $# -gt 0 ]]; do
         --verbose)
             VERBOSE=1
             ;;
-        -h|--help)
+        -h | --help)
             help_user
             exit 0
             ;;
-        -v|--vim)
+        -v | --vim)
             VIM=1
             ALL=0
             ;;
-        -n|--neovim|--nvim)
+        -n | --neovim | --nvim)
             NVIM=1
             ALL=0
             ;;
@@ -420,6 +420,11 @@ while [[ $# -gt 0 ]]; do
 done
 
 initlog
+verbose_msg "Log Disable   : ${NOLOG}"
+verbose_msg "Current Shell : ${CURRENT_SHELL}"
+verbose_msg "Platform      : ${SHELL_PLATFORM}"
+verbose_msg "Architecture  : ${ARCH}"
+verbose_msg "OS            : ${OS}"
 
 if [[ $ALL -eq 1 ]]; then
     PROGS=("vim" "nvim")
@@ -432,7 +437,7 @@ for prog in "${PROGS[@]}"; do
     run_test "$prog"
 done
 
-if { [[ $ALL -eq 1 ]] || [[ $NVIM -eq 1 ]] ; } &&  install_pynvim; then
+if { [[ $ALL -eq 1 ]] || [[ $NVIM -eq 1 ]]; } && install_pynvim; then
     run_test "$prog"
 fi
 

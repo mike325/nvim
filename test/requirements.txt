@@ -1,0 +1,6 @@
+# Linting modules
+vim-vint
+mypy
+flake8
+flake8-mypy
+mccabe
