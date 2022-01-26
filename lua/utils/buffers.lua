@@ -338,8 +338,11 @@ function M.setup(ft, opts)
 
         if utils.get_formatter and utils.format then
             local formatter = utils.get_formatter()
-            if formatter then
+            if formatter and vim.opt_local.formatexpr:get() == '' then
                 vim.opt_local.formatexpr = ([[luaeval('require"filetypes.%s".format()')]]):format(ft)
+                vim.keymap.set('n', '=F', function()
+                    vim.cmd [[normal! gggqG``]]
+                end, { noremap = true, buffer = true, silent = true })
             end
             opts.formatexpr = nil
         end

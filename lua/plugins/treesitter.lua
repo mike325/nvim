@@ -17,8 +17,35 @@ if not packer_plugins or (packer_plugins and not packer_plugins['vim-textobj-com
     commet_txtobj = '@comment.outer'
 end
 
+local parsers = require 'nvim-treesitter.parsers'
+
+local languages = {
+    'lua',
+    'rust',
+    'python',
+    'latex',
+    'bibtex',
+    'c',
+    'cpp',
+    'java',
+    'vim',
+    'query',
+    'json',
+    'jsonc',
+    'yaml',
+    'toml',
+    'make',
+    'cmake',
+    'comment',
+    'markdown',
+    'rst',
+    'dockerfile',
+    'perl',
+    'go',
+}
+
 treesitter.setup {
-    ensure_installed = 'maintained',
+    ensure_installed = languages,
     indent = {
         enable = true,
     },
@@ -157,9 +184,7 @@ treesitter.setup {
     },
 }
 
-local parsers = require 'nvim-treesitter.parsers'
 local fts = {}
-
 for lang, opts in pairs(parsers.list) do
     if parsers.has_parser(lang) then
         if opts.filetype ~= nil then

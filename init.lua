@@ -1,3 +1,5 @@
+local nvim = require 'neovim'
+
 vim.g.loaded_2html_plugin = 1
 vim.g.loaded_gzip = 1
 vim.g.loaded_rrhelper = 1
@@ -11,40 +13,30 @@ vim.g.loaded_ruby_provider = 0
 vim.g.loaded_node_provider = 0
 vim.g.loaded_perl_provider = 0
 
-if vim.fn.has 'win32' == 1 then
+if nvim.has 'win32' then
     vim.opt.shell = 'cmd.exe'
-    -- local powershell_args = {
-    --     '-NoLogo',
-    --     '-NoProfile',
-    --     '-ExecutionPolicy',
-    --     'RemoteSigned',
-    --     '-Command',
-    --     '[Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.Encoding]::UTF8;',
-    -- }
-    -- vim.opt.shell = vim.fn.has('win32') == 1 and 'powershell' or 'pwsh'
-    -- vim.opt.shellcmdflag = table.concat(powershell_args, ' ')
-    -- vim.opt.shellredir = '2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode'
-    -- vim.opt.shellpipe = '2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode'
-    -- vim.opt.shellquote = ''
-    -- vim.opt.shellxquote = ''
 end
-
-vim.g.mapleader = ' '
-vim.cmd [[packadd! cfilter]]
-vim.cmd [[packadd! matchit]]
 
 if not vim.keymap then
     vim.keymap = require('neovim').keymap
 end
 
+vim.g.do_filetype_lua = 1
+if nvim.has { 0, 7 } then
+    vim.g.did_load_filetypes = 0
+end
+
+vim.g.mapleader = ' '
+
+require 'filetypes.detect'
 require 'messages'
 require 'globals'
-RELOAD('filetypes.python').pynvim_setup()
+require('filetypes.python').pynvim_setup()
 
 local is_min = vim.env.VIM_MIN ~= nil or vim.g.minimal ~= nil
 local is_bare = vim.env.VIM_BARE ~= nil or vim.g.bare ~= nil
 
-if vim.fn.executable 'git' == 1 and not is_bare then
+if nvim.executable 'git' and not is_bare then
     if vim.fn.filereadable './plugin/packer_compiled.lua' ~= 1 then
         require 'setup'()
         pcall(require, 'plugins')
@@ -55,3 +47,6 @@ end
 
 -- require'storage'
 require('utils.functions').get_ssh_hosts()
+
+vim.cmd [[packadd! cfilter]]
+vim.cmd [[packadd! matchit]]

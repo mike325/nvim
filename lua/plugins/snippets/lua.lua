@@ -70,6 +70,10 @@ ls.snippets.lua = {
             t{"", "end"},
         }
     ),
+    s('elif', {
+        t{"elseif "}, i(1, 'condition'), t{" then", ""},
+            d(2, saved_text, {}, {indent = true}),
+    }),
     s(
         { trig = "(l?)fun", regTrig = true },
         {
@@ -106,7 +110,7 @@ ls.snippets.lua = {
         t{")"},
     }),
     s("val", {
-        t({"vim.validate{"}),
+        t({"vim.validate {"}),
             t{'', "\t"}, i(1, 'arg'), t{" = { "}, r(1), t{", "},
             c(2, {
                 t{"'string'"},

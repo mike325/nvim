@@ -542,7 +542,18 @@ function M.rename(old, new, bang)
 end
 
 function M.delete(target, bang)
+    vim.validate {
+        target = { target, 'string' },
+        bang = { bang, 'boolean' },
+    }
     target = M.normalize_path(target)
+    if target:sub(#target, #target) == '/' then
+        target = target:sub(1, #target - 1)
+    end
+    if target == sys.home then
+        vim.notify('Target cannot be the homedirectory', 'ERROR', { title = 'Delete File/Directory' })
+        return false
+    end
     if M.is_file(target) or bufloaded(target) then
         if M.is_file(target) then
             if not uv.fs_unlink(target) then

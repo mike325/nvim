@@ -130,6 +130,7 @@ local servers = {
         {
             config = 'pyright',
             exec = 'pyright-langserver',
+            cmd = { 'pyright-langserver', '--stdio' },
             options = {
                 settings = {
                     python = {

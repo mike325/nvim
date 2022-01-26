@@ -15,7 +15,9 @@ for _, lang in ipairs(languages) do
     local ok, module = pcall(require, 'filetypes.' .. lang)
     if ok then
         if module.get_formatter or module.get_linter then
-            M[lang] = {}
+            M[lang] = {
+                servers = {},
+            }
         end
         if module.get_formatter then
             -- TODO: get_formatter checks for a lot of things, maybe just need to return the executable
@@ -28,16 +30,15 @@ for _, lang in ipairs(languages) do
                     cmd_path = formatter[1]
                 end
                 if null_ls.builtins.formatting[cmd] then
-                    table.insert(
-                        M[lang],
-                        null_ls.builtins.formatting[cmd].with {
-                            command = cmd_path,
-                            extra_args = function(param)
-                                local format_cmd = module.get_formatter()
-                                return vim.list_slice(format_cmd, 2, #format_cmd)
-                            end,
-                        }
-                    )
+                    local node = null_ls.builtins.formatting[cmd].with {
+                        command = cmd_path,
+                        extra_args = function(param)
+                            local format_cmd = module.get_formatter()
+                            return vim.list_slice(format_cmd, 2, #format_cmd)
+                        end,
+                    }
+                    M[lang].formatter = node
+                    table.insert(M[lang].servers, node)
                 end
             end
         end
@@ -52,18 +53,20 @@ for _, lang in ipairs(languages) do
                     cmd_path = linter[1]
                 end
                 if null_ls.builtins.diagnostics[cmd] then
-                    table.insert(
-                        M[lang],
-                        null_ls.builtins.diagnostics[cmd].with {
-                            command = cmd_path,
-                            extra_args = function(param)
-                                local lint_cmd = module.get_linter()
-                                return vim.list_slice(lint_cmd, 2, #lint_cmd)
-                            end,
-                        }
-                    )
+                    local node = null_ls.builtins.diagnostics[cmd].with {
+                        command = cmd_path,
+                        extra_args = function(param)
+                            local lint_cmd = module.get_linter()
+                            return vim.list_slice(lint_cmd, 2, #lint_cmd)
+                        end,
+                    }
+                    M[lang].linter = node
+                    table.insert(M[lang].servers, node)
                 end
             end
+        end
+        if M[lang] and #M[lang].servers == 0 then
+            M[lang] = nil
         end
     end
 end

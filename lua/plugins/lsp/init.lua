@@ -9,8 +9,8 @@ if lsp == nil then
     return false
 end
 
-local null_ls = load_module 'null-ls'
 local null_sources = {}
+local null_ls = load_module 'null-ls'
 local null_configs = require 'plugins.lsp.null'
 
 if null_ls then
@@ -97,8 +97,11 @@ vim.lsp.protocol.CompletionItemKind = {
 }
 
 for filetype, _ in pairs(lsp_configs) do
-    if not lsp_setup(filetype) and null_configs[filetype] then
-        vim.list_extend(null_sources, null_configs[filetype])
+    local has_server = lsp_setup(filetype)
+    local null_config = null_configs[filetype]
+
+    if not has_server and null_config then
+        vim.list_extend(null_sources, null_config.servers)
     end
 end
 

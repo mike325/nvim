@@ -164,6 +164,10 @@ local nvim = {
         end,
     }),
     keymap = require('neovim.mappings').keymap,
+    executable = function(exe)
+        vim.validate { exe = { exe, 'string' } }
+        return vim.fn.executable(exe) == 1
+    end,
 }
 
 setmetatable(nvim, {
