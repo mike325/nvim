@@ -69,6 +69,7 @@ local function func_handle(info)
 
     if scope == 'b' then
         local bufnr = type(info.buf) == 'number' and info.buf or require('neovim').get_current_buf()
+        bufnr = bufnr <= 0 and require('neovim').get_current_buf() or bufnr
         bufnr = tostring(bufnr)
         if funcs.b[bufnr] == nil then
             funcs.b[bufnr] = {}
