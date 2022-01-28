@@ -4,8 +4,8 @@ if not ls then
     return false
 end
 
-if not ls.snippets.sh then
-    require 'plugins.snippets.sh'
+if not ls.snippets.c then
+    require 'plugins.snippets.c'
 end
 
-ls.filetype_extend('bash', { 'sh' })
+ls.filetype_extend('cpp', { 'c' })

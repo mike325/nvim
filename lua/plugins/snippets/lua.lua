@@ -44,6 +44,34 @@ local function else_clause(args, snip, old_state, placeholder)
     return snip_node
 end
 
+local function rec_val()
+    return sn(nil, {
+        c(1, {
+            t { '' },
+            sn(nil, {
+                t { ',', '\t' },
+                i(1, 'arg'),
+                t { ' = { ' },
+                r(1),
+                t { ', ' },
+                c(2, {
+                    i(1, "'string'"),
+                    i(1, "'table'"),
+                    i(1, "'function'"),
+                    i(1, "'number'"),
+                    i(1, "'boolean'"),
+                }),
+                c(3, {
+                    t { '' },
+                    t { ', true' },
+                }),
+                t { ' }' },
+                d(4, rec_val, {}),
+            }),
+        }),
+    })
+end
+
 -- stylua: ignore
 ls.snippets.lua = {
     s("for", {
@@ -112,18 +140,19 @@ ls.snippets.lua = {
     s("val", {
         t({"vim.validate {"}),
             t{'', "\t"}, i(1, 'arg'), t{" = { "}, r(1), t{", "},
-            c(2, {
-                t{"'string'"},
-                t{"'table'"},
-                t{"'function'"},
-                t{"'number'"},
-                t{"'boolean'"},
-            }),
-            c(3, {
-                t{""},
-                t{", true"},
-            }),
+                c(2, {
+                    i(1, "'string'"),
+                    i(1, "'table'"),
+                    i(1, "'function'"),
+                    i(1, "'number'"),
+                    i(1, "'boolean'"),
+                }),
+                c(3, {
+                    t{""},
+                    t{", true"},
+                }),
             t({" }"}),
+            d(4, rec_val, {}),
         t({'', "}"}),
     }),
     s("com", {

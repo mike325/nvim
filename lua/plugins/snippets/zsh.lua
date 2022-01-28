@@ -8,4 +8,4 @@ if not ls.snippets.sh then
     require 'plugins.snippets.sh'
 end
 
-ls.filetype_extend('zsh', 'sh')
+ls.filetype_extend('zsh', { 'sh' })

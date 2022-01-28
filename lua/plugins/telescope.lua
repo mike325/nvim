@@ -13,7 +13,7 @@ end
 
 local plugins = require('neovim').plugins
 local builtin = require 'telescope.builtin'
-local themes = require 'telescope.themes'
+-- local themes = require 'telescope.themes'
 
 local noremap = { noremap = true, silent = true }
 
@@ -92,13 +92,13 @@ set_command {
 
 vim.keymap.set('n', '<C-p>', function()
     local is_git = vim.b.project_root and vim.b.project_root.is_git or false
-    builtin.find_files(themes.get_ivy {
+    builtin.find_files {
         find_command = require('utils.helpers').select_filelist(is_git, true),
-    })
+    }
 end, noremap)
 
 vim.keymap.set('n', '<C-b>', function()
-    builtin.current_buffer_fuzzy_find(themes.get_ivy {})
+    builtin.current_buffer_fuzzy_find {}
 end, noremap)
 vim.keymap.set('n', '<leader>g', builtin.live_grep, noremap)
 vim.keymap.set('n', '<C-q>', builtin.quickfix, noremap)

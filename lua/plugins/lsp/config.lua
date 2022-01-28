@@ -99,7 +99,7 @@ M.commands = {
     References = {
         function()
             if has_telescope then
-                builtin.lsp_references(themes.get_cursor {})
+                builtin.lsp_references(themes.get_dropdown {})
             else
                 vim.lsp.buf.references()
             end
@@ -184,7 +184,7 @@ function M.on_attach(client, bufnr, is_null)
             mapping = lua_cmd:format(
                 (
                         has_telescope
-                        and "require'telescope.builtin'.lsp_references(require'telescope.themes'.get_cursor{})"
+                        and "require'telescope.builtin'.lsp_references(require'telescope.themes'.get_dropdown{})"
                     ) or 'vim.lsp.buf.references()'
             ),
         },

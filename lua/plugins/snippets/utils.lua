@@ -118,4 +118,20 @@ function M.copy(args)
     return args[1]
 end
 
+function M.return_value()
+    local clike = {
+        c = true,
+        cpp = true,
+        java = true,
+    }
+
+    local snippet = { t { 'return ' }, i(1, 'value') }
+
+    if clike[vim.bo.filetype] then
+        table.insert(snippet, t { ';' })
+    end
+
+    return snippet
+end
+
 return M

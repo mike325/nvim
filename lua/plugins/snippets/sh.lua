@@ -47,34 +47,40 @@ end
 -- stylua: ignore
 ls.snippets.sh = {
     s(
-        { trig = "if(e?)", regTrig = true },
+        { trig = 'if(e?)', regTrig = true },
         {
-            t{"if [[ "}, i(1, 'condition'), t{" ]]; then", ""},
+            t{'if [[ '}, i(1, 'condition'), t{' ]]; then', ''},
                 d(2, saved_text, {}, {text = ':', indent = true}),
             d(3, else_clause, {}, {}),
-            t{"", "fi"},
+            t{'', 'fi'},
         }
     ),
-    s("fun", {
-        t{"function "}, i(1, 'name'), t{"() {", ""},
+    s('fun', {
+        t{'function '}, i(1, 'name'), t{'() {', ''},
             d(2, saved_text, {}, {text = ':', indent = true}),
-        t{"", "}"},
+        t{'', '}'},
     }),
-    s("for", {
-        t{"for "}, i(1, 'i'), t{" in "}, i(2, 'Iterator'), t{"; do", ""},
+    s('for', {
+        t{'for '}, i(1, 'i'), t{' in '}, i(2, 'Iterator'), t{'; do', ''},
             d(3, saved_text, {}, {text = ':', indent = true}),
-        t{"", "done"}
+        t{'', 'done'}
     }),
-    s("wh", {
-        t{"while "}, i(1, '[[ condition ]]'), t{"; do"},
+    s('wh', {
+        t{'while '}, i(1, '[[ condition ]]'), t{'; do'},
             d(2, saved_text, {}, {text = ':', indent = true}),
-        t{"", "done"}
+        t{'', 'done'}
     }),
     s("case", {
         t{'case "'}, i(1, '$VAR'), t{'" in', ""},
-            t{"\t"}, i(2, 'condition'), t{" )", ""},
-                t{"\t\t"}, i(3, ':'),
-            t{"", "\t\t;;"},
-        t{"", "esac"}
+            t{'\t'}, i(2, 'condition'), t{' )', ''},
+                t{'\t\t'}, i(3, ':'),
+            t{'', '\t\t;;'},
+        t{'', 'esac'}
+    }),
+    s('l', {
+        t{'local '}, i(1, 'varname'), t{'='}, i(2, '1'),
+    }),
+    s('ha', {
+        t{'hash '}, i(1, 'cmd'), t{' 2>/dev/null'},
     }),
 }
