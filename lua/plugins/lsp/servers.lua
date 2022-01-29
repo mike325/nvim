@@ -30,8 +30,8 @@ local servers = {
     },
     kotlin = { { exec = 'kotlin-language-server', config = 'kotlin_language_server' } },
     rust = {
-        { exec = 'rls' },
         { exec = 'rust-analyzer', config = 'rust_analyzer' },
+        { exec = 'rls' },
     },
     tex = {
         {

@@ -21,12 +21,7 @@ then
 end
 
 if not packer_plugins or (packer_plugins and not packer_plugins['nvim-cmp']) then
-    -- TODO: Migrate to lua functions
     vim.keymap.set('i', '<TAB>', [[<C-R>=neovim#tab()<CR>]], noremap_silent)
-
-    -- TODO: Migrate to lua functions
     vim.keymap.set('i', '<S-TAB>', [[<C-R>=neovim#shifttab()<CR>]], noremap_silent)
-
-    -- TODO: Migrate to lua functions
     vim.keymap.set('i', '<CR>', [[<C-R>=neovim#enter()<CR>]], noremap_silent)
 end

@@ -8,7 +8,6 @@ if not cmp then
     return false
 end
 
-local vsnip = load_module 'vsnip'
 local luasnip = load_module 'luasnip'
 local ultisnips = nvim.plugins.ultisnips
 local lspkind = require 'lspkind'
@@ -33,8 +32,6 @@ if luasnip then
     table.insert(sources, { name = 'luasnip', option = { use_show_condition = false } })
 elseif ultisnips then
     table.insert(sources, { name = 'ultisnips' })
-elseif vsnip then
-    table.insert(sources, { name = 'vsnip' })
 end
 
 vim.list_extend(sources, { { name = 'buffer' }, { name = 'path' } })
@@ -44,11 +41,20 @@ local has_words_before = function()
     return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match '%s' == nil
 end
 
+local t = function(str)
+    return vim.api.nvim_replace_termcodes(str, true, true, true)
+end
+
 local next_item = function(fallback)
+    local neogen = load_module 'neogen'
+    local ls = load_module 'luasnip'
+
     if cmp.visible() then
         cmp.select_next_item()
-    elseif luasnip and luasnip.jumpable(1) then
-        luasnip.jump(1)
+    elseif ls and ls.jumpable(1) then
+        ls.jump(1)
+    elseif neogen and neogen.jumpable() then
+        vim.fn.feedkeys(t "<cmd>lua require('neogen').jump_next()<CR>", '')
     elseif ultisnips and vim.fn['UltiSnips#CanJumpForwards']() == 1 then
         vim.fn['UltiSnips#JumpForwards']()
         -- vim.api.nvim_feedkeys(t '<Plug>(ultisnips_jump_forward)', 'm', true)
@@ -61,13 +67,18 @@ local next_item = function(fallback)
 end
 
 local prev_item = function(fallback)
+    local neogen = load_module 'neogen'
+    local ls = load_module 'luasnip'
+
     if cmp.visible() then
         cmp.select_prev_item()
-    elseif luasnip and luasnip.jumpable(-1) then
-        luasnip.jump(-1)
+    elseif ls and ls.jumpable(-1) then
+        ls.jump(-1)
     elseif ultisnips and vim.fn['UltiSnips#CanJumpBackwards']() == 1 then
         vim.fn['UltiSnips#JumpBackwards']()
         -- vim.api.nvim_feedkeys(t '<Plug>(ultisnips_jump_backward)', 'm', true)
+    elseif neogen and neogen.jumpable(-1) then
+        vim.fn.feedkeys(t "<cmd>lua require('neogen').jump_prev()<CR>", '')
     else
         fallback()
     end
@@ -108,8 +119,6 @@ cmp.setup {
                 vim.fn['UltiSnips#Anon'](args.body)
             elseif luasnip then
                 require('luasnip').lsp_expand(args.body)
-            elseif vsnip then
-                vim.fn['vsnip#anonymous'](args.body)
             end
         end,
     },

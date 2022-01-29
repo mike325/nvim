@@ -301,13 +301,13 @@ packer.startup(function()
                 -- current_line_blame = true,
                 -- current_line_blame_opts = {
                 --     virt_text = true,
-                --     virt_text_pos = 'eol',
+                --     virt_text_pos = 'eol', -- 'eol' | 'overlay' | 'right_align'
                 --     delay = 1000,
+                --     ignore_whitespace = false,
                 -- },
-                -- numhl = false,
-                -- linehl = false,
-                -- status_formatter = nil, -- Use default
-                -- word_diff = false,
+                -- current_line_blame_formatter_opts = {
+                --     relative_time = false,
+                -- },
             }
         end,
     }
@@ -623,6 +623,31 @@ packer.startup(function()
         config = function()
             require 'plugins.comments'
         end,
+    }
+
+    use {
+        'danymat/neogen',
+        config = function()
+            require('neogen').setup {
+                enabled = true,
+                input_after_comment = true,
+                languages = {
+                    lua = {
+                        template = {
+                            annotation_convention = 'emmylua',
+                        },
+                    },
+                    python = {
+                        template = {
+                            annotation_convention = 'numpydoc',
+                        },
+                    },
+                },
+            }
+        end,
+        -- requires = 'nvim-treesitter/nvim-treesitter',
+        wants = 'nvim-treesitter',
+        after = 'nvim-treesitter',
     }
 
     -- TODO: Add neovim 0.5 compatibility layer/setup

@@ -186,8 +186,8 @@ ls.snippets.lua = {
             d(2, surround_with_func, {}, {text = 'tbl'}),
          t{', '}, i(3, "ext_tbl"), t({')'})
     }),
-    s("not", {
-        t{"vim.notify("},
+    s('not', {
+        t{'vim.notify('},
             d(1, surround_with_func, {}, {text = 'msg'}),
             t{', '},
             c(2, {
@@ -201,5 +201,10 @@ ls.snippets.lua = {
                 sn(nil, { t{', { title = '}, i(1, "'title'"), t{' }'} }),
             }),
          t{')'},
+    }),
+    s('use', {
+        t{'use { "'},
+            i(1, 'author/plugin'),
+         t{'" }'},
     }),
 }

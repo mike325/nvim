@@ -4,6 +4,14 @@ local executable = function(exe)
     return vim.fn.executable(exe) == 1
 end
 
+local filereadable = function(filename)
+    return vim.fn.executable(filename) == 1
+end
+
+local forward_slash = function(str)
+    return str:gsub('\\', '/')
+end
+
 local function system_name()
     local name = jit.os:lower()
     return name
@@ -11,19 +19,19 @@ end
 
 local function homedir()
     local home = vim.loop.os_homedir()
-    return home:gsub('\\', '/')
+    return forward_slash(home)
 end
 
 local function basedir()
-    return stdpath('config'):gsub('\\', '/')
+    return forward_slash(stdpath 'config')
 end
 
 local function cachedir()
-    return stdpath('cache'):gsub('\\', '/')
+    return forward_slash(stdpath 'cache')
 end
 
 local function datadir()
-    return stdpath('data'):gsub('\\', '/')
+    return forward_slash(stdpath 'data')
 end
 
 local function luajit_version()
@@ -32,20 +40,23 @@ end
 
 local function has_sqlite()
     local os = system_name()
-    -- TODO: search for dll in windows, .so in linux
+    -- TODO: search for dll in windows, .so in unix
     if os == 'windows' then
-        local sqlite_path = (cachedir() .. '/sqlite3.dll'):gsub('\\', '/')
-        if vim.fn.filereadable(sqlite_path) == 1 then
+        local sqlite_path = forward_slash(cachedir() .. '/sqlite3.dll')
+        if filereadable(sqlite_path) then
             vim.g.sqlite_clib_path = sqlite_path
             return true
         end
         return false
     end
+    if filereadable(forward_slash(homedir() .. '/.local/lib/libsqlite.so')) then
+        vim.g.sqlite_clib_path = forward_slash(homedir() .. '/.local/lib/libsqlite.so')
+    end
     return executable 'sqlite3'
 end
 
 local function db_root_path()
-    local root = stdpath('data'):gsub('\\', '/') .. '/databases'
+    local root = forward_slash(stdpath 'data' .. '/databases')
     if vim.fn.isdirectory(root) ~= 1 then
         vim.fn.mkdir(root, 'p')
     end
