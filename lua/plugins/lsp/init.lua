@@ -111,6 +111,7 @@ if null_ls and next(null_sources) ~= nil then
     end
     null_ls.setup {
         sources = null_sources,
+        -- debug = true,
         on_attach = function(client, bufnr)
             require('plugins.lsp.config').on_attach(client, bufnr, true)
         end,

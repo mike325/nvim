@@ -645,8 +645,8 @@ packer.startup(function()
                 },
             }
         end,
-        -- requires = 'nvim-treesitter/nvim-treesitter',
-        wants = 'nvim-treesitter',
+        -- requires = { { 'nvim-treesitter/nvim-treesitter' } },
+        wants = { 'nvim-treesitter' },
         after = 'nvim-treesitter',
     }
 

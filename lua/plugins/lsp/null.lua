@@ -32,7 +32,7 @@ for _, lang in ipairs(languages) do
                 if null_ls.builtins.formatting[cmd] then
                     local node = null_ls.builtins.formatting[cmd].with {
                         command = cmd_path,
-                        extra_args = function(param)
+                        extra_args = function(_)
                             local format_cmd = module.get_formatter()
                             return vim.list_slice(format_cmd, 2, #format_cmd)
                         end,
@@ -55,7 +55,7 @@ for _, lang in ipairs(languages) do
                 if null_ls.builtins.diagnostics[cmd] then
                     local node = null_ls.builtins.diagnostics[cmd].with {
                         command = cmd_path,
-                        extra_args = function(param)
+                        extra_args = function(_)
                             local lint_cmd = module.get_linter()
                             return vim.list_slice(lint_cmd, 2, #lint_cmd)
                         end,
