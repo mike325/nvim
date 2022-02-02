@@ -11,38 +11,54 @@ if treesitter == nil then
     return false
 end
 
+local orgmode = load_module 'orgmode'
+
 local min = vim.env.VIM_MIN ~= nil or vim.g.minimal ~= nil
 local commet_txtobj = nil
 if not packer_plugins or (packer_plugins and not packer_plugins['vim-textobj-comment']) or min then
     commet_txtobj = '@comment.outer'
 end
 
-local parsers = require 'nvim-treesitter.parsers'
-
 local languages = {
-    'lua',
-    'rust',
-    'python',
-    'latex',
     'bibtex',
     'c',
-    'cpp',
-    'java',
-    'vim',
-    'query',
-    'json',
-    'jsonc',
-    'yaml',
-    'toml',
-    'make',
     'cmake',
     'comment',
-    'markdown',
-    'rst',
+    'cpp',
     'dockerfile',
-    'perl',
     'go',
+    'java',
+    'json',
+    'jsonc',
+    'latex',
+    'lua',
+    'make',
+    'markdown',
+    'perl',
+    'python',
+    'query',
+    'rst',
+    'rust',
+    'toml',
+    'vim',
+    'yaml',
 }
+
+local parsers = require 'nvim-treesitter.parsers'
+
+local parser_config = parsers.get_parser_configs()
+parser_config.org = {
+    install_info = {
+        url = 'https://github.com/milisims/tree-sitter-org',
+        revision = 'f110024d539e676f25b72b7c80b0fd43c34264ef',
+        files = { 'src/parser.c', 'src/scanner.cc' },
+    },
+    filetype = 'org',
+}
+
+if orgmode then
+    table.insert(languages, 'org')
+end
 
 treesitter.setup {
     ensure_installed = languages,
@@ -60,6 +76,8 @@ treesitter.setup {
     },
     highlight = {
         enable = true,
+        disable = { 'org' },
+        additional_vim_regex_highlighting = { 'org' },
     },
     textobjects = {
         select = {

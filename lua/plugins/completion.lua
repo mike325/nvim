@@ -9,6 +9,7 @@ if not cmp then
 end
 
 local luasnip = load_module 'luasnip'
+local orgmode = load_module 'orgmode'
 local ultisnips = nvim.plugins.ultisnips
 local lspkind = require 'lspkind'
 
@@ -32,6 +33,10 @@ if luasnip then
     table.insert(sources, { name = 'luasnip', option = { use_show_condition = false } })
 elseif ultisnips then
     table.insert(sources, { name = 'ultisnips' })
+end
+
+if orgmode then
+    table.insert(sources, { name = 'orgmode' })
 end
 
 vim.list_extend(sources, { { name = 'buffer' }, { name = 'path' } })

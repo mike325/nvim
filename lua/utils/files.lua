@@ -35,19 +35,15 @@ end
 function M.exists(filename)
     vim.validate { filename = { filename, 'string' } }
     assert(filename ~= '', debug.traceback 'Empty filename')
-    local stat = uv.fs_stat(filename)
+    local stat = uv.fs_stat(M.normalize_path(filename))
     return stat and stat.type or false
 end
 
 function M.is_dir(filename)
-    vim.validate { filename = { filename, 'string' } }
-    assert(filename ~= '', debug.traceback 'Empty filename')
     return M.exists(filename) == 'directory'
 end
 
 function M.is_file(filename)
-    vim.validate { filename = { filename, 'string' } }
-    assert(filename ~= '', debug.traceback 'Empty filename')
     return M.exists(filename) == 'file'
 end
 
@@ -168,6 +164,7 @@ function M.normalize_path(path)
     if path:sub(1, 1) == '~' then
         path = path:gsub('~', sys.home)
     elseif path == '%' then
+        -- TODO: Replace this with a fast API
         path = vim.fn.expand(path)
     end
     return forward_path(path)

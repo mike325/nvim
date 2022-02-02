@@ -650,6 +650,37 @@ packer.startup(function()
         after = 'nvim-treesitter',
     }
 
+    use {
+        'vimwiki/vimwiki',
+        setup = function()
+            vim.g.vimwiki_list = {
+                { path = '~/notes/' },
+            }
+            vim.g.vimwiki_hl_headers = 1
+            vim.g.vimwiki_hl_cb_checked = 2
+            vim.g.vimwiki_listsyms = ' ○◐●✓'
+            vim.g.vimwiki_listsym_rejected = '✗'
+        end,
+        -- config = function()
+        --     require 'plugins.vimwiki'
+        -- end,
+    }
+
+    -- use {
+    --     'nvim-orgmode/orgmode',
+    --     config = function()
+    --         require 'plugins.orgmode'
+    --     end,
+    --     wants = { 'nvim-treesitter' },
+    --     after = 'nvim-treesitter',
+    -- }
+
+    -- use {
+    --     'ThePrimeagen/refactoring.nvim',
+    --     wants = { 'nvim-treesitter' },
+    --     after = 'nvim-treesitter',
+    -- }
+
     -- TODO: Add neovim 0.5 compatibility layer/setup
     use {
         'jose-elias-alvarez/null-ls.nvim',
