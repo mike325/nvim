@@ -639,7 +639,7 @@ packer.startup(function()
                     },
                     python = {
                         template = {
-                            annotation_convention = 'numpydoc',
+                            annotation_convention = 'google_docstrings',
                         },
                     },
                 },
@@ -655,6 +655,7 @@ packer.startup(function()
         setup = function()
             vim.g.vimwiki_list = {
                 { path = '~/notes/' },
+                { path = '~/work/' },
             }
             vim.g.vimwiki_hl_headers = 1
             vim.g.vimwiki_hl_cb_checked = 2

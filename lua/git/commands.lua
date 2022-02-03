@@ -133,7 +133,7 @@ function M.set_commands()
             nargs = '*',
             force = true,
             buffer = true,
-            complete = [[customlist,neovim#gitfiles_workspace]],
+            complete = [[customlist,v:lua._completions.gitfiles_workspace]],
         },
     }
 
@@ -256,7 +256,7 @@ function M.set_commands()
                 end
             end)
         end,
-        args = { nargs = '?', force = true, complete = [[customlist,neovim#gitfiles_stage]] },
+        args = { nargs = '?', force = true, complete = [[customlist,v:lua._completions.gitfiles_stage]] },
     }
 
     if packer_plugins and packer_plugins['vim-fugitive'] then

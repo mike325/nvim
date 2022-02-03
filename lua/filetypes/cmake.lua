@@ -87,7 +87,12 @@ function M.setup()
             cmake:start()
             cmake:progress()
         end,
-        args = { nargs = '?', force = true, buffer = true, complete = 'customlist,neovim#cmake_build' },
+        args = {
+            nargs = '?',
+            force = true,
+            buffer = true,
+            complete = 'customlist,v:lua._completions.cmake_build',
+        },
     }
 
     set_command {
@@ -136,7 +141,12 @@ function M.setup()
             cmake:start()
             cmake:progress()
         end,
-        args = { nargs = '?', force = true, buffer = true, complete = 'customlist,neovim#cmake_build' },
+        args = {
+            nargs = '?',
+            force = true,
+            buffer = true,
+            complete = 'customlist,v:lua._completions.cmake_build',
+        },
     }
 end
 

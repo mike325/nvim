@@ -217,10 +217,11 @@ function M.get_ssh_hosts()
         local host = ''
         require('utils.files').readfile(ssh_config, true, function(data)
             for _, line in pairs(data) do
-                if line and line ~= '' and line:match 'Host [a-zA-Z0-9_-%.]+' then
+                if line and line ~= '' and line:match '[hH]ost%s+[a-zA-Z0-9_-%.]+' then
                     host = split(line, ' ')[2]
-                elseif line:match '%s+Hostname [a-zA-Z0-9_-%.]+' and host ~= '' then
-                    STORAGE.hosts[host] = split(line, ' ')[2]
+                elseif line:match '%s+[hH]ostname%s+[a-zA-Z0-9_-%.]+' and host ~= '' then
+                    local addr = split(line, ' ')[2]
+                    STORAGE.hosts[host] = addr
                     host = ''
                 end
             end

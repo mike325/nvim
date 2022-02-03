@@ -19,7 +19,7 @@ end
 set_command {
     lhs = 'OSCTerm',
     rhs = 'let g:oscyank_term = <q-args>',
-    args = { force = true, nargs = 1, complete = 'customlist,neovim#vim_oscyank' },
+    args = { force = true, nargs = 1, complete = 'customlist,v:lua._completions.oscyank' },
 }
 
 set_autocmd {

@@ -98,7 +98,7 @@ vim.keymap.set('n', '<C-p>', function()
 end, noremap)
 
 vim.keymap.set('n', '<C-b>', function()
-    builtin.current_buffer_fuzzy_find {}
+    builtin.buffers {}
 end, noremap)
 vim.keymap.set('n', '<leader>g', builtin.live_grep, noremap)
 vim.keymap.set('n', '<C-q>', builtin.quickfix, noremap)

@@ -711,7 +711,7 @@ if executable 'scp' then
 
     local function get_host(host)
         if not host or host == '' then
-            host = vim.fn.input('Enter hostname > ', '', 'customlist,neovim#ssh_hosts_completion')
+            host = vim.fn.input('Enter hostname > ', '', 'customlist,v:lua._completions.ssh_hosts_completion')
         end
         return host
     end
@@ -735,7 +735,7 @@ if executable 'scp' then
         args = {
             nargs = '*',
             force = true,
-            complete = 'customlist,neovim#ssh_hosts_completion',
+            complete = 'customlist,v:lua._completions.ssh_hosts_completion',
         },
     }
 
@@ -759,7 +759,7 @@ if executable 'scp' then
         args = {
             nargs = '*',
             force = true,
-            complete = 'customlist,neovim#ssh_hosts_completion',
+            complete = 'customlist,v:lua._completions.ssh_hosts_completion',
         },
     }
 

@@ -1,3 +1,5 @@
+require 'completions'
+
 _G['P'] = function(...)
     local vars = vim.tbl_map(vim.inspect, { ... })
     print(unpack(vars))

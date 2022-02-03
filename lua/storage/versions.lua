@@ -135,7 +135,7 @@ function M.has_version(prg, target_version)
         },
     }
 
-    if require('utils.files').executable(prg) then
+    if not require('utils.files').executable(prg) then
         return false
     end
 
