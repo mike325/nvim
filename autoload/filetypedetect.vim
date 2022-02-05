@@ -10,6 +10,7 @@ function! filetypedetect#detect() abort
     endif
 
     augroup filetypedetect
+        autocmd BufNewFile,BufRead gitconfig,.gitconfig                         setlocal filetype=gitconfig
         autocmd BufNewFile,BufRead *.{conf,si,sle,in},.coveragerc,config.txt    setlocal filetype=dosini
         autocmd BufNewFile,BufRead *.log,*.rpt,*.rdl                            setlocal filetype=log
         autocmd BufNewFile,BufRead */etc/nginx/*,*.nginx,nginx.conf             setlocal filetype=nginx

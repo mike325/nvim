@@ -127,7 +127,7 @@ function M.format()
             efm = efm,
         }
     else
-        -- Fallback to internal formater
+        -- Fallback to internal formatter
         return 1
     end
 

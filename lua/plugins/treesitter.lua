@@ -66,13 +66,13 @@ treesitter.setup {
         enable = true,
     },
     incremental_selection = {
-        enable = true,
-        keymaps = {
-            init_selection = '<A-i>',
-            scope_incremental = '<A-c>',
-            node_incremental = '<A-I>',
-            node_decremental = '<A-D>',
-        },
+        enable = false,
+        -- keymaps = {
+        --     init_selection = '<A-i>',
+        --     scope_incremental = '<A-c>',
+        --     node_incremental = '<A-I>',
+        --     node_decremental = '<A-D>',
+        -- },
     },
     highlight = {
         enable = true,
@@ -80,6 +80,14 @@ treesitter.setup {
         additional_vim_regex_highlighting = { 'org' },
     },
     textobjects = {
+        lsp_interop = {
+            enable = true,
+            -- border = 'none',
+            peek_definition_code = {
+                ['<A-f>'] = '@function.outer',
+                ['<A-k>'] = '@class.outer',
+            },
+        },
         select = {
             enable = true,
             lookahead = true,
@@ -171,11 +179,6 @@ treesitter.setup {
             goto_node = '<cr>',
             show_help = '?',
         },
-    },
-    query_linter = {
-        enable = true,
-        use_virtual_text = true,
-        lint_events = { 'BufWrite', 'CursorHold' },
     },
     refactor = {
         -- highlight_current_scope = { enable = true },

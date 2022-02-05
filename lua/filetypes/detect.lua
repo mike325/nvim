@@ -21,6 +21,8 @@ vim.filetype.add {
         xmp = 'xml',
     },
     filename = {
+        ['.gitconfig'] = '.gitconfig',
+        ['gitconfig'] = 'gitconfig',
         ['.editorconfig'] = 'toml',
         ['setup.cfg'] = 'toml',
         ['.flake8'] = 'toml',

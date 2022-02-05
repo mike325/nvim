@@ -1,7 +1,7 @@
 local ok, packer = pcall(require, 'packer')
 
 local has_compiler
-if vim.fn.has 'win32' or vim.fn.has 'win64' then
+if vim.fn.has 'win32' == 1 or vim.fn.has 'win64' == 1 then
     -- NOTE: windows' clang by default needs msbuild to compile treesitter parsers,
     has_compiler = vim.fn.executable 'gcc' == 1
 else
@@ -192,7 +192,6 @@ packer.startup(function()
 
     use {
         'Yggdroot/indentLine',
-        event = { 'VimEnter' },
         cond = function()
             return vim.env.VIM_MIN == nil and vim.g.minimal == nil
         end,
@@ -405,7 +404,7 @@ packer.startup(function()
         end,
         cond = function()
             local compiler
-            if vim.fn.has 'win32' or vim.fn.has 'win64' then
+            if vim.fn.has 'win32' == 1 or vim.fn.has 'win64' == 1 then
                 compiler = vim.fn.executable 'gcc' == 1
             else
                 compiler = vim.fn.executable 'gcc' == 1 or vim.fn.executable 'clang' == 1
@@ -413,54 +412,9 @@ packer.startup(function()
             return compiler
         end,
         requires = {
-            {
-                'nvim-treesitter/playground',
-                cond = function()
-                    local compiler
-                    if vim.fn.has 'win32' or vim.fn.has 'win64' then
-                        compiler = vim.fn.executable 'gcc' == 1
-                    else
-                        compiler = vim.fn.executable 'gcc' == 1 or vim.fn.executable 'clang' == 1
-                    end
-                    return compiler
-                end,
-            },
-            {
-                'nvim-treesitter/nvim-treesitter-refactor',
-                cond = function()
-                    local compiler
-                    if vim.fn.has 'win32' or vim.fn.has 'win64' then
-                        compiler = vim.fn.executable 'gcc' == 1
-                    else
-                        compiler = vim.fn.executable 'gcc' == 1 or vim.fn.executable 'clang' == 1
-                    end
-                    return compiler
-                end,
-            },
-            {
-                'nvim-treesitter/nvim-treesitter-textobjects',
-                cond = function()
-                    local compiler
-                    if vim.fn.has 'win32' or vim.fn.has 'win64' then
-                        compiler = vim.fn.executable 'gcc' == 1
-                    else
-                        compiler = vim.fn.executable 'gcc' == 1 or vim.fn.executable 'clang' == 1
-                    end
-                    return compiler
-                end,
-            },
-            {
-                'David-Kunz/treesitter-unit',
-                cond = function()
-                    local compiler
-                    if vim.fn.has 'win32' or vim.fn.has 'win64' then
-                        compiler = vim.fn.executable 'gcc' == 1
-                    else
-                        compiler = vim.fn.executable 'gcc' == 1 or vim.fn.executable 'clang' == 1
-                    end
-                    return compiler
-                end,
-            },
+            { 'nvim-treesitter/playground' },
+            { 'nvim-treesitter/nvim-treesitter-refactor' },
+            { 'nvim-treesitter/nvim-treesitter-textobjects' },
         },
     }
 
@@ -687,6 +641,13 @@ packer.startup(function()
         'jose-elias-alvarez/null-ls.nvim',
         wants = { 'nvim-lspconfig', 'plenary.nvim' },
         branch = (vim.fn.has 'nvim-0.6' == 0 and '0.5.1-compat' or nil),
+    }
+
+    use {
+        'echasnovski/mini.nvim',
+        config = function()
+            require 'plugins.mini'
+        end,
     }
 end)
 

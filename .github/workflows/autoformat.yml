@@ -1,0 +1,24 @@
+name: auto-format
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Fetch install script
+      run: |
+        wget https://raw.githubusercontent.com/Mike325/dotfiles/master/install.sh
+        chmod +x ./install.sh
+        ./install.sh --portables --verbose --force
+    - name: Stylua
+      run: |
+        ~/.local/bin/stylua -s .
+    - uses: EndBug/add-and-commit@v4
+      with:
+        author_name: Autoformatter
+        author_email: autoformatter@users.noreply.github.com
+        message: ':art: Committing stylua changes'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}

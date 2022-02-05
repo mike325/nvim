@@ -203,8 +203,8 @@ ls.snippets.lua = {
          t{')'},
     }),
     s('use', {
-        t{'use { "'},
+        t{"use { '"},
             i(1, 'author/plugin'),
-         t{'" }'},
+         t{" '}"},
     }),
 }

@@ -24,7 +24,9 @@ local M = {
             '--quote-style',
             'AutoPreferSingle',
             '--column-width',
-            '110',
+            '120',
+            '--call-parentheses',
+            'None',
         },
     },
 }
