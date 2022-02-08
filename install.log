@@ -115,8 +115,8 @@
 [+] Debug:		 Downloading shfmt
 [*] Info:		 Forcing stylua install
 [*] Info:		 Getting stylua
-[*] Info:		 Downloading stylua version: v0.12.1
-[+] Debug:		 Fetching https://github.com/johnnymorganz/stylua/releases/download/v0.12.1/stylua-0.12.1-linux.zip
+[*] Info:		 Downloading stylua version: v0.12.2
+[+] Debug:		 Fetching https://github.com/johnnymorganz/stylua/releases/download/v0.12.2/stylua-0.12.2-linux.zip
 [+] Debug:		 Removing /tmp//stylua.zip
 [+] Debug:		 Downloading stylua
 [+] Debug:		 Extracting into /tmp//stylua.zip
