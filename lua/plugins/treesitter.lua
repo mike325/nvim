@@ -20,6 +20,7 @@ if not packer_plugins or (packer_plugins and not packer_plugins['vim-textobj-com
 end
 
 local languages = {
+    'bash',
     'bibtex',
     'c',
     'cmake',

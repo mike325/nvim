@@ -545,7 +545,7 @@ packer.startup(function()
                 db_path = require('sys').db_root .. '/neoclip.sqlite3'
             end
             require('neoclip').setup {
-                enable_persistant_history = has_sqlite,
+                enable_persistent_history = has_sqlite,
                 db_path = db_path,
                 keys = {
                     telescope = {
