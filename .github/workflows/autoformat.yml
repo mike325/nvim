@@ -22,6 +22,6 @@ jobs:
       with:
         author_name: Autoformatter
         author_email: autoformatter@users.noreply.github.com
-        message: ':art: Committing stylua and shfmt changes changes'
+        message: ':art: Committing stylua and shfmt changes'
       env:
         GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
