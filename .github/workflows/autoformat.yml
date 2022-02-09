@@ -15,10 +15,13 @@ jobs:
     - name: Stylua
       run: |
         ~/.local/bin/stylua -s .
+    - name: Shfmt
+      run: |
+        ~/.local/bin/shfmt -i 4 -s -ci -kp -w
     - uses: EndBug/add-and-commit@v4
       with:
         author_name: Autoformatter
         author_email: autoformatter@users.noreply.github.com
-        message: ':art: Committing stylua changes'
+        message: ':art: Committing stylua and shfmt changes changes'
       env:
         GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}

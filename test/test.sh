@@ -367,6 +367,11 @@ verbose_msg "OS            : ${OS}"
 #                           CODE Goes Here                            #
 #######################################################################
 
+if ! hash nvim 2>/dev/null; then
+    error_msg "Missing neovim executable"
+    exit 1
+fi
+
 if is_windows; then
     PLENARY_DIR="$HOME/AppData/Local/nvim-data/site/pack/packer/start"
 else
@@ -379,7 +384,7 @@ if [[ ! -d "$PLENARY_DIR/plenary.nvim" ]]; then
 fi
 
 for test in lua/test/*.lua; do
-    if ! nvim --noplugin -u test/min.lua --headless -c "PlenaryBustedFile $test"; then
+    if ! nvim --noplugin -u test/min.lua --headless -c "PlenaryBustedFile $test" -c 'qa!'; then
         error_msg "Failed to run nvim test: ${test##*/}"
     fi
 done

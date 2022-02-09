@@ -31,7 +31,7 @@ jobs:
           chmod +x ./install.sh
       - name: Install dotfiles and dependencies
         run: |
-          ./install.sh --verbose --vim --nvim --python=3 --portables
+          ./install.sh --verbose --neovim --python=3 --portables
           sudo pip3 install --upgrade pip python-language-server
       - name: Test stable neovim
         run: |
@@ -49,7 +49,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [ macOS-latest ]
+        os: [ macOS-latest, macos-11, macos-10.15 ]
 
     env:
       GITHUB: true
@@ -68,7 +68,7 @@ jobs:
           chmod +x ./install.sh
       - name: Install dotfiles and dependencies
         run: |
-          ./install.sh --verbose --vim --neovim=dotfiles --python=3
+          ./install.sh --verbose --neovim --python=3
           pip3 install --upgrade python-language-server
       - name: Test stable neovim
         run: |
@@ -86,7 +86,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [ windows-latest, windows-2019, windows-2016 ]
+        os: [ windows-latest, windows-2022, windows-2019 ]
 
     env:
       GITHUB: true
@@ -115,7 +115,7 @@ jobs:
       - name: Install dotfiles and dependencies
         shell: bash
         run: |
-          ./install.sh --verbose --vim --neovim=dotfiles --python=3 --portables
+          ./install.sh --verbose --neovim --python=3 --portables
       - name: Test stable neovim
         shell: bash
         run: |

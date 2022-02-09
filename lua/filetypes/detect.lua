@@ -44,6 +44,7 @@ vim.filetype.add {
         ['godbolt.org_.*%.txt'] = 'cpp',
         ['cppreference.com_.*%.txt'] = 'cpp',
         ['.*%.cppreference.com_.*%.txt'] = 'cpp',
+        ['.*/zfunctions/.*'] = 'zsh',
     },
 }
 
