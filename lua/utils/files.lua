@@ -218,22 +218,22 @@ function M.basedir(path)
     return forward_path(path)
 end
 
-function M.subpath_in_path(parent, child)
-    vim.validate { parent = { parent, 'string' }, child = { child, 'string' } }
-    assert(M.is_dir(parent), debug.traceback(('Parent path is not a directory "%s"'):format(parent)))
-    assert(M.is_dir(child), debug.traceback(('Child path is not a directory "%s"'):format(child)))
-
-    child = M.realpath(child)
-    parent = M.realpath(parent)
-
-    -- TODO: Check windows multi drive root
-    local child_in_parent = false
-    if M.is_root(parent) or child:match('^' .. parent) then
-        child_in_parent = true
-    end
-
-    return child_in_parent
-end
+-- function M.subpath_in_path(parent, child)
+--     vim.validate { parent = { parent, 'string' }, child = { child, 'string' } }
+--     assert(M.is_dir(parent), debug.traceback(('Parent path is not a directory "%s"'):format(parent)))
+--     assert(M.is_dir(child), debug.traceback(('Child path is not a directory "%s"'):format(child)))
+--
+--     child = M.realpath(child)
+--     parent = M.realpath(parent)
+--
+--     -- TODO: Check windows multi drive root
+--     local child_in_parent = false
+--     if M.is_root(parent) or child:match('^' .. parent) then
+--         child_in_parent = true
+--     end
+--
+--     return child_in_parent
+-- end
 
 function M.openfile(path, flags, callback)
     vim.validate {
@@ -250,11 +250,18 @@ function M.openfile(path, flags, callback)
 end
 
 local function fs_write(path, data, append, callback)
-    assert(
-        type(data) == type '' or type(data) == type {},
-        debug.traceback('Invalid data type: ' .. type(data))
-    )
-    assert(not callback or type(callback) == 'function', debug.traceback 'Missing valid callback')
+    vim.validate {
+        path = { path, 'string' },
+        data = {
+            data,
+            function(d)
+                return type(d) == type '' or vim.tbl_islist(d)
+            end,
+            'a string or an array',
+        },
+        append = { append, 'boolean', true },
+        callback = { callback, 'function', true },
+    }
 
     data = type(data) ~= type '' and table.concat(data, '\n') or data
     local flags = append and 'a' or 'w'

@@ -336,3 +336,86 @@ describe('Basedir', function()
         assert.equals('/tmp', basedir '/tmp/test')
     end)
 end)
+
+describe('Read/Write', function()
+    local writefile = require('utils.files').writefile
+    local tmp = vim.fn.tempname()
+    local is_file = require('utils.files').is_file
+
+    it('Creating new file', function()
+        local msg = 'this is a test'
+        assert.is_false(is_file(tmp))
+        writefile(tmp, msg)
+        assert.is_true(is_file(tmp))
+        local fd = assert(io.open(tmp))
+        local data = fd:read '*a'
+        fd:close()
+        assert.equals(msg, data)
+    end)
+
+    it('Appending to exists file', function()
+        local updatefile = require('utils.files').updatefile
+        assert.is_true(is_file(tmp))
+
+        local fd = assert(io.open(tmp))
+        local msg = fd:read '*a'
+        fd:close()
+
+        local append_data = '\nappending stuff'
+        updatefile(tmp, append_data)
+
+        fd = assert(io.open(tmp))
+        local data = fd:read '*a'
+        fd:close()
+
+        assert.equals(msg .. append_data, data)
+    end)
+
+    it('Overriding exists file', function()
+        local msg = { 'This', 'Should', 'Override', 'the data' }
+        assert.is_true(is_file(tmp))
+
+        writefile(tmp, msg)
+
+        local fd = assert(io.open(tmp))
+        local data = fd:read '*a'
+        fd:close()
+
+        assert.equals(table.concat(msg, '\n'), data)
+    end)
+
+    it('Reading file as string', function()
+        local readfile = require('utils.files').readfile
+        local msg = { 'This', 'Should', 'Override', 'the data' }
+        assert.equals(table.concat(msg, '\n'), readfile(tmp, false))
+
+        local basedir = vim.fn.stdpath 'config'
+        local init_file = basedir .. '/init.lua'
+
+        local fd = assert(io.open(init_file))
+        local data = fd:read '*a'
+        fd:close()
+
+        assert.equals(data, readfile(init_file, false))
+    end)
+
+    it('Reading file as table', function()
+        local readfile = require('utils.files').readfile
+        local msg = { 'This', 'Should', 'Override', 'the data' }
+        assert.are.same(msg, readfile(tmp))
+
+        local basedir = vim.fn.stdpath 'config'
+        local init_file = basedir .. '/init.lua'
+
+        local fd = assert(io.open(init_file))
+        local data = vim.split(fd:read '*a', '[\r]?\n')
+        fd:close()
+
+        -- Removing EOF jump
+        if data[#data] == '' then
+            data[#data] = nil
+        end
+
+        assert.are.same(data, readfile(init_file))
+    end)
+end)

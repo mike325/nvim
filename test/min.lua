@@ -1,3 +1,4 @@
+vim.opt.rtp:append '.'
 local nvim = require 'neovim'
 
 vim.g.loaded_2html_plugin = 1
@@ -43,7 +44,6 @@ vim.cmd [[packadd! cfilter]]
 vim.cmd [[packadd! matchit]]
 
 local package_plugins = vim.fn.stdpath('data'):gsub('\\', '/') .. '/site/pack/packer/start/'
-
-vim.opt.rtp:append '.'
 vim.opt.rtp:append(package_plugins .. 'plenary.nvim/')
+
 vim.cmd [[runtime plugin/plenary.vim]]
