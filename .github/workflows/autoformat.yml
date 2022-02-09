@@ -9,9 +9,9 @@ jobs:
     - uses: actions/checkout@v2
     - name: Fetch install script
       run: |
-        wget https://raw.githubusercontent.com/Mike325/dotfiles/master/install.sh
-        chmod +x ./install.sh
-        ./install.sh --portables --verbose --force
+        wget https://raw.githubusercontent.com/mike325/dotfiles/master/install.sh -O /tmp/install.sh
+        chmod +x /tmp/install.sh
+        /tmp/install.sh --nolog --portables --verbose --force
     - name: Stylua
       run: |
         ~/.local/bin/stylua -s .
