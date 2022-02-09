@@ -373,14 +373,17 @@ if ! hash nvim 2>/dev/null; then
 fi
 
 if is_windows; then
-    PLENARY_DIR="$HOME/AppData/Local/nvim-data/site/pack/packer/start"
+    PLENARY_DIR="$HOME/AppData/Local/nvim-data/site/pack/packer/start/"
 else
     PLENARY_DIR="$HOME/.local/share/nvim/site/pack/packer/start/"
 fi
 
 if [[ ! -d "$PLENARY_DIR/plenary.nvim" ]]; then
     mkdir -p "$PLENARY_DIR"
-    git clone --recursive https://github.com/nvim-lua/plenary.nvim "$PLENARY_DIR"
+    if ! git clone --recursive https://github.com/nvim-lua/plenary.nvim "$PLENARY_DIR/plenary.nvim"; then
+        error_msg "Failed to clone plenary"
+        exit 1
+    fi
 fi
 
 for test in lua/test/*.lua; do

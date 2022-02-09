@@ -120,10 +120,12 @@ jobs:
         shell: bash
         run: |
           export PATH="$HOME/.local/bin:$PATH"
+          export PATH="/c/tools/neovim/Neovim/bin:$PATH"
           ./test/test.sh
       - name: Test latest Neovim
         shell: bash
         run: |
           choco uninstall neovim && choco install -y neovim --pre
           export PATH="$HOME/.local/bin:$PATH"
+          export PATH="/c/tools/neovim/Neovim/bin:$PATH"
           ./test/test.sh
