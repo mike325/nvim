@@ -32,16 +32,10 @@ vim.g.mapleader = ' '
 require 'filetypes.detect'
 require 'messages'
 require 'globals'
-require('filetypes.python').pynvim_setup()
-
--- local is_min = vim.env.VIM_MIN ~= nil or vim.g.minimal ~= nil
--- local is_bare = vim.env.VIM_BARE ~= nil or vim.g.bare ~= nil
+-- require('filetypes.python').pynvim_setup()
 
 -- require'storage'
-require('utils.functions').get_ssh_hosts()
-
-vim.cmd [[packadd! cfilter]]
-vim.cmd [[packadd! matchit]]
+-- require('utils.functions').get_ssh_hosts()
 
 local package_plugins = vim.fn.stdpath('data'):gsub('\\', '/') .. '/site/pack/packer/start/'
 vim.opt.rtp:append(package_plugins .. 'plenary.nvim/')

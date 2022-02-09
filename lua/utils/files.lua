@@ -50,10 +50,41 @@ function M.is_file(filename)
     return M.exists(filename) == 'file'
 end
 
-function M.mkdir(dirname)
-    vim.validate { dirname = { dirname, 'string' } }
+function M.mkdir(dirname, recurive)
+    vim.validate {
+        dirname = { dirname, 'string' },
+        recurive = { recurive, 'boolean', true },
+    }
     assert(dirname ~= '', debug.traceback 'Empty dirname')
-    uv.fs_mkdir(M.normalize_path(dirname), 511)
+    if M.is_dir(dirname) then
+        return true
+    end
+    local ok, msg, err = uv.fs_mkdir(M.normalize_path(dirname), 511)
+    if err == 'ENOENT' and recurive then
+        local dirs = vim.split(dirname, separator())
+        local base = dirs[1] == '' and '/' or dirs[1]
+        if dirs[1] == '' then
+            table.remove(dirs, 1)
+        end
+        for _, dir in ipairs(dirs) do
+            base = base .. separator() .. dir
+            if not M.exists(base) then
+                ok, msg, _ = uv.fs_mkdir(M.normalize_path(base), 511)
+                if not ok then
+                    vim.notify(msg, 'ERROR', { title = 'Mkdir' })
+                    break
+                end
+            else
+                ok = M.is_dir(base)
+                if not ok then
+                    break
+                end
+            end
+        end
+    elseif not ok then
+        vim.notify(msg, 'ERROR', { title = 'Mkdir' })
+    end
+    return ok or false
 end
 
 function M.link(src, dest, sym, force)
@@ -76,7 +107,7 @@ function M.link(src, dest, sym, force)
 
     assert(src ~= dest, debug.traceback 'Cannot link src to itself')
 
-    local status
+    local status, msg
 
     if not sym and M.is_dir(src) then
         vim.notify('Cannot hard link a directory', 'ERROR', { title = 'Link' })
@@ -87,21 +118,21 @@ function M.link(src, dest, sym, force)
         vim.notify('Dest already exists in ' .. dest, 'ERROR', { title = 'Link' })
         return false
     elseif force and M.exists(dest) then
-        status = uv.fs_unlink(dest)
+        status, msg, _ = uv.fs_unlink(dest)
         if not status then
-            vim.notify('Failed to unlink ' .. dest, 'ERROR', { title = 'Link' })
+            vim.notify(msg, 'ERROR', { title = 'Link' })
             return status
         end
     end
 
     if sym then
-        status = uv.fs_symlink(src, dest, 438)
+        status, msg = uv.fs_symlink(src, dest, 438)
     else
-        status = uv.fs_link(src, dest)
+        status, msg = uv.fs_link(src, dest)
     end
 
     if not status then
-        vim.notify(('Failed to link "%s" to "%s"'):format(src, dest), 'ERROR', { title = 'Link' })
+        vim.notify(msg, 'ERROR', { title = 'Link' })
     end
 
     return status
@@ -162,8 +193,6 @@ function M.normalize_path(path)
     assert(path ~= '', debug.traceback 'Empty path')
     if path:sub(1, 1) == '~' then
         path = path:gsub('~', sys.home)
-    elseif path == '.' then
-        path = M.getcwd()
     elseif path == '%' then
         -- TODO: Replace this with a fast API
         path = vim.fn.expand(path)
@@ -343,54 +372,55 @@ function M.readfile(path, split, callback)
 end
 
 function M.chmod(path, mode, base)
-    if not is_windows then
-        vim.validate {
-            path = { path, 'string' },
-            mode = {
-                mode,
-                function(m)
-                    local isnumber = type(m) == type(1)
-                    -- TODO: check for hex and bin ?
-                    local isrepr = type(m) == type '' and m ~= ''
-                    return isnumber or isrepr
-                end,
-                'valid integer representation',
-            },
-        }
-        assert(path ~= '', debug.traceback 'Empty path')
-        base = base == nil and 8 or base
-        uv.fs_chmod(path, tonumber(mode, base))
+    if is_windows then
+        return
     end
+
+    vim.validate {
+        path = { path, 'string' },
+        mode = {
+            mode,
+            function(m)
+                local isnumber = type(m) == type(1)
+                -- TODO: check for hex and bin ?
+                local isrepr = type(m) == type '' and m ~= ''
+                return isnumber or isrepr
+            end,
+            'valid integer representation',
+        },
+    }
+    assert(path ~= '', debug.traceback 'Empty path')
+    base = base == nil and 8 or base
+    local ok, msg, _ = uv.fs_chmod(path, tonumber(mode, base))
+    if not ok then
+        vim.notify(msg, 'ERROR', { title = 'Chmod' })
+    end
+    return ok or false
 end
 
 function M.ls(expr)
-    assert(
-        not expr or type(expr) == type {} or type(expr) == type '',
-        debug.traceback('Invalid expression ' .. vim.inspect(expr))
-    )
+    vim.validate {
+        expr = {
+            expr,
+            function(e)
+                return type(e) == type '' or type(e) == type {}
+            end,
+            'Expresion must be a string or a table with path and globs',
+        },
+    }
+
     if not expr then
         expr = {}
     elseif type(expr) == type '' then
         expr = { path = M.normalize_path(expr) }
     end
 
-    local search
     local path = expr.path
     local glob = expr.glob
     local filter = expr.type
 
-    if glob == nil and path == nil then
-        path = path == nil and '.' or path
-        glob = glob == nil and '*' or glob
-    end
-
-    if path ~= nil and glob ~= nil then
-        search = path .. '/' .. glob
-    elseif path ~= nil and glob == nil then
-        search = path .. '/*'
-    else
-        search = path == nil and glob or path
-    end
+    glob = glob or '*'
+    path = path or '.'
 
     local filter_func = {
         file = M.is_file,
@@ -402,24 +432,15 @@ function M.ls(expr)
     filter_func.dir = filter_func.dir
     filter_func.dirs = filter_func.dir
 
-    local results = vim.fn.glob(search, false, true, false)
+    -- TODO: Replace this with a luv function
+    local results = vim.fn.globpath(path, glob, false, true, false)
 
     if filter_func[filter] ~= nil then
-        local filtered = {}
-
-        for _, element in pairs(results) do
-            if filter_func[filter](element) then
-                filtered[#filtered + 1] = element
-            end
-        end
-
-        results = filtered
+        results = vim.tbl_filter(filter_func[filter], results)
     end
 
     if is_windows and vim.o.shellslash then
-        for i = 1, #results do
-            results[i] = forward_path(results[i])
-        end
+        vim.tbl_map(forward_path, results)
     end
 
     return results
@@ -454,12 +475,17 @@ function M.get_dirs(expr)
 end
 
 function M.find_files(path, globs, cb)
-    assert(type(path) == type '', debug.traceback('Invalid path: ' .. vim.inspect(path)))
-    assert(not cb or vim.is_callable(cb), debug.traceback('Invalid callback: ' .. vim.inspect(cb)))
-    assert(
-        not globs or type(globs) == type {} or type(globs) == type '',
-        debug.traceback('Invalid globs: ' .. vim.inspect(globs))
-    )
+    vim.validate {
+        path = { path, 'string' },
+        globs = {
+            globs,
+            function(g)
+                return type(g) == type '' or vim.tbl_islist(g)
+            end,
+            'string or array of globs',
+        },
+        cb = { cb, 'function', true },
+    }
 
     local seeker = require('utils.helpers').select_filelist(false, true)
     local cmd = seeker[1]
@@ -551,16 +577,32 @@ end
 function M.delete(target, bang)
     vim.validate {
         target = { target, 'string' },
-        bang = { bang, 'boolean' },
+        bang = { bang, 'boolean', true },
     }
+
+    if bang == nil then
+        bang = false
+    end
+
     target = M.normalize_path(target)
-    if target:sub(#target, #target) == '/' then
+
+    if #target > 1 and target:sub(#target, #target) == '/' then
         target = target:sub(1, #target - 1)
     end
-    if target == sys.home then
-        vim.notify('Target cannot be the homedirectory', 'ERROR', { title = 'Delete File/Directory' })
-        return false
+
+    if M.is_dir(target) then
+        if target == sys.home then
+            vim.notify('Cannot delete home directory', 'ERROR', { title = 'Delete File/Directory' })
+            return false
+        elseif M.is_root(target) then
+            vim.notify('Cannot delete root directory', 'ERROR', { title = 'Delete File/Directory' })
+            return false
+        elseif target == '.' then
+            vim.notify('Cannot delete cwd or parent directory', 'ERROR', { title = 'Delete File/Directory' })
+            return false
+        end
     end
+
     if M.is_file(target) or bufloaded(target) then
         if M.is_file(target) then
             if not uv.fs_unlink(target) then

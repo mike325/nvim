@@ -1,6 +1,5 @@
-local split_components = require('utils.strings').split_components
-
 local function general_completion(arglead, _, _, options)
+    local split_components = require('utils.strings').split_components
     local pattern = table.concat(split_components(arglead, '.'), '.*')
     pattern = pattern:lower()
     return vim.tbl_filter(function(opt)
