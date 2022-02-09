@@ -389,7 +389,7 @@ fi
 nvim --version | tee -a test.log
 
 for test in lua/test/*.lua; do
-    if ! nvim --noplugin -u test/min.lua --headless -c "PlenaryBustedFile $test" -c 'qa!' | tee -a test.log; then
+    if ! nvim --noplugin -u test/min.lua --headless -c "PlenaryBustedFile $test"; then
         error_msg "Failed to run nvim test: ${test##*/}"
     fi
 done
