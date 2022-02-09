@@ -41,3 +41,6 @@ require('utils.functions').get_ssh_hosts()
 
 vim.cmd [[packadd! cfilter]]
 vim.cmd [[packadd! matchit]]
+
+-- vim.opt.rtp:append('.')
+vim.cmd [[runtime plugin/plenary.vim]]

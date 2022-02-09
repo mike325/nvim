@@ -19,8 +19,11 @@ local function split_path(path)
 end
 
 local function forward_path(path)
-    if is_windows and vim.o.shellslash then
-        return path:gsub('\\', '/')
+    if is_windows then
+        if vim.o.shellslash then
+            return path:gsub('\\', '/')
+        end
+        return path:gsub('/', '\\')
     end
     return path
 end
@@ -68,6 +71,9 @@ function M.link(src, dest, sym, force)
         dest = M.basename(src)
     end
 
+    dest = M.normalize_path(dest)
+    src = M.normalize_path(src)
+
     assert(src ~= dest, debug.traceback 'Cannot link src to itself')
 
     local status
@@ -101,17 +107,6 @@ function M.link(src, dest, sym, force)
     return status
 end
 
--- function M.symlink(src, dest)
---     assert(
---         type(src) == type('') and src ~= '',
---         debug.traceback(([[Not a src: "%s"]]):format(src))
---     )
---     assert(
---         type(dest) == type('') and dest ~= '',
---         debug.traceback(([[Not a dest: "%s"]]):format(dest))
---     )
--- end
-
 function M.executable(exec)
     vim.validate { exec = { exec, 'string' } }
     assert(exec ~= '', debug.traceback 'Empty executable string')
@@ -128,7 +123,10 @@ end
 function M.is_absolute(path)
     vim.validate { path = { path, 'string' } }
     assert(path ~= '', debug.traceback 'Empty path')
-    path = M.normalize_path(path)
+    if path:sub(1, 1) == '~' then
+        path = path:gsub('~', sys.home)
+    end
+
     local is_abs = false
     if is_windows and #path >= 2 then
         is_abs = string.match(path:sub(1, 2), '^%w:$') ~= nil
@@ -144,7 +142,7 @@ function M.is_root(path)
     local root = false
     if is_windows and #path >= 2 then
         path = forward_path(path)
-        root = string.match(path, '^%w:/?$') ~= nil
+        root = string.match(path, '^%w:' .. separator() .. '?$') ~= nil
     elseif not is_windows then
         root = path == '/'
     end
@@ -154,6 +152,7 @@ end
 function M.realpath(path)
     vim.validate { path = { path, 'string' } }
     assert(M.exists(path), debug.traceback(([[Path "%s" doesn't exists]]):format(path)))
+    path = M.normalize_path(path)
     local rpath = uv.fs_realpath(path)
     return forward_path(rpath or path)
 end
@@ -163,6 +162,8 @@ function M.normalize_path(path)
     assert(path ~= '', debug.traceback 'Empty path')
     if path:sub(1, 1) == '~' then
         path = path:gsub('~', sys.home)
+    elseif path == '.' then
+        path = M.getcwd()
     elseif path == '%' then
         -- TODO: Replace this with a fast API
         path = vim.fn.expand(path)
@@ -172,7 +173,11 @@ end
 
 function M.basename(path)
     vim.validate { path = { path, 'string' } }
-    path = M.normalize_path(path)
+    if path == '.' then
+        path = M.getcwd()
+    else
+        path = M.normalize_path(path)
+    end
     return path:match(('[^%s]+$'):format(separator()))
 end
 
@@ -186,33 +191,31 @@ function M.extension(path)
         filename = filename[#filename]
         extension = filename:match '^.+(%..+)$' or ''
     end
-    return #extension > 2 and extension:sub(2, #extension) or extension
+    return #extension >= 2 and extension:sub(2, #extension) or extension
 end
 
 function M.basedir(path)
     vim.validate { path = { path, 'string' } }
     path = M.normalize_path(path)
-    if not M.is_dir(path) then
-        local path_components = split_path(path)
-        if #path_components > 1 then
-            table.remove(path_components, #path_components)
-            if M.is_absolute(path) and not is_windows then
-                path = '/'
-            else
-                path = ''
-            end
-            path = path .. table.concat(path_components, '/')
-        elseif M.is_absolute(path) then
-            if is_windows then
-                path = path:sub(1, #path > 2 and 3 or 2)
-            else
-                path = '/'
-            end
+    local path_components = split_path(path)
+    if #path_components > 1 then
+        table.remove(path_components, #path_components)
+        if M.is_absolute(path) and not is_windows then
+            path = '/'
         else
-            path = '.'
+            path = ''
         end
+        path = path .. table.concat(path_components, '/')
+    elseif M.is_absolute(path) then
+        if is_windows then
+            path = path:sub(1, #path > 2 and 3 or 2)
+        else
+            path = '/'
+        end
+    else
+        path = '.'
     end
-    return path
+    return forward_path(path)
 end
 
 function M.subpath_in_path(parent, child)

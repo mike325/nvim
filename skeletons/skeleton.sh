@@ -102,7 +102,7 @@ case "$SHELL_PLATFORM" in
         ;;
 esac
 
-if ! which is_windows >/dev/null; then
+if ! hash is_windows 2>/dev/null; then
     function is_windows() {
         if [[ $SHELL_PLATFORM =~ (msys|cygwin|windows) ]]; then
             return 0
@@ -111,7 +111,7 @@ if ! which is_windows >/dev/null; then
     }
 fi
 
-if ! which is_wls >/dev/null; then
+if ! hash is_wls 2>/dev/null; then
     function is_wls() {
         if [[ "$(uname -r)" =~ Microsoft ]]; then
             return 0
@@ -120,7 +120,7 @@ if ! which is_wls >/dev/null; then
     }
 fi
 
-if ! which is_osx >/dev/null; then
+if ! hash is_osx 2>/dev/null; then
     function is_osx() {
         if [[ $SHELL_PLATFORM == 'osx' ]]; then
             return 0
@@ -129,7 +129,7 @@ if ! which is_osx >/dev/null; then
     }
 fi
 
-if which is_root >/dev/null; then
+if hash is_root 2>/dev/null; then
     function is_root() {
         if ! is_windows && [[ $EUID -eq 0 ]]; then
             return 0
@@ -138,7 +138,7 @@ if which is_root >/dev/null; then
     }
 fi
 
-if which has_sudo >/dev/null; then
+if hash has_sudo 2>/dev/null; then
     function has_sudo() {
         if ! is_windows && hash sudo 2>/dev/null && [[ "$(groups)" =~ sudo ]]; then
             return 0
@@ -147,7 +147,7 @@ if which has_sudo >/dev/null; then
     }
 fi
 
-if ! which is_64bits >/dev/null; then
+if ! hash is_64bits 2>/dev/null; then
     function is_64bits() {
         local arch
         arch="$(uname -m)"

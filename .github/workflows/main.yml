@@ -33,20 +33,15 @@ jobs:
         run: |
           ./install.sh --verbose --vim --nvim --python=3 --portables
           sudo pip3 install --upgrade pip python-language-server
-      - name: Test neovim and stock vim
+      - name: Test stable neovim
         run: |
           export PATH="$HOME/.local/bin:$PATH"
           ./test/test.sh
-      - name: Test latest vim
+      - name: Test latest Neovim
         run: |
-          sudo apt-get install -y vim
-          export PATH="$HOME/.local/bin:$PATH"
-          ./test/test.sh --vim
-      - name: Test latest neovim
-        run: |
-          export PATH="$HOME/.local/bin:$PATH"
           ./install.sh --neovim dev --force
-          ./test/test.sh --nvim
+          export PATH="$HOME/.local/bin:$PATH"
+          ./test/test.sh
 
   osx-build:
     name: Testing install script in ${{ matrix.os }}
@@ -75,17 +70,15 @@ jobs:
         run: |
           ./install.sh --verbose --vim --neovim=dotfiles --python=3
           pip3 install --upgrade python-language-server
-      - name: Test neovim and stock vim
+      - name: Test stable neovim
         run: |
           export PATH="$HOME/.local/bin:$PATH"
           ./test/test.sh
-      - name: Install new vim
+      - name: Test latest Neovim
         run: |
-          brew install vim
-      - name: Test latest vim
-        run: |
+          brew uninstall neovim && brew install neovim --HEAD
           export PATH="$HOME/.local/bin:$PATH"
-          ./test/test.sh --vim
+          ./test/test.sh
 
   windows-build:
     name: Testing install script in ${{ matrix.os }}
@@ -123,8 +116,14 @@ jobs:
         shell: bash
         run: |
           ./install.sh --verbose --vim --neovim=dotfiles --python=3 --portables
-      - name: Basic stock test
+      - name: Test stable neovim
         shell: bash
         run: |
-          export PATH="/c/tools/neovim/Neovim/bin:$PATH"
+          export PATH="$HOME/.local/bin:$PATH"
+          ./test/test.sh
+      - name: Test latest Neovim
+        shell: bash
+        run: |
+          choco uninstall neovim && choco install -y neovim --pre
+          export PATH="$HOME/.local/bin:$PATH"
           ./test/test.sh

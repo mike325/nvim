@@ -22,4 +22,8 @@ read_globals = {
     "STORAGE",
     "use",
     "use_rocks",
+    "describe",
+    "it",
+    "before_each",
+    "assert",
 }

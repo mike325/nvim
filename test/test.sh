@@ -21,32 +21,20 @@
 #            `++:.                           `-/+/
 #            .`                                 `/
 
-ALL=1
 VERBOSE=0
 NOCOLOR=0
 NOLOG=0
 WARN_COUNT=0
 ERR_COUNT=0
-
-VIM=0
-NVIM=0
-
-PROGS=()
-PYTHON2=0
-PYTHON3=0
+# FROM_STDIN=()
 
 NAME="$0"
 NAME="${NAME##*/}"
 LOG="${NAME%%.*}.log"
 
 SCRIPT_PATH="$0"
+
 SCRIPT_PATH="${SCRIPT_PATH%/*}"
-
-TEST_TYPE=("bare" "minimal" "full")
-ARGS=" --cmd version -Es -V2 "
-
-# _DEFAULT_SHELL="${SHELL##*/}"
-CURRENT_SHELL="bash"
 
 OS='unknown'
 ARCH="$(uname -m)"
@@ -59,6 +47,17 @@ else
     pushd "$SCRIPT_PATH" 1>/dev/null  || exit 1
     SCRIPT_PATH="$(pwd -P)"
     popd 1>/dev/null  || exit 1
+fi
+
+if [[ -n $ZSH_NAME ]]; then
+    CURRENT_SHELL="zsh"
+elif [[ -n $BASH ]]; then
+    CURRENT_SHELL="bash"
+else
+    # shellcheck disable=SC2009,SC2046
+    if [[ -z $CURRENT_SHELL ]]; then
+        CURRENT_SHELL="${SHELL##*/}"
+    fi
 fi
 
 if [ -z "$SHELL_PLATFORM" ]; then
@@ -105,7 +104,16 @@ esac
 
 if ! hash is_windows 2>/dev/null; then
     function is_windows() {
-        if [[ $SHELL_PLATFORM == 'msys' ]] || [[ $SHELL_PLATFORM == 'cygwin' ]] || [[ $SHELL_PLATFORM == 'windows' ]]; then
+        if [[ $SHELL_PLATFORM =~ (msys|cygwin|windows) ]]; then
+            return 0
+        fi
+        return 1
+    }
+fi
+
+if ! hash is_wls 2>/dev/null; then
+    function is_wls() {
+        if [[ "$(uname -r)" =~ Microsoft ]]; then
             return 0
         fi
         return 1
@@ -121,18 +129,33 @@ if ! hash is_osx 2>/dev/null; then
     }
 fi
 
-if [[ -n $ZSH_NAME ]]; then
-    CURRENT_SHELL="zsh"
-elif [[ -n $BASH ]]; then
-    CURRENT_SHELL="bash"
-else
-    # shellcheck disable=SC2009,SC2046
-    # _CURRENT_SHELL="$(ps | grep $$ | grep -Eo '(ba|z|tc|c)?sh')"
-    # _CURRENT_SHELL="${_CURRENT_SHELL##*/}"
-    # _CURRENT_SHELL="${_CURRENT_SHELL##*:}"
-    if [[ -z $CURRENT_SHELL ]]; then
-        CURRENT_SHELL="${SHELL##*/}"
-    fi
+if hash is_root 2>/dev/null; then
+    function is_root() {
+        if ! is_windows && [[ $EUID -eq 0 ]]; then
+            return 0
+        fi
+        return 1
+    }
+fi
+
+if hash has_sudo 2>/dev/null; then
+    function has_sudo() {
+        if ! is_windows && hash sudo 2>/dev/null && [[ "$(groups)" =~ sudo ]]; then
+            return 0
+        fi
+        return 1
+    }
+fi
+
+if ! hash is_64bits 2>/dev/null; then
+    function is_64bits() {
+        local arch
+        arch="$(uname -m)"
+        if [[ $arch == 'x86_64' ]] || [[ $arch == 'arm64' ]]; then
+            return 0
+        fi
+        return 1
+    }
 fi
 
 # colors
@@ -182,92 +205,100 @@ Usage:
 EOF
 }
 
+function warn_msg() {
+    local msg="$1"
+    if [[ $NOCOLOR -eq 0 ]]; then
+        printf "${yellow}[!] Warning:${reset_color}\t %s\n" "$msg"
+    else
+        printf "[!] Warning:\t %s\n" "$msg"
+    fi
+    WARN_COUNT=$((WARN_COUNT + 1))
+    if [[ $NOLOG -eq 0 ]]; then
+        printf "[!] Warning:\t %s\n" "$msg" >>"${LOG}"
+    fi
+    return 0
+}
+
+function error_msg() {
+    local msg="$1"
+    if [[ $NOCOLOR -eq 0 ]]; then
+        printf "${red}[X] Error:${reset_color}\t %s\n" "$msg" 1>&2
+    else
+        printf "[X] Error:\t %s\n" "$msg" 1>&2
+    fi
+    ERR_COUNT=$((ERR_COUNT + 1))
+    if [[ $NOLOG -eq 0 ]]; then
+        printf "[X] Error:\t %s\n" "$msg" >>"${LOG}"
+    fi
+    return 0
+}
+
+function status_msg() {
+    local msg="$1"
+    if [[ $NOCOLOR -eq 0 ]]; then
+        printf "${green}[*] Info:${reset_color}\t %s\n" "$msg"
+    else
+        printf "[*] Info:\t %s\n" "$msg"
+    fi
+    if [[ $NOLOG -eq 0 ]]; then
+        printf "[*] Info:\t\t %s\n" "$msg" >>"${LOG}"
+    fi
+    return 0
+}
+
+function verbose_msg() {
+    local msg="$1"
+    if [[ $VERBOSE -eq 1 ]]; then
+        if [[ $NOCOLOR -eq 0 ]]; then
+            printf "${purple}[+] Debug:${reset_color}\t %s\n" "$msg"
+        else
+            printf "[+] Debug:\t %s\n" "$msg"
+        fi
+    fi
+    if [[ $NOLOG -eq 0 ]]; then
+        printf "[+] Debug:\t\t %s\n" "$msg" >>"${LOG}"
+    fi
+    return 0
+}
+
 function __parse_args() {
     if [[ $# -lt 2 ]]; then
         error_msg "Internal error in __parse_args function trying to parse $1"
         exit 1
     fi
 
-    local arg="$1"
-    local name="$2"
+    local flag="$2"
+    local value="$1"
 
-    local pattern="^--${name}=[a-zA-Z0-9.:@_/~-]+$"
+    local pattern="^--${flag}=[a-zA-Z0-9.:@_/~-]+$"
 
     if [[ -n $3   ]]; then
-        local pattern="^--${name}=$3$"
+        local pattern="^--${flag}=$3$"
     fi
 
-    if [[ $arg =~ $pattern ]]; then
-        local left_side="${arg#*=}"
+    if [[ $value =~ $pattern ]]; then
+        local left_side="${value#*=}"
         echo "${left_side/#\~/$HOME}"
     else
-        echo "$arg"
+        echo "$value"
     fi
-}
-
-function warn_msg() {
-    local warn_message="$1"
-    if [[ $NOCOLOR -eq 0 ]]; then
-        printf "\n${yellow}[!] Warning:${reset_color}\t %s" "$warn_message"
-    else
-        printf "\n[!] Warning:\t %s" "$warn_message"
-    fi
-    WARN_COUNT=$((WARN_COUNT + 1))
-    if [[ $NOLOG -eq 0 ]]; then
-        printf "[!] Warning:\t %s\n" "$warn_message" >>"${LOG}"
-    fi
-    return 0
-}
-
-function error_msg() {
-    local error_message="$1"
-    if [[ $NOCOLOR -eq 0 ]]; then
-        printf "\n${red}[X] Error:${reset_color}\t %s" "$error_message" 1>&2
-    else
-        printf "\n[X] Error:\t %s" "$error_message" 1>&2
-    fi
-    ERR_COUNT=$((ERR_COUNT + 1))
-    if [[ $NOLOG -eq 0 ]]; then
-        printf "[X] Error:\t\t %s\n" "$error_message" >>"${LOG}"
-    fi
-    return 0
-}
-
-function status_msg() {
-    local status_message="$1"
-    if [[ $NOCOLOR -eq 0 ]]; then
-        printf "\n${green}[*] Info:${reset_color}\t %s" "$status_message"
-    else
-        printf "\n[*] Info:\t %s" "$status_message"
-    fi
-    if [[ $NOLOG -eq 0 ]]; then
-        printf "[*] Info:\t\t %s\n" "$status_message" >>"${LOG}"
-    fi
-    return 0
-}
-
-function verbose_msg() {
-    local debug_message="$1"
-    if [[ $VERBOSE -eq 1 ]]; then
-        if [[ $NOCOLOR -eq 0 ]]; then
-            printf "\n${purple}[+] Debug:${reset_color}\t %s" "$debug_message"
-        else
-            printf "\n[+] Debug:\t %s" "$debug_message"
-        fi
-    fi
-    if [[ $NOLOG -eq 0 ]]; then
-        printf "[+] Debug:\t\t %s\n" "$debug_message" >>"${LOG}"
-    fi
-    return 0
 }
 
 function initlog() {
     if [[ $NOLOG -eq 0 ]]; then
-        rm -f "${LOG}" 2>/dev/null
-        touch "${LOG}" &>/dev/null
+        [[ -n $LOG ]] && rm -f "${LOG}" 2>/dev/null
+        if ! touch "${LOG}" &>/dev/null; then
+            error_msg "Fail to init log file"
+            NOLOG=1
+            return 1
+        fi
         if [[ -f "${SCRIPT_PATH}/shell/banner" ]]; then
             cat "${SCRIPT_PATH}/shell/banner" >"${LOG}"
         fi
+        if ! is_osx; then
+            LOG=$(readlink -e "${LOG}")
+        fi
+        verbose_msg "Using log at ${LOG}"
     fi
     return 0
 }
@@ -282,107 +313,21 @@ function exit_append() {
             printf "[*] Warnings:\t%s\n" "$WARN_COUNT" >>"${LOG}"
         fi
         if [[ $ERR_COUNT -gt 0 ]]; then
-            printf "[*] Errors:\t\t%s\n" "$ERR_COUNT" >>"${LOG}"
-            echo
-            cat "${LOG}"
+            printf "[*] Errors:\t%s\n" "$ERR_COUNT" >>"${LOG}"
         fi
     fi
     return 0
 }
 
 function get_runtime_files() {
-    prog="$1"
+    local test="nvim/test/min.lua"
+    local nvim_directory
     if is_windows; then
-        if [[ $prog == nvim ]]; then
-            echo "$HOME/AppData/Local/nvim/init.vim"
-        else
-            echo "$HOME/.vim/vimrc"
-        fi
+        nvim_directory="$HOME/AppData/Local/"
     else
-        if [[ $prog == nvim ]]; then
-            echo "$HOME/.config/nvim/init.vim"
-        else
-            echo "$HOME/.vim/vimrc"
-        fi
+        nvim_directory="${XDG_CONFIG_HOME:-$HOME/.config/}"
     fi
-}
-
-function install_pynvim() {
-    if hash pip3 2>/dev/null; then
-        pip3 install --user wheel pynvim
-        PYTHON3=1
-    else
-        warn_msg "Skipping python 3 test with Neovim"
-    fi
-
-    if hash pip2 2>/dev/null; then
-        pip2 install --user wheel pynvim
-        PYTHON2=1
-    else
-        warn_msg "Skipping python 2 test with Neovim"
-    fi
-
-    if [[ $PYTHON2 -eq 1 ]] || [[ $PYTHON3 -eq 1 ]]; then
-        return 0
-    fi
-
-    return 1
-}
-
-function run_test() {
-    local prog="$1"
-    local rsp=0
-    local args
-
-    # if [[ $prog == nvim ]] && [[ $SHELL_PLATFORM == 'linux' ]]; then
-    #     status_msg "Setting YCM flag"
-    #     export YCM=1
-    # else
-    #     unset YCM
-    # fi
-
-    if [[ $prog == nvim ]]; then
-        if [[ $PYTHON2 -eq 0 ]] && [[ $PYTHON3 -eq 0 ]]; then
-            local testname="stable Neovim without python"
-        else
-            local testname="stable Neovim with python"
-        fi
-    else
-        local testname="stock Vim"
-    fi
-
-    local exit_args=" -c 'autocmd VimEnter * qa!' "
-
-    for test_type in  "${TEST_TYPE[@]}"; do
-
-        args="-u $(get_runtime_files "${prog}") ${ARGS}"
-        if [[ $prog == vim ]]; then
-            args="$args -N"
-        fi
-        args="$args $exit_args"
-
-        if [[ $test_type == full ]]; then
-            args=" ${args} -c 'PlugInstall' "
-        elif [[ $test_type == minimal ]]; then
-            local args="${args} --cmd 'let g:mininal=1' -c 'PlugInstall' "
-        elif [[ $test_type == bare ]]; then
-            local args="${args} --cmd 'let g:bare=1'"
-        fi
-
-        status_msg "Testing ${test_type} ${testname}"
-        verbose_msg "Using $(get_runtime_files "${prog}")"
-
-        verbose_msg "Running ${prog} ${args}"
-        if  [[ $prog == nvim ]] && ! hash nvim 2>/dev/null; then
-            error_msg "Neovim is not install or is missing in the path, test ${test_type} ${testname} fail"
-            rsp=1
-        elif ! eval "${prog} ${args}"; then
-            error_msg "${test_type} ${testname} fail"
-            rsp=1
-        fi
-    done
-
-    return $rsp
+    echo "${nvim_directory}/${test}"
 }
 
 while [[ $# -gt 0 ]]; do
@@ -394,20 +339,12 @@ while [[ $# -gt 0 ]]; do
         --nocolor)
             NOCOLOR=1
             ;;
-        --verbose)
+        -v | --verbose)
             VERBOSE=1
             ;;
         -h | --help)
             help_user
             exit 0
-            ;;
-        -v | --vim)
-            VIM=1
-            ALL=0
-            ;;
-        -n | --neovim | --nvim)
-            NVIM=1
-            ALL=0
             ;;
         *)
             initlog
@@ -426,21 +363,35 @@ verbose_msg "Platform      : ${SHELL_PLATFORM}"
 verbose_msg "Architecture  : ${ARCH}"
 verbose_msg "OS            : ${OS}"
 
-if [[ $ALL -eq 1 ]]; then
-    PROGS=("vim" "nvim")
+#######################################################################
+#                           CODE Goes Here                            #
+#######################################################################
+
+if is_windows; then
+    PLENARY_DIR="$HOME/AppData/Local/nvim-data/site/pack/packer/start"
 else
-    [[ $VIM -eq 1 ]] && PROGS+=("vim")
-    [[ $NVIM -eq 1 ]] && PROGS=("nvim")
+    PLENARY_DIR="$HOME/.local/share/nvim/site/pack/packer/start/"
 fi
 
-for prog in "${PROGS[@]}"; do
-    run_test "$prog"
+if [[ ! -d "$PLENARY_DIR/plenary.nvim" ]]; then
+    mkdir -p "$PLENARY_DIR"
+    git clone --recursive https://github.com/nvim-lua/plenary.nvim "$PLENARY_DIR"
+fi
+
+for test in lua/test/*.lua; do
+    if ! nvim --noplugin -u test/min.lua --headless -c "PlenaryBustedFile $test"; then
+        error_msg "Failed to run nvim test: ${test##*/}"
+    fi
 done
 
-if { [[ $ALL -eq 1 ]] || [[ $NVIM -eq 1 ]]; } && install_pynvim; then
-    run_test "$prog"
-fi
+# TODO: Why in hell this fail !?
+# if ! nvim --noplugin -u test/min.lua --headless -c "PlenaryBustedDirectory lua/test/ {minimal_init = 'test/min.lua'}"; then
+#     error_msg "Failed to run nvim tests"
+# fi
 
+#######################################################################
+#                           CODE Goes Here                            #
+#######################################################################
 if [[ $ERR_COUNT -gt 0 ]]; then
     exit 1
 fi
