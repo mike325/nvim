@@ -7,16 +7,14 @@ for a while, feel free to change anything to fit your needs. I try to test this 
 tho windows is is still unstable in regarding some plugin integrations.
 
 ## Status
----
-[![Linux Neovim Stable](https://github.com/Mike325/.vim/workflows/linux-stable/badge.svg)](https://github.com/Mike325/.vim/actions/workflows/linux-stable.yml)
-[![Linux Neovim Nightly](https://github.com/Mike325/.vim/workflows/linux-nightly/badge.svg)](https://github.com/Mike325/.vim/actions/workflows/linux-nightly.yml)
-[![macOS Neovim Stable](https://github.com/Mike325/.vim/workflows/macos-stable/badge.svg)](https://github.com/Mike325/.vim/actions/workflows/macos-stable.yml)
-[![macOS Neovim Nightly](https://github.com/Mike325/.vim/workflows/macos-nightly/badge.svg)](https://github.com/Mike325/.vim/actions/workflows/macos-nightly.yml)
-[![Windows Neovim Stable](https://github.com/Mike325/.vim/workflows/windows-stable/badge.svg)](https://github.com/Mike325/.vim/actions/workflows/windows-stable.yml)
-[![Windows Neovim Nightly](https://github.com/Mike325/.vim/workflows/windows-nightly/badge.svg)](https://github.com/Mike325/.vim/actions/workflows/windows-nightly.yml)
+[![Linux Neovim Stable](https://github.com/Mike325/.vim/workflows/linux-stable/badge.svg)](https://github.com/Mike325/.vim/actions/workflows/linux_stable.yml)
+[![Linux Neovim Nightly](https://github.com/Mike325/.vim/workflows/linux-nightly/badge.svg)](https://github.com/Mike325/.vim/actions/workflows/linux_nightly.yml)
+[![macOS Neovim Stable](https://github.com/Mike325/.vim/workflows/macos-stable/badge.svg)](https://github.com/Mike325/.vim/actions/workflows/macos_stable.yml)
+[![macOS Neovim Nightly](https://github.com/Mike325/.vim/workflows/macos-nightly/badge.svg)](https://github.com/Mike325/.vim/actions/workflows/macos_nightly.yml)
+[![Windows Neovim Stable](https://github.com/Mike325/.vim/workflows/windows-stable/badge.svg)](https://github.com/Mike325/.vim/actions/workflows/windows_stable.yml)
+[![Windows Neovim Nightly](https://github.com/Mike325/.vim/workflows/windows-nightly/badge.svg)](https://github.com/Mike325/.vim/actions/workflows/windows_nightly.yml)
 
 ## Install
----
 
 If you are using [Neovim](https://neovim.io/) you just need to just clone the repo to `~/.config/nvim`
 
@@ -33,7 +31,6 @@ git clone --recursive "https://github.com/mike325/.vim.git" "$env:USERPROFILE/Ap
 Feel free to change anything to fit your needs!
 
 ## Development
----
 
 To execute the available test just run `make` on Linux/macOS or `./test/test.ps1` on windows
 
