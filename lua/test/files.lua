@@ -25,7 +25,6 @@ end
 -- find_files
 -- skeleton_filename
 -- clean_file
--- encode_json
 
 describe('Check file and direcotries', function()
     local basedir, init_file, missing, homedir
@@ -706,7 +705,7 @@ describe('JSON', function()
         { bool = true, num = 1, lst = { 1, 2, 3, 4 }, dict = { rec = false } },
         { 1, 2, 3, 4 },
         { true, 'tst', 2, false, { 1, 2, 3 } },
-        { tst = 'tst', t2 = 'tst2' },
+        { tst = 'tst', t2 = 'tst2/slash' },
     }
 
     local jsons_str = {
@@ -731,23 +730,26 @@ describe('JSON', function()
         assert.are.same(vim.fn.json_decode(data), decode_json(data))
     end)
 
-    -- -- TODO: CJSON encodes escaping /, resulting in different strings
-    -- it('Encode', function()
-    --     local decode_json = require('utils.files').decode_json
-    --     local encode_json = require('utils.files').encode_json
-    --     local readfile = require('utils.files').readfile
-    --
-    --     local basedir = vim.fn.stdpath 'config'
-    --     local projections = basedir .. '/.projections.json'
-    --
-    --     local data = readfile(projections, false)
-    --     local json = decode_json(data)
-    --
-    --     for _, tst in ipairs(jsons) do
-    --         assert.equals(vim.fn.json_encode(tst), encode_json(tst))
-    --     end
-    --     assert.equals(vim.fn.json_encode(json), encode_json(json))
-    -- end)
+    it('Encode', function()
+        local encode_json = require('utils.files').encode_json
+        local readfile = require('utils.files').readfile
+
+        local basedir = vim.fn.stdpath 'config'
+        local projections = basedir .. '/.projections.json'
+
+        -- NOTE: This cannot be test 1:1 since both encodes generate diferent strings
+        local internal
+        local control
+        for _, tst in ipairs(jsons) do
+            internal = encode_json(tst)
+            control = vim.fn.json_encode(tst)
+            assert.are.same(vim.fn.json_decode(control), vim.fn.json_decode(internal))
+        end
+
+        local data = readfile(projections, false)
+        internal = encode_json(vim.fn.json_decode(data))
+        assert.are.same(vim.fn.json_decode(data), vim.fn.json_decode(internal))
+    end)
 
     it('Read', function()
         local read_json = require('utils.files').read_json
@@ -767,7 +769,6 @@ describe('JSON', function()
 
     it('Dump', function()
         local dump_json = require('utils.files').dump_json
-        local read_json = require('utils.files').read_json
         local readfile = require('utils.files').readfile
         local writefile = require('utils.files').writefile
 
@@ -779,9 +780,9 @@ describe('JSON', function()
         for _, tst in ipairs(jsons) do
             assert.is_true(dump_json(tmp, tst))
             assert.is_true(writefile(control, vim.fn.json_encode(tst)))
-            assert.are.same(vim.fn.json_decode(readfile(control, false)), read_json(tmp))
+            assert.are.same(vim.fn.json_decode(readfile(control, false)), vim.fn.json_decode(readfile(tmp)))
         end
-        assert.is_true(dump_json(tmp, read_json(projections)))
-        assert.are.same(vim.fn.json_decode(readfile(projections, false)), read_json(tmp))
+        assert.is_true(dump_json(tmp, vim.fn.json_decode(readfile(projections))))
+        assert.are.same(vim.fn.json_decode(readfile(projections, false)), vim.fn.json_decode(readfile(tmp)))
     end)
 end)

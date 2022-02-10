@@ -37,6 +37,10 @@ local function separator()
     return '/'
 end
 
+if vim.json then
+    vim.json.encode_escape_forward_slash(false)
+end
+
 function M.exists(filename)
     vim.validate { filename = { filename, 'string' } }
     assert(filename ~= '', debug.traceback 'Empty filename')
