@@ -206,9 +206,8 @@ function M.basename(path)
     vim.validate { path = { path, 'string' } }
     if path == '.' then
         path = M.getcwd()
-    else
-        path = M.normalize_path(path)
     end
+    path = M.normalize_path(path)
     return path:match(('[^%s]+$'):format(separator()))
 end
 

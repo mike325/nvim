@@ -187,32 +187,29 @@ describe('Linking', function()
 end)
 
 describe('Absolute path', function()
-    local is_absolute
+    local is_absolute = require('utils.files').is_absolute
 
-    before_each(function()
-        is_absolute = require('utils.files').is_absolute
-    end)
+    it('Unix/Windows', function()
+        assert.is_true(is_absolute(vim.loop.os_homedir()))
+        assert.is_true(is_absolute(vim.loop.cwd()))
+        assert.is_false(is_absolute '.')
+        assert.is_false(is_absolute '../')
+        assert.is_false(is_absolute 'test')
+        assert.is_false(is_absolute './home')
 
-    if is_windows then
-        it('Windows', function()
+        if is_windows then
             assert.is_true(is_absolute 'c:/ProgramData')
             assert.is_true(is_absolute 'D:/data')
-            assert.is_false(is_absolute './home')
-            assert.is_false(is_absolute [[c:\ProgramData]])
+            assert.is_false(is_absolute [[..\\ProgramData]])
             assert.is_true(is_absolute [[c:\]])
             assert.is_true(is_absolute [[C:]])
-        end)
-    else
-        it('Unix', function()
+        else
             assert.is_true(is_absolute '/')
-            assert.is_true(is_absolute '/home/')
+            assert.is_true(is_absolute '/tmp/')
             assert.is_false(is_absolute 'home/')
-            assert.is_false(is_absolute '.')
             assert.is_true(is_absolute '/../')
-            assert.is_false(is_absolute '../')
-            assert.is_false(is_absolute 'test')
-        end)
-    end
+        end
+    end)
 end)
 
 describe('Root path', function()
@@ -312,7 +309,7 @@ describe('Basename', function()
     end)
 
     it('CWD', function()
-        local cwd = vim.loop.cwd():gsub('.*' .. separator(), '')
+        local cwd = forward_path(vim.loop.cwd()):gsub('.*' .. separator(), '')
         assert.equals(cwd, basename '.')
         assert.equals(cwd, basename(vim.loop.cwd()))
     end)
