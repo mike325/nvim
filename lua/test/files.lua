@@ -1,3 +1,4 @@
+require('plenary.async').tests.add_to_env()
 local is_windows = vim.fn.has 'win32' == 1
 
 local function forward_path(path)
@@ -18,6 +19,13 @@ local function separator()
     end
     return '/'
 end
+
+-- TODO: Missing function tests
+-- is_parent
+-- find_files
+-- skeleton_filename
+-- clean_file
+-- encode_json
 
 describe('Check file and direcotries', function()
     local basedir, init_file, missing, homedir
@@ -147,19 +155,21 @@ describe('Linking', function()
         assert.is_false(is_dir(dest))
     end)
 
-    -- it("Missing SRC file/dir", function()
-    --     local src = vim.fn.tempname()
-    --     local dest = vim.fn.tempname()
-    --     local is_file = require'utils.files'.is_file
-    --     local is_dir = require'utils.files'.is_dir
-    --     local link = require'utils.files'.link
-    --
-    --     assert.is_false(is_file(dest))
-    --     assert.is_false(is_dir(dest))
-    --     assert.has.error(link(src, dest))
-    --     assert.is_false(is_file(dest))
-    --     assert.is_false(is_dir(dest))
-    -- end)
+    it('Missing SRC file/dir', function()
+        local src = vim.fn.tempname()
+        local dest = vim.fn.tempname()
+        local is_file = require('utils.files').is_file
+        local is_dir = require('utils.files').is_dir
+        local link = require('utils.files').link
+
+        assert.is_false(is_file(dest))
+        assert.is_false(is_dir(dest))
+        assert.has.error(function()
+            link(src, dest)
+        end)
+        assert.is_false(is_file(dest))
+        assert.is_false(is_dir(dest))
+    end)
 
     describe('Force', function()
         it('Symbolic link to Directory', function()
@@ -213,11 +223,7 @@ describe('Absolute path', function()
 end)
 
 describe('Root path', function()
-    local is_root
-
-    before_each(function()
-        is_root = require('utils.files').is_root
-    end)
+    local is_root = require('utils.files').is_root
 
     if is_windows then
         it('Windows', function()
@@ -237,7 +243,6 @@ describe('Root path', function()
             assert.is_false(is_root '/home/')
             assert.is_false(is_root 'home/')
             assert.is_false(is_root '.')
-            -- assert.is_false(is_root('/../'))
             assert.is_false(is_root '../')
             assert.is_false(is_root 'test')
         end)
@@ -245,11 +250,7 @@ describe('Root path', function()
 end)
 
 describe('Realpath', function()
-    local realpath
-
-    before_each(function()
-        realpath = require('utils.files').realpath
-    end)
+    local realpath = require('utils.files').realpath
 
     it('HOME', function()
         local homedir = vim.loop.os_homedir()
@@ -263,11 +264,7 @@ describe('Realpath', function()
 end)
 
 describe('Normalize', function()
-    local normalize_path
-
-    before_each(function()
-        normalize_path = require('utils.files').normalize_path
-    end)
+    local normalize_path = require('utils.files').normalize_path
 
     it('HOME', function()
         local homedir = vim.loop.os_homedir()
@@ -316,11 +313,7 @@ describe('Basename', function()
 end)
 
 describe('Extension', function()
-    local extension
-
-    before_each(function()
-        extension = require('utils.files').extension
-    end)
+    local extension = require('utils.files').extension
 
     it('Filename', function()
         local basedir = vim.fn.stdpath 'config'
@@ -336,11 +329,7 @@ describe('Extension', function()
 end)
 
 describe('Basedir', function()
-    local basedir
-
-    before_each(function()
-        basedir = require('utils.files').basedir
-    end)
+    local basedir = require('utils.files').basedir
 
     it('Getting basedir from directories and files', function()
         local config_dir = forward_path(vim.fn.stdpath 'config')
@@ -375,30 +364,7 @@ describe('Read/Write', function()
     local basedir = vim.fn.stdpath 'config'
     local init_file = basedir .. '/init.lua'
 
-    local function write_data(path, data)
-        writefile(path, data)
-        assert.is_true(is_file(path))
-        local fd = assert(io.open(path))
-        local rb_data = fd:read '*a'
-        fd:close()
-        if type(data) == type {} then
-            data = table.concat(data, '\n')
-        end
-        assert.equals(rb_data, data)
-    end
-
-    local function write(path, data, cb)
-        if not cb then
-            write_data(path, data)
-        else
-            writefile(path, data, function()
-                write_data(path, data)
-                -- done()
-            end)
-        end
-    end
-
-    local function check_read_data(path, data)
+    local function check_data(path, data)
         assert.is_true(is_file(path))
         local fd = assert(io.open(path))
         local rb_data = fd:read '*a'
@@ -416,17 +382,28 @@ describe('Read/Write', function()
         end
     end
 
+    local function write(path, data, cb)
+        if not cb then
+            assert.is_true(writefile(path, data))
+            check_data(path, data)
+        else
+            writefile(path, data, function()
+                check_data(path, data)
+                assert.is_true(false)
+            end)
+        end
+    end
+
     local function read(path, split, cb)
         if split == nil then
             split = true
         end
         if not cb then
-            check_read_data(path, readfile(path, split))
+            check_data(path, readfile(path, split))
         else
             assert.is_true(is_file(path))
             readfile(path, split, function(data)
-                check_read_data(path, data)
-                -- done()
+                check_data(path, data)
             end)
         end
     end
@@ -471,17 +448,15 @@ describe('Read/Write', function()
         read(init_file, true)
     end)
 
-    -- TODO: async seems to be a nil value
+    -- -- TODO: Need to find a way to test this async functions
     -- describe('Async', function()
-    --     it('Creating new file', function()
-    --         async()
+    --     a.it('Creating new file', function()
     --         local msg = 'this is a test'
     --         assert.is_false(is_file(vim.fn.tempname()))
-    --         write(tmp, msg, true)
+    --         a.run(function() write(tmp, msg, true) end)
     --     end)
     --
-    --     it('Appending to exists file', function()
-    --         async()
+    --     a.it('Appending to exists file', function()
     --         local updatefile = require('utils.files').updatefile
     --         assert.is_true(is_file(tmp))
     --
@@ -495,54 +470,50 @@ describe('Read/Write', function()
     --             local data = fd:read '*a'
     --             fd:close()
     --             assert.equals(msg .. append_data, data)
-    --             done()
     --         end)
     --     end)
     --
-    --     it('Overriding exists file', function()
-    --         async()
+    --     a.it('Overriding exists file', function()
     --         local msg = { 'This', 'Should', 'Override', 'the data', 'async' }
     --         assert.is_true(is_file(tmp))
     --         write(tmp, msg, true)
     --     end)
     --
-    --     it('Reading file as string', function()
-    --         async()
+    --     a.it('Reading file as string', function()
     --         read(tmp, false, true)
     --         read(init_file, false, true)
     --     end)
     --
-    --     it('Reading file as table', function()
-    --         async()
+    --     a.it('Reading file as table', function()
     --         read(tmp, true, true)
     --         read(init_file, true, true)
     --     end)
     -- end)
 end)
 
--- if not is_windows then
---     describe('Chmod', function()
---         local chmod = require('utils.files').chmod
---
---         it('Change file permissions', function()
---             local writefile = require('utils.files').writefile
---             local tmp = vim.fn.tempname()
---             local is_file = require('utils.files').is_file
---
---             local msg = 'this is a test'
---             assert.is_false(is_file(tmp))
---             writefile(tmp, msg)
---             assert.is_true(is_file(tmp))
---
---             -- TODO: Need to check current permissions
---             -- Removing write permissions
---             assert.is_true(chmod(tmp, 400))
---             assert.has.error(writefile(tmp, msg), 'EACCES')
---             assert.is_true(chmod(tmp, 600))
---             assert.has_no.errors(writefile(tmp, msg))
---         end)
---     end)
--- end
+if not is_windows then
+    describe('Chmod', function()
+        local chmod = require('utils.files').chmod
+
+        it('Change file permissions', function()
+            local writefile = require('utils.files').writefile
+            local tmp = vim.fn.tempname()
+            local is_file = require('utils.files').is_file
+
+            local msg = 'this is a test'
+            assert.is_false(is_file(tmp))
+            assert.is_true(writefile(tmp, msg))
+            assert.is_true(is_file(tmp))
+
+            -- TODO: Need to check current permissions
+            -- Removing write permissions
+            assert.is_true(chmod(tmp, 400))
+            assert.is_false(writefile(tmp, msg))
+            assert.is_true(chmod(tmp, 600))
+            assert.is_true(writefile(tmp, msg))
+        end)
+    end)
+end
 
 describe('ls', function()
     it("List directory's files/dirs", function()
@@ -623,7 +594,7 @@ describe('Rename', function()
         local new_tmpfile = vim.fn.tempname()
         local msg = 'this is a test'
 
-        writefile(tmpfile, msg)
+        assert.is_true(writefile(tmpfile, msg))
 
         assert.is_true(is_file(tmpfile))
         assert.is_false(is_file(new_tmpfile))
@@ -636,28 +607,29 @@ describe('Rename', function()
         assert.equals(msg, readfile(new_tmpfile, false))
     end)
 
-    -- it('file to existing file', function()
-    --     local is_file = require('utils.files').is_file
-    --     local writefile = require('utils.files').writefile
-    --     local readfile = require('utils.files').readfile
-    --
-    --     local tmpfile = vim.fn.tempname()
-    --     local new_tmpfile = vim.fn.tempname()
-    --     local msg = 'this is a test'
-    --
-    --     writefile(tmpfile, msg)
-    --     writefile(new_tmpfile, 'this should be just a tmp')
-    --
-    --     assert.is_true(is_file(tmpfile))
-    --     assert.is_true(is_file(new_tmpfile))
-    --
-    --     assert.is_true(rename(tmpfile, new_tmpfile))
-    --
-    --     assert.is_false(is_file(tmpfile))
-    --     assert.is_true(is_file(new_tmpfile))
-    --
-    --     assert.equals(msg, readfile(new_tmpfile, false))
-    -- end)
+    it('file to existing file', function()
+        local is_file = require('utils.files').is_file
+        local writefile = require('utils.files').writefile
+        local readfile = require('utils.files').readfile
+
+        local tmpfile = vim.fn.tempname()
+        local new_tmpfile = vim.fn.tempname()
+        local msg = 'this is a test'
+
+        assert.is_true(writefile(tmpfile, msg))
+        assert.is_true(writefile(new_tmpfile, 'this should be just a tmp'))
+
+        assert.is_true(is_file(tmpfile))
+        assert.is_true(is_file(new_tmpfile))
+
+        assert.is_false(rename(tmpfile, new_tmpfile))
+        assert.is_true(rename(tmpfile, new_tmpfile, true))
+
+        assert.is_false(is_file(tmpfile))
+        assert.is_true(is_file(new_tmpfile))
+
+        assert.equals(msg, readfile(new_tmpfile, false))
+    end)
 
     it('directory', function()
         local is_dir = require('utils.files').is_dir
@@ -689,7 +661,7 @@ describe('Delete', function()
 
         local tmpfile = vim.fn.tempname()
         local msg = 'this is a test'
-        writefile(tmpfile, msg)
+        assert.is_true(writefile(tmpfile, msg))
 
         assert.is_true(is_file(tmpfile))
         assert.is_true(delete(tmpfile))
@@ -720,11 +692,96 @@ describe('Delete', function()
 
         local tmpfile = tmpdir .. '/test'
         local msg = 'this is a test'
-        writefile(tmpfile, msg)
+        assert.is_true(writefile(tmpfile, msg))
         assert.is_true(is_file(tmpfile))
 
         assert.is_false(delete(tmpdir))
         assert.is_true(delete(tmpdir, true))
         assert.is_false(is_dir(tmpdir))
+    end)
+end)
+
+describe('JSON', function()
+    local jsons = {
+        { bool = true, num = 1, lst = { 1, 2, 3, 4 }, dict = { rec = false } },
+        { 1, 2, 3, 4 },
+        { true, 'tst', 2, false, { 1, 2, 3 } },
+        { tst = 'tst', t2 = 'tst2' },
+    }
+
+    local jsons_str = {
+        '[1, 2, 3, 4]',
+        '[1, false, "str", [1, 2, 3] ]',
+        '{ "test": [1, 2], "rson": true, "data": "test" }',
+        '{ "tst": "tst", "b": false, "num": 42, "foo": [ "test", 2, 1, true ] }',
+    }
+
+    it('Decode', function()
+        local decode_json = require('utils.files').decode_json
+        local readfile = require('utils.files').readfile
+
+        local basedir = vim.fn.stdpath 'config'
+        local projections = basedir .. '/.projections.json'
+
+        local data = readfile(projections, false)
+
+        for _, tst in ipairs(jsons_str) do
+            assert.are.same(vim.fn.json_decode(tst), decode_json(tst))
+        end
+        assert.are.same(vim.fn.json_decode(data), decode_json(data))
+    end)
+
+    -- -- TODO: CJSON encodes escaping /, resulting in different strings
+    -- it('Encode', function()
+    --     local decode_json = require('utils.files').decode_json
+    --     local encode_json = require('utils.files').encode_json
+    --     local readfile = require('utils.files').readfile
+    --
+    --     local basedir = vim.fn.stdpath 'config'
+    --     local projections = basedir .. '/.projections.json'
+    --
+    --     local data = readfile(projections, false)
+    --     local json = decode_json(data)
+    --
+    --     for _, tst in ipairs(jsons) do
+    --         assert.equals(vim.fn.json_encode(tst), encode_json(tst))
+    --     end
+    --     assert.equals(vim.fn.json_encode(json), encode_json(json))
+    -- end)
+
+    it('Read', function()
+        local read_json = require('utils.files').read_json
+        local readfile = require('utils.files').readfile
+        local writefile = require('utils.files').writefile
+
+        local basedir = vim.fn.stdpath 'config'
+        local projections = basedir .. '/.projections.json'
+        local tmp = vim.fn.tempname()
+
+        for _, tst in ipairs(jsons_str) do
+            assert.is_true(writefile(tmp, tst))
+            assert.are.same(vim.fn.json_decode(tst), read_json(tmp))
+        end
+        assert.are.same(vim.fn.json_decode(readfile(projections, false)), read_json(projections))
+    end)
+
+    it('Dump', function()
+        local dump_json = require('utils.files').dump_json
+        local read_json = require('utils.files').read_json
+        local readfile = require('utils.files').readfile
+        local writefile = require('utils.files').writefile
+
+        local basedir = vim.fn.stdpath 'config'
+        local projections = basedir .. '/.projections.json'
+        local control = vim.fn.tempname()
+        local tmp = vim.fn.tempname()
+
+        for _, tst in ipairs(jsons) do
+            assert.is_true(dump_json(tmp, tst))
+            assert.is_true(writefile(control, vim.fn.json_encode(tst)))
+            assert.are.same(vim.fn.json_decode(readfile(control, false)), read_json(tmp))
+        end
+        assert.is_true(dump_json(tmp, read_json(projections)))
+        assert.are.same(vim.fn.json_decode(readfile(projections, false)), read_json(tmp))
     end)
 end)

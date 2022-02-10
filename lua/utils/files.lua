@@ -61,7 +61,8 @@ function M.mkdir(dirname, recurive)
     if M.is_dir(dirname) then
         return true
     end
-    local ok, msg, err = uv.fs_mkdir(M.normalize_path(dirname), 511)
+    dirname = M.normalize_path(dirname)
+    local ok, msg, err = uv.fs_mkdir(dirname, 511)
     if err == 'ENOENT' and recurive then
         local dirs = vim.split(dirname, separator())
         local base = dirs[1] == '' and '/' or dirs[1]
@@ -248,22 +249,22 @@ function M.basedir(path)
     return forward_path(path)
 end
 
--- function M.subpath_in_path(parent, child)
---     vim.validate { parent = { parent, 'string' }, child = { child, 'string' } }
---     assert(M.is_dir(parent), debug.traceback(('Parent path is not a directory "%s"'):format(parent)))
---     assert(M.is_dir(child), debug.traceback(('Child path is not a directory "%s"'):format(child)))
---
---     child = M.realpath(child)
---     parent = M.realpath(parent)
---
---     -- TODO: Check windows multi drive root
---     local child_in_parent = false
---     if M.is_root(parent) or child:match('^' .. parent) then
---         child_in_parent = true
---     end
---
---     return child_in_parent
--- end
+function M.is_parent(parent, child)
+    vim.validate { parent = { parent, 'string' }, child = { child, 'string' } }
+    assert(M.is_dir(parent), debug.traceback(('Parent path is not a directory "%s"'):format(parent)))
+    assert(M.is_dir(child), debug.traceback(('Child path is not a directory "%s"'):format(child)))
+
+    child = M.realpath(child)
+    parent = M.realpath(parent)
+
+    -- TODO: Check windows multi drive root
+    local is_child = false
+    if M.is_root(parent) or child:match('^' .. parent) then
+        is_child = true
+    end
+
+    return is_child
+end
 
 function M.openfile(path, flags, callback)
     vim.validate {
@@ -273,7 +274,11 @@ function M.openfile(path, flags, callback)
     }
     assert(path ~= '', debug.traceback 'Empty path')
 
-    local fd = assert(uv.fs_open(path, flags, 438))
+    local fd, msg, _ = uv.fs_open(path, flags, 438)
+    if not fd then
+        vim.notify(msg, 'ERROR', { title = 'OpenFile' })
+        return false
+    end
     local ok, rst = pcall(callback, fd)
     assert(uv.fs_close(fd))
     return rst or ok
@@ -297,36 +302,39 @@ local function fs_write(path, data, append, callback)
     local flags = append and 'a' or 'w'
 
     if not callback then
-        M.openfile(path, flags, function(fd)
+        return M.openfile(path, flags, function(fd)
             local stat = uv.fs_fstat(fd)
             local offset = append and stat.size or 0
-            uv.fs_write(fd, data, offset)
+            local ok, msg, _ = uv.fs_write(fd, data, offset)
+            if not ok then
+                vim.notify(msg, 'ERROR', { title = 'Write file' })
+            end
         end)
-    else
-        uv.fs_open(path, 'r', 438, function(oerr, fd)
-            assert(not oerr, oerr)
-            uv.fs_fstat(fd, function(serr, stat)
-                assert(not serr, serr)
-                local offset = append and stat.size or 0
-                uv.fs_write(fd, data, offset, function(rerr)
-                    assert(not rerr, rerr)
-                    uv.fs_close(fd, function(cerr)
-                        assert(not cerr, cerr)
-                        return callback()
-                    end)
+    end
+
+    uv.fs_open(path, 'r', 438, function(oerr, fd)
+        assert(not oerr, oerr)
+        uv.fs_fstat(fd, function(serr, stat)
+            assert(not serr, serr)
+            local offset = append and stat.size or 0
+            uv.fs_write(fd, data, offset, function(rerr)
+                assert(not rerr, rerr)
+                uv.fs_close(fd, function(cerr)
+                    assert(not cerr, cerr)
+                    return callback()
                 end)
             end)
         end)
-    end
+    end)
 end
 
 function M.writefile(path, data, callback)
-    fs_write(path, data, false, callback)
+    return fs_write(path, data, false, callback)
 end
 
 function M.updatefile(path, data, callback)
     assert(M.is_file(path), debug.traceback('Not a file: ' .. path))
-    fs_write(path, data, true, callback)
+    return fs_write(path, data, true, callback)
 end
 
 function M.readfile(path, split, callback)
@@ -574,7 +582,7 @@ function M.rename(old, new, bang)
             vim.notify('Failed to rename ' .. old, 'ERROR', { title = 'Rename' })
         end
     elseif M.exists(new) then
-        vim.notify(new .. ' exists, use ! to override it', 'ERROR', { title = 'Rename' })
+        vim.notify(new .. ' exists, use force to override it', 'ERROR', { title = 'Rename' })
     end
 
     return false
@@ -774,7 +782,9 @@ function M.decode_json(data)
 end
 
 function M.encode_json(data)
-    assert(type(data) == type {}, debug.traceback('Invalid Json data: ' .. vim.inspect(data)))
+    vim.validate {
+        data = { data, 'table' },
+    }
     if vim.json then
         return vim.json.encode(data)
     elseif has_cjson then
@@ -787,10 +797,10 @@ function M.encode_json(data)
 end
 
 function M.read_json(filename)
-    assert(
-        type(filename) == type '' and filename ~= '',
-        debug.traceback('Not a file: ' .. vim.inspect(filename))
-    )
+    vim.validate {
+        filename = { filename, 'string' },
+    }
+    assert(filename ~= '', debug.traceback 'Empty filename')
     if filename:sub(1, 1) == '~' then
         filename = filename:gsub('~', sys.home)
     end
@@ -799,32 +809,12 @@ function M.read_json(filename)
 end
 
 function M.dump_json(filename, data)
-    vim.validate { filename = { filename, 'string' }, data = { data = 'table' } }
+    vim.validate { filename = { filename, 'string' }, data = { data, 'table' } }
     assert(filename ~= '', debug.traceback 'Empty filename')
     if filename:sub(1, 1) == '~' then
         filename = filename:gsub('~', sys.home)
     end
-    M.writefile(filename, M.encode_json(data))
-end
-
-local w = vim.loop.new_fs_event()
-local function on_change(err, fname, status)
-    -- Do work...
-    vim.api.nvim_command 'checktime'
-    -- Debounce: stop/start.
-    w:stop()
-    M.watch_file(fname)
-end
-
-function M.watch_file(fname)
-    local fullpath = vim.api.nvim_call_function('fnamemodify', { fname, ':p' })
-    w:start(
-        fullpath,
-        {},
-        vim.schedule_wrap(function(...)
-            on_change(...)
-        end)
-    )
+    return M.writefile(filename, M.encode_json(data))
 end
 
 return M

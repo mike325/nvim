@@ -2,6 +2,7 @@
   "ycm_extra_conf.py"             : {"type": "DefaultYCM"},
   "test/test.sh"                  : {"type": "Test"},
   "test/*"                        : {"type": "Test"},
+  "lua/test/*"                    : {"type": "Test"},
   "init.lua"                      : {"type": "Init"},
   "ginit.vim"                     : {"type": "Ginit", "alternate" : "init.lua"},
   ".luacheckrc"                   : {"type": "Lua"},
