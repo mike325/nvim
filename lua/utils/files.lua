@@ -14,16 +14,18 @@ M.getcwd = uv.cwd
 local is_windows = sys.name == 'windows'
 
 local function split_path(path)
-    path = M.normalize_path(path)
-    return require('utils.strings').split(path, '/')
+    path = require('utils.strings').split(M.normalize_path(path), '/')
+    return path
 end
 
 local function forward_path(path)
     if is_windows then
         if vim.o.shellslash then
-            return path:gsub('\\', '/')
+            path = path:gsub('\\', '/')
+            return path
         end
-        return path:gsub('/', '\\')
+        path = path:gsub('/', '\\')
+        return path
     end
     return path
 end
@@ -543,8 +545,13 @@ function M.rename(old, new, bang)
     old = M.normalize_path(old)
 
     if not M.exists(new) or bang then
+        local cursor_pos
+
         if not M.exists(old) and bufloaded(old) then
             nvim.ex.write(old)
+            if M.realpath(nvim.buf.get_name(nvim.get_current_buf())) == M.realpath(old) then
+                cursor_pos = nvim.win.get_cursor(nvim.get_current_buf())
+            end
         end
 
         if bufloaded(new) then
@@ -552,15 +559,15 @@ function M.rename(old, new, bang)
         end
 
         if uv.fs_rename(old, new) then
-            local cursor_pos = nvim.win.get_cursor(0)
+            if bufloaded(old) then
+                nvim.ex['bwipeout!'](old)
+            end
 
             if M.is_file(new) then
                 nvim.ex.edit(new)
-                nvim.win.set_cursor(0, cursor_pos)
-            end
-
-            if bufloaded(old) then
-                nvim.ex['bwipeout!'](old)
+                if cursor_pos then
+                    nvim.win.set_cursor(0, cursor_pos)
+                end
             end
 
             return true

@@ -1,3 +1,24 @@
+local is_windows = vim.fn.has 'win32' == 1
+
+local function forward_path(path)
+    if is_windows then
+        if vim.o.shellslash then
+            path = path:gsub('\\', '/')
+            return path
+        end
+        path = path:gsub('/', '\\')
+        return path
+    end
+    return path
+end
+
+local function separator()
+    if is_windows and not vim.o.shellslash then
+        return '\\'
+    end
+    return '/'
+end
+
 describe('Check file and direcotries', function()
     local basedir, init_file, missing, homedir
 
@@ -172,7 +193,7 @@ describe('Absolute path', function()
         is_absolute = require('utils.files').is_absolute
     end)
 
-    if vim.fn.has 'win32' == 1 then
+    if is_windows then
         it('Windows', function()
             assert.is_true(is_absolute 'c:/ProgramData')
             assert.is_true(is_absolute 'D:/data')
@@ -201,7 +222,7 @@ describe('Root path', function()
         is_root = require('utils.files').is_root
     end)
 
-    if vim.fn.has 'win32' == 1 then
+    if is_windows then
         it('Windows', function()
             assert.is_true(is_root [[c:\]])
             assert.is_true(is_root 'c:/')
@@ -256,7 +277,7 @@ describe('Normalize', function()
         assert.equals(homedir, normalize_path '~')
     end)
 
-    if vim.fn.has 'win32' == 1 then
+    if is_windows then
         it('Windows Path', function()
             local windows_path = [[c:\Users]]
 
@@ -270,11 +291,7 @@ describe('Normalize', function()
 end)
 
 describe('Basename', function()
-    local basename
-
-    before_each(function()
-        basename = require('utils.files').basename
-    end)
+    local basename = require('utils.files').basename
 
     it('HOME', function()
         local username = vim.loop.os_get_passwd().username
@@ -295,7 +312,7 @@ describe('Basename', function()
     end)
 
     it('CWD', function()
-        local cwd = vim.loop.cwd():gsub('.*/', ''):gsub([[.*\]], '')
+        local cwd = vim.loop.cwd():gsub('.*' .. separator(), '')
         assert.equals(cwd, basename '.')
         assert.equals(cwd, basename(vim.loop.cwd()))
     end)
@@ -329,12 +346,12 @@ describe('Basedir', function()
     end)
 
     it('Getting basedir from directories and files', function()
-        local config_dir = vim.fn.stdpath 'config'
-        local data_dir = vim.fn.stdpath 'data'
-        local cache_dir = vim.fn.stdpath 'cache'
+        local config_dir = forward_path(vim.fn.stdpath 'config')
+        local data_dir = forward_path(vim.fn.stdpath 'data')
+        local cache_dir = forward_path(vim.fn.stdpath 'cache')
 
-        local init_file = config_dir .. '/init.lua'
-        local homedir = vim.loop.os_homedir()
+        local init_file = forward_path(config_dir .. '/init.lua')
+        local homedir = forward_path(vim.loop.os_homedir())
 
         assert.equals(config_dir, basedir(init_file))
 
@@ -343,8 +360,13 @@ describe('Basedir', function()
         assert.equals(cache_dir:gsub([[[/\]nvim.*]], ''), basedir(cache_dir))
 
         assert.equals(homedir, basedir '~/.bashrc')
-        assert.equals('/', basedir '/')
-        assert.equals('/tmp', basedir '/tmp/test')
+        if not is_windows then
+            assert.equals('/', basedir '/')
+            assert.equals('/tmp', basedir '/tmp/test')
+        else
+            assert.equals(forward_path 'c:\\', basedir 'c:\\')
+            assert.equals(forward_path 'c:\\Temp', basedir 'c:\\Temp\\test')
+        end
     end)
 end)
 
@@ -501,7 +523,7 @@ describe('Read/Write', function()
     -- end)
 end)
 
--- if vim.fn.has 'win32' == 0 then
+-- if not is_windows then
 --     describe('Chmod', function()
 --         local chmod = require('utils.files').chmod
 --
