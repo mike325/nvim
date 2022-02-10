@@ -123,7 +123,7 @@ function M.link(src, dest, sym, force)
         status, msg, _ = uv.fs_unlink(dest)
         if not status then
             vim.notify(msg, 'ERROR', { title = 'Link' })
-            return status
+            return false
         end
     end
 
@@ -137,7 +137,7 @@ function M.link(src, dest, sym, force)
         vim.notify(msg, 'ERROR', { title = 'Link' })
     end
 
-    return status
+    return status or false
 end
 
 function M.executable(exec)

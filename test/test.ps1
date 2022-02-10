@@ -18,6 +18,8 @@ if ( -Not (Test-Path("$plenary_dir\plenary.nvim")) ) {
     git clone --recursive "https://github.com/nvim-lua/plenary.nvim" "$plenary_dir\plenary.nvim"
 }
 
+nvim --version
+
 Get-ChildItem -Path .\lua\test\ -Recurse | Where-Object {$_.PSIsContainer -eq $false} | ForEach {
     nvim --noplugin -u "test/min.lua" --headless -c "PlenaryBustedFile lua/test/$_"
     if ( -not $? ) {

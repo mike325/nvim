@@ -1,0 +1,37 @@
+name: linux-nightly
+on: [push, pull_request]
+
+jobs:
+  linux-build:
+    name: Testing install script in ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, ubuntu-20.04, ubuntu-18.04 ]
+
+    env:
+      GITHUB: true
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: OS Info
+        run: |
+          sudo apt-get install -y wget
+          wget -O screenfetch-dev https://git.io/vaHfR
+          chmod +x screenfetch-dev
+          ./screenfetch-dev
+      - name: Install system packages
+        run: |
+          sudo apt-get install -y curl git shellcheck python3-setuptools python-setuptools build-essential cmake python3-dev python3-pip
+      - name: Fetch script
+        run: |
+          curl -OL https://raw.githubusercontent.com/Mike325/dotfiles/master/install.sh
+          chmod +x ./install.sh
+      - name: Install dotfiles and dependencies
+        run: |
+          ./install.sh --verbose --neovim dev --python=3 --portables
+      - name: Test nightly Neovim
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          ./test/test.sh
