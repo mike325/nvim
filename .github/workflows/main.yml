@@ -117,16 +117,16 @@ jobs:
         run: |
           ./install.sh --verbose --neovim --python=3 --portables
       - name: Test stable neovim
-        shell: bash
+        shell: powershell
         run: |
-          export PATH="$HOME/.local/bin:$PATH"
-          export PATH="/c/tools/neovim/Neovim/bin:$PATH"
-          ./test/test.sh
+          $env:path = "$env:USERPROFILE\.local\bin;$env:PATH"
+          $env:path = "C:\tools\neovim\Neovim\bin;$env:PATH"
+          ./test/test.ps1
       - name: Test latest Neovim
-        shell: bash
+        shell: powershell
         run: |
           choco uninstall neovim
           choco install -y neovim --pre
-          export PATH="$HOME/.local/bin:$PATH"
-          export PATH="/c/tools/neovim/Neovim/bin:$PATH"
-          ./test/test.sh
+          $env:path = "$env:USERPROFILE\.local\bin;$env:PATH"
+          $env:path = "C:\tools\neovim\Neovim\bin;$env:PATH"
+          ./test/test.ps1

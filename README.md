@@ -28,5 +28,10 @@ git clone --recursive https://github.com/mike325/.vim.git ~/AppData/Local/nvim/
 Feel free to change anything to fit your needs!
 
 ---
+Development
+
+To execute the available test just run `make` on Linux/macOS or ./test/test.ps1 on windows
+
+---
 
 If you want to check my old Vim/Neovim compatible settings please check the legacy branch
