@@ -1,7 +1,16 @@
 local M = {}
 
 function M.has_attrs(tbl, attrs)
-    vim.validate { table = { tbl, 'table' } }
+    vim.validate {
+        table = { tbl, 'table' },
+        attrs = {
+            attrs,
+            function()
+                return attrs ~= nil
+            end,
+            'any value',
+        },
+    }
 
     if type(attrs) ~= type(tbl) then
         if tbl[attrs] ~= nil then
@@ -31,13 +40,12 @@ function M.merge_uniq_list(dest, src)
     vim.validate { source = { src, 'table' }, destination = { dest, 'table' } }
     assert(vim.tbl_islist(dest) and vim.tbl_islist(src), debug.traceback 'Source and dest must be arrays')
 
-    local tmp = vim.deepcopy(dest)
     for _, node in pairs(src) do
-        if not M.has_attrs(tmp, node) then
-            table.insert(tmp, node)
+        if not M.has_attrs(dest, node) then
+            table.insert(dest, node)
         end
     end
-    return tmp
+    return dest
 end
 
 function M.clear_lst(lst)
@@ -46,8 +54,12 @@ function M.clear_lst(lst)
     local tmp = {}
 
     for _, val in pairs(lst) do
-        val = val:gsub('%s+$', '')
-        if not val:match '^%s*$' then
+        if type(val) == type '' then
+            val = val:gsub('%s+$', '')
+            if not val:match '^%s*$' then
+                tmp[#tmp + 1] = val
+            end
+        else
             tmp[#tmp + 1] = val
         end
     end
@@ -55,9 +67,13 @@ function M.clear_lst(lst)
     return tmp
 end
 
-function M.str_to_clean_tbl(cmd_string)
-    vim.validate { cmd = { cmd_string, 'string' } }
-    return M.clear_lst(vim.split(vim.trim(cmd_string), ' ', true))
+function M.str_to_clean_tbl(cmd_string, sep)
+    vim.validate {
+        cmd = { cmd_string, 'string' },
+        separator = { sep, 'string', true },
+    }
+    sep = sep or ' '
+    return M.clear_lst(vim.split(vim.trim(cmd_string), sep, true))
 end
 
 -- NOTE: Took from http://lua-users.org/wiki/CopyTable
@@ -75,19 +91,11 @@ function M.shallowcopy(orig)
     return copy
 end
 
-function M.deepcopy(orig)
-    vim.validate { table = { orig, 'table' } }
-    local copy
-    if type(orig) == type {} then
-        copy = {}
-        for orig_key, orig_value in next, orig, nil do
-            copy[M.deepcopy(orig_key)] = M.deepcopy(orig_value)
-        end
-        setmetatable(copy, M.deepcopy(getmetatable(orig)))
-    else -- number, string, boolean, etc
-        copy = orig
-    end
-    return copy
+function M.isempty(tbl)
+    vim.validate {
+        tbl = { tbl, 'table' },
+    }
+    return #tbl == 0 and next(tbl) == nil
 end
 
 return M

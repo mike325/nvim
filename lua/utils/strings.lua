@@ -1,7 +1,10 @@
 local M = {}
 
 function M.split_components(str, pattern)
-    vim.validate { str = { str, 'string' }, pattern = { pattern, 'string' } }
+    vim.validate {
+        str = { str, 'string' },
+        pattern = { pattern, 'string' },
+    }
     local t = {}
     for v in string.gmatch(str, pattern) do
         t[#t + 1] = v

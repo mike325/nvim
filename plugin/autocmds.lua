@@ -75,7 +75,7 @@ set_autocmd {
 set_autocmd {
     event = { 'DirChanged', 'BufNewFile', 'BufReadPre', 'BufEnter', 'VimEnter' },
     pattern = '*',
-    cmd = 'lua require"utils.helpers".project_config(vim.fn.deepcopy(vim.v.event))',
+    cmd = 'lua require"utils.helpers".project_config(vim.deepcopy(vim.v.event))',
     group = 'ProjectConfig',
 }
 
