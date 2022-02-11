@@ -378,7 +378,7 @@ describe('Read/Write', function()
             assert.are.same(rb_data, data)
         else
             -- BUG: Seems like IO does not read \r in windows but it does in unix
-            if is_windows then
+            if is_windows and data:match '\r' then
                 rb_data = rb_data:gsub('\n', '\r\n')
             end
             assert.equals(rb_data, data)
