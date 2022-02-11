@@ -32,4 +32,4 @@ jobs:
       - name: Test stable neovim
         run: |
           export PATH="$HOME/.local/bin:$PATH"
-          ./test/test.sh
+          make

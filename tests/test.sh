@@ -319,17 +319,6 @@ function exit_append() {
     return 0
 }
 
-function get_runtime_files() {
-    local test="nvim/test/min.lua"
-    local nvim_directory
-    if is_windows; then
-        nvim_directory="$HOME/AppData/Local/"
-    else
-        nvim_directory="${XDG_CONFIG_HOME:-$HOME/.config/}"
-    fi
-    echo "${nvim_directory}/${test}"
-}
-
 while [[ $# -gt 0 ]]; do
     key="$1"
     case "$key" in
@@ -388,14 +377,14 @@ fi
 
 nvim --version | tee -a test.log
 
-for test in lua/test/*.lua; do
-    if ! nvim --noplugin -u test/min.lua --headless -c "PlenaryBustedFile $test"; then
+for test in lua/tests/*.lua; do
+    if ! nvim --noplugin -u tests/min.lua --headless -c "PlenaryBustedFile $test"; then
         error_msg "Failed to run nvim test: ${test##*/}"
     fi
 done
 
 # TODO: Why in hell this fail !?
-# if ! nvim --noplugin -u test/min.lua --headless -c "PlenaryBustedDirectory lua/test/ {minimal_init = 'test/min.lua'}"; then
+# if ! nvim --noplugin -u tests/min.lua --headless -c "PlenaryBustedDirectory lua/tests/ {minimal_init = 'tests/min.lua'}"; then
 #     error_msg "Failed to run nvim tests"
 # fi
 

@@ -44,4 +44,4 @@ jobs:
         run: |
           $env:path = "$env:USERPROFILE\.local\bin;$env:PATH"
           $env:path = "C:\tools\neovim\Neovim\bin;$env:PATH"
-          ./test/test.ps1
+          ./tests/test.ps1

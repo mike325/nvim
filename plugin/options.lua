@@ -51,7 +51,6 @@ end
 
 if sys.name == 'windows' then
     vim.opt.swapfile = false
-    vim.opt.swapfile = false
     vim.opt.backup = false
 end
 

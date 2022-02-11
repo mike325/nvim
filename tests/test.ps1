@@ -20,8 +20,8 @@ if ( -Not (Test-Path("$plenary_dir\plenary.nvim")) ) {
 
 nvim --version
 
-Get-ChildItem -Path .\lua\test\ -Recurse | Where-Object {$_.PSIsContainer -eq $false} | ForEach {
-    nvim --noplugin -u "test/min.lua" --headless -c "PlenaryBustedFile lua/test/$_"
+Get-ChildItem -Path .\lua\tests\ -Recurse | Where-Object {$_.PSIsContainer -eq $false} | ForEach {
+    nvim --noplugin -u "tests/min.lua" --headless -c "PlenaryBustedFile lua/tests/$_"
     if ( -not $? ) {
         exit 2
     }

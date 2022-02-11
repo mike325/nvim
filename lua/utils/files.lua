@@ -70,13 +70,13 @@ function M.mkdir(dirname, recurive)
     if err == 'ENOENT' and recurive then
         local dirs = vim.split(dirname, separator())
         local base = dirs[1] == '' and '/' or dirs[1]
-        if dirs[1] == '' then
+        if dirs[1] == '' or M.is_root(dirs[1]) then
             table.remove(dirs, 1)
         end
         for _, dir in ipairs(dirs) do
             base = base .. separator() .. dir
             if not M.exists(base) then
-                ok, msg, _ = uv.fs_mkdir(M.normalize_path(base), 511)
+                ok, msg, _ = uv.fs_mkdir(base, 511)
                 if not ok then
                     vim.notify(msg, 'ERROR', { title = 'Mkdir' })
                     break
@@ -375,7 +375,9 @@ function M.readfile(path, split, callback)
                     assert(not cerr, cerr)
                     if split then
                         data = vim.split(data, '[\r]?\n')
-                        data[#data] = nil
+                        if data[#data] == '' then
+                            data[#data] = nil
+                        end
                     end
                     return callback(data)
                 end)

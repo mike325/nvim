@@ -1,4 +1,4 @@
 test:
-	bash -c './test/test.sh'
+	bash -c './tests/test.sh'
 
-.PHONY: all test clean
+# .PHONY: all test clean

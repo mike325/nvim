@@ -34,4 +34,4 @@ jobs:
       - name: Test stable Neovim
         run: |
           export PATH="$HOME/.local/bin:$PATH"
-          ./test/test.sh
+          make

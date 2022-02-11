@@ -1,6 +1,8 @@
 vim.opt.rtp:append '.'
 local nvim = require 'neovim'
 
+vim.opt.swapfile = false
+
 vim.g.loaded_2html_plugin = 1
 vim.g.loaded_gzip = 1
 vim.g.loaded_rrhelper = 1
