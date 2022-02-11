@@ -379,7 +379,7 @@ describe('Read/Write', function()
         else
             -- BUG: Seems like IO does not read \r in windows but it does in unix
             if is_windows then
-                rb_data = rb_data:gsub('\r', '')
+                rb_data = rb_data:gsub('\n', '\r\n')
             end
             assert.equals(rb_data, data)
         end
