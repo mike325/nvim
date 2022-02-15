@@ -1,17 +1,23 @@
+local sys = require 'sys'
+
 local load_module = require('utils.helpers').load_module
 local null_ls = load_module 'null-ls'
 
 local is_absolute = require('utils.files').is_absolute
+local basename = require('utils.files').basename
+local get_files = require('utils.files').get_files
 
 if not null_ls then
     return {}
 end
 
-local languages = { 'cpp', 'lua', 'python', 'vim', 'sh' }
 local M = {}
+
+local languages = vim.tbl_map(basename, get_files(sys.base .. '/lua/filetypes/'))
 
 -- TODO: Respect config files Ex. compile_commands.json, stylua.toml, pyproject.toml, etc
 for _, lang in ipairs(languages) do
+    lang = lang:gsub('%.lua$', '')
     local ok, module = pcall(require, 'filetypes.' .. lang)
     if ok then
         if module.get_formatter or module.get_linter then
@@ -19,8 +25,12 @@ for _, lang in ipairs(languages) do
                 servers = {},
             }
         end
+        -- TODO: get_(formatter/linter) returns the current linter/formatter with
+        --       the "correct args" this means they sometimes looks for
+        --       config files and they may even try to parse them, we may need a "simpler" version
+        --       that just returns the correct executable and delay this lookups and parsing features to
+        --       the actual execution
         if module.get_formatter then
-            -- TODO: get_formatter checks for a lot of things, maybe just need to return the executable
             local formatter = module.get_formatter()
             if formatter then
                 local cmd = formatter[1]
@@ -44,7 +54,6 @@ for _, lang in ipairs(languages) do
             end
         end
         if module.get_linter then
-            -- TODO: get_linter checks for a lot of things, maybe just need to return the executable
             local linter = module.get_linter()
             if linter then
                 local cmd = linter[1]

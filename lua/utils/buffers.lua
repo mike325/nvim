@@ -365,9 +365,12 @@ function M.setup(ft, opts)
             local formatter = utils.get_formatter()
             if formatter and vim.opt_local.formatexpr:get() == '' then
                 vim.opt_local.formatexpr = ([[luaeval('require"utils.buffers".format("%s")')]]):format(ft)
-                vim.keymap.set('n', '=F', function()
-                    vim.cmd [[normal! gggqG``]]
-                end, { noremap = true, buffer = true, silent = true })
+                vim.keymap.set(
+                    'n',
+                    '=F',
+                    [[<cmd>normal! gggqG``<CR>]],
+                    { noremap = true, buffer = true, silent = true }
+                )
             end
             opts.formatexpr = nil
         end

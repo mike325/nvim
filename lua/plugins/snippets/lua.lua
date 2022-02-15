@@ -207,4 +207,16 @@ ls.snippets.lua = {
             i(1, 'author/plugin'),
          t{" '}"},
     }),
+    s('desc', {
+        t{"describe('"}, i(1, 'DESCRIPTION'), t{"', function()", ''},
+            t{"\tit('"}, i(2, 'DESCRIPTION'), t{"', function()", ''},
+                t{'\t\t'},   i(3, '-- test'), t{'', ''},
+            t{'\tend)', ''},
+        t{'end)'},
+    }),
+    s('it', {
+        t{"it('"}, i(1, 'DESCRIPTION'), t{"', function()", ''},
+            t{'\t'},   i(2, '-- test'), t{'', ''},
+        t{'end)'},
+    }),
 }
