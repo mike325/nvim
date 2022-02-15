@@ -39,6 +39,7 @@ local M = {
         black = {
             '-l',
             '120',
+            efm = '%trror: cannot format %f: Cannot parse %l:c: %m,%trror: cannot format %f: %m',
         },
         autopep8 = {
             '-i',
@@ -107,31 +108,6 @@ function M.get_linter()
     end
 
     return cmd
-end
-
-function M.format()
-    local buffer = vim.api.nvim_get_current_buf()
-    local external_formatprg = require('utils.functions').external_formatprg
-
-    local cmd = M.get_formatter()
-
-    if cmd then
-        table.insert(cmd, '%')
-        local efm
-        if cmd[1] == 'black' then
-            efm = '%trror: cannot format %f: Cannot parse %l:c: %m,%trror: cannot format %f: %m'
-        end
-        external_formatprg {
-            cmd = cmd,
-            buffer = buffer,
-            efm = efm,
-        }
-    else
-        -- Fallback to internal formatter
-        return 1
-    end
-
-    return 0
 end
 
 function M.setup()

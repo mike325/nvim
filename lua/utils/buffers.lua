@@ -311,12 +311,35 @@ end
 function M.replace_indent(cmd)
     vim.validate { cmd = { cmd, 'table' } }
     for idx, arg in ipairs(cmd) do
-        if arg == 'WIDTH' then
+        if arg == '$WIDTH' then
             cmd[idx] = M.get_indent()
             break
         end
     end
     return cmd
+end
+
+function M.format(ft)
+    ft = (ft and ft ~= '') and ft or vim.opt_local.filetype:get()
+    local buffer = vim.api.nvim_get_current_buf()
+    local external_formatprg = require('utils.functions').external_formatprg
+    local ok, utils = pcall(require, 'filetypes.' .. ft)
+
+    -- TODO: Integrate LSP into this to centralize formatting
+    if ok and utils.get_formatter then
+        local cmd = utils.get_formatter()
+        if cmd then
+            -- table.insert(cmd, '%')
+            external_formatprg {
+                cmd = M.replace_indent(cmd),
+                buffer = buffer,
+                efm = utils.formatprg[cmd[1]].efm,
+            }
+            return 0
+        end
+    end
+
+    return 1
 end
 
 function M.setup(ft, opts)
@@ -330,16 +353,18 @@ function M.setup(ft, opts)
             if linter then
                 table.insert(linter, '%')
                 vim.opt_local.makeprg = table.concat(linter, ' ')
-                -- vim.opt_local.errorformat = '%f:%l:%c: %t%n %m'
+                if utils.makeprg[linter[1]].efm then
+                    vim.opt_local.errorformat = utils.makeprg[linter[1]].efm
+                end
             end
             opts.makeprg = nil
             opts.errorformat = nil
         end
 
-        if utils.get_formatter and utils.format then
+        if utils.get_formatter then
             local formatter = utils.get_formatter()
             if formatter and vim.opt_local.formatexpr:get() == '' then
-                vim.opt_local.formatexpr = ([[luaeval('require"filetypes.%s".format()')]]):format(ft)
+                vim.opt_local.formatexpr = ([[luaeval('require"utils.buffers".format("%s")')]]):format(ft)
                 vim.keymap.set('n', '=F', function()
                     vim.cmd [[normal! gggqG``]]
                 end, { noremap = true, buffer = true, silent = true })

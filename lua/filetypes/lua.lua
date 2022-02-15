@@ -20,7 +20,7 @@ local M = {
             '--indent-type',
             'Spaces',
             '--indent-width',
-            'WIDTH',
+            '$WIDTH',
             '--quote-style',
             'AutoPreferSingle',
             '--column-width',
@@ -42,6 +42,8 @@ function M.get_formatter()
                 vim.list_extend(cmd, M.formatprg[cmd[1]])
                 cmd = require('utils.buffers').replace_indent(cmd)
             end
+        else
+            table.insert(cmd, '-s')
         end
     end
     return cmd
@@ -66,34 +68,6 @@ function M.get_linter()
         end
     end
     return cmd
-end
-
-function M.format()
-    if executable 'stylua' then
-        local buffer = vim.api.nvim_get_current_buf()
-        local external_formatprg = require('utils.functions').external_formatprg
-        local realpath = require('utils.files').realpath
-
-        local project = vim.fn.findfile('stylua.toml', '.;')
-        project = project ~= '' and realpath(project) or nil
-
-        local cmd = { 'stylua' }
-        if not project then
-            vim.list_extend(cmd, M.formatprg.stylua)
-        else
-            table.insert(cmd, '-s')
-        end
-
-        external_formatprg {
-            cmd = require('utils.buffers').replace_indent(cmd),
-            buffer = buffer,
-            -- efm = '%trror: cannot format %f: Cannot parse %l:c: %m,%trror: cannot format %f: %m',
-        }
-    else
-        return 1
-    end
-
-    return 0
 end
 
 return M

@@ -13,6 +13,9 @@ local set_command = require('neovim.commands').set_command
 
 local M = {
     makeprg = {
+        ['clang-tidy'] = {
+            efm = '%E%f:%l:%c: fatal error: %m,%E%f:%l:%c: error: %m,%W%f:%l:%c: warning: %m',
+        },
         ['clang++'] = {
             '-std=c++17',
             '-O3',
@@ -97,6 +100,12 @@ local M = {
             '-Wlogical-op',
             '-Wuseless-cast',
             '-Wformat=2',
+        },
+    },
+    formatprg = {
+        ['clang-format'] = {
+            '--style=file',
+            '--fallback-style=WebKit',
         },
     },
 }
@@ -253,6 +262,20 @@ local function parse_compiledb(data)
     end
 end
 
+function M.get_formatter()
+    local cmd
+    if executable 'clang-format' then
+        cmd = { 'clang-format' }
+        local config = vim.fn.findfile('.clang-format', '.;')
+        if config ~= '' then
+            vim.list_extend(cmd, M.formatprg[cmd[1]])
+            -- cmd = require('utils.buffers').replace_indent(cmd)
+        end
+        table.insert(cmd, '-i')
+    end
+    return cmd
+end
+
 function M.setup()
     local compiler = get_compiler()
     if not compiler then
@@ -261,13 +284,14 @@ function M.setup()
 
     local bufnum = nvim.get_current_buf()
     local bufname = nvim.buf.get_name(bufnum)
+    local normalize_path = require('utils.files').normalize_path
+
     local cwd
     if bufname and bufname ~= '' and is_file(bufname) then
         cwd = require('utils.files').basedir(bufname)
     else
         cwd = require('utils.files').getcwd()
     end
-    local normalize_path = require('utils.files').normalize_path
 
     local flags_file = vim.fn.findfile('compile_flags.txt', cwd .. ';')
     local db_file = vim.fn.findfile('compile_commands.json', cwd .. ';')
@@ -287,9 +311,11 @@ function M.setup()
     local has_tidy = false
     if executable 'clang-tidy' and (flags_file ~= '' or db_file ~= '' or clang_tidy ~= '') then
         has_tidy = true
-        vim.bo.makeprg = 'clang-tidy %'
-        vim.bo.errorformat = '%E%f:%l:%c: fatal error: %m,%E%f:%l:%c: error: %m,%W%f:%l:%c: warning: %m'
+        local tidy = M.makeprg['clang-tidy']
+        vim.bo.makeprg = table.concat(tidy, ' ') .. ' %'
+        vim.bo.errorformat = tidy.efm
     end
+
     local filename
     if db_file ~= '' then
         filename = realpath(normalize_path(db_file))

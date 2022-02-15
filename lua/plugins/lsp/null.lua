@@ -29,6 +29,7 @@ for _, lang in ipairs(languages) do
                     cmd = cmd:gsub('.*/', '')
                     cmd_path = formatter[1]
                 end
+                cmd = cmd:gsub('-', '_')
                 if null_ls.builtins.formatting[cmd] then
                     local node = null_ls.builtins.formatting[cmd].with {
                         command = cmd_path,
@@ -52,6 +53,8 @@ for _, lang in ipairs(languages) do
                     cmd = cmd:gsub('.*/', '')
                     cmd_path = linter[1]
                 end
+
+                cmd = cmd:gsub('-', '_')
                 if null_ls.builtins.diagnostics[cmd] then
                     local node = null_ls.builtins.diagnostics[cmd].with {
                         command = cmd_path,

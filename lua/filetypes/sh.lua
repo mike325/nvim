@@ -13,7 +13,7 @@ local M = {
     formatprg = {
         shfmt = {
             '-i',
-            'WIDTH',
+            '$WIDTH',
             '-s',
             '-ci',
             '-kp',
@@ -39,25 +39,6 @@ function M.get_linter()
         vim.list_extend(cmd, M.makeprg[cmd[1]])
     end
     return cmd
-end
-
-function M.format()
-    local buffer = vim.api.nvim_get_current_buf()
-    local external_formatprg = require('utils.functions').external_formatprg
-
-    if executable 'shfmt' then
-        local cmd = { 'shfmt' }
-        vim.list_extend(cmd, M.formatprg.shfmt)
-
-        external_formatprg {
-            cmd = require('utils.buffers').replace_indent(cmd),
-            buffer = buffer,
-        }
-    else
-        return 1
-    end
-
-    return 0
 end
 
 return M
