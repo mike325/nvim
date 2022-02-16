@@ -31,7 +31,7 @@ end
 
 vim.g.mapleader = ' '
 
-require 'filetypes.detect'
+require 'utils.ft_detect'
 require 'messages'
 require 'globals'
 -- require('filetypes.python').pynvim_setup()
