@@ -365,6 +365,7 @@ function M.setup(ft, opts)
             local formatter = utils.get_formatter()
             if formatter and vim.opt_local.formatexpr:get() == '' then
                 vim.opt_local.formatexpr = ([[luaeval('require"utils.buffers".format("%s")')]]):format(ft)
+                pcall(vim.keymap.del, 'n', '=F', { buffer = true })
                 vim.keymap.set(
                     'n',
                     '=F',

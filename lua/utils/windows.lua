@@ -215,8 +215,11 @@ function M.cursor_window(buffer, auto_size)
     return win
 end
 
-function M.ask_window(callback)
-    vim.validate { callback = { callback, 'function', true } }
+function M.input(opts, on_confirm)
+    vim.validate {
+        opts = { opts, 'table' },
+        on_confirm = { on_confirm, 'function' },
+    }
 
     -- local columns = vim.opt.columns:get()
     -- local lines = vim.opt.lines:get()
@@ -254,13 +257,16 @@ function M.ask_window(callback)
         nested = true,
     }
 
-    vim.keymap.set('i', '<ESC>', function()
+    vim.keymap.set({ 'i', 'n' }, '<ESC>', function()
         if vim.api.nvim_win_is_valid(win) then
             vim.api.nvim_win_close(win, true)
         end
-    end, { silent = true, buffer = buffer })
+        if on_confirm then
+            on_confirm()
+        end
+    end, { silent = true, buffer = buffer, nowait = true })
 
-    vim.keymap.set('i', '<CR>', function()
+    vim.keymap.set({ 'i', 'n' }, '<CR>', function()
         local result
         if vim.api.nvim_win_is_valid(win) then
             vim.api.nvim_win_close(win, true)
@@ -268,10 +274,10 @@ function M.ask_window(callback)
         if vim.api.nvim_buf_is_valid(win) then
             result = vim.api.nvim_buf_get_lines(buffer, 0, -1, false)[1]
         end
-        if callback then
-            callback(result)
+        if on_confirm then
+            on_confirm(result)
         end
-    end, { silent = true, buffer = buffer })
+    end, { silent = true, buffer = buffer, nowait = true })
 
     nvim.ex.startinsert()
 

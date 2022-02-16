@@ -229,7 +229,12 @@ local function keymap(mapping)
         mapping.mode = { mapping.mode }
     end
 
+    -- TODO: Replace termcodes if mapping is using expr
     for _, m in ipairs(mapping.mode) do
+        if mapping.remap then
+            mapping.noremap = false
+        end
+
         M.set_mapping {
             mode = m,
             lhs = mapping.lhs,

@@ -1,62 +1,8 @@
-local function random_string(size)
-    size = size or 10
-    local w = ''
-    for _ = 1, size do
-        w = w .. string.char(math.random(32, 126))
-    end
-    return w
-end
-
-local function random_number(low, high)
-    low = low or 0
-    high = high or 1000000
-    if math.random(0, 100) % 2 == 0 then
-        return math.random(low, high) -- Integer
-    end
-    return math.random(low, high) + math.random() -- Float
-end
-
-local function random_generator()
-    if math.random(0, 100) % 5 == 0 then
-        return random_number(0, 1000000)
-        -- elseif math.random(0, 100) % 3 == 0 then
-        --     return math.random(0, 100) % 2 == 0      -- bool
-    end
-    return random_string(math.random(1, 10)) -- string
-end
-
-local function random_list(size, cb)
-    size = size or 10
-    local lst = {}
-    for _ = 1, size do
-        table.insert(lst, random_generator())
-    end
-    if cb then
-        return vim.tbl_map(cb, lst)
-    end
-    return lst
-end
-
-local function random_map(size, cb)
-    size = size or 10
-    local map = {}
-    for _ = 1, size do
-        map[random_generator()] = random_generator()
-    end
-    if cb then
-        return vim.tbl_map(cb, map)
-    end
-    return map
-end
-
-local function check_clear_lst(lst)
-    for _, v in ipairs(lst) do
-        if type(v) == type '' then
-            assert.is_true(not v:match '%s+$')
-            assert.is_true(not v:match '^%s*$')
-        end
-    end
-end
+local random_string = require('tests.utils').random_string
+local random_generator = require('tests.utils').random_generator
+local random_list = require('tests.utils').random_list
+local random_map = require('tests.utils').random_map
+local check_clear_lst = require('tests.utils').check_clear_lst
 
 describe('has_attrs', function()
     local has_attrs = require('utils.tables').has_attrs

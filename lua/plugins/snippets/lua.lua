@@ -72,22 +72,23 @@ local function rec_val()
     })
 end
 
+-- TODO: Add pcall snippet and use TS to parse saved function and separete the funcion name and the args
 -- stylua: ignore
 ls.snippets.lua = {
-    s("for", {
-        t{"for "}, i(1, 'idx'), t{", "}, i(2, 'v'), t{" in ipairs("}, i(3, 'tbl'), t{") do", ""},
+    s('for', {
+        t{'for '}, i(1, 'idx'), t{', '}, i(2, 'v'), t{' in ipairs('}, i(3, 'tbl'), t{') do', ''},
             d(4, saved_text, {}, {indent = true}),
-        t{"", "end"},
+        t{'', 'end'},
     }),
-    s("forp", {
-        t{"for "}, i(1, 'k'), t{", "}, i(2, 'v'), t{" in pairs"}, i(3, 'tbl'), t({" do", ""}),
+    s('forp', {
+        t{'for '}, i(1, 'k'), t{', '}, i(2, 'v'), t{' in pairs'}, i(3, 'tbl'), t({' do', ''}),
             d(4, saved_text, {}, {indent = true}),
-        t{"", "end"},
+        t{'', 'end'},
     }),
-    s("fori", {
-        t{"for idx = "}, i(1, '1'), t{", "}, i(2, '#limit'), t{" do", ""},
+    s('fori', {
+        t{'for idx = '}, i(1, '1'), t{', '}, i(2, '#limit'), t{' do', ''},
             d(3, saved_text, {}, {indent = true}),
-        t{"", "end"},
+        t{'', 'end'},
     }),
     s(
         { trig = "if(e?)", regTrig = true },
@@ -98,6 +99,11 @@ ls.snippets.lua = {
             t{"", "end"},
         }
     ),
+    s('w', {
+        t{'while '}, i(1, 'true'), t{' do', ''},
+            d(3, saved_text, {}, {indent = true}),
+        t{'', 'end'},
+    }),
     s('elif', {
         t{"elseif "}, i(1, 'condition'), t{" then", ""},
             d(2, saved_text, {}, {indent = true}),
@@ -218,5 +224,63 @@ ls.snippets.lua = {
         t{"it('"}, i(1, 'DESCRIPTION'), t{"', function()", ''},
             t{'\t'},   i(2, '-- test'), t{'', ''},
         t{'end)'},
+    }),
+    s(
+        { trig = '(n?)sa', regTrig = true },
+        {
+            f(function(_, snip)
+                -- stylua: ignore
+                if snip.captures[1] == 'n' then
+        return 'assert.are_not.same('
+                end
+    return 'assert.are.same('
+            end, {}),
+            i(1, 'expected'), t{', '}, i(2, 'result') ,t{')'},
+        }
+    ),
+    s(
+        { trig = '(n?)eq', regTrig = true },
+        {
+            f(function(_, snip)
+                -- stylua: ignore
+                if snip.captures[1] == 'n' then
+        return 'assert.are_not.equal('
+                end
+    return 'assert.are.equal('
+            end, {}),
+            i(1, 'expected'), t{', '}, i(2, 'result') ,t{')'},
+        }
+    ),
+    s('haserr', {
+        t{'assert.has.error(function() '}, i(1, 'error()'), t{' end'},
+        c(2, {
+            t{''},
+            sn(nil, { t{", '"}, i(1, 'error'), t{"'"} }),
+        }),
+        t{')'},
+    }),
+    s(
+        { trig = 'is(_?)true', regTrig = true },
+        {
+            t{'assert.is_true('}, d(1, surround_with_func, {}, {text = 'true'}), t{')'},
+        }
+    ),
+    s(
+        { trig = 'is(_?)false', regTrig = true },
+        {
+            t{'assert.is_false('}, d(1, surround_with_func, {}, {text = 'false'}), t{')'},
+        }
+    ),
+    s('istruthy', {
+        t{'assert.is_truthy('}, d(1, surround_with_func, {}, {text = 'true'}), t{')'},
+    }),
+    s('isfalsy', {
+        t{'assert.is_falsy('}, d(1, surround_with_func, {}, {text = 'false'}), t{')'},
+    }),
+    s('truthy', {
+        t{'assert.is_truthy('}, d(1, surround_with_func, {}, {text = 'true'}), t{')'},
+    }),
+    s('falsy', {
+        t{'assert.is_falsy('}, d(1, surround_with_func, {}, {text = 'false'}), t{')'},
     }),
 }
