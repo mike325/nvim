@@ -657,7 +657,8 @@ function M.skeleton_filename(opts)
         opts = { opts }
     end
 
-    if M.is_file '%' then
+    local buf = vim.fn.expand '%'
+    if buf == '' or M.is_file(buf) then
         return
     end
 
