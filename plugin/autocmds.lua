@@ -66,7 +66,7 @@ set_autocmd {
 }
 
 set_autocmd {
-    event = { 'BufNewFile', 'VimEnter' },
+    event = 'BufNewFile',
     pattern = '*',
     cmd = 'lua require"utils.files".skeleton_filename()',
     group = 'Skeletons',
