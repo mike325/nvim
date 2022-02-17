@@ -657,13 +657,26 @@ function M.skeleton_filename(opts)
         opts = { opts }
     end
 
-    local filename = vim.fn.expand '%:t:r'
-    local extension = vim.fn.expand '%:e' ~= '' and vim.fn.expand '%:e' or '*'
-    local skeleton = ''
+    if M.is_file '%' then
+        return
+    end
 
+    local buf_lines = nvim.buf.get_lines(0, 0, 3, false)
+    if #buf_lines > 1 or (#buf_lines == 1 and buf_lines[1] ~= '') then
+        return
+    end
+
+    local skeleton
+    local filename = M.basename '%'
+    local extension = M.extension '%'
+    local skeletons_path = sys.base .. '/skeletons/'
     local template = #opts > 0 and opts[1] or ''
 
-    local skeletons_path = sys.base .. '/skeletons/'
+    if extension == '' then
+        extension = '*'
+    else
+        filename = filename:gsub('%.' .. extension .. '$', '')
+    end
 
     -- stylua: ignore
     local known_names = {
@@ -672,35 +685,36 @@ function M.skeleton_filename(opts)
         json  = { 'projections' },
         c     = { 'main' },
         cpp   = { 'main' },
+        go    = { 'main' },
         yaml  = { 'pre-commit-config' },
         toml  = { 'pyproject', 'stylua' },
     }
 
     if #template ~= 0 then
-        skeleton = vim.fn.fnameescape(skeletons_path .. template)
-    else
-        if known_names[extension] ~= nil then
-            local names = known_names[extension]
-            for _, name in pairs(names) do
-                if string.find(filename, name, 1, true) ~= nil then
-                    local template_file = skeletons_path .. name
-                    if M.is_file(template_file) then
-                        skeleton = vim.fn.fnameescape(template_file)
-                        break
-                    elseif M.is_file(template_file .. '.' .. extension) then
-                        skeleton = vim.fn.fnameescape(template_file .. '.' .. extension)
-                        break
-                    end
+        skeleton = skeletons_path .. template
+    elseif known_names[extension] then
+        local names = known_names[extension]
+
+        for _, name in ipairs(names) do
+            if filename:match('^%.?' .. name .. '$') then
+                local template_file = skeletons_path .. name
+                if M.is_file(template_file) then
+                    skeleton = template_file
+                elseif M.is_file(template_file .. '.' .. extension) then
+                    skeleton = template_file .. '.' .. extension
+                end
+                if skeleton then
+                    break
                 end
             end
         end
-
-        if #skeleton == 0 then
-            skeleton = vim.fn.fnameescape(skeletons_path .. '/skeleton.' .. extension)
-        end
     end
 
-    if M.is_file(skeleton) then
+    if not skeleton and extension ~= '' then
+        skeleton = skeletons_path .. '/skeleton.' .. extension
+    end
+
+    if skeleton and M.is_file(skeleton) then
         local lines = M.readfile(skeleton)
         for i = 1, #lines do
             local line = lines[i]
