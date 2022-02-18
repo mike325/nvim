@@ -27,14 +27,13 @@ local r = require('luasnip.extras').rep
 local utils = RELOAD 'plugins.snippets.utils'
 local saved_text = utils.saved_text
 local get_comment = utils.get_comment
--- local return_value = utils.return_value
 -- local surround_with_func = utils.surround_with_func
 
 local function else_clause(args, snip, old_state, placeholder)
     local nodes = {}
 
     if snip.captures[1] == 'e' then
-        table.insert(nodes, t { '', 'else {', '\t' })
+        table.insert(nodes, t { ' else {', '\t' })
         table.insert(nodes, i(1, get_comment 'code'))
         table.insert(nodes, t { '', '}' })
     else
@@ -46,81 +45,53 @@ local function else_clause(args, snip, old_state, placeholder)
     return snip_node
 end
 
-local function rec_args()
-    return sn(nil, {
-        c(1, {
-            t { '' },
-            sn(nil, {
-                t { ', ' },
-                c(1, {
-                    i(1, 'int'),
-                    i(1, 'char*'),
-                    i(1, 'float'),
-                    i(1, 'long'),
-                }),
-                t { ' ' },
-                i(2, 'varname'),
-                d(3, rec_args, {}),
-            }),
-        }),
-    })
-end
-
+-- TODO: Add pcall snippet and use TS to parse saved function and separete the funcion name and the args
 -- stylua: ignore
-local snippets = {
+ls.snippets.go = {
+    s('for', {
+        t{'for '},
+            i(1, 'key'), t{', '}, i(2, 'val'), t{' := range '}, i(3, 'iterator'),
+        t{' {', ''},
+            d(4, saved_text, {}, {indent = true}),
+        t{'', '}'},
+    }),
+    s('fori', {
+        t{'for '},
+            i(1, 'i'), t{' := '}, i(2, '0'), t{'; '},
+            r(1),  t{' '}, i(3, '<='), t{' '}, i(4, '10'), t{'; '},
+            r(1), t{'++' },
+        t{' {', ''},
+            d(5, saved_text, {}, {indent = true}),
+        t{'', '}'},
+    }),
     s(
         { trig = 'if(e?)', regTrig = true },
         {
-            t{'if ('}, i(1, 'condition'), t{') {', ''},
+            t{'if '}, i(1, 'condition'), t{' {', ''},
                 d(2, saved_text, {}, {indent = true}),
             t{'', '}'},
             d(3, else_clause, {}, {}),
         }
     ),
-    s('elif', {
-        t{'else if ('}, i(1, 'condition'), t{') {', ''},
-            d(2, saved_text, {}, {indent = true}),
-        t{'', '}'},
-    }),
-    s('for', {
-        t{'for ('},
-            i(1, 'i'), t{' = '}, i(2, '1'), t{'; '},
-            r(1), t{' '}, i(4, '<='), t{' '},  i(5, '10'), t{'; '},
-            t{'++' }, r(1), t{') {'},
-            d(7, saved_text, {}, {indent = true}),
-        t{'', '}'},
-    }),
     s('w', {
-        t{'while ('}, i(1, 'condition'), t{') {'},
+        t{'while '}, i(1, 'true'), t{' {', ''},
             d(2, saved_text, {}, {indent = true}),
         t{'', '}'},
+    }),
+    s('pr', {
+        t{'fmt.Println('}, i(1, 'msg'), t{')'}
+    }),
+    s('var', {
+        t{'var '}, i(1, 'name'),
+        t{' '},
+        c(2, {
+            i(1, 'int'),
+            i(1, 'string'),
+        }),
     }),
     s('fun', {
-        c(1, {
-            i(1, 'int'),
-            i(1, 'char*'),
-            i(1, 'float'),
-            i(1, 'long'),
-        }),
-        t{' '}, i(2, 'name'), t{'('},
-        c(3, {
-            t{''},
-            sn(nil, {
-                c(1, {
-                    i(1, 'int'),
-                    i(1, 'char*'),
-                    i(1, 'float'),
-                    i(1, 'long'),
-                }),
-                t{' '},
-                i(2, 'varname'),
-            }),
-        }),
-        d(4, rec_args, {}),
-        t{') {', ''},
-            d(5, saved_text, {}, {indent = true}),
+        t{'func '}, i(1, 'name'), t{'('}, i(2, 'args'), t{') {', ''},
+            d(3, saved_text, {}, {indent = true}),
         t{'', '}'},
     }),
 }
-
-return snippets
