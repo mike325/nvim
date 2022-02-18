@@ -62,26 +62,51 @@ class Job(object):
     pid: int = field(init=False)
     rc: int = field(init=False)
 
-    # NOTE: Needed it with python < 3.7
+    # # NOTE: Needed it with python < 3.7
     # def __init__(self, cmd: Sequence[str]):
-    #     """TODO: Docstring for __init__.
+    #     """Create a shell command wrapper
     #
     #     Args:
-    #         cmd: TODO
-    #
-    #     Returns: TODO
-    #
+    #         cmd (Sequence[str]): command with its arguments, first element must
+    #                              be and executable or a path to the executable
     #     """
     #     self.cmd = cmd
 
-    def execute(self, background: bool = True, cwd: Optional[str] = None) -> int:
-        """TODO: Docstring for execute.
+    def head(self, size: int = 10) -> List[str]:
+        """Emulate head shell util
 
         Args:
-            background: TODO
+            size (int): first N elements of the stdout
 
-        Returns: TODO
+        Returns:
+            List of string with the first N elements
+        """
+        if size <= 0:
+            raise Exception("Size cannot be less than 0")
+        return self.stdout[0:size]
 
+    def tail(self, size: int = 10) -> List[str]:
+        """Emulate tail shell util
+
+        Args:
+            size (int): last N elements of the stdout
+
+        Returns:
+            List of string with the last N elements
+        """
+        if size <= 0:
+            raise Exception("Size cannot be less than 0")
+        return self.stdout[::-1][0:size]
+
+    def execute(self, background: bool = True, cwd: Optional[str] = None) -> int:
+        """Execute the cmd
+
+        Args:
+            background (bool): execute as async process
+            cwd (Optional[str]): path where the cmd is execute, default to CWD
+
+        Returns:
+            Return-code integer of the cmd
         """
         # Verbose always overrides background output
         background = background if not _verbose else False

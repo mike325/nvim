@@ -85,14 +85,14 @@ end
 
 -- stylua: ignore
 ls.snippets.python = {
-    s("for", {
-        t{"for "}, i(1, 'i'), t{" in "}, i(2, 'Iterator'), t{":", ""},
+    s('for', {
+        t{'for '}, i(1, 'i'), t{' in '}, i(2, 'Iterator'), t{':', ''},
             d(3, saved_text, {}, {text = 'pass', indent = true}),
     }),
-    s("ran", {
-        t{"range("}, i(1, '0'), t{", "}, i(2, 'limit'), t{")"},
+    s('ran', {
+        t{'range('}, i(1, '0'), t{', '}, i(2, 'limit'), t{')'},
     }),
-    s("imp", {
+    s('imp', {
         t{'import '}, i(1, 'sys')
     }),
     s(
@@ -127,29 +127,29 @@ ls.snippets.python = {
             i(2, 'args'), t{'):', ''},
                 d(3, saved_text, {}, {text = 'pass', indent = true}),
     }),
-    s("try", {
-        t{"try:", "",},
+    s('try', {
+        t{'try:', '',},
             d(1, saved_text, {}, {text = 'pass', indent = true}),
-        t{"", "except "},
+        t{'', 'except '},
             c(2, {
                 t{'Exception as e'},
                 t{'KeyboardInterrupt as e'},
                 sn(nil, { i(1, 'Exception') }),
             }),
-        t{":", "\t"},
+        t{':', '\t'},
             i(3, 'pass'),
     }),
-    s("ifmain", {
+    s('ifmain', {
         t{'if __name__ == "__main__":', '\t'},
             c(1, {
                 sn(nil, { t{'exit('}, i(1, 'main()'), t{')'} }),
                 t{'pass'},
             }),
-        t{"", "else:", "\t"},
+        t{'', 'else:', '\t'},
             i(2, 'pass'),
     }),
-    s("with", {
-        t{"with open("}, i(1, 'filename'), t{', '},
+    s('with', {
+        t{'with open('}, i(1, 'filename'), t{', '},
         c(2, {
             i(1, '"r"'),
             i(1, '"a"'),
@@ -158,8 +158,8 @@ ls.snippets.python = {
         t{') as '}, i(3, 'data'), t{':', ''},
             d(4, saved_text, {}, {text = 'pass', indent = true}),
     }),
-    s("w", {
-        t{"while "}, i(1, 'True'), t{":", ""},
+    s('w', {
+        t{'while '}, i(1, 'True'), t{':', ''},
             d(2, saved_text, {}, {text = 'pass', indent = true}),
     }),
     s(
@@ -177,4 +177,13 @@ ls.snippets.python = {
             d(5, python_class_init, {}, {}),
         }
     ),
+    s('raise', {
+        t{'raise '},
+        c(1, {
+            i(1, 'Exception'),
+            i(1, 'KeyboardInterrupt'),
+            i(1, 'IOException'),
+        }),
+        t{'('}, i(2, 'message'), t{')'}
+    }),
 }
