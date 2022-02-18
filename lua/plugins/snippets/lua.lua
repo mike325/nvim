@@ -101,7 +101,7 @@ ls.snippets.lua = {
     ),
     s('w', {
         t{'while '}, i(1, 'true'), t{' do', ''},
-            d(3, saved_text, {}, {indent = true}),
+            d(2, saved_text, {}, {indent = true}),
         t{'', 'end'},
     }),
     s('elif', {
@@ -231,9 +231,11 @@ ls.snippets.lua = {
             f(function(_, snip)
                 -- stylua: ignore
                 if snip.captures[1] == 'n' then
-        return 'assert.are_not.same('
+                    -- stylua: ignore
+                    return 'assert.are_not.same('
                 end
-    return 'assert.are.same('
+                -- stylua: ignore
+                return 'assert.are.same('
             end, {}),
             i(1, 'expected'), t{', '}, i(2, 'result') ,t{')'},
         }
@@ -244,9 +246,11 @@ ls.snippets.lua = {
             f(function(_, snip)
                 -- stylua: ignore
                 if snip.captures[1] == 'n' then
-        return 'assert.are_not.equal('
+                    -- stylua: ignore
+                    return 'assert.are_not.equal('
                 end
-    return 'assert.are.equal('
+                -- stylua: ignore
+                return 'assert.are.equal('
             end, {}),
             i(1, 'expected'), t{', '}, i(2, 'result') ,t{')'},
         }

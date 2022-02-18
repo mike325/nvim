@@ -662,8 +662,8 @@ function M.skeleton_filename(opts)
         return
     end
 
-    local buf_lines = nvim.buf.get_lines(0, 0, 3, false)
-    if #buf_lines > 1 or (#buf_lines == 1 and buf_lines[1] ~= '') then
+    local buf_lines = nvim.buf.line_count(0)
+    if buf_lines > 1 or (buf_lines == 1 and nvim.buf.get_lines(0, 0, 1, true)[1] ~= '') then
         return
     end
 

@@ -14,7 +14,7 @@ local c = ls.choice_node
 local d = ls.dynamic_node
 local l = require('luasnip.extras').lambda
 -- local r = require('luasnip.extras').rep
--- local p = require('luasnip.extras').partial
+local p = require('luasnip.extras').partial
 -- local m = require('luasnip.extras').match
 -- local n = require('luasnip.extras').nonempty
 local dl = require('luasnip.extras').dynamic_lambda
@@ -109,9 +109,23 @@ ls.snippets.python = {
             d(3, else_clause, {}, {}),
         }
     ),
-    s("def", {
-        t{"def "}, i(1, 'name'), t{"("}, i(2, 'args'), t{"):", ""},
-            d(3, saved_text, {}, {text = 'pass', indent = true}),
+    s('def', {
+        t{'def '}, i(1, 'name'), t{'('},
+            p(function()
+                -- stylua: ignore
+                local get_current_class = require('utils.treesitter').get_current_class
+                -- stylua: ignore
+                local has_ts = require('utils.treesitter').has_ts()
+                -- stylua: ignore
+                if has_ts and get_current_class() then
+                    -- stylua: ignore
+                    return 'self, '
+                end
+                -- stylua: ignore
+                return ''
+            end),
+            i(2, 'args'), t{'):', ''},
+                d(3, saved_text, {}, {text = 'pass', indent = true}),
     }),
     s("try", {
         t{"try:", "",},

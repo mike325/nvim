@@ -46,12 +46,12 @@ set_command {
 
 set_command {
     lhs = 'SnippetEdit',
-    rhs = function()
-        local ft = vim.opt_local.filetype:get()
+    rhs = function(ft)
+        ft = (ft and ft ~= '') and ft or vim.opt_local.filetype:get()
         local base = require('sys').base
         vim.cmd(('edit %s/lua/plugins/snippets/%s.lua'):format(base, ft))
     end,
-    args = { force = true },
+    args = { nargs = '?', force = true, complete = 'filetype' },
 }
 
 set_command {
