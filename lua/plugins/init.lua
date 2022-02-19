@@ -650,6 +650,56 @@ packer.startup(function()
             require 'plugins.mini'
         end,
     }
+
+    use {
+        'ThePrimeagen/harpoon',
+        config = function()
+            vim.keymap.set('n', '=H', function()
+                require('harpoon.ui').toggle_quick_menu()
+            end, { noremap = true })
+
+            vim.keymap.set('n', '=A', function()
+                require('harpoon.mark').add_file()
+            end, { noremap = true })
+
+            vim.keymap.set('n', ']h', function()
+                require('harpoon.ui').nav_next()
+            end, { noremap = true })
+
+            vim.keymap.set('n', '[h', function()
+                require('harpoon.ui').nav_prev()
+            end, { noremap = true })
+        end,
+    }
+
+    use {
+        'ray-x/go.nvim',
+        cond = function()
+            return vim.fn.executable 'go'
+        end,
+        config = function()
+            local gofmt = 'gofmt'
+            local goimport = 'goimport'
+            if vim.fn.executable 'gopls' == 1 then
+                gofmt = 'gopls'
+                goimport = 'gopls'
+            end
+
+            require('go').setup {
+                gofmt = gofmt,
+                goimport = goimport,
+                max_line_len = 120,
+                tag_transform = false,
+                test_dir = '',
+                comment_placeholder = '   ',
+                textobjects = false, -- enable default text jobects through treesittter-text-objects
+                lsp_cfg = false, -- false: use your own lspconfig
+                lsp_gofumpt = false, -- true: set default gofmt in gopls format to gofumpt
+                lsp_on_attach = false, -- use on_attach from go.nvim
+                dap_debug = false,
+            }
+        end,
+    }
 end)
 
 if has_compiler then
