@@ -654,11 +654,11 @@ packer.startup(function()
     use {
         'ThePrimeagen/harpoon',
         config = function()
-            vim.keymap.set('n', '=H', function()
+            vim.keymap.set('n', '=h', function()
                 require('harpoon.ui').toggle_quick_menu()
             end, { noremap = true })
 
-            vim.keymap.set('n', '=A', function()
+            vim.keymap.set('n', '=a', function()
                 require('harpoon.mark').add_file()
             end, { noremap = true })
 

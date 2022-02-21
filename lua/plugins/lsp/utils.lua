@@ -87,8 +87,8 @@ function M.setup(ft)
     if server_idx then
         local server = langservers[ft][server_idx]
         local config = server.config or server.exec
-        local init = server.options or {}
-        local cmds = require('plugins.lsp.config').commands
+        local init = vim.deepcopy(server.options) or {}
+        local cmds = vim.deepcopy(require('plugins.lsp.config').commands)
         if server.commands then
             cmds = vim.tbl_extend('force', vim.deepcopy(cmds), server.commands)
         end

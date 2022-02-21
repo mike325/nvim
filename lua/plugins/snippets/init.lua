@@ -39,12 +39,6 @@ set_autocmd {
 }
 
 set_command {
-    lhs = 'SnippetCleanup',
-    rhs = 'lua require"luasnip".cleanup()',
-    args = { force = true },
-}
-
-set_command {
     lhs = 'SnippetEdit',
     rhs = function(ft)
         ft = (ft and ft ~= '') and ft or vim.opt_local.filetype:get()
@@ -58,9 +52,29 @@ set_command {
     lhs = 'SnippetReload',
     rhs = function()
         RELOAD 'plugins.snippets.all'
-        if pcall(RELOAD, 'plugins.snippets.' .. vim.opt_local.filetype:get()) then
-            vim.notify 'Snippets Reloaded!'
+
+        local snippet = 'plugins.snippets.' .. vim.opt_local.filetype:get()
+        local is_file = require('utils.files').is_file
+        local base = require('sys').base
+
+        if is_file(('%s/lua/%s.lua'):format(base, snippet:gsub('%.', '/'))) then
+            local ok, msg = pcall(RELOAD, snippet)
+            if ok then
+                vim.notify 'Snippets Reloaded!'
+            else
+                vim.notify(msg, 'ERROR', { title = 'Luasnip' })
+            end
+        else
+            vim.notify('Missing snippets file', 'ERROR', { title = 'Luasnip' })
         end
+    end,
+    args = { force = true },
+}
+
+set_command {
+    lhs = 'SnippetUnlink',
+    rhs = function()
+        vim.cmd [[LuaSnipUnlinkCurrent]]
     end,
     args = { force = true },
 }
