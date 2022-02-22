@@ -76,11 +76,13 @@ ls.snippets.go = {
             if {} {{
             {}
             }}{}
-        ]], {
+        ]],
+        {
             i(1, 'condition'),
             d(2, saved_text, {}, {indent = true}),
             d(3, else_clause, {}, {}),
-        })),
+        }
+    )),
     s('elif', fmt([[
     else if {} {{
     {}
@@ -118,4 +120,16 @@ ls.snippets.go = {
         i(2, 'args'),
         d(3, saved_text, {}, {indent = true}),
     })),
+    s(
+        { trig = 'ef', regTrig = true },
+        fmt([[
+            {}, {} := {}({})
+        ]],
+        {
+            i(1, 'val'),
+            i(2, 'err'),
+            i(3, 'func'),
+            i(4, 'args'),
+        }
+    )),
 }
