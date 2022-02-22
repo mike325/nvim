@@ -57,7 +57,7 @@ local next_item = function(fallback)
 
     if cmp.visible() then
         cmp.select_next_item()
-    elseif ls and ls.jumpable(1) and not luasnip.expandable() and luasnip.expand_or_locally_jumpable() then
+    elseif ls and ls.jumpable(1) then
         ls.jump(1)
     elseif neogen and neogen.jumpable() then
         vim.fn.feedkeys(t "<cmd>lua require('neogen').jump_next()<CR>", '')
@@ -78,7 +78,7 @@ local prev_item = function(fallback)
 
     if cmp.visible() then
         cmp.select_prev_item()
-    elseif ls and ls.jumpable(-1) and not luasnip.expandable() and luasnip.expand_or_locally_jumpable() then
+    elseif ls and ls.jumpable(-1) then
         ls.jump(-1)
     elseif ultisnips and vim.fn['UltiSnips#CanJumpBackwards']() == 1 then
         vim.fn['UltiSnips#JumpBackwards']()

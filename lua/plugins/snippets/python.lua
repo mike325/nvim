@@ -13,7 +13,7 @@ local i = ls.insert_node
 local c = ls.choice_node
 local d = ls.dynamic_node
 -- local l = require('luasnip.extras').lambda
--- local r = require('luasnip.extras').rep
+local r = require('luasnip.extras').rep
 local p = require('luasnip.extras').partial
 -- local m = require('luasnip.extras').match
 -- local n = require('luasnip.extras').nonempty
@@ -212,5 +212,25 @@ ls.snippets.python = {
             i(1, 'IOException'),
         }),
         i(2, 'message'),
+    })),
+    s('clist', fmt('[{} for {} in {}{}]',{
+        r(1),
+        i(1, 'i'),
+        i(2, 'Iterator'),
+        c(3, {
+            t{''},
+            sn(nil, {t' if ', i(1, 'condition') }),
+        }),
+    })),
+    s('cdict', fmt('{{ {}:{} for ({},{}) in {}{}}}',{
+        r(1),
+        r(2),
+        i(1, 'k'),
+        i(2, 'v'),
+        i(3, 'Iterator'),
+        c(4, {
+            t{''},
+            sn(nil, {t' if ', i(1, 'condition') }),
+        }),
     })),
 }
