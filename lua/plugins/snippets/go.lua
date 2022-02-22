@@ -120,9 +120,7 @@ ls.snippets.go = {
         i(2, 'args'),
         d(3, saved_text, {}, {indent = true}),
     })),
-    s(
-        { trig = 'ef', regTrig = true },
-        fmt([[
+    s('ef', fmt([[
             {}, {} := {}({})
         ]],
         {
@@ -130,6 +128,68 @@ ls.snippets.go = {
             i(2, 'err'),
             i(3, 'func'),
             i(4, 'args'),
+        }
+    )),
+    s('mk', fmt([[
+            make({}, {})
+        ]],
+        {
+            i(1, '[]string'),
+            i(2, '10'),
+        }
+    )),
+    s('map', fmt([[
+            map [{}]{} {{}}
+        ]],
+        {
+            i(1, 'string'),
+            i(2, 'int'),
+        }
+    )),
+    s('str', fmt([[
+        type {} struct {{
+            {}  {}
+        }}
+        ]],
+        {
+            i(1, 'name'),
+            i(2, 'attr'),
+            i(3, 'int'),
+        }
+    )),
+    s('test', fmt([[
+        func Test{}(t *testing.T) {{
+            t.Run("{}", func(t *testing.T) {{
+            {}
+            }})
+        }}
+        ]],
+        {
+            i(1, 'name'),
+            i(2, 'desciption'),
+            d(3, saved_text, {}, {indent = true}),
+        }
+    )),
+    s('run', fmt([[
+        t.Run("{}", func(t *testing.T) {{
+        {}
+        }})
+        ]],
+        {
+            i(1, 'desciption'),
+            d(2, saved_text, {}, {indent = true}),
+        }
+    )),
+    s('met', fmt([[
+        func (self *{}) {}({}) {{
+        {}
+        }}
+        ]],
+        {
+            i(1, 'Obj'),
+            i(2, 'method'),
+            i(3, 'args'),
+            d(4, saved_text, {}, {indent = true}),
         }
     )),
 }
