@@ -112,14 +112,20 @@ ls.snippets.go = {
     s(
         { trig = 'fun(c?)', regTrig = true },
         fmt([[
-    func {}({}){{
-    {}
-    }}
-    ]],{
-        i(1, 'name'),
-        i(2, 'args'),
-        d(3, saved_text, {}, {indent = true}),
-    })),
+        func {}({}) {}{{
+        {}
+        }}
+        ]],{
+            i(1, 'name'),
+            i(2, 'args'),
+            c(3, {
+                sn(nil, fmt('({}, error)', {i(1, 'string')})),
+                sn(nil, fmt('{}', {i(1, 'string')})),
+                t{''},
+            }),
+            d(4, saved_text, {}, {indent = true}),
+        }
+    )),
     s('ef', fmt([[
             {}, {} := {}({})
         ]],
@@ -157,7 +163,7 @@ ls.snippets.go = {
             i(3, 'int'),
         }
     )),
-    s('test', fmt([[
+    s('tfun', fmt([[
         func Test{}(t *testing.T) {{
             t.Run("{}", func(t *testing.T) {{
             {}
@@ -170,7 +176,7 @@ ls.snippets.go = {
             d(3, saved_text, {}, {indent = true}),
         }
     )),
-    s('run', fmt([[
+    s('trun', fmt([[
         t.Run("{}", func(t *testing.T) {{
         {}
         }})
@@ -181,15 +187,19 @@ ls.snippets.go = {
         }
     )),
     s('met', fmt([[
-        func (self *{}) {}({}) {{
+        func (self *{}) {}({}) {}{{
         {}
         }}
-        ]],
-        {
+        ]], {
             i(1, 'Obj'),
             i(2, 'method'),
             i(3, 'args'),
-            d(4, saved_text, {}, {indent = true}),
+            c(4, {
+                sn(nil, fmt('({}, error)', {i(1, 'string')})),
+                sn(nil, fmt('{}', {i(1, 'string')})),
+                t{''},
+            }),
+            d(5, saved_text, {}, {indent = true}),
         }
     )),
 }

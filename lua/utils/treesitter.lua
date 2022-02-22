@@ -18,6 +18,17 @@ local queries = {
                 (function_definition name: (identifier) @definition.function)
             ] @function_name
         ]],
+        go = [[
+            [
+                (function_declaration)
+                (method_declaration)
+            ] @func
+
+            [
+                (function_declaration name: (identifier) @definition.function)
+                (method_declaration name: (field_identifier) @definition.method)
+            ] @function_name
+        ]],
     },
     class = {
         cpp = [[
@@ -151,9 +162,18 @@ function M.list_nodes(node_type)
         if root then
             local query = vim.treesitter.parse_query(ts_lang, queries[node_type][ts_lang])
             for _, node, _ in query:iter_matches(root, buf) do
-                if #node > 0 then
-                    local lbegin, _, lend, _ = get_vim_range { node[2]:range() }
-                    local name = vim.treesitter.query.get_node_text(node[1], buf)
+                if #node > 1 then
+                    local func_name, func_range
+                    for _, v in pairs(node) do
+                        if not func_name then
+                            func_name = v
+                        else
+                            func_range = v
+                            break
+                        end
+                    end
+                    local lbegin, _, lend, _ = get_vim_range { func_range:range() }
+                    local name = vim.treesitter.query.get_node_text(func_name, buf)
                     table.insert(result, { name, lbegin, lend })
                 end
             end
