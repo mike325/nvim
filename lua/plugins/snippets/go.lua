@@ -202,4 +202,29 @@ ls.snippets.go = {
             d(5, saved_text, {}, {indent = true}),
         }
     )),
+    s('case', fmt([[
+        case {}:
+        {}
+        ]], {
+            i(1, 'match'),
+            d(2, saved_text, {}, {indent = true}),
+        }
+    )),
+    s('sw', fmt([[
+        switch {}{{
+        case {}:
+        {}
+        default:
+            {}
+        }}
+        ]], {
+            c(1, {
+                sn(nil, fmt('{} ', {i(1, 'var')})),
+                t{''},
+            }),
+            i(2, 'match'),
+            d(3, saved_text, {}, {indent = true}),
+            i(4, 'break'),
+        }
+    )),
 }

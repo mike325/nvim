@@ -91,7 +91,7 @@ ls.snippets.python = {
     ]], {
         i(1, 'i'),
         i(2, 'iterator'),
-        d(3, saved_text, {}, {indent = true}),
+        d(3, saved_text, {}, {text = 'pass', indent = true}),
     })),
     s('pr', fmt([[print({})]],{
         i(1, 'msg'),
@@ -186,7 +186,7 @@ ls.snippets.python = {
     {}
     ]], {
         i(1, 'condition'),
-        d(2, saved_text, {}, {text = ':', indent = true}),
+        d(2, saved_text, {}, {text = 'pass', indent = true}),
     })),
     s(
         { trig = "(d?)cl", regTrig = true },
