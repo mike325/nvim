@@ -96,21 +96,15 @@ ls.snippets.sh = {
         i(1, 'condition'),
         d(2, saved_text, {}, {text = ':', indent = true}),
     })),
-    s('l', fmt([[
-    local {}={}
-    ]],{
+    s('l', fmt([[local {}={}]],{
         i(1, 'varname'),
         i(2, '1'),
     })),
-    s('ex', fmt([[
-    export {}={}
-    ]],{
+    s('ex', fmt([[export {}={}]],{
         i(1, 'varname'),
         i(2, '1'),
     })),
-    s('ha', fmt([[
-    hash {} 2>/dev/null
-    ]],{
+    s('ha', fmt([[hash {} 2>/dev/null ]],{
         i(1, 'cmd'),
     })),
     s('case', fmt([[

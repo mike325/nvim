@@ -18,7 +18,7 @@ local r = require('luasnip.extras').rep
 -- local m = require('luasnip.extras').match
 -- local n = require('luasnip.extras').nonempty
 -- local dl = require('luasnip.extras').dynamic_lambda
--- local fmt = require('luasnip.extras.fmt').fmt
+local fmt = require('luasnip.extras.fmt').fmt
 -- local fmta = require('luasnip.extras.fmt').fmta
 -- local types = require 'luasnip.util.types'
 -- local events = require 'luasnip.util.events'
@@ -75,21 +75,52 @@ end
 -- TODO: Add pcall snippet and use TS to parse saved function and separete the funcion name and the args
 -- stylua: ignore
 ls.snippets.lua = {
-    s('for', {
-        t{'for '}, i(1, 'idx'), t{', '}, i(2, 'v'), t{' in ipairs('}, i(3, 'tbl'), t{') do', ''},
-            d(4, saved_text, {}, {indent = true}),
-        t{'', 'end'},
-    }),
-    s('forp', {
-        t{'for '}, i(1, 'k'), t{', '}, i(2, 'v'), t{' in pairs'}, i(3, 'tbl'), t({' do', ''}),
-            d(4, saved_text, {}, {indent = true}),
-        t{'', 'end'},
-    }),
-    s('fori', {
-        t{'for idx = '}, i(1, '1'), t{', '}, i(2, '#limit'), t{' do', ''},
+    s(
+        { trig = "(l?)fun", regTrig = true },
+        fmt([[
+        {}function {}({}) {{
+        {}
+        }}
+        ]], {
+            f(function(_, snip)
+                -- stylua: ignore
+                return snip.captures[1] == 'l' and 'local ' or ''
+            end, {}),
+            i(1, 'name'),
+            i(2, 'args'),
             d(3, saved_text, {}, {indent = true}),
-        t{'', 'end'},
-    }),
+        }
+    )),
+    s('for', fmt([[
+    for {}, {} in ipairs({}) do
+    {}
+    end
+    ]], {
+        i(1, 'k'),
+        i(2, 'v'),
+        i(3, 'tbl'),
+        d(4, saved_text, {}, {indent = true}),
+    })),
+    s('forp', fmt([[
+    for {}, {} in pairs({}) do
+    {}
+    end
+    ]], {
+        i(1, 'k'),
+        i(2, 'v'),
+        i(3, 'tbl'),
+        d(4, saved_text, {}, {indent = true}),
+    })),
+    s('fori', fmt([[
+    for {} = {}, {} do
+    {}
+    end
+    ]], {
+        i(1, 'idx'),
+        i(2, '0'),
+        i(3, '10'),
+        d(4, saved_text, {}, {indent = true}),
+    })),
     s(
         { trig = "if(e?)", regTrig = true },
         {
@@ -99,42 +130,31 @@ ls.snippets.lua = {
             t{"", "end"},
         }
     ),
-    s('w', {
-        t{'while '}, i(1, 'true'), t{' do', ''},
-            d(2, saved_text, {}, {indent = true}),
-        t{'', 'end'},
-    }),
-    s('elif', {
-        t{"elseif "}, i(1, 'condition'), t{" then", ""},
-            d(2, saved_text, {}, {indent = true}),
-    }),
-    s(
-        { trig = "(l?)fun", regTrig = true },
-        {
-            f(function(_, snip)
-                -- stylua: ignore
-                return snip.captures[1] == 'l' and 'local ' or ''
-            end, {}),
-            t{"function "}, i(1, 'name'), t{"("}, i(2, 'args'), t{")", ""},
-                d(3, saved_text, {}, {indent = true}),
-            t{"", "end"},
-        }
-    ),
-    s("err", {
-        t{"error(debug.traceback("}, d(1, surround_with_func, {}, {text = 'msg'}), t{"))"}
-    }),
-    s("req", {
-        t{"require '"}, i(1, 'module'), t{"'"}
-    }),
-    s("l", {
-        t{"local "}, i(1, 'var'), t{" = "}, i(2, '{}'),
-    }),
-    s("ign", {
-        t{"-- stylua: ignore"}
-    }),
-    s("sty", {
-        t{"-- stylua: ignore"}
-    }),
+    s('w', fmt([[
+    while {} do
+    {}
+    end
+    ]], {
+        i(1, 'true'),
+        d(2, saved_text, {}, {text = ':', indent = true}),
+    })),
+    s('elif', fmt([[
+    elif {} {{
+    {}
+    }}
+    ]],{
+        i(1, 'condition'),
+        d(2, saved_text, {}, {indent = true}),
+    })),
+    s("req", fmt([[require "{}"]], {
+        i(1, 'module'),
+    })),
+    s("l", fmt([[local {} = {}]], {
+        i(1, 'var'),
+        i(2, '{}'),
+    })),
+    s("ign", { t{"-- stylua: ignore"} }),
+    s("sty", { t{"-- stylua: ignore"} }),
     s("map", {
         t{"vim.keymap.set("},
             t{"'"}, i(1, 'n'), t{"', "},
@@ -176,115 +196,108 @@ ls.snippets.lua = {
             t{"\tgroup = '"},   i(4, 'NewGroup'), t{"',", ""},
         t{"}"},
     }),
-    s("lext", {
-        t{"vim.list_extend("},
-            d(1, surround_with_func, {}, {text = 'tbl'}),
-        t{', {'}, i(2, "'node'"), t{'})'},
-    }),
-    s("text", {
-        t{"vim.tbl_extend("},
-            c(1, {
-                t{"'force'"},
-                t{"'keep'"},
-                t{"'error'"},
-            }),
-            t{', '},
-            d(2, surround_with_func, {}, {text = 'tbl'}),
-         t{', '}, i(3, "ext_tbl"), t({')'})
-    }),
-    s('not', {
-        t{'vim.notify('},
-            d(1, surround_with_func, {}, {text = 'msg'}),
-            t{', '},
-            c(2, {
-                t{"'INFO'"},
-                t{"'WARN'"},
-                t{"'ERROR'"},
-                t{"'DEBUG'"},
-            }),
-            c(3, {
-                t{''},
-                sn(nil, { t{', { title = '}, i(1, "'title'"), t{' }'} }),
-            }),
-         t{')'},
-    }),
-    s('use', {
-        t{"use { '"},
-            i(1, 'author/plugin'),
-         t{" '}"},
-    }),
-    s('desc', {
-        t{"describe('"}, i(1, 'DESCRIPTION'), t{"', function()", ''},
-            t{"\tit('"}, i(2, 'DESCRIPTION'), t{"', function()", ''},
-                t{'\t\t'},   i(3, '-- test'), t{'', ''},
-            t{'\tend)', ''},
-        t{'end)'},
-    }),
-    s('it', {
-        t{"it('"}, i(1, 'DESCRIPTION'), t{"', function()", ''},
-            t{'\t'},   i(2, '-- test'), t{'', ''},
-        t{'end)'},
-    }),
-    s(
-        { trig = '(n?)sa', regTrig = true },
-        {
-            f(function(_, snip)
-                -- stylua: ignore
-                if snip.captures[1] == 'n' then
-                    -- stylua: ignore
-                    return 'assert.are_not.same('
-                end
-                -- stylua: ignore
-                return 'assert.are.same('
-            end, {}),
-            i(1, 'expected'), t{', '}, i(2, 'result') ,t{')'},
-        }
-    ),
+    s('lext', fmt([[vim.list_extend({}, {})]],{
+        d(1, surround_with_func, {}, {text = 'tbl'}),
+        i(2, "'node'"),
+    })),
+    s('text', fmt([[vim.tbl_extend('{}', {}, {})]],{
+        c(1, {
+            t{'force'},
+            t{'keep'},
+            t{'error'},
+        }),
+        d(2, surround_with_func, {}, {text = 'tbl'}),
+        i(3, "'node'"),
+    })),
+    s('not', fmt([[vim.notify("{}", "{}"{})]],{
+        d(1, surround_with_func, {}, {text = 'msg'}),
+        c(2, {
+            t{'INFO'},
+            t{'WARN'},
+            t{'ERROR'},
+            t{'DEBUG'},
+        }),
+        c(3, {
+            t{''},
+            sn(nil, { t{', { title = '}, i(1, "'title'"), t{' }'} }),
+        }),
+    })),
+    s('use', fmt([[use {{ '{}' }}]],{
+        i(1, 'plugin'),
+    })),
+    s('desc', fmt([[
+    describe('{}', funcion()
+        it('{}', funcion()
+            {}
+        end)
+    end)
+    ]],{
+        i(1, 'DESCRIPTION'),
+        i(2, 'DESCRIPTION'),
+        i(3, '-- test'),
+    })),
+    s('it', fmt([[
+    it('{}', funcion()
+        {}
+    end)
+    ]],{
+        i(1, 'DESCRIPTION'),
+        i(2, '-- test'),
+    })),
     s(
         { trig = '(n?)eq', regTrig = true },
-        {
-            f(function(_, snip)
+        fmt([[assert.{}({}, {})]],{
+        f(function(_, snip)
+            -- stylua: ignore
+            if snip.captures[1] == 'n' then
                 -- stylua: ignore
-                if snip.captures[1] == 'n' then
-                    -- stylua: ignore
-                    return 'assert.are_not.equal('
-                end
+                return 'are_not.same('
+            end
+            -- stylua: ignore
+            return 'are.same('
+        end, {}),
+        i(1, 'expected'),
+        i(2, 'result'),
+    })),
+    s(
+        { trig = '(n?)eq', regTrig = true },
+        fmt([[assert.{}({}, {})]],{
+        f(function(_, snip)
+            -- stylua: ignore
+            if snip.captures[1] == 'n' then
                 -- stylua: ignore
-                return 'assert.are.equal('
-            end, {}),
-            i(1, 'expected'), t{', '}, i(2, 'result') ,t{')'},
-        }
-    ),
-    s('haserr', {
-        t{'assert.has.error(function() '}, i(1, 'error()'), t{' end'},
+                return 'are_not.equal('
+            end
+            -- stylua: ignore
+            return 'are.equal('
+        end, {}),
+        i(1, 'expected'),
+        i(2, 'result'),
+    })),
+    s('haserr', fmt([[assert.has.error(function() {} end{})]],{
+        i(1, 'error()'),
         c(2, {
             t{''},
             sn(nil, { t{", '"}, i(1, 'error'), t{"'"} }),
         }),
-        t{')'},
-    }),
+    })),
     s(
         { trig = 'is(_?)true', regTrig = true },
-        {
-            t{'assert.is_true('}, d(1, surround_with_func, {}, {text = 'true'}), t{')'},
+        fmt([[assert.is_true({})]], {
+            d(1, surround_with_func, {}, {text = 'true'}),
         }
-    ),
+    )),
     s(
         { trig = 'is(_?)false', regTrig = true },
-        {
-            t{'assert.is_false('}, d(1, surround_with_func, {}, {text = 'false'}), t{')'},
+        fmt([[assert.is_false({})]], {
+            d(1, surround_with_func, {}, {text = 'false'}),
         }
-    ),
-    s('istruthy', {
-        t{'assert.is_truthy('}, d(1, surround_with_func, {}, {text = 'true'}), t{')'},
-    }),
-    s('isfalsy', {
-        t{'assert.is_falsy('}, d(1, surround_with_func, {}, {text = 'false'}), t{')'},
-    }),
-    s('truthy', {
-        t{'assert.is_truthy('}, d(1, surround_with_func, {}, {text = 'true'}), t{')'},
-    }),
-    s('falsy', {
-        t{'assert.is_falsy('}, d(1, surround_with_func, {}, {text = 'false'}), t{')'},
-    }),
+    )),
+    s('pr', fmt([[print({})]],{
+        i(1, 'msg'),
+    })),
+    s('istruthy', fmt([[assert.is_truthy({})]],{ d(1, surround_with_func, {}, {text = 'true'}), })),
+    s('isfalsy', fmt([[assert.is_falsy({})]],{ d(1, surround_with_func, {}, {text = 'false'}), })),
+    s('truthy', fmt([[assert.is_truthy({})]],{ d(1, surround_with_func, {}, {text = 'true'}), })),
+    s('falsy', fmt([[assert.is_falsy({})]],{ d(1, surround_with_func, {}, {text = 'false'}), })),
 }

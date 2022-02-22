@@ -18,7 +18,7 @@ local r = require('luasnip.extras').rep
 -- local m = require('luasnip.extras').match
 -- local n = require('luasnip.extras').nonempty
 -- local dl = require('luasnip.extras').dynamic_lambda
--- local fmt = require('luasnip.extras.fmt').fmt
+local fmt = require('luasnip.extras.fmt').fmt
 -- local fmta = require('luasnip.extras.fmt').fmta
 -- local types = require 'luasnip.util.types'
 -- local events = require 'luasnip.util.events'
@@ -70,39 +70,55 @@ end
 local snippets = {
     s(
         { trig = 'if(e?)', regTrig = true },
-        {
-            t{'if ('}, i(1, 'condition'), t{') {', ''},
-                d(2, saved_text, {}, {indent = true}),
-            t{'', '}'},
-            d(3, else_clause, {}, {}),
-        }
-    ),
-    s('elif', {
-        t{'else if ('}, i(1, 'condition'), t{') {', ''},
-            d(2, saved_text, {}, {indent = true}),
-        t{'', '}'},
-    }),
-    s('for', {
-        t{'for ('},
-            i(1, 'i'), t{' = '}, i(2, '1'), t{'; '},
-            r(1), t{' '}, i(4, '<='), t{' '},  i(5, '10'), t{'; '},
-            t{'++' }, r(1), t{') {'},
-            d(7, saved_text, {}, {indent = true}),
-        t{'', '}'},
-    }),
-    s('w', {
-        t{'while ('}, i(1, 'condition'), t{') {'},
-            d(2, saved_text, {}, {indent = true}),
-        t{'', '}'},
-    }),
-    s('fun', {
+        fmt([[
+    if({}) {{
+    {}
+    }}{}
+    ]], {
+        i(1, 'condition'),
+        d(2, saved_text, {}, {indent = true}),
+        d(3, else_clause, {}, {}),
+    })),
+    s('elif', fmt([[
+    else if({}) {{
+    {}
+    }}
+    ]],{
+        i(1, 'condition'),
+        d(2, saved_text, {}, {indent = true}),
+    })),
+    s('fori', fmt([[
+    for({} = {}; {} < {}; {}++) {{
+    {}
+    }}
+    ]], {
+        i(1, 'i'),
+        i(2, '0'),
+        r(1),
+        i(3, '10'),
+        r(1),
+        d(4, saved_text, {}, {text = ':', indent = true}),
+    })),
+    s('w', fmt([[
+    while({}) {{
+    {}
+    }}
+    ]], {
+        i(1, 'condition'),
+        d(2, saved_text, {}, {text = ':', indent = true}),
+    })),
+    s('fun', fmt([[
+    {} {}({}{}) {{
+    {}
+    }}
+    ]], {
         c(1, {
             i(1, 'int'),
             i(1, 'char*'),
             i(1, 'float'),
             i(1, 'long'),
         }),
-        t{' '}, i(2, 'name'), t{'('},
+        i(2, 'name'),
         c(3, {
             t{''},
             sn(nil, {
@@ -117,10 +133,8 @@ local snippets = {
             }),
         }),
         d(4, rec_args, {}),
-        t{') {', ''},
-            d(5, saved_text, {}, {indent = true}),
-        t{'', '}'},
-    }),
+        d(5, saved_text, {}, {indent = true}),
+    })),
 }
 
 return snippets

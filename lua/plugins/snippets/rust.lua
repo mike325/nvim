@@ -18,7 +18,7 @@ local d = ls.dynamic_node
 -- local m = require('luasnip.extras').match
 -- local n = require('luasnip.extras').nonempty
 -- local dl = require('luasnip.extras').dynamic_lambda
--- local fmt = require('luasnip.extras.fmt').fmt
+local fmt = require('luasnip.extras.fmt').fmt
 -- local fmta = require('luasnip.extras.fmt').fmta
 -- local types = require 'luasnip.util.types'
 -- local events = require 'luasnip.util.events'
@@ -48,37 +48,64 @@ end
 -- TODO: Add pcall snippet and use TS to parse saved function and separete the funcion name and the args
 -- stylua: ignore
 ls.snippets.rust = {
-    s('for', {
-        t{'for '}, i(1, 'i'), t{' in '}, i(2, 'iterator'), t{' {', ''},
-            d(3, saved_text, {}, {indent = true}),
-        t{'', '}'},
-    }),
+    s('for', fmt([[
+    for {} in {} {{
+    {}
+    }}
+    ]], {
+        i(1, 'key'),
+        i(2, 'iterator'),
+        d(3, saved_text, {}, {indent = true}),
+    })),
     s(
         { trig = 'if(e?)', regTrig = true },
+        fmt([[
+    if {} {{
+    {}
+    }}{}
+    ]], {
+        i(1, 'condition'),
+        d(2, saved_text, {}, {indent = true}),
+        d(3, else_clause, {}, {}),
+    })),
+    -- s('elif', fmt([[
+    -- else if {} {{
+    -- {}
+    -- }}
+    -- ]],{
+    --     i(1, 'condition'),
+    --     d(2, saved_text, {}, {indent = true}),
+    -- })),
+    s('w', fmt([[
+    while {} {{
+    {}
+    }}
+    ]], {
+        i(1, 'condition'),
+        d(2, saved_text, {}, {text = ':', indent = true}),
+    })),
+    s('pr', fmt([[println!({});]],{
+        i(1, 'msg'),
+    })),
+    s('let', fmt([[let {} = {};]],{
+        i(1, 'name'),
+        i(2, '0'),
+    })),
+    s('mut', fmt([[let mut {} = {};]],{
+        i(1, 'name'),
+        i(2, '0'),
+    })),
+    s(
+        { trig = 'f(u?)n', regTrig = true },
+        fmt([[
+            fn {}({}) {{
+            {}
+            }}
+        ]],
         {
-            t{'if '}, i(1, 'condition'), t{' {', ''},
-                d(2, saved_text, {}, {indent = true}),
-            t{'', '}'},
-            d(3, else_clause, {}, {}),
-        }
-    ),
-    s('w', {
-        t{'while '}, i(1, 'true'), t{' {', ''},
-            d(2, saved_text, {}, {indent = true}),
-        t{'', '}'},
-    }),
-    s('pr', {
-        t{'println!('}, i(1, 'msg'), t{');'}
-    }),
-    s('l', {
-        t{'let '}, i(1, 'var'), t{' = '}, i(2, '0'), t{';'},
-    }),
-    s('mut', {
-        t{'let mut '}, i(1, 'var'), t{' = '}, i(2, '0'), t{';'},
-    }),
-    s('fn', {
-        t{'fn '}, i(1, 'name'), t{'('}, i(2, 'args'), t{') {', ''},
+            i(1, 'name'),
+            i(2, 'args'),
             d(3, saved_text, {}, {indent = true}),
-        t{'', '}'},
-    }),
+        }
+    )),
 }

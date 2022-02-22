@@ -12,13 +12,13 @@ local i = ls.insert_node
 -- local f = ls.function_node
 local c = ls.choice_node
 local d = ls.dynamic_node
-local l = require('luasnip.extras').lambda
+-- local l = require('luasnip.extras').lambda
 -- local r = require('luasnip.extras').rep
 local p = require('luasnip.extras').partial
 -- local m = require('luasnip.extras').match
 -- local n = require('luasnip.extras').nonempty
-local dl = require('luasnip.extras').dynamic_lambda
--- local fmt = require('luasnip.extras.fmt').fmt
+-- local dl = require('luasnip.extras').dynamic_lambda
+local fmt = require('luasnip.extras.fmt').fmt
 -- local fmta = require('luasnip.extras.fmt').fmta
 -- local types = require 'luasnip.util.types'
 -- local events = require 'luasnip.util.events'
@@ -85,105 +85,132 @@ end
 
 -- stylua: ignore
 ls.snippets.python = {
-    s('for', {
-        t{'for '}, i(1, 'i'), t{' in '}, i(2, 'Iterator'), t{':', ''},
-            d(3, saved_text, {}, {text = 'pass', indent = true}),
-    }),
-    s('ran', {
-        t{'range('}, i(1, '0'), t{', '}, i(2, 'limit'), t{')'},
-    }),
-    s('imp', {
-        t{'import '}, i(1, 'sys')
-    }),
+    s('for', fmt([[
+    for {} in {}:
+    {}
+    ]], {
+        i(1, 'i'),
+        i(2, 'iterator'),
+        d(3, saved_text, {}, {indent = true}),
+    })),
+    s('pr', fmt([[print({})]],{
+        i(1, 'msg'),
+    })),
+    s('ran', fmt([[range({}, {})]],{
+        i(1, '0'),
+        i(2, '10'),
+    })),
+    s('imp', fmt([[import {}]],{
+        i(1, 'sys'),
+    })),
     s(
         { trig = 'fro(m?)', regTrig = true },
+        fmt([[from {} import {}]],
         {
-            t{'from '}, i(1, 'os'), t{' import '}, i(2, 'path')
+            i(1, 'sys'),
+            i(2, 'path'),
         }
-    ),
+    )),
     s(
-        { trig = "if(e?)", regTrig = true },
-        {
-            t{"if "}, i(1, 'condition'), t{":", ""},
-                d(2, saved_text, {}, {text = 'pass', indent = true}),
-            d(3, else_clause, {}, {}),
-        }
-    ),
-    s('def', {
-        t{'def '}, i(1, 'name'), t{'('},
-            p(function()
+        { trig = 'if(e?)', regTrig = true },
+        fmt([[
+    if {}:
+    {}{}
+    ]], {
+        i(1, 'condition'),
+        d(2, saved_text, {}, {text = 'pass', indent = true}),
+        d(3, else_clause, {}, {}),
+    })),
+    s('def', fmt([[
+    def {}({}{}):
+    {}
+    ]], {
+        i(1, 'name'),
+        p(function()
+            -- stylua: ignore
+            local get_current_class = require('utils.treesitter').get_current_class
+            -- stylua: ignore
+            local has_ts = require('utils.treesitter').has_ts()
+            -- stylua: ignore
+            if has_ts and get_current_class() then
                 -- stylua: ignore
-                local get_current_class = require('utils.treesitter').get_current_class
-                -- stylua: ignore
-                local has_ts = require('utils.treesitter').has_ts()
-                -- stylua: ignore
-                if has_ts and get_current_class() then
-                    -- stylua: ignore
-                    return 'self, '
-                end
-                -- stylua: ignore
-                return ''
-            end),
-            i(2, 'args'), t{'):', ''},
-                d(3, saved_text, {}, {text = 'pass', indent = true}),
-    }),
-    s('try', {
-        t{'try:', '',},
-            d(1, saved_text, {}, {text = 'pass', indent = true}),
-        t{'', 'except '},
-            c(2, {
-                t{'Exception as e'},
-                t{'KeyboardInterrupt as e'},
-                sn(nil, { i(1, 'Exception') }),
-            }),
-        t{':', '\t'},
-            i(3, 'pass'),
-    }),
-    s('ifmain', {
-        t{'if __name__ == "__main__":', '\t'},
-            c(1, {
-                sn(nil, { t{'exit('}, i(1, 'main()'), t{')'} }),
-                t{'pass'},
-            }),
-        t{'', 'else:', '\t'},
-            i(2, 'pass'),
-    }),
-    s('with', {
-        t{'with open('}, i(1, 'filename'), t{', '},
+                return 'self, '
+            end
+            -- stylua: ignore
+            return ''
+        end),
+        i(2, 'args'),
+        d(3, saved_text, {}, {text = 'pass', indent = true}),
+    })),
+    s('try', fmt([[
+    try:
+    {}
+    except {}:
+        {}
+    ]], {
+        d(1, saved_text, {}, {text = 'pass', indent = true}),
+        c(2, {
+            t{'Exception as e'},
+            t{'KeyboardInterrupt as e'},
+            sn(nil, { i(1, 'Exception') }),
+        }),
+        i(3, 'pass'),
+    })),
+    s('ifmain', fmt([[
+    if __name__ == "__main__":
+        {}
+    else:
+        {}
+    ]], {
+        c(1, {
+            sn(nil, { t{'exit('}, i(1, 'main()'), t{')'} }),
+            t{'pass'},
+        }),
+        i(2, 'pass'),
+    })),
+    s('with', fmt([[
+    with open('{}', {}) as {}:
+    {}
+    ]], {
+        i(1, 'filename'),
         c(2, {
             i(1, '"r"'),
             i(1, '"a"'),
             i(1, '"w"'),
         }),
-        t{') as '}, i(3, 'data'), t{':', ''},
-            d(4, saved_text, {}, {text = 'pass', indent = true}),
-    }),
-    s('w', {
-        t{'while '}, i(1, 'True'), t{':', ''},
-            d(2, saved_text, {}, {text = 'pass', indent = true}),
-    }),
+        i(3, 'data'),
+        d(4, saved_text, {}, {text = 'pass', indent = true}),
+    })),
+    s('w', fmt([[
+    while {}:
+    {}
+    ]], {
+        i(1, 'condition'),
+        d(2, saved_text, {}, {text = ':', indent = true}),
+    })),
     s(
         { trig = "(d?)cl", regTrig = true },
+        fmt([[
+        {}class {}({}):
+            {}
+        ]],
         {
             d(1, python_dataclass, {}, {}),
-            t{"class "}, i(2, 'Class'), t{"("},
+            i(2, 'Class'),
             c(3, {
                 t{''},
                 i(1, 'object'),
             }),
-            t{"):", '\t"""'},
-            dl(4, l._1 .. ': docstring', { 2 }),
-            t{'"""', ''},
-            d(5, python_class_init, {}, {}),
+            -- dl(4, l._1 .. ': docstring', { 2 }),
+            d(4, python_class_init, {}, {}),
         }
-    ),
-    s('raise', {
-        t{'raise '},
+    )),
+    s('raise', fmt([[raise {}({})]],{
         c(1, {
             i(1, 'Exception'),
             i(1, 'KeyboardInterrupt'),
             i(1, 'IOException'),
         }),
-        t{'('}, i(2, 'message'), t{')'}
-    }),
+        i(2, 'message'),
+    })),
 }
