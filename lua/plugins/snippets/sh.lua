@@ -13,12 +13,12 @@ local i = ls.insert_node
 -- local c = ls.choice_node
 local d = ls.dynamic_node
 -- local l = require('luasnip.extras').lambda
--- local r = require('luasnip.extras').rep
+local r = require('luasnip.extras').rep
 -- local p = require('luasnip.extras').partial
 -- local m = require('luasnip.extras').match
 -- local n = require('luasnip.extras').nonempty
 -- local dl = require('luasnip.extras').dynamic_lambda
--- local fmt = require('luasnip.extras.fmt').fmt
+local fmt = require('luasnip.extras.fmt').fmt
 -- local fmta = require('luasnip.extras.fmt').fmta
 -- local types = require 'luasnip.util.types'
 -- local events = require 'luasnip.util.events'
@@ -33,8 +33,9 @@ local function else_clause(args, snip, old_state, placeholder)
     local nodes = {}
 
     if snip.captures[1] == 'e' then
-        table.insert(nodes, t { '', 'else', '\t' })
+        table.insert(nodes, t { 'else', '\t' })
         table.insert(nodes, i(1, ':'))
+        table.insert(nodes, t { '', '' })
     else
         table.insert(nodes, t { '' })
     end
@@ -48,39 +49,79 @@ end
 ls.snippets.sh = {
     s(
         { trig = 'if(e?)', regTrig = true },
-        {
-            t{'if [[ '}, i(1, 'condition'), t{' ]]; then', ''},
-                d(2, saved_text, {}, {text = ':', indent = true}),
+        fmt([=[
+        if [[ {} ]]; then
+        {}
+        {}fi
+        ]=], {
+            i(1, 'condition'),
+            d(2, saved_text, {}, {text = ':', indent = true}),
             d(3, else_clause, {}, {}),
-            t{'', 'fi'},
-        }
+        })
     ),
-    s('fun', {
-        t{'function '}, i(1, 'name'), t{'() {', ''},
-            d(2, saved_text, {}, {text = ':', indent = true}),
-        t{'', '}'},
-    }),
-    s('for', {
-        t{'for '}, i(1, 'i'), t{' in '}, i(2, 'Iterator'), t{'; do', ''},
-            d(3, saved_text, {}, {text = ':', indent = true}),
-        t{'', 'done'}
-    }),
-    s('wh', {
-        t{'while '}, i(1, '[[ condition ]]'), t{'; do'},
-            d(2, saved_text, {}, {text = ':', indent = true}),
-        t{'', 'done'}
-    }),
-    s("case", {
-        t{'case "'}, i(1, '$VAR'), t{'" in', ""},
-            t{'\t'}, i(2, 'condition'), t{' )', ''},
-                t{'\t\t'}, i(3, ':'),
-            t{'', '\t\t;;'},
-        t{'', 'esac'}
-    }),
-    s('l', {
-        t{'local '}, i(1, 'varname'), t{'='}, i(2, '1'),
-    }),
-    s('ha', {
-        t{'hash '}, i(1, 'cmd'), t{' 2>/dev/null'},
-    }),
+    s('fun', fmt([[
+    function {}() {{
+    {}
+    }}
+    ]], {
+        i(1, 'name'),
+        d(2, saved_text, {}, {text = ':', indent = true}),
+    })),
+    s('for', fmt([[
+    for {} in {}; do
+    {}
+    done
+    ]], {
+        i(1, 'i'),
+        i(2, 'Iterator'),
+        d(3, saved_text, {}, {text = ':', indent = true}),
+    })),
+    s('fori', fmt([[
+    for (({} = {}; {} < {}; {}++)); do
+    {}
+    done
+    ]], {
+        i(1, 'i'),
+        i(2, '0'),
+        r(1),
+        i(3, '10'),
+        r(1),
+        d(4, saved_text, {}, {text = ':', indent = true}),
+    })),
+    s('wh', fmt([=[
+    while [[ {} ]]; do
+    {}
+    done
+    ]=], {
+        i(1, 'condition'),
+        d(2, saved_text, {}, {text = ':', indent = true}),
+    })),
+    s('l', fmt([[
+    local {}={}
+    ]],{
+        i(1, 'varname'),
+        i(2, '1'),
+    })),
+    s('ex', fmt([[
+    export {}={}
+    ]],{
+        i(1, 'varname'),
+        i(2, '1'),
+    })),
+    s('ha', fmt([[
+    hash {} 2>/dev/null
+    ]],{
+        i(1, 'cmd'),
+    })),
+    s('case', fmt([[
+    case ${} in
+        {})
+            {}
+            ;;
+    esac
+    ]],{
+        i(1, 'VAR'),
+        i(2, 'CONDITION'),
+        i(3, ':'),
+    })),
 }
