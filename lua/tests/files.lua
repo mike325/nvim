@@ -327,6 +327,22 @@ describe('Extension', function()
     end)
 end)
 
+describe('Filename', function()
+    local filename = require('utils.files').filename
+
+    it('without extension', function()
+        local basedir = vim.fn.stdpath 'config'
+        local init_file = basedir .. '/init.lua'
+        assert.equals('init', filename(init_file))
+        assert.equals('init', filename 'init.lua')
+        assert.equals('init.test', filename '.././../init.test.lua')
+        assert.equals('test', filename './test.cpp')
+        assert.equals('test', filename './test.c')
+        assert.equals('.bashrc', filename '.bashrc.sh')
+        assert.equals('.bashrc', filename '.bashrc')
+    end)
+end)
+
 describe('Basedir', function()
     local basedir = require('utils.files').basedir
 

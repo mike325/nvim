@@ -229,6 +229,13 @@ function M.extension(path)
     return #extension >= 2 and extension:sub(2, #extension) or extension
 end
 
+function M.filename(path)
+    vim.validate { path = { path, 'string' } }
+    local name = M.basename(path)
+    local extension = M.extension(name)
+    return extension ~= '' and name:gsub('%.' .. extension .. '$', '') or name
+end
+
 function M.basedir(path)
     vim.validate { path = { path, 'string' } }
     path = M.normalize_path(path)
