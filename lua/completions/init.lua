@@ -46,6 +46,17 @@ local completions = {
         local sessions = utils.get_files(require('sys').data .. '/session')
         return general_completion(arglead, cmdline, cursorpos, vim.tbl_map(utils.filename, sessions))
     end,
+    fileformats = function(arglead, cmdline, cursorpos)
+        return general_completion(arglead, cmdline, cursorpos, { 'unix', 'dos' })
+    end,
+    spells = function(arglead, cmdline, cursorpos)
+        local utils = require 'utils.files'
+        local spells = utils.get_files(require('sys').base .. '/spell')
+        spells = vim.tbl_map(function(spell)
+            return utils.filename(spell):gsub('%..*', '')
+        end, spells)
+        return general_completion(arglead, cmdline, cursorpos, spells)
+    end,
 }
 
 _G._completions = completions

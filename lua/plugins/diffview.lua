@@ -8,7 +8,6 @@ end
 
 local nvim = require 'neovim'
 
--- local set_command = require'neovim.commands'.set_command
 local get_mapping = require('neovim.mappings').get_mapping
 
 local cb = require('diffview.config').diffview_callback

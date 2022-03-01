@@ -18,7 +18,7 @@ if nvim.has 'win32' then
 end
 
 if not vim.keymap then
-    vim.keymap = require('neovim').keymap
+    vim.keymap = nvim.keymap
 end
 
 vim.g.do_filetype_lua = 1
