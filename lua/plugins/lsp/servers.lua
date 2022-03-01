@@ -119,6 +119,7 @@ local servers = {
                                 'STORAGE',
                                 'use',
                                 'use_rocks',
+                                '_completions',
                             },
                         },
                     },

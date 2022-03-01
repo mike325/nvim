@@ -78,9 +78,9 @@ ls.snippets.lua = {
     s(
         { trig = "(l?)fun", regTrig = true },
         fmt([[
-        {}function {}({}) {{
+        {}function {}({})
         {}
-        }}
+        end
         ]], {
             f(function(_, snip)
                 -- stylua: ignore

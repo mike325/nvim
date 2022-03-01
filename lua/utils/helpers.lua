@@ -557,9 +557,11 @@ function M.set_grep(is_git, is_local)
 end
 
 function M.spelllangs(lang)
-    M.abolish(lang)
-    vim.wo.spelllang = lang
-    print(vim.wo.spelllang)
+    if lang and lang ~= '' then
+        M.abolish(lang)
+        vim.opt_local.spelllang = lang
+    end
+    P(vim.opt_local.spelllang:get()[1])
 end
 
 function M.get_abbrs(language)

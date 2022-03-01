@@ -26,4 +26,5 @@ read_globals = {
     "it",
     "before_each",
     "assert",
+    "_completions",
 }
