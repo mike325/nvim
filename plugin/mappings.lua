@@ -411,23 +411,32 @@ set_command {
     args = { nargs = '*', force = true },
 }
 
--- set_command{
---     lhs = 'FileType',
---     rhs = "call neovim#SetFileData('filetype', <q-args>, 'text')",
---     args = {nargs='?', complete='filetype', force = true}
--- }
+set_command {
+    lhs = 'FileType',
+    rhs = function(ft)
+        ft = (ft and ft ~= '') and ft or 'text'
+        vim.opt_local.filetype = ft
+    end,
+    args = { nargs = '?', complete = 'filetype', force = true },
+}
 
--- set_command{
---     lhs = 'FileFormat',
---     rhs = "call neovim#SetFileData('fileformat', <q-args>, 'unix')",
---     args = {nargs='?', complete='customlist,neovim#format', force = true}
--- }
+set_command {
+    lhs = 'FileFormat',
+    rhs = function(format)
+        format = (format and format ~= '') and format or 'unix'
+        vim.opt_local.fileformat = format
+    end,
+    args = { nargs = '?', complete = 'customlist,v:lua._completions.fileformats', force = true },
+}
 
--- set_command{
---     lhs = 'SpellLang',
---     rhs = 'lua require"utils.helpers".spelllangs(<q-args>)',
---     args = {force = true, nargs = '?', complete = 'customlist,neovim#spells'}
--- }
+set_command {
+    lhs = 'SpellLang',
+    rhs = function(lang)
+        lang = (lang and lang ~= '') and lang or 'en'
+        require('utils.helpers').spelllangs(lang)
+    end,
+    args = { force = true, nargs = '?', complete = 'customlist,v:lua._completions.spells' },
+}
 
 -- set_command{
 --     lhs = 'ConncallLevel',
@@ -684,7 +693,7 @@ if executable 'scp' then
             filename = {
                 filename,
                 function(f)
-                    return is_file(filename) or virtual_filename
+                    return is_file(f) or virtual_filename
                 end,
                 'a valid file',
             },
