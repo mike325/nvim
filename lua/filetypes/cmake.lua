@@ -1,4 +1,5 @@
 local M = {}
+local nvim = require 'neovim'
 
 function M.setup()
     local mkdir = require('utils.files').mkdir
