@@ -682,7 +682,13 @@ function M.dump_to_qf(opts)
 
     opts.context = opts.context or 'GenericQfData'
     opts.title = opts.title or 'Generic Qf data'
-    opts.efm = opts.efm or vim.opt_local.efm:get() or vim.opt_global.efm:get()
+    if not opts.efm or #opts.efm == 0 then
+        local efm = vim.opt_local.efm:get()
+        if #efm == 0 then
+            efm = vim.opt_global.efm:get()
+        end
+        opts.efm = efm
+    end
 
     if type(opts.efm) == type {} then
         opts.efm = table.concat(opts.efm, ',')

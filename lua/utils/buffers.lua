@@ -15,7 +15,7 @@ function M.last_position()
         qf = 1,
     }
 
-    if sc_mark[1] >= 1 and dc_mark[1] <= last_line and black_list[filetype] == nil then
+    if sc_mark[1] >= 1 and dc_mark[1] <= last_line and not black_list[filetype] then
         nvim.win.set_cursor(0, dc_mark)
     end
 end

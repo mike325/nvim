@@ -311,7 +311,7 @@ function M.setup()
     local has_tidy = false
     if executable 'clang-tidy' and (flags_file ~= '' or db_file ~= '' or clang_tidy ~= '') then
         has_tidy = true
-        local tidy = M.makeprg['clang-tidy']
+        local tidy = vim.list_extend({ 'clang-tidy' }, M.makeprg['clang-tidy'])
         vim.bo.makeprg = table.concat(tidy, ' ') .. ' %'
         vim.bo.errorformat = tidy.efm
     end
@@ -397,8 +397,6 @@ function M.setup()
                 if not require('utils.files').is_dir 'build' then
                     require('utils.files').mkdir 'build'
                 end
-
-                P(('%s %s'):format(compiler, table.concat(args, ' ')))
 
                 local build = RELOAD('jobs'):new {
                     cmd = compiler,
