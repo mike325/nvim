@@ -6,8 +6,8 @@ if neogit == nil then
     return false
 end
 
-local plugins = require('neovim').plugins
-local set_command = require('neovim.commands').set_command
+local nvim = require 'neovim'
+local plugins = nvim.plugins
 local has_diffview = load_module 'diffview'
 
 neogit.setup {
@@ -30,11 +30,9 @@ neogit.setup {
 }
 
 if not plugins['vim-fugitive'] then
-    set_command {
-        lhs = 'G',
-        rhs = 'lua require"neogit".open({ kind = "vsplit" })',
-        args = { force = true },
-    }
+    nvim.command.set('G', function()
+        require('neogit').open { kind = 'vsplit' }
+    end)
 end
 
 vim.keymap.set(

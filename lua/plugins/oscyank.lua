@@ -1,7 +1,7 @@
 -- luacheck: max line length 143
 local executable = require('utils.files').executable
 
-local set_command = require('neovim.commands').set_command
+local nvim = require 'neovim'
 local set_autocmd = require('neovim.autocmds').set_autocmd
 
 if vim.g.OSCTERM then
@@ -16,11 +16,7 @@ else
     vim.g.oscyank_term = 'default'
 end
 
-set_command {
-    lhs = 'OSCTerm',
-    rhs = 'let g:oscyank_term = <q-args>',
-    args = { force = true, nargs = 1, complete = 'customlist,v:lua._completions.oscyank' },
-}
+nvim.command.set('OSCTerm', 'let g:oscyank_term = <q-args>', { nargs = 1, complete = _completions.oscyank })
 
 set_autocmd {
     event = 'TextYankPost',

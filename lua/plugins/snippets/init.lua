@@ -5,7 +5,7 @@ if not ls then
 end
 
 local set_autocmd = require('neovim.autocmds').set_autocmd
-local set_command = require('neovim.commands').set_command
+local nvim = require 'neovim'
 
 local types = require 'luasnip.util.types'
 
@@ -38,45 +38,33 @@ set_autocmd {
     group = 'Snippets',
 }
 
-set_command {
-    lhs = 'SnippetEdit',
-    rhs = function(ft)
-        ft = (ft and ft ~= '') and ft or vim.opt_local.filetype:get()
-        local base = require('sys').base
-        vim.cmd(('edit %s/lua/plugins/snippets/%s.lua'):format(base, ft))
-    end,
-    args = { nargs = '?', force = true, complete = 'filetype' },
-}
+nvim.command.set('SnippetEdit', function(opts)
+    local ft = opts.args ~= '' and opts.args or vim.opt_local.filetype:get()
+    local base = require('sys').base
+    vim.cmd(('edit %s/lua/plugins/snippets/%s.lua'):format(base, ft))
+end, { nargs = '?', complete = 'filetype' })
 
-set_command {
-    lhs = 'SnippetReload',
-    rhs = function()
-        RELOAD 'plugins.snippets.all'
+nvim.command.set('SnippetReload', function()
+    RELOAD 'plugins.snippets.all'
 
-        local snippet = 'plugins.snippets.' .. vim.opt_local.filetype:get()
-        local is_file = require('utils.files').is_file
-        local base = require('sys').base
+    local snippet = 'plugins.snippets.' .. vim.opt_local.filetype:get()
+    local is_file = require('utils.files').is_file
+    local base = require('sys').base
 
-        if is_file(('%s/lua/%s.lua'):format(base, snippet:gsub('%.', '/'))) then
-            local ok, msg = pcall(RELOAD, snippet)
-            if ok then
-                vim.notify 'Snippets Reloaded!'
-            else
-                vim.notify(msg, 'ERROR', { title = 'Luasnip' })
-            end
+    if is_file(('%s/lua/%s.lua'):format(base, snippet:gsub('%.', '/'))) then
+        local ok, msg = pcall(RELOAD, snippet)
+        if ok then
+            vim.notify 'Snippets Reloaded!'
         else
-            vim.notify('Missing snippets file', 'ERROR', { title = 'Luasnip' })
+            vim.notify(msg, 'ERROR', { title = 'Luasnip' })
         end
-    end,
-    args = { force = true },
-}
+    else
+        vim.notify('Missing snippets file', 'ERROR', { title = 'Luasnip' })
+    end
+end)
 
-set_command {
-    lhs = 'SnippetUnlink',
-    rhs = function()
-        vim.cmd [[LuaSnipUnlinkCurrent]]
-    end,
-    args = { force = true },
-}
+nvim.command.set('SnippetUnlink', function()
+    vim.cmd [[LuaSnipUnlinkCurrent]]
+end)
 
 return true

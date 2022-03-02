@@ -9,8 +9,6 @@ local compile_flags = STORAGE.compile_flags
 local databases = STORAGE.databases
 local has_cjson = STORAGE.has_cjson
 
-local set_command = require('neovim.commands').set_command
-
 local M = {
     makeprg = {
         ['clang-tidy'] = {
@@ -369,41 +367,61 @@ function M.setup()
     end
 
     -- BUG: This only build once, giving linking errors in further calls, needs debug
-    set_command {
-        lhs = 'BuildProject',
-        rhs = function(...)
-            local buffer = nvim.buf.get_name(nvim.get_current_buf())
-            local base_cwd = require('utils.files').getcwd()
-            local ft = vim.bo.filetype
+    nvim.command.set('BuildProject', function(opts)
+        local buffer = nvim.buf.get_name(nvim.get_current_buf())
+        local base_cwd = require('utils.files').getcwd()
+        local ft = vim.bo.filetype
 
-            if not is_file(buffer) then
-                vim.notify('Current buffer is not a file', 'ERROR', { title = 'Execute' })
-                return false
+        if not is_file(buffer) then
+            vim.notify('Current buffer is not a file', 'ERROR', { title = 'Execute' })
+            return false
+        end
+
+        local compile_output = base_cwd .. '/build/main'
+        local args = opts.fargs
+        local compiler_flags_file
+
+        if flags_file ~= '' then
+            compiler_flags_file = realpath(normalize_path(flags_file))
+        end
+
+        get_args(compiler, nvim.get_current_buf(), compiler_flags_file)
+        vim.list_extend(args, { '-o', compile_output })
+
+        require('utils.files').find_files(base_cwd, '*.' .. ft, function(job)
+            vim.list_extend(args, job:output())
+
+            if not require('utils.files').is_dir 'build' then
+                require('utils.files').mkdir 'build'
             end
 
-            local compile_output = base_cwd .. '/build/main'
-            local args, compiler_flags_file
+            -- P(('%s %s'):format(compiler, table.concat(args, ' ')))
 
-            if flags_file ~= '' then
-                compiler_flags_file = realpath(normalize_path(flags_file))
-            end
+            local build = RELOAD('jobs'):new {
+                cmd = compiler,
+                args = args,
+                progress = true,
+                opts = {
+                    cwd = require('utils.files').getcwd(),
+                    -- pty = true,
+                },
+                qf = {
+                    dump = false,
+                    on_fail = {
+                        jump = true,
+                        open = true,
+                        dump = true,
+                    },
+                    context = 'BuildProject',
+                    title = 'BuildProject',
+                },
+            }
 
-            args = get_args(compiler, nvim.get_current_buf(), compiler_flags_file)
-            vim.list_extend(args, { '-o', compile_output })
-
-            require('utils.files').find_files(base_cwd, '*.' .. ft, function(job)
-                vim.list_extend(args, job:output())
-
-                if not require('utils.files').is_dir 'build' then
-                    require('utils.files').mkdir 'build'
-                end
-
-                P(('%s %s'):format(compiler, table.concat(args, ' ')))
-
-                local build = RELOAD('jobs'):new {
-                    cmd = compiler,
-                    args = args,
+            build:callback_on_success(function(_)
+                local execute = RELOAD('jobs'):new {
+                    cmd = compile_output,
                     progress = true,
+                    verify_exec = false,
                     opts = {
                         cwd = require('utils.files').getcwd(),
                         -- pty = true,
@@ -415,41 +433,18 @@ function M.setup()
                             open = true,
                             dump = true,
                         },
-                        context = 'BuildProject',
-                        title = 'BuildProject',
+                        context = 'ExecuteProject',
+                        title = 'ExecuteProject',
                     },
                 }
-
-                build:callback_on_success(function(_)
-                    local execute = RELOAD('jobs'):new {
-                        cmd = compile_output,
-                        progress = true,
-                        verify_exec = false,
-                        opts = {
-                            cwd = require('utils.files').getcwd(),
-                            -- pty = true,
-                        },
-                        qf = {
-                            dump = false,
-                            on_fail = {
-                                jump = true,
-                                open = true,
-                                dump = true,
-                            },
-                            context = 'ExecuteProject',
-                            title = 'ExecuteProject',
-                        },
-                    }
-                    execute:start()
-                    execute:progress()
-                end)
-
-                build:start()
-                build:progress()
+                execute:start()
+                execute:progress()
             end)
-        end,
-        args = { nargs = '*', force = true, buffer = true },
-    }
+
+            build:start()
+            build:progress()
+        end)
+    end, { nargs = '*', buffer = true })
 end
 
 return M

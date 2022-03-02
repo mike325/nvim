@@ -548,6 +548,7 @@ packer.startup(function()
             require('neoclip').setup {
                 enable_persistent_history = has_sqlite,
                 db_path = db_path,
+                default_register = '+',
                 keys = {
                     telescope = {
                         i = {

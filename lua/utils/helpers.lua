@@ -296,11 +296,11 @@ function M.project_config(event)
         end)
     end
 
-    if is_git then
-        pcall(require('git.commands').set_commands)
-    else
-        pcall(require('git.commands').rm_commands)
-    end
+    -- if is_git then
+    --     pcall(require('git.commands').set_commands)
+    -- else
+    --     pcall(require('git.commands').rm_commands)
+    -- end
 
     M.set_grep(is_git, true)
 

@@ -3,7 +3,6 @@ local load_module = require('utils.helpers').load_module
 
 -- local plugins = nvim.plugins
 local set_autocmd = require('neovim.autocmds').set_autocmd
--- local set_command = nvim.commands.set_command
 
 local treesitter = load_module 'nvim-treesitter.configs'
 

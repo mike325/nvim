@@ -4,9 +4,6 @@ if not nvim.has { 0, 5 } then
     return false
 end
 
-local set_command = require('neovim.commands').set_command
--- local set_autocmd = require'neovim.autocmds'.set_autocmd
-
 local jobs = STORAGE.jobs
 
 local function kill_job(jobid)
@@ -37,16 +34,13 @@ local function kill_job(jobid)
     end
 end
 
-set_command {
-    lhs = 'KillJob',
-    rhs = function(_, jobid)
-        if jobid == '' then
-            jobid = nil
-        end
-        kill_job(jobid)
-    end,
-    args = { nargs = '?', bang = true, force = true },
-}
+nvim.command.set('KillJob', function(opts)
+    local jobid = opts.args
+    if jobid == '' then
+        jobid = nil
+    end
+    kill_job(jobid)
+end, { nargs = '?', bang = true })
 
 vim.keymap.set('n', '=p', function()
     if not vim.t.progress_win or not vim.api.nvim_win_is_valid(vim.t.progress_win) then

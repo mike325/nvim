@@ -11,7 +11,6 @@ local basename = require('utils.files').basename
 local read_json = require('utils.files').read_json
 
 local set_abbr = require('neovim.abbrs').set_abbr
-local set_command = require('neovim.commands').set_command
 
 local noremap = { noremap = true }
 local noremap_silent = { noremap = true, silent = true }
@@ -209,21 +208,12 @@ vim.keymap.set('n', ']e', [[:<C-U>lua require"utils.helpers".move_line(true)<CR>
 vim.keymap.set('n', '[e', [[:<C-U>lua require"utils.helpers".move_line(false)<CR>]], noremap_silent)
 vim.keymap.set('n', '<C-L>', '<cmd>nohlsearch|diffupdate<CR>', noremap_silent)
 
-set_command {
-    lhs = 'ClearQf',
-    rhs = function()
-        require('utils.helpers').clear_qf()
-    end,
-    args = { force = true },
-}
-
-set_command {
-    lhs = 'ClearLoc',
-    rhs = function(win)
-        require('utils.helpers').clear_qf(win or nvim.get_current_win())
-    end,
-    args = { nargs = '?', force = true },
-}
+nvim.command.set('ClearQf', function()
+    require('utils.helpers').clear_qf()
+end)
+nvim.command.set('ClearLoc', function()
+    require('utils.helpers').clear_qf(nvim.get_current_win())
+end)
 
 vim.keymap.set('n', '<leader><leader>p', function()
     if nvim.t.swap_window == nil then
@@ -263,191 +253,100 @@ vim.keymap.set(
 
 vim.keymap.set('n', '=q', [[<cmd>lua require"utils.helpers".toggle_qf()<CR>]], noremap_silent)
 
-set_command {
-    lhs = 'Terminal',
-    rhs = function(...)
-        local cmd = { ... }
-        local is_empty = #cmd == 0
-        local shell
+nvim.command.set('Terminal', function(opts)
+    local cmd = opts.args
+    local shell
 
-        if not is_empty then
-            shell = table.concat(cmd, ' ')
-        elseif sys.name == 'windows' then
-            if vim.regex([[^cmd\(\.exe\)\?$]]):match_str(vim.opt.shell:get()) then
-                shell = 'powershell -noexit -executionpolicy bypass '
-            else
-                shell = vim.opt.shell:get()
-            end
+    if cmd ~= '' then
+        shell = cmd
+    elseif sys.name == 'windows' then
+        if vim.regex([[^cmd\(\.exe\)\?$]]):match_str(vim.opt.shell:get()) then
+            shell = 'powershell -noexit -executionpolicy bypass '
         else
-            shell = vim.fn.fnamemodify(vim.env.SHELL or '', ':t')
-            if vim.regex([[\(t\)\?csh]]):match_str(shell) then
-                shell = executable 'zsh' and 'zsh' or (executable 'bash' and 'bash' or shell)
-            end
+            shell = vim.opt.shell:get()
         end
-
-        local win = require('utils.windows').big_center()
-
-        nvim.win.set_option(win, 'number', false)
-        nvim.win.set_option(win, 'relativenumber', false)
-
-        -- nvim.ex.edit('term://'..)
-        vim.fn.termopen(shell)
-
-        if is_empty then
-            nvim.ex.startinsert()
+    else
+        shell = vim.fn.fnamemodify(vim.env.SHELL or '', ':t')
+        if vim.regex([[\(t\)\?csh]]):match_str(shell) then
+            shell = executable 'zsh' and 'zsh' or (executable 'bash' and 'bash' or shell)
         end
-    end,
-    args = { nargs = '*', force = true },
-}
+    end
 
-set_command {
-    lhs = 'RelativeNumbersToggle',
-    rhs = 'set relativenumber! relativenumber?',
-    args = { force = true },
-}
+    local win = require('utils.windows').big_center()
 
-set_command {
-    lhs = 'MouseToggle',
-    rhs = function()
-        if vim.o.mouse == '' then
-            vim.o.mouse = 'a'
-            print 'Mouse Enabled'
-        else
-            vim.o.mouse = ''
-            print 'Mouse Disbled'
+    nvim.win.set_option(win, 'number', false)
+    nvim.win.set_option(win, 'relativenumber', false)
+
+    -- nvim.ex.edit('term://'..)
+    vim.fn.termopen(shell)
+
+    if cmd ~= '' then
+        nvim.ex.startinsert()
+    end
+end, { nargs = '*' })
+
+nvim.command.set('MouseToggle', function()
+    if vim.o.mouse == '' then
+        vim.o.mouse = 'a'
+        print 'Mouse Enabled'
+    else
+        vim.o.mouse = ''
+        print 'Mouse Disbled'
+    end
+end)
+
+nvim.command.set('BufKill', function(opts)
+    local bang = opts.bang
+    local count = 0
+    for _, buf in pairs(nvim.list_bufs()) do
+        if not nvim.buf.is_valid(buf) or (bang and not nvim.buf.is_loaded(buf)) then
+            nvim.ex['bwipeout!'](buf)
+            count = count + 1
         end
-    end,
-    args = { force = true },
-}
+    end
+    if count > 0 then
+        print(count, 'buffers deleted')
+    end
+end, { bang = true, nargs = 0 })
 
--- set_command{
---     lhs = 'ArrowsToggle',
---     rhs = function()
---     end,
---     args = {force=true}
--- }
+nvim.command.set('VerboseToggle', 'let &verbose=!&verbose | echo "Verbose " . &verbose')
+nvim.command.set('RelativeNumbersToggle', 'set relativenumber! relativenumber?')
+nvim.command.set('ModifiableToggle', 'setlocal modifiable! modifiable?')
+nvim.command.set('CursorLineToggle', 'setlocal cursorline! cursorline?')
+nvim.command.set('ScrollBindToggle', 'setlocal scrollbind! scrollbind?')
+nvim.command.set('HlSearchToggle', 'setlocal hlsearch! hlsearch?')
+nvim.command.set('NumbersToggle', 'setlocal number! number?')
+nvim.command.set('SpellToggle', 'setlocal spell! spell?')
+nvim.command.set('WrapToggle', 'setlocal wrap! wrap?')
 
-set_command {
-    lhs = 'BufKill',
-    rhs = function(bang)
-        local count = 0
-        for _, buf in pairs(nvim.list_bufs()) do
-            if not nvim.buf.is_valid(buf) or (bang and not nvim.buf.is_loaded(buf)) then
-                nvim.ex['bwipeout!'](buf)
-                count = count + 1
-            end
-        end
-        if count > 0 then
-            print(count, 'buffers deleted')
-        end
-    end,
-    args = { bang = true, force = true, nargs = 0 },
-}
+nvim.command.set('TrimToggle', function()
+    if not vim.b.trim then
+        print 'Trim'
+    else
+        print 'NoTrim'
+    end
+    vim.b.trim = not vim.b.trim
+end)
 
-set_command {
-    lhs = 'ModifiableToggle',
-    rhs = 'setlocal modifiable! modifiable?',
-    args = { force = true },
-}
+nvim.command.set('GonvimSettngs', "execute('edit ~/.gonvim/setting.toml')")
 
-set_command {
-    lhs = 'CursorLineToggle',
-    rhs = 'setlocal cursorline! cursorline?',
-    args = { force = true },
-}
+nvim.command.set('FileType', function(opts)
+    vim.opt_local.filetype = opts.args ~= '' and opts.args or 'text'
+end, { nargs = '?', complete = 'filetype' })
 
-set_command {
-    lhs = 'ScrollBindToggle',
-    rhs = 'setlocal scrollbind! scrollbind?',
-    args = { force = true },
-}
+nvim.command.set('FileFormat', function(opts)
+    vim.opt_local.filetype = opts.args ~= '' and opts.args or 'unix'
+end, { nargs = '?', complete = _completions.fileformats })
 
-set_command {
-    lhs = 'HlSearchToggle',
-    rhs = 'setlocal hlsearch! hlsearch?',
-    args = { force = true },
-}
+nvim.command.set('SpellLang', function(opts)
+    require('utils.helpers').spelllangs(opts.args)
+end, { nargs = '?', complete = _completions.spells })
 
-set_command {
-    lhs = 'NumbersToggle',
-    rhs = 'setlocal number! number?',
-    args = { force = true },
-}
-
-set_command {
-    lhs = 'SpellToggle',
-    rhs = 'setlocal spell! spell?',
-    args = { force = true },
-}
-
-set_command {
-    lhs = 'WrapToggle',
-    rhs = 'setlocal wrap! wrap?',
-    args = { force = true },
-}
-
-set_command {
-    lhs = 'VerboseToggle',
-    rhs = 'let &verbose=!&verbose | echo "Verbose " . &verbose',
-    args = { force = true },
-}
-
-set_command {
-    lhs = 'TrimToggle',
-    rhs = function()
-        if not vim.b.trim then
-            print 'Trim'
-        else
-            print 'NoTrim'
-        end
-        vim.b.trim = not vim.b.trim
-    end,
-    args = { force = true },
-}
-
-set_command {
-    lhs = 'GonvimSettngs',
-    rhs = "execute('edit ~/.gonvim/setting.toml')",
-    args = { nargs = '*', force = true },
-}
-
--- set_command{
---     lhs = 'FileType',
---     rhs = "call neovim#SetFileData('filetype', <q-args>, 'text')",
---     args = {nargs='?', complete='filetype', force = true}
--- }
-
--- set_command{
---     lhs = 'FileFormat',
---     rhs = "call neovim#SetFileData('fileformat', <q-args>, 'unix')",
---     args = {nargs='?', complete='customlist,neovim#format', force = true}
--- }
-
--- set_command{
---     lhs = 'SpellLang',
---     rhs = 'lua require"utils.helpers".spelllangs(<q-args>)',
---     args = {force = true, nargs = '?', complete = 'customlist,neovim#spells'}
--- }
-
--- set_command{
---     lhs = 'ConncallLevel',
---     rhs = "call neovim#ConncallLevel(expand(<q-args>))",
---     args = {nargs='?', force = true}
--- }
-
-set_command {
-    lhs = 'Qopen',
-    rhs = "execute((&splitbelow) ? 'botright' : 'topleft' ) . ' copen ' . expand(<q-args>)",
-    args = { nargs = '?', force = true },
-}
-
--- if executable('powershell') then
---     set_command{
---         lhs = 'PowershellToggle',
---         rhs = 'call windows#toggle_powershell()',
---         args = {force=true}
---     }
--- end
+nvim.command.set(
+    'Qopen',
+    "execute((&splitbelow) ? 'botright' : 'topleft' ) . ' copen ' . expand(<q-args>)",
+    { nargs = '?' }
+)
 
 -- TODO: Check for GUIs
 if sys.name == 'windows' then
@@ -457,72 +356,52 @@ if sys.name == 'windows' then
         vim.keymap.set('n', '<C-z>', '<nop>', noremap)
     end
 else
-    set_command {
-        lhs = 'Chmod',
-        rhs = function(mode)
-            if not mode:match '^%d+$' then
-                vim.notify('Not a valid permissions mode: ' .. mode, 'ERROR', { title = 'Chmod' })
-                return
-            end
-            local filename = vim.fn.expand '%'
-            local chmod = require('utils.files').chmod
-            if is_file(filename) then
-                chmod(filename, mode)
-            end
-        end,
-        args = { nargs = 1, force = true },
-    }
+    nvim.command.set('Chmod', function(opts)
+        local mode = opts.args
+        if not mode:match '^%d+$' then
+            vim.notify('Not a valid permissions mode: ' .. mode, 'ERROR', { title = 'Chmod' })
+            return
+        end
+        local filename = vim.fn.expand '%'
+        local chmod = require('utils.files').chmod
+        if is_file(filename) then
+            chmod(filename, mode)
+        end
+    end, { nargs = 1 })
 end
 
-set_command {
-    lhs = 'MoveFile',
-    rhs = function(bang, new_path)
-        local current_path = vim.fn.expand '%:p'
-        local is_dir = require('utils.files').is_dir
+nvim.command.set('MoveFile', function(opts)
+    local new_path = opts.args
+    local bang = opts.bang
 
-        if is_file(current_path) and is_dir(new_path) then
-            new_path = new_path .. '/' .. vim.fn.fnamemodify(current_path, ':t')
-        end
+    local current_path = vim.fn.expand '%:p'
+    local is_dir = require('utils.files').is_dir
 
-        require('utils.files').rename(current_path, new_path, bang)
-    end,
-    args = { force = true, bang = true, nargs = 1, complete = 'file' },
-}
+    if is_file(current_path) and is_dir(new_path) then
+        new_path = new_path .. '/' .. vim.fn.fnamemodify(current_path, ':t')
+    end
 
-set_command {
-    lhs = 'RenameFile',
-    rhs = function(bang, args)
-        local current_path = vim.fn.expand '%:p'
-        local current_dir = vim.fn.expand '%:h'
-        require('utils.files').rename(current_path, current_dir .. '/' .. args, bang)
-    end,
-    args = { force = true, bang = true, nargs = 1, complete = 'file' },
-}
+    require('utils.files').rename(current_path, new_path, bang)
+end, { bang = true, nargs = 1, complete = 'file' })
 
-set_command {
-    lhs = 'Mkdir',
-    rhs = function(args)
-        vim.fn.mkdir(vim.fn.fnameescape(args), 'p')
-    end,
-    args = { force = true, nargs = 1, complete = 'dir' },
-}
+nvim.command.set('RenameFile', function(opts)
+    local current_path = vim.fn.expand '%:p'
+    local current_dir = vim.fn.expand '%:h'
+    require('utils.files').rename(current_path, current_dir .. '/' .. opts.args, opts.bang)
+end, { bang = true, nargs = 1, complete = 'file' })
 
-set_command {
-    lhs = 'RemoveFile',
-    rhs = function(bang, args)
-        local target = args ~= '' and args or vim.fn.expand '%'
-        require('utils.files').delete(vim.fn.fnamemodify(target, ':p'), bang)
-    end,
-    args = { force = true, bang = true, nargs = '?', complete = 'file' },
-}
+nvim.command.set('Mkdir', function(opts)
+    vim.fn.mkdir(vim.fn.fnameescape(opts.args), 'p')
+end, { nargs = 1, complete = 'dir' })
 
-set_command {
-    lhs = 'Grep',
-    rhs = function(...)
-        require('utils.functions').send_grep_job { ... }
-    end,
-    args = { nargs = '+', force = true },
-}
+nvim.command.set('RemoveFile', function(opts)
+    local target = opts.args ~= '' and opts.args or vim.fn.expand '%'
+    require('utils.files').delete(vim.fn.fnamemodify(target, ':p'), opts.bang)
+end, { bang = true, nargs = '?', complete = 'file' })
+
+nvim.command.set('Grep', function(opts)
+    require('utils.functions').send_grep_job(opts.fargs)
+end, { nargs = '+' })
 
 vim.keymap.set('n', 'gs', '<cmd>set opfunc=neovim#grep<CR>g@', noremap_silent)
 vim.keymap.set('v', 'gs', ':<C-U>call neovim#grep(visualmode(), v:true)<CR>', noremap_silent)
@@ -530,36 +409,32 @@ vim.keymap.set('n', 'gss', function()
     require('utils.functions').send_grep_job(vim.fn.expand '<cword>')
 end, noremap_silent)
 
-set_command {
-    lhs = 'Lint',
-    rhs = function(...)
-        local args = { ... }
+nvim.command.set('Lint', function(opts)
+    local args = opts.fargs
 
-        local ok, val = pcall(nvim.buf.get_option, 0, 'makeprg')
-        local cmd = ok and val or vim.o.makeprg
+    local ok, val = pcall(nvim.buf.get_option, 0, 'makeprg')
+    local cmd = ok and val or vim.o.makeprg
 
-        if cmd:sub(#cmd, #cmd) == '%' then
-            cmd = cmd:gsub('%%', vim.fn.expand '%')
-        end
+    if cmd:sub(#cmd, #cmd) == '%' then
+        cmd = cmd:gsub('%%', vim.fn.expand '%')
+    end
 
-        cmd = cmd .. table.concat(args, ' ')
-        local lint = RELOAD('jobs'):new {
-            cmd = cmd,
-            qf = {
-                on_fail = {
-                    jump = true,
-                    open = true,
-                },
-                loc = true,
-                win = nvim.get_current_win(),
-                context = 'AsyncLint',
-                title = 'AsyncLint',
+    cmd = cmd .. table.concat(args, ' ')
+    local lint = RELOAD('jobs'):new {
+        cmd = cmd,
+        qf = {
+            on_fail = {
+                jump = true,
+                open = true,
             },
-        }
-        lint:start()
-    end,
-    args = { nargs = '*', force = true },
-}
+            loc = true,
+            win = nvim.get_current_win(),
+            context = 'AsyncLint',
+            title = 'AsyncLint',
+        },
+    }
+    lint:start()
+end, { nargs = '*' })
 
 if executable 'cscope' then
     local function cscope(cword, action)
@@ -574,37 +449,21 @@ if executable 'cscope' then
         nvim.ex.cscope(action .. ' ' .. cword)
     end
 
-    set_command {
-        lhs = 'CDefinition',
-        rhs = function(cword)
-            cscope(cword, 'definition')
-        end,
-        args = { nargs = '?', force = true },
-    }
+    nvim.command.set('CDefinition', function(opts)
+        cscope(opts.args, 'definition')
+    end, { nargs = '?' })
 
-    set_command {
-        lhs = 'CCallers',
-        rhs = function(cword)
-            cscope(cword, 'callers')
-        end,
-        args = { nargs = '?', force = true },
-    }
+    nvim.command.set('CCallers', function(opts)
+        cscope(opts.args, 'callers')
+    end, { nargs = '?' })
 
-    set_command {
-        lhs = 'CFile',
-        rhs = function(cword)
-            cscope(cword, 'file')
-        end,
-        args = { complete = 'file', nargs = '?', force = true },
-    }
+    nvim.command.set('CFile', function(opts)
+        cscope(opts.args, 'file')
+    end, { complete = 'file', nargs = '?' })
 
-    set_command {
-        lhs = 'CText',
-        rhs = function(cword)
-            cscope(cword, 'text')
-        end,
-        args = { nargs = '?', force = true },
-    }
+    nvim.command.set('CText', function(opts)
+        cscope(opts.args, 'text')
+    end, { nargs = '?' })
 end
 
 if executable 'scp' then
@@ -716,193 +575,160 @@ if executable 'scp' then
         return host
     end
 
-    set_command {
-        lhs = 'SendFile',
-        rhs = function(host)
-            host = get_host(host)
-            if not host or host == '' then
-                return
-            end
-            local cmd = remote_cmd(host, true)
-            local send_file = RELOAD('jobs'):new {
-                cmd = cmd,
-                opts = {
-                    pty = true,
-                },
-            }
-            send_file:start()
-        end,
-        args = {
-            nargs = '*',
-            force = true,
-            complete = 'customlist,v:lua._completions.ssh_hosts_completion',
-        },
-    }
+    local function remote_file(host, send)
+        host = get_host(host)
+        if not host or host == '' then
+            return
+        end
+        local cmd = remote_cmd(host, send)
+        local sync = RELOAD('jobs'):new {
+            cmd = cmd,
+            opts = {
+                pty = true,
+            },
+        }
+        sync:start()
+    end
 
-    set_command {
-        lhs = 'GetFile',
-        rhs = function(host)
-            host = get_host(host)
-            if not host or host == '' then
-                return
-            end
-            local cmd = remote_cmd(host, false)
-            local Job = RELOAD 'jobs'
-            local get_file = Job:new {
-                cmd = cmd,
-                opts = {
-                    pty = true,
-                },
-            }
-            get_file:start()
-        end,
-        args = {
-            nargs = '*',
-            force = true,
-            complete = 'customlist,v:lua._completions.ssh_hosts_completion',
-        },
-    }
+    nvim.command.set('SendFile', function(opts)
+        remote_file(opts.args, true)
+    end, {
+        nargs = '*',
+        complete = _completions.ssh_hosts_completion,
+    })
+
+    nvim.command.set('GetFile', function(opts)
+        remote_file(opts.args, false)
+    end, {
+        nargs = '*',
+        complete = _completions.ssh_hosts_completion,
+    })
 
     vim.keymap.set('n', '<leader><leader>s', '<cmd>SendFile<CR>', { noremap = true, silent = true })
     vim.keymap.set('n', '<leader><leader>g', '<cmd>GetFile<CR>', { noremap = true, silent = true })
 end
 
-set_command {
-    lhs = 'Scratch',
-    rhs = function(ft)
-        ft = (ft and ft ~= '') and ft or vim.bo.filetype
-        local scratchs = STORAGE.scratchs
-        scratchs[ft] = scratchs[ft] or vim.fn.tempname()
-        local buf = vim.fn.bufnr(scratchs[ft], true)
+nvim.command.set('Scratch', function(opts)
+    local ft = opts.args ~= '' and opts.args or vim.bo.filetype
+    local scratchs = STORAGE.scratchs
+    scratchs[ft] = scratchs[ft] or vim.fn.tempname()
+    local buf = vim.fn.bufnr(scratchs[ft], true)
 
-        if ft and ft ~= '' then
-            nvim.buf.set_option(buf, 'filetype', ft)
+    if ft and ft ~= '' then
+        nvim.buf.set_option(buf, 'filetype', ft)
+    end
+    nvim.buf.set_option(buf, 'bufhidden', 'hide')
+
+    local wins = nvim.tab.list_wins(0)
+    local scratch_win
+
+    for _, win in pairs(wins) do
+        if nvim.win.get_buf(win) == buf then
+            scratch_win = win
+            break
         end
-        nvim.buf.set_option(buf, 'bufhidden', 'hide')
+    end
 
-        local wins = nvim.tab.list_wins(0)
-        local scratch_win
+    if not scratch_win then
+        scratch_win = nvim.open_win(
+            buf,
+            true,
+            { relative = 'editor', width = 1, height = 1, row = 1, col = 1 }
+        )
+    end
 
-        for _, win in pairs(wins) do
-            if nvim.win.get_buf(win) == buf then
-                scratch_win = win
-                break
+    nvim.set_current_win(scratch_win)
+    nvim.ex.wincmd 'K'
+end, {
+    nargs = '?',
+    complete = 'filetype',
+})
+
+nvim.command.set('ConncallLevel', function()
+    local conncall = vim.opt_local.conceallevel:get() or 0
+    vim.opt_local.conceallevel = conncall > 0 and 0 or 2
+end)
+
+nvim.command.set('Messages', function(opts)
+    local args = opts.args
+    if args == '' then
+        local messages = nvim.exec('messages', true)
+        messages = clear_lst(vim.split(messages, '\n'))
+
+        -- WARN: This is a WA to avoid EFM detecting ^I as part of a file in lua tracebacks
+        for idx, msg in ipairs(messages) do
+            if msg:match '^%^I' and #msg > 2 then
+                messages[idx] = msg:sub(3, #msg)
             end
         end
 
-        if not scratch_win then
-            scratch_win = nvim.open_win(
-                buf,
-                true,
-                { relative = 'editor', width = 1, height = 1, row = 1, col = 1 }
-            )
+        vim.fn.setqflist({}, 'r', {
+            lines = messages,
+            title = 'Messages',
+            context = 'Messages',
+        })
+        nvim.ex.Qopen()
+    else
+        nvim.ex.messages 'clear'
+        local context = vim.fn.getqflist({ context = 1 }).context
+        if context == 'Messages' then
+            require('utils.helpers').clear_qf()
+            nvim.ex.cclose()
         end
-
-        nvim.set_current_win(scratch_win)
-        nvim.ex.wincmd 'K'
-    end,
-    args = {
-        nargs = '?',
-        force = true,
-        complete = 'filetype',
-    },
-}
-
-set_command {
-    lhs = 'ConncallLevel',
-    rhs = function()
-        local conncall = vim.opt_local.conceallevel:get() or 0
-        vim.opt_local.conceallevel = conncall > 0 and 0 or 2
-    end,
-    args = { force = true },
-}
-
-set_command {
-    lhs = 'Messages',
-    rhs = function(args)
-        if not args or args == '' then
-            local messages = nvim.exec('messages', true)
-            messages = clear_lst(vim.split(messages, '\n'))
-
-            -- WARN: This is a WA to avoid EFM detecting ^I as part of a file in lua tracebacks
-            for idx, msg in ipairs(messages) do
-                if msg:match '^%^I' and #msg > 2 then
-                    messages[idx] = msg:sub(3, #msg)
-                end
-            end
-
-            vim.fn.setqflist({}, 'r', {
-                lines = messages,
-                title = 'Messages',
-                context = 'Messages',
-            })
-            nvim.ex.Qopen()
-        else
-            nvim.ex.messages 'clear'
-            local context = vim.fn.getqflist({ context = 1 }).context
-            if context == 'Messages' then
-                require('utils.helpers').clear_qf()
-                nvim.ex.cclose()
-            end
-        end
-    end,
-    args = { nargs = '?', force = true, complete = 'messages' },
-}
+    end
+end, { nargs = '?', complete = 'messages' })
 
 if executable 'pre-commit' then
-    set_command {
-        lhs = 'PreCommit',
-        rhs = function(...)
-            local args = { ... }
-            local errorformats = {
-                '%f:%l:%c: %t%n %m',
-                '%f:%l:%c:%t: %m',
-                '%f:%l:%c: %m',
-                '%f:%l: %trror: %m',
-                '%f:%l: %tarning: %m',
-                '%f:%l: %tote: %m',
-                '%f:%l:%m',
-                '%f: %trror: %m',
-                '%f: %tarning: %m',
-                '%f: %tote: %m',
-                '%f: Failed to json decode (%m: line %l column %c (char %*\\\\d))',
-                '%f: Failed to json decode (%m)',
-                '%E%f:%l:%c: fatal error: %m',
-                '%E%f:%l:%c: error: %m',
-                '%W%f:%l:%c: warning: %m',
-                'Diff in %f:',
-                '+++ %f',
-                'reformatted %f',
-            }
-            local precommit = RELOAD('jobs'):new {
-                cmd = 'pre-commit',
-                args = args,
-                -- progress = true,
-                qf = {
-                    efm = errorformats,
-                    dump = false,
-                    on_fail = {
-                        dump = true,
-                        jump = false,
-                        open = true,
-                    },
-                    context = 'PreCommit',
-                    title = 'PreCommit',
+    nvim.command.set('PreCommit', function(opts)
+        local args = opts.fargs
+        local errorformats = {
+            '%f:%l:%c: %t%n %m',
+            '%f:%l:%c:%t: %m',
+            '%f:%l:%c: %m',
+            '%f:%l: %trror: %m',
+            '%f:%l: %tarning: %m',
+            '%f:%l: %tote: %m',
+            '%f:%l:%m',
+            '%f: %trror: %m',
+            '%f: %tarning: %m',
+            '%f: %tote: %m',
+            '%f: Failed to json decode (%m: line %l column %c (char %*\\\\d))',
+            '%f: Failed to json decode (%m)',
+            '%E%f:%l:%c: fatal error: %m',
+            '%E%f:%l:%c: error: %m',
+            '%W%f:%l:%c: warning: %m',
+            'Diff in %f:',
+            '+++ %f',
+            'reformatted %f',
+        }
+        local precommit = RELOAD('jobs'):new {
+            cmd = 'pre-commit',
+            args,
+            -- progress = true,
+            qf = {
+                efm = errorformats,
+                dump = false,
+                on_fail = {
+                    dump = true,
+                    jump = false,
+                    open = true,
                 },
-            }
-            precommit:start()
-            -- precommit:progress()
-        end,
-        args = { nargs = '*', force = true },
-    }
+                context = 'PreCommit',
+                title = 'PreCommit',
+            },
+        }
+        precommit:start()
+        -- precommit:progress()
+    end, { nargs = '*' })
 end
 
 if not vim.env.SSH_CONNECTION then
-    set_command {
-        lhs = 'Open',
-        rhs = require('utils.functions').open,
-        args = { nargs = '1', force = true, complete = 'file' },
-    }
+    nvim.command.set('Open', function(opts)
+        require('utils.functions').open(opts.args)
+    end, {
+        nargs = 1,
+        complete = 'file',
+    })
 
     vim.keymap.set('n', 'gx', function()
         local cfile = vim.fn.expand '<cfile>'
@@ -911,32 +737,28 @@ if not vim.env.SSH_CONNECTION then
     end, noremap_silent)
 end
 
-set_command {
-    lhs = 'Repl',
-    rhs = function(...)
-        local cmd = { ... }
+nvim.command.set('Repl', function(opts)
+    local cmd = opts.fargs
 
-        if #cmd == 0 then
-            if vim.b.relp_cmd then
-                cmd = vim.b.relp_cmd
-            else
-                cmd = vim.opt_local.filetype:get()
-            end
+    if #cmd == 0 or (#cmd == 1 and cmd[1] == '') then
+        if vim.b.relp_cmd then
+            cmd = vim.b.relp_cmd
+        else
+            cmd = vim.opt_local.filetype:get()
         end
+    end
 
-        local direction = vim.opt.splitbelow:get() and 'botright' or 'topleft'
-        vim.api.nvim_exec(direction .. ' 20new', false)
+    local direction = vim.opt.splitbelow:get() and 'botright' or 'topleft'
+    vim.api.nvim_exec(direction .. ' 20new', false)
 
-        local win = vim.api.nvim_get_current_win()
+    local win = vim.api.nvim_get_current_win()
 
-        nvim.win.set_option(win, 'number', false)
-        nvim.win.set_option(win, 'relativenumber', false)
+    nvim.win.set_option(win, 'number', false)
+    nvim.win.set_option(win, 'relativenumber', false)
 
-        vim.fn.termopen(type(cmd) == type {} and table.concat(cmd, ' ') or cmd)
-        nvim.ex.startinsert()
-    end,
-    args = { nargs = '*', force = true, complete = 'filetype' },
-}
+    vim.fn.termopen(type(cmd) == type {} and table.concat(cmd, ' ') or cmd)
+    nvim.ex.startinsert()
+end, { nargs = '*', complete = 'filetype' })
 
 if has_nvim_6 then
     vim.keymap.set('n', '=D', function()

@@ -164,6 +164,47 @@ local nvim = {
         end,
     }),
     keymap = require('neovim.mappings').keymap,
+    command = {
+        set = function(name, cmd, opts)
+            vim.validate {
+                name = { name, 'string' },
+                cmd = {
+                    cmd,
+                    function(c)
+                        return type(c) == type '' or vim.is_callable(c)
+                    end,
+                    'a string or a lua function',
+                },
+                opts = { opts, 'table', true },
+            }
+            opts = opts or {}
+            if opts.buffer then
+                local buffer = type(opts.buffer) == type(0) and opts.buffer or 0
+                opts.buffer = nil
+                api.nvim_buf_add_user_command(buffer, name, cmd, opts)
+            else
+                api.nvim_add_user_command(name, cmd, opts)
+            end
+        end,
+        del = function(name, buffer)
+            vim.validate {
+                name = { name, 'string' },
+                buffer = {
+                    buffer,
+                    function(b)
+                        return type(b) == type(true) or type(b) == type(0)
+                    end,
+                    'a boolean or a number',
+                },
+            }
+            if buffer then
+                buffer = type(buffer) == type(0) and buffer or 0
+                api.nvim_buf_del_user_command(buffer, name)
+            else
+                api.nvim_del_user_command(name)
+            end
+        end,
+    },
     executable = function(exe)
         vim.validate { exe = { exe, 'string' } }
         return vim.fn.executable(exe) == 1

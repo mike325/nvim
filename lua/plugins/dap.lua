@@ -2,6 +2,8 @@ local exepath = require('utils.files').exepath
 local load_module = require('utils.helpers').load_module
 local getcwd = require('utils.files').getcwd
 
+local nvim = require 'neovim'
+
 local dap = load_module 'dap'
 
 if not dap then
@@ -9,9 +11,7 @@ if not dap then
 end
 
 local executable = require('utils.files').executable
-
 local set_autocmd = require('neovim.autocmds').set_autocmd
-local set_command = require('neovim.commands').set_command
 
 local function pythonPath()
     -- debugpy supports launching an application with a different interpreter
@@ -157,82 +157,52 @@ vim.keymap.set('n', '=r', require('dap').repl.toggle, args)
 vim.keymap.set('n', '<leader>L', list_breakpoints, args)
 vim.keymap.set('n', 'gK', require('dap.ui.widgets').hover, args)
 
-set_command {
-    lhs = 'DapToggleBreakpoint',
-    rhs = require('dap').toggle_breakpoint,
-    args = { force = true },
-}
+nvim.command.set('DapToggleBreakpoint', function()
+    require('dap').toggle_breakpoint()
+end)
 
-set_command {
-    lhs = 'DapRun2Cursor',
-    rhs = require('dap').run_to_cursor,
-    args = { force = true },
-}
+nvim.command.set('DapRun2Cursor', function()
+    require('dap').run_to_cursor()
+end)
 
-set_command {
-    lhs = 'DapBreakpoint',
-    rhs = require('dap').set_breakpoint,
-    args = { force = true },
-}
+nvim.command.set('DapBreakpoint', function()
+    require('dap').set_breakpoint()
+end)
 
-set_command {
-    lhs = 'DapListBreakpoint',
-    rhs = list_breakpoints,
-    args = { force = true },
-}
+nvim.command.set('DapListBreakpoint', function()
+    list_breakpoints()
+end)
 
-set_command {
-    lhs = 'DapStart',
-    rhs = require('dap').continue,
-    args = { force = true },
-}
+nvim.command.set('DapStart', function()
+    require('dap').continue()
+end)
 
-set_command {
-    lhs = 'DapStop',
-    rhs = require('dap').stop,
-    args = { force = true },
-}
+nvim.command.set('DapStop', function()
+    require('dap').stop()
+end)
 
-set_command {
-    lhs = 'DapContinue',
-    rhs = require('dap').continue,
-    args = { force = true },
-}
+nvim.command.set('DapContinue', function()
+    require('dap').continue()
+end)
 
-set_command {
-    lhs = 'DapRepl',
-    rhs = require('dap').repl.toggle,
-    args = { force = true },
-}
+nvim.command.set('DapRepl', function()
+    require('dap').repl.toggle()
+end)
 
-set_command {
-    lhs = 'DapInfo',
-    rhs = require('dap.ui.widgets').hover,
-    args = { force = true },
-}
+nvim.command.set('DapInfo', function()
+    require('dap.ui.widgets').hover()
+end)
 
-set_command {
-    lhs = 'DapStepOver',
-    rhs = function(_)
-        require('dap').step_over()
-    end,
-    args = { nargs = '?', force = true },
-}
+nvim.command.set('DapStepOver', function(_)
+    require('dap').step_over()
+end, { nargs = '?' })
 
-set_command {
-    lhs = 'DapStepInto',
-    rhs = function(_)
-        require('dap').step_into()
-    end,
-    args = { nargs = '?', force = true },
-}
+nvim.command.set('DapStepInto', function(_)
+    require('dap').step_into()
+end, { nargs = '?' })
 
-set_command {
-    lhs = 'DapStepOut',
-    rhs = function(_)
-        require('dap').step_out()
-    end,
-    args = { nargs = '?', force = true },
-}
+nvim.command.set('DapStepOut', function(_)
+    require('dap').step_out()
+end, { nargs = '?' })
 
 return true
