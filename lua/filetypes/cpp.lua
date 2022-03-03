@@ -18,7 +18,7 @@ local M = {
         },
         ['clang++'] = {
             '-std=c++20',
-            '-g3',
+            '-O2',
             '-Wall',
             '-Wextra',
             '-Wshadow',
@@ -36,7 +36,7 @@ local M = {
         },
         ['g++'] = {
             '-std=c++20',
-            '-g3',
+            '-O2',
             '-Wall',
             '-Wextra',
             '-Wno-c++98-compat',
@@ -60,7 +60,7 @@ local M = {
         },
         clang = {
             '-std=c11',
-            '-g3',
+            '-O2',
             '-Wall',
             '-Wextra',
             '-Wshadow',
@@ -79,7 +79,7 @@ local M = {
         },
         gcc = {
             '-std=c11',
-            '-g3',
+            '-O2',
             '-Wall',
             '-Wextra',
             '-Wshadow',
@@ -275,6 +275,117 @@ function M.get_formatter()
     return cmd
 end
 
+function M.execute(exe, args)
+    local base_cwd = require('utils.files').getcwd()
+    exe = exe or base_cwd .. '/build/main'
+    args = args or {}
+    if not is_file(exe) and not executable(exe) then
+        vim.notify('Missing executable: ' .. exe, 'ERROR', { title = 'ExecuteProject' })
+        return false
+    end
+    local run = require('jobs'):new {
+        cmd = exe,
+        args = args,
+        progress = true,
+        verify_exec = false,
+        opts = {
+            cwd = require('utils.files').getcwd(),
+            -- pty = true,
+        },
+        qf = {
+            dump = false,
+            on_fail = {
+                jump = true,
+                open = true,
+                dump = true,
+            },
+            context = 'ExecuteProject',
+            title = 'ExecuteProject',
+        },
+    }
+    run:start()
+    run:progress()
+end
+
+function M.build(compile)
+    local flags = compile.flags or {}
+    local compiler = compile.compiler or get_compiler()
+
+    local base_cwd = require('utils.files').getcwd()
+    local normalize_path = require('utils.files').normalize_path
+    local ft = vim.opt_local.filetype:get()
+
+    local compile_output = base_cwd .. '/build/main'
+    local cflag_files
+
+    if compile.flags_file ~= '' then
+        cflag_files = realpath(normalize_path(compile.flags_file))
+    end
+
+    vim.list_extend(flags, get_args(compiler, nvim.get_current_buf(), cflag_files))
+    vim.list_extend(flags, { '-o', compile_output })
+
+    if compile.build_type then
+        local build_flags = { '-O2' }
+        if compile.build_type:lower() == 'release' then
+            build_flags = { '-O3' }
+        elseif compile.build_type:lower() == 'debug' then
+            build_flags = { '-O0', '-g' }
+        elseif compile.build_type:lower() == 'relwithdebinfo' then
+            build_flags = { '-O2', '-g' }
+        elseif compile.build_type:lower() == 'MinSizeRel' then
+            build_flags = { '-Oz' }
+        end
+        local tmp_flags = {}
+        for _, flag in ipairs(flags) do
+            if not flag:match '^-O%d?$' and not flag:match '^-g%d?$' then
+                table.insert(tmp_flags, flag)
+            end
+        end
+        flags = vim.list_extend(tmp_flags, build_flags)
+    end
+
+    require('utils.files').find_files(base_cwd, '*.' .. ft, function(job)
+        vim.list_extend(flags, job:output())
+
+        if not require('utils.files').is_dir 'build' then
+            require('utils.files').mkdir 'build'
+        end
+
+        P(('%s %s'):format(compiler, table.concat(flags, ' ')))
+
+        local build = require('jobs'):new {
+            cmd = compiler,
+            args = flags,
+            silent = true,
+            progress = true,
+            opts = {
+                cwd = require('utils.files').getcwd(),
+                -- pty = true,
+            },
+            qf = {
+                dump = false,
+                on_fail = {
+                    jump = true,
+                    open = true,
+                    dump = true,
+                },
+                context = 'BuildProject',
+                title = 'BuildProject',
+            },
+        }
+
+        if compile.cb then
+            build:callback_on_success(function(_)
+                compile.cb()
+            end)
+        end
+
+        build:start()
+        -- build:progress()
+    end)
+end
+
 function M.setup()
     local compiler = get_compiler()
     if not compiler then
@@ -300,11 +411,11 @@ function M.setup()
     local cmake = vim.fn.findfile('CMakeLists.txt', cwd .. ';')
 
     if executable 'make' then
-        RELOAD('filetypes.make').setup()
+        require('filetypes.make').setup()
     end
 
     if cmake ~= '' and executable 'cmake' then
-        RELOAD('filetypes.cmake').setup()
+        require('filetypes.cmake').setup()
     end
 
     local has_tidy = false
@@ -367,85 +478,93 @@ function M.setup()
         set_opts(nil, has_tidy, compiler, bufnum)
     end
 
-    -- BUG: This only build once, giving linking errors in further calls, needs debug
     set_command {
         lhs = 'BuildProject',
         rhs = function(...)
-            local buffer = nvim.buf.get_name(nvim.get_current_buf())
-            local base_cwd = require('utils.files').getcwd()
-            local ft = vim.bo.filetype
-
-            if not is_file(buffer) then
-                vim.notify('Current buffer is not a file', 'ERROR', { title = 'Execute' })
-                return false
-            end
-
-            local compile_output = base_cwd .. '/build/main'
-            -- local args, compiler_flags_file
             local args = { ... }
-            local cflag_files
+            local flags = {}
+            local build_type, cflags_file
 
             if flags_file ~= '' then
-                cflag_files = realpath(normalize_path(flags_file))
+                cflags_file = realpath(normalize_path(flags_file))
             end
 
-            vim.list_extend(args, get_args(compiler, nvim.get_current_buf(), cflag_files))
-            vim.list_extend(args, { '-o', compile_output })
+            local builds = {
+                debug = true,
+                release = true,
+                minsizerel = true,
+                relwithdebinfo = true,
+            }
 
-            require('utils.files').find_files(base_cwd, '*.' .. ft, function(job)
-                vim.list_extend(args, job:output())
-
-                if not require('utils.files').is_dir 'build' then
-                    require('utils.files').mkdir 'build'
+            for _, arg in ipairs(args) do
+                if builds[arg:lower()] then
+                    build_type = arg
+                else
+                    table.insert(flags, arg)
                 end
+            end
 
-                local build = RELOAD('jobs'):new {
-                    cmd = compiler,
-                    args = args,
-                    progress = true,
-                    opts = {
-                        cwd = require('utils.files').getcwd(),
-                        -- pty = true,
-                    },
-                    qf = {
-                        dump = false,
-                        on_fail = {
-                            jump = true,
-                            open = true,
-                            dump = true,
-                        },
-                        context = 'BuildProject',
-                        title = 'BuildProject',
-                    },
-                }
+            M.build {
+                compiler = compiler,
+                build_type = build_type,
+                flags = flags,
+                flags_file = cflags_file,
+            }
+        end,
+        args = {
+            nargs = '*',
+            force = true,
+            buffer = true,
+            complete = 'customlist,v:lua._completions.cmake_build',
+        },
+    }
 
-                build:callback_on_success(function(_)
-                    local execute = RELOAD('jobs'):new {
-                        cmd = compile_output,
-                        progress = true,
-                        verify_exec = false,
-                        opts = {
-                            cwd = require('utils.files').getcwd(),
-                            -- pty = true,
-                        },
-                        qf = {
-                            dump = false,
-                            on_fail = {
-                                jump = true,
-                                open = true,
-                                dump = true,
-                            },
-                            context = 'ExecuteProject',
-                            title = 'ExecuteProject',
-                        },
-                    }
-                    execute:start()
-                    execute:progress()
-                end)
+    set_command {
+        lhs = 'BuildExecuteProject',
+        rhs = function(...)
+            local args = { ... }
+            local flags = {}
+            local build_type, cflags_file
 
-                build:start()
-                build:progress()
-            end)
+            if flags_file ~= '' then
+                cflags_file = realpath(normalize_path(flags_file))
+            end
+
+            local builds = {
+                debug = true,
+                release = true,
+                relwithdebinfo = true,
+            }
+
+            for _, arg in ipairs(args) do
+                if builds[arg:lower()] then
+                    build_type = arg
+                else
+                    table.insert(flags, arg)
+                end
+            end
+
+            M.build {
+                compiler = compiler,
+                build_type = build_type,
+                flags = flags,
+                flags_file = cflags_file,
+                cb = M.execute,
+            }
+        end,
+        args = {
+            nargs = '*',
+            force = true,
+            buffer = true,
+            complete = 'customlist,v:lua._completions.cmake_build',
+        },
+    }
+
+    set_command {
+        lhs = 'ExecuteProject',
+        rhs = function(...)
+            local args = { ... }
+            M.execute(nil, args)
         end,
         args = { nargs = '*', force = true, buffer = true },
     }

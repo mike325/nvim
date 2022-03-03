@@ -667,10 +667,9 @@ packer.startup(function()
             return not vim.env.VIM_MIN and not vim.g.minimal
         end,
         config = function()
-            require('dapui').setup {}
-            -- require("dapui").open()
-            -- require("dapui").close()
-            -- require("dapui").toggle()
+            local dapui = require 'dapui'
+            dapui.setup {}
+
             local set_command = require('neovim.commands').set_command
             set_command {
                 lhs = 'DapUI',
@@ -678,8 +677,20 @@ packer.startup(function()
                 args = { force = true },
             }
             vim.keymap.set('n', '=I', require('dapui').toggle, { noremap = true, silent = true })
+
+            local dap = require 'dap'
+            dap.listeners.after.event_initialized['dapui_config'] = function()
+                dapui.open()
+            end
+            dap.listeners.before.event_terminated['dapui_config'] = function()
+                dapui.close()
+            end
+            dap.listeners.before.event_exited['dapui_config'] = function()
+                dapui.close()
+            end
         end,
         wants = 'nvim-dap',
+        after = 'nvim-dap',
     }
 end)
 
