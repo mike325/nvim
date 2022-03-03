@@ -438,25 +438,11 @@ set_command {
     args = { force = true, nargs = '?', complete = 'customlist,v:lua._completions.spells' },
 }
 
--- set_command{
---     lhs = 'ConncallLevel',
---     rhs = "call neovim#ConncallLevel(expand(<q-args>))",
---     args = {nargs='?', force = true}
--- }
-
 set_command {
     lhs = 'Qopen',
     rhs = "execute((&splitbelow) ? 'botright' : 'topleft' ) . ' copen ' . expand(<q-args>)",
     args = { nargs = '?', force = true },
 }
-
--- if executable('powershell') then
---     set_command{
---         lhs = 'PowershellToggle',
---         rhs = 'call windows#toggle_powershell()',
---         args = {force=true}
---     }
--- end
 
 -- TODO: Check for GUIs
 if sys.name == 'windows' then

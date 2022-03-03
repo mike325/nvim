@@ -17,8 +17,8 @@ local M = {
             efm = '%E%f:%l:%c: fatal error: %m,%E%f:%l:%c: error: %m,%W%f:%l:%c: warning: %m',
         },
         ['clang++'] = {
-            '-std=c++17',
-            '-O3',
+            '-std=c++20',
+            '-g3',
             '-Wall',
             '-Wextra',
             '-Wshadow',
@@ -35,8 +35,8 @@ local M = {
             '-Wformat=2',
         },
         ['g++'] = {
-            '-std=c++17',
-            '-O3',
+            '-std=c++20',
+            '-g3',
             '-Wall',
             '-Wextra',
             '-Wno-c++98-compat',
@@ -60,7 +60,7 @@ local M = {
         },
         clang = {
             '-std=c11',
-            '-O3',
+            '-g3',
             '-Wall',
             '-Wextra',
             '-Wshadow',
@@ -79,7 +79,7 @@ local M = {
         },
         gcc = {
             '-std=c11',
-            '-O3',
+            '-g3',
             '-Wall',
             '-Wextra',
             '-Wshadow',
@@ -154,13 +154,13 @@ local function get_args(compiler, bufnum, compiler_flags_file)
 
     if is_file(bufname) then
         if databases[bufname] then
-            args = databases[bufname].args
+            args = databases[bufname].flags
         elseif
             compiler_flags_file
             and compile_flags[compiler_flags_file]
-            and compile_flags[compiler_flags_file].args
+            and compile_flags[compiler_flags_file].flags
         then
-            args = compile_flags[compiler_flags_file].args
+            args = compile_flags[compiler_flags_file].flags
         end
     end
 
@@ -176,7 +176,7 @@ local function set_opts(filename, has_tidy, compiler, bufnum)
         vim.api.nvim_buf_set_option(
             bufnum,
             'makeprg',
-            ('%s %s %%'):format(databases[bufname].compiler, table.concat(databases[bufname].args, ' '))
+            ('%s %s %%'):format(databases[bufname].compiler, table.concat(databases[bufname].flags, ' '))
         )
         local has_local, path = pcall(vim.api.nvim_buf_get_option, bufnum, 'path')
         if not has_local then
@@ -190,7 +190,6 @@ local function set_opts(filename, has_tidy, compiler, bufnum)
     end
     if filename and compile_flags[filename] then
         if #compile_flags[filename].includes > 0 then
-            -- BUG: Seems to fail and abort if we call this too early in nvim startup
             local has_local, path = pcall(vim.api.nvim_buf_get_option, bufnum, 'path')
             if not has_local then
                 path = vim.api.nvim_get_option 'path'
@@ -256,8 +255,8 @@ local function parse_compiledb(data)
             databases[source_name] = {}
             databases[source_name].filename = source_name
             databases[source_name].compiler = args[1]
-            databases[source_name].args = vim.list_slice(args, 2, #args)
-            databases[source_name].includes = parse_includes(databases[source_name].args)
+            databases[source_name].flags = vim.list_slice(args, 2, #args)
+            databases[source_name].includes = parse_includes(databases[source_name].flags)
         end
     end
 end
@@ -384,13 +383,13 @@ function M.setup()
             local compile_output = base_cwd .. '/build/main'
             -- local args, compiler_flags_file
             local args = { ... }
-            local compiler_flags_file
+            local cflag_files
 
             if flags_file ~= '' then
-                compiler_flags_file = realpath(normalize_path(flags_file))
+                cflag_files = realpath(normalize_path(flags_file))
             end
 
-            vim.list_extend(args, get_args(compiler, nvim.get_current_buf(), compiler_flags_file))
+            vim.list_extend(args, get_args(compiler, nvim.get_current_buf(), cflag_files))
             vim.list_extend(args, { '-o', compile_output })
 
             require('utils.files').find_files(base_cwd, '*.' .. ft, function(job)

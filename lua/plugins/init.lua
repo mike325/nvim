@@ -62,7 +62,7 @@ packer.startup(function()
     use {
         'lervag/vimtex',
         cond = function()
-            return vim.fn.executable 'latexmk' == 1 and vim.env.VIM_MIN == nil and vim.g.minimal == nil
+            return vim.fn.executable 'latexmk' == 1 and not vim.env.VIM_MIN and not vim.g.minimal
         end,
         setup = function()
             require 'plugins.vimtex'
@@ -173,7 +173,7 @@ packer.startup(function()
         'tommcdo/vim-lion',
         event = 'VimEnter',
         cond = function()
-            return vim.env.VIM_MIN == nil and vim.g.minimal == nil
+            return not vim.env.VIM_MIN and not vim.g.minimal
         end,
         config = function()
             vim.g.lion_squeeze_spaces = 1
@@ -183,7 +183,7 @@ packer.startup(function()
     use {
         'tpope/vim-abolish',
         cond = function()
-            return vim.env.VIM_MIN == nil and vim.g.minimal == nil
+            return not vim.env.VIM_MIN and not vim.g.minimal
         end,
         event = { 'InsertEnter', 'CmdwinEnter' },
         -- TODO: configs
@@ -193,7 +193,7 @@ packer.startup(function()
     use {
         'Yggdroot/indentLine',
         cond = function()
-            return vim.env.VIM_MIN == nil and vim.g.minimal == nil
+            return not vim.env.VIM_MIN and not vim.g.minimal
         end,
         setup = function()
             vim.g.indentLine_fileTypeExclude = {
@@ -223,7 +223,7 @@ packer.startup(function()
         event = 'CmdlineEnter',
         cmd = { 'DiffviewToggle', 'DiffviewFileHistory' },
         cond = function()
-            return vim.env.VIM_MIN == nil and vim.g.minimal == nil
+            return not vim.env.VIM_MIN and not vim.g.minimal
         end,
         config = function()
             require 'plugins.diffview'
@@ -249,7 +249,7 @@ packer.startup(function()
     use {
         'rhysd/git-messenger.vim',
         cond = function()
-            return vim.env.VIM_MIN == nil and vim.g.minimal == nil
+            return not vim.env.VIM_MIN and not vim.g.minimal
         end,
         setup = function()
             vim.g.git_messenger_no_default_mappings = 1
@@ -263,7 +263,7 @@ packer.startup(function()
         'lewis6991/gitsigns.nvim',
         event = { 'CursorHold', 'CursorHoldI' },
         cond = function()
-            return vim.env.VIM_MIN == nil and vim.g.minimal == nil
+            return not vim.env.VIM_MIN and not vim.g.minimal
         end,
         wants = 'plenary.nvim',
         config = function()
@@ -314,7 +314,7 @@ packer.startup(function()
     use {
         'sainnhe/sonokai',
         cond = function()
-            return vim.env.VIM_MIN == nil and vim.g.minimal == nil
+            return not vim.env.VIM_MIN and not vim.g.minimal
         end,
         config = function()
             vim.opt.termguicolors = true
@@ -358,7 +358,7 @@ packer.startup(function()
     use {
         'phaazon/hop.nvim',
         cond = function()
-            return vim.env.VIM_MIN == nil and vim.g.minimal == nil
+            return not vim.env.VIM_MIN and not vim.g.minimal
         end,
         config = function()
             require 'plugins.hop'
@@ -370,7 +370,7 @@ packer.startup(function()
     --     event = { 'CmdlineEnter', 'CursorHold' },
     --     cmd = { 'Trouble' },
     --     cond = function()
-    --         return vim.env.VIM_MIN == nil and vim.g.minimal == nil
+    --         return not vim.env.VIM_MIN and not vim.g.minimal
     --     end,
     --     config = function()
     --         require 'plugins.trouble'
@@ -380,7 +380,7 @@ packer.startup(function()
     use {
         'vim-airline/vim-airline',
         cond = function()
-            return vim.env.VIM_MIN == nil and vim.g.minimal == nil
+            return not vim.env.VIM_MIN and not vim.g.minimal
         end,
         config = function()
             require 'plugins.airline'
@@ -389,7 +389,7 @@ packer.startup(function()
             {
                 'vim-airline/vim-airline-themes',
                 cond = function()
-                    return vim.env.VIM_MIN == nil and vim.g.minimal == nil
+                    return not vim.env.VIM_MIN and not vim.g.minimal
                 end,
             },
         },
@@ -417,43 +417,6 @@ packer.startup(function()
             { 'nvim-treesitter/nvim-treesitter-textobjects' },
         },
     }
-
-    -- use {
-    --     'mfussenegger/nvim-dap',
-    --     event = { 'CursorHold', 'CmdlineEnter' },
-    --     cmd = { 'DapStart', 'DapContinue' },
-    --     cond = function()
-    --         return vim.env.VIM_MIN == nil and vim.g.minimal == nil
-    --     end,
-    --     config = function()
-    --         require 'plugins.dap'
-    --     end,
-    -- }
-    --
-    -- -- use {
-    -- --     'rcarriga/nvim-dap-ui',
-    -- --     cond = function() return vim.env.VIM_MIN == nil and vim.g.minimal == nil end,
-    -- --     config = function()
-    -- --         require'dapui'.setup{}
-    -- --         local set_command = require'neovim.commands'.set_command
-    -- --         local set_mapping = require'neovim.mappings'.set_mapping
-    -- --         -- require("dapui").open()
-    -- --         -- require("dapui").close()
-    -- --         -- require("dapui").toggle()
-    -- --         set_command{
-    -- --             lhs = 'DapUI',
-    -- --             rhs = require("dapui").toggle,
-    -- --             args = { force = true, }
-    -- --         }
-    -- --         set_mapping{
-    -- --             mode = 'n',
-    -- --             lhs = '=I',
-    -- --             rhs = require("dapui").toggle,
-    -- --             args = {noremap = true, silent = true},
-    -- --         }
-    -- --     end,
-    -- --     wants = 'nvim-dap'
-    -- -- }
 
     use {
         'nvim-telescope/telescope.nvim',
@@ -622,21 +585,6 @@ packer.startup(function()
         -- end,
     }
 
-    -- use {
-    --     'nvim-orgmode/orgmode',
-    --     config = function()
-    --         require 'plugins.orgmode'
-    --     end,
-    --     wants = { 'nvim-treesitter' },
-    --     after = 'nvim-treesitter',
-    -- }
-
-    -- use {
-    --     'ThePrimeagen/refactoring.nvim',
-    --     wants = { 'nvim-treesitter' },
-    --     after = 'nvim-treesitter',
-    -- }
-
     -- TODO: Add neovim 0.5 compatibility layer/setup
     use {
         'jose-elias-alvarez/null-ls.nvim',
@@ -699,6 +647,39 @@ packer.startup(function()
                 dap_debug = false,
             }
         end,
+    }
+
+    use {
+        'mfussenegger/nvim-dap',
+        -- event = { 'CursorHold', 'CmdlineEnter' },
+        -- cmd = { 'DapStart', 'DapContinue' },
+        cond = function()
+            return not vim.env.VIM_MIN and not vim.g.minimal
+        end,
+        config = function()
+            require 'plugins.dap'
+        end,
+    }
+
+    use {
+        'rcarriga/nvim-dap-ui',
+        cond = function()
+            return not vim.env.VIM_MIN and not vim.g.minimal
+        end,
+        config = function()
+            require('dapui').setup {}
+            -- require("dapui").open()
+            -- require("dapui").close()
+            -- require("dapui").toggle()
+            local set_command = require('neovim.commands').set_command
+            set_command {
+                lhs = 'DapUI',
+                rhs = require('dapui').toggle,
+                args = { force = true },
+            }
+            vim.keymap.set('n', '=I', require('dapui').toggle, { noremap = true, silent = true })
+        end,
+        wants = 'nvim-dap',
     }
 end)
 
