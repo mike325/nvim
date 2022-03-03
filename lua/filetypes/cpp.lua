@@ -382,13 +382,15 @@ function M.setup()
             end
 
             local compile_output = base_cwd .. '/build/main'
-            local args, compiler_flags_file
+            -- local args, compiler_flags_file
+            local args = { ... }
+            local compiler_flags_file
 
             if flags_file ~= '' then
                 compiler_flags_file = realpath(normalize_path(flags_file))
             end
 
-            args = get_args(compiler, nvim.get_current_buf(), compiler_flags_file)
+            vim.list_extend(args, get_args(compiler, nvim.get_current_buf(), compiler_flags_file))
             vim.list_extend(args, { '-o', compile_output })
 
             require('utils.files').find_files(base_cwd, '*.' .. ft, function(job)
