@@ -309,7 +309,7 @@ function M.setup()
     local has_tidy = false
     if executable 'clang-tidy' and (flags_file ~= '' or db_file ~= '' or clang_tidy ~= '') then
         has_tidy = true
-        local tidy = M.makeprg['clang-tidy']
+        local tidy = vim.list_extend({ 'clang-tidy' }, M.makeprg['clang-tidy'])
         vim.bo.makeprg = table.concat(tidy, ' ') .. ' %'
         vim.bo.errorformat = tidy.efm
     end
@@ -378,14 +378,14 @@ function M.setup()
         end
 
         local compile_output = base_cwd .. '/build/main'
-        -- local args = opts.fargs
-        local args, compiler_flags_file
+        local args = opts.fargs
+        local compiler_flags_file
 
         if flags_file ~= '' then
             compiler_flags_file = realpath(normalize_path(flags_file))
         end
 
-        args = get_args(compiler, nvim.get_current_buf(), compiler_flags_file)
+        vim.list_extend(args, get_args(compiler, nvim.get_current_buf(), compiler_flags_file))
         vim.list_extend(args, { '-o', compile_output })
 
         require('utils.files').find_files(base_cwd, '*.' .. ft, function(job)

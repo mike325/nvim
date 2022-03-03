@@ -289,7 +289,7 @@ packer.startup(function()
                     ['v =u'] = '<cmd>lua require"gitsigns".reset_hunk({vim.fn.line("."), vim.fn.line("v")})<CR>',
                     ['n =U'] = '<cmd>lua require"gitsigns".reset_buffer()<CR>',
                     ['n =f'] = '<cmd>lua require"gitsigns".preview_hunk()<CR>',
-                    ['n =M'] = '<cmd>lua require"gitsigns".blame_line(true)<CR>',
+                    ['n =M'] = '<cmd>lua require"gitsigns".blame_line({full = false, ignore_whitespace = true})<CR>',
 
                     -- Text objects
                     ['o ih'] = ':<C-U>lua require"gitsigns.actions".select_hunk()<CR>',

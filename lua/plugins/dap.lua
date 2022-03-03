@@ -13,6 +13,17 @@ end
 local executable = require('utils.files').executable
 local set_autocmd = require('neovim.autocmds').set_autocmd
 
+local lldb = exepath 'lldb-vscode'
+
+if not lldb then
+    for version = 8, 13 do
+        lldb = exepath('lldb-vscode-' .. tostring(version))
+        if lldb then
+            break
+        end
+    end
+end
+
 local function pythonPath()
     -- debugpy supports launching an application with a different interpreter
     -- then the one used to launch debugpy itself.
@@ -51,8 +62,6 @@ dap.configurations.python = {
     },
 }
 
-local lldb = exepath 'lldb-vscode' or exepath 'lldb-vscode-11'
-
 if lldb then
     dap.adapters.lldb = {
         type = 'executable',
@@ -66,7 +75,7 @@ if lldb then
             type = 'lldb',
             request = 'launch',
             program = function()
-                return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+                return vim.fn.input('Path to executable: ', getcwd() .. '/', 'file')
             end,
             cwd = '${workspaceFolder}',
             stopOnEntry = false,

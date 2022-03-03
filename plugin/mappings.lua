@@ -543,7 +543,7 @@ if executable 'scp' then
             filename = {
                 filename,
                 function(f)
-                    return is_file(filename) or virtual_filename
+                    return is_file(f) or virtual_filename
                 end,
                 'a valid file',
             },
