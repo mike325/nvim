@@ -345,7 +345,7 @@ end
 function M.setup(ft, opts)
     vim.validate { ft = { ft, 'string', true }, opts = { opts, 'table', true } }
     ft = ft or vim.opt_local.filetype:get()
-    local ok, utils = pcall(require, 'filetypes.' .. ft)
+    local ok, utils = pcall(RELOAD, 'filetypes.' .. ft)
     opts = opts or {}
     if ok then
         if utils.get_linter then

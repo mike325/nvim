@@ -10,39 +10,37 @@ if treesitter == nil then
     return false
 end
 
-local orgmode = load_module 'orgmode'
-
 local min = vim.env.VIM_MIN ~= nil or vim.g.minimal ~= nil
 local commet_txtobj = nil
 if not packer_plugins or (packer_plugins and not packer_plugins['vim-textobj-comment']) or min then
     commet_txtobj = '@comment.outer'
 end
 
-local languages = {
-    'bash',
-    'bibtex',
-    'c',
-    'cmake',
-    'comment',
-    'cpp',
-    'dockerfile',
-    'go',
-    'java',
-    'json',
-    'jsonc',
-    'latex',
-    'lua',
-    'make',
-    'markdown',
-    'perl',
-    'python',
-    'query',
-    'rst',
-    'rust',
-    'toml',
-    'vim',
-    'yaml',
-}
+-- local languages = {
+--     'bash',
+--     'bibtex',
+--     'c',
+--     'cmake',
+--     'comment',
+--     'cpp',
+--     'dockerfile',
+--     'go',
+--     'java',
+--     'json',
+--     'jsonc',
+--     'latex',
+--     'lua',
+--     'make',
+--     'markdown',
+--     'perl',
+--     'python',
+--     'query',
+--     'rst',
+--     'rust',
+--     'toml',
+--     'vim',
+--     'yaml',
+-- }
 
 local parsers = require 'nvim-treesitter.parsers'
 
@@ -56,12 +54,13 @@ parser_config.org = {
     filetype = 'org',
 }
 
-if orgmode then
-    table.insert(languages, 'org')
-end
+-- local orgmode = load_module 'orgmode'
+-- if orgmode then
+--     table.insert(languages, 'org')
+-- end
 
 treesitter.setup {
-    ensure_installed = languages,
+    ensure_installed = 'maintained',
     indent = {
         enable = true,
     },
