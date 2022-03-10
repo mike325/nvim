@@ -4,10 +4,11 @@ local executable = require('utils.files').executable
 local readfile = require('utils.files').readfile
 local is_file = require('utils.files').is_file
 local realpath = require('utils.files').realpath
+local find_parent = require('utils.files').find_parent
 
 local compile_flags = STORAGE.compile_flags
 local databases = STORAGE.databases
-local has_cjson = STORAGE.has_cjson
+-- local has_cjson = STORAGE.has_cjson
 
 local set_command = require('neovim.commands').set_command
 
@@ -148,76 +149,6 @@ local function get_compiler()
     return compiler
 end
 
-local function get_args(compiler, bufnum, compiler_flags_file)
-    local bufname = realpath(nvim.buf.get_name(bufnum))
-    local args
-
-    if is_file(bufname) then
-        if databases[bufname] then
-            args = databases[bufname].flags
-        elseif
-            compiler_flags_file
-            and compile_flags[compiler_flags_file]
-            and compile_flags[compiler_flags_file].flags
-        then
-            args = compile_flags[compiler_flags_file].flags
-        end
-    end
-
-    return args or M.makeprg[compiler] or {}
-end
-
-local function set_opts(filename, has_tidy, compiler, bufnum)
-    local bufname = nvim.buf.get_name(bufnum)
-    local merge_uniq_list = require('utils.tables').merge_uniq_list
-
-    if is_file(bufname) and databases[realpath(bufname)] then
-        bufname = realpath(bufname)
-        vim.api.nvim_buf_set_option(
-            bufnum,
-            'makeprg',
-            ('%s %s %%'):format(databases[bufname].compiler, table.concat(databases[bufname].flags, ' '))
-        )
-        local has_local, path = pcall(vim.api.nvim_buf_get_option, bufnum, 'path')
-        if not has_local then
-            path = vim.api.nvim_get_option 'path'
-        end
-        path = vim.split(path, ',')
-        table.insert(path, '.')
-        path = merge_uniq_list(databases[bufname].includes, path)
-        vim.api.nvim_buf_set_option(bufnum, 'path', table.concat(path, ',') .. ',')
-        return
-    end
-    if filename and compile_flags[filename] then
-        if #compile_flags[filename].includes > 0 then
-            local has_local, path = pcall(vim.api.nvim_buf_get_option, bufnum, 'path')
-            if not has_local then
-                path = vim.api.nvim_get_option 'path'
-            end
-            path = vim.split(path, ',')
-            table.insert(path, '.')
-            path = merge_uniq_list(compile_flags[filename].includes, path)
-            vim.api.nvim_buf_set_option(bufnum, 'path', table.concat(path, ',') .. ',')
-        end
-
-        if #compile_flags[filename].flags > 0 and not has_tidy then
-            local config_flags = table.concat(compile_flags[filename].flags, ' ')
-            vim.api.nvim_buf_set_option(
-                bufnum,
-                'makeprg',
-                ('%s %s -o %s %%'):format(compiler, config_flags, vim.fn.tempname())
-            )
-        end
-    elseif not has_tidy then
-        local config_flags = table.concat(M.makeprg[compiler] or {}, ' ')
-        vim.api.nvim_buf_set_option(
-            bufnum,
-            'makeprg',
-            ('%s %s -o %s %%'):format(compiler, config_flags, vim.fn.tempname())
-        )
-    end
-end
-
 local function parse_includes(args)
     local includes = {}
     local include = false
@@ -257,6 +188,90 @@ local function parse_compiledb(data)
             databases[source_name].compiler = args[1]
             databases[source_name].flags = vim.list_slice(args, 2, #args)
             databases[source_name].includes = parse_includes(databases[source_name].flags)
+        end
+    end
+end
+
+local function parse_compile_flags(flags_file)
+    local data = readfile(flags_file, true)
+    if data and #data > 0 then
+        compile_flags[realpath(flags_file)] = {
+            flags = {},
+            includes = {},
+        }
+        for _, line in pairs(data) do
+            if line:sub(1, 1) == '-' or line:sub(1, 1) == '/' then
+                table.insert(compile_flags[flags_file].flags, line)
+            end
+
+            if line:sub(1, 2) == '-I' or line:sub(1, 2) == '/I' or line:match '^-isystem' then
+                local path = line:sub(3, #line):gsub('^%s+', '')
+                table.insert(compile_flags[flags_file].includes, path)
+            end
+        end
+    end
+end
+
+local function get_args(compiler, bufnum)
+    local bufname = realpath(nvim.buf.get_name(bufnum))
+    local args
+
+    if is_file(bufname) then
+        local cwd
+
+        if bufname and bufname ~= '' and is_file(bufname) then
+            cwd = require('utils.files').basedir(bufname)
+        else
+            cwd = require('utils.files').getcwd()
+        end
+
+        local db_file = find_parent('compile_commands.json', cwd)
+        if db_file then
+            parse_compiledb(readfile(db_file, false))
+            args = databases[bufname].flags
+        else
+            local flags_file = find_parent('compile_flags.txt', cwd)
+            if flags_file then
+                parse_compile_flags(flags_file)
+                args = compile_flags[flags_file].flags
+            end
+        end
+    end
+
+    return args or M.makeprg[compiler] or {}
+end
+
+local function set_opts(compiler, bufnum)
+    local flags_file = find_parent 'compile_flags.txt'
+    local db_file = find_parent 'compile_commands.json'
+    local clang_tidy = find_parent '.clang-tidy'
+    local args
+
+    if executable 'clang-tidy' and (flags_file or db_file or clang_tidy) then
+        local tidy = vim.list_extend({ 'clang-tidy' }, M.makeprg['clang-tidy'])
+        vim.opt_local.makeprg = table.concat(tidy, ' ') .. ' %'
+        vim.opt_local.errorformat = tidy.efm
+    else
+        args = get_args(compile_flags, bufnum)
+        vim.opt_local.makeprg = ('%s %s'):format(compiler, table.concat(args, ' '))
+    end
+
+    if flags_file or db_file then
+        if not args then
+            args = get_args(compile_flags, bufnum)
+        end
+
+        local paths = {}
+        for _, flag in ipairs(args) do
+            if flag:sub(1, 2) == '-I' or flag:sub(1, 2) == '/I' or flag:match '^-isystem' then
+                local path = flag:sub(3, #flag):gsub('^%s+', '')
+                table.insert(paths, path)
+            end
+        end
+        for _, path in ipairs(paths) do
+            if not vim.tbl_contains(vim.opt_local.path:get(), path) then
+                vim.opt_local.path:append(paths)
+            end
         end
     end
 end
@@ -312,28 +327,20 @@ function M.build(compile)
     local compiler = compile.compiler or get_compiler()
 
     local base_cwd = require('utils.files').getcwd()
-    local normalize_path = require('utils.files').normalize_path
     local ft = vim.opt_local.filetype:get()
 
     local compile_output = base_cwd .. '/build/main'
-    local cflag_files
 
-    if compile.flags_file ~= '' then
-        cflag_files = realpath(normalize_path(compile.flags_file))
-    end
-
-    vim.list_extend(flags, get_args(compiler, nvim.get_current_buf(), cflag_files))
+    vim.list_extend(flags, get_args(compiler, nvim.get_current_buf()))
     vim.list_extend(flags, { '-o', compile_output })
 
     if compile.build_type then
         local build_flags = { '-O2' }
-        if compile.build_type:lower() == 'release' then
-            build_flags = { '-O3' }
-        elseif compile.build_type:lower() == 'debug' then
-            build_flags = { '-O0', '-g' }
+        if compile.build_type:lower() == 'debug' then
+            build_flags = { '-Og', '-g' }
         elseif compile.build_type:lower() == 'relwithdebinfo' then
             build_flags = { '-O2', '-g' }
-        elseif compile.build_type:lower() == 'MinSizeRel' then
+        elseif compile.build_type:lower() == 'minsizerel' then
             build_flags = { '-Oz' }
         end
         local tmp_flags = {}
@@ -352,7 +359,7 @@ function M.build(compile)
             require('utils.files').mkdir 'build'
         end
 
-        P(('%s %s'):format(compiler, table.concat(flags, ' ')))
+        -- P(('%s %s'):format(compiler, table.concat(flags, ' ')))
 
         local build = require('jobs'):new {
             cmd = compiler,
@@ -392,102 +399,26 @@ function M.setup()
         return
     end
 
-    local bufnum = nvim.get_current_buf()
-    local bufname = nvim.buf.get_name(bufnum)
-    local normalize_path = require('utils.files').normalize_path
-
-    local cwd
-    if bufname and bufname ~= '' and is_file(bufname) then
-        cwd = require('utils.files').basedir(bufname)
-    else
-        cwd = require('utils.files').getcwd()
-    end
-
-    local flags_file = vim.fn.findfile('compile_flags.txt', cwd .. ';')
-    local db_file = vim.fn.findfile('compile_commands.json', cwd .. ';')
-    local clang_tidy = vim.fn.findfile('.clang-tidy', cwd .. ';')
-
-    -- local makefile = vim.fn.findfile('Makefile', cwd..';')
-    local cmake = vim.fn.findfile('CMakeLists.txt', cwd .. ';')
-
-    if executable 'make' then
+    local makefile = find_parent 'Makefile'
+    if makefile and executable 'make' then
         require('filetypes.make').setup()
     end
 
-    if cmake ~= '' and executable 'cmake' then
+    local cmake = find_parent 'CMakeLists.txt'
+    if cmake and executable 'cmake' then
         require('filetypes.cmake').setup()
     end
 
-    local has_tidy = false
-    if executable 'clang-tidy' and (flags_file ~= '' or db_file ~= '' or clang_tidy ~= '') then
-        has_tidy = true
-        local tidy = vim.list_extend({ 'clang-tidy' }, M.makeprg['clang-tidy'])
-        vim.bo.makeprg = table.concat(tidy, ' ') .. ' %'
-        vim.bo.errorformat = tidy.efm
-    end
-
-    local filename
-    if db_file ~= '' then
-        filename = realpath(normalize_path(db_file))
-        if is_file(bufname) and not databases[realpath(bufname)] then
-            -- bufname = realpath(bufname)
-            readfile(db_file, false, function(data)
-                if has_cjson == true then
-                    parse_compiledb(data)
-                    vim.schedule(function()
-                        set_opts(filename, has_tidy, compiler, bufnum)
-                    end)
-                else
-                    vim.schedule(function()
-                        parse_compiledb(data)
-                        set_opts(filename, has_tidy, compiler, bufnum)
-                    end)
-                end
-            end)
-        else
-            set_opts(filename, has_tidy, compiler, bufnum)
-        end
-    elseif flags_file ~= '' then
-        filename = realpath(normalize_path(flags_file))
-        if not compile_flags[filename] then
-            readfile(filename, true, function(data)
-                if data and #data > 0 then
-                    compile_flags[filename] = {
-                        flags = {},
-                        includes = {},
-                    }
-                    for _, line in pairs(data) do
-                        if line:sub(1, 1) == '-' or line:sub(1, 1) == '/' then
-                            table.insert(compile_flags[filename].flags, line)
-                        end
-                        if line:sub(1, 2) == '-I' or line:sub(1, 2) == '/I' then
-                            local path = line:sub(3, #line):gsub('^%s+', '')
-                            table.insert(compile_flags[filename].includes, path)
-                        end
-                    end
-                    vim.schedule(function()
-                        set_opts(filename, has_tidy, compiler, bufnum)
-                    end)
-                end
-            end)
-        else
-            set_opts(filename, has_tidy, compiler, bufnum)
-        end
-    elseif not has_tidy then
-        -- NOTE: We need to call this multiple times since readfile can be async
-        set_opts(nil, has_tidy, compiler, bufnum)
-    end
+    -- TODO: Add a watcher to compile_commands.json and compile_flags.txt and update the
+    --       flags on any file update
+    set_opts(compiler, nvim.get_current_buf())
 
     set_command {
         lhs = 'BuildProject',
         rhs = function(...)
             local args = { ... }
             local flags = {}
-            local build_type, cflags_file
-
-            if flags_file ~= '' then
-                cflags_file = realpath(normalize_path(flags_file))
-            end
+            local build_type
 
             local builds = {
                 debug = true,
@@ -508,7 +439,6 @@ function M.setup()
                 compiler = compiler,
                 build_type = build_type,
                 flags = flags,
-                flags_file = cflags_file,
             }
         end,
         args = {
@@ -524,11 +454,7 @@ function M.setup()
         rhs = function(...)
             local args = { ... }
             local flags = {}
-            local build_type, cflags_file
-
-            if flags_file ~= '' then
-                cflags_file = realpath(normalize_path(flags_file))
-            end
+            local build_type
 
             local builds = {
                 debug = true,
@@ -548,7 +474,6 @@ function M.setup()
                 compiler = compiler,
                 build_type = build_type,
                 flags = flags,
-                flags_file = cflags_file,
                 cb = M.execute,
             }
         end,

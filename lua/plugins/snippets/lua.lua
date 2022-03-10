@@ -136,7 +136,7 @@ ls.snippets.lua = {
     end
     ]], {
         i(1, 'true'),
-        d(2, saved_text, {}, {text = ':', indent = true}),
+        d(2, saved_text, {}, {indent = true}),
     })),
     s('elif', fmt([[
     elseif {} then

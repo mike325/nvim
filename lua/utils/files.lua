@@ -845,4 +845,27 @@ function M.dump_json(filename, data)
     return M.writefile(filename, M.encode_json(data))
 end
 
+function M.find_parent(filename, basedir)
+    vim.validate { filename = { filename, 'string' }, basedir = { basedir, 'string', true } }
+    basedir = basedir or M.getcwd()
+    assert(M.is_dir(basedir), debug.traceback('Invalid dirname: ' .. basedir))
+
+    basedir = M.realpath(basedir)
+    local dir = uv.fs_scandir(basedir)
+    while true do
+        local scanned, _ = uv.fs_scandir_next(dir)
+        if not scanned then
+            break
+        end
+        if scanned == filename then
+            return basedir .. separator() .. scanned
+        end
+    end
+
+    if not M.is_root(basedir) then
+        return M.find_parent(filename, M.basedir(basedir))
+    end
+    return false
+end
+
 return M
