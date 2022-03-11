@@ -374,7 +374,7 @@ function M.build(compile)
         local build = require('jobs'):new {
             cmd = compiler,
             args = flags,
-            -- progress = true,
+            progress = true,
             opts = {
                 cwd = getcwd(),
                 -- pty = true,
@@ -390,6 +390,12 @@ function M.build(compile)
                 title = 'BuildProject',
             },
         }
+
+        build:callback_on_success(function(_)
+            if vim.t.progress_win then
+                nvim.win.close(vim.t.progress_win, true)
+            end
+        end)
 
         if compile.cb then
             build:callback_on_success(function(_)
