@@ -4,7 +4,8 @@ local executable = require('utils.files').executable
 local readfile = require('utils.files').readfile
 local is_file = require('utils.files').is_file
 local realpath = require('utils.files').realpath
-local find_parent = require('utils.files').find_parent
+local getcwd = require('utils.files').getcwd
+-- local find_parent = require('utils.files').find_parent
 
 local compile_flags = STORAGE.compile_flags
 local databases = STORAGE.databases
@@ -214,27 +215,23 @@ end
 
 local function get_args(compiler, bufnum)
     local bufname = realpath(nvim.buf.get_name(bufnum))
-    local args
+    local args, cwd
 
-    if is_file(bufname) then
-        local cwd
+    if bufname and bufname ~= '' and is_file(bufname) then
+        cwd = require('utils.files').basedir(bufname)
+    else
+        cwd = getcwd()
+    end
 
-        if bufname and bufname ~= '' and is_file(bufname) then
-            cwd = require('utils.files').basedir(bufname)
-        else
-            cwd = require('utils.files').getcwd()
-        end
-
-        local db_file = find_parent('compile_commands.json', cwd)
-        if db_file then
-            parse_compiledb(readfile(db_file, false))
-            args = databases[bufname].flags
-        else
-            local flags_file = find_parent('compile_flags.txt', cwd)
-            if flags_file then
-                parse_compile_flags(flags_file)
-                args = compile_flags[flags_file].flags
-            end
+    local db_file = vim.fn.findfile('compile_commands.json', cwd .. ';')
+    if db_file and db_file ~= '' then
+        parse_compiledb(readfile(db_file, false))
+        args = databases[bufname].flags
+    else
+        local flags_file = vim.fn.findfile('compile_flags.txt', cwd .. ';')
+        if flags_file and flags_file ~= '' then
+            parse_compile_flags(flags_file)
+            args = compile_flags[flags_file].flags
         end
     end
 
@@ -242,23 +239,30 @@ local function get_args(compiler, bufnum)
 end
 
 local function set_opts(compiler, bufnum)
-    local flags_file = find_parent 'compile_flags.txt'
-    local db_file = find_parent 'compile_commands.json'
-    local clang_tidy = find_parent '.clang-tidy'
+    local flags_file = vim.fn.findfile('compile_flags.txt', getcwd() .. ';')
+    local db_file = vim.fn.findfile('compile_commands.json', getcwd() .. ';')
+    local clang_tidy = vim.fn.findfile('.clang-tidy', getcwd() .. ';')
+
+    flags_file = flags_file ~= '' and flags_file or nil
+    db_file = db_file ~= '' and db_file or nil
+    clang_tidy = clang_tidy ~= '' and clang_tidy or nil
+
     local args
 
     if executable 'clang-tidy' and (flags_file or db_file or clang_tidy) then
         local tidy = vim.list_extend({ 'clang-tidy' }, M.makeprg['clang-tidy'])
         vim.opt_local.makeprg = table.concat(tidy, ' ') .. ' %'
-        vim.opt_local.errorformat = tidy.efm
+        if M.makeprg['clang-tidy'].efm then
+            vim.opt_local.errorformat = M.makeprg['clang-tidy'].efm
+        end
     else
-        args = get_args(compile_flags, bufnum)
-        vim.opt_local.makeprg = ('%s %s'):format(compiler, table.concat(args, ' '))
+        args = get_args(compiler, bufnum)
+        vim.opt_local.makeprg = ('%s %s %%'):format(compiler, table.concat(args, ' '))
     end
 
     if flags_file or db_file then
         if not args then
-            args = get_args(compile_flags, bufnum)
+            args = get_args(compiler, bufnum)
         end
 
         local paths = {}
@@ -280,8 +284,8 @@ function M.get_formatter()
     local cmd
     if executable 'clang-format' then
         cmd = { 'clang-format' }
-        local config = vim.fn.findfile('.clang-format', '.;')
-        if config ~= '' then
+        local config = vim.fn.findfile('.clang-format', getcwd() .. ';')
+        if config and config ~= '' then
             vim.list_extend(cmd, M.formatprg[cmd[1]])
             -- cmd = require('utils.buffers').replace_indent(cmd)
         end
@@ -291,7 +295,7 @@ function M.get_formatter()
 end
 
 function M.execute(exe, args)
-    local base_cwd = require('utils.files').getcwd()
+    local base_cwd = getcwd()
     exe = exe or base_cwd .. '/build/main'
     args = args or {}
     if not is_file(exe) and not executable(exe) then
@@ -304,7 +308,7 @@ function M.execute(exe, args)
         progress = true,
         verify_exec = false,
         opts = {
-            cwd = require('utils.files').getcwd(),
+            cwd = getcwd(),
             -- pty = true,
         },
         qf = {
@@ -326,10 +330,13 @@ function M.build(compile)
     local flags = compile.flags or {}
     local compiler = compile.compiler or get_compiler()
 
-    local base_cwd = require('utils.files').getcwd()
+    local base_cwd = getcwd()
     local ft = vim.opt_local.filetype:get()
 
     local compile_output = base_cwd .. '/build/main'
+    if nvim.has 'win32' then
+        compile_output = compile_output .. '.exe'
+    end
 
     vim.list_extend(flags, get_args(compiler, nvim.get_current_buf()))
     vim.list_extend(flags, { '-o', compile_output })
@@ -367,7 +374,7 @@ function M.build(compile)
             silent = true,
             progress = true,
             opts = {
-                cwd = require('utils.files').getcwd(),
+                cwd = getcwd(),
                 -- pty = true,
             },
             qf = {
@@ -399,13 +406,13 @@ function M.setup()
         return
     end
 
-    local makefile = find_parent 'Makefile'
-    if makefile and executable 'make' then
+    local makefile = vim.fn.findfile('Makefile', getcwd() .. ';')
+    if makefile and makefile ~= '' and executable 'make' then
         require('filetypes.make').setup()
     end
 
-    local cmake = find_parent 'CMakeLists.txt'
-    if cmake and executable 'cmake' then
+    local cmake = vim.fn.findfile('Makefile', getcwd() .. ';')
+    if cmake and cmake ~= '' and executable 'cmake' then
         require('filetypes.cmake').setup()
     end
 

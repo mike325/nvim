@@ -1,3 +1,4 @@
+-- luacheck: max line length 170
 local nvim = require 'neovim'
 
 vim.g.loaded_2html_plugin = 1
@@ -15,6 +16,14 @@ vim.g.loaded_perl_provider = 0
 
 if nvim.has 'win32' then
     vim.opt.shell = 'cmd.exe'
+    -- vim.opt.shell = 'powershell'
+    -- vim.opt.shellcmdflag = '-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command [Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.Encoding]::UTF8;'
+    -- vim.opt.shellredir = '2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode'
+    -- vim.opt.shellpipe = '2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode'
+    -- vim.opt.shellquote = ''
+    -- vim.opt.shellxquote = ''
+
+    vim.opt.shellslash = true
 end
 
 if not vim.keymap then

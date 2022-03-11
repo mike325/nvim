@@ -13,11 +13,6 @@ M.getcwd = uv.cwd
 
 local is_windows = sys.name == 'windows'
 
-local function split_path(path)
-    path = require('utils.strings').split(M.normalize_path(path), '/')
-    return path
-end
-
 local function forward_path(path)
     if is_windows then
         if vim.o.shellslash then
@@ -35,6 +30,11 @@ local function separator()
         return '\\'
     end
     return '/'
+end
+
+local function split_path(path)
+    path = require('utils.strings').split(M.normalize_path(path), separator())
+    return path
 end
 
 if vim.json then
@@ -247,7 +247,7 @@ function M.basedir(path)
         else
             path = ''
         end
-        path = path .. table.concat(path_components, '/')
+        path = path .. table.concat(path_components, separator())
     elseif M.is_absolute(path) then
         if is_windows then
             path = path:sub(1, #path > 2 and 3 or 2)
@@ -858,7 +858,7 @@ function M.find_parent(filename, basedir)
             break
         end
         if scanned == filename then
-            return basedir .. separator() .. scanned
+            return M.normalize_path(basedir .. separator() .. scanned)
         end
     end
 
