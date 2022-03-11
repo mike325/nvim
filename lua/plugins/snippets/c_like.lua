@@ -97,7 +97,7 @@ local snippets = {
         r(1),
         i(3, '10'),
         r(1),
-        d(4, saved_text, {}, {text = ':', indent = true}),
+        d(4, saved_text, {}, {indent = true}),
     })),
     s('w', fmt([[
     while({}) {{
@@ -105,7 +105,7 @@ local snippets = {
     }}
     ]], {
         i(1, 'condition'),
-        d(2, saved_text, {}, {text = ':', indent = true}),
+        d(2, saved_text, {}, {indent = true}),
     })),
     s('fun', fmt([[
     {} {}({}{}) {{
