@@ -110,42 +110,6 @@ set_autocmd {
     group = 'DapConfig',
 }
 
--- DAP APIs
---
--- dap.continue()
--- dap.run()
--- dap.run_last()
--- dap.launch()
--- dap.stop()
--- dap.disconnect()
--- dap.attach()
--- dap.set_breakpoint()
--- dap.toggle_breakpoint()
--- dap.list_breakpoints()
--- dap.set_exception_breakpoints()
--- dap.step_over()
--- dap.step_into()
--- dap.step_out()
--- dap.step_back()
--- dap.pause()
--- dap.reverse_continue()
--- dap.up()
--- dap.down()
--- dap.goto_({line})
--- dap.run_to_cursor()
--- dap.set_log_level()
--- dap.session()
--- dap.status()
---
--- dap.repl.open()
--- dap.repl.toggle()
--- dap.repl.close()
---
--- require('dap.ui.variables').hover()
--- require('dap.ui.variables').scopes()
--- require('dap.ui.variables').visual_hover()
--- require('dap.ui.variables').toggle_multiline_display()
-
 local function list_breakpoints()
     dap.list_breakpoints()
     require('utils.helpers').toggle_qf()
@@ -153,16 +117,24 @@ end
 
 local args = { noremap = true, silent = true }
 
+-- require('dap.ui.variables').hover()
+-- require('dap.ui.variables').scopes()
+-- require('dap.ui.variables').visual_hover()
+-- require('dap.ui.variables').toggle_multiline_display()
+
 vim.keymap.set('n', '<F5>', require('dap').continue, args)
 vim.keymap.set('n', '<F4>', function()
     require('dap').terminate()
     require('dap').close()
 end, args)
-vim.keymap.set('n', '<F10>', require('dap').run_to_cursor, args)
+vim.keymap.set('n', '=c', require('dap').run_to_cursor, args)
 vim.keymap.set('n', ']s', require('dap').step_over, args)
 vim.keymap.set('n', ']S', require('dap').step_into, args)
 vim.keymap.set('n', '[s', require('dap').step_out, args)
 vim.keymap.set('n', '=b', require('dap').toggle_breakpoint, args)
+vim.keymap.set('n', '=B', function()
+    require('dap').set_breakpoint(vim.fn.input 'Breakpoint condition: ')
+end, args)
 vim.keymap.set('n', '=r', require('dap').repl.toggle, args)
 vim.keymap.set('n', '<leader>L', list_breakpoints, args)
 vim.keymap.set('n', 'gK', require('dap.ui.widgets').hover, args)
