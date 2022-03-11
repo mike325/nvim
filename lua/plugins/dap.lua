@@ -3,7 +3,6 @@ local load_module = require('utils.helpers').load_module
 local getcwd = require('utils.files').getcwd
 
 local dap = load_module 'dap'
-
 if not dap then
     return false
 end
@@ -155,7 +154,10 @@ end
 local args = { noremap = true, silent = true }
 
 vim.keymap.set('n', '<F5>', require('dap').continue, args)
-vim.keymap.set('n', '<F4>', require('dap').close, args)
+vim.keymap.set('n', '<F4>', function()
+    require('dap').terminate()
+    require('dap').close()
+end, args)
 vim.keymap.set('n', '<F10>', require('dap').run_to_cursor, args)
 vim.keymap.set('n', ']s', require('dap').step_over, args)
 vim.keymap.set('n', ']S', require('dap').step_into, args)
@@ -197,7 +199,10 @@ set_command {
 
 set_command {
     lhs = 'DapStop',
-    rhs = require('dap').stop,
+    rhs = function()
+        require('dap').terminate()
+        require('dap').close()
+    end,
     args = { force = true },
 }
 
