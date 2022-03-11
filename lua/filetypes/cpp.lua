@@ -13,6 +13,9 @@ local databases = STORAGE.databases
 
 local set_command = require('neovim.commands').set_command
 
+local load_module = require('utils.helpers').load_module
+local dap = load_module 'dap'
+
 local M = {
     makeprg = {
         ['clang-tidy'] = {
@@ -371,8 +374,7 @@ function M.build(compile)
         local build = require('jobs'):new {
             cmd = compiler,
             args = flags,
-            silent = true,
-            progress = true,
+            -- progress = true,
             opts = {
                 cwd = getcwd(),
                 -- pty = true,
@@ -396,7 +398,7 @@ function M.build(compile)
         end
 
         build:start()
-        -- build:progress()
+        build:progress()
     end)
 end
 
@@ -491,6 +493,30 @@ function M.setup()
             complete = 'customlist,v:lua._completions.cmake_build',
         },
     }
+
+    -- TODO: Fallback to TermDebug
+    if dap then
+        set_command {
+            lhs = 'BuildDebug',
+            rhs = function(...)
+                local args = { ... }
+                local flags = {}
+
+                vim.list_extend(flags, args)
+                M.build {
+                    compiler = compiler,
+                    build_type = 'debug',
+                    flags = flags,
+                    cb = dap.continue,
+                }
+            end,
+            args = {
+                nargs = '*',
+                force = true,
+                buffer = true,
+            },
+        }
+    end
 
     set_command {
         lhs = 'ExecuteProject',
