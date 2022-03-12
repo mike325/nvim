@@ -199,7 +199,8 @@ end
 local function parse_compile_flags(flags_file)
     local data = readfile(flags_file, true)
     if data and #data > 0 then
-        compile_flags[realpath(flags_file)] = {
+        flags_file = realpath(flags_file)
+        compile_flags[flags_file] = {
             flags = {},
             includes = {},
         }
@@ -217,8 +218,12 @@ local function parse_compile_flags(flags_file)
 end
 
 local function get_args(compiler, bufnum)
-    local bufname = realpath(nvim.buf.get_name(bufnum))
     local args, cwd
+
+    local bufname = nvim.buf.get_name(bufnum)
+    if is_file(bufname) then
+        bufname = realpath(bufname)
+    end
 
     if bufname and bufname ~= '' and is_file(bufname) then
         cwd = require('utils.files').basedir(bufname)
@@ -229,10 +234,13 @@ local function get_args(compiler, bufnum)
     local db_file = vim.fn.findfile('compile_commands.json', cwd .. ';')
     if db_file and db_file ~= '' then
         parse_compiledb(readfile(db_file, false))
-        args = databases[bufname].flags
+        if databases[bufname] then
+            args = databases[bufname].flags
+        end
     else
         local flags_file = vim.fn.findfile('compile_flags.txt', cwd .. ';')
         if flags_file and flags_file ~= '' then
+            flags_file = realpath(flags_file)
             parse_compile_flags(flags_file)
             args = compile_flags[flags_file].flags
         end
