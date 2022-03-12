@@ -29,7 +29,7 @@ local saved_text = utils.saved_text
 -- local get_comment = utils.get_comment
 -- local surround_with_func = utils.surround_with_func
 
-local function else_clause(args, snip, old_state, placeholder)
+local function else_clause(args, snip, old_state, _)
     local nodes = {}
 
     if snip.captures[1] == 'e' then
@@ -55,7 +55,7 @@ ls.snippets.sh = {
         {}fi
         ]=], {
             i(1, 'condition'),
-            d(2, saved_text, {}, {text = ':', indent = true}),
+            d(2, saved_text, {}, {user_args = {{text = ':', indent = true}}}),
             d(3, else_clause, {}, {}),
         })
     ),
@@ -65,7 +65,7 @@ ls.snippets.sh = {
     }}
     ]], {
         i(1, 'name'),
-        d(2, saved_text, {}, {text = ':', indent = true}),
+        d(2, saved_text, {}, {user_args = {{text = ':', indent = true}}}),
     })),
     s('for', fmt([[
     for {} in {}; do
@@ -74,7 +74,7 @@ ls.snippets.sh = {
     ]], {
         i(1, 'i'),
         i(2, 'Iterator'),
-        d(3, saved_text, {}, {text = ':', indent = true}),
+        d(3, saved_text, {}, {user_args = {{text = ':', indent = true}}}),
     })),
     s('fori', fmt([[
     for (({} = {}; {} < {}; {}++)); do
@@ -86,7 +86,7 @@ ls.snippets.sh = {
         r(1),
         i(3, '10'),
         r(1),
-        d(4, saved_text, {}, {text = ':', indent = true}),
+        d(4, saved_text, {}, {user_args = {{text = ':', indent = true}}}),
     })),
     s('wh', fmt([=[
     while [[ {} ]]; do
@@ -94,7 +94,7 @@ ls.snippets.sh = {
     done
     ]=], {
         i(1, 'condition'),
-        d(2, saved_text, {}, {text = ':', indent = true}),
+        d(2, saved_text, {}, {user_args = {{text = ':', indent = true}}}),
     })),
     s('l', fmt([[local {}={}]],{
         i(1, 'varname'),

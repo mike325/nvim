@@ -59,15 +59,12 @@ function M.get_comment(text)
     return comment_str or comment
 end
 
-function M.saved_text(args, snip, old_state, placeholder)
+function M.saved_text(args, snip, old_state, user_args)
     local nodes = {}
-    if not old_state then
-        old_state = {}
-    end
-    if not placeholder then
-        placeholder = {}
-    end
-    local indent = placeholder.indent and '\t' or ''
+    old_state = old_state or {}
+    user_args = user_args or {}
+
+    local indent = user_args.indent and '\t' or ''
 
     if snip.snippet.env and snip.snippet.env.SELECT_DEDENT and #snip.snippet.env.SELECT_DEDENT > 0 then
         local lines = vim.deepcopy(snip.snippet.env.SELECT_DEDENT)
@@ -80,7 +77,7 @@ function M.saved_text(args, snip, old_state, placeholder)
             table.insert(nodes, t(node))
         end
     else
-        local text = placeholder.text or M.get_comment 'code'
+        local text = user_args.text or M.get_comment 'code'
         if indent ~= '' then
             table.insert(nodes, t(indent))
         end
@@ -92,20 +89,16 @@ function M.saved_text(args, snip, old_state, placeholder)
     return snip_node
 end
 
-function M.surround_with_func(args, snip, old_state, placeholder)
+function M.surround_with_func(args, snip, old_state, user_args)
     local nodes = {}
-    if not old_state then
-        old_state = {}
-    end
-    if not placeholder then
-        placeholder = {}
-    end
+    old_state = old_state or {}
+    user_args = user_args or {}
 
     if snip.snippet.env and snip.snippet.env.SELECT_RAW and #snip.snippet.env.SELECT_RAW == 1 then
         local node = snip.snippet.env.SELECT_RAW[1]
         table.insert(nodes, t(node))
     else
-        local text = placeholder.text or 'placeholder'
+        local text = user_args.text or 'placeholder'
         table.insert(nodes, i(1, text))
     end
 

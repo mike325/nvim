@@ -55,7 +55,7 @@ ls.snippets.rust = {
     ]], {
         i(1, 'key'),
         i(2, 'iterator'),
-        d(3, saved_text, {}, {indent = true}),
+        d(3, saved_text, {}, {user_args = {{indent = true}}}),
     })),
     s(
         { trig = 'if(e?)', regTrig = true },
@@ -65,7 +65,7 @@ ls.snippets.rust = {
     }}{}
     ]], {
         i(1, 'condition'),
-        d(2, saved_text, {}, {indent = true}),
+        d(2, saved_text, {}, {user_args = {{indent = true}}}),
         d(3, else_clause, {}, {}),
     })),
     -- s('elif', fmt([[
@@ -74,7 +74,7 @@ ls.snippets.rust = {
     -- }}
     -- ]],{
     --     i(1, 'condition'),
-    --     d(2, saved_text, {}, {indent = true}),
+    --     d(2, saved_text, {}, {user_args = {{indent = true}}}),
     -- })),
     s('w', fmt([[
     while {} {{
@@ -82,7 +82,7 @@ ls.snippets.rust = {
     }}
     ]], {
         i(1, 'condition'),
-        d(2, saved_text, {}, {text = ':', indent = true}),
+        d(2, saved_text, {}, {user_args = {{text = ':', indent = true}}}),
     })),
     s('pr', fmt([[println!({});]],{
         i(1, 'msg'),
@@ -105,7 +105,7 @@ ls.snippets.rust = {
         {
             i(1, 'name'),
             i(2, 'args'),
-            d(3, saved_text, {}, {indent = true}),
+            d(3, saved_text, {}, {user_args = {{indent = true}}}),
         }
     )),
 }

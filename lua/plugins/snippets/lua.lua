@@ -88,7 +88,7 @@ ls.snippets.lua = {
             end, {}),
             i(1, 'name'),
             i(2, 'args'),
-            d(3, saved_text, {}, {indent = true}),
+            d(3, saved_text, {}, {user_args = {{indent = true}}}),
         }
     )),
     s('for', fmt([[
@@ -99,7 +99,7 @@ ls.snippets.lua = {
         i(1, 'k'),
         i(2, 'v'),
         i(3, 'tbl'),
-        d(4, saved_text, {}, {indent = true}),
+        d(4, saved_text, {}, {user_args = {{indent = true}}}),
     })),
     s('forp', fmt([[
     for {}, {} in pairs({}) do
@@ -109,7 +109,7 @@ ls.snippets.lua = {
         i(1, 'k'),
         i(2, 'v'),
         i(3, 'tbl'),
-        d(4, saved_text, {}, {indent = true}),
+        d(4, saved_text, {}, {user_args = {{indent = true}}}),
     })),
     s('fori', fmt([[
     for {} = {}, {} do
@@ -119,13 +119,13 @@ ls.snippets.lua = {
         i(1, 'idx'),
         i(2, '0'),
         i(3, '10'),
-        d(4, saved_text, {}, {indent = true}),
+        d(4, saved_text, {}, {user_args = {{indent = true}}}),
     })),
     s(
         { trig = "if(e?)", regTrig = true },
         {
             t{"if "}, i(1, 'condition'), t{" then", ""},
-                d(2, saved_text, {}, {indent = true}),
+                d(2, saved_text, {}, {user_args = {{indent = true}}}),
             d(3, else_clause, {}, {}),
             t{"", "end"},
         }
@@ -136,14 +136,14 @@ ls.snippets.lua = {
     end
     ]], {
         i(1, 'true'),
-        d(2, saved_text, {}, {indent = true}),
+        d(2, saved_text, {}, {user_args = {{indent = true}}}),
     })),
     s('elif', fmt([[
     elseif {} then
     {}
     ]],{
         i(1, 'condition'),
-        d(2, saved_text, {}, {indent = true}),
+        d(2, saved_text, {}, {user_args = {{indent = true}}}),
     })),
     s("req", fmt([[require "{}"]], {
         i(1, 'module'),
@@ -196,7 +196,7 @@ ls.snippets.lua = {
         t{"}"},
     }),
     s('lext', fmt([[vim.list_extend({}, {})]],{
-        d(1, surround_with_func, {}, {text = 'tbl'}),
+        d(1, surround_with_func, {}, {user_args = {{text = 'tbl'}}}),
         i(2, "'node'"),
     })),
     s('text', fmt([[vim.tbl_extend('{}', {}, {})]],{
@@ -205,11 +205,11 @@ ls.snippets.lua = {
             t{'keep'},
             t{'error'},
         }),
-        d(2, surround_with_func, {}, {text = 'tbl'}),
+        d(2, surround_with_func, {}, {user_args = {{text = 'tbl'}}}),
         i(3, "'node'"),
     })),
     s('not', fmt([[vim.notify("{}", "{}"{})]],{
-        d(1, surround_with_func, {}, {text = 'msg'}),
+        d(1, surround_with_func, {}, {user_args = {{text = 'msg'}}}),
         c(2, {
             t{'INFO'},
             t{'WARN'},
@@ -283,20 +283,20 @@ ls.snippets.lua = {
     s(
         { trig = 'is(_?)true', regTrig = true },
         fmt([[assert.is_true({})]], {
-            d(1, surround_with_func, {}, {text = 'true'}),
+            d(1, surround_with_func, {}, {user_args = {{text = 'true'}}}),
         }
     )),
     s(
         { trig = 'is(_?)false', regTrig = true },
         fmt([[assert.is_false({})]], {
-            d(1, surround_with_func, {}, {text = 'false'}),
+            d(1, surround_with_func, {}, {user_args = {{text = 'false'}}}),
         }
     )),
     s('pr', fmt([[print({})]],{
         i(1, 'msg'),
     })),
-    s('istruthy', fmt([[assert.is_truthy({})]],{ d(1, surround_with_func, {}, {text = 'true'}), })),
-    s('isfalsy', fmt([[assert.is_falsy({})]],{ d(1, surround_with_func, {}, {text = 'false'}), })),
-    s('truthy', fmt([[assert.is_truthy({})]],{ d(1, surround_with_func, {}, {text = 'true'}), })),
-    s('falsy', fmt([[assert.is_falsy({})]],{ d(1, surround_with_func, {}, {text = 'false'}), })),
+    s('istruthy', fmt([[assert.is_truthy({})]],{ d(1, surround_with_func, {}, {user_args = {{text = 'true'}}}), })),
+    s('isfalsy', fmt([[assert.is_falsy({})]],{ d(1, surround_with_func, {}, {user_args = {{text = 'false'}}}), })),
+    s('truthy', fmt([[assert.is_truthy({})]],{ d(1, surround_with_func, {}, {user_args = {{text = 'true'}}}), })),
+    s('falsy', fmt([[assert.is_falsy({})]],{ d(1, surround_with_func, {}, {user_args = {{text = 'false'}}}), })),
 }
