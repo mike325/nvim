@@ -415,6 +415,7 @@ packer.startup(function()
             { 'nvim-treesitter/playground' },
             { 'nvim-treesitter/nvim-treesitter-refactor' },
             { 'nvim-treesitter/nvim-treesitter-textobjects' },
+            { 'Badhi/nvim-treesitter-cpp-tools' },
         },
     }
 

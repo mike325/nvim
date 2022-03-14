@@ -221,7 +221,7 @@ local function get_args(compiler, bufnum)
     local args, cwd
 
     local bufname = nvim.buf.get_name(bufnum)
-    if is_file(bufname) then
+    if bufname and bufname ~= '' and is_file(bufname) then
         bufname = realpath(bufname)
     end
 

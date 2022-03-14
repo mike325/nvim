@@ -821,8 +821,9 @@ set_command {
 
             -- WARN: This is a WA to avoid EFM detecting ^I as part of a file in lua tracebacks
             for idx, msg in ipairs(messages) do
-                if msg:match '^%^I' and #msg > 2 then
-                    messages[idx] = msg:sub(3, #msg)
+                messages[idx] = nvim.replace_termcodes(msg, true, false, true)
+                if msg:match '%^I' and #msg > 2 then
+                    messages[idx] = msg:gsub('%^I', '')
                 end
             end
 
