@@ -246,29 +246,8 @@ function M.on_attach(client, bufnr, is_null)
     local has_formatting = client.resolved_capabilities.document_range_formatting
         or client.resolved_capabilities.document_formatting
 
-    if client.resolved_capabilities.document_formatting then
-        vim.keymap.set('n', '=F', vim.lsp.buf.formatting, { silent = true, buffer = bufnr, noremap = true })
-    end
-
-    if client.resolved_capabilities.document_range_formatting then
-        -- TODO: Check if this is only nvim-0.7 or it's valid in 0.6
-        if has_nvim_6 then
-            vim.api.nvim_buf_set_option(bufnr, 'formatexpr', 'v:lua.vim.lsp.formatexpr()')
-        else
-            vim.keymap.set(
-                'n',
-                'gq',
-                '<cmd>set opfunc=neovim#lsp_format<CR>g@',
-                { silent = true, buffer = bufnr, noremap = true }
-            )
-
-            vim.keymap.set(
-                'v',
-                'gq',
-                ':<C-U>call neovim#lsp_format(visualmode(), v:true)<CR>',
-                { silent = true, buffer = bufnr, noremap = true }
-            )
-        end
+    if has_formatting and vim.opt_local.formatexpr:get() == '' then
+        vim.opt_local.formatexpr = ([[luaeval('require"utils.buffers".format("%s")')]]):format(ft)
     end
 
     -- Disable neomake for lsp buffers
@@ -291,6 +270,9 @@ function M.on_attach(client, bufnr, is_null)
     elseif not has_formatting and null_ls and null_configs[ft] and null_configs[ft].formatter then
         -- TODO: Does this needs the custom "on_attach" handler?
         if not null_ls.is_registered(null_configs[ft].formatter.name) then
+            if vim.opt_local.formatexpr:get() == '' then
+                vim.opt_local.formatexpr = ([[luaeval('require"utils.buffers".format("%s")')]]):format(ft)
+            end
             null_ls.register { null_configs[ft].formatter }
         end
     end

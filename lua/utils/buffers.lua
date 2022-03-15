@@ -325,6 +325,27 @@ function M.format(ft)
     local external_formatprg = require('utils.functions').external_formatprg
     local ok, utils = pcall(require, 'filetypes.' .. ft)
 
+    local first = vim.v.lnum - 1
+    local last = first + vim.v.count
+    local whole_file = last - first == nvim.buf.line_count(0)
+
+    local clients = vim.lsp.buf_get_clients(0)
+
+    for _, client in pairs(clients) do
+        if whole_file and client.resolved_capabilities.document_formatting then
+            vim.lsp.buf.formatting()
+            return 0
+        elseif client.resolved_capabilities.document_range_formatting then
+            -- TODO: Check if this actually works
+            vim.lsp.buf.range_formatting(
+                nil,
+                { first, 0 },
+                { last, #nvim.buf.get_lines(0, last, last + 1, false)[1] }
+            )
+            return 0
+        end
+    end
+
     -- TODO: Integrate LSP into this to centralize formatting
     if ok and utils.get_formatter then
         local cmd = utils.get_formatter()
@@ -365,13 +386,6 @@ function M.setup(ft, opts)
             local formatter = utils.get_formatter()
             if formatter and vim.opt_local.formatexpr:get() == '' then
                 vim.opt_local.formatexpr = ([[luaeval('require"utils.buffers".format("%s")')]]):format(ft)
-                pcall(vim.keymap.del, 'n', '=F', { buffer = true })
-                vim.keymap.set(
-                    'n',
-                    '=F',
-                    [[<cmd>normal! gggqG``<CR>]],
-                    { noremap = true, buffer = true, silent = true }
-                )
             end
             opts.formatexpr = nil
         end

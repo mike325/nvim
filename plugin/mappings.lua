@@ -940,3 +940,6 @@ if has_nvim_6 then
         vim.cmd 'wincmd J'
     end, noremap_silent)
 end
+
+vim.opt.formatexpr = [[luaeval('require"utils.buffers".format()')]]
+vim.keymap.set('n', '=F', [[<cmd>normal! gggqG``<CR>]], { noremap = true, silent = true })
