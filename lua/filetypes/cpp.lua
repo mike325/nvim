@@ -111,6 +111,7 @@ local M = {
         ['clang-format'] = {
             '--style=file',
             '--fallback-style=WebKit',
+            '--sort-includes',
         },
     },
 }

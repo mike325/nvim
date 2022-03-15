@@ -704,7 +704,7 @@ function M.skeleton_filename(opts)
         local names = known_names[extension]
 
         for _, name in ipairs(names) do
-            if filename:match('^%.?' .. name .. '$') then
+            if filename:match('^%.?' .. name:gsub('%-', '%%-') .. '$') then
                 local template_file = skeletons_path .. name
                 if M.is_file(template_file) then
                     skeleton = template_file

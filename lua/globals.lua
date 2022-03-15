@@ -14,11 +14,12 @@ _G['RELOAD'] = function(pkg)
 end
 
 _G['PASTE'] = function(data)
-    if type(data) == type '' then
-        data = vim.split(data, '\n')
-    end
-    if type(data) ~= type {} then
-        data = vim.inspect(vim.split(data, '\n'))
+    if not vim.tbl_islist(data) then
+        if type(data) == type '' then
+            data = vim.split(data, '\n')
+        else
+            data = vim.split(vim.inspect(data), '\n')
+        end
     end
     vim.paste(data, -1)
 end
