@@ -1,6 +1,13 @@
+-- local nvim = require 'neovim'
+local sys = require 'sys'
+
 local exepath = require('utils.files').exepath
 local load_module = require('utils.helpers').load_module
 local getcwd = require('utils.files').getcwd
+local is_dir = require('utils.files').is_dir
+local is_file = require('utils.files').is_file
+
+local is_windows = sys.name == 'windows'
 
 local dap = load_module 'dap'
 if not dap then
@@ -12,6 +19,7 @@ local executable = require('utils.files').executable
 local set_autocmd = require('neovim.autocmds').set_autocmd
 local set_command = require('neovim.commands').set_command
 local lldb = exepath 'lldb-vscode'
+local cppdbg
 
 if not lldb then
     for version = 8, 13 do
@@ -41,6 +49,37 @@ local function pythonPath()
     return exepath 'python3' or exepath 'python'
 end
 
+local vscode_extentions_dir = sys.home .. '/.vscode/extensions'
+if is_dir(vscode_extentions_dir) then
+    for _, extention in ipairs(require('utils.files').get_dirs(vscode_extentions_dir)) do
+        local ext_dir = require('utils.files').basename(extention)
+        if ext_dir:match 'cpptools%-%d%.%d%.%d$' then
+            local exe = 'OpenDebugAD7'
+            if is_windows then
+                exe = exe .. '.exe'
+            end
+
+            cppdbg = ('%s/%s/debugAdapters/bin/%s'):format(vscode_extentions_dir, ext_dir, exe)
+            if is_file(cppdbg) then
+                dap.adapters.cppdbg = {
+                    id = 'cppdbg',
+                    type = 'executable',
+                    command = is_windows and cppdbg:gsub('/', '\\') or cppdbg,
+                }
+                break
+            end
+        end
+    end
+end
+
+if lldb then
+    dap.adapters.lldb = {
+        type = 'executable',
+        command = is_windows and lldb:gsub('/', '\\') or lldb,
+        name = 'lldb',
+    }
+end
+
 dap.adapters.python = {
     type = 'executable',
     command = pythonPath(),
@@ -49,10 +88,9 @@ dap.adapters.python = {
 
 dap.configurations.python = {
     {
-        -- The first three options are required by nvim-dap
+        name = 'Launch debugpy',
         type = 'python', -- the type here established the link to the adapter definition: `dap.adapters.python`
         request = 'launch',
-        name = 'Launch file',
         -- Options below are for debugpy, see
         -- https://github.com/microsoft/debugpy/wiki/Debug-configuration-settings for supported options
         program = '${file}', -- This configuration will launch the current file if used.
@@ -60,43 +98,43 @@ dap.configurations.python = {
     },
 }
 
+dap.configurations.cpp = {}
 if lldb then
-    dap.adapters.lldb = {
-        type = 'executable',
-        command = lldb,
-        name = 'lldb',
-    }
-
-    dap.configurations.cpp = {
-        {
-            name = 'Launch',
-            type = 'lldb',
-            request = 'launch',
-            program = function()
-                return vim.fn.input('Path to executable: ', getcwd() .. '/', 'file')
-            end,
-            cwd = '${workspaceFolder}',
-            stopOnEntry = false,
-            args = {},
-
-            -- if you change `runInTerminal` to true, you might need to change the yama/ptrace_scope setting:
-            --
-            --    echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope
-            --
-            -- Otherwise you might get the following error:
-            --
-            --    Error on launch: Failed to attach to the target process
-            --
-            -- But you should be aware of the implications:
-            -- https://www.kernel.org/doc/html/latest/admin-guide/LSM/Yama.html
-            runInTerminal = false,
-        },
-    }
-
-    -- If you want to use this for rust and c, add something like this:
-    dap.configurations.c = dap.configurations.cpp
-    dap.configurations.rust = dap.configurations.cpp
+    table.insert(dap.configurations.cpp, {
+        name = 'Launch lldb-vscode',
+        type = 'lldb',
+        request = 'launch',
+        program = function()
+            return vim.fn.input('Path to executable: ', getcwd() .. '/', 'file')
+        end,
+        cwd = '${workspaceFolder}',
+        stopOnEntry = false,
+        args = {},
+        runInTerminal = false,
+    })
 end
+
+if cppdbg then
+    table.insert(dap.configurations.cpp, {
+        name = 'Launch cppdbg',
+        type = 'cppdbg',
+        request = 'launch',
+        program = function()
+            return vim.fn.input('Path to executable: ', getcwd() .. '/', 'file')
+        end,
+        cwd = '${workspaceFolder}',
+        stopOnEntry = true,
+        args = {},
+        runInTerminal = false,
+    })
+end
+
+if #dap.configurations.cpp == 0 then
+    dap.configurations.cpp = nil
+end
+
+dap.configurations.c = dap.configurations.cpp
+dap.configurations.rust = dap.configurations.cpp
 
 vim.fn.sign_define('DapBreakpoint', { text = '🛑', texthl = '', linehl = '', numhl = '' })
 -- vim.fn.sign_define('DapLogPoint', {text='🛑', texthl='', linehl='', numhl=''})
