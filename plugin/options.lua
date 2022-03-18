@@ -1,4 +1,5 @@
 local sys = require 'sys'
+local nvim = require 'neovim'
 
 local parent = sys.data
 local mkdir = require('utils.files').mkdir
@@ -37,8 +38,10 @@ vim.g.tex_flavor = 'latex'
 
 vim.g.terminal_scrollback_buffer_size = 100000
 
-if vim.g.started_by_firenvim ~= nil then
-    vim.o.laststatus = 0
+if vim.g.started_by_firenvim then
+    vim.opt.laststatus = 0
+elseif nvim.has { 0, 7 } then
+    vim.opt.laststatus = 3
 end
 
 vim.opt.shada = { '!', '/1000', "'1000", '<1000', ':1000', 's10000', 'h' }

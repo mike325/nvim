@@ -378,25 +378,6 @@ packer.startup(function()
     -- }
 
     use {
-        'vim-airline/vim-airline',
-        cond = function()
-            return not vim.env.VIM_MIN and not vim.g.minimal
-        end,
-        config = function()
-            require 'plugins.airline'
-        end,
-        requires = {
-            {
-                'vim-airline/vim-airline-themes',
-                cond = function()
-                    return not vim.env.VIM_MIN and not vim.g.minimal
-                end,
-            },
-        },
-        -- after = 'firenvim',
-    }
-
-    use {
         'nvim-treesitter/nvim-treesitter',
         run = ':TSUpdate',
         config = function()
@@ -701,6 +682,13 @@ packer.startup(function()
         end,
         wants = 'nvim-dap',
         after = 'nvim-dap',
+    }
+
+    use {
+        'nvim-lualine/lualine.nvim',
+        config = function()
+            require 'plugins.lualine'
+        end,
     }
 end)
 
