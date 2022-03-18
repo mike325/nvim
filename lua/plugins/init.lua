@@ -689,6 +689,7 @@ packer.startup(function()
         config = function()
             require 'plugins.lualine'
         end,
+        requires = { 'arkav/lualine-lsp-progress' },
     }
 end)
 
