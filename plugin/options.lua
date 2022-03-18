@@ -168,7 +168,7 @@ local wildignores = {
     '*.swp',
     '*.swap',
     '*.com',
-    '*.exe',
+    -- '*.exe',
     '*.so',
     '*.pkl',
     '*cache/*',

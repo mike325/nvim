@@ -657,8 +657,9 @@ nvim.command.set('Messages', function(opts)
 
         -- WARN: This is a WA to avoid EFM detecting ^I as part of a file in lua tracebacks
         for idx, msg in ipairs(messages) do
-            if msg:match '^%^I' and #msg > 2 then
-                messages[idx] = msg:sub(3, #msg)
+            messages[idx] = nvim.replace_termcodes(msg, true, false, true)
+            if msg:match '%^I' and #msg > 2 then
+                messages[idx] = msg:gsub('%^I', '')
             end
         end
 
@@ -766,3 +767,6 @@ if has_nvim_6 then
         vim.cmd 'wincmd J'
     end, noremap_silent)
 end
+
+vim.opt.formatexpr = [[luaeval('require"utils.buffers".format()')]]
+vim.keymap.set('n', '=F', [[<cmd>normal! gggqG``<CR>]], { noremap = true, silent = true })

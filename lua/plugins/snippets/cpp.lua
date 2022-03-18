@@ -46,7 +46,7 @@ ls.snippets.cpp = {
             {
                 i(1, 'v'),
                 i(2, 'iterator'),
-                d(3, saved_text, {}, { indent = true }),
+                d(3, saved_text, {}, { user_args = { { indent = true } } }),
             }
         )
     ),

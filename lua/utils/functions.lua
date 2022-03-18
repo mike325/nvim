@@ -282,7 +282,7 @@ function M.external_formatprg(args)
         },
     }
 
-    formatprg:callback_on_success(function(job)
+    formatprg:callback_on_success(function(_)
         local fmt_lines = require('utils.files').readfile(tmpfile)
         fmt_lines = indent(fmt_lines, indent_level)
         vim.api.nvim_buf_set_lines(buf, first, last, false, fmt_lines)

@@ -18,6 +18,7 @@ vim.g.loaded_perl_provider = 0
 
 if nvim.has 'win32' then
     vim.opt.shell = 'cmd.exe'
+    vim.opt.shellslash = true
 end
 
 if not vim.keymap then

@@ -415,6 +415,7 @@ packer.startup(function()
             { 'nvim-treesitter/playground' },
             { 'nvim-treesitter/nvim-treesitter-refactor' },
             { 'nvim-treesitter/nvim-treesitter-textobjects' },
+            { 'Badhi/nvim-treesitter-cpp-tools' },
         },
     }
 
@@ -645,7 +646,7 @@ packer.startup(function()
                 lsp_cfg = false, -- false: use your own lspconfig
                 lsp_gofumpt = false, -- true: set default gofmt in gopls format to gofumpt
                 lsp_on_attach = false, -- use on_attach from go.nvim
-                dap_debug = false,
+                dap_debug = true,
             }
         end,
     }
@@ -660,6 +661,15 @@ packer.startup(function()
         config = function()
             require 'plugins.dap'
         end,
+    }
+
+    use {
+        'theHamsta/nvim-dap-virtual-text',
+        config = function()
+            require('nvim-dap-virtual-text').setup {}
+        end,
+        wants = 'nvim-dap',
+        after = 'nvim-dap',
     }
 
     use {

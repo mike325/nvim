@@ -13,11 +13,6 @@ M.getcwd = uv.cwd
 
 local is_windows = sys.name == 'windows'
 
-local function split_path(path)
-    path = require('utils.strings').split(M.normalize_path(path), '/')
-    return path
-end
-
 local function forward_path(path)
     if is_windows then
         if vim.o.shellslash then
@@ -35,6 +30,11 @@ local function separator()
         return '\\'
     end
     return '/'
+end
+
+local function split_path(path)
+    path = require('utils.strings').split(M.normalize_path(path), separator())
+    return path
 end
 
 if vim.json then
@@ -247,7 +247,7 @@ function M.basedir(path)
         else
             path = ''
         end
-        path = path .. table.concat(path_components, '/')
+        path = path .. table.concat(path_components, separator())
     elseif M.is_absolute(path) then
         if is_windows then
             path = path:sub(1, #path > 2 and 3 or 2)
@@ -704,7 +704,7 @@ function M.skeleton_filename(opts)
         local names = known_names[extension]
 
         for _, name in ipairs(names) do
-            if filename:match('^%.?' .. name .. '$') then
+            if filename:match('^%.?' .. name:gsub('%-', '%%-') .. '$') then
                 local template_file = skeletons_path .. name
                 if M.is_file(template_file) then
                     skeleton = template_file
@@ -843,6 +843,29 @@ function M.dump_json(filename, data)
         filename = filename:gsub('~', sys.home)
     end
     return M.writefile(filename, M.encode_json(data))
+end
+
+function M.find_parent(filename, basedir)
+    vim.validate { filename = { filename, 'string' }, basedir = { basedir, 'string', true } }
+    basedir = basedir or M.getcwd()
+    assert(M.is_dir(basedir), debug.traceback('Invalid dirname: ' .. basedir))
+
+    basedir = M.realpath(basedir)
+    local dir = uv.fs_scandir(basedir)
+    while true do
+        local scanned, _ = uv.fs_scandir_next(dir)
+        if not scanned then
+            break
+        end
+        if scanned == filename then
+            return M.normalize_path(basedir .. separator() .. scanned)
+        end
+    end
+
+    if not M.is_root(basedir) then
+        return M.find_parent(filename, M.basedir(basedir))
+    end
+    return false
 end
 
 return M

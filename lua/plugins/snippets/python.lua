@@ -91,7 +91,7 @@ ls.snippets.python = {
     ]], {
         i(1, 'i'),
         i(2, 'iterator'),
-        d(3, saved_text, {}, {text = 'pass', indent = true}),
+        d(3, saved_text, {}, {user_args = {{text = 'pass', indent = true}}}),
     })),
     s('pr', fmt([[print({})]],{
         i(1, 'msg'),
@@ -118,7 +118,7 @@ ls.snippets.python = {
     {}{}
     ]], {
         i(1, 'condition'),
-        d(2, saved_text, {}, {text = 'pass', indent = true}),
+        d(2, saved_text, {}, {user_args = {{text = 'pass', indent = true}}}),
         d(3, else_clause, {}, {}),
     })),
     s('def', fmt([[
@@ -140,7 +140,7 @@ ls.snippets.python = {
             return ''
         end),
         i(2, 'args'),
-        d(3, saved_text, {}, {text = 'pass', indent = true}),
+        d(3, saved_text, {}, {user_args = {{text = 'pass', indent = true}}}),
     })),
     s('try', fmt([[
     try:
@@ -148,7 +148,7 @@ ls.snippets.python = {
     except {}:
         {}
     ]], {
-        d(1, saved_text, {}, {text = 'pass', indent = true}),
+        d(1, saved_text, {}, {user_args = {{text = 'pass', indent = true}}}),
         c(2, {
             t{'Exception as e'},
             t{'KeyboardInterrupt as e'},
@@ -179,14 +179,14 @@ ls.snippets.python = {
             i(1, '"w"'),
         }),
         i(3, 'data'),
-        d(4, saved_text, {}, {text = 'pass', indent = true}),
+        d(4, saved_text, {}, {user_args = {{text = 'pass', indent = true}}}),
     })),
     s('w', fmt([[
     while {}:
     {}
     ]], {
         i(1, 'condition'),
-        d(2, saved_text, {}, {text = 'pass', indent = true}),
+        d(2, saved_text, {}, {user_args = {{text = 'pass', indent = true}}}),
     })),
     s(
         { trig = "(d?)cl", regTrig = true },
