@@ -133,11 +133,14 @@ describe('Linking', function()
         testlink('~', nil, true)
     end)
 
-    it('Symbolic link to File', function()
-        local basedir = vim.fn.stdpath 'config'
-        local init_file = basedir .. '/init.lua'
-        testlink(init_file, nil, true)
-    end)
+    -- TODO: Add windows negative testing
+    if not is_windows then
+        it('Symbolic link to File', function()
+            local basedir = vim.fn.stdpath 'config'
+            local init_file = basedir .. '/init.lua'
+            testlink(init_file, nil, true)
+        end)
+    end
 
     it('Hard link File', function()
         local basedir = vim.fn.stdpath 'config'
@@ -177,13 +180,15 @@ describe('Linking', function()
             testlink('~', dest, true, true)
         end)
 
-        it('Symbolic link to File', function()
-            local basedir = vim.fn.stdpath 'config'
-            local init_file = basedir .. '/init.lua'
-            local dest = vim.fn.tempname()
-            testlink(init_file, dest, true, false)
-            testlink(init_file, dest, true, true)
-        end)
+        if not is_windows then
+            it('Symbolic link to File', function()
+                local basedir = vim.fn.stdpath 'config'
+                local init_file = basedir .. '/init.lua'
+                local dest = vim.fn.tempname()
+                testlink(init_file, dest, true, false)
+                testlink(init_file, dest, true, true)
+            end)
+        end
 
         it('Hard link File', function()
             local basedir = vim.fn.stdpath 'config'
@@ -253,12 +258,12 @@ describe('Realpath', function()
 
     it('HOME', function()
         local homedir = vim.loop.os_homedir()
-        assert.equals(homedir, realpath '~')
+        assert.equals(forward_path(homedir), realpath '~')
     end)
 
     it('CWD', function()
         local cwd = vim.loop.cwd()
-        assert.equals(cwd, realpath '.')
+        assert.equals(forward_path(cwd), realpath '.')
     end)
 end)
 
@@ -267,7 +272,7 @@ describe('Normalize', function()
 
     it('HOME', function()
         local homedir = vim.loop.os_homedir()
-        assert.equals(homedir, normalize_path '~')
+        assert.equals(forward_path(homedir), normalize_path '~')
     end)
 
     if is_windows then
@@ -275,10 +280,10 @@ describe('Normalize', function()
             local windows_path = [[c:\Users]]
 
             vim.opt.shellslash = false
-            assert.equals(windows_path, normalize_path(windows_path))
+            assert.equals(forward_path(windows_path), normalize_path(windows_path))
 
             vim.opt.shellslash = true
-            assert.equals(windows_path:gsub([[\]], '/'), normalize_path(windows_path))
+            assert.equals(forward_path(windows_path), normalize_path(windows_path))
         end)
     end
 end)
