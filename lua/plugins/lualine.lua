@@ -11,6 +11,22 @@ if not lualine then
     return false
 end
 
+local function where_ami()
+    local class = require('utils.treesitter').get_current_class()
+    local func = require('utils.treesitter').get_current_func()
+    local location = ''
+
+    if class then
+        location = location .. '  ' .. class[1]
+    end
+
+    if func then
+        location = location .. ' ƒ ' .. func[1]
+    end
+
+    return location
+end
+
 lualine.setup {
     options = {
         -- icons_enabled = true,
@@ -58,6 +74,7 @@ lualine.setup {
                     unnamed = '[No Name]',
                 },
             },
+            where_ami,
             'lsp_progress',
         },
         -- lualine_x = { 'encoding', 'fileformat', 'filetype' },
@@ -86,5 +103,5 @@ lualine.setup {
         -- lualine_y = {},
         -- lualine_z = {'tabs'}
     },
-    extensions = {},
+    -- extensions = {},
 }
