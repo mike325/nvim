@@ -74,7 +74,7 @@ end
 
 -- TODO: Add pcall snippet and use TS to parse saved function and separete the funcion name and the args
 -- stylua: ignore
-ls.snippets.lua = {
+ls.add_snippets('lua', {
     s(
         { trig = "(l?)fun", regTrig = true },
         fmt([[
@@ -299,4 +299,4 @@ ls.snippets.lua = {
     s('isfalsy', fmt([[assert.is_falsy({})]],{ d(1, surround_with_func, {}, {user_args = {{text = 'false'}}}), })),
     s('truthy', fmt([[assert.is_truthy({})]],{ d(1, surround_with_func, {}, {user_args = {{text = 'true'}}}), })),
     s('falsy', fmt([[assert.is_falsy({})]],{ d(1, surround_with_func, {}, {user_args = {{text = 'false'}}}), })),
-}
+})

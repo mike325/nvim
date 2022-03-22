@@ -4,7 +4,7 @@ if not ls then
     return false
 end
 
-if not ls.snippets.sh then
+if #ls.get_snippets 'sh' == 0 then
     require 'plugins.snippets.sh'
 end
 

@@ -47,7 +47,7 @@ end
 
 -- TODO: Add pcall snippet and use TS to parse saved function and separete the funcion name and the args
 -- stylua: ignore
-ls.snippets.rust = {
+ls.add_snippets('rust', {
     s('for', fmt([[
     for {} in {} {{
     {}
@@ -108,4 +108,4 @@ ls.snippets.rust = {
             d(3, saved_text, {}, {user_args = {{indent = true}}}),
         }
     )),
-}
+})

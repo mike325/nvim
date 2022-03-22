@@ -5,7 +5,7 @@ if not ls then
 end
 
 local s = ls.snippet
--- local sn = ls.snippet_node
+local sn = ls.snippet_node
 -- local t = ls.text_node
 -- local isn = ls.indent_snippet_node
 local i = ls.insert_node
@@ -24,7 +24,7 @@ local fmt = require('luasnip.extras.fmt').fmt
 -- local events = require 'luasnip.util.events'
 -- local conds = require 'luasnip.extras.expand_conditions'
 
-if not ls.snippets.c then
+if #ls.get_snippets 'c' == 0 then
     require 'plugins.snippets.c'
 end
 
@@ -34,7 +34,7 @@ local saved_text = utils.saved_text
 -- local surround_with_func = utils.surround_with_func
 
 ls.filetype_extend('cpp', { 'c' })
-ls.snippets.cpp = {
+ls.add_snippets('cpp', {
     s(
         'forr',
         fmt(
@@ -52,14 +52,14 @@ ls.snippets.cpp = {
     ),
     s(
         'vec',
-        fmt([[std::vector<{}> {};]], {
+        fmt([[std::vector<{}> {}]], {
             i(1, 'std::string'),
             i(2, 'v'),
         })
     ),
     s(
         'str',
-        fmt([[std::{} {};]], {
+        fmt([[std::{} {}]], {
             c(1, {
                 i(1, 'string'),
                 i(1, 'string_view'),
@@ -74,8 +74,14 @@ ls.snippets.cpp = {
         })
     ),
     s(
+        'cer',
+        fmt([[std::cerr << {};]], {
+            i(1, '"msg"'),
+        })
+    ),
+    s(
         'con',
-        fmt([[const {} {};]], {
+        fmt([[const {} {}]], {
             c(1, {
                 i(1, 'auto'),
                 i(1, 'std::string'),
@@ -84,7 +90,16 @@ ls.snippets.cpp = {
         })
     ),
     s('cex', fmt([[constexpr]], {})),
-}
+    s(
+        'inc',
+        fmt([[#include {}]], {
+            c(1, {
+                sn(nil, fmt('<{}>', { i(1, 'iostream') })),
+                sn(nil, fmt('"{}"', { i(1, 'iostream') })),
+            }),
+        })
+    ),
+})
 
 -- local clike = RELOAD 'plugins.snippets.c_like'
 -- for _, csnip in ipairs(clike) do

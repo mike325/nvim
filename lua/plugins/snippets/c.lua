@@ -29,19 +29,15 @@ local fmt = require('luasnip.extras.fmt').fmt
 -- local get_comment = utils.get_comment
 -- local surround_with_func = utils.surround_with_func
 
-if not ls.snippets then
-    ls.snippets = {}
-end
-
 -- stylua: ignore
-ls.snippets.c  = {
+ls.add_snippets('c', {
     s('inc', fmt([[#include {}]], {
         c(1, {
             sn(nil, fmt('<{}>', {i(1, 'stdio.h')})),
             sn(nil, fmt('"{}"', {i(1, 'stdio.h')})),
         }),
     })),
-}
+})
 
 local clike = RELOAD 'plugins.snippets.c_like'
 for _, csnip in ipairs(clike) do

@@ -47,7 +47,7 @@ end
 
 -- TODO: Add pcall snippet and use TS to parse saved function and separete the funcion name and the args
 -- stylua: ignore
-ls.snippets.go = {
+ls.add_snippets('go', {
     s('for', fmt([[
     for {}, {} := range {} {{
     {}
@@ -227,4 +227,4 @@ ls.snippets.go = {
             i(4, 'break'),
         }
     )),
-}
+})

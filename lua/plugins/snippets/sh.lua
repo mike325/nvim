@@ -46,7 +46,7 @@ local function else_clause(args, snip, old_state, _)
 end
 
 -- stylua: ignore
-ls.snippets.sh = {
+ls.add_snippets('sh', {
     s(
         { trig = 'if(e?)', regTrig = true },
         fmt([=[
@@ -118,4 +118,4 @@ ls.snippets.sh = {
         i(2, 'CONDITION'),
         i(3, ':'),
     })),
-}
+})

@@ -37,16 +37,12 @@ local function notes(note)
     return require('plugins.snippets.utils').get_comment(note)
 end
 
-if not ls.snippets then
-    ls.snippets = {}
-end
-
 local utils = RELOAD 'plugins.snippets.utils'
 local return_value = utils.return_value
 -- local surround_with_func = utils.surround_with_func
 
 -- stylua: ignore
-ls.snippets.all = {
+ls.add_snippets('all', {
     s('date', p(os.date, '%D')),
     s('ret', return_value(true)),
     s('#!', {
@@ -61,7 +57,7 @@ ls.snippets.all = {
             return '#!/usr/bin/env '.. (executables[ft] or ft)
         end),
     })
-}
+})
 
 local annotations = {
     'note',

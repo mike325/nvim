@@ -84,7 +84,7 @@ local function else_clause(args, snip, old_state, placeholder)
 end
 
 -- stylua: ignore
-ls.snippets.python = {
+ls.add_snippets('python', {
     s('for', fmt([[
     for {} in {}:
     {}
@@ -233,4 +233,4 @@ ls.snippets.python = {
             sn(nil, {t' if ', i(1, 'condition') }),
         }),
     })),
-}
+})

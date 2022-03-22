@@ -4,8 +4,20 @@ if not ls then
     return false
 end
 
-if not ls.snippets.c then
-    require 'plugins.snippets.c'
+local snippets = {}
+
+local clike = RELOAD 'plugins.snippets.c_like'
+for _, csnip in ipairs(clike) do
+    local has_snip = false
+    for _, snip in ipairs(snippets) do
+        if snip.dscr == csnip.dscr then
+            has_snip = true
+            break
+        end
+    end
+    if not has_snip then
+        table.insert(snippets, csnip)
+    end
 end
 
-ls.filetype_extend('java', { 'c' })
+ls.add_snippets('java', snippets)
