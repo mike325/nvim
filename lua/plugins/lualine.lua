@@ -27,6 +27,57 @@ local function where_ami()
     return location
 end
 
+local function spell()
+    if vim.opt_local.spell:get() then
+        local lang = vim.opt_local.spelllang:get()[1] or 'en'
+        return ('Spell[%s]'):format(lang:upper())
+    end
+    return ''
+end
+
+local function filename()
+    local buf = vim.api.nvim_get_current_buf()
+    local bufname = vim.api.nvim_buf_get_name(buf)
+
+    local modified = require('utils.buffers').is_modified(buf)
+    local readonly = vim.bo[buf].readonly
+    local ft = vim.bo[buf].filetype
+    local buftype = vim.bo[buf].buftype
+
+    -- TODO: Improve fugitve and other plugin support
+    local plugins = {
+        fugitive = 'Fugitive',
+        telescope = 'Telescope',
+        telescopeprompt = 'Telescope',
+    }
+
+    local filetypes = {
+        gitcommit = 'COMMIT_MSG',
+        GV = 'GV',
+    }
+
+    local name
+
+    if plugins[ft:lower()] then
+        return ('[%s]'):format(plugins[ft:lower()])
+    elseif filetypes[ft] then
+        name = filetypes[ft]
+    elseif buftype == 'terminal' then
+        name = 'term://' .. (bufname:gsub('term://.*:', ''))
+    elseif buftype == 'help' then
+        name = require('utils.files').basename(bufname)
+    elseif buftype == 'prompt' then
+        name = '[Prompt]'
+    elseif bufname == '' then
+        name = '[No Name]'
+    else
+        -- TODO: Cut this to respect the size
+        name = vim.fn.bufname(buf)
+    end
+
+    return name .. (modified and '[+]' or '') .. (readonly and ' ' .. get_icon 'readonly' or '')
+end
+
 lualine.setup {
     options = {
         -- icons_enabled = true,
@@ -47,9 +98,13 @@ lualine.setup {
             {
                 'mode',
                 fmt = function(str)
-                    return str:sub(1, 1):upper()
+                    if str:match '%-LINE' or str:match '%-BLOCK' then
+                        return str:sub(1, 1) .. str:sub(3, 3)
+                    end
+                    return str:sub(1, 1)
                 end,
             },
+            spell,
         },
         lualine_b = {
             'branch',
@@ -66,14 +121,15 @@ lualine.setup {
         },
         -- TODO: Add current function/class/module using TS
         lualine_c = {
-            {
-                'filename',
-                symbols = {
-                    modified = '[+]',
-                    readonly = ' ' .. get_icon 'readonly',
-                    unnamed = '[No Name]',
-                },
-            },
+            -- {
+            --     'filename',
+            --     symbols = {
+            --         modified = '[+]',
+            --         readonly = ' ' .. get_icon 'readonly',
+            --         unnamed = '[No Name]',
+            --     },
+            -- },
+            filename,
             where_ami,
             'lsp_progress',
         },

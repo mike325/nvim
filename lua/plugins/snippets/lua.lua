@@ -145,7 +145,7 @@ ls.add_snippets('lua', {
         i(1, 'condition'),
         d(2, saved_text, {}, {user_args = {{indent = true}}}),
     })),
-    s("req", fmt([[require "{}"]], {
+    s("req", fmt([[require '{}']], {
         i(1, 'module'),
     })),
     s("l", fmt([[local {} = {}]], {
@@ -299,4 +299,4 @@ ls.add_snippets('lua', {
     s('isfalsy', fmt([[assert.is_falsy({})]],{ d(1, surround_with_func, {}, {user_args = {{text = 'false'}}}), })),
     s('truthy', fmt([[assert.is_truthy({})]],{ d(1, surround_with_func, {}, {user_args = {{text = 'true'}}}), })),
     s('falsy', fmt([[assert.is_falsy({})]],{ d(1, surround_with_func, {}, {user_args = {{text = 'false'}}}), })),
-})
+}, {key = 'lua_init'})

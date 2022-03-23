@@ -42,7 +42,7 @@ local return_value = utils.return_value
 -- local surround_with_func = utils.surround_with_func
 
 -- stylua: ignore
-ls.add_snippets('all', {
+local general_snips = {
     s('date', p(os.date, '%D')),
     s('ret', return_value(true)),
     s('#!', {
@@ -57,7 +57,7 @@ ls.add_snippets('all', {
             return '#!/usr/bin/env '.. (executables[ft] or ft)
         end),
     })
-})
+}
 
 local annotations = {
     'note',
@@ -70,5 +70,7 @@ local annotations = {
 }
 
 for _, annotation in ipairs(annotations) do
-    table.insert(ls.snippets.all, s(annotation, p(notes, annotation)))
+    table.insert(general_snips, s(annotation, p(notes, annotation)))
 end
+
+ls.add_snippets('all', general_snips, { key = 'all_init' })

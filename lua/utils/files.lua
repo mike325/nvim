@@ -13,7 +13,7 @@ M.getcwd = uv.cwd
 
 local is_windows = sys.name == 'windows'
 
-local function forward_path(path)
+function M.forward_path(path)
     if is_windows then
         if vim.o.shellslash then
             path = path:gsub('\\', '/')
@@ -25,7 +25,7 @@ local function forward_path(path)
     return path
 end
 
-local function separator()
+function M.separator()
     if is_windows and not vim.o.shellslash then
         return '\\'
     end
@@ -33,7 +33,7 @@ local function separator()
 end
 
 local function split_path(path)
-    path = require('utils.strings').split(M.normalize_path(path), separator())
+    path = require('utils.strings').split(M.normalize_path(path), M.separator())
     return path
 end
 
@@ -68,13 +68,13 @@ function M.mkdir(dirname, recurive)
     dirname = M.normalize_path(dirname)
     local ok, msg, err = uv.fs_mkdir(dirname, 511)
     if err == 'ENOENT' and recurive then
-        local dirs = vim.split(dirname, separator())
+        local dirs = vim.split(dirname, M.separator())
         local base = dirs[1] == '' and '/' or dirs[1]
         if dirs[1] == '' or M.is_root(dirs[1]) then
             table.remove(dirs, 1)
         end
         for _, dir in ipairs(dirs) do
-            base = base .. separator() .. dir
+            base = base .. M.separator() .. dir
             if not M.exists(base) then
                 ok, msg, _ = uv.fs_mkdir(base, 511)
                 if not ok then
@@ -179,8 +179,8 @@ function M.is_root(path)
     assert(path ~= '', debug.traceback 'Empty path')
     local root = false
     if is_windows and #path >= 2 then
-        path = forward_path(path)
-        root = string.match(path, '^%w:' .. separator() .. '?$') ~= nil
+        path = M.forward_path(path)
+        root = string.match(path, '^%w:' .. M.separator() .. '?$') ~= nil
     elseif not is_windows then
         root = path == '/'
     end
@@ -192,7 +192,7 @@ function M.realpath(path)
     assert(M.exists(path), debug.traceback(([[Path "%s" doesn't exists]]):format(path)))
     path = M.normalize_path(path)
     local rpath = uv.fs_realpath(path)
-    return forward_path(rpath or path)
+    return M.forward_path(rpath or path)
 end
 
 function M.normalize_path(path)
@@ -204,7 +204,7 @@ function M.normalize_path(path)
         -- TODO: Replace this with a fast API
         path = vim.fn.expand(path)
     end
-    return forward_path(path)
+    return M.forward_path(path)
 end
 
 function M.basename(path)
@@ -213,7 +213,7 @@ function M.basename(path)
         path = M.getcwd()
     end
     path = M.normalize_path(path)
-    return path:match(('[^%s]+$'):format(separator()))
+    return path:match(('[^%s]+$'):format(M.separator()))
 end
 
 function M.extension(path)
@@ -247,7 +247,7 @@ function M.basedir(path)
         else
             path = ''
         end
-        path = path .. table.concat(path_components, separator())
+        path = path .. table.concat(path_components, M.separator())
     elseif M.is_absolute(path) then
         if is_windows then
             path = path:sub(1, #path > 2 and 3 or 2)
@@ -257,7 +257,7 @@ function M.basedir(path)
     else
         path = '.'
     end
-    return forward_path(path)
+    return M.forward_path(path)
 end
 
 function M.is_parent(parent, child)
@@ -462,7 +462,7 @@ function M.ls(expr)
     end
 
     if is_windows and vim.o.shellslash then
-        vim.tbl_map(forward_path, results)
+        vim.tbl_map(M.forward_path, results)
     end
 
     return results
@@ -858,7 +858,7 @@ function M.find_parent(filename, basedir)
             break
         end
         if scanned == filename then
-            return M.normalize_path(basedir .. separator() .. scanned)
+            return M.normalize_path(basedir .. M.separator() .. scanned)
         end
     end
 

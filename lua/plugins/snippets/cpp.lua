@@ -33,7 +33,6 @@ local saved_text = utils.saved_text
 -- local get_comment = utils.get_comment
 -- local surround_with_func = utils.surround_with_func
 
-ls.filetype_extend('cpp', { 'c' })
 ls.add_snippets('cpp', {
     s(
         'forr',
@@ -99,7 +98,9 @@ ls.add_snippets('cpp', {
             }),
         })
     ),
-})
+}, { key = 'cpp_init' })
+
+ls.filetype_extend('cpp', { 'c' })
 
 -- local clike = RELOAD 'plugins.snippets.c_like'
 -- for _, csnip in ipairs(clike) do

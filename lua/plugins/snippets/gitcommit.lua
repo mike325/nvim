@@ -51,4 +51,4 @@ ls.add_snippets('gitcommit', {
     s('t',  { p(commit_summary, 'test'),     i(1), t{'', '', ''}, i(2) }),
     s('ci', { p(commit_summary, 'ci'),       i(1), t{'', '', ''}, i(2) }),
     s('link', { t{'['}, i(1, 'description'), t{'](https://'}, i(2, {'url'}), t{')'}, }),
-})
+}, {key = 'git_init'})

@@ -108,4 +108,4 @@ ls.add_snippets('rust', {
             d(3, saved_text, {}, {user_args = {{indent = true}}}),
         }
     )),
-})
+}, {key = 'rust_init'})

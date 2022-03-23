@@ -233,4 +233,4 @@ ls.add_snippets('python', {
             sn(nil, {t' if ', i(1, 'condition') }),
         }),
     })),
-})
+}, {key = 'python_init'})

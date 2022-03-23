@@ -30,25 +30,27 @@ local fmt = require('luasnip.extras.fmt').fmt
 -- local surround_with_func = utils.surround_with_func
 
 -- stylua: ignore
-ls.add_snippets('c', {
+local snippets = {
     s('inc', fmt([[#include {}]], {
         c(1, {
             sn(nil, fmt('<{}>', {i(1, 'stdio.h')})),
             sn(nil, fmt('"{}"', {i(1, 'stdio.h')})),
         }),
     })),
-})
+}
 
 local clike = RELOAD 'plugins.snippets.c_like'
 for _, csnip in ipairs(clike) do
     local has_snip = false
-    for _, snip in ipairs(ls.snippets.c) do
+    for _, snip in ipairs(snippets) do
         if snip.dscr == csnip.dscr then
             has_snip = true
             break
         end
     end
     if not has_snip then
-        table.insert(ls.snippets.c, csnip)
+        table.insert(snippets, csnip)
     end
 end
+
+ls.add_snippets('c', snippets, { key = 'c_init' })

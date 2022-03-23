@@ -227,4 +227,4 @@ ls.add_snippets('go', {
             i(4, 'break'),
         }
     )),
-})
+}, {key = 'go_init'})

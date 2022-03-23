@@ -118,4 +118,4 @@ ls.add_snippets('sh', {
         i(2, 'CONDITION'),
         i(3, ':'),
     })),
-})
+}, {key = 'sh_init'})

@@ -20,4 +20,4 @@ for _, csnip in ipairs(clike) do
     end
 end
 
-ls.add_snippets('java', snippets)
+ls.add_snippets('java', snippets, { key = 'java_init' })
