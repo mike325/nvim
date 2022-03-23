@@ -137,7 +137,7 @@ function M.setup()
                     path = vim.split(path, ',')
                 end
                 merge_uniq_list(path, output)
-                vim.api.nvim_buf_set_option(buf, 'path', table.concat(path, ','))
+                vim.bo[buf].path = table.concat(path, ',')
             end)
             get_path:start()
         else
@@ -148,9 +148,9 @@ function M.setup()
             if type(vim.b.python_path) == type '' then
                 vim.b.python_path = vim.split(vim.b.python_path, ',')
             end
-            local path = vim.split(vim.api.nvim_buf_get_option(buf, 'path'), ',')
+            local path = vim.split(vim.bo[buf].path, ',')
             merge_uniq_list(path, vim.b.python_path)
-            vim.api.nvim_buf_set_option(buf, 'path', table.concat(path, ','))
+            vim.bo[buf].path = table.concat(path, ',')
         end
     end
 

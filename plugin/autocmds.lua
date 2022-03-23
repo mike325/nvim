@@ -40,14 +40,7 @@ set_autocmd {
 set_autocmd {
     event = 'TermOpen',
     pattern = '*',
-    cmd = 'setlocal noswapfile nobackup noundofile bufhidden=',
-    group = 'TerminalAutocmds',
-}
-
-set_autocmd {
-    event = 'TermOpen',
-    pattern = '*',
-    cmd = 'setlocal norelativenumber nonumber nocursorline',
+    cmd = 'setlocal noswapfile nobackup noundofile norelativenumber nonumber nocursorline',
     group = 'TerminalAutocmds',
 }
 

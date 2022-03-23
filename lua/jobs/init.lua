@@ -68,9 +68,9 @@ end
 local function get_buffer(job)
     local buf = vim.api.nvim_create_buf(false, true)
 
-    nvim.buf.set_option(buf, 'bufhidden', 'wipe')
+    vim.bo[buf].bufhidden = 'wipe'
     if plugins['nvim-terminal.lua'] then
-        nvim.buf.set_option(buf, 'filetype', 'terminal')
+        vim.bo[buf].filetype = 'terminal'
     end
 
     nvim.buf.set_lines(buf, 0, -1, true, job:output())

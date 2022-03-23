@@ -287,8 +287,8 @@ set_command {
 
         local win = require('utils.windows').big_center()
 
-        nvim.win.set_option(win, 'number', false)
-        nvim.win.set_option(win, 'relativenumber', false)
+        vim.wo[win].number = false
+        vim.wo[win].relativenumber = false
 
         -- nvim.ex.edit('term://'..)
         vim.fn.termopen(shell)
@@ -771,9 +771,9 @@ set_command {
         local buf = vim.fn.bufnr(scratchs[ft], true)
 
         if ft and ft ~= '' then
-            nvim.buf.set_option(buf, 'filetype', ft)
+            vim.bo[buf].filetype = ft
         end
-        nvim.buf.set_option(buf, 'bufhidden', 'hide')
+        vim.bo[buf].bufhidden = 'hide'
 
         local wins = nvim.tab.list_wins(0)
         local scratch_win
@@ -925,8 +925,8 @@ set_command {
 
         local win = vim.api.nvim_get_current_win()
 
-        nvim.win.set_option(win, 'number', false)
-        nvim.win.set_option(win, 'relativenumber', false)
+        vim.wo[win].number = false
+        vim.wo[win].relativenumber = false
 
         vim.fn.termopen(type(cmd) == type {} and table.concat(cmd, ' ') or cmd)
         nvim.ex.startinsert()

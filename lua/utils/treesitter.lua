@@ -119,7 +119,7 @@ function M.is_node(range, node, buf)
     }
 
     local langtree = parser:language_for_range(range)
-    -- local buf_lang = vim.api.nvim_buf_get_option(buf, 'filetype')
+    -- local buf_lang = vim.bo[buf].filetype
     local ts_lang = langtree:lang()
     ts_lang = ts_to_ft[ts_lang] or ts_lang
 

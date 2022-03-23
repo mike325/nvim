@@ -143,8 +143,9 @@ vim.opt.diffopt:append {
     'iwhiteall',
     'iwhiteeol',
     'indent-heuristic',
-    'algorithm:patience',
     'hiddenoff',
+    'closeoff',
+    'algorithm:minimal',
 }
 
 vim.opt.relativenumber = true

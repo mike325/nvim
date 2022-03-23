@@ -155,7 +155,7 @@ function M.on_attach(client, bufnr, is_null)
     local ft = vim.bo.filetype
 
     bufnr = bufnr or nvim.get_current_buf()
-    vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+    vim.bo[bufnr].omnifunc = 'v:lua.vim.lsp.omnifunc'
 
     local lua_cmd = '<cmd>lua %s<CR>'
 

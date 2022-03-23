@@ -44,7 +44,7 @@ vim.keymap.set('n', '=T', function()
     local trouble_open = false
     for _, win in pairs(nvim.tab.list_wins(0)) do
         local buf = nvim.win.get_buf(win)
-        if nvim.buf.get_option(buf, 'filetype') == 'Trouble' then
+        if vim.bo[buf].filetype == 'Trouble' then
             trouble_open = true
             nvim.ex.TroubleClose()
             break

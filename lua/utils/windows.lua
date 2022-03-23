@@ -82,7 +82,7 @@ function M.big_center(buffer)
     if not buffer then
         -- create a new, scratch buffer, for fzf
         buffer = vim.api.nvim_create_buf(false, true)
-        vim.api.nvim_buf_set_option(buffer, 'buftype', 'nofile')
+        vim.bo[buffer].buftype = 'nofile'
     end
 
     -- if the editor is big enough

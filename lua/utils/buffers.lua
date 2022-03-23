@@ -38,7 +38,7 @@ function M.is_modified(bufnr)
     vim.validate { buffer = { bufnr, 'number', true } }
 
     bufnr = bufnr or nvim.get_current_buf()
-    return nvim.buf.get_option(bufnr, 'modified')
+    return vim.bo[bufnr].modified
 end
 
 function M.delete(bufnr, wipe)
@@ -47,7 +47,7 @@ function M.delete(bufnr, wipe)
 
     bufnr = bufnr or vim.api.nvim_get_current_buf()
     local is_duplicated = false
-    local is_wipe = nvim.buf.get_option(bufnr, 'bufhidden') == 'wipe'
+    local is_wipe = vim.bo[bufnr].bufhidden == 'wipe'
     local prev_buf = vim.fn.expand '#' ~= '' and vim.fn.bufnr(vim.fn.expand '#') or -1
     prev_buf = prev_buf == bufnr and -1 or prev_buf
 
@@ -239,8 +239,8 @@ function M.detect_indent(buf)
         TelescopeResults = true,
     }
 
-    local ft = vim.api.nvim_buf_get_option(buf, 'filetype')
-    local buftype = vim.api.nvim_buf_get_option(buf, 'buftype')
+    local ft = vim.bo[buf].filetype
+    local buftype = vim.bo[buf].buftype
     local ok, indent_set = pcall(vim.api.nvim_buf_get_var, buf, 'indent_set')
     indent_set = ok and indent_set or false
 
@@ -260,8 +260,8 @@ function M.detect_indent(buf)
     --     end
     -- end
 
-    local indent = vim.api.nvim_buf_get_option(buf, 'tabstop')
-    local expandtab = vim.api.nvim_buf_get_option(buf, 'expandtab')
+    local indent = vim.bo[buf].tabstop
+    local expandtab = vim.bo[buf].expandtab
     local is_node = require('utils.treesitter').is_node
     local has_ts = require('utils.treesitter').has_ts(buf)
 
@@ -297,13 +297,13 @@ function M.detect_indent(buf)
         end
     end
 
-    vim.api.nvim_buf_set_option(buf, 'expandtab', expandtab)
-    vim.api.nvim_buf_set_option(buf, 'tabstop', indent)
-    vim.api.nvim_buf_set_option(buf, 'softtabstop', -1)
-    vim.api.nvim_buf_set_option(buf, 'shiftwidth', 0)
+    vim.bo[buf].expandtab = expandtab
+    vim.bo[buf].tabstop = indent
+    vim.bo[buf].softtabstop = -1
+    vim.bo[buf].shiftwidth = 0
 
     -- Cache this indent to avoid re-set it
-    vim.api.nvim_buf_set_var(buf, 'indent_set', true)
+    vim.b[buf].indent_set = true
 
     return indent
 end
