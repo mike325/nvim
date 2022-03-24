@@ -3,6 +3,7 @@ local sys = require 'sys'
 
 local split = require('utils.strings').split
 local set_autocmd = require('neovim.autocmds').set_autocmd
+local executable = require('utils.files').executable
 
 local M = {}
 
@@ -71,7 +72,7 @@ function M.send_grep_job(args)
         table.insert(cmd, args)
     end
 
-    local grep = RELOAD('jobs'):new {
+    local grep = require('jobs'):new {
         cmd = cmd,
         silent = true,
         qf = {
@@ -232,9 +233,9 @@ end
 
 function M.get_git_dir(callback)
     vim.validate { callback = { callback, 'function' } }
-    assert(require('utils.files').executable 'git', 'Missing git')
+    assert(executable 'git', 'Missing git')
 
-    local j = RELOAD('jobs'):new {
+    local j = require('jobs'):new {
         cmd = { 'git', 'rev-parse', '--git-dir' },
         silent = true,
     }
@@ -264,7 +265,7 @@ function M.external_formatprg(args)
 
     table.insert(cmd, tmpfile)
 
-    local formatprg = RELOAD('jobs'):new {
+    local formatprg = require('jobs'):new {
         cmd = cmd,
         silent = true,
         qf = {
@@ -299,7 +300,7 @@ function M.async_execute(opts)
     local cmd = opts.cmd
     local args = opts.args
 
-    local script = RELOAD('jobs'):new {
+    local script = require('jobs'):new {
         cmd = cmd,
         args = args,
         progress = true,
@@ -350,7 +351,7 @@ function M.open(uri)
 
     table.insert(args, uri)
 
-    local open = RELOAD('jobs'):new {
+    local open = require('jobs'):new {
         cmd = cmd,
         args = args,
         qf = {
