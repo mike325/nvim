@@ -25,6 +25,6 @@ set_command {
 set_autocmd {
     event = 'TextYankPost',
     pattern = '*',
-    cmd = [[if v:event.operator is 'y' && (v:event.regname is '+' || v:event.regname is '*' || v:event.regname is '') | OSCYankReg + | endif]],
+    cmd = [[call neovim#copy_yanked_text()]],
     group = 'OSCYank',
 }

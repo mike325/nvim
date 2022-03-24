@@ -33,7 +33,7 @@ set_autocmd {
 set_autocmd {
     event = 'TextYankPost',
     pattern = '*',
-    cmd = [[silent! lua require'vim.highlight'.on_yank({higroup = "IncSearch", timeout = 1000})]],
+    cmd = [[silent! lua vim.highlight.on_yank{higroup = "IncSearch", timeout = 1000}]],
     group = 'YankHL',
 }
 

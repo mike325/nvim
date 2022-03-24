@@ -161,3 +161,12 @@ function! neovim#bs() abort
         execute "normal! \<C-o>"
     endtry
 endfunction
+
+function! neovim#copy_yanked_text() abort
+    if exists(':OSCYankReg') == 2
+        if v:event.operator is? 'y' && (v:event.regname is? '+' || v:event.regname is? '*' || v:event.regname is? '')
+            let l:regname =  v:event.regname is? '' ? '"' : v:event.regname
+            execute 'OSCYankReg '.l:regname
+        endif
+    endif
+endfunction
