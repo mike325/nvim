@@ -34,10 +34,12 @@ vim.g.vimtex_mappings_enabled = 0
 vim.g.vimtex_quickfix_open_on_warning = 0
 
 if sys.name == 'windows' then
-    vim.vimtex_compiler_latexmk_engines = {
+    vim.g.vimtex_compiler_latexmk_engines = {
         ['_'] = '-pdf',
         pdflatex = '-shell-escape -synctex=1 -interaction=nonstopmode',
-        dvipdfex = '-pdfdvi',
+        pdfdvi = '-pdfdvi',
+        pdfps = '-pdfps',
+        luatex = '-lualatex',
         lualatex = '-lualatex',
         xelatex = '-xelatex',
         ['context (pdftex)'] = '-shell-escape -synctex=1 -interaction=nonstopmode',

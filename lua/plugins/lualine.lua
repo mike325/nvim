@@ -71,8 +71,14 @@ local function filename()
     elseif bufname == '' then
         name = '[No Name]'
     else
+        local cwd = require('utils.files').getcwd():gsub('%.', '%%.'):gsub('%-', '%%-')
+        local separator = require('utils.files').separator()
         -- TODO: Cut this to respect the size
         name = vim.fn.bufname(buf)
+        if name:match('^' .. cwd) then
+            name = name:gsub('^' .. cwd, '')
+            name = name:sub(1, 1) == separator and name:sub(2, #name) or name
+        end
     end
 
     return name .. (modified and '[+]' or '') .. (readonly and ' ' .. get_icon 'readonly' or '')
@@ -119,16 +125,7 @@ lualine.setup {
                 },
             },
         },
-        -- TODO: Add current function/class/module using TS
         lualine_c = {
-            -- {
-            --     'filename',
-            --     symbols = {
-            --         modified = '[+]',
-            --         readonly = ' ' .. get_icon 'readonly',
-            --         unnamed = '[No Name]',
-            --     },
-            -- },
             filename,
             where_ami,
             'lsp_progress',
