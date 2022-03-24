@@ -84,6 +84,13 @@ local function filename()
     return name .. (modified and '[+]' or '') .. (readonly and ' ' .. get_icon 'readonly' or '')
 end
 
+-- TODO: Missing secctions I would like to add
+-- Improve tab support to make it behave more like "airline"
+-- Mixed indent (spaces with tabs)
+-- Improve code location with TS, module,class,function,definition,etc.
+-- Add support to indicate async job is been run in the backgroud
+-- Count "BUG/TODO/NOTE" indications ?
+
 lualine.setup {
     options = {
         -- icons_enabled = true,
@@ -104,7 +111,7 @@ lualine.setup {
             {
                 'mode',
                 fmt = function(str)
-                    if str:match '%-LINE' or str:match '%-BLOCK' then
+                    if str:match '^%w%-%w' then
                         return str:sub(1, 1) .. str:sub(3, 3)
                     end
                     return str:sub(1, 1)
@@ -142,7 +149,6 @@ lualine.setup {
     --     lualine_y = {},
     --     lualine_z = {},
     -- },
-    -- -- TODO: Improve tabline to make it look more like "airline"
     tabline = {
         lualine_a = {
             {
@@ -156,5 +162,5 @@ lualine.setup {
         -- lualine_y = {},
         -- lualine_z = {'tabs'}
     },
-    -- extensions = {},
+    extensions = { 'quickfix', 'fugitive' },
 }
