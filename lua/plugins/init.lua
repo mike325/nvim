@@ -37,10 +37,6 @@ packer.startup(function()
 
     use 'wbthomason/packer.nvim'
 
-    use { 'PProvost/vim-ps1' }
-    use { 'kurayama/systemd-vim-syntax' }
-    use { 'raimon49/requirements.txt.vim' }
-
     use { 'nanotee/luv-vimdocs', event = 'CmdlineEnter' }
     use { 'tweekmonster/startuptime.vim', cmd = { 'StartupTime' } }
 
@@ -50,6 +46,14 @@ packer.startup(function()
     use { 'nvim-lua/popup.nvim' }
     use { 'nvim-lua/plenary.nvim' }
     use { 'rcarriga/nvim-notify' }
+
+    use {
+        'folke/tokyonight.nvim',
+        config = function()
+            vim.g.tokyonight_style = 'night'
+            vim.cmd [[colorscheme tokyonight]]
+        end,
+    }
 
     use {
         'tami5/sqlite.lua',
@@ -80,8 +84,6 @@ packer.startup(function()
     }
 
     use { 'tpope/vim-repeat', event = 'VimEnter' }
-    use { 'tpope/vim-apathy', event = 'VimEnter' }
-    -- use {'tpope/vim-commentary', event = 'VimEnter'}
 
     use {
         'tpope/vim-surround',
@@ -97,51 +99,7 @@ packer.startup(function()
         end,
     }
 
-    use {
-        'tpope/vim-projectionist',
-        event = { 'CmdlineEnter', 'CursorHold' },
-        config = function()
-            local set_autocmd = require('neovim.autocmds').set_autocmd
-            -- TODO: Make this more "project" tailored, set git and language specific
-            --       projections depending of what's in the cwd
-            -- stylua: ignore
-            vim.g.common_projections = {
-                ['.projections.json']          = { type = 'Projections' },
-                ['.gitignore']                 = { type = 'Gitignore' },
-                ['.git/hooks/*']               = { type = 'GitHooks' },
-                ['.git/config']                = { type = 'Git' },
-                ['.git/info/*']                = { type = 'Git' },
-                ['.github/workflows/main.yml'] = { type = 'Github' },
-                ['.github/workflows/*.yml']    = { type = 'Github' },
-                ['.travis.yml']                = { type = 'Travis' },
-                ['.pre-commit-config.yaml']    = { type = 'PreCommit' },
-                ['.ycm_extra_conf.py']         = { type = 'YCM' },
-                ['pyproject.toml']             = { type = 'PyProject' },
-                ['.flake8']                    = { type = 'Flake' },
-                ['.stylua.toml']               = { type = 'Stylua' },
-                ['.project.vim']               = { type = 'Project' },
-                ['.clang-format']              = { type = 'Clang' },
-                ['.clang-*']                   = { type = 'Clang' },
-                ['compile_flags.txt']          = { type = 'CompileFlags' },
-                ['compile_commands.json']      = { type = 'CompileDB' },
-                ['UltiSnips/*.snippets']       = { type = 'UltiSnips' },
-                ['README.md']                  = { type = 'Readme' },
-                ['LICENSE']                    = { type = 'License' },
-                ['Makefile']                   = { type = 'Makefile' },
-                ['CMakeLists.txt']             = { type = 'CMake' },
-                ['*.cmake']                    = { type = 'CMake' },
-            }
-            set_autocmd {
-                event = 'User',
-                pattern = 'ProjectionistDetect',
-                cmd = 'call projectionist#append(getcwd(), g:common_projections)',
-                group = 'CommonProjections',
-            }
-        end,
-    }
-
     use { 'tpope/vim-fugitive', event = { 'CmdlineEnter', 'CursorHold' } }
-    use { 'junegunn/gv.vim', cmd = 'GV', wants = 'vim-fugitive' }
 
     use {
         'kana/vim-textobj-user',
@@ -167,27 +125,6 @@ packer.startup(function()
         config = function()
             require 'plugins.pairs'
         end,
-    }
-
-    use {
-        'tommcdo/vim-lion',
-        event = 'VimEnter',
-        cond = function()
-            return not vim.env.VIM_MIN and not vim.g.minimal
-        end,
-        config = function()
-            vim.g.lion_squeeze_spaces = 1
-        end,
-    }
-
-    use {
-        'tpope/vim-abolish',
-        cond = function()
-            return not vim.env.VIM_MIN and not vim.g.minimal
-        end,
-        event = { 'InsertEnter', 'CmdwinEnter' },
-        -- TODO: configs
-        -- config = function() require'plugins.abolish' end,
     }
 
     use {
@@ -220,8 +157,8 @@ packer.startup(function()
 
     use {
         'sindrets/diffview.nvim',
-        event = 'CmdlineEnter',
-        cmd = { 'DiffviewToggle', 'DiffviewFileHistory' },
+        -- event = 'CmdlineEnter',
+        -- cmd = { 'DiffviewToggle', 'DiffviewFileHistory' },
         cond = function()
             return not vim.env.VIM_MIN and not vim.g.minimal
         end,
@@ -243,19 +180,6 @@ packer.startup(function()
                 cmd = 'lua require"plugins.diffview".set_mappings()',
                 group = 'DiffViewMappings',
             }
-        end,
-    }
-
-    use {
-        'rhysd/git-messenger.vim',
-        cond = function()
-            return not vim.env.VIM_MIN and not vim.g.minimal
-        end,
-        setup = function()
-            vim.g.git_messenger_no_default_mappings = 1
-        end,
-        config = function()
-            vim.api.nvim_set_keymap('n', '=m', '<Plug>(git-messenger)', { silent = true, nowait = true })
         end,
     }
 
@@ -312,27 +236,6 @@ packer.startup(function()
     }
 
     use {
-        'sainnhe/sonokai',
-        cond = function()
-            return not vim.env.VIM_MIN and not vim.g.minimal
-        end,
-        config = function()
-            vim.opt.termguicolors = true
-
-            -- vim.g.sonokai_current_word = 'bold'
-            vim.g.sonokai_enable_italic = 1
-            vim.g.sonokai_diagnostic_text_highlight = 1
-            vim.g.sonokai_diagnostic_line_highlight = 1
-            vim.g.sonokai_diagnostic_virtual_text = 'colored'
-            vim.g.sonokai_better_performance = 1
-
-            vim.g.airline_theme = 'sonokai'
-
-            vim.cmd [[colorscheme sonokai]]
-        end,
-    }
-
-    use {
         'glacambre/firenvim',
         cond = function()
             local ssh = vim.env.SSH_CONNECTION or false
@@ -364,18 +267,6 @@ packer.startup(function()
             require 'plugins.hop'
         end,
     }
-
-    -- use {
-    --     'folke/trouble.nvim',
-    --     event = { 'CmdlineEnter', 'CursorHold' },
-    --     cmd = { 'Trouble' },
-    --     cond = function()
-    --         return not vim.env.VIM_MIN and not vim.g.minimal
-    --     end,
-    --     config = function()
-    --         require 'plugins.trouble'
-    --     end,
-    -- }
 
     use {
         'nvim-treesitter/nvim-treesitter',
@@ -413,31 +304,6 @@ packer.startup(function()
     }
 
     use {
-        'nvim-telescope/telescope-smart-history.nvim',
-        cond = function()
-            return require('sys').has_sqlite
-        end,
-        module = 'telescope',
-        config = function()
-            require('telescope').load_extension 'smart_history'
-        end,
-        wants = { 'sqlite.lua', 'telescope.nvim' },
-    }
-
-    use {
-        'nvim-telescope/telescope-frecency.nvim',
-        cond = function()
-            return require('sys').has_sqlite
-        end,
-        module = 'telescope',
-        config = function()
-            require('telescope').load_extension 'frecency'
-        end,
-        wants = { 'sqlite.lua', 'telescope.nvim' },
-    }
-
-    use { 'folke/lsp-colors.nvim' }
-    use {
         'neovim/nvim-lspconfig',
         config = function()
             require 'plugins.lsp'
@@ -447,13 +313,6 @@ packer.startup(function()
             { 'weilbith/nvim-lsp-smag' },
             { 'weilbith/nvim-floating-tag-preview' },
         },
-    }
-
-    use {
-        'norcalli/nvim-terminal.lua',
-        config = function()
-            require('terminal').setup()
-        end,
     }
 
     use {
@@ -477,7 +336,7 @@ packer.startup(function()
             -- { 'quangnguyen30192/cmp-nvim-ultisnips' },
         },
         config = function()
-            require 'plugins.completion'
+            require 'plugins.cmp'
         end,
         -- after = 'nvim-lspconfig',
     }
@@ -582,27 +441,6 @@ packer.startup(function()
     }
 
     use {
-        'ThePrimeagen/harpoon',
-        config = function()
-            vim.keymap.set('n', '=h', function()
-                require('harpoon.ui').toggle_quick_menu()
-            end, { noremap = true })
-
-            vim.keymap.set('n', '=a', function()
-                require('harpoon.mark').add_file()
-            end, { noremap = true })
-
-            vim.keymap.set('n', ']h', function()
-                require('harpoon.ui').nav_next()
-            end, { noremap = true })
-
-            vim.keymap.set('n', '[h', function()
-                require('harpoon.ui').nav_prev()
-            end, { noremap = true })
-        end,
-    }
-
-    use {
         'ray-x/go.nvim',
         cond = function()
             return vim.fn.executable 'go'
@@ -691,6 +529,166 @@ packer.startup(function()
         end,
         requires = { 'arkav/lualine-lsp-progress' },
     }
+
+    -- use {
+    --     'folke/trouble.nvim',
+    --     event = { 'CmdlineEnter', 'CursorHold' },
+    --     cmd = { 'Trouble' },
+    --     cond = function()
+    --         return not vim.env.VIM_MIN and not vim.g.minimal
+    --     end,
+    --     config = function()
+    --         require 'plugins.trouble'
+    --     end,
+    -- }
+
+    -- use {
+    --     'folke/todo-comments.nvim',
+    --     cond = function()
+    --         local no_min = vim.env.VIM_MIN == nil and vim.g.minimal == nil
+    --         local has_rg = vim.fn.executable 'rg' == 1
+    --         return no_min and has_rg
+    --     end,
+    --     config = function()
+    --         require 'plugins.todos'
+    --     end,
+    --     wants = 'trouble.nvim',
+    -- }
+
+    -- use {
+    --     'tpope/vim-abolish',
+    --     cond = function()
+    --         return not vim.env.VIM_MIN and not vim.g.minimal
+    --     end,
+    --     event = { 'InsertEnter', 'CmdwinEnter' },
+    --     -- TODO: configs
+    --     -- config = function() require'plugins.abolish' end,
+    -- }
+
+    -- use {
+    --     'ThePrimeagen/harpoon',
+    --     config = function()
+    --         vim.keymap.set('n', '=h', function()
+    --             require('harpoon.ui').toggle_quick_menu()
+    --         end, { noremap = true })
+    --
+    --         vim.keymap.set('n', '=a', function()
+    --             require('harpoon.mark').add_file()
+    --         end, { noremap = true })
+    --
+    --         vim.keymap.set('n', ']h', function()
+    --             require('harpoon.ui').nav_next()
+    --         end, { noremap = true })
+    --
+    --         vim.keymap.set('n', '[h', function()
+    --             require('harpoon.ui').nav_prev()
+    --         end, { noremap = true })
+    --     end,
+    -- }
+
+    -- use { 'folke/lsp-colors.nvim' }
+
+    -- use {
+    --     'norcalli/nvim-terminal.lua',
+    --     config = function()
+    --         require('terminal').setup()
+    --     end,
+    -- }
+
+    -- use {
+    --     'rhysd/git-messenger.vim',
+    --     cond = function()
+    --         return not vim.env.VIM_MIN and not vim.g.minimal
+    --     end,
+    --     setup = function()
+    --         vim.g.git_messenger_no_default_mappings = 1
+    --     end,
+    --     config = function()
+    --         vim.api.nvim_set_keymap('n', '=m', '<Plug>(git-messenger)', { silent = true, nowait = true })
+    --     end,
+    -- }
+
+    -- use {
+    --     'tpope/vim-projectionist',
+    --     event = { 'CmdlineEnter', 'CursorHold' },
+    --     config = function()
+    --         local set_autocmd = require('neovim.autocmds').set_autocmd
+    --         -- TODO: Make this more "project" tailored, set git and language specific
+    --         --       projections depending of what's in the cwd
+    --         -- stylua: ignore
+    --         vim.g.common_projections = {
+    --             ['.projections.json']          = { type = 'Projections' },
+    --             ['.gitignore']                 = { type = 'Gitignore' },
+    --             ['.git/hooks/*']               = { type = 'GitHooks' },
+    --             ['.git/config']                = { type = 'Git' },
+    --             ['.git/info/*']                = { type = 'Git' },
+    --             ['.github/workflows/main.yml'] = { type = 'Github' },
+    --             ['.github/workflows/*.yml']    = { type = 'Github' },
+    --             ['.travis.yml']                = { type = 'Travis' },
+    --             ['.pre-commit-config.yaml']    = { type = 'PreCommit' },
+    --             ['.ycm_extra_conf.py']         = { type = 'YCM' },
+    --             ['pyproject.toml']             = { type = 'PyProject' },
+    --             ['.flake8']                    = { type = 'Flake' },
+    --             ['.stylua.toml']               = { type = 'Stylua' },
+    --             ['.project.vim']               = { type = 'Project' },
+    --             ['.clang-format']              = { type = 'Clang' },
+    --             ['.clang-*']                   = { type = 'Clang' },
+    --             ['compile_flags.txt']          = { type = 'CompileFlags' },
+    --             ['compile_commands.json']      = { type = 'CompileDB' },
+    --             ['UltiSnips/*.snippets']       = { type = 'UltiSnips' },
+    --             ['README.md']                  = { type = 'Readme' },
+    --             ['LICENSE']                    = { type = 'License' },
+    --             ['Makefile']                   = { type = 'Makefile' },
+    --             ['CMakeLists.txt']             = { type = 'CMake' },
+    --             ['*.cmake']                    = { type = 'CMake' },
+    --         }
+    --         set_autocmd {
+    --             event = 'User',
+    --             pattern = 'ProjectionistDetect',
+    --             cmd = 'call projectionist#append(getcwd(), g:common_projections)',
+    --             group = 'CommonProjections',
+    --         }
+    --     end,
+    -- }
+
+    -- use {
+    --     'tommcdo/vim-lion',
+    --     event = 'VimEnter',
+    --     cond = function()
+    --         return not vim.env.VIM_MIN and not vim.g.minimal
+    --     end,
+    --     config = function()
+    --         vim.g.lion_squeeze_spaces = 1
+    --     end,
+    -- }
+
+    -- use {
+    --     'sainnhe/sonokai',
+    --     cond = function()
+    --         return not vim.env.VIM_MIN and not vim.g.minimal
+    --     end,
+    --     config = function()
+    --         vim.opt.termguicolors = true
+    --
+    --         -- vim.g.sonokai_current_word = 'bold'
+    --         vim.g.sonokai_enable_italic = 1
+    --         vim.g.sonokai_diagnostic_text_highlight = 1
+    --         vim.g.sonokai_diagnostic_line_highlight = 1
+    --         vim.g.sonokai_diagnostic_virtual_text = 'colored'
+    --         vim.g.sonokai_better_performance = 1
+    --
+    --         vim.g.airline_theme = 'sonokai'
+    --
+    --         vim.cmd [[colorscheme sonokai]]
+    --     end,
+    -- }
+
+    -- use { 'PProvost/vim-ps1' }
+    -- use { 'kurayama/systemd-vim-syntax' }
+    -- use { 'raimon49/requirements.txt.vim' }
+    -- use { 'tpope/vim-apathy', event = 'VimEnter' }
+    -- use {'tpope/vim-commentary', event = 'VimEnter'}
+    -- use { 'junegunn/gv.vim', cmd = 'GV', wants = 'vim-fugitive' }
 end)
 
 if has_compiler then

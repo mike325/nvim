@@ -11,7 +11,7 @@ if not telescope then
     return false
 end
 
-local plugins = require('neovim').plugins
+-- local plugins = require('neovim').plugins
 local builtin = require 'telescope.builtin'
 -- local themes = require 'telescope.themes'
 
@@ -24,38 +24,17 @@ end
 -- local lsp_langs = require'plugins.lsp'
 -- local ts_langs = require 'plugins.treesitter'
 local actions = require 'telescope.actions'
-local has_sqlite = sys.has_sqlite
-local extensions = {}
-local history
-if has_sqlite then
-    if plugins['telescope-smart-history.nvim'] then
-        history = {
-            path = sys.db_root .. '/telescope_history.sqlite3',
-            limit = 100,
-        }
-    end
-
-    if plugins['telescope-frecency.nvim'] then
-        extensions.frecency = {
-            -- disable_devicons = false,
-            db_root = sys.db_root,
-            workspaces = {
-                ['nvim'] = sys.base,
-                ['dotfiles'] = sys.home .. '/dotfiles/',
-            },
-        }
-        vim.keymap.set('n', '<leader>x', require('telescope').extensions.frecency.frecency, noremap)
-    end
-end
+-- local has_sqlite = sys.has_sqlite
+-- local extensions = {}
 
 telescope.setup {
-    extensions = extensions,
+    -- extensions = extensions,
     layout_config = {
         prompt_position = 'bottom',
         prompt_prefix = '>',
     },
     defaults = {
-        history = history,
+        -- history = history,
         vimgrep_arguments = require('utils.helpers').select_grep(false, 'grepprg', true),
         selection_strategy = 'reset',
         sorting_strategy = 'descending',

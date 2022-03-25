@@ -76,6 +76,7 @@ local sys = {
 }
 
 sys.user.name = sys.user.username
+sys.username = sys.user.username
 
 function sys.tmp(filename)
     local tmpdir = sys.name == 'windows' and 'c:/temp/' or '/tmp/'

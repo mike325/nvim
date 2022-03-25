@@ -169,13 +169,13 @@ local icons
 if not vim.env['NO_COOL_FONTS'] then
     icons = {
         error = '✗', -- ✗ -- 🞮 --  -- ❌
-        warn = '',
+        warn = '', -- 
         info = '',
         hint = '',
         bug = '',
         wait = '☕',
         build = '⛭',
-        success = '✔',
+        success = '✓', -- ✓ -- ✔ -- 
         fail = '✗',
         virtual_text = '❯',
         diff_add = '',
