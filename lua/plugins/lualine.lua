@@ -27,14 +27,6 @@ local function where_ami()
     return location
 end
 
-local function spell()
-    if vim.opt_local.spell:get() then
-        local lang = vim.opt_local.spelllang:get()[1] or 'en'
-        return ('Spell[%s]'):format(lang:upper())
-    end
-    return ''
-end
-
 local function filename()
     local buf = vim.api.nvim_get_current_buf()
     local bufname = vim.api.nvim_buf_get_name(buf)
@@ -117,7 +109,16 @@ lualine.setup {
                     return str:sub(1, 1)
                 end,
             },
-            spell,
+            function()
+                if vim.opt_local.spell:get() then
+                    local lang = vim.opt_local.spelllang:get()[1] or 'en'
+                    return ('Spell[%s]'):format(lang:upper())
+                end
+                return ''
+            end,
+            function()
+                return vim.opt_local.paste:get() and 'PASTE' or ''
+            end,
         },
         lualine_b = {
             'branch',
@@ -138,8 +139,14 @@ lualine.setup {
             'lsp_progress',
         },
         -- lualine_x = { 'encoding', 'fileformat', 'filetype' },
-        -- lualine_y = { 'progress' },
-        -- lualine_z = { 'location' },
+        lualine_y = {
+            function()
+                local space = vim.fn.search([[\s\+$]], 'nwc')
+                return space ~= 0 and 'TW:' .. space or ''
+            end,
+            'progress',
+        },
+        -- lualine_z = { 'location', },
     },
     -- inactive_sections = {
     --     lualine_a = {},
