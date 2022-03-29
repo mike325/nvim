@@ -319,7 +319,7 @@ function M.add_nl(down)
     local count = vim.v['count1']
     if count > 1 then
         for _ = 2, count, 1 do
-            lines[#lines + 1] = ''
+            table.insert(lines, '')
         end
     end
 
@@ -343,7 +343,7 @@ function M.move_line(down)
 
     if count > 1 then
         for _ = 2, count, 1 do
-            lines[#lines + 1] = ''
+            table.insert(lines, '')
         end
     end
 
