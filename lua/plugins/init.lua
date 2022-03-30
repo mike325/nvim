@@ -443,7 +443,7 @@ packer.startup(function()
     use {
         'ray-x/go.nvim',
         cond = function()
-            return vim.fn.executable 'go'
+            return vim.fn.executable 'go' == 1
         end,
         config = function()
             local gofmt = 'gofmt'
