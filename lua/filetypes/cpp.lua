@@ -338,9 +338,13 @@ function M.execute(exe, args)
     run:progress()
 end
 
-function M.build(compile)
-    local flags = compile.flags or {}
-    local compiler = compile.compiler or get_compiler()
+function M.build(build_info)
+    local flags = build_info.flags or {}
+    local compiler = build_info.compiler or get_compiler()
+
+    if type(flags) ~= type {} then
+        flags = { flags }
+    end
 
     local base_cwd = getcwd()
     local ft = vim.opt_local.filetype:get()
@@ -353,13 +357,13 @@ function M.build(compile)
     vim.list_extend(flags, get_args(compiler, nvim.get_current_buf()))
     vim.list_extend(flags, { '-o', compile_output })
 
-    if compile.build_type then
+    if build_info.build_type then
         local build_flags = { '-O2' }
-        if compile.build_type:lower() == 'debug' then
+        if build_info.build_type:lower() == 'debug' then
             build_flags = { '-Og', '-g' }
-        elseif compile.build_type:lower() == 'relwithdebinfo' then
+        elseif build_info.build_type:lower() == 'relwithdebinfo' then
             build_flags = { '-O2', '-g' }
-        elseif compile.build_type:lower() == 'minsizerel' then
+        elseif build_info.build_type:lower() == 'minsizerel' then
             build_flags = { '-Oz' }
         end
         local tmp_flags = {}
@@ -371,18 +375,21 @@ function M.build(compile)
         flags = vim.list_extend(tmp_flags, build_flags)
     end
 
-    require('utils.files').find_files(base_cwd, '*.' .. ft, function(job)
-        vim.list_extend(flags, job:output())
-
+    local compile = function(real_flags)
         if not require('utils.files').is_dir 'build' then
             require('utils.files').mkdir 'build'
         end
 
-        -- P(('%s %s'):format(compiler, table.concat(flags, ' ')))
+        -- -- TODO: Replace mismatch std
+        -- for idx, real_flags in ipairs(real_flags) do
+        --     if real_flags:match '%-%-std' then
+        --         -- code
+        --     end
+        -- end
 
         local build = require('jobs'):new {
             cmd = compiler,
-            args = flags,
+            args = real_flags,
             progress = true,
             opts = {
                 cwd = getcwd(),
@@ -395,8 +402,8 @@ function M.build(compile)
                     open = true,
                     dump = true,
                 },
-                context = 'BuildProject',
-                title = 'BuildProject',
+                context = 'Compile',
+                title = 'Compile',
             },
         }
 
@@ -406,15 +413,24 @@ function M.build(compile)
             end
         end)
 
-        if compile.cb then
+        if build_info.cb then
             build:callback_on_success(function(_)
-                compile.cb()
+                build_info.cb()
             end)
         end
 
         build:start()
         build:progress()
-    end)
+    end
+
+    if not build_info.single then
+        require('utils.files').find_files(base_cwd, '*.' .. ft, function(job)
+            compile(vim.list_extend(flags, job:output()))
+        end)
+    else
+        table.insert(flags, nvim.buf.get_name(0))
+        compile(flags)
+    end
 end
 
 function M.setup()
@@ -474,6 +490,43 @@ function M.setup()
     }
 
     set_command {
+        lhs = 'BuildFile',
+        rhs = function(...)
+            local args = { ... }
+            local flags = {}
+            local build_type
+
+            local builds = {
+                debug = true,
+                release = true,
+                minsizerel = true,
+                relwithdebinfo = true,
+            }
+
+            for _, arg in ipairs(args) do
+                if builds[arg:lower()] then
+                    build_type = arg
+                else
+                    table.insert(flags, arg)
+                end
+            end
+
+            M.build {
+                compiler = compiler,
+                build_type = build_type,
+                flags = flags,
+                single = true,
+            }
+        end,
+        args = {
+            nargs = '*',
+            force = true,
+            buffer = true,
+            complete = 'customlist,v:lua._completions.cmake_build',
+        },
+    }
+
+    set_command {
         lhs = 'BuildExecuteProject',
         rhs = function(...)
             local args = { ... }
@@ -512,7 +565,7 @@ function M.setup()
     -- TODO: Fallback to TermDebug
     if dap then
         set_command {
-            lhs = 'BuildDebug',
+            lhs = 'BuildDebugProject',
             rhs = function(...)
                 local args = { ... }
                 local flags = {}
@@ -523,6 +576,28 @@ function M.setup()
                     build_type = 'debug',
                     flags = flags,
                     cb = dap.continue,
+                }
+            end,
+            args = {
+                nargs = '*',
+                force = true,
+                buffer = true,
+            },
+        }
+
+        set_command {
+            lhs = 'BuildDebugFile',
+            rhs = function(...)
+                local args = { ... }
+                local flags = {}
+
+                vim.list_extend(flags, args)
+                M.build {
+                    compiler = compiler,
+                    build_type = 'debug',
+                    flags = flags,
+                    cb = dap.continue,
+                    single = true,
                 }
             end,
             args = {
