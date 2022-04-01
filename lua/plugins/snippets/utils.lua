@@ -127,4 +127,37 @@ function M.return_value()
     return snippet
 end
 
+function M.else_clause(args, snip, old_state, placeholder)
+    local nodes = {}
+    local ft = vim.opt_local.filetype:get()
+
+    if snip.captures[1] == 'e' then
+        if ft == 'lua' then
+            table.insert(nodes, t { '', 'else', '\t' })
+            table.insert(nodes, i(1, M.get_comment 'code'))
+        elseif ft == 'python' then
+            table.insert(nodes, t { '', 'else', '\t' })
+            table.insert(nodes, i(1, 'pass'))
+        elseif ft == 'sh' or ft == 'bash' or ft == 'zsh' then
+            table.insert(nodes, t { 'else', '\t' })
+            table.insert(nodes, i(1, ':'))
+            table.insert(nodes, t { '', '' })
+        elseif ft == 'go' or ft == 'rust' then
+            table.insert(nodes, t { ' else {', '\t' })
+            table.insert(nodes, i(1, M.get_comment 'code'))
+            table.insert(nodes, t { '', '}' })
+        else
+            table.insert(nodes, t { '', 'else {', '\t' })
+            table.insert(nodes, i(1, M.get_comment 'code'))
+            table.insert(nodes, t { '', '}' })
+        end
+    else
+        table.insert(nodes, t { '' })
+    end
+
+    local snip_node = sn(nil, nodes)
+    snip_node.old_state = old_state
+    return snip_node
+end
+
 return M

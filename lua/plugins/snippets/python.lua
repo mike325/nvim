@@ -26,7 +26,7 @@ local fmt = require('luasnip.extras.fmt').fmt
 
 local utils = RELOAD 'plugins.snippets.utils'
 local saved_text = utils.saved_text
--- local get_comment = utils.get_comment
+local else_clause = utils.else_clause
 -- local surround_with_func = utils.surround_with_func
 
 local function python_class_init(args, snip, old_state, placeholder)
@@ -62,21 +62,6 @@ local function python_dataclass(args, snip, old_state, placeholder)
     local nodes = {}
 
     table.insert(nodes, snip.captures[1] == 'd' and t { '@dataclass', '' } or t { '' })
-
-    local snip_node = sn(nil, nodes)
-    snip_node.old_state = old_state
-    return snip_node
-end
-
-local function else_clause(args, snip, old_state, placeholder)
-    local nodes = {}
-
-    if snip.captures[1] == 'e' then
-        table.insert(nodes, t { '', 'else', '\t' })
-        table.insert(nodes, i(1, 'pass'))
-    else
-        table.insert(nodes, t { '' })
-    end
 
     local snip_node = sn(nil, nodes)
     snip_node.old_state = old_state

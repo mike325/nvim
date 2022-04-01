@@ -51,14 +51,20 @@ set_command {
 set_command {
     lhs = 'SnippetReload',
     rhs = function()
-        RELOAD 'plugins.snippets.all'
+        -- ls.cleanup()
+
+        local ok, msg = pcall(RELOAD, 'plugins.snippets.all')
+        if not ok then
+            vim.notify('Failed to update General snippets\n' .. msg, 'ERROR', { title = 'Luasnip' })
+            return
+        end
 
         local snippet = 'plugins.snippets.' .. vim.opt_local.filetype:get()
         local is_file = require('utils.files').is_file
         local base = require('sys').base
 
         if is_file(('%s/lua/%s.lua'):format(base, snippet:gsub('%.', '/'))) then
-            local ok, msg = pcall(RELOAD, snippet)
+            ok, msg = pcall(RELOAD, snippet)
             if ok then
                 vim.notify 'Snippets Reloaded!'
             else

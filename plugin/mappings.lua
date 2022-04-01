@@ -6,8 +6,8 @@ local executable = require('utils.files').executable
 local is_file = require('utils.files').is_file
 local writefile = require('utils.files').writefile
 local normalize_path = require('utils.files').normalize_path
-local realpath = require('utils.files').realpath
-local basename = require('utils.files').basename
+-- local realpath = require('utils.files').realpath
+-- local basename = require('utils.files').basename
 local read_json = require('utils.files').read_json
 
 local set_abbr = require('neovim.abbrs').set_abbr
@@ -606,7 +606,7 @@ if executable 'scp' then
     local function convert_path(path, send, host)
         path = normalize_path(path)
 
-        local remote_path = './'
+        local remote_path -- = './'
         local hosts, paths, projects
 
         local path_json = normalize_path '~/.config/remotes/paths.json'
@@ -648,9 +648,13 @@ if executable 'scp' then
             end
         end
 
-        if not send and remote_path == './' then
-            remote_path = remote_path .. basename(path)
+        if not remote_path then
+            remote_path = require('utils.files').basedir(path):gsub(sys.home:gsub('\\', '/'), '.') .. '/'
         end
+
+        -- if not send and remote_path == './' then
+        --     remote_path = remote_path .. basename(path)
+        -- end
 
         return remote_path
     end
@@ -687,11 +691,11 @@ if executable 'scp' then
 
         if virtual_filename and send then
             writefile(virtual_filename, nvim.buf.get_lines(0, 0, -1, true))
-        else
-            filename = realpath(normalize_path(filename))
-            if foward_slash then
-                filename = filename:gsub('\\', '/')
-            end
+            -- else
+            --     filename = realpath(normalize_path(filename))
+            --     if foward_slash then
+            --         filename = filename:gsub('\\', '/')
+            --     end
         end
 
         local remote_path = ('%s:%s'):format(host, convert_path(filename, send, host))
