@@ -12,6 +12,7 @@ local databases = STORAGE.databases
 -- local has_cjson = STORAGE.has_cjson
 
 local set_command = require('neovim.commands').set_command
+local async_execute = require('utils.functions').async_execute
 
 local load_module = require('utils.helpers').load_module
 local dap = load_module 'dap'
@@ -314,28 +315,14 @@ function M.execute(exe, args)
         vim.notify('Missing executable: ' .. exe, 'ERROR', { title = 'ExecuteProject' })
         return false
     end
-    local run = require('jobs'):new {
+
+    async_execute {
         cmd = exe,
         args = args,
-        progress = true,
         verify_exec = false,
-        opts = {
-            cwd = getcwd(),
-            -- pty = true,
-        },
-        qf = {
-            dump = false,
-            on_fail = {
-                jump = true,
-                open = true,
-                dump = true,
-            },
-            context = 'ExecuteProject',
-            title = 'ExecuteProject',
-        },
+        context = 'Execute',
+        title = 'Execute',
     }
-    run:start()
-    run:progress()
 end
 
 function M.build(build_info)
@@ -376,10 +363,6 @@ function M.build(build_info)
     end
 
     local compile = function(real_flags)
-        if not require('utils.files').is_dir 'build' then
-            require('utils.files').mkdir 'build'
-        end
-
         -- -- TODO: Replace mismatch std
         -- for idx, real_flags in ipairs(real_flags) do
         --     if real_flags:match '%-%-std' then
@@ -387,40 +370,17 @@ function M.build(build_info)
         --     end
         -- end
 
-        local build = require('jobs'):new {
+        async_execute {
+            pre_execute = function()
+                require('utils.files').mkdir 'build'
+            end,
             cmd = compiler,
             args = real_flags,
-            progress = true,
-            opts = {
-                cwd = getcwd(),
-                -- pty = true,
-            },
-            qf = {
-                dump = false,
-                on_fail = {
-                    jump = true,
-                    open = true,
-                    dump = true,
-                },
-                context = 'Compile',
-                title = 'Compile',
-            },
+            context = 'Compile',
+            title = 'Compile',
+            auto_close = true,
+            callbacks = build_info.cb,
         }
-
-        build:callback_on_success(function(_)
-            if vim.t.progress_win then
-                nvim.win.close(vim.t.progress_win, true)
-            end
-        end)
-
-        if build_info.cb then
-            build:callback_on_success(function(_)
-                build_info.cb()
-            end)
-        end
-
-        build:start()
-        build:progress()
     end
 
     if not build_info.single then

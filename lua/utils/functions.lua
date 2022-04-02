@@ -300,15 +300,19 @@ function M.async_execute(opts)
     local cmd = opts.cmd
     local args = opts.args
 
+    if opts.progress == nil then
+        opts.progress = true
+    end
+
     local script = require('jobs'):new {
         cmd = cmd,
         args = args,
-        progress = true,
+        progress = opts.progress,
         verify_exec = opts.verify_exec,
-        -- opts = {
-        --     cwd = require"utils.files".getcwd(),
-        --     pty = true,
-        -- },
+        opts = {
+            cwd = opts.cwd or require('utils.files').getcwd(),
+            -- pty = true,
+        },
         qf = {
             dump = false,
             on_fail = {
@@ -316,10 +320,11 @@ function M.async_execute(opts)
                 open = true,
                 dump = true,
             },
-            context = 'AsyncExecute',
-            title = 'AsyncExecute',
+            context = opts.context or 'AsyncExecute',
+            title = opts.title or 'AsyncExecute',
         },
     }
+
     if opts.callbacks then
         script:add_callback(opts.callbacks)
     end
@@ -330,6 +335,21 @@ function M.async_execute(opts)
 
     if opts.callback_on_success then
         script:callback_on_success(opts.callback_on_success)
+    end
+
+    if opts.auto_close then
+        script:callback_on_success(function(_)
+            if vim.t.progress_win then
+                nvim.win.close(vim.t.progress_win, true)
+            end
+        end)
+    end
+
+    if opts.pre_execute then
+        opts.pre_execute = vim.tbl_islist(opts.pre_execute) and opts.pre_execute or { opts.pre_execute }
+        for _, func in ipairs(opts.pre_execute) do
+            func()
+        end
     end
 
     script:start()
