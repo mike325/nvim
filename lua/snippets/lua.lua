@@ -24,7 +24,7 @@ local fmt = require('luasnip.extras.fmt').fmt
 -- local events = require 'luasnip.util.events'
 -- local conds = require 'luasnip.extras.expand_conditions'
 
-local utils = RELOAD 'plugins.snippets.utils'
+local utils = RELOAD 'plugins.luasnip.utils'
 local saved_text = utils.saved_text
 local else_clause = utils.else_clause
 local surround_with_func = utils.surround_with_func
@@ -57,9 +57,18 @@ local function rec_val()
     })
 end
 
+-- local function require_import(args, parent, old_state)
+--     P('Args:', args, 'parent:', parent, 'old_state:', old_state)
+--     local nodes = {}
+--
+--     local snip_node = sn(nil, nodes)
+--     snip_node.old_state = old_state
+--     return snip_node
+-- end
+
 -- TODO: Add pcall snippet and use TS to parse saved function and separete the funcion name and the args
 -- stylua: ignore
-ls.add_snippets('lua', {
+return {
     s(
         { trig = "(l?)fun", regTrig = true },
         fmt([[
@@ -130,9 +139,11 @@ ls.add_snippets('lua', {
         i(1, 'condition'),
         d(2, saved_text, {}, {user_args = {{indent = true}}}),
     })),
-    s("req", fmt([[require '{}']], {
-        i(1, 'module'),
-    })),
+    -- s(
+    --     { trig = '(l?)req(f?)', regTrig = true },
+    --     fmt([[{}]], {
+    --     d(1, require_import, {}, {}),
+    -- })),
     s("l", fmt([[local {} = {}]], {
         i(1, 'var'),
         i(2, '{}'),
@@ -284,4 +295,4 @@ ls.add_snippets('lua', {
     s('isfalsy', fmt([[assert.is_falsy({})]],{ d(1, surround_with_func, {}, {user_args = {{text = 'false'}}}), })),
     s('truthy', fmt([[assert.is_truthy({})]],{ d(1, surround_with_func, {}, {user_args = {{text = 'true'}}}), })),
     s('falsy', fmt([[assert.is_falsy({})]],{ d(1, surround_with_func, {}, {user_args = {{text = 'false'}}}), })),
-}, {key = 'lua_init'})
+}

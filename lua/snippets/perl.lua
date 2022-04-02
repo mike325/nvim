@@ -24,27 +24,17 @@ local fmt = require('luasnip.extras.fmt').fmt
 -- local events = require 'luasnip.util.events'
 -- local conds = require 'luasnip.extras.expand_conditions'
 
-local utils = RELOAD 'plugins.snippets.utils'
+local utils = RELOAD 'plugins.luasnip.utils'
 local saved_text = utils.saved_text
 local else_clause = utils.else_clause
 -- local surround_with_func = utils.surround_with_func
 
--- TODO: Add pcall snippet and use TS to parse saved function and separete the funcion name and the args
 -- stylua: ignore
-ls.add_snippets('rust', {
-    s('for', fmt([[
-    for {} in {} {{
-    {}
-    }}
-    ]], {
-        i(1, 'key'),
-        i(2, 'iterator'),
-        d(3, saved_text, {}, {user_args = {{indent = true}}}),
-    })),
+return {
     s(
         { trig = 'if(e?)', regTrig = true },
         fmt([[
-    if {} {{
+    if({}) {{
     {}
     }}{}
     ]], {
@@ -52,44 +42,15 @@ ls.add_snippets('rust', {
         d(2, saved_text, {}, {user_args = {{indent = true}}}),
         d(3, else_clause, {}, {}),
     })),
-    -- s('elif', fmt([[
-    -- else if {} {{
-    -- {}
-    -- }}
-    -- ]],{
-    --     i(1, 'condition'),
-    --     d(2, saved_text, {}, {user_args = {{indent = true}}}),
-    -- })),
-    s('w', fmt([[
-    while {} {{
+    s('elif', fmt([[
+    else if({}) {{
     {}
     }}
-    ]], {
+    ]],{
         i(1, 'condition'),
         d(2, saved_text, {}, {user_args = {{indent = true}}}),
     })),
-    s('pr', fmt([[println!({});]],{
-        i(1, 'msg'),
-    })),
-    s('let', fmt([[let {} = {};]],{
-        i(1, 'name'),
-        i(2, '0'),
-    })),
-    s('mut', fmt([[let mut {} = {};]],{
-        i(1, 'name'),
-        i(2, '0'),
-    })),
-    s(
-        { trig = 'f(u?)n', regTrig = true },
-        fmt([[
-            fn {}({}) {{
-            {}
-            }}
-        ]],
-        {
-            i(1, 'name'),
-            i(2, 'args'),
-            d(3, saved_text, {}, {user_args = {{indent = true}}}),
-        }
-    )),
-}, {key = 'rust_init'})
+    s('pr', fmt([[print "{}\n";]],{ i(1, 'msg'), })),
+    s('my', fmt([[my ${};]],{ i(1, 'var'), })),
+    s('env', fmt([[defined $ENV{{'{}'}}]],{ i(1, 'VAR'), })),
+}

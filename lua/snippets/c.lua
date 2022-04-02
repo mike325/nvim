@@ -24,7 +24,7 @@ local fmt = require('luasnip.extras.fmt').fmt
 -- local events = require 'luasnip.util.events'
 -- local conds = require 'luasnip.extras.expand_conditions'
 
--- local utils = RELOAD('plugins.snippets.utils')
+-- local utils = RELOAD('plugins.luasnip.utils')
 -- local saved_text = utils.saved_text
 -- local get_comment = utils.get_comment
 -- local surround_with_func = utils.surround_with_func
@@ -39,7 +39,7 @@ local snippets = {
     })),
 }
 
-local clike = RELOAD 'plugins.snippets.c_like'
+local clike = RELOAD 'snippets.c_like'
 for _, csnip in ipairs(clike) do
     local has_snip = false
     for _, snip in ipairs(snippets) do
@@ -53,4 +53,5 @@ for _, csnip in ipairs(clike) do
     end
 end
 
-ls.add_snippets('c', snippets, { key = 'c_init' })
+return snippets
+-- ls.add_snippets('c', snippets, { key = 'c_init' })

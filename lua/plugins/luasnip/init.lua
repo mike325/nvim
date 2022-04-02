@@ -4,12 +4,13 @@ if not ls then
     return false
 end
 
-local set_autocmd = require('neovim.autocmds').set_autocmd
 local set_command = require('neovim.commands').set_command
+local sys = require 'sys'
+local nvim = require 'neovim'
 
 local types = require 'luasnip.util.types'
 
-ls.config.set_config {
+ls.config.setup {
     history = true,
     -- Update more often, :h events for more info.
     updateevents = 'TextChanged,TextChangedI',
@@ -28,22 +29,14 @@ ls.config.set_config {
     -- enable_autosnippets = true,
 }
 
-RELOAD 'plugins.snippets.all'
-
-set_autocmd { event = 'FileType', pattern = '*', group = 'Snippets' }
-set_autocmd {
-    event = 'FileType',
-    pattern = '*',
-    cmd = [[lua pcall(RELOAD, "plugins.snippets."..vim.opt_local.filetype:get())]],
-    group = 'Snippets',
-}
-
+-- TODO: May replace this with the recommended function from Luasnip help
 set_command {
     lhs = 'SnippetEdit',
     rhs = function(ft)
         ft = (ft and ft ~= '') and ft or vim.opt_local.filetype:get()
-        local base = require('sys').base
-        vim.cmd(('edit %s/lua/plugins/snippets/%s.lua'):format(base, ft))
+        local base = sys.base
+        vim.cmd(('topleft vsplit %s/lua/snippets/%s.lua'):format(base, ft))
+        nvim.ex.wincmd 'L'
     end,
     args = { nargs = '?', force = true, complete = 'filetype' },
 }
@@ -53,22 +46,26 @@ set_command {
     rhs = function()
         -- ls.cleanup()
 
-        local ok, msg = pcall(RELOAD, 'plugins.snippets.all')
+        local ok, snip_msg = pcall(RELOAD, 'snippets.all')
         if not ok then
-            vim.notify('Failed to update General snippets\n' .. msg, 'ERROR', { title = 'Luasnip' })
+            vim.notify('Failed to update General snippets\n' .. snip_msg, 'ERROR', { title = 'Luasnip' })
             return
         end
 
-        local snippet = 'plugins.snippets.' .. vim.opt_local.filetype:get()
+        ls.add_snippets('all', snip_msg)
+
+        local ft = vim.opt_local.filetype:get()
+        local snippet = 'snippets.' .. ft
         local is_file = require('utils.files').is_file
-        local base = require('sys').base
+        local base = sys.base
 
         if is_file(('%s/lua/%s.lua'):format(base, snippet:gsub('%.', '/'))) then
-            ok, msg = pcall(RELOAD, snippet)
+            ok, snip_msg = pcall(RELOAD, snippet)
             if ok then
+                ls.add_snippets(ft, snip_msg)
                 vim.notify 'Snippets Reloaded!'
             else
-                vim.notify(msg, 'ERROR', { title = 'Luasnip' })
+                vim.notify(snip_msg, 'ERROR', { title = 'Luasnip' })
             end
         else
             vim.notify('Missing snippets file', 'ERROR', { title = 'Luasnip' })
@@ -83,6 +80,17 @@ set_command {
         vim.cmd [[LuaSnipUnlinkCurrent]]
     end,
     args = { force = true },
+}
+
+if #ls.get_snippets 'all' == 0 then
+    ls.add_snippets('all', require 'snippets.all')
+end
+
+require('luasnip.loaders.from_lua').lazy_load {
+    paths = {
+        sys.base .. '/lua/snippets/',
+        './snippets/',
+    },
 }
 
 return true

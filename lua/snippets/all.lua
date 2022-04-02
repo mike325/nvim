@@ -4,6 +4,8 @@ if not ls then
     return false
 end
 
+local utils = RELOAD 'plugins.luasnip.utils'
+
 local s = ls.snippet
 -- local sn = ls.snippet_node
 -- local t = ls.text_node
@@ -24,7 +26,7 @@ local p = require('luasnip.extras').partial
 -- local events = require 'luasnip.util.events'
 -- local conds = require 'luasnip.extras.expand_conditions'
 
--- local utils = RELOAD('plugins.snippets.utils')
+-- local utils = RELOAD('snippets.utils')
 -- local saved_text = utils.saved_text
 -- local get_comment = utils.get_comment
 -- local surround_with_func = utils.surround_with_func
@@ -34,10 +36,9 @@ local function notes(note)
     if note:sub(#note, #note) ~= ':' then
         note = note .. ': '
     end
-    return require('plugins.snippets.utils').get_comment(note)
+    return RELOAD('plugins.luasnip.utils').get_comment(note)
 end
 
-local utils = RELOAD 'plugins.snippets.utils'
 local return_value = utils.return_value
 -- local surround_with_func = utils.surround_with_func
 
@@ -73,4 +74,5 @@ for _, annotation in ipairs(annotations) do
     table.insert(general_snips, s(annotation, p(notes, annotation)))
 end
 
-ls.add_snippets('all', general_snips, { key = 'all_init' })
+-- ls.add_snippets('all', general_snips, { key = 'all_init' })
+return general_snips

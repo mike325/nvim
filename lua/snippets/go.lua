@@ -24,14 +24,14 @@ local fmt = require('luasnip.extras.fmt').fmt
 -- local events = require 'luasnip.util.events'
 -- local conds = require 'luasnip.extras.expand_conditions'
 
-local utils = RELOAD 'plugins.snippets.utils'
+local utils = RELOAD 'plugins.luasnip.utils'
 local saved_text = utils.saved_text
 local else_clause = utils.else_clause
 -- local surround_with_func = utils.surround_with_func
 
 -- TODO: Add pcall snippet and use TS to parse saved function and separete the funcion name and the args
 -- stylua: ignore
-ls.add_snippets('go', {
+return {
     s('for', fmt([[
     for {}, {} := range {} {{
     {}
@@ -211,4 +211,4 @@ ls.add_snippets('go', {
             i(4, 'break'),
         }
     )),
-}, {key = 'go_init'})
+}

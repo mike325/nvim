@@ -24,13 +24,13 @@ local fmt = require('luasnip.extras.fmt').fmt
 -- local events = require 'luasnip.util.events'
 -- local conds = require 'luasnip.extras.expand_conditions'
 
-local utils = RELOAD 'plugins.snippets.utils'
+local utils = RELOAD 'plugins.luasnip.utils'
 local saved_text = utils.saved_text
 local else_clause = utils.else_clause
 -- local surround_with_func = utils.surround_with_func
 
 -- stylua: ignore
-ls.add_snippets('sh', {
+return {
     s(
         { trig = 'if(e?)', regTrig = true },
         fmt([=[
@@ -102,4 +102,4 @@ ls.add_snippets('sh', {
         i(2, 'CONDITION'),
         i(3, ':'),
     })),
-}, {key = 'sh_init'})
+}

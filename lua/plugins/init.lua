@@ -318,7 +318,7 @@ packer.startup(function()
     use {
         'L3MON4D3/LuaSnip',
         config = function()
-            require 'plugins.snippets'
+            require 'plugins.luasnip'
         end,
     }
 

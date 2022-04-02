@@ -6,7 +6,7 @@ end
 
 local snippets = {}
 
-local clike = RELOAD 'plugins.snippets.c_like'
+local clike = RELOAD 'plugins.luasnip.c_like'
 for _, csnip in ipairs(clike) do
     local has_snip = false
     for _, snip in ipairs(snippets) do
@@ -20,4 +20,5 @@ for _, csnip in ipairs(clike) do
     end
 end
 
-ls.add_snippets('java', snippets, { key = 'java_init' })
+-- ls.add_snippets('java', snippets, { key = 'java_init' })
+return snippets

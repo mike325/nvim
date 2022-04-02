@@ -24,7 +24,7 @@ local fmt = require('luasnip.extras.fmt').fmt
 -- local events = require 'luasnip.util.events'
 -- local conds = require 'luasnip.extras.expand_conditions'
 
-local utils = RELOAD 'plugins.snippets.utils'
+local utils = RELOAD 'plugins.luasnip.utils'
 local saved_text = utils.saved_text
 local else_clause = utils.else_clause
 -- local return_value = utils.return_value

@@ -25,15 +25,31 @@ local fmt = require('luasnip.extras.fmt').fmt
 -- local conds = require 'luasnip.extras.expand_conditions'
 
 if #ls.get_snippets 'c' == 0 then
-    require 'plugins.snippets.c'
+    ls.add_snippets('c', require 'snippets.c')
 end
 
-local utils = RELOAD 'plugins.snippets.utils'
+local utils = RELOAD 'plugins.luasnip.utils'
 local saved_text = utils.saved_text
 -- local get_comment = utils.get_comment
 -- local surround_with_func = utils.surround_with_func
 
-ls.add_snippets('cpp', {
+ls.filetype_extend('cpp', { 'c' })
+
+-- local clike = RELOAD 'snippets.c_like'
+-- for _, csnip in ipairs(clike) do
+--     local has_snip = false
+--     for _, snip in ipairs(ls.snippets.c) do
+--         if snip.dscr == csnip.dscr then
+--             has_snip = true
+--             break
+--         end
+--     end
+--     if not has_snip then
+--         table.insert(ls.snippets.c, csnip)
+--     end
+-- end
+
+return {
     s(
         'forr',
         fmt(
@@ -98,20 +114,4 @@ ls.add_snippets('cpp', {
             }),
         })
     ),
-}, { key = 'cpp_init' })
-
-ls.filetype_extend('cpp', { 'c' })
-
--- local clike = RELOAD 'plugins.snippets.c_like'
--- for _, csnip in ipairs(clike) do
---     local has_snip = false
---     for _, snip in ipairs(ls.snippets.c) do
---         if snip.dscr == csnip.dscr then
---             has_snip = true
---             break
---         end
---     end
---     if not has_snip then
---         table.insert(ls.snippets.c, csnip)
---     end
--- end
+}

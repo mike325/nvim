@@ -5,7 +5,8 @@ if not ls then
 end
 
 if #ls.get_snippets 'sh' == 0 then
-    require 'plugins.snippets.sh'
+    ls.add_snippets('sh', require 'snippets.sh')
 end
 
 ls.filetype_extend('bash', { 'sh' })
+return

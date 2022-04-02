@@ -41,7 +41,7 @@ local function commit_summary(init)
 end
 
 -- stylua: ignore
-ls.add_snippets('gitcommit', {
+return {
     s('f',  { p(commit_summary, 'feat'),     i(1), t{'', '', ''}, i(2) }),
     s('x',  { p(commit_summary, 'fix'),      i(1), t{'', '', ''}, i(2) }),
     s('r',  { p(commit_summary, 'refactor'), i(1), t{'', '', ''}, i(2) }),
@@ -51,4 +51,4 @@ ls.add_snippets('gitcommit', {
     s('t',  { p(commit_summary, 'test'),     i(1), t{'', '', ''}, i(2) }),
     s('ci', { p(commit_summary, 'ci'),       i(1), t{'', '', ''}, i(2) }),
     s('link', { t{'['}, i(1, 'description'), t{'](https://'}, i(2, {'url'}), t{')'}, }),
-}, {key = 'git_init'})
+}
