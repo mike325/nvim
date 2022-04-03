@@ -57,14 +57,50 @@ local function rec_val()
     })
 end
 
--- local function require_import(args, parent, old_state)
---     P('Args:', args, 'parent:', parent, 'old_state:', old_state)
---     local nodes = {}
---
---     local snip_node = sn(nil, nodes)
---     snip_node.old_state = old_state
---     return snip_node
--- end
+local function require_import(_, parent, old_state)
+    local nodes = {}
+
+    local variable = parent.captures[1] == 'l'
+    local call_func = parent.captures[2] == 'f'
+
+    if variable then
+        table.insert(nodes, t { 'local ' })
+        if call_func then
+            table.insert(nodes, r(2))
+        else
+            table.insert(
+                nodes,
+                f(function(module)
+                    local name = vim.split(module[1][1], '.', true)
+                    if name[#name] and name[#name] ~= '' then
+                        return name[#name]
+                    elseif #name - 1 > 0 and name[#name - 1] ~= '' then
+                        return name[#name - 1]
+                    end
+                    return name[1] or 'module'
+                end, { 1 })
+            )
+        end
+        table.insert(nodes, t { ' = ' })
+    end
+
+    table.insert(nodes, t { 'require' })
+
+    if call_func then
+        table.insert(nodes, t { "('" })
+        table.insert(nodes, i(1, 'module'))
+        table.insert(nodes, t { "')." })
+        table.insert(nodes, i(2, 'func'))
+    else
+        table.insert(nodes, t { " '" })
+        table.insert(nodes, i(1, 'module'))
+        table.insert(nodes, t { "'" })
+    end
+
+    local snip_node = sn(nil, nodes)
+    snip_node.old_state = old_state
+    return snip_node
+end
 
 -- TODO: Add pcall snippet and use TS to parse saved function and separete the funcion name and the args
 -- stylua: ignore
@@ -139,11 +175,12 @@ return {
         i(1, 'condition'),
         d(2, saved_text, {}, {user_args = {{indent = true}}}),
     })),
-    -- s(
-    --     { trig = '(l?)req(f?)', regTrig = true },
-    --     fmt([[{}]], {
-    --     d(1, require_import, {}, {}),
-    -- })),
+    s(
+        { trig = '(l?)req(f?)', regTrig = true },
+        {
+            d(1, require_import, {}, {}),
+        }
+    ),
     s("l", fmt([[local {} = {}]], {
         i(1, 'var'),
         i(2, '{}'),
