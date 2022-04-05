@@ -7,7 +7,7 @@ local is_file = require('utils.files').is_file
 local writefile = require('utils.files').writefile
 local normalize_path = require('utils.files').normalize_path
 -- local realpath = require('utils.files').realpath
--- local basename = require('utils.files').basename
+local basename = require('utils.files').basename
 local read_json = require('utils.files').read_json
 
 local set_abbr = require('neovim.abbrs').set_abbr
@@ -650,11 +650,10 @@ if executable 'scp' then
 
         if not remote_path then
             remote_path = require('utils.files').basedir(path):gsub(sys.home:gsub('\\', '/'), '.') .. '/'
+            if not send then
+                remote_path = remote_path .. basename(path)
+            end
         end
-
-        -- if not send and remote_path == './' then
-        --     remote_path = remote_path .. basename(path)
-        -- end
 
         return remote_path
     end
@@ -729,6 +728,9 @@ if executable 'scp' then
                     pty = true,
                 },
             }
+            send_file:callback_on_failure(function(job)
+                vim.notify(table.concat(job:output(), '\n'), 'ERROR', { title = 'SendFile' })
+            end)
             send_file:start()
         end,
         args = {
@@ -753,6 +755,12 @@ if executable 'scp' then
                     pty = true,
                 },
             }
+            get_file:callback_on_success(function(_)
+                nvim.ex.checktime()
+            end)
+            get_file:callback_on_failure(function(job)
+                vim.notify(table.concat(job:output(), '\n'), 'ERROR', { title = 'GetFile' })
+            end)
             get_file:start()
         end,
         args = {
