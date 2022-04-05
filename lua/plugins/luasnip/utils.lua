@@ -49,9 +49,12 @@ function M.get_comment(text)
         if vim.tbl_islist(text) then
             comment_str = {}
             for _, line in ipairs(text) do
-                table.insert(comment_str, comment:format(line))
+                local commented = comment:format(line)
+                if line == '' then
+                    commented = vim.trim(commented)
+                end
+                table.insert(comment_str, commented)
             end
-            comment_str = table.concat(comment_str, '\n')
         else
             comment_str = comment:format(text)
         end

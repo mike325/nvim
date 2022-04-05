@@ -4,6 +4,8 @@ if not ls then
     return false
 end
 
+local sys = require 'sys'
+
 local utils = RELOAD 'plugins.luasnip.utils'
 
 local s = ls.snippet
@@ -11,7 +13,7 @@ local s = ls.snippet
 -- local t = ls.text_node
 -- local isn = ls.indent_snippet_node
 -- local i = ls.insert_node
--- local f = ls.function_node
+local f = ls.function_node
 -- local c = ls.choice_node
 -- local d = ls.dynamic_node
 -- local l = require('luasnip.extras').lambda
@@ -40,7 +42,74 @@ local function notes(note)
 end
 
 local return_value = utils.return_value
--- local surround_with_func = utils.surround_with_func
+local get_comment = utils.get_comment
+
+-- TODO: Shoul this chaeck for TS and see if we are in a comment/string ?
+local function license(_, _, user_args)
+    local licenses = {
+        mit = {
+            'The MIT License (MIT)',
+            '',
+            'Copyright (c) ${CURRENT_YEAR} ${NAME}',
+            '',
+            'Permission is hereby granted, free of charge, to any person obtaining a copy',
+            'of this software and associated documentation files (the "Software"), to deal',
+            'in the Software without restriction, including without limitation the rights',
+            'to use, copy, modify, merge, publish, distribute, sublicense, and/or sell',
+            'copies of the Software, and to permit persons to whom the Software is',
+            'furnished to do so, subject to the following conditions:',
+            '',
+            'The above copyright notice and this permission notice shall be included in all',
+            'copies or substantial portions of the Software.',
+            '',
+            'THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR',
+            'IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,',
+            'FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE',
+            'AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER',
+            'LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,',
+            'OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE',
+            'SOFTWARE.',
+        },
+    }
+
+    local ft = vim.opt_local.filetype:get()
+
+    local actual_license = licenses[user_args[1]] or licenses.mit
+    for idx, line in ipairs(actual_license) do
+        if line:match '%${CURRENT_YEAR}' then
+            actual_license[idx] = actual_license[idx]:gsub('%${CURRENT_YEAR}', os.date '%Y')
+        end
+        if line:match '%${NAME}' then
+            -- TODO: Use actual name or maybe add dynamic insert node?
+            actual_license[idx] = actual_license[idx]:gsub('%${NAME}', sys.username)
+        end
+    end
+
+    local plain_fts = {
+        text = 1,
+        plaintext = 1,
+        latex = 1,
+        markdown = 1,
+    }
+
+    local is_node = require('utils.treesitter').is_node
+    local has_ts = require('utils.treesitter').has_ts()
+
+    local cursor = vim.api.nvim_win_get_cursor(0)
+
+    if ft == '' or plain_fts[ft] then
+        return actual_license
+    elseif
+        has_ts
+        and is_node(
+            { cursor[1], 0, cursor[1], #vim.api.nvim_buf_get_lines(0, cursor[1] - 1, cursor[1], false)[1] },
+            'string'
+        )
+    then
+        return actual_license
+    end
+    return get_comment(actual_license)
+end
 
 -- stylua: ignore
 local general_snips = {
@@ -57,7 +126,8 @@ local general_snips = {
             -- stylua: ignore
             return '#!/usr/bin/env '.. (executables[ft] or ft)
         end),
-    })
+    }),
+    s('mitl', f(license, {}, {user_args = {'mit'}}))
 }
 
 local annotations = {
