@@ -7,6 +7,23 @@ local function general_completion(arglead, _, _, options)
     end, options) or {}
 end
 
+local function json_keys_completion(arglead, cmdline, cursorpos, filename, funcs)
+    funcs = funcs or {}
+
+    local json = {}
+    if require('utils.files').is_file(filename) then
+        json = require('utils.files').read_json(filename)
+    end
+    local keys = vim.tbl_keys(json)
+    if funcs.filter then
+        keys = vim.tbl_filter(funcs.filter, keys)
+    end
+    if funcs.map then
+        keys = vim.tbl_map(funcs.map, keys)
+    end
+    return general_completion(arglead, cmdline, cursorpos, keys)
+end
+
 local completions = {
     ssh_hosts_completion = function(arglead, cmdline, cursorpos)
         return general_completion(arglead, cmdline, cursorpos, vim.tbl_keys(STORAGE.hosts))
@@ -56,6 +73,9 @@ local completions = {
             return utils.filename(spell):gsub('%..*', '')
         end, spells)
         return general_completion(arglead, cmdline, cursorpos, spells)
+    end,
+    zoom_links = function(arglead, cmdline, cursorpos)
+        return json_keys_completion(arglead, cmdline, cursorpos, '~/.config/zoom/links.json')
     end,
 }
 

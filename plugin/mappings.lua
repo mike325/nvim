@@ -946,6 +946,24 @@ set_command {
     args = { nargs = '*', force = true, complete = 'filetype' },
 }
 
+-- TODO: May need to add a check for "zoom" executable but this should work even inside WSL
+set_command {
+    lhs = 'Zoom',
+    rhs = function(link)
+        local links = {}
+        if require('utils.files').is_file '~/.config/zoom/links.json' then
+            links = require('utils.files').read_json '~/.config/zoom/links.json'
+        end
+
+        if links[link] then
+            require('utils.functions').open(links[link])
+        else
+            vim.notify('Missing Zoom link ' .. link, 'ERROR', { title = 'Zoom' })
+        end
+    end,
+    args = { nargs = '1', force = true, complete = 'customlist,v:lua._completions.zoom_links' },
+}
+
 if has_nvim_6 then
     vim.keymap.set('n', '=D', function()
         vim.diagnostic.setqflist()

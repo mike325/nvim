@@ -241,7 +241,7 @@ return {
         d(2, surround_with_func, {}, {user_args = {{text = 'tbl'}}}),
         i(3, "'node'"),
     })),
-    s('not', fmt([[vim.notify("{}", "{}"{})]],{
+    s('not', fmt([[vim.notify('{}', '{}'{})]],{
         d(1, surround_with_func, {}, {user_args = {{text = 'msg'}}}),
         c(2, {
             t{'INFO'},
