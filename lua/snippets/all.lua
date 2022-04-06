@@ -92,20 +92,7 @@ local function license(_, _, user_args)
         markdown = 1,
     }
 
-    local is_node = require('utils.treesitter').is_node
-    local has_ts = require('utils.treesitter').has_ts()
-
-    local cursor = vim.api.nvim_win_get_cursor(0)
-
-    if ft == '' or plain_fts[ft] then
-        return actual_license
-    elseif
-        has_ts
-        and is_node(
-            { cursor[1], 0, cursor[1], #vim.api.nvim_buf_get_lines(0, cursor[1] - 1, cursor[1], false)[1] },
-            'string'
-        )
-    then
+    if ft == '' or plain_fts[ft] or require('utils.treesitter').is_in_node 'string' then
         return actual_license
     end
     return get_comment(actual_license)

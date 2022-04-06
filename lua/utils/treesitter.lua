@@ -137,6 +137,27 @@ function M.is_node(range, node, buf)
     return false
 end
 
+function M.is_in_node(node_name, buf, linenr)
+    vim.validate {
+        node_name = { node_name, 'string' },
+        buf = { buf, 'number', true },
+        linenr = { linenr, 'number', true },
+    }
+
+    if not M.has_ts(buf) then
+        return false
+    end
+
+    local cursor = vim.api.nvim_win_get_cursor(0)
+    local start = linenr or cursor[1] - 1
+    local limit = linenr and linenr + 1 or cursor[1]
+
+    local line = vim.api.nvim_buf_get_lines(buf or 0, start, limit, false)[1]
+
+    local range = { start, 0, start, #line }
+    return M.is_node(range, node_name, buf)
+end
+
 function M.list_nodes(node_type)
     local buf = vim.api.nvim_get_current_buf()
 

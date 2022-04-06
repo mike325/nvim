@@ -267,6 +267,7 @@ function M.detect_indent(buf)
 
     -- BUG: This hangs neovim's startup, seems to be a race condition, tested in windows 10
     -- local line_count = vim.api.nvim_buf_line_count(buf)
+
     local line_count = vim.fn.line '$'
     local lines = vim.api.nvim_buf_get_lines(buf, 0, line_count < 1024 and line_count or 1024, true)
     for idx, line in ipairs(lines) do
