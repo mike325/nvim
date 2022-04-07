@@ -449,7 +449,7 @@ function M.grep(tool, attr, lst)
             grepformat = '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m',
         },
         rg = {
-            grepprg = 'rg -SHn --trim --color=never --no-heading --column ',
+            grepprg = 'rg -SHn --trim --color=never --no-heading --column --no-search-zip --hidden ',
             grepformat = '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m',
         },
         ag = {

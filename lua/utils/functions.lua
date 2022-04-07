@@ -75,6 +75,10 @@ function M.send_grep_job(args)
     local grep = require('jobs'):new {
         cmd = cmd,
         silent = true,
+        opts = {
+            cwd = require('utils.files').getcwd(),
+            pty = true, -- ?
+        },
         qf = {
             on_fail = {
                 open = true,
