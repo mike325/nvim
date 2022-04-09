@@ -83,6 +83,23 @@ end
 -- Add support to indicate async job is been run in the backgroud
 -- Count "BUG/TODO/NOTE" indications ?
 
+local tabline = {}
+if not vim.g.started_by_firenvim then
+    tabline = {
+        lualine_a = {
+            {
+                'tabs',
+                mode = 0,
+            },
+        },
+        lualine_b = { 'buffers' },
+        -- lualine_b = {},
+        -- lualine_x = {},
+        -- lualine_y = {},
+        -- lualine_z = {'tabs'}
+    }
+end
+
 lualine.setup {
     options = {
         -- icons_enabled = true,
@@ -156,18 +173,6 @@ lualine.setup {
     --     lualine_y = {},
     --     lualine_z = {},
     -- },
-    tabline = {
-        lualine_a = {
-            {
-                'tabs',
-                mode = 0,
-            },
-        },
-        lualine_b = { 'buffers' },
-        -- lualine_b = {},
-        -- lualine_x = {},
-        -- lualine_y = {},
-        -- lualine_z = {'tabs'}
-    },
+    tabline = tabline,
     extensions = { 'quickfix', 'fugitive' },
 }
