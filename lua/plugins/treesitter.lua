@@ -61,7 +61,7 @@ parser_config.org = {
 -- end
 
 treesitter.setup {
-    ensure_installed = 'maintained',
+    ensure_installed = 'all',
     indent = {
         enable = true,
     },
