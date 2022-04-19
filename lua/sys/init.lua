@@ -38,6 +38,14 @@ local function luajit_version()
     return vim.split(jit.version, ' ')[2]
 end
 
+local function version()
+    return {
+        vim.version().major,
+        vim.version().minor,
+        vim.version().patch,
+    }
+end
+
 local function has_sqlite()
     local os = system_name()
     -- TODO: search for dll in windows, .so in unix
@@ -73,6 +81,7 @@ local sys = {
     db_root = db_root_path(),
     has_sqlite = has_sqlite(),
     user = vim.loop.os_get_passwd(),
+    version = version(),
 }
 
 sys.user.name = sys.user.username

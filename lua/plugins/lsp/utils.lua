@@ -1,5 +1,5 @@
 local sys = require 'sys'
--- local nvim = require 'neovim'
+local nvim = require 'neovim'
 -- local plugins = require'neovim'.plugins
 
 local load_module = require('utils.helpers').load_module
@@ -88,11 +88,14 @@ function M.setup(ft)
         local server = langservers[ft][server_idx]
         local config = server.config or server.exec
         local init = vim.deepcopy(server.options) or {}
-        local cmds = vim.deepcopy(require('plugins.lsp.config').commands)
-        if server.commands then
-            cmds = vim.tbl_extend('force', vim.deepcopy(cmds), server.commands)
+        -- NOTE: User commands got deprecated in neovim 0.7
+        if not nvim.has { 0, 7 } then
+            local cmds = vim.deepcopy(require('plugins.lsp.config').commands)
+            if server.commands then
+                cmds = vim.tbl_extend('force', vim.deepcopy(cmds), server.commands)
+            end
+            init.commands = cmds
         end
-        init.commands = cmds
         init.on_attach = require('plugins.lsp.config').on_attach
         if cmp then
             init.capability = require('cmp_nvim_lsp').update_capabilities(

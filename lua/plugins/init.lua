@@ -270,6 +270,7 @@ packer.startup(function()
 
     use {
         'nvim-treesitter/nvim-treesitter',
+        commit = (vim.fn.has 'nvim-0.7' == 0 and 'db0e5192911a8bf9df2f2a45c4dab249d5cbf32c' or nil),
         run = ':TSUpdate',
         config = function()
             require 'plugins.treesitter'
@@ -305,6 +306,7 @@ packer.startup(function()
 
     use {
         'neovim/nvim-lspconfig',
+        tag = (vim.fn.has 'nvim-0.7' == 0 and 'v0.1.3' or nil),
         config = function()
             require 'plugins.lsp'
         end,
@@ -324,6 +326,7 @@ packer.startup(function()
 
     use {
         'hrsh7th/nvim-cmp',
+        commit = (vim.fn.has 'nvim-0.7' == 0 and '07132dc597e94a8b6df75efce9784a581f55742c' or nil),
         requires = {
             { 'hrsh7th/cmp-nvim-lsp' },
             { 'hrsh7th/cmp-buffer' },
@@ -471,6 +474,7 @@ packer.startup(function()
 
     use {
         'mfussenegger/nvim-dap',
+        commit = (vim.fn.has 'nvim-0.7' == 0 and '71714020884760332240373d2fec481e757f75f2' or nil),
         -- event = { 'CursorHold', 'CmdlineEnter' },
         -- cmd = { 'DapStart', 'DapContinue' },
         cond = function()
