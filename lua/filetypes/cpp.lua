@@ -11,7 +11,6 @@ local compile_flags = STORAGE.compile_flags
 local databases = STORAGE.databases
 -- local has_cjson = STORAGE.has_cjson
 
-local set_command = require('neovim.commands').set_command
 local async_execute = require('utils.functions').async_execute
 
 local load_module = require('utils.helpers').load_module
@@ -413,169 +412,147 @@ function M.setup()
     --       flags on any file update
     set_opts(compiler, nvim.get_current_buf())
 
-    set_command {
-        lhs = 'BuildProject',
-        rhs = function(...)
-            local args = { ... }
-            local flags = {}
-            local build_type
+    nvim.command.set('BuildProject', function(opts)
+        local args = opts.fargs
+        local flags = {}
+        local build_type
 
-            local builds = {
-                debug = true,
-                release = true,
-                minsizerel = true,
-                relwithdebinfo = true,
-            }
+        local builds = {
+            debug = true,
+            release = true,
+            minsizerel = true,
+            relwithdebinfo = true,
+        }
 
-            for _, arg in ipairs(args) do
-                if builds[arg:lower()] then
-                    build_type = arg
-                else
-                    table.insert(flags, arg)
-                end
+        for _, arg in ipairs(args) do
+            if builds[arg:lower()] then
+                build_type = arg
+            else
+                table.insert(flags, arg)
             end
+        end
+        M.build {
+            compiler = compiler,
+            build_type = build_type,
+            flags = flags,
+        }
+    end, {
+        nargs = '*',
+        force = true,
+        buffer = true,
+        complete = 'customlist,v:lua._completions.cmake_build',
+    })
 
-            M.build {
-                compiler = compiler,
-                build_type = build_type,
-                flags = flags,
-            }
-        end,
-        args = {
-            nargs = '*',
-            force = true,
-            buffer = true,
-            complete = 'customlist,v:lua._completions.cmake_build',
-        },
-    }
+    nvim.command.set('BuildFile', function(opts)
+        local args = opts.fargs
+        local flags = {}
+        local build_type
 
-    set_command {
-        lhs = 'BuildFile',
-        rhs = function(...)
-            local args = { ... }
-            local flags = {}
-            local build_type
+        local builds = {
+            debug = true,
+            release = true,
+            minsizerel = true,
+            relwithdebinfo = true,
+        }
 
-            local builds = {
-                debug = true,
-                release = true,
-                minsizerel = true,
-                relwithdebinfo = true,
-            }
-
-            for _, arg in ipairs(args) do
-                if builds[arg:lower()] then
-                    build_type = arg
-                else
-                    table.insert(flags, arg)
-                end
+        for _, arg in ipairs(args) do
+            if builds[arg:lower()] then
+                build_type = arg
+            else
+                table.insert(flags, arg)
             end
+        end
 
-            M.build {
-                compiler = compiler,
-                build_type = build_type,
-                flags = flags,
-                single = true,
-            }
-        end,
-        args = {
-            nargs = '*',
-            force = true,
-            buffer = true,
-            complete = 'customlist,v:lua._completions.cmake_build',
-        },
-    }
+        M.build {
+            compiler = compiler,
+            build_type = build_type,
+            flags = flags,
+            single = true,
+        }
+    end, {
+        nargs = '*',
+        force = true,
+        buffer = true,
+        complete = 'customlist,v:lua._completions.cmake_build',
+    })
 
-    set_command {
-        lhs = 'BuildExecuteProject',
-        rhs = function(...)
-            local args = { ... }
-            local flags = {}
-            local build_type
+    nvim.command.set('BuildExecuteProject', function(opts)
+        local args = opts.fargs
+        local flags = {}
+        local build_type
 
-            local builds = {
-                debug = true,
-                release = true,
-                relwithdebinfo = true,
-            }
+        local builds = {
+            debug = true,
+            release = true,
+            relwithdebinfo = true,
+        }
 
-            for _, arg in ipairs(args) do
-                if builds[arg:lower()] then
-                    build_type = arg
-                else
-                    table.insert(flags, arg)
-                end
+        for _, arg in ipairs(args) do
+            if builds[arg:lower()] then
+                build_type = arg
+            else
+                table.insert(flags, arg)
             end
+        end
 
-            M.build {
-                compiler = compiler,
-                build_type = build_type,
-                flags = flags,
-                cb = M.execute,
-            }
-        end,
-        args = {
-            nargs = '*',
-            force = true,
-            buffer = true,
-            complete = 'customlist,v:lua._completions.cmake_build',
-        },
-    }
+        M.build {
+            compiler = compiler,
+            build_type = build_type,
+            flags = flags,
+            cb = M.execute,
+        }
+    end, {
+        nargs = '*',
+        force = true,
+        buffer = true,
+        complete = 'customlist,v:lua._completions.cmake_build',
+    })
+
+    nvim.command.set('ExecuteProject', function(opts)
+        local args = opts.fargs
+        M.execute(nil, args)
+    end, { nargs = '*', force = true, buffer = true })
 
     -- TODO: Fallback to TermDebug
     if dap then
-        set_command {
-            lhs = 'BuildDebugProject',
-            rhs = function(...)
-                local args = { ... }
-                local flags = {}
+        nvim.command.set('BuildDebugFile', function(opts)
+            local args = opts.fargs
+            local flags = {}
 
-                vim.list_extend(flags, args)
-                M.build {
-                    compiler = compiler,
-                    build_type = 'debug',
-                    flags = flags,
-                    cb = dap.continue,
-                }
-            end,
-            args = {
-                nargs = '*',
-                force = true,
-                buffer = true,
-            },
-        }
+            vim.list_extend(flags, args)
+            M.build {
+                compiler = compiler,
+                build_type = 'debug',
+                flags = flags,
+                cb = dap.continue,
+                single = true,
+            }
+        end, {
+            nargs = '*',
+            force = true,
+            buffer = true,
+        })
 
-        set_command {
-            lhs = 'BuildDebugFile',
-            rhs = function(...)
-                local args = { ... }
-                local flags = {}
-
-                vim.list_extend(flags, args)
-                M.build {
-                    compiler = compiler,
-                    build_type = 'debug',
-                    flags = flags,
-                    cb = dap.continue,
-                    single = true,
-                }
-            end,
-            args = {
-                nargs = '*',
-                force = true,
-                buffer = true,
-            },
-        }
+        nvim.command.set('BuildDebug', function(opts)
+            -- local args = opts.fargs
+            -- local flags = {}
+            -- vim.list_extend(flags, args)
+            M.build {
+                compiler = compiler,
+                build_type = 'debug',
+                flags = opts.fargs,
+                cb = dap.continue,
+            }
+        end, {
+            nargs = '*',
+            force = true,
+            buffer = true,
+        })
     end
 
-    set_command {
-        lhs = 'ExecuteProject',
-        rhs = function(...)
-            local args = { ... }
-            M.execute(nil, args)
-        end,
-        args = { nargs = '*', force = true, buffer = true },
-    }
+    nvim.command.set('ExecuteProject', function(opts)
+        M.execute(nil, opts.fargs)
+    end, { nargs = '*', force = true, buffer = true })
 end
 
 return M

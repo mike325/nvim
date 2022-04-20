@@ -187,14 +187,6 @@ return {
     })),
     s("ign", { t{"-- stylua: ignore"} }),
     s("sty", { t{"-- stylua: ignore"} }),
-    s("map", {
-        t{"vim.keymap.set("},
-            t{"'"}, i(1, 'n'), t{"', "},
-            t{"\t'"}, i(2, 'LHS'), t{"', "},
-            t{"\t'"}, i(3, 'RHS'), t{"', "},
-            t{"\t{"}, i(4, 'noremap = true'), t{"}"},
-        t{")"},
-    }),
     s("val", {
         t({"vim.validate {"}),
             t{'', "\t"}, i(1, 'arg'), t{" = { "}, r(1), t{", "},
@@ -213,13 +205,21 @@ return {
             d(4, rec_val, {}),
         t({'', "}"}),
     }),
-    s("com", {
-        t{"set_command {", ""},
-            t{"\tlhs = '"},  i(1, 'Command'), t{"',", ""},
-            t{"\trhs = '"},  i(2, 'lua P(true)'), t{"',", ""},
-            t{"\targs = { force = true, "}, i(3, "nargs = '?', "), t{"},", ""},
-        t{"}"},
-    }),
+    s('cmd', fmt([[
+    nvim.command.set({}, {}, {})
+    ]], {
+        i(1, 'name'),
+        i(2, 'cmd'),
+        i(3, 'opts'),
+    })),
+    s('map', fmt([[
+    vim.keymap.set('{}', '{}', {}, {{ {} }})
+    ]], {
+            i(1, 'n'),
+            i(2, 'LHS'),
+            i(3, 'RHS'),
+            i(4, ''),
+    })),
     s("au", {
         t{"set_autocmd {", ""},
             t{"\tevent = '"},   i(1, 'FileType'), t{"',", ""},

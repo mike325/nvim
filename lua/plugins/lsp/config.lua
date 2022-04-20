@@ -2,12 +2,6 @@
 local nvim = require 'neovim'
 
 local load_module = require('utils.helpers').load_module
--- local executable = require('utils.files').executable
--- local is_dir = require('utils.files').is_dir
--- local plugins = require'neovim'.plugins
-
--- local set_autocmd = require'neovim.autocmds'.set_autocmd
-local set_command = require('neovim.commands').set_command
 
 local lsp = load_module 'lspconfig'
 
@@ -260,11 +254,7 @@ function M.on_attach(client, bufnr, is_null)
     if is_null then
         for command, values in pairs(M.commands) do
             if type(values[1]) == 'function' then
-                set_command {
-                    lhs = command,
-                    rhs = values[1],
-                    args = { force = true, buffer = true },
-                }
+                nvim.command.set(command, values[1], { buffer = true })
             end
         end
     elseif not has_formatting and null_ls and null_configs[ft] and null_configs[ft].formatter then

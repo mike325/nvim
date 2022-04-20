@@ -1,9 +1,8 @@
+local nvim = require 'neovim'
+
 local sys = require 'sys'
 local executable = require('utils.files').executable
 local load_module = require('utils.helpers').load_module
-
--- local set_autocmd = require('neovim.autocmds').set_autocmd
-local set_command = require('neovim.commands').set_command
 
 local telescope = load_module 'telescope'
 
@@ -59,19 +58,8 @@ telescope.setup {
     },
 }
 
-set_command {
-    lhs = 'LuaReloaded',
-    rhs = [[lua require'telescope.builtin'.reloader()]],
-    args = { force = true },
-}
-
-set_command {
-    lhs = 'HelpTags',
-    rhs = function()
-        builtin.help_tags {}
-    end,
-    args = { force = true },
-}
+vim.keymap.set('n', '<leader>g', builtin.live_grep, noremap)
+vim.keymap.set('n', '<C-q>', builtin.quickfix, noremap)
 
 vim.keymap.set('n', '<C-p>', function()
     local is_git = vim.b.project_root and vim.b.project_root.is_git or false
@@ -83,43 +71,37 @@ end, noremap)
 vim.keymap.set('n', '<C-b>', function()
     builtin.buffers {}
 end, noremap)
-vim.keymap.set('n', '<leader>g', builtin.live_grep, noremap)
-vim.keymap.set('n', '<C-q>', builtin.quickfix, noremap)
 
-set_command {
-    lhs = 'Oldfiles',
-    rhs = [[lua require'telescope.builtin'.oldfiles{}]],
-    args = { force = true },
-}
+nvim.command.set('Oldfiles', function()
+    require('telescope.builtin').oldfiles {}
+end)
 
-set_command {
-    lhs = 'Registers',
-    rhs = [[lua require'telescope.builtin'.registers(require'telescope.themes'.get_dropdown{})]],
-    args = { force = true },
-}
+nvim.command.set('Registers', function()
+    require('telescope.builtin').registers(require('telescope.themes').get_dropdown {})
+end)
 
-set_command {
-    lhs = 'Marks',
-    rhs = [[lua require'telescope.builtin'.marks(require'telescope.themes'.get_dropdown{})]],
-    args = { force = true },
-}
+nvim.command.set('Marks', function()
+    require('telescope.builtin').marks(require('telescope.themes').get_dropdown {})
+end)
 
-set_command {
-    lhs = 'Manpages',
-    rhs = [[lua require'telescope.builtin'.man_pages{}]],
-    args = { force = true },
-}
+nvim.command.set('Manpages', function()
+    require('telescope.builtin').man_pages {}
+end)
 
-set_command {
-    lhs = 'GetVimFiles',
-    rhs = function()
-        builtin.find_files {
-            cwd = sys.base,
-            find_command = require('utils.helpers').select_filelist(false, true),
-        }
-    end,
-    args = { force = true },
-}
+nvim.command.set('GetVimFiles', function()
+    builtin.find_files {
+        cwd = sys.base,
+        find_command = require('utils.helpers').select_filelist(false, true),
+    }
+end)
+
+nvim.command.set('LuaReloaded', function()
+    require('telescope.builtin').reloader()
+end)
+
+nvim.command.set('HelpTags', function()
+    builtin.help_tags {}
+end)
 
 if executable 'git' then
     vim.keymap.set('n', '<leader>c', builtin.git_bcommits, noremap)

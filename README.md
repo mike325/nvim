@@ -2,6 +2,13 @@
 
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 
+## Nightly info
+Welcome to the Nightly branch of my neovim configs, here I make some experiments,
+migrate and refactor stuff to make it work with the latest Neovim version. This
+branch may not work with stable branches.
+
+---
+
 This repo have my personal Neovim >= 0.5 settings that I have been collecting and tweaking
 for a while, feel free to change anything to fit your needs. I try to test this configs in Windows, MacOS and Linux
 tho windows is is still unstable in regarding some plugin integrations.
