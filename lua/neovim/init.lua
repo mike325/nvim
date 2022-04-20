@@ -181,9 +181,9 @@ local nvim = {
             if opts.buffer then
                 local buffer = type(opts.buffer) == type(0) and opts.buffer or 0
                 opts.buffer = nil
-                api.nvim_buf_add_user_command(buffer, name, cmd, opts)
+                api.nvim_buf_create_user_command(buffer, name, cmd, opts)
             else
-                api.nvim_add_user_command(name, cmd, opts)
+                api.nvim_create_user_command(name, cmd, opts)
             end
         end,
         del = function(name, buffer)
