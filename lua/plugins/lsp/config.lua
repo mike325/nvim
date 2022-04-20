@@ -157,7 +157,7 @@ function M.on_attach(client, bufnr, is_null)
 
     local mappings = {
         ['<C-]>'] = {
-            capability = 'goto_definition',
+            capability = 'definitionProvider',
             mapping = lua_cmd:format(
                 (
                         has_telescope
@@ -166,15 +166,15 @@ function M.on_attach(client, bufnr, is_null)
             ),
         },
         ['gd'] = {
-            capability = 'declaration',
+            capability = 'declarationProvider',
             mapping = lua_cmd:format 'vim.lsp.buf.declaration()',
         },
         ['gi'] = {
-            capability = 'implementation',
+            capability = 'implementationProvider',
             mapping = lua_cmd:format 'vim.lsp.buf.implementation()',
         },
         ['gr'] = {
-            capability = 'find_references',
+            capability = 'referencesProvider',
             mapping = lua_cmd:format(
                 (
                         has_telescope
@@ -183,15 +183,15 @@ function M.on_attach(client, bufnr, is_null)
             ),
         },
         ['K'] = {
-            capability = 'hover',
+            capability = 'hoverProvider',
             mapping = lua_cmd:format 'vim.lsp.buf.hover()',
         },
         ['<leader>r'] = {
-            capability = 'rename',
+            capability = 'renameProvider',
             mapping = lua_cmd:format 'vim.lsp.buf.rename()',
         },
         ['ga'] = {
-            capability = 'code_action',
+            capability = 'codeActionProvider',
             mapping = lua_cmd:format(
                 (
                         has_telescope
@@ -200,7 +200,7 @@ function M.on_attach(client, bufnr, is_null)
             ),
         },
         ['gh'] = {
-            capability = 'signature_help',
+            capability = 'signatureHelpProvider',
             mapping = lua_cmd:format 'vim.lsp.buf.signature_help()',
         },
         ['=L'] = {
@@ -232,13 +232,13 @@ function M.on_attach(client, bufnr, is_null)
     }
 
     for mapping, val in pairs(mappings) do
-        if not val.capability or client.resolved_capabilities[val.capability] then
+        if not val.capability or client.server_capabilities[val.capability] then
             vim.keymap.set('n', mapping, val.mapping, { silent = true, buffer = bufnr, noremap = true })
         end
     end
 
-    local has_formatting = client.resolved_capabilities.document_range_formatting
-        or client.resolved_capabilities.document_formatting
+    local has_formatting = client.server_capabilities.documentFormattingProvider
+        or client.server_capabilities.documentRangeFormattingProvider
 
     if has_formatting and vim.opt_local.formatexpr:get() == '' then
         vim.opt_local.formatexpr = ([[luaeval('require"utils.buffers".format("%s")')]]):format(ft)
