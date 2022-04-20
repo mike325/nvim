@@ -502,14 +502,13 @@ packer.startup(function()
         end,
         config = function()
             local dapui = require 'dapui'
+            local nvim = require 'neovim'
             dapui.setup {}
 
-            local set_command = require('neovim.commands').set_command
-            set_command {
-                lhs = 'DapUI',
-                rhs = require('dapui').toggle,
-                args = { force = true },
-            }
+            nvim.command.set('DapUI', function()
+                require('dapui').toggle()
+            end, {})
+
             vim.keymap.set('n', '=I', require('dapui').toggle, { noremap = true, silent = true })
 
             local dap = require 'dap'
