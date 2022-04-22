@@ -1,9 +1,6 @@
 local nvim = require 'neovim'
 local load_module = require('utils.helpers').load_module
 
--- local plugins = nvim.plugins
-local set_autocmd = require('neovim.autocmds').set_autocmd
-
 local treesitter = load_module 'nvim-treesitter.configs'
 
 if treesitter == nil then
@@ -226,11 +223,10 @@ end
 
 if #fts > 0 then
     -- TODO: Check module availability for each language
-    set_autocmd {
+    nvim.autocmd.TreesitterAutocmds = {
         event = 'FileType',
         pattern = fts,
-        cmd = [[setlocal foldenable foldmethod=expr foldexpr=nvim_treesitter#foldexpr()]],
-        group = 'TreesitterAutocmds',
+        command = 'setlocal foldenable foldmethod=expr foldexpr=nvim_treesitter#foldexpr()',
     }
 end
 

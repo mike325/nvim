@@ -1,145 +1,142 @@
-local set_autocmd = require('neovim.autocmds').set_autocmd
+local nvim = require 'neovim'
 
 if require('sys').name ~= 'windows' then
-    set_autocmd {
-        event = { 'BufReadPost' },
-        pattern = '*',
-        cmd = [[lua require"utils.functions".make_executable()]],
-        group = 'MakeExecutable',
-    }
-
-    set_autocmd {
-        event = 'FileType',
-        pattern = 'python,lua,sh,bash,zsh,tcsh,csh,ruby,perl',
-        cmd = [[lua require"utils.functions".make_executable()]],
-        group = 'MakeExecutable',
+    nvim.autocmd.MakeExecutable = {
+        {
+            event = 'BufReadPost',
+            pattern = '*',
+            callback = function()
+                require('utils.functions').make_executable()
+            end,
+        },
+        {
+            event = 'FileType',
+            pattern = 'python,lua,sh,bash,zsh,tcsh,csh,ruby,perl',
+            callback = function()
+                require('utils.functions').make_executable()
+            end,
+        },
     }
 end
 
-set_autocmd {
-    event = { 'BufNewFile', 'BufReadPre', 'BufEnter' },
-    pattern = '*',
-    cmd = "if !exists('b:trim') | let b:trim = v:true | endif",
-    group = 'CleanFile',
+nvim.autocmd.CleanFile = {
+    {
+        event = { 'BufNewFile', 'BufReadPre', 'BufEnter' },
+        pattern = '*',
+        command = "if !exists('b:trim') | let b:trim = v:true | endif",
+    },
+    {
+        event = 'BufWritePre',
+        pattern = '*',
+        callback = function()
+            require('utils.files').clean_file()
+        end,
+    },
 }
 
-set_autocmd {
-    event = 'BufWritePre',
-    pattern = '*',
-    cmd = 'lua require"utils.files".clean_file()',
-    group = 'CleanFile',
-}
-
-set_autocmd {
+nvim.autocmd.YankHL = {
     event = 'TextYankPost',
     pattern = '*',
-    cmd = [[silent! lua vim.highlight.on_yank{higroup = "IncSearch", timeout = 1000}]],
-    group = 'YankHL',
+    command = [[silent! lua vim.highlight.on_yank{higroup = "IncSearch", timeout = 1000}]],
 }
 
-set_autocmd {
+nvim.autocmd.TerminalAutocmds = {
     event = 'TermOpen',
     pattern = '*',
-    cmd = 'setlocal noswapfile nobackup noundofile norelativenumber nonumber nocursorline',
-    group = 'TerminalAutocmds',
+    command = 'setlocal noswapfile nobackup noundofile norelativenumber nonumber nocursorline',
 }
 
-set_autocmd {
+nvim.autocmd.AutoResize = {
     event = 'VimResized',
     pattern = '*',
-    cmd = 'wincmd =',
-    group = 'AutoResize',
+    command = 'wincmd =',
 }
 
-set_autocmd {
+nvim.autocmd.LastEditPosition = {
     event = 'BufReadPost',
     pattern = '*',
-    cmd = 'lua require"utils.buffers".last_position()',
-    group = 'LastEditPosition',
+    callback = function()
+        require('utils.buffers').last_position()
+    end,
 }
 
-set_autocmd {
+nvim.autocmd.Skeletons = {
     event = 'BufNewFile',
     pattern = '*',
-    cmd = 'lua require"utils.files".skeleton_filename()',
-    group = 'Skeletons',
+    callback = function()
+        require('utils.files').skeleton_filename()
+    end,
 }
 
-set_autocmd {
+nvim.autocmd.ProjectConfig = {
     event = { 'DirChanged', 'BufNewFile', 'BufReadPre', 'BufEnter', 'VimEnter' },
     pattern = '*',
-    cmd = 'lua require"utils.helpers".project_config(vim.deepcopy(vim.v.event))',
-    group = 'ProjectConfig',
+    callback = function()
+        require('utils.helpers').project_config(vim.deepcopy(vim.v.event))
+    end,
 }
 
-set_autocmd {
+nvim.autocmd.LocalCR = {
     event = 'CmdwinEnter',
     pattern = '*',
-    cmd = 'nnoremap <CR> <CR>',
-    group = 'LocalCR',
+    command = 'nnoremap <CR> <CR>',
 }
 
-set_autocmd {
-    event = { 'BufEnter', 'BufReadPost' },
-    pattern = '__LanguageClient__',
-    cmd = 'nnoremap <silent> <nowait> <buffer> q :q!<CR>',
-    group = 'QuickQuit',
+nvim.autocmd.QuickQuit = {
+    {
+        event = { 'BufEnter', 'BufReadPost' },
+        pattern = '__LanguageClient__',
+        command = 'nnoremap <silent> <nowait> <buffer> q :q!<CR>',
+    },
+    {
+        event = { 'BufEnter', 'BufWinEnter' },
+        pattern = '*',
+        command = 'if &previewwindow | nnoremap <silent> <nowait> <buffer> q :q!<CR>| endif',
+    },
+    {
+        event = 'TermOpen',
+        pattern = '*',
+        command = 'nnoremap <silent><nowait><buffer> q :q!<CR>',
+    },
 }
 
-set_autocmd {
-    event = { 'BufEnter', 'BufWinEnter' },
-    pattern = '*',
-    cmd = 'if &previewwindow | nnoremap <silent> <nowait> <buffer> q :q!<CR>| endif',
-    group = 'QuickQuit',
-}
-
-set_autocmd {
-    event = 'TermOpen',
-    pattern = '*',
-    cmd = 'nnoremap <silent><nowait><buffer> q :q!<CR>',
-    group = 'QuickQuit',
-}
-
-set_autocmd {
+nvim.autocmd.DisableTemps = {
     event = { 'BufNewFile', 'BufReadPre', 'BufEnter' },
     pattern = '/tmp/*',
-    cmd = 'setlocal noswapfile nobackup noundofile',
-    group = 'DisableTemps',
+    command = 'setlocal noswapfile nobackup noundofile',
 }
 
-set_autocmd {
+nvim.autocmd.CloseMenu = {
     event = { 'InsertLeave', 'CompleteDone' },
     pattern = '*',
-    cmd = 'if pumvisible() == 0 | pclose | endif',
-    group = 'CloseMenu',
+    command = 'if pumvisible() == 0 | pclose | endif',
 }
 
--- set_autocmd {
---     event = 'FileType',
---     pattern = 'lua',
---     cmd = [[nnoremap <buffer><silent> <leader><leader>r :luafile %<cr>:echo "File reloaded"<cr>]],
---     group = 'Reload',
--- }
-
-set_autocmd {
-    event = 'BufWritePost',
-    pattern = 'lua/plugins/init.lua',
-    cmd = 'source lua/plugins/init.lua | PackerCompile',
-    group = 'Reload',
+nvim.autocmd.Reload = {
+    {
+        event = 'BufWritePost',
+        pattern = 'lua/plugins/init.lua',
+        command = 'source lua/plugins/init.lua | PackerCompile',
+    },
+    -- {
+    --     event = 'FileType',
+    --     pattern = 'lua',
+    --     command = [[nnoremap <buffer><silent> <leader><leader>r :luafile %<cr>:echo "File reloaded"<cr>]],
+    -- },
 }
 
-set_autocmd {
+nvim.autocmd.FoldText = {
     event = 'FileType',
     pattern = '*',
-    cmd = [[setlocal foldtext=luaeval('require\"utils\".functions.foldtext()')]],
-    group = 'FoldText',
+    command = [[setlocal foldtext=luaeval('require\"utils\".functions.foldtext()')]],
 }
 
 -- BufReadPost is triggered after FileType detection, TS may not be attatch yet after
 -- FileType event, but should be fine to use BufReadPost
-set_autocmd {
+nvim.autocmd.Indent = {
     event = 'BufReadPost',
     pattern = '*',
-    cmd = [[lua require'utils.buffers'.detect_indent()]],
-    group = 'Indent',
+    callback = function()
+        require('utils.buffers').detect_indent()
+    end,
 }

@@ -220,14 +220,16 @@ return {
             i(3, 'RHS'),
             i(4, ''),
     })),
-    s("au", {
-        t{"set_autocmd {", ""},
-            t{"\tevent = '"},   i(1, 'FileType'), t{"',", ""},
-            t{"\tpattern = '"}, i(2, '*'), t{"',", ""},
-            t{"\tcmd = '"},     i(3, 'lua P(true)'), t{"',", ""},
-            t{"\tgroup = '"},   i(4, 'NewGroup'), t{"',", ""},
-        t{"}"},
-    }),
+    s('au', fmt([[
+    nvim.autocmd.{} = {{
+        event = '{}',
+        pattern = '{}',
+    }}
+    ]], {
+            i(1, 'AuGroup'),
+            i(2, 'event'),
+            i(3, 'pattern'),
+    })),
     s('lext', fmt([[vim.list_extend({}, {})]],{
         d(1, surround_with_func, {}, {user_args = {{text = 'tbl'}}}),
         i(2, "'node'"),

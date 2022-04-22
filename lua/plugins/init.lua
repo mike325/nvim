@@ -165,20 +165,23 @@ packer.startup(function()
         config = function()
             require 'plugins.diffview'
 
-            local set_autocmd = require('neovim.autocmds').set_autocmd
+            local nvim = require 'neovim'
 
-            set_autocmd {
-                event = 'Filetype',
-                pattern = 'Diff{viewFiles,FileHistory}',
-                cmd = 'lua require"plugins.diffview".set_mappings()',
-                group = 'DiffViewMappings',
-            }
-
-            set_autocmd {
-                event = 'TabEnter',
-                pattern = '*',
-                cmd = 'lua require"plugins.diffview".set_mappings()',
-                group = 'DiffViewMappings',
+            nvim.autocmd.DiffViewMappings = {
+                {
+                    event = 'Filetype',
+                    pattern = 'Diff{viewFiles,FileHistory}',
+                    callback = function()
+                        require('plugins.diffview').set_mappings()
+                    end,
+                },
+                {
+                    event = 'TabEnter',
+                    pattern = '*',
+                    callback = function()
+                        require('plugins.diffview').set_mappings()
+                    end,
+                },
             }
         end,
     }

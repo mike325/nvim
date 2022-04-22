@@ -2,7 +2,6 @@
 local executable = require('utils.files').executable
 
 local nvim = require 'neovim'
-local set_autocmd = require('neovim.autocmds').set_autocmd
 
 if vim.g.OSCTERM then
     vim.g.oscyank_term = vim.g.OSCTERM
@@ -18,9 +17,8 @@ end
 
 nvim.command.set('OSCTerm', 'let g:oscyank_term = <q-args>', { nargs = 1, complete = _completions.oscyank })
 
-set_autocmd {
+nvim.autocmd.OSCYank = {
     event = 'TextYankPost',
     pattern = '*',
-    cmd = [[call neovim#copy_yanked_text()]],
-    group = 'OSCYank',
+    command = 'call neovim#copy_yanked_text()',
 }

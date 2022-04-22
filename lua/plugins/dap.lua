@@ -1,4 +1,4 @@
--- local nvim = require 'neovim'
+local nvim = require 'neovim'
 local sys = require 'sys'
 
 local exepath = require('utils.files').exepath
@@ -9,15 +9,12 @@ local is_file = require('utils.files').is_file
 
 local is_windows = sys.name == 'windows'
 
-local nvim = require 'neovim'
-
 local dap = load_module 'dap'
 if not dap then
     return false
 end
 
 local executable = require('utils.files').executable
-local set_autocmd = require('neovim.autocmds').set_autocmd
 
 local lldb = exepath 'lldb-vscode'
 local cppdbg
@@ -142,11 +139,12 @@ vim.fn.sign_define('DapBreakpoint', { text = '🛑', texthl = '', linehl = '', n
 -- vim.fn.sign_define('DapStopped', {text='🛑', texthl='', linehl='', numhl=''})
 -- vim.fn.sign_define('DapBreakpointRejected', {text='🛑', texthl='', linehl='', numhl=''})
 
-set_autocmd {
+nvim.autocmd.DapConfig = {
     event = 'Filetype',
     pattern = 'dap-repl',
-    cmd = "lua require('dap.ext.autocompl').attach()",
-    group = 'DapConfig',
+    callback = function()
+        require('dap.ext.autocompl').attach()
+    end,
 }
 
 local function list_breakpoints()

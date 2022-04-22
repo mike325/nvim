@@ -2,7 +2,6 @@ local nvim = require 'neovim'
 local sys = require 'sys'
 
 local split = require('utils.strings').split
-local set_autocmd = require('neovim.autocmds').set_autocmd
 local executable = require('utils.files').executable
 
 local M = {}
@@ -16,13 +15,14 @@ function M.make_executable()
 
     local shebang = nvim.buf.get_lines(0, 0, 1, true)[1]
     if not shebang or not shebang:match '^#!.+' then
-        set_autocmd {
-            event = 'BufWritePre',
-            pattern = ('<buffer=%d>'):format(nvim.win.get_buf(0)),
-            cmd = [[lua require"utils.functions".make_executable()]],
+        nvim.autocmd.add('BufWritePre', {
             group = 'MakeExecutable',
+            buffer = nvim.win.get_buf(0),
+            callback = function()
+                require('utils.functions').make_executable()
+            end,
             once = true,
-        }
+        })
         return
     end
 
@@ -36,13 +36,14 @@ function M.make_executable()
         end
     end
 
-    set_autocmd {
-        event = 'BufWritePost',
-        pattern = ('<buffer=%d>'):format(nvim.win.get_buf(0)),
-        cmd = [[lua require"utils.functions".chmod_exec()]],
+    nvim.autocmd.add('BufWritePost', {
         group = 'MakeExecutable',
+        buffer = nvim.win.get_buf(0),
+        callback = function()
+            require('utils.functions').chmod_exec()
+        end,
         once = true,
-    }
+    })
 end
 
 function M.chmod_exec()

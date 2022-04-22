@@ -1,69 +1,68 @@
 local nvim = require 'neovim'
-local set_autocmd = require('neovim.autocmds').set_autocmd
 
 local M = {}
 
 local function autowipe(win, buffer)
     vim.validate { window = { win, 'number' }, buffer = { buffer, 'number' } }
 
-    set_autocmd {
-        event = { 'WinClosed' },
+    nvim.autocmd.add('WinClosed', {
         pattern = win,
-        cmd = ('lua if vim.api.nvim_buf_is_valid(%s) then vim.api.nvim_buf_delete(%s, {force=true}) end'):format(
-            buffer,
-            buffer
-        ),
+        callback = function()
+            if vim.api.nvim_buf_is_valid(buffer) then
+                vim.api.nvim_buf_delete(buffer, { force = true })
+            end
+        end,
         group = 'AutoCloseWindow',
         once = true,
         nested = true,
-    }
+    })
 end
 
 local function close_on_move(win, buffer)
     vim.validate { window = { win, 'number' } }
 
-    set_autocmd {
-        event = { 'CursorMoved' },
-        pattern = ('<buffer=%s>'):format(buffer or vim.api.nvim_get_current_buf()),
-        cmd = ('lua if vim.api.nvim_win_is_valid(%s) then vim.api.nvim_win_close(%s, true) end'):format(
-            win,
-            win
-        ),
+    nvim.autocmd.add('CursorMoved', {
+        buffer = buffer or vim.api.nvim_get_current_buf(),
+        callback = function()
+            if vim.api.nvim_win_is_valid(win) then
+                vim.api.nvim_win_close(win, true)
+            end
+        end,
         group = 'AutoCloseWindow',
         once = true,
         nested = true,
-    }
+    })
 end
 
 local function close_on_leave(win, buffer)
     vim.validate { window = { win, 'number' } }
 
     if win then
-        set_autocmd {
-            event = { 'WinLeave' },
+        nvim.autocmd.add('WinLeave', {
             pattern = win,
-            cmd = ('lua if vim.api.nvim_win_is_valid(%s) then vim.api.nvim_win_close(%s, true) end'):format(
-                win,
-                win
-            ),
+            callback = function()
+                if vim.api.nvim_win_is_valid(win) then
+                    vim.api.nvim_win_close(win, true)
+                end
+            end,
             group = 'AutoCloseWindow',
             once = true,
             nested = true,
-        }
+        })
     end
 
     if buffer then
-        set_autocmd {
-            event = { 'BufLeave' },
-            pattern = ('<buffer=%s>'):format(buffer),
-            cmd = ('lua if vim.api.nvim_win_is_valid(%s) then vim.api.nvim_win_close(%s, true) end'):format(
-                win,
-                win
-            ),
+        nvim.autocmd.add('BufLeave', {
+            buffer = buffer,
+            callback = function()
+                if vim.api.nvim_win_is_valid(win) then
+                    vim.api.nvim_win_close(win, true)
+                end
+            end,
             group = 'AutoCloseWindow',
             once = true,
             nested = true,
-        }
+        })
     end
 end
 
@@ -141,11 +140,10 @@ function M.progress(buffer)
             zindex = 1, -- very low priority
         })
 
-        set_autocmd {
+        nvim.autocmd.JobProgress = {
             event = 'WinClosed',
             pattern = vim.t.progress_win,
-            cmd = 'unlet t:progress_win',
-            group = 'JobProgress',
+            command = 'unlet t:progress_win',
             once = true,
         }
 
@@ -248,14 +246,13 @@ function M.input(opts, on_confirm)
     autowipe(win, buffer)
     close_on_leave(win, buffer)
 
-    set_autocmd {
-        event = { 'BufWipeout', 'BufUnload', 'BufLeave', 'BufWinLeave' },
-        pattern = ('<buffer=%s>'):format(buffer),
-        cmd = 'stopinsert',
+    nvim.autocmd.add({ 'BufWipeout', 'BufUnload', 'BufLeave', 'BufWinLeave' }, {
+        buffer = buffer,
+        command = 'stopinsert',
         group = 'AutoCloseWindow',
         once = true,
         nested = true,
-    }
+    })
 
     vim.keymap.set({ 'i', 'n' }, '<ESC>', function()
         if vim.api.nvim_win_is_valid(win) then

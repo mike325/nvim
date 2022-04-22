@@ -9,7 +9,7 @@ branch may not work with stable branches.
 
 ---
 
-This repo have my personal Neovim >= 0.5 settings that I have been collecting and tweaking
+This repo have my personal Neovim settings for latest stable and nightly, I have been collecting and tweaking
 for a while, feel free to change anything to fit your needs. I try to test this configs in Windows, MacOS and Linux
 tho windows is is still unstable in regarding some plugin integrations.
 

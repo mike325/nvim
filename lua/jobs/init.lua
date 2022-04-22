@@ -11,7 +11,6 @@ local jobs = STORAGE.jobs
 
 local plugins = require('neovim').plugins
 
--- local set_autocmd = require'neovim.autocmds'.set_autocmd
 require 'jobs.mappings'
 
 local Job = {}
