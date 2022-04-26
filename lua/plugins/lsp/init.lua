@@ -1,4 +1,4 @@
-local nvim = require 'neovim'
+-- local nvim = require 'neovim'
 local load_module = require('utils.helpers').load_module
 local get_icon = require('utils.helpers').get_icon
 -- local plugins = require'neovim'.plugins
@@ -17,12 +17,7 @@ if null_ls then
     table.insert(null_sources, null_ls.builtins.code_actions.gitsigns)
 end
 
-local has_nvim_6 = nvim.has { 0, 6 }
-local diagnostic = vim.diagnostic or vim.lsp.diagnostic
-
-local lsp_sign = has_nvim_6 and 'DiagnosticSign' or 'LspDiagnosticsSign'
-local levels = { 'Error', 'Hint' }
-local diagnostic_config = {
+vim.diagnostic.config {
     signs = true,
     underline = true,
     update_in_insert = false,
@@ -32,18 +27,8 @@ local diagnostic_config = {
     },
 }
 
-if has_nvim_6 then
-    vim.list_extend(levels, { 'Warn', 'Info' })
-    vim.diagnostic.config(diagnostic_config)
-else
-    vim.list_extend(levels, { 'Warning', 'Information' })
-    vim.lsp.handlers['textDocument/publishDiagnostics'] = vim.lsp.with(
-        vim.lsp.diagnostic.on_publish_diagnostics,
-        diagnostic_config
-    )
-end
-
-for _, level in pairs(levels) do
+local lsp_sign = 'DiagnosticSign'
+for _, level in pairs { 'Error', 'Hint', 'Warn', 'Info' } do
     vim.fn.sign_define(lsp_sign .. level, { text = get_icon(level:lower()), texthl = lsp_sign .. level })
     vim.cmd(
         ('sign define %s%s text=%s texthl=%s%s linehl= numhl='):format(
@@ -56,14 +41,14 @@ for _, level in pairs(levels) do
     )
 end
 
-local original_set_virtual_text = diagnostic.set_virtual_text
-local set_virtual_text_custom = function(lsp_diagnostics, bufnr, client_id, sign_ns, opts)
-    opts = opts or {}
-    -- show all messages that are Warning and above (Warning, Error)
-    opts.severity_limit = 'Error'
-    original_set_virtual_text(lsp_diagnostics, bufnr, client_id, sign_ns, opts)
-end
-diagnostic.set_virtual_text = set_virtual_text_custom
+-- local original_set_virtual_text = vim.diagnostic.set_virtual_text
+-- local set_virtual_text_custom = function(lsp_diagnostics, bufnr, client_id, sign_ns, opts)
+--     opts = opts or {}
+--     -- show all messages that are Warning and above (Warning, Error)
+--     opts.severity_limit = 'Error'
+--     original_set_virtual_text(lsp_diagnostics, bufnr, client_id, sign_ns, opts)
+-- end
+-- vim.diagnostic.set_virtual_text = set_virtual_text_custom
 
 local lsp_configs = require 'plugins.lsp.servers'
 local lsp_setup = require('plugins.lsp.utils').setup
@@ -106,9 +91,6 @@ for filetype, _ in pairs(lsp_configs) do
 end
 
 if null_ls and next(null_sources) ~= nil then
-    if not nvim.has { 0, 6 } then
-        null_ls.setup = null_ls.config
-    end
     null_ls.setup {
         sources = null_sources,
         -- debug = true,

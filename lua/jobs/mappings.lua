@@ -1,9 +1,5 @@
 local nvim = require 'neovim'
 
-if not nvim.has { 0, 5 } then
-    return false
-end
-
 local jobs = STORAGE.jobs
 
 local function kill_job(jobid)

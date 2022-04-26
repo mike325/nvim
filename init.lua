@@ -1,6 +1,10 @@
 -- luacheck: max line length 170
 local nvim = require 'neovim'
 
+if not nvim.has { 0, 7 } then
+    vim.api.nvim_err_writeln 'Neovim version is too old!! please use the legacy branch or the nvim-0.6 tag'
+end
+
 vim.g.loaded_2html_plugin = 1
 vim.g.loaded_gzip = 1
 vim.g.loaded_rrhelper = 1
@@ -31,9 +35,7 @@ if not vim.keymap then
 end
 
 vim.g.do_filetype_lua = 1
-if nvim.has { 0, 7 } then
-    vim.g.did_load_filetypes = 0
-end
+vim.g.did_load_filetypes = 0
 
 vim.g.mapleader = ' '
 

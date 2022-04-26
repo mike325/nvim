@@ -1,9 +1,5 @@
 local nvim = require 'neovim'
 
-if not nvim.has { 0, 5 } then
-    return false
-end
-
 local get_icon = require('utils.helpers').get_icon
 local executable = require('utils.files').executable
 

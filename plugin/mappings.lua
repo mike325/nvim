@@ -15,8 +15,6 @@ local set_abbr = require('neovim.abbrs').set_abbr
 local noremap = { noremap = true }
 local noremap_silent = { noremap = true, silent = true }
 
-local has_nvim_6 = nvim.has { 0, 6 }
-
 if not vim.g.mapleader then
     vim.g.mapleader = ' '
 end
@@ -784,12 +782,10 @@ nvim.command.set('Zoom', function(opts)
     end
 end, { nargs = 1, complete = _completions.zoom_links })
 
-if has_nvim_6 then
-    vim.keymap.set('n', '=D', function()
-        vim.diagnostic.setqflist()
-        vim.cmd 'wincmd J'
-    end, noremap_silent)
-end
+vim.keymap.set('n', '=D', function()
+    vim.diagnostic.setqflist()
+    vim.cmd 'wincmd J'
+end, noremap_silent)
 
 vim.opt.formatexpr = [[luaeval('require"utils.buffers".format()')]]
 vim.keymap.set('n', '=F', [[<cmd>normal! gggqG``<CR>]], { noremap = true, silent = true })

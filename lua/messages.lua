@@ -1,15 +1,8 @@
-local nvim = require 'neovim'
+-- local nvim = require 'neovim'
 
-local has_nvim_6 = nvim.has { 0, 6 }
-
-local lsp_sign = has_nvim_6 and 'DiagnosticSign' or 'LspDiagnosticsSign'
+local lsp_sign = 'DiagnosticSign'
 local names = { 'error', 'hint', 'warn', 'info' }
-local levels = { 'Error', 'Hint' }
-if has_nvim_6 then
-    vim.list_extend(levels, { 'Warn', 'Info' })
-else
-    vim.list_extend(levels, { 'Warning', 'Information' })
-end
+local levels = { 'Error', 'Hint', 'Warn', 'Info' }
 
 local hl_group = {}
 for idx, level in ipairs(levels) do

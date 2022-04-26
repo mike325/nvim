@@ -1,10 +1,3 @@
-local nvim = require 'neovim'
-
-if not nvim.has { 0, 7 } or not vim.filetype then
-    vim.fn['filetypedetect#detect']()
-    return false
-end
-
 vim.filetype.add {
     extension = {
         nginx = 'nginx',

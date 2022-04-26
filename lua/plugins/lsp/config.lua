@@ -10,8 +10,6 @@ if lsp == nil then
 end
 
 local show_diagnostics = true
-local has_nvim_6 = nvim.has { 0, 6 }
-local diagnostic = has_nvim_6 and vim.diagnostic or vim.lsp.diagnostic
 
 local has_telescope, _ = pcall(require, 'telescope')
 -- local servers = require 'plugins.lsp.servers'
@@ -47,7 +45,7 @@ M.commands = {
     LSPToggleDiagnostics = {
         function()
             show_diagnostics = not show_diagnostics
-            local diagnostic_config = {
+            vim.diagnostic.config = {
                 update_in_insert = false,
                 underline = show_diagnostics,
                 signs = show_diagnostics,
@@ -56,14 +54,6 @@ M.commands = {
                     prefix = '❯',
                 } or false,
             }
-            if has_nvim_6 then
-                vim.diagnostic.config = diagnostic_config
-            else
-                _G['vim'].lsp.handlers['textDocument/publishDiagnostics'] = vim.lsp.with(
-                    vim.lsp.diagnostic.on_publish_diagnostics,
-                    diagnostic_config
-                )
-            end
         end,
     },
     Rename = {
@@ -102,11 +92,9 @@ M.commands = {
     Diagnostics = {
         function()
             if has_telescope then
-                local diagnostics_func = has_nvim_6 and 'diagnostics' or 'lsp_document_diagnostics'
-                builtin[diagnostics_func](themes.get_dropdown {})
+                builtin.diagnostics(themes.get_dropdown {})
             else
-                local loclist = has_nvim_6 and 'setloclist' or 'set_loclist'
-                diagnostic[loclist]()
+                vim.diagnostic.setloclist()
             end
         end,
     },
@@ -130,11 +118,7 @@ M.commands = {
     },
     CodeAction = {
         function()
-            if has_telescope then
-                builtin.lsp_code_actions(themes.get_cursor {})
-            else
-                vim.lsp.buf.lsp_code_actions()
-            end
+            vim.lsp.buf.lsp_code_actions()
         end,
     },
 }
@@ -152,8 +136,6 @@ function M.on_attach(client, bufnr, is_null)
     vim.bo[bufnr].omnifunc = 'v:lua.vim.lsp.omnifunc'
 
     local lua_cmd = '<cmd>lua %s<CR>'
-
-    local diag_str = has_nvim_6 and 'vim.diagnostic' or 'vim.lsp.diagnostic'
 
     local mappings = {
         ['<C-]>'] = {
@@ -192,19 +174,14 @@ function M.on_attach(client, bufnr, is_null)
         },
         ['ga'] = {
             capability = 'codeActionProvider',
-            mapping = lua_cmd:format(
-                (
-                        has_telescope
-                        and "require'telescope.builtin'.lsp_code_actions(require'telescope.themes'.get_cursor{})"
-                    ) or 'vim.lsp.buf.code_action()'
-            ),
+            mapping = lua_cmd:format 'vim.lsp.buf.code_action()',
         },
         ['gh'] = {
             capability = 'signatureHelpProvider',
             mapping = lua_cmd:format 'vim.lsp.buf.signature_help()',
         },
         ['=L'] = {
-            mapping = lua_cmd:format(diag_str .. (has_nvim_6 and '.setloclist()' or '.set_loclist()')),
+            mapping = lua_cmd:format 'vim.diagnostic.setloclist()',
         },
         ['<leader>s'] = {
             mapping = lua_cmd:format(
@@ -215,15 +192,13 @@ function M.on_attach(client, bufnr, is_null)
             ),
         },
         ['=d'] = {
-            mapping = lua_cmd:format(
-                diag_str .. (has_nvim_6 and '.open_float()' or '.show_line_diagnostics()')
-            ),
+            mapping = lua_cmd:format 'vim.diagnostic.open_float()',
         },
         [']d'] = {
-            mapping = lua_cmd:format(diag_str .. '.goto_next{wrap=false}'),
+            mapping = lua_cmd:format 'vim.diagnostic.goto_next{wrap=false}',
         },
         ['[d'] = {
-            mapping = lua_cmd:format(diag_str .. '.goto_prev{wrap=false}'),
+            mapping = lua_cmd:format 'vim.diagnostic.goto_prev{wrap=false}',
         },
         -- ['<space>wa'] = '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>',
         -- ['<space>wr'] = '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>',

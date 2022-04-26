@@ -26,9 +26,7 @@ if not vim.keymap then
 end
 
 vim.g.do_filetype_lua = 1
-if nvim.has { 0, 7 } then
-    vim.g.did_load_filetypes = 0
-end
+vim.g.did_load_filetypes = 0
 
 vim.g.mapleader = ' '
 
