@@ -76,6 +76,16 @@ local function filename()
     return name .. (modified and '[+]' or '') .. (readonly and ' ' .. get_icon 'readonly' or '')
 end
 
+local function wordcount()
+    local words = vim.fn.wordcount()['words']
+    return 'Words: ' .. words
+end
+
+local function trailspace()
+    local space = vim.fn.search([[\s\+$]], 'nwc')
+    return space ~= 0 and 'TW:' .. space or ''
+end
+
 -- TODO: Missing secctions I would like to add
 -- Improve tab support to make it behave more like "airline"
 -- Mixed indent (spaces with tabs)
@@ -157,10 +167,32 @@ lualine.setup {
         },
         -- lualine_x = { 'encoding', 'fileformat', 'filetype' },
         lualine_y = {
-            function()
-                local space = vim.fn.search([[\s\+$]], 'nwc')
-                return space ~= 0 and 'TW:' .. space or ''
-            end,
+            {
+                trailspace,
+                cond = function()
+                    local ft = vim.opt_local.filetype:get()
+                    local ro = vim.opt_local.readonly:get()
+                    local mod = vim.opt_local.modifiable:get()
+                    local disable = {
+                        help = true,
+                        log = true,
+                    }
+                    return disable[ft] == nil and not ro and mod
+                end,
+            },
+            {
+                wordcount,
+                cond = function()
+                    local ft = vim.opt_local.filetype:get()
+                    local count = {
+                        latex = true,
+                        tex = true,
+                        markdown = true,
+                        vimwiki = true,
+                    }
+                    return count[ft] ~= nil
+                end,
+            },
             'progress',
         },
         -- lualine_z = { 'location', },
