@@ -789,3 +789,55 @@ end, noremap_silent)
 
 vim.opt.formatexpr = [[luaeval('require"utils.buffers".format()')]]
 vim.keymap.set('n', '=F', [[<cmd>normal! gggqG``<CR>]], { noremap = true, silent = true })
+
+nvim.command.set('Edit', function(args)
+    local globs = args.fargs
+    for _, g in ipairs(globs) do
+        if is_file(g) then
+            nvim.ex.edit(g)
+        elseif g:match '%*' then
+            local files = vim.fn.glob(g, false, true, false)
+            for _, f in ipairs(files) do
+                if is_file(f) then
+                    nvim.ex.edit(f)
+                end
+            end
+        end
+    end
+end, { nargs = '*', complete = 'file' })
+
+nvim.command.set('DiffFiles', function(args)
+    local files = args.fargs
+    if #files ~= 2 and #files ~= 3 then
+        vim.notify('Can only diff 2 or 3 files files', 'ERROR', { title = 'DiffFiles' })
+        return false
+    end
+
+    for _, f in ipairs(files) do
+        if not is_file(f) then
+            vim.notify(
+                f .. ' is not a regular file or the file does not exits',
+                'ERROR',
+                { title = 'DiffFiles' }
+            )
+            return false
+        end
+    end
+    local only = true
+    for _, f in ipairs(files) do
+        if only then
+            only = false
+            nvim.ex.tabnew()
+        else
+            nvim.ex.vsplit()
+        end
+        nvim.ex.edit(f)
+    end
+
+    for _, w in ipairs(nvim.tab.list_wins(0)) do
+        local buf = nvim.win.get_buf(w)
+        nvim.buf.call(buf, function()
+            nvim.ex.diffthis()
+        end)
+    end
+end, { nargs = '+', complete = 'file' })

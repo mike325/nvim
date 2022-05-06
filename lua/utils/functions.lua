@@ -60,18 +60,23 @@ function M.chmod_exec()
 end
 
 function M.send_grep_job(args)
-    assert(
-        type(args) == type '' or type(args) == type {},
-        debug.traceback('Invalid args' .. vim.inspect(args))
-    )
+    vim.validate {
+        args = {
+            args,
+            function(a)
+                return type(a) == type '' or vim.tbl_islist(a)
+            end,
+            'a string or an array of args',
+        },
+    }
 
     local cmd = split(vim.bo.grepprg or vim.o.grepprg, ' ')
 
-    if type(args) == type {} then
-        vim.list_extend(cmd, args)
-    else
-        table.insert(cmd, args)
+    if not vim.tbl_islist(args) then
+        args = { args }
     end
+
+    vim.list_extend(cmd, args)
 
     local grep = require('jobs'):new {
         cmd = cmd,

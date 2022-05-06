@@ -34,7 +34,11 @@ M.commands = {
     Implementation = { vim.lsp.buf.implementation },
     Format = {
         function()
-            vim.lsp.buf.formatting()
+            if nvim.has { 0, 8 } then
+                vim.lsp.buf.format { async = true }
+            else
+                vim.lsp.buf.formatting()
+            end
         end,
     },
     RangeFormat = {

@@ -334,7 +334,11 @@ function M.format(ft)
 
     for _, client in pairs(clients) do
         if whole_file and client.resolved_capabilities.document_formatting then
-            vim.lsp.buf.formatting()
+            if nvim.has { 0, 8 } then
+                vim.lsp.buf.format { async = true }
+            else
+                vim.lsp.buf.formatting()
+            end
             return 0
         elseif client.resolved_capabilities.document_range_formatting then
             -- TODO: Check if this actually works
