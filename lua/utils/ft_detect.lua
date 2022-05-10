@@ -12,6 +12,7 @@ vim.filetype.add {
         rdl = 'log',
         ini = 'toml',
         xmp = 'xml',
+        expect = 'expect',
     },
     filename = {
         ['.gitconfig'] = '.gitconfig',
