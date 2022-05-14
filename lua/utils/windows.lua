@@ -6,7 +6,7 @@ local function autowipe(win, buffer)
     vim.validate { window = { win, 'number' }, buffer = { buffer, 'number' } }
 
     nvim.autocmd.add('WinClosed', {
-        pattern = win,
+        pattern = tostring(win),
         callback = function()
             if vim.api.nvim_buf_is_valid(buffer) then
                 vim.api.nvim_buf_delete(buffer, { force = true })
@@ -39,7 +39,7 @@ local function close_on_leave(win, buffer)
 
     if win then
         nvim.autocmd.add('WinLeave', {
-            pattern = win,
+            pattern = tostring(win),
             callback = function()
                 if vim.api.nvim_win_is_valid(win) then
                     vim.api.nvim_win_close(win, true)
@@ -142,7 +142,7 @@ function M.progress(buffer)
 
         nvim.autocmd.JobProgress = {
             event = 'WinClosed',
-            pattern = vim.t.progress_win,
+            pattern = tostring(vim.t.progress_win),
             command = 'unlet t:progress_win',
             once = true,
         }

@@ -509,20 +509,20 @@ packer.startup(function()
             dapui.setup {}
 
             nvim.command.set('DapUI', function()
-                require('dapui').toggle()
+                require('dapui').toggle 'sidebar'
             end, {})
 
             vim.keymap.set('n', '=I', require('dapui').toggle, { noremap = true, silent = true })
 
             local dap = require 'dap'
             dap.listeners.after.event_initialized['dapui_config'] = function()
-                dapui.open()
+                dapui.open 'sidebar'
             end
             dap.listeners.before.event_terminated['dapui_config'] = function()
-                dapui.close()
+                dapui.close 'sidebar'
             end
             dap.listeners.before.event_exited['dapui_config'] = function()
-                dapui.close()
+                dapui.close 'sidebar'
             end
         end,
         wants = 'nvim-dap',
