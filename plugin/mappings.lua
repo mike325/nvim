@@ -841,3 +841,16 @@ nvim.command.set('DiffFiles', function(args)
         end)
     end
 end, { nargs = '+', complete = 'file' })
+
+local show_diagnostics = true
+local function toggle_diagnostics()
+    show_diagnostics = not show_diagnostics
+    if show_diagnostics then
+        vim.diagnostic.show()
+    else
+        vim.diagnostic.hide()
+    end
+end
+
+vim.keymap.set('n', '<leader>D', toggle_diagnostics, noremap)
+nvim.command.set('ToggleDiagnostics', toggle_diagnostics, {})

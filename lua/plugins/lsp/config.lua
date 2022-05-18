@@ -9,8 +9,6 @@ if lsp == nil then
     return false
 end
 
-local show_diagnostics = true
-
 local has_telescope, _ = pcall(require, 'telescope')
 -- local servers = require 'plugins.lsp.servers'
 
@@ -44,20 +42,6 @@ M.commands = {
     RangeFormat = {
         function()
             vim.lsp.buf.range_formatting()
-        end,
-    },
-    LSPToggleDiagnostics = {
-        function()
-            show_diagnostics = not show_diagnostics
-            vim.diagnostic.config = {
-                update_in_insert = false,
-                underline = show_diagnostics,
-                signs = show_diagnostics,
-                virtual_text = show_diagnostics and {
-                    spacing = 2,
-                    prefix = '❯',
-                } or false,
-            }
         end,
     },
     Rename = {

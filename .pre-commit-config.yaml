@@ -2,7 +2,7 @@
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.1.0
+    rev: v4.2.0
     hooks:
       - id: check-xml
       - id: check-yaml
@@ -21,7 +21,7 @@ repos:
       - id: mixed-line-ending
       # - id: pretty-format-json
   - repo: https://github.com/jumanjihouse/pre-commit-hooks
-    rev: 2.1.5  # or master
+    rev: 2.1.6  # or master
     hooks:
       # TODO: Migrate some checks to python to make them "universal"
       # - id: bundler-audit
@@ -38,7 +38,7 @@ repos:
       # - id: shellcheck
       # - id: shfmt
   - repo: https://github.com/Lucas-C/pre-commit-hooks
-    rev: v1.1.10
+    rev: v1.2.0
     hooks:
       - id: remove-crlf
       - id: remove-tabs
@@ -52,7 +52,7 @@ repos:
             )$
         # args: [ '--whitespaces-count', '2' ]  # defaults to: 4
   - repo: https://github.com/sirosen/check-jsonschema
-    rev: 0.10.0
+    rev: 0.15.0
     hooks:
       - id: check-github-workflows
       - id: check-github-actions
@@ -64,11 +64,11 @@ repos:
     hooks:
       - id: flake8
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: 'v0.931'  # Use the sha / tag you want to point at
+    rev: 'v0.950'  # Use the sha / tag you want to point at
     hooks:
       - id: mypy
   - repo: https://github.com/psf/black
-    rev: 21.12b0  # or stable
+    rev: 22.3.0  # or stable
     hooks:
       - id: black
         args: [ --check, --diff ]
