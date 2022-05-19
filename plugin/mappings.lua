@@ -33,6 +33,9 @@ set_abbr { mode = 'c', lhs = 'QA!', rhs = 'qa!' }
 
 vim.keymap.set('c', '<C-n>', '<down>', noremap)
 vim.keymap.set('c', '<C-p>', '<up>', noremap)
+vim.keymap.set('c', '<C-k>', '<left>', noremap)
+vim.keymap.set('c', '<C-j>', '<right>', noremap)
+
 vim.keymap.set('c', '<C-r><C-w>', "<C-r>=escape(expand('<cword>'), '#')<CR>", noremap)
 
 vim.keymap.set('n', ',', ':', noremap)
