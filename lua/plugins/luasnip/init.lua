@@ -7,15 +7,13 @@ end
 local sys = require 'sys'
 local nvim = require 'neovim'
 
-local types = require 'luasnip.util.types'
-
 ls.config.setup {
-    history = true,
+    history = false,
     -- Update more often, :h events for more info.
     updateevents = 'TextChanged,TextChangedI',
     store_selection_keys = '<CR>',
     ext_opts = {
-        [types.choiceNode] = {
+        [require('luasnip.util.types').choiceNode] = {
             snippet_passive = {
                 virt_text = { { '●', 'Comment' } },
             },
