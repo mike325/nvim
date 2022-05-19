@@ -11,7 +11,13 @@ if not lualine then
     return false
 end
 
+local has_gps, gps = pcall(require, 'nvim-gps')
+
 local function where_ami()
+    if has_gps then
+        return gps.is_available() and gps.get_location() or ''
+    end
+
     local class = require('utils.treesitter').get_current_class()
     local func = require('utils.treesitter').get_current_func()
     local location = ''

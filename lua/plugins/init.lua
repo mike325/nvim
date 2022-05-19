@@ -184,6 +184,7 @@ packer.startup(function()
                 },
             }
         end,
+        requires = 'nvim-lua/plenary.nvim',
     }
 
     use {
@@ -192,7 +193,7 @@ packer.startup(function()
         cond = function()
             return not vim.env.VIM_MIN and not vim.g.minimal
         end,
-        wants = 'plenary.nvim',
+        requires = 'nvim-lua/plenary.nvim',
         config = function()
             require('gitsigns').setup {
                 keymaps = {
@@ -300,9 +301,9 @@ packer.startup(function()
         config = function()
             require 'plugins.telescope'
         end,
-        wants = {
-            'plenary.nvim',
-            'popup.nvim',
+        requires = {
+            'nvim-lua/plenary.nvim',
+            'nvim-lua/popup.nvim',
         },
         tag = (vim.fn.has 'nvim-0.6' == 0 and 'nvim-0.5.0' or nil),
     }
@@ -381,7 +382,10 @@ packer.startup(function()
             -- Windows throws an error complaining it has an invalid syntax, I look in to it later
             return vim.fn.has 'win32' == 0
         end,
-        wants = { 'telescope.nvim', (require('sys').has_sqlite and 'sqlite.lua' or nil) },
+        requires = {
+            'nvim-telescope/telescope.nvim',
+            (require('sys').has_sqlite and 'tami5/sqlite.lua' or nil),
+        },
     }
 
     use {
@@ -411,9 +415,9 @@ packer.startup(function()
                 },
             }
         end,
-        -- requires = { { 'nvim-treesitter/nvim-treesitter' } },
-        wants = { 'nvim-treesitter' },
-        after = 'nvim-treesitter',
+        requires = { 'nvim-treesitter/nvim-treesitter' },
+        -- wants = { 'nvim-treesitter' },
+        -- after = 'nvim-treesitter',
     }
 
     use {
@@ -436,7 +440,8 @@ packer.startup(function()
     -- TODO: Add neovim 0.5 compatibility layer/setup
     use {
         'jose-elias-alvarez/null-ls.nvim',
-        wants = { 'nvim-lspconfig', 'plenary.nvim' },
+        -- wants = { 'nvim-lspconfig', 'plenary.nvim' },
+        requires = { 'neovim/nvim-lspconfig', 'nvim-lua/plenary.nvim' },
         branch = (vim.fn.has 'nvim-0.6' == 0 and '0.5.1-compat' or nil),
     }
 
@@ -494,7 +499,7 @@ packer.startup(function()
         config = function()
             require('nvim-dap-virtual-text').setup {}
         end,
-        wants = 'nvim-dap',
+        requires = 'mfussenegger/nvim-dap',
         after = 'nvim-dap',
     }
 
@@ -525,8 +530,20 @@ packer.startup(function()
                 dapui.close 'sidebar'
             end
         end,
-        wants = 'nvim-dap',
+        requires = 'mfussenegger/nvim-dap',
         after = 'nvim-dap',
+    }
+
+    use {
+        'SmiteshP/nvim-gps',
+        config = function()
+            require('nvim-gps').setup()
+            -- require('nvim-gps').setup{
+            --     separator = ' ❯ ',
+            -- }
+        end,
+        requires = { 'nvim-treesitter/nvim-treesitter' },
+        after = 'nvim-treesitter',
     }
 
     use {
@@ -534,7 +551,9 @@ packer.startup(function()
         config = function()
             require 'plugins.lualine'
         end,
-        requires = { 'arkav/lualine-lsp-progress' },
+        requires = {
+            { 'arkav/lualine-lsp-progress' },
+        },
     }
 
     -- use {
