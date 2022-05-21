@@ -32,12 +32,7 @@ local completions = {
         return general_completion(arglead, cmdline, cursorpos, { 'tmux', 'kitty', 'default' })
     end,
     cmake_build = function(arglead, cmdline, cursorpos)
-        return general_completion(
-            arglead,
-            cmdline,
-            cursorpos,
-            { 'Debug', 'Release', 'MinSizeRel', 'RelWithDebInfo' }
-        )
+        return general_completion(arglead, cmdline, cursorpos, { 'Debug', 'Release', 'MinSizeRel', 'RelWithDebInfo' })
     end,
     gitfiles_workspace = function(arglead, cmdline, cursorpos)
         local gitstatus = require('git.utils').status()

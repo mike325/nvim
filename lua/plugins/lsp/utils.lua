@@ -90,9 +90,7 @@ function M.setup(ft)
         local init = vim.deepcopy(server.options) or {}
         init.on_attach = require('plugins.lsp.config').on_attach
         if cmp then
-            init.capability = require('cmp_nvim_lsp').update_capabilities(
-                vim.lsp.protocol.make_client_capabilities()
-            )
+            init.capability = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
         end
         lsp[config].setup(init)
         return true

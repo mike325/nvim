@@ -44,11 +44,7 @@ end
 function M.set_autocmd(autocmd)
     vim.validate { autocmd = { autocmd, 'table' } }
     if not autocmd.event then
-        vim.notify(
-            'Missing arguments!! set_autocmd need event attribbute',
-            'ERROR',
-            { title = 'Nvim Autocmd' }
-        )
+        vim.notify('Missing arguments!! set_autocmd need event attribbute', 'ERROR', { title = 'Nvim Autocmd' })
         return false
     end
 

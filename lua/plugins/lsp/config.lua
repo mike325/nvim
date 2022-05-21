@@ -129,10 +129,8 @@ function M.on_attach(client, bufnr, is_null)
         ['<C-]>'] = {
             capability = 'definitionProvider',
             mapping = lua_cmd:format(
-                (
-                        has_telescope
-                        and "require'telescope.builtin'.lsp_definitions(require'telescope.themes'.get_cursor{})"
-                    ) or 'vim.lsp.buf.definition()'
+                (has_telescope and "require'telescope.builtin'.lsp_definitions(require'telescope.themes'.get_cursor{})")
+                    or 'vim.lsp.buf.definition()'
             ),
         },
         ['gd'] = {

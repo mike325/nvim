@@ -89,11 +89,7 @@ function M.set_commands()
                         jobopts = {
                             on_exit = function(_, rc)
                                 if rc ~= 0 then
-                                    vim.notify(
-                                        'Failed to Add file: ' .. bufname,
-                                        'ERROR',
-                                        { title = 'GWrite' }
-                                    )
+                                    vim.notify('Failed to Add file: ' .. bufname, 'ERROR', { title = 'GWrite' })
                                 end
                             end,
                         },

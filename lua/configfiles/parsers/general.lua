@@ -34,12 +34,7 @@ function M.parser(data)
                 subsection = line:match '"(.+)"%s*]$'
                 assert(
                     not data_tbl.sections[section][subsection],
-                    'Repeated subsection: '
-                        .. subsection
-                        .. ' in section: '
-                        .. section
-                        .. ' '
-                        .. vim.inspect(data_tbl)
+                    'Repeated subsection: ' .. subsection .. ' in section: ' .. section .. ' ' .. vim.inspect(data_tbl)
                 )
                 data_tbl.sections[section][subsection] = {}
                 subsections[section] = subsection
@@ -69,10 +64,7 @@ function M.parser(data)
                     elseif val:sub(2, 2) == 'o' and val:match '^0o[0-7]+$' then
                         val = tonumber(val:match '^0o([0-7]+)$', 8)
                     end
-                elseif
-                    (val:sub(1, 1) == '"' or val:sub(1, 1) == "'")
-                    and val:sub(#val, #val) == val:sub(1, 1)
-                then
+                elseif (val:sub(1, 1) == '"' or val:sub(1, 1) == "'") and val:sub(#val, #val) == val:sub(1, 1) then
                     local qtype = val:sub(1, 1)
                     val = val:match(('^%s(.*)%s$'):format(qtype, qtype))
                 end

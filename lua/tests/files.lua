@@ -561,15 +561,9 @@ describe('ls', function()
         local is_file = require('utils.files').is_file
 
         assert.are.same(vim.tbl_filter(is_file, vim.fn.globpath('.', '*', true, true)), get_files '.')
-        assert.are.same(
-            vim.tbl_filter(is_file, vim.fn.globpath(homedir, '*', true, true)),
-            get_files(homedir)
-        )
+        assert.are.same(vim.tbl_filter(is_file, vim.fn.globpath(homedir, '*', true, true)), get_files(homedir))
 
-        assert.are.same(
-            vim.tbl_filter(is_file, vim.fn.globpath(cwd, '*', true, true)),
-            get_files { path = cwd }
-        )
+        assert.are.same(vim.tbl_filter(is_file, vim.fn.globpath(cwd, '*', true, true)), get_files { path = cwd })
         assert.are.same(
             vim.tbl_filter(is_file, vim.fn.globpath(homedir, '*', true, true)),
             get_files { path = homedir }
@@ -590,14 +584,8 @@ describe('ls', function()
         assert.are.same(vim.tbl_filter(is_dir, vim.fn.globpath('.', '*', true, true)), get_dirs '.')
         assert.are.same(vim.tbl_filter(is_dir, vim.fn.globpath(homedir, '*', true, true)), get_dirs(homedir))
 
-        assert.are.same(
-            vim.tbl_filter(is_dir, vim.fn.globpath(cwd, '*', true, true)),
-            get_dirs { path = cwd }
-        )
-        assert.are.same(
-            vim.tbl_filter(is_dir, vim.fn.globpath(homedir, '*', true, true)),
-            get_dirs { path = homedir }
-        )
+        assert.are.same(vim.tbl_filter(is_dir, vim.fn.globpath(cwd, '*', true, true)), get_dirs { path = cwd })
+        assert.are.same(vim.tbl_filter(is_dir, vim.fn.globpath(homedir, '*', true, true)), get_dirs { path = homedir })
 
         assert.are.same(
             vim.tbl_filter(is_dir, vim.fn.globpath(cwd, 's*', true, true)),

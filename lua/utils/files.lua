@@ -791,10 +791,7 @@ function M.clean_file()
 end
 
 function M.decode_json(data)
-    assert(
-        type(data) == type '' or type(data) == type {},
-        debug.traceback('Invalid Json data: ' .. vim.inspect(data))
-    )
+    assert(type(data) == type '' or type(data) == type {}, debug.traceback('Invalid Json data: ' .. vim.inspect(data)))
     if type(data) == type {} then
         data = table.concat(data, '\n')
     end

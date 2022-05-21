@@ -35,11 +35,6 @@ if not plugins['vim-fugitive'] then
     end)
 end
 
-vim.keymap.set(
-    'n',
-    '=n',
-    '<cmd>lua require"neogit".open({ kind = "vsplit" })<cr>',
-    { silent = true, noremap = true }
-)
+vim.keymap.set('n', '=n', '<cmd>lua require"neogit".open({ kind = "vsplit" })<cr>', { silent = true, noremap = true })
 
 return true

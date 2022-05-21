@@ -52,9 +52,7 @@ local function func_handle(info)
         funcs.b[bufnr][lhs] = rhs
 
         if not vim.b.wipe_cmds then
-            vim.cmd(
-                ([[autocmd BufWipeout <buffer=%s> lua STORAGE.commands.b['%s'] = nil ]]):format(bufnr, bufnr)
-            )
+            vim.cmd(([[autocmd BufWipeout <buffer=%s> lua STORAGE.commands.b['%s'] = nil ]]):format(bufnr, bufnr))
             vim.b.wipe_cmds = true
         end
     else
@@ -65,11 +63,7 @@ end
 function M.set_command(command)
     vim.validate { command = { command, 'table' } }
     if not command.lhs then
-        vim.notify(
-            'Missing arguments!! set_command need a lhs attribbutes',
-            'ERROR',
-            { title = 'Nvim Commands' }
-        )
+        vim.notify('Missing arguments!! set_command need a lhs attribbutes', 'ERROR', { title = 'Nvim Commands' })
         return false
     end
 

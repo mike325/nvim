@@ -122,10 +122,7 @@ function Job:new(job)
         exe = job.cmd or job.exe
         args = job.args
 
-        assert(
-            not job.verify_exec or type(job.verify_exec) == type(true),
-            debug.traceback 'Invalid verify_exec arg'
-        )
+        assert(not job.verify_exec or type(job.verify_exec) == type(true), debug.traceback 'Invalid verify_exec arg')
         if job.verify_exec ~= nil then
             verify_exec = job.verify_exec
         end
@@ -138,8 +135,7 @@ function Job:new(job)
         if args then
             -- NOTE: allow exe = '' and (args = {} or args = '')
             assert(
-                type(exe) == type ''
-                    and (type(args) == type '' or (type(args) == type {} and vim.tbl_islist(args))),
+                type(exe) == type '' and (type(args) == type '' or (type(args) == type {} and vim.tbl_islist(args))),
                 debug.traceback 'Invalid args, args must be either a string or an array and cmd must be a string'
             )
 
@@ -199,10 +195,7 @@ function Job:new(job)
         assert(job.clear == nil or type(job.clear) == type(true), debug.traceback 'Clear arg must be a bool')
         obj._clear = job.clear == nil and true or job.clear
 
-        assert(
-            job.timeout == nil or type(job.timeout) == type(1),
-            debug.traceback 'Timeout arg must be an integer'
-        )
+        assert(job.timeout == nil or type(job.timeout) == type(1), debug.traceback 'Timeout arg must be an integer')
         obj._timeout = job.timeout
 
         assert(
@@ -288,11 +281,7 @@ function Job:start()
 
     local function general_on_exit(_, rc)
         if rc == 0 then
-            vim.notify(
-                ('Job %s succeed!! %s'):format(self.exe, get_icon 'success'),
-                'INFO',
-                { title = self.exe }
-            )
+            vim.notify(('Job %s succeed!! %s'):format(self.exe, get_icon 'success'), 'INFO', { title = self.exe })
         else
             vim.notify(
                 ('Job %s failed :c exit with code: %d!! %s'):format(self.exe, rc, get_icon 'error'),
@@ -456,11 +445,7 @@ function Job:progress()
     assert(self._isalive, debug.traceback(('Job %s is not running'):format(self._id)))
 
     if self._tab ~= nvim.get_current_tabpage() then
-        vim.notify(
-            'Cannot show progress from a different tab !' .. get_icon 'warn',
-            'WARN',
-            { title = 'Job Progress' }
-        )
+        vim.notify('Cannot show progress from a different tab !' .. get_icon 'warn', 'WARN', { title = 'Job Progress' })
         return false
     end
 
