@@ -1,8 +1,10 @@
 local nvim = require 'neovim'
 local sys = require 'sys'
 
+local is_file = require('utils.files').is_file
 local split = require('utils.strings').split
 local executable = require('utils.files').executable
+local replace_indent = require('utils.buffers').replace_indent
 
 local M = {}
 
@@ -10,8 +12,6 @@ function M.make_executable()
     if sys.name == 'windows' then
         return
     end
-
-    local is_file = require('utils.files').is_file
 
     local shebang = nvim.buf.get_lines(0, 0, 1, true)[1]
     if not shebang or not shebang:match '^#!.+' then
@@ -48,7 +48,6 @@ end
 
 function M.chmod_exec()
     local filename = vim.fn.expand '%'
-    local is_file = require('utils.files').is_file
 
     if not is_file(filename) or sys.name == 'windows' then
         return
@@ -152,8 +151,7 @@ function M.toggle_comments(first, last)
     local comment = false
     local allempty = true
 
-    local comment_match = '^%s*'
-        .. commentstring:format('.*'):gsub('%-', '%%-'):gsub('/%*', '/%%*'):gsub('%*/', '%%*/')
+    local comment_match = '^%s*' .. commentstring:format('.*'):gsub('%-', '%%-'):gsub('/%*', '/%%*'):gsub('%*/', '%%*/')
 
     for _, line in pairs(lines) do
         if #line > 0 then
@@ -182,8 +180,7 @@ function M.toggle_comments(first, last)
     for i = 1, #lines do
         if comment then
             local tocomment = lines[i]:sub(indent_level, #lines[i])
-            local uncomment = (#lines[i] == 0 and indent_level > 1) and spaces
-                or lines[i]:sub(1, indent_level - 1)
+            local uncomment = (#lines[i] == 0 and indent_level > 1) and spaces or lines[i]:sub(1, indent_level - 1)
             local format = #lines[i] == 0 and tocomment or ' ' .. tocomment
             lines[i] = uncomment .. commentstring:format(format)
         else
@@ -222,7 +219,6 @@ end
 
 function M.get_ssh_hosts()
     local ssh_config = sys.home .. '/.ssh/config'
-    local is_file = require('utils.files').is_file
 
     if is_file(ssh_config) then
         local host = ''
@@ -363,7 +359,9 @@ function M.async_execute(opts)
     end
 
     script:start()
-    script:progress()
+    if opts.progress then
+        script:progress()
+    end
 end
 
 function M.open(uri)
@@ -411,6 +409,59 @@ function M.foldtext()
         ('-- %s lines folded --'):format(vim.v.foldend - vim.v.foldstart),
         vim.trim(vim.fn.getline(vim.v.foldend))
     )
+end
+
+function M.set_compiler(compiler, opts)
+    vim.validate {
+        compiler = { compiler, 'string' },
+        opts = { opts, 'table', true },
+    }
+
+    opts = opts or {}
+
+    local language = opts.language or vim.opt_local.filetype:get()
+    local option = opts.option or 'makeprg'
+
+    local cmd = { compiler }
+    local compiler_data = RELOAD('filetypes.' .. language)[option][compiler] or {}
+
+    local has_config = false
+    if opts.configs then
+        for _, config in ipairs(opts.configs) do
+            if is_file(config) then
+                has_config = true
+                break
+            end
+        end
+    end
+
+    -- TODO: Add option to pass config path as compiler arg
+    if not has_config and compiler_data then
+        vim.list_extend(cmd, compiler_data)
+    end
+
+    table.insert(cmd, '%')
+
+    local has_cmd = nvim.has.command 'CompilerSet'
+
+    if not has_cmd then
+        nvim.command.set('CompilerSet', function(command)
+            vim.cmd(('setlocal %s'):format(command.args))
+        end, { nargs = 1, buffer = true })
+    end
+
+    nvim.ex.CompilerSet('makeprg=' .. table.concat(replace_indent(cmd), '\\ '))
+
+    local efm = compiler_data.efm
+    if efm then
+        nvim.ex.CompilerSet('errorformat=' .. table.concat(efm, ','):gsub(' ', '\\ '))
+    end
+
+    vim.b.current_compiler = compiler
+
+    if not has_cmd then
+        nvim.command.del('CompilerSet', true)
+    end
 end
 
 return M

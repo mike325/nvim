@@ -36,7 +36,10 @@ local M = {
         black = {
             '-l',
             '120',
-            efm = '%trror: cannot format %f: Cannot parse %l:c: %m,%trror: cannot format %f: %m',
+            efm = {
+                '%trror: cannot format %f: Cannot parse %l:c: %m',
+                '%trror: cannot format %f: %m',
+            },
         },
         autopep8 = {
             '-i',
@@ -50,8 +53,23 @@ local M = {
             '--style',
             'pep8',
         },
+        isort = {},
     },
-    makeprg = {},
+    makeprg = {
+        mypy = {
+            efm = {
+                '%f:%l: %trror: %m',
+                '%f:%l: %tarning: %m',
+                '%f:%l: %tote: %m',
+                '%f: %trror: %m',
+                '%f: %tarning: %m',
+                '%f: %tote: %m',
+                '%f:%l:%c: %t%n %m',
+                '%f:%l:%c:%t: %m',
+                '%f:%l:%c: %m',
+            },
+        },
+    },
 }
 
 M.makeprg.flake8 = { '--max-line-length=120', '--ignore=' .. table.concat(M.pyignores, ',') }
@@ -114,9 +132,7 @@ function M.setup()
 
         if not vim.b.python_path then
             -- local pypath = {}
-            local pyprog = vim.g.python3_host_prog
-                or vim.g.python_host_prog
-                or (executable 'python3' and 'python3')
+            local pyprog = vim.g.python3_host_prog or vim.g.python_host_prog or (executable 'python3' and 'python3')
 
             local get_path = RELOAD('jobs'):new {
                 cmd = pyprog,

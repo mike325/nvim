@@ -410,7 +410,7 @@ vim.keymap.set('n', 'gss', function()
     require('utils.functions').send_grep_job(vim.fn.expand '<cword>')
 end, noremap_silent)
 
-nvim.command.set('Lint', function(opts)
+nvim.command.set('Make', function(opts)
     local args = opts.fargs
 
     local ok, val = pcall(nvim.buf.get_option, 0, 'makeprg')
@@ -421,20 +421,16 @@ nvim.command.set('Lint', function(opts)
     end
 
     cmd = cmd .. table.concat(args, ' ')
-    local lint = RELOAD('jobs'):new {
+    RELOAD('utils.functions').async_execute {
         cmd = cmd,
-        qf = {
-            on_fail = {
-                jump = true,
-                open = true,
-            },
-            loc = true,
-            win = nvim.get_current_win(),
-            context = 'AsyncLint',
-            title = 'AsyncLint',
-        },
+        progress = false,
+        auto_close = true,
+        context = 'AsyncLint',
+        title = 'AsyncLint',
+        callback_on_success = function()
+            nvim.ex.checktime()
+        end,
     }
-    lint:start()
 end, { nargs = '*' })
 
 if executable 'cscope' then
@@ -640,11 +636,7 @@ nvim.command.set('Scratch', function(opts)
     end
 
     if not scratch_win then
-        scratch_win = nvim.open_win(
-            buf,
-            true,
-            { relative = 'editor', width = 1, height = 1, row = 1, col = 1 }
-        )
+        scratch_win = nvim.open_win(buf, true, { relative = 'editor', width = 1, height = 1, row = 1, col = 1 })
     end
 
     nvim.set_current_win(scratch_win)
@@ -818,11 +810,7 @@ nvim.command.set('DiffFiles', function(args)
 
     for _, f in ipairs(files) do
         if not is_file(f) then
-            vim.notify(
-                f .. ' is not a regular file or the file does not exits',
-                'ERROR',
-                { title = 'DiffFiles' }
-            )
+            vim.notify(f .. ' is not a regular file or the file does not exits', 'ERROR', { title = 'DiffFiles' })
             return false
         end
     end
@@ -855,5 +843,63 @@ local function toggle_diagnostics()
     end
 end
 
+local function custom_compiler(args)
+    local files = RELOAD 'utils.files'
+
+    local path = sys.base .. '/after/compiler/'
+    local compiler = args.args
+    local compilers = vim.tbl_map(files.basename, files.get_files(path))
+    if vim.tbl_contains(compilers, compiler .. '.lua') then
+        nvim.command.set('CompilerSet', function(command)
+            vim.cmd(('setlocal %s'):format(command.args))
+        end, { nargs = 1, buffer = true })
+
+        nvim.ex.luafile(path .. compiler .. '.lua')
+
+        nvim.command.del('CompilerSet', true)
+    else
+        local language = vim.opt_local.filetype:get()
+        local has_compiler, compiler_data = pcall(RELOAD, 'filetypes.' .. language)
+
+        if has_compiler and (compiler_data.makeprg or compiler_data.formatprg) then
+            local set_compiler = RELOAD('utils.functions').set_compiler
+
+            if compiler_data.makeprg[compiler] then
+                set_compiler(compiler)
+            elseif compiler_data.formatprg[compiler] then
+                set_compiler(compiler, { option = 'formatprg' })
+            else
+                has_compiler = not has_compiler
+            end
+        end
+
+        if not has_compiler then
+            nvim.ex.compiler(compiler)
+        end
+    end
+end
+
 vim.keymap.set('n', '<leader>D', toggle_diagnostics, noremap)
 nvim.command.set('ToggleDiagnostics', toggle_diagnostics, {})
+
+-- NOTE: I should not need to create this function, but I couldn't find a way to override
+--       internal runtime compilers
+nvim.command.set('Compiler', custom_compiler, { nargs = 1, complete = 'compiler' })
+-- nvim.command.set('CompilerExecute', function(args)
+--     local makeprg = vim.opt_local.makeprg:get()
+--     local efm = vim.opt_local.errorformat:get()
+--
+--     custom_compiler(args)
+--
+--     local cmd = vim.opt_local.makeprg:get()
+--
+--     async_execute {
+--         cmd = cmd,
+--         progress = false,
+--         context = 'Compiler',
+--         title = 'Compiler',
+--     }
+--
+--     vim.opt_local.makeprg = makeprg
+--     vim.opt_local.errorformat = efm
+-- end, {nargs = 1, complete = 'compiler'})

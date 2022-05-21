@@ -333,20 +333,16 @@ function M.format(ft)
     local clients = vim.lsp.buf_get_clients(0)
 
     for _, client in pairs(clients) do
-        if whole_file and client.resolved_capabilities.document_formatting then
+        if whole_file and client.server_capabilities.documentFormattingProvider then
             if nvim.has { 0, 8 } then
                 vim.lsp.buf.format { async = true }
             else
                 vim.lsp.buf.formatting()
             end
             return 0
-        elseif client.resolved_capabilities.document_range_formatting then
+        elseif client.server_capabilities.documentRangeFormattingProvider then
             -- TODO: Check if this actually works
-            vim.lsp.buf.range_formatting(
-                nil,
-                { first, 0 },
-                { last, #nvim.buf.get_lines(0, last, last + 1, false)[1] }
-            )
+            vim.lsp.buf.range_formatting(nil, { first, 0 }, { last, #nvim.buf.get_lines(0, last, last + 1, false)[1] })
             return 0
         end
     end

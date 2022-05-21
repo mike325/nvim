@@ -179,11 +179,11 @@ local nvim = {
         end,
     }),
     has = setmetatable({
-        cmd = function(cmd)
-            return api.nvim_call_function('exists', { ':' .. cmd }) == 2
-        end,
         command = function(command)
-            return api.nvim_call_function('exists', { '##' .. command }) == 2
+            return api.nvim_call_function('exists', { ':' .. command }) == 2
+        end,
+        event = function(event)
+            return api.nvim_call_function('exists', { '##' .. event }) == 2
         end,
         augroup = function(augroup)
             return api.nvim_call_function('exists', { '#' .. augroup }) == 1

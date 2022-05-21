@@ -1,5 +1,5 @@
 -- local sys = require 'sys'
-local nvim = require 'neovim'
+-- local nvim = require 'neovim'
 
 local load_module = require('utils.helpers').load_module
 local get_icon = require('utils.helpers').get_icon
@@ -128,8 +128,7 @@ lualine.setup {
         -- section_separators = { left = '', right = '' },
         -- disabled_filetypes = {},
         -- always_divide_middle = true,
-        -- globalstatus = false,
-        globalstatus = nvim.has { 0, 7 }, -- Test how this works, not having the bufname in the window may be confusing
+        globalstatus = false, -- nvim.has { 0, 7 },
     },
     sections = {
         lualine_a = {

@@ -19,7 +19,11 @@ local dap = load_module 'dap'
 local M = {
     makeprg = {
         ['clang-tidy'] = {
-            efm = '%E%f:%l:%c: fatal error: %m,%E%f:%l:%c: error: %m,%W%f:%l:%c: warning: %m',
+            efm = {
+                '%E%f:%l:%c: fatal error: %m',
+                '%E%f:%l:%c: error: %m',
+                '%W%f:%l:%c: warning: %m',
+            },
         },
         ['clang++'] = {
             '-std=c++20',

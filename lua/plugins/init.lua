@@ -83,6 +83,7 @@ packer.startup(function()
         event = { 'CursorHold', 'CursorMoved', 'InsertEnter' },
     }
 
+    use { 'tpope/vim-fugitive', event = { 'CmdlineEnter', 'CursorHold' } }
     use { 'tpope/vim-repeat', event = 'VimEnter' }
 
     use {
@@ -99,7 +100,48 @@ packer.startup(function()
         end,
     }
 
-    use { 'tpope/vim-fugitive', event = { 'CmdlineEnter', 'CursorHold' } }
+    use {
+        'tpope/vim-projectionist',
+        event = { 'CmdlineEnter', 'CursorHold' },
+        config = function()
+            local set_autocmd = require('neovim.autocmds').set_autocmd
+            -- TODO: Make this more "project" tailored, set git and language specific
+            --       projections depending of what's in the cwd
+            -- stylua: ignore
+            vim.g.common_projections = {
+                ['.projections.json']          = { type = 'Projections' },
+                ['.gitignore']                 = { type = 'Gitignore' },
+                ['.git/hooks/*']               = { type = 'GitHooks' },
+                ['.git/config']                = { type = 'Git' },
+                ['.git/info/*']                = { type = 'Git' },
+                ['.github/workflows/main.yml'] = { type = 'Github' },
+                ['.github/workflows/*.yml']    = { type = 'Github' },
+                ['.travis.yml']                = { type = 'Travis' },
+                ['.pre-commit-config.yaml']    = { type = 'PreCommit' },
+                ['.ycm_extra_conf.py']         = { type = 'YCM' },
+                ['pyproject.toml']             = { type = 'PyProject' },
+                ['.flake8']                    = { type = 'Flake' },
+                ['.stylua.toml']               = { type = 'Stylua' },
+                ['.project.vim']               = { type = 'Project' },
+                ['.clang-format']              = { type = 'Clang' },
+                ['.clang-*']                   = { type = 'Clang' },
+                ['compile_flags.txt']          = { type = 'CompileFlags' },
+                ['compile_commands.json']      = { type = 'CompileDB' },
+                ['UltiSnips/*.snippets']       = { type = 'UltiSnips' },
+                ['README.md']                  = { type = 'Readme' },
+                ['LICENSE']                    = { type = 'License' },
+                ['Makefile']                   = { type = 'Makefile' },
+                ['CMakeLists.txt']             = { type = 'CMake' },
+                ['*.cmake']                    = { type = 'CMake' },
+            }
+            set_autocmd {
+                event = 'User',
+                pattern = 'ProjectionistDetect',
+                cmd = 'call projectionist#append(getcwd(), g:common_projections)',
+                group = 'CommonProjections',
+            }
+        end,
+    }
 
     use {
         'kana/vim-textobj-user',
@@ -249,12 +291,7 @@ packer.startup(function()
         end,
         config = function()
             if vim.g.started_by_firenvim ~= nil then
-                vim.api.nvim_set_keymap(
-                    'n',
-                    '<C-z>',
-                    '<cmd>call firenvim#hide_frame()<CR>',
-                    { noremap = true }
-                )
+                vim.api.nvim_set_keymap('n', '<C-z>', '<cmd>call firenvim#hide_frame()<CR>', { noremap = true })
             end
         end,
         run = function()
@@ -631,49 +668,6 @@ packer.startup(function()
     --     end,
     --     config = function()
     --         vim.api.nvim_set_keymap('n', '=m', '<Plug>(git-messenger)', { silent = true, nowait = true })
-    --     end,
-    -- }
-
-    -- use {
-    --     'tpope/vim-projectionist',
-    --     event = { 'CmdlineEnter', 'CursorHold' },
-    --     config = function()
-    --         local set_autocmd = require('neovim.autocmds').set_autocmd
-    --         -- TODO: Make this more "project" tailored, set git and language specific
-    --         --       projections depending of what's in the cwd
-    --         -- stylua: ignore
-    --         vim.g.common_projections = {
-    --             ['.projections.json']          = { type = 'Projections' },
-    --             ['.gitignore']                 = { type = 'Gitignore' },
-    --             ['.git/hooks/*']               = { type = 'GitHooks' },
-    --             ['.git/config']                = { type = 'Git' },
-    --             ['.git/info/*']                = { type = 'Git' },
-    --             ['.github/workflows/main.yml'] = { type = 'Github' },
-    --             ['.github/workflows/*.yml']    = { type = 'Github' },
-    --             ['.travis.yml']                = { type = 'Travis' },
-    --             ['.pre-commit-config.yaml']    = { type = 'PreCommit' },
-    --             ['.ycm_extra_conf.py']         = { type = 'YCM' },
-    --             ['pyproject.toml']             = { type = 'PyProject' },
-    --             ['.flake8']                    = { type = 'Flake' },
-    --             ['.stylua.toml']               = { type = 'Stylua' },
-    --             ['.project.vim']               = { type = 'Project' },
-    --             ['.clang-format']              = { type = 'Clang' },
-    --             ['.clang-*']                   = { type = 'Clang' },
-    --             ['compile_flags.txt']          = { type = 'CompileFlags' },
-    --             ['compile_commands.json']      = { type = 'CompileDB' },
-    --             ['UltiSnips/*.snippets']       = { type = 'UltiSnips' },
-    --             ['README.md']                  = { type = 'Readme' },
-    --             ['LICENSE']                    = { type = 'License' },
-    --             ['Makefile']                   = { type = 'Makefile' },
-    --             ['CMakeLists.txt']             = { type = 'CMake' },
-    --             ['*.cmake']                    = { type = 'CMake' },
-    --         }
-    --         set_autocmd {
-    --             event = 'User',
-    --             pattern = 'ProjectionistDetect',
-    --             cmd = 'call projectionist#append(getcwd(), g:common_projections)',
-    --             group = 'CommonProjections',
-    --         }
     --     end,
     -- }
 
