@@ -1,4 +1,5 @@
 local nvim = require 'neovim'
+local executable = require('utils.files').executable
 
 if require('sys').name ~= 'windows' then
     nvim.autocmd.MakeExecutable = {
@@ -140,3 +141,39 @@ nvim.autocmd.Indent = {
         require('utils.buffers').detect_indent()
     end,
 }
+
+local function autoformat(cmd, args)
+    if vim.b.disable_autoformat then
+        return
+    end
+
+    local formatter = require('jobs'):new {
+        cmd = cmd,
+        args = args,
+        silent = true,
+    }
+    formatter:callback_on_success(function()
+        nvim.ex.edit()
+    end)
+    formatter:start()
+end
+
+if executable 'goimports' then
+    nvim.autocmd.add('BufWritePost', {
+        group = 'AutoFormat',
+        pattern = '*.go',
+        callback = function(args)
+            autoformat('goimports', { '-w', args.file })
+        end,
+    })
+end
+
+if executable 'isort' then
+    nvim.autocmd.add('BufWritePost', {
+        group = 'AutoFormat',
+        pattern = '*.{py,ipy}',
+        callback = function(args)
+            autoformat('isort', { '--profile=black', args.file }) -- '-l', '120', '-tc'
+        end,
+    })
+end

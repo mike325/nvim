@@ -313,6 +313,7 @@ function M.async_execute(opts)
     local script = require('jobs'):new {
         cmd = cmd,
         args = args,
+        silent = opts.silent,
         progress = opts.progress,
         verify_exec = opts.verify_exec,
         opts = {

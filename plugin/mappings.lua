@@ -903,3 +903,8 @@ nvim.command.set('Compiler', custom_compiler, { nargs = 1, complete = 'compiler'
 --     vim.opt_local.makeprg = makeprg
 --     vim.opt_local.errorformat = efm
 -- end, {nargs = 1, complete = 'compiler'})
+
+nvim.command.set('AutoFormat', function()
+    vim.b.disable_autoformat = not vim.b.disable_autoformat
+    print('Autoformat', vim.b.disable_autoformat and 'disabled' or 'enabled')
+end, {})

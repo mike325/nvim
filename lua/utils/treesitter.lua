@@ -77,9 +77,35 @@ local function is_in_range(linenr, range)
     return false
 end
 
+function M.get_node_at_cursor()
+    local buf = vim.api.nvim_get_current_buf()
+    local ok, parser = pcall(vim.treesitter.get_parser, buf)
+    if not ok then
+        return nil
+    end
+
+    local cursor = vim.api.nvim_win_get_cursor(0)
+    -- local line = nvim.buf.get_lines(0, cursor[1] - 1, cursor[1], false)[1]
+    local range = { cursor[1] - 1, cursor[2], cursor[1] - 1, cursor[2] }
+    local langtree = parser:language_for_range(range)
+    -- local ts_lang = langtree:lang()
+
+    for _, tree in ipairs(langtree:trees()) do
+        local root = tree:root()
+        if root then
+            local tsnode = root:named_descendant_for_range(unpack(range))
+            if tsnode then
+                return tsnode
+            end
+        end
+    end
+
+    return nil
+end
+
 -- luacheck: ignore 631
 -- Took from: https://github.com/folke/todo-comments.nvim/blob/9983edc5ef38c7a035c17c85f60ee13dbd75dcc8/lua/todo-comments/highlight.lua#L43,#L71
--- Checks if the 3 TS nodes nodes in a range correspond with the target node
+-- Checks if any TS nodes names are in the given range
 -- @param range table: range to look for the node
 -- @param node table: list of nodes to look for
 -- @param buf number: buffer number
@@ -204,7 +230,11 @@ function M.list_nodes(node_type)
     return result
 end
 
-function M.get_current_node(linenr, node_name)
+function M.get_current_node(node_name, linenr)
+    vim.validate {
+        node_name = { node_name, 'string' },
+        linenr = { linenr, 'number', true },
+    }
     local cursor = nvim.win.get_cursor(0)
     linenr = linenr or cursor[1]
 
@@ -220,11 +250,37 @@ function M.get_current_node(linenr, node_name)
 end
 
 function M.get_current_func(linenr)
-    return M.get_current_node(linenr, 'function')
+    return M.get_current_node('function', linenr)
 end
 
 function M.get_current_class(linenr)
-    return M.get_current_node(linenr, 'class')
+    return M.get_current_node('class', linenr)
+end
+
+-- TODO: Make sure we only iterate over the current language/filetype tree
+--       since comments, docstrings and other components may be embedded, this causes that
+--       comments inside functions are reported as false
+function M.is_in_function()
+    local current_node = M.get_node_at_cursor()
+    if not current_node then
+        return false
+    end
+    local node = current_node
+
+    local func_nodes = {
+        function_definition = true,
+        function_declaration = true,
+        method_definition = true,
+        method_declaration = true,
+    }
+
+    while node do
+        if func_nodes[node:type()] then
+            return true
+        end
+        node = node:parent()
+    end
+    return false
 end
 
 function M.has_ts(buf)
