@@ -27,7 +27,7 @@ if nvim.has 'win32' then
     -- vim.opt.shellquote = ''
     -- vim.opt.shellxquote = ''
 
-    vim.opt.shellslash = true
+    vim.opt.shellslash = false
 end
 
 if not vim.keymap then
