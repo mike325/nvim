@@ -377,6 +377,7 @@ packer.startup(function()
             { 'onsails/lspkind-nvim' },
             { 'saadparwaiz1/cmp_luasnip' },
             { 'ray-x/cmp-treesitter' },
+            { 'lukas-reineke/cmp-under-comparator' },
             -- { 'quangnguyen30192/cmp-nvim-ultisnips' },
         },
         config = function()
@@ -490,35 +491,6 @@ packer.startup(function()
     }
 
     use {
-        'ray-x/go.nvim',
-        cond = function()
-            return vim.fn.executable 'go' == 1
-        end,
-        config = function()
-            local gofmt = 'gofmt'
-            local goimport = 'goimport'
-            if vim.fn.executable 'gopls' == 1 then
-                gofmt = 'gopls'
-                goimport = 'gopls'
-            end
-
-            require('go').setup {
-                gofmt = gofmt,
-                goimport = goimport,
-                max_line_len = 120,
-                tag_transform = false,
-                test_dir = '',
-                comment_placeholder = '   ',
-                textobjects = false, -- enable default text jobects through treesittter-text-objects
-                lsp_cfg = false, -- false: use your own lspconfig
-                lsp_gofumpt = false, -- true: set default gofmt in gopls format to gofumpt
-                lsp_on_attach = false, -- use on_attach from go.nvim
-                dap_debug = true,
-            }
-        end,
-    }
-
-    use {
         'mfussenegger/nvim-dap',
         commit = (vim.fn.has 'nvim-0.7' == 0 and '71714020884760332240373d2fec481e757f75f2' or nil),
         -- event = { 'CursorHold', 'CmdlineEnter' },
@@ -590,6 +562,65 @@ packer.startup(function()
         end,
         requires = {
             { 'arkav/lualine-lsp-progress' },
+        },
+    }
+
+    use {
+        'ray-x/go.nvim',
+        cond = function()
+            return vim.fn.executable 'go' == 1
+        end,
+        config = function()
+            local gofmt = 'gofmt'
+            local goimport = 'goimport'
+            if vim.fn.executable 'gopls' == 1 then
+                gofmt = 'gopls'
+                goimport = 'gopls'
+            end
+
+            require('go').setup {
+                gofmt = gofmt,
+                goimport = goimport,
+                max_line_len = 120,
+                tag_transform = false,
+                test_dir = '',
+                comment_placeholder = '   ',
+                textobjects = false, -- enable default text jobects through treesittter-text-objects
+                lsp_cfg = false, -- false: use your own lspconfig
+                lsp_gofumpt = false, -- true: set default gofmt in gopls format to gofumpt
+                lsp_on_attach = false, -- use on_attach from go.nvim
+                dap_debug = true,
+            }
+        end,
+    }
+
+    use {
+        'simrat39/rust-tools.nvim',
+        cond = function()
+            return vim.fn.executable 'rust-analyzer' == 1
+        end,
+        wants = {
+            'nvim-lspconfig',
+            'nvim-dap',
+        },
+        after = {
+            'nvim-lspconfig',
+            'nvim-dap',
+        },
+    }
+
+    use {
+        'p00f/clangd_extensions.nvim',
+        cond = function()
+            return vim.fn.executable 'clangd' == 1
+        end,
+        wants = {
+            'nvim-lspconfig',
+            'nvim-dap',
+        },
+        after = {
+            'nvim-lspconfig',
+            'nvim-dap',
         },
     }
 

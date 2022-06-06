@@ -31,7 +31,7 @@ local servers = {
     kotlin = { { exec = 'kotlin-language-server', config = 'kotlin_language_server' } },
     rust = {
         { exec = 'rust-analyzer', config = 'rust_analyzer' },
-        { exec = 'rls' },
+        -- { exec = 'rls' },
     },
     tex = {
         {

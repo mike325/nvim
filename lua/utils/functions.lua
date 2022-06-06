@@ -82,7 +82,7 @@ function M.send_grep_job(args)
         silent = true,
         opts = {
             cwd = require('utils.files').getcwd(),
-            pty = true, -- ?
+            stdin = 'null',
         },
         qf = {
             on_fail = {

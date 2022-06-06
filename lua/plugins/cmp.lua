@@ -13,6 +13,17 @@ local orgmode = load_module 'orgmode'
 local ultisnips = nvim.plugins.ultisnips
 local lspkind = require 'lspkind'
 
+local custom_comparators = {
+    clangd_comparator = load_module 'clangd_extensions.cmp_scores',
+    underscore = load_module 'cmp-under-comparator',
+}
+
+local comparators = vim.deepcopy(cmp.get_config().sorting.comparators)
+
+for _, comparator in ipairs(custom_comparators) do
+    table.insert(comparators, 4, comparator)
+end
+
 local function has_treesitter()
     if nvim.has 'win32' or nvim.has 'win64' then
         return executable 'gcc'
@@ -161,6 +172,9 @@ cmp.setup {
     experimental = {
         native_menu = false,
         ghost_text = true,
+    },
+    sorting = {
+        comparators = comparators,
     },
 }
 

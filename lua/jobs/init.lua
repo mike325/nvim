@@ -292,10 +292,6 @@ function Job:start()
     end
 
     local function general_on_data(data, name)
-        if type(data) == type '' then
-            data = vim.split(data, '\n')
-        end
-
         vim.list_extend(self['_' .. (name or 'stdout')], data)
         vim.list_extend(self._output, data)
 
@@ -376,7 +372,20 @@ function Job:start()
         end
     end
 
+    local function sanitize(data)
+        if type(data) == type '' then
+            data = vim.split(data, '[\r]?\n')
+        end
+
+        data = vim.tbl_map(function(k)
+            return vim.api.nvim_replace_termcodes(k, true, false, false)
+        end, data)
+
+        return data
+    end
+
     local function on_stdout_wrapper(_, data, name)
+        data = sanitize(data)
         general_on_data(data, name)
         if _user_on_stdout then
             _user_on_stdout(self, data)
@@ -385,6 +394,7 @@ function Job:start()
     end
 
     local function on_stderr_wrapper(_, data, name)
+        data = sanitize(data)
         general_on_data(data, name)
         if _user_on_stderr then
             _user_on_stderr(self, data)

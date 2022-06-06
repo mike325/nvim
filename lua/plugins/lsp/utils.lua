@@ -11,6 +11,17 @@ local langservers = require 'plugins.lsp.servers'
 local lsp = load_module 'lspconfig'
 local cmp = load_module 'cmp'
 
+local preload = {
+    clangd = {
+        func = load_module 'clangd_extensions',
+        args = {},
+    },
+    ['rust-analyzer'] = {
+        func = load_module 'rust-tools',
+        args = {},
+    },
+}
+
 local M = {}
 
 local function check_lsp(servers)
@@ -92,7 +103,11 @@ function M.setup(ft)
         if cmp then
             init.capability = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
         end
-        lsp[config].setup(init)
+        if preload[config] and preload[config].setup then
+            preload[config].setup(preload[config].args)
+        else
+            lsp[config].setup(init)
+        end
         return true
     end
     return false

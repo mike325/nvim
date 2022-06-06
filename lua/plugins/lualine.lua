@@ -1,13 +1,11 @@
 -- local sys = require 'sys'
--- local nvim = require 'neovim'
-
 local load_module = require('utils.helpers').load_module
 local get_icon = require('utils.helpers').get_icon
 
 -- local is_windows = sys.name == 'windows'
 
 local lualine = load_module 'lualine'
-if not lualine then
+if not lualine or vim.g.started_by_firenvim then
     return false
 end
 
@@ -128,7 +126,7 @@ lualine.setup {
         -- section_separators = { left = '', right = '' },
         -- disabled_filetypes = {},
         -- always_divide_middle = true,
-        globalstatus = false, -- nvim.has { 0, 7 },
+        globalstatus = require('neovim').has { 0, 7 }, -- false
     },
     sections = {
         lualine_a = {
