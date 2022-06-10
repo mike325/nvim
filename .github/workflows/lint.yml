@@ -10,6 +10,7 @@ jobs:
       - uses: actions/setup-python@v2
       - name: OS Info
         run: |
+          sudo apt-get update
           sudo apt-get install wget
           mkdir -p ~/.local/bin/
           wget -O ~/.local/bin/screenfetch https://git.io/vaHfR
@@ -29,9 +30,12 @@ jobs:
             golang
 
           sudo luarocks install luacheck
+          go install mvdan.cc/sh/v3/cmd/shfmt@latest
       - name: Fetch install script
         run: |
           wget https://raw.githubusercontent.com/Mike325/dotfiles/master/install.sh
           chmod +x ./install.sh
           ./install.sh --portables --verbose --force
+          # FIX: Temporally fix as currently the latest tag does not have a release
+          rm ~/.local/bin/shfmt
       - uses: pre-commit/action@v2.0.3

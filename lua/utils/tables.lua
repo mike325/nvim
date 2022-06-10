@@ -13,39 +13,79 @@ function M.has_attrs(tbl, attrs)
     }
 
     if type(attrs) ~= type(tbl) then
-        if tbl[attrs] ~= nil then
-            return true
-        end
         for _, val in pairs(tbl) do
             if val == attrs then
                 return true
             end
         end
     else
-        local has_attrs = true
+        local has_attr = true
         for _, attr in pairs(attrs) do
-            has_attrs = M.has_attrs(tbl, attr)
-            if not has_attrs then
+            has_attr = M.has_attrs(tbl, attr)
+            if not has_attr then
                 break
             end
         end
-        if has_attrs then
+        if has_attr then
             return true
         end
     end
     return false
 end
 
+function M.uniq_list(lst)
+    vim.validate { list = { lst, 'table' } }
+    assert(vim.tbl_islist(lst), debug.traceback 'Uniq only works with array-like tables')
+
+    local tmp = {}
+    for _, node in ipairs(lst) do
+        if not vim.tbl_contains(tmp, node) then
+            table.insert(tmp, node)
+        end
+    end
+    return tmp
+end
+
+function M.uniq_unorder(lst)
+    vim.validate { list = { lst, 'table' } }
+    assert(vim.tbl_islist(lst), debug.traceback 'Uniq only works with array-like tables')
+
+    local uniq_items = {}
+    for _, node in ipairs(lst) do
+        uniq_items[node] = true
+    end
+
+    return vim.tbl_keys(uniq_items)
+end
+
 function M.merge_uniq_list(dest, src)
     vim.validate { source = { src, 'table' }, destination = { dest, 'table' } }
     assert(vim.tbl_islist(dest) and vim.tbl_islist(src), debug.traceback 'Source and dest must be arrays')
 
-    for _, node in pairs(src) do
-        if not M.has_attrs(dest, node) then
+    dest = M.uniq_list(dest)
+    for _, node in ipairs(src) do
+        if not vim.tbl_contains(dest, node) then
             table.insert(dest, node)
         end
     end
     return dest
+end
+
+function M.merge_uniq_unorder(dest, src)
+    vim.validate { source = { src, 'table' }, destination = { dest, 'table' } }
+    assert(vim.tbl_islist(dest) and vim.tbl_islist(src), debug.traceback 'Source and dest must be arrays')
+
+    local uniq_items = {}
+
+    for _, node in ipairs(src) do
+        uniq_items[node] = true
+    end
+
+    for _, node in ipairs(dest) do
+        uniq_items[node] = true
+    end
+
+    return vim.tbl_keys(uniq_items)
 end
 
 function M.clear_lst(lst)

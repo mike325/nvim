@@ -74,34 +74,24 @@ describe('has_attrs', function()
     end)
 end)
 
-describe('merge_uniq_list', function()
+describe('Uniq lists', function()
     local merge_uniq_list = require('utils.tables').merge_uniq_list
+    local uniq_list = require('utils.tables').uniq_list
+
+    local merge_uniq_unorder = require('utils.tables').merge_uniq_unorder
+    local uniq_unorder = require('utils.tables').uniq_unorder
 
     local function check_lists(src, dest, merge)
         for _, src_node in ipairs(src) do
-            local has_node = false
-            for _, merge_node in ipairs(merge) do
-                if src_node == merge_node then
-                    has_node = true
-                    break
-                end
-            end
-            assert.is_true(has_node)
+            assert.is_true(vim.tbl_contains(merge, src_node))
         end
 
         for _, dest_node in ipairs(dest) do
-            local has_node = false
-            for _, merge_node in ipairs(merge) do
-                if dest_node == merge_node then
-                    has_node = true
-                    break
-                end
-            end
-            assert.is_true(has_node)
+            assert.is_true(vim.tbl_contains(merge, dest_node))
         end
     end
 
-    it('random lists', function()
+    it('merge random order', function()
         for _ = 1, 10 do
             local lst_src = random_list(math.random(1, 10))
             local lst_dest = random_list(math.random(5, 20))
@@ -109,10 +99,11 @@ describe('merge_uniq_list', function()
 
             check_lists(lst_src, lst_dest, merged_lst)
             assert.equals(#merged_lst, (#lst_src + #lst_dest))
+            assert.same(vim.fn.sort(merged_lst), vim.fn.sort(merge_uniq_unorder(vim.deepcopy(lst_dest), lst_src)))
         end
     end)
 
-    it('overlap lists', function()
+    it('merge overlap order', function()
         for _ = 1, 10 do
             local lst_src = random_list(math.random(1, 10))
             local lst_dest = random_list(math.random(5, 20))
@@ -122,6 +113,59 @@ describe('merge_uniq_list', function()
 
             check_lists(lst_src, lst_dest, merged_lst)
             assert.equals(#merged_lst, (#lst_src + #lst_dest - end_idx))
+            assert.same(vim.fn.sort(merged_lst), vim.fn.sort(merge_uniq_unorder(vim.deepcopy(lst_dest), lst_src)))
+        end
+    end)
+
+    it('order', function()
+        for _ = 1, 10 do
+            local lst_src = random_list(math.random(1, 10))
+            local end_idx = math.random(2, #lst_src)
+            local lst_dest = vim.list_extend(vim.deepcopy(lst_src), lst_src, 1, end_idx)
+            local uniq = uniq_list(lst_dest)
+
+            for _, src_node in ipairs(lst_src) do
+                assert.is_true(vim.tbl_contains(uniq, src_node))
+            end
+            assert.same(uniq, lst_src)
+        end
+    end)
+
+    it('merge random unorder', function()
+        for _ = 1, 10 do
+            local lst_src = random_list(math.random(1, 10))
+            local lst_dest = random_list(math.random(5, 20))
+            local merged_lst = merge_uniq_unorder(vim.deepcopy(lst_dest), lst_src)
+
+            check_lists(lst_src, lst_dest, merged_lst)
+            assert.same(vim.fn.sort(merged_lst), vim.fn.sort(merge_uniq_list(vim.deepcopy(lst_dest), lst_src)))
+        end
+    end)
+
+    it('merge overlap unorder', function()
+        for _ = 1, 10 do
+            local lst_src = random_list(math.random(1, 10))
+            local lst_dest = random_list(math.random(5, 20))
+            local end_idx = math.random(2, #lst_src)
+            vim.list_extend(lst_dest, lst_src, 1, end_idx)
+            local merged_lst = merge_uniq_unorder(vim.deepcopy(lst_dest), lst_src)
+
+            check_lists(lst_src, lst_dest, merged_lst)
+            assert.same(vim.fn.sort(merged_lst), vim.fn.sort(merge_uniq_list(vim.deepcopy(lst_dest), lst_src)))
+        end
+    end)
+
+    it('unorder', function()
+        for _ = 1, 10 do
+            local lst_src = random_list(math.random(1, 10))
+            local end_idx = math.random(2, #lst_src)
+            local lst_dest = vim.list_extend(vim.deepcopy(lst_src), lst_src, 1, end_idx)
+            local uniq = uniq_unorder(lst_dest)
+
+            for _, src_node in ipairs(lst_src) do
+                assert.is_true(vim.tbl_contains(uniq, src_node))
+            end
+            assert.same(vim.fn.sort(uniq), vim.fn.sort(lst_src))
         end
     end)
 end)

@@ -39,9 +39,10 @@ jobs:
         shell: bash
         run: |
           ./install.sh --verbose --neovim --python=3 --portables
-      - name: Test nightly Neovim
+      - name: Test stable neovim
         shell: powershell
         run: |
-          $env:path = "$env:USERPROFILE\.local\bin;$env:PATH"
-          $env:path = "C:\tools\neovim\Neovim\bin;$env:PATH"
+          $env:PATH = "$env:USERPROFILE\.local\bin;$env:PATH"
+          $env:PATH = "C:\tools\neovim\Neovim\bin;$env:PATH"
+          $env:PATH = "C:\tools\neovim\nvim-win64\bin;$env:PATH"
           ./tests/test.ps1
