@@ -19,6 +19,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get install -y \
+            bison              \
             curl               \
             git                \
             shellcheck         \
@@ -30,12 +31,17 @@ jobs:
             golang
 
           sudo luarocks install luacheck
+          # FIX: Temporally fix as currently the latest tag does not have a release
+          rm ~/.local/bin/shfmt
+          bash < <(curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer)
+          source /home/mike/.gvm/scripts/gvm
+          gvm install go1.18.3 -B
+          gvm use go1.18.3 --default
           go install mvdan.cc/sh/v3/cmd/shfmt@latest
+
       - name: Fetch install script
         run: |
           wget https://raw.githubusercontent.com/Mike325/dotfiles/master/install.sh
           chmod +x ./install.sh
-          ./install.sh --portables --verbose --force
-          # FIX: Temporally fix as currently the latest tag does not have a release
-          rm ~/.local/bin/shfmt
+          ./install.sh --portables --verbose
       - uses: pre-commit/action@v2.0.3

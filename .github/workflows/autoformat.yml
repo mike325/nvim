@@ -11,6 +11,7 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y \
+          bison              \
           curl               \
           git                \
           shellcheck         \
@@ -27,6 +28,10 @@ jobs:
 
         # FIX: Temporally fix as currently the latest tag does not have a release
         rm ~/.local/bin/shfmt
+        bash < <(curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer)
+        source /home/mike/.gvm/scripts/gvm
+        gvm install go1.18.3 -B
+        gvm use go1.18.3 --default
         go install mvdan.cc/sh/v3/cmd/shfmt@latest
 
     - name: Stylua
