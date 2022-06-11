@@ -27,7 +27,7 @@ jobs:
         /tmp/install.sh --nolog --portables --verbose --force
 
         # FIX: Temporally fix as currently the latest tag does not have a release
-        rm ~/.local/bin/shfmt
+        rm -f ~/.local/bin/shfmt
         bash < <(curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer)
         source /home/mike/.gvm/scripts/gvm
         gvm install go1.18.3 -B
