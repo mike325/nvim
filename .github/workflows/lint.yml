@@ -34,7 +34,7 @@ jobs:
           # FIX: Temporally fix as currently the latest tag does not have a release
           rm -f ~/.local/bin/shfmt
           bash < <(curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer)
-          source /home/mike/.gvm/scripts/gvm
+          source "$HOME/.gvm/scripts/gvm"
           gvm install go1.18.3 -B
           gvm use go1.18.3 --default
           go install mvdan.cc/sh/v3/cmd/shfmt@latest
