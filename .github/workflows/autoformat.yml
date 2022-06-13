@@ -39,6 +39,7 @@ jobs:
         ~/.local/bin/stylua -s .
     - name: Shfmt
       run: |
+        source "$HOME/.gvm/scripts/gvm"
         shfmt -i 4 -s -ci -kp -w .
     - uses: EndBug/add-and-commit@v4
       with:
