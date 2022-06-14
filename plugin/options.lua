@@ -38,10 +38,38 @@ vim.g.tex_flavor = 'latex'
 
 vim.g.terminal_scrollback_buffer_size = 100000
 
+-- TODO: Winbar should hold current buffer information while the statusline manage repository/workspace stuff
+-- winbar info ideas
+--  file path
+--  local git changes (add/delete/modified lines)
+--  Filetype?
+--  Readonly
+--  unsaved changed
+--  Modifiable
+--  Buffer diagnostics
+--
+-- statusline info ideas
+--  Mode
+--  Spell
+--  PASTE
+--  Repo info: changed/untracked/staged files, stashes, current branch, pending push/pull
+--  Repo diagnostics
+--  Repo passed/failed tests
+--  Local server status (django?)
+--  Build/Compilation status
+--  LSP status
+--
+-- Stuff that is buffer/window local but may go in the statusline since winbar maybe too small for this
+--  File encoding
+--  Cursor position
+--  Line ending
+--  Filetype?
+-- Cursor context (TS or LSP)?
 if vim.g.started_by_firenvim then
     vim.opt.laststatus = 0
-elseif nvim.has { 0, 7 } then
+elseif nvim.has.option 'winbar' then
     vim.opt.laststatus = 3
+    vim.opt.winbar = '%=%m %f'
 else
     vim.opt.laststatus = 2
 end

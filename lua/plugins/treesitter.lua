@@ -208,6 +208,11 @@ treesitter.setup {
     },
 }
 
+local context = load_module 'treesitter-context'
+if context then
+    context.setup {}
+end
+
 local fts = {}
 for lang, opts in pairs(parsers.list) do
     if parsers.has_parser(lang) then

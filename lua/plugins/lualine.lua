@@ -1,4 +1,4 @@
--- local sys = require 'sys'
+local sys = require 'sys'
 local load_module = require('utils.helpers').load_module
 local get_icon = require('utils.helpers').get_icon
 
@@ -8,6 +8,8 @@ local lualine = load_module 'lualine'
 if not lualine or vim.g.started_by_firenvim then
     return false
 end
+
+local getcwd = require('utils.files').getcwd
 
 local has_gps, gps = pcall(require, 'nvim-gps')
 
@@ -67,7 +69,7 @@ local function filename()
     elseif bufname == '' then
         name = '[No Name]'
     else
-        local cwd = require('utils.files').getcwd():gsub('%.', '%%.'):gsub('%-', '%%-')
+        local cwd = getcwd():gsub('%.', '%%.'):gsub('%-', '%%-')
         local separator = require('utils.files').separator()
         -- TODO: Cut this to respect the size
         name = vim.fn.bufname(buf)
@@ -90,6 +92,11 @@ local function trailspace()
     return space ~= 0 and 'TW:' .. space or ''
 end
 
+local function project_root()
+    local cwd = getcwd():gsub('\\', '/')
+    return cwd:gsub(sys.home, '~')
+end
+
 -- TODO: Missing secctions I would like to add
 -- Improve tab support to make it behave more like "airline"
 -- Mixed indent (spaces with tabs)
@@ -101,16 +108,20 @@ local tabline = {}
 if not vim.g.started_by_firenvim then
     tabline = {
         lualine_a = {
+            project_root,
+        },
+        lualine_b = {
             {
                 'tabs',
                 mode = 0,
             },
         },
-        lualine_b = { 'buffers' },
-        -- lualine_b = {},
+        lualine_c = {
+            'buffers',
+        },
         -- lualine_x = {},
-        -- lualine_y = {},
-        -- lualine_z = {'tabs'}
+        lualine_y = {},
+        lualine_z = {},
     }
 end
 
@@ -126,7 +137,7 @@ lualine.setup {
         -- section_separators = { left = '', right = '' },
         -- disabled_filetypes = {},
         -- always_divide_middle = true,
-        globalstatus = require('neovim').has { 0, 7 }, -- false
+        globalstatus = require('neovim').has.option 'winbar', -- false
     },
     sections = {
         lualine_a = {
@@ -165,7 +176,7 @@ lualine.setup {
         },
         lualine_c = {
             filename,
-            where_ami,
+            -- where_ami,
             'lsp_progress',
         },
         -- lualine_x = { 'encoding', 'fileformat', 'filetype' },

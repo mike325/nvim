@@ -330,6 +330,8 @@ packer.startup(function()
             { 'nvim-treesitter/nvim-treesitter-refactor' },
             { 'nvim-treesitter/nvim-treesitter-textobjects' },
             { 'Badhi/nvim-treesitter-cpp-tools' },
+            { 'nvim-treesitter/nvim-treesitter-context' },
+            -- { 'nvim-treesitter/nvim-tree-docs' },
         },
     }
 
