@@ -37,20 +37,21 @@ repos:
       # - id: script-must-not-have-extension
       # - id: shellcheck
       # - id: shfmt
-  - repo: https://github.com/Lucas-C/pre-commit-hooks
-    rev: v1.2.0
-    hooks:
-      - id: remove-crlf
-      - id: remove-tabs
-        exclude: |
-            (?x)^(
-                UltiSnips/.*|
-                Makefile.*|
-                \.git.*|
-                .*\.make|
-                .*\.go$
-            )$
-        # args: [ '--whitespaces-count', '2' ]  # defaults to: 4
+  # TODO: Migrate this to local scripts
+  # - repo: https://github.com/Lucas-C/pre-commit-hooks
+  #   rev: v1.2.0
+  #   hooks:
+  #     - id: remove-crlf
+  #     - id: remove-tabs
+  #       exclude: |
+  #           (?x)^(
+  #               UltiSnips/.*|
+  #               Makefile.*|
+  #               \.git.*|
+  #               .*\.make|
+  #               .*\.go$
+  #           )$
+  #       # args: [ '--whitespaces-count', '2' ]  # defaults to: 4
   - repo: https://github.com/sirosen/check-jsonschema
     rev: 0.15.0
     hooks:
