@@ -222,7 +222,7 @@ function Job:new(job)
     obj._id = -1
     obj._pid = -1
     obj._callbacks = {}
-    obj._show_progress = obj._show_progress or false
+    obj._show_progress = obj._show_progress or true
     obj._tab = nvim.get_current_tabpage()
 
     obj._output = {}
