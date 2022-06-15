@@ -706,7 +706,7 @@ if executable 'pre-commit' then
         }
         local precommit = RELOAD('jobs'):new {
             cmd = 'pre-commit',
-            args,
+            args = args,
             -- progress = true,
             qf = {
                 efm = errorformats,
