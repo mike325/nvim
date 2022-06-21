@@ -77,7 +77,7 @@ function M.get_linter()
     else
         local exe = {
             sys.home .. '/.luarocks/bin/luacheck',
-            sys.home .. '/cache/nvim/packer_hererocks/' .. sys.luajit .. '/bin/luacheck',
+            vim.fn.stdpath('cache'):gsub('\\', '/') .. '/packer_hererocks/' .. sys.luajit .. '/bin/luacheck',
         }
         for i = 1, #exe do
             if is_file(exe[i]) then

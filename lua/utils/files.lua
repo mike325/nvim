@@ -560,6 +560,30 @@ function M.find_files(path, globs, cb)
     end
 end
 
+function M.copy(src, dest, bang)
+    src = M.normalize_path(src)
+    dest = M.normalize_path(dest)
+
+    if not M.is_dir(src) and (not M.exists(dest) or bang) then
+        if M.exists(dest) and bang then
+            if not M.delete(dest, bang) then
+                return false
+            end
+        end
+        local status, msg = uv.fs_copyfile(src, dest)
+        if status then
+            return true
+        end
+        vim.notify('Failed to copy ' .. src .. ' to ' .. dest .. '\n' .. msg, 'ERROR', { title = 'Copy' })
+    elseif M.is_dir(src) then
+        vim.notify('Cannot recursively copy directories', 'ERROR', { title = 'Copy' })
+    else
+        vim.notify(dest .. ' exists, use force to override it', 'ERROR', { title = 'Copy' })
+    end
+
+    return false
+end
+
 function M.rename(old, new, bang)
     new = M.normalize_path(new)
     old = M.normalize_path(old)

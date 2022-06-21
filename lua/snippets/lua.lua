@@ -334,4 +334,19 @@ return {
     s('isfalsy', fmt([[assert.is_falsy({})]],{ d(1, surround_with_func, {}, {user_args = {{text = 'false'}}}), })),
     s('truthy', fmt([[assert.is_truthy({})]],{ d(1, surround_with_func, {}, {user_args = {{text = 'true'}}}), })),
     s('falsy', fmt([[assert.is_falsy({})]],{ d(1, surround_with_func, {}, {user_args = {{text = 'false'}}}), })),
+
+    s(
+        { trig = 'ass' },
+        fmt([[assert({}, debug.traceback({}))]], {
+            i(1, 'condition'),
+            i(2, 'msg'),
+        }
+    )),
+    s(
+        { trig = 'deb' },
+        fmt([[assert({}, debug.traceback({}))]], {
+            i(1, 'condition'),
+            i(2, 'msg'),
+        }
+    )),
 }

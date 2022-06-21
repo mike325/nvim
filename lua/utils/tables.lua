@@ -1,16 +1,108 @@
+-- NOTE: This functions must be as standalone as possible since they may be load from other programs as
+--       wezterm
 local M = {}
 
-function M.has_attrs(tbl, attrs)
-    vim.validate {
-        table = { tbl, 'table' },
-        attrs = {
-            attrs,
-            function()
-                return attrs ~= nil
-            end,
-            'any value',
-        },
+if not debug then
+    _G['debug'] = {
+        traceback = function(msg)
+            return msg
+        end,
     }
+end
+
+-- NOTE: This functions are available in Neovim's runtime, but since I consider some of the useful outside of neovim
+--       I decided to replicate them to use in other apps
+function M.tbl_contains(lst, value)
+    assert(type(lst) == type {}, debug.traceback('Invalid type for lst: ' .. type(lst)))
+    for _, node in ipairs(lst) do
+        if node == value then
+            return true
+        end
+    end
+    return false
+end
+
+function M.tbl_islist(tbl)
+    if type(tbl) ~= type {} then
+        return false
+    end
+    local i = 0
+    for idx, _ in pairs(tbl) do
+        i = i + 1
+        if idx ~= i then
+            return false
+        end
+    end
+    return true
+end
+
+function M.tbl_keys(tbl)
+    assert(type(tbl) == type {}, debug.traceback('Invalid type for tbl: ' .. type(tbl)))
+    local keys = {}
+    for key, _ in pairs(tbl) do
+        table.insert(keys, key)
+    end
+    return keys
+end
+
+function M.tbl_values(tbl)
+    assert(type(tbl) == type {}, debug.traceback('Invalid type for tbl: ' .. type(tbl)))
+    local values = {}
+    for _, value in pairs(tbl) do
+        table.insert(values, value)
+    end
+    return values
+end
+
+function M.tbl_values(tbl)
+    assert(type(tbl) == type {}, debug.traceback('Invalid type for tbl: ' .. type(tbl)))
+    local values = {}
+    for _, value in pairs(tbl) do
+        table.insert(values, value)
+    end
+    return values
+end
+
+function M.tbl_filter(func, tbl)
+    assert(type(tbl) == type {}, debug.traceback('Invalid type for tbl: ' .. type(tbl)))
+    assert(type(func) == 'function', debug.traceback('Invalid type for func: ' .. type(tbl)))
+
+    local tmp = {}
+    for k, v in pairs(tbl) do
+        if func(v) then
+            tmp[k] = v
+        end
+    end
+
+    return tmp
+end
+
+function M.tbl_map(func, tbl)
+    assert(type(tbl) == type {}, debug.traceback('Invalid type for tbl: ' .. type(tbl)))
+    assert(type(func) == 'function', debug.traceback('Invalid type for func: ' .. type(tbl)))
+
+    local tmp = {}
+    for k, v in pairs(tbl) do
+        tmp[k] = func(v)
+    end
+
+    return tmp
+end
+
+function M.list_extend(dest, src)
+    assert(M.tbl_islist(src), debug.traceback('Invalid type for src: ' .. type(src)))
+    assert(M.tbl_islist(dest), debug.traceback('Invalid type for dest: ' .. type(dest)))
+
+    for _, node in ipairs(src) do
+        table.insert(dest, node)
+    end
+    return dest
+end
+
+-- END OF NEOVIM RUNTIME DUPLICATES
+
+function M.has_attrs(tbl, attrs)
+    assert(type(tbl) == type {}, debug.traceback('Invalid type for tbl: ' .. type(tbl)))
 
     if type(attrs) ~= type(tbl) then
         for _, val in pairs(tbl) do
@@ -34,12 +126,11 @@ function M.has_attrs(tbl, attrs)
 end
 
 function M.uniq_list(lst)
-    vim.validate { list = { lst, 'table' } }
-    assert(vim.tbl_islist(lst), debug.traceback 'Uniq only works with array-like tables')
+    assert(M.tbl_islist(lst), debug.traceback 'Uniq only works with array-like tables')
 
     local tmp = {}
     for _, node in ipairs(lst) do
-        if not vim.tbl_contains(tmp, node) then
+        if not M.tbl_contains(tmp, node) then
             table.insert(tmp, node)
         end
     end
@@ -47,24 +138,22 @@ function M.uniq_list(lst)
 end
 
 function M.uniq_unorder(lst)
-    vim.validate { list = { lst, 'table' } }
-    assert(vim.tbl_islist(lst), debug.traceback 'Uniq only works with array-like tables')
+    assert(M.tbl_islist(lst), debug.traceback 'Uniq only works with array-like tables')
 
     local uniq_items = {}
     for _, node in ipairs(lst) do
         uniq_items[node] = true
     end
 
-    return vim.tbl_keys(uniq_items)
+    return M.tbl_keys(uniq_items)
 end
 
 function M.merge_uniq_list(dest, src)
-    vim.validate { source = { src, 'table' }, destination = { dest, 'table' } }
-    assert(vim.tbl_islist(dest) and vim.tbl_islist(src), debug.traceback 'Source and dest must be arrays')
+    assert(M.tbl_islist(dest) and M.tbl_islist(src), debug.traceback 'Source and dest must be arrays')
 
     dest = M.uniq_list(dest)
     for _, node in ipairs(src) do
-        if not vim.tbl_contains(dest, node) then
+        if not M.tbl_contains(dest, node) then
             table.insert(dest, node)
         end
     end
@@ -72,8 +161,7 @@ function M.merge_uniq_list(dest, src)
 end
 
 function M.merge_uniq_unorder(dest, src)
-    vim.validate { source = { src, 'table' }, destination = { dest, 'table' } }
-    assert(vim.tbl_islist(dest) and vim.tbl_islist(src), debug.traceback 'Source and dest must be arrays')
+    assert(M.tbl_islist(dest) and M.tbl_islist(src), debug.traceback 'Source and dest must be arrays')
 
     local uniq_items = {}
 
@@ -85,15 +173,14 @@ function M.merge_uniq_unorder(dest, src)
         uniq_items[node] = true
     end
 
-    return vim.tbl_keys(uniq_items)
+    return M.tbl_keys(uniq_items)
 end
 
 function M.clear_lst(lst)
-    vim.validate { list = { lst, 'table' } }
-    assert(vim.tbl_islist(lst), debug.traceback 'List must be an array')
-    local tmp = {}
+    assert(M.tbl_islist(lst), debug.traceback 'List must be an array')
 
-    for _, val in pairs(lst) do
+    local tmp = {}
+    for _, val in ipairs(lst) do
         if type(val) == type '' then
             val = val:gsub('%s+$', '')
             if not val:match '^%s*$' then
@@ -108,17 +195,18 @@ function M.clear_lst(lst)
 end
 
 function M.str_to_clean_tbl(cmd_string, sep)
-    vim.validate {
-        cmd = { cmd_string, 'string' },
-        separator = { sep, 'string', true },
-    }
+    assert(type(cmd_string) == type '', debug.traceback('Invalid type for cmd_string: ' .. type(cmd_string)))
+    assert(sep == nil or type(sep) == type '', debug.traceback('Invalid type for sep: ' .. type(sep)))
+
+    local utils = require 'utils.strings'
     sep = sep or ' '
-    return M.clear_lst(vim.split(vim.trim(cmd_string), sep, true))
+    return M.clear_lst(utils.split(utils.trim(cmd_string), sep, true))
 end
 
 -- NOTE: Took from http://lua-users.org/wiki/CopyTable
 function M.shallowcopy(orig)
-    vim.validate { table = { orig, 'table' } }
+    assert(type(orig) == type {}, debug.traceback('Invalid type for orig: ' .. type(orig)))
+
     local copy
     if type(orig) == type {} then
         copy = {}
@@ -132,9 +220,7 @@ function M.shallowcopy(orig)
 end
 
 function M.isempty(tbl)
-    vim.validate {
-        tbl = { tbl, 'table' },
-    }
+    assert(type(tbl) == type {}, debug.traceback('Invalid type for tbl: ' .. type(tbl)))
     return #tbl == 0 and next(tbl) == nil
 end
 

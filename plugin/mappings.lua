@@ -400,6 +400,12 @@ nvim.command.set('RemoveFile', function(opts)
     require('utils.files').delete(vim.fn.fnamemodify(target, ':p'), opts.bang)
 end, { bang = true, nargs = '?', complete = 'file' })
 
+nvim.command.set('CopyFile', function(opts)
+    local src = vim.fn.expand '%:p'
+    local dest = opts.fargs[1]
+    require('utils.files').copy(src, dest, opts.bang)
+end, { bang = true, nargs = 1, complete = 'file' })
+
 nvim.command.set('Grep', function(opts)
     require('utils.functions').send_grep_job(opts.fargs)
 end, { nargs = '+' })
