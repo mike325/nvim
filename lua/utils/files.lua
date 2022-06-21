@@ -563,6 +563,7 @@ end
 function M.copy(src, dest, bang)
     src = M.normalize_path(src)
     dest = M.normalize_path(dest)
+    dest = M.is_dir(dest) and dest .. '/' .. M.basename(src) or dest
 
     if not M.is_dir(src) and (not M.exists(dest) or bang) then
         if M.exists(dest) and bang then
