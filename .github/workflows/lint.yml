@@ -2,6 +2,9 @@ name: lint
 
 on: [push, pull_request]
 
+env:
+  GO_VERSION: go1.18.3
+
 jobs:
   precommit:
     runs-on: ubuntu-latest
@@ -31,13 +34,17 @@ jobs:
             golang
 
           sudo luarocks install luacheck
+
           # FIX: Temporally fix as currently the latest tag does not have a release
           rm -f ~/.local/bin/shfmt
           bash < <(curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer)
           source "$HOME/.gvm/scripts/gvm"
-          gvm install go1.18.3 -B
-          gvm use go1.18.3 --default
+          gvm install "$GO_VERSION" -B
+          gvm use "$GO_VERSION" --default
           go install mvdan.cc/sh/v3/cmd/shfmt@latest
+
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+          echo "$HOME/.gvm/pkgsets/$GO_VERSION/global/bin/" >> $GITHUB_PATH
 
       - name: Fetch install script
         run: |
