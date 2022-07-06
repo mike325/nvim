@@ -656,6 +656,10 @@ function M.python(version, args)
 end
 
 function M.toggle_qf(win)
+    if type(win) ~= type(1) then
+        win = nil
+    end
+
     local qf_winid = qf_funcs.get_list({ winid = 0 }, win).winid
     local action = qf_winid > 0 and 'close' or 'open'
     qf_funcs[action](win)

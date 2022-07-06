@@ -245,14 +245,10 @@ vim.keymap.set('n', '<leader><leader>p', function()
     end
 end, noremap_silent)
 
-vim.keymap.set(
-    'n',
-    '=l',
-    [[<cmd>lua require"utils.helpers".toggle_qf(vim.api.nvim_get_current_win())<CR>]],
-    noremap_silent
-)
-
-vim.keymap.set('n', '=q', [[<cmd>lua require"utils.helpers".toggle_qf()<CR>]], noremap_silent)
+vim.keymap.set('n', '=l', function()
+    require('utils.helpers').toggle_qf(vim.api.nvim_get_current_win())
+end, noremap_silent)
+vim.keymap.set('n', '=q', require('utils.helpers').toggle_qf, noremap_silent)
 
 nvim.command.set('Terminal', function(opts)
     local cmd = opts.args

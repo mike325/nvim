@@ -13,11 +13,21 @@ local cmp = load_module 'cmp'
 
 local preload = {
     clangd = {
-        func = load_module 'clangd_extensions',
+        setup = function(opts)
+            local clangd = load_module 'clangd_extensions'
+            if clangd then
+                clangd.setup(opts)
+            end
+        end,
         args = {},
     },
     ['rust-analyzer'] = {
-        func = load_module 'rust-tools',
+        setup = function(opts)
+            local tools = load_module 'rust-tools'
+            if tools then
+                tools.setup(opts)
+            end
+        end,
         args = {},
     },
 }
@@ -104,7 +114,9 @@ function M.setup(ft)
             init.capability = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
         end
         if preload[config] and preload[config].setup then
-            preload[config].setup(preload[config].args)
+            local opts = preload[config].args
+            opts.server = init
+            preload[config].setup(opts)
         else
             lsp[config].setup(init)
         end

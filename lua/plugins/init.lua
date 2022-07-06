@@ -1,7 +1,13 @@
 local ok, packer = pcall(require, 'packer')
 
+if not ok then
+    return false
+end
+
 local has_compiler
-if vim.fn.has 'win32' == 1 or vim.fn.has 'win64' == 1 then
+local has_python = vim.fn.executable 'python3' == 1 or vim.fn.executable 'python' == 1
+local is_win = vim.fn.has 'win32' == 1 or vim.fn.has 'win64' == 1
+if is_win then
     -- NOTE: windows' clang by default needs msbuild to compile treesitter parsers,
     has_compiler = vim.fn.executable 'gcc' == 1
 else
@@ -10,13 +16,9 @@ end
 
 -- local has_make = vim.fn.executable('make') == 1
 
-if not ok then
-    return false
-end
-
 packer.init {
     -- log = {level = 'debug'},
-    luarocks = { python_cmd = 'python3' },
+    luarocks = { python_cmd = vim.fn.executable 'python3' == 1 and 'python3' or 'python' },
     profile = {
         enable = false,
         threshold = 1, -- the amount in ms that a plugins load time must be over for it to be included in the profile
@@ -27,11 +29,13 @@ packer.init {
     git = {
         clone_timeout = 90, -- Timeout, in seconds, for git clones
     },
+    -- max_jobs = is_win and 8 or nil,
+    autoremove = true,
 }
 
 packer.startup(function()
     -- BUG: Seems like luarocks is not supported in windows
-    if has_compiler then
+    if has_compiler and has_python then
         use_rocks { 'luacheck', 'lua-cjson', 'md5' }
     end
 
@@ -335,6 +339,51 @@ packer.startup(function()
         },
     }
 
+    -- use {
+    --     'lewis6991/spellsitter.nvim',
+    --     config = function()
+    --         require('spellsitter').setup {}
+    --     end,
+    --     requires = { 'nvim-treesitter/nvim-treesitter' },
+    -- }
+
+    use {
+        'danymat/neogen',
+        config = function()
+            require('neogen').setup {
+                enabled = true,
+                input_after_comment = true,
+                languages = {
+                    lua = {
+                        template = {
+                            annotation_convention = 'emmylua',
+                        },
+                    },
+                    python = {
+                        template = {
+                            annotation_convention = 'google_docstrings',
+                        },
+                    },
+                },
+            }
+        end,
+        requires = { 'nvim-treesitter/nvim-treesitter' },
+        -- wants = { 'nvim-treesitter' },
+        -- after = 'nvim-treesitter',
+    }
+
+    use {
+        'SmiteshP/nvim-gps',
+        config = function()
+            require('nvim-gps').setup()
+            -- require('nvim-gps').setup{
+            --     separator = ' ❯ ',
+            -- }
+        end,
+        requires = { 'nvim-treesitter/nvim-treesitter' },
+        after = 'nvim-treesitter',
+    }
+
     use {
         'nvim-telescope/telescope.nvim',
         config = function()
@@ -436,31 +485,6 @@ packer.startup(function()
     }
 
     use {
-        'danymat/neogen',
-        config = function()
-            require('neogen').setup {
-                enabled = true,
-                input_after_comment = true,
-                languages = {
-                    lua = {
-                        template = {
-                            annotation_convention = 'emmylua',
-                        },
-                    },
-                    python = {
-                        template = {
-                            annotation_convention = 'google_docstrings',
-                        },
-                    },
-                },
-            }
-        end,
-        requires = { 'nvim-treesitter/nvim-treesitter' },
-        -- wants = { 'nvim-treesitter' },
-        -- after = 'nvim-treesitter',
-    }
-
-    use {
         'vimwiki/vimwiki',
         setup = function()
             vim.g.vimwiki_list = {
@@ -543,18 +567,6 @@ packer.startup(function()
         end,
         requires = 'mfussenegger/nvim-dap',
         after = 'nvim-dap',
-    }
-
-    use {
-        'SmiteshP/nvim-gps',
-        config = function()
-            require('nvim-gps').setup()
-            -- require('nvim-gps').setup{
-            --     separator = ' ❯ ',
-            -- }
-        end,
-        requires = { 'nvim-treesitter/nvim-treesitter' },
-        after = 'nvim-treesitter',
     }
 
     use {
