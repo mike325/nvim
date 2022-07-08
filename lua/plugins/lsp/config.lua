@@ -145,9 +145,9 @@ function M.on_attach(client, bufnr, is_null)
             capability = 'referencesProvider',
             mapping = lua_cmd:format(
                 (
-                        has_telescope
-                        and "require'telescope.builtin'.lsp_references(require'telescope.themes'.get_dropdown{})"
-                    ) or 'vim.lsp.buf.references()'
+                    has_telescope
+                    and "require'telescope.builtin'.lsp_references(require'telescope.themes'.get_dropdown{})"
+                ) or 'vim.lsp.buf.references()'
             ),
         },
         ['K'] = {
@@ -172,9 +172,9 @@ function M.on_attach(client, bufnr, is_null)
         ['<leader>s'] = {
             mapping = lua_cmd:format(
                 (
-                        has_telescope
-                        and "require'telescope.builtin'.lsp_document_symbols(require'telescope.themes'.get_dropdown{})"
-                    ) or 'vim.lsp.buf.document_symbol{}'
+                    has_telescope
+                    and "require'telescope.builtin'.lsp_document_symbols(require'telescope.themes'.get_dropdown{})"
+                ) or 'vim.lsp.buf.document_symbol{}'
             ),
         },
         ['=d'] = {
