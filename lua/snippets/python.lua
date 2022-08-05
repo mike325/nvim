@@ -68,6 +68,16 @@ local function python_dataclass(args, snip, old_state, placeholder)
     return snip_node
 end
 
+local function async_def(args, snip, old_state, placeholder)
+    local nodes = {}
+
+    table.insert(nodes, snip.captures[1] == 'a' and t { 'async def' } or t { 'def' })
+
+    local snip_node = sn(nil, nodes)
+    snip_node.old_state = old_state
+    return snip_node
+end
+
 -- stylua: ignore
 return {
     s('for', fmt([[
@@ -106,11 +116,14 @@ return {
         d(2, saved_text, {}, {user_args = {{text = 'pass', indent = true}}}),
         d(3, else_clause, {}, {}),
     })),
-    s('def', fmt([[
-    def {}({}{}):
+    s(
+        {trig = '(a?)def', regTrig = true},
+        fmt([[
+    {} {}({}{}):
     {}
     ]], {
-        i(1, 'name'),
+        d(1, async_def, {}, {user_args = {}}),
+        i(2, 'name'),
         p(function()
             -- stylua: ignore
             local get_current_class = require('utils.treesitter').get_current_class
@@ -124,8 +137,8 @@ return {
             -- stylua: ignore
             return ''
         end),
-        i(2, 'args'),
-        d(3, saved_text, {}, {user_args = {{text = 'pass', indent = true}}}),
+        i(3, 'args'),
+        d(4, saved_text, {}, {user_args = {{text = 'pass', indent = true}}}),
     })),
     s('try', fmt([[
     try:

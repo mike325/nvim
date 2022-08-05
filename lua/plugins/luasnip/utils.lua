@@ -139,7 +139,7 @@ function M.else_clause(args, snip, old_state, placeholder)
             table.insert(nodes, t { '', 'else', '\t' })
             table.insert(nodes, i(1, M.get_comment 'code'))
         elseif ft == 'python' then
-            table.insert(nodes, t { '', 'else', '\t' })
+            table.insert(nodes, t { '', 'else:', '\t' })
             table.insert(nodes, i(1, 'pass'))
         elseif ft == 'sh' or ft == 'bash' or ft == 'zsh' then
             table.insert(nodes, t { 'else', '\t' })
