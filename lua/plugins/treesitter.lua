@@ -8,9 +8,9 @@ if treesitter == nil then
 end
 
 local min = vim.env.VIM_MIN ~= nil or vim.g.minimal ~= nil
-local commet_txtobj = nil
+local comment_txtobj = nil
 if not packer_plugins or (packer_plugins and not packer_plugins['vim-textobj-comment']) or min then
-    commet_txtobj = '@comment.outer'
+    comment_txtobj = '@comment.outer'
 end
 
 -- local languages = {
@@ -98,8 +98,8 @@ treesitter.setup {
                 ['aa'] = '@parameter.inner',
                 ['ir'] = '@loop.inner', -- "repeat" mnemonic
                 ['ar'] = '@loop.outer',
-                ['ac'] = commet_txtobj,
-                ['ic'] = commet_txtobj,
+                ['ac'] = comment_txtobj,
+                ['ic'] = comment_txtobj,
             },
         },
         swap = {

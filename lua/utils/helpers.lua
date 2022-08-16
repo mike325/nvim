@@ -472,7 +472,7 @@ end
 function M.filelist(tool, lst)
     local filetool = {
         git = 'git --no-pager ls-files -c --exclude-standard',
-        fd = 'fd --type=file --hidden --follow --color=never',
+        fd = 'fd --type=file --hidden --color=never',
         rg = 'rg --color=never --no-search-zip --hidden --trim --files ',
         ag = 'ag -l --follow --nocolor --nogroup --hidden ' .. M.ignores 'ag' .. '-g ""',
         find = 'find . -type f ' .. M.ignores 'find' .. " -iname '*' ",

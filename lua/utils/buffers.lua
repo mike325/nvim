@@ -367,6 +367,8 @@ end
 function M.setup(ft, opts)
     vim.validate { ft = { ft, 'string', true }, opts = { opts, 'table', true } }
     ft = ft or vim.opt_local.filetype:get()
+
+    local basename = require('utils.files').basename
     local ok, utils = pcall(RELOAD, 'filetypes.' .. ft)
     opts = opts or {}
     if ok then
@@ -375,7 +377,7 @@ function M.setup(ft, opts)
             if linter then
                 table.insert(linter, '%')
                 vim.opt_local.makeprg = table.concat(linter, ' ')
-                if utils.makeprg[linter[1]].efm then
+                if (utils.makeprg[linter[1]] or utils.makeprg[basename(linter[1])]).efm then
                     vim.opt_local.errorformat = utils.makeprg[linter[1]].efm
                 end
             end

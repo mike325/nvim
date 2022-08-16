@@ -87,6 +87,7 @@ packer.startup(function()
         event = { 'CursorHold', 'CursorMoved', 'InsertEnter' },
     }
 
+    use { 'junegunn/gv.vim', cmd = 'GV', wants = 'vim-fugitive' }
     use { 'tpope/vim-fugitive', event = { 'CmdlineEnter', 'CursorHold' } }
     use { 'tpope/vim-repeat', event = 'VimEnter' }
 
@@ -517,28 +518,6 @@ packer.startup(function()
     }
 
     use {
-        'mfussenegger/nvim-dap',
-        commit = (vim.fn.has 'nvim-0.7' == 0 and '71714020884760332240373d2fec481e757f75f2' or nil),
-        -- event = { 'CursorHold', 'CmdlineEnter' },
-        -- cmd = { 'DapStart', 'DapContinue' },
-        cond = function()
-            return not vim.env.VIM_MIN and not vim.g.minimal
-        end,
-        config = function()
-            require 'plugins.dap'
-        end,
-    }
-
-    use {
-        'theHamsta/nvim-dap-virtual-text',
-        config = function()
-            require('nvim-dap-virtual-text').setup {}
-        end,
-        requires = 'mfussenegger/nvim-dap',
-        after = 'nvim-dap',
-    }
-
-    use {
         'rcarriga/nvim-dap-ui',
         cond = function()
             return not vim.env.VIM_MIN and not vim.g.minimal
@@ -565,8 +544,19 @@ packer.startup(function()
                 dapui.close 'sidebar'
             end
         end,
-        requires = 'mfussenegger/nvim-dap',
-        after = 'nvim-dap',
+        requires = {
+            'mfussenegger/nvim-dap',
+            commit = (vim.fn.has 'nvim-0.7' == 0 and '71714020884760332240373d2fec481e757f75f2' or nil),
+            -- event = { 'CursorHold', 'CmdlineEnter' },
+            -- cmd = { 'DapStart', 'DapContinue' },
+            cond = function()
+                return not vim.env.VIM_MIN and not vim.g.minimal
+            end,
+            config = function()
+                require 'plugins.dap'
+            end,
+        },
+        -- after = 'nvim-dap',
     }
 
     use {
@@ -753,7 +743,6 @@ packer.startup(function()
     -- use { 'raimon49/requirements.txt.vim' }
     -- use { 'tpope/vim-apathy', event = 'VimEnter' }
     -- use {'tpope/vim-commentary', event = 'VimEnter'}
-    -- use { 'junegunn/gv.vim', cmd = 'GV', wants = 'vim-fugitive' }
 end)
 
 if has_compiler then

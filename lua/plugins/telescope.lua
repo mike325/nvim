@@ -68,6 +68,14 @@ vim.keymap.set('n', '<C-p>', function()
     }
 end, noremap)
 
+vim.keymap.set('n', '<leader><C-p>', function()
+    local finder = require('utils.helpers').select_filelist(false, true)
+    if finder[1] == 'fd' or finder[1] == 'fdfind' or finder[1] == 'rg' then
+        table.insert(finder, '-uuu')
+    end
+    builtin.find_files { find_command = finder }
+end, noremap)
+
 vim.keymap.set('n', '<C-b>', function()
     builtin.buffers {}
 end, noremap)

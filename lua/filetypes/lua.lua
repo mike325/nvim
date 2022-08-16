@@ -2,6 +2,7 @@ local sys = require 'sys'
 local nvim = require 'neovim'
 
 local executable = require('utils.files').executable
+local basename = require('utils.files').basename
 
 local is_file = require('utils.files').is_file
 local getcwd = require('utils.files').getcwd
@@ -82,7 +83,7 @@ function M.get_linter()
         for i = 1, #exe do
             if is_file(exe[i]) then
                 cmd = { exe[i] }
-                vim.list_extend(cmd, M.makeprg[cmd[1]])
+                vim.list_extend(cmd, M.makeprg[basename(cmd[1])])
                 break
             end
         end
