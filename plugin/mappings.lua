@@ -406,6 +406,33 @@ nvim.command.set('Grep', function(opts)
     require('utils.functions').send_grep_job(opts.fargs)
 end, { nargs = '+' })
 
+nvim.command.set('CFind', function(opts)
+    local finder = require('utils.helpers').select_filelist(false, true)
+    if finder[1] == 'fd' or finder[1] == 'fdfind' or finder[1] == 'rg' then
+        table.insert(finder, '-uuu')
+    end
+    local find = RELOAD('jobs'):new {
+        cmd = vim.list_extend(finder,  opts.fargs),
+        progress = false,
+        opts = {
+            stdin = 'null',
+        },
+        qf = {
+            on_fail = {
+                open = true,
+                jump = false,
+            },
+            dump = true,
+            open = true,
+            jump = false,
+            context = 'CFinder',
+            title = 'CFinder',
+            efm = '%f',
+        },
+    }
+    find:start()
+end, { bang = true, nargs = '+', complete = 'file' })
+
 vim.keymap.set('n', 'gs', '<cmd>set opfunc=neovim#grep<CR>g@', noremap_silent)
 vim.keymap.set('v', 'gs', ':<C-U>call neovim#grep(visualmode(), v:true)<CR>', noremap_silent)
 vim.keymap.set('n', 'gss', function()
