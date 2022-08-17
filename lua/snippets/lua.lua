@@ -205,7 +205,7 @@ return {
             d(4, rec_val, {}),
         t({'', "}"}),
     }),
-    s('cmd', fmt([[
+    s('command', fmt([[
     nvim.command.set({}, {}, {})
     ]], {
         i(1, 'name'),
