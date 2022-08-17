@@ -729,11 +729,7 @@ function M.dump_to_qf(opts)
             qf_funcs.first(win)
         end
     else
-        vim.notify(
-            'No output to display',
-            'ERROR',
-            { title = qf_type == 'qf' and 'QuickFix' or 'LocationList' }
-        )
+        vim.notify('No output to display', 'ERROR', { title = qf_type == 'qf' and 'QuickFix' or 'LocationList' })
     end
 end
 

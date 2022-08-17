@@ -412,7 +412,7 @@ nvim.command.set('CFind', function(opts)
         table.insert(finder, '-uuu')
     end
     local find = RELOAD('jobs'):new {
-        cmd = vim.list_extend(finder,  opts.fargs),
+        cmd = vim.list_extend(finder, opts.fargs),
         progress = false,
         opts = {
             stdin = 'null',
