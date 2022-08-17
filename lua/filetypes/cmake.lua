@@ -119,7 +119,7 @@ function M.setup()
             if is_file 'build/compile_commands.json' then
                 link('build/compile_commands.json', '.', false, true)
             end
-            vim.fn.setqflist({}, 'r')
+            require('utils.helpers').clear_qf()
         end)
 
         cmake:callback_on_failure(function(_, rc)

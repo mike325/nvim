@@ -337,7 +337,7 @@ function Job:start()
             local qf_opts = self._qf
 
             qf_opts.lines = self:output()
-            if qf_opts.on_fail then
+            if qf_opts.on_fail and rc ~= 0 then
                 if qf_opts.on_fail.open then
                     qf_opts.open = rc ~= 0
                 end
@@ -356,11 +356,11 @@ function Job:start()
                 if vim.t.progress_win and self._tab == nvim.get_current_tabpage() then
                     nvim.win.close(vim.t.progress_win, false)
                 end
-                require('utils.helpers').dump_to_qf(qf_opts)
+                RELOAD('utils.helpers').dump_to_qf(qf_opts)
             elseif qf_opts.clear and qf_opts.on_fail then
                 local context = vim.fn.getqflist({ context = 1 }).context
                 if context == (qf_opts.context or '') then
-                    require('utils.helpers').clear_qf()
+                    RELOAD('utils.helpers').clear_qf()
                 end
             end
         end

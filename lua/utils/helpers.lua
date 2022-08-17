@@ -710,7 +710,7 @@ function M.dump_to_qf(opts)
         win = opts.win or vim.api.nvim_get_current_win()
     end
     opts.win = nil
-    qf_funcs.set_list({}, 'r', opts, win)
+    qf_funcs.set_list({}, ' ', opts, win)
 
     local info_tab = opts.tab
     if info_tab and info_tab ~= nvim.get_current_tabpage() then
@@ -728,11 +728,17 @@ function M.dump_to_qf(opts)
         if qf_jump then
             qf_funcs.first(win)
         end
+    else
+        vim.notify(
+            'No output to display',
+            'ERROR',
+            { title = qf_type == 'qf' and 'QuickFix' or 'LocationList' }
+        )
     end
 end
 
 function M.clear_qf(win)
-    qf_funcs.set_list({}, 'r', nil, win)
+    qf_funcs.set_list({}, ' ', nil, win)
     qf_funcs.close(win)
 end
 

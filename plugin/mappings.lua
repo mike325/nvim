@@ -667,7 +667,7 @@ nvim.command.set('Messages', function(opts)
             end
         end
 
-        vim.fn.setqflist({}, 'r', {
+        vim.fn.setqflist({}, ' ', {
             lines = messages,
             title = 'Messages',
             context = 'Messages',
