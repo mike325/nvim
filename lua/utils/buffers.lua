@@ -332,6 +332,7 @@ function M.format(ft)
 
     local clients = vim.lsp.buf_get_clients(0)
 
+    -- TODO: Null-ls always report formatting capabilities
     for _, client in pairs(clients) do
         if whole_file and client.server_capabilities.documentFormattingProvider then
             if nvim.has { 0, 8 } then
@@ -347,7 +348,6 @@ function M.format(ft)
         end
     end
 
-    -- TODO: Integrate LSP into this to centralize formatting
     if ok and utils.get_formatter then
         local cmd = utils.get_formatter()
         if cmd then

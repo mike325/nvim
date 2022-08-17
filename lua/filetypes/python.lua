@@ -75,7 +75,7 @@ local M = {
 M.makeprg.flake8 = { '--max-line-length=120', '--ignore=' .. table.concat(M.pyignores, ',') }
 M.makeprg.pycodestyle = M.makeprg.flake8
 
-function M.get_formatter()
+function M.get_formatter(stdin)
     local project = vim.fn.findfile('pyproject.toml', '.;')
     project = project ~= '' and realpath(project) or nil
 

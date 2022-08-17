@@ -36,7 +36,7 @@ local M = {
     },
 }
 
-function M.get_formatter()
+function M.get_formatter(stdin)
     local cmd
     if executable 'stylua' then
         cmd = { 'stylua' }

@@ -17,17 +17,19 @@ local M = {
             '-s',
             '-ci',
             '-kp',
-            '-w',
         },
     },
 }
 
-function M.get_formatter()
+function M.get_formatter(stdin)
     local cmd
     if executable 'shfmt' then
         cmd = { 'shfmt' }
         vim.list_extend(cmd, M.formatprg[cmd[1]])
         cmd = require('utils.buffers').replace_indent(cmd)
+        if not stdin then
+            table.insert(cmd, '-w')
+        end
     end
     return cmd
 end

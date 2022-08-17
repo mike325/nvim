@@ -31,7 +31,7 @@ for _, lang in ipairs(languages) do
         --       that just returns the correct executable and delay this lookups and parsing features to
         --       the actual execution
         if module.get_formatter then
-            local formatter = module.get_formatter()
+            local formatter = module.get_formatter(true)
             if formatter then
                 local cmd = formatter[1]
                 local cmd_path
@@ -44,7 +44,7 @@ for _, lang in ipairs(languages) do
                     local node = null_ls.builtins.formatting[cmd].with {
                         command = cmd_path,
                         extra_args = function(_)
-                            local format_cmd = module.get_formatter()
+                            local format_cmd = module.get_formatter(true)
                             return vim.list_slice(format_cmd, 2, #format_cmd)
                         end,
                     }

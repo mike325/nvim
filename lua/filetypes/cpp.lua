@@ -296,7 +296,7 @@ local function set_opts(compiler, bufnum)
     end
 end
 
-function M.get_formatter()
+function M.get_formatter(stdin)
     local cmd
     if executable 'clang-format' then
         cmd = { 'clang-format' }
@@ -305,7 +305,9 @@ function M.get_formatter()
             vim.list_extend(cmd, M.formatprg[cmd[1]])
             -- cmd = require('utils.buffers').replace_indent(cmd)
         end
-        table.insert(cmd, '-i')
+        if not stdin then
+            table.insert(cmd, '-i')
+        end
     end
     return cmd
 end
