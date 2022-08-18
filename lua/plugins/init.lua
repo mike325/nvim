@@ -405,7 +405,6 @@ packer.startup(function()
         end,
         after = 'telescope.nvim',
         requires = {
-            { 'weilbith/nvim-lsp-smag' },
             { 'weilbith/nvim-floating-tag-preview' },
         },
     }

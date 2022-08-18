@@ -245,3 +245,7 @@ if executable 'nvr' then
     vim.env.vnvr = 'nvr --servername ' .. vim.v.servername .. ' -cc vsplit --remote-silent'
     vim.env.snvr = 'nvr --servername ' .. vim.v.servername .. ' -cc split --remote-silent'
 end
+
+if vim.lsp.tagfunc then
+    vim.opt.tagfunc = 'v:lua.vim.lsp.tagfunc'
+end
