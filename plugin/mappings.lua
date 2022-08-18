@@ -939,15 +939,11 @@ nvim.command.set('ToggleDiagnostics', toggle_diagnostics, { desc = 'Toggle colum
 
 -- NOTE: I should not need to create this function, but I couldn't find a way to override
 --       internal runtime compilers
-nvim.command.set(
-    'Compiler',
-    custom_compiler,
-    {
-        nargs = 1,
-        complete = 'compiler',
-        desc = 'Set the given compiler with preference on the custom compilers located in the after directory',
-    }
-)
+nvim.command.set('Compiler', custom_compiler, {
+    nargs = 1,
+    complete = 'compiler',
+    desc = 'Set the given compiler with preference on the custom compilers located in the after directory',
+})
 -- nvim.command.set('CompilerExecute', function(args)
 --     local makeprg = vim.opt_local.makeprg:get()
 --     local efm = vim.opt_local.errorformat:get()
@@ -970,7 +966,7 @@ nvim.command.set(
 nvim.command.set('AutoFormat', function()
     vim.b.disable_autoformat = not vim.b.disable_autoformat
     print('Autoformat', vim.b.disable_autoformat and 'disabled' or 'enabled')
-end, {desc = 'Toggle Autoformat autocmd'})
+end, { desc = 'Toggle Autoformat autocmd' })
 
 local ok, packer = pcall(require, 'packer')
 if ok then
@@ -981,5 +977,5 @@ if ok then
         local name = opts.args ~= '' and opts.args or 'clean'
         local snapshot = ('%s-nvim-%s-%s.json'):format(name, version, date)
         packer.snapshot(snapshot)
-    end, { nargs = '?', desc = 'Creates a packer snapshot with a standard format'})
+    end, { nargs = '?', desc = 'Creates a packer snapshot with a standard format' })
 end
