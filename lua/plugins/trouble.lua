@@ -13,7 +13,7 @@ trouble.setup {
     position = 'bottom',
     height = 10,
     width = 50,
-    mode = 'lsp_document_diagnostics', -- "lsp_workspace_diagnostics", "quickfix", "lsp_references", "loclist"
+    mode = 'document_diagnostics', -- "lsp_workspace_diagnostics", "quickfix", "lsp_references", "loclist"
     auto_close = true,
     icons = has_devicon,
     use_lsp_diagnostic_signs = false,
@@ -30,7 +30,7 @@ trouble.setup {
 }
 
 vim.keymap.set('n', '=T', function()
-    local lsp_document_diagnostics = vim.diagnostic and vim.diagnostic.get(0) or vim.lsp.diagnostic.get(0)
+    local document_diagnostics = vim.diagnostic and vim.diagnostic.get(0) or vim.lsp.diagnostic.get(0)
     local lsp_workspace_diagnostics = vim.diagnostic and vim.diagnostic.get() or vim.lsp.diagnostic.get_all()
     local has_workspace_diagnostics = false
     for _, diagnostics in pairs(lsp_workspace_diagnostics) do
@@ -51,9 +51,9 @@ vim.keymap.set('n', '=T', function()
         end
     end
     if not trouble_open then
-        if #lsp_document_diagnostics > 0 then
+        if #document_diagnostics > 0 then
             vim.notify('Document Diagnostics', 'INFO', { title = 'Trouble' })
-            nvim.ex.Trouble 'lsp_document_diagnostics'
+            nvim.ex.Trouble 'document_diagnostics'
         elseif has_workspace_diagnostics then
             vim.notify('Workspace Diagnostics', 'INFO', { title = 'Trouble' })
             nvim.ex.Trouble 'lsp_workspace_diagnostics'
@@ -67,6 +67,6 @@ vim.keymap.set('n', '=T', function()
             vim.notify('Nothing to check !', 'WARN', { title = 'Trouble' })
         end
     end
-end, { noremap = true, silent = true })
+end, { noremap = true, silent = true, desc = 'Trouble mapping to toggle diagnostics' })
 
 return true

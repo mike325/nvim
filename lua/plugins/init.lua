@@ -368,7 +368,7 @@ packer.startup(function()
                 },
             }
         end,
-        requires = { 'nvim-treesitter/nvim-treesitter' },
+        requires = 'nvim-treesitter/nvim-treesitter',
         -- wants = { 'nvim-treesitter' },
         -- after = 'nvim-treesitter',
     }
@@ -381,7 +381,7 @@ packer.startup(function()
             --     separator = ' ❯ ',
             -- }
         end,
-        requires = { 'nvim-treesitter/nvim-treesitter' },
+        requires = 'nvim-treesitter/nvim-treesitter',
         after = 'nvim-treesitter',
     }
 
@@ -391,8 +391,8 @@ packer.startup(function()
             require 'plugins.telescope'
         end,
         requires = {
-            'nvim-lua/plenary.nvim',
-            'nvim-lua/popup.nvim',
+            { 'nvim-lua/plenary.nvim' },
+            { 'nvim-lua/popup.nvim' },
         },
         tag = (vim.fn.has 'nvim-0.6' == 0 and 'nvim-0.5.0' or nil),
     }
@@ -473,8 +473,8 @@ packer.startup(function()
             return vim.fn.has 'win32' == 0
         end,
         requires = {
-            'nvim-telescope/telescope.nvim',
-            (require('sys').has_sqlite and 'tami5/sqlite.lua' or nil),
+            { 'nvim-telescope/telescope.nvim' },
+            (require('sys').has_sqlite and { 'tami5/sqlite.lua' } or nil),
         },
     }
 
@@ -506,7 +506,10 @@ packer.startup(function()
     use {
         'jose-elias-alvarez/null-ls.nvim',
         -- wants = { 'nvim-lspconfig', 'plenary.nvim' },
-        requires = { 'neovim/nvim-lspconfig', 'nvim-lua/plenary.nvim' },
+        requires = {
+            { 'neovim/nvim-lspconfig' },
+            { 'nvim-lua/plenary.nvim' },
+        },
         branch = (vim.fn.has 'nvim-0.6' == 0 and '0.5.1-compat' or nil),
     }
 
@@ -545,16 +548,18 @@ packer.startup(function()
             end
         end,
         requires = {
-            'mfussenegger/nvim-dap',
-            commit = (vim.fn.has 'nvim-0.7' == 0 and '71714020884760332240373d2fec481e757f75f2' or nil),
-            -- event = { 'CursorHold', 'CmdlineEnter' },
-            -- cmd = { 'DapStart', 'DapContinue' },
-            cond = function()
-                return not vim.env.VIM_MIN and not vim.g.minimal
-            end,
-            config = function()
-                require 'plugins.dap'
-            end,
+            {
+                'mfussenegger/nvim-dap',
+                commit = (vim.fn.has 'nvim-0.7' == 0 and '71714020884760332240373d2fec481e757f75f2' or nil),
+                -- event = { 'CursorHold', 'CmdlineEnter' },
+                -- cmd = { 'DapStart', 'DapContinue' },
+                cond = function()
+                    return not vim.env.VIM_MIN and not vim.g.minimal
+                end,
+                config = function()
+                    require 'plugins.dap'
+                end,
+            },
         },
         -- after = 'nvim-dap',
     }
@@ -629,14 +634,12 @@ packer.startup(function()
     }
 
     -- use {
-    --     'folke/trouble.nvim',
-    --     event = { 'CmdlineEnter', 'CursorHold' },
-    --     cmd = { 'Trouble' },
+    --     'tommcdo/vim-lion',
     --     cond = function()
     --         return not vim.env.VIM_MIN and not vim.g.minimal
     --     end,
     --     config = function()
-    --         require 'plugins.trouble'
+    --         vim.g.lion_squeeze_spaces = 1
     --     end,
     -- }
 
@@ -650,7 +653,17 @@ packer.startup(function()
     --     config = function()
     --         require 'plugins.todos'
     --     end,
-    --     wants = 'trouble.nvim',
+    --     requires = {
+    --         {
+    --             'folke/trouble.nvim',
+    --             cond = function()
+    --                 return not vim.env.VIM_MIN and not vim.g.minimal
+    --             end,
+    --             config = function()
+    --                 require 'plugins.trouble'
+    --             end,
+    --         }
+    --     },
     -- }
 
     -- use {
@@ -703,17 +716,6 @@ packer.startup(function()
     --     end,
     --     config = function()
     --         vim.api.nvim_set_keymap('n', '=m', '<Plug>(git-messenger)', { silent = true, nowait = true })
-    --     end,
-    -- }
-
-    -- use {
-    --     'tommcdo/vim-lion',
-    --     event = 'VimEnter',
-    --     cond = function()
-    --         return not vim.env.VIM_MIN and not vim.g.minimal
-    --     end,
-    --     config = function()
-    --         vim.g.lion_squeeze_spaces = 1
     --     end,
     -- }
 

@@ -336,17 +336,40 @@ return {
     s('falsy', fmt([[assert.is_falsy({})]],{ d(1, surround_with_func, {}, {user_args = {{text = 'false'}}}), })),
 
     s(
-        { trig = 'ass' },
+        { trig = 'assert' },
         fmt([[assert({}, debug.traceback({}))]], {
             i(1, 'condition'),
             i(2, 'msg'),
         }
     )),
     s(
-        { trig = 'deb' },
+        { trig = 'debug' },
         fmt([[assert({}, debug.traceback({}))]], {
             i(1, 'condition'),
             i(2, 'msg'),
+        }
+    )),
+    s(
+        { trig = 'pcall' },
+        fmt([[local {}, {} = pcall({})]], {
+            c(1, {
+                i(1, 'ok'),
+                i(1, '_'),
+            }),
+            c(2, {
+                i(1, 'module'),
+                i(1, '_'),
+            }),
+            c(3, {
+                sn(nil, {
+                    i(1, 'func'),
+                }),
+                sn(nil, {
+                    i(1, 'func'),
+                    t { ', ' },
+                    i(2, 'arg'),
+                }),
+            }),
         }
     )),
 }

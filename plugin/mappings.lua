@@ -111,7 +111,7 @@ vim.keymap.set('n', '<BS>', function()
         --     end
         -- end
     end
-end, noremap_silent)
+end, { noremap = true, silent = true, desc = 'Return to the last jump/tag' })
 
 local function nicenext(dir)
     local view = vim.fn.winsaveview()
@@ -123,11 +123,11 @@ end
 
 vim.keymap.set('n', 'n', function()
     nicenext 'n'
-end, noremap_silent)
+end, { noremap = true, silent = true, desc = 'n and center view' })
 
 vim.keymap.set('n', 'N', function()
     nicenext 'N'
-end, noremap_silent)
+end, { noremap = true, silent = true, desc = 'N and center viwe' })
 
 vim.keymap.set('n', '<S-tab>', '<C-o>', noremap)
 vim.keymap.set('x', '<', '<gv', noremap)
@@ -157,7 +157,7 @@ vim.keymap.set('n', 'i', function()
         return '"_ddO'
     end
     return 'i'
-end, { noremap = true, expr = true })
+end, { noremap = true, expr = true, desc = 'Smart insert/indent' })
 
 vim.keymap.set('n', 'c*', 'm`*``cgn', noremap)
 vim.keymap.set('n', 'c#', 'm`#``cgN', noremap)
@@ -183,13 +183,13 @@ vim.keymap.set('n', '<leader>q', function()
     else
         nvim.exec('quit!', false)
     end
-end, noremap_silent)
+end, { noremap = true, silent = true, desc = 'Quit/close windows and tabs' })
 
 vim.keymap.set('i', '<C-U>', '<C-G>u<C-U>', noremap)
 
 vim.keymap.set('n', '<leader>d', function()
     require('utils.buffers').delete()
-end)
+end, { desc = 'Delete current buffer without changing the window layout' })
 
 vim.keymap.set('n', '[Q', ':<C-U>cfirst<CR>zvzz', noremap_silent)
 vim.keymap.set('n', ']Q', ':<C-U>clast<CR>zvzz', noremap_silent)
@@ -212,6 +212,7 @@ vim.keymap.set('n', '<C-L>', '<cmd>nohlsearch|diffupdate<CR>', noremap_silent)
 nvim.command.set('ClearQf', function()
     require('utils.helpers').clear_qf()
 end)
+
 nvim.command.set('ClearLoc', function()
     require('utils.helpers').clear_qf(nvim.get_current_win())
 end)
@@ -243,12 +244,17 @@ vim.keymap.set('n', '<leader><leader>p', function()
         nvim.t.swap_base_win = nil
         nvim.t.swap_base_buf = nil
     end
-end, noremap_silent)
+end, { noremap = true, silent = true, desc = 'Mark and swap windows' })
 
 vim.keymap.set('n', '=l', function()
     require('utils.helpers').toggle_qf(vim.api.nvim_get_current_win())
-end, noremap_silent)
-vim.keymap.set('n', '=q', require('utils.helpers').toggle_qf, noremap_silent)
+end, { noremap = true, silent = true, desc = 'Toggle location list' })
+vim.keymap.set(
+    'n',
+    '=q',
+    require('utils.helpers').toggle_qf,
+    { noremap = true, silent = true, desc = 'Toggle quickfix' }
+)
 
 nvim.command.set('Terminal', function(opts)
     local cmd = opts.args
@@ -280,7 +286,7 @@ nvim.command.set('Terminal', function(opts)
     if cmd ~= '' then
         nvim.ex.startinsert()
     end
-end, { nargs = '*' })
+end, { nargs = '*', desc = 'Show big center floating terminal window' })
 
 nvim.command.set('MouseToggle', function()
     if vim.o.mouse == '' then
@@ -317,7 +323,7 @@ nvim.command.set('SpellToggle', 'setlocal spell! spell?')
 nvim.command.set('WrapToggle', 'setlocal wrap! wrap?')
 
 nvim.command.set('TrimToggle', function()
-    if not vim.b.trim then
+    if not vim.b.trim and not vim.t.trim and not vim.g.trim then
         print 'Trim'
     else
         print 'NoTrim'
@@ -347,8 +353,13 @@ nvim.command.set(
 
 -- TODO: Check for GUIs
 if sys.name == 'windows' then
-    vim.keymap.set('n', '<C-h>', '<cmd>call neovim#bs()<CR>', noremap_silent)
-    vim.keymap.set('x', '<C-h>', '<cmd><ESC>', noremap)
+    vim.keymap.set(
+        'n',
+        '<C-h>',
+        '<cmd>call neovim#bs()<CR>',
+        { noremap = true, silent = true, desc = 'Same as <BS> mapping' }
+    )
+    vim.keymap.set('x', '<C-h>', '<cmd><ESC>', { noremap = true, silent = true, desc = 'Same as <BS> mapping' })
     if not vim.g.started_by_firenvim then
         vim.keymap.set('n', '<C-z>', '<nop>', noremap)
     end
@@ -460,7 +471,7 @@ nvim.command.set('Make', function(opts)
             nvim.ex.checktime()
         end,
     }
-end, { nargs = '*' })
+end, { nargs = '*', desc = 'Async execution of current makeprg' })
 
 if executable 'cscope' then
     local function cscope(cword, action)
@@ -630,6 +641,7 @@ if executable 'scp' then
     end, {
         nargs = '*',
         complete = _completions.ssh_hosts_completion,
+        desc = 'Send current file to a remote location',
     })
 
     nvim.command.set('GetFile', function(opts)
@@ -637,6 +649,7 @@ if executable 'scp' then
     end, {
         nargs = '*',
         complete = _completions.ssh_hosts_completion,
+        desc = 'Get current file from a remote location',
     })
 
     vim.keymap.set('n', '<leader><leader>s', '<cmd>SendFile<CR>', { noremap = true, silent = true })
@@ -673,12 +686,13 @@ nvim.command.set('Scratch', function(opts)
 end, {
     nargs = '?',
     complete = 'filetype',
+    desc = 'Create a scratch buffer of the current or given filetype',
 })
 
-nvim.command.set('ConncallLevel', function()
+nvim.command.set('ConcealLevel', function()
     local conncall = vim.opt_local.conceallevel:get() or 0
     vim.opt_local.conceallevel = conncall > 0 and 0 or 2
-end)
+end, { desc = 'Toogle conceal level between 0 and 2' })
 
 nvim.command.set('Messages', function(opts)
     local args = opts.args
@@ -708,7 +722,7 @@ nvim.command.set('Messages', function(opts)
             nvim.ex.cclose()
         end
     end
-end, { nargs = '?', complete = 'messages' })
+end, { nargs = '?', complete = 'messages', desc = 'Populate quickfix with the :messages list' })
 
 if executable 'pre-commit' then
     nvim.command.set('PreCommit', function(opts)
@@ -760,6 +774,7 @@ if not vim.env.SSH_CONNECTION then
     end, {
         nargs = 1,
         complete = 'file',
+        desc = 'Open file in the default OS external program',
     })
 
     vim.keymap.set('n', 'gx', function()
@@ -804,15 +819,20 @@ nvim.command.set('Zoom', function(opts)
     else
         vim.notify('Missing Zoom link ' .. opts.args, 'ERROR', { title = 'Zoom' })
     end
-end, { nargs = 1, complete = _completions.zoom_links })
+end, { nargs = 1, complete = _completions.zoom_links, desc = 'Open Zoom call in a specific room' })
 
 vim.keymap.set('n', '=D', function()
     vim.diagnostic.setqflist()
     vim.cmd 'wincmd J'
-end, noremap_silent)
+end, { noremap = true, silent = true, desc = 'Toggle diagnostics in the quickfix' })
 
 vim.opt.formatexpr = [[luaeval('require"utils.buffers".format()')]]
-vim.keymap.set('n', '=F', [[<cmd>normal! gggqG``<CR>]], { noremap = true, silent = true })
+vim.keymap.set(
+    'n',
+    '=F',
+    [[<cmd>normal! gggqG``<CR>]],
+    { noremap = true, silent = true, desc = 'Format the current buffer with the prefer formatting prg' }
+)
 
 nvim.command.set('Edit', function(args)
     local globs = args.fargs
@@ -828,7 +848,7 @@ nvim.command.set('Edit', function(args)
             end
         end
     end
-end, { nargs = '*', complete = 'file' })
+end, { nargs = '*', complete = 'file', desc = 'Open multiple files' })
 
 nvim.command.set('DiffFiles', function(args)
     local files = args.fargs
@@ -860,7 +880,7 @@ nvim.command.set('DiffFiles', function(args)
             nvim.ex.diffthis()
         end)
     end
-end, { nargs = '+', complete = 'file' })
+end, { nargs = '+', complete = 'file', desc = 'Open a new tab in diff mode with the given files' })
 
 local show_diagnostics = true
 local function toggle_diagnostics()
@@ -908,12 +928,26 @@ local function custom_compiler(args)
     end
 end
 
-vim.keymap.set('n', '<leader>D', toggle_diagnostics, noremap)
-nvim.command.set('ToggleDiagnostics', toggle_diagnostics, {})
+-- -- TODO: include a message to indicte the current state
+-- vim.keymap.set(
+--     'n',
+--     '<leader>D',
+--     toggle_diagnostics,
+--     { noremap = true, silent = true, desc = 'Toggle colum sign diagnostics' }
+-- )
+nvim.command.set('ToggleDiagnostics', toggle_diagnostics, { desc = 'Toggle column sign diagnostics' })
 
 -- NOTE: I should not need to create this function, but I couldn't find a way to override
 --       internal runtime compilers
-nvim.command.set('Compiler', custom_compiler, { nargs = 1, complete = 'compiler' })
+nvim.command.set(
+    'Compiler',
+    custom_compiler,
+    {
+        nargs = 1,
+        complete = 'compiler',
+        desc = 'Set the given compiler with preference on the custom compilers located in the after directory',
+    }
+)
 -- nvim.command.set('CompilerExecute', function(args)
 --     local makeprg = vim.opt_local.makeprg:get()
 --     local efm = vim.opt_local.errorformat:get()
@@ -936,4 +970,16 @@ nvim.command.set('Compiler', custom_compiler, { nargs = 1, complete = 'compiler'
 nvim.command.set('AutoFormat', function()
     vim.b.disable_autoformat = not vim.b.disable_autoformat
     print('Autoformat', vim.b.disable_autoformat and 'disabled' or 'enabled')
-end, {})
+end, {desc = 'Toggle Autoformat autocmd'})
+
+local ok, packer = pcall(require, 'packer')
+if ok then
+    nvim.command.set('CreateSnapshot', function(opts)
+        local date = os.date '%Y-%m-%d'
+        local raw_ver = nvim.version()
+        local version = table.concat({ raw_ver.major, raw_ver.minor, raw_ver.patch }, '.')
+        local name = opts.args ~= '' and opts.args or 'clean'
+        local snapshot = ('%s-nvim-%s-%s.json'):format(name, version, date)
+        packer.snapshot(snapshot)
+    end, { nargs = '?', desc = 'Creates a packer snapshot with a standard format'})
+end

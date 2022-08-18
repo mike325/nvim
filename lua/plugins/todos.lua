@@ -30,7 +30,7 @@ if has_trouble then
         if not trouble_open then
             nvim.ex.TodoTrouble()
         end
-    end, { noremap = true, silent = true })
+    end, { noremap = true, silent = true, desc = 'TODOs trouble toggle' })
 end
 
 return true
