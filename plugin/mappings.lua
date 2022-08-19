@@ -323,7 +323,7 @@ nvim.command.set('SpellToggle', 'setlocal spell! spell?')
 nvim.command.set('WrapToggle', 'setlocal wrap! wrap?')
 
 nvim.command.set('TrimToggle', function()
-    if not vim.b.trim and not vim.t.trim and not vim.g.trim then
+    if vim.b.trim then
         print 'Trim'
     else
         print 'NoTrim'
@@ -474,33 +474,32 @@ nvim.command.set('Make', function(opts)
 end, { nargs = '*', desc = 'Async execution of current makeprg' })
 
 if executable 'cscope' then
-    local function cscope(cword, action)
-        local actions = {
-            definition = 'find g',
-            callers = 'find c',
-            file = 'find f',
-            text = 'find t',
-        }
+    local cscope_queries = {
+        symbol = 'find s', -- 0
+        definition = 'find g', -- 1
+        calling = 'find d', -- 2
+        callers = 'find c', -- 3
+        text = 'find t', -- 4
+        file = 'find f', -- 7
+        include = 'find i', -- 8
+        assing = 'find a', -- 9
+    }
+
+    local function cscope(cword, query)
         cword = (cword and cword ~= '') and cword or vim.fn.expand '<cword>'
-        action = actions[action] or 'g'
-        nvim.ex.cscope(action .. ' ' .. cword)
+        query = cscope_queries[query] or 'find g'
+        local ok, err = pcall(nvim.ex.cscope, query .. ' ' .. cword)
+        if not ok then
+            vim.notify('Error!\n' .. err, 'ERROR', { title = 'cscope' })
+        end
     end
 
-    nvim.command.set('CDefinition', function(opts)
-        cscope(opts.args, 'definition')
-    end, { nargs = '?' })
-
-    nvim.command.set('CCallers', function(opts)
-        cscope(opts.args, 'callers')
-    end, { nargs = '?' })
-
-    nvim.command.set('CFile', function(opts)
-        cscope(opts.args, 'file')
-    end, { complete = 'file', nargs = '?' })
-
-    nvim.command.set('CText', function(opts)
-        cscope(opts.args, 'text')
-    end, { nargs = '?' })
+    for query, _ in pairs(cscope_queries) do
+        local cmd = 'C' .. query:sub(1, 1):upper() .. query:sub(2, #query)
+        nvim.command.set(cmd, function(opts)
+            cscope(opts.args, query)
+        end, { nargs = '?', desc = 'cscope commad to find ' .. query .. ' under cursor or arg' })
+    end
 end
 
 if executable 'scp' then

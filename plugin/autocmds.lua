@@ -142,6 +142,7 @@ nvim.autocmd.Indent = {
     end,
 }
 
+-- TODO: Autoenable autoformat when any autoformatter is present
 local function autoformat(cmd, args)
     if vim.b.disable_autoformat then
         return
@@ -153,14 +154,16 @@ local function autoformat(cmd, args)
         silent = true,
     }
     formatter:callback_on_success(function()
-        nvim.ex.edit()
+        nvim.ex.checktime()
+        -- nvim.ex.edit()
     end)
     formatter:start()
 end
 
+nvim.augroup.del('ImportFix')
 if executable 'goimports' then
     nvim.autocmd.add('BufWritePost', {
-        group = 'AutoFormat',
+        group = 'ImportFix',
         pattern = '*.go',
         callback = function(args)
             autoformat('goimports', { '-w', args.file })
@@ -170,7 +173,7 @@ end
 
 if executable 'isort' then
     nvim.autocmd.add('BufWritePost', {
-        group = 'AutoFormat',
+        group = 'ImportFix',
         pattern = '*.{py,ipy}',
         callback = function(args)
             autoformat('isort', { '--profile=black', args.file }) -- '-l', '120', '-tc'
