@@ -160,7 +160,7 @@ local function autoformat(cmd, args)
     formatter:start()
 end
 
-nvim.augroup.del('ImportFix')
+nvim.augroup.del 'ImportFix'
 if executable 'goimports' then
     nvim.autocmd.add('BufWritePost', {
         group = 'ImportFix',
