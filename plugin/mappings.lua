@@ -362,7 +362,6 @@ nvim.command.set('Trim', function(opts)
     if args == '' or (enable and (vim.t.disable_trim or vim.g.disable_trim)) then
         get_trim_state()
     end
-
 end, { nargs = '?', complete = _completions.toggle, bang = true })
 
 nvim.command.set('GonvimSettngs', "execute('edit ~/.gonvim/setting.toml')")
