@@ -322,14 +322,48 @@ nvim.command.set('NumbersToggle', 'setlocal number! number?')
 nvim.command.set('SpellToggle', 'setlocal spell! spell?')
 nvim.command.set('WrapToggle', 'setlocal wrap! wrap?')
 
-nvim.command.set('TrimToggle', function()
-    if vim.b.trim then
-        print 'Trim'
-    else
-        print 'NoTrim'
+nvim.command.set('Trim', function(opts)
+    local args = opts.args:lower()
+    if args ~= '' and args ~= 'enable' and args ~= 'disable' and args ~= '?' then
+        vim.notify('Invalid arg: ' .. args, 'ERROR', { title = 'Trim' })
+        return
     end
-    vim.b.trim = not vim.b.trim
-end)
+
+    local function get_trim_state()
+        if vim.t.disable_trim or vim.g.disable_trim then
+            print((' Disabled by %s variable'):format(vim.g.disable_trim and 'global' or 'project'))
+        else
+            print(vim.b.trim and ' Trim' or ' NoTrim')
+        end
+    end
+
+    if args == '?' then
+        get_trim_state()
+        return
+    end
+
+    local enable
+    if args == '' then
+        enable = not vim.b.trim
+    else
+        enable = args == 'enable'
+    end
+
+    if opts.bang and enable then
+        vim.t.disable_trim = nil
+        vim.b.trim = true
+    elseif opts.bang and not enable then
+        vim.t.disable_trim = true
+        vim.b.trim = false
+    elseif not opts.bang then
+        vim.b.trim = enable
+    end
+
+    if args == '' or (enable and (vim.t.disable_trim or vim.g.disable_trim)) then
+        get_trim_state()
+    end
+
+end, { nargs = '?', complete = _completions.toggle, bang = true })
 
 nvim.command.set('GonvimSettngs', "execute('edit ~/.gonvim/setting.toml')")
 
@@ -978,3 +1012,12 @@ if ok then
         packer.snapshot(snapshot)
     end, { nargs = '?', desc = 'Creates a packer snapshot with a standard format' })
 end
+
+nvim.command.set('Wall', function(opts)
+    for _, win in ipairs(nvim.tab.list_wins(0)) do
+        -- local buf = nvim.win.get_buf(win)
+        nvim.win.call(win, function()
+            nvim.ex.update()
+        end)
+    end
+end, { desc = 'Saves all visible windows' })

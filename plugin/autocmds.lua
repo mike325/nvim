@@ -24,7 +24,11 @@ nvim.autocmd.CleanFile = {
     {
         event = { 'BufNewFile', 'BufReadPre', 'BufEnter' },
         pattern = '*',
-        command = "if !exists('b:trim') | let b:trim = v:true | endif",
+        callback = function()
+            if vim.b.trim == nil then
+                vim.b.trim = true
+            end
+        end,
     },
     {
         event = 'BufWritePre',

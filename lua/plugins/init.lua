@@ -87,9 +87,9 @@ packer.startup(function()
         event = { 'CursorHold', 'CursorMoved', 'InsertEnter' },
     }
 
+    use { 'tpope/vim-fugitive' }
     use { 'junegunn/gv.vim', cmd = 'GV', wants = 'vim-fugitive' }
-    use { 'tpope/vim-fugitive', event = { 'CmdlineEnter', 'CursorHold' } }
-    use { 'tpope/vim-repeat', event = 'VimEnter' }
+    use { 'tpope/vim-repeat' }
 
     use {
         'tpope/vim-surround',

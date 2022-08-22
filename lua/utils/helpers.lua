@@ -300,9 +300,8 @@ function M.project_config(event)
 
     M.set_grep(is_git, true)
 
-    local project = vim.fn.findfile('.project.vim', cwd .. ';')
+    local project = vim.fn.findfile('.project.lua', cwd .. ';')
     if #project > 0 then
-        -- print('Sourcing Project ', project)
         nvim.ex.source(project)
     end
 end
@@ -400,7 +399,7 @@ function M.ignores(tool)
     local ignores = {
         fd = {},
         find = { '-regextype', 'egrep', '!', [[\(]] },
-        -- rg = {},
+        rg = {},
         ag = {},
         grep = {},
         -- findstr = {},
@@ -413,19 +412,20 @@ function M.ignores(tool)
     for i = 1, #excludes do
         -- excludes[i] = "'" .. excludes[i] .. "'"
 
-        ignores.fd[#ignores.fd + 1] = '--exclude=' .. excludes[i]
-        ignores.find[#ignores.find + 1] = '-iwholename ' .. excludes[i]
+        table.insert(ignores.fd, '--exclude=' .. excludes[i])
+        table.insert(ignores.find, '-iwholename ' .. excludes[i])
         if i < #excludes then
-            ignores.find[#ignores.find + 1] = '-or'
+            table.insert(ignores.find, '-or')
         end
-        ignores.ag[#ignores.ag + 1] = ' --ignore ' .. excludes[i]
-        ignores.grep[#ignores.grep + 1] = '--exclude=' .. excludes[i]
+        table.insert(ignores.ag, ' --ignore ' .. excludes[i])
+        table.insert(ignores.grep, '--exclude=' .. excludes[i])
+        table.insert(ignores.rg, ' --iglob=!' .. excludes[i])
     end
 
-    ignores.find[#ignores.find + 1] = [[\)]]
+    table.insert(ignores.find, [[\)]])
 
     -- if is_file(sys.home .. '/.config/git/ignore') then
-    --     -- ignores.rg = ' --ignore-file '.. sys.home .. '/.config/git/ignore '
+    --     ignores.rg = ' --ignore-file '.. sys.home .. '/.config/git/ignore '
     --     ignores.fd = ' --ignore-file '.. sys.home .. '/.config/git/ignore '
     -- end
 
@@ -443,7 +443,9 @@ function M.grep(tool, attr, lst)
             grepformat = '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m',
         },
         rg = {
-            grepprg = 'rg -SHn --trim --color=never --no-heading --column --no-search-zip --hidden ',
+            grepprg = 'rg -SHn --trim --color=never --no-heading --column --no-search-zip --hidden '
+                .. M.ignores 'rg'
+                .. ' ',
             grepformat = '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m',
         },
         ag = {
@@ -472,8 +474,8 @@ end
 function M.filelist(tool, lst)
     local filetool = {
         git = 'git --no-pager ls-files -c --exclude-standard',
-        fd = 'fd --type=file --hidden --color=never',
-        rg = 'rg --color=never --no-search-zip --hidden --trim --files ',
+        fd = 'fd --type=file --hidden --color=never ' .. M.ignores 'fd' .. ' ',
+        rg = 'rg --color=never --no-search-zip --hidden --trim --files ' .. M.ignores 'rg' .. ' ',
         ag = 'ag -l --follow --nocolor --nogroup --hidden ' .. M.ignores 'ag' .. '-g ""',
         find = 'find . -type f ' .. M.ignores 'find' .. " -iname '*' ",
     }

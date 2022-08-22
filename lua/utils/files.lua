@@ -781,7 +781,9 @@ function M.clean_file()
     local buftype = vim.bo.buftype
     local filetype = vim.bo.filetype
 
-    if not vim.b.trim or exc_buftypes[buftype] or exc_filetypes[filetype] or filetype == '' then
+    local excluded_buffer = exc_buftypes[buftype] or exc_filetypes[filetype] or filetype == ''
+    local clean_buffer = vim.b.trim and not vim.g.disable_trim and not vim.t.disable_trim
+    if not clean_buffer or excluded_buffer then
         return false
     end
 

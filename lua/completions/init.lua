@@ -72,6 +72,9 @@ local completions = {
     zoom_links = function(arglead, cmdline, cursorpos)
         return json_keys_completion(arglead, cmdline, cursorpos, '~/.config/zoom/links.json')
     end,
+    toggle = function(arglead, cmdline, cursorpos)
+        return general_completion(arglead, cmdline, cursorpos, {'enable', 'disable'})
+    end,
 }
 
 _G._completions = completions
