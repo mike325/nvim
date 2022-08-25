@@ -1,6 +1,6 @@
 local nvim = require 'neovim'
 
-local get_icon = require('utils.helpers').get_icon
+local get_icon = require('utils.functions').get_icon
 local executable = require('utils.files').executable
 
 local jobs = STORAGE.jobs
@@ -356,11 +356,11 @@ function Job:start()
                 if vim.t.progress_win and self._tab == nvim.get_current_tabpage() then
                     nvim.win.close(vim.t.progress_win, false)
                 end
-                RELOAD('utils.helpers').dump_to_qf(qf_opts)
+                RELOAD('utils.functions').dump_to_qf(qf_opts)
             elseif qf_opts.clear and qf_opts.on_fail then
                 local context = vim.fn.getqflist({ context = 1 }).context
                 if context == (qf_opts.context or '') then
-                    RELOAD('utils.helpers').clear_qf()
+                    RELOAD('utils.functions').clear_qf()
                 end
             end
         end

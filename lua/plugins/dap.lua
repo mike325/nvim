@@ -2,7 +2,7 @@ local nvim = require 'neovim'
 local sys = require 'sys'
 
 local exepath = require('utils.files').exepath
-local load_module = require('utils.helpers').load_module
+local load_module = require('utils.functions').load_module
 local getcwd = require('utils.files').getcwd
 local is_dir = require('utils.files').is_dir
 local is_file = require('utils.files').is_file
@@ -149,7 +149,7 @@ nvim.autocmd.DapConfig = {
 
 local function list_breakpoints()
     dap.list_breakpoints()
-    require('utils.helpers').toggle_qf()
+    require('utils.functions').toggle_qf()
 end
 
 local args = { noremap = true, silent = true }

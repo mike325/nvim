@@ -1,4 +1,4 @@
-local load_module = require('utils.helpers').load_module
+local load_module = require('utils.functions').load_module
 
 local nvim = require 'neovim'
 local executable = require('utils.files').executable

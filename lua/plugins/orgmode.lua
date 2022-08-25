@@ -1,5 +1,5 @@
 -- local nvim = require 'neovim'
-local load_module = require('utils.helpers').load_module
+local load_module = require('utils.functions').load_module
 
 local orgmode = load_module 'orgmode'
 

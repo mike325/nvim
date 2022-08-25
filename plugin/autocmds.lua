@@ -77,7 +77,7 @@ nvim.autocmd.ProjectConfig = {
     event = { 'DirChanged', 'BufNewFile', 'BufReadPre', 'BufEnter', 'VimEnter' },
     pattern = '*',
     callback = function()
-        require('utils.helpers').project_config(vim.deepcopy(vim.v.event))
+        require('utils.functions').project_config(vim.deepcopy(vim.v.event))
     end,
 }
 

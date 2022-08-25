@@ -1,4 +1,4 @@
-local load_module = require('utils.helpers').load_module
+local load_module = require('utils.functions').load_module
 local trouble = load_module 'trouble'
 
 if trouble == nil then
@@ -6,7 +6,7 @@ if trouble == nil then
 end
 
 local nvim = require 'neovim'
-local get_icon = require('utils.helpers').get_icon
+local get_icon = require('utils.functions').get_icon
 local has_devicon = pcall(require, 'nvim-web-devicons')
 
 trouble.setup {

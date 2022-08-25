@@ -13,7 +13,7 @@ local databases = STORAGE.databases
 
 local async_execute = require('utils.functions').async_execute
 
-local load_module = require('utils.helpers').load_module
+local load_module = require('utils.functions').load_module
 local dap = load_module 'dap'
 
 local M = {

@@ -1,7 +1,7 @@
 -- local sys = require 'sys'
 local nvim = require 'neovim'
 
-local load_module = require('utils.helpers').load_module
+local load_module = require('utils.functions').load_module
 
 local lsp = load_module 'lspconfig'
 

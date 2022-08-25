@@ -1,6 +1,6 @@
 local sys = require 'sys'
 
-local load_module = require('utils.helpers').load_module
+local load_module = require('utils.functions').load_module
 local null_ls = load_module 'null-ls'
 
 local is_absolute = require('utils.files').is_absolute

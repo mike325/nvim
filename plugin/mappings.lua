@@ -203,18 +203,18 @@ vim.keymap.set('n', '[B', ':<C-U>bfirst<CR>zvzz', noremap_silent)
 vim.keymap.set('n', ']B', ':<C-U>blast<CR>zvzz', noremap_silent)
 vim.keymap.set('n', '[b', ':<C-U>exe "".(v:count ? v:count : "")."bprevious"<CR>', noremap_silent)
 vim.keymap.set('n', ']b', ':<C-U>exe "".(v:count ? v:count : "")."bnext"<CR>', noremap_silent)
-vim.keymap.set('n', ']<Space>', [[:<C-U>lua require"utils.helpers".add_nl(true)<CR>]], noremap_silent)
-vim.keymap.set('n', '[<Space>', [[:<C-U>lua require"utils.helpers".add_nl(false)<CR>]], noremap_silent)
-vim.keymap.set('n', ']e', [[:<C-U>lua require"utils.helpers".move_line(true)<CR>]], noremap_silent)
-vim.keymap.set('n', '[e', [[:<C-U>lua require"utils.helpers".move_line(false)<CR>]], noremap_silent)
+vim.keymap.set('n', ']<Space>', [[:<C-U>lua require"utils.functions".add_nl(true)<CR>]], noremap_silent)
+vim.keymap.set('n', '[<Space>', [[:<C-U>lua require"utils.functions".add_nl(false)<CR>]], noremap_silent)
+vim.keymap.set('n', ']e', [[:<C-U>lua require"utils.functions".move_line(true)<CR>]], noremap_silent)
+vim.keymap.set('n', '[e', [[:<C-U>lua require"utils.functions".move_line(false)<CR>]], noremap_silent)
 vim.keymap.set('n', '<C-L>', '<cmd>nohlsearch|diffupdate<CR>', noremap_silent)
 
 nvim.command.set('ClearQf', function()
-    require('utils.helpers').clear_qf()
+    require('utils.functions').clear_qf()
 end)
 
 nvim.command.set('ClearLoc', function()
-    require('utils.helpers').clear_qf(nvim.get_current_win())
+    require('utils.functions').clear_qf(nvim.get_current_win())
 end)
 
 vim.keymap.set('n', '<leader><leader>p', function()
@@ -247,12 +247,12 @@ vim.keymap.set('n', '<leader><leader>p', function()
 end, { noremap = true, silent = true, desc = 'Mark and swap windows' })
 
 vim.keymap.set('n', '=l', function()
-    require('utils.helpers').toggle_qf(vim.api.nvim_get_current_win())
+    require('utils.functions').toggle_qf(vim.api.nvim_get_current_win())
 end, { noremap = true, silent = true, desc = 'Toggle location list' })
 vim.keymap.set(
     'n',
     '=q',
-    require('utils.helpers').toggle_qf,
+    require('utils.functions').toggle_qf,
     { noremap = true, silent = true, desc = 'Toggle quickfix' }
 )
 
@@ -375,7 +375,7 @@ nvim.command.set('FileFormat', function(opts)
 end, { nargs = '?', complete = _completions.fileformats })
 
 nvim.command.set('SpellLang', function(opts)
-    require('utils.helpers').spelllangs(opts.args)
+    require('utils.functions').spelllangs(opts.args)
 end, { nargs = '?', complete = _completions.spells })
 
 nvim.command.set(
@@ -451,7 +451,7 @@ nvim.command.set('Grep', function(opts)
 end, { nargs = '+' })
 
 nvim.command.set('CFind', function(opts)
-    local finder = require('utils.helpers').select_filelist(false, true)
+    local finder = require('utils.functions').select_filelist(false, true)
     if finder[1] == 'fd' or finder[1] == 'fdfind' or finder[1] == 'rg' then
         table.insert(finder, '-uuu')
     end
@@ -760,7 +760,7 @@ nvim.command.set('Messages', function(opts)
         nvim.ex.messages 'clear'
         local context = vim.fn.getqflist({ context = 1 }).context
         if context == 'Messages' then
-            require('utils.helpers').clear_qf()
+            require('utils.functions').clear_qf()
             nvim.ex.cclose()
         end
     end

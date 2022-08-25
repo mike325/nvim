@@ -2,7 +2,7 @@ local sys = require 'sys'
 -- local nvim = require 'neovim'
 -- local plugins = require'neovim'.plugins
 
-local load_module = require('utils.helpers').load_module
+local load_module = require('utils.functions').load_module
 
 local executable = require('utils.files').executable
 local is_dir = require('utils.files').is_dir

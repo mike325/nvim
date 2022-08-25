@@ -509,7 +509,7 @@ function M.find_files(path, globs, cb)
         cb = { cb, 'function', true },
     }
 
-    local seeker = require('utils.helpers').select_filelist(false, true)
+    local seeker = require('utils.functions').select_filelist(false, true)
     local cmd = seeker[1]
     local args = vim.list_slice(seeker, 2, #seeker)
 

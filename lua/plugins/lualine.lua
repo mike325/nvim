@@ -1,6 +1,6 @@
 local sys = require 'sys'
-local load_module = require('utils.helpers').load_module
-local get_icon = require('utils.helpers').get_icon
+local load_module = require('utils.functions').load_module
+local get_icon = require('utils.functions').get_icon
 
 -- local is_windows = sys.name == 'windows'
 

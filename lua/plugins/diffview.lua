@@ -1,4 +1,4 @@
-local load_module = require('utils.helpers').load_module
+local load_module = require('utils.functions').load_module
 
 local diffview = load_module 'diffview'
 

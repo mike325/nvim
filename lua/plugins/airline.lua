@@ -1,5 +1,5 @@
-local get_icon = require('utils.helpers').get_icon
-local get_separators = require('utils.helpers').get_separators
+local get_icon = require('utils.functions').get_icon
+local get_separators = require('utils.functions').get_separators
 
 if not vim.g.started_by_firenvim then
     vim.g['airline#extensions#tabline#enabled'] = 1

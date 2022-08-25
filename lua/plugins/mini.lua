@@ -4,7 +4,7 @@ local sys = require 'sys'
 local is_dir = require('utils.files').is_dir
 local mkdir = require('utils.files').mkdir
 
-local load_module = require('utils.helpers').load_module
+local load_module = require('utils.functions').load_module
 local minidoc = load_module 'mini.doc'
 local minisessions = load_module 'mini.sessions'
 

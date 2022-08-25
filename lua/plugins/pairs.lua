@@ -1,4 +1,4 @@
-local load_module = require('utils.helpers').load_module
+local load_module = require('utils.functions').load_module
 
 local pears = load_module 'pears'
 local autopairs = load_module 'nvim-autopairs'
