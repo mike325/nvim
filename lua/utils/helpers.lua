@@ -443,7 +443,7 @@ function M.grep(tool, attr, lst)
             grepformat = '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m',
         },
         rg = {
-            grepprg = 'rg -SHn --trim --color=never --no-heading --column --no-search-zip --hidden '
+            grepprg = 'rg -SHn --no-binary --trim --color=never --no-heading --column --no-search-zip --hidden '
                 .. M.ignores 'rg'
                 .. ' ',
             grepformat = '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m',
@@ -475,7 +475,7 @@ function M.filelist(tool, lst)
     local filetool = {
         git = 'git --no-pager ls-files -c --exclude-standard',
         fd = 'fd --type=file --hidden --color=never ' .. M.ignores 'fd' .. ' ',
-        rg = 'rg --color=never --no-search-zip --hidden --trim --files ' .. M.ignores 'rg' .. ' ',
+        rg = 'rg --no-binary --color=never --no-search-zip --hidden --trim --files ' .. M.ignores 'rg' .. ' ',
         ag = 'ag -l --follow --nocolor --nogroup --hidden ' .. M.ignores 'ag' .. '-g ""',
         find = 'find . -type f ' .. M.ignores 'find' .. " -iname '*' ",
     }

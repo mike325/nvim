@@ -175,6 +175,13 @@ return {
         i(1, 'condition'),
         d(2, saved_text, {}, {user_args = {{indent = true}}}),
     })),
+    s('elseif', fmt([[
+    elseif {} then
+    {}
+    ]],{
+        i(1, 'condition'),
+        d(2, saved_text, {}, {user_args = {{indent = true}}}),
+    })),
     s(
         { trig = '(l?)req(f?)', regTrig = true },
         {

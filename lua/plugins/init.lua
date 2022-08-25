@@ -207,7 +207,8 @@ packer.startup(function()
         -- event = 'CmdlineEnter',
         -- cmd = { 'DiffviewToggle', 'DiffviewFileHistory' },
         cond = function()
-            return not vim.env.VIM_MIN and not vim.g.minimal
+            local is_min = vim.env.VIM_MIN or vim.g.minimal
+            return not is_min and require('storage').has_version('git', { '2', '31', '0' })
         end,
         config = function()
             require 'plugins.diffview'
@@ -665,6 +666,52 @@ packer.startup(function()
     --     },
     -- }
 
+    use {
+        'rhysd/git-messenger.vim',
+        cond = function()
+            return not vim.env.VIM_MIN and not vim.g.minimal
+        end,
+        setup = function()
+            vim.g.git_messenger_no_default_mappings = 1
+        end,
+        config = function()
+            vim.api.nvim_set_keymap('n', '=m', '<Plug>(git-messenger)', { silent = true, nowait = true })
+        end,
+    }
+
+    use {
+        'tommcdo/vim-lion',
+        cond = function()
+            return not vim.env.VIM_MIN and not vim.g.minimal
+        end,
+        config = function()
+            vim.g.lion_squeeze_spaces = 1
+        end,
+    }
+
+    use {
+        'folke/todo-comments.nvim',
+        cond = function()
+            local no_min = vim.env.VIM_MIN == nil and vim.g.minimal == nil
+            local has_rg = vim.fn.executable 'rg' == 1
+            return no_min and has_rg
+        end,
+        config = function()
+            require 'plugins.todos'
+        end,
+        requires = {
+            {
+                'folke/trouble.nvim',
+                cond = function()
+                    return not vim.env.VIM_MIN and not vim.g.minimal
+                end,
+                config = function()
+                    require 'plugins.trouble'
+                end,
+            },
+        },
+    }
+
     -- use {
     --     'tpope/vim-abolish',
     --     cond = function()
@@ -702,19 +749,6 @@ packer.startup(function()
     --     'norcalli/nvim-terminal.lua',
     --     config = function()
     --         require('terminal').setup()
-    --     end,
-    -- }
-
-    -- use {
-    --     'rhysd/git-messenger.vim',
-    --     cond = function()
-    --         return not vim.env.VIM_MIN and not vim.g.minimal
-    --     end,
-    --     setup = function()
-    --         vim.g.git_messenger_no_default_mappings = 1
-    --     end,
-    --     config = function()
-    --         vim.api.nvim_set_keymap('n', '=m', '<Plug>(git-messenger)', { silent = true, nowait = true })
     --     end,
     -- }
 

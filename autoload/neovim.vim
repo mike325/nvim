@@ -10,17 +10,17 @@ endif
 
 function! neovim#grep(type, ...) abort
     let l:visual = a:0 ? v:true : v:false
-    call luaeval('require"utils.functions".opfun_grep(_A[1], _A[2])', [a:type, l:visual])
+    call luaeval('RELOAD"utils.functions".opfun_grep(_A[1], _A[2])', [a:type, l:visual])
 endfunction
 
 function! neovim#lsp_format(type, ...) abort
     " let l:visual = a:0 ? v:true : v:false
-    call luaeval('require"utils.functions".opfun_lsp_format()')
+    call luaeval('RELOAD"utils.functions".opfun_lsp_format()')
 endfunction
 
 function! neovim#comment(type, ...) abort
     let l:visual = a:0 ? v:true : v:false
-    call luaeval('require"utils.functions".opfun_comment(_A[1], _A[2])', [a:type, l:visual])
+    call luaeval('RELOAD"utils.functions".opfun_comment(_A[1], _A[2])', [a:type, l:visual])
 endfunction
 
 function! neovim#inside_empty_pairs() abort

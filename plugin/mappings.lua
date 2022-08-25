@@ -477,11 +477,21 @@ nvim.command.set('CFind', function(opts)
     find:start()
 end, { bang = true, nargs = '+', complete = 'file' })
 
-vim.keymap.set('n', 'gs', '<cmd>set opfunc=neovim#grep<CR>g@', noremap_silent)
-vim.keymap.set('v', 'gs', ':<C-U>call neovim#grep(visualmode(), v:true)<CR>', noremap_silent)
+vim.keymap.set(
+    'n',
+    'gs',
+    '<cmd>set opfunc=neovim#grep<CR>g@',
+    { noremap = true, silent = true, desc = 'Grep search {motion}' }
+)
+vim.keymap.set(
+    'v',
+    'gs',
+    ':<C-U>call neovim#grep(visualmode(), v:true)<CR>',
+    { noremap = true, silent = true, desc = 'Grep search visual selection' }
+)
 vim.keymap.set('n', 'gss', function()
     require('utils.functions').send_grep_job(vim.fn.expand '<cword>')
-end, noremap_silent)
+end, { noremap = true, silent = true, desc = 'Grep search word under cursor' })
 
 nvim.command.set('Make', function(opts)
     local args = opts.fargs

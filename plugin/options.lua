@@ -190,6 +190,7 @@ vim.opt.foldlevel = 99
 
 vim.opt.signcolumn = 'auto:2'
 
+-- TODO: Add support to read and parse local and global git ignore files
 local wildignores = {
     '*.spl',
     '*.aux',
@@ -202,7 +203,18 @@ local wildignores = {
     '*.swp',
     '*.swap',
     '*.com',
+    '*.class',
+    '*.slo',
+    '*.lo',
+    '*.o',
+    '*.oarma72smp',
+    '*.oppc500',
+    '*.oppc',
+    '*.opp',
     '*.so',
+    '*.lai',
+    '*.la',
+    '*.a',
     '*.pkl',
     '*cache/*',
     '*__pycache__/*',

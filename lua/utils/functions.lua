@@ -111,34 +111,24 @@ function M.send_grep_job(args)
     grep:start()
 end
 
+-- TODO: call opfun functions directly instead of using a viml wrapper
 function M.opfun_grep(select, visual)
     local select_save = vim.o.selection
     vim.o.selection = 'inclusive'
-    local reg_save = nvim.reg['@']
 
-    -- TODO: migrate to neovim's api functions ?
-    if visual then
-        nvim.ex['normal!'] 'gvy'
-    elseif select == 'line' then
-        nvim.ex['normal!'] "'[V']y"
-    else -- char/block
-        nvim.ex['normal!'] '`[v`]y'
-    end
+    local startpos = nvim.buf.get_mark(0, '[')
+    local endpos = nvim.buf.get_mark(0, ']')
+    local selection = nvim.buf.get_text(0, startpos[1] - 1, startpos[2], endpos[1] - 1, endpos[2] + 1, {})[1]
 
-    M.send_grep_job(nvim.reg['@'])
+    M.send_grep_job(selection)
 
     vim.o.selection = select_save
-    nvim.reg['@'] = reg_save
 end
 
 function M.opfun_lsp_format()
     local buf = nvim.get_current_buf()
     local startpos = nvim.buf.get_mark(buf, '[')
-    -- startpos[2] = 0
     local endpos = nvim.buf.get_mark(buf, ']')
-    -- local endline = nvim.buf.get_lines(buf, endpos[1], endpos[1] + 1, false)[1]
-    -- endpos[2] = #endline
-
     vim.lsp.buf.range_formatting({}, startpos, endpos)
 end
 
@@ -200,21 +190,13 @@ end
 function M.opfun_comment(_, visual)
     local select_save = vim.o.selection
     vim.o.selection = 'inclusive'
-    local reg_save = nvim.reg['@']
 
-    if visual then
-        nvim.ex['normal!'] 'gvy'
-    else
-        nvim.ex['normal!'] "'[V']y"
-    end
+    local startpos = nvim.buf.get_mark(0, '[')
+    local endpos = nvim.buf.get_mark(0, ']')
 
-    local sel_start = nvim.buf.get_mark(0, '[')
-    local sel_end = nvim.buf.get_mark(0, ']')
-
-    M.toggle_comments(sel_start[1] - 1, sel_end[1])
+    M.toggle_comments(startpos[1] - 1, endpos[1])
 
     vim.o.selection = select_save
-    nvim.reg['@'] = reg_save
 end
 
 function M.get_ssh_hosts()

@@ -43,6 +43,20 @@ return {
             d(3, else_clause, {}, {}),
         })
     ),
+    s('elseif', fmt([=[
+    elif [[ {} ]]; then
+    {}
+    ]=],{
+        i(1, 'condition'),
+        d(2, saved_text, {}, {user_args = {{text = ':', indent = true}}}),
+    })),
+    s('elif', fmt([=[
+    elif [[ {} ]]; then
+    {}
+    ]=],{
+        i(1, 'condition'),
+        d(2, saved_text, {}, {user_args = {{text = ':', indent = true}}}),
+    })),
     s('fun', fmt([[
     function {}() {{
     {}
