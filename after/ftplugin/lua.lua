@@ -19,4 +19,5 @@ require('utils.buffers').setup(ft, {
     define = [[^\s*\(local\s\+\)\?\(function\s\+\(\i\+[.:]\)\?\|\ze\i\+\s*=\s*\|\(\i\+[.:]\)\?\ze\s*=\s*\)]],
     -- TODO: this includeexpr does not include /init.lua files
     includeexpr = [[substitute(v:fname,'\.','/','g')]],
+    include = [[\v\s*(RELOAD|require)]],
 })

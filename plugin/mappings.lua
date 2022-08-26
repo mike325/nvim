@@ -435,3 +435,5 @@ end, { desc = 'Saves all visible windows' })
 nvim.command.set('AlternateGrep', function()
     RELOAD('mappings').alternate_grep()
 end, { nargs = 0, desc = 'Change between git grep and the best available alternative' })
+
+pcall(require, 'work.mappings')

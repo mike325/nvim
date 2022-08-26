@@ -438,10 +438,19 @@ function M.async_execute(opts)
                 open = true,
                 dump = true,
             },
+            efm = opts.efm,
             context = opts.context or 'AsyncExecute',
             title = opts.title or 'AsyncExecute',
         },
     }
+
+    if opts.auto_close then
+        script:callback_on_success(function(_)
+            if vim.t.progress_win then
+                nvim.win.close(vim.t.progress_win, true)
+            end
+        end)
+    end
 
     if opts.callbacks then
         script:add_callback(opts.callbacks)
@@ -453,14 +462,6 @@ function M.async_execute(opts)
 
     if opts.callback_on_success then
         script:callback_on_success(opts.callback_on_success)
-    end
-
-    if opts.auto_close then
-        script:callback_on_success(function(_)
-            if vim.t.progress_win then
-                nvim.win.close(vim.t.progress_win, true)
-            end
-        end)
     end
 
     if opts.pre_execute then

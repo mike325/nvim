@@ -184,3 +184,5 @@ if executable 'isort' then
         end,
     })
 end
+
+pcall(require, 'work.autocmds')

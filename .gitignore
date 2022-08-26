@@ -14,12 +14,6 @@
 /extras.vim
 
 /plugged/
-/host/
-/autoload/host/
-/autoload/host.vim
-/autoload/work/
-/autoload/work.vim
-/plugin/host/
 
 .ropeproject/*
 
@@ -32,10 +26,18 @@ TAGS
 *.spl
 *.sug
 
-/local.vim
 /.luacheckcache
-/lua/work/
-/lua/host/
-/after/plugin/host/
 
 /plugin/packer_compiled.*
+
+work/
+work.vim
+work.lua
+
+private/
+private.lua
+private.vim
+
+host/
+host.vim
+host.lua

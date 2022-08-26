@@ -7,6 +7,7 @@ local jobs = STORAGE.jobs
 
 local plugins = require('neovim').plugins
 
+-- TODO: Add support to indicate backgroud jobs in the statusline
 require 'jobs.mappings'
 
 local Job = {}
