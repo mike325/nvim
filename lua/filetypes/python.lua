@@ -76,7 +76,7 @@ M.makeprg.flake8 = { '--max-line-length=120', '--ignore=' .. table.concat(M.pyig
 M.makeprg.pycodestyle = M.makeprg.flake8
 
 function M.get_formatter(stdin)
-    local project = require('utils.files').findfile('pyproject.toml')
+    local project = require('utils.files').findfile 'pyproject.toml'
     if project then
         project = realpath(project)
     end
