@@ -633,39 +633,6 @@ packer.startup(function()
         },
     }
 
-    -- use {
-    --     'tommcdo/vim-lion',
-    --     cond = function()
-    --         return not vim.env.VIM_MIN and not vim.g.minimal
-    --     end,
-    --     config = function()
-    --         vim.g.lion_squeeze_spaces = 1
-    --     end,
-    -- }
-
-    -- use {
-    --     'folke/todo-comments.nvim',
-    --     cond = function()
-    --         local no_min = vim.env.VIM_MIN == nil and vim.g.minimal == nil
-    --         local has_rg = vim.fn.executable 'rg' == 1
-    --         return no_min and has_rg
-    --     end,
-    --     config = function()
-    --         require 'plugins.todos'
-    --     end,
-    --     requires = {
-    --         {
-    --             'folke/trouble.nvim',
-    --             cond = function()
-    --                 return not vim.env.VIM_MIN and not vim.g.minimal
-    --             end,
-    --             config = function()
-    --                 require 'plugins.trouble'
-    --             end,
-    --         }
-    --     },
-    -- }
-
     use {
         'rhysd/git-messenger.vim',
         cond = function()
