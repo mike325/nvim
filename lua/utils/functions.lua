@@ -647,7 +647,11 @@ function M.project_config(event)
         end)
     end
 
-    M.set_grep(is_git, true)
+    if not vim.b.lock_grep then
+        M.set_grep(is_git, true)
+    else
+        M.set_grep(false, true)
+    end
 
     local project = require('utils.files').findfile('.project.lua', cwd)
     if project then

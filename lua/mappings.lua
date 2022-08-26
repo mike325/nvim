@@ -613,11 +613,11 @@ function M.toggle_diagnostics()
     end
 end
 
-function M.custom_compiler(args)
+function M.custom_compiler(opts)
     local files = RELOAD 'utils.files'
 
     local path = sys.base .. '/after/compiler/'
-    local compiler = args.args
+    local compiler = opts.args
     local compilers = vim.tbl_map(files.basename, files.get_files(path))
     if vim.tbl_contains(compilers, compiler .. '.lua') then
         nvim.command.set('CompilerSet', function(command)
@@ -672,6 +672,50 @@ function M.wall(opts)
         nvim.win.call(win, function()
             nvim.ex.update()
         end)
+    end
+end
+
+function M.alternate_grep(opts)
+    vim.b.lock_grep = not vim.b.lock_grep
+    local is_git = false
+    if vim.b.lock_grep then
+        require('utils.functions').set_grep(is_git, true)
+    else
+        if vim.b.project_root then
+            is_git = vim.b.project_root.is_git
+        end
+        require('utils.functions').set_grep(is_git, true)
+    end
+    local grepprg = require('utils.functions').select_grep(is_git, nil, true)
+    print(' Using: ' .. grepprg[1] .. ' as grepprg')
+end
+
+function M.swap_window()
+    if not nvim.t.swap_window then
+        nvim.t.swap_window = 1
+        nvim.t.swap_cursor = nvim.win.get_cursor(0)
+        nvim.t.swap_base_tab = nvim.tab.get_number(0)
+        nvim.t.swap_base_win = nvim.tab.get_win(0)
+        nvim.t.swap_base_buf = nvim.win.get_buf(0)
+    else
+        local swap_new_tab = nvim.tab.get_number(0)
+        local swap_new_win = nvim.tab.get_win(0)
+        local swap_new_buf = nvim.win.get_buf(0)
+        if
+            swap_new_tab == nvim.t.swap_base_tab
+            and swap_new_win ~= nvim.t.swap_base_win
+            and swap_new_buf ~= nvim.t.swap_base_buf
+        then
+            nvim.win.set_buf(0, nvim.t.swap_base_buf)
+            nvim.win.set_buf(nvim.t.swap_base_win, swap_new_buf)
+            nvim.win.set_cursor(0, nvim.t.swap_cursor)
+            nvim.ex['normal!'] 'zz'
+        end
+        nvim.t.swap_window = nil
+        nvim.t.swap_cursor = nil
+        nvim.t.swap_base_tab = nil
+        nvim.t.swap_base_win = nil
+        nvim.t.swap_base_buf = nil
     end
 end
 
