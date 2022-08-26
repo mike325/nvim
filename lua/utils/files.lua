@@ -869,8 +869,13 @@ function M.dump_json(filename, data)
     return M.writefile(filename, M.encode_json(data))
 end
 
-function M.find_parent(filename, basedir)
-    vim.validate { filename = { filename, 'string' }, basedir = { basedir, 'string', true } }
+-- TODO: Add find_any find_any_file and find_any_dir find any element of an array
+local function _find_parent(filename, basedir, condition_func)
+    vim.validate {
+        filename = { filename, 'string' },
+        basedir = { basedir, 'string', true },
+        condition_func = { condition_func, 'function', true },
+    }
     basedir = basedir or M.getcwd()
     assert(M.is_dir(basedir), debug.traceback('Invalid dirname: ' .. basedir))
 
@@ -881,15 +886,27 @@ function M.find_parent(filename, basedir)
         if not scanned then
             break
         end
-        if scanned == filename then
+        if scanned == filename and (not condition_func or condition_func(filename)) then
             return M.normalize_path(basedir .. M.separator() .. scanned)
         end
     end
 
     if not M.is_root(basedir) then
-        return M.find_parent(filename, M.basedir(basedir))
+        return _find_parent(filename, M.basedir(basedir))
     end
     return false
+end
+
+function M.find_parent(filename, basedir)
+    return _find_parent(filename, basedir)
+end
+
+function M.findfile(filename, basedir)
+    return _find_parent(filename, basedir, M.is_file)
+end
+
+function M.finddir(filename, basedir)
+    return _find_parent(filename, basedir, M.is_dir)
 end
 
 return M

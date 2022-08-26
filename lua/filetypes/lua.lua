@@ -51,8 +51,8 @@ function M.get_formatter(stdin)
         local found = false
         for _, config in ipairs(files) do
             for _, cwd in ipairs(dirs) do
-                local config_path = vim.fn.findfile(config, cwd .. ';')
-                if config_path ~= '' then
+                local config_path = require('utils.files').findfile(config, cwd)
+                if config_path then
                     vim.list_extend(cmd, { '-f', require('utils.files').realpath(config_path) })
                     found = true
                     break

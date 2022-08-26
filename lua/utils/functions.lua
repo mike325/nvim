@@ -649,8 +649,8 @@ function M.project_config(event)
 
     M.set_grep(is_git, true)
 
-    local project = vim.fn.findfile('.project.lua', cwd .. ';')
-    if #project > 0 then
+    local project = require('utils.files').findfile('.project.lua', cwd)
+    if project then
         nvim.ex.source(project)
     end
 end
@@ -709,21 +709,13 @@ function M.find_project_root(path)
     local dir = vim.fn.fnamemodify(path, ':p')
 
     for _, marker in pairs(vcs_markers) do
-        root = vim.fn.finddir(marker, dir .. ';')
-
-        if #root == 0 and marker == '.git' then
-            root = vim.fn.findfile(marker, dir .. ';')
-            root = #root > 0 and root .. '/' or root
-        end
-
-        if root ~= '' then
-            root = vim.fn.fnamemodify(root, ':p:h:h')
+        root = require('utils.files').find_parent(marker, dir)
+        if root then
             break
         end
     end
 
-    root = (not root or root == '') and getcwd() or root
-    return normalize_path(root)
+    return not root and getcwd() or require('utils.files').basedir(root)
 end
 
 function M.is_git_repo(root)
@@ -739,7 +731,7 @@ function M.is_git_repo(root)
     if require('utils.files').is_dir(git) or require('utils.files').is_file(git) then
         return true
     end
-    return vim.fn.findfile('.git', root .. ';') ~= ''
+    return require('utils.files').find_parent('.git', root)
 end
 
 function M.ignores(tool)
