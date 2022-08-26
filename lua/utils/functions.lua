@@ -648,7 +648,7 @@ function M.project_config(event)
         end)
     end
 
-    if not vim.b.lock_grep then
+    if not vim.t.lock_grep then
         M.set_grep(is_git, true)
     else
         M.set_grep(false, true)

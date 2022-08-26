@@ -676,9 +676,9 @@ function M.wall(opts)
 end
 
 function M.alternate_grep(opts)
-    vim.b.lock_grep = not vim.b.lock_grep
+    vim.t.lock_grep = not vim.t.lock_grep
     local is_git = false
-    if vim.b.lock_grep then
+    if vim.t.lock_grep then
         require('utils.functions').set_grep(is_git, true)
     else
         if vim.b.project_root then

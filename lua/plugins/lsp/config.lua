@@ -126,13 +126,13 @@ function M.on_attach(client, bufnr, is_null)
     local lua_cmd = '<cmd>lua %s<CR>'
 
     local mappings = {
-        ['<C-]>'] = {
-            capability = 'definitionProvider',
-            mapping = lua_cmd:format(
-                (has_telescope and "require'telescope.builtin'.lsp_definitions(require'telescope.themes'.get_cursor{})")
-                    or 'vim.lsp.buf.definition()'
-            ),
-        },
+        -- ['<C-]>'] = {
+        --     capability = 'definitionProvider',
+        --     mapping = lua_cmd:format(
+        --         (has_telescope and "require'telescope.builtin'.lsp_definitions(require'telescope.themes'.get_cursor{})")
+        --             or 'vim.lsp.buf.definition()'
+        --     ),
+        -- },
         ['gd'] = {
             capability = 'declarationProvider',
             mapping = lua_cmd:format 'vim.lsp.buf.declaration()',
