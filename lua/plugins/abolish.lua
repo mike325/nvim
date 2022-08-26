@@ -85,5 +85,5 @@ abolish['es'] = {
 }
 
 return {
-    abolish = abolish
+    abolish = abolish,
 }
