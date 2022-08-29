@@ -92,7 +92,10 @@ local function license(_, _, user_args)
         markdown = 1,
     }
 
-    if ft == '' or plain_fts[ft] or require('utils.treesitter').is_in_node 'string' then
+    local cursor = vim.api.nvim_win_get_cursor(0)
+    local range = { cursor[1] - 1, cursor[2], cursor[1] - 1, cursor[2] }
+
+    if ft == '' or plain_fts[ft] or require('utils.treesitter').is_in_node(range, 'string') then
         return actual_license
     end
     return get_comment(actual_license)

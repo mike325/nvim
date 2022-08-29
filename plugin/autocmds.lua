@@ -142,7 +142,7 @@ nvim.autocmd.Indent = {
     event = 'BufReadPost',
     pattern = '*',
     callback = function()
-        require('utils.buffers').detect_indent()
+        RELOAD('utils.buffers').detect_indent()
     end,
 }
 

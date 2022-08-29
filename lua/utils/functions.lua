@@ -478,6 +478,10 @@ function M.async_execute(opts)
 end
 
 function M.open(uri)
+    vim.validate {
+        uri = { uri, 'string' },
+    }
+
     local cmd
     local args = {}
     if sys.name == 'windows' then

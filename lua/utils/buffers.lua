@@ -260,35 +260,43 @@ function M.detect_indent(buf)
     --     end
     -- end
 
+    local ts_utils = RELOAD 'utils.treesitter'
+
     local indent = vim.bo[buf].tabstop
     local expandtab = vim.bo[buf].expandtab
-    local is_node = require('utils.treesitter').is_node
-    local has_ts = require('utils.treesitter').has_ts(buf)
+    local is_in_node = ts_utils.is_in_node
+    local has_ts = ts_utils.has_ts(buf)
 
     -- BUG: This hangs neovim's startup, seems to be a race condition, tested in windows 10
     -- local line_count = vim.api.nvim_buf_line_count(buf)
 
     local line_count = vim.fn.line '$'
     local lines = vim.api.nvim_buf_get_lines(buf, 0, line_count < 1024 and line_count or 1024, true)
+    -- TODO: may change this to while to skip ranges of un interested blocks of code
+
+    local blacklist = {
+        'string',
+        'comment',
+        'paragraph',
+        'document',
+        'parameter_list',
+        'field_initializer_list',
+        'field_initializer',
+        'parameters',
+    }
+
     for idx, line in ipairs(lines) do
         if line and #line > 0 and not line:match '^%s*$' then
             local indent_str = line:match '^(%s+)[^%s]+'
             if indent_str then
                 -- Use TS to avoid multiline strings and comments
                 -- We may need to fallback to lua pattern matching if TS is not available
-                if
-                    not has_ts
-                    or not is_node(
-                        { idx - 1, #indent_str, idx - 1, #line },
-                        { 'string', 'comment', 'paragraph', 'document' }
-                    )
-                then
+                if not has_ts or not is_in_node({ idx - 1, #indent_str - 1, idx - 1, #line - 1 }, blacklist) then
                     -- NOTE: we may need to confirm tab indent with more than 1 line and avoid mix indent
                     if indent_str:match '^\t+$' then
                         expandtab = false
                         break
-                        -- TODO: this accepts indent == 6
-                    elseif indent_str:match '^ +$' and #indent_str % 2 == 0 and #indent_str < 9 then
+                    elseif indent_str:match '^ +$' and #indent_str < 9 then
                         indent = #indent_str
                         expandtab = true
                         break
