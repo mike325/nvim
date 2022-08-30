@@ -296,7 +296,7 @@ function M.detect_indent(buf)
                     if indent_str:match '^\t+$' then
                         expandtab = false
                         break
-                    elseif indent_str:match '^ +$' and #indent_str < 9 then
+                    elseif indent_str:match '^ +$' and #indent_str < 9 and #indent_str > 1 then
                         indent = #indent_str
                         expandtab = true
                         break
