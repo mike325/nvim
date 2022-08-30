@@ -225,7 +225,6 @@ nvim.command.set('DapStepOut', function(_)
     require('dap').step_out()
 end, { nargs = '?' })
 
-
 local dapui = load_module 'dapui'
 if dapui then
     dapui.setup {}
