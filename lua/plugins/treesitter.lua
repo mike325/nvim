@@ -74,6 +74,7 @@ treesitter.setup {
         enable = true,
         disable = {
             'org',
+            'make',
             nvim.plugins['todo-comments.nvim'] and 'comment' or nil,
         },
         additional_vim_regex_highlighting = { 'org' },
