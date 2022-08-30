@@ -225,4 +225,26 @@ nvim.command.set('DapStepOut', function(_)
     require('dap').step_out()
 end, { nargs = '?' })
 
+
+local dapui = load_module 'dapui'
+if dapui then
+    dapui.setup {}
+
+    nvim.command.set('DapUI', function()
+        require('dapui').toggle 'sidebar'
+    end, {})
+
+    vim.keymap.set('n', '=I', require('dapui').toggle, { noremap = true, silent = true })
+
+    dap.listeners.after.event_initialized['dapui_config'] = function()
+        dapui.open 'sidebar'
+    end
+    dap.listeners.before.event_terminated['dapui_config'] = function()
+        dapui.close 'sidebar'
+    end
+    dap.listeners.before.event_exited['dapui_config'] = function()
+        dapui.close 'sidebar'
+    end
+end
+
 return true

@@ -521,47 +521,24 @@ packer.startup(function()
     }
 
     use {
-        'rcarriga/nvim-dap-ui',
+        'mfussenegger/nvim-dap',
+        commit = (vim.fn.has 'nvim-0.7' == 0 and '71714020884760332240373d2fec481e757f75f2' or nil),
+        -- event = { 'CursorHold', 'CmdlineEnter' },
+        -- cmd = { 'DapStart', 'DapContinue' },
         cond = function()
             return not vim.env.VIM_MIN and not vim.g.minimal
         end,
         config = function()
-            local dapui = require 'dapui'
-            local nvim = require 'neovim'
-            dapui.setup {}
-
-            nvim.command.set('DapUI', function()
-                require('dapui').toggle 'sidebar'
-            end, {})
-
-            vim.keymap.set('n', '=I', require('dapui').toggle, { noremap = true, silent = true })
-
-            local dap = require 'dap'
-            dap.listeners.after.event_initialized['dapui_config'] = function()
-                dapui.open 'sidebar'
-            end
-            dap.listeners.before.event_terminated['dapui_config'] = function()
-                dapui.close 'sidebar'
-            end
-            dap.listeners.before.event_exited['dapui_config'] = function()
-                dapui.close 'sidebar'
-            end
+            require 'plugins.dap'
         end,
         requires = {
             {
-                'mfussenegger/nvim-dap',
-                commit = (vim.fn.has 'nvim-0.7' == 0 and '71714020884760332240373d2fec481e757f75f2' or nil),
-                -- event = { 'CursorHold', 'CmdlineEnter' },
-                -- cmd = { 'DapStart', 'DapContinue' },
+                'rcarriga/nvim-dap-ui',
                 cond = function()
                     return not vim.env.VIM_MIN and not vim.g.minimal
                 end,
-                config = function()
-                    require 'plugins.dap'
-                end,
             },
         },
-        -- after = 'nvim-dap',
     }
 
     use {
