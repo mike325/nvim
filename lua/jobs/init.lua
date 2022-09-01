@@ -13,7 +13,7 @@ require 'jobs.mappings'
 local Job = {}
 Job.__index = Job
 
-local function general_output_parser(job, data)
+local function general_input_parser(job, data)
     vim.validate {
         data = {
             data,
@@ -31,7 +31,7 @@ local function general_output_parser(job, data)
         data = vim.split(data, '[\r]?\n')
     end
 
-    for _, val in pairs(data) do
+    for _, val in ipairs(data) do
         val = nvim.replace_termcodes(val, true, false, false)
 
         if val:match '^[uU]sername for .*' or val:match '.* [uU]sername:%s*$' then
@@ -59,6 +59,44 @@ local function general_output_parser(job, data)
             job:stop()
         end
     end
+end
+
+local function general_error_parser(job, data)
+    vim.validate {
+        data = {
+            data,
+            function(d)
+                return type(d) == type '' or type(d) == type {}
+            end,
+            'job stdout data string or table',
+        },
+    }
+
+    local error_detected = false
+    -- TODO: Need to do more testing on these patterns
+    local error_patterns = {
+        '<(fail(ed)|err(or)?)>:',
+        '<(fail(ed)|error)>:?',
+        [=[\[(error|fail(ed)?]:?]=],
+    }
+    local error_regex = vim.regex([[\v\c(]] .. table.concat(error_patterns, '|') .. ')')
+
+    if type(data) == 'string' then
+        data = vim.split(data, '[\r]?\n')
+    end
+
+    for _, val in ipairs(data) do
+        val = nvim.replace_termcodes(val, true, false, false)
+        if error_regex:match(val) then
+            error_detected = true
+            break
+        end
+    end
+
+    if error_detected then
+        job.failed = true
+    end
+
 end
 
 local function get_buffer(job)
@@ -210,11 +248,29 @@ function Job:new(job)
 
         assert(
             job.progress == nil or type(job.progress) == type(true),
-            debug.traceback('Invalid progress arg ' .. vim.inspect(job._show_progress))
+            debug.traceback('Invalid progress arg ' .. vim.inspect(job.progress))
         )
         obj._show_progress = false
         if job.progress ~= nil then
             obj._show_progress = job.progress
+        end
+
+        assert(
+            job.parse_errors == nil or type(job.parse_errors) == type(true),
+            debug.traceback('Invalid parse_errors arg ' .. vim.inspect(job.parse_errors))
+        )
+        obj._parse_errors = false
+        if job.parse_errors ~= nil then
+            obj._parse_errors = job.parse_errors
+        end
+
+        assert(
+            job.parse_input == nil or type(job.parse_input) == type(true),
+            debug.traceback('Invalid parse_input arg ' .. vim.inspect(job.parse_input))
+        )
+        obj._parse_input = ( obj._opts and obj._opts.pty ) and obj._opts.pty or false
+        if job.parse_input ~= nil then
+            obj._parse_input = job.parse_input
         end
     end
 
@@ -223,8 +279,21 @@ function Job:new(job)
     obj._id = -1
     obj._pid = -1
     obj._callbacks = {}
-    obj._show_progress = obj._show_progress or true
     obj._tab = nvim.get_current_tabpage()
+
+    if obj._show_progress == nil then
+        obj._show_progress = false
+    end
+
+    -- TODO: Add option to set custom parsing functions
+    if obj._parse_errors == nil then
+        obj._parse_errors = false
+    end
+
+    -- TODO: Add option to set custom parsing functions
+    if obj._parse_input == nil then
+        obj._parse_input = false
+    end
 
     obj._output = {}
     obj._stdout = {}
@@ -281,7 +350,7 @@ function Job:start()
     assert(not self._fired, debug.traceback(('Job %s was already started'):format(self._id)))
 
     local function general_on_exit(_, rc)
-        if rc == 0 then
+        if rc == 0 and not self.failed then
             vim.notify(('Job %s succeed!! %s'):format(self.exe, get_icon 'success'), 'INFO', { title = self.exe })
         else
             vim.notify(
@@ -318,15 +387,20 @@ function Job:start()
     local _user_on_stdout = self._opts.on_stdout
     local _user_on_stderr = self._opts.on_stderr
     local _user_on_exit = self._opts.on_exit
-    local _cwd = self._opts.cwd or require('utils.files').getcwd()
+    local utils_io = RELOAD('utils.files')
+    local _cwd = self._opts.cwd or utils_io.getcwd()
 
-    self._opts.cwd = require('utils.files').realpath(_cwd)
+    self._opts.cwd = utils_io.realpath(_cwd)
 
     local function on_exit_wrapper(_, rc, event)
         self._isalive = false
         self.rc = rc
         self._show_progress = false
         jobs[tostring(self._id)] = nil
+
+        if vim.t.active_job == tostring(self._id)then
+            vim.t.active_job = nil
+        end
 
         if _user_on_exit then
             _user_on_exit(self, rc)
@@ -338,15 +412,16 @@ function Job:start()
             local qf_opts = self._qf
 
             qf_opts.lines = self:output()
-            if qf_opts.on_fail and rc ~= 0 then
+            local failed = rc ~= 0 or self.failed
+            if qf_opts.on_fail and failed then
                 if qf_opts.on_fail.open then
-                    qf_opts.open = rc ~= 0
+                    qf_opts.open = failed
                 end
                 if qf_opts.on_fail.jump then
-                    qf_opts.jump = rc ~= 0
+                    qf_opts.jump = failed
                 end
                 if qf_opts.on_fail.dump then
-                    qf_opts.dump = rc ~= 0
+                    qf_opts.dump = failed
                 end
             end
 
@@ -379,7 +454,9 @@ function Job:start()
         end
 
         data = vim.tbl_map(function(k)
-            return vim.api.nvim_replace_termcodes(k, true, false, false)
+            k = vim.api.nvim_replace_termcodes(k, true, false, false)
+            k = k:gsub('?%[[:;0-9]*m', '')
+            return k
         end, data)
 
         return data
@@ -391,7 +468,12 @@ function Job:start()
         if _user_on_stdout then
             _user_on_stdout(self, data)
         end
-        general_output_parser(self, data)
+        if self._parse_input then
+            general_input_parser(self, data)
+        end
+        if self._parse_errors then
+            general_error_parser(self, data)
+        end
     end
 
     local function on_stderr_wrapper(_, data, name)
@@ -400,7 +482,12 @@ function Job:start()
         if _user_on_stderr then
             _user_on_stderr(self, data)
         end
-        general_output_parser(self, data)
+        if self._parse_input then
+            general_input_parser(self, data)
+        end
+        if self._parse_errors then
+            general_error_parser(self, data)
+        end
     end
 
     self._opts.on_stdout = on_stdout_wrapper
@@ -416,6 +503,7 @@ function Job:start()
     self._fired = true
     self._isalive = true
     self._pid = vim.fn.jobpid(self._id)
+    -- TODO: Should all jobs be pluggable ?
 
     if self._timeout and self._timeout > 0 then
         vim.defer_fn(function()
@@ -425,6 +513,7 @@ function Job:start()
     end
 
     jobs[tostring(self._id)] = self
+    vim.t.active_job = tostring(self._id)
 end
 
 function Job:stop()
@@ -466,7 +555,8 @@ function Job:progress()
         self._buffer = get_buffer(self)
     end
 
-    require('utils.windows').progress(self._buffer)
+    RELOAD('utils.windows').progress(self._buffer)
+
 end
 
 function Job:wait(timeout)
@@ -486,7 +576,7 @@ end
 function Job:callback_on_failure(cb)
     vim.validate { callback = { cb, 'function' } }
     self:add_callback(function(job, rc)
-        if rc ~= 0 then
+        if rc ~= 0 or job.failed then
             cb(job, rc)
         end
     end)
@@ -495,7 +585,7 @@ end
 function Job:callback_on_success(cb)
     vim.validate { callback = { cb, 'function' } }
     self:add_callback(function(job, rc)
-        if rc == 0 then
+        if rc == 0 and not job.failed then
             cb(job)
         end
     end)

@@ -427,6 +427,7 @@ function M.async_execute(opts)
         silent = opts.silent,
         progress = opts.progress,
         verify_exec = opts.verify_exec,
+        parse_errors = opts.parse_errors,
         opts = {
             cwd = opts.cwd or require('utils.files').getcwd(),
             -- pty = true,
@@ -439,8 +440,8 @@ function M.async_execute(opts)
                 dump = true,
             },
             efm = opts.efm,
-            context = opts.context or 'AsyncExecute',
-            title = opts.title or 'AsyncExecute',
+            context = opts.context or opts.title or 'AsyncExecute',
+            title = opts.title or opts.context or 'AsyncExecute',
         },
     }
 
@@ -1033,8 +1034,8 @@ function M.dump_to_qf(opts)
         },
     }
 
-    opts.context = opts.context or 'GenericQfData'
-    opts.title = opts.title or 'Generic Qf data'
+    opts.title = opts.title or opts.context or 'Generic Qf data'
+    opts.context = opts.context or opts.title or 'GenericQfData'
     if not opts.efm or #opts.efm == 0 then
         local efm = vim.opt_local.efm:get()
         if #efm == 0 then
@@ -1057,6 +1058,10 @@ function M.dump_to_qf(opts)
     opts.jump = nil
     opts.cmdname = nil
     opts.lines = require('utils.tables').clear_lst(opts.lines)
+
+    for idx, line in ipairs(opts.lines) do
+        opts.lines[idx] = vim.api.nvim_replace_termcodes(line, true, false, false)
+    end
 
     local win
     if qf_type ~= 'qf' then
