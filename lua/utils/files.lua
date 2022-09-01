@@ -213,6 +213,9 @@ function M.basename(path)
         path = M.getcwd()
     end
     path = M.normalize_path(path)
+    if path:sub(#path, #path) == M.separator() then
+        path = path:sub(1, #path - 1)
+    end
     return path:match(('[^%s]+$'):format(M.separator()))
 end
 

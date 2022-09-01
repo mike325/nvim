@@ -309,6 +309,11 @@ describe('Basename', function()
         assert.equals('test', basename './test')
     end)
 
+    it('Dirname', function()
+        assert.equals('test', basename './test/')
+        assert.equals('test', basename './test')
+    end)
+
     it('CWD', function()
         local cwd = forward_path(vim.loop.cwd()):gsub('.*' .. separator(), '')
         assert.equals(cwd, basename '.')

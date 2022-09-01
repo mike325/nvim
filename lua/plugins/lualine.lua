@@ -1,15 +1,16 @@
+local nvim = require 'neovim'
 local sys = require 'sys'
 local load_module = require('utils.functions').load_module
 local get_icon = require('utils.functions').get_icon
 
--- local is_windows = sys.name == 'windows'
-
+-- TODO: Add support to live reload these functions
 local lualine = load_module 'lualine'
 if not lualine or vim.g.started_by_firenvim then
     return false
 end
 
 local getcwd = require('utils.files').getcwd
+local has_winbar = nvim.has.option 'winbar'
 
 -- local has_gps, gps = pcall(require, 'nvim-gps')
 -- local function where_ami()
@@ -136,7 +137,7 @@ lualine.setup {
         -- section_separators = { left = '', right = '' },
         -- disabled_filetypes = {},
         -- always_divide_middle = true,
-        globalstatus = require('neovim').has.option 'winbar', -- false
+        globalstatus = has_winbar, -- false
     },
     sections = {
         lualine_a = {

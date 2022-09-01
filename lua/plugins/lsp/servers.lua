@@ -209,7 +209,7 @@ local servers = {
                     '--header-insertion=iwyu',
                     '--function-arg-placeholders',
                     '--completion-style=detailed',
-                    '--log=verbose',
+                    -- '--log=verbose',
                 },
                 capabilities = {
                     textDocument = {

@@ -764,4 +764,19 @@ function M.toggle_progress_win()
     end
 end
 
+function M.gradle(opts)
+    local args = opts.fargs
+    local cmd = { 'gradle', '--quiet' }
+
+    cmd = vim.list_slice(cmd, args)
+    RELOAD('utils.functions').async_execute {
+        cmd = cmd,
+        progress = true,
+        auto_close = true,
+        context = 'Gradle',
+        title = 'Gradle',
+        efm = table.concat(vim.opt_global:get(), ','),
+    }
+end
+
 return M

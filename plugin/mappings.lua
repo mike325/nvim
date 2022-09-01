@@ -436,4 +436,10 @@ nvim.command.set('AlternateGrep', function()
     RELOAD('mappings').alternate_grep()
 end, { nargs = 0, desc = 'Change between git grep and the best available alternative' })
 
+if executable 'gradle' then
+    nvim.command.set('Gradle', function(opts)
+        RELOAD('mappings').gradle(opts)
+    end, { nargs = '+', desc = 'Execute Gradle async' })
+end
+
 pcall(require, 'work.mappings')
