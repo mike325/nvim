@@ -96,7 +96,6 @@ local function general_error_parser(job, data)
     if error_detected then
         job.failed = true
     end
-
 end
 
 local function get_buffer(job)
@@ -268,7 +267,7 @@ function Job:new(job)
             job.parse_input == nil or type(job.parse_input) == type(true),
             debug.traceback('Invalid parse_input arg ' .. vim.inspect(job.parse_input))
         )
-        obj._parse_input = ( obj._opts and obj._opts.pty ) and obj._opts.pty or false
+        obj._parse_input = (obj._opts and obj._opts.pty) and obj._opts.pty or false
         if job.parse_input ~= nil then
             obj._parse_input = job.parse_input
         end
@@ -387,7 +386,7 @@ function Job:start()
     local _user_on_stdout = self._opts.on_stdout
     local _user_on_stderr = self._opts.on_stderr
     local _user_on_exit = self._opts.on_exit
-    local utils_io = RELOAD('utils.files')
+    local utils_io = RELOAD 'utils.files'
     local _cwd = self._opts.cwd or utils_io.getcwd()
 
     self._opts.cwd = utils_io.realpath(_cwd)
@@ -398,7 +397,7 @@ function Job:start()
         self._show_progress = false
         jobs[tostring(self._id)] = nil
 
-        if vim.t.active_job == tostring(self._id)then
+        if vim.t.active_job == tostring(self._id) then
             vim.t.active_job = nil
         end
 
@@ -556,7 +555,6 @@ function Job:progress()
     end
 
     RELOAD('utils.windows').progress(self._buffer)
-
 end
 
 function Job:wait(timeout)
