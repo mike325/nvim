@@ -77,5 +77,10 @@ local completions = {
     end,
 }
 
-_G._completions = completions
-return completions
+if not _G._completions then
+    _G._completions = completions
+else
+    _G._completions = vim.tbl_extend('force', _G._completions, completions)
+end
+
+return _G._completions

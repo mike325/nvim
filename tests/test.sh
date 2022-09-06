@@ -377,18 +377,9 @@ fi
 
 nvim --version | tee -a test.log
 
-for test in lua/tests/*.lua; do
-    if [[ -f $test ]]; then
-        if ! nvim --noplugin -u tests/min.lua --headless -c "PlenaryBustedFile $test"; then
-            error_msg "Failed to run nvim test: ${test##*/}"
-        fi
-    fi
-done
-
-# TODO: Why in hell this fail !?
-# if ! nvim --noplugin -u tests/min.lua --headless -c "PlenaryBustedDirectory lua/tests/ {minimal_init = 'tests/min.lua'}"; then
-#     error_msg "Failed to run nvim tests"
-# fi
+if ! nvim --noplugin -u tests/min.lua --headless -c "PlenaryBustedDirectory lua/tests/ {minimal_init = 'tests/min.lua'}"; then
+    error_msg "Failed to run nvim tests"
+fi
 
 #######################################################################
 #                           CODE Goes Here                            #

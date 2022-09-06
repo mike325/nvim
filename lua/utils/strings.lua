@@ -45,4 +45,11 @@ function M.trim(str)
     return str:gsub('^%s*', ''):gsub('%s*$', '')
 end
 
+function M.capitalize(str)
+    if #str == 1 or #str == 0 then
+        return #str == 0 and str or str:upper()
+    end
+    return str:sub(1, 1):upper() .. str:sub(2, #str)
+end
+
 return M

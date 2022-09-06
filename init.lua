@@ -55,6 +55,7 @@ end
 
 -- require'storage'
 require('utils.functions').get_ssh_hosts()
+pcall(require, 'work')
 
 vim.cmd [[packadd! cfilter]]
 vim.cmd [[packadd! matchit]]
