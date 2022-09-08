@@ -66,9 +66,13 @@ local next_item = function(fallback)
     local neogen = load_module 'neogen'
     local ls = load_module 'luasnip'
 
+    if ls then
+        ls.unlink_current_if_deleted()
+    end
+
     if cmp.visible() then
         cmp.select_next_item()
-    elseif ls and ls.jumpable(1) then
+    elseif ls and ls.locally_jumpable(1) then
         ls.jump(1)
     elseif neogen and neogen.jumpable() then
         vim.fn.feedkeys(t "<cmd>lua require('neogen').jump_next()<CR>", '')
@@ -87,9 +91,13 @@ local prev_item = function(fallback)
     local neogen = load_module 'neogen'
     local ls = load_module 'luasnip'
 
+    if ls then
+        ls.unlink_current_if_deleted()
+    end
+
     if cmp.visible() then
         cmp.select_prev_item()
-    elseif ls and ls.jumpable(-1) then
+    elseif ls and ls.locally_jumpable(-1) then
         ls.jump(-1)
     elseif ultisnips and vim.fn['UltiSnips#CanJumpBackwards']() == 1 then
         vim.fn['UltiSnips#JumpBackwards']()
@@ -146,6 +154,7 @@ cmp.setup {
             behavior = cmp.SelectBehavior.Insert,
             select = true,
         },
+        -- TODO: May move this functions to utils.functions to auto reload them
         ['<C-e>'] = cmp.mapping(close, { 'i', 's' }),
         ['<CR>'] = cmp.mapping(enter_item, { 'i', 's' }),
         ['<Tab>'] = cmp.mapping(next_item, { 'i', 's' }),

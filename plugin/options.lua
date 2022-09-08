@@ -87,7 +87,10 @@ if sys.name == 'windows' then
     vim.opt.backup = false
 end
 
-vim.opt.backupcopy = 'yes'
+-- vim.opt.swapfile = false
+-- vim.opt.backup = true
+-- vim.opt.writebackup = true
+-- vim.opt.backupcopy = 'auto'
 vim.opt.undofile = true
 
 vim.opt.expandtab = true

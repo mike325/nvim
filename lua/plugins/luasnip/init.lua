@@ -8,9 +8,8 @@ local sys = require 'sys'
 local nvim = require 'neovim'
 
 ls.config.setup {
-    history = false,
-    -- Update more often, :h events for more info.
-    updateevents = 'TextChanged,TextChangedI',
+    -- history = true,
+    -- region_check_events = 'InsertEnter,InsertLeave',
     store_selection_keys = '<CR>',
     ext_opts = {
         [require('luasnip.util.types').choiceNode] = {
@@ -19,11 +18,6 @@ ls.config.setup {
             },
         },
     },
-    -- treesitter-hl has 100, use something higher (default is 200).
-    -- ext_base_prio = 300,
-    -- minimal increase in priority.
-    -- ext_prio_increase = 1,
-    -- enable_autosnippets = true,
 }
 
 nvim.command.set('SnippetEdit', function(opts)

@@ -21,6 +21,7 @@ if ( -Not (Test-Path("$plenary_dir\plenary.nvim")) ) {
 nvim --version
 
 $exit_code = 0
+# nvim --noplugin -u tests/min.lua --headless -c "PlenaryBustedDirectory lua/tests/ {minimal_init = 'tests/min.lua'}"
 Get-ChildItem -Path .\lua\tests\ | Where-Object {$_.PSIsContainer -eq $false} | ForEach {
     nvim --noplugin -u "tests/min.lua" --headless -c "PlenaryBustedFile lua/tests/$_"
     if ( -not $? ) {
