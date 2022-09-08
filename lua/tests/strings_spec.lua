@@ -35,9 +35,9 @@ describe('Capitalize', function()
     local capitalize = require('utils.strings').capitalize
 
     it('words', function()
-        assert.equals('Directory', capitalize('directory'))
-        assert.equals('Directory', capitalize('Directory'))
-        assert.equals('D', capitalize('d'))
-        assert.equals('', capitalize(''))
+        assert.equals('Directory', capitalize 'directory')
+        assert.equals('Directory', capitalize 'Directory')
+        assert.equals('D', capitalize 'd')
+        assert.equals('', capitalize '')
     end)
 end)
