@@ -64,12 +64,12 @@ vim.keymap.set('n', '<C-q>', builtin.quickfix, noremap)
 vim.keymap.set('n', '<C-p>', function()
     local is_git = vim.b.project_root and vim.b.project_root.is_git or false
     builtin.find_files {
-        find_command = require('utils.functions').select_filelist(is_git, true),
+        find_command = RELOAD('utils.functions').select_filelist(is_git, true),
     }
 end, noremap)
 
 vim.keymap.set('n', '<leader><C-p>', function()
-    local finder = require('utils.functions').select_filelist(false, true)
+    local finder = RELOAD('utils.functions').select_filelist(false, true)
     if finder[1] == 'fd' or finder[1] == 'fdfind' or finder[1] == 'rg' then
         table.insert(finder, '-uuu')
     end
@@ -99,7 +99,7 @@ end)
 nvim.command.set('GetVimFiles', function()
     builtin.find_files {
         cwd = sys.base,
-        find_command = require('utils.functions').select_filelist(false, true),
+        find_command = RELOAD('utils.functions').select_filelist(false, true),
     }
 end)
 

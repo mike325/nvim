@@ -51,7 +51,6 @@ end
 -- vim.diagnostic.set_virtual_text = set_virtual_text_custom
 
 local lsp_configs = require 'plugins.lsp.servers'
-local lsp_setup = require('plugins.lsp.utils').setup
 
 vim.lsp.protocol.CompletionItemKind = {
     '', -- Text          = 1;
@@ -81,8 +80,54 @@ vim.lsp.protocol.CompletionItemKind = {
     '', -- TypeParameter = 25;
 }
 
+local preload = {
+    clangd = {
+        setup = function(opts)
+            local clangd = load_module 'clangd_extensions'
+            if clangd then
+                clangd.setup(opts)
+            end
+        end,
+        args = {},
+    },
+    ['rust-analyzer'] = {
+        setup = function(opts)
+            local tools = load_module 'rust-tools'
+            if tools then
+                tools.setup(opts)
+            end
+        end,
+        args = {},
+    },
+}
+
+local function setup(ft)
+    vim.validate { filetype = { ft, 'string' } }
+    local cmp = load_module 'cmp'
+
+    local server_idx = RELOAD('plugins.lsp.utils').check_language_server(ft)
+    if server_idx then
+        local server = RELOAD('plugins.lsp.servers')[ft][server_idx]
+        local config = server.config or server.exec
+        local init = vim.deepcopy(server.options) or {}
+        init.on_attach = require('plugins.lsp.config').on_attach
+        if cmp then
+            init.capability = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+        end
+        if preload[config] and preload[config].setup then
+            local opts = preload[config].args
+            opts.server = init
+            preload[config].setup(opts)
+        else
+            lsp[config].setup(init)
+        end
+        return true
+    end
+    return false
+end
+
 for filetype, _ in pairs(lsp_configs) do
-    local has_server = lsp_setup(filetype)
+    local has_server = setup(filetype)
     local null_config = null_configs[filetype]
 
     if not has_server and null_config then
@@ -101,5 +146,5 @@ if null_ls and next(null_sources) ~= nil then
 end
 
 return {
-    setup = lsp_setup,
+    setup = setup,
 }

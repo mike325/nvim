@@ -36,7 +36,7 @@ packer.init {
 packer.startup(function()
     -- BUG: Seems like luarocks is not supported in windows
     if has_compiler and has_python then
-        use_rocks { 'luacheck', 'lua-cjson', 'md5' }
+        use_rocks { 'luacheck', 'md5', 'jsregexp' }
     end
 
     use 'wbthomason/packer.nvim'
@@ -337,6 +337,7 @@ packer.startup(function()
             { 'nvim-treesitter/nvim-treesitter-textobjects' },
             { 'Badhi/nvim-treesitter-cpp-tools' },
             { 'nvim-treesitter/nvim-treesitter-context' },
+            -- { 'David-Kunz/markid' },
             -- { 'nvim-treesitter/nvim-tree-docs' },
         },
     }

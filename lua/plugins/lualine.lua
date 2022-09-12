@@ -97,12 +97,14 @@ local function project_root()
     return cwd:gsub(sys.home, '~')
 end
 
--- TODO: Missing secctions I would like to add
+-- TODO: Missing sections I would like to add
 -- Improve tab support to make it behave more like "airline"
 -- Mixed indent (spaces with tabs)
 -- Improve code location with TS, module,class,function,definition,etc.
 -- Add support to indicate async job is been run in the backgroud
 -- Count "BUG/TODO/NOTE" indications ?
+-- Backgroup Job status counter
+-- List of quickfix/location list items
 
 local tabline = {}
 if not vim.g.started_by_firenvim then

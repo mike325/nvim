@@ -2,35 +2,9 @@ local sys = require 'sys'
 -- local nvim = require 'neovim'
 -- local plugins = require'neovim'.plugins
 
-local load_module = require('utils.functions').load_module
-
 local executable = require('utils.files').executable
 local is_dir = require('utils.files').is_dir
 local langservers = require 'plugins.lsp.servers'
-
-local lsp = load_module 'lspconfig'
-local cmp = load_module 'cmp'
-
-local preload = {
-    clangd = {
-        setup = function(opts)
-            local clangd = load_module 'clangd_extensions'
-            if clangd then
-                clangd.setup(opts)
-            end
-        end,
-        args = {},
-    },
-    ['rust-analyzer'] = {
-        setup = function(opts)
-            local tools = load_module 'rust-tools'
-            if tools then
-                tools.setup(opts)
-            end
-        end,
-        args = {},
-    },
-}
 
 local M = {}
 
@@ -99,30 +73,6 @@ function M.get_language_server_cmd(filetype)
         exec = server.cmd or { server.exec }
     end
     return exec
-end
-
-function M.setup(ft)
-    vim.validate { filetype = { ft, 'string' } }
-
-    local server_idx = M.check_language_server(ft)
-    if server_idx then
-        local server = langservers[ft][server_idx]
-        local config = server.config or server.exec
-        local init = vim.deepcopy(server.options) or {}
-        init.on_attach = require('plugins.lsp.config').on_attach
-        if cmp then
-            init.capability = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
-        end
-        if preload[config] and preload[config].setup then
-            local opts = preload[config].args
-            opts.server = init
-            preload[config].setup(opts)
-        else
-            lsp[config].setup(init)
-        end
-        return true
-    end
-    return false
 end
 
 return M
