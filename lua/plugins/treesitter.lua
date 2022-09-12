@@ -195,7 +195,7 @@ treesitter.setup {
         navigation = {
             enable = true,
             keymaps = {
-                goto_definition = '<A-d>',
+                goto_definition = '<leader><A-d>',
                 list_definitions = '<A-l>',
                 goto_next_usage = '<A-n>',
                 goto_previous_usage = '<A-N>',
@@ -209,6 +209,26 @@ treesitter.setup {
             quit = 'q', -- optional keymapping for quit preview
             accept = '<CR>', -- optional keymapping for accept preview
         },
+    },
+    markid = { enable = false },
+    tree_docs = {
+        enable = false,
+        keymaps = {
+            doc_node_at_cursor = '<A-d>',
+            doc_all_in_range = '<A-d>',
+        },
+        -- spec_config = {
+        --     jsdoc = {
+        --         slots = {
+        --             class = { author = true },
+        --         },
+        --         processors = {
+        --             author = function()
+        --                 return ' * @author ' .. require('sys').username
+        --             end,
+        --         },
+        --     },
+        -- },
     },
 }
 

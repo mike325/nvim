@@ -2,7 +2,6 @@ local nvim = require 'neovim'
 local sys = require 'sys'
 
 local replace_indent = require('utils.buffers').replace_indent
-local split = require('utils.strings').split
 local normalize_path = require('utils.files').normalize_path
 local executable = require('utils.files').executable
 local is_file = require('utils.files').is_file
@@ -198,7 +197,7 @@ function M.send_grep_job(args)
         },
     }
 
-    local cmd = split(vim.bo.grepprg or vim.o.grepprg, ' ')
+    local cmd = vim.split(vim.bo.grepprg or vim.o.grepprg, '%s+')
 
     if not vim.tbl_islist(args) then
         args = { args }
@@ -336,9 +335,9 @@ function M.get_ssh_hosts()
         require('utils.files').readfile(ssh_config, true, function(data)
             for _, line in pairs(data) do
                 if line and line ~= '' and line:match '[hH]ost%s+[a-zA-Z0-9_-%.]+' then
-                    host = split(line, ' ')[2]
+                    host = vim.split(line, '%s+')[2]
                 elseif line:match '%s+[hH]ostname%s+[a-zA-Z0-9_-%.]+' and host ~= '' then
-                    local addr = split(line, ' ')[2]
+                    local addr = vim.split(line, '%s+')[2]
                     STORAGE.hosts[host] = addr
                     host = ''
                 end
@@ -745,7 +744,7 @@ function M.is_git_repo(root)
 end
 
 function M.ignores(tool)
-    local excludes = split(vim.o.backupskip, ',')
+    local excludes = vim.split(vim.o.backupskip, ',+')
 
     local ignores = {
         fd = {},
@@ -816,7 +815,7 @@ function M.grep(tool, attr, lst)
     local grep = lst and {} or ''
     if executable(tool) and greplist[tool] ~= nil then
         grep = greplist[tool][property]
-        grep = lst and split(grep, ' ') or grep
+        grep = lst and vim.split(grep, '%s+') or grep
     end
 
     return grep
@@ -841,7 +840,7 @@ function M.filelist(tool, lst)
     end
 
     if #filelist > 0 then
-        filelist = lst and split(filelist, ' ') or filelist
+        filelist = lst and vim.split(filelist, '%s+') or filelist
     end
     return filelist
 end

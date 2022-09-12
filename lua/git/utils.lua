@@ -157,22 +157,20 @@ local function parse_status(status)
         },
     }
 
-    local split = require('utils.strings').split
-
     if type(status) == 'string' then
-        status = split(status, '\n')
+        status = vim.split(status, '\n+')
     end
 
     local parsed = {}
 
     for _, gitfile in pairs(status) do
         if not parsed.branch and gitfile:match '^#%s+branch%.head' then
-            parsed.branch = split(gitfile, ' ')[3]
+            parsed.branch = vim.split(gitfile, '%s+')[3]
         elseif not parsed.upstream and gitfile:match '^#%s+branch%.upstream' then
-            parsed.upstream = split(gitfile, ' ')[3]
+            parsed.upstream = vim.split(gitfile, '%s+')[3]
         elseif gitfile:sub(1, 1) ~= '#' then
             -- parsed.files = parsed.files or {}
-            -- local line = split(gitfile, ' ')
+            -- local line = vim.split(gitfile, '%s+')
             if gitfile:sub(1, 1) == '1' or gitfile:sub(1, 1) == '2' then
                 local stage_status = gitfile:sub(3, 3)
                 local wt_status = gitfile:sub(4, 4)
@@ -188,7 +186,7 @@ local function parse_status(status)
                     -- parsed.files[filename] = 'staged'
                 elseif stage_status == 'R' then
                     parsed.stage = parsed.stage or {}
-                    local files = split(gitfile:sub(119, #gitfile), '\t')
+                    local files = vim.split(gitfile:sub(119, #gitfile), '\t+') -- replace with %s+ ??
                     local filename = files[1]
                     parsed.stage[filename] = {
                         status = 'moved',

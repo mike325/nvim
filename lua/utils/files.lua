@@ -68,7 +68,7 @@ function M.mkdir(dirname, recurive)
     dirname = M.normalize_path(dirname)
     local ok, msg, err = uv.fs_mkdir(dirname, 511)
     if err == 'ENOENT' and recurive then
-        local dirs = vim.split(dirname, M.separator())
+        local dirs = vim.split(dirname, M.separator() .. '+')
         local base = dirs[1] == '' and '/' or dirs[1]
         if dirs[1] == '' or M.is_root(dirs[1]) then
             table.remove(dirs, 1)

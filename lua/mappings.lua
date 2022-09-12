@@ -466,7 +466,9 @@ function M.messages(opts)
     local args = opts.args
     if args == '' then
         local messages = nvim.exec('messages', true)
-        messages = RELOAD('utils.tables').clear_lst(vim.split(messages, '\n'))
+        messages = vim.tbl_filter(function(v)
+            return not v:match '^%s*$'
+        end, vim.split(messages, '\n+'))
 
         -- WARN: This is a WA to avoid EFM detecting ^I as part of a file in lua tracebacks
         for idx, msg in ipairs(messages) do
@@ -662,7 +664,12 @@ function M.create_snapshot(opts)
         local version = table.concat({ raw_ver.major, raw_ver.minor, raw_ver.patch }, '.')
         local name = opts.args ~= '' and opts.args or 'clean'
         local snapshot = ('%s-nvim-%s-%s.json'):format(name, version, date)
-        packer.snapshot(snapshot)
+        local success, msg = pcall(packer.snapshot, snapshot)
+        if success then
+            vim.notify('Snapshot: ' .. snapshot .. ' created', 'INFO', { title = 'Packer' })
+        else
+            vim.notify('Failed to create snapshot:\n' .. vim.inspect(msg), 'ERROR', { title = 'Packer' })
+        end
     end
 end
 

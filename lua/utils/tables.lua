@@ -178,20 +178,9 @@ end
 
 function M.clear_lst(lst)
     assert(M.tbl_islist(lst), debug.traceback 'List must be an array')
-
-    local tmp = {}
-    for _, val in ipairs(lst) do
-        if type(val) == type '' then
-            val = val:gsub('%s+$', '')
-            if not val:match '^%s*$' then
-                tmp[#tmp + 1] = val
-            end
-        else
-            tmp[#tmp + 1] = val
-        end
-    end
-
-    return tmp
+    return vim.tbl_filter(function(v)
+        return not v:match '^%s*$'
+    end, lst)
 end
 
 function M.str_to_clean_tbl(cmd_string, sep)
@@ -199,7 +188,7 @@ function M.str_to_clean_tbl(cmd_string, sep)
     assert(sep == nil or type(sep) == type '', debug.traceback('Invalid type for sep: ' .. type(sep)))
 
     local utils = require 'utils.strings'
-    sep = sep or ' '
+    sep = sep or '%s+'
     return M.clear_lst(utils.split(utils.trim(cmd_string), sep, true))
 end
 
