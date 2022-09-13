@@ -197,7 +197,9 @@ function M.send_grep_job(args)
         },
     }
 
-    local cmd = vim.split(vim.bo.grepprg or vim.o.grepprg, '%s+')
+    local cmd = vim.tbl_filter(function(k)
+        return not k:match '^%s*$'
+    end, vim.split(vim.bo.grepprg or vim.o.grepprg, '%s+'))
 
     if not vim.tbl_islist(args) then
         args = { args }
