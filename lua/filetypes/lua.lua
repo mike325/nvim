@@ -36,6 +36,7 @@ local M = {
     },
 }
 
+-- TODO: Extract config file lookup function to centralize the logic
 function M.get_formatter(stdin)
     local cmd
     if executable 'stylua' then
@@ -44,7 +45,7 @@ function M.get_formatter(stdin)
         local dirs = { getcwd() }
 
         local buffer = nvim.buf.get_name(0)
-        if buffer ~= '' then
+        if buffer ~= '' and not buffer:match '^%w+:/' then
             table.insert(dirs, 1, require('utils.files').basedir(buffer))
         end
 

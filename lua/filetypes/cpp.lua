@@ -168,14 +168,16 @@ local function parse_includes(args)
         elseif include then
             table.insert(includes, arg)
             include = false
-        elseif #arg > 2 and (arg:sub(1, 2) == '-I' or arg:sub(1, 2) == '/I') then
-            local path = arg:sub(3, #arg):gsub('^%s+', '')
-            table.insert(includes, path)
+        elseif arg:match '^[-/]I' then
+            table.insert(includes, vim.trim(arg:gsub('^[-/]I', '')))
+        elseif arg:match '^%-isystem' then
+            table.insert(includes, vim.trim(arg:gsub('^%-isystem', '')))
         end
     end
     return includes
 end
 
+-- TODO: Add support to inherit c/cpp source paths
 local function parse_compiledb(data)
     vim.validate { data = { data, 'string' } }
     local json = require('utils.files').decode_json(data)
@@ -214,40 +216,35 @@ local function parse_compile_flags(flags_file)
             if line:sub(1, 1) == '-' or line:sub(1, 1) == '/' then
                 table.insert(compile_flags[flags_file].flags, line)
             end
-
-            if line:sub(1, 2) == '-I' or line:sub(1, 2) == '/I' or line:match '^-isystem' then
-                local path = line:sub(3, #line):gsub('^%s+', '')
-                table.insert(compile_flags[flags_file].includes, path)
-            end
         end
+        compile_flags[flags_file].includes = parse_includes(compile_flags[flags_file].flags)
     end
 end
 
-local function get_args(compiler, bufnum)
-    local args, cwd
+local function get_args(compiler, bufnum, flags_location)
+    vim.validate {
+        compiler = { compiler, 'string' },
+        bufnum = { bufnum, 'number', true },
+        flags_location = { flags_location, 'string', true },
+    }
+
+    local args
     local bufname = nvim.buf.get_name(bufnum)
-    if bufname and bufname ~= '' and is_file(bufname) then
+    if is_file(bufname) then
         bufname = realpath(bufname)
     end
 
-    if bufname and bufname ~= '' and is_file(bufname) then
-        cwd = require('utils.files').basedir(bufname)
-    else
-        cwd = getcwd()
-    end
-
-    local db_file = findfile('compile_commands.json', cwd)
-    if db_file then
-        parse_compiledb(readfile(db_file, false))
-        if databases[bufname] then
-            args = databases[bufname].flags
-        end
-    else
-        local flags_file = findfile('compile_flags.txt', cwd)
-        if flags_file then
-            flags_file = realpath(flags_file)
-            parse_compile_flags(flags_file)
-            args = compile_flags[flags_file].flags
+    if flags_location then
+        flags_location = realpath(flags_location)
+        local name = require('utils.files').basename(flags_location)
+        if name == 'compile_commands.json' then
+            parse_compiledb(readfile(flags_location, false))
+            if databases[bufname] then
+                args = databases[bufname].flags
+            end
+        else
+            parse_compile_flags(flags_location)
+            args = compile_flags[flags_location].flags
         end
     end
 
@@ -255,41 +252,51 @@ local function get_args(compiler, bufnum)
 end
 
 local function set_opts(compiler, bufnum)
-    local args
+    vim.validate {
+        compiler = { compiler, 'string' },
+        bufnum = { bufnum, 'number' },
+    }
 
+    local args
     local cwd = getcwd()
     local flags_file = findfile('compile_flags.txt', cwd)
     local db_file = findfile('compile_commands.json', cwd)
-    local clang_tidy = findfile('.clang-tidy', cwd)
+    -- local clang_tidy = findfile('.clang-tidy', cwd)
 
-    if executable 'clang-tidy' and (flags_file or db_file or clang_tidy) then
-        local tidy = vim.list_extend({ 'clang-tidy' }, M.makeprg['clang-tidy'])
-        vim.opt_local.makeprg = table.concat(tidy, ' ') .. ' %'
-        if M.makeprg['clang-tidy'].efm then
-            vim.opt_local.errorformat = M.makeprg['clang-tidy'].efm
-        end
-    else
-        args = get_args(compiler, bufnum)
-        vim.opt_local.makeprg = ('%s %s %%'):format(compiler, table.concat(args, ' '))
-    end
-
-    if flags_file or db_file then
-        if not args then
-            args = get_args(compiler, bufnum)
-        end
-
-        local paths = {}
-        for _, flag in ipairs(args) do
-            if flag:sub(1, 2) == '-I' or flag:sub(1, 2) == '/I' or flag:match '^-isystem' then
-                local path = flag:sub(3, #flag):gsub('^%s+', '')
-                table.insert(paths, path)
+    if db_file or flags_file then
+        if executable 'clang-tidy' then
+            local tidy = vim.list_extend({ 'clang-tidy' }, M.makeprg['clang-tidy'])
+            vim.opt_local.makeprg = table.concat(tidy, ' ') .. ' %'
+            if M.makeprg['clang-tidy'].efm then
+                vim.opt_local.errorformat = M.makeprg['clang-tidy'].efm
             end
         end
+
+        args = get_args(compiler, bufnum, db_file or flags_file)
+
+        local paths = {}
+        if db_file then
+            local filename = nvim.buf.get_name(bufnum)
+            if is_file(filename) then
+                filename = realpath(filename)
+                if databases[filename] then
+                    paths = databases[filename].includes
+                end
+            end
+        else
+            paths = compile_flags[flags_file].includes
+        end
+
         for _, path in ipairs(paths) do
             if not vim.tbl_contains(vim.opt_local.path:get(), path) then
                 vim.opt_local.path:append(paths)
             end
         end
+    end
+
+    if not args then
+        args = get_args(compiler, bufnum)
+        vim.opt_local.makeprg = ('%s %s %%'):format(compiler, table.concat(args, ' '))
     end
 end
 
@@ -343,7 +350,12 @@ function M.build(build_info)
         compile_output = compile_output .. '.exe'
     end
 
-    vim.list_extend(flags, get_args(compiler, nvim.get_current_buf()))
+    local cwd = getcwd()
+    local flags_file = findfile('compile_flags.txt', cwd)
+    local db_file = findfile('compile_commands.json', cwd)
+    -- local clang_tidy = findfile('.clang-tidy', cwd)
+
+    vim.list_extend(flags, get_args(compiler, nvim.get_current_buf(), db_file or flags_file))
     vim.list_extend(flags, { '-o', compile_output })
 
     if build_info.build_type then
@@ -402,12 +414,14 @@ function M.setup()
     end
 
     local cwd = getcwd()
+    -- TODO: Add support for other build commands like gradle
+
     local makefile = findfile('Makefile', cwd)
     if makefile and executable 'make' then
         require('filetypes.make').setup()
     end
 
-    local cmake = findfile('Makefile', cwd)
+    local cmake = findfile('CMakeLists.txt', cwd)
     if cmake and executable 'cmake' then
         require('filetypes.cmake').setup()
     end
