@@ -176,11 +176,20 @@ function M.merge_uniq_unorder(dest, src)
     return M.tbl_keys(uniq_items)
 end
 
+-- NOTE: Should this function also trim trailing spaces ?
 function M.clear_lst(lst)
     assert(M.tbl_islist(lst), debug.traceback 'List must be an array')
-    return vim.tbl_filter(function(v)
-        return not v:match '^%s*$'
-    end, lst)
+    return vim.tbl_map(
+        function(v)
+            return type(v) == type '' and v:gsub('%s+$', '') or v
+        end,
+        vim.tbl_filter(function(v)
+            if type(v) == type '' then
+                return not v:match '^%s*$'
+            end
+            return true
+        end, lst)
+    )
 end
 
 function M.str_to_clean_tbl(cmd_string, sep)
