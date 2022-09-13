@@ -775,14 +775,14 @@ function M.gradle(opts)
     local args = opts.fargs
     local cmd = { 'gradle', '--quiet' }
 
-    cmd = vim.list_slice(cmd, args)
+    cmd = vim.list_extend(cmd, args)
     RELOAD('utils.functions').async_execute {
         cmd = cmd,
         progress = true,
         auto_close = true,
         context = 'Gradle',
         title = 'Gradle',
-        efm = table.concat(vim.opt_global:get(), ','),
+        efm = table.concat(vim.opt_global.efm:get(), ','),
     }
 end
 
