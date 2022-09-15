@@ -44,6 +44,12 @@ require('filetypes.python').pynvim_setup()
 local is_min = vim.env.VIM_MIN ~= nil or vim.g.minimal ~= nil
 local is_bare = vim.env.VIM_BARE ~= nil or vim.g.bare ~= nil
 
+local host_plugins = vim.fn.stdpath('data'):gsub('\\', '/') .. '/site/host'
+if not vim.fn.isdirectory(host_plugins) then
+    vim.fn.mkdir(host_plugins .. '/opt/host')
+    vim.fn.mkdir(host_plugins .. '/start/host')
+end
+
 if nvim.executable 'git' and not is_bare then
     if vim.fn.filereadable './plugin/packer_compiled.lua' ~= 1 then
         require 'setup'()
@@ -55,7 +61,6 @@ end
 
 -- require'storage'
 require('utils.functions').get_ssh_hosts()
-pcall(require, 'work')
 
 vim.cmd [[packadd! cfilter]]
 vim.cmd [[packadd! matchit]]

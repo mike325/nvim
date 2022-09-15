@@ -7,6 +7,11 @@ end
 local sys = require 'sys'
 local nvim = require 'neovim'
 
+local snippet_paths = {
+    sys.base .. '/lua/snippets/',
+    './snippets/',
+}
+
 ls.config.setup {
     -- history = true,
     -- region_check_events = 'InsertEnter,InsertLeave',
@@ -21,10 +26,7 @@ ls.config.setup {
 }
 
 nvim.command.set('SnippetEdit', function(opts)
-    local ft = (opts.args and opts.args ~= '') and opts.args or vim.opt_local.filetype:get()
-    local base = sys.base
-    vim.cmd(('topleft vsplit %s/lua/snippets/%s.lua'):format(base, ft))
-    nvim.ex.wincmd 'L'
+    require('luasnip.loaders').edit_snippet_files()
 end, { nargs = '?', complete = 'filetype' })
 
 nvim.command.set('SnippetReload', function()
@@ -65,10 +67,7 @@ if #ls.get_snippets 'all' == 0 then
 end
 
 require('luasnip.loaders.from_lua').lazy_load {
-    paths = {
-        sys.base .. '/lua/snippets/',
-        './snippets/',
-    },
+    paths = snippet_paths,
 }
 
 return true

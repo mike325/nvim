@@ -36,7 +36,7 @@ vim.keymap.set('n', 'Y', 'y$', noremap)
 vim.keymap.set('x', '$', '$h', noremap)
 vim.keymap.set('n', 'Q', 'o<ESC>', noremap)
 vim.keymap.set('n', 'J', 'm`J``', noremap)
-vim.keymap.set('i', 'jj', '<ESC>')
+vim.keymap.set('i', 'jj', '<ESC>', noremap)
 vim.keymap.set('x', '<BS>', '<ESC>', noremap)
 
 vim.keymap.set('n', '<leader>h', '<C-w>h', noremap)
@@ -70,10 +70,7 @@ vim.keymap.set('n', '^', '0', noremap)
 vim.keymap.set('n', 'gV', '`[v`]', noremap)
 
 vim.keymap.set('t', '<ESC>', '<C-\\><C-n>', noremap)
-
-vim.keymap.set('n', '<BS>', function()
-    RELOAD('mappings').backspace()
-end, { noremap = true, silent = true, desc = 'Return to the last jump/tag' })
+vim.keymap.set('n', '<BS>', '<C-o>', { noremap = true, silent = true })
 
 -- vim.keymap.set('n', 'n', function()
 --     RELOAD('mappings').nicenext 'n'
@@ -441,5 +438,3 @@ if executable 'gradle' then
         RELOAD('mappings').gradle(opts)
     end, { nargs = '+', desc = 'Execute Gradle async' })
 end
-
-pcall(require, 'work.mappings')

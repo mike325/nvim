@@ -225,6 +225,9 @@ local wildignores = {
 
 local no_backup = {
     '.git/*',
+    '.clangd/*',
+    '.gem/*',
+    '.caddir/',
     '.svn/*',
     '*.bin',
     '*.7z',
