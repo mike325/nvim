@@ -44,10 +44,10 @@ require('filetypes.python').pynvim_setup()
 local is_min = vim.env.VIM_MIN ~= nil or vim.g.minimal ~= nil
 local is_bare = vim.env.VIM_BARE ~= nil or vim.g.bare ~= nil
 
-local host_plugins = vim.fn.stdpath('data'):gsub('\\', '/') .. '/site/host'
-if not vim.fn.isdirectory(host_plugins) then
-    vim.fn.mkdir(host_plugins .. '/opt/host')
-    vim.fn.mkdir(host_plugins .. '/start/host')
+local host_plugins = vim.fn.stdpath('data'):gsub('\\', '/') .. '/site/pack/host'
+if vim.fn.isdirectory(host_plugins) == 0 then
+    vim.fn.mkdir(host_plugins .. '/opt/host', 'p')
+    vim.fn.mkdir(host_plugins .. '/start/host', 'p')
 end
 
 if nvim.executable 'git' and not is_bare then

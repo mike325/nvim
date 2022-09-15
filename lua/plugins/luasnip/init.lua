@@ -9,12 +9,13 @@ local nvim = require 'neovim'
 
 local snippet_paths = {
     sys.base .. '/lua/snippets/',
-    './snippets/',
 }
 
 ls.config.setup {
     -- history = true,
     -- region_check_events = 'InsertEnter,InsertLeave',
+    -- NOTE: Live update snippets
+    update_events = 'InsertLeave,TextChangedI', -- TextChanged,TextChangedI
     store_selection_keys = '<CR>',
     ext_opts = {
         [require('luasnip.util.types').choiceNode] = {
@@ -68,6 +69,14 @@ end
 
 require('luasnip.loaders.from_lua').lazy_load {
     paths = snippet_paths,
+    priority = 1000,
+    override_priority = 1000,
+}
+
+-- NOTE: This will load all snippets found in the runtimepath located in the luasnippets
+require('luasnip.loaders.from_lua').lazy_load {
+    priority = 2000,
+    override_priority = 2000,
 }
 
 return true
