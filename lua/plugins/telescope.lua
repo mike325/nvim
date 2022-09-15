@@ -103,6 +103,16 @@ nvim.command.set('GetVimFiles', function()
     }
 end)
 
+local host_plugins = sys.data .. '/site/pack/host'
+if require('utils.files').is_dir(host_plugins) then
+    nvim.command.set('HostFiles', function()
+        builtin.find_files {
+            cwd = host_plugins,
+            find_command = RELOAD('utils.functions').select_filelist(false, true),
+        }
+    end)
+end
+
 nvim.command.set('LuaReloaded', function()
     require('telescope.builtin').reloader()
 end)
