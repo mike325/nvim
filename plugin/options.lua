@@ -248,12 +248,8 @@ local no_backup = {
 vim.opt.wildignore = wildignores
 vim.opt.backupskip = vim.list_extend(no_backup, wildignores)
 
-if not vim.env.SSH_CONNECTION then
-    vim.opt.mouse = 'a'
-    vim.opt.clipboard = { 'unnamedplus', 'unnamed' }
-else
-    vim.opt.mouse = ''
-end
+vim.opt.mouse = 'a'
+vim.opt.clipboard = { 'unnamedplus', 'unnamed' }
 
 if executable 'nvr' then
     vim.env.nvr = 'nvr --servername ' .. vim.v.servername .. ' --remote-silent'

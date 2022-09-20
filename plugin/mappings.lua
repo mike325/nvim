@@ -211,13 +211,8 @@ nvim.command.set(
 
 -- TODO: Check for GUIs
 if sys.name == 'windows' then
-    vim.keymap.set(
-        'n',
-        '<C-h>',
-        '<cmd>call neovim#bs()<CR>',
-        { noremap = true, silent = true, desc = 'Same as <BS> mapping' }
-    )
-    vim.keymap.set('x', '<C-h>', '<cmd><ESC>', { noremap = true, silent = true, desc = 'Same as <BS> mapping' })
+    vim.keymap.set('n', '<C-h>', '<C-o>', { noremap = true, silent = true })
+    vim.keymap.set('x', '<C-h>', '<ESC>', { noremap = true, silent = true, desc = 'Same as <BS> mapping' })
     if not vim.g.started_by_firenvim then
         vim.keymap.set('n', '<C-z>', '<nop>', noremap)
     end

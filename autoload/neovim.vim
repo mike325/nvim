@@ -13,11 +13,6 @@ function! neovim#grep(type, ...) abort
     call luaeval('RELOAD"utils.functions".opfun_grep(_A[1], _A[2])', [a:type, l:visual])
 endfunction
 
-function! neovim#lsp_format(type, ...) abort
-    " let l:visual = a:0 ? v:true : v:false
-    call luaeval('RELOAD"utils.functions".opfun_lsp_format()')
-endfunction
-
 function! neovim#comment(type, ...) abort
     let l:visual = a:0 ? v:true : v:false
     call luaeval('RELOAD"utils.functions".opfun_comment(_A[1], _A[2])', [a:type, l:visual])
@@ -152,21 +147,4 @@ function! neovim#shifttab() abort
     endif
     " TODO
     return ''
-endfunction
-
-function! neovim#bs() abort
-    try
-        execute 'pop'
-    catch /E\(55\(5\|6\)\|73\|92\)/
-        execute "normal! \<C-o>"
-    endtry
-endfunction
-
-function! neovim#copy_yanked_text() abort
-    if exists(':OSCYankReg') == 2
-        if v:event.operator is? 'y' && (v:event.regname is? '+' || v:event.regname is? '*' || v:event.regname is? '')
-            let l:regname =  v:event.regname is? '' ? '"' : v:event.regname
-            execute 'OSCYankReg '.l:regname
-        endif
-    endif
 endfunction

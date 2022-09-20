@@ -13,6 +13,8 @@ M.getcwd = uv.cwd
 
 local is_windows = sys.name == 'windows'
 
+-- TODO: Replace some of these functions with vim.fs conterparts
+
 function M.forward_path(path)
     if is_windows then
         if vim.o.shellslash then

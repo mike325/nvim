@@ -20,5 +20,9 @@ nvim.command.set('OSCTerm', 'let g:oscyank_term = <q-args>', { nargs = 1, comple
 nvim.autocmd.OSCYank = {
     event = 'TextYankPost',
     pattern = '*',
-    command = 'call neovim#copy_yanked_text()',
+    callback = function(args)
+        if vim.v.event.operator == 'y' and (vim.v.register == '+' or vim.v.register == '*' or vim.v.register == '') then
+            vim.fn.OSCYankString(nvim.reg[vim.v.register])
+        end
+    end,
 }
