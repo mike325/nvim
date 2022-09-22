@@ -87,56 +87,87 @@ local function wordcount()
     return 'Words: ' .. words
 end
 
-local function trailspace()
-    local space = vim.fn.search([[\s\+$]], 'nwc')
-    return space ~= 0 and 'TW:' .. space or ''
-end
-
 local function project_root()
     local cwd = getcwd():gsub('\\', '/')
     return cwd:gsub(sys.home, '~')
 end
 
 -- TODO: Missing sections I would like to add
--- Improve tab support to make it behave more like "airline"
--- Mixed indent (spaces with tabs)
 -- Improve code location with TS, module,class,function,definition,etc.
--- Add support to indicate async job is been run in the backgroud
--- Count "BUG/TODO/NOTE" indications ?
 -- Backgroup Job status counter
+-- Count "BUG/TODO/NOTE" indications ?
 -- List of quickfix/location list items
 
+-- TODO: Enable auto shrink components and remove sections
+
 local tabline = {}
+local winbar = {}
 if not vim.g.started_by_firenvim then
     tabline = {
         lualine_a = {
-            project_root,
-        },
-        lualine_b = {
+            -- project_root,
             {
                 'tabs',
                 mode = 0,
+                cond = function()
+                    return #vim.api.nvim_list_tabpages() > 1
+                end,
             },
         },
-        lualine_c = {
-            'buffers',
+        lualine_b = {
+            {
+                'buffers',
+                cond = function()
+                    return #vim.api.nvim_list_tabpages() == 1
+                end,
+            },
+            {
+                'windows',
+                cond = function()
+                    return #vim.api.nvim_list_tabpages() > 1
+                end,
+            },
         },
+        lualine_c = {},
         -- lualine_x = {},
         lualine_y = {},
-        lualine_z = {},
+        lualine_z = {
+            project_root,
+        },
     }
+    if has_winbar then
+        winbar = {
+            lualine_a = {},
+            lualine_b = {},
+            lualine_c = {},
+            -- lualine_x = {},
+            lualine_y = {},
+            lualine_z = {
+                {
+                    filename,
+                    color = function(section)
+                        return vim.bo.modified and { bg = 'orange' } or nil
+                    end,
+                },
+            },
+        }
+    end
 end
+
+-- component_separators = { left = '', right = '' }
+local component_separators = { left = ')', right = '(' }
+-- component_separators = { left = '/', right = '\\' }
+
+-- section_separators = { left = '', right = '' }
+-- section_separators = { left = '', right = '' }
+local section_separators = { left = '', right = '' }
 
 lualine.setup {
     options = {
         -- icons_enabled = true,
         -- theme = 'auto',
-        component_separators = { left = '', right = '' },
-        section_separators = { left = '', right = '' },
-        -- component_separators = { left = ')', right = '(' },
-        -- section_separators = { left = '', right = '' },
-        -- component_separators = { left = '/', right = '\\' },
-        -- section_separators = { left = '', right = '' },
+        component_separators = component_separators,
+        section_separators = section_separators,
         -- disabled_filetypes = {},
         -- always_divide_middle = true,
         globalstatus = has_winbar, -- false
@@ -145,6 +176,7 @@ lualine.setup {
         lualine_a = {
             {
                 'mode',
+                separator = { left = section_separators.right, right = section_separators.left },
                 fmt = function(str)
                     if str:match '^%w%-%w' then
                         return str:sub(1, 1) .. str:sub(3, 3)
@@ -152,19 +184,45 @@ lualine.setup {
                     return str:sub(1, 1)
                 end,
             },
-            function()
-                if vim.opt_local.spell:get() then
-                    local lang = vim.opt_local.spelllang:get()[1] or 'en'
-                    return ('Spell[%s]'):format(lang:upper())
-                end
-                return ''
-            end,
-            function()
-                return vim.opt_local.paste:get() and 'PASTE' or ''
-            end,
+            {
+                function()
+                    return vim.opt_local.paste:get() and 'PASTE' or ''
+                end,
+                separator = '|',
+            },
+            {
+                function()
+                    if vim.opt_local.spell:get() then
+                        local lang = vim.opt_local.spelllang:get()[1] or 'en'
+                        return ('[%s]'):format(lang:upper())
+                    end
+                    return ''
+                end,
+                separator = '|',
+            },
         },
         lualine_b = {
-            'branch',
+            'host_status',
+            {
+                'branch',
+                fmt = function(branch)
+                    local shrink
+                    if #branch > 15 then
+                        local patterns = {
+                            '^(%w+[/-]%w+[/-]%d+[/-])',
+                            '^(%w+[/-]%d+[/-])',
+                            '^(%w+[/-])',
+                        }
+                        for _, pattern in ipairs(patterns) do
+                            shrink = branch:match(pattern)
+                            if shrink then
+                                break
+                            end
+                        end
+                    end
+                    return shrink and branch:gsub(shrink:gsub('%-', '%%-'), '') or branch
+                end,
+            },
             'diff',
             {
                 'diagnostics',
@@ -177,14 +235,23 @@ lualine.setup {
             },
         },
         lualine_c = {
-            filename,
+            {
+                filename,
+                color = function(section)
+                    return vim.bo.modified and { fg = 'orange' } or nil
+                end,
+                fmt = function(name)
+                    return require('utils.files').basename(name)
+                end,
+            },
             -- where_ami,
             'lsp_progress',
         },
         -- lualine_x = { 'encoding', 'fileformat', 'filetype' },
         lualine_y = {
             {
-                trailspace,
+                'trailspace',
+                separator = { left = section_separators.right, right = '' },
                 cond = function()
                     local ft = vim.opt_local.filetype:get()
                     local ro = vim.opt_local.readonly:get()
@@ -193,7 +260,21 @@ lualine.setup {
                         help = true,
                         log = true,
                     }
-                    return disable[ft] == nil and not ro and mod
+                    return not disable[ft] and not ro and mod
+                end,
+            },
+            {
+                'mixindent',
+                separator = { left = section_separators.right, right = '' },
+                cond = function()
+                    local ft = vim.opt_local.filetype:get()
+                    local ro = vim.opt_local.readonly:get()
+                    local mod = vim.opt_local.modifiable:get()
+                    local disable = {
+                        help = true,
+                        log = true,
+                    }
+                    return not disable[ft] and not ro and mod
                 end,
             },
             {
@@ -209,18 +290,19 @@ lualine.setup {
                     return count[ft] ~= nil
                 end,
             },
-            'progress',
+            {
+                'progress',
+                separator = { left = section_separators.right, right = '' },
+            },
         },
-        -- lualine_z = { 'location', },
+        lualine_z = {
+            {
+                'location',
+                separator = { left = section_separators.right, right = section_separators.left },
+            },
+        },
     },
-    -- inactive_sections = {
-    --     lualine_a = {},
-    --     lualine_b = {},
-    --     lualine_c = { 'filename' },
-    --     lualine_x = { 'location' },
-    --     lualine_y = {},
-    --     lualine_z = {},
-    -- },
     tabline = tabline,
+    winbar = winbar,
     extensions = { 'quickfix', 'fugitive' },
 }

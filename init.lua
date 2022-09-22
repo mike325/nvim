@@ -62,6 +62,18 @@ end
 -- require'storage'
 require('utils.functions').get_ssh_hosts()
 
+-- NOTE: Compatibility layer with nvim-0.8
+if not vim.fs then
+    vim.fs = {
+        basename = require('utils.files').basename,
+        normalize = require('utils.files').normalize_path, -- NOTE: These functions are not exactly equivalent
+        dirname = require('utils.files').dirname,
+        -- parents = require'utils.files'.parents,
+        -- dir = require'utils.files'.dir,
+        -- find = require'utils.files'.find,
+    }
+end
+
 vim.cmd [[packadd! cfilter]]
 vim.cmd [[packadd! matchit]]
 vim.cmd [[packadd! termdebug]]

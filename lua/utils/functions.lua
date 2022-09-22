@@ -726,7 +726,7 @@ function M.find_project_root(path)
         end
     end
 
-    return not root and getcwd() or require('utils.files').basedir(root)
+    return not root and getcwd() or require('utils.files').dirname(root)
 end
 
 function M.is_git_repo(root)

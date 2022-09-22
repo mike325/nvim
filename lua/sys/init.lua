@@ -22,7 +22,7 @@ local function homedir()
     return forward_slash(home)
 end
 
-local function basedir()
+local function dirname()
     return forward_slash(stdpath 'config')
 end
 
@@ -74,7 +74,7 @@ end
 local sys = {
     name = system_name(),
     home = homedir(),
-    base = basedir(),
+    base = dirname(),
     data = datadir(),
     cache = cachedir(),
     luajit = luajit_version(),

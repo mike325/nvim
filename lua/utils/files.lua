@@ -206,6 +206,9 @@ function M.normalize_path(path)
         -- TODO: Replace this with a fast API
         path = vim.fn.expand(path)
     end
+    for env in string.gmatch(path, '(%$%w+)') do
+        path = path:gsub(env:gsub('%$', '%%$'), vim.env[env:gsub('%$', '')])
+    end
     return M.forward_path(path)
 end
 
@@ -241,7 +244,7 @@ function M.filename(path)
     return extension ~= '' and name:gsub('%.' .. extension .. '$', '') or name
 end
 
-function M.basedir(path)
+function M.dirname(path)
     vim.validate { path = { path, 'string' } }
     path = M.normalize_path(path)
     local path_components = split_path(path)
@@ -875,43 +878,43 @@ function M.dump_json(filename, data)
 end
 
 -- TODO: Add find_any find_any_file and find_any_dir find any element of an array
-local function _find_parent(filename, basedir, condition_func)
+local function _find_parent(filename, directory, condition_func)
     vim.validate {
         filename = { filename, 'string' },
-        basedir = { basedir, 'string', true },
+        directory = { directory, 'string', true },
         condition_func = { condition_func, 'function', true },
     }
-    basedir = basedir or M.getcwd()
-    assert(M.is_dir(basedir), debug.traceback('Invalid dirname: ' .. basedir))
+    directory = directory or M.getcwd()
+    assert(M.is_dir(directory), debug.traceback('Invalid dirname: ' .. directory))
 
-    basedir = M.realpath(basedir)
-    local dir = uv.fs_scandir(basedir)
+    directory = M.realpath(directory)
+    local dir_it = uv.fs_scandir(directory)
     while true do
-        local scanned, _ = uv.fs_scandir_next(dir)
+        local scanned, _ = uv.fs_scandir_next(dir_it)
         if not scanned then
             break
         end
         if scanned == filename and (not condition_func or condition_func(filename)) then
-            return M.normalize_path(basedir .. M.separator() .. scanned)
+            return M.normalize_path(directory .. M.separator() .. scanned)
         end
     end
 
-    if not M.is_root(basedir) then
-        return _find_parent(filename, M.basedir(basedir))
+    if not M.is_root(directory) then
+        return _find_parent(filename, M.dirname(directory))
     end
     return false
 end
 
-function M.find_parent(filename, basedir)
-    return _find_parent(filename, basedir)
+function M.find_parent(filename, directory)
+    return _find_parent(filename, directory)
 end
 
-function M.findfile(filename, basedir)
-    return _find_parent(filename, basedir, M.is_file)
+function M.findfile(filename, directory)
+    return _find_parent(filename, directory, M.is_file)
 end
 
-function M.finddir(filename, basedir)
-    return _find_parent(filename, basedir, M.is_dir)
+function M.finddir(filename, directory)
+    return _find_parent(filename, directory, M.is_dir)
 end
 
 return M

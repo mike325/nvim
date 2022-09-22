@@ -46,7 +46,7 @@ function M.get_formatter(stdin)
 
         local buffer = nvim.buf.get_name(0)
         if buffer ~= '' and not buffer:match '^%w+:/' then
-            table.insert(dirs, 1, require('utils.files').basedir(buffer))
+            table.insert(dirs, 1, require('utils.files').dirname(buffer))
         end
 
         local found = false

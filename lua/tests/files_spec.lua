@@ -27,18 +27,18 @@ end
 -- clean_file
 
 describe('Check file and direcotries', function()
-    local basedir, init_file, missing, homedir
+    local config_dir, init_file, missing, homedir
 
     before_each(function()
         homedir = vim.loop.os_homedir()
-        basedir = vim.fn.stdpath 'config'
-        init_file = basedir .. '/init.lua'
+        config_dir = vim.fn.stdpath 'config'
+        init_file = config_dir .. '/init.lua'
         missing = vim.fn.tempname()
     end)
 
     it('exists', function()
         local exists = require('utils.files').exists
-        assert.equals('directory', exists(basedir))
+        assert.equals('directory', exists(config_dir))
         assert.equals('file', exists(init_file))
         assert.is_false(exists(missing))
     end)
@@ -46,13 +46,13 @@ describe('Check file and direcotries', function()
     it('is_file', function()
         local is_file = require('utils.files').is_file
         assert.is_true(is_file(init_file))
-        assert.is_false(is_file(basedir))
+        assert.is_false(is_file(config_dir))
         assert.is_false(is_file(missing))
     end)
 
     it('is_dir', function()
         local is_dir = require('utils.files').is_dir
-        assert.is_true(is_dir(basedir))
+        assert.is_true(is_dir(config_dir))
         assert.is_true(is_dir(homedir))
         assert.is_false(is_dir(init_file))
         assert.is_false(is_dir(missing))
@@ -76,8 +76,8 @@ describe('Mkdir', function()
     end)
 
     it('Existing file', function()
-        local basedir = vim.fn.stdpath 'config'
-        local init_file = basedir .. '/init.lua'
+        local config_dir = vim.fn.stdpath 'config'
+        local init_file = config_dir .. '/init.lua'
         assert.is_false(mkdir(init_file))
     end)
 
@@ -136,15 +136,15 @@ describe('Linking', function()
     -- TODO: Add windows negative testing
     if not is_windows then
         it('Symbolic link to File', function()
-            local basedir = vim.fn.stdpath 'config'
-            local init_file = basedir .. '/init.lua'
+            local config_dir = vim.fn.stdpath 'config'
+            local init_file = config_dir .. '/init.lua'
             testlink(init_file, nil, true)
         end)
     end
 
     it('Hard link File', function()
-        local basedir = vim.fn.stdpath 'config'
-        local init_file = basedir .. '/init.lua'
+        local config_dir = vim.fn.stdpath 'config'
+        local init_file = config_dir .. '/init.lua'
         testlink(init_file, nil, false)
     end)
 
@@ -182,8 +182,8 @@ describe('Linking', function()
 
         if not is_windows then
             it('Symbolic link to File', function()
-                local basedir = vim.fn.stdpath 'config'
-                local init_file = basedir .. '/init.lua'
+                local config_dir = vim.fn.stdpath 'config'
+                local init_file = config_dir .. '/init.lua'
                 local dest = vim.fn.tempname()
                 testlink(init_file, dest, true, false)
                 testlink(init_file, dest, true, true)
@@ -191,8 +191,8 @@ describe('Linking', function()
         end
 
         it('Hard link File', function()
-            local basedir = vim.fn.stdpath 'config'
-            local init_file = basedir .. '/init.lua'
+            local config_dir = vim.fn.stdpath 'config'
+            local init_file = config_dir .. '/init.lua'
             local dest = vim.fn.tempname()
             testlink(init_file, dest, false, false)
             testlink(init_file, dest, false, true)
@@ -298,8 +298,8 @@ describe('Basename', function()
     end)
 
     it('Init file', function()
-        local basedir = vim.fn.stdpath 'config'
-        local init_file = basedir .. '/init.lua'
+        local config_dir = vim.fn.stdpath 'config'
+        local init_file = config_dir .. '/init.lua'
         assert.equals('init.lua', basename(init_file))
     end)
 
@@ -325,8 +325,8 @@ describe('Extension', function()
     local extension = require('utils.files').extension
 
     it('Filename', function()
-        local basedir = vim.fn.stdpath 'config'
-        local init_file = basedir .. '/init.lua'
+        local config_dir = vim.fn.stdpath 'config'
+        local init_file = config_dir .. '/init.lua'
         assert.equals('lua', extension(init_file))
         assert.equals('lua', extension 'init.lua')
         assert.equals('lua', extension '.././../init.test.lua')
@@ -341,8 +341,8 @@ describe('Filename', function()
     local filename = require('utils.files').filename
 
     it('without extension', function()
-        local basedir = vim.fn.stdpath 'config'
-        local init_file = basedir .. '/init.lua'
+        local config_dir = vim.fn.stdpath 'config'
+        local init_file = config_dir .. '/init.lua'
         assert.equals('init', filename(init_file))
         assert.equals('init', filename 'init.lua')
         assert.equals('init.test', filename '.././../init.test.lua')
@@ -354,9 +354,9 @@ describe('Filename', function()
 end)
 
 describe('Basedir', function()
-    local basedir = require('utils.files').basedir
+    local dirname = require('utils.files').dirname
 
-    it('Getting basedir from directories and files', function()
+    it('Getting dirname from directories and files', function()
         local config_dir = forward_path(vim.fn.stdpath 'config')
         local data_dir = forward_path(vim.fn.stdpath 'data')
         local cache_dir = forward_path(vim.fn.stdpath 'cache')
@@ -364,19 +364,19 @@ describe('Basedir', function()
         local init_file = forward_path(config_dir .. '/init.lua')
         local homedir = forward_path(vim.loop.os_homedir())
 
-        assert.equals(config_dir, basedir(init_file))
+        assert.equals(config_dir, dirname(init_file))
 
-        assert.equals(config_dir:gsub([[[/\]nvim.*]], ''), basedir(config_dir))
-        assert.equals(data_dir:gsub([[[/\]nvim.*]], ''), basedir(data_dir))
-        assert.equals(cache_dir:gsub([[[/\]nvim.*]], ''), basedir(cache_dir))
+        assert.equals(config_dir:gsub([[[/\]nvim.*]], ''), dirname(config_dir))
+        assert.equals(data_dir:gsub([[[/\]nvim.*]], ''), dirname(data_dir))
+        assert.equals(cache_dir:gsub([[[/\]nvim.*]], ''), dirname(cache_dir))
 
-        assert.equals(homedir, basedir '~/.bashrc')
+        assert.equals(homedir, dirname '~/.bashrc')
         if not is_windows then
-            assert.equals('/', basedir '/')
-            assert.equals('/tmp', basedir '/tmp/test')
+            assert.equals('/', dirname '/')
+            assert.equals('/tmp', dirname '/tmp/test')
         else
-            assert.equals(forward_path 'c:\\', basedir 'c:\\')
-            assert.equals(forward_path 'c:\\Temp', basedir 'c:\\Temp\\test')
+            assert.equals(forward_path 'c:\\', dirname 'c:\\')
+            assert.equals(forward_path 'c:\\Temp', dirname 'c:\\Temp\\test')
         end
     end)
 end)
@@ -386,8 +386,8 @@ describe('Read/Write', function()
     local readfile = require('utils.files').readfile
     local tmp = vim.fn.tempname()
     local is_file = require('utils.files').is_file
-    local basedir = vim.fn.stdpath 'config'
-    local init_file = basedir .. '/init.lua'
+    local config_dir = vim.fn.stdpath 'config'
+    local init_file = config_dir .. '/init.lua'
 
     local function check_data(path, data)
         assert.is_true(is_file(path))
@@ -742,8 +742,8 @@ describe('JSON', function()
         local decode_json = require('utils.files').decode_json
         local readfile = require('utils.files').readfile
 
-        local basedir = vim.fn.stdpath 'config'
-        local projections = basedir .. '/.projections.json'
+        local config_dir = vim.fn.stdpath 'config'
+        local projections = config_dir .. '/.projections.json'
 
         local data = readfile(projections, false)
 
@@ -757,8 +757,8 @@ describe('JSON', function()
         local encode_json = require('utils.files').encode_json
         local readfile = require('utils.files').readfile
 
-        local basedir = vim.fn.stdpath 'config'
-        local projections = basedir .. '/.projections.json'
+        local config_dir = vim.fn.stdpath 'config'
+        local projections = config_dir .. '/.projections.json'
 
         -- NOTE: This cannot be test 1:1 since both encodes generate diferent strings
         local internal
@@ -779,8 +779,8 @@ describe('JSON', function()
         local readfile = require('utils.files').readfile
         local writefile = require('utils.files').writefile
 
-        local basedir = vim.fn.stdpath 'config'
-        local projections = basedir .. '/.projections.json'
+        local config_dir = vim.fn.stdpath 'config'
+        local projections = config_dir .. '/.projections.json'
         local tmp = vim.fn.tempname()
 
         for _, tst in ipairs(jsons_str) do
@@ -795,8 +795,8 @@ describe('JSON', function()
         local readfile = require('utils.files').readfile
         local writefile = require('utils.files').writefile
 
-        local basedir = vim.fn.stdpath 'config'
-        local projections = basedir .. '/.projections.json'
+        local config_dir = vim.fn.stdpath 'config'
+        local projections = config_dir .. '/.projections.json'
         local control = vim.fn.tempname()
         local tmp = vim.fn.tempname()
 

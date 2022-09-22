@@ -7,14 +7,15 @@ local Config = {
 
 local function read_config(config)
     local configfile = config.filename
-    local data = require('utils.files').readfile(configfile)
+    local utils_fs = require 'utils.files'
+    local data = utils_fs.readfile(configfile)
     local parsers = require 'configfiles.parsers'
 
-    local ext = require('utils.files').extension(configfile)
-    local basename = require('utils.files').basename
+    local ext = utils_fs.extension(configfile)
+    local basename = utils_fs.basename
 
     local base_filename = basename(configfile)
-    local base_dir = basename(require('utils.files').basedir(config.path))
+    local base_dir = basename(utils_fs.dirname(config.path))
 
     if ext == 'toml' then
         return parsers.toml(data)

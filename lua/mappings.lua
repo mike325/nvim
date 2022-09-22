@@ -345,7 +345,7 @@ function M.convert_path(path, send, host)
     end
 
     if not remote_path then
-        remote_path = utils.basedir(path):gsub(sys.home:gsub('\\', '/'), '.') .. '/'
+        remote_path = utils.dirname(path):gsub(sys.home:gsub('\\', '/'), '.') .. '/'
         if not send then
             remote_path = remote_path .. utils.basename(path)
         end
