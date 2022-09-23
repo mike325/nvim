@@ -27,6 +27,7 @@ vim.filetype.add {
         ['config.txt'] = 'dosini',
         ['nginx.conf'] = 'nginx',
         ['tmux.conf'] = 'tmux',
+        ['zsh.sh'] = 'zsh',
     },
     pattern = {
         ['.*/etc/nginx/.*'] = 'nginx',
