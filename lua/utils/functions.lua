@@ -255,13 +255,6 @@ function M.opfun_grep(select, visual)
     vim.o.selection = select_save
 end
 
-function M.opfun_lsp_format()
-    local buf = nvim.get_current_buf()
-    local startpos = nvim.buf.get_mark(buf, '[')
-    local endpos = nvim.buf.get_mark(buf, ']')
-    vim.lsp.buf.range_formatting({}, startpos, endpos)
-end
-
 function M.toggle_comments(first, last)
     local cursor = nvim.win.get_cursor(0)
     local lines = nvim.buf.get_lines(0, first, last, false)
@@ -603,6 +596,18 @@ function M.get_separators(sep_type)
         arrow = {
             left = icons.sep_arrow_left,
             right = icons.sep_arrow_right,
+        },
+        tag = {
+            left = '',
+            right = '',
+        },
+        slash = {
+            left = '/',
+            right = '\\',
+        },
+        parenthesis = {
+            left = ')',
+            right = '(',
         },
     }
 

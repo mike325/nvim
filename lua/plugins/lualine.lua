@@ -92,13 +92,11 @@ local function project_root()
     return cwd:gsub(sys.home, '~')
 end
 
+-- TODO: Enable auto shrink components and remove sections
 -- TODO: Missing sections I would like to add
 -- Improve code location with TS, module,class,function,definition,etc.
 -- Backgroup Job status counter
 -- Count "BUG/TODO/NOTE" indications ?
--- List of quickfix/location list items
-
--- TODO: Enable auto shrink components and remove sections
 
 local tabline = {}
 local winbar = {}
@@ -154,13 +152,8 @@ if not vim.g.started_by_firenvim then
     end
 end
 
--- component_separators = { left = '', right = '' }
-local component_separators = { left = ')', right = '(' }
--- component_separators = { left = '/', right = '\\' }
-
--- section_separators = { left = '', right = '' }
--- section_separators = { left = '', right = '' }
-local section_separators = { left = '', right = '' }
+local component_separators = require('utils.functions').get_separators 'parenthesis'
+local section_separators = require('utils.functions').get_separators 'circle'
 
 lualine.setup {
     options = {
@@ -202,7 +195,7 @@ lualine.setup {
             },
         },
         lualine_b = {
-            'host_status',
+            'cc_view',
             {
                 'branch',
                 fmt = function(branch)
@@ -223,6 +216,8 @@ lualine.setup {
                     return shrink and branch:gsub(shrink:gsub('%-', '%%-'), '') or branch
                 end,
             },
+            'qf_counter',
+            'loc_counter',
             'diff',
             {
                 'diagnostics',
@@ -241,7 +236,11 @@ lualine.setup {
                     return vim.bo.modified and { fg = 'orange' } or nil
                 end,
                 fmt = function(name)
-                    return require('utils.files').basename(name)
+                    -- TODO: May add other pattens to avoid truncate other special names
+                    if not name:match '^%w+://' then
+                        return require('utils.files').basename(name)
+                    end
+                    return name
                 end,
             },
             -- where_ami,

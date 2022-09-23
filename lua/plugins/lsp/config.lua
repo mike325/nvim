@@ -32,16 +32,12 @@ M.commands = {
     Implementation = { vim.lsp.buf.implementation },
     Format = {
         function()
-            if nvim.has { 0, 8 } then
-                vim.lsp.buf.format { async = true }
-            else
-                vim.lsp.buf.formatting()
-            end
+            require('utils.buffers').format()
         end,
     },
     RangeFormat = {
         function()
-            vim.lsp.buf.range_formatting()
+            require('utils.buffers').format()
         end,
     },
     Rename = {

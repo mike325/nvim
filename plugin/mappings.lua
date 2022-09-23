@@ -355,12 +355,9 @@ vim.keymap.set('n', '=D', function()
 end, { noremap = true, silent = true, desc = 'Toggle diagnostics in the quickfix' })
 
 vim.opt.formatexpr = [[luaeval('require"utils.buffers".format()')]]
-vim.keymap.set(
-    'n',
-    '=F',
-    [[<cmd>normal! gggqG``<CR>]],
-    { noremap = true, silent = true, desc = 'Format the current buffer with the prefer formatting prg' }
-)
+vim.keymap.set('n', '=F', function()
+    RELOAD('utils.buffers').format()
+end, { noremap = true, silent = true, desc = 'Format the current buffer with the prefer formatting prg' })
 
 nvim.command.set('Edit', function(opts)
     RELOAD('mappings').edit(opts)

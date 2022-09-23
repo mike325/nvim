@@ -18,6 +18,8 @@
   "init.lua"                      : {"type": "Init"},
   "ginit.vim"                     : {"type": "Ginit", "alternate" : "init.lua"},
   ".luacheckrc"                   : {"type": "Lua"},
+  "lua/plugins/lualine.lua"       : {"type": "Lualine"},
+  "lua/lualine/components/*.lua"  : {"type": "Lualine"},
   "lua/*.lua"                     : {"type": "Lua", "alternate"   : "lua/tests/{}_spec.lua"},
   "lua/plugins/snippets/init.lua" : {"type": "Snippets"},
   "lua/plugins/snippets/*.lua"    : {"type": "Snippets"},

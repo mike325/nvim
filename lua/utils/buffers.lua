@@ -334,6 +334,8 @@ function M.format(ft)
     local external_formatprg = require('utils.functions').external_formatprg
     local ok, utils = pcall(require, 'filetypes.' .. ft)
 
+    local view = vim.fn.winsaveview()
+
     local first = vim.v.lnum - 1
     local last = first + vim.v.count
     local whole_file = last - first == nvim.buf.line_count(0)
@@ -343,15 +345,31 @@ function M.format(ft)
     -- TODO: Null-ls always report formatting capabilities
     for _, client in pairs(clients) do
         if whole_file and client.server_capabilities.documentFormattingProvider then
+            -- TODO: May add filter to prefere some lsp over the others
             if nvim.has { 0, 8 } then
-                vim.lsp.buf.format { async = true }
+                vim.lsp.buf.format { async = false }
             else
                 vim.lsp.buf.formatting()
             end
+            vim.fn.winrestview(view)
             return 0
         elseif client.server_capabilities.documentRangeFormattingProvider then
-            -- TODO: Check if this actually works
-            vim.lsp.buf.range_formatting(nil, { first, 0 }, { last, #nvim.buf.get_lines(0, last, last + 1, false)[1] })
+            if nvim.has { 0, 8 } then
+                vim.lsp.buf.format {
+                    async = false,
+                    range = {
+                        start = { first, 0 },
+                        ['end'] = { last, #nvim.buf.get_lines(0, last, last + 1, false)[1] },
+                    },
+                }
+            else
+                vim.lsp.buf.range_formatting(
+                    nil,
+                    { first, 0 },
+                    { last, #nvim.buf.get_lines(0, last, last + 1, false)[1] }
+                )
+            end
+            vim.fn.winrestview(view)
             return 0
         end
     end
