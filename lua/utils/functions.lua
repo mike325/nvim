@@ -394,10 +394,13 @@ function M.external_formatprg(args)
         },
     }
 
+    local view = vim.fn.winsaveview()
+
     formatprg:callback_on_success(function(_)
         local fmt_lines = require('utils.files').readfile(tmpfile)
         fmt_lines = indent(fmt_lines, indent_level)
         vim.api.nvim_buf_set_lines(buf, first, last, false, fmt_lines)
+        vim.fn.winrestview(view)
     end)
 
     formatprg:start()
@@ -1104,6 +1107,25 @@ end
 
 if STORAGE.modern_git == -1 then
     STORAGE.modern_git = require('storage').has_version('git', { '2', '19' })
+end
+
+function M.autoformat(cmd, args)
+    if vim.b.disable_autoformat then
+        return
+    end
+
+    local view = vim.fn.winsaveview()
+    local formatter = RELOAD('jobs'):new {
+        cmd = cmd,
+        args = args,
+        silent = true,
+    }
+    formatter:callback_on_success(function()
+        nvim.ex.checktime()
+        vim.fn.winrestview(view)
+        -- nvim.ex.edit()
+    end)
+    formatter:start()
 end
 
 return M

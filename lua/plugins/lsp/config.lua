@@ -190,10 +190,6 @@ function M.on_attach(client, bufnr, is_null)
     local has_formatting = client.server_capabilities.documentFormattingProvider
         or client.server_capabilities.documentRangeFormattingProvider
 
-    if has_formatting and vim.opt_local.formatexpr:get() == '' then
-        vim.opt_local.formatexpr = ([[luaeval('require"utils.buffers".format("%s")')]]):format(ft)
-    end
-
     -- Disable neomake for lsp buffers
     if nvim.plugins.neomake then
         pcall(vim.fn['neomake#CancelJobs'], 0)

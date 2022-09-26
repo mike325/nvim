@@ -328,8 +328,10 @@ function M.replace_indent(cmd)
     return cmd
 end
 
-function M.format(ft)
-    ft = (ft and ft ~= '') and ft or vim.opt_local.filetype:get()
+function M.format(opts)
+    opts = opts or {}
+
+    local ft = opts.ft or vim.opt_local.filetype:get()
     local buffer = vim.api.nvim_get_current_buf()
     local external_formatprg = require('utils.functions').external_formatprg
     local ok, utils = pcall(require, 'filetypes.' .. ft)
@@ -338,7 +340,7 @@ function M.format(ft)
 
     local first = vim.v.lnum - 1
     local last = first + vim.v.count
-    local whole_file = last - first == nvim.buf.line_count(0)
+    local whole_file = last - first == nvim.buf.line_count(0) or opts.whole_file
 
     local clients = vim.lsp.buf_get_clients(0)
 
@@ -377,11 +379,19 @@ function M.format(ft)
     if ok and utils.get_formatter then
         local cmd = utils.get_formatter()
         if cmd then
-            -- table.insert(cmd, '%')
+            if opts.whole_file then
+                first = 0
+                last = -1
+            else
+                first = nil
+                last = nil
+            end
             external_formatprg {
                 cmd = M.replace_indent(cmd),
                 buffer = buffer,
                 efm = utils.formatprg[cmd[1]].efm,
+                first = first,
+                last = last,
             }
             return 0
         end

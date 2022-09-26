@@ -7,14 +7,14 @@ if require('sys').name ~= 'windows' then
             event = 'BufReadPost',
             pattern = '*',
             callback = function()
-                require('utils.functions').make_executable()
+                RELOAD('utils.functions').make_executable()
             end,
         },
         {
             event = 'FileType',
             pattern = 'python,lua,sh,bash,zsh,tcsh,csh,ruby,perl',
             callback = function()
-                require('utils.functions').make_executable()
+                RELOAD('utils.functions').make_executable()
             end,
         },
     }
@@ -34,7 +34,7 @@ nvim.autocmd.CleanFile = {
         event = 'BufWritePre',
         pattern = '*',
         callback = function()
-            require('utils.files').clean_file()
+            RELOAD('utils.files').clean_file()
         end,
     },
 }
@@ -61,7 +61,7 @@ nvim.autocmd.LastEditPosition = {
     event = 'BufReadPost',
     pattern = '*',
     callback = function()
-        require('utils.buffers').last_position()
+        RELOAD('utils.buffers').last_position()
     end,
 }
 
@@ -69,7 +69,7 @@ nvim.autocmd.Skeletons = {
     event = 'BufNewFile',
     pattern = '*',
     callback = function()
-        require('utils.files').skeleton_filename()
+        RELOAD('utils.files').skeleton_filename()
     end,
 }
 
@@ -77,7 +77,7 @@ nvim.autocmd.ProjectConfig = {
     event = { 'DirChanged', 'BufNewFile', 'BufReadPre', 'BufEnter', 'VimEnter' },
     pattern = '*',
     callback = function()
-        require('utils.functions').project_config(vim.deepcopy(vim.v.event))
+        RELOAD('utils.functions').project_config(vim.deepcopy(vim.v.event))
     end,
 }
 
@@ -133,7 +133,7 @@ nvim.autocmd.Reload = {
 nvim.autocmd.FoldText = {
     event = 'FileType',
     pattern = '*',
-    command = [[setlocal foldtext=luaeval('require\"utils\".functions.foldtext()')]],
+    command = [[setlocal foldtext=luaeval('RELOAD\"utils\".functions.foldtext()')]],
 }
 
 -- BufReadPost is triggered after FileType detection, TS may not be attatch yet after
@@ -146,31 +146,13 @@ nvim.autocmd.Indent = {
     end,
 }
 
--- TODO: Autoenable autoformat when any autoformatter is present
-local function autoformat(cmd, args)
-    if vim.b.disable_autoformat then
-        return
-    end
-
-    local formatter = require('jobs'):new {
-        cmd = cmd,
-        args = args,
-        silent = true,
-    }
-    formatter:callback_on_success(function()
-        nvim.ex.checktime()
-        -- nvim.ex.edit()
-    end)
-    formatter:start()
-end
-
 nvim.augroup.del 'ImportFix'
 if executable 'goimports' then
     nvim.autocmd.add('BufWritePost', {
         group = 'ImportFix',
         pattern = '*.go',
         callback = function(args)
-            autoformat('goimports', { '-w', args.file })
+            RELOAD('utils.functions').autoformat('goimports', { '-w', args.file })
         end,
     })
 end
@@ -180,7 +162,7 @@ if executable 'isort' then
         group = 'ImportFix',
         pattern = '*.{py,ipy}',
         callback = function(args)
-            autoformat('isort', { '--profile=black', args.file }) -- '-l', '120', '-tc'
+            RELOAD('utils.functions').autoformat('isort', { '--profile=black', args.file }) -- '-l', '120', '-tc'
         end,
     })
 end

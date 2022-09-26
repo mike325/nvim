@@ -354,9 +354,9 @@ vim.keymap.set('n', '=D', function()
     vim.cmd 'wincmd J'
 end, { noremap = true, silent = true, desc = 'Toggle diagnostics in the quickfix' })
 
-vim.opt.formatexpr = [[luaeval('require"utils.buffers".format()')]]
+vim.opt.formatexpr = [[luaeval('RELOAD"utils.buffers".format()')]]
 vim.keymap.set('n', '=F', function()
-    RELOAD('utils.buffers').format()
+    RELOAD('utils.buffers').format { whole_file = true }
 end, { noremap = true, silent = true, desc = 'Format the current buffer with the prefer formatting prg' })
 
 nvim.command.set('Edit', function(opts)
@@ -429,4 +429,33 @@ if executable 'gradle' then
     nvim.command.set('Gradle', function(opts)
         RELOAD('mappings').gradle(opts)
     end, { nargs = '+', desc = 'Execute Gradle async' })
+end
+
+-- TODO: Add support for nvim < 0.8
+if nvim.has { 0, 8 } then
+    nvim.command.set('Alternate', function(opts)
+        opts.buf = vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf())
+
+        local candidates
+        local alternates = vim.g.alternates or {}
+        if not alternates[opts.buf] or opts.bang then
+            _, candidates = RELOAD('threads.related').alternate_src_header(vim.json.encode(opts))
+            candidates = vim.json.decode(candidates)
+            alternates = vim.g.alternates or {}
+            alternates[opts.buf] = candidates
+            vim.g.alternates = alternates
+        else
+            candidates = vim.g.alternates[opts.buf]
+        end
+
+        if #candidates > 1 then
+            vim.ui.select(candidates, { prompt = 'Alternate: ' }, function(choise)
+                nvim.ex.edit(choise)
+            end)
+        elseif #candidates == 1 then
+            nvim.ex.edit(candidates[1])
+        else
+            vim.notify('No alternate file found', 'WARN')
+        end
+    end, { nargs = 0, desc = 'Alternate between files', bang = true })
 end
