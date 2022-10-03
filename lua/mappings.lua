@@ -786,4 +786,24 @@ function M.gradle(opts)
     }
 end
 
+function M.reload_configs(opts)
+    local configs = {
+        mappings = 'mappings',
+        commands = 'mappings',
+        autocmds = 'autocmds',
+        options = 'options',
+    }
+
+    if opts.args == 'all' or opts.args == '' then
+        vim.notify('Reloading all configs', 'INFO')
+        for _, v in ipairs(configs) do
+            vim.cmd.source(vim.fn.stdpath 'config' .. '/plugin/' .. v .. '.lua')
+        end
+    elseif configs[opts.args] then
+        vim.notify('Reloading: ' .. opts.args, 'INFO')
+        vim.cmd.source(vim.fn.stdpath 'config' .. '/plugin/' .. opts.args .. '.lua')
+    else
+        vim.notify('Invalid config name: ' .. opts.args, 'ERROR', { title = 'Reloader' })
+    end
+end
 return M

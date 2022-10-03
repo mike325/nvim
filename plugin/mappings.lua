@@ -247,7 +247,7 @@ end, { bang = true, nargs = 1, complete = 'file' })
 
 nvim.command.set('Grep', function(opts)
     RELOAD('utils.functions').send_grep_job(opts.fargs)
-end, { nargs = '+' })
+end, { nargs = '+', complete = 'file' })
 
 nvim.command.set('CFind', function(opts)
     RELOAD('mappings').cfind(opts)
@@ -405,6 +405,14 @@ end, {
 --     vim.opt_local.makeprg = makeprg
 --     vim.opt_local.errorformat = efm
 -- end, {nargs = 1, complete = 'compiler'})
+
+nvim.command.set('Reloader', function(opts)
+    RELOAD('mappings').reload_configs(opts)
+end, {
+    nargs = '?',
+    desc = 'Change between git grep and the best available alternative',
+    complete = _completions.reload_configs,
+})
 
 nvim.command.set('AutoFormat', function()
     RELOAD('mappings').autoformat()
