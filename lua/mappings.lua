@@ -415,8 +415,12 @@ end
 function M.remote_file(host, send)
     host = M.get_host(host)
     if not host or host == '' then
+        vim.notify('Missing hostname', 'ERROR')
         return
     end
+
+    host = STORAGE.hosts[host] or host
+
     local cmd = M.remote_cmd(host, send)
     local sync = RELOAD('jobs'):new {
         cmd = cmd,
