@@ -7,5 +7,6 @@ require('utils.buffers').setup(ft, {
 })
 
 if nvim.has { 0, 8 } then
-    RELOAD('threads.related').async_lookup_alternate()
+    local related_utils = RELOAD 'threads.related'
+    related_utils.async_lookup_alternate()
 end

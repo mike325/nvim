@@ -48,21 +48,25 @@ function M.alternate_src_header(opts)
         candidates = vim.fs.find(filter_func, { type = 'file' })
     end
 
-    return vim.json.encode(opts), vim.json.encode(candidates)
+    return vim.json.encode(opts), vim.json.encode(candidates), opts.buf, 'alternates'
 end
 
-function M.alternate_cb(opts, results)
+function M.alternate_cb(opts, results, key, varname)
     if type(results) == type '' then
         local candidates = vim.json.decode(results)
-        opts = vim.json.decode(opts)
+        -- opts = vim.json.decode(opts)
 
         if #candidates > 0 then
-            local alternates = vim.g.alternates or {}
-            alternates[opts.buf] = candidates
-            vim.g.alternates = alternates
+            local udpate_val = vim.g[varname] or {}
+            udpate_val[key] = candidates
+            vim.g[varname] = udpate_val
         end
     else
-        print 'Something when wrong, got an empty string from another thread'
+        vim.notify(
+            'Something when wrong, got an empty string from another thread',
+            'ERROR',
+            { title = 'Alternate lookup Thread' }
+        )
     end
 end
 

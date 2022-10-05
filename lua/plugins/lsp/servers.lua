@@ -212,6 +212,7 @@ local servers = {
                     -- '--log=verbose',
                 },
                 capabilities = {
+                    offsetEncoding = { 'utf-16' }, -- TODO: Check if this cause side effects
                     textDocument = {
                         completion = {
                             completionItem = { snippetSupport = true },

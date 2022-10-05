@@ -62,4 +62,5 @@ local function notify(msg, level, opts)
     end
 end
 
-vim.notify = notify
+-- NOTE: Schedule notifications allow us to use them in thread's callbacks
+vim.notify = vim.schedule_wrap(notify)
