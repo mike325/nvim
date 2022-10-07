@@ -186,7 +186,7 @@ function M.chmod_exec()
     require('utils.files').chmod(filename, bit.bor(filemode, 0x48), 10)
 end
 
-function M.send_grep_job(args)
+function M.send_grep_job(args, cmd)
     vim.validate {
         args = {
             args,
@@ -195,11 +195,14 @@ function M.send_grep_job(args)
             end,
             'a string or an array of args',
         },
+        cmd = { cmd, 'table', true },
     }
 
-    local cmd = vim.tbl_filter(function(k)
-        return not k:match '^%s*$'
-    end, vim.split(vim.bo.grepprg or vim.o.grepprg, '%s+'))
+    if not cmd then
+        cmd = vim.tbl_filter(function(k)
+            return not k:match '^%s*$'
+        end, vim.split(vim.bo.grepprg or vim.o.grepprg, '%s+'))
+    end
 
     if not vim.tbl_islist(args) then
         args = { args }

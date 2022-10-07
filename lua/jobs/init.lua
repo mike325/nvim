@@ -75,9 +75,8 @@ local function general_error_parser(job, data)
     local error_detected = false
     -- TODO: Need to do more testing on these patterns
     local error_patterns = {
-        '<(fail(ed)|err(or)?)>:',
-        '<(fail(ed)|error)>:?',
-        [=[\[(error|fail(ed)?]:?]=],
+        '<(fail(ed)?|err(or)?)>:?',
+        [=[\[(error|fail(ed)?)]:?]=],
     }
     local error_regex = vim.regex([[\v\c(]] .. table.concat(error_patterns, '|') .. ')')
 
@@ -87,7 +86,7 @@ local function general_error_parser(job, data)
 
     for _, val in ipairs(data) do
         val = nvim.replace_termcodes(val, true, false, false)
-        if error_regex:match(val) then
+        if error_regex:match_str(val) then
             error_detected = true
             break
         end

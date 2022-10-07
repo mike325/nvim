@@ -334,8 +334,8 @@ function M.convert_path(path, send, host)
             loc = loc:gsub('%%PROJECT', project)
         end
         loc = utils.normalize_path(loc)
-        if path:match(loc) then
-            local tail = path:gsub(loc, '')
+        if path:match('^' .. loc) then
+            local tail = path:gsub('^' .. loc, '')
             if remote:match '%%PROJECT' then
                 remote = remote:gsub('%%PROJECT', project)
             end

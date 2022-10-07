@@ -441,10 +441,18 @@ end
 
 -- TODO: Add support for nvim < 0.8
 if nvim.has { 0, 8 } then
+    -- TODO: Make this alternate command buffer local and not global
     nvim.command.set('Alternate', function(opts)
         opts.buf = vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf())
 
+        local prefix = opts.buf:match '^%w+://'
+        opts.buf = opts.buf:gsub('^%w+://', '')
+        if prefix == 'fugitive://' then
+            opts.buf = opts.buf:gsub('%.git//?[%w%d]+//?', '')
+        end
+
         local candidates
+        -- TODO: alternates should be buffer local
         local alternates = vim.g.alternates or {}
         if not alternates[opts.buf] or opts.bang then
             _, candidates = RELOAD('threads.related').alternate_src_header(vim.json.encode(opts))

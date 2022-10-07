@@ -32,17 +32,32 @@ function M.alternate_src_header(opts)
 
     opts = vim.json.decode(opts)
 
+    local prefix = opts.buf:match '^%w+://'
+    if prefix then
+        opts.buf = opts.buf:gsub('^%w+://', '')
+        if prefix == 'fugitive://' then
+            opts.buf = opts.buf:gsub('%.git//?[%w%d]+//?', '')
+        end
+    end
+
     local candidates = {}
     local buf = opts.buf
     local buf_name = buf:match '[^/]+$'
     local buf_ext = buf_name:match '^.+%.(.+)$' or ''
+    local buf_name_no_ext = buf_name
+    if buf_ext and buf_ext ~= '' then
+        buf_name_no_ext = buf_name:gsub('%.' .. buf_ext .. '$', '')
+    end
 
     if extentions[buf_ext] then
         local filter_func = function(filename)
+            local name = filename
             local ext = filename:match '^.+%.(.+)$' or ''
-            local name = filename:gsub('%.' .. ext .. '$', '')
+            if ext and ext ~= '' then
+                name = filename:gsub('%.' .. ext .. '$', '')
+            end
 
-            return buf_name:gsub('%.' .. buf_ext .. '$', '') == name and vim.tbl_contains(extentions[buf_ext], ext)
+            return buf_name_no_ext == name and vim.tbl_contains(extentions[buf_ext], ext)
         end
 
         candidates = vim.fs.find(filter_func, { type = 'file' })
@@ -70,8 +85,8 @@ function M.alternate_cb(opts, results, key, varname)
     end
 end
 
-function M.async_lookup_alternate()
-    local opts = {}
+function M.async_lookup_alternate(opts)
+    opts = opts or {}
     opts.buf = vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf())
     local work = vim.loop.new_work(M.alternate_src_header, M.alternate_cb)
     work:queue(vim.json.encode(opts))

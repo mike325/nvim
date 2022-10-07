@@ -209,6 +209,7 @@ local servers = {
                     '--header-insertion=iwyu',
                     '--function-arg-placeholders',
                     '--completion-style=detailed',
+                    '--pch-storage=memory',
                     -- '--log=verbose',
                 },
                 capabilities = {
