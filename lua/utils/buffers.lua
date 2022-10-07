@@ -90,7 +90,11 @@ function M.delete(bufnr, wipe)
     end
 
     if not is_duplicated and not is_wipe and nvim.buf.is_valid(bufnr) then
-        local action = not wipe and { unload = true } or { force = true }
+        local action = { unload = true }
+        -- TODO: maybe should ask for confirmation in non scratch modified buffers
+        if wipe or vim.bo[bufnr].modified then
+            action = { force = true }
+        end
         nvim.buf.delete(bufnr, action)
     end
 end
