@@ -2,7 +2,6 @@ local nvim = require 'neovim'
 local sys = require 'sys'
 
 local replace_indent = require('utils.buffers').replace_indent
-local normalize_path = require('utils.files').normalize_path
 local executable = require('utils.files').executable
 local is_file = require('utils.files').is_file
 local getcwd = require('utils.files').getcwd
@@ -638,7 +637,7 @@ function M.project_config(event)
         root = vim.fn.fnamemodify(cwd, ':p')
     end
 
-    root = normalize_path(root)
+    root = vim.fs.normalize(root)
 
     if vim.b.project_root and root == vim.b.project_root['root'] then
         return vim.b.project_root
@@ -671,9 +670,9 @@ function M.project_config(event)
         M.set_grep(false, true)
     end
 
-    local project = require('utils.files').findfile('.project.lua', cwd)
-    if project then
-        nvim.ex.source(project)
+    local project = vim.fs.find('.project.lua', { upward = true, type = 'file' })
+    if #project > 0 then
+        nvim.ex.source(project[1])
     end
 end
 
@@ -747,7 +746,7 @@ function M.is_git_repo(root)
         return false
     end
 
-    root = normalize_path(root)
+    root = vim.fs.normalize(root)
 
     local git = root .. '/.git'
 

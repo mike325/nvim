@@ -34,8 +34,18 @@ function M.separator()
     return '/'
 end
 
+function M.normalize(path)
+    vim.validate { path = { path, 'string' } }
+    assert(path ~= '', debug.traceback 'Empty path')
+    if path == '%' then
+        -- TODO: Replace this with a fast API
+        return vim.fn.expand(path)
+    end
+    return (path:gsub('^~', vim.loop.os_homedir()):gsub('%$([%w_]+)', vim.loop.os_getenv):gsub('\\', '/'))
+end
+
 local function split_path(path)
-    path = require('utils.strings').split(M.normalize_path(path), M.separator())
+    path = require('utils.strings').split(M.normalize(path), M.separator())
     return path
 end
 
@@ -46,7 +56,7 @@ end
 function M.exists(filename)
     vim.validate { filename = { filename, 'string' } }
     assert(filename ~= '', debug.traceback 'Empty filename')
-    local stat = uv.fs_stat(M.normalize_path(filename))
+    local stat = uv.fs_stat(M.normalize(filename))
     return stat and stat.type or false
 end
 
@@ -67,7 +77,7 @@ function M.mkdir(dirname, recurive)
     if M.is_dir(dirname) then
         return true
     end
-    dirname = M.normalize_path(dirname)
+    dirname = M.normalize(dirname)
     local ok, msg, err = uv.fs_mkdir(dirname, 511)
     if err == 'ENOENT' and recurive then
         local dirs = vim.split(dirname, M.separator() .. '+')
@@ -111,8 +121,8 @@ function M.link(src, dest, sym, force)
         dest = vim.fs.basename(src)
     end
 
-    dest = M.normalize_path(dest)
-    src = M.normalize_path(src)
+    dest = M.normalize(dest)
+    src = M.normalize(src)
 
     assert(src ~= dest, debug.traceback 'Cannot link src to itself')
 
@@ -192,24 +202,9 @@ end
 function M.realpath(path)
     vim.validate { path = { path, 'string' } }
     assert(M.exists(path), debug.traceback(([[Path "%s" doesn't exists]]):format(path)))
-    path = M.normalize_path(path)
+    path = M.normalize(path)
     local rpath = uv.fs_realpath(path)
     return M.forward_path(rpath or path)
-end
-
-function M.normalize_path(path)
-    vim.validate { path = { path, 'string' } }
-    assert(path ~= '', debug.traceback 'Empty path')
-    if path:sub(1, 1) == '~' then
-        path = path:gsub('~', sys.home)
-    elseif path == '%' then
-        -- TODO: Replace this with a fast API
-        path = vim.fn.expand(path)
-    end
-    for env in string.gmatch(path, '(%$%w+)') do
-        path = path:gsub(env:gsub('%$', '%%$'), vim.env[env:gsub('%$', '')])
-    end
-    return M.forward_path(path)
 end
 
 function M.basename(path)
@@ -221,7 +216,7 @@ function M.extension(path)
     vim.validate { path = { path, 'string' } }
     assert(path ~= '', debug.traceback 'Empty path')
     local extension = ''
-    path = M.normalize_path(path)
+    path = M.normalize(path)
     if not M.is_dir(path) then
         local filename = split_path(path)
         filename = filename[#filename]
@@ -409,16 +404,6 @@ function M.chmod(path, mode, base)
     return ok or false
 end
 
--- NOTE: Took from neovim fs.lua source code
-function M.dir(path)
-    vim.validate {
-        path = { path, 'string' },
-    }
-    return function(fs)
-        return vim.loop.fs_scandir_next(fs)
-    end, vim.loop.fs_scandir(M.normalize(path))
-end
-
 function M.ls(path, opts)
     vim.validate {
         path = { path, 'string' },
@@ -513,8 +498,8 @@ function M.find_files(path, globs, cb)
 end
 
 function M.copy(src, dest, bang)
-    src = M.normalize_path(src)
-    dest = M.normalize_path(dest)
+    src = M.normalize(src)
+    dest = M.normalize(dest)
     dest = M.is_dir(dest) and dest .. '/' .. vim.fs.basename(src) or dest
 
     if not M.is_dir(src) and (not M.exists(dest) or bang) then
@@ -538,8 +523,8 @@ function M.copy(src, dest, bang)
 end
 
 function M.rename(old, new, bang)
-    new = M.normalize_path(new)
-    old = M.normalize_path(old)
+    new = M.normalize(new)
+    old = M.normalize(old)
 
     if not M.exists(new) or bang then
         local cursor_pos
@@ -588,7 +573,7 @@ function M.delete(target, bang)
         bang = false
     end
 
-    target = M.normalize_path(target)
+    target = M.normalize(target)
 
     if #target > 1 and target:sub(#target, #target) == '/' then
         target = target:sub(1, #target - 1)
@@ -821,44 +806,40 @@ function M.dump_json(filename, data)
     return M.writefile(filename, M.encode_json(data))
 end
 
--- TODO: Make this compatible with vim.fs.find
-local function _find_parent(filename, directory, condition_func)
+-- NOTE: dir/parents where took from neovim fs.lua source code
+function M.dir(path)
     vim.validate {
-        filename = { filename, 'string' },
-        directory = { directory, 'string', true },
-        condition_func = { condition_func, 'function', true },
+        path = { path, 'string' },
     }
-    directory = directory or M.getcwd()
-    assert(M.is_dir(directory), debug.traceback('Invalid dirname: ' .. directory))
+    return function(fs)
+        return vim.loop.fs_scandir_next(fs)
+    end, vim.loop.fs_scandir(M.normalize(path))
+end
 
-    directory = M.realpath(directory)
-    local dir_it = uv.fs_scandir(directory)
-    while true do
-        local scanned, _ = uv.fs_scandir_next(dir_it)
-        if not scanned then
-            break
+function M.parents(start)
+    return function(_, dir)
+        local parent = M.dirname(dir)
+        if parent == dir then
+            return nil
         end
-        if scanned == filename and (not condition_func or condition_func(filename)) then
-            return M.normalize_path(directory .. M.separator() .. scanned)
-        end
+
+        return parent
+    end,
+        nil,
+        start
+end
+
+function M.find(filename, opts)
+    vim.validate {
+        filename = { filename, { 'function', 'string', 'table' } },
+        opts = { opts, 'table', true },
+    }
+
+    if nvim.has { 0, 8 } then
+        return vim.fs.find(filename, opts)
     end
-
-    if not M.is_root(directory) then
-        return _find_parent(filename, vim.fs.dirname(directory))
-    end
-    return false
-end
-
-function M.find_parent(filename, directory)
-    return _find_parent(filename, directory)
-end
-
-function M.findfile(filename, directory)
-    return _find_parent(filename, directory, M.is_file)
-end
-
-function M.finddir(filename, directory)
-    return _find_parent(filename, directory, M.is_dir)
+    -- TODO: Implement this for neovim < 0.8
+    error 'Not implemented yet'
 end
 
 return M

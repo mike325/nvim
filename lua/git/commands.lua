@@ -101,7 +101,7 @@ function M.set_commands()
             else
                 for i = 1, #args do
                     if args[i] == '%' then
-                        require('utils.files').normalize_path(args[i])
+                        vim.fs.normalize(args[i])
                     end
                 end
                 utils.launch_gitcmd_job {
@@ -206,7 +206,7 @@ function M.set_commands()
             else
                 for i = 1, #args do
                     if args[i] == '%' then
-                        require('utils.files').normalize_path(args[i])
+                        vim.fs.normalize(args[i])
                     end
                 end
                 if sys.name == 'windows' then

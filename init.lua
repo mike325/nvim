@@ -67,9 +67,9 @@ if not vim.fs then
     vim.fs = {
         basename = require('utils.files').basename,
         normalize = require('utils.files').normalize_path, -- NOTE: These functions are not exactly equivalent
+        dir = require('utils.files').dir,
         dirname = require('utils.files').dirname,
-        -- parents = require'utils.files'.parents,
-        -- dir = require'utils.files'.dir,
+        parents = require('utils.files').parents,
         -- find = require'utils.files'.find,
     }
 end

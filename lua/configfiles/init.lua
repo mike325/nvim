@@ -27,7 +27,7 @@ end
 
 function Config:new(configfile)
     vim.validate { configfile = { configfile, 'string' } }
-    configfile = require('utils.files').normalize_path(configfile)
+    configfile = vim.fs.normalize(configfile)
     vim.validate {
         configfile = {
             configfile,

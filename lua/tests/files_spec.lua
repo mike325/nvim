@@ -292,11 +292,11 @@ describe('Realpath', function()
 end)
 
 describe('Normalize', function()
-    local normalize_path = require('utils.files').normalize_path
+    local normalize = require('utils.files').normalize
 
     it('HOME', function()
         local homedir = vim.loop.os_homedir()
-        assert.equals(forward_path(homedir), normalize_path '~')
+        assert.equals(forward_path(homedir), normalize '~')
     end)
 
     if is_windows then
@@ -304,10 +304,10 @@ describe('Normalize', function()
             local windows_path = [[c:\Users]]
 
             vim.opt.shellslash = false
-            assert.equals(forward_path(windows_path), normalize_path(windows_path))
+            assert.equals(forward_path(windows_path), normalize(windows_path))
 
             vim.opt.shellslash = true
-            assert.equals(forward_path(windows_path), normalize_path(windows_path))
+            assert.equals(forward_path(windows_path), normalize(windows_path))
         end)
     end
 end)

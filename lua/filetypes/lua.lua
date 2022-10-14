@@ -40,7 +40,9 @@ function M.get_formatter(stdin)
     local cmd
     if executable 'stylua' then
         cmd = { 'stylua' }
-        local files = { '.stylua.toml', 'stylua.toml' }
+        local configs = { '.stylua.toml', 'stylua.toml' }
+
+        -- TODO: lookup upwards in file's directory
         local dirs = { getcwd() }
 
         local buffer = nvim.buf.get_name(0)
@@ -49,16 +51,11 @@ function M.get_formatter(stdin)
         end
 
         local found = false
-        for _, config in ipairs(files) do
-            for _, cwd in ipairs(dirs) do
-                local config_path = require('utils.files').findfile(config, cwd)
-                if config_path then
-                    vim.list_extend(cmd, { '-f', require('utils.files').realpath(config_path) })
-                    found = true
-                    break
-                end
-            end
-            if found then
+        for _, cwd in ipairs(dirs) do
+            local config_path = vim.fs.find(configs, { upward = true, type = 'file', path = cwd })
+            if #config_path > 0 then
+                vim.list_extend(cmd, { '-f', require('utils.files').realpath(config_path[1]) })
+                found = true
                 break
             end
         end

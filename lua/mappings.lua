@@ -301,12 +301,12 @@ end
 function M.convert_path(path, send, host)
     local utils = RELOAD 'utils.files'
 
-    path = utils.normalize_path(path)
+    path = vim.fs.normalize(path)
 
     local remote_path -- = './'
     local hosts, paths, projects
 
-    local path_json = utils.normalize_path '~/.config/remotes/paths.json'
+    local path_json = vim.fs.normalize '~/.config/remotes/paths.json'
     if utils.is_file(path_json) then
         local configs = utils.read_json(path_json) or {}
         hosts = configs.hosts or {}
@@ -334,7 +334,7 @@ function M.convert_path(path, send, host)
         if loc:match '%%PROJECT' then
             loc = loc:gsub('%%PROJECT', project)
         end
-        loc = utils.normalize_path(loc)
+        loc = vim.fs.normalize(loc)
         if path:match('^' .. loc) then
             local tail = path:gsub('^' .. loc, '')
             if remote:match '%%PROJECT' then
@@ -390,7 +390,7 @@ function M.remote_cmd(host, send)
     if virtual_filename and send then
         utils.writefile(virtual_filename, nvim.buf.get_lines(0, 0, -1, true))
         -- else
-        --     filename = realpath(normalize_path(filename))
+        --     filename = realpath(vim.fs.normalize(filename))
         --     if foward_slash then
         --         filename = filename:gsub('\\', '/')
         --     end

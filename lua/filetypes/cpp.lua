@@ -5,7 +5,6 @@ local readfile = require('utils.files').readfile
 local is_file = require('utils.files').is_file
 local realpath = require('utils.files').realpath
 local getcwd = require('utils.files').getcwd
-local findfile = require('utils.files').findfile
 
 local compile_flags = STORAGE.compile_flags
 local databases = STORAGE.databases
@@ -257,10 +256,13 @@ local function set_opts(compiler, bufnum)
     }
 
     local args
-    local cwd = getcwd()
-    local flags_file = findfile('compile_flags.txt', cwd)
-    local db_file = findfile('compile_commands.json', cwd)
-    -- local clang_tidy = findfile('.clang-tidy', cwd)
+
+    local flags_file = vim.fs.find('compile_flags.txt', { upward = true, type = 'file' })
+    flags_file = #flags_file > 0 and flags_file[1] or false
+    local db_file = vim.fs.find('compile_commands.json', { upward = true, type = 'file' })
+    db_file = #db_file > 0 and db_file[1] or false
+    -- local clang_tidy = vim.fs.find('.clang-tidy', { upward = true, type = 'file' })
+    -- clang_tidy = #clang_tidy > 0 and clang_tidy[1] or false
 
     if db_file or flags_file then
         if executable 'clang-tidy' then
@@ -303,8 +305,8 @@ function M.get_formatter(stdin)
     local cmd
     if executable 'clang-format' then
         cmd = { 'clang-format' }
-        local config = findfile('.clang-format', getcwd())
-        if config then
+        local config = vim.fs.find('.clang-format', { upward = true, type = 'file' })
+        if #config > 0 then
             vim.list_extend(cmd, M.formatprg[cmd[1]])
             -- cmd = require('utils.buffers').replace_indent(cmd)
         end
@@ -349,10 +351,12 @@ function M.build(build_info)
         compile_output = compile_output .. '.exe'
     end
 
-    local cwd = getcwd()
-    local flags_file = findfile('compile_flags.txt', cwd)
-    local db_file = findfile('compile_commands.json', cwd)
-    -- local clang_tidy = findfile('.clang-tidy', cwd)
+    local flags_file = vim.fs.find('compile_flags.txt', { upward = true, type = 'file' })
+    flags_file = #flags_file > 0 and flags_file[1] or false
+    local db_file = vim.fs.find('compile_commands.json', { upward = true, type = 'file' })
+    db_file = #db_file > 0 and db_file[1] or false
+    -- local clang_tidy = vim.fs.find('.clang-tidy', { upward = true, type = 'file' })
+    -- clang_tidy = #clang_tidy > 0 and clang_tidy[1] or false
 
     vim.list_extend(flags, get_args(compiler, nvim.get_current_buf(), db_file or flags_file))
     vim.list_extend(flags, { '-o', compile_output })
@@ -412,16 +416,14 @@ function M.setup()
         return
     end
 
-    local cwd = getcwd()
     -- TODO: Add support for other build commands like gradle
-
-    local makefile = findfile('Makefile', cwd)
-    if makefile and executable 'make' then
+    local makefile = vim.fs.find('Makefile', { upward = true, type = 'file' })
+    if #makefile > 0 and executable 'make' then
         require('filetypes.make').setup()
     end
 
-    local cmake = findfile('CMakeLists.txt', cwd)
-    if cmake and executable 'cmake' then
+    local cmake = vim.fs.find('CMakeLists.txt', { upward = true, type = 'file' })
+    if #cmake > 0 and executable 'cmake' then
         require('filetypes.cmake').setup()
     end
 
