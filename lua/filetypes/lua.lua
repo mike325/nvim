@@ -2,7 +2,6 @@ local sys = require 'sys'
 local nvim = require 'neovim'
 
 local executable = require('utils.files').executable
-local basename = require('utils.files').basename
 
 local is_file = require('utils.files').is_file
 local getcwd = require('utils.files').getcwd
@@ -46,7 +45,7 @@ function M.get_formatter(stdin)
 
         local buffer = nvim.buf.get_name(0)
         if buffer ~= '' and not buffer:match '^%w+:/' then
-            table.insert(dirs, 1, require('utils.files').dirname(buffer))
+            table.insert(dirs, 1, vim.fs.dirname(buffer))
         end
 
         local found = false
@@ -84,7 +83,7 @@ function M.get_linter()
         for i = 1, #exe do
             if is_file(exe[i]) then
                 cmd = { exe[i] }
-                vim.list_extend(cmd, M.makeprg[basename(cmd[1])])
+                vim.list_extend(cmd, M.makeprg[vim.fs.basename(cmd[1])])
                 break
             end
         end

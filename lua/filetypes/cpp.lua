@@ -6,7 +6,6 @@ local is_file = require('utils.files').is_file
 local realpath = require('utils.files').realpath
 local getcwd = require('utils.files').getcwd
 local findfile = require('utils.files').findfile
--- local find_parent = require('utils.files').find_parent
 
 local compile_flags = STORAGE.compile_flags
 local databases = STORAGE.databases
@@ -236,7 +235,7 @@ local function get_args(compiler, bufnum, flags_location)
 
     if flags_location then
         flags_location = realpath(flags_location)
-        local name = require('utils.files').basename(flags_location)
+        local name = vim.fs.basename(flags_location)
         if name == 'compile_commands.json' then
             parse_compiledb(readfile(flags_location, false))
             if databases[bufname] then

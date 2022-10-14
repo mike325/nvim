@@ -731,13 +731,14 @@ function M.find_project_root(path)
     local dir = vim.fn.fnamemodify(path, ':p')
 
     for _, marker in pairs(vcs_markers) do
-        root = require('utils.files').find_parent(marker, dir)
-        if root then
+        local results = vim.fs.find(marker, { path = dir, upward = true })
+        if #results > 0 then
+            root = results[1]
             break
         end
     end
 
-    return not root and getcwd() or require('utils.files').dirname(root)
+    return not root and getcwd() or vim.fs.dirname(root)
 end
 
 function M.is_git_repo(root)
@@ -753,7 +754,8 @@ function M.is_git_repo(root)
     if require('utils.files').is_dir(git) or require('utils.files').is_file(git) then
         return true
     end
-    return require('utils.files').find_parent('.git', root)
+    local results = vim.fs.find('.git', { path = root, upward = true })
+    return #results > 0 and results[1] or false
 end
 
 function M.ignores(tool)

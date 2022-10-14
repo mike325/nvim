@@ -108,7 +108,7 @@ function M.link(src, dest, sym, force)
     assert(M.exists(src), debug.traceback('link source ' .. src .. ' does not exists'))
 
     if dest == '.' then
-        dest = M.basename(src)
+        dest = vim.fs.basename(src)
     end
 
     dest = M.normalize_path(dest)
@@ -214,14 +214,7 @@ end
 
 function M.basename(path)
     vim.validate { path = { path, 'string' } }
-    if path == '.' then
-        path = M.getcwd()
-    end
-    path = M.normalize_path(path)
-    if path:sub(#path, #path) == M.separator() then
-        path = path:sub(1, #path - 1)
-    end
-    return path:match(('[^%s]+$'):format(M.separator()))
+    return path:match '[/\\]$' and '' or path:match '[^\\/]+$'
 end
 
 function M.extension(path)
@@ -239,33 +232,21 @@ end
 
 function M.filename(path)
     vim.validate { path = { path, 'string' } }
-    local name = M.basename(path)
+    local name = vim.fs.basename(path)
     local extension = M.extension(name)
     return extension ~= '' and name:gsub('%.' .. extension .. '$', '') or name
 end
 
 function M.dirname(path)
     vim.validate { path = { path, 'string' } }
-    path = M.normalize_path(path)
-    local path_components = split_path(path)
-    if #path_components > 1 then
-        table.remove(path_components, #path_components)
-        if M.is_absolute(path) and not is_windows then
-            path = '/'
-        else
-            path = ''
-        end
-        path = path .. table.concat(path_components, M.separator())
-    elseif M.is_absolute(path) then
-        if is_windows then
-            path = path:sub(1, #path > 2 and 3 or 2)
-        else
-            path = '/'
-        end
-    else
-        path = '.'
+    if not path:match '[\\/]' then
+        return '.'
+    elseif path == '/' or path:gsub('\\', '/'):match '^%w:$' then
+        return M.forward_path(path)
+    elseif path:match '^/[^/]+$' then
+        return '/'
     end
-    return M.forward_path(path)
+    return M.forward_path(path:match '[/\\]$' and path:sub(1, #path - 1) or path:match '^([/\\]?.+)[/\\]')
 end
 
 function M.is_parent(parent, child)
@@ -428,80 +409,43 @@ function M.chmod(path, mode, base)
     return ok or false
 end
 
-function M.ls(expr)
+-- NOTE: Took from neovim fs.lua source code
+function M.dir(path)
     vim.validate {
-        expr = {
-            expr,
-            function(e)
-                return type(e) == type '' or type(e) == type {}
-            end,
-            'Expresion must be a string or a table with path and globs',
-        },
+        path = { path, 'string' },
     }
+    return function(fs)
+        return vim.loop.fs_scandir_next(fs)
+    end, vim.loop.fs_scandir(M.normalize(path))
+end
 
-    if not expr then
-        expr = {}
-    elseif type(expr) == type '' then
-        expr = { path = M.normalize_path(expr) }
-    end
-
-    local path = expr.path
-    local glob = expr.glob
-    local filter = expr.type
-
-    glob = glob or '*'
-    path = path or '.'
-
-    local filter_func = {
-        file = M.is_file,
-        directory = M.is_dir,
+function M.ls(path, opts)
+    vim.validate {
+        path = { path, 'string' },
+        opts = { opts, 'table', true },
     }
+    opts = opts or {}
 
-    filter_func.files = filter_func.file
-    filter_func.directorys = filter_func.directory
-    filter_func.dir = filter_func.dir
-    filter_func.dirs = filter_func.dir
+    local dir_it = uv.fs_scandir(path)
+    local filename, ftype
+    local results = {}
 
-    -- TODO: Replace this with a luv function
-    local results = vim.fn.globpath(path, glob, false, true, false)
-
-    if filter_func[filter] ~= nil then
-        results = vim.tbl_filter(filter_func[filter], results)
-    end
-
-    if is_windows and vim.o.shellslash then
-        vim.tbl_map(M.forward_path, results)
-    end
+    repeat
+        filename, ftype = uv.fs_scandir_next(dir_it)
+        if filename and (not opts.type or opts.type == ftype) then
+            table.insert(results, path .. M.separator() .. filename)
+        end
+    until not filename
 
     return results
 end
 
-function M.get_files(expr)
-    assert(
-        not expr or type(expr) == type {} or type(expr) == type '',
-        debug.traceback('Invalid expression ' .. vim.inspect(expr))
-    )
-    if not expr then
-        expr = {}
-    elseif type(expr) == type '' then
-        expr = { path = M.normalize_path(expr) }
-    end
-    expr.type = 'file'
-    return M.ls(expr)
+function M.get_files(path)
+    return M.ls(path, { type = 'file' })
 end
 
-function M.get_dirs(expr)
-    assert(
-        not expr or type(expr) == type {} or type(expr) == type '',
-        debug.traceback('Invalid expression ' .. vim.inspect(expr))
-    )
-    if not expr then
-        expr = {}
-    elseif type(expr) == type '' then
-        expr = { path = M.normalize_path(expr) }
-    end
-    expr.type = 'directory'
-    return M.ls(expr)
+function M.get_dirs(path)
+    return M.ls(path, { type = 'directory' })
 end
 
 function M.find_files(path, globs, cb)
@@ -571,7 +515,7 @@ end
 function M.copy(src, dest, bang)
     src = M.normalize_path(src)
     dest = M.normalize_path(dest)
-    dest = M.is_dir(dest) and dest .. '/' .. M.basename(src) or dest
+    dest = M.is_dir(dest) and dest .. '/' .. vim.fs.basename(src) or dest
 
     if not M.is_dir(src) and (not M.exists(dest) or bang) then
         if M.exists(dest) and bang then
@@ -708,7 +652,7 @@ function M.skeleton_filename(opts)
     end
 
     local skeleton
-    local filename = M.basename '%'
+    local filename = vim.fs.basename '%'
     local extension = M.extension '%'
     local skeletons_path = sys.base .. '/skeletons/'
     local template = #opts > 0 and opts[1] or ''
@@ -877,7 +821,7 @@ function M.dump_json(filename, data)
     return M.writefile(filename, M.encode_json(data))
 end
 
--- TODO: Add find_any find_any_file and find_any_dir find any element of an array
+-- TODO: Make this compatible with vim.fs.find
 local function _find_parent(filename, directory, condition_func)
     vim.validate {
         filename = { filename, 'string' },
@@ -900,7 +844,7 @@ local function _find_parent(filename, directory, condition_func)
     end
 
     if not M.is_root(directory) then
-        return _find_parent(filename, M.dirname(directory))
+        return _find_parent(filename, vim.fs.dirname(directory))
     end
     return false
 end

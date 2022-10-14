@@ -12,10 +12,9 @@ local function read_config(config)
     local parsers = require 'configfiles.parsers'
 
     local ext = utils_fs.extension(configfile)
-    local basename = utils_fs.basename
 
-    local base_filename = basename(configfile)
-    local base_dir = basename(utils_fs.dirname(config.path))
+    local base_filename = vim.fs.basename(configfile)
+    local base_dir = vim.fs.basename(vim.fs.dirname(config.path))
 
     if ext == 'toml' then
         return parsers.toml(data)

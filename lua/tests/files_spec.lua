@@ -13,12 +13,35 @@ local function forward_path(path)
     return path
 end
 
-local function separator()
-    if is_windows and not vim.o.shellslash then
-        return '\\'
-    end
-    return '/'
-end
+-- local function separator()
+--     if is_windows and not vim.o.shellslash then
+--         return '\\'
+--     end
+--     return '/'
+-- end
+
+local dirname_basename_paths = {
+    '~/repos/',
+    '~/repos',
+    '~/.bashrc',
+    './.bashrc',
+    '~/repos/foo.lua',
+    'foo.lua',
+    '.',
+    '..',
+    '../',
+    '~',
+    '/usr/bin',
+    '/usr/bin/gcc',
+    '/',
+    '/usr/',
+    '/usr',
+    'c:/usr',
+    'c:/',
+    'c:/usr/bin',
+    'c:/usr/bin/foo.lua',
+    'c:/usr/bin/foo/../',
+}
 
 -- TODO: Missing function tests
 -- is_parent
@@ -142,6 +165,7 @@ describe('Linking', function()
         end)
     end
 
+    -- NOTE: Hardlinks fail in some systems
     it('Hard link File', function()
         local config_dir = vim.fn.stdpath 'config'
         local init_file = config_dir .. '/init.lua'
@@ -291,11 +315,22 @@ end)
 describe('Basename', function()
     local basename = require('utils.files').basename
 
-    it('HOME', function()
-        local username = vim.loop.os_get_passwd().username
-        assert.equals(username, basename '~')
-        assert.equals(username, basename(vim.loop.os_homedir()))
+    it('Default', function()
+        for _, path in ipairs(dirname_basename_paths) do
+            assert(
+                basename(path) == vim.fn.fnamemodify(path, ':t'),
+                debug.traceback(
+                    ('Error basename %s: %s ~= %s '):format(path, basename(path), vim.fn.fnamemodify(path, ':t'))
+                )
+            )
+        end
     end)
+
+    -- it('HOME', function()
+    --     local username = vim.loop.os_get_passwd().username
+    --     assert.equals(username, basename '~')
+    --     assert.equals(username, basename(vim.loop.os_homedir()))
+    -- end)
 
     it('Init file', function()
         local config_dir = vim.fn.stdpath 'config'
@@ -309,16 +344,16 @@ describe('Basename', function()
         assert.equals('test', basename './test')
     end)
 
-    it('Dirname', function()
-        assert.equals('test', basename './test/')
-        assert.equals('test', basename './test')
-    end)
+    -- it('Dirname', function()
+    --     assert.equals('test', basename './test/')
+    --     assert.equals('test', basename './test')
+    -- end)
 
-    it('CWD', function()
-        local cwd = forward_path(vim.loop.cwd()):gsub('.*' .. separator(), '')
-        assert.equals(cwd, basename '.')
-        assert.equals(cwd, basename(vim.loop.cwd()))
-    end)
+    -- it('CWD', function()
+    --     local cwd = forward_path(vim.loop.cwd()):gsub('.*' .. separator(), '')
+    --     assert.equals(cwd, basename '.')
+    --     assert.equals(cwd, basename(vim.loop.cwd()))
+    -- end)
 end)
 
 describe('Extension', function()
@@ -353,16 +388,25 @@ describe('Filename', function()
     end)
 end)
 
-describe('Basedir', function()
+describe('Dirname', function()
     local dirname = require('utils.files').dirname
 
     it('Getting dirname from directories and files', function()
+        for _, path in ipairs(dirname_basename_paths) do
+            assert(
+                dirname(path) == vim.fn.fnamemodify(path, ':h'),
+                debug.traceback(
+                    ('Error dirname %s: %s ~= %s '):format(path, dirname(path), vim.fn.fnamemodify(path, ':h'))
+                )
+            )
+        end
+
         local config_dir = forward_path(vim.fn.stdpath 'config')
         local data_dir = forward_path(vim.fn.stdpath 'data')
         local cache_dir = forward_path(vim.fn.stdpath 'cache')
 
         local init_file = forward_path(config_dir .. '/init.lua')
-        local homedir = forward_path(vim.loop.os_homedir())
+        -- local homedir = forward_path(vim.loop.os_homedir())
 
         assert.equals(config_dir, dirname(init_file))
 
@@ -370,7 +414,7 @@ describe('Basedir', function()
         assert.equals(data_dir:gsub([[[/\]nvim.*]], ''), dirname(data_dir))
         assert.equals(cache_dir:gsub([[[/\]nvim.*]], ''), dirname(cache_dir))
 
-        assert.equals(homedir, dirname '~/.bashrc')
+        assert.equals('~', dirname '~/.bashrc')
         if not is_windows then
             assert.equals('/', dirname '/')
             assert.equals('/tmp', dirname '/tmp/test')
@@ -544,60 +588,36 @@ if not is_windows then
     end)
 end
 
-describe('ls', function()
-    it("List directory's files/dirs", function()
-        local ls = require('utils.files').ls
-        local homedir = vim.loop.os_homedir()
-        local cwd = vim.loop.cwd()
-
-        assert.are.same(vim.fn.globpath('.', '*', true, true), ls '.')
-        assert.are.same(vim.fn.globpath(homedir, '*', true, true), ls(homedir))
-
-        assert.are.same(vim.fn.globpath(cwd, '*', true, true), ls { path = cwd })
-        assert.are.same(vim.fn.globpath(homedir, '*', true, true), ls { path = homedir })
-
-        assert.are.same(vim.fn.globpath(cwd, '*.lua', true, true), ls { path = cwd, glob = '*.lua' })
-    end)
-
-    it('Getting all files', function()
-        local get_files = require('utils.files').get_files
-        local homedir = vim.loop.os_homedir()
-        local cwd = vim.loop.cwd()
-        local is_file = require('utils.files').is_file
-
-        assert.are.same(vim.tbl_filter(is_file, vim.fn.globpath('.', '*', true, true)), get_files '.')
-        assert.are.same(vim.tbl_filter(is_file, vim.fn.globpath(homedir, '*', true, true)), get_files(homedir))
-
-        assert.are.same(vim.tbl_filter(is_file, vim.fn.globpath(cwd, '*', true, true)), get_files { path = cwd })
-        assert.are.same(
-            vim.tbl_filter(is_file, vim.fn.globpath(homedir, '*', true, true)),
-            get_files { path = homedir }
-        )
-
-        assert.are.same(
-            vim.tbl_filter(is_file, vim.fn.globpath(cwd, '*.lua', true, true)),
-            get_files { path = cwd, glob = '*.lua' }
-        )
-    end)
-
-    it('Getting all directories', function()
-        local get_dirs = require('utils.files').get_dirs
-        local homedir = vim.loop.os_homedir()
-        local cwd = vim.loop.cwd()
-        local is_dir = require('utils.files').is_dir
-
-        assert.are.same(vim.tbl_filter(is_dir, vim.fn.globpath('.', '*', true, true)), get_dirs '.')
-        assert.are.same(vim.tbl_filter(is_dir, vim.fn.globpath(homedir, '*', true, true)), get_dirs(homedir))
-
-        assert.are.same(vim.tbl_filter(is_dir, vim.fn.globpath(cwd, '*', true, true)), get_dirs { path = cwd })
-        assert.are.same(vim.tbl_filter(is_dir, vim.fn.globpath(homedir, '*', true, true)), get_dirs { path = homedir })
-
-        assert.are.same(
-            vim.tbl_filter(is_dir, vim.fn.globpath(cwd, 's*', true, true)),
-            get_dirs { path = cwd, glob = 's*' }
-        )
-    end)
-end)
+-- -- TODO: Glob and globpath does not return hidden files, cannot be used to verify function correctness
+-- describe('ls', function()
+--     it("List directory's files/dirs", function()
+--         local ls = require('utils.files').ls
+--         local homedir = vim.loop.os_homedir()
+--
+--         assert.are.same(vim.fn.globpath('.', '*', true, true), ls '.')
+--         assert.are.same(vim.fn.globpath(homedir, '*', true, true), ls(homedir))
+--     end)
+--
+--     it('Getting all files', function()
+--         local get_files = require('utils.files').get_files
+--         local homedir = vim.loop.os_homedir()
+--         -- local cwd = vim.loop.cwd()
+--         local is_file = require('utils.files').is_file
+--
+--         assert.are.same(vim.tbl_filter(is_file, vim.fn.globpath('.', '*', true, true)), get_files '.')
+--         assert.are.same(vim.tbl_filter(is_file, vim.fn.globpath(homedir, '*', true, true)), get_files(homedir))
+--     end)
+--
+--     it('Getting all directories', function()
+--         local get_dirs = require('utils.files').get_dirs
+--         local homedir = vim.loop.os_homedir()
+--         -- local cwd = vim.loop.cwd()
+--         local is_dir = require('utils.files').is_dir
+--
+--         assert.are.same(vim.tbl_filter(is_dir, vim.fn.globpath('.', '*', true, true)), get_dirs '.')
+--         assert.are.same(vim.tbl_filter(is_dir, vim.fn.globpath(homedir, '*', true, true)), get_dirs(homedir))
+--     end)
+-- end)
 
 describe('Rename', function()
     local rename = require('utils.files').rename

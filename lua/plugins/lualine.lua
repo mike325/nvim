@@ -63,7 +63,7 @@ local function filename()
     elseif buftype == 'terminal' then
         name = 'term://' .. (bufname:gsub('term://.*:', ''))
     elseif buftype == 'help' then
-        name = require('utils.files').basename(bufname)
+        name = vim.fs.basename(bufname)
     elseif buftype == 'prompt' then
         name = '[Prompt]'
     elseif bufname == '' then
@@ -238,7 +238,7 @@ lualine.setup {
                 fmt = function(name)
                     -- TODO: May add other pattens to avoid truncate other special names
                     if not name:match '^%w+://' then
-                        return require('utils.files').basename(name)
+                        return vim.fs.basename(name)
                     end
                     return name
                 end,

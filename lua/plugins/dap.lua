@@ -50,7 +50,7 @@ end
 local vscode_extentions_dir = sys.home .. '/.vscode/extensions'
 if is_dir(vscode_extentions_dir) then
     for _, extention in ipairs(require('utils.files').get_dirs(vscode_extentions_dir)) do
-        local ext_dir = require('utils.files').basename(extention)
+        local ext_dir = vim.fs.basename(extention)
         if ext_dir:match 'cpptools%-%d%.%d%.%d$' then
             local exe = 'OpenDebugAD7'
             if is_windows then

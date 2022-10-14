@@ -21,9 +21,8 @@ if minisessions then
     nvim.command.set('SessionSave', function(opts)
         local session = opts.args
         if session == '' then
-            local basename = require('utils.files').basename
             local getcwd = require('utils.files').getcwd
-            session = vim.v.this_session ~= '' and vim.v.this_session or basename(getcwd())
+            session = vim.v.this_session ~= '' and vim.v.this_session or vim.fs.basename(getcwd())
             if session:match '^%.' then
                 session = session:gsub('^%.+', '')
             end

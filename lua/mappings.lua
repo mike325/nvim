@@ -297,6 +297,7 @@ function M.cscope(cword, query)
     end
 end
 
+-- TODO: Improve this with globs and pattern matching
 function M.convert_path(path, send, host)
     local utils = RELOAD 'utils.files'
 
@@ -345,9 +346,9 @@ function M.convert_path(path, send, host)
     end
 
     if not remote_path then
-        remote_path = utils.dirname(path):gsub(sys.home:gsub('\\', '/'), '.') .. '/'
+        remote_path = vim.fs.dirname(path):gsub(sys.home:gsub('\\', '/'), '.') .. '/'
         if not send then
-            remote_path = remote_path .. utils.basename(path)
+            remote_path = remote_path .. vim.fs.basename(path)
         end
     end
 
@@ -624,7 +625,7 @@ function M.custom_compiler(opts)
 
     local path = sys.base .. '/after/compiler/'
     local compiler = opts.args
-    local compilers = vim.tbl_map(files.basename, files.get_files(path))
+    local compilers = vim.tbl_map(vim.fs.basename, files.get_files(path))
     if vim.tbl_contains(compilers, compiler .. '.lua') then
         nvim.command.set('CompilerSet', function(command)
             vim.cmd(('setlocal %s'):format(command.args))

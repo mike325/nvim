@@ -4,7 +4,6 @@ local load_module = require('utils.functions').load_module
 local null_ls = load_module 'null-ls'
 
 local is_absolute = require('utils.files').is_absolute
-local basename = require('utils.files').basename
 local get_files = require('utils.files').get_files
 
 if not null_ls then
@@ -13,7 +12,7 @@ end
 
 local M = {}
 
-local languages = vim.tbl_map(basename, get_files(sys.base .. '/lua/filetypes/'))
+local languages = vim.tbl_map(vim.fs.basename, get_files(sys.base .. '/lua/filetypes/'))
 
 -- TODO: Respect config files Ex. compile_commands.json, stylua.toml, pyproject.toml, etc
 for _, lang in ipairs(languages) do
