@@ -670,6 +670,18 @@ function M.project_config(event)
         M.set_grep(false, true)
     end
 
+    if nvim.has { 0, 8 } then
+        -- NOTE: this could be also search in another thread, we may have too many search in bufenter/filetype events
+        local is_c_project = vim.fs.find(
+            { 'CMakeLists.txt', 'compile_flags.txt', 'compile_commands.json', '.clang-format', '.clang-tidy' },
+            { upward = true, type = 'file' }
+        )
+
+        if #is_c_project > 0 then
+            RELOAD('threads.related').async_gather_alternates { path = vim.fs.dirname(is_c_project[1]) }
+        end
+    end
+
     local project = vim.fs.find('.project.lua', { upward = true, type = 'file' })
     if #project > 0 then
         nvim.ex.source(project[1])

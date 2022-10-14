@@ -1,5 +1,3 @@
-local api = vim.api
-
 require 'globals'
 
 local function get_autocmd(opts)
@@ -8,7 +6,7 @@ local function get_autocmd(opts)
     }
     opts = opts or {}
 
-    local ok, autocmds = pcall(api.nvim_get_autocmds, opts)
+    local ok, autocmds = pcall(vim.api.nvim_get_autocmds, opts)
     if not ok then
         autocmds = {}
     end
@@ -51,7 +49,7 @@ local function add_augroup(name, clear)
 
     local groups = get_augroup(name)
     if #groups == 0 or clear then
-        return api.nvim_create_augroup(name, { clear = clear == true })
+        return vim.api.nvim_create_augroup(name, { clear = clear == true })
     end
     return groups[1].group
 end
@@ -60,7 +58,7 @@ local function clear_augroup(name)
     vim.validate {
         name = { name, 'string' },
     }
-    api.nvim_create_augroup(name, { clear = true })
+    vim.api.nvim_create_augroup(name, { clear = true })
 end
 
 local function del_augroup(name_id)
@@ -74,7 +72,7 @@ local function del_augroup(name_id)
         },
     }
 
-    local api_call = type(name_id) == type '' and api.nvim_del_augroup_by_name or api.nvim_del_augroup_by_id
+    local api_call = type(name_id) == type '' and vim.api.nvim_del_augroup_by_name or vim.api.nvim_del_augroup_by_id
     pcall(api_call, name_id)
     -- local ok, _ = pcall(api_call, name_id)
     -- NOTE: May disable notifications and do a silent fail
@@ -106,7 +104,7 @@ local function add_autocmd(event, opts)
         clear_augroup(opts.group)
     end
 
-    return api.nvim_create_autocmd(event, opts)
+    return vim.api.nvim_create_autocmd(event, opts)
 end
 
 local function add_command(name, cmd, opts)
@@ -125,9 +123,9 @@ local function add_command(name, cmd, opts)
     if opts.buffer then
         local buffer = type(opts.buffer) == type(0) and opts.buffer or 0
         opts.buffer = nil
-        api.nvim_buf_create_user_command(buffer, name, cmd, opts)
+        vim.api.nvim_buf_create_user_command(buffer, name, cmd, opts)
     else
-        api.nvim_create_user_command(name, cmd, opts)
+        vim.api.nvim_create_user_command(name, cmd, opts)
     end
 end
 
@@ -144,9 +142,9 @@ local function del_command(name, buffer)
     }
     if buffer then
         buffer = type(buffer) == type(0) and buffer or 0
-        api.nvim_buf_del_user_command(buffer, name)
+        vim.api.nvim_buf_del_user_command(buffer, name)
     else
-        api.nvim_del_user_command(name)
+        vim.api.nvim_del_user_command(name)
     end
 end
 
@@ -162,7 +160,7 @@ local nvim = {
                 return x
             end
 
-            local ok, plugs = pcall(api.nvim_get_var, 'plugs')
+            local ok, plugs = pcall(vim.api.nvim_get_var, 'plugs')
             if plugs[k] then
                 mt[k] = plugs[k]
                 return plugs[k]
@@ -180,19 +178,19 @@ local nvim = {
     }),
     has = setmetatable({
         command = function(command)
-            return api.nvim_call_function('exists', { ':' .. command }) == 2
+            return vim.api.nvim_call_function('exists', { ':' .. command }) == 2
         end,
         event = function(event)
-            return api.nvim_call_function('exists', { '##' .. event }) == 2
+            return vim.api.nvim_call_function('exists', { '##' .. event }) == 2
         end,
         augroup = function(augroup)
-            return api.nvim_call_function('exists', { '#' .. augroup }) == 1
+            return vim.api.nvim_call_function('exists', { '#' .. augroup }) == 1
         end,
         option = function(option)
-            return api.nvim_call_function('exists', { '+' .. option }) == 1
+            return vim.api.nvim_call_function('exists', { '+' .. option }) == 1
         end,
         func = function(func)
-            return api.nvim_call_function('exists', { '*' .. func }) == 1
+            return vim.api.nvim_call_function('exists', { '*' .. func }) == 1
         end,
     }, {
         __call = function(_, feature)
@@ -207,44 +205,44 @@ local nvim = {
                 }
                 return require('storage').check_version(nvim_version, feature)
             end
-            return api.nvim_call_function('has', { feature }) == 1
+            return vim.api.nvim_call_function('has', { feature }) == 1
         end,
     }),
     exists = setmetatable({
         cmd = function(cmd)
-            return api.nvim_call_function('exists', { ':' .. cmd }) == 2
+            return vim.api.nvim_call_function('exists', { ':' .. cmd }) == 2
         end,
         command = function(command)
-            return api.nvim_call_function('exists', { '##' .. command }) == 2
+            return vim.api.nvim_call_function('exists', { '##' .. command }) == 2
         end,
         augroup = function(augroup)
-            return api.nvim_call_function('exists', { '#' .. augroup }) == 1
+            return vim.api.nvim_call_function('exists', { '#' .. augroup }) == 1
         end,
         option = function(option)
-            return api.nvim_call_function('exists', { '+' .. option }) == 1
+            return vim.api.nvim_call_function('exists', { '+' .. option }) == 1
         end,
         func = function(func)
-            return api.nvim_call_function('exists', { '*' .. func }) == 1
+            return vim.api.nvim_call_function('exists', { '*' .. func }) == 1
         end,
     }, {
         __call = function(_, feature)
-            return api.nvim_call_function('exists', { feature }) == 1
+            return vim.api.nvim_call_function('exists', { feature }) == 1
         end,
     }),
     env = setmetatable({}, {
         __index = function(_, k)
-            local ok, value = pcall(api.nvim_call_function, 'getenv', { k })
+            local ok, value = pcall(vim.api.nvim_call_function, 'getenv', { k })
             if not ok then
-                value = api.nvim_call_function('expand', { '$' .. k })
+                value = vim.api.nvim_call_function('expand', { '$' .. k })
                 value = value == k and nil or value
             end
             return value or nil
         end,
         __newindex = function(_, k, v)
-            local ok, _ = pcall(api.nvim_call_function, 'setenv', { k, v })
+            local ok, _ = pcall(vim.api.nvim_call_function, 'setenv', { k, v })
             if not ok then
                 v = type(v) == 'string' and '"' .. v .. '"' or v
-                local _ = api.nvim_eval('let $' .. k .. ' = ' .. v)
+                local _ = vim.api.nvim_eval('let $' .. k .. ' = ' .. v)
             end
         end,
     }),
@@ -257,7 +255,7 @@ local nvim = {
             end
             local command = k:gsub('_$', '!')
             local f = function(...)
-                return api.nvim_command(table.concat(vim.tbl_flatten { command, ... }, ' '))
+                return vim.api.nvim_command(table.concat(vim.tbl_flatten { command, ... }, ' '))
             end
             mt[k] = f
             return f
@@ -270,7 +268,7 @@ local nvim = {
             if x ~= nil then
                 return x
             end
-            local f = api['nvim_buf_' .. k]
+            local f = vim.api['nvim_buf_' .. k]
             mt[k] = f
             return f
         end,
@@ -282,7 +280,7 @@ local nvim = {
             if x ~= nil then
                 return x
             end
-            local f = api['nvim_win_' .. k]
+            local f = vim.api['nvim_win_' .. k]
             mt[k] = f
             return f
         end,
@@ -294,21 +292,21 @@ local nvim = {
             if x ~= nil then
                 return x
             end
-            local f = api['nvim_tabpage_' .. k]
+            local f = vim.api['nvim_tabpage_' .. k]
             mt[k] = f
             return f
         end,
     }),
     reg = setmetatable({}, {
         __index = function(_, k)
-            local ok, value = pcall(api.nvim_call_function, 'getreg', { k })
+            local ok, value = pcall(vim.api.nvim_call_function, 'getreg', { k })
             return ok and value or nil
         end,
         __newindex = function(_, k, v)
             if v == nil then
                 error "Can't clear registers"
             end
-            pcall(api.nvim_call_function, 'setreg', { k, v })
+            pcall(vim.api.nvim_call_function, 'setreg', { k, v })
         end,
     }),
     keymap = require('neovim.mappings').keymap,
@@ -421,7 +419,7 @@ setmetatable(nvim, {
         local ok, x = pcall(RELOAD, 'neovim.' .. k)
 
         if not ok then
-            x = api['nvim_' .. k]
+            x = vim.api['nvim_' .. k]
             if not x then
                 x = vim[k]
             end
@@ -431,10 +429,12 @@ setmetatable(nvim, {
     end,
 })
 
-if api.nvim_call_function('has', { 'nvim-0.5' }) == 0 then
-    local legacy = require 'neovim.legacy'
-    for obj, val in pairs(legacy) do
-        nvim[obj] = val
+if not vim.is_thread or not vim.is_thread() then
+    if vim.api.nvim_call_function('has', { 'nvim-0.5' }) == 0 then
+        local legacy = require 'neovim.legacy'
+        for obj, val in pairs(legacy) do
+            nvim[obj] = val
+        end
     end
 end
 

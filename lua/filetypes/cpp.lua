@@ -257,6 +257,7 @@ local function set_opts(compiler, bufnum)
 
     local args
 
+    -- TODO: unify these 2
     local flags_file = vim.fs.find('compile_flags.txt', { upward = true, type = 'file' })
     flags_file = #flags_file > 0 and flags_file[1] or false
     local db_file = vim.fs.find('compile_commands.json', { upward = true, type = 'file' })

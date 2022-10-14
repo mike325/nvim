@@ -1,6 +1,4 @@
-local sys = require 'sys'
 local nvim = require 'neovim'
-local bufloaded = require('utils.buffers').bufloaded
 
 local uv = vim.loop
 
@@ -11,7 +9,7 @@ local M = {}
 
 M.getcwd = uv.cwd
 
-local is_windows = sys.name == 'windows'
+local is_windows = jit.os == 'Windows'
 
 -- TODO: Replace some of these functions with vim.fs conterparts
 
@@ -174,7 +172,7 @@ function M.is_absolute(path)
     vim.validate { path = { path, 'string' } }
     assert(path ~= '', debug.traceback 'Empty path')
     if path:sub(1, 1) == '~' then
-        path = path:gsub('~', sys.home)
+        path = path:gsub('~', uv.os_homedir())
     end
 
     local is_abs = false
@@ -202,9 +200,7 @@ end
 function M.realpath(path)
     vim.validate { path = { path, 'string' } }
     assert(M.exists(path), debug.traceback(([[Path "%s" doesn't exists]]):format(path)))
-    path = M.normalize(path)
-    local rpath = uv.fs_realpath(path)
-    return M.forward_path(rpath or path)
+    return uv.fs_realpath(M.normalize(path))
 end
 
 function M.basename(path)
@@ -523,6 +519,7 @@ function M.copy(src, dest, bang)
 end
 
 function M.rename(old, new, bang)
+    local bufloaded = require('utils.buffers').bufloaded
     new = M.normalize(new)
     old = M.normalize(old)
 
@@ -569,6 +566,8 @@ function M.delete(target, bang)
         bang = { bang, 'boolean', true },
     }
 
+    local bufloaded = require('utils.buffers').bufloaded
+
     if bang == nil then
         bang = false
     end
@@ -580,7 +579,7 @@ function M.delete(target, bang)
     end
 
     if M.is_dir(target) then
-        if target == sys.home then
+        if target == uv.loop.os_homedir() then
             vim.notify('Cannot delete home directory', 'ERROR', { title = 'Delete File/Directory' })
             return false
         elseif M.is_root(target) then
@@ -639,7 +638,7 @@ function M.skeleton_filename(opts)
     local skeleton
     local filename = vim.fs.basename '%'
     local extension = M.extension '%'
-    local skeletons_path = sys.base .. '/skeletons/'
+    local skeletons_path = require('sys').base .. '/skeletons/'
     local template = #opts > 0 and opts[1] or ''
 
     if extension == '' then
@@ -791,7 +790,7 @@ function M.read_json(filename)
     }
     assert(filename ~= '', debug.traceback 'Empty filename')
     if filename:sub(1, 1) == '~' then
-        filename = filename:gsub('~', sys.home)
+        filename = filename:gsub('~', uv.os_homedir())
     end
     assert(M.is_file(filename), debug.traceback('Not a file: ' .. filename))
     return M.decode_json(M.readfile(filename, false))
@@ -801,7 +800,7 @@ function M.dump_json(filename, data)
     vim.validate { filename = { filename, 'string' }, data = { data, 'table' } }
     assert(filename ~= '', debug.traceback 'Empty filename')
     if filename:sub(1, 1) == '~' then
-        filename = filename:gsub('~', sys.home)
+        filename = filename:gsub('~', uv.os_homedir())
     end
     return M.writefile(filename, M.encode_json(data))
 end

@@ -1,5 +1,3 @@
-local stdpath = vim.fn.stdpath
-
 local executable = function(exe)
     return vim.fn.executable(exe) == 1
 end
@@ -23,15 +21,15 @@ local function homedir()
 end
 
 local function dirname()
-    return forward_slash(stdpath 'config')
+    return forward_slash(vim.fn.stdpath 'config')
 end
 
 local function cachedir()
-    return forward_slash(stdpath 'cache')
+    return forward_slash(vim.fn.stdpath 'cache')
 end
 
 local function datadir()
-    return forward_slash(stdpath 'data')
+    return forward_slash(vim.fn.stdpath 'data')
 end
 
 local function luajit_version()
@@ -64,7 +62,7 @@ local function has_sqlite()
 end
 
 local function db_root_path()
-    local root = forward_slash(stdpath 'data' .. '/databases')
+    local root = forward_slash(vim.fn.stdpath 'data' .. '/databases')
     if vim.fn.isdirectory(root) ~= 1 then
         vim.fn.mkdir(root, 'p')
     end
