@@ -260,7 +260,7 @@ endfunction
 function! s:tools_ignores(tool) abort
     let l:excludes = []
 
-    if has('nvim-0.2') || v:version >= 800 || has#patch('7.4.2044')
+    if has('nvim-0.2') || v:version >= 800 || s:has_patch('7.4.2044')
         let l:excludes = map(split(copy(&backupskip), ','), {key, val -> substitute(val, '.*', "'\\0'", 'g') })
     endif
 
@@ -276,8 +276,8 @@ function! s:tools_ignores(tool) abort
             let l:ignores['ag'] .= ' --ignore ' . join(l:excludes, ' --ignore ' ) . ' '
         endif
         if executable('fd')
-            if filereadable(vars#home() . '/.config/git/ignore')
-                let l:ignores['fd'] .= ' --ignore-file '. vars#home() .'/.config/git/ignore'
+            if filereadable(s:vars_home() . '/.config/git/ignore')
+                let l:ignores['fd'] .= ' --ignore-file '. s:vars_home() .'/.config/git/ignore'
             else
                 let l:ignores['fd'] .= ' -E ' . join(l:excludes, ' -E ' ) . ' '
             endif
