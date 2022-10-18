@@ -79,7 +79,7 @@ local qf_funcs = {
 
 if not vim.env.NO_COOL_FONTS then
     icons = {
-        error = '✗', -- ✗ -- 🞮 --  -- ❌
+        error = '×', -- ✗ -- 🞮  -- × --  -- ❌
         warn = ' ', -- 
         info = ' ',
         hint = '',
@@ -109,16 +109,16 @@ else
         info = 'I',
         hint = 'H',
         bug = 'B',
-        build = 'W',
-        wait = '...',
-        success = ':)',
-        fail = ':c',
-        virtual_text = '➤',
+        wait = '☕', -- W
+        build = '⛭', -- b
+        success = '✓', -- ✓ -- ✔ -- 
+        fail = '✗',
+        virtual_text = '❯', -- '❯', -- '➤',
         diff_add = '+',
         diff_modified = '~',
         diff_remove = '-',
-        git_branch = '',
-        readonly = '',
+        git_branch = '', -- TODO add an universal branch
+        readonly = '🔒', -- '',
         bar = '|',
         sep_triangle_left = '>',
         sep_triangle_right = '<',
