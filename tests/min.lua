@@ -35,9 +35,6 @@ require 'messages'
 require 'globals'
 -- require('filetypes.python').pynvim_setup()
 
--- require'storage'
--- require('utils.functions').get_ssh_hosts()
-
 local package_plugins = vim.fn.stdpath('data'):gsub('\\', '/') .. '/site/pack/packer/start/'
 vim.opt.rtp:append(package_plugins .. 'plenary.nvim/')
 

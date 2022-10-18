@@ -579,7 +579,7 @@ function M.delete(target, bang)
     end
 
     if M.is_dir(target) then
-        if target == uv.loop.os_homedir() then
+        if target == uv.os_homedir() then
             vim.notify('Cannot delete home directory', 'ERROR', { title = 'Delete File/Directory' })
             return false
         elseif M.is_root(target) then
@@ -758,30 +758,14 @@ function M.decode_json(data)
     if type(data) == type {} then
         data = table.concat(data, '\n')
     end
-    if vim.json then
-        return vim.json.decode(data)
-    elseif has_cjson then
-        return require('cjson').decode(data)
-    elseif vim.in_fast_event() then
-        error 'Decode json in fast event is not yet supported!!'
-        -- return vim.fn.json_decode(data)
-    end
-    return vim.fn.json_decode(data)
+    return vim.json.decode(data)
 end
 
 function M.encode_json(data)
     vim.validate {
         data = { data, 'table' },
     }
-    if vim.json then
-        return vim.json.encode(data)
-    elseif has_cjson then
-        return require('cjson').encode(data)
-    elseif vim.in_fast_event() then
-        error(debug.traceback 'Encode json in fast event is not yet supported!!')
-        -- return vim.fn.json_encode(data)
-    end
-    return vim.fn.json_encode(data)
+    return vim.json.encode(data)
 end
 
 function M.read_json(filename)
