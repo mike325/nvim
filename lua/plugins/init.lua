@@ -44,7 +44,12 @@ packer.startup(function()
     use { 'nanotee/luv-vimdocs', event = 'CmdlineEnter' }
     use { 'tweekmonster/startuptime.vim', cmd = { 'StartupTime' } }
 
-    use { 'kyazdani42/nvim-web-devicons' }
+    use {
+        cond = function()
+            return not vim.env.NO_COOL_FONTS
+        end,
+        'kyazdani42/nvim-web-devicons',
+    }
     use { 'kevinhwang91/nvim-bqf' }
 
     use { 'nvim-lua/popup.nvim' }
@@ -102,49 +107,6 @@ packer.startup(function()
             vim.g['surround_' .. vim.fn.char2nr ';'] = ':\r:'
             vim.g['surround_' .. vim.fn.char2nr ':'] = ':\r:'
             vim.g['surround_' .. vim.fn.char2nr 'q'] = [[``\r'']]
-        end,
-    }
-
-    use {
-        'tpope/vim-projectionist',
-        event = { 'CmdlineEnter', 'CursorHold' },
-        config = function()
-            local set_autocmd = require('neovim.autocmds').set_autocmd
-            -- TODO: Make this more "project" tailored, set git and language specific
-            --       projections depending of what's in the cwd
-            -- stylua: ignore
-            vim.g.common_projections = {
-                ['.projections.json']          = { type = 'Projections' },
-                ['.gitignore']                 = { type = 'Gitignore' },
-                ['.git/hooks/*']               = { type = 'GitHooks' },
-                ['.git/config']                = { type = 'Git' },
-                ['.git/info/*']                = { type = 'Git' },
-                ['.github/workflows/main.yml'] = { type = 'Github' },
-                ['.github/workflows/*.yml']    = { type = 'Github' },
-                ['.travis.yml']                = { type = 'Travis' },
-                ['.pre-commit-config.yaml']    = { type = 'PreCommit' },
-                ['.ycm_extra_conf.py']         = { type = 'YCM' },
-                ['pyproject.toml']             = { type = 'PyProject' },
-                ['.flake8']                    = { type = 'Flake' },
-                ['.stylua.toml']               = { type = 'Stylua' },
-                ['.project.vim']               = { type = 'Project' },
-                ['.clang-format']              = { type = 'Clang' },
-                ['.clang-*']                   = { type = 'Clang' },
-                ['compile_flags.txt']          = { type = 'CompileFlags' },
-                ['compile_commands.json']      = { type = 'CompileDB' },
-                ['UltiSnips/*.snippets']       = { type = 'UltiSnips' },
-                ['README.md']                  = { type = 'Readme' },
-                ['LICENSE']                    = { type = 'License' },
-                ['Makefile']                   = { type = 'Makefile' },
-                ['CMakeLists.txt']             = { type = 'CMake' },
-                ['*.cmake']                    = { type = 'CMake' },
-            }
-            set_autocmd {
-                event = 'User',
-                pattern = 'ProjectionistDetect',
-                cmd = 'call projectionist#append(getcwd(), g:common_projections)',
-                group = 'CommonProjections',
-            }
         end,
     }
 

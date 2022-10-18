@@ -1,3 +1,5 @@
+local get_icon = require('utils.functions').get_icon
+
 local M = require('lualine.component'):extend()
 
 local hl = require 'lualine.highlight'
@@ -12,7 +14,7 @@ end
 function M:update_status()
     local loc_values = #vim.fn.getloclist(vim.api.nvim_get_current_win())
     if loc_values > 0 then
-        return ('%s%s: %s'):format(hl.component_format_highlight(self.loc_counter), '', loc_values)
+        return ('%s%s: %s'):format(hl.component_format_highlight(self.loc_counter), get_icon 'warn', loc_values)
     end
     return ''
 end

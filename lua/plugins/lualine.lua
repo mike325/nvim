@@ -2,6 +2,7 @@ local nvim = require 'neovim'
 local sys = require 'sys'
 local load_module = require('utils.functions').load_module
 local get_icon = require('utils.functions').get_icon
+local get_separators = require('utils.functions').get_separators
 
 -- TODO: Add support to live reload these functions
 local lualine = load_module 'lualine'
@@ -152,12 +153,12 @@ if not vim.g.started_by_firenvim then
     end
 end
 
-local component_separators = require('utils.functions').get_separators 'parenthesis'
-local section_separators = require('utils.functions').get_separators 'circle'
+local component_separators = vim.env.NO_COOL_FONTS == nil and get_separators 'parenthesis' or get_icon 'bar'
+local section_separators = vim.env.NO_COOL_FONTS == nil and get_separators 'circle' or ''
 
 lualine.setup {
     options = {
-        -- icons_enabled = true,
+        icons_enabled = vim.env.NO_COOL_FONTS == nil,
         -- theme = 'auto',
         component_separators = component_separators,
         section_separators = section_separators,

@@ -77,7 +77,7 @@ local qf_funcs = {
 -- ☰
 -- 
 
-if not vim.env['NO_COOL_FONTS'] then
+if not vim.env.NO_COOL_FONTS then
     icons = {
         error = '✗', -- ✗ -- 🞮 --  -- ❌
         warn = ' ', -- 
