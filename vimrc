@@ -429,21 +429,21 @@ function! s:mappings_inside_empty_pairs() abort
     return l:rsp
 endfunction
 
-function! s:mappings_enter() abort
+function! g:MappingsEnter() abort
     if pumvisible()
         return "\<C-y>"
     endif
     return "\<CR>"
 endfunction
 
-function! s:mappings_tab() abort
+function! g:MappingsTab() abort
     if pumvisible()
         return "\<C-n>"
     endif
     return "\<TAB>"
 endfunction
 
-function! s:mappings_shifttab() abort
+function! g:MappingsShiftTab() abort
     if pumvisible()
         return "\<C-p>"
     endif
@@ -506,7 +506,7 @@ endif
 
 " Center searches results
 " CREDITS: https://amp.reddit.com/r/vim/comments/4jy1mh/slightly_more_subltle_n_and_n_behavior/
-function! s:mappings_NiceNext(cmd) abort
+function! g:MappingsNiceNext(cmd) abort
     let view = winsaveview()
     execute 'silent! normal! ' . a:cmd
     if view.topline != winsaveview().topline
@@ -514,7 +514,7 @@ function! s:mappings_NiceNext(cmd) abort
     endif
 endfunction
 
-function! s:mappings_Trim() abort
+function! g:MappingsTrim() abort
     " Since default is to trim, the first call is to deactivate trim
     if b:trim == 0
         let b:trim = 1
@@ -525,10 +525,6 @@ function! s:mappings_Trim() abort
     endif
 
     return 0
-endfunction
-
-function! s:mappings_bs() abort
-    execute "normal! \<C-o>"
 endfunction
 
 function! s:mappings_cr() abort
@@ -548,7 +544,7 @@ endfunction
 
 " CREDITS: https://github.com/alexlafroscia/dotfiles/blob/master/nvim/init.vim
 " Smart indent when entering insert mode with i on empty lines
-function! s:mappings_IndentWithI() abort
+function! g:MappingsIndentWithI() abort
     if len(getline('.')) == 0 && line('.') != line('$') && &buftype !~? 'terminal'
         return '"_ddO'
     endif
@@ -881,13 +877,13 @@ nnoremap J m`J``
 " Better <ESC> mappings
 imap jj <Esc>
 
-nnoremap <silent> <BS> :call s:mappings_bs()<CR>
+nnoremap <silent> <BS> <C-o>
 
 xnoremap <BS> <ESC>
 
-inoremap <silent> <TAB>   <C-R>=s:mappings_tab()<CR>
-inoremap <silent> <S-TAB> <C-R>=s:mappings_shifttab()<CR>
-inoremap <silent> <CR>    <C-R>=s:mappings_enter()<CR>
+inoremap <silent> <TAB>   <C-R>=g:MappingsTab()<CR>
+inoremap <silent> <S-TAB> <C-R>=g:MappingsShiftTab()<CR>
+inoremap <silent> <CR>    <C-R>=g:MappingsEnter()<CR>
 
 " Use <C-L> to clear the highlighting of :set hlsearch.
 if maparg('<C-L>', 'n') ==# ''
@@ -901,7 +897,7 @@ if !s:has_patch('8.1.2289')
 endif
 
 " Seems like a good idea, may activate it later
-" nnoremap <expr> q &diff ? ":diffoff!\<bar>only\<cr>" : "q"
+nnoremap <expr> q &diff ? ":diffoff!\<bar>only\<cr>" : "q"
 
 " Move vertically by visual line unless preceded by a count. If a movement is
 " greater than 3 then automatically add to the jumplist.
@@ -926,7 +922,7 @@ nnoremap / ms/
 nnoremap g/ ms/\v
 
 " TODO
-" nnoremap <expr> i mappings#IndentWithI()
+nnoremap <expr> i g:MappingsIndentWithI()
 
 if has('nvim') || v:version >= 704
     " Change word under cursor and dot repeat
@@ -1037,8 +1033,8 @@ nnoremap <silent> ]B :<C-U>exe "".(v:count ? v:count : "")."blast"<CR>
 nnoremap <silent> [b :<C-U>exe "".(v:count ? v:count : "")."bprevious"<CR>
 nnoremap <silent> ]b :<C-U>exe "".(v:count ? v:count : "")."bnext"<CR>
 
-nnoremap <silent> n :call s:mappings_NiceNext('n')<cr>
-nnoremap <silent> N :call s:mappings_NiceNext('N')<cr>
+nnoremap <silent> n :call g:MappingsNiceNext('n')<cr>
+nnoremap <silent> N :call g:MappingsNiceNext('N')<cr>
 
 " " TODO: port quick quickfix/loclist toggle to viml
 " nnoremap <silent> =q :ERROR<cr>
@@ -1075,7 +1071,7 @@ if has('nvim') || v:version >= 704
     command! -nargs=? -complete=customlist,s:mappings_format FileFormat call s:mappings_SetFileData('fileformat', <q-args>, 'unix')
 endif
 
-command! TrimToggle call s:mappings_Trim()
+command! TrimToggle call g:MappingsTrim()
 
 if has('nvim-0.2') || s:has_patch('7.4.2044')
     command! -nargs=? -complete=customlist,s:mappings_spells SpellLang
