@@ -140,8 +140,6 @@ vim.opt.showmatch = true
 vim.opt.splitright = true
 vim.opt.splitbelow = true
 
-vim.opt.termguicolors = true
-
 vim.opt.infercase = true
 vim.opt.ignorecase = true
 vim.opt.smartcase = false

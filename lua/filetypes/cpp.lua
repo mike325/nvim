@@ -8,7 +8,6 @@ local getcwd = require('utils.files').getcwd
 
 local compile_flags = STORAGE.compile_flags
 local databases = STORAGE.databases
--- local has_cjson = STORAGE.has_cjson
 
 local async_execute = require('utils.functions').async_execute
 

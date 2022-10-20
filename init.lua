@@ -34,6 +34,7 @@ if not vim.keymap then
     vim.keymap = nvim.keymap
 end
 
+vim.opt.termguicolors = true
 vim.g.mapleader = ' '
 
 require 'utils.ft_detect'

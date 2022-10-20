@@ -44,7 +44,6 @@ if not STORAGE then
         scratchs = {},
         compile_flags = {},
         databases = {},
-        has_cjson = -1,
         jobs = {},
         autocmds = {},
         filelists = {},
@@ -58,5 +57,6 @@ if not STORAGE then
             g = {},
             b = {},
         },
+        servers = {},
     }
 end

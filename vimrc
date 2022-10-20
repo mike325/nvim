@@ -840,10 +840,6 @@ set fileencoding=utf-8
 set background=dark
 set cursorline
 
-if s:has_option('termguicolors')
-    set termguicolors
-endif
-
 if !has('nvim')
     set t_Co=256
     let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"

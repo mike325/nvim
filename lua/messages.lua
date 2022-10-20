@@ -1,4 +1,5 @@
 -- local nvim = require 'neovim'
+local get_icon = require('utils.functions').get_icon
 
 local lsp_sign = 'DiagnosticSign'
 local names = { 'error', 'hint', 'warn', 'info' }
@@ -7,6 +8,20 @@ local levels = { 'Error', 'Hint', 'Warn', 'Info' }
 local hl_group = {}
 for idx, level in ipairs(levels) do
     hl_group[names[idx]] = lsp_sign .. level
+end
+
+local has_notify, nvim_notify = pcall(require, 'notify')
+
+if has_notify and vim.env.NO_COOL_FONTS then
+    nvim_notify.setup {
+        icons = {
+            DEBUG = get_icon 'bug',
+            ERROR = get_icon 'error',
+            INFO = get_icon 'info',
+            TRACE = '✎',
+            WARN = get_icon 'warn',
+        },
+    }
 end
 
 local function notify(msg, level, opts)
@@ -35,10 +50,8 @@ local function notify(msg, level, opts)
     -- if vim.opt.verbose:get() == 1 then
     -- end
 
-    local has_notify, floating_notify = pcall(require, 'notify')
-
     if has_notify then
-        floating_notify(msg, level, opts)
+        nvim_notify(msg, level, opts)
     else
         if opts and opts.title then
             msg = ('[%s]: %s'):format(opts.title, msg)

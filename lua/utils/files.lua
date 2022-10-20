@@ -2,12 +2,9 @@ local nvim = require 'neovim'
 
 local uv = vim.loop
 
-local has_cjson, _ = pcall(require, 'cjson')
-STORAGE.has_cjson = vim.json ~= nil or has_cjson
-
-local M = {}
-
-M.getcwd = uv.cwd
+local M = {
+    getcwd = uv.cwd,
+}
 
 local is_windows = jit.os == 'Windows'
 
@@ -124,7 +121,7 @@ function M.link(src, dest, sym, force)
 
     assert(src ~= dest, debug.traceback 'Cannot link src to itself')
 
-    local status, msg
+    local status, msg, _
 
     if not sym and M.is_dir(src) then
         vim.notify('Cannot hard link a directory', 'ERROR', { title = 'Link' })

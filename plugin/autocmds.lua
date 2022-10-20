@@ -162,7 +162,7 @@ if executable 'isort' then
         group = 'ImportFix',
         pattern = '*.{py,ipy}',
         callback = function(args)
-            RELOAD('utils.functions').autoformat('isort', { '--profile=black', args.file }) -- '-l', '120', '-tc'
+            RELOAD('utils.functions').autoformat('isort', { args.file }) -- '--profile=black', '-l', '120', '-tc'
         end,
     })
 end

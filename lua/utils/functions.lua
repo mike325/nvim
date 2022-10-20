@@ -1126,7 +1126,7 @@ if STORAGE.modern_git == -1 then
 end
 
 function M.autoformat(cmd, args)
-    if vim.b.disable_autoformat then
+    if vim.b.disable_autoformat or vim.t.disable_autoformat or vim.g.disable_autoformat then
         return
     end
 
