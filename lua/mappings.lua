@@ -811,4 +811,77 @@ function M.reload_configs(opts)
         vim.notify('Invalid config name: ' .. opts.args, 'ERROR', { title = 'Reloader' })
     end
 end
+
+function M.alternate(opts)
+    opts.buf = vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf())
+
+    local prefix = opts.buf:match '^%w+://'
+    opts.buf = opts.buf:gsub('^%w+://', '')
+    if prefix == 'fugitive://' then
+        opts.buf = opts.buf:gsub('%.git//?[%w%d]+//?', '')
+    end
+
+    if require('utils.files').is_file(opts.buf) then
+        opts.buf = vim.loop.fs_realpath(opts.buf)
+    end
+
+    local candidates, _
+    -- TODO: alternates should be buffer local
+    local alternates = vim.g.alternates or {}
+    if not alternates[opts.buf] or opts.bang then
+        _, candidates = RELOAD('threads.related').alternate_src_header(vim.json.encode(opts))
+        if #candidates > 0 then
+            candidates = vim.json.decode(candidates)
+            alternates[opts.buf] = candidates
+            vim.g.alternates = alternates
+        end
+    else
+        candidates = alternates[opts.buf]
+    end
+
+    if #candidates > 1 then
+        vim.ui.select(candidates, { prompt = 'Alternate: ' }, function(choise)
+            nvim.ex.edit(choise)
+        end)
+    elseif #candidates == 1 then
+        nvim.ex.edit(candidates[1])
+    else
+        vim.notify('No alternate file found', 'WARN')
+    end
+end
+
+function M.alt_makefiles(opts)
+    opts.buf = vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf())
+
+    local prefix = opts.buf:match '^%w+://'
+    opts.buf = opts.buf:gsub('^%w+://', '')
+    if prefix == 'fugitive://' then
+        opts.buf = opts.buf:gsub('%.git//?[%w%d]+//?', '')
+    end
+
+    opts.basedir = vim.fs.dirname(opts.buf)
+
+    local candidates, _
+    local makefiles = vim.g.makefiles or {}
+    if not makefiles[opts.basedir] or opts.bang then
+        _, candidates = RELOAD('threads.related').related_makefiles(vim.json.encode(opts))
+        candidates = vim.json.decode(candidates)
+        makefiles = vim.g.makefiles or {}
+        makefiles[opts.basedir] = candidates
+        vim.g.makefiles = makefiles
+    else
+        candidates = vim.g.makefiles[opts.basedir]
+    end
+
+    if #candidates > 1 then
+        vim.ui.select(candidates, { prompt = 'Makefile: ' }, function(choise)
+            nvim.ex.edit(choise)
+        end)
+    elseif #candidates == 1 then
+        nvim.ex.edit(candidates[1])
+    else
+        vim.notify('No makefiles file found', 'WARN')
+    end
+end
+
 return M

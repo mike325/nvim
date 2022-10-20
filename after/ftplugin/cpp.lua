@@ -1,4 +1,4 @@
-local nvim = require 'neovim'
+-- local nvim = require 'neovim'
 
 local ft = vim.opt_local.filetype:get()
 require('utils.buffers').setup(ft, {
@@ -6,7 +6,8 @@ require('utils.buffers').setup(ft, {
     commentstring = '// %s',
 })
 
-if nvim.has { 0, 8 } then
-    local related_utils = RELOAD 'threads.related'
-    related_utils.async_lookup_alternate()
-end
+-- if nvim.has { 0, 8 } then
+--     local related_utils = RELOAD 'threads.related'
+--     -- related_utils.async_lookup_alternate()
+--     -- related_utils.async_lookup_makefiles()
+-- end

@@ -324,26 +324,6 @@ function M.opfun_comment(_, visual)
     vim.o.selection = select_save
 end
 
-function M.get_ssh_hosts()
-    local ssh_config = sys.home .. '/.ssh/config'
-
-    if is_file(ssh_config) then
-        local host = ''
-        require('utils.files').readfile(ssh_config, true, function(data)
-            for _, line in pairs(data) do
-                if line and line ~= '' and line:match '[hH]ost%s+[a-zA-Z0-9_-%.]+' then
-                    host = vim.split(line, '%s+')[2]
-                elseif line:match '%s+[hH]ostname%s+[a-zA-Z0-9_-%.]+' and host ~= '' then
-                    local addr = vim.split(line, '%s+')[2]
-                    STORAGE.hosts[host] = addr
-                    host = ''
-                end
-            end
-            -- vim.tbl_add_reverse_lookup(STORAGE.hosts)
-        end)
-    end
-end
-
 function M.get_git_dir(callback)
     vim.validate { callback = { callback, 'function' } }
     assert(executable 'git', 'Missing git')
@@ -679,6 +659,20 @@ function M.project_config(event)
 
         if #is_c_project > 0 then
             RELOAD('threads.related').async_gather_alternates { path = vim.fs.dirname(is_c_project[1]) }
+
+            local compile_flags = vim.fs.find(
+                { 'compile_flags.txt', 'compile_commands.json' },
+                { upward = true, type = 'file' }
+            )
+
+            local flags_root = vim.fs.dirname(compile_flags[1])
+            vim.g.parsed = vim.g.parsed or {}
+            if #compile_flags > 0 and not vim.g.parsed[flags_root] then
+                RELOAD('threads.parse').compile_flags {
+                    root = flags_root,
+                    flags_file = compile_flags[1],
+                }
+            end
         end
     end
 

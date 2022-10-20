@@ -443,35 +443,15 @@ end
 if nvim.has { 0, 8 } then
     -- TODO: Make this alternate command buffer local and not global
     nvim.command.set('Alternate', function(opts)
-        opts.buf = vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf())
-
-        local prefix = opts.buf:match '^%w+://'
-        opts.buf = opts.buf:gsub('^%w+://', '')
-        if prefix == 'fugitive://' then
-            opts.buf = opts.buf:gsub('%.git//?[%w%d]+//?', '')
-        end
-
-        local candidates
-        -- TODO: alternates should be buffer local
-        local alternates = vim.g.alternates or {}
-        if not alternates[opts.buf] or opts.bang then
-            _, candidates = RELOAD('threads.related').alternate_src_header(vim.json.encode(opts))
-            candidates = vim.json.decode(candidates)
-            alternates = vim.g.alternates or {}
-            alternates[opts.buf] = candidates
-            vim.g.alternates = alternates
-        else
-            candidates = vim.g.alternates[opts.buf]
-        end
-
-        if #candidates > 1 then
-            vim.ui.select(candidates, { prompt = 'Alternate: ' }, function(choise)
-                nvim.ex.edit(choise)
-            end)
-        elseif #candidates == 1 then
-            nvim.ex.edit(candidates[1])
-        else
-            vim.notify('No alternate file found', 'WARN')
-        end
+        RELOAD('mappings').alternate(opts)
     end, { nargs = 0, desc = 'Alternate between files', bang = true })
+
+    -- nvim.command.set('AltMakefile', function(opts)
+    --     RELOAD('mappings').alt_makefiles(opts)
+    -- end, { nargs = 0, desc = 'Open related makefile', bang = true })
 end
+
+-- nvim.command.set('NotificationServer', function(opts)
+--     opts.enable = opts.args == 'enable'
+--     RELOAD('mappings').notification_server(opts)
+-- end, { nargs = 1, complete = _completions.toggle, bang = true })

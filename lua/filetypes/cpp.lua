@@ -1,7 +1,7 @@
 local nvim = require 'neovim'
 
 local executable = require('utils.files').executable
-local readfile = require('utils.files').readfile
+-- local readfile = require('utils.files').readfile
 local is_file = require('utils.files').is_file
 local realpath = require('utils.files').realpath
 local getcwd = require('utils.files').getcwd
@@ -156,68 +156,6 @@ local function get_compiler()
     return compiler
 end
 
-local function parse_includes(args)
-    local includes = {}
-    local include = false
-    for _, arg in pairs(args) do
-        if arg == '-isystem' or arg == '-I' or arg == '/I' then
-            include = true
-        elseif include then
-            table.insert(includes, arg)
-            include = false
-        elseif arg:match '^[-/]I' then
-            table.insert(includes, vim.trim(arg:gsub('^[-/]I', '')))
-        elseif arg:match '^%-isystem' then
-            table.insert(includes, vim.trim(arg:gsub('^%-isystem', '')))
-        end
-    end
-    return includes
-end
-
--- TODO: Add support to inherit c/cpp source paths
-local function parse_compiledb(data)
-    vim.validate { data = { data, 'string' } }
-    local json = require('utils.files').decode_json(data)
-    for _, source in pairs(json) do
-        local source_name
-        if not source.file:match '/' then
-            source_name = source.directory .. '/' .. source.file
-        else
-            source_name = source.file
-        end
-        if not databases[source_name] then
-            local args
-            if source.arguments then
-                args = source.arguments
-            elseif source.command then
-                args = vim.split(source.command, ' ')
-            end
-            databases[source_name] = {}
-            databases[source_name].filename = source_name
-            databases[source_name].compiler = args[1]
-            databases[source_name].flags = vim.list_slice(args, 2, #args)
-            databases[source_name].includes = parse_includes(databases[source_name].flags)
-        end
-    end
-end
-
-local function parse_compile_flags(flags_file)
-    local data = readfile(flags_file, true)
-    if data and #data > 0 then
-        flags_file = realpath(flags_file)
-        compile_flags[flags_file] = {
-            flags = {},
-            includes = {},
-        }
-        for _, line in pairs(data) do
-            if line:sub(1, 1) == '-' or line:sub(1, 1) == '/' then
-                table.insert(compile_flags[flags_file].flags, line)
-            end
-        end
-        compile_flags[flags_file].includes = parse_includes(compile_flags[flags_file].flags)
-    end
-end
-
 local function get_args(compiler, bufnum, flags_location)
     vim.validate {
         compiler = { compiler, 'string' },
@@ -235,13 +173,15 @@ local function get_args(compiler, bufnum, flags_location)
         flags_location = realpath(flags_location)
         local name = vim.fs.basename(flags_location)
         if name == 'compile_commands.json' then
-            parse_compiledb(readfile(flags_location, false))
+            -- parse_compiledb(readfile(flags_location, false))
             if databases[bufname] then
                 args = databases[bufname].flags
             end
         else
-            parse_compile_flags(flags_location)
-            args = compile_flags[flags_location].flags
+            -- parse_compile_flags(flags_location)
+            if compile_flags[flags_location] then
+                args = compile_flags[flags_location].flags
+            end
         end
     end
 
@@ -255,16 +195,25 @@ local function set_opts(compiler, bufnum)
     }
 
     local args
+    local flags_file = vim.fs.find(
+        { 'compile_flags.txt', 'compile_commands.json' },
+        { upward = true, type = 'file', limit = math.huge }
+    )
 
-    -- TODO: unify these 2
-    local flags_file = vim.fs.find('compile_flags.txt', { upward = true, type = 'file' })
-    flags_file = #flags_file > 0 and flags_file[1] or false
-    local db_file = vim.fs.find('compile_commands.json', { upward = true, type = 'file' })
-    db_file = #db_file > 0 and db_file[1] or false
-    -- local clang_tidy = vim.fs.find('.clang-tidy', { upward = true, type = 'file' })
-    -- clang_tidy = #clang_tidy > 0 and clang_tidy[1] or false
+    if #flags_file > 0 then
+        local db
+        for _, filename in ipairs(flags_file) do
+            if vim.fs.basename(filename) == 'compile_commands.json' then
+                db = filename
+                break
+            end
+        end
+        flags_file = db or flags_file[1]
+    else
+        flags_file = nil
+    end
 
-    if db_file or flags_file then
+    if flags_file then
         if executable 'clang-tidy' then
             local tidy = vim.list_extend({ 'clang-tidy' }, M.makeprg['clang-tidy'])
             vim.opt_local.makeprg = table.concat(tidy, ' ') .. ' %'
@@ -273,18 +222,17 @@ local function set_opts(compiler, bufnum)
             end
         end
 
-        args = get_args(compiler, bufnum, db_file or flags_file)
+        args = get_args(compiler, bufnum, flags_file)
 
         local paths = {}
-        if db_file then
-            local filename = nvim.buf.get_name(bufnum)
-            if is_file(filename) then
-                filename = realpath(filename)
-                if databases[filename] then
-                    paths = databases[filename].includes
-                end
-            end
-        else
+        local filename = nvim.buf.get_name(bufnum)
+        if is_file(filename) then
+            filename = realpath(filename)
+        end
+
+        if databases[filename] then
+            paths = databases[filename].includes
+        elseif compile_flags[flags_file] then
             paths = compile_flags[flags_file].includes
         end
 
@@ -528,8 +476,7 @@ function M.setup()
     })
 
     nvim.command.set('ExecuteProject', function(opts)
-        local args = opts.fargs
-        M.execute(nil, args)
+        M.execute(nil, opts.fargs)
     end, { nargs = '*', force = true, buffer = true })
 
     -- TODO: Fallback to TermDebug
@@ -568,10 +515,6 @@ function M.setup()
             buffer = true,
         })
     end
-
-    nvim.command.set('ExecuteProject', function(opts)
-        M.execute(nil, opts.fargs)
-    end, { nargs = '*', force = true, buffer = true })
 end
 
 return M
