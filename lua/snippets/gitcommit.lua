@@ -13,12 +13,12 @@ local i = ls.insert_node
 -- local c = ls.choice_node
 -- local d = ls.dynamic_node
 -- local l = require('luasnip.extras').lambda
--- local r = require('luasnip.extras').rep
+local r = require('luasnip.extras').rep
 local p = require('luasnip.extras').partial
 -- local m = require('luasnip.extras').match
 -- local n = require('luasnip.extras').nonempty
 -- local dl = require('luasnip.extras').dynamic_lambda
--- local fmt = require('luasnip.extras.fmt').fmt
+local fmt = require('luasnip.extras.fmt').fmt
 -- local fmta = require('luasnip.extras.fmt').fmta
 -- local types = require 'luasnip.util.types'
 -- local events = require 'luasnip.util.events'
@@ -51,4 +51,17 @@ return {
     s('t',  { p(commit_summary, 'test'),     i(1), t{'', '', ''}, i(2) }),
     s('ci', { p(commit_summary, 'ci'),       i(1), t{'', '', ''}, i(2) }),
     s('link', { t{'['}, i(1, 'description'), t{'](https://'}, i(2, {'url'}), t{')'}, }),
+    s('url', { t{'['}, i(1, 'description'), t{'](https://'}, i(2, {'url'}), t{')'}, }),
+    s('ghpr', fmt([[[#{}](https://github.com/{}/{}/pull/{})]], {
+        r(3),
+        i(1, 'username'),
+        i(2, 'repo'),
+        i(3, 'pr'),
+    })),
+    s('ghiss', fmt([[[#{}](https://github.com/{}/{}/issues/{})]], {
+        r(3),
+        i(1, 'username'),
+        i(2, 'repo'),
+        i(3, 'issue'),
+    })),
 }
