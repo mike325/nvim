@@ -62,7 +62,7 @@ end
 -- if executable('gtags-cscope') then
 --     gutentags_modules[#gutentags_modules + 1] = 'gtags_cscope'
 -- elseif executable('cscope') then
-if executable 'cscope' and not vim.tbl_contains(gutentags_modules, 'cscope') then
+if not nvim.has { 0, 9 } and executable 'cscope' and not vim.tbl_contains(gutentags_modules, 'cscope') then
     gutentags_modules[#gutentags_modules + 1] = 'cscope'
 end
 

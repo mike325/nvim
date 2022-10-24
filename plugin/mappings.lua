@@ -271,7 +271,7 @@ end, { noremap = true, silent = true, desc = 'Grep search word under cursor' })
 
 nvim.command.set('Make', RELOAD('mappings').async_makeprg, { nargs = '*', desc = 'Async execution of current makeprg' })
 
-if executable 'cscope' then
+if executable 'cscope' and not nvim.has { 0, 9 } then
     for query, _ in pairs(require('mappings').cscope_queries) do
         local cmd = 'C' .. query:sub(1, 1):upper() .. query:sub(2, #query)
         nvim.command.set(cmd, function(opts)

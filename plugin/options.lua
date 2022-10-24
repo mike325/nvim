@@ -260,4 +260,6 @@ if vim.lsp.tagfunc then
     vim.opt.tagfunc = 'v:lua.vim.lsp.tagfunc'
 end
 
-vim.opt.cscopequickfix = { 's-', 'c-', 'd-', 'i-', 't-', 'e-', 'a-', 'g-' }
+if not nvim.has { 0, 9 } then
+    vim.opt.cscopequickfix = { 's-', 'c-', 'd-', 'i-', 't-', 'e-', 'a-', 'g-' }
+end
