@@ -29,6 +29,9 @@ jobs:
         with:
           neovim: true
           version: nightly
+      - name: Install dotfile
+        run: |
+          ./install.sh --verbose --neovim dotfiles
       - name: Test nightly Neovim
         run: |
           export PATH="$HOME/.local/bin:$PATH"

@@ -38,6 +38,9 @@ jobs:
         with:
           neovim: true
           version: stable
+      - name: Install dotfile
+        run: |
+          ./install.sh --verbose --neovim dotfiles
       - name: Test stable neovim
         shell: powershell
         run: |
