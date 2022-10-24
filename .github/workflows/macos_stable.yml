@@ -18,7 +18,6 @@ jobs:
       - name: OS Info
         run: |
           brew install shellcheck
-          brew install neovim
           wget -O screenfetch-dev https://git.io/vaHfR
           chmod +x screenfetch-dev
           ./screenfetch-dev
@@ -26,9 +25,10 @@ jobs:
         run: |
           curl -OL https://raw.githubusercontent.com/Mike325/dotfiles/master/install.sh
           chmod +x ./install.sh
-      - name: Install dotfiles and dependencies
-        run: |
-          ./install.sh --verbose --neovim --python=3
+      - uses: rhysd/action-setup-vim@v1
+        with:
+          neovim: true
+          version: stable
       - name: Test stable neovim
         run: |
           export PATH="$HOME/.local/bin:$PATH"

@@ -29,16 +29,15 @@ jobs:
         shell: powershell
         run: |
           choco install -y python curl cmake
-          choco install -y neovim --pre
       - name: Fetch script
         shell: bash
         run: |
           curl -OL https://raw.githubusercontent.com/Mike325/dotfiles/master/install.sh
           chmod +x ./install.sh
-      - name: Install dotfiles and dependencies
-        shell: bash
-        run: |
-          ./install.sh --verbose --neovim --python=3 --portables
+      - uses: rhysd/action-setup-vim@v1
+        with:
+          neovim: true
+          version: nightly
       - name: Test stable neovim
         shell: powershell
         run: |
