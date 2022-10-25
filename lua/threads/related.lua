@@ -47,7 +47,7 @@ function M.gather_srcs_headers(opts)
         local realfile = vim.loop.fs_realpath(filename)
         tmp[realfile] = {}
         -- NOTE: Hope to not find repeated files
-        idxs[vim.fs.basename(filename)] = realfile
+        idxs[(filename:match '[^/]+$')] = realfile
     end
 
     for _, filename in ipairs(candidates) do
@@ -60,7 +60,7 @@ function M.gather_srcs_headers(opts)
         end
 
         for _, alt_ext in pairs(extentions[file_ext]) do
-            local alt_candidate = vim.fs.basename(file_name_no_ext .. '.' .. alt_ext)
+            local alt_candidate = ((file_name_no_ext .. '.' .. alt_ext):match '[^/]+$')
             if idxs[alt_candidate] then
                 table.insert(tmp[filename], idxs[alt_candidate])
             end

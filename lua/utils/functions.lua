@@ -636,6 +636,7 @@ function M.project_config(event)
     }
 
     if is_git and not git_dir then
+        -- TODO: This should trigger an autocmd to update alternates, tests and everything else with the correct root
         M.get_git_dir(function(dir)
             local project = vim.b.project_root
             project.git_dir = dir

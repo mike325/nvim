@@ -442,4 +442,39 @@ function M.setup(ft, opts)
     end
 end
 
+function M.remove_empty(opts)
+    local bufs_in_use = {}
+    for _, tab in ipairs(vim.api.nvim_list_tabpages()) do
+        for _, win in ipairs(vim.api.nvim_tabpage_list_wins(tab)) do
+            bufs_in_use[tostring(vim.api.nvim_win_get_buf(win))] = true
+        end
+    end
+
+    local function buf_is_empty(buf)
+        if vim.api.nvim_buf_line_count(buf) == 1 and vim.api.nvim_buf_get_lines(buf, 0, 1, false)[1] == '' then
+            return true
+        end
+        return false
+    end
+
+    local function buf_is_scratch(buf)
+        if vim.api.nvim_buf_get_name(buf) == '' or vim.api.nvim_buf_get_option(buf, 'buftype') == 'nofile' then
+            return true
+        end
+        return false
+    end
+
+    local removed = 0
+    for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+        if buf_is_empty(buf) and buf_is_scratch(buf) and not bufs_in_use[buf] then
+            vim.api.nvim_buf_delete(buf, { force = true })
+            removed = removed + 1
+        end
+    end
+
+    if removed > 0 then
+        print(' ', removed, ' Buffers cleaned!')
+    end
+end
+
 return M

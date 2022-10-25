@@ -464,3 +464,7 @@ end, { nargs = 0, desc = 'Reload all mappings and commands', bang = true })
 --     opts.enable = opts.args == 'enable'
 --     RELOAD('mappings').notification_server(opts)
 -- end, { nargs = 1, complete = _completions.toggle, bang = true })
+
+nvim.command.set('RemoveEmpty', function(opts)
+    RELOAD('utils.buffers').remove_empty(opts)
+end, { nargs = 0, bang = true })
