@@ -441,8 +441,11 @@ end
 
 -- TODO: Add support for nvim < 0.8
 if nvim.has { 0, 8 } then
-    -- TODO: Make this alternate command buffer local and not global
     nvim.command.set('Alternate', function(opts)
+        RELOAD('mappings').alternate(opts)
+    end, { nargs = 0, desc = 'Alternate between files', bang = true })
+
+    nvim.command.set('A', function(opts)
         RELOAD('mappings').alternate(opts)
     end, { nargs = 0, desc = 'Alternate between files', bang = true })
 
@@ -450,6 +453,12 @@ if nvim.has { 0, 8 } then
     --     RELOAD('mappings').alt_makefiles(opts)
     -- end, { nargs = 0, desc = 'Open related makefile', bang = true })
 end
+
+-- NOTE: if a mapping is remove from the file but there's not explicit delete,
+--       it'll be kept since we just overwrite old mappings
+nvim.command.set('ReloadMappings', function(opts)
+    vim.cmd.source(sys.base .. '/plugin/mappings.lua')
+end, { nargs = 0, desc = 'Reload all mappings and commands', bang = true })
 
 -- nvim.command.set('NotificationServer', function(opts)
 --     opts.enable = opts.args == 'enable'

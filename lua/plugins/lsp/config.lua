@@ -13,10 +13,8 @@ local has_telescope, _ = pcall(require, 'telescope')
 -- local servers = require 'plugins.lsp.servers'
 
 local builtin
-local themes
 if has_telescope then
     builtin = require 'telescope.builtin'
-    themes = require 'telescope.themes'
 end
 
 local null_ls = load_module 'null-ls'
@@ -32,12 +30,12 @@ M.commands = {
     Implementation = { vim.lsp.buf.implementation },
     Format = {
         function()
-            require('utils.buffers').format()
+            RELOAD('utils.buffers').format()
         end,
     },
     RangeFormat = {
         function()
-            require('utils.buffers').format()
+            RELOAD('utils.buffers').format()
         end,
     },
     Rename = {
@@ -58,7 +56,7 @@ M.commands = {
     Definition = {
         function()
             if has_telescope then
-                builtin.lsp_definitions(themes.get_cursor {})
+                builtin.lsp_definitions()
             else
                 vim.lsp.buf.definition()
             end
@@ -67,7 +65,7 @@ M.commands = {
     References = {
         function()
             if has_telescope then
-                builtin.lsp_references(themes.get_dropdown {})
+                builtin.lsp_references()
             else
                 vim.lsp.buf.references()
             end
@@ -76,7 +74,7 @@ M.commands = {
     Diagnostics = {
         function()
             if has_telescope then
-                builtin.diagnostics(themes.get_dropdown {})
+                builtin.diagnostics()
             else
                 vim.diagnostic.setloclist()
             end
@@ -85,7 +83,7 @@ M.commands = {
     DocSymbols = {
         function()
             if has_telescope then
-                builtin.lsp_document_symbols(themes.get_dropdown {})
+                builtin.lsp_document_symbols()
             else
                 vim.lsp.buf.document_symbol()
             end
@@ -94,7 +92,7 @@ M.commands = {
     WorkSymbols = {
         function()
             if has_telescope then
-                builtin.lsp_workspace_symbols(themes.get_dropdown {})
+                builtin.lsp_workspace_symbols()
             else
                 vim.lsp.buf.workspace_symbol()
             end
@@ -133,10 +131,7 @@ function M.on_attach(client, bufnr, is_null)
         ['gr'] = {
             capability = 'referencesProvider',
             mapping = lua_cmd:format(
-                (
-                    has_telescope
-                    and "require'telescope.builtin'.lsp_references(require'telescope.themes'.get_dropdown{})"
-                ) or 'vim.lsp.buf.references()'
+                (has_telescope and "require'telescope.builtin'.lsp_references()") or 'vim.lsp.buf.references()'
             ),
         },
         ['K'] = {
@@ -160,10 +155,8 @@ function M.on_attach(client, bufnr, is_null)
         },
         ['<leader>s'] = {
             mapping = lua_cmd:format(
-                (
-                    has_telescope
-                    and "require'telescope.builtin'.lsp_document_symbols(require'telescope.themes'.get_dropdown{})"
-                ) or 'vim.lsp.buf.document_symbol{}'
+                (has_telescope and "require'telescope.builtin'.lsp_document_symbols()")
+                    or 'vim.lsp.buf.document_symbol{}'
             ),
         },
         ['=d'] = {

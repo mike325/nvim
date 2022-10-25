@@ -209,8 +209,11 @@ local servers = {
                     '--header-insertion=iwyu',
                     '--function-arg-placeholders',
                     '--completion-style=detailed',
-                    '--pch-storage=memory',
+                    -- '--pch-storage=memory',
                     -- '--log=verbose',
+                },
+                cmd_env = {
+                    TMPDIR = './.clangd/pchs/',
                 },
                 capabilities = {
                     offsetEncoding = { 'utf-16' }, -- TODO: Check if this cause side effects

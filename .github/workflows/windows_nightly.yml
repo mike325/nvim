@@ -39,6 +39,7 @@ jobs:
           neovim: true
           version: nightly
       - name: Install dotfile
+        shell: bash
         run: |
           ./install.sh --verbose --neovim dotfiles
       - name: Test stable neovim
