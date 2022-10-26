@@ -39,10 +39,10 @@ function M.normalize(path)
     return (path:gsub('^~', vim.loop.os_homedir()):gsub('%$([%w_]+)', vim.loop.os_getenv):gsub('\\', '/'))
 end
 
-local function split_path(path)
-    path = require('utils.strings').split(M.normalize(path), M.separator())
-    return path
-end
+-- local function split_path(path)
+--     path = require('utils.strings').split(M.normalize(path), M.separator())
+--     return path
+-- end
 
 if vim.json then
     vim.json.encode_escape_forward_slash(false)
@@ -50,7 +50,9 @@ end
 
 function M.exists(filename)
     vim.validate { filename = { filename, 'string' } }
-    assert(filename ~= '', debug.traceback 'Empty filename')
+    if filename == '' then
+        return false
+    end
     local stat = uv.fs_stat(M.normalize(filename))
     return stat and stat.type or false
 end
@@ -211,8 +213,7 @@ function M.extension(path)
     local extension = ''
     path = M.normalize(path)
     if not M.is_dir(path) then
-        local filename = split_path(path)
-        filename = filename[#filename]
+        local filename = M.basename(path)
         extension = filename:match '^.+(%..+)$' or ''
     end
     return #extension >= 2 and extension:sub(2, #extension) or extension

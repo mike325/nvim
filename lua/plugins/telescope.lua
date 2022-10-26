@@ -1,7 +1,6 @@
 local nvim = require 'neovim'
 
 local sys = require 'sys'
-local executable = require('utils.files').executable
 local load_module = require('utils.functions').load_module
 
 local telescope = load_module 'telescope'
@@ -50,9 +49,11 @@ telescope.setup {
                 -- ["<CR>"]  = actions.goto_file_selection_edit + actions.center,
                 ['<C-j>'] = actions.move_selection_next,
                 ['<C-k>'] = actions.move_selection_previous,
+                ['<C-q>'] = actions.smart_send_to_qflist + actions.open_qflist,
             },
             n = {
                 ['<ESC>'] = actions.close,
+                ['<C-q>'] = actions.smart_send_to_qflist + actions.open_qflist,
             },
         },
     },
@@ -96,7 +97,7 @@ nvim.command.set('Manpages', function()
     require('telescope.builtin').man_pages {}
 end)
 
-nvim.command.set('GetVimFiles', function()
+nvim.command.set('NeovimConfig', function()
     builtin.find_files {
         cwd = sys.base,
         find_command = RELOAD('utils.functions').select_filelist(false, true),
@@ -121,10 +122,10 @@ nvim.command.set('HelpTags', function()
     builtin.help_tags {}
 end)
 
-if executable 'git' then
-    vim.keymap.set('n', '<leader>c', builtin.git_bcommits, noremap)
-    vim.keymap.set('n', '<leader>C', builtin.git_commits, noremap)
-    vim.keymap.set('n', '<leader>b', builtin.git_branches, noremap)
-end
+-- if executable 'git' then
+--     vim.keymap.set('n', '<leader>c', builtin.git_bcommits, noremap)
+--     vim.keymap.set('n', '<leader>C', builtin.git_commits, noremap)
+--     vim.keymap.set('n', '<leader>b', builtin.git_branches, noremap)
+-- end
 
 return true

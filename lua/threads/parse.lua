@@ -58,8 +58,8 @@ function M.parse_compiledb(opts)
 
     for _, source in pairs(json) do
         local source_name
-        if not source.file:match '/' then
-            source_name = source.directory .. '/' .. source.file
+        if not source.file:match '[/\\]' then
+            source_name = source.directory:gsub('\\', '/') .. '/' .. source.file
         else
             source_name = source.file
         end

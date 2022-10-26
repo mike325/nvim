@@ -83,11 +83,16 @@ if not vim.env.NO_COOL_FONTS then
         warn = ' ', -- 
         info = ' ',
         hint = '',
-        bug = '',
         wait = '☕',
         build = '⛭',
         success = '✓', -- ✓ -- ✔ -- 
         fail = '✗',
+        bug = '',
+        todo = '',
+        hack = ' ',
+        perf = ' ',
+        note = ' ',
+        test = '⏲ ',
         virtual_text = '❯',
         diff_add = '',
         diff_modified = '',
@@ -108,11 +113,16 @@ else
         warn = '!',
         info = 'I',
         hint = 'H',
-        bug = 'B',
         wait = '☕', -- W
         build = '⛭', -- b
         success = '✓', -- ✓ -- ✔ -- 
         fail = '✗',
+        bug = 'B', -- 🐛' -- B
+        todo = '⦿',
+        hack = '☠',
+        perf = '✈', -- 🚀
+        note = '🗈',
+        test = '⏲',
         virtual_text = '❯', -- '❯', -- '➤',
         diff_add = '+',
         diff_modified = '~',
@@ -653,6 +663,9 @@ function M.project_config(event)
 
     if nvim.has { 0, 8 } then
         -- NOTE: this could be also search in another thread, we may have too many search in bufenter/filetype events
+
+        -- RELOAD('threads.related').async_gather_tests()
+
         local is_c_project = vim.fs.find(
             { 'CMakeLists.txt', 'compile_flags.txt', 'compile_commands.json', '.clang-format', '.clang-tidy' },
             { upward = true, type = 'file' }

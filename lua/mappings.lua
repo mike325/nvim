@@ -884,4 +884,41 @@ function M.alt_makefiles(opts)
     end
 end
 
+function M.alternate_test(opts)
+    opts.buf = vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf())
+
+    local prefix = opts.buf:match '^%w+://'
+    opts.buf = opts.buf:gsub('^%w+://', '')
+    if prefix == 'fugitive://' then
+        opts.buf = opts.buf:gsub('%.git//?[%w%d]+//?', '')
+    end
+
+    if require('utils.files').is_file(opts.buf) then
+        opts.buf = vim.loop.fs_realpath(opts.buf)
+    end
+
+    local candidates, _
+    local alternates = vim.g.tests or {}
+    if not alternates[opts.buf] or opts.bang then
+        _, candidates = RELOAD('threads.related').alternate_test(vim.json.encode(opts))
+        if #candidates > 0 then
+            candidates = vim.json.decode(candidates)
+            alternates[opts.buf] = candidates
+            vim.g.tests = alternates
+        end
+    else
+        candidates = alternates[opts.buf]
+    end
+
+    if #candidates > 1 then
+        vim.ui.select(candidates, { prompt = 'Test: ' }, function(choise)
+            nvim.ex.edit(choise)
+        end)
+    elseif #candidates == 1 then
+        nvim.ex.edit(candidates[1])
+    else
+        vim.notify('No test file found', 'WARN')
+    end
+end
+
 return M

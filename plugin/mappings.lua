@@ -449,6 +449,14 @@ if nvim.has { 0, 8 } then
         RELOAD('mappings').alternate(opts)
     end, { nargs = 0, desc = 'Alternate between files', bang = true })
 
+    nvim.command.set('AlternateTest', function(opts)
+        RELOAD('mappings').alternate_test(opts)
+    end, { nargs = 0, desc = 'Alternate between files', bang = true })
+
+    nvim.command.set('T', function(opts)
+        RELOAD('mappings').alternate_test(opts)
+    end, { nargs = 0, desc = 'Alternate between files', bang = true })
+
     -- nvim.command.set('AltMakefile', function(opts)
     --     RELOAD('mappings').alt_makefiles(opts)
     -- end, { nargs = 0, desc = 'Open related makefile', bang = true })
