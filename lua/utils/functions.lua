@@ -8,7 +8,6 @@ local getcwd = require('utils.files').getcwd
 
 local M = {}
 
-local icons
 local git_dirs = {}
 local qf_funcs = {
     first = function(win)
@@ -77,6 +76,7 @@ local qf_funcs = {
 -- ☰
 -- 
 
+local icons
 if not vim.env.NO_COOL_FONTS then
     icons = {
         error = '×', -- ✗ -- 🞮  -- × --  -- ❌

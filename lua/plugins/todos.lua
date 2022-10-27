@@ -17,17 +17,17 @@ todo.setup {
     },
     keywords = {
         FIX = {
-            icon = get_icon 'bug' .. ' ', -- icon used for the sign, and in search results
+            icon = get_icon 'bug', -- icon used for the sign, and in search results
             color = 'error', -- can be a hex color, or a named color (see below)
             alt = { 'FIXME', 'BUG', 'FIXIT', 'ISSUE' }, -- a set of other keywords that all map to this FIX keywords
             -- signs = false, -- configure signs for some keywords individually
         },
-        TODO = { icon = get_icon 'todo' .. ' ', color = 'info' },
-        HACK = { icon = get_icon 'hack' .. ' ', color = 'warning' },
-        WARN = { icon = get_icon 'warn' .. ' ', color = 'warning', alt = { 'WARNING', 'XXX' } },
-        PERF = { icon = get_icon 'perf' .. ' ', color = 'hint', alt = { 'OPTIM', 'PERFORMANCE', 'OPTIMIZE' } },
-        NOTE = { icon = get_icon 'note' .. ' ', color = 'hint', alt = { 'INFO', '8AC0FFEE', 'BEBECAFE' } },
-        TEST = { icon = get_icon 'test' .. ' ', color = 'test', alt = { 'TESTING', 'PASSED', 'FAILED' } },
+        TODO = { icon = get_icon 'todo', color = 'info' },
+        HACK = { icon = get_icon 'hack', color = 'warning' },
+        WARN = { icon = get_icon 'warn', color = 'warning', alt = { 'WARNING', 'XXX' } },
+        PERF = { icon = get_icon 'perf', color = 'hint', alt = { 'OPTIM', 'PERFORMANCE', 'OPTIMIZE' } },
+        NOTE = { icon = get_icon 'note', color = 'hint', alt = { 'INFO', '8AC0FFEE', 'BEBECAFE' } },
+        TEST = { icon = get_icon 'test', color = 'test', alt = { 'TESTING', 'PASSED', 'FAILED' } },
     },
 }
 
