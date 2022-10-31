@@ -36,7 +36,7 @@ packer.init {
 packer.startup(function()
     -- BUG: Seems like luarocks is not supported in windows
     if has_compiler and has_python then
-        use_rocks { 'luacheck', 'md5', 'jsregexp' }
+        use_rocks { 'luacheck', 'jsregexp' }
     end
 
     use 'wbthomason/packer.nvim'
@@ -317,6 +317,7 @@ packer.startup(function()
         config = function()
             require('neogen').setup {
                 enabled = true,
+                snippet_engine = 'luasnip',
                 input_after_comment = true,
                 languages = {
                     lua = {

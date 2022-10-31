@@ -113,11 +113,13 @@ local function setup(ft)
         init.on_attach = require('plugins.lsp.config').on_attach
         if cmp then
             local cmp_lsp = require 'cmp_nvim_lsp'
+            local capabilities
             if cmp_lsp.default_capabilities then
-                init.capabilities = cmp_lsp.default_capabilities()
+                capabilities = cmp_lsp.default_capabilities()
             else
-                init.capabilities = cmp_lsp.update_capabilities(vim.lsp.protocol.make_client_capabilities())
+                capabilities = cmp_lsp.update_capabilities(vim.lsp.protocol.make_client_capabilities())
             end
+            init.capabilities = vim.tbl_deep_extend('keep', init.capabilities or {}, capabilities)
         end
         if preload[config] and preload[config].setup then
             local opts = preload[config].args
