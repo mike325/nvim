@@ -114,9 +114,9 @@ local function setup(ft)
         if cmp then
             local cmp_lsp = require 'cmp_nvim_lsp'
             if cmp_lsp.default_capabilities then
-                init.capability = cmp_lsp.default_capabilities()
+                init.capabilities = cmp_lsp.default_capabilities()
             else
-                init.capability = cmp_lsp.update_capabilities(vim.lsp.protocol.make_client_capabilities())
+                init.capabilities = cmp_lsp.update_capabilities(vim.lsp.protocol.make_client_capabilities())
             end
         end
         if preload[config] and preload[config].setup then
