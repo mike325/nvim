@@ -174,6 +174,11 @@ function M.on_attach(client, bufnr, is_null)
         -- ['<leader>D'] = '<cmd>lua vim.lsp.buf.type_definition()<CR>',
     }
 
+    if client.name == 'sumneko_lua' then
+        client.server_capabilities.documentFormattingProvider = false
+        client.server_capabilities.documentRangeFormattingProvider = false
+    end
+
     for mapping, val in pairs(mappings) do
         if not val.capability or client.server_capabilities[val.capability] then
             vim.keymap.set('n', mapping, val.mapping, { silent = true, buffer = bufnr, noremap = true })
