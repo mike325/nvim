@@ -19,13 +19,13 @@ although windows is still unstable from time to time
 If you are using [Neovim](https://neovim.io/) you just need to just clone the repo to `~/.config/nvim`
 
 ```sh
-git clone --recursive https://github.com/mike325/.vim.git ~/.config/nvim/
+git clone --recursive https://github.com/mike325/nvim.git ~/.config/nvim/
 ```
 
 To use Neovim in Windows clone the repo in the following location `$env:USERPROFILE/AppData/Local/nvim/`
 
 ```sh
-git clone --recursive "https://github.com/mike325/.vim.git" "$env:USERPROFILE/AppData/Local/nvim/"
+git clone --recursive "https://github.com/mike325/nvim.git" "$env:USERPROFILE/AppData/Local/nvim/"
 ```
 
 Feel free to change anything to fit your needs!
