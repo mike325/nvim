@@ -174,6 +174,7 @@ function M.on_attach(client, bufnr, is_null)
         -- ['<leader>D'] = '<cmd>lua vim.lsp.buf.type_definition()<CR>',
     }
 
+    -- TODO: Move this config to lsp/server.lua
     if client.name == 'sumneko_lua' then
         client.server_capabilities.documentFormattingProvider = false
         client.server_capabilities.documentRangeFormattingProvider = false

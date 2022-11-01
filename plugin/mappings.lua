@@ -246,7 +246,17 @@ nvim.command.set('CopyFile', function(opts)
 end, { bang = true, nargs = 1, complete = 'file' })
 
 nvim.command.set('Grep', function(opts)
-    RELOAD('utils.functions').send_grep_job(opts.fargs)
+    local search = opts.fargs[#opts.fargs]
+    opts.fargs[#opts.fargs] = nil
+    local args = opts.fargs
+    RELOAD('utils.functions').send_grep_job { search = search, args = args }
+end, { nargs = '+', complete = 'file' })
+
+nvim.command.set('LGrep', function(opts)
+    local search = opts.fargs[#opts.fargs]
+    opts.fargs[#opts.fargs] = nil
+    local args = opts.fargs
+    RELOAD('utils.functions').send_grep_job { loc = true, search = search, args = args }
 end, { nargs = '+', complete = 'file' })
 
 nvim.command.set('CFind', function(opts)
@@ -266,7 +276,7 @@ vim.keymap.set(
     { noremap = true, silent = true, desc = 'Grep search visual selection' }
 )
 vim.keymap.set('n', 'gss', function()
-    RELOAD('utils.functions').send_grep_job(vim.fn.expand '<cword>')
+    RELOAD('utils.functions').send_grep_job()
 end, { noremap = true, silent = true, desc = 'Grep search word under cursor' })
 
 nvim.command.set('Make', RELOAD('mappings').async_makeprg, { nargs = '*', desc = 'Async execution of current makeprg' })

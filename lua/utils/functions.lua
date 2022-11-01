@@ -195,29 +195,37 @@ function M.chmod_exec()
     require('utils.files').chmod(filename, bit.bor(filemode, 0x48), 10)
 end
 
-function M.send_grep_job(args, cmd)
+function M.send_grep_job(opts)
     vim.validate {
-        args = {
-            args,
-            function(a)
-                return type(a) == type '' or vim.tbl_islist(a)
-            end,
-            'a string or an array of args',
-        },
-        cmd = { cmd, 'table', true },
+        opts = { opts, 'table', true },
     }
 
+    opts = opts or {}
+
+    local cmd = opts.cmd or vim.split(vim.bo.grepprg or vim.o.grepprg, '%s+')
+    local args = opts.args or {}
+    local search = opts.search or vim.fn.expand '<cword>'
+    local use_loc = opts.loc
+    local win
+    if use_loc then
+        win = opts.win or vim.api.nvim_get_current_win()
+    end
+
     if not cmd then
-        cmd = vim.tbl_filter(function(k)
-            return not k:match '^%s*$'
-        end, vim.split(vim.bo.grepprg or vim.o.grepprg, '%s+'))
+        cmd = vim.split(vim.bo.grepprg or vim.o.grepprg, '%s+')
     end
 
     if not vim.tbl_islist(args) then
-        args = { args }
+        args = vim.tbl_filter(function(k)
+            return not k:match '^%s*$'
+        end, vim.split(args, '%s+'))
     end
 
+    cmd = vim.tbl_filter(function(k)
+        return not k:match '^%s*$'
+    end, cmd)
     vim.list_extend(cmd, args)
+    table.insert(cmd, search)
 
     local grep = require('jobs'):new {
         cmd = cmd,
@@ -231,6 +239,8 @@ function M.send_grep_job(args, cmd)
                 open = true,
                 jump = false,
             },
+            loc = use_loc,
+            win = win,
             jump = true,
             context = 'AsyncGrep',
             title = 'AsyncGrep',
@@ -239,7 +249,6 @@ function M.send_grep_job(args, cmd)
     }
 
     grep:add_callback(function(job, rc)
-        local search = type(args) == type {} and args[#args] or args
         if rc == 0 and job:is_empty() then
             vim.notify('No matching results ' .. search, 'WARN', { title = 'Grep' })
         elseif rc ~= 0 then
@@ -262,7 +271,7 @@ function M.opfun_grep(select, visual)
     local endpos = nvim.buf.get_mark(0, ']')
     local selection = nvim.buf.get_text(0, startpos[1] - 1, startpos[2], endpos[1] - 1, endpos[2] + 1, {})[1]
 
-    M.send_grep_job(selection)
+    M.send_grep_job { search = selection }
 
     vim.o.selection = select_save
 end
