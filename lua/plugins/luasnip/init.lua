@@ -4,11 +4,10 @@ if not ls then
     return false
 end
 
-local sys = require 'sys'
 local nvim = require 'neovim'
 
 local snippet_paths = {
-    sys.base .. '/lua/snippets/',
+    './lua/snippets/',
 }
 
 ls.config.setup {
@@ -30,30 +29,48 @@ nvim.command.set('SnippetEdit', function(opts)
     require('luasnip.loaders').edit_snippet_files()
 end, { nargs = '?', complete = 'filetype' })
 
+-- TODO: Improve this reload function
 nvim.command.set('SnippetReload', function()
-    -- ls.cleanup()
+    ls.cleanup()
 
-    local ok, snip_msg = pcall(RELOAD, 'snippets.all')
-    if not ok then
-        vim.notify('Failed to update General snippets\n' .. snip_msg, 'ERROR', { title = 'Luasnip' })
-        return
+    local runtimepaths = {
+        'lua/snippets/',
+        'luasnippets/',
+    }
+
+    local errors = false
+    local ok, snip_msg
+    for _, runtimepath in ipairs(runtimepaths) do
+        for _, snips in ipairs(vim.api.nvim_get_runtime_file(runtimepath .. 'all.lua', true)) do
+            ok, snip_msg = pcall(dofile, snips)
+            if not ok then
+                errors = true
+                break
+            end
+            ls.add_snippets('all', snip_msg, { key = snips })
+        end
+
+        if errors then
+            break
+        end
+
+        local ft = vim.opt_local.filetype:get()
+        for _, snips in ipairs(vim.api.nvim_get_runtime_file(runtimepath .. ft .. '.lua', true)) do
+            ok, snip_msg = pcall(dofile, snips)
+            if not ok then
+                errors = true
+                break
+            end
+            ls.add_snippets(ft, snip_msg, { key = snips })
+        end
+
+        if errors then
+            break
+        end
     end
 
-    ls.add_snippets('all', snip_msg)
-
-    local ft = vim.opt_local.filetype:get()
-    local snippet = 'snippets.' .. ft
-    local is_file = require('utils.files').is_file
-    local base = sys.base
-
-    if is_file(('%s/lua/%s.lua'):format(base, snippet:gsub('%.', '/'))) then
-        ok, snip_msg = pcall(RELOAD, snippet)
-        if ok then
-            ls.add_snippets(ft, snip_msg)
-            vim.notify 'Snippets Reloaded!'
-        else
-            vim.notify(snip_msg, 'ERROR', { title = 'Luasnip' })
-        end
+    if not errors then
+        vim.notify 'Snippets Reloaded!'
     else
         vim.notify(snip_msg, 'ERROR', { title = 'Luasnip' })
     end
