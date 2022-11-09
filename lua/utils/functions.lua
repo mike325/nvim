@@ -789,8 +789,20 @@ function M.is_git_repo(root)
     return #results > 0 and results[1] or false
 end
 
-function M.ignores(tool)
-    local excludes = vim.split(vim.o.backupskip, ',+')
+function M.ignores(tool, excludes, lst)
+    vim.validate {
+        tool = { tool, 'string' },
+        excludes = { excludes, { 'string', 'table' } },
+        lst = { lst, 'boolean', true },
+    }
+
+    if lst == nil then
+        lst = false
+    end
+
+    if not vim.tbl_islist(excludes) then
+        excludes = { excludes }
+    end
 
     local ignores = {
         fd = {},
@@ -802,20 +814,20 @@ function M.ignores(tool)
     }
 
     if #excludes == 0 or not ignores[tool] then
-        return ''
+        return lst and {} or ''
     end
 
     for i = 1, #excludes do
-        -- excludes[i] = "'" .. excludes[i] .. "'"
-
-        table.insert(ignores.fd, '--exclude=' .. excludes[i])
-        table.insert(ignores.find, '-iwholename ' .. excludes[i])
-        if i < #excludes then
-            table.insert(ignores.find, '-or')
+        if excludes[i] ~= '' then
+            table.insert(ignores.fd, '--exclude=' .. excludes[i])
+            table.insert(ignores.find, '-iwholename ' .. excludes[i])
+            if i < #excludes then
+                table.insert(ignores.find, '-or')
+            end
+            table.insert(ignores.ag, ' --ignore ' .. excludes[i])
+            table.insert(ignores.grep, '--exclude=' .. excludes[i])
+            table.insert(ignores.rg, ' --iglob=!' .. excludes[i])
         end
-        table.insert(ignores.ag, ' --ignore ' .. excludes[i])
-        table.insert(ignores.grep, '--exclude=' .. excludes[i])
-        table.insert(ignores.rg, ' --iglob=!' .. excludes[i])
     end
 
     table.insert(ignores.find, [[\)]])
@@ -825,11 +837,12 @@ function M.ignores(tool)
     --     ignores.fd = ' --ignore-file '.. sys.home .. '/.config/git/ignore '
     -- end
 
-    return table.concat(ignores[tool], ' ')
+    return lst and ignores[tool] or table.concat(ignores[tool], ' ')
 end
 
 function M.grep(tool, attr, lst)
     local property = (attr and attr ~= '') and attr or 'grepprg'
+    local excludes = vim.split(vim.o.backupskip, ',+')
 
     local modern_git = STORAGE.modern_git
 
@@ -840,16 +853,16 @@ function M.grep(tool, attr, lst)
         },
         rg = {
             grepprg = 'rg -SHn --no-binary --trim --color=never --no-heading --column --no-search-zip --hidden '
-                .. M.ignores 'rg'
+                .. M.ignores('rg', excludes)
                 .. ' ',
             grepformat = '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m',
         },
         ag = {
-            grepprg = 'ag -S --follow --nogroup --nocolor --hidden --vimgrep ' .. M.ignores 'ag' .. ' ',
+            grepprg = 'ag -S --follow --nogroup --nocolor --hidden --vimgrep ' .. M.ignores('ag', excludes) .. ' ',
             grepformat = '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m',
         },
         grep = {
-            grepprg = 'grep -RHiIn --color=never ' .. M.ignores 'grep' .. ' ',
+            grepprg = 'grep -RHiIn --color=never ' .. M.ignores('grep', excludes) .. ' ',
             grepformat = '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m',
         },
         findstr = {
@@ -864,16 +877,26 @@ function M.grep(tool, attr, lst)
         grep = lst and vim.split(grep, '%s+') or grep
     end
 
+    if vim.tbl_islist(grep) then
+        grep = vim.tbl_filter(function(k)
+            return not k:match '^%s*$'
+        end, grep)
+    end
+
     return grep
 end
 
 function M.filelist(tool, lst)
+    local excludes = vim.split(vim.o.backupskip, ',+')
+
     local filetool = {
         git = 'git --no-pager ls-files -c --exclude-standard',
-        fd = 'fd --type=file --hidden --color=never ' .. M.ignores 'fd' .. ' ',
-        rg = 'rg --no-binary --color=never --no-search-zip --hidden --trim --files ' .. M.ignores 'rg' .. ' ',
-        ag = 'ag -l --follow --nocolor --nogroup --hidden ' .. M.ignores 'ag' .. '-g ""',
-        find = 'find . -type f ' .. M.ignores 'find' .. " -iname '*' ",
+        fd = 'fd --type=file --hidden --color=never ' .. M.ignores('fd', excludes) .. ' ',
+        rg = 'rg --no-binary --color=never --no-search-zip --hidden --trim --files '
+            .. M.ignores('rg', excludes)
+            .. ' ',
+        ag = 'ag -l --follow --nocolor --nogroup --hidden ' .. M.ignores('ag', excludes) .. '-g ""',
+        find = 'find . -type f ' .. M.ignores('find', excludes) .. " -iname '*' ",
     }
 
     filetool.fdfind = string.gsub(filetool.fd, '^fd', 'fdfind')
@@ -888,6 +911,13 @@ function M.filelist(tool, lst)
     if #filelist > 0 then
         filelist = lst and vim.split(filelist, '%s+') or filelist
     end
+
+    if vim.tbl_islist(filelist) then
+        filelist = vim.tbl_filter(function(k)
+            return not k:match '^%s*$'
+        end, filelist)
+    end
+
     return filelist
 end
 
