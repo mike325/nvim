@@ -60,13 +60,14 @@ nvim.command.set('SnippetReload', function()
 end)
 
 nvim.command.set('SnippetUnlink', function()
-    vim.cmd [[LuaSnipUnlinkCurrent]]
+    vim.cmd.LuaSnipUnlinkCurrent()
 end)
 
 if #ls.get_snippets 'all' == 0 then
     ls.add_snippets('all', require 'snippets.all')
 end
 
+-- TODO: may add changes to this to "manually" load files using autocmds to better control hot/auto reload
 require('luasnip.loaders.from_lua').lazy_load {
     paths = snippet_paths,
     priority = 1000,

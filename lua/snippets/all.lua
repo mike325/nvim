@@ -34,9 +34,10 @@ local p = require('luasnip.extras').partial
 -- local surround_with_func = utils.surround_with_func
 
 local function notes(note)
-    note = note:upper()
-    if note:sub(#note, #note) ~= ':' then
-        note = note .. ': '
+    if vim.bo.filetype ~= 'gitcommit' then
+        note = ('%s(%s): '):format(note:upper(), sys.username)
+    else
+        note = ('%s: '):format(note:upper())
     end
     return RELOAD('plugins.luasnip.utils').get_comment(note)
 end
@@ -103,7 +104,7 @@ end
 
 -- stylua: ignore
 local general_snips = {
-    s('date', p(os.date, '%D')),
+    s('date', p(os.date, '%Y-%m-%d')),
     s('ret', return_value(true)),
     s('#!', {
         p(function()
@@ -117,7 +118,16 @@ local general_snips = {
             return '#!/usr/bin/env '.. (executables[ft] or ft)
         end),
     }),
-    s('mitl', f(license, {}, {user_args = {'mit'}}))
+    s('mitl', f(license, {}, {user_args = {'mit'}})),
+    s('aut', p(function()
+        -- TODO: Read actual gitconfig to get current git author
+        if vim.env.WORK_USER then
+            return vim.env.WORK_USER
+        elseif vim.env.GIT_USER then
+            return vim.env.GIT_USER
+        end
+        return 'Mike' -- vim.env.USER or vim.env.USERNAME
+    end)),
 }
 
 local annotations = {

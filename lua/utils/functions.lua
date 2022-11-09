@@ -419,7 +419,7 @@ function M.async_execute(opts)
         opts.progress = true
     end
 
-    local script = require('jobs'):new {
+    local script = RELOAD('jobs'):new {
         cmd = cmd,
         args = args,
         silent = opts.silent,
@@ -428,7 +428,10 @@ function M.async_execute(opts)
         parse_errors = opts.parse_errors,
         opts = {
             cwd = opts.cwd or require('utils.files').getcwd(),
-            -- pty = true,
+            on_stdout = opts.on_stdout,
+            on_stderr = opts.on_stderr,
+            on_exit = opts.on_exit,
+            pty = opts.pty,
         },
         qf = {
             dump = false,

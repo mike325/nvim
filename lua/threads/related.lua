@@ -1,6 +1,7 @@
 local M = {}
 
 -- NOTE: May save this to disk in a json cache file
+-- TODO: simplify and unify threads initialization
 function M.gather_srcs_headers(opts)
     if not vim.env then
         vim.env = setmetatable({}, {
