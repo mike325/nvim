@@ -59,8 +59,14 @@ telescope.setup {
     },
 }
 
-vim.keymap.set('n', '<leader>g', builtin.live_grep, noremap)
 vim.keymap.set('n', '<C-q>', builtin.quickfix, noremap)
+
+vim.keymap.set('n', '<leader>g', function()
+    local grepprg = vim.tbl_filter(function(k)
+        return not k:match '^%s*$'
+    end, vim.split(vim.bo.grepprg or vim.o.grepprg, '%s+'))
+    builtin.live_grep(grepprg)
+end, noremap)
 
 vim.keymap.set('n', '<C-p>', function()
     local is_git = vim.b.project_root and vim.b.project_root.is_git or false

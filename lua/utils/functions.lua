@@ -202,28 +202,29 @@ function M.send_grep_job(opts)
 
     opts = opts or {}
 
-    local cmd = opts.cmd or vim.split(vim.bo.grepprg or vim.o.grepprg, '%s+')
-    local args = opts.args or {}
+    local grepprg = vim.split(vim.bo.grepprg or vim.o.grepprg, '%s+')
+    local cmd = opts.cmd or grepprg[1]
+    local args = opts.args or vim.list_slice(grepprg, 2, #grepprg)
     local search = opts.search or vim.fn.expand '<cword>'
     local use_loc = opts.loc
+
+    vim.validate {
+        cmd = { cmd, 'string' },
+        args = { args, 'table' },
+        search = { search, 'string' },
+        use_loc = { use_loc, 'boolean', true },
+    }
+
     local win
     if use_loc then
         win = opts.win or vim.api.nvim_get_current_win()
     end
 
-    if not cmd then
-        cmd = vim.split(vim.bo.grepprg or vim.o.grepprg, '%s+')
-    end
-
-    if not vim.tbl_islist(args) then
-        args = vim.tbl_filter(function(k)
-            return not k:match '^%s*$'
-        end, vim.split(args, '%s+'))
-    end
-
-    cmd = vim.tbl_filter(function(k)
+    cmd = { cmd }
+    args = vim.tbl_filter(function(k)
         return not k:match '^%s*$'
-    end, cmd)
+    end, args)
+
     vim.list_extend(cmd, args)
     table.insert(cmd, search)
 
