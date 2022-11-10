@@ -204,7 +204,7 @@ function M.send_grep_job(opts)
 
     local grepprg = vim.split(vim.bo.grepprg or vim.o.grepprg, '%s+')
     local cmd = opts.cmd or grepprg[1]
-    local args = opts.args or vim.list_slice(grepprg, 2, #grepprg)
+    local args = opts.args or {}
     local search = opts.search or vim.fn.expand '<cword>'
     local use_loc = opts.loc
 
@@ -214,6 +214,10 @@ function M.send_grep_job(opts)
         search = { search, 'string' },
         use_loc = { use_loc, 'boolean', true },
     }
+
+    if cmd == grepprg[1] then
+        vim.list_extend(args, vim.list_slice(grepprg, 2, #grepprg))
+    end
 
     local win
     if use_loc then
