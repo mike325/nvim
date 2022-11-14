@@ -6,10 +6,6 @@ end
 
 local nvim = require 'neovim'
 
-local snippet_paths = {
-    './lua/snippets/',
-}
-
 ls.config.setup {
     -- history = true,
     -- region_check_events = 'InsertEnter,InsertLeave',
@@ -25,54 +21,57 @@ ls.config.setup {
     },
 }
 
+-- TODO: Add file watcher to auto reload snippets on changes
+local function load_snippets(ft)
+    local runtimepaths = {
+        ['lua/snippets/'] = {
+            default_priority = 1000,
+        },
+        ['luasnippets/'] = {
+            default_priority = 2000,
+        },
+    }
+
+    local ok
+    local snip_msg = ''
+    ft = ft or vim.opt_local.filetype:get()
+
+    for runtimepath, opts in pairs(runtimepaths) do
+        for _, snips in ipairs(vim.api.nvim_get_runtime_file(runtimepath .. 'all.lua', true)) do
+            ok, snip_msg = pcall(dofile, snips)
+            if not ok then
+                goto fail
+            end
+            opts.key = snips
+            ls.add_snippets('all', snip_msg, opts)
+        end
+
+        for _, snips in ipairs(vim.api.nvim_get_runtime_file(runtimepath .. ft .. '.lua', true)) do
+            ok, snip_msg = pcall(dofile, snips)
+            if not ok then
+                goto fail
+            end
+            opts.key = snips
+            ls.add_snippets(ft, snip_msg, opts)
+        end
+    end
+
+    ::fail::
+
+    return ok, snip_msg
+end
+
 nvim.command.set('SnippetEdit', function(opts)
     require('luasnip.loaders').edit_snippet_files()
 end, { nargs = '?', complete = 'filetype' })
 
 -- TODO: Improve this reload function
 nvim.command.set('SnippetReload', function()
-    ls.cleanup()
-
-    local runtimepaths = {
-        'lua/snippets/',
-        'luasnippets/',
-    }
-
-    local errors = false
-    local ok, snip_msg
-    for _, runtimepath in ipairs(runtimepaths) do
-        for _, snips in ipairs(vim.api.nvim_get_runtime_file(runtimepath .. 'all.lua', true)) do
-            ok, snip_msg = pcall(dofile, snips)
-            if not ok then
-                errors = true
-                break
-            end
-            ls.add_snippets('all', snip_msg, { key = snips })
-        end
-
-        if errors then
-            break
-        end
-
-        local ft = vim.opt_local.filetype:get()
-        for _, snips in ipairs(vim.api.nvim_get_runtime_file(runtimepath .. ft .. '.lua', true)) do
-            ok, snip_msg = pcall(dofile, snips)
-            if not ok then
-                errors = true
-                break
-            end
-            ls.add_snippets(ft, snip_msg, { key = snips })
-        end
-
-        if errors then
-            break
-        end
-    end
-
-    if not errors then
+    local ok, msg = load_snippets()
+    if ok then
         vim.notify 'Snippets Reloaded!'
     else
-        vim.notify(snip_msg, 'ERROR', { title = 'Luasnip' })
+        vim.notify(msg, 'ERROR', { title = 'Luasnip' })
     end
 end)
 
@@ -85,16 +84,24 @@ if #ls.get_snippets 'all' == 0 then
 end
 
 -- TODO: may add changes to this to "manually" load files using autocmds to better control hot/auto reload
-require('luasnip.loaders.from_lua').lazy_load {
-    paths = snippet_paths,
-    priority = 1000,
-    override_priority = 1000,
-}
+-- require('luasnip.loaders.from_lua').lazy_load {
+--     paths = snippet_paths,
+--     priority = 1000,
+--     override_priority = 1000,
+-- }
 
 -- NOTE: This will load all snippets found in the runtimepath located in the luasnippets
-require('luasnip.loaders.from_lua').lazy_load {
-    priority = 2000,
-    override_priority = 2000,
+-- require('luasnip.loaders.from_lua').lazy_load {
+--     priority = 2000,
+--     override_priority = 2000,
+-- }
+
+nvim.autocmd.AutoLoadSnippets = {
+    event = 'Filetype',
+    pattern = '*',
+    callback = function()
+        load_snippets()
+    end,
 }
 
 return true
