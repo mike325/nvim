@@ -6,10 +6,10 @@ end
 
 local s = ls.snippet
 local sn = ls.snippet_node
--- local t = ls.text_node
+local t = ls.text_node
 -- local isn = ls.indent_snippet_node
 local i = ls.insert_node
--- local f = ls.function_node
+local f = ls.function_node
 local c = ls.choice_node
 local d = ls.dynamic_node
 -- local l = require('luasnip.extras').lambda
@@ -35,19 +35,21 @@ local saved_text = utils.saved_text
 
 ls.filetype_extend('cpp', { 'c' })
 
--- local clike = RELOAD 'snippets.c_like'
--- for _, csnip in ipairs(clike) do
---     local has_snip = false
---     for _, snip in ipairs(ls.snippets.c) do
---         if snip.dscr == csnip.dscr then
---             has_snip = true
---             break
---         end
---     end
---     if not has_snip then
---         table.insert(ls.snippets.c, csnip)
---     end
--- end
+local function smart_ptr(_, snip)
+    local qt_ptr = snip.captures[1] == 'q'
+    local is_uniq = snip.captures[2] == 'u'
+
+    local ptr
+    if qt_ptr and not is_uniq then
+        ptr = 'QSharedPointer'
+    elseif not qt_ptr and not is_uniq then
+        ptr = 'std::shared_ptr'
+    else
+        ptr = 'std::unique_ptr'
+    end
+
+    return ptr
+end
 
 return {
     s(
@@ -113,5 +115,46 @@ return {
                 sn(nil, fmt('"{}"', { i(1, 'iostream') })),
             }),
         })
+    ),
+    s(
+        { trig = '(q?)([us])_?ptr', regTrig = true },
+        fmt([[{}<{}>]], {
+            f(smart_ptr, {}),
+            i(1, 'type'),
+        })
+    ),
+    s(
+        { trig = 'mfun', regTrig = true },
+        fmt(
+            [[
+        {} {}::{}({}) {{
+        {}
+        }}
+        ]],
+            {
+                c(1, {
+                    i(1, 'int'),
+                    i(1, 'char*'),
+                    i(1, 'float'),
+                    i(1, 'long'),
+                }),
+                i(2, 'Class'),
+                i(3, 'funcname'),
+                c(4, {
+                    t { '' },
+                    sn(nil, {
+                        c(1, {
+                            i(1, 'int'),
+                            i(1, 'char*'),
+                            i(1, 'float'),
+                            i(1, 'long'),
+                        }),
+                        t { ' ' },
+                        i(2, 'varname'),
+                    }),
+                }),
+                d(5, saved_text, {}, { user_args = { { indent = true } } }),
+            }
+        )
     ),
 }

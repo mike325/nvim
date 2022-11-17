@@ -173,12 +173,10 @@ local function get_args(compiler, bufnum, flags_location)
         flags_location = realpath(flags_location)
         local name = vim.fs.basename(flags_location)
         if name == 'compile_commands.json' then
-            -- parse_compiledb(readfile(flags_location, false))
             if databases[bufname] then
                 args = databases[bufname].flags
             end
         else
-            -- parse_compile_flags(flags_location)
             if compile_flags[flags_location] then
                 args = compile_flags[flags_location].flags
             end

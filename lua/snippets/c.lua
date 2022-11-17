@@ -11,7 +11,7 @@ local sn = ls.snippet_node
 local i = ls.insert_node
 -- local f = ls.function_node
 local c = ls.choice_node
--- local d = ls.dynamic_node
+local d = ls.dynamic_node
 -- local l = require('luasnip.extras').lambda
 -- local r = require('luasnip.extras').rep
 -- local p = require('luasnip.extras').partial
@@ -24,8 +24,8 @@ local fmt = require('luasnip.extras.fmt').fmt
 -- local events = require 'luasnip.util.events'
 -- local conds = require 'luasnip.extras.expand_conditions'
 
--- local utils = RELOAD('plugins.luasnip.utils')
--- local saved_text = utils.saved_text
+local utils = RELOAD 'plugins.luasnip.utils'
+local saved_text = utils.saved_text
 -- local get_comment = utils.get_comment
 -- local surround_with_func = utils.surround_with_func
 
@@ -36,6 +36,17 @@ local snippets = {
             sn(nil, fmt('<{}>', {i(1, 'stdio.h')})),
             sn(nil, fmt('"{}"', {i(1, 'stdio.h')})),
         }),
+    })),
+    s('def', fmt([[#define {}]], {
+        i(1, 'MACRO'),
+    })),
+    s('idef', fmt([[
+    #ifdef {}
+    {}
+    #endif
+    ]], {
+        i(1, 'MACRO'),
+        d(2, saved_text, {}, {user_args = {{indent = false}}}),
     })),
 }
 

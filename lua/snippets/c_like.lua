@@ -71,6 +71,13 @@ local snippets = {
         i(1, 'condition'),
         d(2, saved_text, {}, {user_args = {{indent = true}}}),
     })),
+    s('else', fmt([[
+    else {{
+    {}
+    }}
+    ]],{
+        d(1, saved_text, {}, {user_args = {{indent = true}}}),
+    })),
     s('fori', fmt([[
     for({} = {}; {} < {}; {}++) {{
     {}
