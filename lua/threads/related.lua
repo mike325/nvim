@@ -36,7 +36,9 @@ function M.gather_srcs_headers(opts)
         hxx = { 'cpp', 'cxx', 'cc' },
     }
 
-    opts = vim.json.decode(opts)
+    if type(opts) == type '' then
+        opts = vim.json.decode(opts)
+    end
     opts.alternates = opts.alternates or {}
     local path = opts.path or '.'
 
@@ -78,7 +80,7 @@ function M.gather_srcs_headers(opts)
         end
     end
 
-    return vim.json.encode(opts)
+    return vim.is_thread() and vim.json.encode(opts) or opts
 end
 
 function M.gather_tests(opts)
@@ -116,7 +118,10 @@ function M.gather_tests(opts)
         java = true,
     }
 
-    opts = vim.json.decode(opts)
+    if type(opts) == type '' then
+        opts = vim.json.decode(opts)
+    end
+
     opts.tests = opts.tests or {}
     local path = opts.path or '.'
 
@@ -201,7 +206,7 @@ function M.gather_tests(opts)
         end
     end
 
-    return vim.json.encode(opts)
+    return vim.is_thread() and vim.json.encode(opts) or opts
 end
 
 function M.alternate_src_header(opts)
@@ -237,7 +242,9 @@ function M.alternate_src_header(opts)
         hxx = { 'cpp', 'cxx', 'cc' },
     }
 
-    opts = vim.json.decode(opts)
+    if type(opts) == type '' then
+        opts = vim.json.decode(opts)
+    end
 
     local prefix = opts.buf:match '^%w+://'
     if prefix then
@@ -270,7 +277,10 @@ function M.alternate_src_header(opts)
         candidates = vim.fs.find(filter_func, { type = 'file' })
     end
 
-    return vim.json.encode(opts), vim.json.encode(candidates), opts.buf, 'alternates'
+    opts.candidates = candidates
+    opts.key = opts.buf
+    opts.varname = 'alternates'
+    return vim.is_thread() and vim.json.encode(opts) or opts
 end
 
 function M.alternate_test(opts)
@@ -308,7 +318,9 @@ function M.alternate_test(opts)
         java = true,
     }
 
-    opts = vim.json.decode(opts)
+    if type(opts) == type '' then
+        opts = vim.json.decode(opts)
+    end
 
     local prefix = opts.buf:match '^%w+://'
     if prefix then
@@ -368,7 +380,10 @@ function M.alternate_test(opts)
         candidates = vim.fs.find(filter_func, { type = 'file' })
     end
 
-    return vim.json.encode(opts), vim.json.encode(candidates), opts.buf, 'tests'
+    opts.candidates = candidates
+    opts.key = opts.buf
+    opts.varname = 'tests'
+    return vim.is_thread() and vim.json.encode(opts) or opts
 end
 
 -- NOTE: This does not work yet since find in nvim-0.8 can not search upward in different threads
@@ -392,19 +407,26 @@ function M.related_makefiles(opts)
         vim.fs = require 'vim.fs'
     end
 
-    opts = vim.json.decode(opts)
+    if type(opts) == type '' then
+        opts = vim.json.decode(opts)
+    end
 
     local candidates = vim.fs.find(function(filename)
         return filename:match '^[Mm]akefile' ~= nil or filename:match '.+%.mk$' ~= nil
     end, { type = 'file', limit = math.huge, upward = true, path = opts.basedir })
 
-    return vim.json.encode(opts), vim.json.encode(candidates), opts.basedir, 'makefiles'
+    opts.candidates = candidates
+    opts.key = opts.basedir
+    opts.varname = 'makefiles'
+    return vim.is_thread() and vim.json.encode(opts) or opts
 end
 
-function M.update_var_cb(opts, results, key, varname)
-    if type(results) == type '' then
-        local candidates = vim.json.decode(results)
-        -- opts = vim.json.decode(opts)
+function M.update_var_cb(opts)
+    if type(opts) == type '' and opts ~= '' then
+        opts = vim.json.decode(opts)
+        local key = opts.key
+        local varname = opts.varname
+        local candidates = opts.candidates
 
         if #candidates > 0 then
             local udpate_val = vim.g[varname] or {}
@@ -421,7 +443,7 @@ function M.update_var_cb(opts, results, key, varname)
 end
 
 function M.tests_cb(opts)
-    if type(opts) == type '' then
+    if type(opts) == type '' and opts ~= '' then
         opts = vim.json.decode(opts)
         vim.g.tests = vim.tbl_extend('force', vim.g.tests or {}, opts.tests or {})
     else

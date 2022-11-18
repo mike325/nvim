@@ -825,13 +825,13 @@ function M.alternate(opts)
         opts.buf = vim.loop.fs_realpath(opts.buf)
     end
 
-    local candidates, _
+    local candidates
     -- TODO: alternates should be buffer local
     local alternates = vim.g.alternates or {}
     if not alternates[opts.buf] or opts.bang then
-        _, candidates = RELOAD('threads.related').alternate_src_header(vim.json.encode(opts))
+        opts = RELOAD('threads.related').alternate_src_header(opts)
+        candidates = opts.candidates or {}
         if #candidates > 0 then
-            candidates = vim.json.decode(candidates)
             alternates[opts.buf] = candidates
             vim.g.alternates = alternates
         end
@@ -861,14 +861,16 @@ function M.alt_makefiles(opts)
 
     opts.basedir = vim.fs.dirname(opts.buf)
 
-    local candidates, _
+    local candidates
     local makefiles = vim.g.makefiles or {}
     if not makefiles[opts.basedir] or opts.bang then
-        _, candidates = RELOAD('threads.related').related_makefiles(vim.json.encode(opts))
-        candidates = vim.json.decode(candidates)
-        makefiles = vim.g.makefiles or {}
-        makefiles[opts.basedir] = candidates
-        vim.g.makefiles = makefiles
+        opts = RELOAD('threads.related').related_makefiles(opts)
+        candidates = opts.candidates or {}
+        if #candidates > 0 then
+            makefiles = vim.g.makefiles or {}
+            makefiles[opts.basedir] = candidates
+            vim.g.makefiles = makefiles
+        end
     else
         candidates = vim.g.makefiles[opts.basedir]
     end
@@ -897,12 +899,12 @@ function M.alternate_test(opts)
         opts.buf = vim.loop.fs_realpath(opts.buf)
     end
 
-    local candidates, _
+    local candidates
     local alternates = vim.g.tests or {}
     if not alternates[opts.buf] or opts.bang then
-        _, candidates = RELOAD('threads.related').alternate_test(vim.json.encode(opts))
+        opts = RELOAD('threads.related').alternate_test(opts)
+        candidates = opts.candidates or {}
         if #candidates > 0 then
-            candidates = vim.json.decode(candidates)
             alternates[opts.buf] = candidates
             vim.g.tests = alternates
         end

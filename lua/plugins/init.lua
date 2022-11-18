@@ -36,7 +36,7 @@ packer.init {
 packer.startup(function()
     -- BUG: Seems like luarocks is not supported in windows
     if has_compiler and has_python then
-        use_rocks { 'luacheck', 'jsregexp' }
+        use_rocks { 'luacheck', 'jsregexp', 'lua-yaml' }
     end
 
     use 'wbthomason/packer.nvim'

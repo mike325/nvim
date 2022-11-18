@@ -48,7 +48,7 @@ function M.compile_flags(opts)
     -- NOTE: No longer needed
     opts.include_parser = nil
     opts.compile_flags = compile_flags
-    return vim.json.encode(opts)
+    return vim.is_thread() and vim.json.encode(opts) or opts
 end
 
 function M.compiledb(opts)
@@ -85,7 +85,7 @@ function M.compiledb(opts)
     end
     opts.include_parser = nil
     opts.databases = databases
-    return vim.json.encode(opts)
+    return vim.is_thread() and vim.json.encode(opts) or opts
 end
 
 function M.sshconfig(opts)
@@ -106,7 +106,7 @@ function M.sshconfig(opts)
                 host = ''
             end
         end
-        return vim.json.encode(hosts)
+        return vim.is_thread() and vim.json.encode(hosts) or hosts
     end
 end
 
@@ -125,8 +125,10 @@ function M.yaml(opts)
     local ok, parser = pcall(require, 'yaml')
     local data = utils.readfile(filename, not ok)
 
+    local yaml_dict = {}
     if ok then
-        return vim.json.encode(parser.eval(data))
+        yaml_dict = parser.eval(data)
+        return vim.is_thread() and vim.json.encode(yaml_dict) or yaml_dict
     end
 
     -- local multiline = false
@@ -134,7 +136,6 @@ function M.yaml(opts)
     -- - Multi line strings
     -- - Dict attributes
     -- - List attributes
-    local yaml_dict = {}
     for _, line in ipairs(data) do
         if line:match '^%w+' then
             -- if not line:match '^%s*$' and not line:match '^%s*#' then
@@ -171,7 +172,7 @@ function M.yaml(opts)
         end
     end
 
-    return vim.json.encode(yaml_dict)
+    return vim.is_thread() and vim.json.encode(yaml_dict) or yaml_dict
 end
 
 return M
