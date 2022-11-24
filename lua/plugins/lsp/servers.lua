@@ -202,13 +202,14 @@ local servers = {
             options = {
                 cmd = {
                     'clangd',
-                    '--index',
                     '--background-index',
                     '--suggest-missing-includes',
                     '--clang-tidy',
                     '--header-insertion=iwyu',
                     '--function-arg-placeholders',
                     '--completion-style=detailed',
+                    -- '--index',
+                    -- '--cross-file-rename', -- NOTE: Available only in clangd >= 10
                     -- '--pch-storage=memory',
                     -- '--log=verbose',
                 },

@@ -29,6 +29,9 @@ vim.keymap.set('c', '<C-k>', '<left>', noremap)
 vim.keymap.set('c', '<C-j>', '<right>', noremap)
 
 vim.keymap.set('c', '<C-r><C-w>', "<C-r>=escape(expand('<cword>'), '#')<CR>", noremap)
+vim.keymap.set('c', '<C-r><C-n>', [[<C-r>=luaeval("vim.fs.basename(vim.fn.expand('%'))")<CR>]], noremap)
+vim.keymap.set('c', '<C-r><C-p>', [[<C-r>=luaeval("vim.fn.expand('%')")<CR>]], noremap)
+vim.keymap.set('c', '<C-r><C-d>', [[<C-r>=luaeval("vim.fs.dirname(vim.fn.expand('%'))..'/'")<CR>]], noremap)
 
 vim.keymap.set('n', ',', ':', noremap)
 vim.keymap.set('x', ',', ':', noremap)
@@ -152,12 +155,13 @@ nvim.command.set('ClearLoc', function()
     RELOAD('utils.functions').clear_qf(nvim.get_current_win())
 end)
 
-vim.keymap.set('n', '=l', function()
-    RELOAD('utils.functions').toggle_qf(vim.api.nvim_get_current_win())
-end, { noremap = true, silent = true, desc = 'Toggle location list' })
 vim.keymap.set('n', '=q', function()
     RELOAD('utils.functions').toggle_qf()
 end, { noremap = true, silent = true, desc = 'Toggle quickfix' })
+
+vim.keymap.set('n', '=l', function()
+    RELOAD('utils.functions').toggle_qf { win = vim.api.nvim_get_current_win() }
+end, { noremap = true, silent = true, desc = 'Toggle location list' })
 
 vim.keymap.set('n', '<leader><leader>p', function()
     RELOAD('mappings').swap_window()
@@ -203,11 +207,13 @@ nvim.command.set('SpellLang', function(opts)
     RELOAD('utils.functions').spelllangs(opts.args)
 end, { nargs = '?', complete = _completions.spells })
 
-nvim.command.set(
-    'Qopen',
-    "execute((&splitbelow) ? 'botright' : 'topleft' ) . ' copen ' . expand(<q-args>)",
-    { nargs = '?' }
-)
+nvim.command.set('Qopen', function(opts)
+    opts.size = tonumber(opts.args)
+    if opts.size then
+        opts.size = opts.size + 1
+    end
+    RELOAD('utils.functions').toggle_qf(opts)
+end, { nargs = '?' })
 
 -- TODO: Check for GUIs
 if sys.name == 'windows' then
@@ -478,10 +484,10 @@ nvim.command.set('ReloadMappings', function(opts)
     vim.cmd.source(sys.base .. '/plugin/mappings.lua')
 end, { nargs = 0, desc = 'Reload all mappings and commands', bang = true })
 
--- nvim.command.set('NotificationServer', function(opts)
---     opts.enable = opts.args == 'enable'
---     RELOAD('mappings').notification_server(opts)
--- end, { nargs = 1, complete = _completions.toggle, bang = true })
+nvim.command.set('NotificationServer', function(opts)
+    opts.enable = opts.args == 'enable' or opts.args == ''
+    RELOAD('servers.notifications').start_server(opts)
+end, { nargs = 1, complete = _completions.toggle, bang = true })
 
 nvim.command.set('RemoveEmpty', function(opts)
     RELOAD('utils.buffers').remove_empty(opts)

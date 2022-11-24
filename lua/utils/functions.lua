@@ -11,6 +11,9 @@ local M = {}
 local git_dirs = {}
 local qf_funcs = {
     first = function(win)
+        vim.validate {
+            win = { win, 'number', true },
+        }
         if win then
             nvim.ex.lfirst()
         else
@@ -18,21 +21,28 @@ local qf_funcs = {
         end
     end,
     last = function(win)
+        vim.validate {
+            win = { win, 'number', true },
+        }
         if win then
             nvim.ex.llast()
         else
             nvim.ex.clast()
         end
     end,
-    open = function(win)
-        local cmd = vim.o.splitbelow and 'botright' or 'topleft'
-        if win then
-            vim.cmd(cmd .. ' lopen')
-        else
-            vim.cmd(cmd .. ' copen')
-        end
+    open = function(win, size)
+        vim.validate {
+            win = { win, 'number', true },
+            size = { size, 'number', true },
+        }
+        local direction = vim.o.splitbelow and 'botright' or 'topleft'
+        local cmd = win and 'lopen' or 'copen'
+        vim.cmd(('%s %s %s'):format(direction, cmd, size or ''))
     end,
     close = function(win)
+        vim.validate {
+            win = { win, 'number', true },
+        }
         if win then
             nvim.ex.lclose()
         else
@@ -40,6 +50,9 @@ local qf_funcs = {
         end
     end,
     set_list = function(items, action, what, win)
+        vim.validate {
+            win = { win, 'number', true },
+        }
         if win then
             -- BUG: For some reason we cannot send what as nil, so it needs to be ommited
             if not what then
@@ -56,10 +69,20 @@ local qf_funcs = {
         end
     end,
     get_list = function(what, win)
+        vim.validate {
+            what = { what, 'table', true },
+            win = { win, 'number', true },
+        }
         if win then
-            return vim.fn.getloclist(win, what)
+            if what then
+                return vim.fn.getloclist(win, what)
+            end
+            return vim.fn.getloclist(win)
         end
-        return vim.fn.getqflist(what)
+        if what then
+            return vim.fn.getqflist(what)
+        end
+        return vim.fn.getqflist()
     end,
 }
 
@@ -1089,14 +1112,31 @@ function M.python(version, args)
     vim.cmd(split_type .. ' split term://' .. pyversion .. ' ' .. args)
 end
 
-function M.toggle_qf(win)
+function M.toggle_qf(opts)
+    vim.validate {
+        opts = { opts, 'table', true },
+    }
+    opts = opts or {}
+    local win = opts.win
     if type(win) ~= type(1) then
         win = nil
     end
 
     local qf_winid = qf_funcs.get_list({ winid = 0 }, win).winid
-    local action = qf_winid > 0 and 'close' or 'open'
-    qf_funcs[action](win)
+    if qf_winid > 0 then
+        qf_funcs.close(win)
+    else
+        local size
+        local elements = #qf_funcs.get_list(nil, win) + 1
+        if opts.size then
+            size = opts.size
+        else
+            local lines = vim.opt_local.lines:get()
+            size = math.min(math.floor(lines * 0.5), elements)
+        end
+
+        qf_funcs.open(win, size)
+    end
 end
 
 function M.dump_to_qf(opts)
