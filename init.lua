@@ -60,8 +60,6 @@ elseif not is_min and not is_bare then
     vim.notify('Missing git! cannot install plugins', 'WARN', { title = 'Nvim Setup' })
 end
 
-require('threads.parse').ssh_hosts()
-
 -- NOTE: Compatibility layer with nvim-0.8
 if not vim.fs then
     vim.fs = {
@@ -73,6 +71,8 @@ if not vim.fs then
         -- find = require'utils.files'.find,
     }
 end
+
+require('threads.parse').ssh_hosts()
 
 vim.cmd [[packadd! cfilter]]
 vim.cmd [[packadd! matchit]]
