@@ -1200,7 +1200,10 @@ function M.dump_to_qf(opts)
         return
     elseif #opts.lines > 0 then
         if qf_open then
-            qf_funcs.open(win)
+            local elements = #qf_funcs.get_list(nil, win) + 1
+            local lines = vim.opt_local.lines:get()
+            local size = math.min(math.floor(lines * 0.5), elements)
+            qf_funcs.open(win, size)
         end
 
         if qf_jump then
