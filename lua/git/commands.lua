@@ -42,7 +42,7 @@ function M.set_commands()
                         vim.notify('Failed to pull changes!!', 'ERROR', { title = 'GPull' })
                     else
                         vim.notify('Repo updated!', 'INFO', { title = 'GPull' })
-                        nvim.ex.checktime()
+                        vim.cmd.checktime()
                     end
                 end,
             },
@@ -82,7 +82,7 @@ function M.set_commands()
                 local untracked = status.untracked or {}
 
                 if workspace[bufname] or vim.tbl_contains(untracked, bufname) then
-                    nvim.ex.update() { bufname }
+                    vim.cmd.update { args = { bufname } }
                     utils.launch_gitcmd_job {
                         gitcmd = 'add',
                         args = args,
@@ -125,7 +125,7 @@ function M.set_commands()
                     bufname = bufname:gsub('\\', '/')
                 end
                 if status.stage and status.stage[bufname] then
-                    nvim.ex.update()
+                    vim.cmd.update()
                     utils.launch_gitcmd_job {
                         gitcmd = 'reset',
                         args = { 'HEAD', bufname },
@@ -144,7 +144,7 @@ function M.set_commands()
                                                         { title = 'GRead' }
                                                     )
                                                 end
-                                                nvim.ex.checktime()
+                                                vim.cmd.checktime()
                                             end,
                                         },
                                     }
@@ -159,7 +159,7 @@ function M.set_commands()
                         },
                     }
                 elseif status.workspace and status.workspace[bufname] then
-                    nvim.ex.update() { '--', bufname }
+                    vim.cmd.update { args = { '--', bufname } }
                     utils.launch_gitcmd_job {
                         gitcmd = 'checkout',
                         args = args,
@@ -196,7 +196,7 @@ function M.set_commands()
                                         { title = 'GRestore' }
                                     )
                                 end
-                                nvim.ex.checktime()
+                                vim.cmd.checktime()
                             end,
                         },
                     }
@@ -220,7 +220,7 @@ function M.set_commands()
                             if rc ~= 0 then
                                 error(('Failed to restore file: %s'):format(args))
                             end
-                            nvim.ex.checktime()
+                            vim.cmd.checktime()
                         end,
                     },
                 }

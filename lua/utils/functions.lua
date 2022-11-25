@@ -15,9 +15,9 @@ local qf_funcs = {
             win = { win, 'number', true },
         }
         if win then
-            nvim.ex.lfirst()
+            vim.cmd.lfirst()
         else
-            nvim.ex.cfirst()
+            vim.cmd.cfirst()
         end
     end,
     last = function(win)
@@ -25,9 +25,9 @@ local qf_funcs = {
             win = { win, 'number', true },
         }
         if win then
-            nvim.ex.llast()
+            vim.cmd.llast()
         else
-            nvim.ex.clast()
+            vim.cmd.clast()
         end
     end,
     open = function(win, size)
@@ -44,9 +44,9 @@ local qf_funcs = {
             win = { win, 'number', true },
         }
         if win then
-            nvim.ex.lclose()
+            vim.cmd.lclose()
         else
-            nvim.ex.cclose()
+            vim.cmd.cclose()
         end
     end,
     set_list = function(items, action, what, win)
@@ -596,11 +596,11 @@ function M.set_compiler(compiler, opts)
         end, { nargs = 1, buffer = true })
     end
 
-    nvim.ex.CompilerSet('makeprg=' .. table.concat(replace_indent(cmd), '\\ '))
+    vim.cmd.CompilerSet('makeprg=' .. table.concat(replace_indent(cmd), '\\ '))
 
     local efm = compiler_data.efm
     if efm then
-        nvim.ex.CompilerSet('errorformat=' .. table.concat(efm, ','):gsub(' ', '\\ '))
+        vim.cmd.CompilerSet('errorformat=' .. table.concat(efm, ','):gsub(' ', '\\ '))
     end
 
     vim.b.current_compiler = compiler
@@ -732,7 +732,7 @@ function M.project_config(event)
 
     local project = vim.fs.find('.project.lua', { upward = true, type = 'file' })
     if #project > 0 then
-        nvim.ex.source(project[1])
+        vim.cmd.source(project[1])
     end
 end
 
@@ -1235,9 +1235,9 @@ function M.autoformat(cmd, args)
         silent = true,
     }
     formatter:callback_on_success(function()
-        nvim.ex.checktime()
+        vim.cmd.checktime()
         vim.fn.winrestview(view)
-        -- nvim.ex.edit()
+        -- vim.cmd.edit()
     end)
     formatter:start()
 end

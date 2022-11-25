@@ -36,7 +36,7 @@ M.precommit_efm = {
 }
 
 function M.backspace()
-    local ok, _ = pcall(nvim.ex.pop)
+    local ok, _ = pcall(vim.cmd.pop)
     if not ok then
         local key = nvim.replace_termcodes('<C-o>', true, false, true)
         nvim.feedkeys(key, 'n', true)
@@ -60,7 +60,7 @@ function M.backspace()
         --         local jump_buf = jumps[current_jump - 1][4]
         --         if current_buf ~= jump_buf then
         --             if not nvim.buf.is_valid(jump_buf) or not nvim.buf.is_loaded(jump_buf) then
-        --                 nvim.ex.edit(jump_buf)
+        --                 vim.cmd.edit{ args = {jump_buf} }
         --             end
         --         end
         --         nvim.win.set_cursor(0, jumps[current_jump - 1][2], jumps[current_jump - 1][3])
@@ -124,11 +124,10 @@ function M.floating_terminal(opts)
     vim.wo[win].number = false
     vim.wo[win].relativenumber = false
 
-    -- nvim.ex.edit('term://'..)
     vim.fn.termopen(shell)
 
     if cmd ~= '' then
-        nvim.ex.startinsert()
+        vim.cmd.startinsert()
     end
 end
 
@@ -283,7 +282,7 @@ function M.async_makeprg(opts)
         context = 'AsyncLint',
         title = 'AsyncLint',
         callback_on_success = function()
-            nvim.ex.checktime()
+            vim.cmd.checktime()
         end,
     }
 end
@@ -291,7 +290,7 @@ end
 function M.cscope(cword, query)
     cword = (cword and cword ~= '') and cword or vim.fn.expand '<cword>'
     query = M.cscope_queries[query] or 'find g'
-    local ok, err = pcall(nvim.ex.cscope, query .. ' ' .. cword)
+    local ok, err = pcall(vim.cmd.cscope, { args = query, cword })
     if not ok then
         vim.notify('Error!\n' .. err, 'ERROR', { title = 'cscope' })
     end
@@ -430,7 +429,7 @@ function M.remote_file(host, send)
         },
     }
     sync:callback_on_success(function(_)
-        nvim.ex.checktime()
+        vim.cmd.checktime()
     end)
     sync:callback_on_failure(function(job)
         vim.notify(table.concat(job:output(), '\n'), 'ERROR', { title = 'SyncFile' })
@@ -464,7 +463,7 @@ function M.scratch_buffer(opts)
     end
 
     nvim.set_current_win(scratch_win)
-    nvim.ex.wincmd 'K'
+    vim.cmd.wincmd 'K'
 end
 
 function M.messages(opts)
@@ -488,13 +487,13 @@ function M.messages(opts)
             title = 'Messages',
             context = 'Messages',
         })
-        nvim.ex.Qopen()
+        vim.cmd.Qopen()
     else
-        nvim.ex.messages 'clear'
+        vim.cmd.messages 'clear'
         local context = vim.fn.getqflist({ context = 1 }).context
         if context == 'Messages' then
             RELOAD('utils.functions').clear_qf()
-            nvim.ex.cclose()
+            vim.cmd.cclose()
         end
     end
 end
@@ -541,7 +540,7 @@ function M.repl(opts)
     vim.wo[win].relativenumber = false
 
     vim.fn.termopen(type(cmd) == type {} and table.concat(cmd, ' ') or cmd)
-    nvim.ex.startinsert()
+    vim.cmd.startinsert()
 end
 
 function M.zoom_links(opts)
@@ -565,12 +564,12 @@ function M.edit(args)
     local globs = args.fargs
     for _, g in ipairs(globs) do
         if utils.is_file(g) then
-            nvim.ex.edit(g)
+            vim.cmd.edit(g)
         elseif g:match '%*' then
             local files = vim.fn.glob(g, false, true, false)
             for _, f in ipairs(files) do
                 if utils.is_file(f) then
-                    nvim.ex.edit(f)
+                    vim.cmd.edit(f)
                 end
             end
         end
@@ -596,17 +595,17 @@ function M.diff_files(args)
     for _, f in ipairs(files) do
         if only then
             only = false
-            nvim.ex.tabnew()
+            vim.cmd.tabnew()
         else
-            nvim.ex.vsplit()
+            vim.cmd.vsplit()
         end
-        nvim.ex.edit(f)
+        vim.cmd.edit(f)
     end
 
     for _, w in ipairs(nvim.tab.list_wins(0)) do
         local buf = nvim.win.get_buf(w)
         nvim.buf.call(buf, function()
-            nvim.ex.diffthis()
+            vim.cmd.diffthis()
         end)
     end
 end
@@ -631,7 +630,7 @@ function M.custom_compiler(opts)
             vim.cmd(('setlocal %s'):format(command.args))
         end, { nargs = 1, buffer = true })
 
-        nvim.ex.luafile(path .. compiler .. '.lua')
+        vim.cmd.luafile { args = { path .. compiler .. '.lua' } }
 
         nvim.command.del('CompilerSet', true)
     else
@@ -651,7 +650,7 @@ function M.custom_compiler(opts)
         end
 
         if not has_compiler then
-            nvim.ex.compiler(compiler)
+            vim.cmd.compiler(compiler)
         end
     end
 end
@@ -682,7 +681,7 @@ function M.wall(opts)
     for _, win in ipairs(nvim.tab.list_wins(0)) do
         -- local buf = nvim.win.get_buf(win)
         nvim.win.call(win, function()
-            nvim.ex.update()
+            vim.cmd.update()
         end)
     end
 end
@@ -841,10 +840,10 @@ function M.alternate(opts)
 
     if #candidates > 1 then
         vim.ui.select(candidates, { prompt = 'Alternate: ' }, function(choise)
-            nvim.ex.edit(choise)
+            vim.cmd.edit(choise)
         end)
     elseif #candidates == 1 then
-        nvim.ex.edit(candidates[1])
+        vim.cmd.edit(candidates[1])
     else
         vim.notify('No alternate file found', 'WARN')
     end
@@ -877,10 +876,10 @@ function M.alt_makefiles(opts)
 
     if #candidates > 1 then
         vim.ui.select(candidates, { prompt = 'Makefile: ' }, function(choise)
-            nvim.ex.edit(choise)
+            vim.cmd.edit(choise)
         end)
     elseif #candidates == 1 then
-        nvim.ex.edit(candidates[1])
+        vim.cmd.edit(candidates[1])
     else
         vim.notify('No makefiles file found', 'WARN')
     end
@@ -914,10 +913,10 @@ function M.alternate_test(opts)
 
     if #candidates > 1 then
         vim.ui.select(candidates, { prompt = 'Test: ' }, function(choise)
-            nvim.ex.edit(choise)
+            vim.cmd.edit(choise)
         end)
     elseif #candidates == 1 then
-        nvim.ex.edit(candidates[1])
+        vim.cmd.edit(candidates[1])
     else
         vim.notify('No test file found', 'WARN')
     end

@@ -44,22 +44,22 @@ vim.keymap.set('n', '=t', function()
     local has_telescope = load_module 'telescope'
 
     if has_telescope then
-        nvim.ex.TodoTelescope()
+        vim.cmd.TodoTelescope()
     elseif has_trouble then
         local trouble_open = false
         for _, win in pairs(nvim.tab.list_wins(0)) do
             local buf = nvim.win.get_buf(win)
             if vim.bo[buf].filetype == 'Trouble' then
                 trouble_open = true
-                nvim.ex.TroubleClose()
+                vim.cmd.TroubleClose()
                 break
             end
         end
         if not trouble_open then
-            nvim.ex.TodoTrouble()
+            vim.cmd.TodoTrouble()
         end
     else
-        nvim.ex.TodoQuickfix()
+        vim.cmd.TodoQuickfix()
     end
 end, { noremap = true, silent = true, desc = "Display all available TODO's labels" })
 

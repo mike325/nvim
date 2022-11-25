@@ -46,23 +46,23 @@ vim.keymap.set('n', '=T', function()
         local buf = nvim.win.get_buf(win)
         if vim.bo[buf].filetype == 'Trouble' then
             trouble_open = true
-            nvim.ex.TroubleClose()
+            vim.cmd.TroubleClose()
             break
         end
     end
     if not trouble_open then
         if #document_diagnostics > 0 then
             vim.notify('Document Diagnostics', 'INFO', { title = 'Trouble' })
-            nvim.ex.Trouble 'document_diagnostics'
+            vim.cmd.Trouble 'document_diagnostics'
         elseif has_workspace_diagnostics then
             vim.notify('Workspace Diagnostics', 'INFO', { title = 'Trouble' })
-            nvim.ex.Trouble 'lsp_workspace_diagnostics'
+            vim.cmd.Trouble 'lsp_workspace_diagnostics'
         elseif #loc_diagnostics > 0 then
             vim.notify('Location list', 'INFO', { title = 'Trouble' })
-            nvim.ex.Trouble 'loclist'
+            vim.cmd.Trouble 'loclist'
         elseif #qf_diagnostics > 0 then
             vim.notify('Quicfix', 'INFO', { title = 'Trouble' })
-            nvim.ex.Trouble 'quickfix'
+            vim.cmd.Trouble 'quickfix'
         else
             vim.notify('Nothing to check !', 'WARN', { title = 'Trouble' })
         end

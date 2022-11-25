@@ -525,7 +525,7 @@ function M.rename(old, new, bang)
         local cursor_pos
 
         if not M.exists(old) and bufloaded(old) then
-            nvim.ex.write(old)
+            vim.cmd.write(old)
             if M.realpath(nvim.buf.get_name(nvim.get_current_buf())) == M.realpath(old) then
                 cursor_pos = nvim.win.get_cursor(nvim.get_current_buf())
             end
@@ -541,7 +541,7 @@ function M.rename(old, new, bang)
             end
 
             if M.is_file(new) then
-                nvim.ex.edit(new)
+                vim.cmd.edit(new)
                 if cursor_pos then
                     nvim.win.set_cursor(0, cursor_pos)
                 end

@@ -285,7 +285,7 @@ function M.input(opts, on_confirm)
         end
     end, { silent = true, buffer = buffer, nowait = true })
 
-    nvim.ex.startinsert()
+    vim.cmd.startinsert()
 
     return win
 end
