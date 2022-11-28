@@ -3,9 +3,6 @@ local M = require('lualine.component'):extend()
 local hl = require 'lualine.highlight'
 local utils = require 'lualine.utils.utils'
 
--- local colors = RELOAD 'colors'
--- local tokyio = require('tokyonight.colors').setup()
-
 function M:init(options)
     M.super.init(self, options)
     self.colors = {}

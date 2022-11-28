@@ -57,10 +57,34 @@ packer.startup(function()
     use { 'rcarriga/nvim-notify' }
 
     use {
-        'folke/tokyonight.nvim',
+        'catppuccin/nvim',
+        as = 'catppuccin',
         config = function()
-            vim.g.tokyonight_style = 'night'
-            vim.cmd [[colorscheme tokyonight]]
+            -- vim.g.tokyonight_style = 'night'
+            require('catppuccin').setup {
+                flavour = 'mocha', -- latte, frappe, macchiato, mocha
+                integrations = {
+                    cmp = true,
+                    gitsigns = true,
+                    nvimtree = false,
+                    telescope = true,
+                    notify = true,
+                    mini = true,
+                    hop = true,
+                    dap = {
+                        enabled = true,
+                        enable_ui = true,
+                    },
+                    native_lsp = {
+                        enabled = true,
+                    },
+                    treesitter = true,
+                    treesitter_context = true,
+                    -- lsp_trouble = true,
+                    vimwiki = true,
+                },
+            }
+            vim.cmd.colorscheme 'catppuccin'
         end,
     }
 

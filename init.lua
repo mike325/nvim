@@ -17,6 +17,8 @@ vim.g.loaded_vimballPlugin = 1
 vim.g.loaded_ruby_provider = 0
 vim.g.loaded_node_provider = 0
 vim.g.loaded_perl_provider = 0
+vim.g.loaded_python_provider = 0
+vim.g.loaded_python3_provider = 0
 
 if nvim.has 'win32' then
     vim.opt.shell = 'cmd.exe'
@@ -40,7 +42,8 @@ vim.g.mapleader = ' '
 require 'utils.ft_detect'
 require 'messages'
 require 'globals'
-require('filetypes.python').pynvim_setup()
+-- NOTE: I no longer use python plugins, no need to setup python remote provider
+-- require('filetypes.python').pynvim_setup()
 
 local is_min = vim.env.VIM_MIN ~= nil or vim.g.minimal ~= nil
 local is_bare = vim.env.VIM_BARE ~= nil or vim.g.bare ~= nil

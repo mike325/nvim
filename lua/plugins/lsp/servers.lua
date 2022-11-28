@@ -207,11 +207,11 @@ local servers = {
                     '--clang-tidy',
                     '--header-insertion=iwyu',
                     '--function-arg-placeholders',
-                    '--completion-style=detailed',
+                    '--completion-style=bundled',
                     -- '--index',
                     -- '--cross-file-rename', -- NOTE: Available only in clangd >= 10
                     -- '--pch-storage=memory',
-                    -- '--log=verbose',
+                    '--log=error',
                 },
                 cmd_env = {
                     TMPDIR = './.clangd/pchs/',
