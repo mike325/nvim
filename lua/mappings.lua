@@ -236,32 +236,54 @@ function M.rename_file(opts)
     RELOAD('utils.files').rename(current_path, current_dir .. '/' .. opts.args, opts.bang)
 end
 
-function M.cfind(opts)
+function M.find(opts)
     local finder = RELOAD('utils.functions').select_filelist(false, true)
 
-    if finder[1] == 'fd' or finder[1] == 'fdfind' or finder[1] == 'rg' then
-        table.insert(finder, '-uuu')
-    end
-    local find = RELOAD('jobs'):new {
-        cmd = vim.list_extend(finder, opts.fargs),
-        progress = false,
-        opts = {
-            stdin = 'null',
-        },
-        qf = {
-            on_fail = {
-                open = true,
-                jump = false,
-            },
-            dump = true,
+    local fast_finders = {
+        fd = true,
+        fdfind = true,
+        rg = true,
+    }
+
+    local qf_opts = {
+        on_fail = {
             open = true,
             jump = false,
-            context = 'CFinder',
-            title = 'CFinder',
-            efm = '%f',
         },
+        dump = true,
+        open = true,
+        jump = false,
+        context = 'Finder',
+        title = 'Finder',
+        efm = '%f',
     }
-    find:start()
+
+    if fast_finders[finder[1]] then
+        table.insert(finder, '-uuu')
+        local find = RELOAD('jobs'):new {
+            cmd = vim.list_extend(finder, opts.fargs),
+            progress = false,
+            opts = {
+                stdin = 'null',
+            },
+            qf = qf_opts,
+        }
+        find:start()
+    else
+        -- NOTE: Fallback to native finder which works everywhere
+        RELOAD('threads.functions').find {
+            target = opts.args,
+            qf_opts = qf_opts,
+            cb = function(results)
+                if results and results ~= '' then
+                    results = vim.json.decode(results)
+                    qf_opts = results.qf_opts
+                    qf_opts.lines = results.results
+                    RELOAD('utils.functions').dump_to_qf(qf_opts)
+                end
+            end,
+        }
+    end
 end
 
 function M.async_makeprg(opts)

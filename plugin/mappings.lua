@@ -265,8 +265,8 @@ nvim.command.set('LGrep', function(opts)
     RELOAD('utils.functions').send_grep_job { loc = true, search = search, args = args }
 end, { nargs = '+', complete = 'file' })
 
-nvim.command.set('CFind', function(opts)
-    RELOAD('mappings').cfind(opts)
+nvim.command.set('Find', function(opts)
+    RELOAD('mappings').find(opts)
 end, { bang = true, nargs = '+', complete = 'file' })
 
 vim.keymap.set(

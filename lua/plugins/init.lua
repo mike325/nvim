@@ -323,6 +323,7 @@ packer.startup(function()
             { 'nvim-treesitter/nvim-treesitter-textobjects' },
             { 'Badhi/nvim-treesitter-cpp-tools' },
             { 'nvim-treesitter/nvim-treesitter-context' },
+            { 'ziontee113/query-secretary' },
             -- { 'David-Kunz/markid' },
             -- { 'nvim-treesitter/nvim-tree-docs' },
         },
@@ -675,8 +676,6 @@ packer.startup(function()
     --     end,
     -- }
 
-    -- use { 'folke/lsp-colors.nvim' }
-
     -- use {
     --     'norcalli/nvim-terminal.lua',
     --     config = function()
@@ -684,32 +683,10 @@ packer.startup(function()
     --     end,
     -- }
 
-    -- use {
-    --     'sainnhe/sonokai',
-    --     cond = function()
-    --         return not vim.env.VIM_MIN and not vim.g.minimal
-    --     end,
-    --     config = function()
-    --         vim.opt.termguicolors = true
-    --
-    --         -- vim.g.sonokai_current_word = 'bold'
-    --         vim.g.sonokai_enable_italic = 1
-    --         vim.g.sonokai_diagnostic_text_highlight = 1
-    --         vim.g.sonokai_diagnostic_line_highlight = 1
-    --         vim.g.sonokai_diagnostic_virtual_text = 'colored'
-    --         vim.g.sonokai_better_performance = 1
-    --
-    --         vim.g.airline_theme = 'sonokai'
-    --
-    --         vim.cmd [[colorscheme sonokai]]
-    --     end,
-    -- }
-
     -- use { 'PProvost/vim-ps1' }
     -- use { 'kurayama/systemd-vim-syntax' }
     -- use { 'raimon49/requirements.txt.vim' }
     -- use { 'tpope/vim-apathy', event = 'VimEnter' }
-    -- use {'tpope/vim-commentary', event = 'VimEnter'}
 end)
 
 if has_compiler then

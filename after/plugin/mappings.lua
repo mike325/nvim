@@ -50,3 +50,9 @@ end
 if nvim.plugins['vim-fugitive'] then
     vim.keymap.set('n', '=e', '<cmd>Gedit<CR>', { noremap = true, silent = true, desc = 'Fugitive Gedit shortcut' })
 end
+
+if nvim.plugins['query-secretary'] then
+    vim.keymap.set('n', '<M-q>', function()
+        require('query-secretary').query_window_initiate()
+    end, { desc = 'TS Query editing tool' })
+end

@@ -917,6 +917,7 @@ end
 function M.filelist(tool, lst)
     local excludes = vim.split(vim.o.backupskip, ',+')
 
+    -- TODO: find in windows works different
     local filetool = {
         git = 'git --no-pager ls-files -c --exclude-standard',
         fd = 'fd --type=file --hidden --color=never ' .. M.ignores('fd', excludes) .. ' ',
@@ -1177,6 +1178,7 @@ function M.dump_to_qf(opts)
     opts.open = nil
     opts.jump = nil
     opts.cmdname = nil
+    opts.on_fail = nil
     opts.lines = require('utils.tables').clear_lst(opts.lines)
 
     for idx, line in ipairs(opts.lines) do
