@@ -1,41 +1,45 @@
 local M = {}
 
 function M.ssh_hosts(opts)
-    local parsers = require 'threads.parsers'
-    local work = vim.loop.new_work(parsers.sshconfig, function(hosts)
-        if hosts and hosts ~= '' then
-            hosts = vim.json.decode(hosts)
-            for host, addr in pairs(hosts) do
-                STORAGE.hosts[host] = addr
-            end
+    local parsers = RELOAD 'threads.parsers'
+    RELOAD('threads').queue_thread(parsers.sshconfig, function(hosts)
+        for host, addr in pairs(hosts) do
+            STORAGE.hosts[host] = addr
         end
-    end)
-    work:queue(vim.json.encode(opts))
+    end, opts or {})
 end
 
 function M.compile_flags(opts)
-    local parsers = require 'threads.parsers'
+    vim.validate {
+        opts = { opts, 'table' },
+        flags_file = { opts.flags_file, 'string' },
+    }
+
+    local parsers = RELOAD 'threads.parsers'
     local parse_func = {
         ['compile_commands.json'] = parsers.compiledb,
         ['compile_flags.txt'] = parsers.compile_flags,
     }
-    opts.compile_flags = STORAGE.compile_flags
-    opts.databases = STORAGE.databases
 
-    opts.include_parser = string.dump(parsers.includes)
-    local work = vim.loop.new_work(parse_func[vim.fs.basename(opts.flags_file)], function(results)
-        if type(results) == type '' and results ~= '' then
-            local parsed = vim.g.parsed or {}
-            results = vim.json.decode(results)
-            parsed[vim.fs.dirname(results.flags_file)] = true
-            vim.g.parsed = parsed
-            vim.list_extend(STORAGE.compile_flags, results.compile_flags)
-            for source_name, flags in pairs(results.databases) do
+    local flags_type = vim.fs.basename(opts.flags_file)
+    -- opts.flags = flags_type == 'compile_flags.txt' and STORAGE.compile_flags or STORAGE.databases
+
+    local thread_func = parse_func[flags_type]
+
+    RELOAD('threads').queue_thread(thread_func, function(results)
+        local ftype = vim.fs.basename(results.flags_file)
+        if ftype == 'compile_flags.txt' then
+            local flags_file = require('utils.files').realpath(results.flags_file)
+            STORAGE.compile_flags[flags_file] = results.flags
+        else
+            for source_name, flags in pairs(results.flags) do
                 STORAGE.databases[source_name] = flags
             end
         end
-    end)
-    work:queue(vim.json.encode(opts))
+        local parsed = vim.g.parsed or {}
+        parsed[vim.fs.dirname(results.flags_file)] = true
+        vim.g.parsed = parsed
+    end, opts or {})
 end
 
 return M

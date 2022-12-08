@@ -274,13 +274,10 @@ function M.find(opts)
         RELOAD('threads.functions').find {
             target = opts.args,
             qf_opts = qf_opts,
-            cb = function(results)
-                if results and results ~= '' then
-                    results = vim.json.decode(results)
-                    qf_opts = results.qf_opts
-                    qf_opts.lines = results.results
-                    RELOAD('utils.functions').dump_to_qf(qf_opts)
-                end
+            cb = function(data)
+                qf_opts = data.args.qf_opts
+                qf_opts.lines = data.results
+                RELOAD('utils.functions').dump_to_qf(qf_opts)
             end,
         }
     end

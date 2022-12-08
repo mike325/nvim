@@ -22,45 +22,46 @@ end
 
 -- local has_cjson = STORAGE.has_cjson
 -- TODO: Add support to inherit c/cpp source paths
-function M.compile_flags(opts)
+function M.compile_flags(thread_args)
+    thread_args = require('threads').init(thread_args)
     local utils = require 'utils.files'
 
-    if type(opts) == type '' then
-        opts = vim.json.decode(opts)
-    end
+    local flags_file = thread_args.args.flags_file
+    local data = utils.readfile(flags_file, true)
+    local inc_parser = require('threads.parsers').includes
 
-    local data = utils.readfile(opts.flags_file, true)
-    local inc_parser = loadstring(opts.include_parser)
-
-    opts.flags_file = utils.realpath(opts.flags_file)
+    flags_file = utils.realpath(flags_file)
     local compile_flags = {
-        [opts.flags_file] = {
+        [flags_file] = {
             flags = {},
             includes = {},
         },
     }
+
     for _, line in pairs(data) do
         if line:sub(1, 1) == '-' or line:sub(1, 1) == '/' then
-            table.insert(compile_flags[opts.flags_file].flags, line)
+            table.insert(compile_flags[flags_file].flags, line)
         end
     end
-    compile_flags[opts.flags_file].includes = inc_parser(compile_flags[opts.flags_file].flags)
-    -- NOTE: No longer needed
-    opts.include_parser = nil
-    opts.compile_flags = compile_flags
-    return vim.is_thread() and vim.json.encode(opts) or opts
+
+    compile_flags[flags_file].includes = inc_parser(compile_flags[flags_file].flags)
+
+    local results = {
+        flags_file = flags_file,
+        flags =  compile_flags,
+    }
+    return vim.is_thread() and vim.json.encode(results) or results
 end
 
-function M.compiledb(opts)
+function M.compiledb(thread_args)
+    thread_args = require('threads').init(thread_args)
     local utils = require 'utils.files'
 
-    if type(opts) == type '' then
-        opts = vim.json.decode(opts)
-    end
+    local flags_file = thread_args.args.flags_file
 
-    local data = utils.readfile(opts.flags_file, false)
+    local data = utils.readfile(flags_file, false)
     local json = vim.json.decode(data)
-    local inc_parser = loadstring(opts.include_parser)
+    local inc_parser = require('threads.parsers').includes
 
     local databases = {}
 
@@ -83,19 +84,23 @@ function M.compiledb(opts)
         databases[source_name].flags = vim.list_slice(args, 2, #args)
         databases[source_name].includes = inc_parser(databases[source_name].flags)
     end
-    opts.include_parser = nil
-    opts.databases = databases
-    return vim.is_thread() and vim.json.encode(opts) or opts
+
+    local results = {
+        flags_file = flags_file,
+        flags = databases,
+    }
+    return vim.is_thread() and vim.json.encode(results) or results
 end
 
-function M.sshconfig(opts)
+function M.sshconfig()
+    require('threads').init()
+
     local utils = require 'utils.files'
-    -- opts = vim.json.decode(opts)
     local ssh_config = vim.loop.os_homedir() .. '/.ssh/config'
 
+    local hosts = {}
     if utils.is_file(ssh_config) then
         local host = ''
-        local hosts = {}
         local data = utils.readfile(ssh_config, true)
         for _, line in pairs(data) do
             if line and line ~= '' and line:match '[hH]ost%s+[a-zA-Z0-9_-%.]+' then
@@ -106,17 +111,14 @@ function M.sshconfig(opts)
                 host = ''
             end
         end
-        return vim.is_thread() and vim.json.encode(hosts) or hosts
     end
+    return vim.is_thread() and vim.json.encode(hosts) or hosts
 end
 
-function M.yaml(opts)
-    opts = opts or {}
-    if type(opts) == type '' then
-        opts = vim.json.decode(opts)
-    end
+function M.yaml(thread_args)
+    thread_args = require('threads').init(thread_args)
 
-    local filename = opts.filename
+    local filename = thread_args.args.filename
     vim.validate {
         filename = { filename, 'string' },
     }

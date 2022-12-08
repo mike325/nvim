@@ -436,9 +436,10 @@ function M.external_formatprg(args)
 end
 
 function M.async_execute(opts)
-    assert(type(opts) == type {}, debug.traceback 'Invalid opts')
-    assert(opts.cmd, debug.traceback 'Missing cmd')
-    -- assert(not opts.args, debug.traceback('Missing args'))
+    vim.validate {
+        opts = { opts, 'table' },
+        cmd = { opts.cmd, { 'table', 'string' } },
+    }
 
     local cmd = opts.cmd
     local args = opts.args
@@ -1203,7 +1204,7 @@ function M.dump_to_qf(opts)
     elseif #opts.lines > 0 then
         if qf_open then
             local elements = #qf_funcs.get_list(nil, win) + 1
-            local lines = vim.opt_local.lines:get()
+            local lines = vim.opt.lines:get()
             local size = math.min(math.floor(lines * 0.5), elements)
             qf_funcs.open(win, size)
         end
