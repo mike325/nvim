@@ -271,7 +271,7 @@ function M.find(opts)
         find:start()
     else
         -- NOTE: Fallback to native finder which works everywhere
-        RELOAD('threads.functions').find {
+        RELOAD('threads.functions').async_find {
             target = opts.args,
             qf_opts = qf_opts,
             cb = function(data)

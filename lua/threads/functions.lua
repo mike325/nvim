@@ -1,6 +1,6 @@
 local M = {}
 
-function M.find_mathches(thread_args)
+function M.find(thread_args)
     local encode = type(thread_args) == type ''
     thread_args = require('threads').init(thread_args)
 
@@ -25,7 +25,7 @@ function M.find_mathches(thread_args)
     return (vim.is_thread() and encode) and vim.json.encode(thread_args) or thread_args
 end
 
-function M.find(opts)
+function M.async_find(opts)
     vim.validate {
         opts = { opts, 'table' },
         cb = { opts.cb, 'function' },
@@ -64,7 +64,7 @@ function M.find(opts)
         find_opts[k] = v
     end
 
-    require('threads').queue_thread(M.find_mathches, cb, find_opts)
+    require('threads').queue_thread(M.find, cb, find_opts)
 end
 
 return M

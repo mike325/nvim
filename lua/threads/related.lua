@@ -2,25 +2,8 @@ local M = {}
 
 -- NOTE: May save this to disk in a json cache file
 -- TODO: simplify and unify threads initialization
-function M.gather_srcs_headers(opts)
-    if not vim.env then
-        vim.env = setmetatable({}, {
-            __index = function(_, k)
-                local v = vim.loop.os_getenv(k)
-                if v == nil then
-                    return nil
-                end
-                return v
-            end,
-            __newindex = function(_, k, v)
-                vim.loop.os_setenv(k, v)
-            end,
-        })
-    end
-
-    if not vim.fs then
-        vim.fs = require 'vim.fs'
-    end
+function M.gather_srcs_headers(thread_args)
+    thread_args = require('threads').init(thread_args)
 
     local basename = require('utils.files').basename
     local extension = require('utils.files').extension
@@ -36,11 +19,9 @@ function M.gather_srcs_headers(opts)
         hxx = { 'cpp', 'cxx', 'cc' },
     }
 
-    if type(opts) == type '' then
-        opts = vim.json.decode(opts)
-    end
-    opts.alternates = opts.alternates or {}
-    local path = opts.path or '.'
+    local args = thread_args.args
+    local alternates = {}
+    local path = args.path or '.'
 
     local filter_func = function(filename)
         local ext = extension(filename)
@@ -74,34 +55,18 @@ function M.gather_srcs_headers(opts)
         end
     end
 
-    for filename, alternates in pairs(tmp) do
-        if #alternates > 0 then
-            opts.alternates[filename] = alternates
+    for filename, alternate_files in pairs(tmp) do
+        if #alternate_files > 0 then
+            alternates[filename] = alternate_files
         end
     end
 
-    return vim.is_thread() and vim.json.encode(opts) or opts
+    return vim.is_thread() and vim.json.encode(alternates) or alternates
 end
 
-function M.gather_tests(opts)
-    if not vim.env then
-        vim.env = setmetatable({}, {
-            __index = function(_, k)
-                local v = vim.loop.os_getenv(k)
-                if v == nil then
-                    return nil
-                end
-                return v
-            end,
-            __newindex = function(_, k, v)
-                vim.loop.os_setenv(k, v)
-            end,
-        })
-    end
-
-    if not vim.fs then
-        vim.fs = require 'vim.fs'
-    end
+function M.gather_tests(thread_args)
+    -- local encode = type(thread_args) == type ''
+    thread_args = require('threads').init(thread_args)
 
     local basename = require('utils.files').basename
     local extension = require('utils.files').extension
@@ -118,12 +83,10 @@ function M.gather_tests(opts)
         java = true,
     }
 
-    if type(opts) == type '' then
-        opts = vim.json.decode(opts)
-    end
+    local args = thread_args.args
 
-    opts.tests = opts.tests or {}
-    local path = opts.path or '.'
+    local tests = {}
+    local path = args.path or '.'
 
     local filter_func = function(filename)
         local ext = extension(filename)
@@ -200,34 +163,17 @@ function M.gather_tests(opts)
         end
     end
 
-    for filename, tests in pairs(tmp) do
-        if #tests > 0 then
-            opts.tests[filename] = tests
+    for filename, tests_files in pairs(tmp) do
+        if #tests_files > 0 then
+            tests[filename] = tests_files
         end
     end
 
-    return vim.is_thread() and vim.json.encode(opts) or opts
+    return vim.is_thread() and vim.json.encode(tests) or tests
 end
 
-function M.alternate_src_header(opts)
-    if not vim.env then
-        vim.env = setmetatable({}, {
-            __index = function(_, k)
-                local v = vim.loop.os_getenv(k)
-                if v == nil then
-                    return nil
-                end
-                return v
-            end,
-            __newindex = function(_, k, v)
-                vim.loop.os_setenv(k, v)
-            end,
-        })
-    end
-
-    if not vim.fs then
-        vim.fs = require 'vim.fs'
-    end
+function M.alternate_src_header(thread_args)
+    thread_args = require('threads').init(thread_args)
 
     local basename = require('utils.files').basename
     local extension = require('utils.files').extension
@@ -242,20 +188,8 @@ function M.alternate_src_header(opts)
         hxx = { 'cpp', 'cxx', 'cc' },
     }
 
-    if type(opts) == type '' then
-        opts = vim.json.decode(opts)
-    end
-
-    local prefix = opts.buf:match '^%w+://'
-    if prefix then
-        opts.buf = opts.buf:gsub('^%w+://', '')
-        if prefix == 'fugitive://' then
-            opts.buf = opts.buf:gsub('%.git//?[%w%d]+//?', '')
-        end
-    end
-
     local candidates = {}
-    local buf = opts.buf
+    local buf = thread_args.args.bufname
     local buf_name = basename(buf)
     local buf_ext = extension(buf_name)
     local buf_name_no_ext = buf_name
@@ -277,31 +211,17 @@ function M.alternate_src_header(opts)
         candidates = vim.fs.find(filter_func, { type = 'file' })
     end
 
-    opts.candidates = candidates
-    opts.key = opts.buf
-    opts.varname = 'alternates'
-    return vim.is_thread() and vim.json.encode(opts) or opts
+    local results = {
+        candidates = candidates,
+        key = buf,
+        varname = 'alternates',
+    }
+
+    return vim.is_thread() and vim.json.encode(results) or results
 end
 
-function M.alternate_test(opts)
-    if not vim.env then
-        vim.env = setmetatable({}, {
-            __index = function(_, k)
-                local v = vim.loop.os_getenv(k)
-                if v == nil then
-                    return nil
-                end
-                return v
-            end,
-            __newindex = function(_, k, v)
-                vim.loop.os_setenv(k, v)
-            end,
-        })
-    end
-
-    if not vim.fs then
-        vim.fs = require 'vim.fs'
-    end
+function M.alternate_test(thread_args)
+    thread_args = require('threads').init(thread_args)
 
     local basename = require('utils.files').basename
     local extension = require('utils.files').extension
@@ -318,26 +238,10 @@ function M.alternate_test(opts)
         java = true,
     }
 
-    if type(opts) == type '' then
-        opts = vim.json.decode(opts)
-    end
-
-    local prefix = opts.buf:match '^%w+://'
-    if prefix then
-        opts.buf = opts.buf:gsub('^%w+://', '')
-        if prefix == 'fugitive://' then
-            opts.buf = opts.buf:gsub('%.git//?[%w%d]+//?', '')
-        end
-    end
-
     local candidates = {}
-    local buf = opts.buf
+    local buf = thread_args.args.bufname
     local buf_name = basename(buf)
     local buf_ext = extension(buf_name)
-    -- local buf_name_no_ext = buf_name
-    -- if buf_ext and buf_ext ~= '' then
-    --     buf_name_no_ext = buf_name:gsub('%.' .. buf_ext .. '$', '')
-    -- end
 
     -- TODO: look into tst/test directory for the same name
     local test_patterns = {
@@ -380,139 +284,78 @@ function M.alternate_test(opts)
         candidates = vim.fs.find(filter_func, { type = 'file' })
     end
 
-    opts.candidates = candidates
-    opts.key = opts.buf
-    opts.varname = 'tests'
-    return vim.is_thread() and vim.json.encode(opts) or opts
+    local results = {
+        candidates = candidates,
+        key = buf,
+        varname = 'tests',
+    }
+
+    return vim.is_thread() and vim.json.encode(results) or results
 end
 
 -- NOTE: This does not work yet since find in nvim-0.8 can not search upward in different threads
-function M.related_makefiles(opts)
-    if not vim.env then
-        vim.env = setmetatable({}, {
-            __index = function(_, k)
-                local v = vim.loop.os_getenv(k)
-                if v == nil then
-                    return nil
-                end
-                return v
-            end,
-            __newindex = function(_, k, v)
-                vim.loop.os_setenv(k, v)
-            end,
-        })
-    end
+function M.related_makefiles(thread_args)
+    thread_args = require('threads').init(thread_args)
 
-    if not vim.fs then
-        vim.fs = require 'vim.fs'
-    end
-
-    if type(opts) == type '' then
-        opts = vim.json.decode(opts)
-    end
+    -- NOTE: current buffer's directory
+    local dirname = thread_args.args.dirname
 
     local candidates = vim.fs.find(function(filename)
         return filename:match '^[Mm]akefile' ~= nil or filename:match '.+%.mk$' ~= nil
-    end, { type = 'file', limit = math.huge, upward = true, path = opts.basedir })
+    end, { type = 'file', limit = math.huge, upward = true, path = dirname })
 
-    opts.candidates = candidates
-    opts.key = opts.basedir
-    opts.varname = 'makefiles'
-    return vim.is_thread() and vim.json.encode(opts) or opts
+    local results = {
+        candidates = candidates,
+        key = dirname,
+        varname = 'makefiles',
+    }
+
+    return vim.is_thread() and vim.json.encode(results) or results
 end
 
 function M.update_var_cb(opts)
-    if type(opts) == type '' and opts ~= '' then
-        opts = vim.json.decode(opts)
-        local key = opts.key
-        local varname = opts.varname
-        local candidates = opts.candidates
+    local key = opts.key
+    local varname = opts.varname
+    local candidates = opts.candidates
 
-        if #candidates > 0 then
-            local udpate_val = vim.g[varname] or {}
-            udpate_val[key] = candidates
-            vim.g[varname] = udpate_val
-        end
-    else
-        vim.notify(
-            'Something when wrong, got an empty string from another thread',
-            'ERROR',
-            { title = 'Alternate lookup Thread' }
-        )
+    if #candidates > 0 then
+        local udpate_val = vim.g[varname] or {}
+        udpate_val[key] = candidates
+        vim.g[varname] = udpate_val
     end
 end
 
-function M.tests_cb(opts)
-    if type(opts) == type '' and opts ~= '' then
-        opts = vim.json.decode(opts)
-        vim.g.tests = vim.tbl_extend('force', vim.g.tests or {}, opts.tests or {})
-    else
-        vim.notify(
-            'Something when wrong, got an empty string from another thread',
-            'ERROR',
-            { title = 'Alternate lookup Thread' }
-        )
-    end
+function M.tests_cb(tests)
+    vim.g.tests = vim.tbl_extend('force', vim.deepcopy(vim.g.tests or {}), tests or {})
 end
 
-function M.alternate_cb(opts)
-    if type(opts) == type '' then
-        opts = vim.json.decode(opts)
-        vim.g.alternates = vim.tbl_extend('force', vim.g.alternates or {}, opts.alternates or {})
-    else
-        vim.notify(
-            'Something when wrong, got an empty string from another thread',
-            'ERROR',
-            { title = 'Alternate lookup Thread' }
-        )
-    end
+function M.alternate_cb(alternates)
+    vim.g.alternates = vim.tbl_extend('force', vim.deepcopy(vim.g.alternates or {}), alternates or {})
 end
 
 function M.async_lookup_alternate(opts)
     opts = opts or {}
-    opts.buf = vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf())
-    local work = vim.loop.new_work(M.alternate_src_header, M.update_var_cb)
-    work:queue(vim.json.encode(opts))
+    require('threads').queue_thread(M.alternate_src_header, M.update_var_cb, opts)
 end
 
 function M.async_lookup_tests(opts)
     opts = opts or {}
-    opts.buf = vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf())
-    local work = vim.loop.new_work(M.alternate_test, M.update_var_cb)
-    work:queue(vim.json.encode(opts))
+    require('threads').queue_thread(M.alternate_test, M.update_var_cb, opts)
 end
 
 function M.async_lookup_makefiles(opts)
     opts = opts or {}
-    opts.buf = vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf())
-
-    local prefix = opts.buf:match '^%w+://'
-    if prefix then
-        opts.buf = opts.buf:gsub('^%w+://', '')
-        if prefix == 'fugitive://' then
-            opts.buf = opts.buf:gsub('%.git//?[%w%d]+//?', '')
-        end
-    end
-
-    opts.basedir = vim.fs.dirname(opts.buf)
-    local work = vim.loop.new_work(M.related_makefiles, M.update_var_cb)
-    work:queue(vim.json.encode(opts))
+    require('threads').queue_thread(M.related_makefiles, M.update_var_cb, opts)
 end
 
 function M.async_gather_alternates(opts)
     opts = opts or {}
-    opts.alternates = vim.g.alternates or {}
-    opts.path = opts.path or vim.loop.cwd()
-    local work = vim.loop.new_work(M.gather_srcs_headers, M.alternate_cb)
-    work:queue(vim.json.encode(opts))
+    require('threads').queue_thread(M.gather_srcs_headers, M.alternate_cb, opts)
 end
 
 function M.async_gather_tests(opts)
     opts = opts or {}
-    opts.tests = vim.g.tests or {}
-    opts.path = opts.path or vim.loop.cwd()
-    local work = vim.loop.new_work(M.gather_tests, M.tests_cb)
-    work:queue(vim.json.encode(opts))
+    require('threads').queue_thread(M.gather_tests, M.tests_cb, opts)
 end
 
 return M
