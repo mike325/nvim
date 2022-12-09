@@ -48,7 +48,7 @@ function M.compile_flags(thread_args)
 
     local results = {
         flags_file = flags_file,
-        flags =  compile_flags,
+        flags = compile_flags,
     }
     return vim.is_thread() and vim.json.encode(results) or results
 end
