@@ -783,7 +783,7 @@ function M.move_line(down)
     end
 
     vim.cmd.move(count)
-    vim.cmd.normal { bang = true, args = {'=='} }
+    vim.cmd.normal { bang = true, args = { '==' } }
     -- TODO: Make repeat work
     -- vim.cmd('silent! call repeat#set("'..cmd..'",'..count..')')
 end
