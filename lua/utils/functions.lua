@@ -37,6 +37,7 @@ local qf_funcs = {
         }
         local direction = vim.o.splitbelow and 'botright' or 'topleft'
         local cmd = win and 'lopen' or 'copen'
+        -- TODO: botright and topleft does not seem to work with vim.cmd, need some digging
         vim.cmd(('%s %s %s'):format(direction, cmd, size or ''))
     end,
     close = function(win)
@@ -593,6 +594,7 @@ function M.set_compiler(compiler, opts)
 
     if not has_cmd then
         nvim.command.set('CompilerSet', function(command)
+            -- TODO: Migrate this into opt_local API
             vim.cmd(('setlocal %s'):format(command.args))
         end, { nargs = 1, buffer = true })
     end
@@ -757,6 +759,7 @@ function M.add_nl(down)
 
     nvim.put(lines, 'l', down, true)
     nvim.win.set_cursor(0, cursor_pos)
+    -- TODO: Investigate how to add silent
     vim.cmd('silent! call repeat#set("' .. cmd .. '",' .. count .. ')')
 end
 
@@ -779,7 +782,8 @@ function M.move_line(down)
         count = vim.fn.line '.' - count - 1 < 1 and 1 or vim.fn.line '.' - count - 1
     end
 
-    vim.cmd(string.format([[move %s | normal! ==]], count))
+    vim.cmd.move(count)
+    vim.cmd.normal { bang = true, args = {'=='} }
     -- TODO: Make repeat work
     -- vim.cmd('silent! call repeat#set("'..cmd..'",'..count..')')
 end
@@ -1030,12 +1034,12 @@ function M.abolish(language)
     if nvim.has.cmd 'Abolish' then
         if abolish[current] ~= nil then
             for base, _ in pairs(abolish[current]) do
-                vim.cmd('Abolish -delete -buffer ' .. base)
+                vim.cmd.Abolish { args = { '-delete', '-buffer', base } }
             end
         end
         if abolish[language] ~= nil then
             for base, replace in pairs(abolish[language]) do
-                vim.cmd('Abolish -buffer ' .. base .. ' ' .. replace)
+                vim.cmd.Abolish { args = { '-buffer', base, replace } }
             end
         end
     else
@@ -1111,6 +1115,7 @@ function M.python(version, args)
     end
 
     local split_type = vim.o.splitbelow and 'botright' or 'topleft'
+    -- TODO: migrate this
     vim.cmd(split_type .. ' split term://' .. pyversion .. ' ' .. args)
 end
 

@@ -38,4 +38,4 @@ require 'globals'
 local package_plugins = vim.fn.stdpath('data'):gsub('\\', '/') .. '/site/pack/packer/start/'
 vim.opt.rtp:append(package_plugins .. 'plenary.nvim/')
 
-vim.cmd [[runtime plugin/plenary.vim]]
+vim.cmd.runtime 'plugin/plenary.vim'

@@ -367,7 +367,7 @@ end, { nargs = 1, complete = _completions.zoom_links, desc = 'Open Zoom call in 
 
 vim.keymap.set('n', '=D', function()
     vim.diagnostic.setqflist()
-    vim.cmd 'wincmd J'
+    vim.cmd.wincmd  'J'
 end, { noremap = true, silent = true, desc = 'Toggle diagnostics in the quickfix' })
 
 vim.opt.formatexpr = [[luaeval('RELOAD"utils.buffers".format()')]]

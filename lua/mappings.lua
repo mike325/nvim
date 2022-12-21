@@ -71,9 +71,9 @@ end
 
 function M.nicenext(dir)
     local view = vim.fn.winsaveview()
-    vim.cmd('silent! normal! ' .. dir)
+    vim.cmd.normal { args = { dir }, bang = true }
     if view.topline ~= vim.fn.winsaveview().topline then
-        vim.cmd 'silent! normal! zz'
+        vim.cmd.normal { args = { 'zz' }, bang = true }
     end
 end
 
@@ -646,6 +646,7 @@ function M.custom_compiler(opts)
     local compilers = vim.tbl_map(vim.fs.basename, files.get_files(path))
     if vim.tbl_contains(compilers, compiler .. '.lua') then
         nvim.command.set('CompilerSet', function(command)
+            -- TODO: Add support for vim.opt_local
             vim.cmd(('setlocal %s'):format(command.args))
         end, { nargs = 1, buffer = true })
 
@@ -820,11 +821,11 @@ function M.reload_configs(opts)
     if opts.args == 'all' or opts.args == '' then
         vim.notify('Reloading all configs', 'INFO')
         for _, v in ipairs(configs) do
-            vim.cmd.source(vim.fn.stdpath 'config' .. '/plugin/' .. v .. '.lua')
+            vim.cmd.source(vim.fn.stdpath('config' .. '/plugin/' .. v .. '.lua'))
         end
     elseif configs[opts.args] then
         vim.notify('Reloading: ' .. opts.args, 'INFO')
-        vim.cmd.source(vim.fn.stdpath 'config' .. '/plugin/' .. opts.args .. '.lua')
+        vim.cmd.source(vim.fn.stdpath('config' .. '/plugin/' .. opts.args .. '.lua'))
     else
         vim.notify('Invalid config name: ' .. opts.args, 'ERROR', { title = 'Reloader' })
     end

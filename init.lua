@@ -77,6 +77,6 @@ end
 
 require('threads.parse').ssh_hosts()
 
-vim.cmd [[packadd! cfilter]]
-vim.cmd [[packadd! matchit]]
-vim.cmd [[packadd! termdebug]]
+vim.cmd.packadd { args = { 'cfilter' }, bang = true }
+vim.cmd.packadd { args = { 'matchit' }, bang = true }
+vim.cmd.packadd { args = { 'termdebug' }, bang = true }

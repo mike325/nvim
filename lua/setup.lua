@@ -13,7 +13,7 @@ local download_packer = function()
 
     vim.notify(out, 'INFO', { title = 'Packer Setup' })
     if vim.v.shell_error == 0 then
-        vim.cmd [[packadd packer.nvim]]
+        vim.cmd.packadd 'packer.nvim'
         return true
     end
 

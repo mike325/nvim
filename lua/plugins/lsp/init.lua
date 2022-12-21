@@ -30,6 +30,7 @@ vim.diagnostic.config {
 local lsp_sign = 'DiagnosticSign'
 for _, level in pairs { 'Error', 'Hint', 'Warn', 'Info' } do
     vim.fn.sign_define(lsp_sign .. level, { text = get_icon(level:lower()), texthl = lsp_sign .. level })
+    -- TODO: Simplify this abomination
     vim.cmd(
         ('sign define %s%s text=%s texthl=%s%s linehl= numhl='):format(
             lsp_sign,

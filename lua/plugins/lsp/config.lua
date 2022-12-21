@@ -189,20 +189,15 @@ function M.on_attach(client, bufnr, is_null)
     local has_formatting = client.server_capabilities.documentFormattingProvider
         or client.server_capabilities.documentRangeFormattingProvider
 
-    -- Disable neomake for lsp buffers
-    if nvim.plugins.neomake then
-        pcall(vim.fn['neomake#CancelJobs'], 0)
-        pcall(vim.fn['neomake#cmd#clean'], 1)
-        pcall(vim.cmd, 'silent call neomake#cmd#disable(b:)')
+    for command, values in pairs(M.commands) do
+        if type(values[1]) == 'function' then
+            local opts = { buffer = true }
+            vim.tbl_extend('keep', opts, values[2] or {})
+            nvim.command.set(command, values[1], opts)
+        end
     end
 
-    if is_null then
-        for command, values in pairs(M.commands) do
-            if type(values[1]) == 'function' then
-                nvim.command.set(command, values[1], { buffer = true })
-            end
-        end
-    elseif not has_formatting and null_ls and null_configs[ft] and null_configs[ft].formatter then
+    if not has_formatting and null_ls and null_configs[ft] and null_configs[ft].formatter then
         -- TODO: Does this needs the custom "on_attach" handler?
         if not null_ls.is_registered(null_configs[ft].formatter.name) then
             if vim.opt_local.formatexpr:get() == '' then

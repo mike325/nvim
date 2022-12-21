@@ -598,7 +598,7 @@ function M.delete(target, bang)
         end
         if bufloaded(target) then
             local command = bang and 'wipeout' or 'delete'
-            local ok, error_code = pcall(vim.cmd, ([[b%s! %s]]):format(command, target))
+            local ok, error_code = pcall(vim.cmd, {cmd = 'b'..command, bang = true, args = { target} } )
             if not ok and error_code:match 'Vim(.%w+.)\\?:E94' then
                 vim.notify('Failed to ' .. command .. ' buffer ' .. target, 'ERROR', { title = 'Delete' })
                 return false

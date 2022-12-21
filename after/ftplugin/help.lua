@@ -3,5 +3,5 @@ vim.opt_local.relativenumber = true
 vim.opt_local.buflisted = true
 vim.opt_local.list = false
 
-vim.cmd [[nnoremap <silent> <nowait> <buffer> q <cmd>q!<CR>]]
-vim.cmd [[nnoremap <silent> <nowait> <buffer> <CR> <C-]>]]
+vim.keymap.set('n', 'q', '<cmd>q!<CR>', { noremap = true, silent = true, nowait = true })
+vim.keymap.set('n', '<CR>', '<C-]>', { noremap = true, silent = true, nowait = true })

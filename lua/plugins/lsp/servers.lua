@@ -11,7 +11,7 @@ local function switch_source_header_splitcmd(bufnr, splitcmd)
             vim.notify('Corresponding file can’t be determined', 'ERROR', { title = 'Clangd' })
             return
         end
-        vim.cmd(splitcmd .. ' ' .. vim.uri_to_fname(result))
+        vim.cmd { cmd = splitcmd, args = { vim.uri_to_fname(result) } }
     end)
 end
 
