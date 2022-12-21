@@ -134,8 +134,12 @@ local env = {
     cpp = 'CXX',
 }
 
-local function get_compiler()
-    local ft = vim.bo.filetype
+function M.get_compiler(ft)
+    vim.validate {
+        ft = { ft, 'string', true },
+    }
+
+    ft = ft or vim.bo.filetype
 
     -- safe check
     if not compilers[ft] then
@@ -156,7 +160,7 @@ local function get_compiler()
     return compiler
 end
 
-local function get_args(compiler, bufnum, flags_location)
+function M.get_args(compiler, bufnum, flags_location)
     vim.validate {
         compiler = { compiler, 'string' },
         bufnum = { bufnum, 'number', true },
@@ -220,7 +224,7 @@ local function set_opts(compiler, bufnum)
             end
         end
 
-        args = get_args(compiler, bufnum, flags_file)
+        args = M.get_args(compiler, bufnum, flags_file)
 
         local paths = {}
         local filename = nvim.buf.get_name(bufnum)
@@ -242,7 +246,7 @@ local function set_opts(compiler, bufnum)
     end
 
     if not args then
-        args = get_args(compiler, bufnum)
+        args = M.get_args(compiler, bufnum)
         vim.opt_local.makeprg = ('%s %s %%'):format(compiler, table.concat(args, ' '))
     end
 end
@@ -283,7 +287,7 @@ end
 
 function M.build(build_info)
     local flags = build_info.flags or {}
-    local compiler = build_info.compiler or get_compiler()
+    local compiler = build_info.compiler or M.get_compiler()
 
     if type(flags) ~= type {} then
         flags = { flags }
@@ -297,14 +301,25 @@ function M.build(build_info)
         compile_output = compile_output .. '.exe'
     end
 
-    local flags_file = vim.fs.find('compile_flags.txt', { upward = true, type = 'file' })
-    flags_file = #flags_file > 0 and flags_file[1] or false
-    local db_file = vim.fs.find('compile_commands.json', { upward = true, type = 'file' })
-    db_file = #db_file > 0 and db_file[1] or false
-    -- local clang_tidy = vim.fs.find('.clang-tidy', { upward = true, type = 'file' })
-    -- clang_tidy = #clang_tidy > 0 and clang_tidy[1] or false
+    local flags_file = vim.fs.find(
+        { 'compile_flags.txt', 'compile_commands.json' },
+        { upward = true, type = 'file', limit = math.huge }
+    )
 
-    vim.list_extend(flags, get_args(compiler, nvim.get_current_buf(), db_file or flags_file))
+    if #flags_file > 0 then
+        local db
+        for _, filename in ipairs(flags_file) do
+            if vim.fs.basename(filename) == 'compile_commands.json' then
+                db = filename
+                break
+            end
+        end
+        flags_file = db or flags_file[1]
+    else
+        flags_file = nil
+    end
+
+    vim.list_extend(flags, M.get_args(compiler, nvim.get_current_buf(), flags_file))
     vim.list_extend(flags, { '-o', compile_output })
 
     if build_info.build_type then
@@ -357,7 +372,7 @@ function M.build(build_info)
 end
 
 function M.setup()
-    local compiler = get_compiler()
+    local compiler = M.get_compiler()
     if not compiler then
         return
     end
