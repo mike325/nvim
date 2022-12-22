@@ -39,6 +39,7 @@ function M.compile_flags(opts)
         local parsed = vim.g.parsed or {}
         parsed[vim.fs.dirname(results.flags_file)] = true
         vim.g.parsed = parsed
+        vim.cmd.doautocmd { args = { 'User', 'FlagsParsed' } }
     end, opts or {})
 end
 

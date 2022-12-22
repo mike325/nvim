@@ -166,3 +166,31 @@ if executable 'isort' then
         end,
     })
 end
+
+nvim.autocmd.add('User', {
+    pattern = 'FlagsParsed',
+    callback = function(args)
+        local extensions = {
+            c = true,
+            h = true,
+            cc = true,
+            cpp = true,
+            cxx = true,
+            hpp = true,
+            hxx = true,
+        }
+
+        for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+            local bufname = vim.api.nvim_buf_get_name(buf)
+            local ext = vim.fn.fnamemodify(bufname, ':e')
+            if extensions[ext] then
+                local cpp = require 'filetypes.cpp'
+                if ext == 'c' or ext == 'h' then
+                    cpp.set_opts(cpp.get_compiler 'c', buf)
+                else
+                    cpp.set_opts(cpp.get_compiler 'cpp', buf)
+                end
+            end
+        end
+    end,
+})

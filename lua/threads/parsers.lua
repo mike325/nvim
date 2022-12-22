@@ -20,7 +20,6 @@ function M.includes(args)
     return includes
 end
 
--- local has_cjson = STORAGE.has_cjson
 -- TODO: Add support to inherit c/cpp source paths
 function M.compile_flags(thread_args)
     thread_args = require('threads').init(thread_args)

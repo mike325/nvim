@@ -134,11 +134,11 @@ local env = {
     cpp = 'CXX',
 }
 
+-- TODO: current compiler should be cached into an internal buf/tab/global var
 function M.get_compiler(ft)
     vim.validate {
         ft = { ft, 'string', true },
     }
-
     ft = ft or vim.bo.filetype
 
     -- safe check
@@ -190,7 +190,7 @@ function M.get_args(compiler, bufnum, flags_location)
     return args or M.makeprg[compiler] or {}
 end
 
-local function set_opts(compiler, bufnum)
+function M.set_opts(compiler, bufnum)
     vim.validate {
         compiler = { compiler, 'string' },
         bufnum = { bufnum, 'number' },
@@ -390,7 +390,7 @@ function M.setup()
 
     -- TODO: Add a watcher to compile_commands.json and compile_flags.txt and update the
     --       flags on any file update
-    set_opts(compiler, nvim.get_current_buf())
+    M.set_opts(compiler, nvim.get_current_buf())
 
     nvim.command.set('BuildProject', function(opts)
         local args = opts.fargs

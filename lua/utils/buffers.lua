@@ -407,9 +407,14 @@ end
 function M.setup(ft, opts)
     vim.validate { ft = { ft, 'string', true }, opts = { opts, 'table', true } }
 
-    local bufnum = vim.api.nvim_get_current_buf()
-    local buftype = vim.api.nvim_buf_get_option(bufnum, 'buftype')
+    -- local bufnum = vim.api.nvim_get_current_buf()
+    -- local buftype = vim.api.nvim_buf_get_option(bufnum, 'buftype')
     ft = ft or vim.opt_local.filetype:get()
+
+    -- NOTE: C uses C++ setup
+    if ft == 'c' then
+        ft = 'cpp'
+    end
 
     local ok, utils = pcall(RELOAD, 'filetypes.' .. ft)
     opts = opts or {}
@@ -435,7 +440,7 @@ function M.setup(ft, opts)
             opts.formatexpr = nil
         end
 
-        if not buftype == 'nofile' and not buftype == 'prompt' and utils.setup then
+        if utils.setup then
             utils.setup()
         end
     end

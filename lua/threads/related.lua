@@ -1,7 +1,6 @@
 local M = {}
 
 -- NOTE: May save this to disk in a json cache file
--- TODO: simplify and unify threads initialization
 function M.gather_srcs_headers(thread_args)
     thread_args = require('threads').init(thread_args)
 

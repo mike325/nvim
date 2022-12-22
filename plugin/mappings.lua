@@ -383,13 +383,6 @@ nvim.command.set('DiffFiles', function(opts)
     RELOAD('mappings').diff_files(opts)
 end, { nargs = '+', complete = 'file', desc = 'Open a new tab in diff mode with the given files' })
 
--- -- TODO: include a message to indicte the current state
--- vim.keymap.set(
---     'n',
---     '<leader>D',
---     toggle_diagnostics,
---     { noremap = true, silent = true, desc = 'Toggle colum sign diagnostics' }
--- )
 nvim.command.set('ToggleDiagnostics', function()
     RELOAD('mappings').toggle_diagnostics()
 end, { desc = 'Toggle column sign diagnostics' })
