@@ -40,35 +40,12 @@ function M.init(thread_args)
     return thread_args
 end
 
-function M.queue_thread(thread, cb, opts)
+function M.add_thread_context(opts)
     vim.validate {
-        thread = { thread, 'function' },
-        cb = { cb, 'function' },
         opts = { opts, { 'string', 'table', 'number', 'bool' }, true },
     }
 
-    -- TODO: There should be a way to init the threads common state using M.init() and pcall the `thread` function
-    -- Common init state
-    -- - global functions
-    -- - vim.env
-    -- - vim.fs
-    -- - copy of all global, buffer and tab variables vim ?
-    -- - pcall thread function and collect errors
-    -- - Parse thread opts/function/args before calling the thread function
-    local work = vim.loop.new_work(
-        thread,
-        vim.schedule_wrap(function(o)
-            if type(o) == type '' and o ~= '' then
-                cb(vim.json.decode(o))
-            else
-                vim.notify(
-                    'Something when wrong, got an empty string from another thread',
-                    'ERROR',
-                    { title = 'Thread' }
-                )
-            end
-        end)
-    )
+    opts = opts or {}
 
     local thread_opts = {
         functions = {},
@@ -113,7 +90,40 @@ function M.queue_thread(thread, cb, opts)
 
     thread_opts.context = context
 
-    work:queue(vim.json.encode(thread_opts))
+    return thread_opts
+end
+
+function M.queue_thread(thread, cb, opts)
+    vim.validate {
+        thread = { thread, 'function' },
+        cb = { cb, 'function' },
+        opts = { opts, { 'string', 'table', 'number', 'bool' }, true },
+    }
+
+    -- TODO: There should be a way to init the threads common state using M.init() and pcall the `thread` function
+    -- Common init state
+    -- - global functions
+    -- - vim.env
+    -- - vim.fs
+    -- - copy of all global, buffer and tab variables vim ?
+    -- - pcall thread function and collect errors
+    -- - Parse thread opts/function/args before calling the thread function
+    local work = vim.loop.new_work(
+        thread,
+        vim.schedule_wrap(function(o)
+            if type(o) == type '' and o ~= '' then
+                cb(vim.json.decode(o))
+            else
+                vim.notify(
+                    'Something when wrong, got an empty string from another thread',
+                    'ERROR',
+                    { title = 'Thread' }
+                )
+            end
+        end)
+    )
+
+    work:queue(vim.json.encode(M.add_thread_context(opts)))
 end
 
 return M

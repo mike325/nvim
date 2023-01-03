@@ -10,7 +10,6 @@ end
 
 local luasnip = load_module 'luasnip'
 local orgmode = load_module 'orgmode'
-local ultisnips = nvim.plugins.ultisnips
 local lspkind = require 'lspkind'
 
 local custom_comparators = {
@@ -43,8 +42,6 @@ end
 
 if luasnip then
     table.insert(sources, { name = 'luasnip', option = { use_show_condition = false } })
-elseif ultisnips then
-    table.insert(sources, { name = 'ultisnips' })
 end
 
 if orgmode then
@@ -76,9 +73,6 @@ local next_item = function(fallback)
         ls.jump(1)
     elseif neogen and neogen.jumpable() then
         vim.fn.feedkeys(t "<cmd>lua require('neogen').jump_next()<CR>", '')
-    elseif ultisnips and vim.fn['UltiSnips#CanJumpForwards']() == 1 then
-        vim.fn['UltiSnips#JumpForwards']()
-        -- vim.api.nvim_feedkeys(t '<Plug>(ultisnips_jump_forward)', 'm', true)
     elseif has_words_before() then
         cmp.complete()
     else
@@ -99,9 +93,6 @@ local prev_item = function(fallback)
         cmp.select_prev_item()
     elseif ls and ls.locally_jumpable(-1) then
         ls.jump(-1)
-    elseif ultisnips and vim.fn['UltiSnips#CanJumpBackwards']() == 1 then
-        vim.fn['UltiSnips#JumpBackwards']()
-        -- vim.api.nvim_feedkeys(t '<Plug>(ultisnips_jump_backward)', 'm', true)
     elseif neogen and neogen.jumpable(-1) then
         vim.fn.feedkeys(t "<cmd>lua require('neogen').jump_prev()<CR>", '')
     else
@@ -112,8 +103,6 @@ end
 local enter_item = function(fallback)
     if luasnip and luasnip.expandable() then
         luasnip.expand()
-    elseif ultisnips and vim.fn['UltiSnips#CanExpandSnippet']() == 1 then
-        vim.fn['UltiSnips#ExpandSnippet']()
     elseif cmp.visible() then
         if not cmp.get_selected_entry() then
             cmp.close()
@@ -126,8 +115,6 @@ local enter_item = function(fallback)
 end
 
 local close = function(fallback)
-    -- if ultisnips and vim.fn['UltiSnips#CanExpandSnippet']() == 1 then
-    --     vim.fn['UltiSnips#ExpandSnippet']()
     if luasnip and luasnip.choice_active() then
         luasnip.change_choice(1)
     elseif cmp.visible() then
@@ -140,9 +127,7 @@ end
 cmp.setup {
     snippet = {
         expand = function(args)
-            if ultisnips then
-                vim.fn['UltiSnips#Anon'](args.body)
-            elseif luasnip then
+            if luasnip then
                 require('luasnip').lsp_expand(args.body)
             end
         end,
@@ -173,7 +158,6 @@ cmp.setup {
                 nvim_lua = '[API]',
                 path = '[PATH]',
                 luasnip = '[SNIP]',
-                ultisnips = '[SNIP]',
                 vsnip = '[SNIP]',
             },
         },

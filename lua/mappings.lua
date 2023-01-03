@@ -845,17 +845,20 @@ function M.alternate(opts)
     end
 
     local candidates
+    local buf = opts.buf
+    local bang = opts.bang
+
     -- TODO: alternates should be buffer local
     local alternates = vim.g.alternates or {}
-    if not alternates[opts.buf] or opts.bang then
-        opts = RELOAD('threads.related').alternate_src_header(opts)
-        candidates = opts.candidates or {}
+    if not alternates[buf] or bang then
+        local results = RELOAD('threads.related').alternate_src_header(RELOAD('threads').add_thread_context(opts))
+        candidates = results.candidates or {}
         if #candidates > 0 then
-            alternates[opts.buf] = candidates
+            alternates[buf] = candidates
             vim.g.alternates = alternates
         end
     else
-        candidates = alternates[opts.buf]
+        candidates = alternates[buf]
     end
 
     if #candidates > 1 then

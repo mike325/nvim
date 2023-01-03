@@ -7,7 +7,6 @@ if neogit == nil then
 end
 
 local nvim = require 'neovim'
-local plugins = nvim.plugins
 local has_diffview = load_module 'diffview'
 
 neogit.setup {
@@ -29,7 +28,7 @@ neogit.setup {
     },
 }
 
-if not plugins['vim-fugitive'] then
+if not nvim.plugins['vim-fugitive'] then
     nvim.command.set('G', function()
         require('neogit').open { kind = 'vsplit' }
     end)

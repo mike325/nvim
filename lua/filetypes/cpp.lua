@@ -218,9 +218,10 @@ function M.set_opts(compiler, bufnum)
     if flags_file then
         if executable 'clang-tidy' then
             local tidy = vim.list_extend({ 'clang-tidy' }, M.makeprg['clang-tidy'])
-            vim.opt_local.makeprg = table.concat(tidy, ' ') .. ' %'
+            vim.bo[bufnum].makeprg = table.concat(tidy, ' ') .. ' %'
             if M.makeprg['clang-tidy'].efm then
-                vim.opt_local.errorformat = M.makeprg['clang-tidy'].efm
+                -- TODO: Add this option to buflocal stuff
+                vim.bo[bufnum].errorformat = table.concat(M.makeprg['clang-tidy'].efm, ',')
             end
         end
 
@@ -238,16 +239,17 @@ function M.set_opts(compiler, bufnum)
             paths = compile_flags[flags_file].includes
         end
 
+        local path_var = vim.split(vim.bo[bufnum].path, ',')
         for _, path in ipairs(paths) do
-            if not vim.tbl_contains(vim.opt_local.path:get(), path) then
-                vim.opt_local.path:append(paths)
+            if not vim.tbl_contains(path_var, path) then
+                vim.bo[bufnum].path = vim.bo[bufnum].path .. ',' .. path
             end
         end
     end
 
     if not args then
         args = M.get_args(compiler, bufnum)
-        vim.opt_local.makeprg = ('%s %s %%'):format(compiler, table.concat(args, ' '))
+        vim.bo[bufnum].makeprg = ('%s %s %%'):format(compiler, table.concat(args, ' '))
     end
 end
 

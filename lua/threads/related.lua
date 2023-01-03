@@ -188,7 +188,7 @@ function M.alternate_src_header(thread_args)
     }
 
     local candidates = {}
-    local buf = thread_args.args.bufname
+    local buf = thread_args.context.bufname
     local buf_name = basename(buf)
     local buf_ext = extension(buf_name)
     local buf_name_no_ext = buf_name
@@ -238,7 +238,7 @@ function M.alternate_test(thread_args)
     }
 
     local candidates = {}
-    local buf = thread_args.args.bufname
+    local buf = thread_args.context.bufname
     local buf_name = basename(buf)
     local buf_ext = extension(buf_name)
 
@@ -297,7 +297,7 @@ function M.related_makefiles(thread_args)
     thread_args = require('threads').init(thread_args)
 
     -- NOTE: current buffer's directory
-    local dirname = thread_args.args.dirname
+    local dirname = thread_args.context.dirname
 
     local candidates = vim.fs.find(function(filename)
         return filename:match '^[Mm]akefile' ~= nil or filename:match '.+%.mk$' ~= nil

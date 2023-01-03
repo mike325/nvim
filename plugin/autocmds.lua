@@ -42,13 +42,22 @@ nvim.autocmd.CleanFile = {
 nvim.autocmd.YankHL = {
     event = 'TextYankPost',
     pattern = '*',
-    command = [[silent! lua vim.highlight.on_yank{higroup = "IncSearch", timeout = 1000}]],
+    callback = function()
+        vim.highlight.on_yank { higroup = 'IncSearch', timeout = 1000 }
+    end,
 }
 
 nvim.autocmd.TerminalAutocmds = {
     event = 'TermOpen',
     pattern = '*',
-    command = 'setlocal noswapfile nobackup noundofile norelativenumber nonumber nocursorline',
+    callback = function()
+        vim.opts_local.swapfile = false
+        vim.opts_local.backup = false
+        vim.opts_local.undofile = false
+        vim.opts_local.relativenumber = false
+        vim.opts_local.number = false
+        vim.opts_local.cursorline = false
+    end,
 }
 
 nvim.autocmd.AutoResize = {
