@@ -1,6 +1,6 @@
 local M = {}
 local nvim = require 'neovim'
-local completions = RELOAD('completions')
+local completions = RELOAD 'completions'
 
 function M.setup()
     local mkdir = require('utils.files').mkdir

@@ -2,7 +2,7 @@ local nvim = require 'neovim'
 local sys = require 'sys'
 
 local executable = require('utils.files').executable
-local completions = RELOAD('completions')
+local completions = RELOAD 'completions'
 
 if not executable 'git' then
     return false

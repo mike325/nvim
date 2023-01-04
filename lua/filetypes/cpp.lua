@@ -5,7 +5,7 @@ local executable = require('utils.files').executable
 local is_file = require('utils.files').is_file
 local realpath = require('utils.files').realpath
 local getcwd = require('utils.files').getcwd
-local completions = RELOAD('completions')
+local completions = RELOAD 'completions'
 
 local compile_flags = STORAGE.compile_flags
 local databases = STORAGE.databases

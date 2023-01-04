@@ -3,7 +3,7 @@ local sys = require 'sys'
 
 local is_dir = require('utils.files').is_dir
 local mkdir = require('utils.files').mkdir
-local completions = RELOAD('completions')
+local completions = RELOAD 'completions'
 
 local load_module = require('utils.functions').load_module
 local minidoc = load_module 'mini.doc'
