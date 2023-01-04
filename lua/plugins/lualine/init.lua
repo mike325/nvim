@@ -130,7 +130,10 @@ lualine.setup {
             {
                 section.session,
                 fmt = function(str)
-                    return (str:gsub('^.+/', ''))
+                    if str ~= '' then
+                        return ('S: %s'):format((str:gsub('^.+/', '')))
+                    end
+                    return ''
                 end,
             },
             'qf_counter',
