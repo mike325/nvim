@@ -55,6 +55,35 @@ packer.startup(function()
     use { 'nvim-lua/popup.nvim' }
     use { 'nvim-lua/plenary.nvim' }
     use { 'rcarriga/nvim-notify' }
+    use { 'tpope/vim-abolish' }
+
+    use {
+        'chrisgrieser/nvim-various-textobjs',
+        config = function()
+            require('various-textobjs').setup {
+                useDefaultKeymaps = false,
+            }
+
+            vim.keymap.set({ 'o', 'x' }, 'ie', function()
+                require('various-textobjs').entireBuffer()
+            end)
+
+            -- NOTE: Add missing key text-obj?
+            vim.keymap.set({ 'o', 'x' }, 'av', function()
+                require('various-textobjs').value(true)
+            end)
+            vim.keymap.set({ 'o', 'x' }, 'iv', function()
+                require('various-textobjs').value(true)
+            end)
+
+            vim.keymap.set({ 'o', 'x' }, 'ii', function()
+                require('various-textobjs').indentation(true, true)
+            end)
+            vim.keymap.set({ 'o', 'x' }, 'ai', function()
+                require('various-textobjs').indentation(false, false)
+            end)
+        end,
+    }
 
     use {
         'catppuccin/nvim',
@@ -132,16 +161,6 @@ packer.startup(function()
             vim.g['surround_' .. vim.fn.char2nr ':'] = ':\r:'
             vim.g['surround_' .. vim.fn.char2nr 'q'] = [[``\r'']]
         end,
-    }
-
-    use {
-        'kana/vim-textobj-user',
-        requires = {
-            { 'kana/vim-textobj-line' },
-            { 'kana/vim-textobj-entire' },
-            { 'michaeljsmith/vim-indent-object' },
-            { 'glts/vim-textobj-comment' },
-        },
     }
 
     use {
@@ -328,14 +347,6 @@ packer.startup(function()
             -- { 'nvim-treesitter/nvim-tree-docs' },
         },
     }
-
-    -- use {
-    --     'lewis6991/spellsitter.nvim',
-    --     config = function()
-    --         require('spellsitter').setup {}
-    --     end,
-    --     requires = { 'nvim-treesitter/nvim-treesitter' },
-    -- }
 
     use {
         'danymat/neogen',
@@ -644,49 +655,6 @@ packer.startup(function()
             },
         },
     }
-
-    -- use {
-    --     'tpope/vim-abolish',
-    --     cond = function()
-    --         return not vim.env.VIM_MIN and not vim.g.minimal
-    --     end,
-    --     event = { 'InsertEnter', 'CmdwinEnter' },
-    --     -- TODO: configs
-    --     -- config = function() require'plugins.abolish' end,
-    -- }
-
-    -- use {
-    --     'ThePrimeagen/harpoon',
-    --     config = function()
-    --         vim.keymap.set('n', '=h', function()
-    --             require('harpoon.ui').toggle_quick_menu()
-    --         end, { noremap = true })
-    --
-    --         vim.keymap.set('n', '=a', function()
-    --             require('harpoon.mark').add_file()
-    --         end, { noremap = true })
-    --
-    --         vim.keymap.set('n', ']h', function()
-    --             require('harpoon.ui').nav_next()
-    --         end, { noremap = true })
-    --
-    --         vim.keymap.set('n', '[h', function()
-    --             require('harpoon.ui').nav_prev()
-    --         end, { noremap = true })
-    --     end,
-    -- }
-
-    -- use {
-    --     'norcalli/nvim-terminal.lua',
-    --     config = function()
-    --         require('terminal').setup()
-    --     end,
-    -- }
-
-    -- use { 'PProvost/vim-ps1' }
-    -- use { 'kurayama/systemd-vim-syntax' }
-    -- use { 'raimon49/requirements.txt.vim' }
-    -- use { 'tpope/vim-apathy', event = 'VimEnter' }
 end)
 
 if has_compiler then
