@@ -71,15 +71,15 @@ M.commands = {
             end
         end,
     },
-    Diagnostics = {
-        function()
-            if has_telescope then
-                builtin.diagnostics()
-            else
-                vim.diagnostic.setloclist()
-            end
-        end,
-    },
+    -- Diagnostics = {
+    --     function()
+    --         if has_telescope then
+    --             builtin.diagnostics()
+    --         else
+    --             vim.diagnostic.setloclist()
+    --         end
+    --     end,
+    -- },
     DocSymbols = {
         function()
             if has_telescope then

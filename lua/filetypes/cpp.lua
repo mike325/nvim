@@ -5,6 +5,7 @@ local executable = require('utils.files').executable
 local is_file = require('utils.files').is_file
 local realpath = require('utils.files').realpath
 local getcwd = require('utils.files').getcwd
+local completions = RELOAD('completions')
 
 local compile_flags = STORAGE.compile_flags
 local databases = STORAGE.databases
@@ -422,7 +423,7 @@ function M.setup()
         nargs = '*',
         force = true,
         buffer = true,
-        complete = 'customlist,v:lua._completions.cmake_build',
+        complete = completions.cmake_build,
     })
 
     nvim.command.set('BuildFile', function(opts)
@@ -455,7 +456,7 @@ function M.setup()
         nargs = '*',
         force = true,
         buffer = true,
-        complete = 'customlist,v:lua._completions.cmake_build',
+        complete = completions.cmake_build,
     })
 
     nvim.command.set('BuildExecuteProject', function(opts)
@@ -487,7 +488,7 @@ function M.setup()
         nargs = '*',
         force = true,
         buffer = true,
-        complete = 'customlist,v:lua._completions.cmake_build',
+        complete = completions.cmake_build,
     })
 
     nvim.command.set('ExecuteProject', function(opts)

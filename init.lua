@@ -20,6 +20,17 @@ vim.g.loaded_perl_provider = 0
 vim.g.loaded_python_provider = 0
 vim.g.loaded_python3_provider = 0
 
+vim.g.show_diagnostics = true
+vim.g.alternates = {}
+vim.g.tests = {}
+vim.g.makefiles = {}
+vim.g.parsed = {}
+
+vim.g.port = 0x8AC
+
+-- vim.g.minimal = false
+-- vim.g.bare = false
+
 if nvim.has 'win32' then
     vim.opt.shell = 'cmd.exe'
     -- vim.opt.shell = 'powershell'

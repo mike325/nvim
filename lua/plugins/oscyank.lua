@@ -17,7 +17,7 @@ end
 
 vim.g.oscyank_silent = true
 
-nvim.command.set('OSCTerm', 'let g:oscyank_term = <q-args>', { nargs = 1, complete = _completions.oscyank })
+nvim.command.set('OSCTerm', 'let g:oscyank_term = <q-args>', { nargs = 1, complete = RELOAD('completions').oscyank })
 
 nvim.autocmd.OSCYank = {
     event = 'TextYankPost',

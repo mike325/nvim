@@ -17,16 +17,6 @@ if null_ls then
     table.insert(null_sources, null_ls.builtins.code_actions.gitsigns)
 end
 
-vim.diagnostic.config {
-    signs = true,
-    underline = true,
-    update_in_insert = false,
-    virtual_text = {
-        spacing = 2,
-        prefix = '❯',
-    },
-}
-
 local lsp_sign = 'DiagnosticSign'
 for _, level in pairs { 'Error', 'Hint', 'Warn', 'Info' } do
     vim.fn.sign_define(lsp_sign .. level, { text = get_icon(level:lower()), texthl = lsp_sign .. level })

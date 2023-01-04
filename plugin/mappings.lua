@@ -3,6 +3,7 @@ local nvim = require 'neovim'
 
 local executable = require('utils.files').executable
 local set_abbr = require('neovim.abbrs').set_abbr
+local completions = RELOAD 'completions'
 
 local noremap = { noremap = true }
 local noremap_silent = { noremap = true, silent = true }
@@ -191,7 +192,7 @@ nvim.command.set('WrapToggle', 'setlocal wrap! wrap?')
 
 nvim.command.set('Trim', function(opts)
     RELOAD('mappings').trim(opts)
-end, { nargs = '?', complete = _completions.toggle, bang = true })
+end, { nargs = '?', complete = completions.toggle, bang = true })
 
 nvim.command.set('GonvimSettngs', "execute('edit ~/.gonvim/setting.toml')")
 
@@ -201,11 +202,11 @@ end, { nargs = '?', complete = 'filetype' })
 
 nvim.command.set('FileFormat', function(opts)
     vim.opt_local.filetype = opts.args ~= '' and opts.args or 'unix'
-end, { nargs = '?', complete = _completions.fileformats })
+end, { nargs = '?', complete = completions.fileformats })
 
 nvim.command.set('SpellLang', function(opts)
     RELOAD('utils.functions').spelllangs(opts.args)
-end, { nargs = '?', complete = _completions.spells })
+end, { nargs = '?', complete = completions.spells })
 
 nvim.command.set('Qopen', function(opts)
     opts.size = tonumber(opts.args)
@@ -301,7 +302,7 @@ if executable 'scp' then
         RELOAD('mappings').remote_file(opts.args, true)
     end, {
         nargs = '*',
-        complete = _completions.ssh_hosts_completion,
+        complete = completions.ssh_hosts_completion,
         desc = 'Send current file to a remote location',
     })
 
@@ -309,7 +310,7 @@ if executable 'scp' then
         RELOAD('mappings').remote_file(opts.args, false)
     end, {
         nargs = '*',
-        complete = _completions.ssh_hosts_completion,
+        complete = completions.ssh_hosts_completion,
         desc = 'Get current file from a remote location',
     })
 
@@ -363,7 +364,7 @@ end, { nargs = '*', complete = 'filetype' })
 -- TODO: May need to add a check for "zoom" executable but this should work even inside WSL
 nvim.command.set('Zoom', function(opts)
     RELOAD('mappings').zoom_links(opts)
-end, { nargs = 1, complete = _completions.zoom_links, desc = 'Open Zoom call in a specific room' })
+end, { nargs = 1, complete = completions.zoom_links, desc = 'Open Zoom call in a specific room' })
 
 vim.keymap.set('n', '=D', function()
     vim.diagnostic.setqflist()
@@ -420,7 +421,7 @@ nvim.command.set('Reloader', function(opts)
 end, {
     nargs = '?',
     desc = 'Change between git grep and the best available alternative',
-    complete = _completions.reload_configs,
+    complete = completions.reload_configs,
 })
 
 nvim.command.set('AutoFormat', function()
@@ -471,17 +472,21 @@ if nvim.has { 0, 8 } then
     -- end, { nargs = 0, desc = 'Open related makefile', bang = true })
 end
 
--- NOTE: if a mapping is remove from the file but there's not explicit delete,
---       it'll be kept since we just overwrite old mappings
-nvim.command.set('ReloadMappings', function(opts)
-    vim.cmd.source(sys.base .. '/plugin/mappings.lua')
-end, { nargs = 0, desc = 'Reload all mappings and commands', bang = true })
-
 nvim.command.set('NotificationServer', function(opts)
     opts.enable = opts.args == 'enable' or opts.args == ''
     RELOAD('servers.notifications').start_server(opts)
-end, { nargs = 1, complete = _completions.toggle, bang = true })
+end, { nargs = 1, complete = completions.toggle, bang = true })
 
 nvim.command.set('RemoveEmpty', function(opts)
     RELOAD('utils.buffers').remove_empty(opts)
-end, { nargs = 0, bang = true })
+end, { nargs = 0, bang = true, desc = 'Remove empty buffers' })
+
+-- TODO: set max size just as dump_to_qf
+nvim.command.set('DumpDiagnostics', function(opts)
+    local severity = vim.diagnostic.severity[opts.args]
+    if severity then
+        severity = { min = severity }
+    end
+    vim.diagnostic.setqflist { severity = severity }
+    vim.cmd.wincmd 'J'
+end, { nargs = '?', bang = true, desc = 'Filter Diagnostics in Qf', complete = completions.severity_list })

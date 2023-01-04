@@ -426,7 +426,7 @@ end
 
 function M.get_host(host)
     if not host or host == '' then
-        host = vim.fn.input('Enter hostname > ', '', 'customlist,v:lua._completions.ssh_hosts_completion')
+        host = vim.fn.input('Enter hostname > ', '', 'customlist,v:lua.require("completions").ssh_hosts_completion')
     end
     return host
 end
@@ -632,8 +632,10 @@ end
 function M.toggle_diagnostics()
     vim.g.show_diagnostics = not vim.g.show_diagnostics
     if vim.g.show_diagnostics then
+        vim.diagnostic.enable()
         vim.diagnostic.show()
     else
+        vim.diagnostic.disable()
         vim.diagnostic.hide()
     end
 end
@@ -818,14 +820,16 @@ function M.reload_configs(opts)
         options = 'options',
     }
 
+    local config_dir = vim.fn.stdpath 'config'
+
     if opts.args == 'all' or opts.args == '' then
-        vim.notify('Reloading all configs', 'INFO')
         for _, v in ipairs(configs) do
-            vim.cmd.source(vim.fn.stdpath('config' .. '/plugin/' .. v .. '.lua'))
+            vim.cmd.source(config_dir .. '/plugin/' .. v .. '.lua')
         end
+        vim.notify('All configs reloaded!', 'INFO')
     elseif configs[opts.args] then
-        vim.notify('Reloading: ' .. opts.args, 'INFO')
-        vim.cmd.source(vim.fn.stdpath('config' .. '/plugin/' .. opts.args .. '.lua'))
+        vim.cmd.source(config_dir .. '/plugin/' .. opts.args .. '.lua')
+        vim.notify(opts.args .. ' reloaded!', 'INFO')
     else
         vim.notify('Invalid config name: ' .. opts.args, 'ERROR', { title = 'Reloader' })
     end

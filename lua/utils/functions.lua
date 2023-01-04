@@ -1146,6 +1146,7 @@ function M.toggle_qf(opts)
     end
 end
 
+-- TODO: Add support to dump to diagnostics ?
 function M.dump_to_qf(opts)
     vim.validate {
         opts = { opts, 'table' },

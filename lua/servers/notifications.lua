@@ -1,5 +1,4 @@
 local uv = vim.loop
-vim.g.port = 0x8AC
 
 local M = {}
 

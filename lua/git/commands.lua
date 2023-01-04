@@ -2,6 +2,7 @@ local nvim = require 'neovim'
 local sys = require 'sys'
 
 local executable = require('utils.files').executable
+local completions = RELOAD('completions')
 
 if not executable 'git' then
     return false
@@ -112,7 +113,7 @@ function M.set_commands()
         end)
     end, {
         nargs = '*',
-        complete = _completions.gitfiles_workspace,
+        complete = completions.gitfiles_workspace,
     })
 
     nvim.command.set('GRead', function(opts)
@@ -226,7 +227,7 @@ function M.set_commands()
                 }
             end
         end)
-    end, { nargs = '?', complete = _completions.gitfiles_stage })
+    end, { nargs = '?', complete = completions.gitfiles_stage })
 
     if packer_plugins and packer_plugins['vim-fugitive'] then
         return

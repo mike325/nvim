@@ -1,5 +1,6 @@
 local M = {}
 local nvim = require 'neovim'
+local completions = RELOAD('completions')
 
 function M.setup()
     local mkdir = require('utils.files').mkdir
@@ -82,7 +83,7 @@ function M.setup()
     end, {
         nargs = '?',
         buffer = true,
-        complete = _completions.cmake_build,
+        complete = completions.cmake_build,
     })
 
     nvim.command.set('CMakeBuild', function(opts)
@@ -131,7 +132,7 @@ function M.setup()
     end, {
         nargs = '?',
         buffer = true,
-        complete = _completions.cmake_build,
+        complete = completions.cmake_build,
     })
 end
 

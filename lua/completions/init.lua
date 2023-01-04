@@ -78,12 +78,12 @@ local completions = {
     reload_configs = function(arglead, cmdline, cursorpos)
         return general_completion(arglead, cmdline, cursorpos, { 'all', 'mappings', 'commands', 'autocmds', 'options' })
     end,
+    severity_list = function(arglead, cmdline, cursorpos)
+        local severity_lst = vim.tbl_filter(function(s)
+            return #tostring(s) > 1
+        end, vim.diagnostic.severity)
+        return general_completion(arglead, cmdline, cursorpos, severity_lst)
+    end,
 }
 
-if not _G._completions then
-    _G._completions = completions
-else
-    _G._completions = vim.tbl_extend('force', _G._completions, completions)
-end
-
-return _G._completions
+return completions

@@ -3,6 +3,7 @@ local sys = require 'sys'
 
 local is_dir = require('utils.files').is_dir
 local mkdir = require('utils.files').mkdir
+local completions = RELOAD('completions')
 
 local load_module = require('utils.functions').load_module
 local minidoc = load_module 'mini.doc'
@@ -28,7 +29,7 @@ if minisessions then
             end
         end
         minisessions.write(session:gsub('%s+', '_'), { force = true })
-    end, { nargs = '?', complete = _completions.session_files })
+    end, { nargs = '?', complete = completions.session_files })
 
     nvim.command.set('SessionLoad', function(opts)
         local session = opts.args
@@ -37,7 +38,7 @@ if minisessions then
         else
             minisessions.get_latest()
         end
-    end, { nargs = '?', complete = _completions.session_files })
+    end, { nargs = '?', complete = completions.session_files })
 
     nvim.command.set('SessionDelete', function(opts)
         local bang = opts.bang
@@ -52,6 +53,6 @@ if minisessions then
     end, {
         bang = true,
         nargs = 1,
-        complete = _completions.session_files,
+        complete = completions.session_files,
     })
 end

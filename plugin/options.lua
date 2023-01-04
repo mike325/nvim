@@ -267,3 +267,37 @@ end
 if nvim.has { 0, 8 } then
     vim.opt.splitkeep = 'screen'
 end
+
+vim.diagnostic.config {
+    signs = true,
+    underline = true,
+    update_in_insert = false,
+    severity_sort = true,
+    virtual_text = {
+        spacing = 2,
+        prefix = '❯',
+        -- source = true,
+    },
+}
+
+local orig_signs_handler = vim.diagnostic.handlers.signs
+vim.diagnostic.handlers.signs = {
+    show = function(ns, bufnr, diagnostics, opts)
+        local max_severity_per_line = {}
+        for _, d in pairs(diagnostics) do
+            local m = max_severity_per_line[d.lnum]
+            if not m or d.severity < m.severity then
+                max_severity_per_line[d.lnum] = d
+            end
+        end
+
+        local filtered_diagnostics = vim.tbl_values(max_severity_per_line)
+        orig_signs_handler.show(ns, bufnr, filtered_diagnostics, opts)
+    end,
+    hide = function(ns, bufnr)
+        orig_signs_handler.hide(ns, bufnr)
+    end,
+}
+
+vim.diagnostic.enable()
+vim.diagnostic.show()
