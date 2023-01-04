@@ -145,6 +145,7 @@ lualine.setup {
                     hint = get_icon 'hint',
                 },
             },
+            'bg_jobs',
         },
         lualine_c = {
             {

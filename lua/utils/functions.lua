@@ -169,6 +169,10 @@ icons.message = icons.hint
 icons.warning = icons.warn
 icons.information = icons.info
 
+function M.get_icon(icon)
+    return icons[icon]
+end
+
 function M.make_executable()
     if sys.name == 'windows' then
         return
@@ -650,10 +654,6 @@ function M.get_separators(sep_type)
     }
 
     return separators[sep_type]
-end
-
-function M.get_icon(icon)
-    return icons[icon]
 end
 
 function M.project_config(event)
