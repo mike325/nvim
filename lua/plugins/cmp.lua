@@ -10,7 +10,25 @@ end
 
 local luasnip = load_module 'luasnip'
 local orgmode = load_module 'orgmode'
-local lspkind = require 'lspkind'
+
+local lspkind = load_module 'lspkind'
+local format
+if lspkind then
+    format = {
+        format = lspkind.cmp_format {
+            with_text = true,
+            menu = {
+                buffer = '[BUFFER]',
+                treesitter = '[TS]',
+                nvim_lsp = '[LSP]',
+                nvim_lua = '[API]',
+                path = '[PATH]',
+                luasnip = '[SNIP]',
+                vsnip = '[SNIP]',
+            },
+        },
+    }
+end
 
 local custom_comparators = {
     clangd_comparator = load_module 'clangd_extensions.cmp_scores',
@@ -125,6 +143,10 @@ local close = function(fallback)
 end
 
 cmp.setup {
+    window = {
+        completion = cmp.config.window.bordered(),
+        documentation = cmp.config.window.bordered(),
+    },
     snippet = {
         expand = function(args)
             if luasnip then
@@ -132,6 +154,9 @@ cmp.setup {
             end
         end,
     },
+    -- completion = {
+    --     keyword_length = 1,
+    -- },
     mapping = {
         ['<C-d>'] = cmp.mapping.scroll_docs(-4),
         ['<C-f>'] = cmp.mapping.scroll_docs(4),
@@ -148,27 +173,36 @@ cmp.setup {
         ['<C-p>'] = cmp.mapping.select_prev_item { behavior = cmp.SelectBehavior.Insert },
     },
     sources = cmp.config.sources(sources),
-    formatting = {
-        format = lspkind.cmp_format {
-            with_text = true,
-            menu = {
-                buffer = '[BUFFER]',
-                treesitter = '[TS]',
-                nvim_lsp = '[LSP]',
-                nvim_lua = '[API]',
-                path = '[PATH]',
-                luasnip = '[SNIP]',
-                vsnip = '[SNIP]',
-            },
-        },
-    },
+    formatting = format,
     experimental = {
-        native_menu = false,
         ghost_text = true,
     },
     sorting = {
         comparators = comparators,
     },
 }
+
+cmp.setup.cmdline({ '/', '?' }, {
+    completion = {
+        keyword_length = 2,
+    },
+    mapping = cmp.mapping.preset.cmdline(),
+    sources = {
+        { name = 'treesitter' },
+        { name = 'buffer' },
+    },
+})
+
+cmp.setup.cmdline(':', {
+    completion = {
+        keyword_length = 2,
+    },
+    mapping = cmp.mapping.preset.cmdline(),
+    sources = cmp.config.sources({
+        { name = 'path' },
+    }, {
+        { name = 'cmdline' },
+    }),
+})
 
 return true

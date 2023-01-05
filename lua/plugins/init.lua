@@ -430,7 +430,7 @@ packer.startup(function()
             { 'saadparwaiz1/cmp_luasnip' },
             { 'ray-x/cmp-treesitter' },
             { 'lukas-reineke/cmp-under-comparator' },
-            -- { 'quangnguyen30192/cmp-nvim-ultisnips' },
+            { 'hrsh7th/cmp-cmdline' },
         },
         config = function()
             require 'plugins.cmp'
