@@ -16,6 +16,8 @@ local format
 if lspkind then
     format = {
         format = lspkind.cmp_format {
+            maxwidth = 50,
+            ellipsis_char = '...',
             with_text = true,
             menu = {
                 buffer = '[BUFFER]',
@@ -198,11 +200,9 @@ cmp.setup.cmdline(':', {
         keyword_length = 2,
     },
     mapping = cmp.mapping.preset.cmdline(),
-    sources = cmp.config.sources({
+    sources = cmp.config.sources {
         { name = 'path' },
-    }, {
-        { name = 'cmdline' },
-    }),
+    },
 })
 
 return true
