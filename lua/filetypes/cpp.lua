@@ -221,7 +221,6 @@ function M.set_opts(compiler, bufnum)
             local tidy = vim.list_extend({ 'clang-tidy' }, M.makeprg['clang-tidy'])
             vim.bo[bufnum].makeprg = table.concat(tidy, ' ') .. ' %'
             if M.makeprg['clang-tidy'].efm then
-                -- TODO: Add this option to buflocal stuff
                 vim.bo[bufnum].errorformat = table.concat(M.makeprg['clang-tidy'].efm, ',')
             end
         end

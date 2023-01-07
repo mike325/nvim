@@ -189,11 +189,11 @@ nvim.autocmd.add('User', {
             hxx = true,
         }
 
+        local cpp = RELOAD 'filetypes.cpp'
         for _, buf in ipairs(vim.api.nvim_list_bufs()) do
             local bufname = vim.api.nvim_buf_get_name(buf)
             local ext = vim.fn.fnamemodify(bufname, ':e')
             if extensions[ext] then
-                local cpp = require 'filetypes.cpp'
                 if ext == 'c' or ext == 'h' then
                     cpp.set_opts(cpp.get_compiler 'c', buf)
                 else
