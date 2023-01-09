@@ -697,6 +697,11 @@ function M.skeleton_filename(opts)
 end
 
 function M.clean_file()
+
+    if vim.b.editorconfig and vim.b.editorconfig.trim_trailing_whitespace ~= nil then
+        return
+    end
+
     local exc_buftypes = {
         nofile = 1,
         help = 1,

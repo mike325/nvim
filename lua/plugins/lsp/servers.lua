@@ -202,17 +202,18 @@ local servers = {
                 cmd = {
                     'clangd',
                     '--background-index',
-                    '--suggest-missing-includes',
                     '--clang-tidy',
                     '--header-insertion=iwyu',
                     '--function-arg-placeholders',
                     '--completion-style=bundled',
-                    -- '--index',
-                    -- '--cross-file-rename', -- NOTE: Available only in clangd >= 10
                     -- '--pch-storage=memory',
+                    -- '--suggest-missing-includes',  -- NOTE: Obsolete in recent versions
+                    -- '--index', -- NOTE: Obsolete in recent versions
+                    -- '--cross-file-rename', -- NOTE: Available only in clangd >= 10
                     '--log=error',
                 },
                 cmd_env = {
+                    -- NOTE: pchs is not created by default, needs to be manually created
                     TMPDIR = './.clangd/pchs/',
                 },
                 capabilities = {

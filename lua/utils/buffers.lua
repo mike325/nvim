@@ -234,6 +234,10 @@ function M.detect_indent(buf)
         return
     end
 
+    if vim.b.editorconfig and (vim.b.editorconfig.indent_size or vim.b.editorconfig.indent_style) then
+        return
+    end
+
     local ignore_fts = {
         man = true,
         help = true,

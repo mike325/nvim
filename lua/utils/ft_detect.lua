@@ -17,7 +17,7 @@ vim.filetype.add {
     filename = {
         ['.gitconfig'] = '.gitconfig',
         ['gitconfig'] = 'gitconfig',
-        ['.editorconfig'] = 'toml',
+        ['.editorconfig'] = vim.fn.has 'nvim-0.9' == 1 and 'editorconfig' or 'dosini',
         ['setup.cfg'] = 'toml',
         ['.flake8'] = 'toml',
         ['flake8'] = 'toml',
