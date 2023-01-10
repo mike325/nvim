@@ -110,10 +110,9 @@ function M.big_center(buffer)
 end
 
 function M.progress(buffer)
-    assert(
-        not buffer or (type(buffer) == type(0) and buffer >= 0),
-        debug.traceback('Invalid buffer: ' .. vim.inspect(buffer))
-    )
+    vim.validate {
+        buffer = { buffer, 'number', true },
+    }
 
     local columns = vim.opt.columns:get()
     local lines = vim.opt.lines:get()
@@ -166,11 +165,46 @@ function M.progress(buffer)
     return vim.t.progress_win
 end
 
+function M.lower_window(buffer)
+    vim.validate {
+        buffer = { buffer, 'number', true },
+    }
+
+    local columns = vim.opt.columns:get()
+    local lines = vim.opt.lines:get()
+
+    local scratch = false
+    if not buffer then
+        buffer = vim.api.nvim_create_buf(false, true)
+        scratch = true
+    end
+
+    local lower_window = vim.api.nvim_open_win(buffer, false, {
+        style = 'minimal',
+        border = 'rounded',
+        relative = 'win',
+        anchor = 'SW',
+        row = lines - 5,
+        col = 2,
+        -- bufpos = {lines/2, 15},
+        height = 15,
+        width = columns - 5,
+        noautocmd = true,
+        focusable = true,
+        zindex = 1, -- very low priority
+    })
+
+    if scratch then
+        autowipe(lower_window, buffer)
+    end
+
+    return lower_window
+end
+
 function M.cursor_window(buffer, auto_size)
-    assert(
-        not buffer or (type(buffer) == type(0) and buffer >= 0),
-        debug.traceback('Invalid buffer: ' .. vim.inspect(buffer))
-    )
+    vim.validate {
+        buffer = { buffer, 'number', true },
+    }
 
     -- local columns = vim.opt.columns:get()
     -- local lines = vim.opt.lines:get()

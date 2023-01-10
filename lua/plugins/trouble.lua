@@ -52,16 +52,12 @@ vim.keymap.set('n', '=T', function()
     end
     if not trouble_open then
         if #document_diagnostics > 0 then
-            vim.notify('Document Diagnostics', 'INFO', { title = 'Trouble' })
             vim.cmd.Trouble 'document_diagnostics'
         elseif has_workspace_diagnostics then
-            vim.notify('Workspace Diagnostics', 'INFO', { title = 'Trouble' })
             vim.cmd.Trouble 'lsp_workspace_diagnostics'
         elseif #loc_diagnostics > 0 then
-            vim.notify('Location list', 'INFO', { title = 'Trouble' })
             vim.cmd.Trouble 'loclist'
         elseif #qf_diagnostics > 0 then
-            vim.notify('Quicfix', 'INFO', { title = 'Trouble' })
             vim.cmd.Trouble 'quickfix'
         else
             vim.notify('Nothing to check !', 'WARN', { title = 'Trouble' })

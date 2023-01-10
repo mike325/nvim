@@ -752,13 +752,12 @@ function M.swap_window()
     end
 end
 
-local jobs = STORAGE.jobs
 local function kill_job(jobid)
     if not jobid then
         local ids = {}
         local cmds = {}
         local jobidx = 1
-        for idx, job in pairs(jobs) do
+        for idx, job in pairs(STORAGE.jobs) do
             ids[#ids + 1] = idx
             local cmd = type(job._cmd) == type '' and job._cmd or table.concat(job._cmd, ' ')
             cmds[#cmds + 1] = ('%s: %s'):format(jobidx, cmd)

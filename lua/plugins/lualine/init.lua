@@ -136,9 +136,28 @@ lualine.setup {
                     return ''
                 end,
             },
-            'qf_counter',
-            'loc_counter',
-            'diff',
+            {
+                'qf_counter',
+                on_click = function(clicks, button, modifiers)
+                    RELOAD('utils.functions').toggle_qf()
+                end,
+            },
+            {
+                'loc_counter',
+                on_click = function(clicks, button, modifiers)
+                    RELOAD('utils.functions').toggle_qf { win = vim.api.nvim_get_current_win() }
+                end,
+            },
+            {
+                'diff',
+                on_click = function(clicks, button, modifiers)
+                    local ok, gitsigns = pcall(require, 'gitsigns')
+                    -- TODO: check if qf or trouble are open
+                    if ok then
+                        gitsigns.setqflist 'attached'
+                    end
+                end,
+            },
             {
                 'diagnostics',
                 symbols = {
@@ -147,8 +166,36 @@ lualine.setup {
                     info = get_icon 'info',
                     hint = get_icon 'hint',
                 },
+                on_click = function(clicks, button, modifiers)
+                    vim.diagnostic.setqflist()
+                    vim.cmd.wincmd 'J'
+                end,
             },
-            'bg_jobs',
+            {
+                'bg_jobs',
+                on_click = function(clicks, button, modifiers)
+                    if next(STORAGE.jobs) == nil then
+                        return
+                    end
+
+                    if vim.t.job_info and nvim.win.is_valid(vim.t.job_info) then
+                        nvim.win.close(vim.t.job_info, true)
+                        vim.t.job_info = nil
+                        return
+                    else
+                        vim.t.job_info = RELOAD('utils.windows').lower_window()
+                    end
+
+                    -- TODO: Add auto update of the current jobs if the window stays open
+                    local buf = nvim.win.get_buf(vim.t.job_info)
+                    local lines = {}
+                    for id, job in pairs(STORAGE.jobs) do
+                        local cmd = type(job._cmd) == type '' and job._cmd or table.concat(job._cmd, ' ')
+                        table.insert(lines, ('%s: %s'):format(id, cmd))
+                    end
+                    nvim.buf.set_lines(buf, 0, -1, false, lines)
+                end,
+            },
         },
         lualine_c = {
             {
