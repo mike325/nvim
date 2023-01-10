@@ -480,7 +480,7 @@ function M.async_execute(opts)
         },
     }
 
-    if opts.auto_close then
+    if opts.auto_close or opts.autoclose then
         script:callback_on_success(function(_)
             if vim.t.progress_win then
                 nvim.win.close(vim.t.progress_win, true)

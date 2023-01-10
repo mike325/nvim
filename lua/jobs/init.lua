@@ -396,8 +396,8 @@ function Job:start()
         self._show_progress = false
         jobs[tostring(self._id)] = nil
 
-        if vim.t.active_job == tostring(self._id) then
-            vim.t.active_job = next(jobs)
+        if vim.g.active_job == tostring(self._id) then
+            vim.g.active_job = next(jobs)
         end
 
         if _user_on_exit then
@@ -511,7 +511,7 @@ function Job:start()
     end
 
     jobs[tostring(self._id)] = self
-    vim.t.active_job = tostring(self._id)
+    vim.g.active_job = tostring(self._id)
 end
 
 function Job:stop()

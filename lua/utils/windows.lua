@@ -109,9 +109,10 @@ function M.big_center(buffer)
     end
 end
 
-function M.progress(buffer)
+function M.progress(buffer, job)
     vim.validate {
         buffer = { buffer, 'number', true },
+        job = { job, 'number', true },
     }
 
     local columns = vim.opt.columns:get()
@@ -153,10 +154,9 @@ function M.progress(buffer)
         nvim.win.set_buf(vim.t.progress_win, buffer)
     end
 
-    local jobs = STORAGE.jobs
-    if scratch and vim.t.active_job and jobs[vim.t.active_job] then
-        local job = jobs[vim.t.active_job]
-        nvim.buf.set_lines(buffer, -2, -1, false, job:output())
+    local job_obj = job and STORAGE.jobs[job] or STORAGE.jobs[vim.g.active_job]
+    if scratch and job_obj then
+        nvim.buf.set_lines(buffer, -2, -1, false, job_obj:output())
         nvim.buf.call(buffer, function()
             nvim.ex['normal!'] 'G'
         end)
