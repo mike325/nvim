@@ -397,7 +397,7 @@ function Job:start()
         jobs[tostring(self._id)] = nil
 
         if vim.t.active_job == tostring(self._id) then
-            vim.t.active_job = nil
+            vim.t.active_job = next(jobs)
         end
 
         if _user_on_exit then
