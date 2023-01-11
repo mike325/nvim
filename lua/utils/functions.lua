@@ -1251,4 +1251,36 @@ function M.autoformat(cmd, args)
     formatter:start()
 end
 
+function M.qf_to_diagnostic(ns_name)
+    vim.validate {
+        ns_name = { ns_name, 'string' },
+    }
+
+    local ns = vim.api.nvim_create_namespace(ns_name)
+    vim.diagnostic.reset(ns)
+
+    local qf_items = vim.fn.getqflist()
+    if #qf_items > 0 then
+        local diagnostics = vim.diagnostic.fromqflist(qf_items)
+        if not diagnostics or #diagnostics == 0 then
+            return
+        end
+
+        local buf_diagnostics = {}
+
+        for _, diagnostic in ipairs(diagnostics) do
+            local bufnr = diagnostic.bufnr
+            if not buf_diagnostics[bufnr] then
+                buf_diagnostics[bufnr] = {}
+            end
+            table.insert(buf_diagnostics[bufnr], diagnostic)
+        end
+
+        for buf, diagnostic in pairs(buf_diagnostics) do
+            vim.diagnostic.set(ns, buf, diagnostic)
+        end
+        vim.diagnostic.show(ns)
+    end
+end
+
 return M
