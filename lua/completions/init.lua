@@ -84,6 +84,13 @@ local completions = {
         end, vim.diagnostic.severity)
         return general_completion(arglead, cmdline, cursorpos, severity_lst)
     end,
+    diagnostics_namespaces = function(arglead, cmdline, cursorpos)
+        local namespaces = {}
+        for _, ns in pairs(vim.diagnostic.get_namespaces()) do
+            table.insert(namespaces, ns.name)
+        end
+        return general_completion(arglead, cmdline, cursorpos, namespaces)
+    end,
 }
 
 return completions

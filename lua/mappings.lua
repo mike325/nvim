@@ -629,14 +629,18 @@ function M.diff_files(args)
     end
 end
 
-function M.toggle_diagnostics()
+function M.toggle_diagnostics(ns)
+    vim.validate {
+        ns = { ns, 'number', true }
+    }
+
     vim.g.show_diagnostics = not vim.g.show_diagnostics
     if vim.g.show_diagnostics then
-        vim.diagnostic.enable()
-        vim.diagnostic.show()
+        vim.diagnostic.enable(0, ns)
+        vim.diagnostic.show(ns, 0)
     else
-        vim.diagnostic.disable()
-        vim.diagnostic.hide()
+        vim.diagnostic.disable(0, ns)
+        vim.diagnostic.hide(ns, 0)
     end
 end
 

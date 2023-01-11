@@ -384,10 +384,6 @@ nvim.command.set('DiffFiles', function(opts)
     RELOAD('mappings').diff_files(opts)
 end, { nargs = '+', complete = 'file', desc = 'Open a new tab in diff mode with the given files' })
 
-nvim.command.set('ToggleDiagnostics', function()
-    RELOAD('mappings').toggle_diagnostics()
-end, { desc = 'Toggle column sign diagnostics' })
-
 -- NOTE: I should not need to create this function, but I couldn't find a way to override
 --       internal runtime compilers
 nvim.command.set('Compiler', function(opts)
@@ -490,3 +486,43 @@ nvim.command.set('DumpDiagnostics', function(opts)
     vim.diagnostic.setqflist { severity = severity }
     vim.cmd.wincmd 'J'
 end, { nargs = '?', bang = true, desc = 'Filter Diagnostics in Qf', complete = completions.severity_list })
+
+nvim.command.set('HideDiagnostics', function(opts)
+    local ns
+    if opts.args ~= '' then
+        for namespace, attrs in pairs(vim.diagnostic.get_namespaces()) do
+            if attrs.name == opts.args then
+                ns = namespace
+                break
+            end
+        end
+    end
+    vim.diagnostic.hide(ns, vim.api.nvim_get_current_buf())
+end, { nargs = '?', desc = 'Remove diagnostics from a namespsce', complete = completions.diagnostics_namespaces })
+
+nvim.command.set('ShowDiagnostics', function(opts)
+    local ns
+    if opts.args ~= '' then
+        for namespace, attrs in pairs(vim.diagnostic.get_namespaces()) do
+            if attrs.name == opts.args then
+                ns = namespace
+                break
+            end
+        end
+    end
+    vim.diagnostic.show(ns, vim.api.nvim_get_current_buf())
+end, { nargs = '?', desc = 'Remove diagnostics from a namespsce', complete = completions.diagnostics_namespaces })
+
+nvim.command.set('ToggleDiagnostics', function(opts)
+    local ns
+    if opts.args ~= '' then
+        for namespace, attrs in pairs(vim.diagnostic.get_namespaces()) do
+            if attrs.name == opts.args then
+                ns = namespace
+                break
+            end
+        end
+    end
+    RELOAD('mappings').toggle_diagnostics(ns)
+end, { nargs = '?', desc = 'Toggle column sign diagnostics', complete = completions.diagnostics_namespaces })
+
