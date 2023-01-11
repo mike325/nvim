@@ -525,4 +525,3 @@ nvim.command.set('ToggleDiagnostics', function(opts)
     end
     RELOAD('mappings').toggle_diagnostics(ns)
 end, { nargs = '?', desc = 'Toggle column sign diagnostics', complete = completions.diagnostics_namespaces })
-

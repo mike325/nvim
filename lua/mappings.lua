@@ -631,7 +631,7 @@ end
 
 function M.toggle_diagnostics(ns)
     vim.validate {
-        ns = { ns, 'number', true }
+        ns = { ns, 'number', true },
     }
 
     vim.g.show_diagnostics = not vim.g.show_diagnostics
