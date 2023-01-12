@@ -260,7 +260,7 @@ function M.send_grep_job(opts)
     vim.list_extend(cmd, args)
     table.insert(cmd, search)
 
-    local grep = require('jobs'):new {
+    local grep = RELOAD('jobs'):new {
         cmd = cmd,
         silent = true,
         opts = {
@@ -281,7 +281,7 @@ function M.send_grep_job(opts)
         },
     }
 
-    grep:add_callback(function(job, rc)
+    grep:add_callbacks(function(job, rc)
         if rc == 0 and job:is_empty() then
             vim.notify('No matching results ' .. search, 'WARN', { title = 'Grep' })
         elseif rc ~= 0 then
@@ -380,14 +380,14 @@ function M.get_git_dir(callback)
     vim.validate { callback = { callback, 'function' } }
     assert(executable 'git', 'Missing git')
 
-    local j = require('jobs'):new {
+    local j = RELOAD('jobs'):new {
         cmd = { 'git', 'rev-parse', '--git-dir' },
         silent = true,
+        callbacks_on_success = function(job)
+            local dir = table.concat(job:output(), '')
+            pcall(callback, require('utils.files').realpath(dir))
+        end,
     }
-    j:callback_on_success(function(job)
-        local dir = table.concat(job:output(), '')
-        pcall(callback, require('utils.files').realpath(dir))
-    end)
     j:start()
 end
 
@@ -410,7 +410,9 @@ function M.external_formatprg(args)
 
     table.insert(cmd, tmpfile)
 
-    local formatprg = require('jobs'):new {
+    local view = vim.fn.winsaveview()
+
+    local formatprg = RELOAD('jobs'):new {
         cmd = cmd,
         silent = true,
         qf = {
@@ -426,16 +428,13 @@ function M.external_formatprg(args)
             title = 'Format',
             efm = args.efm,
         },
+        callbacks_on_success = function(_)
+            local fmt_lines = require('utils.files').readfile(tmpfile)
+            fmt_lines = indent(fmt_lines, indent_level)
+            vim.api.nvim_buf_set_lines(buf, first, last, false, fmt_lines)
+            vim.fn.winrestview(view)
+        end,
     }
-
-    local view = vim.fn.winsaveview()
-
-    formatprg:callback_on_success(function(_)
-        local fmt_lines = require('utils.files').readfile(tmpfile)
-        fmt_lines = indent(fmt_lines, indent_level)
-        vim.api.nvim_buf_set_lines(buf, first, last, false, fmt_lines)
-        vim.fn.winrestview(view)
-    end)
 
     formatprg:start()
 end
@@ -478,26 +477,17 @@ function M.async_execute(opts)
             context = opts.context or opts.title or 'AsyncExecute',
             title = opts.title or opts.context or 'AsyncExecute',
         },
+        callbacks = opts.callbacks,
+        callbacks_on_failure = opts.callbacks_on_failure,
+        callbacks_on_success = opts.callbacks_on_success,
     }
 
     if opts.auto_close or opts.autoclose then
-        script:callback_on_success(function(_)
+        script:callbacks_on_success(function(_)
             if vim.t.progress_win then
                 nvim.win.close(vim.t.progress_win, true)
             end
         end)
-    end
-
-    if opts.callbacks then
-        script:add_callback(opts.callbacks)
-    end
-
-    if opts.callback_on_failure then
-        script:callback_on_failure(opts.callback_on_failure)
-    end
-
-    if opts.callback_on_success then
-        script:callback_on_success(opts.callback_on_success)
     end
 
     if opts.pre_execute then
@@ -532,7 +522,7 @@ function M.open(uri)
 
     table.insert(args, uri)
 
-    local open = require('jobs'):new {
+    local open = RELOAD('jobs'):new {
         cmd = cmd,
         args = args,
         qf = {
@@ -1242,12 +1232,12 @@ function M.autoformat(cmd, args)
         cmd = cmd,
         args = args,
         silent = true,
+        callbacks_on_success = function()
+            vim.cmd.checktime()
+            vim.fn.winrestview(view)
+            -- vim.cmd.edit()
+        end,
     }
-    formatter:callback_on_success(function()
-        vim.cmd.checktime()
-        vim.fn.winrestview(view)
-        -- vim.cmd.edit()
-    end)
     formatter:start()
 end
 

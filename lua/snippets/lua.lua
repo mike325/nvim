@@ -34,7 +34,7 @@ local function rec_val()
         c(1, {
             t { '' },
             sn(nil, {
-                t { ',', '\t' },
+                t { '', '\t' },
                 i(1, 'arg'),
                 t { ' = { ' },
                 r(1),
@@ -50,7 +50,7 @@ local function rec_val()
                     t { '' },
                     t { ', true' },
                 }),
-                t { ' }' },
+                t { ' },' },
                 d(4, rec_val, {}),
             }),
         }),
@@ -208,7 +208,7 @@ return {
                     t{""},
                     t{", true"},
                 }),
-            t({" }"}),
+            t({" },"}),
             d(4, rec_val, {}),
         t({'', "}"}),
     }),

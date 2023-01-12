@@ -142,20 +142,20 @@ function M.setup()
                 cmd = pyprog,
                 args = { '-c', 'import sys; print(",".join(sys.path), flush=True)' },
                 silent = true,
+                callbacks_on_success = function(job)
+                    -- NOTE: output is an array of stdout lines, we must join the array in a str
+                    --       split it into a single array
+                    local output = vim.split(table.concat(job:output(), ','), ',')
+                    -- BUG: No idea why this fails
+                    -- local path = vim.split(vim.api.nvim_buf_get_option(buf, 'path'), ',')
+                    local path = vim.opt_local.path:get()
+                    if type(path) == type '' then
+                        path = vim.split(path, ',')
+                    end
+                    merge_uniq_list(path, output)
+                    vim.bo[buf].path = table.concat(path, ',')
+                end,
             }
-            get_path:callback_on_success(function(job)
-                -- NOTE: output is an array of stdout lines, we must join the array in a str
-                --       split it into a single array
-                local output = vim.split(table.concat(job:output(), ','), ',')
-                -- BUG: No idea why this fails
-                -- local path = vim.split(vim.api.nvim_buf_get_option(buf, 'path'), ',')
-                local path = vim.opt_local.path:get()
-                if type(path) == type '' then
-                    path = vim.split(path, ',')
-                end
-                merge_uniq_list(path, output)
-                vim.bo[buf].path = table.concat(path, ',')
-            end)
             get_path:start()
         else
             assert(

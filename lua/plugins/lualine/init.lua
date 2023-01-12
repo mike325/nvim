@@ -159,6 +159,7 @@ lualine.setup {
                 end,
             },
             {
+                -- TODO: Add support to ignore disabled namespaces
                 'diagnostics',
                 symbols = {
                     error = get_icon 'error',

@@ -113,19 +113,17 @@ function M.setup()
                 context = 'CMake',
                 title = 'CMake',
             },
+            callbacks_on_success = function(_)
+                vim.notify('Build completed!', 'INFO', { title = 'CMake' })
+                if is_file 'build/compile_commands.json' then
+                    link('build/compile_commands.json', '.', false, true)
+                end
+                require('utils.functions').clear_qf()
+            end,
+            callbacks_on_failure = function(_, rc)
+                vim.notify('CMake Build Failed! :c with exit code: ' .. rc, 'ERROR', { title = 'CMake' })
+            end,
         }
-
-        cmake:callback_on_success(function(_)
-            vim.notify('Build completed!', 'INFO', { title = 'CMake' })
-            if is_file 'build/compile_commands.json' then
-                link('build/compile_commands.json', '.', false, true)
-            end
-            require('utils.functions').clear_qf()
-        end)
-
-        cmake:callback_on_failure(function(_, rc)
-            vim.notify('CMake Build Failed! :c with exit code: ' .. rc, 'ERROR', { title = 'CMake' })
-        end)
 
         cmake:start()
         cmake:progress()

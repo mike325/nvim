@@ -364,9 +364,10 @@ function M.build(build_info)
     end
 
     if not build_info.single then
-        require('utils.files').find_files(base_cwd, '*.' .. ft, function(job)
-            compile(vim.list_extend(flags, job:output()))
+        local files = vim.fs.find(function(filename)
+            return (filename:match('%.' .. ft .. '$'))
         end)
+        compile(vim.list_extend(flags, files))
     else
         table.insert(flags, nvim.buf.get_name(0))
         compile(flags)

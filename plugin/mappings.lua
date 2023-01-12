@@ -267,7 +267,27 @@ nvim.command.set('LGrep', function(opts)
 end, { nargs = '+', complete = 'file' })
 
 nvim.command.set('Find', function(opts)
-    RELOAD('mappings').find(opts)
+    local args = {
+        args = opts.fargs,
+        target = opts.args,
+        cb = function(results)
+            local qf_opts = {
+                on_fail = {
+                    open = true,
+                    jump = false,
+                },
+                dump = true,
+                open = true,
+                jump = false,
+                context = 'Finder',
+                title = 'Finder',
+                efm = '%f',
+            }
+            qf_opts.lines = results
+            RELOAD('utils.functions').dump_to_qf(qf_opts)
+        end,
+    }
+    RELOAD('mappings').find(args)
 end, { bang = true, nargs = '+', complete = 'file' })
 
 vim.keymap.set(

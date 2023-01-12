@@ -81,7 +81,7 @@ local function exec_async_gitcmd(data)
     if callbacks then
         callbacks = type(callbacks) ~= type {} and { callbacks } or callbacks
         for _, cb in pairs(callbacks) do
-            async_git:add_callback(cb)
+            async_git:add_callbacks(cb)
         end
     end
     async_git:start()

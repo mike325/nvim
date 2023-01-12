@@ -20,11 +20,11 @@ local function async_insert_version(prg)
     local versioner = RELOAD('jobs'):new {
         cmd = prg .. ' --version',
         silent = true,
+        callbacks_on_success = function(job)
+            local version = get_prg_version(table.concat(job:output(), ' '))
+            insert_row('versions', { name = prg, version = version })
+        end,
     }
-    versioner:callback_on_success(function(job)
-        local version = get_prg_version(table.concat(job:output(), ' '))
-        insert_row('versions', { name = prg, version = version })
-    end)
     versioner:start()
 end
 

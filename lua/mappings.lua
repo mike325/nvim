@@ -237,6 +237,13 @@ function M.rename_file(opts)
 end
 
 function M.find(opts)
+    vim.validate {
+        opts = { opts, 'table' },
+        args = { opts.args, 'table', true },
+        target = { opts.target, 'string', true },
+        cb = { opts.cb, 'function', true },
+    }
+
     local finder = RELOAD('utils.functions').select_filelist(false, true)
 
     local fast_finders = {
@@ -245,41 +252,56 @@ function M.find(opts)
         rg = true,
     }
 
-    local qf_opts = {
-        on_fail = {
-            open = true,
-            jump = false,
-        },
-        dump = true,
-        open = true,
-        jump = false,
-        context = 'Finder',
-        title = 'Finder',
-        efm = '%f',
-    }
-
     if fast_finders[finder[1]] then
         table.insert(finder, '-uuu')
+        local args = opts.args
+        if not args then
+            args = { opts.target }
+        end
         local find = RELOAD('jobs'):new {
-            cmd = vim.list_extend(finder, opts.fargs),
+            cmd = vim.list_extend(finder, args),
             progress = false,
             opts = {
                 stdin = 'null',
             },
-            qf = qf_opts,
-        }
-        find:start()
-    else
-        -- NOTE: Fallback to native finder which works everywhere
-        RELOAD('threads.functions').async_find {
-            target = opts.args,
-            qf_opts = qf_opts,
-            cb = function(data)
-                qf_opts = data.args.qf_opts
-                qf_opts.lines = data.results
-                RELOAD('utils.functions').dump_to_qf(qf_opts)
+            callbacks = function(job, rc)
+                if opts.cb then
+                    opts.cb(vim.tbl_filter(function(v)
+                        return v ~= ''
+                    end, job:output()))
+                end
             end,
         }
+        find:start()
+        if not opts.cb then
+            local rc = find:wait()
+            return rc == 0 and vim.tbl_filter(function(v)
+                return v ~= ''
+            end, find:output()) or {}
+        end
+    else
+        if opts.cb then
+            -- NOTE: Fallback to native finder which works everywhere
+            RELOAD('threads.functions').async_find {
+                target = opts.target,
+                cb = function(data)
+                    opts.cb(data.results)
+                end,
+            }
+        else
+            local target = ''
+            if opts.target:match '%*' then
+                for _, s in ipairs(vim.split(opts.target, '')) do
+                    target = target .. (s == '*' and '.*' or vim.pesc(s))
+                end
+            else
+                target = vim.pesc(opts.target)
+            end
+            local filter = function(filename)
+                return filename:match(target) ~= nil
+            end
+            return vim.fs.find(filter, { type = 'file', limit = math.huge })
+        end
     end
 end
 
@@ -300,7 +322,7 @@ function M.async_makeprg(opts)
         auto_close = true,
         context = 'AsyncLint',
         title = 'AsyncLint',
-        callback_on_success = function()
+        callbacks_on_success = function()
             vim.cmd.checktime()
         end,
     }
@@ -446,13 +468,13 @@ function M.remote_file(host, send)
         opts = {
             pty = true,
         },
+        callbacks_on_success = function(_)
+            vim.cmd.checktime()
+        end,
+        callbacks_on_failure = function(job)
+            vim.notify(table.concat(job:output(), '\n'), 'ERROR', { title = 'SyncFile' })
+        end,
     }
-    sync:callback_on_success(function(_)
-        vim.cmd.checktime()
-    end)
-    sync:callback_on_failure(function(job)
-        vim.notify(table.concat(job:output(), '\n'), 'ERROR', { title = 'SyncFile' })
-    end)
     sync:start()
 end
 

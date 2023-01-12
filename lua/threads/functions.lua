@@ -11,7 +11,14 @@ function M.find(thread_args)
     if functions.filter then
         filter = functions.filter
     else
-        local target = args.target:gsub('%.', '%%.'):gsub('%-', '%%-')
+        local target = ''
+        if args.target:match '%*' then
+            for _, s in ipairs(vim.split(args.target, '')) do
+                target = target .. (s == '*' and '.*' or vim.pesc(s))
+            end
+        else
+            target = vim.pesc(args.target)
+        end
         filter = function(filename)
             return filename:match(target) ~= nil
         end

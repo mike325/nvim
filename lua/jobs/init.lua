@@ -206,69 +206,118 @@ function Job:new(job)
     obj._cmd = cmd
 
     if type(job) == type {} and not vim.tbl_islist(job) then
-        if job.interactive ~= nil then
-            assert(type(job.interactive) == type(true), debug.traceback 'interactive must be a bool')
-            obj.interactive = job.interactive
-        end
+        vim.validate { interactive = { job.interactive, 'boolean', true } }
+        obj.interactive = job.interactive
 
-        if job.opts then
-            assert(type(job.opts) == type {}, debug.traceback 'job options must be a table')
-            obj._opts = job.opts
-        end
+        vim.validate { opts = { job.opts, 'table', true } }
+        obj._opts = job.opts
 
-        assert(job.qf == nil or type(job.qf) == type {}, debug.traceback 'Invalid qf args')
+        vim.validate { qf = { job.qf, 'table', true } }
         obj._qf = job.qf
 
         if obj._qf then
             obj._qf.tab = nvim.get_current_tabpage()
         end
 
-        assert(
-            job.save_data == nil or type(job.save_data) == type(true),
-            debug.traceback 'save_data arg must be a bool'
-        )
+        vim.validate { save_data = { job.save_data, 'boolean', true } }
         obj.save_data = job.save_data == nil and true or job.save_data
 
-        assert(job.clear == nil or type(job.clear) == type(true), debug.traceback 'Clear arg must be a bool')
+        vim.validate { clear = { job.clear, 'boolean', true } }
         obj._clear = job.clear == nil and true or job.clear
 
-        assert(job.timeout == nil or type(job.timeout) == type(1), debug.traceback 'Timeout arg must be an integer')
+        vim.validate { timeout = { job.timeout, 'number', true } }
         obj._timeout = job.timeout
 
-        assert(
-            job.silent == nil or type(job.silent) == type(true),
-            debug.traceback('Invalid silent arg ' .. vim.inspect(job.silent))
-        )
+        vim.validate { silent = { job.silent, 'boolean', true } }
         obj.silent = false
         if job.silent ~= nil then
             obj.silent = job.silent
         end
 
-        assert(
-            job.progress == nil or type(job.progress) == type(true),
-            debug.traceback('Invalid progress arg ' .. vim.inspect(job.progress))
-        )
+        vim.validate { progress = { job.progress, 'boolean', true } }
         obj._show_progress = false
         if job.progress ~= nil then
             obj._show_progress = job.progress
         end
 
-        assert(
-            job.parse_errors == nil or type(job.parse_errors) == type(true),
-            debug.traceback('Invalid parse_errors arg ' .. vim.inspect(job.parse_errors))
-        )
+        vim.validate { parse_errors = { job.parse_errors, 'boolean', true } }
         obj._parse_errors = false
         if job.parse_errors ~= nil then
             obj._parse_errors = job.parse_errors
         end
 
-        assert(
-            job.parse_input == nil or type(job.parse_input) == type(true),
-            debug.traceback('Invalid parse_input arg ' .. vim.inspect(job.parse_input))
-        )
+        vim.validate { parse_input = { job.parse_input, 'boolean', true } }
         obj._parse_input = (obj._opts and obj._opts.pty) and obj._opts.pty or false
         if job.parse_input ~= nil then
             obj._parse_input = job.parse_input
+        end
+
+        obj._callbacks = {}
+        local function cb_validator(callbacks)
+            for _, cb in pairs(callbacks) do
+                if type(cb) ~= 'function' then
+                    return false
+                end
+            end
+            return true
+        end
+
+        vim.validate { callbacks = { job.callbacks, { 'table', 'function' }, true } }
+        if job.callbacks then
+            obj._callbacks = type(job.callbacks) == 'function' and { job.callbacks } or job.callbacks
+            vim.validate {
+                callbacks = {
+                    obj._callbacks,
+                    cb_validator,
+                    'expected a function in all callbacks',
+                },
+            }
+        end
+
+        vim.validate { callbacks_on_success = { job.callbacks_on_success, { 'table', 'function' }, true } }
+        if job.callbacks_on_success then
+            local cb_on_success = type(job.callbacks_on_success) == 'function' and { job.callbacks_on_success }
+                or job.callbacks_on_success
+            vim.validate {
+                callbacks_on_success = {
+                    cb_on_success,
+                    cb_validator,
+                    'expected a function in all callbacks_on_success',
+                },
+            }
+            vim.list_extend(
+                obj._callbacks,
+                vim.tbl_map(function(cb)
+                    return function(j, rc)
+                        if rc == 0 and not job.failed then
+                            cb(j, rc)
+                        end
+                    end
+                end, cb_on_success)
+            )
+        end
+
+        vim.validate { callbacks_on_failure = { job.callbacks_on_failure, { 'table', 'function' }, true } }
+        if job.callbacks_on_failure then
+            local cb_on_failure = type(job.callbacks_on_failure) == 'function' and { job.callbacks_on_failure }
+                or job.callbacks_on_failure
+            vim.validate {
+                callbacks_on_failure = {
+                    cb_on_failure,
+                    cb_validator,
+                    'expected a function in all callbacks_on_failure',
+                },
+            }
+            vim.list_extend(
+                obj._callbacks,
+                vim.tbl_map(function(cb)
+                    return function(j, rc)
+                        if rc ~= 0 or j.failed then
+                            cb(j, rc)
+                        end
+                    end
+                end, cb_on_failure)
+            )
         end
     end
 
@@ -276,7 +325,6 @@ function Job:new(job)
     obj._fired = false
     obj._id = -1
     obj._pid = -1
-    obj._callbacks = {}
     obj._tab = nvim.get_current_tabpage()
 
     if obj._show_progress == nil then
@@ -565,27 +613,36 @@ function Job:wait(timeout)
     return vim.fn.jobwait({ self._id })[1]
 end
 
-function Job:add_callback(cb)
-    vim.validate { callback = { cb, 'function' } }
-    table.insert(self._callbacks, cb)
+function Job:add_callbacks(cbs)
+    vim.validate { callback = { cbs, { 'function', 'table' } } }
+    cbs = type(cbs) == 'function' and { cbs } or cbs
+    vim.list_extend(self._callbacks, cbs)
 end
 
-function Job:callback_on_failure(cb)
-    vim.validate { callback = { cb, 'function' } }
-    self:add_callback(function(job, rc)
-        if rc ~= 0 or job.failed then
-            cb(job, rc)
+function Job:callbacks_on_failure(cbs)
+    vim.validate { callback = { cbs, { 'function', 'table' } } }
+    cbs = type(cbs) == 'function' and { cbs } or cbs
+    cbs = vim.tbl_map(function(cb)
+        return function(job, rc)
+            if rc ~= 0 or job.failed then
+                cb(job, rc)
+            end
         end
-    end)
+    end, cbs)
+    self:add_callbacks(cbs)
 end
 
-function Job:callback_on_success(cb)
-    vim.validate { callback = { cb, 'function' } }
-    self:add_callback(function(job, rc)
-        if rc == 0 and not job.failed then
-            cb(job)
+function Job:callbacks_on_success(cbs)
+    vim.validate { callback = { cbs, { 'function', 'table' } } }
+    cbs = type(cbs) == 'function' and { cbs } or cbs
+    cbs = vim.tbl_map(function(cb)
+        return function(job, rc)
+            if rc == 0 and not job.failed then
+                cb(job)
+            end
         end
-    end)
+    end, cbs)
+    self:add_callbacks(cbs)
 end
 
 return Job
