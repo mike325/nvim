@@ -132,11 +132,6 @@ nvim.autocmd.Reload = {
         pattern = 'lua/plugins/init.lua',
         command = 'source lua/plugins/init.lua | PackerCompile',
     },
-    -- {
-    --     event = 'FileType',
-    --     pattern = 'lua',
-    --     command = [[nnoremap <buffer><silent> <leader><leader>r :luafile %<cr>:echo "File reloaded"<cr>]],
-    -- },
 }
 
 nvim.autocmd.FoldText = {

@@ -644,8 +644,7 @@ function M.diff_files(args)
     end
 
     for _, w in ipairs(nvim.tab.list_wins(0)) do
-        local buf = nvim.win.get_buf(w)
-        nvim.buf.call(buf, function()
+        nvim.win.call(w, function()
             vim.cmd.diffthis()
         end)
     end

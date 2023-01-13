@@ -483,8 +483,8 @@ function M.async_execute(opts)
     }
 
     if opts.auto_close or opts.autoclose then
-        script:callbacks_on_success(function(_)
-            if vim.t.progress_win then
+        script:callbacks_on_success(function(job)
+            if vim.t.progress_win and not vim.g.active_job then
                 nvim.win.close(vim.t.progress_win, true)
             end
         end)

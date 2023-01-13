@@ -157,7 +157,7 @@ function M.progress(buffer, job)
     local job_obj = job and STORAGE.jobs[job] or STORAGE.jobs[vim.g.active_job]
     if scratch and job_obj then
         nvim.buf.set_lines(buffer, -2, -1, false, job_obj:output())
-        nvim.buf.call(buffer, function()
+        nvim.win.call(vim.t.progress_win, function()
             nvim.ex['normal!'] 'G'
         end)
     end

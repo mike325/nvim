@@ -106,11 +106,6 @@ local function get_buffer(job)
     end
 
     nvim.buf.set_lines(buf, 0, -1, true, job:output())
-    nvim.buf.call(buf, function()
-        nvim.ex['normal!'] 'G'
-    end)
-
-    job._buffer = buf
 
     return buf
 end
@@ -214,10 +209,6 @@ function Job:new(job)
 
         vim.validate { qf = { job.qf, 'table', true } }
         obj._qf = job.qf
-
-        if obj._qf then
-            obj._qf.tab = nvim.get_current_tabpage()
-        end
 
         vim.validate { save_data = { job.save_data, 'boolean', true } }
         obj.save_data = job.save_data == nil and true or job.save_data
@@ -325,7 +316,6 @@ function Job:new(job)
     obj._fired = false
     obj._id = -1
     obj._pid = -1
-    obj._tab = nvim.get_current_tabpage()
 
     if obj._show_progress == nil then
         obj._show_progress = false
@@ -388,7 +378,6 @@ function Job:restart()
     self._fired = false
     self._id = -1
     self._pid = -1
-    -- self._tab = nvim.get_current_tabpage()
     self:start()
 end
 
@@ -416,7 +405,7 @@ function Job:start()
                 self._buffer = get_buffer(self)
             else
                 nvim.buf.set_lines(self._buffer, -2, -1, false, data)
-                nvim.buf.call(self._buffer, function()
+                nvim.win.call(vim.t.progress_win, function()
                     nvim.ex['normal!'] 'G'
                 end)
             end
@@ -445,7 +434,17 @@ function Job:start()
         jobs[tostring(self._id)] = nil
 
         if vim.g.active_job == tostring(self._id) then
-            vim.g.active_job = next(jobs)
+            local clear = true
+            for id, job in pairs(jobs) do
+                if job._show_progress then
+                    vim.g.active_job = id
+                    clear = false
+                    break
+                end
+            end
+            if clear then
+                vim.g.active_job = nil
+            end
         end
 
         if _user_on_exit then
@@ -475,7 +474,7 @@ function Job:start()
             qf_opts.clear = qf_opts.clear == nil and true or qf_opts.clear
 
             if qf_opts.dump then
-                if vim.t.progress_win and self._tab == nvim.get_current_tabpage() then
+                if vim.t.progress_win then
                     nvim.win.close(vim.t.progress_win, false)
                 end
                 RELOAD('utils.functions').dump_to_qf(qf_opts)
@@ -559,7 +558,9 @@ function Job:start()
     end
 
     jobs[tostring(self._id)] = self
-    vim.g.active_job = tostring(self._id)
+    if self._show_progress then
+        vim.g.active_job = tostring(self._id)
+    end
 end
 
 function Job:stop()
@@ -571,6 +572,14 @@ end
 function Job:pid()
     assert(self._isalive, debug.traceback(('Job %s is not running'):format(self._id)))
     return self._pid
+end
+
+function Job:id()
+    return self._id
+end
+
+function Job:isalive()
+    return self._isalive
 end
 
 function Job:send(data)
@@ -590,13 +599,8 @@ end
 function Job:progress()
     assert(self._isalive, debug.traceback(('Job %s is not running'):format(self._id)))
 
-    if self._tab ~= nvim.get_current_tabpage() then
-        vim.notify('Cannot show progress from a different tab !' .. get_icon 'warn', 'WARN', { title = 'Job Progress' })
-        return false
-    end
-
     self._show_progress = true
-
+    vim.g.active_job = tostring(self:id())
     if not self._buffer or not nvim.buf.is_valid(self.buffer) then
         self._buffer = get_buffer(self)
     end
