@@ -685,6 +685,7 @@ function M.project_config(event)
             project.git_dir = dir
             git_dirs[cwd] = dir
             vim.b.project_root = project
+            vim.opt_local.tags = { './tags', vim.b.project_root.git_dir .. '/tags' }
         end)
     end
 

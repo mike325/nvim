@@ -113,7 +113,7 @@ vim.opt.virtualedit = 'block'
 
 vim.opt.complete = { '.', 'w', 'b', 'u', 't' }
 vim.opt.completeopt = { 'menu', 'menuone', 'noselect', 'noinsert' }
-vim.opt.tags = { '.git/tags', './tags;', 'tags' }
+-- vim.opt.tags = { '.git/tags', './tags;', 'tags' }
 vim.opt.display = { 'lastline', 'msgsep' }
 vim.opt.fileformats = { 'unix', 'dos' }
 

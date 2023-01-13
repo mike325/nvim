@@ -61,13 +61,11 @@ vim.keymap.set('n', '<leader>9', '9gt', noremap)
 vim.keymap.set('n', '<leader>0', '<cmd>tablast<CR>', noremap)
 vim.keymap.set('n', '<leader><leader>n', '<cmd>tabnew<CR>', noremap)
 
-vim.keymap.set('n', '-', '<cmd>Explore<CR>', noremap)
-
 vim.keymap.set('n', '&', '<cmd>&&<CR>', noremap)
 vim.keymap.set('x', '&', '<cmd>&&<CR>', noremap)
 
-vim.keymap.set('n', '/', 'ms/', noremap)
-vim.keymap.set('n', 'g/', 'ms/\\v', noremap)
+vim.keymap.set('n', '/', "m'/", noremap)
+vim.keymap.set('n', 'g/', "m'/\\v", noremap)
 vim.keymap.set('n', '0', '^', noremap)
 vim.keymap.set('n', '^', '0', noremap)
 
