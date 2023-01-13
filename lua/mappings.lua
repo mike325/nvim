@@ -973,4 +973,18 @@ function M.alternate_test(opts)
     end
 end
 
+function M.scp_edit(host, filename)
+    vim.validate {
+        host = { host, 'string' },
+        filename = { filename, 'string' },
+    }
+
+    if STORAGE.hosts[host] then
+        host = STORAGE.hosts[host]
+    end
+
+    local virtual_filename = ('scp://%s:22/%s'):format(host, filename)
+    vim.cmd.edit(virtual_filename)
+end
+
 return M

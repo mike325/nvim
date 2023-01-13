@@ -543,3 +543,40 @@ nvim.command.set('ToggleDiagnostics', function(opts)
     end
     RELOAD('mappings').toggle_diagnostics(ns)
 end, { nargs = '?', desc = 'Toggle column sign diagnostics', complete = completions.diagnostics_namespaces })
+
+nvim.command.set('SCPEdit', function(opts)
+    local host = opts.fargs[1]
+    local filename = opts.fargs[2]
+
+    local function filename_input(hostname)
+        vim.ui.input({ prompt = 'Enter filename > ' }, function(input)
+            if not input then
+                vim.notify('Missing filename!', 'ERROR', { title = 'SCPEdit' })
+                return
+            end
+            filename = input
+            RELOAD('mappings').scp_edit(hostname, filename)
+        end)
+    end
+
+    if not host then
+        vim.ui.input(
+            {
+                prompt = 'Enter hostname > ',
+                completion = 'customlist,v:lua.require("completions").ssh_hosts_completion',
+            },
+            function(input)
+                if not input then
+                    vim.notify('Missing hostname!', 'ERROR', { title = 'SCPEdit' })
+                    return
+                end
+                host = input
+                P(host)
+            end
+        )
+    elseif not filename then
+        filename_input(host)
+    else
+        RELOAD('mappings').scp_edit(host, filename)
+    end
+end, { nargs = '*', desc = 'Toggle column sign diagnostics', complete = completions.ssh_hosts_completion })
