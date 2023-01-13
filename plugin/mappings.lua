@@ -560,20 +560,17 @@ nvim.command.set('SCPEdit', function(opts)
     end
 
     if not host then
-        vim.ui.input(
-            {
-                prompt = 'Enter hostname > ',
-                completion = 'customlist,v:lua.require("completions").ssh_hosts_completion',
-            },
-            function(input)
-                if not input then
-                    vim.notify('Missing hostname!', 'ERROR', { title = 'SCPEdit' })
-                    return
-                end
-                host = input
-                P(host)
+        vim.ui.input({
+            prompt = 'Enter hostname > ',
+            completion = 'customlist,v:lua.require("completions").ssh_hosts_completion',
+        }, function(input)
+            if not input then
+                vim.notify('Missing hostname!', 'ERROR', { title = 'SCPEdit' })
+                return
             end
-        )
+            host = input
+            P(host)
+        end)
     elseif not filename then
         filename_input(host)
     else
