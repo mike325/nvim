@@ -616,9 +616,9 @@ endif
 
 set diffopt^=vertical
 
-if s:has_patch('8.1.0360') || has('nvim')
-    set diffopt^=indent-heuristic,algorithm:patience
-endif
+" if s:has_patch('8.1.0360') || has('nvim')
+"     set diffopt^=indent-heuristic,algorithm:patience
+" endif
 
 if s:has_patch('8.1.1361') || has('nvim')
     set diffopt^=hiddenoff

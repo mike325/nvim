@@ -58,6 +58,16 @@ packer.startup(function()
     use { 'tpope/vim-abolish' }
 
     use {
+        'folke/noice.nvim',
+        config = function()
+            require 'plugins.noice'
+        end,
+        requires = {
+            'MunifTanjim/nui.nvim',
+        },
+    }
+
+    use {
         'chrisgrieser/nvim-various-textobjs',
         config = function()
             require('various-textobjs').setup {
@@ -165,6 +175,9 @@ packer.startup(function()
 
     use {
         'ojroques/vim-oscyank',
+        cond = function()
+            return vim.env.SSH_CONNECTION ~= nil
+        end,
         event = 'VimEnter',
         config = function()
             require 'plugins.oscyank'
@@ -546,9 +559,6 @@ packer.startup(function()
         config = function()
             require 'plugins.lualine'
         end,
-        requires = {
-            { 'arkav/lualine-lsp-progress' },
-        },
     }
 
     use {

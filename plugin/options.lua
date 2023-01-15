@@ -134,7 +134,7 @@ vim.opt.listchars = { tab = '▸ ', trail = '•', extends = '❯', precedes = '
 vim.opt.cpoptions = 'aAceFs_B'
 vim.opt.shortmess:append { a = true, c = true }
 
-vim.opt.lazyredraw = true
+vim.opt.lazyredraw = false
 vim.opt.showmatch = true
 
 vim.opt.splitright = true

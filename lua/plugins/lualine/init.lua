@@ -213,9 +213,7 @@ lualine.setup {
                 end,
             },
             -- where_ami,
-            'lsp_progress',
         },
-        -- lualine_x = { 'encoding', 'fileformat', 'filetype' },
         lualine_y = {
             {
                 'trailspace',
@@ -261,6 +259,17 @@ lualine.setup {
             {
                 'progress',
                 separator = { left = section_separators.right, right = '' },
+            },
+        },
+        lualine_x = {
+            'encoding',
+            'fileformat',
+            'filetype',
+            -- 'lsp_progress',
+            {
+                require('noice').api.statusline.mode.get,
+                cond = require('noice').api.statusline.mode.has,
+                color = { fg = '#ff9e64' },
             },
         },
         lualine_z = {
