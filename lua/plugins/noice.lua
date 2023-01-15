@@ -8,6 +8,7 @@ end
 
 local routes = {}
 
+-- TODO: routes fugitive and long shell messages like pre-commit
 -- filter annoying messages
 local hidden_text = {
     '%[w%]',
