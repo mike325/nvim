@@ -56,3 +56,9 @@ if nvim.plugins['query-secretary'] then
         require('query-secretary').query_window_initiate()
     end, { desc = 'TS Query editing tool' })
 end
+
+if not nvim.plugins['noice.nvim'] then
+    nvim.command.set('Messages', function(opts)
+        RELOAD('mappings').messages(opts)
+    end, { nargs = '?', complete = 'messages', desc = 'Populate quickfix with the :messages list' })
+end

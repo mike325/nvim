@@ -349,10 +349,6 @@ nvim.command.set('ConcealLevel', function()
     vim.opt_local.conceallevel = conncall > 0 and 0 or 2
 end, { desc = 'Toogle conceal level between 0 and 2' })
 
-nvim.command.set('Messages', function(opts)
-    RELOAD('mappings').messages(opts)
-end, { nargs = '?', complete = 'messages', desc = 'Populate quickfix with the :messages list' })
-
 if executable 'pre-commit' then
     nvim.command.set('PreCommit', function(opts)
         RELOAD('mappings').precommit(opts)

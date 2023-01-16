@@ -15,6 +15,7 @@ local hidden_text = {
     'writter',
     'fewer line',
     'less line',
+    '1 change;',
     'more lines?',
     'yanked',
 }

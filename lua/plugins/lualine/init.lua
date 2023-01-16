@@ -11,7 +11,17 @@ if not lualine or vim.g.started_by_firenvim then
     return false
 end
 
+local noice = load_module 'noice'
 local has_winbar = nvim.has.option 'winbar'
+
+local noice_component
+if noice then
+    noice_component = {
+        noice.api.statusline.mode.get,
+        cond = noice.api.statusline.mode.has,
+        color = { fg = '#ff9e64' },
+    }
+end
 
 -- TODO: Enable auto shrink components and remove sections
 -- TODO: Missing sections I would like to add
@@ -266,11 +276,7 @@ lualine.setup {
             'fileformat',
             'filetype',
             -- 'lsp_progress',
-            {
-                require('noice').api.statusline.mode.get,
-                cond = require('noice').api.statusline.mode.has,
-                color = { fg = '#ff9e64' },
-            },
+            noice_component,
         },
         lualine_z = {
             {
