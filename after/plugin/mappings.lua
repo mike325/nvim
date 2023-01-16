@@ -56,3 +56,18 @@ if nvim.plugins['query-secretary'] then
         require('query-secretary').query_window_initiate()
     end, { desc = 'TS Query editing tool' })
 end
+
+if not nvim.plugins['mini.nvim'] then
+    vim.keymap.set(
+        'n',
+        ']e',
+        [[:<C-U>lua require"utils.functions".move_line(true)<CR>]],
+        { noremap = true, silent = true }
+    )
+    vim.keymap.set(
+        'n',
+        '[e',
+        [[:<C-U>lua require"utils.functions".move_line(false)<CR>]],
+        { noremap = true, silent = true }
+    )
+end

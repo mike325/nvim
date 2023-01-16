@@ -6,19 +6,20 @@ local mkdir = require('utils.files').mkdir
 local completions = RELOAD 'completions'
 
 local load_module = require('utils.functions').load_module
-local minidoc = load_module 'mini.doc'
-local minisessions = load_module 'mini.sessions'
+local mini_doc = load_module 'mini.doc'
+local mini_sessions = load_module 'mini.sessions'
+local mini_move = load_module 'mini.move'
 
-if minidoc then
-    minidoc.setup {}
+if mini_doc then
+    mini_doc.setup {}
 end
 
-if minisessions then
+if mini_sessions then
     local sessions_dir = sys.data .. '/session'
     if not is_dir(sessions_dir) then
         mkdir(sessions_dir)
     end
-    minisessions.setup {}
+    mini_sessions.setup {}
     nvim.command.set('SessionSave', function(opts)
         local session = opts.args
         if session == '' then
@@ -28,15 +29,15 @@ if minisessions then
                 session = session:gsub('^%.+', '')
             end
         end
-        minisessions.write(session:gsub('%s+', '_'), { force = true })
+        mini_sessions.write(session:gsub('%s+', '_'), { force = true })
     end, { nargs = '?', complete = completions.session_files })
 
     nvim.command.set('SessionLoad', function(opts)
         local session = opts.args
         if session ~= '' then
-            minisessions.read(session, { force = false })
+            mini_sessions.read(session, { force = false })
         else
-            minisessions.get_latest()
+            mini_sessions.get_latest()
         end
     end, { nargs = '?', complete = completions.session_files })
 
@@ -49,10 +50,26 @@ if minisessions then
             vim.notify('Invalid Session: ' .. session, 'ERROR', { title = 'MiniSession' })
             return
         end
-        minisessions.delete(session, { force = bang })
+        mini_sessions.delete(session, { force = bang })
     end, {
         bang = true,
         nargs = 1,
         complete = completions.session_files,
     })
+end
+
+if mini_move then
+    mini_move.setup {
+        mappings = {
+            left = '',
+            right = '',
+            down = ']e',
+            up = '[e',
+
+            line_left = '',
+            line_right = '',
+            line_down = ']e',
+            line_up = '[e',
+        },
+    }
 end

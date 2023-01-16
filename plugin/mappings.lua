@@ -143,8 +143,6 @@ vim.keymap.set('n', '[b', ':<C-U>exe "".(v:count ? v:count : "")."bprevious"<CR>
 vim.keymap.set('n', ']b', ':<C-U>exe "".(v:count ? v:count : "")."bnext"<CR>', noremap_silent)
 vim.keymap.set('n', ']<Space>', [[:<C-U>lua require"utils.functions".add_nl(true)<CR>]], noremap_silent)
 vim.keymap.set('n', '[<Space>', [[:<C-U>lua require"utils.functions".add_nl(false)<CR>]], noremap_silent)
-vim.keymap.set('n', ']e', [[:<C-U>lua require"utils.functions".move_line(true)<CR>]], noremap_silent)
-vim.keymap.set('n', '[e', [[:<C-U>lua require"utils.functions".move_line(false)<CR>]], noremap_silent)
 vim.keymap.set('n', '<C-L>', '<cmd>nohlsearch|diffupdate<CR>', noremap_silent)
 
 nvim.command.set('ClearQf', function()
