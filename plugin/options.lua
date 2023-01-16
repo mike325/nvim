@@ -165,8 +165,8 @@ if vim.g.gonvim_running ~= nil then
     vim.opt.showmode = false
     vim.opt.ruler = false
 else
+    vim.opt.title = false
     vim.opt.titlestring = '%t (%f)'
-    vim.opt.title = true
 end
 
 vim.opt.diffopt:append {
