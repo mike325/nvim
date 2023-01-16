@@ -12,10 +12,10 @@ local routes = {}
 -- filter annoying messages
 local hidden_text = {
     '%[w%]',
-    'writter',
-    'fewer line',
-    'less line',
-    '1 change;',
+    'written',
+    'fewer lines',
+    'line less',
+    '%d+ changes?;',
     'more lines?',
     'yanked',
 }
