@@ -62,3 +62,18 @@ if not nvim.plugins['noice.nvim'] then
         RELOAD('mappings').messages(opts)
     end, { nargs = '?', complete = 'messages', desc = 'Populate quickfix with the :messages list' })
 end
+
+if not nvim.plugins['mini.nvim'] then
+    vim.keymap.set(
+        'n',
+        ']e',
+        [[:<C-U>lua require"utils.functions".move_line(true)<CR>]],
+        { noremap = true, silent = true }
+    )
+    vim.keymap.set(
+        'n',
+        '[e',
+        [[:<C-U>lua require"utils.functions".move_line(false)<CR>]],
+        { noremap = true, silent = true }
+    )
+end
