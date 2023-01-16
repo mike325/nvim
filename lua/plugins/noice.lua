@@ -18,6 +18,7 @@ local hidden_text = {
     '%d+ changes?;',
     'more lines?',
     'yanked',
+    '%d+ lines?',
 }
 for _, msg in ipairs(hidden_text) do
     table.insert(routes, {
