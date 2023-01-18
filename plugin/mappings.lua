@@ -601,8 +601,10 @@ if executable 'git' then
                     end
                     if #files then
                         for _, f in ipairs(files) do
-                            vim.cmd.edit(f)
+                            -- NOTE: using badd since `:edit` load every buffer and `bufadd()` set buffers as hidden
+                            vim.cmd.badd(f)
                         end
+                        vim.api.nvim_win_set_buf(0, vim.fn.bufadd(files[1]))
                     else
                         vim.notify('No modified files to open', 'WARN', { title = 'GitStatus' })
                     end
