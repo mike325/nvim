@@ -15,12 +15,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Cache packages
-        uses: actions/cache@v2
-        with:
-          path: |
-            C:\Python310
-          key: ${{runner.os}}-pre-commit-${{hashFiles('.github/workflows/main.yml')}}
       - name: Enable Chocolatey
         shell: powershell
         run: |
@@ -28,7 +22,7 @@ jobs:
       - name: Install system packages
         shell: powershell
         run: |
-          choco install -y python curl cmake
+          choco install -y curl cmake
       - name: Fetch script
         shell: bash
         run: |
