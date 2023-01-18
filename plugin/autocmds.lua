@@ -51,12 +51,12 @@ nvim.autocmd.TerminalAutocmds = {
     event = 'TermOpen',
     pattern = '*',
     callback = function()
-        vim.opts_local.swapfile = false
-        vim.opts_local.backup = false
-        vim.opts_local.undofile = false
-        vim.opts_local.relativenumber = false
-        vim.opts_local.number = false
-        vim.opts_local.cursorline = false
+        vim.opt.swapfile = false
+        vim.opt.backup = false
+        vim.opt.undofile = false
+        vim.opt.relativenumber = false
+        vim.opt.number = false
+        vim.opt.cursorline = false
     end,
 }
 
