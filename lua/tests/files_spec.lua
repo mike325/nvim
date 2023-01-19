@@ -1,24 +1,19 @@
 require('plenary.async').tests.add_to_env()
 local is_windows = vim.fn.has 'win32' == 1
 
-local function forward_path(path)
-    if is_windows then
-        if vim.o.shellslash then
-            path = path:gsub('\\', '/')
-            return path
-        end
-        path = path:gsub('/', '\\')
-        return path
-    end
-    return path
-end
-
 -- local function separator()
 --     if is_windows and not vim.o.shellslash then
 --         return '\\'
 --     end
 --     return '/'
 -- end
+
+local function forward_path(path)
+    if is_windows then
+        return (path:gsub('\\', '/'))
+    end
+    return path
+end
 
 local dirname_basename_paths = {
     '~/repos/',
@@ -282,12 +277,12 @@ describe('Realpath', function()
 
     it('HOME', function()
         local homedir = vim.loop.os_homedir()
-        assert.equals(forward_path(homedir), realpath '~')
+        assert.equals(realpath '~', forward_path(homedir))
     end)
 
     it('CWD', function()
         local cwd = vim.loop.cwd()
-        assert.equals(forward_path(cwd), realpath '.')
+        assert.equals(realpath '.', forward_path(cwd))
     end)
 end)
 
@@ -296,7 +291,7 @@ describe('Normalize', function()
 
     it('HOME', function()
         local homedir = vim.loop.os_homedir()
-        assert.equals(forward_path(homedir), normalize '~')
+        assert.equals(normalize '~', forward_path(homedir))
     end)
 
     if is_windows then
@@ -304,10 +299,10 @@ describe('Normalize', function()
             local windows_path = [[c:\Users]]
 
             vim.opt.shellslash = false
-            assert.equals(forward_path(windows_path), normalize(windows_path))
+            assert.equals(normalize(windows_path), forward_path(windows_path))
 
             vim.opt.shellslash = true
-            assert.equals(forward_path(windows_path), normalize(windows_path))
+            assert.equals(normalize(windows_path), forward_path(windows_path))
         end)
     end
 end)

@@ -202,9 +202,16 @@ function M.realpath(path)
     return uv.fs_realpath(M.normalize(path))
 end
 
-function M.basename(path)
-    vim.validate { path = { path, 'string' } }
-    return path:match '[/\\]$' and '' or path:match '[^\\/]+$'
+function M.basename(file)
+    vim.validate { file = { file, 'string', true } }
+    if file == nil then
+        return nil
+    end
+    vim.validate { file = { file, 's' } }
+    if is_windows and file:match '^%w:[\\/]?$' then
+        return ''
+    end
+    return file:match '[/\\]$' and '' or (file:match('[^\\/]*$'):gsub('\\', '/'))
 end
 
 function M.extension(path)
@@ -226,16 +233,24 @@ function M.filename(path)
     return extension ~= '' and name:gsub('%.' .. extension .. '$', '') or name
 end
 
-function M.dirname(path)
-    vim.validate { path = { path, 'string' } }
-    if not path:match '[\\/]' then
+function M.dirname(file)
+    vim.validate { file = { file, 'string', true } }
+    if file == nil then
+        return nil
+    end
+    vim.validate { file = { file, 's' } }
+    if is_windows and file:match '^%w:[\\/]?$' then
+        return (file:gsub('\\', '/'))
+    elseif not file:match '[\\/]' then
         return '.'
-    elseif path == '/' or path:gsub('\\', '/'):match '^%w:$' then
-        return M.forward_path(path)
-    elseif path:match '^/[^/]+$' then
+    elseif file == '/' or file:match '^/[^/]+$' then
         return '/'
     end
-    return M.forward_path(path:match '[/\\]$' and path:sub(1, #path - 1) or path:match '^([/\\]?.+)[/\\]')
+    local dir = file:match '[/\\]$' and file:sub(1, #file - 1) or file:match '^([/\\]?.+)[/\\]'
+    if is_windows and dir:match '^%w:$' then
+        return dir .. '/'
+    end
+    return (dir:gsub('\\', '/'))
 end
 
 function M.is_parent(parent, child)
