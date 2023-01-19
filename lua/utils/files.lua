@@ -199,7 +199,7 @@ end
 function M.realpath(path)
     vim.validate { path = { path, 'string' } }
     assert(M.exists(path), debug.traceback(([[Path "%s" doesn't exists]]):format(path)))
-    return uv.fs_realpath(M.normalize(path))
+    return uv.fs_realpath(M.normalize(path)):gsub('\\', '/')
 end
 
 function M.basename(file)
