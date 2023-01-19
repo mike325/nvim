@@ -238,15 +238,15 @@ function M.alternate_test(thread_args)
     }
 
     local candidates = {}
-    local buf = thread_args.context.bufname
-    local buf_name = basename(buf)
-    local buf_ext = extension(buf_name)
+    local bufname = thread_args.context.bufname
+    local base_bufname = basename(bufname)
+    local buf_ext = extension(base_bufname)
 
     -- TODO: look into tst/test directory for the same name
     local test_patterns = {
-        '([_.]spec)%.' .. buf_ext,
-        '^([tT][eE][sS][tT][_.])',
-        '([._][tT][eE][sS][tT])%.' .. buf_ext,
+        '[_%.]spec%.' .. buf_ext .. '$',
+        '^[tT][eE][sS][tT][_%.]' .. base_bufname,
+        '[%._][tT][eE][sS][tT]%.' .. buf_ext .. '$',
     }
 
     local function is_test(filename)
@@ -260,7 +260,7 @@ function M.alternate_test(thread_args)
 
     if extensions[buf_ext] then
         local function find_test(filename)
-            for _, pattern in pairs(test_patterns) do
+            for _, pattern in ipairs(test_patterns) do
                 if filename:match(pattern) then
                     return true
                 end
@@ -268,24 +268,26 @@ function M.alternate_test(thread_args)
             return false
         end
 
-        local function find_src(filename)
-            for _, pattern in pairs(test_patterns) do
-                local sub = (filename:match(pattern))
-                if sub and filename:gsub(sub, '') == buf_name then
-                    return true
-                end
+        local src_name
+        if is_test(base_bufname) then
+            src_name = basename(bufname)
+            for _, pattern in ipairs(test_patterns) do
+                src_name = src_name:gsub(pattern, '')
             end
-            return false
+            src_name = src_name .. '.' .. buf_ext
+        end
+        local function find_src(filename)
+            return filename == src_name
         end
 
-        local filter_func = is_test(buf_name) and find_test or find_src
+        local filter_func = is_test(base_bufname) and find_src or find_test
 
         candidates = vim.fs.find(filter_func, { type = 'file' })
     end
 
     local results = {
         candidates = candidates,
-        key = buf,
+        key = bufname,
         varname = 'tests',
     }
 

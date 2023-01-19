@@ -952,10 +952,10 @@ function M.alternate_test(opts)
     local candidates
     local alternates = vim.g.tests or {}
     if not alternates[opts.buf] or opts.bang then
-        opts = RELOAD('threads.related').alternate_test(opts)
+        opts = RELOAD('threads.related').alternate_test(RELOAD('threads').add_thread_context(opts))
         candidates = opts.candidates or {}
         if #candidates > 0 then
-            alternates[opts.buf] = candidates
+            alternates[opts.key] = candidates
             vim.g.tests = alternates
         end
     else
