@@ -1,13 +1,6 @@
 require('plenary.async').tests.add_to_env()
 local is_windows = vim.fn.has 'win32' == 1
 
--- local function separator()
---     if is_windows and not vim.o.shellslash then
---         return '\\'
---     end
---     return '/'
--- end
-
 local function forward_path(path)
     if is_windows then
         return (path:gsub('\\', '/'))
