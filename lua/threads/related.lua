@@ -275,7 +275,14 @@ function M.alternate_test(thread_args)
                 src_name = src_name:gsub(pattern, '')
             end
             src_name = src_name .. '.' .. buf_ext
+        else
+            for idx, pattern in ipairs(test_patterns) do
+                if pattern:sub(1, 1) ~= '^' then
+                    test_patterns[idx] = base_bufname:gsub('%.' .. buf_ext .. '$', '') .. pattern
+                end
+            end
         end
+
         local function find_src(filename)
             return filename == src_name
         end
