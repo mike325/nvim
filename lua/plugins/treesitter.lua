@@ -7,11 +7,11 @@ if treesitter == nil then
     return false
 end
 
-local min = vim.env.VIM_MIN ~= nil or vim.g.minimal ~= nil
-local comment_txtobj = nil
-if not packer_plugins or (packer_plugins and not packer_plugins['vim-textobj-comment']) or min then
-    comment_txtobj = '@comment.outer'
-end
+-- local min = vim.env.VIM_MIN ~= nil or vim.g.minimal ~= nil
+-- local comment_txtobj = nil
+-- if not packer_plugins or (packer_plugins and not packer_plugins['vim-textobj-comment']) or min then
+--     comment_txtobj = '@comment.outer'
+-- end
 
 -- local languages = {
 --     'bash',
