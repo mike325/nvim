@@ -478,9 +478,11 @@ function M.remove_empty(opts)
 
     local removed = 0
     for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-        if buf_is_empty(buf) and buf_is_scratch(buf) and not bufs_in_use[buf] then
-            vim.api.nvim_buf_delete(buf, { force = true })
-            removed = removed + 1
+        if buf_is_scratch(buf) and not bufs_in_use[tostring(buf)] then
+            if buf_is_empty(buf) or opts.bang then
+                vim.api.nvim_buf_delete(buf, { force = true })
+                removed = removed + 1
+            end
         end
     end
 
