@@ -264,7 +264,7 @@ if not nvim.has { 0, 9 } then
     vim.opt.cscopequickfix = { 's-', 'c-', 'd-', 'i-', 't-', 'e-', 'a-', 'g-' }
 end
 
-if nvim.has { 0, 8 } then
+if nvim.has { 0, 9 } then
     vim.opt.splitkeep = 'screen'
 end
 
