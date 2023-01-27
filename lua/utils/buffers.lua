@@ -491,4 +491,44 @@ function M.remove_empty(opts)
     end
 end
 
+function M.open_changes(opts)
+    local git_cmd = {
+        'git',
+        'status',
+        '--porcelain=2',
+    }
+
+    RELOAD('utils.functions').async_execute {
+        cmd = git_cmd,
+        progress = false,
+        auto_close = true,
+        silent = true,
+        title = 'GitStatus',
+        on_exit = function(job, rc)
+            if rc == 0 then
+                local output = job:output()
+                local files = {}
+                for _, line in ipairs(output) do
+                    if line:match '^%d%s+[%.AM][M%.]' then
+                        local status = vim.split(line, '%s+')
+                        -- TODO: take filename spaces into consideration
+                        table.insert(files, status[#status])
+                    end
+                end
+                if #files > 0 then
+                    for _, f in ipairs(files) do
+                        -- NOTE: using badd since `:edit` load every buffer and `bufadd()` set buffers as hidden
+                        vim.cmd.badd(f)
+                    end
+                    vim.api.nvim_win_set_buf(0, vim.fn.bufadd(files[1]))
+                else
+                    vim.notify('No modified files to open', 'WARN', { title = 'GitStatus' })
+                end
+            else
+                vim.notify('Failed to the modifiled files', 'ERROR', { title = 'GitStatus' })
+            end
+        end,
+    }
+end
+
 return M

@@ -544,78 +544,12 @@ end, { nargs = '?', desc = 'Toggle column sign diagnostics', complete = completi
 
 if executable 'scp' then
     nvim.command.set('SCPEdit', function(opts)
-        local host = opts.fargs[1]
-        local filename = opts.fargs[2]
-
-        local function filename_input(hostname)
-            vim.ui.input({ prompt = 'Enter filename > ' }, function(input)
-                if not input then
-                    vim.notify('Missing filename!', 'ERROR', { title = 'SCPEdit' })
-                    return
-                end
-                filename = input
-                RELOAD('mappings').scp_edit(hostname, filename)
-            end)
-        end
-
-        if not host then
-            vim.ui.input({
-                prompt = 'Enter hostname > ',
-                completion = 'customlist,v:lua.require("completions").ssh_hosts_completion',
-            }, function(input)
-                if not input then
-                    vim.notify('Missing hostname!', 'ERROR', { title = 'SCPEdit' })
-                    return
-                end
-                host = input
-                P(host)
-            end)
-        elseif not filename then
-            filename_input(host)
-        else
-            RELOAD('mappings').scp_edit(host, filename)
-        end
+        RELOAD('utils.functions').scp_edit(opts)
     end, { nargs = '*', desc = 'Toggle column sign diagnostics', complete = completions.ssh_hosts_completion })
 end
 
 if executable 'git' then
     nvim.command.set('OpenChanges', function(opts)
-        local git_cmd = {
-            'git',
-            'status',
-            '--porcelain=2',
-        }
-
-        RELOAD('utils.functions').async_execute {
-            cmd = git_cmd,
-            progress = false,
-            auto_close = true,
-            silent = true,
-            title = 'GitStatus',
-            on_exit = function(job, rc)
-                if rc == 0 then
-                    local output = job:output()
-                    local files = {}
-                    for _, line in ipairs(output) do
-                        if line:match '^%d%s+[%.AM][M%.]' then
-                            local status = vim.split(line, '%s+')
-                            -- TODO: take filename spaces into consideration
-                            table.insert(files, status[#status])
-                        end
-                    end
-                    if #files then
-                        for _, f in ipairs(files) do
-                            -- NOTE: using badd since `:edit` load every buffer and `bufadd()` set buffers as hidden
-                            vim.cmd.badd(f)
-                        end
-                        vim.api.nvim_win_set_buf(0, vim.fn.bufadd(files[1]))
-                    else
-                        vim.notify('No modified files to open', 'WARN', { title = 'GitStatus' })
-                    end
-                else
-                    vim.notify('Failed to the modifiled files', 'ERROR', { title = 'GitStatus' })
-                end
-            end,
-        }
+        RELOAD('utils.buffers').open_changes(opts)
     end, { nargs = 0, desc = 'Open all modified files in the current git repository' })
 end

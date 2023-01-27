@@ -647,6 +647,10 @@ function M.get_separators(sep_type)
 end
 
 function M.project_config(event)
+    if vim.is_thread() then
+        return
+    end
+
     local cwd = event.cwd or getcwd()
     cwd = cwd:gsub('\\', '/')
 
@@ -697,8 +701,6 @@ function M.project_config(event)
 
     if nvim.has { 0, 8 } then
         -- NOTE: this could be also search in another thread, we may have too many search in bufenter/filetype events
-
-        -- RELOAD('threads.related').async_gather_tests()
 
         local is_c_project = vim.fs.find(
             { 'CMakeLists.txt', 'compile_flags.txt', 'compile_commands.json', '.clang-format', '.clang-tidy' },
@@ -1271,6 +1273,40 @@ function M.qf_to_diagnostic(ns_name)
             vim.diagnostic.set(ns, buf, diagnostic)
         end
         vim.diagnostic.show(ns)
+    end
+end
+
+function M.scp_edit(opts)
+    local host = opts.fargs[1]
+    local filename = opts.fargs[2]
+
+    local function filename_input(hostname)
+        vim.ui.input({ prompt = 'Enter filename > ' }, function(input)
+            if not input then
+                vim.notify('Missing filename!', 'ERROR', { title = 'SCPEdit' })
+                return
+            end
+            filename = input
+            RELOAD('mappings').scp_edit(hostname, filename)
+        end)
+    end
+
+    if not host then
+        vim.ui.input({
+            prompt = 'Enter hostname > ',
+            completion = 'customlist,v:lua.require("completions").ssh_hosts_completion',
+        }, function(input)
+            if not input then
+                vim.notify('Missing hostname!', 'ERROR', { title = 'SCPEdit' })
+                return
+            end
+            host = input
+            P(host)
+        end)
+    elseif not filename then
+        filename_input(host)
+    else
+        RELOAD('mappings').scp_edit(host, filename)
     end
 end
 
