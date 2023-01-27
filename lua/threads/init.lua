@@ -112,7 +112,16 @@ function M.queue_thread(thread, cb, opts)
         thread,
         vim.schedule_wrap(function(o)
             if type(o) == type '' and o ~= '' then
-                cb(vim.json.decode(o))
+                local ok, data = pcall(vim.json.decode, o)
+                if ok then
+                    cb(data)
+                else
+                    vim.notify(
+                        'Failed to decode return value from thread\nnot valid json data: ' .. o .. '\n' .. data,
+                        'ERROR',
+                        { title = 'Thread' }
+                    )
+                end
             else
                 vim.notify(
                     'Something when wrong, got an empty string from another thread',
