@@ -1,6 +1,4 @@
-local load_module = require('utils.functions').load_module
-
-local comment = load_module 'Comment'
+local comment = vim.F.npcall(require, 'Comment')
 if not comment then
     return false
 end

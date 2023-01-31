@@ -1,6 +1,4 @@
-local load_module = require('utils.functions').load_module
-
-local hop = load_module 'hop'
+local hop = vim.F.npcall(require, 'hop')
 
 if not hop then
     return false

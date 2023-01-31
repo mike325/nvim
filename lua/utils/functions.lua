@@ -608,11 +608,7 @@ function M.set_compiler(compiler, opts)
 end
 
 function M.load_module(name)
-    local ok, module = pcall(require, name)
-    if not ok then
-        return nil
-    end
-    return module
+    return vim.F.npcall(require, name)
 end
 
 function M.get_separators(sep_type)

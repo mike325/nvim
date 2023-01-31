@@ -1,12 +1,11 @@
 local nvim = require 'neovim'
-local load_module = require('utils.functions').load_module
 local get_icon = require('utils.functions').get_icon
 local get_separators = require('utils.functions').get_separators
 
 local section = RELOAD 'plugins.lualine.sections'
 
 -- TODO: Add support to live reload these functions
-local lualine = load_module 'lualine'
+local lualine = vim.F.npcall(require, 'lualine')
 if not lualine or vim.g.started_by_firenvim then
     return false
 end

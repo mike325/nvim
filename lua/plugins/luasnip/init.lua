@@ -1,5 +1,4 @@
-local load_module = require('utils.functions').load_module
-local ls = load_module 'luasnip'
+local ls = vim.F.npcall(require, 'luasnip')
 if not ls then
     return false
 end

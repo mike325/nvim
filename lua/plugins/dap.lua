@@ -2,14 +2,13 @@ local nvim = require 'neovim'
 local sys = require 'sys'
 
 local exepath = require('utils.files').exepath
-local load_module = require('utils.functions').load_module
 local getcwd = require('utils.files').getcwd
 local is_dir = require('utils.files').is_dir
 local is_file = require('utils.files').is_file
 
 local is_windows = sys.name == 'windows'
 
-local dap = load_module 'dap'
+local dap = vim.F.npcall(require, 'dap')
 if not dap then
     return false
 end
@@ -225,7 +224,7 @@ nvim.command.set('DapStepOut', function(_)
     require('dap').step_out()
 end, { nargs = '?' })
 
-local dapui = load_module 'dapui'
+local dapui = vim.F.npcall(require, 'dapui')
 if dapui then
     dapui.setup {}
 

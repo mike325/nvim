@@ -1,7 +1,4 @@
--- local nvim = require 'neovim'
-local load_module = require('utils.functions').load_module
-
-local orgmode = load_module 'orgmode'
+local orgmode = vim.F.npcall(require, 'orgmode')
 
 if orgmode == nil then
     return false

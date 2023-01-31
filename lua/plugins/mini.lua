@@ -5,10 +5,9 @@ local is_dir = require('utils.files').is_dir
 local mkdir = require('utils.files').mkdir
 local completions = RELOAD 'completions'
 
-local load_module = require('utils.functions').load_module
-local mini_doc = load_module 'mini.doc'
-local mini_sessions = load_module 'mini.sessions'
-local mini_move = load_module 'mini.move'
+local mini_doc = vim.F.npcall(require, 'mini.doc')
+local mini_sessions = vim.F.npcall(require, 'mini.sessions')
+local mini_move = vim.F.npcall(require, 'mini.move')
 
 if mini_doc then
     mini_doc.setup {}

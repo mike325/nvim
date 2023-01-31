@@ -1,7 +1,6 @@
 local sys = require 'sys'
 
-local load_module = require('utils.functions').load_module
-local null_ls = load_module 'null-ls'
+local null_ls = vim.F.npcall(require, 'null-ls')
 
 local is_absolute = require('utils.files').is_absolute
 local get_files = require('utils.files').get_files

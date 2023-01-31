@@ -1,7 +1,5 @@
-local load_module = require('utils.functions').load_module
-
-local pears = load_module 'pears'
-local autopairs = load_module 'nvim-autopairs'
+local pears = vim.F.npcall(require, 'pears')
+local autopairs = vim.F.npcall(require, 'nvim-autopairs')
 
 if pears then
     pears.setup(function(conf)

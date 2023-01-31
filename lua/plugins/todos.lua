@@ -1,10 +1,9 @@
 local nvim = require 'neovim'
 
 local utils = RELOAD 'utils.functions'
-local load_module = utils.load_module
 local get_icon = utils.get_icon
 
-local todo = load_module 'todo-comments'
+local todo = vim.F.npcall(require, 'todo-comments')
 
 if not todo then
     return false
@@ -40,8 +39,8 @@ vim.keymap.set('n', '[t', function()
 end, { desc = 'Previous todo comment' })
 
 vim.keymap.set('n', '=t', function()
-    local has_trouble = load_module 'trouble'
-    local has_telescope = load_module 'telescope'
+    local has_trouble = vim.F.npcall(require, 'trouble')
+    local has_telescope = vim.F.npcall(require, 'telescope')
 
     if has_telescope then
         vim.cmd.TodoTelescope()

@@ -1,17 +1,15 @@
-local load_module = require('utils.functions').load_module
-
 local nvim = require 'neovim'
 local executable = require('utils.files').executable
 
-local cmp = load_module 'cmp'
+local cmp = vim.F.npcall(require, 'cmp')
 if not cmp then
     return false
 end
 
-local luasnip = load_module 'luasnip'
-local orgmode = load_module 'orgmode'
+local luasnip = vim.F.npcall(require, 'luasnip')
+local orgmode = vim.F.npcall(require, 'orgmode')
 
-local lspkind = load_module 'lspkind'
+local lspkind = vim.F.npcall(require, 'lspkind')
 local format
 if lspkind then
     format = {
@@ -33,8 +31,8 @@ if lspkind then
 end
 
 local custom_comparators = {
-    clangd_comparator = load_module 'clangd_extensions.cmp_scores',
-    underscore = load_module 'cmp-under-comparator',
+    clangd_comparator = vim.F.npcall(require, 'clangd_extensions.cmp_scores'),
+    underscore = vim.F.npcall(require, 'cmp-under-comparator'),
 }
 
 local comparators = vim.deepcopy(cmp.get_config().sorting.comparators)
@@ -80,8 +78,8 @@ local t = function(str)
 end
 
 local next_item = function(fallback)
-    local neogen = load_module 'neogen'
-    local ls = load_module 'luasnip'
+    local neogen = vim.F.npcall(require, 'neogen')
+    local ls = vim.F.npcall(require, 'luasnip')
 
     if ls then
         ls.unlink_current_if_deleted()
@@ -102,8 +100,8 @@ local next_item = function(fallback)
 end
 
 local prev_item = function(fallback)
-    local neogen = load_module 'neogen'
-    local ls = load_module 'luasnip'
+    local neogen = vim.F.npcall(require, 'neogen')
+    local ls = vim.F.npcall(require, 'luasnip')
 
     if ls then
         ls.unlink_current_if_deleted()
