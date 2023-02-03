@@ -7,9 +7,6 @@ local jobs = STORAGE.jobs
 
 local plugins = require('neovim').plugins
 
--- TODO: Add support to indicate backgroud jobs in the statusline
-require 'jobs.mappings'
-
 local Job = {}
 Job.__index = Job
 
@@ -542,7 +539,7 @@ function Job:start()
     self._id = vim.fn.jobstart(self._cmd, self._opts)
 
     if self._id == -1 then
-        error(debug.traceback(('%s is not executable'):format(self._exe)))
+        error(debug.traceback(('%s is not executable'):format(self.exe)))
     end
 
     self._fired = true

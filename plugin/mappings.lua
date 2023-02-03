@@ -553,3 +553,15 @@ if executable 'git' then
         RELOAD('utils.buffers').open_changes(opts)
     end, { nargs = 0, desc = 'Open all modified files in the current git repository' })
 end
+
+vim.keymap.set('n', '=j', function(opts)
+    RELOAD('mappings').show_background_jobs(opts)
+end, noremap)
+
+nvim.command.set('KillJob', function(opts)
+    RELOAD('mappings').kill_job(opts)
+end, { nargs = '?', bang = true, desc = 'Kill the selected job' })
+
+vim.keymap.set('n', '=p', function()
+    RELOAD('mappings').toggle_progress_win()
+end, { noremap = true, silent = true, desc = 'Show progress of the selected job' })

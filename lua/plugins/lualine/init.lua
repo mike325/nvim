@@ -174,26 +174,7 @@ lualine.setup {
             {
                 'bg_jobs',
                 on_click = function(clicks, button, modifiers)
-                    if next(STORAGE.jobs) == nil then
-                        return
-                    end
-
-                    if vim.t.job_info and nvim.win.is_valid(vim.t.job_info) then
-                        nvim.win.close(vim.t.job_info, true)
-                        vim.t.job_info = nil
-                        return
-                    else
-                        vim.t.job_info = RELOAD('utils.windows').lower_window()
-                    end
-
-                    -- TODO: Add auto update of the current jobs if the window stays open
-                    local buf = nvim.win.get_buf(vim.t.job_info)
-                    local lines = {}
-                    for id, job in pairs(STORAGE.jobs) do
-                        local cmd = type(job._cmd) == type '' and job._cmd or table.concat(job._cmd, ' ')
-                        table.insert(lines, ('%s: %s'):format(id, cmd))
-                    end
-                    nvim.buf.set_lines(buf, 0, -1, false, lines)
+                    RELOAD('mappings').show_background_jobs()
                 end,
             },
         },
