@@ -1,10 +1,22 @@
 local function general_completion(arglead, _, _, options)
     local split_components = require('utils.strings').split_components
-    local pattern = table.concat(split_components(arglead, '.'), '.*')
+    local dashes
+    if arglead:sub(1, 2) == '--' then
+        dashes = '--'
+    elseif arglead:sub(1, 1) == '-' then
+        dashes = '-'
+    end
+    local pattern = table.concat(split_components((arglead:gsub('%-', '')), '.'), '.*')
     pattern = pattern:lower()
-    return vim.tbl_filter(function(opt)
+    local results = vim.tbl_filter(function(opt)
         return opt:lower():match(pattern) ~= nil
     end, options) or {}
+    return vim.tbl_map(function(arg)
+        if dashes and arg:sub(1, #dashes) ~= dashes then
+            return dashes .. arg
+        end
+        return arg
+    end, results)
 end
 
 local function json_keys_completion(arglead, cmdline, cursorpos, filename, funcs)
