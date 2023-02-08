@@ -531,4 +531,18 @@ function M.open_changes(opts)
     }
 end
 
+function M.get_diagnostic_ns(ns)
+    vim.validate {
+        ns = { ns, 'string' },
+    }
+    if ns ~= '' then
+        for namespace, attrs in pairs(vim.diagnostic.get_namespaces()) do
+            if attrs.name == ns then
+                return namespace
+            end
+        end
+    end
+    return
+end
+
 return M
