@@ -1,5 +1,4 @@
-local load_module = require('utils.functions').load_module
-local trouble = load_module 'trouble'
+local trouble = vim.F.npcall(require, 'trouble')
 
 if trouble == nil then
     return false

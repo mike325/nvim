@@ -1,10 +1,22 @@
 local function general_completion(arglead, _, _, options)
     local split_components = require('utils.strings').split_components
-    local pattern = table.concat(split_components(arglead, '.'), '.*')
+    local dashes
+    if arglead:sub(1, 2) == '--' then
+        dashes = '--'
+    elseif arglead:sub(1, 1) == '-' then
+        dashes = '-'
+    end
+    local pattern = table.concat(split_components((arglead:gsub('%-', '')), '.'), '.*')
     pattern = pattern:lower()
-    return vim.tbl_filter(function(opt)
+    local results = vim.tbl_filter(function(opt)
         return opt:lower():match(pattern) ~= nil
     end, options) or {}
+    return vim.tbl_map(function(arg)
+        if dashes and arg:sub(1, #dashes) ~= dashes then
+            return dashes .. arg
+        end
+        return arg
+    end, results)
 end
 
 local function json_keys_completion(arglead, cmdline, cursorpos, filename, funcs)
@@ -90,6 +102,16 @@ local completions = {
             table.insert(namespaces, ns.name)
         end
         return general_completion(arglead, cmdline, cursorpos, namespaces)
+    end,
+    background_jobs = function(arglead, cmdline, cursorpos)
+        local jobs = {}
+        for id, job in pairs(STORAGE.jobs) do
+            -- NOTE: this gives very little context about the cmd arguments and what is running
+            -- We need a more unique identifier but also a descriptive enough one to know what's
+            -- executing
+            table.insert(jobs, id .. ':' .. job.exe)
+        end
+        return general_completion(arglead, cmdline, cursorpos, jobs)
     end,
 }
 

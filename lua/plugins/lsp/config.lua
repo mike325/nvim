@@ -1,9 +1,7 @@
 -- local sys = require 'sys'
 local nvim = require 'neovim'
 
-local load_module = require('utils.functions').load_module
-
-local lsp = load_module 'lspconfig'
+local lsp = vim.F.npcall(require, 'lspconfig')
 
 if lsp == nil then
     return false
@@ -17,7 +15,7 @@ if has_telescope then
     builtin = require 'telescope.builtin'
 end
 
-local null_ls = load_module 'null-ls'
+local null_ls = vim.F.npcall(require, 'null-ls')
 local null_configs = require 'plugins.lsp.null'
 
 local M = {}

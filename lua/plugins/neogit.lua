@@ -1,13 +1,11 @@
-local load_module = require('utils.functions').load_module
-
-local neogit = load_module 'neogit'
+local neogit = vim.F.npcall(require, 'neogit')
 
 if neogit == nil then
     return false
 end
 
 local nvim = require 'neovim'
-local has_diffview = load_module 'diffview'
+local has_diffview = vim.F.npcall(require, 'diffview')
 
 neogit.setup {
     -- disable_signs = true,

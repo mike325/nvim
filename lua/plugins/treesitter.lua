@@ -1,9 +1,7 @@
 local nvim = require 'neovim'
-local load_module = require('utils.functions').load_module
+local treesitter = vim.F.npcall(require, 'nvim-treesitter.configs')
 
-local treesitter = load_module 'nvim-treesitter.configs'
-
-if treesitter == nil then
+if not treesitter then
     return false
 end
 
@@ -22,6 +20,7 @@ end
 --     'cpp',
 --     'dockerfile',
 --     'go',
+--     'ini',
 --     'java',
 --     'json',
 --     'jsonc',
@@ -53,7 +52,7 @@ parser_config.org = {
     filetype = 'org',
 }
 
--- local orgmode = load_module 'orgmode'
+-- local orgmode = vim.F.npcall(require, 'orgmode')
 -- if orgmode then
 --     table.insert(languages, 'org')
 -- end
@@ -234,7 +233,7 @@ treesitter.setup {
     },
 }
 
-local context = load_module 'treesitter-context'
+local context = vim.F.npcall(require, 'treesitter-context')
 if context then
     context.setup {}
 end

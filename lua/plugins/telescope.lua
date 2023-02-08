@@ -1,9 +1,7 @@
 local nvim = require 'neovim'
 
 local sys = require 'sys'
-local load_module = require('utils.functions').load_module
-
-local telescope = load_module 'telescope'
+local telescope = vim.F.npcall(require, 'telescope')
 
 if not telescope then
     return false
@@ -15,7 +13,7 @@ local builtin = require 'telescope.builtin'
 
 local noremap = { noremap = true, silent = true }
 
-if load_module 'harpoon' then
+if vim.F.npcall(require, 'harpoon') then
     require('telescope').load_extension 'harpoon'
 end
 

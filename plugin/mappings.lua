@@ -378,11 +378,6 @@ nvim.command.set('Zoom', function(opts)
     RELOAD('mappings').zoom_links(opts)
 end, { nargs = 1, complete = completions.zoom_links, desc = 'Open Zoom call in a specific room' })
 
-vim.keymap.set('n', '=D', function()
-    vim.diagnostic.setqflist()
-    vim.cmd.wincmd 'J'
-end, { noremap = true, silent = true, desc = 'Toggle diagnostics in the quickfix' })
-
 vim.opt.formatexpr = [[luaeval('RELOAD"utils.buffers".format()')]]
 vim.keymap.set('n', '=F', function()
     RELOAD('utils.buffers').format { whole_file = true }
@@ -489,6 +484,11 @@ nvim.command.set('RemoveEmpty', function(opts)
     RELOAD('utils.buffers').remove_empty(opts)
 end, { nargs = 0, bang = true, desc = 'Remove empty buffers' })
 
+vim.keymap.set('n', '=D', function()
+    vim.diagnostic.setqflist()
+    vim.cmd.wincmd 'J'
+end, { noremap = true, silent = true, desc = 'Toggle diagnostics in the quickfix' })
+
 -- TODO: set max size just as dump_to_qf
 nvim.command.set('DumpDiagnostics', function(opts)
     local severity = vim.diagnostic.severity[opts.args]
@@ -499,119 +499,50 @@ nvim.command.set('DumpDiagnostics', function(opts)
     vim.cmd.wincmd 'J'
 end, { nargs = '?', bang = true, desc = 'Filter Diagnostics in Qf', complete = completions.severity_list })
 
+nvim.command.set('ClearDiagnostics', function(opts)
+    local ns = RELOAD('utils.buffers').get_diagnostic_ns(opts.args)
+    vim.diagnostic.reset(ns, 0)
+end, { nargs = '?', desc = 'Clear diagnostics from the given NS', complete = completions.diagnostics_namespaces })
+
 nvim.command.set('HideDiagnostics', function(opts)
-    local ns
-    if opts.args ~= '' then
-        for namespace, attrs in pairs(vim.diagnostic.get_namespaces()) do
-            if attrs.name == opts.args then
-                ns = namespace
-                break
-            end
-        end
-    end
-    vim.diagnostic.hide(ns, vim.api.nvim_get_current_buf())
-end, { nargs = '?', desc = 'Remove diagnostics from a namespsce', complete = completions.diagnostics_namespaces })
+    local ns = RELOAD('utils.buffers').get_diagnostic_ns(opts.args)
+    vim.diagnostic.hide(ns, 0)
+end, { nargs = '?', desc = 'Hide diagnostics from the given NS', complete = completions.diagnostics_namespaces })
 
 nvim.command.set('ShowDiagnostics', function(opts)
-    local ns
-    if opts.args ~= '' then
-        for namespace, attrs in pairs(vim.diagnostic.get_namespaces()) do
-            if attrs.name == opts.args then
-                ns = namespace
-                break
-            end
-        end
-    end
-    vim.diagnostic.show(ns, vim.api.nvim_get_current_buf())
-end, { nargs = '?', desc = 'Remove diagnostics from a namespsce', complete = completions.diagnostics_namespaces })
+    local ns = RELOAD('utils.buffers').get_diagnostic_ns(opts.args)
+    vim.diagnostic.show(ns, 0)
+end, { nargs = '?', desc = 'Show diagnostics from the given NS', complete = completions.diagnostics_namespaces })
 
 nvim.command.set('ToggleDiagnostics', function(opts)
-    local ns
-    if opts.args ~= '' then
-        for namespace, attrs in pairs(vim.diagnostic.get_namespaces()) do
-            if attrs.name == opts.args then
-                ns = namespace
-                break
-            end
-        end
-    end
+    local ns = RELOAD('utils.buffers').get_diagnostic_ns(opts.args)
     RELOAD('mappings').toggle_diagnostics(ns)
 end, { nargs = '?', desc = 'Toggle column sign diagnostics', complete = completions.diagnostics_namespaces })
 
 if executable 'scp' then
     nvim.command.set('SCPEdit', function(opts)
-        local host = opts.fargs[1]
-        local filename = opts.fargs[2]
-
-        local function filename_input(hostname)
-            vim.ui.input({ prompt = 'Enter filename > ' }, function(input)
-                if not input then
-                    vim.notify('Missing filename!', 'ERROR', { title = 'SCPEdit' })
-                    return
-                end
-                filename = input
-                RELOAD('mappings').scp_edit(hostname, filename)
-            end)
-        end
-
-        if not host then
-            vim.ui.input({
-                prompt = 'Enter hostname > ',
-                completion = 'customlist,v:lua.require("completions").ssh_hosts_completion',
-            }, function(input)
-                if not input then
-                    vim.notify('Missing hostname!', 'ERROR', { title = 'SCPEdit' })
-                    return
-                end
-                host = input
-                P(host)
-            end)
-        elseif not filename then
-            filename_input(host)
-        else
-            RELOAD('mappings').scp_edit(host, filename)
-        end
-    end, { nargs = '*', desc = 'Toggle column sign diagnostics', complete = completions.ssh_hosts_completion })
+        RELOAD('utils.functions').scp_edit(opts)
+    end, { nargs = '*', desc = 'Edit remote file using scp', complete = completions.ssh_hosts_completion })
 end
 
 if executable 'git' then
     nvim.command.set('OpenChanges', function(opts)
-        local git_cmd = {
-            'git',
-            'status',
-            '--porcelain=2',
-        }
-
-        RELOAD('utils.functions').async_execute {
-            cmd = git_cmd,
-            progress = false,
-            auto_close = true,
-            silent = true,
-            title = 'GitStatus',
-            on_exit = function(job, rc)
-                if rc == 0 then
-                    local output = job:output()
-                    local files = {}
-                    for _, line in ipairs(output) do
-                        if line:match '^%d%s+[%.AM][M%.]' then
-                            local status = vim.split(line, '%s+')
-                            -- TODO: take filename spaces into consideration
-                            table.insert(files, status[#status])
-                        end
-                    end
-                    if #files then
-                        for _, f in ipairs(files) do
-                            -- NOTE: using badd since `:edit` load every buffer and `bufadd()` set buffers as hidden
-                            vim.cmd.badd(f)
-                        end
-                        vim.api.nvim_win_set_buf(0, vim.fn.bufadd(files[1]))
-                    else
-                        vim.notify('No modified files to open', 'WARN', { title = 'GitStatus' })
-                    end
-                else
-                    vim.notify('Failed to the modifiled files', 'ERROR', { title = 'GitStatus' })
-                end
-            end,
-        }
+        RELOAD('utils.buffers').open_changes(opts)
     end, { nargs = 0, desc = 'Open all modified files in the current git repository' })
 end
+
+vim.keymap.set('n', '=j', function(opts)
+    RELOAD('mappings').show_background_jobs(opts)
+end, noremap)
+
+nvim.command.set('KillJob', function(opts)
+    RELOAD('mappings').kill_job(opts)
+end, { nargs = '?', bang = true, desc = 'Kill the selected job' })
+
+vim.keymap.set('n', '=p', function()
+    RELOAD('mappings').toggle_progress_win()
+end, { noremap = true, silent = true, desc = 'Show progress of the selected job' })
+
+nvim.command.set('Progress', function(opts)
+    RELOAD('mappings').show_job_progress(opts)
+end, { nargs = 1, desc = 'Show progress of the selected job', complete = completions.background_jobs })

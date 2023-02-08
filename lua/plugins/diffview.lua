@@ -1,6 +1,4 @@
-local load_module = require('utils.functions').load_module
-
-local diffview = load_module 'diffview'
+local diffview = vim.F.npcall(require, 'diffview')
 
 if diffview == nil then
     return false
@@ -11,7 +9,7 @@ local nvim = require 'neovim'
 local get_mapping = require('neovim.mappings').get_mapping
 
 local cb = require('diffview.config').diffview_callback
-local has_devicons = load_module 'nvim-web-devicons'
+local has_devicons = vim.F.npcall(require, 'nvim-web-devicons')
 
 local M = {}
 

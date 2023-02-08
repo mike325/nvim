@@ -644,7 +644,7 @@ function M.diff_files(args)
     end
 
     for _, w in ipairs(nvim.tab.list_wins(0)) do
-        nvim.win.call(w, function()
+        nvim.buf.call(vim.api.nvim_win_get_buf(w), function()
             vim.cmd.diffthis()
         end)
     end
@@ -726,8 +726,7 @@ end
 
 function M.wall(opts)
     for _, win in ipairs(nvim.tab.list_wins(0)) do
-        -- local buf = nvim.win.get_buf(win)
-        nvim.win.call(win, function()
+        nvim.buf.call(nvim.win.get_buf(win), function()
             vim.cmd.update()
         end)
     end
@@ -860,7 +859,13 @@ function M.reload_configs(opts)
 end
 
 function M.alternate(opts)
-    opts.buf = vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf())
+    local bufnr = vim.api.nvim_get_current_buf()
+    opts.buf = vim.api.nvim_buf_get_name(bufnr)
+
+    -- NOTE: ignore scratch buffers
+    if opts.buf == '' and vim.bo[bufnr].buftype ~= '' then
+        return
+    end
 
     local prefix = opts.buf:match '^%w+://'
     opts.buf = opts.buf:gsub('^%w+://', '')
@@ -901,7 +906,13 @@ function M.alternate(opts)
 end
 
 function M.alt_makefiles(opts)
-    opts.buf = vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf())
+    local bufnr = vim.api.nvim_get_current_buf()
+    opts.buf = vim.api.nvim_buf_get_name(bufnr)
+
+    -- NOTE: ignore scratch buffers
+    if opts.buf == '' and vim.bo[bufnr].buftype ~= '' then
+        return
+    end
 
     local prefix = opts.buf:match '^%w+://'
     opts.buf = opts.buf:gsub('^%w+://', '')
@@ -937,7 +948,13 @@ function M.alt_makefiles(opts)
 end
 
 function M.alternate_test(opts)
-    opts.buf = vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf())
+    local bufnr = vim.api.nvim_get_current_buf()
+    opts.buf = vim.api.nvim_buf_get_name(bufnr)
+
+    -- NOTE: ignore scratch buffers
+    if opts.buf == '' and vim.bo[bufnr].buftype ~= '' then
+        return
+    end
 
     local prefix = opts.buf:match '^%w+://'
     opts.buf = opts.buf:gsub('^%w+://', '')
@@ -985,6 +1002,37 @@ function M.scp_edit(host, filename)
 
     local virtual_filename = ('scp://%s:22/%s'):format(host, filename)
     vim.cmd.edit(virtual_filename)
+end
+
+function M.show_background_jobs()
+    if next(STORAGE.jobs) == nil then
+        return
+    end
+
+    if vim.t.job_info and nvim.win.is_valid(vim.t.job_info) then
+        nvim.win.close(vim.t.job_info, true)
+        vim.t.job_info = nil
+        return
+    else
+        vim.t.job_info = RELOAD('utils.windows').lower_window()
+    end
+
+    -- TODO: Add auto update of the current jobs if the window stays open
+    local buf = nvim.win.get_buf(vim.t.job_info)
+    local lines = {}
+    for id, job in pairs(STORAGE.jobs) do
+        local cmd = type(job._cmd) == type '' and job._cmd or table.concat(job._cmd, ' ')
+        table.insert(lines, ('%s: %s'):format(id, cmd))
+    end
+    nvim.buf.set_lines(buf, 0, -1, false, lines)
+end
+
+function M.show_job_progress(opts)
+    local id = tostring(opts.fargs[1]:match '^%d+')
+    if STORAGE.jobs[id] then
+        local job = STORAGE.jobs[id]
+        job:progress()
+    end
 end
 
 return M

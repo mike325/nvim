@@ -1,5 +1,3 @@
-local get_icon = require('utils.functions').get_icon
-
 local M = require('lualine.component'):extend()
 
 local hl = require 'lualine.highlight'
@@ -14,7 +12,7 @@ end
 function M:update_status()
     local qf_values = #vim.fn.getqflist()
     if qf_values > 0 then
-        return ('%s%s: %s'):format(hl.component_format_highlight(self.qf_counter), get_icon 'warn', qf_values)
+        return ('%s%s: %s'):format(hl.component_format_highlight(self.qf_counter), 'QF', qf_values)
     end
     return ''
 end

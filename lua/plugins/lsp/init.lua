@@ -1,16 +1,13 @@
--- local nvim = require 'neovim'
-local load_module = require('utils.functions').load_module
 local get_icon = require('utils.functions').get_icon
--- local plugins = require'neovim'.plugins
 
-local lsp = load_module 'lspconfig'
+local lsp = vim.F.npcall(require, 'lspconfig')
 
 if lsp == nil then
     return false
 end
 
 local null_sources = {}
-local null_ls = load_module 'null-ls'
+local null_ls = vim.F.npcall(require, 'null-ls')
 local null_configs = require 'plugins.lsp.null'
 
 if null_ls then
@@ -74,7 +71,7 @@ vim.lsp.protocol.CompletionItemKind = {
 local preload = {
     clangd = {
         setup = function(opts)
-            local clangd = load_module 'clangd_extensions'
+            local clangd = vim.F.npcall(require, 'clangd_extensions')
             if clangd then
                 clangd.setup(opts)
             end
@@ -83,7 +80,7 @@ local preload = {
     },
     ['rust-analyzer'] = {
         setup = function(opts)
-            local tools = load_module 'rust-tools'
+            local tools = vim.F.npcall(require, 'rust-tools')
             if tools then
                 tools.setup(opts)
             end
@@ -94,7 +91,7 @@ local preload = {
 
 local function setup(ft)
     vim.validate { filetype = { ft, 'string' } }
-    local cmp = load_module 'cmp'
+    local cmp = vim.F.npcall(require, 'cmp')
 
     local server_idx = RELOAD('plugins.lsp.utils').check_language_server(ft)
     if server_idx then
@@ -103,7 +100,7 @@ local function setup(ft)
         local init = vim.deepcopy(server.options) or {}
         init.on_attach = require('plugins.lsp.config').on_attach
         if cmp then
-            local cmp_lsp = load_module 'cmp_nvim_lsp'
+            local cmp_lsp = vim.F.npcall(require, 'cmp_nvim_lsp')
             local capabilities
             if cmp_lsp then
                 if cmp_lsp.default_capabilities then

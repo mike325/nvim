@@ -12,8 +12,7 @@ local databases = STORAGE.databases
 
 local async_execute = require('utils.functions').async_execute
 
-local load_module = require('utils.functions').load_module
-local dap = load_module 'dap'
+local dap = vim.F.npcall(require, 'dap')
 
 local M = {
     makeprg = {
