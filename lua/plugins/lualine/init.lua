@@ -10,7 +10,7 @@ if not lualine or vim.g.started_by_firenvim then
     return false
 end
 
-local noice = load_module 'noice'
+local noice = vim.F.npcall(require, 'noice')
 local has_winbar = nvim.has.option 'winbar'
 
 local noice_component

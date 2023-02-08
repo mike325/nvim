@@ -1,7 +1,4 @@
--- local nvim = require 'neovim'
-local load_module = require('utils.functions').load_module
-
-local noice = load_module 'noice'
+local noice = vim.F.npcall(require, 'noice')
 if not noice or vim.g.started_by_firenvim then
     return false
 end
