@@ -644,7 +644,7 @@ function M.diff_files(args)
     end
 
     for _, w in ipairs(nvim.tab.list_wins(0)) do
-        nvim.win.call(w, function()
+        nvim.buf.call(vim.api.nvim_win_get_buf(w), function()
             vim.cmd.diffthis()
         end)
     end
@@ -726,8 +726,7 @@ end
 
 function M.wall(opts)
     for _, win in ipairs(nvim.tab.list_wins(0)) do
-        -- local buf = nvim.win.get_buf(win)
-        nvim.win.call(win, function()
+        nvim.buf.call(nvim.win.get_buf(win), function()
             vim.cmd.update()
         end)
     end
@@ -1026,6 +1025,14 @@ function M.show_background_jobs()
         table.insert(lines, ('%s: %s'):format(id, cmd))
     end
     nvim.buf.set_lines(buf, 0, -1, false, lines)
+end
+
+function M.show_job_progress(opts)
+    local id = tostring(opts.fargs[1]:match '^%d+')
+    if STORAGE.jobs[id] then
+        local job = STORAGE.jobs[id]
+        job:progress()
+    end
 end
 
 return M

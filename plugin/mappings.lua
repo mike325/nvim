@@ -565,3 +565,48 @@ end, { nargs = '?', bang = true, desc = 'Kill the selected job' })
 vim.keymap.set('n', '=p', function()
     RELOAD('mappings').toggle_progress_win()
 end, { noremap = true, silent = true, desc = 'Show progress of the selected job' })
+
+nvim.command.set('ClearDiagnostics', function(opts)
+    local ns
+    if opts.args ~= '' then
+        for namespace, attrs in pairs(vim.diagnostic.get_namespaces()) do
+            if attrs.name == opts.args then
+                ns = namespace
+                break
+            end
+        end
+    end
+    vim.diagnostic.reset(ns, 0)
+end, { nargs = '?', desc = 'Clear diagnostics from the given NS', complete = completions.diagnostics_namespaces })
+
+nvim.command.set('HideDiagnostics', function(opts)
+    local ns
+    if opts.args ~= '' then
+        for namespace, attrs in pairs(vim.diagnostic.get_namespaces()) do
+            if attrs.name == opts.args then
+                ns = namespace
+                break
+            end
+        end
+    end
+    vim.diagnostic.disable(0, ns)
+    vim.diagnostic.hide(ns, 0)
+end, { nargs = '?', desc = 'Hide diagnostics from the given NS', complete = completions.diagnostics_namespaces })
+
+nvim.command.set('ShowDiagnostics', function(opts)
+    local ns
+    if opts.args ~= '' then
+        for namespace, attrs in pairs(vim.diagnostic.get_namespaces()) do
+            if attrs.name == opts.args then
+                ns = namespace
+                break
+            end
+        end
+    end
+    vim.diagnostic.enable(0, ns)
+    vim.diagnostic.show(ns, 0)
+end, { nargs = '?', desc = 'Show diagnostics from the given NS', complete = completions.diagnostics_namespaces })
+
+nvim.command.set('Progress', function(opts)
+    RELOAD('mappings').show_job_progress(opts)
+end, { nargs = 1, desc = 'Show progress of the selected job', complete = completions.background_jobs })

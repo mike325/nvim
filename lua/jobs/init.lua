@@ -402,7 +402,7 @@ function Job:start()
                 self._buffer = get_buffer(self)
             else
                 nvim.buf.set_lines(self._buffer, -2, -1, false, data)
-                nvim.win.call(vim.t.progress_win, function()
+                nvim.buf.call(self._buffer, function()
                     nvim.ex['normal!'] 'G'
                 end)
             end

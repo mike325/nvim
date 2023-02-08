@@ -103,6 +103,16 @@ local completions = {
         end
         return general_completion(arglead, cmdline, cursorpos, namespaces)
     end,
+    background_jobs = function(arglead, cmdline, cursorpos)
+        local jobs = {}
+        for id, job in pairs(STORAGE.jobs) do
+            -- NOTE: this gives very little context about the cmd arguments and what is running
+            -- We need a more unique identifier but also a descriptive enough one to know what's
+            -- executing
+            table.insert(jobs, id .. ':' .. job.exe)
+        end
+        return general_completion(arglead, cmdline, cursorpos, jobs)
+    end,
 }
 
 return completions
