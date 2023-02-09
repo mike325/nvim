@@ -598,7 +598,7 @@ function Job:progress()
 
     self._show_progress = true
     vim.g.active_job = tostring(self:id())
-    if not self._buffer or not nvim.buf.is_valid(self.buffer) then
+    if not self._buffer or not nvim.buf.is_valid(self._buffer) then
         self._buffer = get_buffer(self)
     end
 
