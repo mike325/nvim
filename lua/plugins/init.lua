@@ -216,7 +216,7 @@ packer.startup(function()
             return not is_min and require('storage').has_version('git', { '2', '31', '0' })
         end,
         config = function()
-            require('plugins.diffview')
+            require 'plugins.diffview'
             vim.keymap.set(
                 'n',
                 '<leader>D',
