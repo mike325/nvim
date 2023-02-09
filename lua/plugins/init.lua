@@ -229,26 +229,13 @@ packer.startup(function()
             return not is_min and require('storage').has_version('git', { '2', '31', '0' })
         end,
         config = function()
-            require 'plugins.diffview'
-
-            local nvim = require 'neovim'
-
-            nvim.autocmd.DiffViewMappings = {
-                {
-                    event = 'Filetype',
-                    pattern = 'Diff{viewFiles,FileHistory}',
-                    callback = function()
-                        require('plugins.diffview').set_mappings()
-                    end,
-                },
-                {
-                    event = 'TabEnter',
-                    pattern = '*',
-                    callback = function()
-                        require('plugins.diffview').set_mappings()
-                    end,
-                },
-            }
+            require('plugins.diffview')
+            vim.keymap.set(
+                'n',
+                '<leader>D',
+                '<cmd>DiffviewOpen<CR>',
+                { noremap = true, silent = true, desc = 'Open DiffView' }
+            )
         end,
         requires = 'nvim-lua/plenary.nvim',
     }
