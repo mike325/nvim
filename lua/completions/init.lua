@@ -113,6 +113,11 @@ local completions = {
         end
         return general_completion(arglead, cmdline, cursorpos, jobs)
     end,
+    diagnostics_level = function(arglead, cmdline, cursorpos)
+        local levels = vim.deepcopy(vim.log.levels)
+        levels.OFF = nil
+        return general_completion(arglead, cmdline, cursorpos, vim.tbl_keys(levels))
+    end,
 }
 
 return completions
