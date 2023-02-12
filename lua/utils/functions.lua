@@ -243,7 +243,7 @@ function M.send_grep_job(opts)
         use_loc = { use_loc, 'boolean', true },
     }
 
-    if cmd == grepprg[1] then
+    if cmd == grepprg[1] and #args == 0 then
         vim.list_extend(args, vim.list_slice(grepprg, 2, #grepprg))
     end
 

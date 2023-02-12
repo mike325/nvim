@@ -252,13 +252,29 @@ nvim.command.set('Grep', function(opts)
     local search = opts.fargs[#opts.fargs]
     opts.fargs[#opts.fargs] = nil
     local args = opts.fargs
+    if #args > 0 then
+        local grepprg = vim.tbl_filter(function(k)
+            return not k:match '^%s*$'
+        end, RELOAD('utils.functions').select_grep(false, nil, true))
+
+        vim.list_extend(args, vim.list_slice(grepprg, 2, #grepprg))
+    end
     RELOAD('utils.functions').send_grep_job { search = search, args = args }
 end, { nargs = '+', complete = 'file' })
 
 nvim.command.set('LGrep', function(opts)
     local search = opts.fargs[#opts.fargs]
     opts.fargs[#opts.fargs] = nil
+
     local args = opts.fargs
+    if #args > 0 then
+        local grepprg = vim.tbl_filter(function(k)
+            return not k:match '^%s*$'
+        end, RELOAD('utils.functions').select_grep(false, nil, true))
+
+        vim.list_extend(args, vim.list_slice(grepprg, 2, #grepprg))
+    end
+
     RELOAD('utils.functions').send_grep_job { loc = true, search = search, args = args }
 end, { nargs = '+', complete = 'file' })
 
@@ -546,3 +562,22 @@ end, { noremap = true, silent = true, desc = 'Show progress of the selected job'
 nvim.command.set('Progress', function(opts)
     RELOAD('mappings').show_job_progress(opts)
 end, { nargs = 1, desc = 'Show progress of the selected job', complete = completions.background_jobs })
+
+nvim.command.set('CLevel', function(opts)
+    RELOAD('mappings').filter_qf_diagnostics(opts)
+end, {
+    nargs = 1,
+    bang = true,
+    desc = 'Filter the quickfix by diagnostcis level',
+    complete = completions.diagnostics_level,
+})
+
+nvim.command.set('LLevel', function(opts)
+    opts.win = vim.api.nvim_get_current_win()
+    RELOAD('mappings').filter_qf_diagnostics(opts)
+end, {
+    nargs = 1,
+    bang = true,
+    desc = 'Filter the location list by diagnostcis level',
+    complete = completions.diagnostics_level,
+})

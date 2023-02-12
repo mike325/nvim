@@ -1035,4 +1035,39 @@ function M.show_job_progress(opts)
     end
 end
 
+function M.filter_qf_diagnostics(opts)
+    local filtered_list = {}
+    local items = opts.win and vim.fn.getloclist(opts.win) or vim.fn.getqflist()
+
+    local limit = opts.args:upper()
+    if not vim.log.levels[limit] then
+        vim.notify('Invalid level: ' .. opts.args, 'ERROR', { title = 'QFDiagnostics' })
+        return
+    end
+
+    limit = limit:sub(1, 1)
+
+    local translation_list = {}
+    for l, v in pairs(vim.lsp.log_levels) do
+        if type(l) == type(0) then
+            translation_list[l] = v:sub(1, 1)
+        else
+            translation_list[l:sub(1, 1)] = v
+        end
+    end
+
+    for _, item in ipairs(items) do
+        local level = translation_list[item.type]
+        if level and (item.type == limit or (opts.bang and level >= translation_list[limit])) then
+            table.insert(filtered_list, item)
+        end
+    end
+
+    if opts.win then
+        vim.fn.setloclist(opts.win, filtered_list, ' ')
+    else
+        vim.fn.setqflist(filtered_list, ' ')
+    end
+end
+
 return M
