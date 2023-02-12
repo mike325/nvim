@@ -580,7 +580,7 @@ packer.startup(function()
     use {
         'simrat39/rust-tools.nvim',
         cond = function()
-            return vim.fn.executable 'rust-analyzer' == 1
+            return vim.fn.executable 'rust-analyzer' == 1 or vim.fn.executable 'rustup' == 1
         end,
         wants = {
             'nvim-lspconfig',
