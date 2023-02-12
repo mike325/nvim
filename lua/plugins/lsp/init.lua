@@ -99,6 +99,7 @@ local function setup(ft)
         local config = server.config or server.exec
         local init = vim.deepcopy(server.options) or {}
         init.on_attach = require('plugins.lsp.config').on_attach
+        init.cmd = init.cmd or server.cmd
         if cmp then
             local cmp_lsp = vim.F.npcall(require, 'cmp_nvim_lsp')
             local capabilities
