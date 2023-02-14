@@ -198,3 +198,13 @@ nvim.autocmd.add('User', {
         end
     end,
 })
+
+nvim.autocmd.LspMappings = {
+    event = 'LspAttach',
+    pattern = '*',
+    callback = function(args)
+        local bufnr = args.buf
+        local client = vim.lsp.get_client_by_id(args.data.client_id)
+        RELOAD('plugins.lsp.config').lsp_mappings(client, bufnr)
+    end,
+}

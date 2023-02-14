@@ -585,3 +585,29 @@ end, {
     desc = 'Filter the location list by diagnostcis level',
     complete = completions.diagnostics_level,
 })
+
+if executable 'gh' then
+    nvim.command.set('OpenPRFiles', function(opts)
+        RELOAD('utils.functions').async_execute {
+            cmd = { 'gh', 'pr', 'view', '--json', 'files' },
+            progress = false,
+            context = 'GitHub',
+            title = 'GitHub',
+            callbacks_on_success = function(job)
+                local json = vim.json.decode(table.concat(job:output(), '\n'))
+                local files = {}
+                for _, file in ipairs(json.files) do
+                    table.insert(files, file.path)
+                end
+                if #files > 0 then
+                    for _, f in ipairs(files) do
+                        vim.cmd.badd(f)
+                    end
+                    vim.api.nvim_win_set_buf(0, vim.fn.bufadd(files[1]))
+                end
+            end,
+        }
+    end, {
+        desc = 'Open all modified files in the current PR',
+    })
+end

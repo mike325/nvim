@@ -103,17 +103,15 @@ M.commands = {
     },
 }
 
-function M.on_attach(client, bufnr, is_null)
+function M.lsp_mappings(client, bufnr)
     vim.validate {
         client = { client, 'table' },
         bufnr = { bufnr, 'number', true },
-        is_null = { is_null, 'boolean', true },
     }
-
-    local ft = vim.bo.filetype
 
     bufnr = bufnr or nvim.get_current_buf()
     vim.bo[bufnr].omnifunc = 'v:lua.vim.lsp.omnifunc'
+    vim.bo[bufnr].tagfunc = 'v:lua.vim.lsp.tagfunc'
 
     local lua_cmd = '<cmd>lua %s<CR>'
 
@@ -184,9 +182,6 @@ function M.on_attach(client, bufnr, is_null)
         end
     end
 
-    local has_formatting = client.server_capabilities.documentFormattingProvider
-        or client.server_capabilities.documentRangeFormattingProvider
-
     for command, values in pairs(M.commands) do
         if type(values[1]) == 'function' then
             local opts = { buffer = true }
@@ -194,6 +189,19 @@ function M.on_attach(client, bufnr, is_null)
             nvim.command.set(command, values[1], opts)
         end
     end
+
+end
+
+function M.on_attach(client, bufnr, is_null)
+    vim.validate {
+        client = { client, 'table' },
+        bufnr = { bufnr, 'number', true },
+        is_null = { is_null, 'boolean', true },
+    }
+
+    local ft = vim.bo.filetype
+    local has_formatting = client.server_capabilities.documentFormattingProvider
+        or client.server_capabilities.documentRangeFormattingProvider
 
     if not has_formatting and null_ls and null_configs[ft] and null_configs[ft].formatter then
         -- TODO: Does this needs the custom "on_attach" handler?
