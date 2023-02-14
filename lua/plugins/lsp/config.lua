@@ -189,7 +189,6 @@ function M.lsp_mappings(client, bufnr)
             nvim.command.set(command, values[1], opts)
         end
     end
-
 end
 
 function M.on_attach(client, bufnr, is_null)
