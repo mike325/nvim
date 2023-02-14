@@ -1,11 +1,4 @@
--- local sys = require 'sys'
 local nvim = require 'neovim'
-
-local lsp = vim.F.npcall(require, 'lspconfig')
-
-if lsp == nil then
-    return false
-end
 
 local has_telescope, _ = pcall(require, 'telescope')
 -- local servers = require 'plugins.lsp.servers'
@@ -113,56 +106,81 @@ function M.lsp_mappings(client, bufnr)
     vim.bo[bufnr].omnifunc = 'v:lua.vim.lsp.omnifunc'
     vim.bo[bufnr].tagfunc = 'v:lua.vim.lsp.tagfunc'
 
-    local lua_cmd = '<cmd>lua %s<CR>'
-
     local mappings = {
         ['gd'] = {
             capability = 'declarationProvider',
-            mapping = lua_cmd:format 'vim.lsp.buf.declaration()',
+            mapping = function()
+                vim.lsp.buf.declaration()
+            end,
         },
         ['gi'] = {
             capability = 'implementationProvider',
-            mapping = lua_cmd:format 'vim.lsp.buf.implementation()',
+            mapping = function()
+                vim.lsp.buf.implementation()
+            end,
         },
         ['gr'] = {
             capability = 'referencesProvider',
-            mapping = lua_cmd:format(
-                (has_telescope and "require'telescope.builtin'.lsp_references()") or 'vim.lsp.buf.references()'
-            ),
+            mapping = function()
+                if has_telescope then
+                    require('telescope.builtin').lsp_references()
+                else
+                    vim.lsp.buf.references()
+                end
+            end,
         },
         ['K'] = {
             capability = 'hoverProvider',
-            mapping = lua_cmd:format 'vim.lsp.buf.hover()',
+            mapping = function()
+                vim.lsp.buf.hover()
+            end,
         },
         ['<leader>r'] = {
             capability = 'renameProvider',
-            mapping = lua_cmd:format 'vim.lsp.buf.rename()',
+            mapping = function()
+                vim.lsp.buf.rename()
+            end,
         },
         ['ga'] = {
             capability = 'codeActionProvider',
-            mapping = lua_cmd:format 'vim.lsp.buf.code_action()',
+            mapping = function()
+                vim.lsp.buf.code_action()
+            end,
         },
         ['gh'] = {
             capability = 'signatureHelpProvider',
-            mapping = lua_cmd:format 'vim.lsp.buf.signature_help()',
+            mapping = function()
+                vim.lsp.buf.signature_help()
+            end,
         },
         ['=L'] = {
-            mapping = lua_cmd:format 'vim.diagnostic.setloclist()',
+            mapping = function()
+                vim.diagnostic.setloclist()
+            end,
         },
         ['<leader>s'] = {
-            mapping = lua_cmd:format(
-                (has_telescope and "require'telescope.builtin'.lsp_document_symbols()")
-                    or 'vim.lsp.buf.document_symbol{}'
-            ),
+            mapping = function()
+                if has_telescope then
+                    require('telescope.builtin').lsp_document_symbols()
+                else
+                    vim.lsp.buf.document_symbol {}
+                end
+            end,
         },
         ['=d'] = {
-            mapping = lua_cmd:format 'vim.diagnostic.open_float()',
+            mapping = function()
+                vim.diagnostic.open_float()
+            end,
         },
         [']d'] = {
-            mapping = lua_cmd:format 'vim.diagnostic.goto_next{wrap=false}',
+            mapping = function()
+                vim.diagnostic.goto_next { wrap = false }
+            end,
         },
         ['[d'] = {
-            mapping = lua_cmd:format 'vim.diagnostic.goto_prev{wrap=false}',
+            mapping = function()
+                vim.diagnostic.goto_prev { wrap = false }
+            end,
         },
         -- ['<space>wa'] = '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>',
         -- ['<space>wr'] = '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>',
