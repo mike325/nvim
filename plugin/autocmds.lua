@@ -248,10 +248,12 @@ if not lsp then
                     vim.list_extend(markers, server.markers)
                 end
 
+                local root_dir = vim.fs.dirname(vim.fs.find(markers, { upward = true })[1]) or vim.loop.cwd()
+
                 vim.lsp.start {
                     name = name,
                     cmd = cmd,
-                    root_dir = vim.fs.dirname(vim.fs.find(markers, { upward = true })[1]),
+                    root_dir = root_dir,
                 }
             end
         end,
