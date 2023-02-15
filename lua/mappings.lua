@@ -1057,8 +1057,7 @@ function M.filter_qf_diagnostics(opts)
     end
 
     for _, item in ipairs(items) do
-        local level = translation_list[item.type]
-        if level and (item.type == limit or (opts.bang and level >= translation_list[limit])) then
+        if item.type == limit or (opts.bang and translation_list[item.type] >= translation_list[limit]) then
             table.insert(filtered_list, item)
         end
     end

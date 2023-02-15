@@ -505,6 +505,22 @@ vim.keymap.set('n', '=D', function()
     vim.cmd.wincmd 'J'
 end, { noremap = true, silent = true, desc = 'Toggle diagnostics in the quickfix' })
 
+vim.keymap.set('n', '=L', function()
+    vim.diagnostic.setloclist()
+end, { noremap = true, silent = true, desc = 'Toggle diagnostics in the location list' })
+
+vim.keymap.set('n', '=d', function()
+    vim.diagnostic.open_float()
+end, { noremap = true, silent = true, desc = 'Show diagnostics under the cursor in a floating window' })
+
+vim.keymap.set('n', 'd]', function()
+    vim.diagnostic.goto_next { wrap = true }
+end, { noremap = true, silent = true, desc = 'Go to the next diagnostic' })
+
+vim.keymap.set('n', '[d', function()
+    vim.diagnostic.goto_prev { wrap = true }
+end, { noremap = true, silent = true, desc = 'Go to the prev diagnostic' })
+
 -- TODO: set max size just as dump_to_qf
 nvim.command.set('DumpDiagnostics', function(opts)
     local severity = vim.diagnostic.severity[opts.args]
@@ -581,3 +597,29 @@ end, {
     desc = 'Filter the location list by diagnostcis level',
     complete = completions.diagnostics_level,
 })
+
+if executable 'gh' then
+    nvim.command.set('OpenPRFiles', function(opts)
+        RELOAD('utils.functions').async_execute {
+            cmd = { 'gh', 'pr', 'view', '--json', 'files' },
+            progress = false,
+            context = 'GitHub',
+            title = 'GitHub',
+            callbacks_on_success = function(job)
+                local json = vim.json.decode(table.concat(job:output(), '\n'))
+                local files = {}
+                for _, file in ipairs(json.files) do
+                    table.insert(files, file.path)
+                end
+                if #files > 0 then
+                    for _, f in ipairs(files) do
+                        vim.cmd.badd(f)
+                    end
+                    vim.api.nvim_win_set_buf(0, vim.fn.bufadd(files[1]))
+                end
+            end,
+        }
+    end, {
+        desc = 'Open all modified files in the current PR',
+    })
+end

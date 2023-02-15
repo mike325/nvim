@@ -1,7 +1,10 @@
 local sys = require 'sys'
 
 local function switch_source_header_splitcmd(bufnr, splitcmd)
-    bufnr = require('lspconfig').util.validate_bufnr(bufnr)
+    local lsp = vim.F.npcall(require, 'lspconfig')
+    if lsp then
+        bufnr = require('lspconfig').util.validate_bufnr(bufnr)
+    end
     local params = { uri = vim.uri_from_bufnr(bufnr) }
     vim.lsp.buf_request(bufnr, 'textDocument/switchSourceHeader', params, function(err, _, result)
         if err then

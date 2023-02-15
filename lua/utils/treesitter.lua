@@ -35,11 +35,6 @@ local queries = {
             [
                 (struct_specifier)
                 (class_specifier)
-            ] @class
-
-            [
-                (struct_specifier name: [((type_identifier) @name) (template_type name: (type_identifier) @name)])
-                (class_specifier name: [((type_identifier) @name) (template_type name: (type_identifier) @name)])
             ] @class_name
         ]],
         python = [[
@@ -154,43 +149,35 @@ function M.is_in_node(range, node, buf)
     return false
 end
 
-function M.list_nodes(node_type)
-    local buf = vim.api.nvim_get_current_buf()
+function M.list_nodes(query, buf)
+    vim.validate {
+        query = { query, 'string' },
+        buf = { buf, 'number', true },
+    }
+
+    buf = buf or vim.api.nvim_get_current_buf()
 
     local ok, parser = pcall(vim.treesitter.get_parser, buf)
     if not ok then
         return {}
     end
 
-    local buf_lines = nvim.buf.line_count(0)
-    local line = nvim.buf.get_lines(0, buf_lines - 1, buf_lines, false)[1]
+    local buf_lines = nvim.buf.line_count(buf)
+    local line = nvim.buf.get_lines(buf, buf_lines - 1, buf_lines, false)[1]
 
     local langtree = parser:language_for_range { 0, 0, buf_lines, #line }
     local ts_lang = langtree:lang()
-
-    if not queries[node_type] or not queries[node_type][ts_lang] then
-        return {}
-    end
 
     local result = {}
     for _, tree in ipairs(langtree:trees()) do
         local root = tree:root()
 
         if root then
-            local query = vim.treesitter.parse_query(ts_lang, queries[node_type][ts_lang])
-            for _, node, _ in query:iter_matches(root, buf) do
-                if #node > 1 then
-                    local func_name, func_range
-                    for _, v in pairs(node) do
-                        if not func_name then
-                            func_name = v
-                        else
-                            func_range = v
-                            break
-                        end
-                    end
-                    local lbegin, _, lend, _ = unpack(M.get_vim_range { func_range:range() })
-                    local name = vim.treesitter.query.get_node_text(func_name, buf)
+            local matches = vim.treesitter.parse_query(ts_lang, query)
+            for _, node, _ in matches:iter_matches(root, buf) do
+                for _, v in pairs(node) do
+                    local lbegin, _, lend, _ = unpack(M.get_vim_range({ v:range() }, buf))
+                    local name = vim.treesitter.query.get_node_text(v, buf)
                     table.insert(result, { name, lbegin, lend })
                 end
             end
@@ -207,8 +194,7 @@ function M.get_current_node(node_name, linenr)
     }
     linenr = linenr or nvim.win.get_cursor(0)[1]
 
-    local func_list = M.list_nodes(node_name)
-
+    local func_list = M.list_nodes(queries[node_name][vim.opt_local.filetype:get()])
     for idx, func in ipairs(func_list) do
         if is_in_range(linenr, { func[2], func[3] }) then
             return func_list[idx]

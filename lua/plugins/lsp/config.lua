@@ -1,11 +1,4 @@
--- local sys = require 'sys'
 local nvim = require 'neovim'
-
-local lsp = vim.F.npcall(require, 'lspconfig')
-
-if lsp == nil then
-    return false
-end
 
 local has_telescope, _ = pcall(require, 'telescope')
 -- local servers = require 'plugins.lsp.servers'
@@ -103,68 +96,71 @@ M.commands = {
     },
 }
 
-function M.on_attach(client, bufnr, is_null)
+function M.lsp_mappings(client, bufnr)
     vim.validate {
         client = { client, 'table' },
         bufnr = { bufnr, 'number', true },
-        is_null = { is_null, 'boolean', true },
     }
-
-    local ft = vim.bo.filetype
 
     bufnr = bufnr or nvim.get_current_buf()
     vim.bo[bufnr].omnifunc = 'v:lua.vim.lsp.omnifunc'
-
-    local lua_cmd = '<cmd>lua %s<CR>'
+    vim.bo[bufnr].tagfunc = 'v:lua.vim.lsp.tagfunc'
 
     local mappings = {
         ['gd'] = {
             capability = 'declarationProvider',
-            mapping = lua_cmd:format 'vim.lsp.buf.declaration()',
+            mapping = function()
+                vim.lsp.buf.declaration()
+            end,
         },
         ['gi'] = {
             capability = 'implementationProvider',
-            mapping = lua_cmd:format 'vim.lsp.buf.implementation()',
+            mapping = function()
+                vim.lsp.buf.implementation()
+            end,
         },
         ['gr'] = {
             capability = 'referencesProvider',
-            mapping = lua_cmd:format(
-                (has_telescope and "require'telescope.builtin'.lsp_references()") or 'vim.lsp.buf.references()'
-            ),
+            mapping = function()
+                if has_telescope then
+                    require('telescope.builtin').lsp_references()
+                else
+                    vim.lsp.buf.references()
+                end
+            end,
         },
         ['K'] = {
             capability = 'hoverProvider',
-            mapping = lua_cmd:format 'vim.lsp.buf.hover()',
+            mapping = function()
+                vim.lsp.buf.hover()
+            end,
         },
         ['<leader>r'] = {
             capability = 'renameProvider',
-            mapping = lua_cmd:format 'vim.lsp.buf.rename()',
+            mapping = function()
+                vim.lsp.buf.rename()
+            end,
         },
         ['ga'] = {
             capability = 'codeActionProvider',
-            mapping = lua_cmd:format 'vim.lsp.buf.code_action()',
+            mapping = function()
+                vim.lsp.buf.code_action()
+            end,
         },
         ['gh'] = {
             capability = 'signatureHelpProvider',
-            mapping = lua_cmd:format 'vim.lsp.buf.signature_help()',
-        },
-        ['=L'] = {
-            mapping = lua_cmd:format 'vim.diagnostic.setloclist()',
+            mapping = function()
+                vim.lsp.buf.signature_help()
+            end,
         },
         ['<leader>s'] = {
-            mapping = lua_cmd:format(
-                (has_telescope and "require'telescope.builtin'.lsp_document_symbols()")
-                    or 'vim.lsp.buf.document_symbol{}'
-            ),
-        },
-        ['=d'] = {
-            mapping = lua_cmd:format 'vim.diagnostic.open_float()',
-        },
-        [']d'] = {
-            mapping = lua_cmd:format 'vim.diagnostic.goto_next{wrap=false}',
-        },
-        ['[d'] = {
-            mapping = lua_cmd:format 'vim.diagnostic.goto_prev{wrap=false}',
+            mapping = function()
+                if has_telescope then
+                    require('telescope.builtin').lsp_document_symbols()
+                else
+                    vim.lsp.buf.document_symbol {}
+                end
+            end,
         },
         -- ['<space>wa'] = '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>',
         -- ['<space>wr'] = '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>',
@@ -184,9 +180,6 @@ function M.on_attach(client, bufnr, is_null)
         end
     end
 
-    local has_formatting = client.server_capabilities.documentFormattingProvider
-        or client.server_capabilities.documentRangeFormattingProvider
-
     for command, values in pairs(M.commands) do
         if type(values[1]) == 'function' then
             local opts = { buffer = true }
@@ -194,6 +187,18 @@ function M.on_attach(client, bufnr, is_null)
             nvim.command.set(command, values[1], opts)
         end
     end
+end
+
+function M.on_attach(client, bufnr, is_null)
+    vim.validate {
+        client = { client, 'table' },
+        bufnr = { bufnr, 'number', true },
+        is_null = { is_null, 'boolean', true },
+    }
+
+    local ft = vim.bo.filetype
+    local has_formatting = client.server_capabilities.documentFormattingProvider
+        or client.server_capabilities.documentRangeFormattingProvider
 
     if not has_formatting and null_ls and null_configs[ft] and null_configs[ft].formatter then
         -- TODO: Does this needs the custom "on_attach" handler?
