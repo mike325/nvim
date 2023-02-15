@@ -12,7 +12,7 @@ local f = ls.function_node
 local c = ls.choice_node
 local d = ls.dynamic_node
 -- local l = require('luasnip.extras').lambda
--- local r = require('luasnip.extras').rep
+local r = require('luasnip.extras').rep
 -- local p = require('luasnip.extras').partial
 -- local m = require('luasnip.extras').match
 -- local n = require('luasnip.extras').nonempty
@@ -48,6 +48,96 @@ local function smart_ptr(_, snip)
     end
 
     return ptr
+end
+
+local function get_classname()
+    local class = RELOAD('utils.treesitter').get_current_class()
+    if not class then
+        vim.notify('Cursor is not inside a class', 'ERROR')
+        return 'Class'
+    end
+    local classname_query = [[
+        (class_specifier (type_identifier) @name)
+        (struct_specifier (type_identifier) @name)
+    ]]
+
+    local buf = vim.api.nvim_get_current_buf()
+    local node = vim.treesitter.get_node_at_pos(buf, class[2] - 1, class[3] - 1, {})
+
+    local classname = ''
+    local query = vim.treesitter.query.parse_query(vim.opt_local.filetype:get(), classname_query)
+    for _, capture, _ in query:iter_captures(node, buf) do
+        -- NOTE: Should match just once
+        classname = vim.treesitter.query.get_node_text(capture, buf)
+    end
+
+    return classname
+end
+
+local function rule_3_5(_, parent, old_state)
+    local classname = get_classname()
+    local choice_nr = 1
+    local function get_choice()
+        choice_nr = choice_nr + 1
+        return c(choice_nr, {
+            t { ' = delete' },
+            t { ' = default' },
+            t { '' },
+        })
+    end
+
+    local nodes = {}
+
+    if parent.captures[1] ~= '' then
+        vim.list_extend(nodes, {
+            c(1, {
+                t { '' },
+                t { 'virtual ' },
+            }),
+            t { '~' },
+            t { classname },
+            t { '()' },
+            get_choice(),
+            t { ';', '' },
+
+            t { classname },
+            t { '(' },
+            t { classname },
+            t { '&)' },
+            get_choice(),
+            t { ';', '' },
+
+            t { classname },
+            t { '& operator=(' },
+            t { classname },
+            t { '&)' },
+            r(choice_nr),
+            t { ';', '' },
+        })
+    end
+
+    if parent.captures[1] == '5' then
+        vim.list_extend(nodes, {
+            t { classname },
+            t { '(' },
+            t { classname },
+            t { '&&)' },
+            get_choice(),
+            t { ';', '' },
+        })
+        vim.list_extend(nodes, {
+            t { classname },
+            t { '& operator=(' },
+            t { classname },
+            t { '&&)' },
+            r(choice_nr),
+            t { ';', '' },
+        })
+    end
+
+    local snip_node = sn(nil, nodes)
+    snip_node.old_state = old_state
+    return snip_node
 end
 
 return {
@@ -153,6 +243,18 @@ return {
                     }),
                 }),
                 d(5, saved_text, {}, { user_args = { { indent = true } } }),
+            }
+        )
+    ),
+    -- TODO: This could be smarter, and add only the missing functions
+    s(
+        { trig = 'r([35])', regTrig = true },
+        fmt(
+            [[
+            {}
+        ]],
+            {
+                d(1, rule_3_5, {}, {}),
             }
         )
     ),
