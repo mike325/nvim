@@ -509,6 +509,22 @@ vim.keymap.set('n', '=D', function()
     vim.cmd.wincmd 'J'
 end, { noremap = true, silent = true, desc = 'Toggle diagnostics in the quickfix' })
 
+vim.keymap.set('n', '=L', function()
+    vim.diagnostic.setloclist()
+end, { noremap = true, silent = true, desc = 'Toggle diagnostics in the location list' })
+
+vim.keymap.set('n', '=d', function()
+    vim.diagnostic.open_float()
+end, { noremap = true, silent = true, desc = 'Show diagnostics under the cursor in a floating window' })
+
+vim.keymap.set('n', 'd]', function()
+    vim.diagnostic.goto_next { wrap = true }
+end, { noremap = true, silent = true, desc = 'Go to the next diagnostic' })
+
+vim.keymap.set('n', '[d', function()
+    vim.diagnostic.goto_prev { wrap = true }
+end, { noremap = true, silent = true, desc = 'Go to the prev diagnostic' })
+
 -- TODO: set max size just as dump_to_qf
 nvim.command.set('DumpDiagnostics', function(opts)
     local severity = vim.diagnostic.severity[opts.args]

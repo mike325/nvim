@@ -153,11 +153,6 @@ function M.lsp_mappings(client, bufnr)
                 vim.lsp.buf.signature_help()
             end,
         },
-        ['=L'] = {
-            mapping = function()
-                vim.diagnostic.setloclist()
-            end,
-        },
         ['<leader>s'] = {
             mapping = function()
                 if has_telescope then
@@ -165,21 +160,6 @@ function M.lsp_mappings(client, bufnr)
                 else
                     vim.lsp.buf.document_symbol {}
                 end
-            end,
-        },
-        ['=d'] = {
-            mapping = function()
-                vim.diagnostic.open_float()
-            end,
-        },
-        [']d'] = {
-            mapping = function()
-                vim.diagnostic.goto_next { wrap = false }
-            end,
-        },
-        ['[d'] = {
-            mapping = function()
-                vim.diagnostic.goto_prev { wrap = false }
             end,
         },
         -- ['<space>wa'] = '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>',
