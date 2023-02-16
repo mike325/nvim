@@ -517,7 +517,7 @@ vim.keymap.set('n', '=d', function()
     vim.diagnostic.open_float()
 end, { noremap = true, silent = true, desc = 'Show diagnostics under the cursor in a floating window' })
 
-vim.keymap.set('n', 'd]', function()
+vim.keymap.set('n', ']d', function()
     vim.diagnostic.goto_next { wrap = true }
 end, { noremap = true, silent = true, desc = 'Go to the next diagnostic' })
 
