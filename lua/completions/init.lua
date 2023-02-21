@@ -47,22 +47,14 @@ local completions = {
         return general_completion(arglead, cmdline, cursorpos, { 'Debug', 'Release', 'MinSizeRel', 'RelWithDebInfo' })
     end,
     gitfiles_workspace = function(arglead, cmdline, cursorpos)
-        local gitstatus = require('git.utils').status()
-        local files = {}
-        if gitstatus.workspace then
-            vim.list_extend(files, vim.tbl_keys(gitstatus.workspace))
-        end
-        if gitstatus.untracked then
-            vim.list_extend(files, gitstatus.untracked)
-        end
-        return general_completion(arglead, cmdline, cursorpos, files)
+        local gitstatus = require('utils.git').status()
+        local files = vim.tbl_keys(gitstatus.workspace)
+        vim.list_extend(files, gitstatus.untracked)
+        return general_completion(arglead, cmdline, cursorpos, require('utils.tables').uniq_unorder(files))
     end,
     gitfiles_stage = function(arglead, cmdline, cursorpos)
-        local gitstatus = require('git.utils').status()
-        local files = {}
-        if gitstatus.stage then
-            vim.list_extend(files, vim.tbl_keys(gitstatus.stage))
-        end
+        local gitstatus = require('utils.git').status()
+        local files = vim.tbl_keys(gitstatus.stage)
         return general_completion(arglead, cmdline, cursorpos, files)
     end,
     session_files = function(arglead, cmdline, cursorpos)
@@ -117,6 +109,14 @@ local completions = {
         local levels = vim.deepcopy(vim.log.levels)
         levels.OFF = nil
         return general_completion(arglead, cmdline, cursorpos, vim.tbl_keys(levels))
+    end,
+    qf_file_options = function(arglead, cmdline, cursorpos)
+        local options = {
+            '-qf',
+            '-open',
+            '-background',
+        }
+        return general_completion(arglead, cmdline, cursorpos, options)
     end,
 }
 

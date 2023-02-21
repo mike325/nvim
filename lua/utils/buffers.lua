@@ -492,43 +492,33 @@ function M.remove_empty(opts)
 end
 
 function M.open_changes(opts)
-    local git_cmd = {
-        'git',
-        'status',
-        '--porcelain=2',
-    }
-
-    RELOAD('utils.functions').async_execute {
-        cmd = git_cmd,
-        progress = false,
-        auto_close = true,
-        silent = true,
-        title = 'GitStatus',
-        on_exit = function(job, rc)
-            if rc == 0 then
-                local output = job:output()
-                local files = {}
-                for _, line in ipairs(output) do
-                    if line:match '^%d%s+[%.AM][M%.]' then
-                        local status = vim.split(line, '%s+')
-                        -- TODO: take filename spaces into consideration
-                        table.insert(files, status[#status])
-                    end
+    local action = opts.args:gsub('%-', '')
+    local function files_actions(files)
+        if #files > 0 then
+            files = vim.tbl_filter(function(filename)
+                return require('utils.files').is_file(filename)
+            end, files)
+            if action == 'qf' then
+                M.dump_files_into_qf(files, true)
+            elseif action == 'open' or action == 'background' or action == '' then
+                for _, f in ipairs(files) do
+                    -- NOTE: using badd since `:edit` load every buffer and `bufadd()` set buffers as hidden
+                    vim.cmd.badd(f)
                 end
-                if #files > 0 then
-                    for _, f in ipairs(files) do
-                        -- NOTE: using badd since `:edit` load every buffer and `bufadd()` set buffers as hidden
-                        vim.cmd.badd(f)
-                    end
+                if action == 'open' or action == '' then
                     vim.api.nvim_win_set_buf(0, vim.fn.bufadd(files[1]))
-                else
-                    vim.notify('No modified files to open', 'WARN', { title = 'GitStatus' })
                 end
-            else
-                vim.notify('Failed to the modifiled files', 'ERROR', { title = 'GitStatus' })
             end
-        end,
-    }
+        else
+            vim.notify('No modified files to open', 'WARN', { title = 'GitStatus' })
+        end
+    end
+
+    if not opts.bang then
+        RELOAD('utils.git').modified_files(files_actions)
+    else
+        RELOAD('utils.git').modified_files_from_base(files_actions)
+    end
 end
 
 function M.get_diagnostic_ns(ns)
@@ -543,6 +533,30 @@ function M.get_diagnostic_ns(ns)
         end
     end
     return
+end
+
+function M.dump_files_into_qf(buffers, open)
+    vim.validate {
+        buffers = { buffers, 'table' },
+        open = { open, 'boolean', true },
+    }
+
+    local items = {}
+    for _, buf in ipairs(buffers) do
+        if type(buf) == type(1) then
+            table.insert(items, { bufnr = buf })
+        else
+            table.insert(items, { filename = buf })
+        end
+    end
+    if #items > 0 then
+        vim.fn.setqflist(items, ' ')
+        if open then
+            RELOAD('utils.functions').toggle_qf()
+        end
+    else
+        vim.notify('No buffers to open', 'INFO')
+    end
 end
 
 return M

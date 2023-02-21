@@ -522,7 +522,7 @@ vim.keymap.set('n', '[d', function()
 end, { noremap = true, silent = true, desc = 'Go to the prev diagnostic' })
 
 -- TODO: set max size just as dump_to_qf
-nvim.command.set('DumpDiagnostics', function(opts)
+nvim.command.set('DiagnosticsDump', function(opts)
     local severity = vim.diagnostic.severity[opts.args]
     if severity then
         severity = { min = severity }
@@ -531,22 +531,22 @@ nvim.command.set('DumpDiagnostics', function(opts)
     vim.cmd.wincmd 'J'
 end, { nargs = '?', bang = true, desc = 'Filter Diagnostics in Qf', complete = completions.severity_list })
 
-nvim.command.set('ClearDiagnostics', function(opts)
+nvim.command.set('DiagnosticsClear', function(opts)
     local ns = RELOAD('utils.buffers').get_diagnostic_ns(opts.args)
     vim.diagnostic.reset(ns, 0)
 end, { nargs = '?', desc = 'Clear diagnostics from the given NS', complete = completions.diagnostics_namespaces })
 
-nvim.command.set('HideDiagnostics', function(opts)
+nvim.command.set('DiagnosticsHide', function(opts)
     local ns = RELOAD('utils.buffers').get_diagnostic_ns(opts.args)
     vim.diagnostic.hide(ns, 0)
 end, { nargs = '?', desc = 'Hide diagnostics from the given NS', complete = completions.diagnostics_namespaces })
 
-nvim.command.set('ShowDiagnostics', function(opts)
+nvim.command.set('DiagnosticsShow', function(opts)
     local ns = RELOAD('utils.buffers').get_diagnostic_ns(opts.args)
     vim.diagnostic.show(ns, 0)
 end, { nargs = '?', desc = 'Show diagnostics from the given NS', complete = completions.diagnostics_namespaces })
 
-nvim.command.set('ToggleDiagnostics', function(opts)
+nvim.command.set('DiagnosticsToggle', function(opts)
     local ns = RELOAD('utils.buffers').get_diagnostic_ns(opts.args)
     RELOAD('mappings').toggle_diagnostics(ns)
 end, { nargs = '?', desc = 'Toggle column sign diagnostics', complete = completions.diagnostics_namespaces })
@@ -555,12 +555,6 @@ if executable 'scp' then
     nvim.command.set('SCPEdit', function(opts)
         RELOAD('utils.functions').scp_edit(opts)
     end, { nargs = '*', desc = 'Edit remote file using scp', complete = completions.ssh_hosts_completion })
-end
-
-if executable 'git' then
-    nvim.command.set('OpenChanges', function(opts)
-        RELOAD('utils.buffers').open_changes(opts)
-    end, { nargs = 0, desc = 'Open all modified files in the current git repository' })
 end
 
 vim.keymap.set('n', '=j', function(opts)
@@ -598,8 +592,13 @@ end, {
     complete = completions.diagnostics_level,
 })
 
+-- TODO: All this file list functions should be able to:
+-- - List dump the files into the QF
+-- - Open them in the background
+-- - Open them in the forground setting the active buffer
 if executable 'gh' then
     nvim.command.set('OpenPRFiles', function(opts)
+        local action = opts.args:gsub('%-', '')
         RELOAD('utils.functions').async_execute {
             cmd = { 'gh', 'pr', 'view', '--json', 'files' },
             progress = false,
@@ -612,14 +611,46 @@ if executable 'gh' then
                     table.insert(files, file.path)
                 end
                 if #files > 0 then
-                    for _, f in ipairs(files) do
-                        vim.cmd.badd(f)
+                    if action == 'qf' then
+                        RELOAD('utils.buffers').dump_files_into_qf(files, true)
+                    elseif action == 'open' or action == 'background' or action == '' then
+                        for _, f in ipairs(files) do
+                            -- NOTE: using badd since `:edit` load every buffer and `bufadd()` set buffers as hidden
+                            vim.cmd.badd(f)
+                        end
+                        if action == 'open' or action == '' then
+                            vim.api.nvim_win_set_buf(0, vim.fn.bufadd(files[1]))
+                        end
                     end
-                    vim.api.nvim_win_set_buf(0, vim.fn.bufadd(files[1]))
                 end
             end,
         }
     end, {
+        nargs = '?',
+        complete = completions.qf_file_options,
         desc = 'Open all modified files in the current PR',
     })
 end
+
+if executable 'git' then
+    nvim.command.set('OpenChanges', function(opts)
+        RELOAD('utils.buffers').open_changes(opts)
+    end, {
+        bang = true,
+        nargs = '?',
+        complete = completions.qf_file_options,
+        desc = 'Open all modified files in the current git repository',
+    })
+end
+
+-- NOTE: This could be smarter and list the hunks in the QF
+nvim.command.set('ModifiedDump', function(opts)
+    RELOAD('utils.buffers').dump_files_into_qf(
+        vim.tbl_filter(function(buf)
+            return vim.bo[buf].modified
+        end, vim.api.nvim_list_bufs()),
+        true
+    )
+end, {
+    desc = 'Dump all unsaved files into the QF',
+})
