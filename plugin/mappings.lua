@@ -602,7 +602,7 @@ end, {
 -- - Open them in the forground setting the active buffer
 if executable 'gh' then
     nvim.command.set('OpenPRFiles', function(opts)
-        local action = opts.fargs[1]:gsub('%-', '')
+        local action = opts.args:gsub('%-', '')
         RELOAD('utils.functions').async_execute {
             cmd = { 'gh', 'pr', 'view', '--json', 'files' },
             progress = false,
