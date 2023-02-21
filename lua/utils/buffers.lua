@@ -498,6 +498,8 @@ function M.open_changes(opts)
         '--porcelain=2',
     }
 
+    local action = opts.fargs[1]:gsub('%-', '')
+
     RELOAD('utils.functions').async_execute {
         cmd = git_cmd,
         progress = false,
@@ -516,11 +518,17 @@ function M.open_changes(opts)
                     end
                 end
                 if #files > 0 then
-                    for _, f in ipairs(files) do
-                        -- NOTE: using badd since `:edit` load every buffer and `bufadd()` set buffers as hidden
-                        vim.cmd.badd(f)
+                    if action == 'qf' then
+                        M.dump_files_into_qf(files, true)
+                    elseif action == 'open' or action == 'background' then
+                        for _, f in ipairs(files) do
+                            -- NOTE: using badd since `:edit` load every buffer and `bufadd()` set buffers as hidden
+                            vim.cmd.badd(f)
+                        end
+                        if action == 'open' then
+                            vim.api.nvim_win_set_buf(0, vim.fn.bufadd(files[1]))
+                        end
                     end
-                    vim.api.nvim_win_set_buf(0, vim.fn.bufadd(files[1]))
                 else
                     vim.notify('No modified files to open', 'WARN', { title = 'GitStatus' })
                 end
@@ -543,6 +551,30 @@ function M.get_diagnostic_ns(ns)
         end
     end
     return
+end
+
+function M.dump_files_into_qf(buffers, open)
+    vim.validate {
+        buffers = { buffers, 'table' },
+        open = { open, 'boolean', true },
+    }
+
+    local items = {}
+    for _, buf in ipairs(buffers) do
+        if type(buf) == type(1) then
+            table.insert(items, { bufnr = buf })
+        else
+            table.insert(items, { filename = buf })
+        end
+    end
+    if #items > 0 then
+        vim.fn.setqflist(items, ' ')
+        if open then
+            RELOAD('utils.functions').toggle_qf()
+        end
+    else
+        vim.notify('No buffers to open', 'INFO')
+    end
 end
 
 return M

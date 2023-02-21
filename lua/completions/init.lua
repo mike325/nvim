@@ -118,6 +118,14 @@ local completions = {
         levels.OFF = nil
         return general_completion(arglead, cmdline, cursorpos, vim.tbl_keys(levels))
     end,
+    qf_file_options = function(arglead, cmdline, cursorpos)
+        local options = {
+            '-qf',
+            '-open',
+            '-background',
+        }
+        return general_completion(arglead, cmdline, cursorpos, options)
+    end,
 }
 
 return completions
