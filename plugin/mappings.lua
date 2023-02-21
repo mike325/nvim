@@ -617,12 +617,12 @@ if executable 'gh' then
                 if #files > 0 then
                     if action == 'qf' then
                         RELOAD('utils.buffers').dump_files_into_qf(files, true)
-                    elseif action == 'open' or action == 'background' then
+                    elseif action == 'open' or action == 'background' or action == '' then
                         for _, f in ipairs(files) do
                             -- NOTE: using badd since `:edit` load every buffer and `bufadd()` set buffers as hidden
                             vim.cmd.badd(f)
                         end
-                        if action == 'open' then
+                        if action == 'open' or action == '' then
                             vim.api.nvim_win_set_buf(0, vim.fn.bufadd(files[1]))
                         end
                     end
@@ -640,6 +640,7 @@ if executable 'git' then
     nvim.command.set('OpenChanges', function(opts)
         RELOAD('utils.buffers').open_changes(opts)
     end, {
+        bang = true,
         nargs = '?',
         complete = completions.qf_file_options,
         desc = 'Open all modified files in the current git repository',

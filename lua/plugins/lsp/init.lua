@@ -70,22 +70,24 @@ vim.lsp.protocol.CompletionItemKind = {
 
 local preload = {
     clangd = {
-        setup = function(opts)
+        setup = function(init)
             local clangd = vim.F.npcall(require, 'clangd_extensions')
             if clangd then
-                clangd.setup(opts)
+                clangd.setup { server = init }
+            else
+                lsp.clangd.setup(init)
             end
         end,
-        args = {},
     },
     ['rust-analyzer'] = {
-        setup = function(opts)
+        setup = function(init)
             local tools = vim.F.npcall(require, 'rust-tools')
             if tools then
-                tools.setup(opts)
+                tools.setup { server = init }
+            else
+                lsp.rust_analyzer.setup(init)
             end
         end,
-        args = {},
     },
 }
 
@@ -113,9 +115,7 @@ local function setup(ft)
             init.capabilities = vim.tbl_deep_extend('keep', init.capabilities or {}, capabilities or {})
         end
         if preload[config] and preload[config].setup then
-            local opts = preload[config].args
-            opts.server = init
-            preload[config].setup(opts)
+            preload[config].setup(init)
         else
             lsp[config].setup(init)
         end

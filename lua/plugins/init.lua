@@ -567,6 +567,7 @@ packer.startup(function()
         end,
     }
 
+    -- TODO: Add commands to invoke rust-tools functions
     use {
         'simrat39/rust-tools.nvim',
         cond = function()
