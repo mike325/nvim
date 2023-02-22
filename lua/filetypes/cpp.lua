@@ -246,7 +246,7 @@ function M.set_opts(compiler, bufnum)
             end
         end
 
-        if filename:match('%.hpp$') or filename:match('%.h$') then
+        if filename:match '%.hpp$' or filename:match '%.h$' then
             if vim.g.alternates[filename] then
                 set_source_options(vim.g.alternates[filename][1])
             else
@@ -266,7 +266,6 @@ function M.set_opts(compiler, bufnum)
         else
             set_source_options(filename)
         end
-
     end
 
     if not args then

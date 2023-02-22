@@ -62,16 +62,6 @@ if nvim.plugins['query-secretary'] then
 end
 
 if not nvim.plugins['mini.nvim'] then
-    vim.keymap.set(
-        'n',
-        ']e',
-        [[:<C-U>lua require"mappings".move_line(true)<CR>]],
-        { noremap = true, silent = true }
-    )
-    vim.keymap.set(
-        'n',
-        '[e',
-        [[:<C-U>lua require"mappings".move_line(false)<CR>]],
-        { noremap = true, silent = true }
-    )
+    vim.keymap.set('n', ']e', [[:<C-U>lua require"mappings".move_line(true)<CR>]], { noremap = true, silent = true })
+    vim.keymap.set('n', '[e', [[:<C-U>lua require"mappings".move_line(false)<CR>]], { noremap = true, silent = true })
 end
