@@ -173,56 +173,6 @@ function M.get_icon(icon)
     return icons[icon]
 end
 
-function M.make_executable()
-    if sys.name == 'windows' then
-        return
-    end
-
-    local shebang = nvim.buf.get_lines(0, 0, 1, true)[1]
-    if not shebang or not shebang:match '^#!.+' then
-        nvim.autocmd.add('BufWritePre', {
-            group = 'MakeExecutable',
-            buffer = nvim.win.get_buf(0),
-            callback = function()
-                M.make_executable()
-            end,
-            once = true,
-        })
-        return
-    end
-
-    local filename = vim.fn.expand '%'
-    if is_file(filename) then
-        local fileinfo = vim.loop.fs_stat(filename)
-        local filemode = fileinfo.mode - 32768
-
-        if fileinfo.uid ~= sys.user.uid or bit.band(filemode, 0x40) ~= 0 then
-            return
-        end
-    end
-
-    nvim.autocmd.add('BufWritePost', {
-        group = 'MakeExecutable',
-        buffer = nvim.win.get_buf(0),
-        callback = function()
-            M.chmod_exec()
-        end,
-        once = true,
-    })
-end
-
-function M.chmod_exec()
-    local filename = vim.fn.expand '%'
-
-    if not is_file(filename) or sys.name == 'windows' then
-        return
-    end
-
-    local fileinfo = vim.loop.fs_stat(filename)
-    local filemode = fileinfo.mode - 32768
-    require('utils.files').chmod(filename, bit.bor(filemode, 0x48), 10)
-end
-
 function M.send_grep_job(opts)
     vim.validate {
         opts = { opts, 'table', true },
@@ -728,55 +678,6 @@ function M.project_config(event)
     end
 end
 
-function M.add_nl(down)
-    local cursor_pos = nvim.win.get_cursor(0)
-    local lines = { '' }
-    local count = vim.v['count1']
-    if count > 1 then
-        for _ = 2, count, 1 do
-            table.insert(lines, '')
-        end
-    end
-
-    local cmd
-    if not down then
-        cursor_pos[1] = cursor_pos[1] + count
-        cmd = '[ '
-    else
-        cmd = '] '
-    end
-
-    nvim.put(lines, 'l', down, true)
-    nvim.win.set_cursor(0, cursor_pos)
-    -- TODO: Investigate how to add silent
-    vim.cmd('silent! call repeat#set("' .. cmd .. '",' .. count .. ')')
-end
-
-function M.move_line(down)
-    -- local cmd
-    local lines = { '' }
-    local count = vim.v.count1
-
-    if count > 1 then
-        for _ = 2, count, 1 do
-            table.insert(lines, '')
-        end
-    end
-
-    if down then
-        -- cmd = ']e'
-        count = vim.fn.line '$' < vim.fn.line '.' + count and vim.fn.line '$' or vim.fn.line '.' + count
-    else
-        -- cmd = '[e'
-        count = vim.fn.line '.' - count - 1 < 1 and 1 or vim.fn.line '.' - count - 1
-    end
-
-    vim.cmd.move(count)
-    vim.cmd.normal { bang = true, args = { '==' } }
-    -- TODO: Make repeat work
-    -- vim.cmd('silent! call repeat#set("'..cmd..'",'..count..')')
-end
-
 function M.find_project_root(path)
     assert(type(path) == 'string' and path ~= '', ([[Not a path: "%s"]]):format(path))
     local root
@@ -1273,6 +1174,20 @@ function M.qf_to_diagnostic(ns_name)
 end
 
 function M.scp_edit(opts)
+    local function get_remote_file(host, filename)
+        vim.validate {
+            host = { host, 'string' },
+            filename = { filename, 'string' },
+        }
+
+        if STORAGE.hosts[host] then
+            host = STORAGE.hosts[host]
+        end
+
+        local virtual_filename = ('scp://%s:22/%s'):format(host, filename)
+        vim.cmd.edit(virtual_filename)
+    end
+
     local host = opts.fargs[1]
     local filename = opts.fargs[2]
 
@@ -1283,7 +1198,7 @@ function M.scp_edit(opts)
                 return
             end
             filename = input
-            RELOAD('mappings').scp_edit(hostname, filename)
+            get_remote_file(hostname, filename)
         end)
     end
 
@@ -1297,12 +1212,12 @@ function M.scp_edit(opts)
                 return
             end
             host = input
-            P(host)
+            filename_input(host)
         end)
     elseif not filename then
         filename_input(host)
     else
-        RELOAD('mappings').scp_edit(host, filename)
+        get_remote_file(host, filename)
     end
 end
 

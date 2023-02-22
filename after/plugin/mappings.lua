@@ -65,13 +65,13 @@ if not nvim.plugins['mini.nvim'] then
     vim.keymap.set(
         'n',
         ']e',
-        [[:<C-U>lua require"utils.functions".move_line(true)<CR>]],
+        [[:<C-U>lua require"mappings".move_line(true)<CR>]],
         { noremap = true, silent = true }
     )
     vim.keymap.set(
         'n',
         '[e',
-        [[:<C-U>lua require"utils.functions".move_line(false)<CR>]],
+        [[:<C-U>lua require"mappings".move_line(false)<CR>]],
         { noremap = true, silent = true }
     )
 end

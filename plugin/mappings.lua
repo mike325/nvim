@@ -141,8 +141,8 @@ vim.keymap.set('n', '[B', ':<C-U>bfirst<CR>zvzz', noremap_silent)
 vim.keymap.set('n', ']B', ':<C-U>blast<CR>zvzz', noremap_silent)
 vim.keymap.set('n', '[b', ':<C-U>exe "".(v:count ? v:count : "")."bprevious"<CR>', noremap_silent)
 vim.keymap.set('n', ']b', ':<C-U>exe "".(v:count ? v:count : "")."bnext"<CR>', noremap_silent)
-vim.keymap.set('n', ']<Space>', [[:<C-U>lua require"utils.functions".add_nl(true)<CR>]], noremap_silent)
-vim.keymap.set('n', '[<Space>', [[:<C-U>lua require"utils.functions".add_nl(false)<CR>]], noremap_silent)
+vim.keymap.set('n', ']<Space>', [[:<C-U>lua require"mappings".add_nl(true)<CR>]], noremap_silent)
+vim.keymap.set('n', '[<Space>', [[:<C-U>lua require"mappings".add_nl(false)<CR>]], noremap_silent)
 vim.keymap.set('n', '<C-L>', '<cmd>nohlsearch|diffupdate<CR>', noremap_silent)
 
 nvim.command.set('ClearQf', function()
@@ -602,33 +602,7 @@ end, {
 -- - Open them in the forground setting the active buffer
 if executable 'gh' then
     nvim.command.set('OpenPRFiles', function(opts)
-        local action = opts.args:gsub('%-', '')
-        RELOAD('utils.functions').async_execute {
-            cmd = { 'gh', 'pr', 'view', '--json', 'files' },
-            progress = false,
-            context = 'GitHub',
-            title = 'GitHub',
-            callbacks_on_success = function(job)
-                local json = vim.json.decode(table.concat(job:output(), '\n'))
-                local files = {}
-                for _, file in ipairs(json.files) do
-                    table.insert(files, file.path)
-                end
-                if #files > 0 then
-                    if action == 'qf' then
-                        RELOAD('utils.buffers').dump_files_into_qf(files, true)
-                    elseif action == 'open' or action == 'background' or action == '' then
-                        for _, f in ipairs(files) do
-                            -- NOTE: using badd since `:edit` load every buffer and `bufadd()` set buffers as hidden
-                            vim.cmd.badd(f)
-                        end
-                        if action == 'open' or action == '' then
-                            vim.api.nvim_win_set_buf(0, vim.fn.bufadd(files[1]))
-                        end
-                    end
-                end
-            end,
-        }
+        RELOAD('utils.gh').get_pr_changes(opts)
     end, {
         nargs = '?',
         complete = completions.qf_file_options,

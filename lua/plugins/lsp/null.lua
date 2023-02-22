@@ -1,17 +1,12 @@
-local sys = require 'sys'
-
 local null_ls = vim.F.npcall(require, 'null-ls')
 
 local is_absolute = require('utils.files').is_absolute
-local get_files = require('utils.files').get_files
-
 if not null_ls then
     return {}
 end
 
 local M = {}
-
-local languages = vim.tbl_map(vim.fs.basename, get_files(sys.base .. '/lua/filetypes/'))
+local languages = vim.tbl_map(vim.fs.basename, vim.api.nvim_get_runtime_file('lua/filetypes/*.lua', true))
 
 -- TODO: Respect config files Ex. compile_commands.json, stylua.toml, pyproject.toml, etc
 for _, lang in ipairs(languages) do
@@ -37,7 +32,7 @@ for _, lang in ipairs(languages) do
                     cmd = cmd:gsub('.*/', '')
                     cmd_path = formatter[1]
                 end
-                cmd = cmd:gsub('-', '_')
+                cmd = cmd:gsub('%-', '_')
                 if null_ls.builtins.formatting[cmd] then
                     local node = null_ls.builtins.formatting[cmd].with {
                         command = cmd_path,

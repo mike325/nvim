@@ -297,3 +297,21 @@ vim.diagnostic.handlers.signs = {
 
 vim.diagnostic.enable()
 vim.diagnostic.show()
+
+local sign_str = 'DiagnosticSign'
+for _, level in pairs { 'Error', 'Hint', 'Warn', 'Info' } do
+    vim.fn.sign_define(
+        sign_str .. level,
+        { text = require('utils.functions').get_icon(level:lower()), texthl = sign_str .. level }
+    )
+    -- TODO: Simplify this abomination
+    vim.cmd(
+        ('sign define %s%s text=%s texthl=%s%s linehl= numhl='):format(
+            sign_str,
+            level,
+            require('utils.functions').get_icon(level:lower()),
+            sign_str,
+            level
+        )
+    )
+end
