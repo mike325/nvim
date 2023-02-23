@@ -87,7 +87,7 @@ local servers = {
     lua = {
         {
             exec = 'lua-language-server',
-            config = 'sumneko_lua',
+            config = 'lua_ls',
             options = {
                 settings = {
                     Lua = {
