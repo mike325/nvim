@@ -492,32 +492,43 @@ function M.remove_empty(opts)
 end
 
 function M.open_changes(opts)
-    local action = opts.args:gsub('%-', '')
+    local action = 'open'
+    local revision
+    for _, arg in ipairs(opts.fargs) do
+        if arg:match '^%-' then
+            action = (arg:gsub('^%-+', ''))
+        else
+            revision = arg
+        end
+    end
     local function files_actions(files)
         if #files > 0 then
             files = vim.tbl_filter(function(filename)
                 return require('utils.files').is_file(filename)
             end, files)
+            for _, f in ipairs(files) do
+                -- NOTE: using badd since `:edit` load every buffer and `bufadd()` set buffers as hidden
+                vim.cmd.badd(f)
+            end
             if action == 'qf' then
-                M.dump_files_into_qf(files, true)
-            elseif action == 'open' or action == 'background' or action == '' then
-                for _, f in ipairs(files) do
-                    -- NOTE: using badd since `:edit` load every buffer and `bufadd()` set buffers as hidden
-                    vim.cmd.badd(f)
-                end
-                if action == 'open' or action == '' then
-                    vim.api.nvim_win_set_buf(0, vim.fn.bufadd(files[1]))
-                end
+                RELOAD('threads').queue_thread(RELOAD('threads.git').get_hunks, function(hunks)
+                    if #hunks > 0 then
+                        vim.fn.setqflist(hunks, ' ')
+                        RELOAD('utils.functions').toggle_qf()
+                    end
+                end, { revision = revision, files = files })
+            elseif action == 'open' or action == '' then
+                vim.api.nvim_win_set_buf(0, vim.fn.bufadd(files[1]))
             end
         else
             vim.notify('No modified files to open', 'WARN', { title = 'GitStatus' })
         end
     end
 
-    if not opts.bang then
-        RELOAD('utils.git').modified_files(files_actions)
+    if opts.bang then
+        RELOAD('utils.git').modified_files_from_base(revision, files_actions)
     else
-        RELOAD('utils.git').modified_files_from_base(files_actions)
+        RELOAD('utils.git').modified_files(files_actions)
     end
 end
 

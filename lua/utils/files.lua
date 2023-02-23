@@ -778,4 +778,55 @@ function M.find(filename, opts)
     error 'Not implemented yet'
 end
 
+function M.chmod_exec()
+    local filename = vim.fn.expand '%'
+
+    if not M.is_file(filename) or require('sys').name == 'windows' then
+        return
+    end
+
+    local fileinfo = vim.loop.fs_stat(filename)
+    local filemode = fileinfo.mode - 32768
+    require('utils.files').chmod(filename, bit.bor(filemode, 0x48), 10)
+end
+
+function M.make_executable()
+    local sys = require 'sys'
+    if sys.name == 'windows' then
+        return
+    end
+
+    local shebang = nvim.buf.get_lines(0, 0, 1, true)[1]
+    if not shebang or not shebang:match '^#!.+' then
+        nvim.autocmd.add('BufWritePre', {
+            group = 'MakeExecutable',
+            buffer = nvim.win.get_buf(0),
+            callback = function()
+                M.make_executable()
+            end,
+            once = true,
+        })
+        return
+    end
+
+    local filename = vim.fn.expand '%'
+    if M.is_file(filename) then
+        local fileinfo = vim.loop.fs_stat(filename)
+        local filemode = fileinfo.mode - 32768
+
+        if fileinfo.uid ~= sys.user.uid or bit.band(filemode, 0x40) ~= 0 then
+            return
+        end
+    end
+
+    nvim.autocmd.add('BufWritePost', {
+        group = 'MakeExecutable',
+        buffer = nvim.win.get_buf(0),
+        callback = function()
+            M.chmod_exec()
+        end,
+        once = true,
+    })
+end
+
 return M

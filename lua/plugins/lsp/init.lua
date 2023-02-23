@@ -1,5 +1,3 @@
-local get_icon = require('utils.functions').get_icon
-
 local lsp = vim.F.npcall(require, 'lspconfig')
 
 if lsp == nil then
@@ -12,21 +10,6 @@ local null_configs = require 'plugins.lsp.null'
 
 if null_ls then
     table.insert(null_sources, null_ls.builtins.code_actions.gitsigns)
-end
-
-local lsp_sign = 'DiagnosticSign'
-for _, level in pairs { 'Error', 'Hint', 'Warn', 'Info' } do
-    vim.fn.sign_define(lsp_sign .. level, { text = get_icon(level:lower()), texthl = lsp_sign .. level })
-    -- TODO: Simplify this abomination
-    vim.cmd(
-        ('sign define %s%s text=%s texthl=%s%s linehl= numhl='):format(
-            lsp_sign,
-            level,
-            get_icon(level:lower()),
-            lsp_sign,
-            level
-        )
-    )
 end
 
 -- local original_set_virtual_text = vim.diagnostic.set_virtual_text
@@ -91,6 +74,7 @@ local preload = {
     },
 }
 
+local settedup_configs = {}
 local function setup(ft)
     vim.validate { filetype = { ft, 'string' } }
     local cmp = vim.F.npcall(require, 'cmp')
@@ -99,24 +83,23 @@ local function setup(ft)
     if server_idx then
         local server = RELOAD('plugins.lsp.servers')[ft][server_idx]
         local config = server.config or server.exec
-        local init = vim.deepcopy(server.options) or {}
-        init.on_attach = require('plugins.lsp.config').on_attach
-        init.cmd = init.cmd or server.cmd
-        if cmp then
-            local cmp_lsp = vim.F.npcall(require, 'cmp_nvim_lsp')
-            local capabilities
-            if cmp_lsp then
-                if cmp_lsp.default_capabilities then
-                    capabilities = cmp_lsp.default_capabilities()
-                else
-                    capabilities = cmp_lsp.update_capabilities(vim.lsp.protocol.make_client_capabilities())
+        if not settedup_configs[config] then
+            settedup_configs[config] = true
+            local init = vim.deepcopy(server.options) or {}
+            init.on_attach = require('plugins.lsp.config').on_attach
+            init.cmd = init.cmd or server.cmd
+            if cmp then
+                local cmp_lsp = vim.F.npcall(require, 'cmp_nvim_lsp')
+                local capabilities
+                if cmp_lsp then
+                    if cmp_lsp.default_capabilities then
+                        capabilities = cmp_lsp.default_capabilities()
+                    else
+                        capabilities = cmp_lsp.update_capabilities(vim.lsp.protocol.make_client_capabilities())
+                    end
                 end
+                init.capabilities = vim.tbl_deep_extend('keep', init.capabilities or {}, capabilities or {})
             end
-            init.capabilities = vim.tbl_deep_extend('keep', init.capabilities or {}, capabilities or {})
-        end
-        if preload[config] and preload[config].setup then
-            preload[config].setup(init)
-        else
             lsp[config].setup(init)
         end
         return true

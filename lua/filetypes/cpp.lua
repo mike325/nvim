@@ -232,17 +232,39 @@ function M.set_opts(compiler, bufnum)
             filename = realpath(filename)
         end
 
-        if databases[filename] then
-            paths = databases[filename].includes
-        elseif compile_flags[flags_file] then
-            paths = compile_flags[flags_file].includes
+        local function set_source_options(fname)
+            if databases[fname] then
+                paths = databases[fname].includes
+            elseif compile_flags[flags_file] then
+                paths = compile_flags[flags_file].includes
+            end
+            local path_var = vim.split(vim.bo[bufnum].path, ',')
+            for _, path in ipairs(paths) do
+                if not vim.tbl_contains(path_var, path) then
+                    vim.bo[bufnum].path = vim.bo[bufnum].path .. ',' .. path
+                end
+            end
         end
 
-        local path_var = vim.split(vim.bo[bufnum].path, ',')
-        for _, path in ipairs(paths) do
-            if not vim.tbl_contains(path_var, path) then
-                vim.bo[bufnum].path = vim.bo[bufnum].path .. ',' .. path
+        if filename:match '%.hpp$' or filename:match '%.h$' then
+            if vim.g.alternates[filename] then
+                set_source_options(vim.g.alternates[filename][1])
+            else
+                local srcname = vim.fs.basename(filename):gsub('%.hpp$', '.cpp'):gsub('%.h$', '.c')
+                RELOAD('threads.functions').async_find {
+                    target = srcname,
+                    cb = function(data)
+                        if #data > 0 then
+                            local alternates = vim.g.alternates
+                            alternates[filename] = data
+                            vim.g.alternates = alternates
+                            set_source_options(data[1])
+                        end
+                    end,
+                }
             end
+        else
+            set_source_options(filename)
         end
     end
 

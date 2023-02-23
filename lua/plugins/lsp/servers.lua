@@ -216,7 +216,7 @@ local servers = {
                     '--log=error',
                 },
                 cmd_env = {
-                    -- NOTE: pchs is not created by default, needs to be manually created
+                    -- NOTE: pchs directory is not created by default, needs to be manually created
                     TMPDIR = './.clangd/pchs/',
                 },
                 capabilities = {

@@ -26,7 +26,7 @@ local function rm_pager(cmd)
 end
 
 local function get_git_dir(cmd)
-    if vim.b.project_root and vim.b.project_root.is_git then
+    if vim.b.project_root and vim.b.project_root.git_dir then
         return vim.list_extend(cmd or {}, { '--git-dir', vim.b.project_root.git_dir })
     end
     return {}
@@ -39,7 +39,7 @@ local function filter_empty(tbl)
 end
 
 local function exec_sync_gitcmd(cmd, gitcmd)
-    local ok, output = pcall(vim.fn.system, cmd)
+    local ok, output = pcall(vim.fn.systemlist, cmd)
     return ok and output or error(debug.traceback('Failed to execute: ' .. gitcmd .. ', ' .. output))
 end
 
@@ -145,7 +145,7 @@ local function exec_gitcmd(gitcmd, args, callbacks)
 
     local cmd = M.get_git_cmd(gitcmd, args)
     if not callbacks then
-        return filter_empty(vim.split(exec_sync_gitcmd(cmd, gitcmd), '\n'))
+        return filter_empty(exec_sync_gitcmd(cmd, gitcmd))
     end
 
     local git = RELOAD('jobs'):new {
@@ -227,32 +227,32 @@ function M.base_branch(base, callback)
     end)
 end
 
-function M.modified_files(base, callback)
+function M.modified_files(location, callback)
     vim.validate {
-        base = { base, { 'string', 'function' }, true },
+        location = { location, { 'string', 'function' }, true },
         callback = { callback, 'function', true },
     }
 
-    if type(base) == type(callback) and base ~= nil then
-        error(debug.traceback 'base and callback cannot be the same type')
+    if type(location) == type(callback) and location ~= nil then
+        error(debug.traceback 'location and callback cannot be the same type')
     end
 
-    if type(base) == 'function' then
-        callback = base
-        base = ''
+    if type(location) == 'function' then
+        callback = location
+        location = ''
     end
 
     local function get_files(status)
-        if base == 'stage' or base == 'staged' then
+        if location == 'stage' or location == 'staged' then
             return vim.tbl_keys(status.stage)
-        elseif base == 'workspace' then
+        elseif location == 'workspace' then
             return vim.tbl_keys(status.workspace)
-        elseif base == 'untrack' or base == 'untracked' then
-            return vim.tbl_keys(status.untracked)
+        elseif location == 'untrack' or location == 'untracked' then
+            return status.untracked
         end
         local files = vim.tbl_keys(status.stage)
         vim.list_extend(files, vim.tbl_keys(status.workspace))
-        vim.list_extend(files, vim.tbl_keys(status.untracked))
+        vim.list_extend(files, status.untracked)
         return RELOAD('utils.tables').uniq_unorder(files)
     end
 
@@ -264,33 +264,33 @@ function M.modified_files(base, callback)
     end)
 end
 
-function M.modified_files_from_base(base, callback)
+function M.modified_files_from_base(revision, callback)
     vim.validate {
-        base = { base, { 'string', 'function' }, true },
+        revision = { revision, { 'string', 'function' }, true },
         callback = { callback, 'function', true },
     }
 
-    if type(base) == type(callback) and base ~= nil then
-        error(debug.traceback 'base and callback cannot be the same type')
+    if type(revision) == type(callback) and revision ~= nil then
+        error(debug.traceback 'revision and callback cannot be the same type')
     end
 
-    if type(base) == 'function' then
-        callback = base
-        base = nil
+    if type(revision) == 'function' then
+        callback = revision
+        revision = nil
     end
 
     local gitcmd = 'diff'
     local args = {
         '--name-only',
         'HEAD',
-        -- base branch/commit
+        -- revision branch/commit
     }
     if not callback then
-        table.insert(args, base or M.base_branch())
+        table.insert(args, revision or M.base_branch())
         return exec_gitcmd(gitcmd, args) or {}
     end
-    if base then
-        table.insert(args, base)
+    if revision then
+        table.insert(args, revision)
         exec_gitcmd(gitcmd, args, function(files)
             callback(files)
         end)

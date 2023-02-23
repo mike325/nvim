@@ -71,9 +71,12 @@ end
 
 function M.nicenext(dir)
     local view = vim.fn.winsaveview()
-    vim.cmd.normal { args = { dir }, bang = true }
-    if view.topline ~= vim.fn.winsaveview().topline then
+    local ok, msg = pcall(vim.cmd.normal, { args = { dir }, bang = true })
+    if ok and view.topline ~= vim.fn.winsaveview().topline then
         vim.cmd.normal { args = { 'zz' }, bang = true }
+    elseif not ok then
+        local err = (msg:match 'Vim:E486: Pattern not found:.*')
+        vim.api.nvim_err_writeln(err or msg)
     end
 end
 
@@ -844,7 +847,6 @@ function M.reload_configs(opts)
     }
 
     local config_dir = vim.fn.stdpath 'config'
-
     if opts.args == 'all' or opts.args == '' then
         for _, v in ipairs(configs) do
             vim.cmd.source(config_dir .. '/plugin/' .. v .. '.lua')
@@ -990,20 +992,6 @@ function M.alternate_test(opts)
     end
 end
 
-function M.scp_edit(host, filename)
-    vim.validate {
-        host = { host, 'string' },
-        filename = { filename, 'string' },
-    }
-
-    if STORAGE.hosts[host] then
-        host = STORAGE.hosts[host]
-    end
-
-    local virtual_filename = ('scp://%s:22/%s'):format(host, filename)
-    vim.cmd.edit(virtual_filename)
-end
-
 function M.show_background_jobs()
     if next(STORAGE.jobs) == nil then
         return
@@ -1067,6 +1055,55 @@ function M.filter_qf_diagnostics(opts)
     else
         vim.fn.setqflist(filtered_list, ' ')
     end
+end
+
+function M.add_nl(down)
+    local cursor_pos = nvim.win.get_cursor(0)
+    local lines = { '' }
+    local count = vim.v['count1']
+    if count > 1 then
+        for _ = 2, count, 1 do
+            table.insert(lines, '')
+        end
+    end
+
+    local cmd
+    if not down then
+        cursor_pos[1] = cursor_pos[1] + count
+        cmd = '[ '
+    else
+        cmd = '] '
+    end
+
+    nvim.put(lines, 'l', down, true)
+    nvim.win.set_cursor(0, cursor_pos)
+    -- TODO: Investigate how to add silent
+    vim.cmd('silent! call repeat#set("' .. cmd .. '",' .. count .. ')')
+end
+
+function M.move_line(down)
+    -- local cmd
+    local lines = { '' }
+    local count = vim.v.count1
+
+    if count > 1 then
+        for _ = 2, count, 1 do
+            table.insert(lines, '')
+        end
+    end
+
+    if down then
+        -- cmd = ']e'
+        count = vim.fn.line '$' < vim.fn.line '.' + count and vim.fn.line '$' or vim.fn.line '.' + count
+    else
+        -- cmd = '[e'
+        count = vim.fn.line '.' - count - 1 < 1 and 1 or vim.fn.line '.' - count - 1
+    end
+
+    vim.cmd.move(count)
+    vim.cmd.normal { bang = true, args = { '==' } }
+    -- TODO: Make repeat work
+    -- vim.cmd('silent! call repeat#set("'..cmd..'",'..count..')')
 end
 
 return M
