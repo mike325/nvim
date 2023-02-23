@@ -71,9 +71,12 @@ end
 
 function M.nicenext(dir)
     local view = vim.fn.winsaveview()
-    vim.cmd.normal { args = { dir }, bang = true }
-    if view.topline ~= vim.fn.winsaveview().topline then
+    local ok, msg = pcall(vim.cmd.normal, { args = { dir }, bang = true })
+    if ok and view.topline ~= vim.fn.winsaveview().topline then
         vim.cmd.normal { args = { 'zz' }, bang = true }
+    elseif not ok then
+        local err = (msg:match 'Vim:E486: Pattern not found:.*')
+        vim.api.nvim_err_writeln(err or msg)
     end
 end
 
@@ -844,7 +847,6 @@ function M.reload_configs(opts)
     }
 
     local config_dir = vim.fn.stdpath 'config'
-
     if opts.args == 'all' or opts.args == '' then
         for _, v in ipairs(configs) do
             vim.cmd.source(config_dir .. '/plugin/' .. v .. '.lua')

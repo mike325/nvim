@@ -74,12 +74,12 @@ vim.keymap.set('n', 'gV', '`[v`]', noremap)
 vim.keymap.set('t', '<ESC>', '<C-\\><C-n>', noremap)
 vim.keymap.set('n', '<BS>', '<C-o>', { noremap = true, silent = true })
 
--- vim.keymap.set('n', 'n', function()
---     RELOAD('mappings').nicenext 'n'
--- end, { noremap = true, silent = true, desc = 'n and center view' })
--- vim.keymap.set('n', 'N', function()
---     RELOAD('mappings').nicenext 'N'
--- end, { noremap = true, silent = true, desc = 'N and center viwe' })
+vim.keymap.set('n', 'n', function()
+    RELOAD('mappings').nicenext 'n'
+end, { noremap = true, silent = true, desc = 'n and center view' })
+vim.keymap.set('n', 'N', function()
+    RELOAD('mappings').nicenext 'N'
+end, { noremap = true, silent = true, desc = 'N and center view' })
 
 vim.keymap.set('n', '<S-tab>', '<C-o>', noremap)
 vim.keymap.set('x', '<', '<gv', noremap)
@@ -615,7 +615,7 @@ if executable 'git' then
         RELOAD('utils.buffers').open_changes(opts)
     end, {
         bang = true,
-        nargs = '?',
+        nargs = '*',
         complete = completions.qf_file_options,
         desc = 'Open all modified files in the current git repository',
     })
