@@ -182,25 +182,25 @@ cmp.setup {
     },
 }
 
-cmp.setup.cmdline({ '/', '?' }, {
-    completion = {
-        keyword_length = 2,
-    },
-    mapping = cmp.mapping.preset.cmdline(),
-    sources = {
-        { name = 'treesitter' },
-        { name = 'buffer' },
-    },
-})
+-- cmp.setup.cmdline({ '/', '?' }, {
+--     completion = {
+--         keyword_length = 2,
+--     },
+--     mapping = cmp.mapping.preset.cmdline(),
+--     sources = {
+--         { name = 'treesitter' },
+--         { name = 'buffer' },
+--     },
+-- })
 
-cmp.setup.cmdline(':', {
-    completion = {
-        keyword_length = 2,
-    },
-    mapping = cmp.mapping.preset.cmdline(),
-    sources = cmp.config.sources {
-        { name = 'path' },
-    },
-})
+-- cmp.setup.cmdline(':', {
+--     completion = {
+--         keyword_length = 2,
+--     },
+--     mapping = cmp.mapping.preset.cmdline(),
+--     sources = cmp.config.sources {
+--         { name = 'path' },
+--     },
+-- })
 
 return true

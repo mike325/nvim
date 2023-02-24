@@ -506,9 +506,10 @@ function M.open_changes(opts)
             files = vim.tbl_filter(function(filename)
                 return require('utils.files').is_file(filename)
             end, files)
+            local cwd = vim.pesc(require('utils.files').getcwd()) .. '/'
             for _, f in ipairs(files) do
                 -- NOTE: using badd since `:edit` load every buffer and `bufadd()` set buffers as hidden
-                vim.cmd.badd(f)
+                vim.cmd.badd((f:gsub('^' .. cwd, '')))
             end
             if action == 'qf' then
                 RELOAD('threads').queue_thread(RELOAD('threads.git').get_hunks, function(hunks)
