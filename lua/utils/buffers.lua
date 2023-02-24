@@ -341,8 +341,8 @@ function M.format(opts)
 
     local ft = opts.ft or vim.opt_local.filetype:get()
     local buffer = vim.api.nvim_get_current_buf()
-    local external_formatprg = require('utils.functions').external_formatprg
-    local ok, utils = pcall(require, 'filetypes.' .. ft)
+    local external_formatprg = RELOAD('utils.functions').external_formatprg
+    local ok, utils = pcall(RELOAD, 'filetypes.' .. ft)
 
     local view = vim.fn.winsaveview()
 
