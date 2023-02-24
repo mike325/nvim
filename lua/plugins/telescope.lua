@@ -1,4 +1,4 @@
-local nvim = require 'neovim'
+local nvim = require 'nvim'
 
 local sys = require 'sys'
 local telescope = vim.F.npcall(require, 'telescope')
@@ -7,7 +7,6 @@ if not telescope then
     return false
 end
 
--- local plugins = require('neovim').plugins
 local builtin = require 'telescope.builtin'
 -- local themes = require 'telescope.themes'
 

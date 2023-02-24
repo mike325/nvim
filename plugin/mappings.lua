@@ -1,8 +1,8 @@
 local sys = require 'sys'
-local nvim = require 'neovim'
+local nvim = require 'nvim'
 
 local executable = require('utils.files').executable
-local set_abbr = require('neovim.abbrs').set_abbr
+local set_abbr = require('nvim.abbrs').set_abbr
 local completions = RELOAD 'completions'
 
 local noremap = { noremap = true }

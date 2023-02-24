@@ -1,11 +1,11 @@
-local nvim = require 'neovim'
+local nvim = require 'nvim'
 local sys = require 'sys'
 
 local is_file = require('utils.files').is_file
 local realpath = require('utils.files').realpath
 local executable = require('utils.files').executable
 
-local plugins = require('neovim').plugins
+local plugins = require('nvim').plugins
 
 local M = {
     pyignores = {

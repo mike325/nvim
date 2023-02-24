@@ -1,4 +1,4 @@
-local nvim = require 'neovim'
+local nvim = require 'nvim'
 local lsp = vim.F.npcall(require, 'lspconfig')
 
 if not lsp then

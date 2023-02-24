@@ -1,6 +1,4 @@
 local sys = require 'sys'
--- local nvim = require 'neovim'
--- local plugins = require'neovim'.plugins
 
 local executable = require('utils.files').executable
 local is_dir = require('utils.files').is_dir

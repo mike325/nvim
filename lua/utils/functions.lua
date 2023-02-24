@@ -1,4 +1,4 @@
-local nvim = require 'neovim'
+local nvim = require 'nvim'
 local sys = require 'sys'
 
 local replace_indent = require('utils.buffers').replace_indent
@@ -918,7 +918,7 @@ end
 
 function M.abolish(language)
     local current = vim.bo.spelllang
-    local set_abbr = require('neovim.abbrs').set_abbr
+    local set_abbr = require('nvim.abbrs').set_abbr
     local abolish = require('plugins.abolish').abolish
 
     if nvim.has.cmd 'Abolish' then

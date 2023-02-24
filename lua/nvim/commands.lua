@@ -10,7 +10,7 @@ local function get_wrapper(info)
     local nparams = info.nparams
     local varargs = info.varargs
     local bang = info.bang
-    local bufnr = require('neovim').win.get_buf(0)
+    local bufnr = require('nvim').win.get_buf(0)
 
     local cmd = [[lua STORAGE.commands]]
 
@@ -43,7 +43,7 @@ local function func_handle(info)
     local scope = info.scope
     local lhs = info.lhs
     local rhs = info.rhs
-    local bufnr = tostring(require('neovim').win.get_buf(0))
+    local bufnr = tostring(require('nvim').win.get_buf(0))
 
     if scope == 'b' then
         if funcs.b[bufnr] == nil then

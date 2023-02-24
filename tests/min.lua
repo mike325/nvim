@@ -1,5 +1,5 @@
 vim.opt.rtp:append '.'
-local nvim = require 'neovim'
+local nvim = require 'nvim'
 
 vim.opt.swapfile = false
 
@@ -33,7 +33,7 @@ if nvim.has 'win32' then
 end
 
 if not vim.keymap then
-    vim.keymap = require('neovim').keymap
+    vim.keymap = require('nvim').keymap
 end
 
 vim.g.mapleader = ' '

@@ -3,7 +3,7 @@ if not ls then
     return false
 end
 
-local nvim = require 'neovim'
+local nvim = require 'nvim'
 
 ls.config.setup {
     -- history = true,

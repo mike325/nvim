@@ -1,5 +1,5 @@
 local M = {}
-local nvim = require 'neovim'
+local nvim = require 'nvim'
 
 function M.setup()
     nvim.command.set('Make', function(opts)

@@ -1,5 +1,5 @@
 local sys = require 'sys'
-local nvim = require 'neovim'
+local nvim = require 'nvim'
 
 local parent = sys.data
 local mkdir = require('utils.files').mkdir

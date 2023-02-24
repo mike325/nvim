@@ -1,5 +1,5 @@
 local M = {}
-local nvim = require 'neovim'
+local nvim = require 'nvim'
 local completions = RELOAD 'completions'
 
 function M.setup()

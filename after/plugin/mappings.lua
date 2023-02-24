@@ -1,4 +1,4 @@
-local nvim = require 'neovim'
+local nvim = require 'nvim'
 
 if not vim.keymap then
     vim.keymap = nvim.keymap

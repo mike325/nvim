@@ -1,4 +1,4 @@
-local nvim = require 'neovim'
+local nvim = require 'nvim'
 local executable = require('utils.files').executable
 
 local cmp = vim.F.npcall(require, 'cmp')
