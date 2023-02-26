@@ -3,13 +3,13 @@ if not ls then
     return false
 end
 
-local nvim = require 'neovim'
+local nvim = require 'nvim'
 
 ls.config.setup {
     -- history = true,
     -- region_check_events = 'InsertEnter,InsertLeave',
     -- NOTE: Live update snippets
-    update_events = 'InsertLeave,TextChangedI', -- TextChanged,TextChangedI
+    update_events = { 'InsertLeave', 'TextChangedI' }, -- TextChanged,TextChangedI
     store_selection_keys = '<CR>',
     ext_opts = {
         [require('luasnip.util.types').choiceNode] = {

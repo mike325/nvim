@@ -1,4 +1,4 @@
-local nvim = require 'neovim'
+local nvim = require 'nvim'
 
 local M = {}
 
@@ -341,8 +341,8 @@ function M.format(opts)
 
     local ft = opts.ft or vim.opt_local.filetype:get()
     local buffer = vim.api.nvim_get_current_buf()
-    local external_formatprg = require('utils.functions').external_formatprg
-    local ok, utils = pcall(require, 'filetypes.' .. ft)
+    local external_formatprg = RELOAD('utils.functions').external_formatprg
+    local ok, utils = pcall(RELOAD, 'filetypes.' .. ft)
 
     local view = vim.fn.winsaveview()
 
@@ -506,9 +506,10 @@ function M.open_changes(opts)
             files = vim.tbl_filter(function(filename)
                 return require('utils.files').is_file(filename)
             end, files)
+            local cwd = vim.pesc(require('utils.files').getcwd()) .. '/'
             for _, f in ipairs(files) do
                 -- NOTE: using badd since `:edit` load every buffer and `bufadd()` set buffers as hidden
-                vim.cmd.badd(f)
+                vim.cmd.badd((f:gsub('^' .. cwd, '')))
             end
             if action == 'qf' then
                 RELOAD('threads').queue_thread(RELOAD('threads.git').get_hunks, function(hunks)

@@ -1,4 +1,3 @@
--- local nvim = require 'neovim'
 local get_icon = require('utils.functions').get_icon
 
 local lsp_sign = 'DiagnosticSign'

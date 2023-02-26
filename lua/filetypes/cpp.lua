@@ -1,4 +1,4 @@
-local nvim = require 'neovim'
+local nvim = require 'nvim'
 
 local executable = require('utils.files').executable
 -- local readfile = require('utils.files').readfile
@@ -386,8 +386,8 @@ function M.build(build_info)
 
     if not build_info.single then
         local files = vim.fs.find(function(filename)
-            return (filename:match('%.' .. ft .. '$'))
-        end)
+            return filename:match('%.' .. ft .. '$') ~= nil
+        end, { type = 'file', limit = math.huge })
         compile(vim.list_extend(flags, files))
     else
         table.insert(flags, nvim.buf.get_name(0))

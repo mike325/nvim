@@ -1,4 +1,4 @@
-local transform_mapping = require('neovim.utils').transform_mapping
+local transform_mapping = require('nvim.utils').transform_mapping
 local funcs = STORAGE.mappings
 
 local modes = {
@@ -40,7 +40,7 @@ local function get_wrapper(info)
     cmd = cmd .. ("['%s']"):format(scope)
 
     if scope == 'b' then
-        local bufnr = type(info.buf) == 'number' and info.buf or require('neovim').get_current_buf()
+        local bufnr = type(info.buf) == 'number' and info.buf or require('nvim').get_current_buf()
         cmd = cmd .. ("['%s']"):format(bufnr)
     end
 
@@ -66,8 +66,8 @@ local function func_handle(info)
     lhs = lhs:gsub('<C-', '^')
 
     if scope == 'b' then
-        local bufnr = type(info.buf) == 'number' and info.buf or require('neovim').get_current_buf()
-        bufnr = bufnr <= 0 and require('neovim').get_current_buf() or bufnr
+        local bufnr = type(info.buf) == 'number' and info.buf or require('nvim').get_current_buf()
+        bufnr = bufnr <= 0 and require('nvim').get_current_buf() or bufnr
         bufnr = tostring(bufnr)
         if funcs.b[bufnr] == nil then
             funcs.b[bufnr] = {}

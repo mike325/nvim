@@ -100,7 +100,11 @@ local function setup(ft)
                 end
                 init.capabilities = vim.tbl_deep_extend('keep', init.capabilities or {}, capabilities or {})
             end
-            lsp[config].setup(init)
+            if preload[config] then
+                preload[config].setup(init)
+            else
+                lsp[config].setup(init)
+            end
         end
         return true
     end

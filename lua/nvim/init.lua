@@ -309,7 +309,7 @@ local nvim = {
             pcall(vim.api.nvim_call_function, 'setreg', { k, v })
         end,
     }),
-    keymap = require('neovim.mappings').keymap,
+    keymap = require('nvim.mappings').keymap,
     command = {
         set = add_command,
         del = del_command,
@@ -416,7 +416,7 @@ setmetatable(nvim, {
             return mt[k]
         end
 
-        local ok, x = pcall(RELOAD, 'neovim.' .. k)
+        local ok, x = pcall(RELOAD, 'nvim.' .. k)
 
         if not ok then
             x = vim.api['nvim_' .. k]
@@ -431,7 +431,7 @@ setmetatable(nvim, {
 
 if not vim.is_thread or not vim.is_thread() then
     if vim.api.nvim_call_function('has', { 'nvim-0.5' }) == 0 then
-        local legacy = require 'neovim.legacy'
+        local legacy = require 'nvim.legacy'
         for obj, val in pairs(legacy) do
             nvim[obj] = val
         end

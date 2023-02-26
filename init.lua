@@ -1,5 +1,5 @@
 -- luacheck: max line length 170
-local nvim = require 'neovim'
+local nvim = require 'nvim'
 
 if not nvim.has { 0, 7 } then
     vim.api.nvim_err_writeln 'Neovim version is too old!! please use the legacy branch or the nvim-0.6 tag'

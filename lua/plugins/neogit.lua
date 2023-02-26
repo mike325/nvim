@@ -4,7 +4,7 @@ if neogit == nil then
     return false
 end
 
-local nvim = require 'neovim'
+local nvim = require 'nvim'
 local has_diffview = vim.F.npcall(require, 'diffview')
 
 neogit.setup {

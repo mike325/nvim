@@ -4,7 +4,7 @@ if trouble == nil then
     return false
 end
 
-local nvim = require 'neovim'
+local nvim = require 'nvim'
 local get_icon = require('utils.functions').get_icon
 local has_devicon = pcall(require, 'nvim-web-devicons')
 

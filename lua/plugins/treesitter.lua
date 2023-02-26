@@ -1,4 +1,4 @@
-local nvim = require 'neovim'
+local nvim = require 'nvim'
 local treesitter = vim.F.npcall(require, 'nvim-treesitter.configs')
 
 if not treesitter then

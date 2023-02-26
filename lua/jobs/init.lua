@@ -1,11 +1,11 @@
-local nvim = require 'neovim'
+local nvim = require 'nvim'
 
 local get_icon = require('utils.functions').get_icon
 local executable = require('utils.files').executable
 
 local jobs = STORAGE.jobs
 
-local plugins = require('neovim').plugins
+local plugins = require('nvim').plugins
 
 local Job = {}
 Job.__index = Job

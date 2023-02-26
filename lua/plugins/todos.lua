@@ -1,4 +1,4 @@
-local nvim = require 'neovim'
+local nvim = require 'nvim'
 
 local utils = RELOAD 'utils.functions'
 local get_icon = utils.get_icon

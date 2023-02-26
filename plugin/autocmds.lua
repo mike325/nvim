@@ -1,4 +1,4 @@
-local nvim = require 'neovim'
+local nvim = require 'nvim'
 local executable = require('utils.files').executable
 
 if require('sys').name ~= 'windows' then

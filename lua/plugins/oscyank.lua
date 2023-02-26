@@ -1,7 +1,7 @@
 -- luacheck: max line length 143
 local executable = require('utils.files').executable
 
-local nvim = require 'neovim'
+local nvim = require 'nvim'
 
 if vim.g.OSCTERM then
     vim.g.oscyank_term = vim.g.OSCTERM

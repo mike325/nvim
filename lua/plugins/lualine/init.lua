@@ -1,4 +1,4 @@
-local nvim = require 'neovim'
+local nvim = require 'nvim'
 local get_icon = require('utils.functions').get_icon
 local get_separators = require('utils.functions').get_separators
 

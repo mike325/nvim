@@ -1,4 +1,4 @@
-local nvim = require 'neovim'
+local nvim = require 'nvim'
 local sys = require 'sys'
 
 local exepath = require('utils.files').exepath

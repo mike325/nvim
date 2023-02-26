@@ -1,4 +1,4 @@
-local nvim = require 'neovim'
+local nvim = require 'nvim'
 
 local has_telescope, _ = pcall(require, 'telescope')
 -- local servers = require 'plugins.lsp.servers'

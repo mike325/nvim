@@ -1,4 +1,4 @@
-local nvim = require 'neovim'
+local nvim = require 'nvim'
 local sys = require 'sys'
 
 local replace_indent = require('utils.buffers').replace_indent
@@ -342,7 +342,10 @@ function M.get_git_dir(callback)
 end
 
 function M.external_formatprg(args)
-    assert(type(args) == type {} and args.cmd, debug.traceback 'Missing command')
+    vim.validate {
+        args = { args, 'table' },
+        cmd = { args.cmd, 'table' },
+    }
 
     local cmd = args.cmd
     local buf = args.buffer or vim.api.nvim_get_current_buf()
@@ -918,7 +921,7 @@ end
 
 function M.abolish(language)
     local current = vim.bo.spelllang
-    local set_abbr = require('neovim.abbrs').set_abbr
+    local set_abbr = require('nvim.abbrs').set_abbr
     local abolish = require('plugins.abolish').abolish
 
     if nvim.has.cmd 'Abolish' then

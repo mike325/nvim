@@ -1,4 +1,4 @@
-local nvim = require 'neovim'
+local nvim = require 'nvim'
 
 local uv = vim.loop
 
@@ -199,7 +199,7 @@ end
 function M.realpath(path)
     vim.validate { path = { path, 'string' } }
     assert(M.exists(path), debug.traceback(([[Path "%s" doesn't exists]]):format(path)))
-    return uv.fs_realpath(M.normalize(path)):gsub('\\', '/')
+    return (uv.fs_realpath(M.normalize(path)):gsub('\\', '/'))
 end
 
 function M.basename(file)
@@ -230,7 +230,7 @@ function M.filename(path)
     vim.validate { path = { path, 'string' } }
     local name = vim.fs.basename(path)
     local extension = M.extension(name)
-    return extension ~= '' and name:gsub('%.' .. extension .. '$', '') or name
+    return extension ~= '' and (name:gsub('%.' .. extension .. '$', '')) or name
 end
 
 function M.dirname(file)
@@ -614,7 +614,7 @@ function M.skeleton_filename(opts)
         local names = known_names[extension]
 
         for _, name in ipairs(names) do
-            if filename:match('^%.?' .. name:gsub('%-', '%%-') .. '$') then
+            if filename:match('^%.?' .. (name:gsub('%-', '%%-')) .. '$') then
                 local template_file = skeletons_path .. name
                 if M.is_file(template_file) then
                     skeleton = template_file
