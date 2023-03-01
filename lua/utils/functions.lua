@@ -654,10 +654,10 @@ function M.project_config(event)
         local is_c_project = vim.fs.find(
             { 'CMakeLists.txt', 'compile_flags.txt', 'compile_commands.json', '.clang-format', '.clang-tidy' },
             { upward = true, type = 'file' }
-        )
+        )[1]
 
-        if #is_c_project > 0 then
-            RELOAD('threads.related').async_gather_alternates { path = vim.fs.dirname(is_c_project[1]) }
+        if is_c_project then
+            RELOAD('threads.related').async_gather_alternates { path = vim.fs.dirname(is_c_project) }
 
             local compile_flags = vim.fs.find(
                 { 'compile_flags.txt', 'compile_commands.json' },
@@ -675,9 +675,9 @@ function M.project_config(event)
         end
     end
 
-    local project = vim.fs.find('.project.lua', { upward = true, type = 'file' })
-    if #project > 0 then
-        vim.cmd.source(project[1])
+    local project = vim.fs.find('.project.lua', { upward = true, type = 'file' })[1]
+    if project then
+        vim.cmd.source(project)
     end
 end
 
@@ -688,9 +688,8 @@ function M.find_project_root(path)
     local dir = vim.fn.fnamemodify(path, ':p')
 
     for _, marker in pairs(vcs_markers) do
-        local results = vim.fs.find(marker, { path = dir, upward = true })
-        if #results > 0 then
-            root = results[1]
+        root = vim.fs.find(marker, { path = dir, upward = true })[1]
+        if root then
             break
         end
     end

@@ -76,11 +76,9 @@ M.makeprg.flake8 = { '--max-line-length=120', '--ignore=' .. table.concat(M.pyig
 M.makeprg.pycodestyle = M.makeprg.flake8
 
 function M.get_formatter(stdin)
-    local project = vim.fs.find('pyproject.toml', { upward = true, type = 'file' })
-    if #project > 0 then
-        project = realpath(project[1])
-    else
-        project = nil
+    local project = vim.fs.find('pyproject.toml', { upward = true, type = 'file' })[1]
+    if project then
+        project = realpath(project)
     end
 
     local cmd

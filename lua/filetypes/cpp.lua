@@ -278,8 +278,8 @@ function M.get_formatter(stdin)
     local cmd
     if executable 'clang-format' then
         cmd = { 'clang-format' }
-        local config = vim.fs.find('.clang-format', { upward = true, type = 'file' })
-        if #config > 0 then
+        local config = vim.fs.find('.clang-format', { upward = true, type = 'file' })[1]
+        if config then
             vim.list_extend(cmd, M.formatprg[cmd[1]])
             -- cmd = require('utils.buffers').replace_indent(cmd)
         end
@@ -402,13 +402,13 @@ function M.setup()
     end
 
     -- TODO: Add support for other build commands like gradle
-    local makefile = vim.fs.find('Makefile', { upward = true, type = 'file' })
-    if #makefile > 0 and executable 'make' then
+    local makefile = vim.fs.find('Makefile', { upward = true, type = 'file' })[1]
+    if makefile and executable 'make' then
         require('filetypes.make').setup()
     end
 
-    local cmake = vim.fs.find('CMakeLists.txt', { upward = true, type = 'file' })
-    if #cmake > 0 and executable 'cmake' then
+    local cmake = vim.fs.find('CMakeLists.txt', { upward = true, type = 'file' })[1]
+    if cmake and executable 'cmake' then
         require('filetypes.cmake').setup()
     end
 
