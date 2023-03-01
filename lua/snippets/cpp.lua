@@ -101,14 +101,14 @@ local function rule_3_5(_, parent, old_state)
             t { ';', '' },
 
             t { classname },
-            t { '(' },
+            t { '(const ' },
             t { classname },
             t { '&)' },
             get_choice(),
             t { ';', '' },
 
             t { classname },
-            t { '& operator=(' },
+            t { '& operator=(const ' },
             t { classname },
             t { '&)' },
             r(choice_nr),
@@ -155,6 +155,202 @@ return {
                 d(3, saved_text, {}, { user_args = { { indent = true } } }),
             }
         )
+    ),
+    s(
+        { trig = 'mfun', regTrig = true },
+        fmt(
+            [[
+        {} {}::{}({}) {{
+        {}
+        }}
+        ]],
+            {
+                c(1, {
+                    i(1, 'int'),
+                    i(1, 'char*'),
+                    i(1, 'float'),
+                    i(1, 'long'),
+                }),
+                i(2, 'Class'),
+                i(3, 'funcname'),
+                c(4, {
+                    t { '' },
+                    sn(nil, {
+                        c(1, {
+                            i(1, 'int'),
+                            i(1, 'char*'),
+                            i(1, 'float'),
+                            i(1, 'long'),
+                        }),
+                        t { ' ' },
+                        i(2, 'varname'),
+                    }),
+                }),
+                d(5, saved_text, {}, { user_args = { { indent = true } } }),
+            }
+        )
+    ),
+    -- TODO: This could be smarter, and add only the missing functions
+    s({ trig = 'rl?([35])', regTrig = true }, {
+        d(1, rule_3_5, {}, {}),
+    }),
+    s(
+        { trig = '(t?)cl', regTrig = true },
+        fmt(
+            [[
+            class {} final
+            {{
+            public:
+            }};
+        ]],
+            {
+                i(1, 'Class'),
+            }
+        )
+    ),
+    -- TODO: There's should be a way to have the same login in cl3/5 and have dynamic class names changes
+    s(
+        { trig = '(t?)cl3', regTrig = true },
+        fmt(
+            [[
+            class {} final
+            {{
+            public:
+                {}(){};
+                ~{}(){};
+                {}(const {}&){};
+                {}& operator=(const {}&){};
+            }};
+        ]],
+            {
+                i(1, 'Class'),
+                r(1),
+                c(2, {
+                    t { ' = delete' },
+                    t { ' = default' },
+                    t { '' },
+                }),
+                r(1),
+                c(3, {
+                    t { ' = delete' },
+                    t { ' = default' },
+                    t { '' },
+                }),
+                r(1),
+                r(1),
+                c(4, {
+                    t { ' = delete' },
+                    t { ' = default' },
+                    t { '' },
+                }),
+                r(1),
+                r(1),
+                r(4),
+            }
+        )
+    ),
+    s(
+        { trig = '(t?)cl5', regTrig = true },
+        fmt(
+            [[
+            class {} final
+            {{
+            public:
+                {}(){};
+                ~{}(){};
+                {}(const {}&){};
+                {}& operator=(const {}&){};
+                {}({}&&){};
+                {}& operator=({}&&){};
+            }};
+        ]],
+            {
+                i(1, 'Class'),
+                r(1),
+                c(2, {
+                    t { ' = delete' },
+                    t { ' = default' },
+                    t { '' },
+                }),
+                r(1),
+                c(3, {
+                    t { ' = delete' },
+                    t { ' = default' },
+                    t { '' },
+                }),
+                r(1),
+                r(1),
+                c(4, {
+                    t { ' = delete' },
+                    t { ' = default' },
+                    t { '' },
+                }),
+                r(1),
+                r(1),
+                r(4),
+                r(1),
+                r(1),
+                c(5, {
+                    t { ' = delete' },
+                    t { ' = default' },
+                    t { '' },
+                }),
+                r(1),
+                r(1),
+                r(5),
+            }
+        )
+    ),
+    s(
+        'enum',
+        fmt(
+            [[
+        enum class {}
+        {{
+            {};
+        }}
+        ]],
+            {
+                i(1, 'EClass'),
+                i(2, 'ONE'),
+            }
+        )
+    ),
+    s(
+        'swi',
+        fmt(
+            [[
+        switch({})
+        {{
+        case {}:
+            break;
+        default:
+            break;
+        }}
+        ]],
+            {
+                i(1, 'var'),
+                i(2, 'CASE'),
+            }
+        )
+    ),
+    s(
+        'case',
+        fmt(
+            [[
+        case {}:
+            break;
+        ]],
+            {
+                i(1, 'CASE'),
+            }
+        )
+    ),
+    s(
+        'strs',
+        fmt([[std::stringstream {}]], {
+            i(1, 'ss'),
+        })
     ),
     s(
         'vec',
@@ -211,51 +407,5 @@ return {
             f(smart_ptr, {}),
             i(1, 'type'),
         })
-    ),
-    s(
-        { trig = 'mfun', regTrig = true },
-        fmt(
-            [[
-        {} {}::{}({}) {{
-        {}
-        }}
-        ]],
-            {
-                c(1, {
-                    i(1, 'int'),
-                    i(1, 'char*'),
-                    i(1, 'float'),
-                    i(1, 'long'),
-                }),
-                i(2, 'Class'),
-                i(3, 'funcname'),
-                c(4, {
-                    t { '' },
-                    sn(nil, {
-                        c(1, {
-                            i(1, 'int'),
-                            i(1, 'char*'),
-                            i(1, 'float'),
-                            i(1, 'long'),
-                        }),
-                        t { ' ' },
-                        i(2, 'varname'),
-                    }),
-                }),
-                d(5, saved_text, {}, { user_args = { { indent = true } } }),
-            }
-        )
-    ),
-    -- TODO: This could be smarter, and add only the missing functions
-    s(
-        { trig = 'r([35])', regTrig = true },
-        fmt(
-            [[
-            {}
-        ]],
-            {
-                d(1, rule_3_5, {}, {}),
-            }
-        )
     ),
 }
