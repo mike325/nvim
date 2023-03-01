@@ -174,6 +174,11 @@ function M.lsp_mappings(client, bufnr)
         client.server_capabilities.documentRangeFormattingProvider = false
     end
 
+    -- NOTE: use HelpNeovim defined in after/ftplugin
+    if vim.opt_local.filetype:get() == 'lua' then
+        client.server_capabilities.hoverProvider = false
+    end
+
     for mapping, val in pairs(mappings) do
         if not val.capability or client.server_capabilities[val.capability] then
             vim.keymap.set('n', mapping, val.mapping, { silent = true, buffer = bufnr, noremap = true })

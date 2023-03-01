@@ -632,3 +632,16 @@ nvim.command.set('ModifiedDump', function(opts)
 end, {
     desc = 'Dump all unsaved files into the QF',
 })
+
+nvim.command.set('ModifiedSave', function(opts)
+    local modified = vim.tbl_filter(function(buf)
+        return vim.bo[buf].modified
+    end, vim.api.nvim_list_bufs())
+    for _, buf in ipairs(modified) do
+        vim.api.nvim_buf_call(buf, function()
+            vim.cmd.update()
+        end)
+    end
+end, {
+    desc = 'Save all modified buffers',
+})
