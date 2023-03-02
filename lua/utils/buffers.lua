@@ -571,4 +571,45 @@ function M.dump_files_into_qf(buffers, open)
     end
 end
 
+function M.push_tag(args)
+    args = args or {}
+    vim.validate {
+        cmd = { args.cmd, 'string', true },
+        pos = { args.pos, 'table', true },
+        tagname = { args.tagname, 'string', true },
+        filename = { args.filename, 'string', true },
+        buf = { args.buf, 'number', true },
+    }
+
+    local buf = args.buf
+    local filename = args.filename
+    assert(buf or filename, debug.traceback 'Missing both, buf number and filename')
+    assert(args.cmd or args.pos, debug.traceback 'Missing both, position and cmd')
+
+    local cwd = vim.pesc(vim.loop.cwd()) .. '/'
+
+    if not buf then
+        filename = args.filename:gsub('^' .. cwd, '')
+        buf = vim.fn.bufadd(filename)
+    end
+
+    local tagname = args.tagname or vim.fn.expand '<cword>'
+
+    local win = vim.api.nvim_get_current_win()
+    local cursor_pos = vim.api.nvim_win_get_cursor(win)
+    local pos = { vim.api.nvim_get_current_buf(), cursor_pos[1], cursor_pos[2], 0 }
+    local newtag = { { tagname = tagname, from = pos } }
+
+    vim.api.nvim_win_set_buf(win, buf)
+
+    if args.cmd then
+        vim.api.nvim_command(args.cmd)
+    else
+        vim.api.nvim_win_set_cursor(win, args.pos)
+    end
+
+    -- TODO: Stack manipulation should be smarter and free invalid stack entries, not just push new ones
+    vim.fn.settagstack(win, { items = newtag }, 'a')
+end
+
 return M
