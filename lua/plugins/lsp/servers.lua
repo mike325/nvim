@@ -217,7 +217,7 @@ local servers = {
                 },
                 cmd_env = {
                     -- NOTE: pchs directory is not created by default, needs to be manually created
-                    TMPDIR = './.clangd/pchs/',
+                    TMPDIR = './.cache/clangd/pchs/',
                 },
                 capabilities = {
                     offsetEncoding = { 'utf-16' }, -- TODO: Check if this cause side effects
