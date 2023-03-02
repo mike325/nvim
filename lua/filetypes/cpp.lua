@@ -111,7 +111,6 @@ local M = {
     },
     formatprg = {
         ['clang-format'] = {
-            '--style=file',
             '--fallback-style=WebKit',
             '--sort-includes',
         },
@@ -278,10 +277,10 @@ function M.get_formatter(stdin)
     local cmd
     if executable 'clang-format' then
         cmd = { 'clang-format' }
-        local config = vim.fs.find('.clang-format', { upward = true, type = 'file' })[1]
-        if config then
-            vim.list_extend(cmd, M.formatprg[cmd[1]])
-            -- cmd = require('utils.buffers').replace_indent(cmd)
+        vim.list_extend(cmd, M.formatprg[cmd[1]])
+        local config_file = RELOAD('utils.buffers').find_config { configs = '.clang-format' }
+        if config_file then
+            table.insert(cmd, '--style=file')
         end
         if not stdin then
             table.insert(cmd, '-i')

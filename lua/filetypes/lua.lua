@@ -1,10 +1,8 @@
 local sys = require 'sys'
-local nvim = require 'nvim'
+-- local nvim = require 'nvim'
 
 local executable = require('utils.files').executable
-
 local is_file = require('utils.files').is_file
-local getcwd = require('utils.files').getcwd
 
 local M = {
     makeprg = {
@@ -40,26 +38,10 @@ function M.get_formatter(stdin)
     local cmd
     if executable 'stylua' then
         cmd = { 'stylua' }
-        local configs = { '.stylua.toml', 'stylua.toml' }
-
-        -- TODO: lookup upwards in file's directory
-        local dirs = { getcwd() }
-
-        local buffer = nvim.buf.get_name(0)
-        if buffer ~= '' and not buffer:match '^%w+:/' then
-            table.insert(dirs, 1, vim.fs.dirname(buffer))
-        end
-
-        local found = false
-        for _, cwd in ipairs(dirs) do
-            local config_path = vim.fs.find(configs, { upward = true, type = 'file', path = cwd })[1]
-            if config_path then
-                vim.list_extend(cmd, { '-f', require('utils.files').realpath(config_path) })
-                found = true
-                break
-            end
-        end
-        if not found then
+        local config_file = RELOAD('utils.buffers').find_config { configs = { '.stylua.toml', 'stylua.toml' } }
+        if config_file then
+            vim.list_extend(cmd, { '-f', config_file })
+        else
             vim.list_extend(cmd, M.formatprg[cmd[1]])
             cmd = require('utils.buffers').replace_indent(cmd)
         end

@@ -171,7 +171,7 @@ function M.lsp_mappings(client, bufnr)
     }
 
     -- TODO: Move this config to lsp/server.lua
-    if client.name == 'sumneko_lua' then
+    if client.name == 'sumneko_lua' or client.name == 'lua_ls' then
         client.server_capabilities.documentFormattingProvider = false
         client.server_capabilities.documentRangeFormattingProvider = false
     end

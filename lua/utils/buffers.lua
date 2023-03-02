@@ -612,4 +612,32 @@ function M.push_tag(args)
     vim.fn.settagstack(win, { items = newtag }, 'a')
 end
 
+function M.find_config(opts)
+    opts = opts or {}
+    vim.validate {
+        configs = { opts.configs, { 'string', 'table' } },
+        dirs = { opts.dirs, { 'string', 'table' }, true },
+    }
+
+    local dirs = opts.dirs or { vim.fs.dirname(vim.api.nvim_buf_get_name(0)), require('utils.files').getcwd() }
+    if type(dirs) ~= type {} then
+        dirs = { dirs }
+    end
+
+    local configs = opts.configs
+    if type(configs) ~= type {} then
+        configs = { configs }
+    end
+
+    local config_path
+    for _, cwd in ipairs(dirs) do
+        config_path = vim.fs.find(configs, { upward = true, type = 'file', path = cwd })[1]
+        if config_path then
+            config_path = require('utils.files').realpath(config_path)
+            break
+        end
+    end
+    return config_path
+end
+
 return M
