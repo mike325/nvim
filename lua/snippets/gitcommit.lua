@@ -30,6 +30,7 @@ local function commit_summary(init)
         fi = 'fix',
         r = 'refactor',
         ref = 'refactor',
+        p = 'performance',
         perf = 'performance',
         c = 'chore',
     }
