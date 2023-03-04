@@ -30,12 +30,33 @@ local function commit_summary(init)
         fi = 'fix',
         r = 'refactor',
         ref = 'refactor',
+        p = 'performance',
         perf = 'performance',
         c = 'chore',
     }
 
     init = init:lower()
     init = notes[init] or init
+    if vim.g.gitsigns_head then
+        vim.g.branch = vim.g.gitsigns_head
+    else
+        vim.g.branch = RELOAD('utils.git').status().branch
+    end
+
+    local feat_pattern = {
+        '^([fF][eE][rR][-/]%d+)[-/]',
+    }
+
+    if vim.g.branch then
+        for _, pattern in ipairs(feat_pattern) do
+            local feature = vim.g.branch:match(pattern)
+            if feature then
+                init = init .. ('(%s)'):format(feature)
+                break
+            end
+        end
+    end
+
     return init .. ': '
 end
 

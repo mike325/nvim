@@ -104,7 +104,9 @@ function M.lsp_mappings(client, bufnr)
 
     bufnr = bufnr or nvim.get_current_buf()
     vim.bo[bufnr].omnifunc = 'v:lua.vim.lsp.omnifunc'
-    vim.bo[bufnr].tagfunc = 'v:lua.vim.lsp.tagfunc'
+    if vim.bo[bufnr].tagfunc == '' then
+        vim.bo[bufnr].tagfunc = 'v:lua.vim.lsp.tagfunc'
+    end
 
     local mappings = {
         ['gd'] = {
@@ -169,9 +171,14 @@ function M.lsp_mappings(client, bufnr)
     }
 
     -- TODO: Move this config to lsp/server.lua
-    if client.name == 'sumneko_lua' then
+    if client.name == 'sumneko_lua' or client.name == 'lua_ls' then
         client.server_capabilities.documentFormattingProvider = false
         client.server_capabilities.documentRangeFormattingProvider = false
+    end
+
+    -- NOTE: use HelpNeovim defined in after/ftplugin
+    if vim.opt_local.filetype:get() == 'lua' then
+        client.server_capabilities.hoverProvider = false
     end
 
     for mapping, val in pairs(mappings) do

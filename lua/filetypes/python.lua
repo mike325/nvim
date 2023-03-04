@@ -2,7 +2,6 @@ local nvim = require 'nvim'
 local sys = require 'sys'
 
 local is_file = require('utils.files').is_file
-local realpath = require('utils.files').realpath
 local executable = require('utils.files').executable
 
 local plugins = require('nvim').plugins
@@ -76,24 +75,19 @@ M.makeprg.flake8 = { '--max-line-length=120', '--ignore=' .. table.concat(M.pyig
 M.makeprg.pycodestyle = M.makeprg.flake8
 
 function M.get_formatter(stdin)
-    local project = vim.fs.find('pyproject.toml', { upward = true, type = 'file' })
-    if #project > 0 then
-        project = realpath(project[1])
-    else
-        project = nil
-    end
+    local config_file = RELOAD('utils.buffers').find_config { configs = 'pyproject.toml' }
 
     local cmd
     if executable 'black' then
         cmd = { 'black' }
-        if not project then
+        if not config_file then
             vim.list_extend(cmd, M.formatprg[cmd[1]])
         else
-            vim.list_extend(cmd, { '--config', project })
+            vim.list_extend(cmd, { '--config', config_file })
         end
     elseif executable 'yapf' or executable 'autopep8' then
         cmd = { executable 'yapf' and 'yapf' or 'autopep8' }
-        if not project then
+        if not config_file then
             vim.list_extend(cmd, M.formatprg[cmd[1]])
         else
             table.insert(cmd, '-i')
