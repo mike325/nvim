@@ -25,6 +25,7 @@ vim.g.alternates = {}
 vim.g.tests = {}
 vim.g.makefiles = {}
 vim.g.parsed = {}
+vim.g.short_branch_name = true
 
 vim.g.port = 0x8AC
 

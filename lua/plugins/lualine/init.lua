@@ -110,20 +110,32 @@ lualine.setup {
                 'branch',
                 fmt = function(branch)
                     local shrink
-                    if #branch > 15 then
-                        local patterns = {
-                            '^(%w+[/-]%w+[/-]%d+[/-])',
-                            '^(%w+[/-]%d+[/-])',
-                            '^(%w+[/-])',
-                        }
+                    local patterns = {
+                        '^(%w+[/-]%w+[/-]%d+[/-])',
+                        '^(%w+[/-]%d+[/-])',
+                        '^(%w+[/-])',
+                    }
+                    if #branch > 30 and vim.g.short_branch_name then
                         for _, pattern in ipairs(patterns) do
                             shrink = branch:match(pattern)
                             if shrink then
+                                branch = shrink:sub(1, #shrink - 1)
+                                break
+                            end
+                        end
+                    elseif #branch > 15 then
+                        for _, pattern in ipairs(patterns) do
+                            shrink = branch:match(pattern)
+                            if shrink then
+                                branch = branch:gsub(vim.pesc(shrink), '')
                                 break
                             end
                         end
                     end
-                    return shrink and branch:gsub(shrink:gsub('%-', '%%-'), '') or branch
+                    return branch
+                end,
+                on_click = function(clicks, button, modifiers)
+                    vim.g.short_branch_name = not vim.g.short_branch_name
                 end,
             },
             {
