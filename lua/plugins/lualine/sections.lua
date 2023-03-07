@@ -61,7 +61,7 @@ function M.filename()
     elseif bufname == '' then
         name = '[No Name]'
     else
-        local cwd = getcwd():gsub('%.', '%%.'):gsub('%-', '%%-')
+        local cwd = vim.pesc(getcwd())
         local separator = require('utils.files').separator()
         -- TODO: Cut this to respect the size
         name = vim.fn.bufname(buf)

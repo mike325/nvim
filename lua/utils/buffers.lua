@@ -609,7 +609,7 @@ function M.push_tag(args)
     end
 
     -- TODO: Stack manipulation should be smarter and free invalid stack entries, not just push new ones
-    vim.fn.settagstack(win, { items = newtag }, 'a')
+    vim.fn.settagstack(win, { items = newtag }, 't')
 end
 
 function M.find_config(opts)
