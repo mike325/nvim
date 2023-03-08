@@ -166,6 +166,9 @@ packer.startup(function()
     use {
         'ojroques/vim-oscyank',
         event = 'VimEnter',
+        setup = function()
+            vim.g.oscyank_silent = true
+        end,
         config = function()
             require 'plugins.oscyank'
         end,

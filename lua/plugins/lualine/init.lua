@@ -12,10 +12,34 @@ end
 
 local has_winbar = nvim.has.option 'winbar'
 
+-- TODO: Winbar should hold current buffer information while the statusline manage repository/workspace stuff
+-- winbar info ideas
+--  file path
+--  local git changes (add/delete/modified lines)
+--  Filetype?
+--  Readonly
+--  unsaved changed
+--  Modifiable
+--  Buffer diagnostics
+
 -- TODO: Enable auto shrink components and remove sections
--- TODO: Missing sections I would like to add
--- Improve code location with TS, module,class,function,definition,etc.
--- Backgroup Job status counter
+-- statusline info ideas
+--  Mode
+--  Spell
+--  PASTE
+--  Repo info: changed/untracked/staged files, stashes, current branch, pending push/pull
+--  Repo diagnostics
+--  Repo passed/failed tests
+--  Local server status (django?)
+--  Build/Compilation status
+--  LSP status
+
+-- TODO: Stuff that is buffer/window local but may go in the statusline since winbar maybe too small for this
+--  File encoding
+--  Cursor position
+--  Line ending
+--  Filetype?
+-- Cursor context (TS or LSP)?
 -- Count "BUG/TODO/NOTE" indications ?
 
 local tabline = {}
