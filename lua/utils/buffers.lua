@@ -517,7 +517,7 @@ function M.open_changes(opts)
                 RELOAD('threads').queue_thread(RELOAD('threads.git').get_hunks, function(hunks)
                     if #hunks > 0 then
                         vim.fn.setqflist(hunks, ' ')
-                        if vim.fn.getqflist({winid = 0}).winid == 0 then
+                        if vim.fn.getqflist({ winid = 0 }).winid == 0 then
                             RELOAD('utils.functions').toggle_qf()
                         end
                     end
@@ -567,7 +567,7 @@ function M.dump_files_into_qf(buffers, open)
     end
     if #items > 0 then
         vim.fn.setqflist(items, ' ')
-        if open and vim.fn.getqflist({winid = 0}).winid == 0 then
+        if open and vim.fn.getqflist({ winid = 0 }).winid == 0 then
             RELOAD('utils.functions').toggle_qf()
         end
     else
