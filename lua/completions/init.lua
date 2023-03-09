@@ -112,6 +112,7 @@ local completions = {
     end,
     qf_file_options = function(arglead, cmdline, cursorpos)
         local options = {
+            '-hunks',
             '-qf',
             '-open',
             '-background',
