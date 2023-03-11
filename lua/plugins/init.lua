@@ -179,6 +179,9 @@ packer.startup(function()
             return vim.env.SSH_CONNECTION ~= nil
         end,
         event = 'VimEnter',
+        setup = function()
+            vim.g.oscyank_silent = true
+        end,
         config = function()
             require 'plugins.oscyank'
         end,

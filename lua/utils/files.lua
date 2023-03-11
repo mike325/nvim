@@ -9,6 +9,10 @@ local is_windows = jit.os == 'Windows'
 
 -- TODO: Replace some of these functions with vim.fs conterparts
 
+if vim.json then
+    vim.json.encode_escape_forward_slash(false)
+end
+
 function M.forward_path(path)
     if is_windows then
         if vim.o.shellslash then
@@ -40,15 +44,6 @@ function M.normalize(path)
         return vim.fn.expand(path)
     end
     return (path:gsub('^~', vim.loop.os_homedir()):gsub('%$([%w_]+)', vim.loop.os_getenv):gsub('\\', '/'))
-end
-
--- local function split_path(path)
---     path = require('utils.strings').split(M.normalize(path), M.separator())
---     return path
--- end
-
-if vim.json then
-    vim.json.encode_escape_forward_slash(false)
 end
 
 function M.exists(filename)

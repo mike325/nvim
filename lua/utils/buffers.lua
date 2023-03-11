@@ -512,10 +512,14 @@ function M.open_changes(opts)
                 vim.cmd.badd((f:gsub('^' .. cwd, '')))
             end
             if action == 'qf' then
+                RELOAD('utils.buffers').dump_files_into_qf(files, true)
+            elseif action == 'hunks' then
                 RELOAD('threads').queue_thread(RELOAD('threads.git').get_hunks, function(hunks)
                     if #hunks > 0 then
                         vim.fn.setqflist(hunks, ' ')
-                        RELOAD('utils.functions').toggle_qf()
+                        if vim.fn.getqflist({ winid = 0 }).winid == 0 then
+                            RELOAD('utils.functions').toggle_qf()
+                        end
                     end
                 end, { revision = revision, files = files })
             elseif action == 'open' or action == '' then
@@ -563,7 +567,7 @@ function M.dump_files_into_qf(buffers, open)
     end
     if #items > 0 then
         vim.fn.setqflist(items, ' ')
-        if open then
+        if open and vim.fn.getqflist({ winid = 0 }).winid == 0 then
             RELOAD('utils.functions').toggle_qf()
         end
     else
@@ -609,7 +613,7 @@ function M.push_tag(args)
     end
 
     -- TODO: Stack manipulation should be smarter and free invalid stack entries, not just push new ones
-    vim.fn.settagstack(win, { items = newtag }, 'a')
+    vim.fn.settagstack(win, { items = newtag }, 't')
 end
 
 function M.find_config(opts)

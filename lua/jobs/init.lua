@@ -331,6 +331,7 @@ function Job:new(job)
     obj._output = {}
     obj._stdout = {}
     obj._stderr = {}
+    obj._restarted = false
 
     return setmetatable(obj, self)
 end
@@ -362,11 +363,13 @@ function Job:restart()
     local silent = self.silent
     self.silent = true
 
+    self._restarted = true
     if self._isalive then
         self:stop()
     end
 
     self.silent = silent
+    self._restarted = false
 
     self._stderr = {}
     self._stdout = {}
@@ -425,10 +428,15 @@ function Job:start()
     self._opts.cwd = utils_io.realpath(_cwd)
 
     local function on_exit_wrapper(_, rc, event)
+        jobs[tostring(self._id)] = nil
+        -- NOTE: restart in progress, will come back after the new exit
+        if self._restarted then
+            return
+        end
+
         self._isalive = false
         self.rc = rc
         self._show_progress = false
-        jobs[tostring(self._id)] = nil
 
         if vim.g.active_job == tostring(self._id) then
             local clear = true

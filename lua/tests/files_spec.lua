@@ -277,6 +277,11 @@ describe('Realpath', function()
         local cwd = vim.loop.cwd()
         assert.equals(realpath '.', forward_path(cwd))
     end)
+
+    it('parent', function()
+        local cwd = vim.loop.cwd()
+        assert.equals(realpath '..', vim.fs.dirname(cwd))
+    end)
 end)
 
 describe('Normalize', function()
@@ -314,12 +319,6 @@ describe('Basename', function()
         end
     end)
 
-    -- it('HOME', function()
-    --     local username = vim.loop.os_get_passwd().username
-    --     assert.equals(username, basename '~')
-    --     assert.equals(username, basename(vim.loop.os_homedir()))
-    -- end)
-
     it('Init file', function()
         local config_dir = vim.fn.stdpath 'config'
         local init_file = config_dir .. '/init.lua'
@@ -331,17 +330,6 @@ describe('Basename', function()
         assert.equals('test', basename './test')
         assert.equals('test', basename './test')
     end)
-
-    -- it('Dirname', function()
-    --     assert.equals('test', basename './test/')
-    --     assert.equals('test', basename './test')
-    -- end)
-
-    -- it('CWD', function()
-    --     local cwd = forward_path(vim.loop.cwd()):gsub('.*' .. separator(), '')
-    --     assert.equals(cwd, basename '.')
-    --     assert.equals(cwd, basename(vim.loop.cwd()))
-    -- end)
 end)
 
 describe('Extension', function()
