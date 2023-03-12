@@ -7,12 +7,16 @@ Watcher.__index = Watcher
 local function on_change(watcher, err, fname, status)
     -- Do work...
     if not watcher._wait then
-        if type(watcher._cb) == type {} then
-            for _, cb in ipairs(watcher._cb) do
+        for _, cb in ipairs(watcher._cb) do
+            if vim.is_callable(cb) then
                 cb(err, fname, status)
+            else
+                -- TODO: Add support to send err,fname,status to the autocmd
+                vim.cmd.doautocmd { args = { 'User', cb } }
             end
         end
     end
+
     -- Debounce: stop/start.
     watcher:stop()
     vim.defer_fn(function()
@@ -20,14 +24,13 @@ local function on_change(watcher, err, fname, status)
     end, 100)
 end
 
--- TODO: Add autocmd support
 function Watcher:new(filename, cb)
     vim.validate {
         filename = { filename, 'string' },
-        cb = { cb, { 'table', 'function' } },
+        cb = { cb, { 'table', 'function', 'string' } },
     }
 
-    if type(cb) == 'function' then
+    if type(cb) ~= type {} then
         cb = { cb }
     end
 
@@ -51,12 +54,12 @@ function Watcher:start()
         {},
         vim.schedule_wrap(function(...)
             on_change(self, ...)
-            self._wait = true
         end)
     )
 end
 
 function Watcher:stop()
+    self._wait = true
     self._watcher:stop()
 end
 
@@ -67,10 +70,10 @@ end
 
 function Watcher:subscribe(cb)
     vim.validate {
-        cb = { cb, { 'function', 'table' } },
+        cb = { cb, { 'function', 'table', 'string' } },
     }
 
-    if type(cb) == 'function' then
+    if type(cb) ~= type {} then
         cb = { cb }
     end
     vim.list_extend(self._cb, cb)
