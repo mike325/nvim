@@ -25,7 +25,7 @@ let s:ignores_patterns = {
             \   'vcs': [ 'hg', 'svn', 'git',],
             \   'compile' : ['obj', 'class', 'pyc', 'o', 'dll', 'a', 'moc',],
             \   'tmp_dirs': [ 'trash', 'tmp', '__pycache__', 'ropeproject'],
-            \   'vim_dirs': [ 'backup', 'swap', 'sessions', 'cache', 'undos',],
+            \   'vim_dirs': [ 'backup', 'swap', 'session', 'cache', 'undos',],
             \   'tmp_file' : ['swp', 'bk',],
             \   'docs': ['docx', 'doc', 'xls', 'xlsx', 'odt', 'ppt', 'pptx', 'pdf',],
             \   'image': ['jpg', 'jpeg', 'png', 'gif', 'raw'],

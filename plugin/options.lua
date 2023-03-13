@@ -1,7 +1,6 @@
 local sys = require 'sys'
 local nvim = require 'nvim'
 
-local parent = sys.data
 local mkdir = require('utils.files').mkdir
 local is_dir = require('utils.files').is_dir
 local executable = require('utils.files').executable
@@ -15,15 +14,16 @@ local dirpaths = {
     swap = 'directory',
     undo = 'undodir',
     cache = '',
-    sessions = '',
+    session = '',
 }
 
 for dirname, dir_setting in pairs(dirpaths) do
-    if not is_dir(parent .. '/' .. dirname) then
-        mkdir(parent .. '/' .. dirname)
+    local config_dir = sys[dirname]
+    if not is_dir(config_dir) then
+        mkdir(config_dir)
     end
     if not isempty(dir_setting) then
-        vim.opt[dir_setting] = parent .. '/' .. dirname
+        vim.opt[dir_setting] = config_dir
     end
 end
 

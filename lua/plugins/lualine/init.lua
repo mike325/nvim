@@ -173,12 +173,18 @@ lualine.setup {
             },
             {
                 'qf_counter',
+                cond = function()
+                    return #vim.fn.getqflist() > 0
+                end,
                 on_click = function(clicks, button, modifiers)
                     RELOAD('utils.functions').toggle_qf()
                 end,
             },
             {
                 'loc_counter',
+                cond = function()
+                    return #vim.fn.getloclist(vim.api.nvim_get_current_win()) > 0
+                end,
                 on_click = function(clicks, button, modifiers)
                     RELOAD('utils.functions').toggle_qf { win = vim.api.nvim_get_current_win() }
                 end,

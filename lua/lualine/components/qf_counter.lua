@@ -10,9 +10,17 @@ function M:init(options)
 end
 
 function M:update_status()
-    local qf_values = #vim.fn.getqflist()
-    if qf_values > 0 then
-        return ('%s%s: %s'):format(hl.component_format_highlight(self.qf_counter), 'QF', qf_values)
+    local qf_values = vim.fn.getqflist()
+    if #qf_values > 0 then
+        local valid = 0
+        for _, item in ipairs(qf_values) do
+            if item.valid == 1 then
+                valid = valid + 1
+            end
+        end
+        if valid > 0 then
+            return ('%s%s: %s'):format(hl.component_format_highlight(self.qf_counter), 'QF', valid)
+        end
     end
     return ''
 end
