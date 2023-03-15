@@ -227,6 +227,7 @@ packer.startup(function()
                 { noremap = true, silent = true, desc = 'Open DiffView' }
             )
         end,
+        cmd = { 'DiffviewOpen', 'DiffviewFileHistory', 'DiffviewLog' },
         requires = 'nvim-lua/plenary.nvim',
     }
 
@@ -341,40 +342,21 @@ packer.startup(function()
     use {
         'danymat/neogen',
         config = function()
-            require('neogen').setup {
-                enabled = true,
-                snippet_engine = 'luasnip',
-                input_after_comment = true,
-                languages = {
-                    lua = {
-                        template = {
-                            annotation_convention = 'emmylua',
-                        },
-                    },
-                    python = {
-                        template = {
-                            annotation_convention = 'google_docstrings',
-                        },
-                    },
-                },
-            }
+            require 'plugins.neogen'
         end,
+        cmd = { 'Neogen' },
         requires = 'nvim-treesitter/nvim-treesitter',
-        -- wants = { 'nvim-treesitter' },
-        -- after = 'nvim-treesitter',
     }
 
-    use {
-        'SmiteshP/nvim-gps',
-        config = function()
-            require('nvim-gps').setup()
-            -- require('nvim-gps').setup{
-            --     separator = ' ❯ ',
-            -- }
-        end,
-        requires = 'nvim-treesitter/nvim-treesitter',
-        after = 'nvim-treesitter',
-    }
+    -- NOTE: Replace by treesitter_context
+    -- use {
+    --     'SmiteshP/nvim-gps',
+    --     config = function()
+    --         require('nvim-gps').setup()
+    --     end,
+    --     requires = 'nvim-treesitter/nvim-treesitter',
+    --     after = 'nvim-treesitter',
+    -- }
 
     use {
         'nvim-telescope/telescope.nvim',
