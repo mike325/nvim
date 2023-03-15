@@ -612,7 +612,6 @@ function M.push_tag(args)
         vim.api.nvim_win_set_cursor(win, args.pos)
     end
 
-    -- TODO: Stack manipulation should be smarter and free invalid stack entries, not just push new ones
     vim.fn.settagstack(win, { items = newtag }, 't')
 end
 

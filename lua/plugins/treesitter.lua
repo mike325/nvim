@@ -33,7 +33,6 @@ end
 --     'query',
 --     'rst',
 --     'rust',
---     'sql',
 --     'todotxt',
 --     'toml',
 --     'vim',
