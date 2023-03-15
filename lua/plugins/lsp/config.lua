@@ -211,7 +211,7 @@ function M.on_attach(client, bufnr, is_null)
         -- TODO: Does this needs the custom "on_attach" handler?
         if not null_ls.is_registered(null_configs[ft].formatter.name) then
             if vim.opt_local.formatexpr:get() == '' then
-                vim.opt_local.formatexpr = ([[luaeval('require"utils.buffers".format("%s")')]]):format(ft)
+                vim.opt_local.formatexpr = [[luaeval('require"utils.buffers".format({ft=_A})',&l:filetype)]]
             end
             null_ls.register { null_configs[ft].formatter }
         end

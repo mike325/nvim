@@ -398,7 +398,7 @@ nvim.command.set('Zoom', function(opts)
     RELOAD('mappings').zoom_links(opts)
 end, { nargs = 1, complete = completions.zoom_links, desc = 'Open Zoom call in a specific room' })
 
-vim.opt.formatexpr = [[luaeval('RELOAD"utils.buffers".format()')]]
+vim.opt.formatexpr = [[luaeval('require"utils.buffers".format({ft=_A})',&l:filetype)]]
 vim.keymap.set('n', '=F', function()
     RELOAD('utils.buffers').format { whole_file = true }
 end, { noremap = true, silent = true, desc = 'Format the current buffer with the prefer formatting prg' })
@@ -557,7 +557,11 @@ end, { nargs = '?', desc = 'Toggle column sign diagnostics', complete = completi
 
 if executable 'scp' then
     nvim.command.set('SCPEdit', function(opts)
-        RELOAD('utils.functions').scp_edit(opts)
+        local args = {
+            host = opts.fargs[1],
+            filename = opts.fargs[2],
+        }
+        RELOAD('utils.functions').scp_edit(args)
     end, { nargs = '*', desc = 'Edit remote file using scp', complete = completions.ssh_hosts_completion })
 end
 

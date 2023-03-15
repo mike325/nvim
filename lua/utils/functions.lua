@@ -1176,50 +1176,61 @@ function M.qf_to_diagnostic(ns_name)
 end
 
 function M.scp_edit(opts)
-    local function get_remote_file(host, filename)
+    opts = opts or {}
+    local host = opts.host
+    local filename = opts.filename
+    local path = opts.path
+
+    local function get_remote_file(hostname, remote_file, remote_path)
         vim.validate {
-            host = { host, 'string' },
-            filename = { filename, 'string' },
+            hostname = { hostname, 'string' },
+            remote_file = { remote_file, 'string' },
+            remote_path = { remote_path, 'string', true },
         }
 
-        if STORAGE.hosts[host] then
-            host = STORAGE.hosts[host]
+        if STORAGE.hosts[hostname] then
+            hostname = STORAGE.hosts[hostname]
         end
 
-        local virtual_filename = ('scp://%s:22/%s'):format(host, filename)
+        if remote_path and remote_path ~= '' then
+            remote_file = remote_path .. '/' .. remote_file
+        end
+
+        local virtual_filename = ('scp://%s:22/%s'):format(hostname, remote_file)
         vim.cmd.edit(virtual_filename)
     end
 
-    local host = opts.fargs[1]
-    local filename = opts.fargs[2]
-
-    local function filename_input(hostname)
-        vim.ui.input({ prompt = 'Enter filename > ' }, function(input)
-            if not input then
-                vim.notify('Missing filename!', 'ERROR', { title = 'SCPEdit' })
-                return
-            end
-            filename = input
-            get_remote_file(hostname, filename)
-        end)
+    local function filename_input()
+        if not filename or filename == '' then
+            vim.ui.input({ prompt = 'Enter filename > ' }, function(input)
+                if not input then
+                    vim.notify('Missing filename!', 'ERROR', { title = 'SCPEdit' })
+                    return
+                end
+                filename = input
+                get_remote_file(host, filename, path)
+            end)
+        else
+            get_remote_file(host, filename, path)
+        end
     end
 
-    if not host then
+    if not host or host == '' then
         vim.ui.input({
             prompt = 'Enter hostname > ',
-            completion = 'customlist,v:lua.require("completions").ssh_hosts_completion',
+            completion = "customlist,v:lua.require'completions'.ssh_hosts_completion",
         }, function(input)
             if not input then
                 vim.notify('Missing hostname!', 'ERROR', { title = 'SCPEdit' })
                 return
             end
             host = input
-            filename_input(host)
+            filename_input()
         end)
-    elseif not filename then
-        filename_input(host)
+    elseif not filename or filename == '' then
+        filename_input()
     else
-        get_remote_file(host, filename)
+        get_remote_file(host, filename, path)
     end
 end
 

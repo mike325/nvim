@@ -451,7 +451,7 @@ end
 
 function M.get_host(host)
     if not host or host == '' then
-        host = vim.fn.input('Enter hostname > ', '', 'customlist,v:lua.require("completions").ssh_hosts_completion')
+        host = vim.fn.input('Enter hostname > ', '', "customlist,v:lua.require'completions'.ssh_hosts_completion")
     end
     return host
 end

@@ -346,8 +346,8 @@ function M.format(opts)
 
     local view = vim.fn.winsaveview()
 
-    local first = vim.v.lnum - 1
-    local last = first + vim.v.count
+    local first = vim.v.lnum
+    local last = first + vim.v.count - 1
     local whole_file = last - first == nvim.buf.line_count(0) or opts.whole_file
 
     local clients = vim.lsp.buf_get_clients(0)
@@ -439,7 +439,7 @@ function M.setup(ft, opts)
         if utils.get_formatter then
             local formatter = utils.get_formatter()
             if formatter and vim.opt_local.formatexpr:get() == '' then
-                vim.opt_local.formatexpr = ([[luaeval('require"utils.buffers".format("%s")')]]):format(ft)
+                vim.opt_local.formatexpr = [[luaeval('require"utils.buffers".format({ft=_A})',&l:filetype)]]
             end
             opts.formatexpr = nil
         end
