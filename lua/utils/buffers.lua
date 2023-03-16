@@ -560,9 +560,9 @@ function M.dump_files_into_qf(buffers, open)
     local items = {}
     for _, buf in ipairs(buffers) do
         if type(buf) == type(1) then
-            table.insert(items, { bufnr = buf })
+            table.insert(items, { bufnr = buf, valid = true })
         else
-            table.insert(items, { filename = buf })
+            table.insert(items, { filename = buf, valid = true })
         end
     end
     if #items > 0 then

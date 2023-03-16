@@ -24,7 +24,7 @@ function M.get_hunks(thread_args)
                 { result_type = 'indices', algorithm = 'minimal' }
             )
             for _, diff in ipairs(diffs) do
-                table.insert(hunks, { filename = f, lnum = diff[1], text = workspace_content[diff[1]] })
+                table.insert(hunks, { filename = f, lnum = diff[1], text = workspace_content[diff[1]], valid = true })
             end
         end
     end
