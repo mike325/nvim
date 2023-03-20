@@ -208,3 +208,15 @@ nvim.autocmd.LspMappings = {
         RELOAD('plugins.lsp.config').lsp_mappings(client, bufnr)
     end,
 }
+
+nvim.autocmd.Alternate = {
+    event = 'FileType',
+    pattern = 'c,cpp',
+    callback = function(args)
+        local bufname = vim.api.nvim_buf_get_name(0)
+        -- NOTE: should this look in the local path instead of the whole directory?
+        if bufname ~= '' and not vim.g.alternates[bufname] then
+            RELOAD('threads.related').async_lookup_alternate()
+        end
+    end,
+}

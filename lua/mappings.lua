@@ -283,27 +283,29 @@ function M.find(opts)
             end, find:output()) or {}
         end
     else
+        local target = ''
+        -- NOTE: Since this is a "cmdline" utility, transform "glob" to lua pattern
+        if opts.target:match '%*' then
+            for _, s in ipairs(vim.split(opts.target, '')) do
+                target = target .. (s == '*' and '.*' or vim.pesc(s))
+            end
+        -- elseif opts.target:match '[%[%]*+?^$]' then
+        --     target = function(filename)
+        --         return filename:match(opts.target) ~= nil
+        --     end
+        else
+            target = opts.target
+        end
         if opts.cb then
             -- NOTE: Fallback to native finder which works everywhere
             RELOAD('threads.functions').async_find {
-                target = opts.target,
+                target = target,
                 cb = function(data)
-                    opts.cb(data.results)
+                    opts.cb(data)
                 end,
             }
         else
-            local target = ''
-            if opts.target:match '%*' then
-                for _, s in ipairs(vim.split(opts.target, '')) do
-                    target = target .. (s == '*' and '.*' or vim.pesc(s))
-                end
-            else
-                target = vim.pesc(opts.target)
-            end
-            local filter = function(filename)
-                return filename:match(target) ~= nil
-            end
-            return vim.fs.find(filter, { type = 'file', limit = math.huge })
+            return vim.fs.find(target, { type = 'file', limit = math.huge })
         end
     end
 end
@@ -860,12 +862,18 @@ function M.reload_configs(opts)
     end
 end
 
+-- TODO: Add support for clangd switch header/src command
 function M.alternate(opts)
     local bufnr = vim.api.nvim_get_current_buf()
     opts.buf = vim.api.nvim_buf_get_name(bufnr)
 
     -- NOTE: ignore scratch buffers
     if opts.buf == '' and vim.bo[bufnr].buftype ~= '' then
+        return
+    end
+
+    local found = RELOAD('plugins.lsp.utils').switch_source_header_splitcmd(bufnr, 'edit')
+    if found then
         return
     end
 

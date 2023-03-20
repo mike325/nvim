@@ -14,7 +14,7 @@ if mini_doc then
 end
 
 if mini_sessions then
-    local sessions_dir = sys.data .. '/session'
+    local sessions_dir = sys.session
     if not is_dir(sessions_dir) then
         mkdir(sessions_dir)
     end
