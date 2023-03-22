@@ -872,10 +872,10 @@ function M.alternate(opts)
         return
     end
 
-    local found = RELOAD('plugins.lsp.utils').switch_source_header_splitcmd(bufnr, 'edit')
-    if found then
-        return
-    end
+    -- local found = RELOAD('plugins.lsp.utils').switch_source_header_splitcmd(bufnr, 'edit')
+    -- if found then
+    --     return
+    -- end
 
     local prefix = opts.buf:match '^%w+://'
     opts.buf = opts.buf:gsub('^%w+://', '')

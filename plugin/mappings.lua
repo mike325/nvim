@@ -649,3 +649,26 @@ nvim.command.set('ModifiedSave', function(opts)
 end, {
     desc = 'Save all modified buffers',
 })
+
+nvim.command.set('SwitchQf', function(opts)
+    local win = vim.api.nvim_get_current_win()
+    if opts.bang then
+        local items = vim.fn.getloclist(win)
+        if #items > 0 then
+            vim.fn.setqflist(items, ' ')
+            vim.cmd.lclose()
+            -- TODO: Should we keep the loclist ?
+            vim.fn.setloclist(win, {}, ' ')
+            RELOAD('utils.functions').toggle_qf()
+        end
+    else
+        local items = vim.fn.getqflist()
+        if #items > 0 then
+            vim.fn.setloclist(win, items, ' ')
+            vim.cmd.cclose()
+            -- TODO: Should we keep the qf ?
+            vim.fn.setqflist({}, ' ')
+            RELOAD('utils.functions').toggle_qf { win = win }
+        end
+    end
+end, { bang = true, desc = "Move the current QF to the window's location list" })
