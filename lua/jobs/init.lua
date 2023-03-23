@@ -479,7 +479,7 @@ function Job:start()
             qf_opts.dump = qf_opts.dump == nil and true or qf_opts.dump
             qf_opts.clear = qf_opts.clear == nil and true or qf_opts.clear
 
-            local qfutils = RELOAD('utils.qf')
+            local qfutils = RELOAD 'utils.qf'
             if qf_opts.dump then
                 if vim.t.progress_win then
                     nvim.win.close(vim.t.progress_win, false)
