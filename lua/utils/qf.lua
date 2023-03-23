@@ -197,7 +197,8 @@ function M.qf_to_diagnostic(ns_name, win)
 
     assert((ns_name and ns_name ~= '') or qf.title ~= '', debug.traceback 'Missing namespace or Qf Title')
     ns_name = ns_name or qf.title
-    local ns = vim.api.nvim_create_namespace(ns_name)
+    ns_name = ns_name:gsub('%s+', '_')
+    local ns = vim.api.nvim_create_namespace(ns_name:lower())
     vim.diagnostic.reset(ns)
     if #qf.items > 0 then
         local diagnostics = vim.diagnostic.fromqflist(qf.items)
@@ -233,6 +234,29 @@ function M.qf_to_diagnostic(ns_name, win)
             end
         end
         -- vim.diagnostic.show(ns)
+    end
+end
+
+function M.diagnostics_to_qf(diagnostics, opts, win)
+    vim.validate {
+        diagnostics = { diagnostics, 'table' },
+        opts = { opts, 'table', true },
+        win = { win, 'number', true },
+    }
+    opts = opts or {}
+    opts.items = {}
+    win = win or opts.win
+    for _, diagnostic in pairs(diagnostics) do
+        local items = vim.diagnostic.toqflist(diagnostic)
+        for idx, _ in ipairs(items) do
+            items[idx].valid = 1
+        end
+        vim.list_extend(opts.items, items)
+    end
+    vim.api.nvim_win_set_buf(0, tonumber(vim.tbl_keys(diagnostics)[1]))
+    M.set_list(opts, win)
+    if not M.is_open(win) then
+        M.open(win)
     end
 end
 
