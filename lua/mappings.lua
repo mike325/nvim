@@ -528,18 +528,17 @@ function M.messages(opts)
             end
         end
 
-        vim.fn.setqflist({}, ' ', {
-            lines = messages,
+        RELOAD('utils.qf').set_list {
+            items = messages,
             title = 'Messages',
             context = 'Messages',
-        })
-        vim.cmd.Qopen()
+            open = true,
+        }
     else
         vim.cmd.messages 'clear'
-        local context = vim.fn.getqflist({ context = 1 }).context
-        if context == 'Messages' then
-            RELOAD('utils.functions').clear_qf()
-            vim.cmd.cclose()
+        local title = vim.fn.getqflist({ title = 1 }).title
+        if title == 'Messages' then
+            RELOAD('utils.qf').clear()
         end
     end
 end
@@ -1028,40 +1027,6 @@ function M.show_job_progress(opts)
     if STORAGE.jobs[id] then
         local job = STORAGE.jobs[id]
         job:progress()
-    end
-end
-
-function M.filter_qf_diagnostics(opts)
-    local filtered_list = {}
-    local items = opts.win and vim.fn.getloclist(opts.win) or vim.fn.getqflist()
-
-    local limit = opts.args:upper()
-    if not vim.log.levels[limit] then
-        vim.notify('Invalid level: ' .. opts.args, 'ERROR', { title = 'QFDiagnostics' })
-        return
-    end
-
-    limit = limit:sub(1, 1)
-
-    local translation_list = {}
-    for l, v in pairs(vim.lsp.log_levels) do
-        if type(l) == type(0) then
-            translation_list[l] = v:sub(1, 1)
-        else
-            translation_list[l:sub(1, 1)] = v
-        end
-    end
-
-    for _, item in ipairs(items) do
-        if item.type == limit or (opts.bang and translation_list[item.type] >= translation_list[limit]) then
-            table.insert(filtered_list, item)
-        end
-    end
-
-    if opts.win then
-        vim.fn.setloclist(opts.win, filtered_list, ' ')
-    else
-        vim.fn.setqflist(filtered_list, ' ')
     end
 end
 

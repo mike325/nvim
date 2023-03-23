@@ -148,7 +148,7 @@ nvim.autocmd.DapConfig = {
 
 local function list_breakpoints()
     dap.list_breakpoints()
-    require('utils.functions').toggle_qf()
+    RELOAD('utils.qf').toggle()
 end
 
 local args = { noremap = true, silent = true }

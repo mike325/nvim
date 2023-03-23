@@ -177,7 +177,7 @@ lualine.setup {
                     return #vim.fn.getqflist() > 0
                 end,
                 on_click = function(clicks, button, modifiers)
-                    RELOAD('utils.functions').toggle_qf()
+                    RELOAD('utils.qf').toggle()
                 end,
             },
             {
@@ -186,7 +186,7 @@ lualine.setup {
                     return #vim.fn.getloclist(vim.api.nvim_get_current_win()) > 0
                 end,
                 on_click = function(clicks, button, modifiers)
-                    RELOAD('utils.functions').toggle_qf { win = vim.api.nvim_get_current_win() }
+                    RELOAD('utils.qf').toggle { win = vim.api.nvim_get_current_win() }
                 end,
             },
             {

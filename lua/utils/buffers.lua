@@ -511,15 +511,13 @@ function M.open_changes(opts)
                 -- NOTE: using badd since `:edit` load every buffer and `bufadd()` set buffers as hidden
                 vim.cmd.badd((f:gsub('^' .. cwd, '')))
             end
+            local qfutils = RELOAD 'utils.qf'
             if action == 'qf' then
-                RELOAD('utils.buffers').dump_files_into_qf(files, true)
+                qfutils.dump_files(files, { open = true })
             elseif action == 'hunks' then
                 RELOAD('threads').queue_thread(RELOAD('threads.git').get_hunks, function(hunks)
                     if #hunks > 0 then
-                        vim.fn.setqflist(hunks, ' ')
-                        if vim.fn.getqflist({ winid = 0 }).winid == 0 then
-                            RELOAD('utils.functions').toggle_qf()
-                        end
+                        qfutils.set_list { items = hunks, title = 'OpenChanges', open = not qfutils.is_open() }
                     end
                 end, { revision = revision, files = files })
             elseif action == 'open' or action == '' then
@@ -549,30 +547,6 @@ function M.get_diagnostic_ns(ns)
         end
     end
     return
-end
-
-function M.dump_files_into_qf(buffers, open)
-    vim.validate {
-        buffers = { buffers, 'table' },
-        open = { open, 'boolean', true },
-    }
-
-    local items = {}
-    for _, buf in ipairs(buffers) do
-        if type(buf) == type(1) then
-            table.insert(items, { bufnr = buf, valid = true })
-        else
-            table.insert(items, { filename = buf, valid = true })
-        end
-    end
-    if #items > 0 then
-        vim.fn.setqflist(items, ' ')
-        if open and vim.fn.getqflist({ winid = 0 }).winid == 0 then
-            RELOAD('utils.functions').toggle_qf()
-        end
-    else
-        vim.notify('No buffers to open', 'INFO')
-    end
 end
 
 function M.push_tag(args)

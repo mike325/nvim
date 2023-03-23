@@ -146,18 +146,18 @@ vim.keymap.set('n', '[<Space>', [[:<C-U>lua require"mappings".add_nl(false)<CR>]
 vim.keymap.set('n', '<C-L>', '<cmd>nohlsearch|diffupdate<CR>', noremap_silent)
 
 nvim.command.set('ClearQf', function()
-    RELOAD('utils.functions').clear_qf()
+    RELOAD('utils.qf').clear()
 end)
 nvim.command.set('ClearLoc', function()
-    RELOAD('utils.functions').clear_qf(nvim.get_current_win())
+    RELOAD('utils.qf').clear(nvim.get_current_win())
 end)
 
 vim.keymap.set('n', '=q', function()
-    RELOAD('utils.functions').toggle_qf()
+    RELOAD('utils.qf').toggle()
 end, { noremap = true, silent = true, desc = 'Toggle quickfix' })
 
 vim.keymap.set('n', '=l', function()
-    RELOAD('utils.functions').toggle_qf { win = vim.api.nvim_get_current_win() }
+    RELOAD('utils.qf').toggle { win = vim.api.nvim_get_current_win() }
 end, { noremap = true, silent = true, desc = 'Toggle location list' })
 
 vim.keymap.set('n', '<leader><leader>p', function()
@@ -209,7 +209,7 @@ nvim.command.set('Qopen', function(opts)
     if opts.size then
         opts.size = opts.size + 1
     end
-    RELOAD('utils.functions').toggle_qf(opts)
+    RELOAD('utils.qf').toggle(opts)
 end, { nargs = '?' })
 
 -- TODO: Check for GUIs
@@ -284,19 +284,14 @@ nvim.command.set('Find', function(opts)
         target = opts.args,
         cb = function(results)
             local qf_opts = {
-                on_fail = {
-                    open = true,
-                    jump = false,
-                },
-                dump = true,
                 open = true,
                 jump = false,
                 context = 'Finder',
                 title = 'Finder',
                 efm = '%f',
+                items = results,
             }
-            qf_opts.lines = results
-            RELOAD('utils.functions').dump_to_qf(qf_opts)
+            RELOAD('utils.functions').set_list(qf_opts)
         end,
     }
     RELOAD('mappings').find(args)
@@ -582,7 +577,7 @@ nvim.command.set('Progress', function(opts)
 end, { nargs = 1, desc = 'Show progress of the selected job', complete = completions.background_jobs })
 
 nvim.command.set('CLevel', function(opts)
-    RELOAD('mappings').filter_qf_diagnostics(opts)
+    RELOAD('utils.qf').filter_qf_diagnostics(opts)
 end, {
     nargs = 1,
     bang = true,
@@ -592,7 +587,7 @@ end, {
 
 nvim.command.set('LLevel', function(opts)
     opts.win = vim.api.nvim_get_current_win()
-    RELOAD('mappings').filter_qf_diagnostics(opts)
+    RELOAD('utils.qf').filter_qf_diagnostics(opts)
 end, {
     nargs = 1,
     bang = true,
@@ -627,11 +622,11 @@ end
 
 -- NOTE: This could be smarter and list the hunks in the QF
 nvim.command.set('ModifiedDump', function(opts)
-    RELOAD('utils.buffers').dump_files_into_qf(
+    RELOAD('utils.qf').dump_files(
         vim.tbl_filter(function(buf)
             return vim.bo[buf].modified
         end, vim.api.nvim_list_bufs()),
-        true
+        { open = true }
     )
 end, {
     desc = 'Dump all unsaved files into the QF',
@@ -651,24 +646,26 @@ end, {
 })
 
 nvim.command.set('SwitchQf', function(opts)
-    local win = vim.api.nvim_get_current_win()
+    local win
     if opts.bang then
-        local items = vim.fn.getloclist(win)
-        if #items > 0 then
-            vim.fn.setqflist(items, ' ')
-            vim.cmd.lclose()
-            -- TODO: Should we keep the loclist ?
-            vim.fn.setloclist(win, {}, ' ')
-            RELOAD('utils.functions').toggle_qf()
-        end
-    else
-        local items = vim.fn.getqflist()
-        if #items > 0 then
-            vim.fn.setloclist(win, items, ' ')
-            vim.cmd.cclose()
-            -- TODO: Should we keep the qf ?
-            vim.fn.setqflist({}, ' ')
-            RELOAD('utils.functions').toggle_qf { win = win }
+        win = vim.api.nvim_get_current_win()
+    end
+
+    local qfutils = RELOAD 'utils.qf'
+    local qflist = qfutils.get_list({ items = 0, winid = 0, title = 0, context = 0 }, win)
+    if #qflist.items > 0 then
+        qfutils.set_list(qflist, win)
+        local is_open = qfutils.is_open(win)
+        -- qfutils.close(win)
+        -- TODO: Should we keep the loclist ?
+        qfutils.clear(win)
+        if is_open then
+            if win then
+                win = nil
+            else
+                win = vim.api.nvim_get_current_win()
+            end
+            qfutils.open(win)
         end
     end
 end, { bang = true, desc = "Move the current QF to the window's location list" })

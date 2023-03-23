@@ -19,16 +19,14 @@ function M.get_pr_changes(opts)
                     -- NOTE: using badd since `:edit` load every buffer and `bufadd()` set buffers as hidden
                     vim.cmd.badd((f:gsub('^' .. cwd, '')))
                 end
+                local qfutils = RELOAD 'utils.qf'
                 if action == 'qf' then
-                    RELOAD('utils.buffers').dump_files_into_qf(files, true)
+                    qfutils.dump_files(files, { open = true })
                 elseif action == 'hunks' then
                     local revision = json.baseRefName
                     RELOAD('threads').queue_thread(RELOAD('threads.git').get_hunks, function(hunks)
                         if #hunks > 0 then
-                            vim.fn.setqflist(hunks, ' ')
-                            if vim.fn.getqflist({ winid = 0 }).winid == 0 then
-                                RELOAD('utils.functions').toggle_qf()
-                            end
+                            qfutils.set_list { items = hunks, open = not qfutils.is_open() }
                         end
                     end, { revision = revision, files = files })
                 elseif action == 'open' or action == '' then
