@@ -28,10 +28,15 @@ local qf_funcs = {
             win = { win, 'number', true },
             size = { size, 'number', true },
         }
-        local direction = vim.o.splitbelow and 'botright' or 'topleft'
         local cmd = win and 'lopen' or 'copen'
         -- TODO: botright and topleft does not seem to work with vim.cmd, need some digging
-        vim.cmd(('%s %s %s'):format(direction, cmd, size or ''))
+        -- TODO: for some reason vim.cmd.copen/lopen does not accept arguments
+        if win then
+            vim.cmd(('%s %s'):format(cmd, size or ''))
+        else
+            local direction = vim.o.splitbelow and 'botright' or 'topleft'
+            vim.cmd(('%s %s %s'):format(direction, cmd, size or ''))
+        end
     end,
     close = function(win)
         vim.validate {
@@ -138,6 +143,12 @@ function M.set_list(opts, win)
     }
 
     assert(not opts.lines, debug.traceback 'Cannot set lines using items')
+
+    vim.validate { win = { opts.win, 'number', true } }
+    if not win and opts.win then
+        win = opts.win
+        opts.win = nil
+    end
 
     local action = opts.action or ' '
     local items = opts.items
@@ -260,12 +271,17 @@ function M.diagnostics_to_qf(diagnostics, opts, win)
     end
 end
 
-function M.toggle(opts)
-    vim.validate { opts = { opts, 'table', true } }
+function M.toggle(opts, win)
+    vim.validate {
+        opts = { opts, 'table', true },
+        win = { win, 'number', true },
+    }
     opts = opts or {}
-    local win = opts.win
-    if type(win) ~= type(1) then
-        win = nil
+
+    vim.validate { win = { opts.win, 'number', true } }
+    if not win and opts.win then
+        win = opts.win
+        opts.win = nil
     end
 
     if M.is_open(win) then
@@ -283,8 +299,15 @@ function M.dump_files(buffers, opts, win)
     }
 
     opts = opts or {}
+
     local open = opts.open
     opts.open = nil
+
+    vim.validate { win = { opts.win, 'number', true } }
+    if not win and opts.win then
+        win = opts.win
+        opts.win = nil
+    end
 
     local items = {}
     for _, buf in ipairs(buffers) do
@@ -303,14 +326,19 @@ function M.dump_files(buffers, opts, win)
     end
 end
 
-function M.filter_qf_diagnostics(opts)
+function M.filter_qf_diagnostics(opts, win)
     opts = opts or {}
     vim.validate {
         limit = { opts.limit, 'string' },
-        win = { opts.win, 'number', true },
+        win = { win, 'number', true },
     }
 
-    local win = opts.win
+    vim.validate { win = { opts.win, 'number', true } }
+    if not win and opts.win then
+        win = opts.win
+        opts.win = nil
+    end
+
     local limit = opts.limit:upper()
 
     local filtered_list = {}
