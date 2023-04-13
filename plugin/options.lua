@@ -152,6 +152,12 @@ vim.opt.diffopt:append {
     'algorithm:minimal',
 }
 
+if nvim.has { 0, 9 } then
+    vim.opt.diffopt:append {
+        'linematch:60',
+    }
+end
+
 vim.opt.relativenumber = true
 vim.opt.number = true
 vim.opt.list = true

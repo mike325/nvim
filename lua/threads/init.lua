@@ -89,6 +89,7 @@ function M.add_thread_context(opts)
     context.cwd = context.cwd or vim.loop.cwd():gsub('\\', '/')
 
     thread_opts.context = context
+    thread_opts.version = vim.version()
 
     return thread_opts
 end
