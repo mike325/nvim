@@ -237,7 +237,12 @@ lualine.setup {
             -- where_ami,
             'lsp_progress',
         },
-        -- lualine_x = { 'encoding', 'fileformat', 'filetype' },
+        lualine_x = {
+            'encoding',
+            'fileformat',
+            'filetype',
+            'searchcount',
+        },
         lualine_y = {
             {
                 'trailspace',
