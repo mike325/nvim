@@ -328,6 +328,11 @@ function M.async_execute(opts)
         opts.progress = true
     end
 
+    local dump = opts.dump
+    if dump == nil then
+        dump = false
+    end
+
     local script = RELOAD('jobs'):new {
         cmd = cmd,
         args = args,
@@ -343,7 +348,8 @@ function M.async_execute(opts)
             pty = opts.pty,
         },
         qf = {
-            dump = false,
+            dump = dump,
+            open = dump,
             on_fail = {
                 jump = true,
                 open = true,
@@ -932,8 +938,7 @@ function M.python(version, args)
     end
 
     local split_type = vim.o.splitbelow and 'botright' or 'topleft'
-    -- TODO: migrate this
-    vim.cmd(split_type .. ' split term://' .. pyversion .. ' ' .. args)
+    vim.cmd { cmd = 'split', args = { 'term://' .. pyversion .. ' ' .. args }, mods = { split = split_type } }
 end
 
 if STORAGE.modern_git == -1 then

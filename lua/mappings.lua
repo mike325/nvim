@@ -333,6 +333,7 @@ function M.async_makeprg(opts)
     }
 end
 
+-- NOTE: This does not work from neovim >= 0.8
 function M.cscope(cword, query)
     cword = (cword and cword ~= '') and cword or vim.fn.expand '<cword>'
     query = M.cscope_queries[query] or 'find g'
@@ -1050,8 +1051,7 @@ function M.add_nl(down)
 
     nvim.put(lines, 'l', down, true)
     nvim.win.set_cursor(0, cursor_pos)
-    -- TODO: Investigate how to add silent
-    vim.cmd('silent! call repeat#set("' .. cmd .. '",' .. count .. ')')
+    pcall(vim.fn['repeat#set'], cmd, count)
 end
 
 function M.move_line(down)
@@ -1076,7 +1076,7 @@ function M.move_line(down)
     vim.cmd.move(count)
     vim.cmd.normal { bang = true, args = { '==' } }
     -- TODO: Make repeat work
-    -- vim.cmd('silent! call repeat#set("'..cmd..'",'..count..')')
+    -- pcall(vim.fn['repeat#set'], cmd, count)
 end
 
 return M

@@ -90,6 +90,7 @@ local function parse_status(status)
             if file_status ~= '#' then
                 -- parsed.files = parsed.files or {}
                 -- local line = vim.split(gitfile, '%s+')
+                -- TODO: Add support for conflict files u/U
                 if file_status == '1' or file_status == '2' then
                     local stage_status = gitfile:sub(3, 3)
                     local wt_status = gitfile:sub(4, 4)

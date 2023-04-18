@@ -112,15 +112,15 @@ end
 -- @param node table: list of nodes to look for
 -- @param buf number: buffer number
 -- @return true or false otherwise
-function M.is_in_node(range, node, buf)
+function M.is_in_node(node, range, buf)
     vim.validate {
         buf = { buf, 'number', true },
         range = {
             range,
             function(r)
-                return vim.tbl_islist(r)
+                return r == nil or vim.tbl_islist(r)
             end,
-            'an array',
+            'an array or nil',
         },
         node = {
             node,
@@ -134,8 +134,24 @@ function M.is_in_node(range, node, buf)
     buf = buf or vim.api.nvim_get_current_buf()
     node = node or { 'comment' }
 
+    if not range then
+        local cursor = vim.api.nvim_win_get_cursor(0)
+        range = { cursor[1] - 1, cursor[2], cursor[1] - 1, cursor[2] }
+    end
+
     if not vim.tbl_islist(node) then
         node = { node }
+    end
+
+    if vim.tbl_contains(node, 'comment') then
+        local ok, parser = pcall(vim.treesitter.get_parser, buf)
+        if not ok then
+            return false
+        end
+        local langtree = parser:language_for_range(range)
+        if langtree and langtree:lang() == 'comment' then
+            return true
+        end
     end
 
     local tnode = M.get_node_at_range(range, buf)

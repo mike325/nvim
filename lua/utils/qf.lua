@@ -32,10 +32,10 @@ local qf_funcs = {
         -- TODO: botright and topleft does not seem to work with vim.cmd, need some digging
         -- TODO: for some reason vim.cmd.copen/lopen does not accept arguments
         if win then
-            vim.cmd(('%s %s'):format(cmd, size or ''))
+            vim.cmd { cmd = cmd, count = size or nil }
         else
             local direction = vim.o.splitbelow and 'botright' or 'topleft'
-            vim.cmd(('%s %s %s'):format(direction, cmd, size or ''))
+            vim.cmd { cmd = cmd, count = size or nil, mods = { split = direction } }
         end
     end,
     close = function(win)
