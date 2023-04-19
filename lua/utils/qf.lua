@@ -375,79 +375,24 @@ function M.filter_qf_diagnostics(opts, win)
     M.set_list(new_qf, win)
 end
 
-function M.dump_to_qf(opts)
-    vim.validate {
-        opts = { opts, 'table' },
-        lines = { opts.lines, 'table' },
-        context = { opts.context, 'string', true },
-        title = { opts.title, 'string', true },
-        efm = {
-            opts.efm,
-            function(e)
-                return not e or type(e) == type '' or type(e) == type {}
-            end,
-            'error format must be a string or a table',
-        },
-    }
+function M.qf_loclist_switcher(opts)
+    opts = opts or {}
+    local loc = opts.loc
+    local win = vim.api.nvim_get_current_win()
 
-    opts.title = opts.title or opts.context or 'Generic Qf data'
-    opts.context = opts.context or opts.title or 'GenericQfData'
-    if not opts.efm or #opts.efm == 0 then
-        local efm = vim.opt_local.efm:get()
-        if #efm == 0 then
-            efm = vim.opt_global.efm:get()
-        end
-        opts.efm = efm
-    end
+    local src = loc and'Qf' or 'LocList'
+    local dest = loc and 'Loclist' or 'Qf'
 
-    if type(opts.efm) == type {} then
-        opts.efm = table.concat(opts.efm, ',')
-    end
-    -- opts.efm = opts.efm:gsub(' ', '\\ ')
-
-    local qf_type = opts.loc and 'loc' or 'qf'
-    local qf_open = opts.open or false
-    local qf_jump = opts.jump or false
-
-    opts.loc = nil
-    opts.open = nil
-    opts.jump = nil
-    opts.cmdname = nil
-    opts.on_fail = nil
-    opts.lines = require('utils.tables').clear_lst(opts.lines)
-
-    for idx, line in ipairs(opts.lines) do
-        opts.lines[idx] = vim.api.nvim_replace_termcodes(line, true, false, false)
-    end
-
-    local win
-    if qf_type ~= 'qf' then
-        win = opts.win or vim.api.nvim_get_current_win()
-    end
-    opts.win = nil
-    qf_funcs.set_list({}, ' ', opts, win)
-
-    local info_tab = opts.tab
-    if info_tab and info_tab ~= nvim.get_current_tabpage() then
-        vim.notify(
-            ('%s Updated! with %s info'):format(qf_type == 'qf' and 'Qf' or 'Loc', opts.context),
-            'INFO',
-            { title = qf_type == 'qf' and 'QuickFix' or 'LocationList' }
-        )
-        return
-    elseif #opts.lines > 0 then
-        if qf_open then
-            local elements = #qf_funcs.get_list(nil, win) + 1
-            local lines = vim.opt.lines:get()
-            local size = math.min(math.floor(lines * 0.5), elements)
-            qf_funcs.open(win, size)
-        end
-
-        if qf_jump then
-            qf_funcs.first(win)
+    local qflist = M.get_list({ items = true, winid = true, title = true, context = true }, not loc and win or nil)
+    if #qflist.items > 0 then
+        local is_open = M.is_open(not loc and win or nil)
+        M.set_list(qflist, loc and win or nil)
+        M.clear(not loc and win or nil)
+        if is_open then
+            M.open(loc and win or nil)
         end
     else
-        vim.notify('No output to display', 'ERROR', { title = qf_type == 'qf' and 'QuickFix' or 'LocationList' })
+        vim.notify(src .. ' is empty!, nothing to set in the ' .. dest, 'WARN')
     end
 end
 

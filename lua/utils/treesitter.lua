@@ -46,6 +46,11 @@ local queries = {
     },
 }
 
+-- TODO: Remove redundant functions
+-- get_node_at_range
+-- get_node_at_cursor
+-- get_current_node
+
 -- Copied from nvim-treesitter in ts_utils
 function M.get_vim_range(range, buf)
     local srow, scol, erow, ecol = unpack(range)
@@ -185,15 +190,18 @@ function M.list_nodes(query, buf)
     local ts_lang = langtree:lang()
 
     local result = {}
+    -- DEPRECATED: vim.treesitter.(parse_query/query.parse_query/get_node_...) in 0.9
+    local parse_func = vim.treesitter.query.parse or vim.treesitter.query.parse_query
+    local get_node_text = vim.treesitter.get_node_text or vim.treesitter.query.get_node_text
     for _, tree in ipairs(langtree:trees()) do
         local root = tree:root()
 
         if root then
-            local matches = vim.treesitter.parse_query(ts_lang, query)
+            local matches = parse_func(ts_lang, query)
             for _, node, _ in matches:iter_matches(root, buf) do
                 for _, v in pairs(node) do
                     local lbegin, _, lend, _ = unpack(M.get_vim_range({ v:range() }, buf))
-                    local name = vim.treesitter.query.get_node_text(v, buf)
+                    local name = get_node_text(v, buf)
                     table.insert(result, { name, lbegin, lend })
                 end
             end

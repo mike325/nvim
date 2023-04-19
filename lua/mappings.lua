@@ -578,6 +578,7 @@ function M.repl(opts)
     end
 
     local direction = vim.opt.splitbelow:get() and 'botright' or 'topleft'
+    -- DEPRECATED: 0.9
     vim.api.nvim_exec(direction .. ' 20new', false)
 
     local win = vim.api.nvim_get_current_win()

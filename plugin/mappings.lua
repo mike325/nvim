@@ -520,7 +520,6 @@ vim.keymap.set('n', '[d', function()
     vim.diagnostic.goto_prev { wrap = true }
 end, { noremap = true, silent = true, desc = 'Go to the prev diagnostic' })
 
--- TODO: set max size just as dump_to_qf
 nvim.command.set('DiagnosticsDump', function(opts)
     local severity = vim.diagnostic.severity[opts.args]
     if severity then
@@ -645,27 +644,12 @@ end, {
     desc = 'Save all modified buffers',
 })
 
-nvim.command.set('SwitchQf', function(opts)
-    local win
-    if opts.bang then
-        win = vim.api.nvim_get_current_win()
-    end
-
+nvim.command.set('Qf2Loc', function(opts)
     local qfutils = RELOAD 'utils.qf'
-    local qflist = qfutils.get_list({ items = 0, winid = 0, title = 0, context = 0 }, win)
-    if #qflist.items > 0 then
-        qfutils.set_list(qflist, win)
-        local is_open = qfutils.is_open(win)
-        -- qfutils.close(win)
-        -- TODO: Should we keep the loclist ?
-        qfutils.clear(win)
-        if is_open then
-            if win then
-                win = nil
-            else
-                win = vim.api.nvim_get_current_win()
-            end
-            qfutils.open(win)
-        end
-    end
-end, { bang = true, desc = "Move the current QF to the window's location list" })
+    qfutils.qf_loclist_switcher { loc = true }
+end, { desc = "Move the current QF to the window's location list" })
+
+nvim.command.set('Loc2Qf', function(opts)
+    local qfutils = RELOAD 'utils.qf'
+    qfutils.qf_loclist_switcher()
+end, { desc = "Move the current window's location list to the QF" })
