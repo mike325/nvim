@@ -299,7 +299,7 @@ function M.detect_indent(buf)
             if indent_str then
                 -- Use TS to avoid multiline strings and comments
                 -- We may need to fallback to lua pattern matching if TS is not available
-                if not has_ts or not is_in_node(blacklist, { idx - 1, #indent_str - 1, idx - 1, #line - 1 }) then
+                if not has_ts or not is_in_node(blacklist, { idx - 1, #indent_str + 1 }) then
                     -- NOTE: we may need to confirm tab indent with more than 1 line and avoid mix indent
                     if indent_str:match '^\t+$' then
                         expandtab = false

@@ -708,8 +708,14 @@ function M.custom_compiler(opts)
     end
 end
 
-function M.autoformat()
-    vim.b.disable_autoformat = not vim.b.disable_autoformat
+function M.autoformat(opts)
+    if opts.args == 'enable' then
+        vim.b.disable_autoformat = false
+    elseif opts.args == 'disable' then
+        vim.b.disable_autoformat = true
+    else
+        vim.b.disable_autoformat = not vim.b.disable_autoformat
+    end
     print('Autoformat', vim.b.disable_autoformat and 'disabled' or 'enabled')
 end
 

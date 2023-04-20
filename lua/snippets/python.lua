@@ -125,11 +125,11 @@ return {
         i(2, 'name'),
         p(function()
             -- stylua: ignore
-            local get_current_class = require('utils.treesitter').get_current_class
+            local is_in_class = require('utils.treesitter').is_in_class
             -- stylua: ignore
             local has_ts = require('utils.treesitter').has_ts()
             -- stylua: ignore
-            if has_ts and get_current_class() then
+            if has_ts and is_in_class() then
                 -- stylua: ignore
                 return 'self, '
             end
