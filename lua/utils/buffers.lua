@@ -357,7 +357,12 @@ function M.format(opts)
         if whole_file and client.server_capabilities.documentFormattingProvider then
             -- TODO: May add filter to prefere some lsp over the others
             if nvim.has { 0, 8 } then
-                vim.lsp.buf.format { async = false }
+                vim.lsp.buf.format {
+                    async = false,
+                    filter = function(c)
+                        return c.id == client.id
+                    end,
+                }
             else
                 vim.lsp.buf.formatting()
             end
@@ -367,6 +372,9 @@ function M.format(opts)
             if nvim.has { 0, 8 } then
                 vim.lsp.buf.format {
                     async = false,
+                    filter = function(c)
+                        return c.id == client.id
+                    end,
                     range = {
                         start = { first, 0 },
                         ['end'] = { last, #nvim.buf.get_lines(0, last, last + 1, false)[1] },
@@ -439,7 +447,7 @@ function M.setup(ft, opts)
         if utils.get_formatter then
             local formatter = utils.get_formatter()
             if formatter and vim.opt_local.formatexpr:get() == '' then
-                vim.opt_local.formatexpr = [[luaeval('require"utils.buffers".format({ft=_A})',&l:filetype)]]
+                vim.opt_local.formatexpr = [[luaeval('RELOAD"utils.buffers".format({ft=_A})',&l:filetype)]]
             end
             opts.formatexpr = nil
         end

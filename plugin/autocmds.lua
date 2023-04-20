@@ -205,6 +205,22 @@ nvim.autocmd.LspMappings = {
     callback = function(args)
         local bufnr = args.buf
         local client = vim.lsp.get_client_by_id(args.data.client_id)
+
+        local null_ls = vim.F.npcall(require, 'null-ls')
+        if null_ls and client.name ~= 'null-ls' then
+            local null_configs = require 'plugins.lsp.null'
+
+            local ft = vim.bo.filetype
+            local has_formatting = client.server_capabilities.documentFormattingProvider
+                or client.server_capabilities.documentRangeFormattingProvider
+
+            if not has_formatting and null_ls and null_configs[ft] and null_configs[ft].formatter then
+                if not null_ls.is_registered(null_configs[ft].formatter.name) then
+                    null_ls.register { null_configs[ft].formatter }
+                end
+            end
+        end
+
         RELOAD('plugins.lsp.config').lsp_mappings(client, bufnr)
     end,
 }

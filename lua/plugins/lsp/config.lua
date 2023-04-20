@@ -196,26 +196,4 @@ function M.lsp_mappings(client, bufnr)
     end
 end
 
-function M.on_attach(client, bufnr, is_null)
-    vim.validate {
-        client = { client, 'table' },
-        bufnr = { bufnr, 'number', true },
-        is_null = { is_null, 'boolean', true },
-    }
-
-    local ft = vim.bo.filetype
-    local has_formatting = client.server_capabilities.documentFormattingProvider
-        or client.server_capabilities.documentRangeFormattingProvider
-
-    if not has_formatting and null_ls and null_configs[ft] and null_configs[ft].formatter then
-        -- TODO: Does this needs the custom "on_attach" handler?
-        if not null_ls.is_registered(null_configs[ft].formatter.name) then
-            if vim.opt_local.formatexpr:get() == '' then
-                vim.opt_local.formatexpr = [[luaeval('require"utils.buffers".format({ft=_A})',&l:filetype)]]
-            end
-            null_ls.register { null_configs[ft].formatter }
-        end
-    end
-end
-
 return M
