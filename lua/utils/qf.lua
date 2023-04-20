@@ -380,7 +380,7 @@ function M.qf_loclist_switcher(opts)
     local loc = opts.loc
     local win = vim.api.nvim_get_current_win()
 
-    local src = loc and'Qf' or 'LocList'
+    local src = loc and 'Qf' or 'LocList'
     local dest = loc and 'Loclist' or 'Qf'
 
     local qflist = M.get_list({ items = true, winid = true, title = true, context = true }, not loc and win or nil)
