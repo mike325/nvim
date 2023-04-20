@@ -86,7 +86,7 @@ local function setup(ft)
         if not settedup_configs[config] then
             settedup_configs[config] = true
             local init = vim.deepcopy(server.options) or {}
-            init.on_attach = require('plugins.lsp.config').on_attach
+            -- init.on_attach = require('plugins.lsp.config').on_attach
             init.cmd = init.cmd or server.cmd
             if cmp then
                 local cmp_lsp = vim.F.npcall(require, 'cmp_nvim_lsp')
@@ -124,9 +124,6 @@ if null_ls and next(null_sources) ~= nil then
     null_ls.setup {
         sources = null_sources,
         debug = false,
-        on_attach = function(client, bufnr)
-            require('plugins.lsp.config').on_attach(client, bufnr, true)
-        end,
     }
 end
 

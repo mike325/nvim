@@ -451,12 +451,8 @@ function M.set_compiler(compiler, opts)
 
     local has_config = false
     if opts.configs then
-        for _, config in ipairs(opts.configs) do
-            if is_file(config) then
-                has_config = true
-                break
-            end
-        end
+        local config_files = vim.fs.find(opts.configs, { upward = true, type = 'file' })
+        has_config = #config_files > 0
     end
 
     -- TODO: Add option to pass config path as compiler arg
