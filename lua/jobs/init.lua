@@ -107,6 +107,8 @@ local function get_buffer(job)
     return buf
 end
 
+-- TODO: Add diagnostics integration support
+-- TODO: split function into smaller units
 function Job:new(job)
     vim.validate {
         job = {

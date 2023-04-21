@@ -313,7 +313,9 @@ vim.keymap.set('n', 'gss', function()
     RELOAD('utils.functions').send_grep_job()
 end, { noremap = true, silent = true, desc = 'Grep search word under cursor' })
 
-nvim.command.set('Make', RELOAD('mappings').async_makeprg, { nargs = '*', desc = 'Async execution of current makeprg' })
+nvim.command.set('Make', function(opts)
+    RELOAD('mappings').async_makeprg(opts)
+end, { nargs = '*', desc = 'Async execution of current makeprg' })
 
 if executable 'cscope' and not nvim.has { 0, 9 } then
     for query, _ in pairs(require('mappings').cscope_queries) do
@@ -415,6 +417,7 @@ end, {
     complete = 'compiler',
     desc = 'Set the given compiler with preference on the custom compilers located in the after directory',
 })
+
 -- nvim.command.set('CompilerExecute', function(args)
 --     local makeprg = vim.opt_local.makeprg:get()
 --     local efm = vim.opt_local.errorformat:get()

@@ -4,6 +4,7 @@ local sys = require 'sys'
 local replace_indent = require('utils.buffers').replace_indent
 local executable = require('utils.files').executable
 local is_file = require('utils.files').is_file
+local is_dir = require('utils.files').is_dir
 local getcwd = require('utils.files').getcwd
 
 local M = {}
@@ -455,6 +456,10 @@ function M.set_compiler(compiler, opts)
         has_config = #config_files > 0
     end
 
+    if not has_config and opts.global_config and is_file(opts.global_config) then
+        has_config = true
+    end
+
     -- TODO: Add option to pass config path as compiler arg
     if not has_config and compiler_data then
         vim.list_extend(cmd, compiler_data)
@@ -634,7 +639,7 @@ function M.is_git_repo(root)
 
     local git = root .. '/.git'
 
-    if require('utils.files').is_dir(git) or require('utils.files').is_file(git) then
+    if is_dir(git) or is_file(git) then
         return true
     end
     local results = vim.fs.find('.git', { path = root, upward = true })

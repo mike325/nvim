@@ -6,35 +6,12 @@ local executable = require('utils.files').executable
 
 local plugins = require('nvim').plugins
 
+local line_length = '120'
 local M = {
-    pyignores = {
-        -- 'E121', --
-        -- 'E123', --
-        -- 'E126', --
-        'E203', -- Whitespace before :
-        -- 'E221', --
-        'E226', -- Whitespace around operators
-        -- 'E228', --
-        'E231', -- Missing whitespace after ','
-        -- 'E24',  --
-        -- 'E251', --
-        'E261', -- 2 spaces before inline comment
-        'E262', -- Comments should start with '#'
-        'E265', -- Block comment should start with '#'
-        -- 'E27',  --
-        'E302', -- Expected 2 lines between funcs/classes
-        -- 'E501', --
-        -- 'E701', --
-        -- 'E704', --
-        -- 'H233', --
-        'W391', -- Blank line and the EOF
-        -- 'W503', --
-        -- 'W504', --
-    },
     formatprg = {
         black = {
             '-l',
-            '120',
+            line_length,
             efm = {
                 '%trror: cannot format %f: Cannot parse %l:c: %m',
                 '%trror: cannot format %f: %m',
@@ -45,14 +22,19 @@ local M = {
             '--experimental',
             '--aggressive',
             '--max-line-length',
-            '120',
+            line_length,
         },
         yapf = {
             '-i',
             '--style',
             'pep8',
         },
-        isort = {},
+        isort = {
+            '--line-length',
+            line_length,
+            '--profile=black',
+            -- '--trailing-comma'
+        },
     },
     makeprg = {
         mypy = {
@@ -68,11 +50,39 @@ local M = {
                 '%f:%l:%c: %m',
             },
         },
+        ruff = {
+            'check',
+            '--respect-gitignore',
+            '--line-length=' .. line_length,
+        },
+        flake8 = {
+            '--max-line-length=' .. line_length,
+            '--ignore='
+                .. table.concat({
+                    'E203', -- Whitespace before :
+                    'E226', -- Whitespace around operators
+                    'E231', -- Missing whitespace after ','
+                    'E261', -- 2 spaces before inline comment
+                    'E262', -- Comments should start with '#'
+                    'E265', -- Block comment should start with '#'
+                    'E302', -- Expected 2 lines between funcs/classes
+                    'W391', -- Blank line and the EOF
+                }, ','),
+        },
+        pycodestyle = {}, -- NOTE: Same values as flake8
+        pylint = {
+            '--disable=C0413,R0205,E0401,C0103',
+            efm = {
+                '%f:%l:%c: %t%n: %m',
+                '%f:%l:%c: %t%n %m',
+                '%f:%l:%c:%t: %m',
+                '%f:%l:%c: %m',
+            }
+        },
     },
 }
 
-M.makeprg.flake8 = { '--max-line-length=120', '--ignore=' .. table.concat(M.pyignores, ',') }
-M.makeprg.pycodestyle = M.makeprg.flake8
+vim.list_extend(M.makeprg.pycodestyle, M.makeprg.flake8)
 
 function M.get_formatter(stdin)
     local config_file = RELOAD('utils.buffers').find_config { configs = 'pyproject.toml' }
@@ -97,20 +107,22 @@ function M.get_formatter(stdin)
     return cmd
 end
 
+-- TODO: Python benefits from multiple linter, get_linter may be change to support return
+--       either an iterator or a dictionary of linters
 function M.get_linter()
     local cmd
     if executable 'flake8' then
         cmd = { 'flake8' }
-        local global_settings = vim.fn.expand(sys.name == 'windows' and '~/.flake8' or '~/.config/flake8')
+        local global_config = vim.fn.expand(sys.name == 'windows' and '~/.flake8' or '~/.config/flake8')
+        local config_file = RELOAD('utils.buffers').find_config {
+            configs = {
+                'tox.ini',
+                '.flake8',
+                'setup.cfg',
+            },
+        }
 
-        if
-            not is_file(global_settings)
-            and not is_file './tox.ini'
-            and not is_file './.flake8'
-            and not is_file './setup.cfg'
-            -- and not is_file './setup.py'
-            -- and not is_file './pyproject.toml'
-        then
+        if not is_file(global_config) and not config_file then
             vim.list_extend(cmd, M.makeprg[cmd[1]])
         end
     elseif executable 'pycodestyle' then
@@ -183,7 +195,7 @@ function M.setup()
             },
         }
         vim.list_extend(opts.args, cmd_opts.fargs)
-        require('utils.functions').async_execute(opts)
+        RELOAD('utils.functions').async_execute(opts)
     end, { nargs = '*', buffer = true })
 end
 

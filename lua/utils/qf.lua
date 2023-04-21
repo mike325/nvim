@@ -218,7 +218,6 @@ function M.qf_to_diagnostic(ns_name, win)
         end
 
         local buf_diagnostics = {}
-
         for _, diagnostic in ipairs(diagnostics) do
             local bufnr = tostring(diagnostic.bufnr)
             if not buf_diagnostics[bufnr] then

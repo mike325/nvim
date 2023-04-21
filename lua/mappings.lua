@@ -321,14 +321,17 @@ function M.async_makeprg(opts)
     end
 
     cmd = cmd .. table.concat(args, ' ')
+    local title = cmd:gsub('%s+.*', '')
     RELOAD('utils.functions').async_execute {
         cmd = cmd,
         progress = false,
         auto_close = true,
-        context = 'AsyncLint',
-        title = 'AsyncLint',
+        title = title:sub(1, 1):upper() .. title:sub(2, #title),
         callbacks_on_success = function()
             vim.cmd.checktime()
+        end,
+        callbacks_on_failure = function(job)
+            RELOAD('utils.qf').qf_to_diagnostic(title)
         end,
     }
 end
