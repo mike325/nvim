@@ -10,8 +10,6 @@ local completions = RELOAD 'completions'
 local compile_flags = STORAGE.compile_flags
 local databases = STORAGE.databases
 
-local async_execute = require('utils.functions').async_execute
-
 local dap = vim.F.npcall(require, 'dap')
 
 local M = {
@@ -298,7 +296,7 @@ function M.execute(exe, args)
         return false
     end
 
-    async_execute {
+    RELOAD('utils.functions').async_execute {
         cmd = exe,
         args = args,
         verify_exec = false,
@@ -370,7 +368,7 @@ function M.build(build_info)
         --     end
         -- end
 
-        async_execute {
+        RELOAD('utils.functions').async_execute {
             pre_execute = function()
                 require('utils.files').mkdir 'build'
             end,

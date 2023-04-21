@@ -150,6 +150,7 @@ nvim.autocmd.Indent = {
     end,
 }
 
+-- TODO: should this check if the filea actually change before fixing imports?
 nvim.augroup.del 'ImportFix'
 if executable 'goimports' then
     nvim.autocmd.add('BufWritePost', {
@@ -166,7 +167,9 @@ if executable 'isort' then
         group = 'ImportFix',
         pattern = '*.{py,ipy}',
         callback = function(args)
-            RELOAD('utils.functions').autoformat('isort', { args.file }) -- '--profile=black', '-l', '120', '-tc'
+            local format_args = RELOAD('filetypes.python').formatprg.isort
+            table.insert(format_args, args.file)
+            RELOAD('utils.functions').autoformat('isort', format_args)
         end,
     })
 end
