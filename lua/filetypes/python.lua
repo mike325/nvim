@@ -57,17 +57,16 @@ local M = {
         },
         flake8 = {
             '--max-line-length=' .. line_length,
-            '--ignore='
-                .. table.concat({
-                    'E203', -- Whitespace before :
-                    'E226', -- Whitespace around operators
-                    'E231', -- Missing whitespace after ','
-                    'E261', -- 2 spaces before inline comment
-                    'E262', -- Comments should start with '#'
-                    'E265', -- Block comment should start with '#'
-                    'E302', -- Expected 2 lines between funcs/classes
-                    'W391', -- Blank line and the EOF
-                }, ','),
+            '--ignore=' .. table.concat({
+                'E203', -- Whitespace before :
+                'E226', -- Whitespace around operators
+                'E231', -- Missing whitespace after ','
+                'E261', -- 2 spaces before inline comment
+                'E262', -- Comments should start with '#'
+                'E265', -- Block comment should start with '#'
+                'E302', -- Expected 2 lines between funcs/classes
+                'W391', -- Blank line and the EOF
+            }, ','),
         },
         pycodestyle = {}, -- NOTE: Same values as flake8
         pylint = {
@@ -77,7 +76,7 @@ local M = {
                 '%f:%l:%c: %t%n %m',
                 '%f:%l:%c:%t: %m',
                 '%f:%l:%c: %m',
-            }
+            },
         },
     },
 }
