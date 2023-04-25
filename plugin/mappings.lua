@@ -579,6 +579,7 @@ nvim.command.set('Progress', function(opts)
 end, { nargs = 1, desc = 'Show progress of the selected job', complete = completions.background_jobs })
 
 nvim.command.set('CLevel', function(opts)
+    opts.level = opts.args
     RELOAD('utils.qf').filter_qf_diagnostics(opts)
 end, {
     nargs = 1,
@@ -589,6 +590,7 @@ end, {
 
 nvim.command.set('LLevel', function(opts)
     opts.win = vim.api.nvim_get_current_win()
+    opts.level = opts.args
     RELOAD('utils.qf').filter_qf_diagnostics(opts)
 end, {
     nargs = 1,
