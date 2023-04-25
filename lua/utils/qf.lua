@@ -328,7 +328,7 @@ end
 function M.filter_qf_diagnostics(opts, win)
     opts = opts or {}
     vim.validate {
-        limit = { opts.limit, 'string' },
+        level = { opts.level, 'string' },
         win = { win, 'number', true },
     }
 
@@ -338,17 +338,17 @@ function M.filter_qf_diagnostics(opts, win)
         opts.win = nil
     end
 
-    local limit = opts.limit:upper()
+    local level = opts.level:upper()
 
     local filtered_list = {}
     local qf = qf_funcs.get_list({ all = 0 }, win)
 
-    if not vim.log.levels[limit] then
+    if not vim.log.levels[level] then
         vim.notify('Invalid level: ' .. opts.args, 'ERROR', { title = 'QFDiagnostics' })
         return
     end
 
-    limit = limit:sub(1, 1)
+    level = level:sub(1, 1)
 
     local translation_list = {}
     for l, v in pairs(vim.lsp.log_levels) do
@@ -360,7 +360,7 @@ function M.filter_qf_diagnostics(opts, win)
     end
 
     for _, item in ipairs(qf.items) do
-        if item.type == limit or (opts.bang and translation_list[item.type] >= translation_list[limit]) then
+        if item.type == level or (opts.bang and translation_list[item.type] >= translation_list[level]) then
             table.insert(filtered_list, item)
         end
     end
