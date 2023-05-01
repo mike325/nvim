@@ -115,12 +115,13 @@ local function rule_3_5(_, parent, old_state)
             t { classname },
             t { '&)' },
             r(choice_nr),
-            t { ';', '' },
+            t { ';' },
         })
     end
 
     if parent.captures[1] == '5' then
         vim.list_extend(nodes, {
+            t { '', '' },
             t { classname },
             t { '(' },
             t { classname },
@@ -134,7 +135,7 @@ local function rule_3_5(_, parent, old_state)
             t { classname },
             t { '&&)' },
             r(choice_nr),
-            t { ';', '' },
+            t { ';' },
         })
     end
 
