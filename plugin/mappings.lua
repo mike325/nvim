@@ -658,3 +658,11 @@ nvim.command.set('Loc2Qf', function(opts)
     local qfutils = RELOAD 'utils.qf'
     qfutils.qf_loclist_switcher()
 end, { desc = "Move the current window's location list to the QF" })
+
+nvim.command.set('TrimWhites', function(opts)
+    vim.cmd.substitute {
+        args = { '/\\s\\+$//g' },
+        range = { opts.line1, opts.line2 },
+        mods = { keeppatterns = true, keepjumps = true, emsg_silent = true, noautocmd = true },
+    }
+end, { range = '%', desc = 'Alias to <>s/\\s\\+$//g' })
