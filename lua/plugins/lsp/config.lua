@@ -8,9 +8,6 @@ if has_telescope then
     builtin = require 'telescope.builtin'
 end
 
-local null_ls = vim.F.npcall(require, 'null-ls')
-local null_configs = require 'plugins.lsp.null'
-
 local M = {}
 
 M.commands = {
