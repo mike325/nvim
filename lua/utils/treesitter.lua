@@ -2,50 +2,6 @@ local nvim = require 'nvim'
 
 local M = {}
 
-local queries = {
-    ['function'] = {
-        lua = [[
-            (function_declaration)
-            [
-                (function_declaration name: [
-                    ((identifier) @function) ((dot_index_expression field: (identifier) @function))
-                ])
-            ] @function_name
-        ]],
-        python = [[
-            (function_definition)
-            [
-                (function_definition name: (identifier) @definition.function)
-            ] @function_name
-        ]],
-        go = [[
-            [
-                (function_declaration)
-                (method_declaration)
-            ] @func
-
-            [
-                (function_declaration name: (identifier) @definition.function)
-                (method_declaration name: (field_identifier) @definition.method)
-            ] @function_name
-        ]],
-    },
-    class = {
-        cpp = [[
-            [
-                (struct_specifier)
-                (class_specifier)
-            ] @class_name
-        ]],
-        python = [[
-            (class_definition)
-            [
-                (class_definition name: (identifier) @definition.type)
-            ] @class_name
-        ]],
-    },
-}
-
 -- Copied from nvim-treesitter in ts_utils
 function M.get_vim_range(range, buf)
     local srow, scol, erow, ecol = unpack(range)
@@ -99,7 +55,7 @@ function M.is_in_node(node, range, buf)
     }
 
     buf = buf or vim.api.nvim_get_current_buf()
-    local ok, parser = pcall(vim.treesitter.get_parser, buf)
+    local ok, _ = pcall(vim.treesitter.get_parser, buf)
     if not ok then
         return false
     end
