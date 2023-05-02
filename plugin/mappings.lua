@@ -283,15 +283,19 @@ nvim.command.set('Find', function(opts)
         args = opts.fargs,
         target = opts.args,
         cb = function(results)
-            local qf_opts = {
-                open = true,
-                jump = false,
-                context = 'Finder',
-                title = 'Finder',
-                efm = '%f',
-                items = results,
-            }
-            RELOAD('utils.functions').set_list(qf_opts)
+            if #results > 0 then
+                local qf_opts = {
+                    open = true,
+                    jump = false,
+                    context = 'Finder',
+                    title = 'Finder',
+                    efm = '%f',
+                    items = results,
+                }
+                RELOAD('utils.qf').set_list(qf_opts)
+            else
+                vim.notify('No files matching: '..opts.fargs[#opts.fargs] , 'ERROR', { title = 'Find' })
+            end
         end,
     }
     RELOAD('mappings').find(args)

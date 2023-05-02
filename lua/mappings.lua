@@ -532,11 +532,15 @@ function M.messages(opts)
             end
         end
 
+        local efm = vim.opt_global.efm:get()
+        table.insert(efm, 1, '%trror executing vim.schedule lua callback: %f:%l:%m')
+
         RELOAD('utils.qf').set_list {
             items = messages,
             title = 'Messages',
             context = 'Messages',
             open = true,
+            efm = efm,
         }
     else
         vim.cmd.messages 'clear'

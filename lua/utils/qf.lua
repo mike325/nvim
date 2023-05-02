@@ -140,6 +140,7 @@ function M.set_list(opts, win)
         action = { opts.action, 'string', true },
         open = { opts.open, 'boolean', true },
         jump = { opts.jump, 'boolean', true },
+        efm = { opts.efm, {'string', 'table'}, true },
     }
 
     assert(not opts.lines, debug.traceback 'Cannot set lines using items')
