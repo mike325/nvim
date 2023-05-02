@@ -294,7 +294,7 @@ nvim.command.set('Find', function(opts)
                 }
                 RELOAD('utils.qf').set_list(qf_opts)
             else
-                vim.notify('No files matching: '..opts.fargs[#opts.fargs] , 'ERROR', { title = 'Find' })
+                vim.notify('No files matching: ' .. opts.fargs[#opts.fargs], 'ERROR', { title = 'Find' })
             end
         end,
     }
