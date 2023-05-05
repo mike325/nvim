@@ -11,6 +11,7 @@ function M.find(thread_args)
     if functions.filter then
         target = functions.filter
     else
+        -- TODO: Add support to match paths
         target = args.target
         if type(target) == 'string' and target:match '[%[%]*+?^$]' then
             local filter_pattern = target

@@ -255,7 +255,9 @@ function M.set_opts(compiler, bufnum)
                             local alternates = vim.g.alternates
                             alternates[filename] = data
                             vim.g.alternates = alternates
-                            set_source_options(data[1])
+                            if vim.api.nvim_buf_is_valid(bufnum) then
+                                set_source_options(data[1])
+                            end
                         end
                     end,
                 }
