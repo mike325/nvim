@@ -36,6 +36,7 @@ end
 --     'todotxt',
 --     'toml',
 --     'vim',
+--     'vimdoc',
 --     'yaml',
 -- }
 

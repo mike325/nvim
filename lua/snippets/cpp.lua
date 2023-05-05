@@ -123,7 +123,7 @@ local function rule_3_5(_, parent, old_state)
         vim.list_extend(nodes, {
             t { '', '' },
             t { classname },
-            t { '(' },
+            t { '(const ' },
             t { classname },
             t { '&&)' },
             get_choice(),
@@ -131,7 +131,7 @@ local function rule_3_5(_, parent, old_state)
         })
         vim.list_extend(nodes, {
             t { classname },
-            t { '& operator=(' },
+            t { '& operator=(const ' },
             t { classname },
             t { '&&)' },
             r(choice_nr),
