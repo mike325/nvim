@@ -538,23 +538,45 @@ end, { nargs = '?', bang = true, desc = 'Filter Diagnostics in Qf', complete = c
 
 nvim.command.set('DiagnosticsClear', function(opts)
     local ns = RELOAD('utils.buffers').get_diagnostic_ns(opts.args)
-    vim.diagnostic.reset(ns, 0)
-end, { nargs = '?', desc = 'Clear diagnostics from the given NS', complete = completions.diagnostics_namespaces })
+    local buf = not opts.bang and vim.api.nvim_get_current_buf() or nil
+    vim.diagnostic.reset(ns, buf)
+end, {
+    bang = true,
+    nargs = '?',
+    desc = 'Clear diagnostics from the given NS',
+    complete = completions.diagnostics_namespaces,
+})
 
 nvim.command.set('DiagnosticsHide', function(opts)
     local ns = RELOAD('utils.buffers').get_diagnostic_ns(opts.args)
-    vim.diagnostic.hide(ns, 0)
-end, { nargs = '?', desc = 'Hide diagnostics from the given NS', complete = completions.diagnostics_namespaces })
+    local buf = not opts.bang and vim.api.nvim_get_current_buf() or nil
+    vim.diagnostic.hide(ns, buf)
+end, {
+    bang = true,
+    nargs = '?',
+    desc = 'Hide diagnostics from the given NS',
+    complete = completions.diagnostics_namespaces,
+})
 
 nvim.command.set('DiagnosticsShow', function(opts)
     local ns = RELOAD('utils.buffers').get_diagnostic_ns(opts.args)
-    vim.diagnostic.show(ns, 0)
-end, { nargs = '?', desc = 'Show diagnostics from the given NS', complete = completions.diagnostics_namespaces })
+    local buf = not opts.bang and vim.api.nvim_get_current_buf() or nil
+    vim.diagnostic.show(ns, buf)
+end, {
+    bang = true,
+    nargs = '?',
+    desc = 'Show diagnostics from the given NS',
+    complete = completions.diagnostics_namespaces,
+})
 
-nvim.command.set('DiagnosticsToggle', function(opts)
-    local ns = RELOAD('utils.buffers').get_diagnostic_ns(opts.args)
-    RELOAD('mappings').toggle_diagnostics(ns)
-end, { nargs = '?', desc = 'Toggle column sign diagnostics', complete = completions.diagnostics_namespaces })
+nvim.command.set(
+    'DiagnosticsToggle',
+    function(opts)
+        local ns = RELOAD('utils.buffers').get_diagnostic_ns(opts.args)
+        RELOAD('mappings').toggle_diagnostics(ns, opts.bang)
+    end,
+    { bang = true, nargs = '?', desc = 'Toggle column sign diagnostics', complete = completions.diagnostics_namespaces }
+)
 
 if executable 'scp' then
     nvim.command.set('SCPEdit', function(opts)

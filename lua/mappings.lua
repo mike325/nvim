@@ -663,18 +663,20 @@ function M.diff_files(args)
     end
 end
 
-function M.toggle_diagnostics(ns)
+function M.toggle_diagnostics(ns, force)
     vim.validate {
         ns = { ns, 'number', true },
+        force = { force, 'boolean', true },
     }
 
     vim.g.show_diagnostics = not vim.g.show_diagnostics
+    local buf = not force and vim.api.nvim_get_current_buf() or nil
     if vim.g.show_diagnostics then
-        vim.diagnostic.enable(0, ns)
-        vim.diagnostic.show(ns, 0)
+        vim.diagnostic.enable(buf, ns)
+        vim.diagnostic.show(ns, buf)
     else
-        vim.diagnostic.disable(0, ns)
-        vim.diagnostic.hide(ns, 0)
+        vim.diagnostic.disable(buf, ns)
+        vim.diagnostic.hide(ns, buf)
     end
 end
 
