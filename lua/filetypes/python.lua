@@ -135,13 +135,23 @@ function M.get_linter()
 end
 
 function M.setup()
+
+    if not executable 'python3' and not executable 'python' then
+        -- NOTE: python is not installed, skip path and mappings setup
+        return
+    end
+
     if not plugins['vim-apathy'] then
         local buf = nvim.get_current_buf()
         local merge_uniq_list = require('utils.tables').merge_uniq_list
 
         if not vim.b.python_path then
             -- local pypath = {}
-            local pyprog = vim.g.python3_host_prog or vim.g.python_host_prog or (executable 'python3' and 'python3')
+            local pyprog = vim.g.python3_host_prog or vim.g.python_host_prog
+
+            if not pyprog then
+                pyprog = executable 'python3' and 'python3' or 'python'
+            end
 
             local get_path = RELOAD('jobs'):new {
                 cmd = pyprog,

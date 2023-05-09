@@ -681,20 +681,11 @@ function M.toggle_diagnostics(ns, force)
 end
 
 function M.custom_compiler(opts)
-    local files = RELOAD 'utils.files'
-
-    local path = sys.base .. '/after/compiler/'
     local compiler = opts.args
-    local compilers = vim.tbl_map(vim.fs.basename, files.get_files(path))
-    if vim.tbl_contains(compilers, compiler .. '.lua') then
-        nvim.command.set('CompilerSet', function(command)
-            -- TODO: Add support for vim.opt_local
-            vim.cmd(('setlocal %s'):format(command.args))
-        end, { nargs = 1, buffer = true })
-
-        vim.cmd.luafile { args = { path .. compiler .. '.lua' } }
-
-        nvim.command.del('CompilerSet', true)
+    local base_path = 'after/compiler/'
+    local compilers = vim.tbl_map(vim.fs.basename, vim.api.nvim_get_runtime_file(base_path .. '*.lua', true))
+    if vim.tbl_contains(compilers, (compiler:gsub('%.lua$', ''))) then
+        vim.cmd.runtime { bang = true, args = { base_path .. compiler } }
     else
         local language = vim.opt_local.filetype:get()
         local has_compiler, compiler_data = pcall(RELOAD, 'filetypes.' .. language)
