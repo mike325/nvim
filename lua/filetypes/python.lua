@@ -135,7 +135,6 @@ function M.get_linter()
 end
 
 function M.setup()
-
     if not executable 'python3' and not executable 'python' then
         -- NOTE: python is not installed, skip path and mappings setup
         return
