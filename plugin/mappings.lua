@@ -301,6 +301,30 @@ nvim.command.set('Find', function(opts)
     RELOAD('mappings').find(args)
 end, { bang = true, nargs = '+', complete = 'file' })
 
+nvim.command.set('LFind', function(opts)
+    local args = {
+        args = opts.fargs,
+        target = opts.args,
+        cb = function(results)
+            if #results > 0 then
+                local qf_opts = {
+                    open = true,
+                    jump = false,
+                    win = nvim.get_current_win(),
+                    context = 'Finder',
+                    title = 'Finder',
+                    efm = '%f',
+                    items = results,
+                }
+                RELOAD('utils.qf').set_list(qf_opts)
+            else
+                vim.notify('No files matching: ' .. opts.fargs[#opts.fargs], 'ERROR', { title = 'Find' })
+            end
+        end,
+    }
+    RELOAD('mappings').find(args)
+end, { bang = true, nargs = '+', complete = 'file' })
+
 vim.keymap.set(
     'n',
     'gs',
