@@ -59,8 +59,12 @@ if not treesitter then
         -- NOTE: This parsers come bundle with recent neovim releases
         pattern = 'c,viml,lua,help',
         callback = function(args)
-            local filetype = vim.bo[args.buf].filetype == 'help' and 'vimdoc' or vim.bo[args.buf].filetype
-            vim.treesitter.start(args.buf, filetype)
+            local ft_mapping = {}
+            if nvim.has { 0, 10 } then
+                ft_mapping.help = 'vimdoc'
+            end
+            local filetype = vim.bo[args.buf].filetype
+            vim.treesitter.start(args.buf, ft_mapping[filetype] or filetype)
             -- vim.bo[args.buf].syntax = 'on'  -- only if additional legacy syntax is needed
         end,
     })

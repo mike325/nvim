@@ -984,17 +984,16 @@ xnoremap <leader>8 <ESC>8gt
 xnoremap <leader>9 <ESC>9gt
 xnoremap <leader>0 <ESC>:tablast<CR>
 
-cabbrev W    w
-cabbrev Q    q
-cabbrev q1   q!
-cabbrev qa1  qa!
-cabbrev w1   w!
-cabbrev wA!  wa!
-cabbrev wa1  wa!
-cabbrev QA!  qa!
-cabbrev QA1  qa!
-cabbrev Qa!  qa!
-cabbrev Qa1  qa!
+cabbrev W   w
+cabbrev Q   q
+cabbrev q1  q!
+cabbrev qa1 qa!
+cabbrev w1  w!
+cabbrev wA! wa!
+cabbrev wa1 wa!
+cabbrev Qa1 qa!
+cabbrev Qa! qa!
+cabbrev QA! qa!
 
 " Use C-p and C-n to move in command's history
 cnoremap <C-n> <down>
