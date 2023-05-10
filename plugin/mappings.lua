@@ -473,9 +473,9 @@ end, {
     complete = completions.reload_configs,
 })
 
-nvim.command.set('AutoFormat', function()
-    RELOAD('mappings').autoformat()
-end, { desc = 'Toggle Autoformat autocmd' })
+nvim.command.set('AutoFormat', function(opts)
+    RELOAD('mappings').autoformat(opts)
+end, { nargs = '?', complete = completions.toggle, bang = true, desc = 'Toggle Autoformat autocmd' })
 
 local ok, _ = pcall(require, 'packer')
 if ok then
