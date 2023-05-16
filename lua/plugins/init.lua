@@ -494,7 +494,6 @@ packer.startup(function()
 
     use {
         'mfussenegger/nvim-dap',
-        commit = (vim.fn.has 'nvim-0.7' == 0 and '71714020884760332240373d2fec481e757f75f2' or nil),
         -- event = { 'CursorHold', 'CmdlineEnter' },
         -- cmd = { 'DapStart', 'DapContinue' },
         cond = function()

@@ -340,7 +340,7 @@ function M.format(opts)
     opts = opts or {}
 
     local ft = opts.ft or vim.opt_local.filetype:get()
-    local buffer = vim.api.nvim_get_current_buf()
+    local bufnr = vim.api.nvim_get_current_buf()
     local external_formatprg = RELOAD('utils.functions').external_formatprg
     local ok, utils = pcall(RELOAD, 'filetypes.' .. ft)
 
@@ -348,47 +348,38 @@ function M.format(opts)
 
     local first = vim.v.lnum
     local last = first + vim.v.count - 1
-    local whole_file = last - first == nvim.buf.line_count(0) or opts.whole_file
+    local whole_file = last - first == nvim.buf.line_count(bufnr) or opts.whole_file
 
     local clients = vim.lsp.buf_get_clients(0)
+    local is_null_ls_formatting_enabled = require('plugins.lsp.config').is_null_ls_formatting_enabled
 
-    -- TODO: Null-ls always report formatting capabilities
     for _, client in pairs(clients) do
         if whole_file and client.server_capabilities.documentFormattingProvider then
-            -- TODO: May add filter to prefere some lsp over the others
-            if nvim.has { 0, 8 } then
+            if client.name ~= 'null-ls' or is_null_ls_formatting_enabled(bufnr) then
                 vim.lsp.buf.format {
                     async = false,
-                    filter = function(c)
-                        return c.id == client.id
-                    end,
+                    id = client.id,
                 }
-            else
-                vim.lsp.buf.formatting()
+                if vim.bo.modified then
+                    vim.fn.winrestview(view)
+                    return 0
+                end
             end
-            vim.fn.winrestview(view)
-            return 0
         elseif client.server_capabilities.documentRangeFormattingProvider then
-            if nvim.has { 0, 8 } then
+            if client.name ~= 'null-ls' or is_null_ls_formatting_enabled(bufnr) then
                 vim.lsp.buf.format {
                     async = false,
-                    filter = function(c)
-                        return c.id == client.id
-                    end,
+                    id = client.id,
                     range = {
                         start = { first, 0 },
                         ['end'] = { last, #nvim.buf.get_lines(0, last, last + 1, false)[1] },
                     },
                 }
-            else
-                vim.lsp.buf.range_formatting(
-                    nil,
-                    { first, 0 },
-                    { last, #nvim.buf.get_lines(0, last, last + 1, false)[1] }
-                )
+                if vim.bo.modified then
+                    vim.fn.winrestview(view)
+                    return 0
+                end
             end
-            vim.fn.winrestview(view)
-            return 0
         end
     end
 
@@ -404,7 +395,7 @@ function M.format(opts)
             end
             external_formatprg {
                 cmd = M.replace_indent(cmd),
-                buffer = buffer,
+                bufnr = bufnr,
                 efm = utils.formatprg[cmd[1]].efm,
                 first = first,
                 last = last,
