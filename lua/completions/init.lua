@@ -59,7 +59,7 @@ local completions = {
     end,
     session_files = function(arglead, cmdline, cursorpos)
         local utils = require 'utils.files'
-        local sessions = utils.get_files(require('sys').data .. '/session')
+        local sessions = utils.get_files(require('sys').session)
         return general_completion(arglead, cmdline, cursorpos, vim.tbl_map(utils.filename, sessions))
     end,
     fileformats = function(arglead, cmdline, cursorpos)

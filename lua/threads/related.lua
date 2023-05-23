@@ -33,8 +33,11 @@ function M.gather_srcs_headers(thread_args)
     for _, filename in ipairs(candidates) do
         local realfile = vim.loop.fs_realpath(filename)
         tmp[realfile] = {}
-        -- NOTE: Hope to not find repeated files
-        idxs[basename(filename)] = realfile
+        local basename_file = basename(filename)
+        if not idxs[basename_file] then
+            idxs[basename_file] = {}
+        end
+        table.insert(idxs[basename_file], realfile)
     end
 
     for _, filename in ipairs(candidates) do
@@ -49,7 +52,10 @@ function M.gather_srcs_headers(thread_args)
         for _, alt_ext in pairs(extensions[file_ext]) do
             local alt_candidate = basename(file_name_no_ext .. '.' .. alt_ext)
             if idxs[alt_candidate] then
-                table.insert(tmp[filename], idxs[alt_candidate])
+                if not tmp[filename] then
+                    tmp[filename] = {}
+                end
+                vim.list_extend(tmp[filename], idxs[alt_candidate])
             end
         end
     end

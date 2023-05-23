@@ -49,14 +49,6 @@ if not STORAGE then
         filelists = {},
         hosts = {},
         remotes = {},
-        mappings = {
-            g = {},
-            b = {},
-        },
-        commands = {
-            g = {},
-            b = {},
-        },
         servers = {},
     }
 end

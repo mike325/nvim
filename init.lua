@@ -92,3 +92,10 @@ require('threads.parse').ssh_hosts()
 vim.cmd.packadd { args = { 'cfilter' }, bang = true }
 vim.cmd.packadd { args = { 'matchit' }, bang = true }
 vim.cmd.packadd { args = { 'termdebug' }, bang = true }
+
+if vim.env.TMUX_WINDOW then
+    local socket = vim.fn.stdpath 'cache' .. '/socket.win' .. vim.env.TMUX_WINDOW
+    if vim.fn.filereadable(socket) ~= 1 then
+        vim.fn.serverstart(socket)
+    end
+end

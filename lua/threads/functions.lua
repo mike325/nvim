@@ -7,37 +7,54 @@ function M.find(thread_args)
     local args = thread_args.args
     local functions = thread_args.functions
 
-    local filter
+    local target
     if functions.filter then
-        filter = functions.filter
+        target = functions.filter
     else
-        local target = ''
-        if args.target:match '%*' then
-            for _, s in ipairs(vim.split(args.target, '')) do
-                target = target .. (s == '*' and '.*' or vim.pesc(s))
+        -- TODO: Add support to match paths
+        target = args.target
+        if type(target) == 'string' and target:match '[%[%]*+?^$]' then
+            local filter_pattern = target
+            local function filter(filename, _)
+                return filename:match(filter_pattern) ~= nil
             end
-        else
-            target = vim.pesc(args.target)
-        end
-        filter = function(filename)
-            return filename:match(target) ~= nil
+            target = filter
+        elseif type(target) == 'table' then
+            for _, p in ipairs(target) do
+                if p:match '[%[%]*+?^$]' then
+                    local filter_pattern = target
+                    local function filter(filename, _)
+                        for _, f in ipairs(filter_pattern) do
+                            if filename:match(f) ~= nil then
+                                return true
+                            end
+                        end
+                        return false
+                    end
+                    target = filter
+                    break
+                end
+            end
         end
     end
 
-    local opts = args.opts or { type = 'file', limit = math.huge }
-
-    local results = vim.fs.find(filter, opts)
+    local opts = args.opts or { type = 'file' }
+    if not opts.limit then
+        opts.limit = math.huge
+    end
+    local results = vim.fs.find(target, opts)
     thread_args.results = results
     thread_args.functions = nil
-    return (vim.is_thread() and encode) and vim.json.encode(thread_args) or thread_args
+    thread_args.args = nil
+    return (vim.is_thread() and encode) and vim.json.encode(results) or results
 end
 
 function M.async_find(opts)
     vim.validate {
         opts = { opts, 'table' },
         cb = { opts.cb, 'function' },
-        target = { opts.target, 'string', true },
-        filter = { opts.filter, { 'string', 'function' }, true },
+        target = { opts.target, { 'string', 'table' }, true },
+        filter = { opts.filter, 'function', true },
         path = { opts.path, 'string', true },
     }
     assert(opts.filter or opts.target, debug.traceback 'Missing both filter and target opts')

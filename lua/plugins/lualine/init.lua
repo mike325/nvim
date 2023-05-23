@@ -183,14 +183,20 @@ lualine.setup {
             },
             {
                 'qf_counter',
+                cond = function()
+                    return #vim.fn.getqflist() > 0
+                end,
                 on_click = function(clicks, button, modifiers)
-                    RELOAD('utils.functions').toggle_qf()
+                    RELOAD('utils.qf').toggle()
                 end,
             },
             {
                 'loc_counter',
+                cond = function()
+                    return #vim.fn.getloclist(vim.api.nvim_get_current_win()) > 0
+                end,
                 on_click = function(clicks, button, modifiers)
-                    RELOAD('utils.functions').toggle_qf { win = vim.api.nvim_get_current_win() }
+                    RELOAD('utils.qf').toggle { win = vim.api.nvim_get_current_win() }
                 end,
             },
             {
@@ -240,6 +246,13 @@ lualine.setup {
             },
             -- where_ami,
         },
+        lualine_x = {
+            'encoding',
+            'fileformat',
+            'filetype',
+            'searchcount',
+            noice_component,
+        },
         lualine_y = {
             {
                 'trailspace',
@@ -286,13 +299,6 @@ lualine.setup {
                 'progress',
                 separator = { left = section_separators.right, right = '' },
             },
-        },
-        lualine_x = {
-            'encoding',
-            'fileformat',
-            'filetype',
-            -- 'lsp_progress',
-            noice_component,
         },
         lualine_z = {
             {

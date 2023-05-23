@@ -146,18 +146,18 @@ vim.keymap.set('n', '[<Space>', [[:<C-U>lua require"mappings".add_nl(false)<CR>]
 vim.keymap.set('n', '<C-L>', '<cmd>nohlsearch|diffupdate<CR>', noremap_silent)
 
 nvim.command.set('ClearQf', function()
-    RELOAD('utils.functions').clear_qf()
+    RELOAD('utils.qf').clear()
 end)
 nvim.command.set('ClearLoc', function()
-    RELOAD('utils.functions').clear_qf(nvim.get_current_win())
+    RELOAD('utils.qf').clear(nvim.get_current_win())
 end)
 
 vim.keymap.set('n', '=q', function()
-    RELOAD('utils.functions').toggle_qf()
+    RELOAD('utils.qf').toggle()
 end, { noremap = true, silent = true, desc = 'Toggle quickfix' })
 
 vim.keymap.set('n', '=l', function()
-    RELOAD('utils.functions').toggle_qf { win = vim.api.nvim_get_current_win() }
+    RELOAD('utils.qf').toggle { win = vim.api.nvim_get_current_win() }
 end, { noremap = true, silent = true, desc = 'Toggle location list' })
 
 vim.keymap.set('n', '<leader><leader>p', function()
@@ -209,7 +209,7 @@ nvim.command.set('Qopen', function(opts)
     if opts.size then
         opts.size = opts.size + 1
     end
-    RELOAD('utils.functions').toggle_qf(opts)
+    RELOAD('utils.qf').toggle(opts)
 end, { nargs = '?' })
 
 -- TODO: Check for GUIs
@@ -283,20 +283,43 @@ nvim.command.set('Find', function(opts)
         args = opts.fargs,
         target = opts.args,
         cb = function(results)
-            local qf_opts = {
-                on_fail = {
+            if #results > 0 then
+                local qf_opts = {
                     open = true,
                     jump = false,
-                },
-                dump = true,
-                open = true,
-                jump = false,
-                context = 'Finder',
-                title = 'Finder',
-                efm = '%f',
-            }
-            qf_opts.lines = results
-            RELOAD('utils.functions').dump_to_qf(qf_opts)
+                    context = 'Finder',
+                    title = 'Finder',
+                    efm = '%f',
+                    items = results,
+                }
+                RELOAD('utils.qf').set_list(qf_opts)
+            else
+                vim.notify('No files matching: ' .. opts.fargs[#opts.fargs], 'ERROR', { title = 'Find' })
+            end
+        end,
+    }
+    RELOAD('mappings').find(args)
+end, { bang = true, nargs = '+', complete = 'file' })
+
+nvim.command.set('LFind', function(opts)
+    local args = {
+        args = opts.fargs,
+        target = opts.args,
+        cb = function(results)
+            if #results > 0 then
+                local qf_opts = {
+                    open = true,
+                    jump = false,
+                    win = nvim.get_current_win(),
+                    context = 'Finder',
+                    title = 'Finder',
+                    efm = '%f',
+                    items = results,
+                }
+                RELOAD('utils.qf').set_list(qf_opts)
+            else
+                vim.notify('No files matching: ' .. opts.fargs[#opts.fargs], 'ERROR', { title = 'Find' })
+            end
         end,
     }
     RELOAD('mappings').find(args)
@@ -318,7 +341,9 @@ vim.keymap.set('n', 'gss', function()
     RELOAD('utils.functions').send_grep_job()
 end, { noremap = true, silent = true, desc = 'Grep search word under cursor' })
 
-nvim.command.set('Make', RELOAD('mappings').async_makeprg, { nargs = '*', desc = 'Async execution of current makeprg' })
+nvim.command.set('Make', function(opts)
+    RELOAD('mappings').async_makeprg(opts)
+end, { nargs = '*', desc = 'Async execution of current makeprg' })
 
 if executable 'cscope' and not nvim.has { 0, 9 } then
     for query, _ in pairs(require('mappings').cscope_queries) do
@@ -394,7 +419,7 @@ nvim.command.set('Zoom', function(opts)
     RELOAD('mappings').zoom_links(opts)
 end, { nargs = 1, complete = completions.zoom_links, desc = 'Open Zoom call in a specific room' })
 
-vim.opt.formatexpr = [[luaeval('RELOAD"utils.buffers".format()')]]
+vim.opt.formatexpr = [[luaeval('RELOAD"utils.buffers".format({ft=_A})',&l:filetype)]]
 vim.keymap.set('n', '=F', function()
     RELOAD('utils.buffers').format { whole_file = true }
 end, { noremap = true, silent = true, desc = 'Format the current buffer with the prefer formatting prg' })
@@ -416,6 +441,7 @@ end, {
     complete = 'compiler',
     desc = 'Set the given compiler with preference on the custom compilers located in the after directory',
 })
+
 -- nvim.command.set('CompilerExecute', function(args)
 --     local makeprg = vim.opt_local.makeprg:get()
 --     local efm = vim.opt_local.errorformat:get()
@@ -443,9 +469,9 @@ end, {
     complete = completions.reload_configs,
 })
 
-nvim.command.set('AutoFormat', function()
-    RELOAD('mappings').autoformat()
-end, { desc = 'Toggle Autoformat autocmd' })
+nvim.command.set('AutoFormat', function(opts)
+    RELOAD('mappings').autoformat(opts)
+end, { nargs = '?', complete = completions.toggle, bang = true, desc = 'Toggle Autoformat autocmd' })
 
 local ok, _ = pcall(require, 'packer')
 if ok then
@@ -521,7 +547,6 @@ vim.keymap.set('n', '[d', function()
     vim.diagnostic.goto_prev { wrap = true }
 end, { noremap = true, silent = true, desc = 'Go to the prev diagnostic' })
 
--- TODO: set max size just as dump_to_qf
 nvim.command.set('DiagnosticsDump', function(opts)
     local severity = vim.diagnostic.severity[opts.args]
     if severity then
@@ -533,27 +558,53 @@ end, { nargs = '?', bang = true, desc = 'Filter Diagnostics in Qf', complete = c
 
 nvim.command.set('DiagnosticsClear', function(opts)
     local ns = RELOAD('utils.buffers').get_diagnostic_ns(opts.args)
-    vim.diagnostic.reset(ns, 0)
-end, { nargs = '?', desc = 'Clear diagnostics from the given NS', complete = completions.diagnostics_namespaces })
+    local buf = not opts.bang and vim.api.nvim_get_current_buf() or nil
+    vim.diagnostic.reset(ns, buf)
+end, {
+    bang = true,
+    nargs = '?',
+    desc = 'Clear diagnostics from the given NS',
+    complete = completions.diagnostics_namespaces,
+})
 
 nvim.command.set('DiagnosticsHide', function(opts)
     local ns = RELOAD('utils.buffers').get_diagnostic_ns(opts.args)
-    vim.diagnostic.hide(ns, 0)
-end, { nargs = '?', desc = 'Hide diagnostics from the given NS', complete = completions.diagnostics_namespaces })
+    local buf = not opts.bang and vim.api.nvim_get_current_buf() or nil
+    vim.diagnostic.hide(ns, buf)
+end, {
+    bang = true,
+    nargs = '?',
+    desc = 'Hide diagnostics from the given NS',
+    complete = completions.diagnostics_namespaces,
+})
 
 nvim.command.set('DiagnosticsShow', function(opts)
     local ns = RELOAD('utils.buffers').get_diagnostic_ns(opts.args)
-    vim.diagnostic.show(ns, 0)
-end, { nargs = '?', desc = 'Show diagnostics from the given NS', complete = completions.diagnostics_namespaces })
+    local buf = not opts.bang and vim.api.nvim_get_current_buf() or nil
+    vim.diagnostic.show(ns, buf)
+end, {
+    bang = true,
+    nargs = '?',
+    desc = 'Show diagnostics from the given NS',
+    complete = completions.diagnostics_namespaces,
+})
 
-nvim.command.set('DiagnosticsToggle', function(opts)
-    local ns = RELOAD('utils.buffers').get_diagnostic_ns(opts.args)
-    RELOAD('mappings').toggle_diagnostics(ns)
-end, { nargs = '?', desc = 'Toggle column sign diagnostics', complete = completions.diagnostics_namespaces })
+nvim.command.set(
+    'DiagnosticsToggle',
+    function(opts)
+        local ns = RELOAD('utils.buffers').get_diagnostic_ns(opts.args)
+        RELOAD('mappings').toggle_diagnostics(ns, opts.bang)
+    end,
+    { bang = true, nargs = '?', desc = 'Toggle column sign diagnostics', complete = completions.diagnostics_namespaces }
+)
 
 if executable 'scp' then
     nvim.command.set('SCPEdit', function(opts)
-        RELOAD('utils.functions').scp_edit(opts)
+        local args = {
+            host = opts.fargs[1],
+            filename = opts.fargs[2],
+        }
+        RELOAD('utils.functions').scp_edit(args)
     end, { nargs = '*', desc = 'Edit remote file using scp', complete = completions.ssh_hosts_completion })
 end
 
@@ -574,7 +625,8 @@ nvim.command.set('Progress', function(opts)
 end, { nargs = 1, desc = 'Show progress of the selected job', complete = completions.background_jobs })
 
 nvim.command.set('CLevel', function(opts)
-    RELOAD('mappings').filter_qf_diagnostics(opts)
+    opts.level = opts.args
+    RELOAD('utils.qf').filter_qf_diagnostics(opts)
 end, {
     nargs = 1,
     bang = true,
@@ -584,7 +636,8 @@ end, {
 
 nvim.command.set('LLevel', function(opts)
     opts.win = vim.api.nvim_get_current_win()
-    RELOAD('mappings').filter_qf_diagnostics(opts)
+    opts.level = opts.args
+    RELOAD('utils.qf').filter_qf_diagnostics(opts)
 end, {
     nargs = 1,
     bang = true,
@@ -619,11 +672,11 @@ end
 
 -- NOTE: This could be smarter and list the hunks in the QF
 nvim.command.set('ModifiedDump', function(opts)
-    RELOAD('utils.buffers').dump_files_into_qf(
+    RELOAD('utils.qf').dump_files(
         vim.tbl_filter(function(buf)
             return vim.bo[buf].modified
         end, vim.api.nvim_list_bufs()),
-        true
+        { open = true }
     )
 end, {
     desc = 'Dump all unsaved files into the QF',
@@ -641,3 +694,25 @@ nvim.command.set('ModifiedSave', function(opts)
 end, {
     desc = 'Save all modified buffers',
 })
+
+nvim.command.set('Qf2Loc', function(opts)
+    local qfutils = RELOAD 'utils.qf'
+    qfutils.qf_loclist_switcher { loc = true }
+end, { desc = "Move the current QF to the window's location list" })
+
+nvim.command.set('Loc2Qf', function(opts)
+    local qfutils = RELOAD 'utils.qf'
+    qfutils.qf_loclist_switcher()
+end, { desc = "Move the current window's location list to the QF" })
+
+nvim.command.set('TrimWhites', function(opts)
+    local line1 = opts.line1
+    local line2 = opts.line2
+    local lines = nvim.buf.get_lines(0, line1 - 1, line2, false)
+
+    local new_lines = {}
+    for i, line in ipairs(lines) do
+        new_lines[i] = line:gsub('%s+$', '')
+    end
+    nvim.buf.set_lines(0, line1 - 1, line2, false, new_lines)
+end, { range = '%', desc = 'Alias to <,>s/\\s\\+$//g' })

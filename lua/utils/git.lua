@@ -78,6 +78,7 @@ local function parse_status(status)
         stage = {},
         workspace = {},
         untracked = {},
+        conflict = {},
     }
 
     for _, gitfile in ipairs(status) do
@@ -122,6 +123,10 @@ local function parse_status(status)
                         }
                         -- parsed.files[filename] = 'workspace'
                     end
+                elseif file_status == 'u' then
+                    local info = vim.split(gitfile, '%s+', { trimempty = true })
+                    local filename = table.concat(vim.list_slice(info, 11, #info), ' ')
+                    parsed.conflict[filename] = { status = 'conflict' }
                 elseif file_status == '?' then
                     parsed.untracked = parsed.untracked or {}
                     local filename = gitfile:sub(3, #gitfile)
@@ -247,12 +252,19 @@ function M.modified_files(location, callback)
             return vim.tbl_keys(status.stage)
         elseif location == 'workspace' then
             return vim.tbl_keys(status.workspace)
+        elseif location == 'conflict' then
+            return vim.tbl_keys(status.conflict)
         elseif location == 'untrack' or location == 'untracked' then
             return status.untracked
         end
-        local files = vim.tbl_keys(status.stage)
-        vim.list_extend(files, vim.tbl_keys(status.workspace))
-        vim.list_extend(files, status.untracked)
+        local files = {}
+        for _, git_files in pairs(status) do
+            if vim.tbl_islist(git_files) then
+                vim.list_extend(files, git_files)
+            elseif type(git_files) == type {} then
+                vim.list_extend(files, vim.tbl_keys(git_files))
+            end
+        end
         return RELOAD('utils.tables').uniq_unorder(files)
     end
 

@@ -283,27 +283,29 @@ function M.find(opts)
             end, find:output()) or {}
         end
     else
+        local target = ''
+        -- NOTE: Since this is a "cmdline" utility, transform "glob" to lua pattern
+        if opts.target:match '%*' then
+            for _, s in ipairs(vim.split(opts.target, '')) do
+                target = target .. (s == '*' and '.*' or vim.pesc(s))
+            end
+        -- elseif opts.target:match '[%[%]*+?^$]' then
+        --     target = function(filename)
+        --         return filename:match(opts.target) ~= nil
+        --     end
+        else
+            target = opts.target
+        end
         if opts.cb then
             -- NOTE: Fallback to native finder which works everywhere
             RELOAD('threads.functions').async_find {
-                target = opts.target,
+                target = target,
                 cb = function(data)
-                    opts.cb(data.results)
+                    opts.cb(data)
                 end,
             }
         else
-            local target = ''
-            if opts.target:match '%*' then
-                for _, s in ipairs(vim.split(opts.target, '')) do
-                    target = target .. (s == '*' and '.*' or vim.pesc(s))
-                end
-            else
-                target = vim.pesc(opts.target)
-            end
-            local filter = function(filename)
-                return filename:match(target) ~= nil
-            end
-            return vim.fs.find(filter, { type = 'file', limit = math.huge })
+            return vim.fs.find(target, { type = 'file', limit = math.huge })
         end
     end
 end
@@ -319,18 +321,22 @@ function M.async_makeprg(opts)
     end
 
     cmd = cmd .. table.concat(args, ' ')
+    local title = cmd:gsub('%s+.*', '')
     RELOAD('utils.functions').async_execute {
         cmd = cmd,
         progress = false,
         auto_close = true,
-        context = 'AsyncLint',
-        title = 'AsyncLint',
+        title = title:sub(1, 1):upper() .. title:sub(2, #title),
         callbacks_on_success = function()
             vim.cmd.checktime()
+        end,
+        callbacks_on_failure = function(job)
+            RELOAD('utils.qf').qf_to_diagnostic(title)
         end,
     }
 end
 
+-- NOTE: This does not work from neovim >= 0.8
 function M.cscope(cword, query)
     cword = (cword and cword ~= '') and cword or vim.fn.expand '<cword>'
     query = M.cscope_queries[query] or 'find g'
@@ -451,7 +457,7 @@ end
 
 function M.get_host(host)
     if not host or host == '' then
-        host = vim.fn.input('Enter hostname > ', '', 'customlist,v:lua.require("completions").ssh_hosts_completion')
+        host = vim.fn.input('Enter hostname > ', '', "customlist,v:lua.require'completions'.ssh_hosts_completion")
     end
     return host
 end
@@ -526,18 +532,21 @@ function M.messages(opts)
             end
         end
 
-        vim.fn.setqflist({}, ' ', {
-            lines = messages,
+        local efm = vim.opt_global.efm:get()
+        table.insert(efm, 1, '%trror executing vim.schedule lua callback: %f:%l:%m')
+
+        RELOAD('utils.qf').set_list {
+            items = messages,
             title = 'Messages',
             context = 'Messages',
-        })
-        vim.cmd.Qopen()
+            open = true,
+            efm = efm,
+        }
     else
         vim.cmd.messages 'clear'
-        local context = vim.fn.getqflist({ context = 1 }).context
-        if context == 'Messages' then
-            RELOAD('utils.functions').clear_qf()
-            vim.cmd.cclose()
+        local title = vim.fn.getqflist({ title = 1 }).title
+        if title == 'Messages' then
+            RELOAD('utils.qf').clear()
         end
     end
 end
@@ -576,6 +585,7 @@ function M.repl(opts)
     end
 
     local direction = vim.opt.splitbelow:get() and 'botright' or 'topleft'
+    -- DEPRECATED: 0.9
     vim.api.nvim_exec(direction .. ' 20new', false)
 
     local win = vim.api.nvim_get_current_win()
@@ -653,36 +663,29 @@ function M.diff_files(args)
     end
 end
 
-function M.toggle_diagnostics(ns)
+function M.toggle_diagnostics(ns, force)
     vim.validate {
         ns = { ns, 'number', true },
+        force = { force, 'boolean', true },
     }
 
     vim.g.show_diagnostics = not vim.g.show_diagnostics
+    local buf = not force and vim.api.nvim_get_current_buf() or nil
     if vim.g.show_diagnostics then
-        vim.diagnostic.enable(0, ns)
-        vim.diagnostic.show(ns, 0)
+        vim.diagnostic.enable(buf, ns)
+        vim.diagnostic.show(ns, buf)
     else
-        vim.diagnostic.disable(0, ns)
-        vim.diagnostic.hide(ns, 0)
+        vim.diagnostic.disable(buf, ns)
+        vim.diagnostic.hide(ns, buf)
     end
 end
 
 function M.custom_compiler(opts)
-    local files = RELOAD 'utils.files'
-
-    local path = sys.base .. '/after/compiler/'
     local compiler = opts.args
-    local compilers = vim.tbl_map(vim.fs.basename, files.get_files(path))
-    if vim.tbl_contains(compilers, compiler .. '.lua') then
-        nvim.command.set('CompilerSet', function(command)
-            -- TODO: Add support for vim.opt_local
-            vim.cmd(('setlocal %s'):format(command.args))
-        end, { nargs = 1, buffer = true })
-
-        vim.cmd.luafile { args = { path .. compiler .. '.lua' } }
-
-        nvim.command.del('CompilerSet', true)
+    local base_path = 'after/compiler/'
+    local compilers = vim.tbl_map(vim.fs.basename, vim.api.nvim_get_runtime_file(base_path .. '*.lua', true))
+    if vim.tbl_contains(compilers, (compiler:gsub('%.lua$', ''))) then
+        vim.cmd.runtime { bang = true, args = { base_path .. compiler } }
     else
         local language = vim.opt_local.filetype:get()
         local has_compiler, compiler_data = pcall(RELOAD, 'filetypes.' .. language)
@@ -705,8 +708,14 @@ function M.custom_compiler(opts)
     end
 end
 
-function M.autoformat()
-    vim.b.disable_autoformat = not vim.b.disable_autoformat
+function M.autoformat(opts)
+    if opts.args == 'enable' then
+        vim.b.disable_autoformat = false
+    elseif opts.args == 'disable' then
+        vim.b.disable_autoformat = true
+    else
+        vim.b.disable_autoformat = not vim.b.disable_autoformat
+    end
     print('Autoformat', vim.b.disable_autoformat and 'disabled' or 'enabled')
 end
 
@@ -860,6 +869,7 @@ function M.reload_configs(opts)
     end
 end
 
+-- TODO: Add support for clangd switch header/src command
 function M.alternate(opts)
     local bufnr = vim.api.nvim_get_current_buf()
     opts.buf = vim.api.nvim_buf_get_name(bufnr)
@@ -868,6 +878,11 @@ function M.alternate(opts)
     if opts.buf == '' and vim.bo[bufnr].buftype ~= '' then
         return
     end
+
+    -- local found = RELOAD('plugins.lsp.utils').switch_source_header_splitcmd(bufnr, 'edit')
+    -- if found then
+    --     return
+    -- end
 
     local prefix = opts.buf:match '^%w+://'
     opts.buf = opts.buf:gsub('^%w+://', '')
@@ -1023,40 +1038,6 @@ function M.show_job_progress(opts)
     end
 end
 
-function M.filter_qf_diagnostics(opts)
-    local filtered_list = {}
-    local items = opts.win and vim.fn.getloclist(opts.win) or vim.fn.getqflist()
-
-    local limit = opts.args:upper()
-    if not vim.log.levels[limit] then
-        vim.notify('Invalid level: ' .. opts.args, 'ERROR', { title = 'QFDiagnostics' })
-        return
-    end
-
-    limit = limit:sub(1, 1)
-
-    local translation_list = {}
-    for l, v in pairs(vim.lsp.log_levels) do
-        if type(l) == type(0) then
-            translation_list[l] = v:sub(1, 1)
-        else
-            translation_list[l:sub(1, 1)] = v
-        end
-    end
-
-    for _, item in ipairs(items) do
-        if item.type == limit or (opts.bang and translation_list[item.type] >= translation_list[limit]) then
-            table.insert(filtered_list, item)
-        end
-    end
-
-    if opts.win then
-        vim.fn.setloclist(opts.win, filtered_list, ' ')
-    else
-        vim.fn.setqflist(filtered_list, ' ')
-    end
-end
-
 function M.add_nl(down)
     local cursor_pos = nvim.win.get_cursor(0)
     local lines = { '' }
@@ -1077,8 +1058,7 @@ function M.add_nl(down)
 
     nvim.put(lines, 'l', down, true)
     nvim.win.set_cursor(0, cursor_pos)
-    -- TODO: Investigate how to add silent
-    vim.cmd('silent! call repeat#set("' .. cmd .. '",' .. count .. ')')
+    pcall(vim.fn['repeat#set'], cmd, count)
 end
 
 function M.move_line(down)
@@ -1103,7 +1083,7 @@ function M.move_line(down)
     vim.cmd.move(count)
     vim.cmd.normal { bang = true, args = { '==' } }
     -- TODO: Make repeat work
-    -- vim.cmd('silent! call repeat#set("'..cmd..'",'..count..')')
+    -- pcall(vim.fn['repeat#set'], cmd, count)
 end
 
 return M

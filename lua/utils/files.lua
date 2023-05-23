@@ -867,4 +867,58 @@ function M.make_executable()
     })
 end
 
+function M.find_in_dir(args)
+    args = args or {}
+    vim.validate {
+        pattern = { args.pattern, { 'function', 'table', 'string' } },
+        dir = { args.dir, 'string', true },
+        callback = { args.callback, 'function', true },
+    }
+
+    local dir
+    if args.dir and args.dir ~= '' then
+        dir = M.realpath(args.dir)
+    else
+        dir = vim.api.nvim_buf_get_name(0)
+    end
+
+    local cwd = vim.loop.cwd()
+    if dir ~= cwd then
+        dir = dir:gsub(vim.pesc(cwd) .. '/', ''):gsub('/.*', '')
+    end
+
+    local pattern = args.pattern
+    local filter
+    if type(pattern) == 'function' then
+        filter = pattern
+        pattern = nil
+    end
+
+    if args.callback then
+        RELOAD('threads.functions').async_find {
+            target = pattern,
+            filter = filter,
+            opts = {
+                type = 'file',
+                path = dir,
+            },
+            cb = args.callback,
+        }
+        return
+    end
+    local results = RELOAD('threads.functions').find {
+        args = {
+            target = pattern,
+            opts = {
+                type = 'file',
+                path = dir,
+            },
+        },
+        functions = {
+            filter = filter,
+        },
+    }
+    return results
+end
+
 return M

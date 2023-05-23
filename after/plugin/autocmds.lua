@@ -1,5 +1,6 @@
 local nvim = require 'nvim'
 local lsp = vim.F.npcall(require, 'lspconfig')
+local treesitter = vim.F.npcall(require, 'nvim-treesitter.configs')
 
 if not lsp then
     nvim.autocmd.StartLSP = {
@@ -34,6 +35,7 @@ if not lsp then
                     name = cmd[1]
                 end
 
+                -- TODO: Add especific ft markers, like cargo, pyproject, etc
                 local markers = { '.git' }
                 if server.markers then
                     vim.list_extend(markers, server.markers)
@@ -49,4 +51,21 @@ if not lsp then
             end
         end,
     }
+end
+
+if not treesitter then
+    nvim.autocmd.add('FileType', {
+        group = 'TreesitterAutocmds',
+        -- NOTE: This parsers come bundle with recent neovim releases
+        pattern = 'c,viml,lua,help',
+        callback = function(args)
+            local ft_mapping = {}
+            if nvim.has { 0, 10 } then
+                ft_mapping.help = 'vimdoc'
+            end
+            local filetype = vim.bo[args.buf].filetype
+            vim.treesitter.start(args.buf, ft_mapping[filetype] or filetype)
+            -- vim.bo[args.buf].syntax = 'on'  -- only if additional legacy syntax is needed
+        end,
+    })
 end

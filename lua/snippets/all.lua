@@ -33,12 +33,14 @@ local p = require('luasnip.extras').partial
 -- local surround_with_func = utils.surround_with_func
 
 local function notes(note)
-    if vim.bo.filetype ~= 'gitcommit' then
-        note = ('%s(%s): '):format(note:upper(), sys.username)
-    else
+    if vim.bo.filetype == 'gitcommit' then
         note = ('%s: '):format(note:upper())
+    else
+        note = ('%s(%s): '):format(note:upper(), sys.username)
     end
-    return RELOAD('plugins.luasnip.utils').get_comment(note)
+
+    local is_in_comment = require('utils.treesitter').is_in_node 'comment'
+    return is_in_comment and note or RELOAD('plugins.luasnip.utils').get_comment(note)
 end
 
 local return_value = utils.return_value
@@ -92,10 +94,7 @@ local function license(_, _, user_args)
         markdown = 1,
     }
 
-    local cursor = vim.api.nvim_win_get_cursor(0)
-    local range = { cursor[1] - 1, cursor[2], cursor[1] - 1, cursor[2] }
-
-    if ft == '' or plain_fts[ft] or require('utils.treesitter').is_in_node(range, 'string') then
+    if ft == '' or plain_fts[ft] or require('utils.treesitter').is_in_node 'string' then
         return actual_license
     end
     return get_comment(actual_license)

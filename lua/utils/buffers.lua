@@ -299,7 +299,7 @@ function M.detect_indent(buf)
             if indent_str then
                 -- Use TS to avoid multiline strings and comments
                 -- We may need to fallback to lua pattern matching if TS is not available
-                if not has_ts or not is_in_node({ idx - 1, #indent_str - 1, idx - 1, #line - 1 }, blacklist) then
+                if not has_ts or not is_in_node(blacklist, { idx - 1, #indent_str - 1, idx - 1, #line - 1 }) then
                     -- NOTE: we may need to confirm tab indent with more than 1 line and avoid mix indent
                     if indent_str:match '^\t+$' then
                         expandtab = false
@@ -340,47 +340,46 @@ function M.format(opts)
     opts = opts or {}
 
     local ft = opts.ft or vim.opt_local.filetype:get()
-    local buffer = vim.api.nvim_get_current_buf()
+    local bufnr = vim.api.nvim_get_current_buf()
     local external_formatprg = RELOAD('utils.functions').external_formatprg
     local ok, utils = pcall(RELOAD, 'filetypes.' .. ft)
 
     local view = vim.fn.winsaveview()
 
-    local first = vim.v.lnum - 1
-    local last = first + vim.v.count
-    local whole_file = last - first == nvim.buf.line_count(0) or opts.whole_file
+    local first = vim.v.lnum
+    local last = first + vim.v.count - 1
+    local whole_file = last - first == nvim.buf.line_count(bufnr) or opts.whole_file
 
     local clients = vim.lsp.buf_get_clients(0)
+    local is_null_ls_formatting_enabled = require('plugins.lsp.config').is_null_ls_formatting_enabled
 
-    -- TODO: Null-ls always report formatting capabilities
     for _, client in pairs(clients) do
         if whole_file and client.server_capabilities.documentFormattingProvider then
-            -- TODO: May add filter to prefere some lsp over the others
-            if nvim.has { 0, 8 } then
-                vim.lsp.buf.format { async = false }
-            else
-                vim.lsp.buf.formatting()
-            end
-            vim.fn.winrestview(view)
-            return 0
-        elseif client.server_capabilities.documentRangeFormattingProvider then
-            if nvim.has { 0, 8 } then
+            if client.name ~= 'null-ls' or is_null_ls_formatting_enabled(bufnr) then
                 vim.lsp.buf.format {
                     async = false,
+                    id = client.id,
+                }
+                if vim.bo.modified then
+                    vim.fn.winrestview(view)
+                    return 0
+                end
+            end
+        elseif client.server_capabilities.documentRangeFormattingProvider then
+            if client.name ~= 'null-ls' or is_null_ls_formatting_enabled(bufnr) then
+                vim.lsp.buf.format {
+                    async = false,
+                    id = client.id,
                     range = {
                         start = { first, 0 },
                         ['end'] = { last, #nvim.buf.get_lines(0, last, last + 1, false)[1] },
                     },
                 }
-            else
-                vim.lsp.buf.range_formatting(
-                    nil,
-                    { first, 0 },
-                    { last, #nvim.buf.get_lines(0, last, last + 1, false)[1] }
-                )
+                if vim.bo.modified then
+                    vim.fn.winrestview(view)
+                    return 0
+                end
             end
-            vim.fn.winrestview(view)
-            return 0
         end
     end
 
@@ -396,7 +395,7 @@ function M.format(opts)
             end
             external_formatprg {
                 cmd = M.replace_indent(cmd),
-                buffer = buffer,
+                bufnr = bufnr,
                 efm = utils.formatprg[cmd[1]].efm,
                 first = first,
                 last = last,
@@ -439,7 +438,7 @@ function M.setup(ft, opts)
         if utils.get_formatter then
             local formatter = utils.get_formatter()
             if formatter and vim.opt_local.formatexpr:get() == '' then
-                vim.opt_local.formatexpr = ([[luaeval('require"utils.buffers".format("%s")')]]):format(ft)
+                vim.opt_local.formatexpr = [[luaeval('RELOAD"utils.buffers".format({ft=_A})',&l:filetype)]]
             end
             opts.formatexpr = nil
         end
@@ -511,15 +510,13 @@ function M.open_changes(opts)
                 -- NOTE: using badd since `:edit` load every buffer and `bufadd()` set buffers as hidden
                 vim.cmd.badd((f:gsub('^' .. cwd, '')))
             end
+            local qfutils = RELOAD 'utils.qf'
             if action == 'qf' then
-                RELOAD('utils.buffers').dump_files_into_qf(files, true)
+                qfutils.dump_files(files, { open = true })
             elseif action == 'hunks' then
                 RELOAD('threads').queue_thread(RELOAD('threads.git').get_hunks, function(hunks)
                     if #hunks > 0 then
-                        vim.fn.setqflist(hunks, ' ')
-                        if vim.fn.getqflist({ winid = 0 }).winid == 0 then
-                            RELOAD('utils.functions').toggle_qf()
-                        end
+                        qfutils.set_list { items = hunks, title = 'OpenChanges', open = not qfutils.is_open() }
                     end
                 end, { revision = revision, files = files })
             elseif action == 'open' or action == '' then
@@ -530,9 +527,12 @@ function M.open_changes(opts)
         end
     end
 
-    if opts.bang then
+    if opts.bang and revision then
         RELOAD('utils.git').modified_files_from_base(revision, files_actions)
     else
+        if opts.bang then
+            vim.notify('Missing revision, opening changes from latest HEAD', 'WARN', { title = 'OpenChanges' })
+        end
         RELOAD('utils.git').modified_files(files_actions)
     end
 end
@@ -549,30 +549,6 @@ function M.get_diagnostic_ns(ns)
         end
     end
     return
-end
-
-function M.dump_files_into_qf(buffers, open)
-    vim.validate {
-        buffers = { buffers, 'table' },
-        open = { open, 'boolean', true },
-    }
-
-    local items = {}
-    for _, buf in ipairs(buffers) do
-        if type(buf) == type(1) then
-            table.insert(items, { bufnr = buf })
-        else
-            table.insert(items, { filename = buf })
-        end
-    end
-    if #items > 0 then
-        vim.fn.setqflist(items, ' ')
-        if open and vim.fn.getqflist({ winid = 0 }).winid == 0 then
-            RELOAD('utils.functions').toggle_qf()
-        end
-    else
-        vim.notify('No buffers to open', 'INFO')
-    end
 end
 
 function M.push_tag(args)
@@ -612,7 +588,6 @@ function M.push_tag(args)
         vim.api.nvim_win_set_cursor(win, args.pos)
     end
 
-    -- TODO: Stack manipulation should be smarter and free invalid stack entries, not just push new ones
     vim.fn.settagstack(win, { items = newtag }, 't')
 end
 

@@ -1,3 +1,10 @@
+local config_dirs = {
+    'backup',
+    'swap',
+    'undo',
+    'session',
+}
+
 local executable = function(exe)
     return vim.fn.executable(exe) == 1
 end
@@ -88,6 +95,10 @@ sys.username = sys.user.username
 function sys.tmp(filename)
     local tmpdir = sys.name == 'windows' and 'c:/temp/' or '/tmp/'
     return tmpdir .. filename
+end
+
+for _, dir_name in ipairs(config_dirs) do
+    sys[dir_name] = sys.data .. '/' .. dir_name
 end
 
 return sys

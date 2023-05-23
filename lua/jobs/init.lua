@@ -107,6 +107,8 @@ local function get_buffer(job)
     return buf
 end
 
+-- TODO: Add diagnostics integration support
+-- TODO: split function into smaller units
 function Job:new(job)
     vim.validate {
         job = {
@@ -461,7 +463,8 @@ function Job:start()
         if self._qf then
             local qf_opts = self._qf
 
-            qf_opts.lines = self:output()
+            qf_opts.items = self:output()
+            local win = qf_opts.win
             local failed = rc ~= 0 or self.failed
             if qf_opts.on_fail and failed then
                 if qf_opts.on_fail.open then
@@ -478,15 +481,17 @@ function Job:start()
             qf_opts.dump = qf_opts.dump == nil and true or qf_opts.dump
             qf_opts.clear = qf_opts.clear == nil and true or qf_opts.clear
 
+            local qfutils = RELOAD 'utils.qf'
             if qf_opts.dump then
                 if vim.t.progress_win then
                     nvim.win.close(vim.t.progress_win, false)
                 end
-                RELOAD('utils.functions').dump_to_qf(qf_opts)
+                qfutils.set_list(qf_opts, win)
             elseif qf_opts.clear and qf_opts.on_fail then
-                local context = vim.fn.getqflist({ context = 1 }).context
-                if context == (qf_opts.context or '') then
-                    RELOAD('utils.functions').clear_qf()
+                -- TODO: check context
+                local title = qfutils.get_list({ title = 1 }, win).title
+                if title == (qf_opts.title or '') then
+                    qfutils.clear()
                 end
             end
         end

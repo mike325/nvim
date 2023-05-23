@@ -4,88 +4,12 @@ local sys = require 'sys'
 local replace_indent = require('utils.buffers').replace_indent
 local executable = require('utils.files').executable
 local is_file = require('utils.files').is_file
+local is_dir = require('utils.files').is_dir
 local getcwd = require('utils.files').getcwd
 
 local M = {}
 
 local git_dirs = {}
-local qf_funcs = {
-    first = function(win)
-        vim.validate {
-            win = { win, 'number', true },
-        }
-        if win then
-            vim.cmd.lfirst()
-        else
-            vim.cmd.cfirst()
-        end
-    end,
-    last = function(win)
-        vim.validate {
-            win = { win, 'number', true },
-        }
-        if win then
-            vim.cmd.llast()
-        else
-            vim.cmd.clast()
-        end
-    end,
-    open = function(win, size)
-        vim.validate {
-            win = { win, 'number', true },
-            size = { size, 'number', true },
-        }
-        local direction = vim.o.splitbelow and 'botright' or 'topleft'
-        local cmd = win and 'lopen' or 'copen'
-        -- TODO: botright and topleft does not seem to work with vim.cmd, need some digging
-        vim.cmd(('%s %s %s'):format(direction, cmd, size or ''))
-    end,
-    close = function(win)
-        vim.validate {
-            win = { win, 'number', true },
-        }
-        if win then
-            vim.cmd.lclose()
-        else
-            vim.cmd.cclose()
-        end
-    end,
-    set_list = function(items, action, what, win)
-        vim.validate {
-            win = { win, 'number', true },
-        }
-        if win then
-            -- BUG: For some reason we cannot send what as nil, so it needs to be ommited
-            if not what then
-                vim.fn.setloclist(win, items, action)
-            else
-                vim.fn.setloclist(win, items, action, what)
-            end
-        else
-            if not what then
-                vim.fn.setqflist(items, action)
-            else
-                vim.fn.setqflist(items, action, what)
-            end
-        end
-    end,
-    get_list = function(what, win)
-        vim.validate {
-            what = { what, 'table', true },
-            win = { win, 'number', true },
-        }
-        if win then
-            if what then
-                return vim.fn.getloclist(win, what)
-            end
-            return vim.fn.getloclist(win)
-        end
-        if what then
-            return vim.fn.getqflist(what)
-        end
-        return vim.fn.getqflist()
-    end,
-}
 
 -- Separators
 -- 
@@ -405,6 +329,11 @@ function M.async_execute(opts)
         opts.progress = true
     end
 
+    local dump = opts.dump
+    if dump == nil then
+        dump = false
+    end
+
     local script = RELOAD('jobs'):new {
         cmd = cmd,
         args = args,
@@ -420,7 +349,8 @@ function M.async_execute(opts)
             pty = opts.pty,
         },
         qf = {
-            dump = false,
+            dump = dump,
+            open = dump,
             on_fail = {
                 jump = true,
                 open = true,
@@ -522,12 +452,12 @@ function M.set_compiler(compiler, opts)
 
     local has_config = false
     if opts.configs then
-        for _, config in ipairs(opts.configs) do
-            if is_file(config) then
-                has_config = true
-                break
-            end
-        end
+        local config_files = vim.fs.find(opts.configs, { upward = true, type = 'file' })
+        has_config = #config_files > 0
+    end
+
+    if not has_config and opts.global_config and is_file(opts.global_config) then
+        has_config = true
     end
 
     -- TODO: Add option to pass config path as compiler arg
@@ -657,7 +587,9 @@ function M.project_config(event)
         )[1]
 
         if is_c_project then
-            RELOAD('threads.related').async_gather_alternates { path = vim.fs.dirname(is_c_project) }
+            -- NOTE: This may take a lot of time and even though it wont hang the ui it hang noevim exit
+            -- which means if you can't to close neovim before it finishes indexing
+            -- RELOAD('threads.related').async_gather_alternates { path = vim.fs.dirname(is_c_project) }
 
             local compile_flags = vim.fs.find(
                 { 'compile_flags.txt', 'compile_commands.json' },
@@ -707,7 +639,7 @@ function M.is_git_repo(root)
 
     local git = root .. '/.git'
 
-    if require('utils.files').is_dir(git) or require('utils.files').is_file(git) then
+    if is_dir(git) or is_file(git) then
         return true
     end
     local results = vim.fs.find('.git', { path = root, upward = true })
@@ -1007,117 +939,7 @@ function M.python(version, args)
     end
 
     local split_type = vim.o.splitbelow and 'botright' or 'topleft'
-    -- TODO: migrate this
-    vim.cmd(split_type .. ' split term://' .. pyversion .. ' ' .. args)
-end
-
-function M.toggle_qf(opts)
-    vim.validate {
-        opts = { opts, 'table', true },
-    }
-    opts = opts or {}
-    local win = opts.win
-    if type(win) ~= type(1) then
-        win = nil
-    end
-
-    local qf_winid = qf_funcs.get_list({ winid = 0 }, win).winid
-    if qf_winid > 0 then
-        qf_funcs.close(win)
-    else
-        local size
-        local elements = #qf_funcs.get_list(nil, win) + 1
-        if opts.size then
-            size = opts.size
-        else
-            local lines = vim.opt_local.lines:get()
-            size = math.min(math.floor(lines * 0.5), elements)
-        end
-
-        qf_funcs.open(win, size)
-    end
-end
-
--- TODO: Add support to dump to diagnostics ?
-function M.dump_to_qf(opts)
-    vim.validate {
-        opts = { opts, 'table' },
-        lines = { opts.lines, 'table' },
-        context = { opts.context, 'string', true },
-        title = { opts.title, 'string', true },
-        efm = {
-            opts.efm,
-            function(e)
-                return not e or type(e) == type '' or type(e) == type {}
-            end,
-            'error format must be a string or a table',
-        },
-    }
-
-    opts.title = opts.title or opts.context or 'Generic Qf data'
-    opts.context = opts.context or opts.title or 'GenericQfData'
-    if not opts.efm or #opts.efm == 0 then
-        local efm = vim.opt_local.efm:get()
-        if #efm == 0 then
-            efm = vim.opt_global.efm:get()
-        end
-        opts.efm = efm
-    end
-
-    if type(opts.efm) == type {} then
-        opts.efm = table.concat(opts.efm, ',')
-    end
-    -- opts.efm = opts.efm:gsub(' ', '\\ ')
-
-    local qf_type = opts.loc and 'loc' or 'qf'
-    local qf_open = opts.open or false
-    local qf_jump = opts.jump or false
-
-    opts.loc = nil
-    opts.open = nil
-    opts.jump = nil
-    opts.cmdname = nil
-    opts.on_fail = nil
-    opts.lines = require('utils.tables').clear_lst(opts.lines)
-
-    for idx, line in ipairs(opts.lines) do
-        opts.lines[idx] = vim.api.nvim_replace_termcodes(line, true, false, false)
-    end
-
-    local win
-    if qf_type ~= 'qf' then
-        win = opts.win or vim.api.nvim_get_current_win()
-    end
-    opts.win = nil
-    qf_funcs.set_list({}, ' ', opts, win)
-
-    local info_tab = opts.tab
-    if info_tab and info_tab ~= nvim.get_current_tabpage() then
-        vim.notify(
-            ('%s Updated! with %s info'):format(qf_type == 'qf' and 'Qf' or 'Loc', opts.context),
-            'INFO',
-            { title = qf_type == 'qf' and 'QuickFix' or 'LocationList' }
-        )
-        return
-    elseif #opts.lines > 0 then
-        if qf_open then
-            local elements = #qf_funcs.get_list(nil, win) + 1
-            local lines = vim.opt.lines:get()
-            local size = math.min(math.floor(lines * 0.5), elements)
-            qf_funcs.open(win, size)
-        end
-
-        if qf_jump then
-            qf_funcs.first(win)
-        end
-    else
-        vim.notify('No output to display', 'ERROR', { title = qf_type == 'qf' and 'QuickFix' or 'LocationList' })
-    end
-end
-
-function M.clear_qf(win)
-    qf_funcs.set_list({}, ' ', nil, win)
-    qf_funcs.close(win)
+    vim.cmd { cmd = 'split', args = { 'term://' .. pyversion .. ' ' .. args }, mods = { split = split_type } }
 end
 
 if STORAGE.modern_git == -1 then
@@ -1143,83 +965,62 @@ function M.autoformat(cmd, args)
     formatter:start()
 end
 
-function M.qf_to_diagnostic(ns_name)
-    vim.validate {
-        ns_name = { ns_name, 'string' },
-    }
-
-    local ns = vim.api.nvim_create_namespace(ns_name)
-    vim.diagnostic.reset(ns)
-
-    local qf_items = vim.fn.getqflist()
-    if #qf_items > 0 then
-        local diagnostics = vim.diagnostic.fromqflist(qf_items)
-        if not diagnostics or #diagnostics == 0 then
-            return
-        end
-
-        local buf_diagnostics = {}
-
-        for _, diagnostic in ipairs(diagnostics) do
-            local bufnr = diagnostic.bufnr
-            if not buf_diagnostics[bufnr] then
-                buf_diagnostics[bufnr] = {}
-            end
-            table.insert(buf_diagnostics[bufnr], diagnostic)
-        end
-
-        for buf, diagnostic in pairs(buf_diagnostics) do
-            vim.diagnostic.set(ns, buf, diagnostic)
-        end
-        vim.diagnostic.show(ns)
-    end
-end
-
 function M.scp_edit(opts)
-    local function get_remote_file(host, filename)
+    opts = opts or {}
+    local host = opts.host
+    local filename = opts.filename
+    local path = opts.path
+
+    local function get_remote_file(hostname, remote_file, remote_path)
         vim.validate {
-            host = { host, 'string' },
-            filename = { filename, 'string' },
+            hostname = { hostname, 'string' },
+            remote_file = { remote_file, 'string' },
+            remote_path = { remote_path, 'string', true },
         }
 
-        if STORAGE.hosts[host] then
-            host = STORAGE.hosts[host]
+        if STORAGE.hosts[hostname] then
+            hostname = STORAGE.hosts[hostname]
         end
 
-        local virtual_filename = ('scp://%s:22/%s'):format(host, filename)
+        if remote_path and remote_path ~= '' then
+            remote_file = remote_path .. '/' .. remote_file
+        end
+
+        local virtual_filename = ('scp://%s:22/%s'):format(hostname, remote_file)
         vim.cmd.edit(virtual_filename)
     end
 
-    local host = opts.fargs[1]
-    local filename = opts.fargs[2]
-
-    local function filename_input(hostname)
-        vim.ui.input({ prompt = 'Enter filename > ' }, function(input)
-            if not input then
-                vim.notify('Missing filename!', 'ERROR', { title = 'SCPEdit' })
-                return
-            end
-            filename = input
-            get_remote_file(hostname, filename)
-        end)
+    local function filename_input()
+        if not filename or filename == '' then
+            vim.ui.input({ prompt = 'Enter filename > ' }, function(input)
+                if not input then
+                    vim.notify('Missing filename!', 'ERROR', { title = 'SCPEdit' })
+                    return
+                end
+                filename = input
+                get_remote_file(host, filename, path)
+            end)
+        else
+            get_remote_file(host, filename, path)
+        end
     end
 
-    if not host then
+    if not host or host == '' then
         vim.ui.input({
             prompt = 'Enter hostname > ',
-            completion = 'customlist,v:lua.require("completions").ssh_hosts_completion',
+            completion = "customlist,v:lua.require'completions'.ssh_hosts_completion",
         }, function(input)
             if not input then
                 vim.notify('Missing hostname!', 'ERROR', { title = 'SCPEdit' })
                 return
             end
             host = input
-            filename_input(host)
+            filename_input()
         end)
-    elseif not filename then
-        filename_input(host)
+    elseif not filename or filename == '' then
+        filename_input()
     else
-        get_remote_file(host, filename)
+        get_remote_file(host, filename, path)
     end
 end
 

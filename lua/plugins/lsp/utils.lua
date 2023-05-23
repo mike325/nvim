@@ -73,4 +73,24 @@ function M.get_language_server_cmd(filetype)
     return exec
 end
 
+function M.switch_source_header_splitcmd(bufnr, splitcmd)
+    local lsp = vim.F.npcall(require, 'lspconfig')
+    if lsp then
+        bufnr = require('lspconfig').util.validate_bufnr(bufnr)
+    end
+    local params = { uri = vim.uri_from_bufnr(bufnr) }
+    local clients = vim.lsp.get_active_clients { name = 'clangd', bufnr = vim.api.nvim_get_current_buf() }
+    local server = clients[1]
+    if not server then
+        return false
+    end
+    local candidate = server.request_sync('textDocument/switchSourceHeader', params, 1000, bufnr)
+    if not candidate or type(candidate) == type '' or candidate.err then
+        -- error(debug.traceback(candidate or 'Failed to execute switchSourceHeader'))
+        return false
+    end
+    vim.cmd { cmd = splitcmd, args = { vim.uri_to_fname(candidate.result) } }
+    return true
+end
+
 return M

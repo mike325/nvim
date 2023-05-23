@@ -25,7 +25,7 @@ let s:ignores_patterns = {
             \   'vcs': [ 'hg', 'svn', 'git',],
             \   'compile' : ['obj', 'class', 'pyc', 'o', 'dll', 'a', 'moc',],
             \   'tmp_dirs': [ 'trash', 'tmp', '__pycache__', 'ropeproject'],
-            \   'vim_dirs': [ 'backup', 'swap', 'sessions', 'cache', 'undos',],
+            \   'vim_dirs': [ 'backup', 'swap', 'session', 'cache', 'undos',],
             \   'tmp_file' : ['swp', 'bk',],
             \   'docs': ['docx', 'doc', 'xls', 'xlsx', 'odt', 'ppt', 'pptx', 'pdf',],
             \   'image': ['jpg', 'jpeg', 'png', 'gif', 'raw'],
@@ -40,6 +40,12 @@ let s:basedir = ''
 let s:homedir = ''
 let s:datadir = ''
 let s:cache   = ''
+
+function! s:echoerr(msg) abort
+    echohl ErrorMsg
+    echomsg a:msg
+    echohl
+endfunction
 
 function! s:has_patch(patch) abort
     return has('patch-'.a:patch)
@@ -156,7 +162,7 @@ function! s:setupdirs() abort
         silent! call mkdir(fnameescape($XDG_DATA_HOME), 'p')
         silent! call mkdir(fnameescape($XDG_CONFIG_HOME), 'p')
     elseif !isdirectory($XDG_CONFIG_HOME) || !isdirectory($XDG_DATA_HOME)
-        call s:tools_echoerr('Failed to create data dirs, mkdir is not available')
+        call s:echoerr('Failed to create data dirs, mkdir is not available')
     endif
 
     let s:datadir = expand($XDG_DATA_HOME) . (s:os_name('windows') ? '/nvim-data' : '/nvim')
@@ -197,12 +203,6 @@ function! s:vars_home() abort
         call s:setupdirs()
     endif
     return s:homedir
-endfunction
-
-function! s:tools_echoerr(msg) abort
-    echohl ErrorMsg
-    echo a:msg
-    echohl
 endfunction
 
 function! s:tools_get_icon(icon) abort
@@ -684,10 +684,10 @@ endif
 " Clipboard {{{
 " Set the defaults, which we may change depending where we run (Neo)vim
 
-" Disable mouse at all
-" This can be re-enable wit MouseToggle cmd
+" Enable mouse
+" This can be disable wit MouseToggle cmd
 if has('mouse')
-    set mouse=
+    set mouse=a
 endif
 " set nocompatible
 
@@ -987,13 +987,13 @@ xnoremap <leader>0 <ESC>:tablast<CR>
 cabbrev W   w
 cabbrev Q   q
 cabbrev q1  q!
+cabbrev qa1 qa!
 cabbrev w1  w!
 cabbrev wA! wa!
 cabbrev wa1 wa!
-cabbrev QA! qa!
-cabbrev QA1 qa!
-cabbrev Qa! qa!
 cabbrev Qa1 qa!
+cabbrev Qa! qa!
+cabbrev QA! qa!
 
 " Use C-p and C-n to move in command's history
 cnoremap <C-n> <down>
@@ -1120,7 +1120,7 @@ command! -bang -nargs=? -complete=file Remove
     \ if filereadable(s:target) || bufloaded(s:target) |
     \   if filereadable(s:target) |
     \       if delete(s:target) == -1 |
-    \           s:tools_echoerr("Failed to delete the file '" . s:target . "'") |
+    \           s:echoerr("Failed to delete the file '" . s:target . "'") |
     \       endif |
     \   endif |
     \   if bufloaded(s:target) |
@@ -1128,7 +1128,7 @@ command! -bang -nargs=? -complete=file Remove
     \       try |
     \           execute s:cmd . s:target |
     \       catch /E94/ |
-    \           s:tools_echoerr("Failed to delete/wipe '" . s:target . "'") |
+    \           s:echoerr("Failed to delete/wipe '" . s:target . "'") |
     \       finally |
     \           unlet s:cmd |
     \       endtry |
@@ -1136,11 +1136,11 @@ command! -bang -nargs=? -complete=file Remove
     \ elseif isdirectory(s:target) |
     \   let s:flag = (s:bang) ? "rf" : "d" |
     \   if delete(s:target, s:flag) == -1 |
-    \       s:tools_echoerr("Failed to remove '" . s:target . "'") |
+    \       s:echoerr("Failed to remove '" . s:target . "'") |
     \   endif |
     \   unlet s:flag |
     \ else |
-    \   s:tools_echoerr('Non removable target: "'.s:target.'"') |
+    \   s:echoerr('Non removable target: "'.s:target.'"') |
     \ endif |
     \ unlet s:bang |
     \ unlet s:target
@@ -1195,5 +1195,66 @@ augroup CloseMenu
     autocmd!
     autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
 augroup end
+
+if executable('nvim')
+    function! s:nvim(...) abort
+        let l:cachedir = $HOME..'/.cache/nvim'
+        let l:socket = $TMUX_WINDOW ? l:cachedir..'/socket.win'..$TMUX_WINDOW : l:cachedir..'/socket'
+
+        let l:cmd = ['nvim'] " , '--server', l:socket, '--remote-silent']
+
+        if len(a:000) == 0
+            if !filewritable(l:socket)
+                call s:echoerr('Socket: "' .. l:socket .. '" does not exists' )
+                return 1
+            endif
+
+            let l:cmd += ['--server', l:socket, '--remote-silent', expand('%:p')]
+        else
+            let l:has_server = v:false
+            let l:has_remote_cmd = v:false
+
+            for l:i in range(len(a:000))
+                if a:000[l:i] == '%'
+                    let a:000[l:i] = expand('%:p')
+                elseif a:000[l:i] =~? '^--server'
+                    if !filewritable(a:000[l:i + 1])
+                        call s:echoerr('Socket: "' .. a:000[l:i + 1] .. '" does not exists' )
+                        return 1
+                    endif
+
+                    let l:has_server = v:true
+                elseif a:000[l:i] =~? '^--remote'
+                    let l:has_remote_cmd = v:true
+                endif
+            endfor
+
+            if l:has_server != v:true
+                if !filewritable(l:socket)
+                    call s:echoerr('Socket: "' .. l:socket .. '" does not exists' )
+                    return 1
+                endif
+
+                let l:cmd += ['--server', l:socket]
+            endif
+
+            if l:has_remote_cmd != v:true
+                let l:cmd += ['--remote-silent']
+            endif
+
+            let l:cmd += a:000
+        endif
+
+        call system(join(l:cmd, ' '))
+    endfunction
+
+    function! s:send_file(filename) abort
+        let l:filename = a:filename == "" ? expand('%') : a:filename
+        call s:nvim(fnamemodify(l:filename, ':p'))
+    endfunction
+
+    command! -complete=file -nargs=? SendFile call s:send_file(<q-args>)
+    command! -complete=file -nargs=* Nvim call s:nvim(<f-args>)
+endif
 
 filetype plugin indent on

@@ -150,6 +150,7 @@ nvim.autocmd.Indent = {
     end,
 }
 
+-- TODO: should this check if the filea actually change before fixing imports?
 nvim.augroup.del 'ImportFix'
 if executable 'goimports' then
     nvim.autocmd.add('BufWritePost', {
@@ -166,7 +167,9 @@ if executable 'isort' then
         group = 'ImportFix',
         pattern = '*.{py,ipy}',
         callback = function(args)
-            RELOAD('utils.functions').autoformat('isort', { args.file }) -- '--profile=black', '-l', '120', '-tc'
+            local format_args = RELOAD('filetypes.python').formatprg.isort
+            table.insert(format_args, args.file)
+            RELOAD('utils.functions').autoformat('isort', format_args)
         end,
     })
 end
@@ -205,6 +208,34 @@ nvim.autocmd.LspMappings = {
     callback = function(args)
         local bufnr = args.buf
         local client = vim.lsp.get_client_by_id(args.data.client_id)
+
+        local null_ls = vim.F.npcall(require, 'null-ls')
+        if null_ls and client.name ~= 'null-ls' then
+            local null_configs = require 'plugins.lsp.null'
+
+            local ft = vim.bo.filetype
+            local has_formatting = client.server_capabilities.documentFormattingProvider
+                or client.server_capabilities.documentRangeFormattingProvider
+
+            if not has_formatting and null_ls and null_configs[ft] and null_configs[ft].formatter then
+                if not null_ls.is_registered(null_configs[ft].formatter.name) then
+                    null_ls.register { null_configs[ft].formatter }
+                end
+            end
+        end
+
         RELOAD('plugins.lsp.config').lsp_mappings(client, bufnr)
+    end,
+}
+
+nvim.autocmd.Alternate = {
+    event = 'FileType',
+    pattern = 'c,cpp',
+    callback = function(args)
+        local bufname = vim.api.nvim_buf_get_name(0)
+        -- NOTE: should this look in the local path instead of the whole directory?
+        if bufname ~= '' and not vim.g.alternates[bufname] then
+            RELOAD('threads.related').async_lookup_alternate()
+        end
     end,
 }

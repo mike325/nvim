@@ -1,23 +1,5 @@
 local sys = require 'sys'
 
-local function switch_source_header_splitcmd(bufnr, splitcmd)
-    local lsp = vim.F.npcall(require, 'lspconfig')
-    if lsp then
-        bufnr = require('lspconfig').util.validate_bufnr(bufnr)
-    end
-    local params = { uri = vim.uri_from_bufnr(bufnr) }
-    vim.lsp.buf_request(bufnr, 'textDocument/switchSourceHeader', params, function(err, _, result)
-        if err then
-            error(debug.traceback(tostring(err)))
-        end
-        if not result then
-            vim.notify('Corresponding file can’t be determined', 'ERROR', { title = 'Clangd' })
-            return
-        end
-        vim.cmd { cmd = splitcmd, args = { vim.uri_to_fname(result) } }
-    end)
-end
-
 local lua_runtime = vim.split(package.path, ';')
 table.insert(lua_runtime, 'lua/?.lua')
 table.insert(lua_runtime, 'lua/?/init.lua')
@@ -236,19 +218,19 @@ local servers = {
             commands = {
                 Switch = {
                     function()
-                        switch_source_header_splitcmd(0, 'edit')
+                        require('plugins.lsp.utils').switch_source_header_splitcmd(0, 'edit')
                     end,
                     description = 'Open source/header in current buffer',
                 },
                 SwitchVSplit = {
                     function()
-                        switch_source_header_splitcmd(0, 'vsplit')
+                        require('plugins.lsp.utils').switch_source_header_splitcmd(0, 'vsplit')
                     end,
                     description = 'Open source/header in a new vsplit',
                 },
                 SwitchSplit = {
                     function()
-                        switch_source_header_splitcmd(0, 'split')
+                        require('plugins.lsp.utils').switch_source_header_splitcmd(0, 'split')
                     end,
                     description = 'Open source/header in a new split',
                 },
