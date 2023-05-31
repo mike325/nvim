@@ -58,6 +58,10 @@ telescope.setup {
 
 vim.keymap.set('n', '<C-q>', builtin.quickfix, noremap)
 
+vim.keymap.set('n', '<leader><C-r>', function()
+    builtin.resume()
+end, noremap)
+
 vim.keymap.set('n', '<leader>g', function()
     local grepprg = vim.tbl_filter(function(k)
         return not k:match '^%s*$'

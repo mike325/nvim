@@ -239,3 +239,11 @@ nvim.autocmd.Alternate = {
         end
     end,
 }
+
+nvim.autocmd.SSHParser = {
+    event = 'BufWritePost',
+    pattern = '*/.ssh/config,*\\.ssh\\config',
+    callback = function(args)
+        RELOAD('threads.parse').ssh_hosts()
+    end,
+}

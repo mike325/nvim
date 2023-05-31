@@ -720,3 +720,10 @@ nvim.command.set('TrimWhites', function(opts)
     end
     nvim.buf.set_lines(0, line1 - 1, line2, false, new_lines)
 end, { range = '%', desc = 'Alias to <,>s/\\s\\+$//g' })
+
+nvim.command.set('ParseSSHConfig', function(opts)
+    local hosts = RELOAD('threads.parsers').sshconfig()
+    for host, addr in pairs(hosts) do
+        STORAGE.hosts[host] = addr
+    end
+end, { desc = 'Parse SSH config' })
