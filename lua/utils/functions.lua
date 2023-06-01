@@ -405,21 +405,34 @@ function M.open(uri)
 
     table.insert(args, uri)
 
-    local open = RELOAD('jobs'):new {
-        cmd = cmd,
-        args = args,
-        qf = {
-            dump = false,
-            on_fail = {
-                dump = true,
-                jump = false,
-                open = true,
+    -- NOTE: Attempt to open using wezterm OSC functionality
+    if vim.env.SSH_CONNECTION then
+        local b64 = RELOAD('utils.strings').base64_encode('"' .. uri .. '"')
+        local seq
+        if vim.env.TMUX then
+            seq = '\x1bPtmux;\x1b\x1b]1337;SetUserVar=%s=%s\b\x1b\\'
+        else
+            seq = '\x1b]1337;SetUserVar=%s=%s\b'
+        end
+        local stdout = vim.loop.new_tty(1, false)
+        stdout:write(seq:format('open', b64))
+    else
+        local open = RELOAD('jobs'):new {
+            cmd = cmd,
+            args = args,
+            qf = {
+                dump = false,
+                on_fail = {
+                    dump = true,
+                    jump = false,
+                    open = true,
+                },
+                context = 'Open',
+                title = 'Open',
             },
-            context = 'Open',
-            title = 'Open',
-        },
-    }
-    open:start()
+        }
+        open:start()
+    end
 end
 
 -- TODO: Improve python folding text

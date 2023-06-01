@@ -88,6 +88,23 @@ if not vim.fs then
 end
 
 require('threads.parse').ssh_hosts()
+local ssh_config = vim.loop.os_homedir():gsub('\\', '/') .. '/.ssh/config'
+if require('utils.files').is_file(ssh_config) then
+    local ssh_watcher
+    ssh_watcher = require('watcher.file'):new(ssh_config, function(err, fname, status)
+        if not err or err == '' then
+            require('threads.parse').ssh_hosts()
+        else
+            vim.notify(
+                'Something went on file watcher for ' .. fname .. '\n' .. err,
+                'ERROR',
+                { title = 'Watcher ' .. status }
+            )
+            ssh_watcher:stop()
+        end
+    end)
+    ssh_watcher:start()
+end
 
 vim.cmd.packadd { args = { 'cfilter' }, bang = true }
 vim.cmd.packadd { args = { 'matchit' }, bang = true }

@@ -15,6 +15,7 @@ else
     vim.g.oscyank_term = 'default'
 end
 
+-- vim.g.oscyank_osc52 = "\x1bPtmux;\x1b]52;c;%s\x07\x1b\\"
 nvim.command.set('OSCTerm', 'let g:oscyank_term = <q-args>', { nargs = 1, complete = RELOAD('completions').oscyank })
 
 nvim.autocmd.OSCYank = {
