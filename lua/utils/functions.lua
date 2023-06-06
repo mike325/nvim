@@ -93,6 +93,18 @@ icons.message = icons.hint
 icons.warning = icons.warn
 icons.information = icons.info
 
+function M.send_osc52(name, val)
+    local b64 = RELOAD('utils.strings').base64_encode(val)
+    local seq
+    if vim.env.TMUX then
+        seq = '\x1bPtmux;\x1b\x1b]1337;SetUserVar=%s=%s\b\x1b\\'
+    else
+        seq = '\x1b]1337;SetUserVar=%s=%s\b'
+    end
+    local stdout = vim.loop.new_tty(1, false)
+    stdout:write(seq:format(name, b64))
+end
+
 function M.get_icon(icon)
     return icons[icon]
 end
@@ -407,15 +419,7 @@ function M.open(uri)
 
     -- NOTE: Attempt to open using wezterm OSC functionality
     if vim.env.SSH_CONNECTION then
-        local b64 = RELOAD('utils.strings').base64_encode('"' .. uri .. '"')
-        local seq
-        if vim.env.TMUX then
-            seq = '\x1bPtmux;\x1b\x1b]1337;SetUserVar=%s=%s\b\x1b\\'
-        else
-            seq = '\x1b]1337;SetUserVar=%s=%s\b'
-        end
-        local stdout = vim.loop.new_tty(1, false)
-        stdout:write(seq:format('open', b64))
+        M.send_osc52('open', '"' .. uri .. '"')
     else
         local open = RELOAD('jobs'):new {
             cmd = cmd,

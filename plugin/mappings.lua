@@ -727,3 +727,31 @@ nvim.command.set('ParseSSHConfig', function(opts)
         STORAGE.hosts[host] = addr
     end
 end, { desc = 'Parse SSH config' })
+
+vim.keymap.set('n', '<leader>c', function()
+    local options = {
+        filename = function(bufnr)
+            return vim.fs.basename(nvim.buf.get_name(bufnr or 0))
+        end,
+        -- extension = true,
+        filepath = function(bufnr)
+            return require('utils.files').realpath(nvim.buf.get_name(bufnr or 0))
+        end,
+        dirname = function(bufnr)
+            return vim.fs.dirname(nvim.buf.get_name(bufnr or 0))
+        end,
+        bufnr = function()
+            return vim.api.nvim_get_current_buf()
+        end,
+    }
+
+    vim.ui.select(vim.tbl_keys(options), {
+        prompt = 'Select File/Buffer attribute: ',
+    }, function(choice)
+        if options[choice] then
+            local bufnr = vim.api.nvim_get_current_buf()
+            nvim.reg['+'] = options[choice](bufnr)
+            vim.notify(choice .. ' copied', 'INFO')
+        end
+    end)
+end, { noremap = true, desc = 'Copy different Buffer/File related stuff' })
