@@ -1103,7 +1103,7 @@ function M.vnc(hostname, opts)
 
     if vim.env.SSH_CONNECTION then
         RELOAD('utils.functions').send_osc52('vnc', hostname .. ':' .. port)
-    elseif executable('vncviewer') then
+    elseif executable 'vncviewer' then
         local args = { hostname }
         vim.list_extend(args, opts or {})
         local vnc = RELOAD('jobs'):new {
