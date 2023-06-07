@@ -728,6 +728,10 @@ nvim.command.set('ParseSSHConfig', function(opts)
     end
 end, { desc = 'Parse SSH config' })
 
+nvim.command.set('VNC', function(opts)
+    RELOAD('mappings').vnc(opts.args, { '-Quality=high' })
+end, { complete = completions.ssh_hosts_completion, nargs = 1, desc = 'Open a VNC connection to the given host' })
+
 vim.keymap.set('n', '<leader>c', function()
     local options = {
         filename = function(bufnr)

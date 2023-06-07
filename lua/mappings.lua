@@ -1086,4 +1086,43 @@ function M.move_line(down)
     -- pcall(vim.fn['repeat#set'], cmd, count)
 end
 
+function M.vnc(hostname, opts)
+    vim.validate {
+        hostname = { hostname, 'string' },
+        opts = { opts, 'table', true },
+    }
+    local executable = RELOAD('utils.files').executable
+
+    local components = vim.split(hostname, ':')
+    hostname = components[1]
+    local port = components[2] or '1' -- '10'
+
+    if STORAGE.hosts[hostname] then
+        hostname = STORAGE.hosts[hostname]:match '^[%w._%d]+@(.+)$' or STORAGE.hosts[hostname]
+    end
+
+    if vim.env.SSH_CONNECTION then
+        RELOAD('utils.functions').send_osc52('vnc', hostname .. ':' .. port)
+    elseif executable('vncviewer') then
+        local args = { hostname }
+        vim.list_extend(args, opts or {})
+        local vnc = RELOAD('jobs'):new {
+            cmd = 'vncviewer',
+            args = args,
+            qf = {
+                dump = false,
+                on_fail = {
+                    dump = true,
+                    jump = false,
+                    open = true,
+                },
+                title = 'VNC',
+            },
+        }
+        vnc:start()
+    else
+        vim.notify('Missing vncviewer executable', 'ERROR', { title = 'VNC' })
+    end
+end
+
 return M
