@@ -190,18 +190,10 @@ Usage:
     $NAME [OPTIONAL]
 
     Optional Flags
-
-        --nolog
-            Disable log writting
-
-        --nocolor
-            Disable color output
-
-        -v, --verbose
-            Enable debug messages
-
-        -h, --help
-            Display help, if you are seeing this, that means that you already know it (nice)
+        --nolog         Disable log writting
+        --nocolor       Disable color output
+        -v, --verbose   Enable debug messages
+        -h, --help      Display this help message
 EOF
 }
 
