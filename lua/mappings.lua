@@ -96,9 +96,10 @@ function M.smart_quit()
     if #wins > 1 and vim.fn.expand '%' ~= '[Command Line]' then
         nvim.win.hide(0)
     elseif #tabs > 1 then
-        nvim.ex['tabclose!']()
+        vim.cmd.tabclose { bang = true }
     else
-        nvim.exec('quit!', false)
+        vim.cmd.quit { bang = true }
+        -- nvim.exec('quit!', false)
     end
 end
 
@@ -150,6 +151,7 @@ function M.bufkill(opts)
     for _, buf in pairs(nvim.list_bufs()) do
         if not nvim.buf.is_valid(buf) or (bang and not nvim.buf.is_loaded(buf)) then
             nvim.ex['bwipeout!'](buf)
+            vim.cmd.bwipeout { bang = true, args = { buf } }
             count = count + 1
         end
     end
@@ -585,8 +587,7 @@ function M.repl(opts)
     end
 
     local direction = vim.opt.splitbelow:get() and 'botright' or 'topleft'
-    -- DEPRECATED: 0.9
-    vim.api.nvim_exec(direction .. ' 20new', false)
+    vim.cmd { cmd = 'new', range = { 20 }, mods = { split = direction } }
 
     local win = vim.api.nvim_get_current_win()
 
@@ -778,7 +779,7 @@ function M.swap_window()
             nvim.win.set_buf(0, nvim.t.swap_base_buf)
             nvim.win.set_buf(nvim.t.swap_base_win, swap_new_buf)
             nvim.win.set_cursor(0, nvim.t.swap_cursor)
-            nvim.ex['normal!'] 'zz'
+            vim.cmd.normal { bang = true, args = { 'zz' } }
         end
         nvim.t.swap_window = nil
         nvim.t.swap_cursor = nil

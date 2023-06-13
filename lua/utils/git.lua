@@ -321,4 +321,120 @@ function M.modified_files_from_base(revision, callback)
     end
 end
 
+function M.is_git_repo(root)
+    vim.validate {
+        root = { root, 'string' },
+    }
+
+    local is_file = require('utils.files').is_file
+    local is_dir = require('utils.files').is_dir
+
+    if not executable 'git' then
+        return false
+    end
+
+    root = vim.fs.normalize(root)
+
+    local git = root .. '/.git'
+
+    if is_dir(git) or is_file(git) then
+        return git
+    end
+    local results = vim.fs.find('.git', { path = root, upward = true })
+    return #results > 0 and results[1] or false
+end
+
+function M.get_git_dir(path, callback)
+    vim.validate {
+        path = { path, 'string', true },
+        callback = { callback, 'function', true },
+    }
+
+    local gitcmd = 'rev-parse'
+    local args = {
+        '--git-dir',
+    }
+
+    local cmd = { 'git' }
+    rm_colors(cmd)
+    rm_pager(cmd)
+    table.insert(cmd, gitcmd)
+    vim.list_extend(cmd, args)
+
+    path = path or require('utils.files').getcwd()
+
+    if not callback then
+        local git = RELOAD('jobs'):new {
+            cmd = cmd,
+            opts = {
+                cwd = path,
+            },
+            silent = true,
+            callbacks_on_failure = function(job)
+                local title = 'Git' .. gitcmd:sub(1, 1):upper() .. gitcmd:sub(2, #gitcmd)
+                vim.notify('Failed to execute git ' .. gitcmd, 'ERROR', { title = title })
+            end,
+        }
+        git:start()
+        git:wait()
+        if git.rc == 0 then
+            local git_dir = table.concat(filter_empty(git:output()))
+            if git_dir == '.git' then
+                return (('%s/%s'):format(path, git_dir):gsub('/+', '/'))
+            end
+            return git_dir
+        end
+        return false
+    end
+
+    local git = RELOAD('jobs'):new {
+        cmd = cmd,
+        opts = {
+            cwd = path,
+        },
+        silent = true,
+        callbacks_on_success = function(job)
+            local git_dir = table.concat(filter_empty(job:output()))
+            if git_dir == '.git' then
+                git_dir = (('%s/%s'):format(path, git_dir):gsub('/+', '/'))
+            end
+            callback(git_dir)
+        end,
+        callbacks_on_failure = function(job)
+            local title = 'Git' .. gitcmd:sub(1, 1):upper() .. gitcmd:sub(2, #gitcmd)
+            vim.notify('Failed to execute git ' .. gitcmd, 'ERROR', { title = title })
+        end,
+    }
+    git:start()
+end
+
+M.exec = setmetatable({}, {
+    __index = function(_, k)
+        vim.validate {
+            gitcmd = { k, 'string' },
+        }
+
+        local gitcmd = k
+        local supported_cmds = {
+            'mv',
+        }
+
+        if not vim.tbl_contains(supported_cmds, gitcmd) then
+            error(debug.traceback('Unsupported cmd: ' .. gitcmd .. ', ' .. vim.inspect(supported_cmds)))
+        end
+
+        return function(args, callback)
+            if not callback then
+                return exec_gitcmd(gitcmd, args)[1] or ''
+            end
+            exec_gitcmd(gitcmd, args, function(branch)
+                callback(branch[1] or '')
+            end)
+        end
+    end,
+    __newindex = function(_, _, _)
+        error(debug.traceback 'Cannot set values to exec table')
+    end,
+})
+
 return M

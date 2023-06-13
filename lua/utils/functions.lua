@@ -4,7 +4,6 @@ local sys = require 'sys'
 local replace_indent = require('utils.buffers').replace_indent
 local executable = require('utils.files').executable
 local is_file = require('utils.files').is_file
-local is_dir = require('utils.files').is_dir
 local getcwd = require('utils.files').getcwd
 
 local M = {}
@@ -260,21 +259,6 @@ function M.opfun_comment(_, visual)
     M.toggle_comments(startpos[1] - 1, endpos[1])
 
     vim.o.selection = select_save
-end
-
-function M.get_git_dir(callback)
-    vim.validate { callback = { callback, 'function' } }
-    assert(executable 'git', 'Missing git')
-
-    local j = RELOAD('jobs'):new {
-        cmd = { 'git', 'rev-parse', '--git-dir' },
-        silent = true,
-        callbacks_on_success = function(job)
-            local dir = table.concat(job:output(), '')
-            pcall(callback, require('utils.files').realpath(dir))
-        end,
-    }
-    j:start()
 end
 
 function M.external_formatprg(args)
@@ -566,7 +550,7 @@ function M.project_config(event)
         return vim.b.project_root
     end
 
-    local is_git = M.is_git_repo(root)
+    local is_git = RELOAD('utils.git').is_git_repo(root)
     local git_dir = is_git and git_dirs[cwd] or nil
     -- local filetype = vim.bo.filetype
     -- local buftype = vim.bo.buftype
@@ -580,7 +564,8 @@ function M.project_config(event)
 
     if is_git and not git_dir then
         -- TODO: This should trigger an autocmd to update alternates, tests and everything else with the correct root
-        M.get_git_dir(function(dir)
+        -- TODO: Add support for worktrees
+        RELOAD('utils.git').get_git_dir('.', function(dir)
             local project = vim.b.project_root
             project.git_dir = dir
             git_dirs[cwd] = dir
@@ -644,23 +629,6 @@ function M.find_project_root(path)
     end
 
     return not root and getcwd() or vim.fs.dirname(root)
-end
-
-function M.is_git_repo(root)
-    assert(type(root) == type '' and root ~= '', debug.traceback(([[Not a path: "%s"]]):format(root)))
-    if not executable 'git' then
-        return false
-    end
-
-    root = vim.fs.normalize(root)
-
-    local git = root .. '/.git'
-
-    if is_dir(git) or is_file(git) then
-        return true
-    end
-    local results = vim.fs.find('.git', { path = root, upward = true })
-    return #results > 0 and results[1] or false
 end
 
 function M.ignores(tool, excludes, lst)

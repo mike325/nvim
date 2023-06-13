@@ -484,14 +484,10 @@ function M.rename(old, new, bang)
         end
 
         if bufloaded(new) then
-            nvim.ex['bwipeout!'](new)
+            vim.cmd.bwipeout { args = { new }, bang = true }
         end
 
-        if uv.fs_rename(old, new) then
-            if bufloaded(old) then
-                nvim.ex['bwipeout!'](old)
-            end
-
+        local function switch_buffers()
             if M.is_file(new) then
                 vim.cmd.edit(new)
                 if cursor_pos then
@@ -499,10 +495,32 @@ function M.rename(old, new, bang)
                 end
             end
 
-            return true
-        else
-            vim.notify('Failed to rename ' .. old, 'ERROR', { title = 'Rename' })
+            if bufloaded(old) then
+                vim.cmd.bwipeout { args = { old }, bang = true }
+            end
         end
+
+        local git = RELOAD 'utils.git'
+
+        if git.is_git_repo(vim.fs.dirname(old)) then
+            local result = git.exec.mv { '-f', old, new }
+            if #result > 0 then
+                vim.notify(
+                    'Failed to rename ' .. old .. '\n' .. table.concat(result, '\n'),
+                    'ERROR',
+                    { title = 'Rename' }
+                )
+                return false
+            end
+        else
+            if not uv.fs_rename(old, new) then
+                vim.notify('Failed to rename ' .. old, 'ERROR', { title = 'Rename' })
+                return false
+            end
+        end
+
+        switch_buffers()
+        return true
     elseif M.exists(new) then
         vim.notify(new .. ' exists, use force to override it', 'ERROR', { title = 'Rename' })
     end
@@ -702,7 +720,7 @@ function M.clean_file()
         end
     end
     if retab then
-        nvim.ex['retab!']()
+        vim.cmd.retab { bang = true }
     end
     return true
 end

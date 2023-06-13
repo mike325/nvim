@@ -408,7 +408,7 @@ function Job:start()
             else
                 nvim.buf.set_lines(self._buffer, -2, -1, false, data)
                 nvim.buf.call(self._buffer, function()
-                    nvim.ex['normal!'] 'G'
+                    vim.cmd.normal { args = { 'G' }, bang = true }
                 end)
             end
 
