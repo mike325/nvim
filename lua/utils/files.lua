@@ -666,6 +666,34 @@ function M.skeleton_filename(opts)
     end
 end
 
+function M.trimwhites(buf, range)
+    vim.validate {
+        buf = { buf, 'number', true },
+        range = { range, 'table', true },
+    }
+    assert(not range or #range == 2, debug.traceback 'range must be {start, end} format')
+    range = range or {}
+    buf = buf or nvim.get_current_buf()
+
+    local start_line = range[1]
+    local end_line = range[2]
+    local lines = nvim.buf.get_lines(buf, start_line, end_line, true)
+
+    for i = 1, #lines do
+        local line = lines[i]
+        if line ~= '' then
+            local s_row = (start_line + i) - 1
+            local e_row = (start_line + i) - 1
+
+            if line:find '%s+$' then
+                local s_col, e_col = line:find '%s+$'
+                s_col = s_col - 1
+                nvim.buf.set_text(buf, s_row, s_col, e_row, e_col, { '' })
+            end
+        end
+    end
+end
+
 function M.clean_file()
     if vim.b.editorconfig and vim.b.editorconfig.trim_trailing_whitespace ~= nil then
         return
@@ -695,27 +723,20 @@ function M.clean_file()
         return false
     end
 
-    local lines = nvim.buf.get_lines(0, 0, -1, true)
+    local range = { 0, -1 }
+    local buf = nvim.get_current_buf()
+    M.trimwhites(buf, range)
+
+    local lines = nvim.buf.get_lines(buf, range[1], range[2], true)
     local expandtab = vim.bo.expandtab
     local retab = false
-
     for i = 1, #lines do
         local line = lines[i]
         if line ~= '' then
-            local s_row = i - 1
-            local e_row = i - 1
-
-            if line:find '%s+$' then
-                local s_col = line:find '%s+$' - 1
-                local e_col = #line
-                nvim.buf.set_text(0, s_row, s_col, e_row, e_col, { '' })
-            end
-
             -- NOTE: Retab seems to be faster that set_(text/lines) API
-            if expandtab and line:match '^\t+' then
+            if (expandtab and line:match '^\t+') or (not expandtab and line:match '^ +') then
                 retab = true
-            elseif not expandtab and line:match '^ +' then
-                retab = true
+                break
             end
         end
     end
@@ -726,7 +747,9 @@ function M.clean_file()
 end
 
 function M.decode_json(data)
-    assert(type(data) == type '' or type(data) == type {}, debug.traceback('Invalid Json data: ' .. vim.inspect(data)))
+    vim.validate {
+        data = { data, { 'string', 'table' } },
+    }
     if type(data) == type {} then
         data = table.concat(data, '\n')
     end
