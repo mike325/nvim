@@ -710,7 +710,7 @@ nvim.command.set('Loc2Qf', function(opts)
 end, { desc = "Move the current window's location list to the QF" })
 
 nvim.command.set('TrimWhites', function(opts)
-    RELOAD('utils.files').trimwhites(nvim.get_current_buf(), {opts.line1 - 1, opts.line2})
+    RELOAD('utils.files').trimwhites(nvim.get_current_buf(), { opts.line1 - 1, opts.line2 })
 end, { range = '%', desc = 'Alias to <,>s/\\s\\+$//g' })
 
 nvim.command.set('ParseSSHConfig', function(opts)
