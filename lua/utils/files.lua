@@ -672,7 +672,7 @@ function M.trimwhites(buf, range)
         range = { range, 'table', true },
     }
     assert(not range or #range == 2, debug.traceback 'range must be {start, end} format')
-    range = range or {}
+    range = range or { 0, -1 }
     buf = buf or nvim.get_current_buf()
 
     local start_line = range[1]
