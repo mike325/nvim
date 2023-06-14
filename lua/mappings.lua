@@ -211,7 +211,7 @@ function M.chmod(opts)
         vim.notify('Not a valid permissions mode: ' .. mode, 'ERROR', { title = 'Chmod' })
         return
     end
-    local filename = vim.fn.expand '%'
+    local filename = vim.api.nvim_buf_get_name(0)
     local chmod = utils.chmod
     if is_file(filename) then
         chmod(filename, mode)
@@ -224,21 +224,20 @@ function M.move_file(opts)
     local is_file = utils.is_file
     local is_dir = utils.is_dir
 
-    local new_path = opts.args
+    local location = opts.args
     local bang = opts.bang
 
-    local current_path = vim.fn.expand '%:p'
-
-    if is_file(current_path) and is_dir(new_path) then
-        new_path = new_path .. '/' .. vim.fn.fnamemodify(current_path, ':t')
+    local filename = vim.api.nvim_buf_get_name(0)
+    if is_file(filename) and is_dir(location) then
+        location = location .. '/' .. vim.fs.basename(filename)
     end
-    utils.rename(current_path, new_path, bang)
+    utils.rename(filename, location, bang)
 end
 
 function M.rename_file(opts)
-    local current_path = vim.fn.expand '%:p'
-    local current_dir = vim.fn.expand '%:h'
-    RELOAD('utils.files').rename(current_path, current_dir .. '/' .. opts.args, opts.bang)
+    local filename = vim.api.nvim_buf_get_name(0)
+    local dirname = vim.fs.dirname(filename)
+    RELOAD('utils.files').rename(filename, dirname .. '/' .. opts.args, opts.bang)
 end
 
 function M.find(opts)
@@ -319,7 +318,7 @@ function M.async_makeprg(opts)
     local cmd = ok and val or vim.o.makeprg
 
     if cmd:sub(#cmd, #cmd) == '%' then
-        cmd = cmd:gsub('%%', vim.fn.expand '%')
+        cmd = cmd:gsub('%%', vim.api.nvim_buf_get_name(0))
     end
 
     cmd = cmd .. table.concat(args, ' ')

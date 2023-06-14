@@ -30,9 +30,9 @@ vim.keymap.set('c', '<C-k>', '<left>', noremap)
 vim.keymap.set('c', '<C-j>', '<right>', noremap)
 
 vim.keymap.set('c', '<C-r><C-w>', "<C-r>=escape(expand('<cword>'), '#')<CR>", noremap)
-vim.keymap.set('c', '<C-r><C-n>', [[<C-r>=luaeval("vim.fs.basename(vim.fn.expand('%'))")<CR>]], noremap)
-vim.keymap.set('c', '<C-r><C-p>', [[<C-r>=luaeval("vim.fn.expand('%')")<CR>]], noremap)
-vim.keymap.set('c', '<C-r><C-d>', [[<C-r>=luaeval("vim.fs.dirname(vim.fn.expand('%'))..'/'")<CR>]], noremap)
+vim.keymap.set('c', '<C-r><C-n>', [[<C-r>=luaeval("vim.fs.basename(vim.api.nvim_buf_get_name(0))")<CR>]], noremap)
+vim.keymap.set('c', '<C-r><C-p>', [[<C-r>=luaeval("vim.api.nvim_buf_get_name(0)")<CR>]], noremap)
+vim.keymap.set('c', '<C-r><C-d>', [[<C-r>=luaeval("vim.fs.dirname(vim.api.nvim_buf_get_name(0))..'/'")<CR>]], noremap)
 
 vim.keymap.set('n', ',', ':', noremap)
 vim.keymap.set('x', ',', ':', noremap)
@@ -238,14 +238,16 @@ nvim.command.set('Mkdir', function(opts)
 end, { nargs = 1, complete = 'dir' })
 
 nvim.command.set('RemoveFile', function(opts)
-    local target = opts.args ~= '' and opts.args or vim.fn.expand '%'
-    RELOAD('utils.files').delete(vim.fn.fnamemodify(target, ':p'), opts.bang)
+    local target = opts.args ~= '' and opts.args or vim.api.nvim_buf_get_name(0)
+    local utils = RELOAD 'utils.files'
+    utils.delete(utils.realpath(target), opts.bang)
 end, { bang = true, nargs = '?', complete = 'file' })
 
 nvim.command.set('CopyFile', function(opts)
-    local src = vim.fn.expand '%:p'
+    local utils = RELOAD 'utils.files'
+    local src = vim.api.nvim_buf_get_name(0)
     local dest = opts.fargs[1]
-    RELOAD('utils.files').copy(src, dest, opts.bang)
+    utils.copy(src, dest, opts.bang)
 end, { bang = true, nargs = 1, complete = 'file' })
 
 nvim.command.set('Grep', function(opts)

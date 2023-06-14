@@ -7,5 +7,5 @@ set_compiler('flake8', {
         '.flake8',
         'setup.cfg',
     },
-    global_config = vim.fn.expand(sys.name == 'windows' and '~/.flake8' or '~/.config/flake8'),
+    global_config = vim.fs.normalize(sys.name == 'windows' and '~/.flake8' or '~/.config/flake8'),
 })

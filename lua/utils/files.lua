@@ -36,10 +36,10 @@ function M.normalize(path)
     vim.validate { path = { path, 'string' } }
     assert(path ~= '', debug.traceback 'Empty path')
     if path == '%' then
-        -- TODO: Replace this with a fast API
-        return vim.fn.expand(path)
+        local cwd = ((uv.cwd() .. '/'):gsub('\\', '/'):gsub('/+', '/'))
+        path = (vim.api.nvim_buf_get_name(0):gsub(vim.pesc(cwd), ''))
     end
-    return (path:gsub('^~', vim.loop.os_homedir()):gsub('%$([%w_]+)', vim.loop.os_getenv):gsub('\\', '/'))
+    return vim.fs.normalize(path)
 end
 
 -- local function split_path(path)
@@ -593,7 +593,7 @@ function M.skeleton_filename(opts)
         opts = { opts }
     end
 
-    local buf = vim.fn.expand '%'
+    local buf = vim.api.nvim_buf_get_name(0)
     if buf == '' or M.is_file(buf) then
         return
     end
@@ -859,19 +859,34 @@ function M.find(filename, opts)
         return vim.fs.find(filename, opts)
     end
     -- TODO: Implement this for neovim < 0.8
-    error 'Not implemented yet'
+    error(debug.traceback 'Not implemented yet')
 end
 
-function M.chmod_exec()
-    local filename = vim.fn.expand '%'
+function M.is_executable(filename)
+    vim.validate {
+        filename = { filename, 'string' },
+    }
+    if M.is_file(filename) and require('sys').name ~= 'windows' then
+        local fileinfo = vim.loop.fs_stat(filename)
+        local filemode = fileinfo.mode - 32768
 
-    if not M.is_file(filename) or require('sys').name == 'windows' then
-        return
+        if bit.band(filemode, 0x40) ~= 0 then
+            return true
+        end
     end
+    return false
+end
 
-    local fileinfo = vim.loop.fs_stat(filename)
-    local filemode = fileinfo.mode - 32768
-    require('utils.files').chmod(filename, bit.bor(filemode, 0x48), 10)
+function M.chmod_exec(buf)
+    vim.validate {
+        buf = { buf, 'number', true },
+    }
+    local filename = vim.api.nvim_buf_get_name(buf or 0)
+    if not M.is_executable(filename) then
+        local fileinfo = vim.loop.fs_stat(filename)
+        local filemode = fileinfo.mode - 32768
+        M.chmod(filename, bit.bor(filemode, 0x48), 10)
+    end
 end
 
 function M.make_executable()
@@ -881,7 +896,12 @@ function M.make_executable()
     end
 
     local shebang = nvim.buf.get_lines(0, 0, 1, true)[1]
-    if not shebang or not shebang:match '^#!.+' then
+    local filename = vim.api.nvim_buf_get_name(0)
+    if M.is_executable(filename) then
+        return
+    end
+
+    if not shebang:match '^#!.+' then
         nvim.autocmd.add('BufWritePre', {
             group = 'MakeExecutable',
             buffer = nvim.win.get_buf(0),
@@ -893,24 +913,17 @@ function M.make_executable()
         return
     end
 
-    local filename = vim.fn.expand '%'
-    if M.is_file(filename) then
-        local fileinfo = vim.loop.fs_stat(filename)
-        local filemode = fileinfo.mode - 32768
-
-        if fileinfo.uid ~= sys.user.uid or bit.band(filemode, 0x40) ~= 0 then
-            return
-        end
+    if not M.is_executable(filename) or not M.exists(filename) then
+        -- TODO(miochoa): Add support to pass buffer
+        nvim.autocmd.add('BufWritePost', {
+            group = 'MakeExecutable',
+            buffer = nvim.win.get_buf(0),
+            callback = function()
+                M.chmod_exec()
+            end,
+            once = true,
+        })
     end
-
-    nvim.autocmd.add('BufWritePost', {
-        group = 'MakeExecutable',
-        buffer = nvim.win.get_buf(0),
-        callback = function()
-            M.chmod_exec()
-        end,
-        once = true,
-    })
 end
 
 function M.find_in_dir(args)

@@ -162,4 +162,19 @@ function M.else_clause(args, snip, old_state, placeholder)
     return snip_node
 end
 
+-- C/C++ only
+function M.add_statement_and_include(statement, include, include_type)
+    vim.validate {
+        statement = { statement, 'string' },
+        include = { include, 'string', true },
+        include_type = { include_type, 'string', true },
+    }
+    include = include or statement
+    include_type = include_type or 'sys'
+
+    local cpp = RELOAD 'utils.treesitter.cpp'
+    cpp.add_include(include, include_type)
+    return statement
+end
+
 return M

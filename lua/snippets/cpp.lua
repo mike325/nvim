@@ -13,7 +13,7 @@ local c = ls.choice_node
 local d = ls.dynamic_node
 -- local l = require('luasnip.extras').lambda
 local r = require('luasnip.extras').rep
--- local p = require('luasnip.extras').partial
+local p = require('luasnip.extras').partial
 -- local m = require('luasnip.extras').match
 -- local n = require('luasnip.extras').nonempty
 -- local dl = require('luasnip.extras').dynamic_lambda
@@ -29,25 +29,52 @@ end
 
 local utils = RELOAD 'plugins.luasnip.utils'
 local saved_text = utils.saved_text
+local add_statement_and_include = utils.add_statement_and_include
 -- local get_comment = utils.get_comment
 -- local surround_with_func = utils.surround_with_func
 
 ls.filetype_extend('cpp', { 'c' })
 
 local function smart_ptr(_, snip)
+    local cpp = RELOAD 'utils.treesitter.cpp'
     local qt_ptr = snip.captures[1] == 'q'
     local is_uniq = snip.captures[2] == 'u'
 
     local ptr
     if qt_ptr and not is_uniq then
+        cpp.add_include('qt5/QtCore/QSharedPointer', 'sys')
         ptr = 'QSharedPointer'
-    elseif not qt_ptr and not is_uniq then
-        ptr = 'std::shared_ptr'
     else
-        ptr = 'std::unique_ptr'
+        cpp.add_include('memory', 'sys')
+        if not qt_ptr and not is_uniq then
+            ptr = 'std::shared_ptr'
+        else
+            ptr = 'std::unique_ptr'
+        end
     end
 
     return ptr
+end
+local function chrono_sleep(_, parent, old_state)
+    local cpp = RELOAD 'utils.treesitter.cpp'
+    cpp.add_include('chono', 'sys')
+    cpp.add_include('thread', 'sys')
+
+    local nodes = {}
+    vim.list_extend(nodes, {
+        c(1, {
+            i(1, 'nanoseconds'),
+            i(1, 'microseconds'),
+            i(1, 'milliseconds'),
+            i(1, 'seconds'),
+            i(1, 'minutes'),
+            i(1, 'hours'),
+        }),
+    })
+
+    local snip_node = sn(nil, nodes)
+    snip_node.old_state = old_state
+    return snip_node
 end
 
 local function get_classname()
@@ -359,37 +386,45 @@ return {
         )
     ),
     s(
-        'strs',
-        fmt([[std::stringstream {}]], {
+        'sst',
+        fmt([[std::{} {}]], {
+            p(add_statement_and_include, 'stringstream', 'sstream'),
             i(1, 'ss'),
         })
     ),
     s(
         'vec',
-        fmt([[std::vector<{}> {}]], {
-            i(1, 'std::string'),
+        fmt([[std::{}<{}> {}]], {
+            p(add_statement_and_include, 'vector'),
+            i(1, 'int'),
             i(2, 'v'),
+        })
+    ),
+    s(
+        'sv',
+        fmt([[std::{} {}]], {
+            p(add_statement_and_include, 'string_view'),
+            i(1, 's'),
         })
     ),
     s(
         'str',
         fmt([[std::{} {}]], {
-            c(1, {
-                i(1, 'string'),
-                i(1, 'string_view'),
-            }),
-            i(2, 's'),
+            p(add_statement_and_include, 'string'),
+            i(1, 's'),
         })
     ),
     s(
         'co',
-        fmt([[std::cout << {};]], {
+        fmt([[std::{} << {};]], {
+            p(add_statement_and_include, 'cout', 'iostream'),
             i(1, '"msg"'),
         })
     ),
     s(
         'cer',
-        fmt([[std::cerr << {};]], {
+        fmt([[std::{} << {};]], {
+            p(add_statement_and_include, 'cerr', 'iostream'),
             i(1, '"msg"'),
         })
     ),
@@ -408,8 +443,8 @@ return {
         'inc',
         fmt([[#include {}]], {
             c(1, {
-                sn(nil, fmt('<{}>', { i(1, 'iostream') })),
                 sn(nil, fmt('"{}"', { i(1, 'iostream') })),
+                sn(nil, fmt('<{}>', { i(1, 'iostream') })),
             }),
         })
     ),
@@ -418,6 +453,13 @@ return {
         fmt([[{}<{}>]], {
             f(smart_ptr, {}),
             i(1, 'type'),
+        })
+    ),
+    s(
+        { trig = 'sleep', regTrig = false },
+        fmt([[std::this_thread::sleep_for(std::chrono::{}({}));]], {
+            d(1, chrono_sleep, {}, {}),
+            i(2, '10'),
         })
     ),
 }

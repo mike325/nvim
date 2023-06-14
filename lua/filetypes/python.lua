@@ -112,7 +112,7 @@ function M.get_linter()
     local cmd
     if executable 'flake8' then
         cmd = { 'flake8' }
-        local global_config = vim.fn.expand(sys.name == 'windows' and '~/.flake8' or '~/.config/flake8')
+        local global_config = vim.fs.normalize(sys.name == 'windows' and '~/.flake8' or '~/.config/flake8')
         local config_file = RELOAD('utils.buffers').find_config {
             configs = {
                 'tox.ini',
