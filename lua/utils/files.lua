@@ -895,13 +895,13 @@ function M.make_executable()
         return
     end
 
-    local shebang = nvim.buf.get_lines(0, 0, 1, true)[1]
     local filename = vim.api.nvim_buf_get_name(0)
     if M.is_executable(filename) then
         return
     end
 
-    if not shebang:match '^#!.+' then
+    local shebang = nvim.buf.get_lines(0, 0, 1, true)[1]
+    if not shebang or not shebang:match '^#!.+' then
         nvim.autocmd.add('BufWritePre', {
             group = 'MakeExecutable',
             buffer = nvim.win.get_buf(0),
