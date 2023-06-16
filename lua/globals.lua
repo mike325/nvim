@@ -4,7 +4,7 @@ _G['RELOAD'] = function(pkg)
 end
 
 _G['P'] = function(...)
-    local tbls = require('utils.tables')
+    local tbls = require 'utils.tables'
     local vars = tbls.tbl_map(tbls.inspect, { ... })
     print(unpack(vars))
     return { ... }
@@ -14,7 +14,7 @@ _G['PRINT'] = _G['P']
 
 _G['PASTE'] = function(data)
     if not vim then
-        error(debug.traceback("This platform is unsupported"))
+        error(debug.traceback 'This platform is unsupported')
     end
     if not vim.tbl_islist(data) then
         if type(data) == type '' then
