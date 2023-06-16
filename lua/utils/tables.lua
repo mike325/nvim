@@ -222,4 +222,43 @@ function M.isempty(tbl)
     return #tbl == 0 and next(tbl) == nil
 end
 
+-- NOTE: This is intendent for wezterm, which does not have inspect
+function M.inspect(t)
+    if type(t) ~= 'table' then
+        return t
+    elseif type(t) == 'functions' then
+        return 'function'
+    end
+    local tbl = '{'
+    if M.tbl_islist(t) then
+        for _, v in ipairs(t) do
+            if type(v) == 'table' or type(v) == 'function' then
+                v = M.inspect(v)
+            elseif type(v) == 'string' then
+                v = ('"%s"'):format(v)
+            end
+            tbl = tbl .. (' %s,'):format(v)
+        end
+    else
+        for k, v in pairs(t) do
+            if type(k) == 'table' or type(k) == 'function' then
+                k = M.inspect(k)
+            elseif type(k) == 'number' then
+                k = ('[%s]'):format(k)
+            end
+            if type(v) == 'table' or type(v) == 'function' then
+                v = M.inspect(v)
+            elseif type(v) == 'string' then
+                v = ('"%s"'):format(v)
+            end
+            tbl = tbl .. (' %s = %s,'):format(k, v)
+        end
+    end
+    if tbl:sub(-1) == ',' then
+        tbl = tbl:sub(1, #tbl - 1)
+    end
+    tbl = tbl .. ' }'
+    return tbl
+end
+
 return M

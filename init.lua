@@ -53,6 +53,7 @@ vim.g.mapleader = ' '
 
 require 'utils.ft_detect'
 require 'messages'
+require 'completions'
 require 'globals'
 -- NOTE: I no longer use python plugins, no need to setup python remote provider
 -- require('filetypes.python').pynvim_setup()
