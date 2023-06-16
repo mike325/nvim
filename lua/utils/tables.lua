@@ -224,15 +224,19 @@ end
 
 -- NOTE: This is intendent for wezterm, which does not have inspect
 function M.inspect(t)
-    if type(t) ~= 'table' then
+    local special = {
+        ['function'] = true,
+        userdata = true,
+    }
+    if special[type(t)] then
+        return ('<%s>'):format(type(t))
+    elseif type(t) ~= 'table' then
         return t
-    elseif type(t) == 'functions' then
-        return 'function'
     end
     local tbl = '{'
     if M.tbl_islist(t) then
         for _, v in ipairs(t) do
-            if type(v) == 'table' or type(v) == 'function' then
+            if type(v) == 'table' or special[type(v)] then
                 v = M.inspect(v)
             elseif type(v) == 'string' then
                 v = ('"%s"'):format(v)
@@ -241,12 +245,12 @@ function M.inspect(t)
         end
     else
         for k, v in pairs(t) do
-            if type(k) == 'table' or type(k) == 'function' then
+            if type(k) == 'table' or special[type(k)] then
                 k = M.inspect(k)
             elseif type(k) == 'number' then
                 k = ('[%s]'):format(k)
             end
-            if type(v) == 'table' or type(v) == 'function' then
+            if type(v) == 'table' or special[type(v)] then
                 v = M.inspect(v)
             elseif type(v) == 'string' then
                 v = ('"%s"'):format(v)
