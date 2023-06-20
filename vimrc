@@ -991,9 +991,10 @@ cabbrev qa1 qa!
 cabbrev w1  w!
 cabbrev wA! wa!
 cabbrev wa1 wa!
-cabbrev Qa1 qa!
-cabbrev Qa! qa!
 cabbrev QA! qa!
+cabbrev QA1 qa!
+cabbrev Qa! qa!
+cabbrev Qa1 qa!
 
 " Use C-p and C-n to move in command's history
 cnoremap <C-n> <down>
