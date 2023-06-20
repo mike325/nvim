@@ -4,7 +4,6 @@ local sys = require 'sys'
 local replace_indent = require('utils.buffers').replace_indent
 local executable = require('utils.files').executable
 local is_file = require('utils.files').is_file
-local is_dir = require('utils.files').is_dir
 local getcwd = require('utils.files').getcwd
 
 local M = {}

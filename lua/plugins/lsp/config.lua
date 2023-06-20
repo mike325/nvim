@@ -184,6 +184,10 @@ function M.lsp_mappings(client, bufnr)
         end
     end
 
+    if client.server_capabilities.inlayHintProvider then
+        vim.lsp.buf.inlay_hint(bufnr, true)
+    end
+
     for command, values in pairs(M.commands) do
         if type(values[1]) == 'function' then
             local opts = { buffer = true }
