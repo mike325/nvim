@@ -1,19 +1,21 @@
-require 'completions'
+_G['RELOAD'] = function(pkg)
+    package.loaded[pkg] = nil
+    return require(pkg)
+end
 
 _G['P'] = function(...)
-    local vars = vim.tbl_map(vim.inspect, { ... })
+    local tbls = require 'utils.tables'
+    local vars = tbls.tbl_map(tbls.inspect, { ... })
     print(unpack(vars))
     return { ... }
 end
 
 _G['PRINT'] = _G['P']
 
-_G['RELOAD'] = function(pkg)
-    package.loaded[pkg] = nil
-    return require(pkg)
-end
-
 _G['PASTE'] = function(data)
+    if not vim then
+        error(debug.traceback 'This platform is unsupported')
+    end
     if not vim.tbl_islist(data) then
         if type(data) == type '' then
             data = vim.split(data, '\n')
@@ -26,13 +28,14 @@ end
 
 _G['PERF'] = function(msg, ...)
     local args = { ... }
-    vim.validate { func = { args[1], 'function' }, message = { msg, 'string', true } }
+    assert(type(args[1]) == 'function', debug.traceback 'The first argumet must be a function')
+    assert(not msg or type(msg) == 'string', debug.traceback 'msg must be a string')
+    msg = msg or 'Func reference elpse time:'
     local func = args[1]
     table.remove(args, 1)
     -- local start = os.time()
     local start = os.clock()
     local data = func(unpack(args))
-    msg = msg or 'Func reference elpse time:'
     print(msg, ('%.2f s'):format(os.clock() - start))
     -- print(msg, ('%.2f s'):format(os.difftime(os.time(), start)))
     return data

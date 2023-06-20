@@ -127,16 +127,6 @@ else
     fi
 fi
 
-if ! hash is_64bits 2>/dev/null; then
-    # TODO: This should work with ARM 64bits
-    function is_64bits() {
-        if [[ $ARCH == 'x86_64' ]]; then
-            return 0
-        fi
-        return 1
-    }
-fi
-
 # colors
 # shellcheck disable=SC2034
 black="\033[0;30m"
@@ -170,17 +160,10 @@ Usage:
 
     Optional Flags
 
-        --nolog
-            Disable log writting
-
-        --nocolor
-            Disable color output
-
-        -v, --verbose
-            Enable debug messages
-
-        -h, --help
-            Display help, if you are seeing this, that means that you already know it (nice)
+        --nolog         Disable log writting
+        --nocolor       Disable color output
+        -v, --verbose   Enable debug messages
+        -h, --help      Display this help message
 EOF
 }
 

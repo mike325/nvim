@@ -102,11 +102,15 @@ function M.sshconfig()
         local host = ''
         local data = utils.readfile(ssh_config, true)
         for _, line in pairs(data) do
-            if line and line ~= '' and line:match '[hH]ost%s+[a-zA-Z0-9_-%.]+' then
-                host = vim.split(line, '%s+')[2]
-            elseif line:match '%s+[hH]ostname%s+[a-zA-Z0-9_-%.]+' and host ~= '' then
-                local addr = vim.split(line, '%s+')[2]
-                hosts[host] = addr
+            if line and line ~= '' and line:match '[hH][oO][sS][tT]%s+[a-zA-Z0-9_-%.]+' then
+                host = vim.split(line, '%s+', { trimempty = true })[2]
+            elseif
+                line ~= ''
+                and line:match '^%s+[hH][oO][sS][tT][nN][aA][mM][eE]%s+[a-zA-Z0-9_-%.]+'
+                and host ~= ''
+            then
+                local hostname = vim.split(line, '%s+', { trimempty = true })
+                hosts[host] = hostname[2]
                 host = ''
             end
         end

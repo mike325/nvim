@@ -36,10 +36,10 @@ function M.normalize(path)
     vim.validate { path = { path, 'string' } }
     assert(path ~= '', debug.traceback 'Empty path')
     if path == '%' then
-        -- TODO: Replace this with a fast API
-        return vim.fn.expand(path)
+        local cwd = ((uv.cwd() .. '/'):gsub('\\', '/'):gsub('/+', '/'))
+        path = (vim.api.nvim_buf_get_name(0):gsub(vim.pesc(cwd), ''))
     end
-    return (path:gsub('^~', vim.loop.os_homedir()):gsub('%$([%w_]+)', vim.loop.os_getenv):gsub('\\', '/'))
+    return vim.fs.normalize(path)
 end
 
 -- local function split_path(path)
@@ -484,14 +484,10 @@ function M.rename(old, new, bang)
         end
 
         if bufloaded(new) then
-            nvim.ex['bwipeout!'](new)
+            vim.cmd.bwipeout { args = { new }, bang = true }
         end
 
-        if uv.fs_rename(old, new) then
-            if bufloaded(old) then
-                nvim.ex['bwipeout!'](old)
-            end
-
+        local function switch_buffers()
             if M.is_file(new) then
                 vim.cmd.edit(new)
                 if cursor_pos then
@@ -499,10 +495,32 @@ function M.rename(old, new, bang)
                 end
             end
 
-            return true
-        else
-            vim.notify('Failed to rename ' .. old, 'ERROR', { title = 'Rename' })
+            if bufloaded(old) then
+                vim.cmd.bwipeout { args = { old }, bang = true }
+            end
         end
+
+        local git = RELOAD 'utils.git'
+
+        if git.is_git_repo(vim.fs.dirname(old)) then
+            local result = git.exec.mv { '-f', old, new }
+            if #result > 0 then
+                vim.notify(
+                    'Failed to rename ' .. old .. '\n' .. table.concat(result, '\n'),
+                    'ERROR',
+                    { title = 'Rename' }
+                )
+                return false
+            end
+        else
+            if not uv.fs_rename(old, new) then
+                vim.notify('Failed to rename ' .. old, 'ERROR', { title = 'Rename' })
+                return false
+            end
+        end
+
+        switch_buffers()
+        return true
     elseif M.exists(new) then
         vim.notify(new .. ' exists, use force to override it', 'ERROR', { title = 'Rename' })
     end
@@ -575,7 +593,7 @@ function M.skeleton_filename(opts)
         opts = { opts }
     end
 
-    local buf = vim.fn.expand '%'
+    local buf = vim.api.nvim_buf_get_name(0)
     if buf == '' or M.is_file(buf) then
         return
     end
@@ -648,6 +666,34 @@ function M.skeleton_filename(opts)
     end
 end
 
+function M.trimwhites(buf, range)
+    vim.validate {
+        buf = { buf, 'number', true },
+        range = { range, 'table', true },
+    }
+    assert(not range or #range == 2, debug.traceback 'range must be {start, end} format')
+    range = range or { 0, -1 }
+    buf = buf or nvim.get_current_buf()
+
+    local start_line = range[1]
+    local end_line = range[2]
+    local lines = nvim.buf.get_lines(buf, start_line, end_line, true)
+
+    for i = 1, #lines do
+        local line = lines[i]
+        if line ~= '' then
+            local s_row = (start_line + i) - 1
+            local e_row = (start_line + i) - 1
+
+            if line:find '%s+$' then
+                local s_col, e_col = line:find '%s+$'
+                s_col = s_col - 1
+                nvim.buf.set_text(buf, s_row, s_col, e_row, e_col, { '' })
+            end
+        end
+    end
+end
+
 function M.clean_file()
     if vim.b.editorconfig and vim.b.editorconfig.trim_trailing_whitespace ~= nil then
         return
@@ -677,38 +723,33 @@ function M.clean_file()
         return false
     end
 
-    local lines = nvim.buf.get_lines(0, 0, -1, true)
+    local range = { 0, -1 }
+    local buf = nvim.get_current_buf()
+    M.trimwhites(buf, range)
+
+    local lines = nvim.buf.get_lines(buf, range[1], range[2], true)
     local expandtab = vim.bo.expandtab
     local retab = false
-
     for i = 1, #lines do
         local line = lines[i]
         if line ~= '' then
-            local s_row = i - 1
-            local e_row = i - 1
-
-            if line:find '%s+$' then
-                local s_col = line:find '%s+$' - 1
-                local e_col = #line
-                nvim.buf.set_text(0, s_row, s_col, e_row, e_col, { '' })
-            end
-
             -- NOTE: Retab seems to be faster that set_(text/lines) API
-            if expandtab and line:match '^\t+' then
+            if (expandtab and line:match '^\t+') or (not expandtab and line:match '^ +') then
                 retab = true
-            elseif not expandtab and line:match '^ +' then
-                retab = true
+                break
             end
         end
     end
     if retab then
-        nvim.ex['retab!']()
+        vim.cmd.retab { bang = true }
     end
     return true
 end
 
 function M.decode_json(data)
-    assert(type(data) == type '' or type(data) == type {}, debug.traceback('Invalid Json data: ' .. vim.inspect(data)))
+    vim.validate {
+        data = { data, { 'string', 'table' } },
+    }
     if type(data) == type {} then
         data = table.concat(data, '\n')
     end
@@ -818,24 +859,44 @@ function M.find(filename, opts)
         return vim.fs.find(filename, opts)
     end
     -- TODO: Implement this for neovim < 0.8
-    error 'Not implemented yet'
+    error(debug.traceback 'Not implemented yet')
 end
 
-function M.chmod_exec()
-    local filename = vim.fn.expand '%'
+function M.is_executable(filename)
+    vim.validate {
+        filename = { filename, 'string' },
+    }
+    if M.is_file(filename) and require('sys').name ~= 'windows' then
+        local fileinfo = vim.loop.fs_stat(filename)
+        local filemode = fileinfo.mode - 32768
 
-    if not M.is_file(filename) or require('sys').name == 'windows' then
-        return
+        if bit.band(filemode, 0x40) ~= 0 then
+            return true
+        end
     end
+    return false
+end
 
-    local fileinfo = vim.loop.fs_stat(filename)
-    local filemode = fileinfo.mode - 32768
-    require('utils.files').chmod(filename, bit.bor(filemode, 0x48), 10)
+function M.chmod_exec(buf)
+    vim.validate {
+        buf = { buf, 'number', true },
+    }
+    local filename = vim.api.nvim_buf_get_name(buf or 0)
+    if not M.is_executable(filename) then
+        local fileinfo = vim.loop.fs_stat(filename)
+        local filemode = fileinfo.mode - 32768
+        M.chmod(filename, bit.bor(filemode, 0x48), 10)
+    end
 end
 
 function M.make_executable()
     local sys = require 'sys'
     if sys.name == 'windows' then
+        return
+    end
+
+    local filename = vim.api.nvim_buf_get_name(0)
+    if M.is_executable(filename) then
         return
     end
 
@@ -852,24 +913,17 @@ function M.make_executable()
         return
     end
 
-    local filename = vim.fn.expand '%'
-    if M.is_file(filename) then
-        local fileinfo = vim.loop.fs_stat(filename)
-        local filemode = fileinfo.mode - 32768
-
-        if fileinfo.uid ~= sys.user.uid or bit.band(filemode, 0x40) ~= 0 then
-            return
-        end
+    if not M.is_executable(filename) or not M.exists(filename) then
+        -- TODO(miochoa): Add support to pass buffer
+        nvim.autocmd.add('BufWritePost', {
+            group = 'MakeExecutable',
+            buffer = nvim.win.get_buf(0),
+            callback = function()
+                M.chmod_exec()
+            end,
+            once = true,
+        })
     end
-
-    nvim.autocmd.add('BufWritePost', {
-        group = 'MakeExecutable',
-        buffer = nvim.win.get_buf(0),
-        callback = function()
-            M.chmod_exec()
-        end,
-        once = true,
-    })
 end
 
 function M.find_in_dir(args)

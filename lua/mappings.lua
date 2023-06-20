@@ -96,9 +96,10 @@ function M.smart_quit()
     if #wins > 1 and vim.fn.expand '%' ~= '[Command Line]' then
         nvim.win.hide(0)
     elseif #tabs > 1 then
-        nvim.ex['tabclose!']()
+        vim.cmd.tabclose { bang = true }
     else
-        nvim.exec('quit!', false)
+        vim.cmd.quit { bang = true }
+        -- nvim.exec('quit!', false)
     end
 end
 
@@ -150,6 +151,7 @@ function M.bufkill(opts)
     for _, buf in pairs(nvim.list_bufs()) do
         if not nvim.buf.is_valid(buf) or (bang and not nvim.buf.is_loaded(buf)) then
             nvim.ex['bwipeout!'](buf)
+            vim.cmd.bwipeout { bang = true, args = { buf } }
             count = count + 1
         end
     end
@@ -209,7 +211,7 @@ function M.chmod(opts)
         vim.notify('Not a valid permissions mode: ' .. mode, 'ERROR', { title = 'Chmod' })
         return
     end
-    local filename = vim.fn.expand '%'
+    local filename = vim.api.nvim_buf_get_name(0)
     local chmod = utils.chmod
     if is_file(filename) then
         chmod(filename, mode)
@@ -222,21 +224,20 @@ function M.move_file(opts)
     local is_file = utils.is_file
     local is_dir = utils.is_dir
 
-    local new_path = opts.args
+    local location = opts.args
     local bang = opts.bang
 
-    local current_path = vim.fn.expand '%:p'
-
-    if is_file(current_path) and is_dir(new_path) then
-        new_path = new_path .. '/' .. vim.fn.fnamemodify(current_path, ':t')
+    local filename = vim.api.nvim_buf_get_name(0)
+    if is_file(filename) and is_dir(location) then
+        location = location .. '/' .. vim.fs.basename(filename)
     end
-    utils.rename(current_path, new_path, bang)
+    utils.rename(filename, location, bang)
 end
 
 function M.rename_file(opts)
-    local current_path = vim.fn.expand '%:p'
-    local current_dir = vim.fn.expand '%:h'
-    RELOAD('utils.files').rename(current_path, current_dir .. '/' .. opts.args, opts.bang)
+    local filename = vim.api.nvim_buf_get_name(0)
+    local dirname = vim.fs.dirname(filename)
+    RELOAD('utils.files').rename(filename, dirname .. '/' .. opts.args, opts.bang)
 end
 
 function M.find(opts)
@@ -317,7 +318,7 @@ function M.async_makeprg(opts)
     local cmd = ok and val or vim.o.makeprg
 
     if cmd:sub(#cmd, #cmd) == '%' then
-        cmd = cmd:gsub('%%', vim.fn.expand '%')
+        cmd = cmd:gsub('%%', vim.api.nvim_buf_get_name(0))
     end
 
     cmd = cmd .. table.concat(args, ' ')
@@ -585,8 +586,7 @@ function M.repl(opts)
     end
 
     local direction = vim.opt.splitbelow:get() and 'botright' or 'topleft'
-    -- DEPRECATED: 0.9
-    vim.api.nvim_exec(direction .. ' 20new', false)
+    vim.cmd { cmd = 'new', range = { 20 }, mods = { split = direction } }
 
     local win = vim.api.nvim_get_current_win()
 
@@ -778,7 +778,7 @@ function M.swap_window()
             nvim.win.set_buf(0, nvim.t.swap_base_buf)
             nvim.win.set_buf(nvim.t.swap_base_win, swap_new_buf)
             nvim.win.set_cursor(0, nvim.t.swap_cursor)
-            nvim.ex['normal!'] 'zz'
+            vim.cmd.normal { bang = true, args = { 'zz' } }
         end
         nvim.t.swap_window = nil
         nvim.t.swap_cursor = nil
@@ -1084,6 +1084,45 @@ function M.move_line(down)
     vim.cmd.normal { bang = true, args = { '==' } }
     -- TODO: Make repeat work
     -- pcall(vim.fn['repeat#set'], cmd, count)
+end
+
+function M.vnc(hostname, opts)
+    vim.validate {
+        hostname = { hostname, 'string' },
+        opts = { opts, 'table', true },
+    }
+    local executable = RELOAD('utils.files').executable
+
+    local components = vim.split(hostname, ':')
+    hostname = components[1]
+    local port = components[2] or '1' -- '10'
+
+    if STORAGE.hosts[hostname] then
+        hostname = STORAGE.hosts[hostname]:match '^[%w._%d]+@(.+)$' or STORAGE.hosts[hostname]
+    end
+
+    if vim.env.SSH_CONNECTION then
+        RELOAD('utils.functions').send_osc52('vnc', hostname .. ':' .. port)
+    elseif executable 'vncviewer' then
+        local args = { hostname }
+        vim.list_extend(args, opts or {})
+        local vnc = RELOAD('jobs'):new {
+            cmd = 'vncviewer',
+            args = args,
+            qf = {
+                dump = false,
+                on_fail = {
+                    dump = true,
+                    jump = false,
+                    open = true,
+                },
+                title = 'VNC',
+            },
+        }
+        vnc:start()
+    else
+        vim.notify('Missing vncviewer executable', 'ERROR', { title = 'VNC' })
+    end
 end
 
 return M

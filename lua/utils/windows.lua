@@ -158,7 +158,7 @@ function M.progress(buffer, job)
     if scratch and job_obj then
         nvim.buf.set_lines(buffer, -2, -1, false, job_obj:output())
         nvim.win.call(vim.t.progress_win, function()
-            nvim.ex['normal!'] 'G'
+            vim.cmd.normal { bang = true, args = { 'G' } }
         end)
     end
 

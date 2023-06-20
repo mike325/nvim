@@ -16,9 +16,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install wget
           mkdir -p ~/.local/bin/
-          wget -O ~/.local/bin/screenfetch https://git.io/vaHfR
-          chmod +x ~/.local/bin/screenfetch
-          ~/.local/bin/screenfetch
+          wget https://raw.githubusercontent.com/dylanaraps/neofetch/master/neofetch && chmod +x ./neofetch && ./neofetch
       - name: Install dependencies
         run: |
           sudo apt-get install -y \

@@ -57,6 +57,18 @@ parser_config.org = {
 --     table.insert(languages, 'org')
 -- end
 
+local cpp_tools = vim.F.npcall(require, 'nt-cpp-tools')
+if cpp_tools then
+    cpp_tools.setup {
+        preview = {
+            quit = '<ESC>', -- optional keymapping for quit preview
+            accept = '<CR>', -- optional keymapping for accept preview
+        },
+        header_extension = 'hpp', -- optional
+        source_extension = 'cpp', -- optional
+    }
+end
+
 treesitter.setup {
     ensure_installed = 'all',
     indent = {
@@ -202,13 +214,6 @@ treesitter.setup {
                 goto_previous_usage = '<A-N>',
                 -- list_definitions_toc = "<A-t>",
             },
-        },
-    },
-    nt_cpp_tools = {
-        enable = true,
-        preview = {
-            quit = '<ESC>', -- optional keymapping for quit preview
-            accept = '<CR>', -- optional keymapping for accept preview
         },
     },
     markid = { enable = false },

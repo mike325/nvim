@@ -18,9 +18,7 @@ jobs:
       - name: OS Info
         run: |
           brew install shellcheck
-          wget -O screenfetch-dev https://git.io/vaHfR
-          chmod +x screenfetch-dev
-          ./screenfetch-dev
+          wget https://raw.githubusercontent.com/dylanaraps/neofetch/master/neofetch && chmod +x ./neofetch && ./neofetch
       - name: Fetch script
         run: |
           curl -OL https://raw.githubusercontent.com/Mike325/dotfiles/master/install.sh

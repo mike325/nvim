@@ -230,4 +230,11 @@ return {
             sn(nil, {t' if ', i(1, 'condition') }),
         }),
     })),
+    s('elif', fmt([[
+    elif {}:
+    {}
+    ]],{
+        i(1, 'condition'),
+        d(2, saved_text, {}, {user_args = {{text = 'pass', indent = true}}}),
+    })),
 }

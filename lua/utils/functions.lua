@@ -93,6 +93,18 @@ icons.message = icons.hint
 icons.warning = icons.warn
 icons.information = icons.info
 
+function M.send_osc52(name, val)
+    local b64 = RELOAD('utils.strings').base64_encode(val)
+    local seq
+    if vim.env.TMUX then
+        seq = '\x1bPtmux;\x1b\x1b]1337;SetUserVar=%s=%s\b\x1b\\'
+    else
+        seq = '\x1b]1337;SetUserVar=%s=%s\b'
+    end
+    local stdout = vim.loop.new_tty(1, false)
+    stdout:write(seq:format(name, b64))
+end
+
 function M.get_icon(icon)
     return icons[icon]
 end
@@ -250,21 +262,6 @@ function M.opfun_comment(_, visual)
     vim.o.selection = select_save
 end
 
-function M.get_git_dir(callback)
-    vim.validate { callback = { callback, 'function' } }
-    assert(executable 'git', 'Missing git')
-
-    local j = RELOAD('jobs'):new {
-        cmd = { 'git', 'rev-parse', '--git-dir' },
-        silent = true,
-        callbacks_on_success = function(job)
-            local dir = table.concat(job:output(), '')
-            pcall(callback, require('utils.files').realpath(dir))
-        end,
-    }
-    j:start()
-end
-
 function M.external_formatprg(args)
     vim.validate {
         args = { args, 'table' },
@@ -405,21 +402,26 @@ function M.open(uri)
 
     table.insert(args, uri)
 
-    local open = RELOAD('jobs'):new {
-        cmd = cmd,
-        args = args,
-        qf = {
-            dump = false,
-            on_fail = {
-                dump = true,
-                jump = false,
-                open = true,
+    -- NOTE: Attempt to open using wezterm OSC functionality
+    if vim.env.SSH_CONNECTION then
+        M.send_osc52('open', '"' .. uri .. '"')
+    else
+        local open = RELOAD('jobs'):new {
+            cmd = cmd,
+            args = args,
+            qf = {
+                dump = false,
+                on_fail = {
+                    dump = true,
+                    jump = false,
+                    open = true,
+                },
+                context = 'Open',
+                title = 'Open',
             },
-            context = 'Open',
-            title = 'Open',
-        },
-    }
-    open:start()
+        }
+        open:start()
+    end
 end
 
 -- TODO: Improve python folding text
@@ -549,7 +551,7 @@ function M.project_config(event)
         return vim.b.project_root
     end
 
-    local is_git = M.is_git_repo(root)
+    local is_git = RELOAD('utils.git').is_git_repo(root)
     local git_dir = is_git and git_dirs[cwd] or nil
     -- local filetype = vim.bo.filetype
     -- local buftype = vim.bo.buftype
@@ -563,7 +565,8 @@ function M.project_config(event)
 
     if is_git and not git_dir then
         -- TODO: This should trigger an autocmd to update alternates, tests and everything else with the correct root
-        M.get_git_dir(function(dir)
+        -- TODO: Add support for worktrees
+        RELOAD('utils.git').get_git_dir('.', function(dir)
             local project = vim.b.project_root
             project.git_dir = dir
             git_dirs[cwd] = dir
@@ -627,23 +630,6 @@ function M.find_project_root(path)
     end
 
     return not root and getcwd() or vim.fs.dirname(root)
-end
-
-function M.is_git_repo(root)
-    assert(type(root) == type '' and root ~= '', debug.traceback(([[Not a path: "%s"]]):format(root)))
-    if not executable 'git' then
-        return false
-    end
-
-    root = vim.fs.normalize(root)
-
-    local git = root .. '/.git'
-
-    if is_dir(git) or is_file(git) then
-        return true
-    end
-    local results = vim.fs.find('.git', { path = root, upward = true })
-    return #results > 0 and results[1] or false
 end
 
 function M.ignores(tool, excludes, lst)

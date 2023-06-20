@@ -23,7 +23,7 @@ function M.init(thread_args)
         end
     end
 
-    if type(thread_args) == type '' and thread_args ~= '' then
+    if thread_args and type(thread_args) == type '' and thread_args ~= '' then
         thread_args = vim.json.decode(thread_args)
 
         thread_args.args = thread_args.args or {}

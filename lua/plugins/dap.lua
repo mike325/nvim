@@ -5,6 +5,7 @@ local exepath = require('utils.files').exepath
 local getcwd = require('utils.files').getcwd
 local is_dir = require('utils.files').is_dir
 local is_file = require('utils.files').is_file
+local get_dirs = require('utils.files').get_dirs
 
 local is_windows = sys.name == 'windows'
 
@@ -48,15 +49,14 @@ end
 
 local vscode_extentions_dir = sys.home .. '/.vscode/extensions'
 if is_dir(vscode_extentions_dir) then
-    for _, extention in ipairs(require('utils.files').get_dirs(vscode_extentions_dir)) do
-        local ext_dir = vim.fs.basename(extention)
-        if ext_dir:match 'cpptools%-%d%.%d%.%d$' then
-            local exe = 'OpenDebugAD7'
+    for _, ext_dir in ipairs(vim.tbl_map(vim.fs.basename, get_dirs(vscode_extentions_dir))) do
+        if ext_dir:match 'cpptools' then
+            local debugger = 'OpenDebugAD7'
             if is_windows then
-                exe = exe .. '.exe'
+                debugger = debugger .. '.exe'
             end
 
-            cppdbg = ('%s/%s/debugAdapters/bin/%s'):format(vscode_extentions_dir, ext_dir, exe)
+            cppdbg = ('%s/%s/debugAdapters/bin/%s'):format(vscode_extentions_dir, ext_dir, debugger)
             if is_file(cppdbg) then
                 dap.adapters.cppdbg = {
                     id = 'cppdbg',
@@ -77,23 +77,25 @@ if lldb then
     }
 end
 
-dap.adapters.python = {
-    type = 'executable',
-    command = pythonPath(),
-    args = { '-m', 'debugpy.adapter' },
-}
+if executable 'python3' or executable 'python' then
+    dap.adapters.python = {
+        type = 'executable',
+        command = pythonPath(),
+        args = { '-m', 'debugpy.adapter' },
+    }
 
-dap.configurations.python = {
-    {
-        name = 'Launch debugpy',
-        type = 'python', -- the type here established the link to the adapter definition: `dap.adapters.python`
-        request = 'launch',
-        -- Options below are for debugpy, see
-        -- https://github.com/microsoft/debugpy/wiki/Debug-configuration-settings for supported options
-        program = '${file}', -- This configuration will launch the current file if used.
-        pythonPath = pythonPath,
-    },
-}
+    dap.configurations.python = {
+        {
+            name = 'Launch debugpy',
+            type = 'python', -- the type here established the link to the adapter definition: `dap.adapters.python`
+            request = 'launch',
+            -- Options below are for debugpy, see
+            -- https://github.com/microsoft/debugpy/wiki/Debug-configuration-settings for supported options
+            program = '${file}', -- This configuration will launch the current file if used.
+            pythonPath = pythonPath,
+        },
+    }
+end
 
 dap.configurations.cpp = {}
 if lldb then
