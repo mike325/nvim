@@ -121,4 +121,3 @@ if vim.env.TMUX_WINDOW then
         vim.fn.serverstart(socket)
     end
 end
-
