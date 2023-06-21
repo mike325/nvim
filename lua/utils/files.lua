@@ -47,10 +47,6 @@ end
 --     return path
 -- end
 
-if vim.json then
-    vim.json.encode_escape_forward_slash(false)
-end
-
 function M.exists(filename)
     vim.validate { filename = { filename, 'string' } }
     if filename == '' then
@@ -760,7 +756,9 @@ function M.encode_json(data)
     vim.validate {
         data = { data, 'table' },
     }
-    return vim.json.encode(data)
+    local json = vim.json.encode(data)
+    -- NOTE: Remove this once json:new works and expose the internals of cjson
+    return (json:gsub('\\/', '/'))
 end
 
 function M.read_json(filename)
