@@ -19,6 +19,16 @@ local function general_completion(arglead, _, _, options)
     end, results)
 end
 
+local function general_nodash_completion(arglead, _, _, options)
+    local split_components = require('utils.strings').split_components
+    local pattern = table.concat(split_components(arglead, '.'), '.*')
+    pattern = pattern:lower()
+    local results = vim.tbl_filter(function(opt)
+        return opt:lower():match(pattern) ~= nil
+    end, options) or {}
+    return results
+end
+
 local function json_keys_completion(arglead, cmdline, cursorpos, filename, funcs)
     funcs = funcs or {}
 
@@ -93,7 +103,7 @@ local completions = {
         for _, ns in pairs(vim.diagnostic.get_namespaces()) do
             table.insert(namespaces, ns.name)
         end
-        return general_completion(arglead, cmdline, cursorpos, namespaces)
+        return general_nodash_completion(arglead, cmdline, cursorpos, namespaces)
     end,
     background_jobs = function(arglead, cmdline, cursorpos)
         local jobs = {}
