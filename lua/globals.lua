@@ -1,5 +1,10 @@
 _G['RELOAD'] = function(pkg)
-    package.loaded[pkg] = nil
+    if vim.v.vim_did_enter == 1 then
+        package.loaded[pkg] = nil
+        if vim.loader and vim.loader.enabled then
+            vim.loader.reset(pkg)
+        end
+    end
     return require(pkg)
 end
 

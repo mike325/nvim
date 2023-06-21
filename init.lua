@@ -1,8 +1,12 @@
 -- luacheck: max line length 170
 local nvim = require 'nvim'
 
-if not nvim.has { 0, 7 } then
-    vim.api.nvim_err_writeln 'Neovim version is too old!! please use the legacy branch or the nvim-0.6 tag'
+if not nvim.has { 0, 8 } then
+    vim.api.nvim_err_writeln 'Neovim version is too old!! please use update it'
+end
+
+if vim.loader then
+    vim.loader.enable()
 end
 
 vim.g.loaded_2html_plugin = 1
@@ -117,3 +121,4 @@ if vim.env.TMUX_WINDOW then
         vim.fn.serverstart(socket)
     end
 end
+
