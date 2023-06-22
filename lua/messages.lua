@@ -86,11 +86,7 @@ else
         else
             local output
             if level and level ~= '' then
-                output = ('%s%s%s\n'):format(
-                    level_colors[level] or level_colors.INFO,
-                    msg,
-                    term_colors.reset_color
-                )
+                output = ('%s%s%s\n'):format(level_colors[level] or level_colors.INFO, msg, term_colors.reset_color)
             else
                 output = ('%s\n'):format(msg)
             end
