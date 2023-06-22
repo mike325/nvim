@@ -42,12 +42,7 @@ function M.normalize(path)
     return vim.fs.normalize(path)
 end
 
--- local function split_path(path)
---     path = require('utils.strings').split(M.normalize(path), M.separator())
---     return path
--- end
-
-if vim.json then
+if vim.json and vim.json.encode_escape_forward_slash then
     vim.json.encode_escape_forward_slash(false)
 end
 

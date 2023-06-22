@@ -723,7 +723,7 @@ function M.create_snapshot(opts)
     local ok, packer = pcall(require, 'packer')
     if ok then
         local date = os.date '%Y-%m-%d'
-        local raw_ver = nvim.version()
+        local raw_ver = vim.version()
         local version = table.concat({ raw_ver.major, raw_ver.minor, raw_ver.patch }, '.')
         local name = opts.args ~= '' and opts.args or 'clean'
         local snapshot = ('%s-nvim-%s-%s.json'):format(name, version, date)
