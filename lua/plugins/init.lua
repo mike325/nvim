@@ -108,7 +108,7 @@ return {
 --             return vim.fn.executable 'latexmk' == 1 and not vim.env.VIM_MIN and not vim.g.minimal
 --         end,
 --         setup = function()
---             require 'plugins.vimtex'
+--             require 'configs.vimtex'
 --         end,
 --         ft = { 'bib', 'tex', 'latex', 'bibtex' },
 --     }
@@ -147,7 +147,7 @@ return {
 --             vim.g.oscyank_silent = true
 --         end,
 --         config = function()
---             require 'plugins.oscyank'
+--             require 'configs.oscyank'
 --         end,
 --     }
 --
@@ -155,7 +155,7 @@ return {
 --         'windwp/nvim-autopairs',
 --         event = 'InsertEnter',
 --         config = function()
---             require 'plugins.pairs'
+--             require 'configs.pairs'
 --         end,
 --     }
 --
@@ -196,7 +196,7 @@ return {
 --             return not is_min and require('storage').has_version('git', { '2', '31', '0' })
 --         end,
 --         config = function()
---             require 'plugins.diffview'
+--             require 'configs.diffview'
 --             vim.keymap.set(
 --                 'n',
 --                 '<leader>D',
@@ -284,7 +284,7 @@ return {
 --             return not vim.env.VIM_MIN and not vim.g.minimal
 --         end,
 --         config = function()
---             require 'plugins.hop'
+--             require 'configs.hop'
 --         end,
 --     }
 --
@@ -293,7 +293,7 @@ return {
 --         commit = (vim.fn.has 'nvim-0.7' == 0 and 'db0e5192911a8bf9df2f2a45c4dab249d5cbf32c' or nil),
 --         run = ':TSUpdate',
 --         config = function()
---             require 'plugins.treesitter'
+--             require 'configs.treesitter'
 --         end,
 --         cond = function()
 --             local compiler
@@ -319,7 +319,7 @@ return {
 --     use {
 --         'danymat/neogen',
 --         config = function()
---             require 'plugins.neogen'
+--             require 'configs.neogen'
 --         end,
 --         cmd = { 'Neogen' },
 --         requires = 'nvim-treesitter/nvim-treesitter',
@@ -338,7 +338,7 @@ return {
 --     use {
 --         'nvim-telescope/telescope.nvim',
 --         config = function()
---             require 'plugins.telescope'
+--             require 'configs.telescope'
 --         end,
 --         requires = {
 --             { 'nvim-lua/plenary.nvim' },
@@ -351,7 +351,7 @@ return {
 --         'neovim/nvim-lspconfig',
 --         tag = (vim.fn.has 'nvim-0.7' == 0 and 'v0.1.3' or nil),
 --         config = function()
---             require 'plugins.lsp'
+--             require 'configs.lsp'
 --         end,
 --         after = 'telescope.nvim',
 --         requires = {
@@ -362,7 +362,7 @@ return {
 --     use {
 --         'L3MON4D3/LuaSnip',
 --         config = function()
---             require 'plugins.luasnip'
+--             require 'configs.luasnip'
 --         end,
 --     }
 --
@@ -382,7 +382,7 @@ return {
 --             { 'hrsh7th/cmp-cmdline' },
 --         },
 --         config = function()
---             require 'plugins.cmp'
+--             require 'configs.cmp'
 --         end,
 --         -- after = 'nvim-lspconfig',
 --     }
@@ -430,7 +430,7 @@ return {
 --     use {
 --         'numToStr/Comment.nvim',
 --         config = function()
---             require 'plugins.comments'
+--             require 'configs.comments'
 --         end,
 --     }
 --
@@ -447,7 +447,7 @@ return {
 --             vim.g.vimwiki_listsym_rejected = '✗'
 --         end,
 --         -- config = function()
---         --     require 'plugins.vimwiki'
+--         --     require 'configs.vimwiki'
 --         -- end,
 --     }
 --
@@ -465,7 +465,7 @@ return {
 --     use {
 --         'echasnovski/mini.nvim',
 --         config = function()
---             require 'plugins.mini'
+--             require 'configs.mini'
 --         end,
 --     }
 --
@@ -477,7 +477,7 @@ return {
 --             return not vim.env.VIM_MIN and not vim.g.minimal
 --         end,
 --         config = function()
---             require 'plugins.dap'
+--             require 'configs.dap'
 --         end,
 --         requires = {
 --             {
@@ -492,7 +492,7 @@ return {
 --     use {
 --         'nvim-lualine/lualine.nvim',
 --         config = function()
---             require 'plugins.lualine'
+--             require 'configs.lualine'
 --         end,
 --         requires = {
 --             { 'arkav/lualine-lsp-progress' },
@@ -590,7 +590,7 @@ return {
 --             return no_min and has_rg
 --         end,
 --         config = function()
---             require 'plugins.todos'
+--             require 'configs.todos'
 --         end,
 --         requires = {
 --             {
@@ -599,7 +599,7 @@ return {
 --                     return not vim.env.VIM_MIN and not vim.g.minimal
 --                 end,
 --                 config = function()
---                     require 'plugins.trouble'
+--                     require 'configs.trouble'
 --                 end,
 --             },
 --         },

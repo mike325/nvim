@@ -832,13 +832,13 @@ function M.spelllangs(lang)
 end
 
 function M.get_abbrs(language)
-    return require('plugins.abolish').abolish[language]
+    return require('configs.abolish').abolish[language]
 end
 
 function M.abolish(language)
     local current = vim.bo.spelllang
     local set_abbr = require('nvim.abbrs').set_abbr
-    local abolish = require('plugins.abolish').abolish
+    local abolish = require('configs.abolish').abolish
 
     if nvim.has.cmd 'Abolish' then
         if abolish[current] ~= nil then

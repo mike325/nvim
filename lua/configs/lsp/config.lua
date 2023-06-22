@@ -1,7 +1,6 @@
 local nvim = require 'nvim'
 
 local has_telescope, _ = pcall(require, 'telescope')
--- local servers = require 'plugins.lsp.servers'
 
 local builtin
 if has_telescope then

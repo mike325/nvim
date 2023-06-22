@@ -2,7 +2,7 @@ local nvim = require 'nvim'
 local get_icon = require('utils.functions').get_icon
 local get_separators = require('utils.functions').get_separators
 
-local section = RELOAD 'plugins.lualine.sections'
+local section = RELOAD 'configs.lualine.sections'
 
 -- TODO: Add support to live reload these functions
 local lualine = vim.F.npcall(require, 'lualine')

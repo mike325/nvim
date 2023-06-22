@@ -6,7 +6,7 @@ if pears then
         conf.expand_on_enter(false)
     end)
 elseif autopairs then
-    local ts_langs = require 'plugins.treesitter'
+    local ts_langs = require 'configs.treesitter'
     autopairs.setup {
         disable_filetype = { 'TelescopePrompt', 'log' },
         check_ts = type(ts_langs) == 'table',

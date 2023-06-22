@@ -27,7 +27,7 @@ if #ls.get_snippets 'c' == 0 then
     ls.add_snippets('c', require 'snippets.c')
 end
 
-local utils = RELOAD 'plugins.luasnip.utils'
+local utils = RELOAD 'configs.luasnip.utils'
 local saved_text = utils.saved_text
 local add_statement_and_include = utils.add_statement_and_include
 -- local get_comment = utils.get_comment

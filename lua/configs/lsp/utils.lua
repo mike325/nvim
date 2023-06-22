@@ -2,7 +2,7 @@ local sys = require 'sys'
 
 local executable = require('utils.files').executable
 local is_dir = require('utils.files').is_dir
-local langservers = require 'plugins.lsp.servers'
+local langservers = require 'configs.lsp.servers'
 
 local M = {}
 

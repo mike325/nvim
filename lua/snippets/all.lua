@@ -5,7 +5,7 @@ end
 
 local sys = require 'sys'
 
-local utils = RELOAD 'plugins.luasnip.utils'
+local utils = RELOAD 'configs.luasnip.utils'
 
 local s = ls.snippet
 -- local sn = ls.snippet_node
@@ -40,7 +40,7 @@ local function notes(note)
     end
 
     local is_in_comment = require('utils.treesitter').is_in_node 'comment'
-    return is_in_comment and note or RELOAD('plugins.luasnip.utils').get_comment(note)
+    return is_in_comment and note or RELOAD('configs.luasnip.utils').get_comment(note)
 end
 
 local return_value = utils.return_value

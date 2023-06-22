@@ -16,8 +16,6 @@ if vim.F.npcall(require, 'harpoon') then
     require('telescope').load_extension 'harpoon'
 end
 
--- local lsp_langs = require'plugins.lsp'
--- local ts_langs = require 'plugins.treesitter'
 local actions = require 'telescope.actions'
 -- local has_sqlite = sys.has_sqlite
 -- local extensions = {}

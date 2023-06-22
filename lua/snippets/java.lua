@@ -5,7 +5,7 @@ end
 
 local snippets = {}
 
-local clike = RELOAD 'plugins.luasnip.c_like'
+local clike = RELOAD 'configs.luasnip.c_like'
 for _, csnip in ipairs(clike) do
     local has_snip = false
     for _, snip in ipairs(snippets) do

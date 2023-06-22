@@ -862,7 +862,7 @@ function M.alternate(opts)
         return
     end
 
-    -- local found = RELOAD('plugins.lsp.utils').switch_source_header_splitcmd(bufnr, 'edit')
+    -- local found = RELOAD('configs.lsp.utils').switch_source_header_splitcmd(bufnr, 'edit')
     -- if found then
     --     return
     -- end

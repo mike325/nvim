@@ -351,7 +351,7 @@ function M.format(opts)
     local whole_file = last - first == nvim.buf.line_count(bufnr) or opts.whole_file
 
     local clients = vim.lsp.buf_get_clients(0)
-    local is_null_ls_formatting_enabled = require('plugins.lsp.config').is_null_ls_formatting_enabled
+    local is_null_ls_formatting_enabled = require('configs.lsp.config').is_null_ls_formatting_enabled
 
     for _, client in pairs(clients) do
         if whole_file and client.server_capabilities.documentFormattingProvider then

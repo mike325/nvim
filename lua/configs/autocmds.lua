@@ -203,7 +203,7 @@ nvim.autocmd.LspMappings = {
 
         local null_ls = vim.F.npcall(require, 'null-ls')
         if null_ls and client.name ~= 'null-ls' then
-            local null_configs = require 'plugins.lsp.null'
+            local null_configs = require 'configs.lsp.null'
 
             local ft = vim.bo.filetype
             local has_formatting = client.server_capabilities.documentFormattingProvider
@@ -216,7 +216,7 @@ nvim.autocmd.LspMappings = {
             end
         end
 
-        RELOAD('plugins.lsp.config').lsp_mappings(client, bufnr)
+        RELOAD('configs.lsp.config').lsp_mappings(client, bufnr)
     end,
 }
 
