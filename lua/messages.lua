@@ -1,5 +1,3 @@
-local get_icon = require('utils.functions').get_icon
-
 local lsp_sign = 'DiagnosticSign'
 local names = { 'error', 'hint', 'warn', 'info' }
 local levels = { 'Error', 'Hint', 'Warn', 'Info' }
@@ -12,6 +10,8 @@ end
 local has_notify, nvim_notify = pcall(require, 'notify')
 
 if has_notify and vim.env.NO_COOL_FONTS then
+    local get_icon = require('utils.functions').get_icon
+
     nvim_notify.setup {
         icons = {
             DEBUG = get_icon 'bug',
