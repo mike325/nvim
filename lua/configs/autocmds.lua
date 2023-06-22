@@ -168,7 +168,7 @@ end
 
 nvim.autocmd.add('User', {
     pattern = 'FlagsParsed',
-    callback = function(args)
+    callback = function()
         local extensions = {
             c = true,
             h = true,
@@ -223,7 +223,7 @@ nvim.autocmd.LspMappings = {
 nvim.autocmd.Alternate = {
     event = 'FileType',
     pattern = 'c,cpp',
-    callback = function(args)
+    callback = function()
         local bufname = vim.api.nvim_buf_get_name(0)
         -- NOTE: should this look in the local path instead of the whole directory?
         if bufname ~= '' and not vim.g.alternates[bufname] then
@@ -235,7 +235,18 @@ nvim.autocmd.Alternate = {
 nvim.autocmd.SSHParser = {
     event = 'BufWritePost',
     pattern = '*/.ssh/config,*\\.ssh\\config',
-    callback = function(args)
+    callback = function()
         RELOAD('threads.parse').ssh_hosts()
+    end,
+}
+
+nvim.autocmd.ApplyColorscheme = {
+    event = 'VimEnter',
+    pattern = '*',
+    callback = function()
+        local ok, _ = pcall(vim.cmd.colorscheme, 'catppuccin')
+        if not ok then
+            vim.cmd.colorscheme 'torte'
+        end
     end,
 }

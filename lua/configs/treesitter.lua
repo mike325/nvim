@@ -52,23 +52,6 @@ parser_config.org = {
     filetype = 'org',
 }
 
--- local orgmode = vim.F.npcall(require, 'orgmode')
--- if orgmode then
---     table.insert(languages, 'org')
--- end
-
-local cpp_tools = vim.F.npcall(require, 'nt-cpp-tools')
-if cpp_tools then
-    cpp_tools.setup {
-        preview = {
-            quit = '<ESC>', -- optional keymapping for quit preview
-            accept = '<CR>', -- optional keymapping for accept preview
-        },
-        header_extension = 'hpp', -- optional
-        source_extension = 'cpp', -- optional
-    }
-end
-
 treesitter.setup {
     ensure_installed = 'all',
     indent = {
@@ -237,11 +220,6 @@ treesitter.setup {
         -- },
     },
 }
-
-local context = vim.F.npcall(require, 'treesitter-context')
-if context then
-    context.setup {}
-end
 
 local fts = {}
 for lang, opts in pairs(parsers.list) do

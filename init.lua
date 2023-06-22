@@ -102,10 +102,7 @@ vim.cmd.packadd { args = { 'termdebug' }, bang = false }
 if nvim.executable 'git' and not is_bare then
     local is_setup = require 'setup'()
     if is_setup then
-        local ok, plugins = pcall(require, 'plugins')
-        if ok then
-            require('lazy').setup(plugins, {})
-        end
+        require('lazy').setup('plugins', {})
     end
 elseif not is_min and not is_bare then
     vim.notify('Missing git! cannot install plugins', 'WARN', { title = 'Nvim Setup' })
