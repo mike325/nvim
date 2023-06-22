@@ -479,13 +479,6 @@ nvim.command.set('AutoFormat', function(opts)
     RELOAD('mappings').autoformat(opts)
 end, { nargs = '?', complete = completions.toggle, bang = true, desc = 'Toggle Autoformat autocmd' })
 
-local ok, _ = pcall(require, 'packer')
-if ok then
-    nvim.command.set('CreateSnapshot', function(opts)
-        RELOAD('mappings').create_snapshot(opts)
-    end, { nargs = '?', desc = 'Creates a packer snapshot with a standard format' })
-end
-
 nvim.command.set('Wall', function(opts)
     RELOAD('mappings').wall(opts)
 end, { desc = 'Saves all visible windows' })

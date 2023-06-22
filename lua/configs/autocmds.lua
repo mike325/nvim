@@ -126,14 +126,6 @@ nvim.autocmd.CloseMenu = {
     command = 'if pumvisible() == 0 | pclose | endif',
 }
 
-nvim.autocmd.Reload = {
-    {
-        event = 'BufWritePost',
-        pattern = 'lua/plugins/init.lua',
-        command = 'source lua/plugins/init.lua | PackerCompile',
-    },
-}
-
 nvim.autocmd.FoldText = {
     event = 'FileType',
     pattern = '*',
