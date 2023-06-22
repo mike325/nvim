@@ -13,8 +13,9 @@ return {
             require 'configs.treesitter'
         end,
         cond = compiler ~= nil,
-        lazy = false,
-        priority = 1,
+        -- lazy = false,
+        -- priority = 1,
+        event = 'FileType',
         dependencies = {
             { 'nvim-treesitter/nvim-treesitter-refactor' },
             { 'nvim-treesitter/nvim-treesitter-textobjects' },

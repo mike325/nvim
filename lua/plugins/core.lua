@@ -49,6 +49,31 @@ return {
         cond = require('sys').has_sqlite,
         lazy = true,
     },
+    {
+        'tpope/vim-surround',
+        event = { 'CursorHold', 'CursorHoldI' },
+        init = function()
+            vim.g['surround_' .. vim.fn.char2nr '¿'] = '¿\r?'
+            vim.g['surround_' .. vim.fn.char2nr '?'] = '¿\r?'
+            vim.g['surround_' .. vim.fn.char2nr '¡'] = '¡\r!'
+            vim.g['surround_' .. vim.fn.char2nr '!'] = '¡\r!'
+            vim.g['surround_' .. vim.fn.char2nr ';'] = ':\r:'
+            vim.g['surround_' .. vim.fn.char2nr ':'] = ':\r:'
+            vim.g['surround_' .. vim.fn.char2nr 'q'] = [[``\r'']]
+        end,
+    },
+    {
+        'echasnovski/mini.nvim',
+        config = function()
+            require 'configs.mini'
+        end,
+        event = 'CursorHold',
+        cmd = {
+            'SessionSave',
+            'SessionLoad',
+            'SessionDelete',
+        },
+    },
 }
 
 -- packer.startup(function()
@@ -56,7 +81,6 @@ return {
 --     if has_compiler and has_python then
 --         use_rocks { 'luacheck', 'jsregexp', 'lua-yaml' }
 --     end
---
 --
 --     use {
 --         'chrisgrieser/nvim-various-textobjs',
@@ -104,20 +128,6 @@ return {
 --             require('colorizer').setup()
 --         end,
 --         event = { 'CursorHold', 'CursorMoved', 'InsertEnter' },
---     }
---
---     use {
---         'tpope/vim-surround',
---         event = 'VimEnter',
---         setup = function()
---             vim.g['surround_' .. vim.fn.char2nr '¿'] = '¿\r?'
---             vim.g['surround_' .. vim.fn.char2nr '?'] = '¿\r?'
---             vim.g['surround_' .. vim.fn.char2nr '¡'] = '¡\r!'
---             vim.g['surround_' .. vim.fn.char2nr '!'] = '¡\r!'
---             vim.g['surround_' .. vim.fn.char2nr ';'] = ':\r:'
---             vim.g['surround_' .. vim.fn.char2nr ':'] = ':\r:'
---             vim.g['surround_' .. vim.fn.char2nr 'q'] = [[``\r'']]
---         end,
 --     }
 --
 --     use {
@@ -298,13 +308,6 @@ return {
 --         -- config = function()
 --         --     require 'configs.vimwiki'
 --         -- end,
---     }
---
---     use {
---         'echasnovski/mini.nvim',
---         config = function()
---             require 'configs.mini'
---         end,
 --     }
 --
 --     use {
