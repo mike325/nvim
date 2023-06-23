@@ -1,7 +1,7 @@
 -- luacheck: max line length 170
 local nvim = require 'nvim'
 
-if not nvim.has { 0, 8 } then
+if not nvim.has { 0, 9 } then
     vim.api.nvim_err_writeln 'Neovim version is too old!! please use update it'
 end
 
@@ -59,8 +59,6 @@ require 'utils.ft_detect'
 require 'messages'
 require 'completions'
 require 'globals'
--- NOTE: I no longer use python plugins, no need to setup python remote provider
--- require('filetypes.python').pynvim_setup()
 
 local is_min = vim.env.VIM_MIN ~= nil or vim.g.minimal ~= nil
 local is_bare = vim.env.VIM_BARE ~= nil or vim.g.bare ~= nil
@@ -78,18 +76,6 @@ if nvim.executable 'git' and not is_bare then
     end
 elseif not is_min and not is_bare then
     vim.notify('Missing git! cannot install plugins', 'WARN', { title = 'Nvim Setup' })
-end
-
--- NOTE: Compatibility layer with nvim-0.8
-if not vim.fs then
-    vim.fs = {
-        basename = require('utils.files').basename,
-        normalize = require('utils.files').normalize_path, -- NOTE: These functions are not exactly equivalent
-        dir = require('utils.files').dir,
-        dirname = require('utils.files').dirname,
-        parents = require('utils.files').parents,
-        -- find = require'utils.files'.find,
-    }
 end
 
 require('threads.parse').ssh_hosts()

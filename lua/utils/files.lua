@@ -42,11 +42,6 @@ function M.normalize(path)
     return vim.fs.normalize(path)
 end
 
--- local function split_path(path)
---     path = require('utils.strings').split(M.normalize(path), M.separator())
---     return path
--- end
-
 function M.exists(filename)
     vim.validate { filename = { filename, 'string' } }
     if filename == '' then
