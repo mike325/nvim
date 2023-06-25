@@ -1,0 +1,100 @@
+return {
+    {
+        'vimwiki/vimwiki',
+        init = function()
+            vim.g.vimwiki_list = {
+                { path = '~/notes/', syntax = 'markdown', ext = '.md' },
+                { path = '~/work/', syntax = 'markdown', ext = '.md' },
+            }
+            vim.g.vimwiki_hl_headers = 1
+            vim.g.vimwiki_hl_cb_checked = 2
+            vim.g.vimwiki_listsyms = ' ○◐●✓'
+            vim.g.vimwiki_listsym_rejected = '✗'
+        end,
+        config = function() end,
+        ft = { 'markdown', 'wiki', 'vimwiki' },
+    },
+    {
+        'lervag/vimtex',
+        cond = vim.fn.executable 'latexmk' == 1 and not vim.env.VIM_MIN and not vim.g.minimal,
+        init = function()
+            require 'configs.vimtex'
+        end,
+        ft = { 'bib', 'tex', 'latex', 'bibtex' },
+    },
+    -- {
+    --     'norcalli/nvim-colorizer.lua',
+    --     config = function()
+    --         -- require('colorizer').setup()
+    --     end,
+    --     opts= {},
+    --     lazy = true,
+    --     -- event = {},
+    -- },
+    {
+        'Yggdroot/indentLine',
+        cond = not vim.env.VIM_MIN and not vim.g.minimal,
+        init = function()
+            vim.g.indentLine_fileTypeExclude = {
+                'Telescope',
+                'TelescopePrompt',
+                'TelescopeResults',
+                'log',
+                'help',
+                'packer',
+            }
+
+            vim.g.indentLine_bufTypeExclude = {
+                'terminal',
+                'man',
+                'nofile',
+            }
+
+            vim.g.indentLine_bufNameExclude = {
+                'term://.*',
+                'man://.*',
+            }
+        end,
+        event = 'VeryLazy',
+    },
+    {
+        'tommcdo/vim-lion',
+        cond = not vim.env.VIM_MIN and not vim.g.minimal,
+        config = function()
+            vim.g.lion_squeeze_spaces = 1
+        end,
+        event = 'VeryLazy',
+    },
+    {
+        'folke/todo-comments.nvim',
+        cond = function()
+            local no_min = vim.env.VIM_MIN == nil and vim.g.minimal == nil
+            local has_rg = vim.fn.executable 'rg' == 1
+            return no_min and has_rg
+        end,
+        config = function()
+            require 'configs.todos'
+        end,
+        lazy = true,
+        event = 'VeryLazy',
+    },
+    {
+        'folke/trouble.nvim',
+        cond = not vim.env.VIM_MIN and not vim.g.minimal,
+        config = function()
+            require 'configs.trouble'
+        end,
+        lazy = true,
+        event = 'VeryLazy',
+    },
+
+    {
+        'nvim-lualine/lualine.nvim',
+        config = function()
+            require 'configs.lualine'
+        end,
+        dependencies = {
+            { 'arkav/lualine-lsp-progress' },
+        },
+    },
+}

@@ -5,11 +5,15 @@ end
 return {
     {
         'tpope/vim-fugitive',
-        dependencies = {
-            { 'junegunn/gv.vim', cmd = 'GV' },
-        },
         cmd = { 'G' },
         event = { 'CursorHold', 'CursorHoldI' },
+    },
+    {
+        'junegunn/gv.vim',
+        cmd = 'GV',
+        dependencies = {
+            { 'tpope/vim-fugitive' },
+        },
     },
     {
         'sindrets/diffview.nvim',
@@ -39,12 +43,20 @@ return {
             on_attach = function(bufnr)
                 local mappings = {
                     ['n ]c'] = {
-                        "&diff ? ']c' : '<cmd>lua require\"gitsigns.actions\".next_hunk()<CR>'",
-                        { expr = true },
+                        function()
+                            if vim.opt.diff:get() then
+                                vim.cmd.normal { args = { ']c', bang = true } }
+                            end
+                            require('gitsigns.actions').next_hunk()
+                        end,
                     },
                     ['n [c'] = {
-                        "&diff ? '[c' : '<cmd>lua require\"gitsigns.actions\".prev_hunk()<CR>'",
-                        { expr = true },
+                        function()
+                            if vim.opt.diff:get() then
+                                vim.cmd.normal { args = { '[c', bang = true } }
+                            end
+                            require('gitsigns.actions').prev_hunk()
+                        end,
                     },
 
                     ['n =s'] = '<cmd>lua require"gitsigns".stage_hunk()<CR>',
@@ -64,7 +76,14 @@ return {
                 }
                 for lhs, rhs in pairs(mappings) do
                     local opts = { buffer = bufnr, noremap = true }
-                    vim.keymap.set(lhs:sub(1, 1), lhs:sub(3, #lhs), rhs[1], vim.tbl_extend('force', opts, rhs[2] or {}))
+                    local mapping
+                    if type(rhs) == type {} then
+                        mapping = rhs[1]
+                        opts = vim.tbl_extend('force', opts, rhs[2] or {})
+                    else
+                        mapping = rhs
+                    end
+                    vim.keymap.set(lhs:sub(1, 1), lhs:sub(3, #lhs), mapping, opts)
                 end
             end,
             -- current_line_blame = true,

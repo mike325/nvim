@@ -56,7 +56,6 @@ vim.opt.termguicolors = true
 vim.g.mapleader = ' '
 
 require 'utils.ft_detect'
-require 'messages'
 require 'completions'
 require 'globals'
 
@@ -105,3 +104,5 @@ if nvim.executable 'git' and not is_bare then
 elseif not is_min and not is_bare then
     vim.notify('Missing git! cannot install plugins', 'WARN', { title = 'Nvim Setup' })
 end
+
+require 'messages'
