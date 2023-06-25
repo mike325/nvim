@@ -5,7 +5,7 @@ end
 
 local nvim = require 'nvim'
 
-if not nvim.has { 0, 8 } then
+if not nvim.has { 0, 9 } then
     vim.api.nvim_err_writeln 'Neovim version is too old!! please use update it'
 end
 
@@ -59,8 +59,6 @@ require 'utils.ft_detect'
 require 'messages'
 require 'completions'
 require 'globals'
--- NOTE: I no longer use python plugins, no need to setup python remote provider
--- require('filetypes.python').pynvim_setup()
 
 local is_min = vim.env.VIM_MIN ~= nil or vim.g.minimal ~= nil
 local is_bare = vim.env.VIM_BARE ~= nil or vim.g.bare ~= nil

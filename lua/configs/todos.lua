@@ -31,7 +31,7 @@ todo.setup {
         WARN = { icon = get_icon 'warn', color = 'warning', alt = { 'WARNING', 'XXX', 'DEPRECATED' } },
         PERF = { icon = get_icon 'perf', color = 'hint', alt = { 'OPTIM', 'PERFORMANCE', 'OPTIMIZE' } },
         NOTE = { icon = get_icon 'note', color = 'hint', alt = { 'INFO' } },
-        TEST = { icon = get_icon 'test', color = 'test', alt = { 'TESTING', 'PASSED', 'FAILED' } },
+        TEST = { icon = get_icon 'test', color = 'test', alt = { 'WIP', 'TESTING', 'PASSED', 'FAILED' } },
     },
     search = {
         pattern = [[\b(KEYWORDS)(\(\w+\))?:]],
