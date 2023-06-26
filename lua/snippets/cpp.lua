@@ -462,4 +462,30 @@ return {
             i(2, '10'),
         })
     ),
+    s(
+        'find',
+        fmt([[std::{}({}.begin(), {}.end(), {})]], {
+            p(add_statement_and_include, 'find', 'algorithm'),
+            i(1, 'v'),
+            r(1),
+            i(2, 'n'),
+        })
+    ),
+    s(
+        'findi',
+        fmt([[std::{}({}.begin(), {}.end(), [](decltype(*{}.begin()) {}){{ return {}; }})]], {
+            p(add_statement_and_include, 'find_if', 'algorithm'),
+            i(1, 'v'),
+            r(1),
+            r(1),
+            i(2, 'it'),
+            i(3, 'true'),
+        })
+    ),
+    s(
+        'cau',
+        fmt([[const auto {};]], {
+            i(1, 'v'),
+        })
+    ),
 }
