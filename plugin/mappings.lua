@@ -448,25 +448,6 @@ end, {
     desc = 'Set the given compiler with preference on the custom compilers located in the after directory',
 })
 
--- nvim.command.set('CompilerExecute', function(args)
---     local makeprg = vim.opt_local.makeprg:get()
---     local efm = vim.opt_local.errorformat:get()
---
---     custom_compiler(args)
---
---     local cmd = vim.opt_local.makeprg:get()
---
---     async_execute {
---         cmd = cmd,
---         progress = false,
---         context = 'Compiler',
---         title = 'Compiler',
---     }
---
---     vim.opt_local.makeprg = makeprg
---     vim.opt_local.errorformat = efm
--- end, {nargs = 1, complete = 'compiler'})
-
 nvim.command.set('Reloader', function(opts)
     RELOAD('mappings').reload_configs(opts)
 end, {

@@ -23,21 +23,22 @@ function M.init(thread_args)
         end
     end
 
+    local args = thread_args
     if thread_args and type(thread_args) == type '' and thread_args ~= '' then
-        thread_args = vim.json.decode(thread_args)
+        args = vim.json.decode(thread_args)
 
-        thread_args.args = thread_args.args or {}
-        thread_args.context = thread_args.context or {}
-        thread_args.functions = thread_args.functions or {}
+        args.args = args.args or {}
+        args.context = args.context or {}
+        args.functions = args.functions or {}
 
-        if #thread_args.functions > 0 then
-            for k, v in pairs(thread_args.functions) do
-                thread_args.fucntions[k] = loadstring(v)
+        if next(args.functions) ~= nil then
+            for k, v in pairs(args.functions) do
+                args.functions[k] = loadstring(v)
             end
         end
     end
 
-    return thread_args
+    return args
 end
 
 function M.add_thread_context(opts)
