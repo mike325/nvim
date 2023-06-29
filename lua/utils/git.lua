@@ -1,7 +1,8 @@
-local executable = require('utils.files').executable
-
-if not executable 'git' then
-    return false
+if not vim.is_thread() then
+    local executable = require('utils.files').executable
+    if not executable 'git' then
+        return false
+    end
 end
 
 local M = {}
@@ -26,7 +27,7 @@ local function rm_pager(cmd)
 end
 
 local function get_git_dir(cmd)
-    if vim.b.project_root and vim.b.project_root.git_dir then
+    if vim.b and vim.b.project_root and vim.b.project_root.git_dir then
         return vim.list_extend(cmd or {}, { '--git-dir', vim.b.project_root.git_dir })
     end
     return {}
@@ -39,8 +40,15 @@ local function filter_empty(tbl)
 end
 
 local function exec_sync_gitcmd(cmd, gitcmd)
-    local ok, output = pcall(vim.fn.systemlist, cmd)
-    return ok and output or error(debug.traceback('Failed to execute: ' .. gitcmd .. ', ' .. output))
+    -- TODO: This is not a direct replacement, may need to use vim.system but need a cleanup first
+    if vim.is_thread() then
+        local git = io.popen(table.concat(cmd, ' '), 'r')
+        local output = git:read '*a'
+        return vim.split(output, '\n', { trimempty = true })
+    else
+        local ok, output = pcall(vim.fn.systemlist, cmd)
+        return ok and output or error(debug.traceback('Failed to execute: ' .. gitcmd .. ', ' .. output))
+    end
 end
 
 function M.get_git_cmd(gitcmd, args)
@@ -329,12 +337,7 @@ function M.is_git_repo(root)
     local is_file = require('utils.files').is_file
     local is_dir = require('utils.files').is_dir
 
-    if not executable 'git' then
-        return false
-    end
-
     root = vim.fs.normalize(root)
-
     local git = root .. '/.git'
 
     if is_dir(git) or is_file(git) then
@@ -406,6 +409,22 @@ function M.get_git_dir(path, callback)
         end,
     }
     git:start()
+end
+
+function M.get_branch(callback)
+    vim.validate { callback = { callback, 'function', true } }
+
+    local gitcmd = 'branch'
+    local args = {
+        '--show-current',
+    }
+    if not callback then
+        return exec_gitcmd(gitcmd, args)[1]
+    end
+
+    exec_gitcmd(gitcmd, args, function(branch)
+        callback(branch[1])
+    end)
 end
 
 M.exec = setmetatable({}, {
