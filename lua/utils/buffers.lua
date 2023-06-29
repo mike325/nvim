@@ -515,8 +515,8 @@ function M.open_changes(opts)
                 qfutils.dump_files(files, { open = true })
             elseif action == 'hunks' then
                 RELOAD('threads').queue_thread(RELOAD('threads.git').get_hunks, function(hunks)
-                    if #hunks > 0 then
-                        qfutils.set_list { items = hunks, title = 'OpenChanges', open = not qfutils.is_open() }
+                    if next(hunks) ~= nil then
+                        qfutils.set_list { items = hunks.items, title = 'OpenChanges', open = not qfutils.is_open() }
                     end
                 end, { revision = revision, files = files })
             elseif action == 'open' or action == '' then
