@@ -52,10 +52,7 @@ parser_config.org = {
     filetype = 'org',
 }
 
--- local orgmode = vim.F.npcall(require, 'orgmode')
--- if orgmode then
---     table.insert(languages, 'org')
--- end
+local parsers = require 'nvim-treesitter.parsers'
 
 local cpp_tools = vim.F.npcall(require, 'nt-cpp-tools')
 if cpp_tools then

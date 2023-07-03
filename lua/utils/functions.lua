@@ -609,9 +609,9 @@ function M.project_config(event)
         end
     end
 
-    local project = vim.fs.find('.project.lua', { upward = true, type = 'file' })[1]
+    local project = vim.fs.find({ '.project.lua', 'project.lua' }, { upward = true, type = 'file' })[1]
     if project then
-        vim.cmd.source(project)
+        vim.secure.read(project)
     end
 end
 

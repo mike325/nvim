@@ -60,6 +60,8 @@ if sys.name == 'windows' then
     vim.opt.backup = false
 end
 
+vim.opt.exrc = true
+
 -- vim.opt.swapfile = false
 -- vim.opt.backup = true
 -- vim.opt.writebackup = true
