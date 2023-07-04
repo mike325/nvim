@@ -131,6 +131,21 @@ local servers = {
             },
         },
         {
+            config = 'pylyzer',
+            exec = 'pylyzer',
+            cmd = { 'pylyzer', '--server' },
+            options = {
+                settings = {
+                    python = {
+                        checkOnType = false,
+                        diagnostics = true,
+                        inlayHints = true,
+                        smartCompletion = true,
+                    },
+                },
+            },
+        },
+        {
             exec = 'pylsp',
             options = {
                 cmd = {
