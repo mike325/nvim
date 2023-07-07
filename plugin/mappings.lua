@@ -755,4 +755,3 @@ if executable 'gh' then
         desc = 'Open all modified files in the current PR',
     })
 end
-
