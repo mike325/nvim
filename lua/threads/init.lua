@@ -21,6 +21,21 @@ function M.init(thread_args)
         if not vim.fs then
             vim.fs = require 'vim.fs'
         end
+
+        -- NOTE: this only spawns async works, which should be detatch, sync jobs
+        --       does not work because `vim.wait` is not avaialble on threads
+        if not vim.system then
+            local ok, system = pcall(require, 'vim._system')
+            if ok then
+                vim.system = function(cmd, opts, on_exit)
+                    if type(opts) == 'function' then
+                        on_exit = opts
+                        opts = nil
+                    end
+                    return system.run(cmd, opts, on_exit)
+                end
+            end
+        end
     end
 
     local args = thread_args

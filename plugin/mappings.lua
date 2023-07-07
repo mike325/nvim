@@ -632,20 +632,6 @@ end, {
     complete = completions.diagnostics_level,
 })
 
--- TODO: All this file list functions should be able to:
--- - List dump the files into the QF
--- - Open them in the background
--- - Open them in the forground setting the active buffer
-if executable 'gh' then
-    nvim.command.set('OpenPRFiles', function(opts)
-        RELOAD('utils.gh').get_pr_changes(opts)
-    end, {
-        nargs = '?',
-        complete = completions.qf_file_options,
-        desc = 'Open all modified files in the current PR',
-    })
-end
-
 if executable 'git' then
     nvim.command.set('OpenChanges', function(opts)
         RELOAD('utils.buffers').open_changes(opts)
@@ -734,3 +720,39 @@ vim.keymap.set('n', '<leader>c', function()
         end
     end)
 end, { noremap = true, desc = 'Copy different Buffer/File related stuff' })
+
+if executable 'gh' then
+    nvim.command.set('OpenPRFiles', function(opts)
+        local action = opts.args:gsub('%-', '')
+        RELOAD('utils.gh').get_pr_changes(opts, function(output)
+            local files = output.files
+            local revision = output.revision
+            local cwd = vim.pesc(require('utils.files').getcwd()) .. '/'
+            for _, f in ipairs(files) do
+                -- NOTE: using badd since `:edit` load every buffer and `bufadd()` set buffers as hidden
+                vim.cmd.badd((f:gsub('^' .. cwd, '')))
+            end
+            local qfutils = RELOAD 'utils.qf'
+            if action == 'qf' then
+                qfutils.dump_files(files, { open = true })
+            elseif action == 'hunks' then
+                RELOAD('threads').queue_thread(RELOAD('threads.git').get_hunks, function(hunks)
+                    if next(hunks) ~= nil then
+                        qfutils.set_list {
+                            items = hunks.items,
+                            title = 'OpenPRChanges',
+                            open = not qfutils.is_open(),
+                        }
+                    end
+                end, { revision = revision, files = files })
+            elseif action == 'open' or action == '' then
+                vim.api.nvim_win_set_buf(0, vim.fn.bufadd(files[1]))
+            end
+        end)
+    end, {
+        nargs = '?',
+        complete = completions.qf_file_options,
+        desc = 'Open all modified files in the current PR',
+    })
+end
+
