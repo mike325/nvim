@@ -240,35 +240,7 @@ packer.startup(function()
         requires = 'nvim-lua/plenary.nvim',
         config = function()
             require('gitsigns').setup {
-                keymaps = {
-                    -- Default keymap options
-                    noremap = true,
-                    buffer = true,
-
-                    ['n ]c'] = {
-                        expr = true,
-                        "&diff ? ']c' : '<cmd>lua require\"gitsigns.actions\".next_hunk()<CR>'",
-                    },
-                    ['n [c'] = {
-                        expr = true,
-                        "&diff ? '[c' : '<cmd>lua require\"gitsigns.actions\".prev_hunk()<CR>'",
-                    },
-
-                    ['n =s'] = '<cmd>lua require"gitsigns".stage_hunk()<CR>',
-                    ['v =s'] = '<cmd>lua require"gitsigns".stage_hunk({vim.fn.line("."), vim.fn.line("v")})<CR>',
-                    ['n =S'] = '<cmd>lua require"gitsigns".undo_stage_hunk()<CR>',
-                    ['n =u'] = '<cmd>lua require"gitsigns".reset_hunk()<CR>',
-                    ['v =u'] = '<cmd>lua require"gitsigns".reset_hunk({vim.fn.line("."), vim.fn.line("v")})<CR>',
-                    ['n =U'] = '<cmd>lua require"gitsigns".reset_buffer()<CR>',
-                    ['n =f'] = '<cmd>lua require"gitsigns".preview_hunk()<CR>',
-                    ['n =M'] = '<cmd>lua require"gitsigns".blame_line({full = false, ignore_whitespace = true})<CR>',
-
-                    -- Text objects
-                    ['o ih'] = ':<C-U>lua require"gitsigns.actions".select_hunk()<CR>',
-                    ['x ih'] = ':<C-U>lua require"gitsigns.actions".select_hunk()<CR>',
-                    ['o ah'] = ':<C-U>lua require"gitsigns.actions".select_hunk()<CR>',
-                    ['x ah'] = ':<C-U>lua require"gitsigns.actions".select_hunk()<CR>',
-                },
+                -- word_diff = true,
                 -- current_line_blame = true,
                 -- current_line_blame_opts = {
                 --     virt_text = true,
@@ -279,6 +251,57 @@ packer.startup(function()
                 -- current_line_blame_formatter_opts = {
                 --     relative_time = false,
                 -- },
+                on_attach = function(bufnr)
+                    local opts = {
+                        -- noremap = true,
+                        buffer = bufnr,
+                    }
+                    local keymaps = {
+                        [']c'] = {
+                            mode = 'n',
+                            mapping = function()
+                                if vim.opt_local.diff:get() then
+                                    vim.cmd.normal { bang = true, args = { ']c' } }
+                                else
+                                    require('gitsigns.actions').next_hunk()
+                                end
+                            end,
+                        },
+                        ['[c'] = {
+                            mode = 'n',
+                            mapping = function()
+                                if vim.opt_local.diff:get() then
+                                    vim.cmd.normal { bang = true, args = { '[c' } }
+                                else
+                                    require('gitsigns.actions').prev_hunk()
+                                end
+                            end,
+                        },
+                        ['=s'] = { mode = { 'n', 'v' }, mapping = '<cmd>lua require"gitsigns".stage_hunk()<CR>' },
+                        ['=S'] = { mode = 'n', mapping = '<cmd>lua require"gitsigns".undo_stage_hunk()<CR>' },
+                        ['=u'] = { mode = { 'n', 'v' }, mapping = '<cmd>lua require"gitsigns".reset_hunk()<CR>' },
+                        ['=U'] = { mode = 'n', mapping = '<cmd>lua require"gitsigns".reset_buffer()<CR>' },
+                        ['=f'] = { mode = 'n', mapping = '<cmd>lua require"gitsigns".preview_hunk()<CR>' },
+                        ['=M'] = {
+                            mode = 'n',
+                            mapping = '<cmd>lua require"gitsigns".blame_line{full=false, ignore_whitespace=true}<CR>',
+                        },
+
+                        -- Text objects
+                        ['ih'] = {
+                            mode = { 'o', 'x' },
+                            mapping = ':<C-U>lua require"gitsigns.actions".select_hunk()<CR>',
+                        },
+                        ['ah'] = {
+                            mode = { 'o', 'x' },
+                            mapping = ':<C-U>lua require"gitsigns.actions".select_hunk()<CR>',
+                        },
+                    }
+
+                    for lhs, rhs in pairs(keymaps) do
+                        vim.keymap.set(rhs.mode, lhs, rhs.mapping, opts)
+                    end
+                end,
             }
         end,
     }
