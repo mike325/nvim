@@ -109,9 +109,9 @@ vim.keymap.set('n', 'c#', 'm`#``cgN', noremap)
 vim.keymap.set('n', 'cg*', 'm`g*``cgn', noremap)
 vim.keymap.set('n', 'cg#', 'm`#``cgN', noremap)
 vim.keymap.set('x', 'c', [["cy/<C-r>c<CR>Ncgn]], noremap)
-vim.keymap.set({'n', 'x'}, '¿', '`', noremap)
-vim.keymap.set({'n', 'x'}, '¿¿', '``', noremap)
-vim.keymap.set({'n', 'x'}, '¡', '^', noremap)
+vim.keymap.set({ 'n', 'x' }, '¿', '`', noremap)
+vim.keymap.set({ 'n', 'x' }, '¿¿', '``', noremap)
+vim.keymap.set({ 'n', 'x' }, '¡', '^', noremap)
 
 vim.keymap.set('n', '<leader>p', '<C-^>', noremap)
 
