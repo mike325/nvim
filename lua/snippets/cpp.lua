@@ -57,7 +57,7 @@ local function smart_ptr(_, snip)
 end
 local function chrono_sleep(_, parent, old_state)
     local cpp = RELOAD 'utils.treesitter.cpp'
-    cpp.add_include('chono', 'sys')
+    cpp.add_include('chrono', 'sys')
     cpp.add_include('thread', 'sys')
 
     local nodes = {}
