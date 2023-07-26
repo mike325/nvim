@@ -680,8 +680,8 @@ end, { range = '%', desc = 'Alias to <,>s/\\s\\+$//g' })
 
 nvim.command.set('ParseSSHConfig', function(opts)
     local hosts = RELOAD('threads.parsers').sshconfig()
-    for host, addr in pairs(hosts) do
-        STORAGE.hosts[host] = addr
+    for host, attrs in pairs(hosts) do
+        STORAGE.hosts[host] = attrs
     end
 end, { desc = 'Parse SSH config' })
 

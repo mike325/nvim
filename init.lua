@@ -87,9 +87,9 @@ if require('utils.files').is_file(ssh_config) then
             require('threads.parse').ssh_hosts()
         else
             vim.notify(
-                'Something went on file watcher for ' .. fname .. '\n' .. err,
+                'Failed to parse sshconfig: ' .. fname .. '\n' .. err,
                 'ERROR',
-                { title = 'Watcher ' .. status }
+                { title = 'SSHWatcher ' .. status }
             )
             ssh_watcher:stop()
         end
