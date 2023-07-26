@@ -3,8 +3,8 @@ local M = {}
 function M.ssh_hosts(opts)
     local parsers = RELOAD 'threads.parsers'
     RELOAD('threads').queue_thread(parsers.sshconfig, function(hosts)
-        for host, addr in pairs(hosts) do
-            STORAGE.hosts[host] = addr
+        for host, attrs in pairs(hosts) do
+            STORAGE.hosts[host] = attrs
         end
     end, opts or {})
 end
