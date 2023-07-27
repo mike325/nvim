@@ -138,10 +138,12 @@ local annotations = {
     'warn',
     'bug',
     'improve',
+    'deprecated',
 }
 
 for _, annotation in ipairs(annotations) do
-    table.insert(general_snips, s(annotation, p(notes, annotation)))
+    local snip = #annotation <= 4 and annotation or annotation:sub(1, 4)
+    table.insert(general_snips, s(snip, p(notes, annotation)))
 end
 
 -- ls.add_snippets('all', general_snips, { key = 'all_init' })

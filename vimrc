@@ -1033,7 +1033,7 @@ nnoremap <silent> ]b :<C-U>exe "".(v:count ? v:count : "")."bnext"<CR>
 nnoremap <silent> n :call g:MappingsNiceNext('n')<cr>
 nnoremap <silent> N :call g:MappingsNiceNext('N')<cr>
 
-" " TODO: port quick quickfix/loclist toggle to viml
+" TODO: port quick quickfix/loclist toggle to viml
 " nnoremap <silent> =q :ERROR<cr>
 " nnoremap <silent> =l :ERROR<cr>
 

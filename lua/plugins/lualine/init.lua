@@ -122,9 +122,6 @@ lualine.setup {
                 end,
             },
             {
-                section.paste,
-            },
-            {
                 section.spell,
             },
         },

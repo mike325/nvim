@@ -63,10 +63,6 @@ function M.project_root()
     return cwd:gsub(sys.home, '~')
 end
 
-function M.paste()
-    return vim.opt_local.paste:get() and 'PASTE' or ''
-end
-
 function M.spell()
     if vim.opt_local.spell:get() then
         local lang = vim.opt_local.spelllang:get()[1] or 'en'
