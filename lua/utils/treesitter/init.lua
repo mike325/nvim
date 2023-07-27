@@ -93,9 +93,48 @@ function M.is_in_node(node, range, buf)
     return false
 end
 
-function M.list_nodes(query, buf)
+function M.get_list_nodes(root_node, tsquery, text, buf)
     vim.validate {
-        query = { query, 'string' },
+        root_node = { root_node, { 'userdata', 'table' } },
+        tsquery = { tsquery, 'string' },
+        text = { text, 'boolean', true },
+        buf = { buf, 'number', true },
+    }
+
+    buf = buf or vim.api.nvim_get_current_buf()
+
+    local ok, parser = pcall(vim.treesitter.get_parser, buf)
+    if not ok then
+        return {}
+    end
+
+    local langtree = parser:language_for_range{ root_node:range() }
+    local ts_lang = langtree:lang()
+
+    -- DEPRECATED: vim.treesitter.(parse_query/query.parse_query/get_node_...) in 0.9
+    local parse_query = vim.treesitter.query.parse or vim.treesitter.query.parse_query
+    local get_node_text = vim.treesitter.get_node_text or vim.treesitter.query.get_node_text
+
+    local nodes = {}
+    local query = parse_query(ts_lang, tsquery)
+    for _, match, _ in query:iter_matches(root_node, buf) do
+        for _, match_node in pairs(match) do
+            local lbegin, _, lend, _ = unpack(M.get_vim_range({ match_node:range() }, buf))
+            if text then
+                local name = get_node_text(match_node, buf)
+                table.insert(nodes, { name, lbegin, lend })
+            else
+                table.insert(nodes, match_node)
+            end
+        end
+    end
+
+    return nodes
+end
+
+function M.list_buf_nodes(tsquery, buf)
+    vim.validate {
+        tsquery = { tsquery, 'string' },
         buf = { buf, 'number', true },
     }
 
@@ -110,28 +149,16 @@ function M.list_nodes(query, buf)
     local line = nvim.buf.get_lines(buf, buf_lines - 1, buf_lines, false)[1]
 
     local langtree = parser:language_for_range { 0, 0, buf_lines, #line }
-    local ts_lang = langtree:lang()
 
-    local result = {}
-    -- DEPRECATED: vim.treesitter.(parse_query/query.parse_query/get_node_...) in 0.9
-    local parse_func = vim.treesitter.query.parse or vim.treesitter.query.parse_query
-    local get_node_text = vim.treesitter.get_node_text or vim.treesitter.query.get_node_text
+    local results = {}
     for _, tree in ipairs(langtree:trees()) do
         local root = tree:root()
-
         if root then
-            local matches = parse_func(ts_lang, query)
-            for _, node, _ in matches:iter_matches(root, buf) do
-                for _, v in pairs(node) do
-                    local lbegin, _, lend, _ = unpack(M.get_vim_range({ v:range() }, buf))
-                    local name = get_node_text(v, buf)
-                    table.insert(result, { name, lbegin, lend })
-                end
-            end
+            results = vim.list_extend(results, M.get_list_nodes(root, tsquery, true, buf))
         end
     end
 
-    return result
+    return results
 end
 
 function M.get_current_node(node_name, range)

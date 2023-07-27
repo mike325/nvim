@@ -77,6 +77,16 @@ local function chrono_sleep(_, parent, old_state)
     return snip_node
 end
 
+local function get_move_copy_functions()
+    local class_node = RELOAD('utils.treesitter').get_current_class()
+    if not class_node then
+        vim.notify('Cursor is not inside a class', 'ERROR')
+        return {}
+    end
+
+    return RELOAD('utils.treesitter.cpp').get_class_operators(true)
+end
+
 local function get_classname()
     local class_node = RELOAD('utils.treesitter').get_current_class()
     if not class_node then
@@ -106,7 +116,8 @@ end
 
 local function rule_3_5(_, parent, old_state)
     local classname = get_classname()
-    local choice_nr = 1
+
+    local choice_nr = 0
     local function get_choice()
         choice_nr = choice_nr + 1
         return c(choice_nr, {
@@ -118,52 +129,95 @@ local function rule_3_5(_, parent, old_state)
 
     local nodes = {}
 
+    local operators = get_move_copy_functions()
+
+    local copy_contructor = false
+    local copy_oper = false
+    local move_contructor = false
+    local move_oper = false
+    local destructor = false
+
+    for _, method in ipairs(operators) do
+        local signature = vim.trim(method[1])
+        if signature:match('virtual ~' .. classname .. '%s*%(') or signature:match('~' .. classname .. '%s*%(') then
+            destructor = true
+        elseif signature:match(classname .. '%s*%(%w*%s*' .. classname .. '&&') then
+            move_contructor = true
+        elseif signature:match(classname .. '%s*&%s*operator=%(%w*%s*' .. classname .. '&&') then
+            move_oper = true
+        elseif signature:match(classname .. '%s*%(%w*%s*' .. classname .. '&') then
+            copy_contructor = true
+        elseif signature:match(classname .. '%s*&%s*operator=%(%w*%s*' .. classname .. '&') then
+            copy_oper = true
+        end
+    end
+
+    -- local space = false
     if parent.captures[1] ~= '' then
-        vim.list_extend(nodes, {
-            c(1, {
-                t { '' },
-                t { 'virtual ' },
-            }),
-            t { '~' },
-            t { classname },
-            t { '()' },
-            get_choice(),
-            t { ';', '' },
+        if not destructor then
+            choice_nr = choice_nr + 1
+            vim.list_extend(nodes, {
+                c(choice_nr, {
+                    t { '' },
+                    t { 'virtual ' },
+                }),
+                t { '~' },
+                t { classname },
+                t { '()' },
+                get_choice(),
+                t { ';' },
+            })
+        end
 
-            t { classname },
-            t { '(const ' },
-            t { classname },
-            t { '&)' },
-            get_choice(),
-            t { ';', '' },
+        if not copy_contructor then
+            vim.list_extend(nodes, {
+                t { '', '' },
+                t { classname },
+                t { '(const ' },
+                t { classname },
+                t { '&)' },
+                get_choice(),
+                t { ';' },
+            })
+        end
 
-            t { classname },
-            t { '& operator=(const ' },
-            t { classname },
-            t { '&)' },
-            r(choice_nr),
-            t { ';' },
-        })
+        if not copy_oper then
+            vim.list_extend(nodes, {
+                t { '', '' },
+                t { classname },
+                t { '& operator=(const ' },
+                t { classname },
+                t { '&)' },
+                r(choice_nr),
+                t { ';' },
+            })
+        end
     end
 
     if parent.captures[1] == '5' then
-        vim.list_extend(nodes, {
-            t { '', '' },
-            t { classname },
-            t { '(const ' },
-            t { classname },
-            t { '&&)' },
-            get_choice(),
-            t { ';', '' },
-        })
-        vim.list_extend(nodes, {
-            t { classname },
-            t { '& operator=(const ' },
-            t { classname },
-            t { '&&)' },
-            r(choice_nr),
-            t { ';' },
-        })
+        if not move_contructor then
+            vim.list_extend(nodes, {
+                t { '', '' },
+                t { classname },
+                t { '(const ' },
+                t { classname },
+                t { '&&)' },
+                get_choice(),
+                t { ';' },
+            })
+        end
+
+        if not move_oper then
+            vim.list_extend(nodes, {
+                t { '', '' },
+                t { classname },
+                t { '& operator=(const ' },
+                t { classname },
+                t { '&&)' },
+                r(choice_nr),
+                t { ';' },
+            })
+        end
     end
 
     local snip_node = sn(nil, nodes)
