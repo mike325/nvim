@@ -53,7 +53,7 @@ function M.get_class_operators(text)
 
     local functions = {}
 
-    local ts_utils = RELOAD('utils.treesitter')
+    local ts_utils = RELOAD 'utils.treesitter'
     local class_node = ts_utils.get_current_class()
     if not class_node then
         vim.notify('Cursor is not inside a class', 'ERROR')

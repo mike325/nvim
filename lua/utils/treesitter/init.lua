@@ -185,7 +185,7 @@ function M.get_list_nodes(root_node, tsquery, text, buf)
         return {}
     end
 
-    local langtree = parser:language_for_range{ root_node:range() }
+    local langtree = parser:language_for_range { root_node:range() }
     local ts_lang = langtree:lang()
 
     -- DEPRECATED: vim.treesitter.(parse_query/query.parse_query/get_node_...) in 0.9
