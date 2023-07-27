@@ -12,15 +12,6 @@ if null_ls then
     table.insert(null_sources, null_ls.builtins.code_actions.gitsigns)
 end
 
--- local original_set_virtual_text = vim.diagnostic.set_virtual_text
--- local set_virtual_text_custom = function(lsp_diagnostics, bufnr, client_id, sign_ns, opts)
---     opts = opts or {}
---     -- show all messages that are Warning and above (Warning, Error)
---     opts.severity_limit = 'Error'
---     original_set_virtual_text(lsp_diagnostics, bufnr, client_id, sign_ns, opts)
--- end
--- vim.diagnostic.set_virtual_text = set_virtual_text_custom
-
 local lsp_configs = require 'plugins.lsp.servers'
 
 vim.lsp.protocol.CompletionItemKind = {
