@@ -135,7 +135,7 @@ vim.opt.autowriteall = true
 vim.opt.fileencoding = 'utf-8'
 
 -- DEPRECATED: no longer available in 0.10
-if not nvim.has {0, 10} then
+if not nvim.has { 0, 10 } then
     vim.opt.pastetoggle = '<f3>'
 end
 
