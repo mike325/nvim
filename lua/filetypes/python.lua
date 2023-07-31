@@ -136,53 +136,56 @@ end
 
 function M.setup()
     if not executable 'python3' and not executable 'python' then
-        -- NOTE: python is not installed, skip path and mappings setup
         return
     end
+
+    vim.validate {
+        python_path = { vim.b.python_path, { 'string', 'table' }, true },
+    }
 
     if not plugins['vim-apathy'] then
         local buf = nvim.get_current_buf()
         local merge_uniq_list = require('utils.tables').merge_uniq_list
 
-        if not vim.b.python_path then
-            -- local pypath = {}
-            local pyprog = vim.g.python3_host_prog or vim.g.python_host_prog
-
-            if not pyprog then
-                pyprog = executable 'python3' and 'python3' or 'python'
-            end
-
-            local get_path = RELOAD('jobs'):new {
-                cmd = pyprog,
-                args = { '-c', 'import sys; print(",".join(sys.path), flush=True)' },
-                silent = true,
-                callbacks_on_success = function(job)
-                    -- NOTE: output is an array of stdout lines, we must join the array in a str
-                    --       split it into a single array
-                    local output = vim.split(table.concat(job:output(), ','), ',')
-                    -- BUG: No idea why this fails
-                    -- local path = vim.split(vim.api.nvim_buf_get_option(buf, 'path'), ',')
-                    local path = vim.opt_local.path:get()
-                    if type(path) == type '' then
-                        path = vim.split(path, ',')
-                    end
-                    merge_uniq_list(path, output)
-                    vim.bo[buf].path = table.concat(path, ',')
-                end,
-            }
-            get_path:start()
-        else
-            assert(
-                type(vim.b.python_path) == type '' or type(vim.b.python_path) == type {},
-                debug.traceback 'b:python_path must be either a string or list'
-            )
-            if type(vim.b.python_path) == type '' then
-                vim.b.python_path = vim.split(vim.b.python_path, ',')
-            end
-            local path = vim.split(vim.bo[buf].path, ',')
-            merge_uniq_list(path, vim.b.python_path)
-            vim.bo[buf].path = table.concat(path, ',')
+        local pyprog
+        local shebang = vim.api.nvim_buf_get_lines(buf, 0, 1, true)[1]
+        if shebang and shebang:match '^#!' then
+            pyprog = vim.split((shebang:gsub('^#!', '')), ' ', { trimempty = true })
         end
+
+        if not pyprog then
+            pyprog = executable 'python3' and { 'python3' } or { 'python' }
+        end
+
+        local cmd = pyprog
+        cmd = vim.list_extend(cmd, { '-c', 'import sys; print(",".join(sys.path))' })
+
+        local get_path = RELOAD('jobs'):new {
+            cmd = cmd,
+            silent = true,
+            callbacks_on_success = function(job)
+                -- NOTE: output is an array of stdout lines, we must join the array in a str
+                --       split it into a single array
+                local output = vim.split(table.concat(job:output(), ','), ',')
+                -- BUG: No idea why this fails
+                -- local path = vim.split(vim.api.nvim_buf_get_option(buf, 'path'), ',')
+                local path = vim.opt_local.path:get()
+                if type(path) == type '' then
+                    path = vim.split(path, ',')
+                end
+                path = merge_uniq_list(path, output)
+
+                if vim.b.python_path then
+                    if type(vim.b.python_path) == type '' then
+                        vim.b.python_path = vim.split(vim.b.python_path, ',')
+                    end
+                    path = merge_uniq_list(path, vim.b.python_path)
+                end
+
+                vim.bo[buf].path = table.concat(path, ',')
+            end,
+        }
+        get_path:start()
     end
 
     nvim.command.set('Execute', function(cmd_opts)

@@ -96,8 +96,8 @@ if not vim.g.started_by_firenvim then
     end
 end
 
-local component_separators = vim.env.NO_COOL_FONTS == nil and get_separators 'parenthesis' or get_icon 'bar'
-local section_separators = vim.env.NO_COOL_FONTS == nil and get_separators 'circle' or ''
+local component_separators = vim.env.NO_COOL_FONTS == nil and get_separators 'tag' or get_icon 'bar'
+local section_separators = vim.env.NO_COOL_FONTS == nil and get_separators 'arrow' or ''
 
 lualine.setup {
     options = {
@@ -120,9 +120,6 @@ lualine.setup {
                     end
                     return str:sub(1, 1)
                 end,
-            },
-            {
-                section.paste,
             },
             {
                 section.spell,

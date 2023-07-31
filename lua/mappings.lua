@@ -470,7 +470,9 @@ function M.remote_file(host, send)
         return
     end
 
-    host = STORAGE.hosts[host] or host
+    if STORAGE.hosts[host] then
+        host = STORAGE.hosts[host].hostname
+    end
 
     local cmd = M.remote_cmd(host, send)
     local sync = RELOAD('jobs'):new {
@@ -1081,7 +1083,7 @@ function M.vnc(hostname, opts)
     local port = components[2] or '1' -- '10'
 
     if STORAGE.hosts[hostname] then
-        hostname = STORAGE.hosts[hostname]:match '^[%w._%d]+@(.+)$' or STORAGE.hosts[hostname]
+        hostname = STORAGE.hosts[hostname].hostname
     end
 
     if vim.env.SSH_CONNECTION then

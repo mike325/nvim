@@ -25,7 +25,7 @@ syn keyword LogPass  start START started STARTED
 
 syn keyword LogBool  true false TRUE FALSE True False
 
-syn region LogString start=+"\|'+ end=+"\|'+
+syn region LogString start=+"+ end=+"+
 
 hi def link LogError DiagnosticError
 hi def link LogWarn  DiagnosticWarn

@@ -9,7 +9,9 @@ function M.find(thread_args)
 
     local target
     if functions.filter then
-        target = functions.filter
+        target = function(name, path)
+            return functions.filter(name, path, thread_args)
+        end
     else
         -- TODO: Add support to match paths
         target = args.target

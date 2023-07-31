@@ -113,6 +113,21 @@ local servers = {
     },
     python = {
         {
+            config = 'pylyzer',
+            exec = 'pylyzer',
+            cmd = { 'pylyzer', '--server' },
+            options = {
+                settings = {
+                    python = {
+                        checkOnType = false,
+                        diagnostics = true,
+                        inlayHints = true,
+                        smartCompletion = true,
+                    },
+                },
+            },
+        },
+        {
             config = 'pyright',
             exec = 'pyright-langserver',
             cmd = { 'pyright-langserver', '--stdio' },

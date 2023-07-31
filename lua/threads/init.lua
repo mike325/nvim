@@ -21,23 +21,39 @@ function M.init(thread_args)
         if not vim.fs then
             vim.fs = require 'vim.fs'
         end
-    end
 
-    if thread_args and type(thread_args) == type '' and thread_args ~= '' then
-        thread_args = vim.json.decode(thread_args)
-
-        thread_args.args = thread_args.args or {}
-        thread_args.context = thread_args.context or {}
-        thread_args.functions = thread_args.functions or {}
-
-        if #thread_args.functions > 0 then
-            for k, v in pairs(thread_args.functions) do
-                thread_args.fucntions[k] = loadstring(v)
+        -- NOTE: this only spawns async works, which should be detatch, sync jobs
+        --       does not work because `vim.wait` is not avaialble on threads
+        if not vim.system then
+            local ok, system = pcall(require, 'vim._system')
+            if ok then
+                vim.system = function(cmd, opts, on_exit)
+                    if type(opts) == 'function' then
+                        on_exit = opts
+                        opts = nil
+                    end
+                    return system.run(cmd, opts, on_exit)
+                end
             end
         end
     end
 
-    return thread_args
+    local args = thread_args
+    if thread_args and type(thread_args) == type '' and thread_args ~= '' then
+        args = vim.json.decode(thread_args)
+
+        args.args = args.args or {}
+        args.context = args.context or {}
+        args.functions = args.functions or {}
+
+        if next(args.functions) ~= nil then
+            for k, v in pairs(args.functions) do
+                args.functions[k] = loadstring(v)
+            end
+        end
+    end
+
+    return args
 end
 
 function M.add_thread_context(opts)

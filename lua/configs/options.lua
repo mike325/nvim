@@ -60,6 +60,8 @@ if sys.name == 'windows' then
     vim.opt.backup = false
 end
 
+vim.opt.exrc = true
+
 -- vim.opt.swapfile = false
 -- vim.opt.backup = true
 -- vim.opt.writebackup = true
@@ -132,7 +134,10 @@ vim.opt.autowrite = true
 vim.opt.autowriteall = true
 vim.opt.fileencoding = 'utf-8'
 
-vim.opt.pastetoggle = '<f3>'
+-- DEPRECATED: no longer available in 0.10
+if not nvim.has { 0, 10 } then
+    vim.opt.pastetoggle = '<f3>'
+end
 
 if vim.g.gonvim_running ~= nil then
     vim.opt.showmode = false

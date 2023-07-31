@@ -57,7 +57,7 @@ local function smart_ptr(_, snip)
 end
 local function chrono_sleep(_, parent, old_state)
     local cpp = RELOAD 'utils.treesitter.cpp'
-    cpp.add_include('chono', 'sys')
+    cpp.add_include('chrono', 'sys')
     cpp.add_include('thread', 'sys')
 
     local nodes = {}
@@ -77,9 +77,19 @@ local function chrono_sleep(_, parent, old_state)
     return snip_node
 end
 
+local function get_move_copy_functions()
+    local class_node = RELOAD('utils.treesitter').get_current_class()
+    if not class_node then
+        vim.notify('Cursor is not inside a class', 'ERROR')
+        return {}
+    end
+
+    return RELOAD('utils.treesitter.cpp').get_class_operators(true)
+end
+
 local function get_classname()
-    local class = RELOAD('utils.treesitter').get_current_class()
-    if not class then
+    local class_node = RELOAD('utils.treesitter').get_current_class()
+    if not class_node then
         vim.notify('Cursor is not inside a class', 'ERROR')
         return 'Class'
     end
@@ -90,21 +100,13 @@ local function get_classname()
 
     local buf = vim.api.nvim_get_current_buf()
 
-    local node
-    local pos = { class[2] - 1, class[3] - 1 }
-
     -- DEPRECATED: vim.treesitter.(parse_query/query.parse_query/get_node_...) in 0.9
     local parse_func = vim.treesitter.query.parse or vim.treesitter.query.parse_query
     local get_node_text = vim.treesitter.get_node_text or vim.treesitter.query.get_node_text
-    if vim.treesitter.get_node then
-        node = vim.treesitter.get_node { bufnr = buf, pos = pos }
-    else
-        node = vim.treesitter.get_node_at_pos(buf, pos[1], pos[2], {})
-    end
 
     local classname = ''
     local query = parse_func(vim.opt_local.filetype:get(), classname_query)
-    for _, capture, _ in query:iter_captures(node, buf) do
+    for _, capture, _ in query:iter_captures(class_node, buf) do
         -- NOTE: Should match just once
         classname = get_node_text(capture, buf)
     end
@@ -114,7 +116,8 @@ end
 
 local function rule_3_5(_, parent, old_state)
     local classname = get_classname()
-    local choice_nr = 1
+
+    local choice_nr = 0
     local function get_choice()
         choice_nr = choice_nr + 1
         return c(choice_nr, {
@@ -126,52 +129,95 @@ local function rule_3_5(_, parent, old_state)
 
     local nodes = {}
 
+    local operators = get_move_copy_functions()
+
+    local copy_contructor = false
+    local copy_oper = false
+    local move_contructor = false
+    local move_oper = false
+    local destructor = false
+
+    for _, method in ipairs(operators) do
+        local signature = vim.trim(method[1])
+        if signature:match('virtual ~' .. classname .. '%s*%(') or signature:match('~' .. classname .. '%s*%(') then
+            destructor = true
+        elseif signature:match(classname .. '%s*%(%w*%s*' .. classname .. '&&') then
+            move_contructor = true
+        elseif signature:match(classname .. '%s*&%s*operator=%(%w*%s*' .. classname .. '&&') then
+            move_oper = true
+        elseif signature:match(classname .. '%s*%(%w*%s*' .. classname .. '&') then
+            copy_contructor = true
+        elseif signature:match(classname .. '%s*&%s*operator=%(%w*%s*' .. classname .. '&') then
+            copy_oper = true
+        end
+    end
+
+    -- local space = false
     if parent.captures[1] ~= '' then
-        vim.list_extend(nodes, {
-            c(1, {
-                t { '' },
-                t { 'virtual ' },
-            }),
-            t { '~' },
-            t { classname },
-            t { '()' },
-            get_choice(),
-            t { ';', '' },
+        if not destructor then
+            choice_nr = choice_nr + 1
+            vim.list_extend(nodes, {
+                c(choice_nr, {
+                    t { '' },
+                    t { 'virtual ' },
+                }),
+                t { '~' },
+                t { classname },
+                t { '()' },
+                get_choice(),
+                t { ';' },
+            })
+        end
 
-            t { classname },
-            t { '(const ' },
-            t { classname },
-            t { '&)' },
-            get_choice(),
-            t { ';', '' },
+        if not copy_contructor then
+            vim.list_extend(nodes, {
+                t { '', '' },
+                t { classname },
+                t { '(const ' },
+                t { classname },
+                t { '&)' },
+                get_choice(),
+                t { ';' },
+            })
+        end
 
-            t { classname },
-            t { '& operator=(const ' },
-            t { classname },
-            t { '&)' },
-            r(choice_nr),
-            t { ';' },
-        })
+        if not copy_oper then
+            vim.list_extend(nodes, {
+                t { '', '' },
+                t { classname },
+                t { '& operator=(const ' },
+                t { classname },
+                t { '&)' },
+                r(choice_nr),
+                t { ';' },
+            })
+        end
     end
 
     if parent.captures[1] == '5' then
-        vim.list_extend(nodes, {
-            t { '', '' },
-            t { classname },
-            t { '(const ' },
-            t { classname },
-            t { '&&)' },
-            get_choice(),
-            t { ';', '' },
-        })
-        vim.list_extend(nodes, {
-            t { classname },
-            t { '& operator=(const ' },
-            t { classname },
-            t { '&&)' },
-            r(choice_nr),
-            t { ';' },
-        })
+        if not move_contructor then
+            vim.list_extend(nodes, {
+                t { '', '' },
+                t { classname },
+                t { '(const ' },
+                t { classname },
+                t { '&&)' },
+                get_choice(),
+                t { ';' },
+            })
+        end
+
+        if not move_oper then
+            vim.list_extend(nodes, {
+                t { '', '' },
+                t { classname },
+                t { '& operator=(const ' },
+                t { classname },
+                t { '&&)' },
+                r(choice_nr),
+                t { ';' },
+            })
+        end
     end
 
     local snip_node = sn(nil, nodes)
@@ -460,6 +506,32 @@ return {
         fmt([[std::this_thread::sleep_for(std::chrono::{}({}));]], {
             d(1, chrono_sleep, {}, {}),
             i(2, '10'),
+        })
+    ),
+    s(
+        'find',
+        fmt([[std::{}({}.begin(), {}.end(), {})]], {
+            p(add_statement_and_include, 'find', 'algorithm'),
+            i(1, 'v'),
+            r(1),
+            i(2, 'n'),
+        })
+    ),
+    s(
+        'findi',
+        fmt([[std::{}({}.begin(), {}.end(), [](decltype(*{}.begin()) {}){{ return {}; }})]], {
+            p(add_statement_and_include, 'find_if', 'algorithm'),
+            i(1, 'v'),
+            r(1),
+            r(1),
+            i(2, 'it'),
+            i(3, 'true'),
+        })
+    ),
+    s(
+        'cau',
+        fmt([[const auto {};]], {
+            i(1, 'v'),
         })
     ),
 }

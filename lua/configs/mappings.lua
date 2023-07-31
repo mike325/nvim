@@ -61,8 +61,7 @@ vim.keymap.set('n', '<leader>9', '9gt', noremap)
 vim.keymap.set('n', '<leader>0', '<cmd>tablast<CR>', noremap)
 vim.keymap.set('n', '<leader><leader>n', '<cmd>tabnew<CR>', noremap)
 
-vim.keymap.set('n', '&', '<cmd>&&<CR>', noremap)
-vim.keymap.set('x', '&', '<cmd>&&<CR>', noremap)
+vim.keymap.set({ 'n', 'x' }, '&', '<cmd>&&<CR>', noremap)
 
 vim.keymap.set('n', '/', "m'/", noremap)
 vim.keymap.set('n', 'g/', "m'/\\v", noremap)
@@ -110,12 +109,9 @@ vim.keymap.set('n', 'c#', 'm`#``cgN', noremap)
 vim.keymap.set('n', 'cg*', 'm`g*``cgn', noremap)
 vim.keymap.set('n', 'cg#', 'm`#``cgN', noremap)
 vim.keymap.set('x', 'c', [["cy/<C-r>c<CR>Ncgn]], noremap)
-vim.keymap.set('n', '¿', '`', noremap)
-vim.keymap.set('x', '¿', '`', noremap)
-vim.keymap.set('n', '¿¿', '``', noremap)
-vim.keymap.set('x', '¿¿', '``', noremap)
-vim.keymap.set('n', '¡', '^', noremap)
-vim.keymap.set('x', '¡', '^', noremap)
+vim.keymap.set({ 'n', 'x' }, '¿', '`', noremap)
+vim.keymap.set({ 'n', 'x' }, '¿¿', '``', noremap)
+vim.keymap.set({ 'n', 'x' }, '¡', '^', noremap)
 
 vim.keymap.set('n', '<leader>p', '<C-^>', noremap)
 
@@ -448,25 +444,6 @@ end, {
     desc = 'Set the given compiler with preference on the custom compilers located in the after directory',
 })
 
--- nvim.command.set('CompilerExecute', function(args)
---     local makeprg = vim.opt_local.makeprg:get()
---     local efm = vim.opt_local.errorformat:get()
---
---     custom_compiler(args)
---
---     local cmd = vim.opt_local.makeprg:get()
---
---     async_execute {
---         cmd = cmd,
---         progress = false,
---         context = 'Compiler',
---         title = 'Compiler',
---     }
---
---     vim.opt_local.makeprg = makeprg
---     vim.opt_local.errorformat = efm
--- end, {nargs = 1, complete = 'compiler'})
-
 nvim.command.set('Reloader', function(opts)
     RELOAD('mappings').reload_configs(opts)
 end, {
@@ -644,20 +621,6 @@ end, {
     complete = completions.diagnostics_level,
 })
 
--- TODO: All this file list functions should be able to:
--- - List dump the files into the QF
--- - Open them in the background
--- - Open them in the forground setting the active buffer
-if executable 'gh' then
-    nvim.command.set('OpenPRFiles', function(opts)
-        RELOAD('utils.gh').get_pr_changes(opts)
-    end, {
-        nargs = '?',
-        complete = completions.qf_file_options,
-        desc = 'Open all modified files in the current PR',
-    })
-end
-
 if executable 'git' then
     nvim.command.set('OpenChanges', function(opts)
         RELOAD('utils.buffers').open_changes(opts)
@@ -710,8 +673,8 @@ end, { range = '%', desc = 'Alias to <,>s/\\s\\+$//g' })
 
 nvim.command.set('ParseSSHConfig', function(opts)
     local hosts = RELOAD('threads.parsers').sshconfig()
-    for host, addr in pairs(hosts) do
-        STORAGE.hosts[host] = addr
+    for host, attrs in pairs(hosts) do
+        STORAGE.hosts[host] = attrs
     end
 end, { desc = 'Parse SSH config' })
 
@@ -746,3 +709,38 @@ vim.keymap.set('n', '<leader>c', function()
         end
     end)
 end, { noremap = true, desc = 'Copy different Buffer/File related stuff' })
+
+if executable 'gh' then
+    nvim.command.set('OpenPRFiles', function(opts)
+        local action = opts.args:gsub('%-', '')
+        RELOAD('utils.gh').get_pr_changes(opts, function(output)
+            local files = output.files
+            local revision = output.revision
+            local cwd = vim.pesc(require('utils.files').getcwd()) .. '/'
+            for _, f in ipairs(files) do
+                -- NOTE: using badd since `:edit` load every buffer and `bufadd()` set buffers as hidden
+                vim.cmd.badd((f:gsub('^' .. cwd, '')))
+            end
+            local qfutils = RELOAD 'utils.qf'
+            if action == 'qf' then
+                qfutils.dump_files(files, { open = true })
+            elseif action == 'hunks' then
+                RELOAD('threads').queue_thread(RELOAD('threads.git').get_hunks, function(hunks)
+                    if next(hunks) ~= nil then
+                        qfutils.set_list {
+                            items = hunks.items,
+                            title = 'OpenPRChanges',
+                            open = not qfutils.is_open(),
+                        }
+                    end
+                end, { revision = revision, files = files })
+            elseif action == 'open' or action == '' then
+                vim.api.nvim_win_set_buf(0, vim.fn.bufadd(files[1]))
+            end
+        end)
+    end, {
+        nargs = '?',
+        complete = completions.qf_file_options,
+        desc = 'Open all modified files in the current PR',
+    })
+end

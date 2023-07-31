@@ -39,8 +39,10 @@ local function notes(note)
         note = ('%s(%s): '):format(note:upper(), sys.username)
     end
 
-    local is_in_comment = require('utils.treesitter').is_in_node 'comment'
-    return is_in_comment and note or RELOAD('configs.luasnip.utils').get_comment(note)
+    if RELOAD('utils.treesitter').is_in_node 'comment' then
+        return note
+    end
+    return RELOAD('plugins.luasnip.utils').get_comment(note)
 end
 
 local return_value = utils.return_value
@@ -94,7 +96,7 @@ local function license(_, _, user_args)
         markdown = 1,
     }
 
-    if ft == '' or plain_fts[ft] or require('utils.treesitter').is_in_node 'string' then
+    if ft == '' or plain_fts[ft] or RELOAD('utils.treesitter').is_in_node 'string' then
         return actual_license
     end
     return get_comment(actual_license)
@@ -136,10 +138,12 @@ local annotations = {
     'warn',
     'bug',
     'improve',
+    'deprecated',
 }
 
 for _, annotation in ipairs(annotations) do
-    table.insert(general_snips, s(annotation, p(notes, annotation)))
+    local snip = #annotation <= 4 and annotation or annotation:sub(1, 4)
+    table.insert(general_snips, s(snip, p(notes, annotation)))
 end
 
 -- ls.add_snippets('all', general_snips, { key = 'all_init' })

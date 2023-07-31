@@ -299,7 +299,7 @@ function M.detect_indent(buf)
             if indent_str then
                 -- Use TS to avoid multiline strings and comments
                 -- We may need to fallback to lua pattern matching if TS is not available
-                if not has_ts or not is_in_node(blacklist, { idx - 1, #indent_str - 1, idx - 1, #line - 1 }) then
+                if not has_ts or not is_in_node(blacklist, { idx - 1, #indent_str + 1 }) then
                     -- NOTE: we may need to confirm tab indent with more than 1 line and avoid mix indent
                     if indent_str:match '^\t+$' then
                         expandtab = false
@@ -515,8 +515,8 @@ function M.open_changes(opts)
                 qfutils.dump_files(files, { open = true })
             elseif action == 'hunks' then
                 RELOAD('threads').queue_thread(RELOAD('threads.git').get_hunks, function(hunks)
-                    if #hunks > 0 then
-                        qfutils.set_list { items = hunks, title = 'OpenChanges', open = not qfutils.is_open() }
+                    if next(hunks) ~= nil then
+                        qfutils.set_list { items = hunks.items, title = 'OpenChanges', open = not qfutils.is_open() }
                     end
                 end, { revision = revision, files = files })
             elseif action == 'open' or action == '' then
