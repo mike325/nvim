@@ -7,46 +7,45 @@ for idx, level in ipairs(levels) do
     hl_group[names[idx]] = lsp_sign .. level
 end
 
-local has_notify, nvim_notify = pcall(require, 'notify')
-
-if has_notify then
-    local get_icon = require('utils.functions').get_icon
-    nvim_notify.setup {
-        icons = {
-            DEBUG = get_icon 'bug',
-            ERROR = get_icon 'error',
-            INFO = get_icon 'info',
-            TRACE = '✎',
-            WARN = get_icon 'warn',
-        },
-    }
-end
-
 local notify_backend
 local has_ui = #vim.api.nvim_list_uis() > 0
-if has_notify and has_ui then
-    notify_backend = nvim_notify
-elseif has_ui then
-    notify_backend = function(msg, level, opts)
-        if opts and opts.title then
-            msg = ('[%s]: %s'):format(opts.title, msg)
-        end
+if has_ui then
+    local nvim_notify = vim.F.npcall(require, 'notify')
 
-        local msg_hl = {
-            hl_group.error,
-            hl_group.warn,
-            hl_group.info,
-            hl_group.hint,
-            [0] = hl_group.error,
-            TRACE = hl_group.error,
-            ERROR = hl_group.error,
-            WARN = hl_group.warn,
-            WARNING = hl_group.warn,
-            INFO = hl_group.info,
-            DEBUG = hl_group.hint,
+    if nvim_notify then
+        local get_icon = require('utils.functions').get_icon
+        nvim_notify.setup {
+            icons = {
+                DEBUG = get_icon 'bug',
+                ERROR = get_icon 'error',
+                INFO = get_icon 'info',
+                TRACE = '✎',
+                WARN = get_icon 'warn',
+            },
         }
+        notify_backend = nvim_notify
+    else
+        notify_backend = function(msg, level, opts)
+            if opts and opts.title then
+                msg = ('[%s]: %s'):format(opts.title, msg)
+            end
 
-        vim.api.nvim_echo({ { msg, level and msg_hl[level] or msg_hl.INFO } }, true, {})
+            local msg_hl = {
+                hl_group.error,
+                hl_group.warn,
+                hl_group.info,
+                hl_group.hint,
+                [0] = hl_group.error,
+                TRACE = hl_group.error,
+                ERROR = hl_group.error,
+                WARN = hl_group.warn,
+                WARNING = hl_group.warn,
+                INFO = hl_group.info,
+                DEBUG = hl_group.hint,
+            }
+
+            vim.api.nvim_echo({ { msg, level and msg_hl[level] or msg_hl.INFO } }, true, {})
+        end
     end
 else
     notify_backend = function(msg, level, opts)
@@ -70,6 +69,7 @@ else
             WARN = term_colors.yellow,
             WARNING = term_colors.yellow,
             INFO = term_colors.green,
+            HINT = term_colors.blue,
             DEBUG = term_colors.purple,
         }
 
@@ -77,20 +77,46 @@ else
             msg = ('[%s]: %s'):format(opts.title, msg)
         end
 
-        -- TODO: This cannot be redirected `1>/dev/null`, add support for pipes/redirects
-        local stdout = vim.loop.new_tty(1, false)
-        local stderr = vim.loop.new_tty(2, false)
+        -- TODO: Make redirects work on windows
         if level and level == 'ERROR' then
-            local output = ('%s%s%s\n'):format(level_colors[level] or level_colors.INFO, msg, term_colors.reset_color)
-            stderr:write(output)
-        else
-            local output
-            if level and level ~= '' then
-                output = ('%s%s%s\n'):format(level_colors[level] or level_colors.INFO, msg, term_colors.reset_color)
+            local stderr = vim.loop.new_tty(2, false)
+            if stderr then
+                local output = ('%s%s%s\n'):format(
+                    level_colors[level] or level_colors.INFO,
+                    msg,
+                    term_colors.reset_color
+                )
+                stderr:write(output)
             else
-                output = ('%s\n'):format(msg)
+                local fd = ('/proc/%s/fd/2'):format(vim.fn.getpid())
+                stderr = assert(vim.loop.fs_open(fd, 'a+', 438))
+
+                local ok, err, _ = vim.loop.fs_write(stderr, msg .. '\n', 0)
+                if not ok then
+                    vim.print(err)
+                end
+
+                assert(vim.loop.fs_close(stderr))
             end
-            stdout:write(output)
+        else
+            local output = ('%s\n'):format(msg)
+            local stdout = vim.loop.new_tty(1, false)
+            if stdout then
+                if level and level ~= '' then
+                    output = ('%s%s%s\n'):format(level_colors[level] or level_colors.INFO, msg, term_colors.reset_color)
+                end
+                stdout:write(output)
+            else
+                local fd = ('/proc/%s/fd/1'):format(vim.fn.getpid())
+                stdout = assert(vim.loop.fs_open(fd, 'a+', 438))
+
+                local ok, err, _ = vim.loop.fs_write(stdout, output, 0)
+                if not ok then
+                    vim.print(err)
+                end
+
+                assert(vim.loop.fs_close(stdout))
+            end
         end
     end
 end
