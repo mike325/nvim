@@ -106,3 +106,42 @@ if mini_splitjoin then
         },
     }
 end
+
+local mini_files = vim.F.npcall(require, 'mini.files')
+if mini_files then
+    mini_files.setup {
+        mappings = {
+            close = 'q',
+            go_in = '<TAB>',
+            go_in_plus = '<CR>',
+            go_out = '<BS>',
+            go_out_plus = 'H',
+            reset = '<F5>',
+            reveal_cwd = '@',
+            show_help = 'g?',
+            synchronize = '=',
+            trim_left = '<',
+            trim_right = '>',
+        },
+    }
+    nvim.command.set('Files', function(opts)
+        mini_files.open()
+    end, { desc = 'Open mini.files' })
+    vim.keymap.set('n', '-', function()
+        mini_files.open()
+    end, { noremap = true, silent = true, desc = 'Open mini.files' })
+end
+
+local mini_map = vim.F.npcall(require, 'mini.map')
+if mini_map then
+    mini_map.setup {}
+    nvim.command.set('MiniMap', function(opts)
+        if opts.args == 'enable' then
+            mini_map.open()
+        elseif opts.args == 'disable' then
+            mini_map.close()
+        else
+            mini_map.toggle()
+        end
+    end, { nargs = '?', complete = completions.toggle, desc = 'Open/Close mini.map' })
+end
