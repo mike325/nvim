@@ -382,47 +382,6 @@ function M.async_execute(opts)
     end
 end
 
-function M.open(uri)
-    vim.validate {
-        uri = { uri, 'string' },
-    }
-
-    local cmd
-    local args = {}
-    if sys.name == 'windows' then
-        cmd = 'powershell'
-        vim.list_extend(args, { '-noexit', '-executionpolicy', 'bypass', 'Start-Process' })
-    elseif sys.name == 'linux' then
-        cmd = 'xdg-open'
-    else
-        -- Problably macos
-        cmd = 'open'
-    end
-
-    table.insert(args, uri)
-
-    -- NOTE: Attempt to open using wezterm OSC functionality
-    if vim.env.SSH_CONNECTION then
-        M.send_osc52('open', '"' .. uri .. '"')
-    else
-        local open = RELOAD('jobs'):new {
-            cmd = cmd,
-            args = args,
-            qf = {
-                dump = false,
-                on_fail = {
-                    dump = true,
-                    jump = false,
-                    open = true,
-                },
-                context = 'Open',
-                title = 'Open',
-            },
-        }
-        open:start()
-    end
-end
-
 -- TODO: Improve python folding text
 function M.foldtext()
     local indent_level =

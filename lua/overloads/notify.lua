@@ -88,6 +88,7 @@ else
                 )
                 stderr:write(output)
             else
+                -- NOTE: Not using utils.files since they call notify for errors, making this recursive
                 local fd = ('/proc/%s/fd/2'):format(vim.fn.getpid())
                 stderr = assert(vim.loop.fs_open(fd, 'a+', 438))
 
@@ -107,6 +108,7 @@ else
                 end
                 stdout:write(output)
             else
+                -- NOTE: Not using utils.files since they call notify for errors, making this recursive
                 local fd = ('/proc/%s/fd/1'):format(vim.fn.getpid())
                 stdout = assert(vim.loop.fs_open(fd, 'a+', 438))
 
