@@ -608,7 +608,7 @@ function M.zoom_links(opts)
     end
 
     if links[opts.args] then
-        RELOAD('utils.functions').open(links[opts.args])
+        vim.ui.open(links[opts.args])
     else
         vim.notify('Missing Zoom link ' .. opts.args, 'ERROR', { title = 'Zoom' })
     end

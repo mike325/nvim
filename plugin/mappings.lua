@@ -398,7 +398,7 @@ end
 
 -- TODO: Add support to change between local and osc/remote open
 nvim.command.set('Open', function(opts)
-    RELOAD('utils.functions').open(opts.args)
+    vim.ui.open(opts.args)
 end, {
     nargs = 1,
     complete = 'file',
@@ -409,7 +409,7 @@ end, {
 vim.keymap.set('n', 'gx', function()
     local cfile = vim.fn.expand '<cfile>'
     local cword = vim.fn.expand '<cWORD>'
-    RELOAD('utils.functions').open(cword:match '^[%w]+://' and cword or cfile)
+    vim.ui.open(cword:match '^[%w]+://' and cword or cfile)
 end, noremap_silent)
 
 nvim.command.set('Repl', function(opts)

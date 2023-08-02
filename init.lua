@@ -58,7 +58,12 @@ vim.opt.termguicolors = true
 vim.g.mapleader = ' '
 
 require 'utils.ft_detect'
-require 'messages'
+
+-- NOTE: overload/replace vim.* functions
+require 'overloads.notify'
+require 'overloads.ui.open'
+-- require 'overloads.paste'
+
 require 'completions'
 require 'globals'
 

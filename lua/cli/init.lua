@@ -14,7 +14,10 @@ vim.g.port = 0x8AC
 vim.g.mapleader = ' '
 vim.opt.termguicolors = true
 
-require 'messages'
+-- NOTE: overload/replace vim.* functions
+require 'overloads.notify'
+require 'overloads.ui.open'
+
 require 'globals'
 
 local hosts = require('threads.parsers').sshconfig()
