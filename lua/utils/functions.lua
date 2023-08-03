@@ -1,5 +1,4 @@
 local nvim = require 'nvim'
-local sys = require 'sys'
 
 local replace_indent = require('utils.buffers').replace_indent
 local executable = require('utils.files').executable

@@ -40,6 +40,7 @@ function M.get_comment(text)
         },
     }
     local comment = vim.opt_local.commentstring:get()
+    comment = comment ~= '' and comment or '// %s'
     if not comment:match '%s%%s' then
         comment = comment:format ' %s'
     end
