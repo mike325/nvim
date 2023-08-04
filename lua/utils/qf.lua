@@ -164,6 +164,7 @@ function M.set_list(opts, win)
     if type(items[1]) == type {} then
         opts.items = items
     elseif type(items[1]) == type '' then
+        local BIG_LINE = 512
         opts.lines = require('utils.tables').clear_lst(items)
         if not opts.efm or #opts.efm == 0 then
             local efm = vim.opt_local.efm:get()
@@ -178,6 +179,12 @@ function M.set_list(opts, win)
         end
 
         for idx, line in ipairs(opts.lines) do
+            -- NOTE: quickfix is extreamly slow to parse long lines and actually freaze neovim
+            --       this hack truncate all big elements to speed up parsing
+            if #line > BIG_LINE then
+                opts.lines[idx] = (line:sub(1, BIG_LINE)) .. '...>'
+                line = opts.lines[idx]
+            end
             opts.lines[idx] = vim.api.nvim_replace_termcodes(line, true, false, false)
         end
     else
