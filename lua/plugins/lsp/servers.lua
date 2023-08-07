@@ -171,7 +171,6 @@ local servers = {
                             },
                             pycodestyle = {
                                 maxLineLength = 120,
-                                ignore = RELOAD('filetypes.python').pyignores,
                             },
                         },
                     },
