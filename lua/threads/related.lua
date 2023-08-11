@@ -34,10 +34,12 @@ function M.gather_srcs_headers(thread_args)
         local realfile = vim.loop.fs_realpath(filename)
         tmp[realfile] = {}
         local basename_file = basename(filename)
-        if not idxs[basename_file] then
-            idxs[basename_file] = {}
+        if basename_file then
+            if not idxs[basename_file] then
+                idxs[basename_file] = {}
+            end
+            table.insert(idxs[basename_file], realfile)
         end
-        table.insert(idxs[basename_file], realfile)
     end
 
     for _, filename in ipairs(candidates) do

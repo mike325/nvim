@@ -493,14 +493,13 @@ function M.rename(old, new, bang)
 
         local git = RELOAD 'utils.git'
 
-        if git.is_git_repo(vim.fs.dirname(old)) then
+        if
+            git.is_git_repo(vim.fs.dirname(old))
+            and not vim.list_contains(vim.tbl_map(M.realpath, git.status().untracked or {}), old)
+        then
             local result = git.exec.mv { '-f', old, new }
             if #result > 0 then
-                vim.notify(
-                    'Failed to rename ' .. old .. '\n' .. table.concat(result, '\n'),
-                    'ERROR',
-                    { title = 'Rename' }
-                )
+                vim.notify('Failed to rename ' .. old .. '\n' .. result, 'ERROR', { title = 'Rename' })
                 return false
             end
         else

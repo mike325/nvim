@@ -871,7 +871,6 @@ function M.reload_configs(opts)
     end
 end
 
--- TODO: Add support for clangd switch header/src command
 function M.alternate(opts)
     local bufnr = vim.api.nvim_get_current_buf()
     opts.buf = vim.api.nvim_buf_get_name(bufnr)
@@ -881,6 +880,7 @@ function M.alternate(opts)
         return
     end
 
+    -- TODO: Add support for clangd switch header/src command
     -- local found = RELOAD('plugins.lsp.utils').switch_source_header_splitcmd(bufnr, 'edit')
     -- if found then
     --     return
