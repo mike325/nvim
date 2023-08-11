@@ -547,8 +547,8 @@ function M.project_config(event)
         )[1]
 
         if is_c_project then
-            -- NOTE: This may take a lot of time and even though it wont hang the ui it hang noevim exit
-            -- which means if you can't to close neovim before it finishes indexing
+            -- NOTE: This may take a lot of time and even though it wont hang the UI it still can hang neovim's exit
+            --       which means neovim can't be closed before it finishes indexing
             -- RELOAD('threads.related').async_gather_alternates { path = vim.fs.dirname(is_c_project) }
 
             local compile_flags = vim.fs.find(
