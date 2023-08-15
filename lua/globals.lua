@@ -1,13 +1,15 @@
 _G['RELOAD'] = function(pkg)
-    if vim.is_thread() then
-        package.loaded[pkg] = nil
-    else
-        if vim.v.vim_did_enter == 1 then
+    if vim then
+        if vim.is_thread() then
+            package.loaded[pkg] = nil
+        elseif vim.v.vim_did_enter == 1 then
             package.loaded[pkg] = nil
             if vim.loader and vim.loader.enabled then
                 vim.loader.reset(pkg)
             end
         end
+    else
+        package.loaded[pkg] = nil
     end
     return require(pkg)
 end

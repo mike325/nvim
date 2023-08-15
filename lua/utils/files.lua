@@ -312,7 +312,7 @@ local function fs_write(path, data, append, callback)
         end)
     end
 
-    uv.fs_open(path, 'r', 438, function(oerr, fd)
+    uv.fs_open(path, 'r+', 438, function(oerr, fd)
         assert(not oerr, oerr)
         uv.fs_fstat(fd, function(serr, stat)
             assert(not serr, serr)
