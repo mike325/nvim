@@ -77,48 +77,39 @@ else
             msg = ('[%s]: %s'):format(opts.title, msg)
         end
 
-        -- TODO: Make redirects work on windows
-        if level and level == 'ERROR' then
-            local stderr = vim.loop.new_tty(2, false)
-            if stderr then
-                local output = ('%s%s%s\n'):format(
-                    level_colors[level] or level_colors.INFO,
-                    msg,
-                    term_colors.reset_color
-                )
-                stderr:write(output)
+        local fd = (level and level == 'ERROR') and 2 or 1
+        local output = ('%s\n'):format(msg)
+        local handle_type = vim.loop.guess_handle(fd)
+        if handle_type == 'tty' then
+            local stdio = vim.loop.new_tty(fd, false)
+            if level and level ~= '' then
+                output = ('%s%s%s\n'):format(level_colors[level] or level_colors.INFO, msg, term_colors.reset_color)
+            end
+            stdio:write(output)
+            stdio:close()
+        elseif handle_type == 'file' then
+            -- NOTE: Not using utils.files since they call notify for errors, making this recursive
+            local stdio = assert(vim.loop.fs_open(('/proc/%s/fd/%s'):format(vim.fn.getpid(), fd), 'a+', 438))
+
+            local ok, err, _ = vim.loop.fs_write(stdio, output, 0)
+            if not ok then
+                vim.print(err)
+            end
+
+            assert(vim.loop.fs_close(stdio))
+        elseif handle_type == 'pipe' then
+            -- TODO: Migrate this to libuv
+            -- local stdio = vim.loop.new_pipe(false)
+            -- assert(stdio:open(fd) == 0)
+            -- stdio:write(output)
+            -- stdio:close()
+            if fd == 1 then
+                io.stdout:write(output)
             else
-                -- NOTE: Not using utils.files since they call notify for errors, making this recursive
-                local fd = ('/proc/%s/fd/2'):format(vim.fn.getpid())
-                stderr = assert(vim.loop.fs_open(fd, 'a+', 438))
-
-                local ok, err, _ = vim.loop.fs_write(stderr, msg .. '\n', 0)
-                if not ok then
-                    vim.print(err)
-                end
-
-                assert(vim.loop.fs_close(stderr))
+                io.stderr:write(output)
             end
         else
-            local output = ('%s\n'):format(msg)
-            local stdout = vim.loop.new_tty(1, false)
-            if stdout then
-                if level and level ~= '' then
-                    output = ('%s%s%s\n'):format(level_colors[level] or level_colors.INFO, msg, term_colors.reset_color)
-                end
-                stdout:write(output)
-            else
-                -- NOTE: Not using utils.files since they call notify for errors, making this recursive
-                local fd = ('/proc/%s/fd/1'):format(vim.fn.getpid())
-                stdout = assert(vim.loop.fs_open(fd, 'a+', 438))
-
-                local ok, err, _ = vim.loop.fs_write(stdout, output, 0)
-                if not ok then
-                    vim.print(err)
-                end
-
-                assert(vim.loop.fs_close(stdout))
-            end
+            error(debug.traceback(('Unknown fd handle type: %s\n'):format(vim.loop.guess_handle(fd))))
         end
     end
 end
