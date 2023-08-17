@@ -519,8 +519,12 @@ function M.open_changes(opts)
                         qfutils.set_list { items = hunks.items, title = 'OpenChanges', open = not qfutils.is_open() }
                     end
                 end, { revision = revision, files = files })
-            elseif action == 'open' or action == '' then
-                vim.api.nvim_win_set_buf(0, vim.fn.bufadd(files[1]))
+            else
+                RELOAD('utils.arglist').add(files, true)
+                if action == 'open' or action == '' then
+                    vim.api.nvim_win_set_buf(0, vim.fn.bufadd(files[1]))
+                    -- else "background" does not :edit the first file
+                end
             end
         else
             vim.notify('No modified files to open', 'WARN', { title = 'GitStatus' })

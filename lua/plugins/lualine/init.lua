@@ -181,6 +181,12 @@ lualine.setup {
                 end,
             },
             {
+                'arglist_counter',
+                cond = function()
+                    return vim.fn.argc() > 0
+                end,
+            },
+            {
                 'loc_counter',
                 cond = function()
                     return #vim.fn.getloclist(vim.api.nvim_get_current_win()) > 0
