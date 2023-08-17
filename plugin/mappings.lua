@@ -762,9 +762,7 @@ nvim.command.set('Argdo', function(opts)
 end, { nargs = '+', desc = 'argdo but without the final Press enter message', complete = 'command' })
 
 nvim.command.set('Arglistclear', function()
-    for _, filename in ipairs(vim.fn.argv()) do
-        vim.cmd.argdelete(filename)
-    end
+    RELOAD('utils.arglist').clear()
 end, { desc = 'Remove all args from the arglist' })
 
 nvim.command.set('Qf2Arglist', function()
@@ -775,4 +773,14 @@ end, { desc = 'Dump qf files to the arglist' })
 nvim.command.set('Loc2Arglist', function()
     local qfutils = RELOAD 'utils.qf'
     qfutils.qf_to_arglist { loc = true }
+end, { desc = 'Dump loclist files to the arglist' })
+
+nvim.command.set('Arglist2Qf', function()
+    local qfutils = RELOAD 'utils.qf'
+    qfutils.dump_files(vim.fn.argv())
+end, { desc = 'Dump loclist files to the arglist' })
+
+nvim.command.set('Arglist2Loc', function()
+    local qfutils = RELOAD 'utils.qf'
+    qfutils.dump_files(vim.fn.argv(), { win = 0 })
 end, { desc = 'Dump loclist files to the arglist' })

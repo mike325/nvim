@@ -301,9 +301,18 @@ end
 function M.dump_files(buffers, opts, win)
     vim.validate {
         buffers = { buffers, 'table' },
-        opts = { opts, { 'table', 'boolean' }, true },
+        opts = { opts, { 'table', 'number' }, true },
         win = { win, 'number', true },
     }
+
+    if type(opts) == 'number' then
+        if not win then
+            win = opts
+            opts = {}
+        else
+            error(debug.traceback 'Cannot provide opts = "number" and win = "number"')
+        end
+    end
 
     opts = opts or {}
 
@@ -410,25 +419,15 @@ function M.qf_to_arglist(opts)
     if loc and not win then
         win = vim.api.nvim_get_current_win()
     end
-    local args = vim.fn.argv()
-    if #args > 0 then
-        for _, filename in ipairs(args) do
-            vim.cmd.argdelete(filename)
-        end
-    end
-    local qfitems = M.get_list({items = true}, win).items
-    -- print('items:', #qfitems)
-    local filenames = {}
+    local qfitems = M.get_list({ items = true }, win).items
+    local files = {}
     for _, item in ipairs(qfitems) do
         local buf = item.bufnr
-        if buf then
-            -- print('filename:', vim.fn.bufname(buf), 'bufnr:', buf)
-            filenames[vim.fn.bufname(buf)] = true
+        if buf and vim.api.nvim_buf_is_valid(buf) then
+            table.insert(files, buf)
         end
     end
-    for _, filename in ipairs(vim.tbl_keys(filenames)) do
-        vim.cmd.argadd(filename)
-    end
+    RELOAD('utils.arglist').add(files, true)
 end
 
 return M
