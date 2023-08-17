@@ -403,4 +403,32 @@ function M.qf_loclist_switcher(opts)
     end
 end
 
+function M.qf_to_arglist(opts)
+    opts = opts or {}
+    local loc = opts.loc
+    local win = opts.win
+    if loc and not win then
+        win = vim.api.nvim_get_current_win()
+    end
+    local args = vim.fn.argv()
+    if #args > 0 then
+        for _, filename in ipairs(args) do
+            vim.cmd.argdelete(filename)
+        end
+    end
+    local qfitems = M.get_list({items = true}, win).items
+    -- print('items:', #qfitems)
+    local filenames = {}
+    for _, item in ipairs(qfitems) do
+        local buf = item.bufnr
+        if buf then
+            -- print('filename:', vim.fn.bufname(buf), 'bufnr:', buf)
+            filenames[vim.fn.bufname(buf)] = true
+        end
+    end
+    for _, filename in ipairs(vim.tbl_keys(filenames)) do
+        vim.cmd.argadd(filename)
+    end
+end
+
 return M

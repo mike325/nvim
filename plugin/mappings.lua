@@ -751,3 +751,28 @@ if executable 'gh' then
         desc = 'Open all modified files in the current PR',
     })
 end
+
+nvim.command.set('Argdo', function(opts)
+    for _, filename in ipairs(vim.fn.argv()) do
+        local buf = vim.fn.bufnr(filename)
+        vim.api.nvim_buf_call(buf, function()
+            vim.cmd(opts.args)
+        end)
+    end
+end, { nargs = '+', desc = 'argdo but without the final Press enter message', complete = 'command' })
+
+nvim.command.set('Arglistclear', function()
+    for _, filename in ipairs(vim.fn.argv()) do
+        vim.cmd.argdelete(filename)
+    end
+end, { desc = 'Remove all args from the arglist' })
+
+nvim.command.set('Qf2Arglist', function()
+    local qfutils = RELOAD 'utils.qf'
+    qfutils.qf_to_arglist()
+end, { desc = 'Dump qf files to the arglist' })
+
+nvim.command.set('Loc2Arglist', function()
+    local qfutils = RELOAD 'utils.qf'
+    qfutils.qf_to_arglist { loc = true }
+end, { desc = 'Dump loclist files to the arglist' })
