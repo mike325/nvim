@@ -64,5 +64,6 @@ if not STORAGE then
         hosts = {},
         remotes = {},
         servers = {},
+        loggers = {},
     }
 end
