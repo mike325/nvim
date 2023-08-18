@@ -299,7 +299,7 @@ local function fs_write(path, data, append, callback)
     }
 
     data = type(data) ~= type '' and table.concat(data, '\n') or data
-    local flags = append and 'a' or 'w'
+    local flags = append and 'a+' or 'w+'
 
     if not callback then
         return M.openfile(path, flags, function(fd)
