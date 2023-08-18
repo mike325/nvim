@@ -46,6 +46,11 @@ function Logger:new(opts)
 end
 
 local function async_append_log(filename, data, cb)
+    vim.validate {
+        filename = { filename, 'string' },
+        data = { data, 'string' },
+        cb = { cb, 'function', true },
+    }
     vim.loop.fs_open(filename, 'a+', 438, function(oerr, fd)
         assert(not oerr, oerr)
         vim.loop.fs_write(fd, data .. '\n', 0, function(rerr)
