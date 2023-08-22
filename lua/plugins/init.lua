@@ -470,13 +470,6 @@ packer.startup(function()
     }
 
     use {
-        'numToStr/Comment.nvim',
-        config = function()
-            require 'plugins.comments'
-        end,
-    }
-
-    use {
         'vimwiki/vimwiki',
         setup = function()
             vim.g.vimwiki_list = {

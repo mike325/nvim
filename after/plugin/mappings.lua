@@ -4,7 +4,7 @@ if not vim.keymap then
     vim.keymap = nvim.keymap
 end
 
-if not nvim.plugins['vim-commentary'] and not nvim.plugins['Comment.nvim'] then
+if not nvim.plugins['vim-commentary'] and not nvim.plugins['Comment.nvim'] and not nvim.plugins['mini.nvim'] then
     vim.keymap.set(
         'n',
         'gc',
