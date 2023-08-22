@@ -145,3 +145,8 @@ if mini_map then
         end
     end, { nargs = '?', complete = completions.toggle, desc = 'Open/Close mini.map' })
 end
+
+local mini_comment = vim.F.npcall(require, 'mini.comment')
+if mini_comment then
+    mini_comment.setup {}
+end
