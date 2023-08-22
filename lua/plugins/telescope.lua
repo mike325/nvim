@@ -18,6 +18,15 @@ local actions = require 'telescope.actions'
 -- local has_sqlite = sys.has_sqlite
 
 local extensions = {}
+local fzf = vim.F.npcall(require, 'fzf_lib')
+if fzf then
+    extensions.fzf = {
+        fuzzy = true, -- false will only do exact matching
+        override_generic_sorter = true, -- override the generic sorter
+        override_file_sorter = true, -- override the file sorter
+        case_mode = 'smart_case', -- or "ignore_case" or "respect_case"
+    }
+end
 
 telescope.setup {
     extensions = extensions,
@@ -32,8 +41,8 @@ telescope.setup {
         sorting_strategy = 'descending',
         layout_strategy = 'horizontal',
         -- file_ignore_patterns = {},
-        file_sorter = require('telescope.sorters').get_fzy_sorter,
-        generic_sorter = require('telescope.sorters').get_fzy_sorter,
+        file_sorter = not fzf and require('telescope.sorters').get_fzy_sorter or nil,
+        generic_sorter = not fzf and require('telescope.sorters').get_fzy_sorter or nil,
         -- shorten_path = true,
         winblend = 0,
         set_env = { ['COLORTERM'] = 'truecolor' },
@@ -55,6 +64,10 @@ telescope.setup {
 
 if vim.F.npcall(require, 'harpoon') then
     require('telescope').load_extension 'harpoon'
+end
+
+if fzf then
+    require('telescope').load_extension 'fzf'
 end
 
 vim.keymap.set('n', '<C-q>', builtin.quickfix, noremap)
