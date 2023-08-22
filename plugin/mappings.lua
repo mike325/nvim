@@ -30,9 +30,9 @@ vim.keymap.set('c', '<C-k>', '<left>', noremap)
 vim.keymap.set('c', '<C-j>', '<right>', noremap)
 
 vim.keymap.set('c', '<C-r><C-w>', "<C-r>=escape(expand('<cword>'), '#')<CR>", noremap)
-vim.keymap.set('c', '<C-r><C-n>', [[<C-r>=luaeval("vim.fs.basename(vim.api.nvim_buf_get_name(0))")<CR>]], noremap)
-vim.keymap.set('c', '<C-r><C-p>', [[<C-r>=luaeval("vim.api.nvim_buf_get_name(0)")<CR>]], noremap)
-vim.keymap.set('c', '<C-r><C-d>', [[<C-r>=luaeval("vim.fs.dirname(vim.api.nvim_buf_get_name(0))..'/'")<CR>]], noremap)
+vim.keymap.set('c', '<C-r><C-n>', [[<C-r>=v:lua.vim.fs.basename(nvim_buf_get_name(0))<CR>]], noremap)
+vim.keymap.set('c', '<C-r><C-p>', [[<C-r>=nvim_buf_get_name(0)<CR>]], noremap)
+vim.keymap.set('c', '<C-r><C-d>', [[<C-r>=v:lua.vim.fs.dirname(nvim_buf_get_name(0))..'/'<CR>]], noremap)
 
 vim.keymap.set('n', ',', ':', noremap)
 vim.keymap.set('x', ',', ':', noremap)
@@ -169,8 +169,11 @@ nvim.command.set('MouseToggle', function()
 end)
 
 nvim.command.set('BufKill', function(opts)
+    opts = opts or {}
+    opts.rm_no_cwd = vim.list_contains(opts.fargs, '-cwd')
+    opts.rm_empty = vim.list_contains(opts.fargs, '-empty')
     RELOAD('mappings').bufkill(opts)
-end, { bang = true, nargs = 0 })
+end, { bang = true, nargs = '*', complete = completions.bufkill_options })
 
 nvim.command.set('VerboseToggle', 'let &verbose=!&verbose | echo "Verbose " . &verbose')
 nvim.command.set('RelativeNumbersToggle', 'set relativenumber! relativenumber?')
@@ -506,7 +509,10 @@ nvim.command.set('NotificationServer', function(opts)
 end, { nargs = 1, complete = completions.toggle, bang = true })
 
 nvim.command.set('RemoveEmpty', function(opts)
-    RELOAD('utils.buffers').remove_empty(opts)
+    local removed = RELOAD('utils.buffers').remove_empty(opts)
+    if removed > 0 then
+        print(' ', removed, ' buffers cleaned!')
+    end
 end, { nargs = 0, bang = true, desc = 'Remove empty buffers' })
 
 vim.keymap.set('n', '=D', function()

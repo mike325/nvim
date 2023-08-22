@@ -10,12 +10,12 @@ endif
 
 function! neovim#grep(type, ...) abort
     let l:visual = a:0 ? v:true : v:false
-    call luaeval('RELOAD"utils.functions".opfun_grep(_A[1], _A[2])', [a:type, l:visual])
+    call v:lua.RELOAD('utils.functions').opfun_grep(a:type, l:visual)
 endfunction
 
 function! neovim#comment(type, ...) abort
     let l:visual = a:0 ? v:true : v:false
-    call luaeval('RELOAD"utils.functions".opfun_comment(_A[1], _A[2])', [a:type, l:visual])
+    call v:lua.RELOAD('utils.functions').opfun_comment(a:type, l:visual)
 endfunction
 
 function! neovim#inside_empty_pairs() abort
@@ -51,13 +51,13 @@ function! neovim#enter() abort
     let l:snippet = 0
 
     if has#plugin('snippets.nvim')
-        let l:snippet = luaeval("require'snippets'.expand_or_advance(1)")
+        let l:snippet = v:lua.require('snippets').expand_or_advance(1)
     elseif has#plugin('ultisnips')
         let l:snippet = UltiSnips#ExpandSnippet()
     endif
 
     if has#plugin('LuaSnip') && luasnip#expandable()
-        let l:snippet = luaeval("require'luasnip'.expand()")
+        let l:snippet = v:lua.require('luasnip').expand()
         return ''
     elseif get(g:,'ulti_expand_res', 0) > 0
         return l:snippet
@@ -68,9 +68,9 @@ function! neovim#enter() abort
             return ''
         elseif has#plugin('nvim-cmp')
             if l:selected
-                call luaeval('require"cmp".mapping.confirm({ select = true })()')
+                call luaeval("require'cmp'.mapping.confirm({ select = true })()")
             else
-                call luaeval('require"cmp".mapping.close()()')
+                call luaeval("require'cmp'.mapping.close()()")
             endif
             return ''
         elseif has#plugin('nvim-compe')
@@ -84,16 +84,16 @@ function! neovim#enter() abort
             if ! l:selected
                 call nvim_select_popupmenu_item(-1 , v:false , v:true ,{})
             endif
-            call luaeval("require'completion'.confirmCompletion()")
+            call v:lua.require('completion').confirmCompletion()
             return l:selected ? "\<C-y>" : ''
         endif
 
         return "\<C-y>"
     elseif has#plugin('nvim-autopairs')
-        return luaeval('require"nvim-autopairs".autopairs_cr()')
+        return v:luav:.require('nvim-autopairs').autopairs_cr()
     elseif has#plugin('pears.nvim')
         if neovim#inside_empty_pairs()
-            call luaeval('require"pears".handle_return(_A)', nvim_get_current_buf())
+            call v:lua.require('pears').handle_return(nvim_get_current_buf())
             return ''
         endif
     elseif has#plugin('delimitMate') && delimitMate#WithinEmptyPair()
@@ -117,7 +117,7 @@ function! neovim#tab() abort
         lua require'luasnip'.jump(1)
         return ''
     elseif has#plugin('snippets.nvim')
-        let l:snippet = luaeval("require'snippets'.expand_or_advance(1)")
+        let l:snippet = v:lua.require('snippets').expand_or_advance(1)
         return ''
     elseif has#plugin('ultisnips')
         call UltiSnips#JumpForwards()

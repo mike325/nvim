@@ -146,18 +146,24 @@ function M.toggle_mouse()
 end
 
 function M.bufkill(opts)
+    opts = opts or {}
     local bang = opts.bang
-    local count = 0
+    local removed = 0
+    if opts.rm_empty then
+        removed = removed + RELOAD('utils.buffers').remove_empty(opts)
+    end
     for _, buf in pairs(nvim.list_bufs()) do
-        if not nvim.buf.is_valid(buf) or (bang and not nvim.buf.is_loaded(buf)) then
-            nvim.ex['bwipeout!'](buf)
+        local is_valid = nvim.buf.is_valid(buf)
+        local is_unloaded = bang and not nvim.buf.is_loaded(buf)
+        if not is_valid or is_unloaded then
             vim.cmd.bwipeout { bang = true, args = { buf } }
-            count = count + 1
+            removed = removed + 1
         end
     end
-    if count > 0 then
-        print(count, 'buffers deleted')
+    if removed > 0 then
+        print(' ', removed, 'buffers deleted')
     end
+    return removed
 end
 
 function M.trim(opts)

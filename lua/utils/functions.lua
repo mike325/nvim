@@ -186,8 +186,8 @@ function M.opfun_grep(select, visual)
 
     local search, s_row, s_col, e_row, e_col
     if visual then
-        local startpos = nvim.fn.getpos("'<")
-        local endpos = nvim.fn.getpos("'>")
+        local startpos = nvim.fn.getpos "'<"
+        local endpos = nvim.fn.getpos "'>"
         s_row, s_col, e_row, e_col = startpos[2] - 1, startpos[3] - 1, endpos[2] - 1, endpos[3]
     else
         local startpos = nvim.buf.get_mark(0, '[')
@@ -262,8 +262,8 @@ function M.opfun_comment(_, visual)
 
     local s_row, e_row
     if visual then
-        local startpos = nvim.fn.getpos("'<")
-        local endpos = nvim.fn.getpos("'>")
+        local startpos = nvim.fn.getpos "'<"
+        local endpos = nvim.fn.getpos "'>"
         s_row, e_row = startpos[2] - 1, endpos[2]
     else
         local startpos = nvim.buf.get_mark(0, '[')
@@ -399,8 +399,8 @@ end
 
 -- TODO: Improve python folding text
 function M.foldtext()
-    local indent_level =
-        require('utils.buffers').get_indent_block(vim.api.nvim_buf_get_lines(0, vim.v.foldstart, vim.v.foldend, false))
+    local lines = vim.api.nvim_buf_get_lines(0, vim.v.foldstart, vim.v.foldend, false)
+    local indent_level = require('utils.buffers').get_indent_block(lines)
     local indent_string = require('utils.buffers').get_indent_string(indent_level)
     local foldtext = '%s %s %s %s'
     return foldtext:format(

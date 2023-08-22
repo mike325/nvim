@@ -453,7 +453,14 @@ function M.setup(ft, opts)
     end
 end
 
-function M.remove_empty(opts)
+function M.remove_empty(opts, buffers)
+    opts = opts or {}
+    buffers = buffers or vim.api.nvim_list_bufs()
+    vim.validate {
+        buffers = { buffers, 'table' },
+        opts = { opts, 'table' },
+    }
+
     local bufs_in_use = {}
     for _, tab in ipairs(vim.api.nvim_list_tabpages()) do
         for _, win in ipairs(vim.api.nvim_tabpage_list_wins(tab)) do
@@ -476,7 +483,7 @@ function M.remove_empty(opts)
     end
 
     local removed = 0
-    for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+    for _, buf in ipairs(buffers) do
         if buf_is_scratch(buf) and not bufs_in_use[tostring(buf)] then
             if buf_is_empty(buf) or opts.bang then
                 vim.api.nvim_buf_delete(buf, { force = true })
@@ -485,9 +492,7 @@ function M.remove_empty(opts)
         end
     end
 
-    if removed > 0 then
-        print(' ', removed, ' Buffers cleaned!')
-    end
+    return removed
 end
 
 function M.open_changes(opts)
