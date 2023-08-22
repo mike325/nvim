@@ -181,18 +181,18 @@ lualine.setup {
                 end,
             },
             {
-                'arglist_counter',
-                cond = function()
-                    return vim.fn.argc() > 0
-                end,
-            },
-            {
                 'loc_counter',
                 cond = function()
                     return #vim.fn.getloclist(vim.api.nvim_get_current_win()) > 0
                 end,
                 on_click = function(clicks, button, modifiers)
                     RELOAD('utils.qf').toggle { win = vim.api.nvim_get_current_win() }
+                end,
+            },
+            {
+                'arglist_counter',
+                cond = function()
+                    return vim.fn.argc() > 0
                 end,
             },
             {
