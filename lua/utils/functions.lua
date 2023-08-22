@@ -260,10 +260,18 @@ function M.opfun_comment(_, visual)
     local select_save = vim.o.selection
     vim.o.selection = 'inclusive'
 
-    local startpos = nvim.buf.get_mark(0, '[')
-    local endpos = nvim.buf.get_mark(0, ']')
+    local s_row, e_row
+    if visual then
+        local startpos = nvim.fn.getpos("'<")
+        local endpos = nvim.fn.getpos("'>")
+        s_row, e_row = startpos[2] - 1, endpos[2]
+    else
+        local startpos = nvim.buf.get_mark(0, '[')
+        local endpos = nvim.buf.get_mark(0, ']')
+        s_row, e_row = startpos[1] - 1, endpos[1]
+    end
 
-    M.toggle_comments(startpos[1] - 1, endpos[1])
+    M.toggle_comments(s_row, e_row)
 
     vim.o.selection = select_save
 end
