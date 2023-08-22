@@ -33,6 +33,8 @@ packer.init {
     autoremove = true,
 }
 
+-- TODO: There are alot of conditions that should be check at "build" time and not at runtime
+--       to speed up startup time
 packer.startup(function()
     -- BUG: Seems like luarocks is not supported in windows
     if has_compiler and has_python then
@@ -389,6 +391,21 @@ packer.startup(function()
             { 'nvim-lua/plenary.nvim' },
             { 'nvim-lua/popup.nvim' },
         },
+    }
+
+    use {
+        'nvim-telescope/telescope-fzf-native.nvim',
+        module = { 'fzf_lib', 'telescope' },
+        run = 'make',
+        cond = function()
+            local compiler
+            if vim.fn.has 'win32' == 1 or vim.fn.has 'win64' == 1 then
+                compiler = vim.fn.executable 'gcc' == 1
+            else
+                compiler = vim.fn.executable 'gcc' == 1 or vim.fn.executable 'clang' == 1
+            end
+            return compiler
+        end,
     }
 
     use {
