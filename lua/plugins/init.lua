@@ -336,7 +336,6 @@ packer.startup(function()
 
     use {
         'nvim-treesitter/nvim-treesitter',
-        commit = (vim.fn.has 'nvim-0.7' == 0 and 'db0e5192911a8bf9df2f2a45c4dab249d5cbf32c' or nil),
         run = ':TSUpdate',
         config = function()
             require 'plugins.treesitter'
@@ -390,12 +389,10 @@ packer.startup(function()
             { 'nvim-lua/plenary.nvim' },
             { 'nvim-lua/popup.nvim' },
         },
-        tag = (vim.fn.has 'nvim-0.6' == 0 and 'nvim-0.5.0' or nil),
     }
 
     use {
         'neovim/nvim-lspconfig',
-        tag = (vim.fn.has 'nvim-0.7' == 0 and 'v0.1.3' or nil),
         config = function()
             require 'plugins.lsp'
         end,
@@ -414,7 +411,6 @@ packer.startup(function()
 
     use {
         'hrsh7th/nvim-cmp',
-        commit = (vim.fn.has 'nvim-0.7' == 0 and '07132dc597e94a8b6df75efce9784a581f55742c' or nil),
         requires = {
             { 'hrsh7th/cmp-nvim-lsp' },
             { 'hrsh7th/cmp-buffer' },
@@ -500,12 +496,12 @@ packer.startup(function()
     -- TODO: Add neovim 0.5 compatibility layer/setup
     use {
         'jose-elias-alvarez/null-ls.nvim',
+        lock = true,
         -- wants = { 'nvim-lspconfig', 'plenary.nvim' },
         requires = {
             { 'neovim/nvim-lspconfig' },
             { 'nvim-lua/plenary.nvim' },
         },
-        branch = (vim.fn.has 'nvim-0.6' == 0 and '0.5.1-compat' or nil),
     }
 
     use {

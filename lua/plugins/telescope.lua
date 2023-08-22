@@ -12,18 +12,15 @@ local builtin = require 'telescope.builtin'
 
 local noremap = { noremap = true, silent = true }
 
-if vim.F.npcall(require, 'harpoon') then
-    require('telescope').load_extension 'harpoon'
-end
-
 -- local lsp_langs = require'plugins.lsp'
 -- local ts_langs = require 'plugins.treesitter'
 local actions = require 'telescope.actions'
 -- local has_sqlite = sys.has_sqlite
--- local extensions = {}
+
+local extensions = {}
 
 telescope.setup {
-    -- extensions = extensions,
+    extensions = extensions,
     layout_config = {
         prompt_position = 'bottom',
         prompt_prefix = '>',
@@ -55,6 +52,10 @@ telescope.setup {
         },
     },
 }
+
+if vim.F.npcall(require, 'harpoon') then
+    require('telescope').load_extension 'harpoon'
+end
 
 vim.keymap.set('n', '<C-q>', builtin.quickfix, noremap)
 
