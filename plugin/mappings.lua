@@ -125,18 +125,30 @@ vim.keymap.set('n', '<leader>d', function()
     RELOAD('utils.buffers').delete()
 end, { desc = 'Delete current buffer without changing the window layout' })
 
-vim.keymap.set('n', '[Q', ':<C-U>cfirst<CR>zvzz', noremap_silent)
-vim.keymap.set('n', ']Q', ':<C-U>clast<CR>zvzz', noremap_silent)
-vim.keymap.set('n', '[q', ':<C-U>exe "".(v:count ? v:count : "")."cprevious"<CR>zvzz', noremap_silent)
-vim.keymap.set('n', ']q', ':<C-U>exe "".(v:count ? v:count : "")."cnext"<CR>zvzz', noremap_silent)
-vim.keymap.set('n', '[L', ':<C-U>lfirst<CR>zvzz', noremap_silent)
-vim.keymap.set('n', ']L', ':<C-U>llast<CR>zvzz', noremap_silent)
-vim.keymap.set('n', '[l', ':<C-U>exe "".(v:count ? v:count : "")."lprevious"<CR>zvzz', noremap_silent)
-vim.keymap.set('n', ']l', ':<C-U>exe "".(v:count ? v:count : "")."lnext"<CR>zvzz', noremap_silent)
-vim.keymap.set('n', '[B', ':<C-U>bfirst<CR>zvzz', noremap_silent)
-vim.keymap.set('n', ']B', ':<C-U>blast<CR>zvzz', noremap_silent)
-vim.keymap.set('n', '[b', ':<C-U>exe "".(v:count ? v:count : "")."bprevious"<CR>', noremap_silent)
-vim.keymap.set('n', ']b', ':<C-U>exe "".(v:count ? v:count : "")."bnext"<CR>', noremap_silent)
+local mapping_pairs = {
+    a = '',
+    b = 'b',
+    q = 'c',
+    l = 'l',
+}
+
+for postfix_map, prefix_cmd in pairs(mapping_pairs) do
+    vim.keymap.set('n', '[' .. postfix_map:upper(), ':<C-U>' .. prefix_cmd .. 'first<CR>zvzz', noremap_silent)
+    vim.keymap.set('n', ']' .. postfix_map:upper(), ':<C-U>' .. prefix_cmd .. 'last<CR>zvzz', noremap_silent)
+    vim.keymap.set(
+        'n',
+        '[' .. postfix_map,
+        ':<C-U>exe "".(v:count ? v:count : "")."' .. prefix_cmd .. 'previous"<CR>zvzz',
+        noremap_silent
+    )
+    vim.keymap.set(
+        'n',
+        ']' .. postfix_map,
+        ':<C-U>exe "".(v:count ? v:count : "")."' .. prefix_cmd .. 'next"<CR>zvzz',
+        noremap_silent
+    )
+end
+
 vim.keymap.set('n', ']<Space>', [[:<C-U>lua require"mappings".add_nl(true)<CR>]], noremap_silent)
 vim.keymap.set('n', '[<Space>', [[:<C-U>lua require"mappings".add_nl(false)<CR>]], noremap_silent)
 vim.keymap.set('n', '<C-L>', '<cmd>nohlsearch|diffupdate<CR>', noremap_silent)
