@@ -146,18 +146,24 @@ function M.toggle_mouse()
 end
 
 function M.bufkill(opts)
+    opts = opts or {}
     local bang = opts.bang
-    local count = 0
+    local removed = 0
+    if opts.rm_empty then
+        removed = removed + RELOAD('utils.buffers').remove_empty(opts)
+    end
     for _, buf in pairs(nvim.list_bufs()) do
-        if not nvim.buf.is_valid(buf) or (bang and not nvim.buf.is_loaded(buf)) then
-            nvim.ex['bwipeout!'](buf)
+        local is_valid = nvim.buf.is_valid(buf)
+        local is_unloaded = bang and not nvim.buf.is_loaded(buf)
+        if not is_valid or is_unloaded then
             vim.cmd.bwipeout { bang = true, args = { buf } }
-            count = count + 1
+            removed = removed + 1
         end
     end
-    if count > 0 then
-        print(count, 'buffers deleted')
+    if removed > 0 then
+        print(' ', removed, 'buffers deleted')
     end
+    return removed
 end
 
 function M.trim(opts)
@@ -608,7 +614,7 @@ function M.zoom_links(opts)
     end
 
     if links[opts.args] then
-        RELOAD('utils.functions').open(links[opts.args])
+        vim.ui.open(links[opts.args])
     else
         vim.notify('Missing Zoom link ' .. opts.args, 'ERROR', { title = 'Zoom' })
     end
@@ -854,7 +860,6 @@ function M.reload_configs(opts)
     end
 end
 
--- TODO: Add support for clangd switch header/src command
 function M.alternate(opts)
     local bufnr = vim.api.nvim_get_current_buf()
     opts.buf = vim.api.nvim_buf_get_name(bufnr)
@@ -864,7 +869,8 @@ function M.alternate(opts)
         return
     end
 
-    -- local found = RELOAD('configs.lsp.utils').switch_source_header_splitcmd(bufnr, 'edit')
+    -- TODO: Add support for clangd switch header/src command
+    -- local found = RELOAD('plugins.lsp.utils').switch_source_header_splitcmd(bufnr, 'edit')
     -- if found then
     --     return
     -- end

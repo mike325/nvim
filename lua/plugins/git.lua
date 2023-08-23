@@ -41,49 +41,54 @@ return {
         },
         opts = {
             on_attach = function(bufnr)
-                local mappings = {
-                    ['n ]c'] = {
-                        function()
-                            if vim.opt.diff:get() then
-                                vim.cmd.normal { args = { ']c', bang = true } }
+                local opts = {
+                    -- noremap = true,
+                    buffer = bufnr,
+                }
+                local keymaps = {
+                    [']c'] = {
+                        mode = 'n',
+                        mapping = function()
+                            if vim.opt_local.diff:get() then
+                                vim.cmd.normal { bang = true, args = { ']c' } }
+                            else
+                                require('gitsigns.actions').next_hunk()
                             end
-                            require('gitsigns.actions').next_hunk()
                         end,
                     },
-                    ['n [c'] = {
-                        function()
-                            if vim.opt.diff:get() then
-                                vim.cmd.normal { args = { '[c', bang = true } }
+                    ['[c'] = {
+                        mode = 'n',
+                        mapping = function()
+                            if vim.opt_local.diff:get() then
+                                vim.cmd.normal { bang = true, args = { '[c' } }
+                            else
+                                require('gitsigns.actions').prev_hunk()
                             end
-                            require('gitsigns.actions').prev_hunk()
                         end,
                     },
-
-                    ['n =s'] = '<cmd>lua require"gitsigns".stage_hunk()<CR>',
-                    ['v =s'] = '<cmd>lua require"gitsigns".stage_hunk({vim.fn.line("."), vim.fn.line("v")})<CR>',
-                    ['n =S'] = '<cmd>lua require"gitsigns".undo_stage_hunk()<CR>',
-                    ['n =u'] = '<cmd>lua require"gitsigns".reset_hunk()<CR>',
-                    ['v =u'] = '<cmd>lua require"gitsigns".reset_hunk({vim.fn.line("."), vim.fn.line("v")})<CR>',
-                    ['n =U'] = '<cmd>lua require"gitsigns".reset_buffer()<CR>',
-                    ['n =f'] = '<cmd>lua require"gitsigns".preview_hunk()<CR>',
-                    ['n =M'] = '<cmd>lua require"gitsigns".blame_line({full = false, ignore_whitespace = true})<CR>',
+                    ['=s'] = { mode = { 'n', 'v' }, mapping = '<cmd>lua require"gitsigns".stage_hunk()<CR>' },
+                    ['=S'] = { mode = 'n', mapping = '<cmd>lua require"gitsigns".undo_stage_hunk()<CR>' },
+                    ['=u'] = { mode = { 'n', 'v' }, mapping = '<cmd>lua require"gitsigns".reset_hunk()<CR>' },
+                    ['=U'] = { mode = 'n', mapping = '<cmd>lua require"gitsigns".reset_buffer()<CR>' },
+                    ['=f'] = { mode = 'n', mapping = '<cmd>lua require"gitsigns".preview_hunk()<CR>' },
+                    ['=M'] = {
+                        mode = 'n',
+                        mapping = '<cmd>lua require"gitsigns".blame_line{full=false, ignore_whitespace=true}<CR>',
+                    },
 
                     -- Text objects
-                    ['o ih'] = ':<C-U>lua require"gitsigns.actions".select_hunk()<CR>',
-                    ['x ih'] = ':<C-U>lua require"gitsigns.actions".select_hunk()<CR>',
-                    ['o ah'] = ':<C-U>lua require"gitsigns.actions".select_hunk()<CR>',
-                    ['x ah'] = ':<C-U>lua require"gitsigns.actions".select_hunk()<CR>',
+                    ['ih'] = {
+                        mode = { 'o', 'x' },
+                        mapping = ':<C-U>lua require"gitsigns.actions".select_hunk()<CR>',
+                    },
+                    ['ah'] = {
+                        mode = { 'o', 'x' },
+                        mapping = ':<C-U>lua require"gitsigns.actions".select_hunk()<CR>',
+                    },
                 }
-                for lhs, rhs in pairs(mappings) do
-                    local opts = { buffer = bufnr, noremap = true }
-                    local mapping
-                    if type(rhs) == type {} then
-                        mapping = rhs[1]
-                        opts = vim.tbl_extend('force', opts, rhs[2] or {})
-                    else
-                        mapping = rhs
-                    end
-                    vim.keymap.set(lhs:sub(1, 1), lhs:sub(3, #lhs), mapping, opts)
+
+                for lhs, rhs in pairs(keymaps) do
+                    vim.keymap.set(rhs.mode, lhs, rhs.mapping, opts)
                 end
             end,
             -- current_line_blame = true,

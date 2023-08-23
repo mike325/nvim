@@ -129,7 +129,7 @@ nvim.autocmd.CloseMenu = {
 nvim.autocmd.FoldText = {
     event = 'FileType',
     pattern = '*',
-    command = [[setlocal foldtext=luaeval('RELOAD\"utils\".functions.foldtext()')]],
+    command = "setlocal foldtext=v:lua.RELOAD('utils.functions').foldtext()",
 }
 
 -- BufReadPost is triggered after FileType detection, TS may not be attatch yet after

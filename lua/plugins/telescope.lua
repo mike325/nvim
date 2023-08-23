@@ -13,6 +13,21 @@ return {
         keys = { '<C-p>', '<C-b>' },
     },
     {
+        'nvim-telescope/telescope-fzf-native.nvim',
+        build = 'make',
+        main = 'fzf_lib',
+        module = true,
+        cond = function()
+            local compiler
+            if vim.fn.has 'win32' == 1 or vim.fn.has 'win64' == 1 then
+                compiler = vim.fn.executable 'gcc' == 1
+            else
+                compiler = vim.fn.executable 'gcc' == 1 or vim.fn.executable 'clang' == 1
+            end
+            return compiler
+        end,
+    },
+    {
         'AckslD/nvim-neoclip.lua',
         config = function()
             local db_path

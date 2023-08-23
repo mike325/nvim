@@ -187,6 +187,12 @@ lualine.setup {
                 end,
             },
             {
+                'arglist_counter',
+                cond = function()
+                    return vim.fn.argc() > 0
+                end,
+            },
+            {
                 'diff',
                 on_click = function(clicks, button, modifiers)
                     local ok, gitsigns = pcall(require, 'gitsigns')

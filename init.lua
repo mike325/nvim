@@ -9,6 +9,12 @@ if not nvim.has { 0, 9 } then
     vim.api.nvim_err_writeln 'Neovim version is too old!! please use update it'
 end
 
+if vim.loader then
+    vim.loader.enable()
+end
+
+vim.g.has_ui = #vim.api.nvim_list_uis() > 0
+
 vim.g.loaded_2html_plugin = 1
 vim.g.loaded_gzip = 1
 vim.g.loaded_rrhelper = 1
@@ -56,6 +62,12 @@ vim.opt.termguicolors = true
 vim.g.mapleader = ' '
 
 require 'utils.ft_detect'
+
+-- NOTE: overload/replace vim.* functions
+require 'overloads.notify'
+require 'overloads.ui.open'
+-- require 'overloads.paste'
+
 require 'completions'
 require 'globals'
 

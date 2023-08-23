@@ -295,7 +295,7 @@ local function fs_write(path, data, append, callback)
     }
 
     data = type(data) ~= type '' and table.concat(data, '\n') or data
-    local flags = append and 'a' or 'w'
+    local flags = append and 'a+' or 'w+'
 
     if not callback then
         return M.openfile(path, flags, function(fd)
@@ -308,7 +308,7 @@ local function fs_write(path, data, append, callback)
         end)
     end
 
-    uv.fs_open(path, 'r', 438, function(oerr, fd)
+    uv.fs_open(path, 'r+', 438, function(oerr, fd)
         assert(not oerr, oerr)
         uv.fs_fstat(fd, function(serr, stat)
             assert(not serr, serr)
@@ -493,14 +493,13 @@ function M.rename(old, new, bang)
 
         local git = RELOAD 'utils.git'
 
-        if git.is_git_repo(vim.fs.dirname(old)) then
+        if
+            git.is_git_repo(vim.fs.dirname(old))
+            and not vim.list_contains(vim.tbl_map(M.realpath, git.status().untracked or {}), old)
+        then
             local result = git.exec.mv { '-f', old, new }
             if #result > 0 then
-                vim.notify(
-                    'Failed to rename ' .. old .. '\n' .. table.concat(result, '\n'),
-                    'ERROR',
-                    { title = 'Rename' }
-                )
+                vim.notify('Failed to rename ' .. old .. '\n' .. result, 'ERROR', { title = 'Rename' })
                 return false
             end
         else

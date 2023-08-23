@@ -1,5 +1,4 @@
 local nvim = require 'nvim'
-local sys = require 'sys'
 
 local replace_indent = require('utils.buffers').replace_indent
 local executable = require('utils.files').executable
@@ -185,11 +184,19 @@ function M.opfun_grep(select, visual)
     local select_save = vim.o.selection
     vim.o.selection = 'inclusive'
 
-    local startpos = nvim.buf.get_mark(0, '[')
-    local endpos = nvim.buf.get_mark(0, ']')
-    local selection = nvim.buf.get_text(0, startpos[1] - 1, startpos[2], endpos[1] - 1, endpos[2] + 1, {})[1]
+    local search, s_row, s_col, e_row, e_col
+    if visual then
+        local startpos = nvim.fn.getpos "'<"
+        local endpos = nvim.fn.getpos "'>"
+        s_row, s_col, e_row, e_col = startpos[2] - 1, startpos[3] - 1, endpos[2] - 1, endpos[3]
+    else
+        local startpos = nvim.buf.get_mark(0, '[')
+        local endpos = nvim.buf.get_mark(0, ']')
+        s_row, s_col, e_row, e_col = startpos[1] - 1, startpos[2], endpos[1] - 1, endpos[2] + 1
+    end
 
-    M.send_grep_job { search = selection }
+    search = nvim.buf.get_text(0, s_row, s_col, e_row, e_col, {})[1]
+    M.send_grep_job { search = search }
 
     vim.o.selection = select_save
 end
@@ -253,10 +260,18 @@ function M.opfun_comment(_, visual)
     local select_save = vim.o.selection
     vim.o.selection = 'inclusive'
 
-    local startpos = nvim.buf.get_mark(0, '[')
-    local endpos = nvim.buf.get_mark(0, ']')
+    local s_row, e_row
+    if visual then
+        local startpos = nvim.fn.getpos "'<"
+        local endpos = nvim.fn.getpos "'>"
+        s_row, e_row = startpos[2] - 1, endpos[2]
+    else
+        local startpos = nvim.buf.get_mark(0, '[')
+        local endpos = nvim.buf.get_mark(0, ']')
+        s_row, e_row = startpos[1] - 1, endpos[1]
+    end
 
-    M.toggle_comments(startpos[1] - 1, endpos[1])
+    M.toggle_comments(s_row, e_row)
 
     vim.o.selection = select_save
 end
@@ -382,51 +397,10 @@ function M.async_execute(opts)
     end
 end
 
-function M.open(uri)
-    vim.validate {
-        uri = { uri, 'string' },
-    }
-
-    local cmd
-    local args = {}
-    if sys.name == 'windows' then
-        cmd = 'powershell'
-        vim.list_extend(args, { '-noexit', '-executionpolicy', 'bypass', 'Start-Process' })
-    elseif sys.name == 'linux' then
-        cmd = 'xdg-open'
-    else
-        -- Problably macos
-        cmd = 'open'
-    end
-
-    table.insert(args, uri)
-
-    -- NOTE: Attempt to open using wezterm OSC functionality
-    if vim.env.SSH_CONNECTION then
-        M.send_osc52('open', '"' .. uri .. '"')
-    else
-        local open = RELOAD('jobs'):new {
-            cmd = cmd,
-            args = args,
-            qf = {
-                dump = false,
-                on_fail = {
-                    dump = true,
-                    jump = false,
-                    open = true,
-                },
-                context = 'Open',
-                title = 'Open',
-            },
-        }
-        open:start()
-    end
-end
-
 -- TODO: Improve python folding text
 function M.foldtext()
-    local indent_level =
-        require('utils.buffers').get_indent_block(vim.api.nvim_buf_get_lines(0, vim.v.foldstart, vim.v.foldend, false))
+    local lines = vim.api.nvim_buf_get_lines(0, vim.v.foldstart, vim.v.foldend, false)
+    local indent_level = require('utils.buffers').get_indent_block(lines)
     local indent_string = require('utils.buffers').get_indent_string(indent_level)
     local foldtext = '%s %s %s %s'
     return foldtext:format(
@@ -589,8 +563,8 @@ function M.project_config(event)
         )[1]
 
         if is_c_project then
-            -- NOTE: This may take a lot of time and even though it wont hang the ui it hang noevim exit
-            -- which means if you can't to close neovim before it finishes indexing
+            -- NOTE: This may take a lot of time and even though it wont hang the UI it still can hang neovim's exit
+            --       which means neovim can't be closed before it finishes indexing
             -- RELOAD('threads.related').async_gather_alternates { path = vim.fs.dirname(is_c_project) }
 
             local compile_flags = vim.fs.find(

@@ -79,12 +79,6 @@ return {
         },
     },
     {
-        'numToStr/Comment.nvim',
-        config = function()
-            require 'configs.comments'
-        end,
-    },
-    {
         'chrisgrieser/nvim-various-textobjs',
         config = function()
             require('various-textobjs').setup {

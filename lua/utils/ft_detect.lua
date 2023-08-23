@@ -40,6 +40,16 @@ vim.filetype.add {
         ['cppreference.com_.*%.txt'] = 'cpp',
         ['.*%.cppreference.com_.*%.txt'] = 'cpp',
         ['.*/zfunctions/.*'] = 'zsh',
+        ['.*'] = {
+            priority = -math.huge,
+            function(_, bufnr)
+                local content = vim.api.nvim_buf_get_lines(bufnr, 0, 1, false)
+                local first_line = content[1]
+                if first_line and first_line:match(('^#!%s'):format(vim.pesc(vim.v.progpath))) then
+                    return 'lua'
+                end
+            end,
+        },
     },
 }
 

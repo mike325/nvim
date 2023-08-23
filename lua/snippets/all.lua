@@ -8,13 +8,13 @@ local sys = require 'sys'
 local utils = RELOAD 'configs.luasnip.utils'
 
 local s = ls.snippet
--- local sn = ls.snippet_node
--- local t = ls.text_node
+local sn = ls.snippet_node
+local t = ls.text_node
 -- local isn = ls.indent_snippet_node
--- local i = ls.insert_node
+local i = ls.insert_node
 local f = ls.function_node
--- local c = ls.choice_node
--- local d = ls.dynamic_node
+local c = ls.choice_node
+local d = ls.dynamic_node
 -- local l = require('luasnip.extras').lambda
 -- local r = require('luasnip.extras').rep
 local p = require('luasnip.extras').partial
@@ -32,17 +32,44 @@ local p = require('luasnip.extras').partial
 -- local get_comment = utils.get_comment
 -- local surround_with_func = utils.surround_with_func
 
-local function notes(note)
+local function notes(args, snip, old_state, user_args)
+    local nodes = {}
+    old_state = old_state or {}
+    user_args = user_args or {}
+    local annotation = user_args.annotation
+
+    local annotation_nodes = {}
+    local interactive_node = 1
     if vim.bo.filetype == 'gitcommit' then
-        note = ('%s: '):format(note:upper())
+        table.insert(annotation_nodes, t { ('%s: '):format(annotation:upper()) })
     else
-        note = ('%s(%s): '):format(note:upper(), sys.username)
+        table.insert(annotation_nodes, t { annotation:upper() })
+        table.insert(
+            annotation_nodes,
+            c(interactive_node, {
+                sn(nil, {
+                    t { '(' },
+                    i(1, sys.username),
+                    t { ')' },
+                }),
+                i(1, ''),
+            })
+        )
+        table.insert(annotation_nodes, t { ': ' })
+        interactive_node = interactive_node + 1
     end
 
-    if RELOAD('utils.treesitter').is_in_node 'comment' then
-        return note
+    if not RELOAD('utils.treesitter').is_in_node 'comment' then
+        local comment_str = (RELOAD('plugins.luasnip.utils').get_comment():gsub('%%s', ''))
+        table.insert(nodes, t { comment_str })
+        nodes = vim.list_extend(nodes, annotation_nodes)
     end
-    return RELOAD('plugins.luasnip.utils').get_comment(note)
+
+    table.insert(nodes, i(interactive_node, ''))
+
+    local snip_node = sn(nil, nodes)
+    snip_node.old_state = old_state
+    return snip_node
 end
 
 local return_value = utils.return_value
@@ -114,6 +141,13 @@ local general_snips = {
             local executables = {
                 python = 'python3'
             }
+
+            -- stylua: ignore
+            if ft == 'lua' then
+                -- stylua: ignore
+                return '#!' .. vim.v.progpath .. ' -l'
+            end
+
             -- stylua: ignore
             return '#!/usr/bin/env '.. (executables[ft] or ft)
         end),
@@ -143,7 +177,7 @@ local annotations = {
 
 for _, annotation in ipairs(annotations) do
     local snip = #annotation <= 4 and annotation or annotation:sub(1, 4)
-    table.insert(general_snips, s(snip, p(notes, annotation)))
+    table.insert(general_snips, s(snip, d(1, notes, {}, { user_args = { { annotation = annotation } } })))
 end
 
 -- ls.add_snippets('all', general_snips, { key = 'all_init' })

@@ -54,15 +54,6 @@ function M.tbl_values(tbl)
     return values
 end
 
-function M.tbl_values(tbl)
-    assert(type(tbl) == type {}, debug.traceback('Invalid type for tbl: ' .. type(tbl)))
-    local values = {}
-    for _, value in pairs(tbl) do
-        table.insert(values, value)
-    end
-    return values
-end
-
 function M.tbl_filter(func, tbl)
     assert(type(tbl) == type {}, debug.traceback('Invalid type for tbl: ' .. type(tbl)))
     assert(type(func) == 'function', debug.traceback('Invalid type for func: ' .. type(tbl)))
@@ -90,8 +81,8 @@ function M.tbl_map(func, tbl)
 end
 
 function M.list_extend(dest, src)
-    assert(M.tbl_islist(src), debug.traceback('Invalid type for src: ' .. type(src)))
-    assert(M.tbl_islist(dest), debug.traceback('Invalid type for dest: ' .. type(dest)))
+    assert(type(src) == type {}, debug.traceback('Invalid type for src: ' .. type(src)))
+    assert(type(dest) == type {}, debug.traceback('Invalid type for dest: ' .. type(dest)))
 
     for _, node in ipairs(src) do
         table.insert(dest, node)
@@ -126,12 +117,14 @@ function M.has_attrs(tbl, attrs)
 end
 
 function M.uniq_list(lst)
-    assert(M.tbl_islist(lst), debug.traceback 'Uniq only works with array-like tables')
+    assert(type(lst) == type {}, debug.traceback 'Uniq only works with array-like tables')
 
     local tmp = {}
+    local tmp_hash = {}
     for _, node in ipairs(lst) do
-        if not M.tbl_contains(tmp, node) then
+        if tmp_hash[node] == nil then
             table.insert(tmp, node)
+            tmp_hash[node] = true
         end
     end
     return tmp

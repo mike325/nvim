@@ -30,9 +30,9 @@ vim.keymap.set('c', '<C-k>', '<left>', noremap)
 vim.keymap.set('c', '<C-j>', '<right>', noremap)
 
 vim.keymap.set('c', '<C-r><C-w>', "<C-r>=escape(expand('<cword>'), '#')<CR>", noremap)
-vim.keymap.set('c', '<C-r><C-n>', [[<C-r>=luaeval("vim.fs.basename(vim.api.nvim_buf_get_name(0))")<CR>]], noremap)
-vim.keymap.set('c', '<C-r><C-p>', [[<C-r>=luaeval("vim.api.nvim_buf_get_name(0)")<CR>]], noremap)
-vim.keymap.set('c', '<C-r><C-d>', [[<C-r>=luaeval("vim.fs.dirname(vim.api.nvim_buf_get_name(0))..'/'")<CR>]], noremap)
+vim.keymap.set('c', '<C-r><C-n>', [[<C-r>=v:lua.vim.fs.basename(nvim_buf_get_name(0))<CR>]], noremap)
+vim.keymap.set('c', '<C-r><C-p>', [[<C-r>=nvim_buf_get_name(0)<CR>]], noremap)
+vim.keymap.set('c', '<C-r><C-d>', [[<C-r>=v:lua.vim.fs.dirname(nvim_buf_get_name(0))..'/'<CR>]], noremap)
 
 vim.keymap.set('n', ',', ':', noremap)
 vim.keymap.set('x', ',', ':', noremap)
@@ -169,8 +169,11 @@ nvim.command.set('MouseToggle', function()
 end)
 
 nvim.command.set('BufKill', function(opts)
+    opts = opts or {}
+    opts.rm_no_cwd = vim.list_contains(opts.fargs, '-cwd')
+    opts.rm_empty = vim.list_contains(opts.fargs, '-empty')
     RELOAD('mappings').bufkill(opts)
-end, { bang = true, nargs = 0 })
+end, { bang = true, nargs = '*', complete = completions.bufkill_options })
 
 nvim.command.set('VerboseToggle', 'let &verbose=!&verbose | echo "Verbose " . &verbose')
 nvim.command.set('RelativeNumbersToggle', 'set relativenumber! relativenumber?')
@@ -398,7 +401,7 @@ end
 
 -- TODO: Add support to change between local and osc/remote open
 nvim.command.set('Open', function(opts)
-    RELOAD('utils.functions').open(opts.args)
+    vim.ui.open(opts.args)
 end, {
     nargs = 1,
     complete = 'file',
@@ -409,7 +412,7 @@ end, {
 vim.keymap.set('n', 'gx', function()
     local cfile = vim.fn.expand '<cfile>'
     local cword = vim.fn.expand '<cWORD>'
-    RELOAD('utils.functions').open(cword:match '^[%w]+://' and cword or cfile)
+    vim.ui.open(cword:match '^[%w]+://' and cword or cfile)
 end, noremap_silent)
 
 nvim.command.set('Repl', function(opts)
@@ -482,11 +485,11 @@ if nvim.has { 0, 8 } then
 
     nvim.command.set('AlternateTest', function(opts)
         RELOAD('mappings').alternate_test(opts)
-    end, { nargs = 0, desc = 'Alternate between files', bang = true })
+    end, { nargs = 0, desc = 'Alternate between source and test files', bang = true })
 
     nvim.command.set('T', function(opts)
         RELOAD('mappings').alternate_test(opts)
-    end, { nargs = 0, desc = 'Alternate between files', bang = true })
+    end, { nargs = 0, desc = 'Alternate between source and test files', bang = true })
 
     -- nvim.command.set('AltMakefile', function(opts)
     --     RELOAD('mappings').alt_makefiles(opts)
@@ -499,7 +502,10 @@ nvim.command.set('NotificationServer', function(opts)
 end, { nargs = 1, complete = completions.toggle, bang = true })
 
 nvim.command.set('RemoveEmpty', function(opts)
-    RELOAD('utils.buffers').remove_empty(opts)
+    local removed = RELOAD('utils.buffers').remove_empty(opts)
+    if removed > 0 then
+        print(' ', removed, ' buffers cleaned!')
+    end
 end, { nargs = 0, bang = true, desc = 'Remove empty buffers' })
 
 vim.keymap.set('n', '=D', function()
@@ -744,3 +750,36 @@ if executable 'gh' then
         desc = 'Open all modified files in the current PR',
     })
 end
+
+nvim.command.set('Argdo', function(opts)
+    for _, filename in ipairs(vim.fn.argv()) do
+        local buf = vim.fn.bufnr(filename)
+        vim.api.nvim_buf_call(buf, function()
+            vim.cmd(opts.args)
+        end)
+    end
+end, { nargs = '+', desc = 'argdo but without the final Press enter message', complete = 'command' })
+
+nvim.command.set('Arglistclear', function()
+    RELOAD('utils.arglist').clear()
+end, { desc = 'Remove all args from the arglist' })
+
+nvim.command.set('Qf2Arglist', function()
+    local qfutils = RELOAD 'utils.qf'
+    qfutils.qf_to_arglist()
+end, { desc = 'Dump qf files to the arglist' })
+
+nvim.command.set('Loc2Arglist', function()
+    local qfutils = RELOAD 'utils.qf'
+    qfutils.qf_to_arglist { loc = true }
+end, { desc = 'Dump loclist files to the arglist' })
+
+nvim.command.set('Arglist2Qf', function()
+    local qfutils = RELOAD 'utils.qf'
+    qfutils.dump_files(vim.fn.argv())
+end, { desc = 'Dump loclist files to the arglist' })
+
+nvim.command.set('Arglist2Loc', function()
+    local qfutils = RELOAD 'utils.qf'
+    qfutils.dump_files(vim.fn.argv(), { win = 0 })
+end, { desc = 'Dump loclist files to the arglist' })

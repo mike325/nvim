@@ -78,7 +78,6 @@ Matrix
 asincronismo
 fundamentación
 telemarketing
-Batch
 vim
 certbot
 plasmashell
@@ -157,8 +156,6 @@ GPIOs
 led
 leds
 script
-raspbian
-leds
 Raspberry
 info
 zigbee
@@ -172,7 +169,6 @@ NMI
 fTPM
 SMI
 SMS
-prototipado
 prototipado
 dijkstra
 Google

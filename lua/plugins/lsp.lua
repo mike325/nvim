@@ -10,17 +10,18 @@ return {
     {
         'jose-elias-alvarez/null-ls.nvim',
         priority = 90,
+        pin = true,
         dependencies = {
             { 'neovim/nvim-lspconfig' },
             { 'nvim-lua/plenary.nvim' },
         },
     },
-    {
-        'weilbith/nvim-floating-tag-preview',
-        lazy = true,
-        event = { 'CursorHold' },
-        dependencies = {
-            { 'neovim/nvim-lspconfig' },
-        },
-    },
+    -- {
+    --     'weilbith/nvim-floating-tag-preview',
+    --     lazy = true,
+    --     event = { 'CursorHold' },
+    --     dependencies = {
+    --         { 'neovim/nvim-lspconfig' },
+    --     },
+    -- },
 }

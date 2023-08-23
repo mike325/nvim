@@ -42,18 +42,20 @@ end
 
 local parsers = require 'nvim-treesitter.parsers'
 
-local parser_config = parsers.get_parser_configs()
-parser_config.org = {
-    install_info = {
-        url = 'https://github.com/milisims/tree-sitter-org',
-        revision = 'f110024d539e676f25b72b7c80b0fd43c34264ef',
-        files = { 'src/parser.c', 'src/scanner.cc' },
-    },
-    filetype = 'org',
-}
+local cpp_tools = vim.F.npcall(require, 'nt-cpp-tools')
+if cpp_tools then
+    cpp_tools.setup {
+        preview = {
+            quit = '<ESC>',
+            accept = '<CR>',
+        },
+        header_extension = 'hpp',
+        source_extension = 'cpp',
+    }
+end
 
 treesitter.setup {
-    ensure_installed = 'all',
+    -- ensure_installed = languages,
     indent = {
         enable = true,
     },
@@ -98,24 +100,24 @@ treesitter.setup {
                 ['aa'] = '@parameter.inner',
                 ['ir'] = '@loop.inner', -- "repeat" mnemonic
                 ['ar'] = '@loop.outer',
-                -- ['ac'] = comment_txtobj,
-                -- ['ic'] = comment_txtobj,
+                ['ac'] =  '@comment.outer',
+                ['ic'] =  '@comment.outer',
             },
         },
         swap = {
             enable = true,
             swap_next = {
                 -- ["<leader>k"] = "@class.outer",
-                -- ["<leader>c"] = "@comment.outer",
                 -- ["<leader>f"] = "@loop.outer",
+                ["<leader>c"] = "@comment.outer",
                 ['<leader>f'] = '@conditional.outer',
                 ['<leader>a'] = '@parameter.inner',
                 ['<leader>m'] = '@function.outer',
             },
             swap_previous = {
                 -- ["<leader><leader>k"] = "@class.outer",
-                -- ["<leader><leader>c"] = "@comment.outer",
                 -- ["<leader><leader>f"] = "@loop.outer",
+                ["<leader><leader>c"] = "@comment.outer",
                 ['<leader><leader>f'] = '@conditional.outer',
                 ['<leader><leader>a'] = '@parameter.inner',
                 ['<leader><leader>m'] = '@function.outer',
@@ -129,32 +131,32 @@ treesitter.setup {
                 ['[m'] = '@function.outer',
                 ['[k'] = '@class.outer',
                 ['[r'] = '@loop.outer',
-                ['[a'] = '@parameter.inner',
-                -- ["[c"] = commet_txtobj,
+                ["[C"] = '@comment.outer',
+                -- ['[a'] = '@parameter.inner',
             },
             goto_next_start = {
                 [']f'] = '@conditional.outer',
                 [']m'] = '@function.outer',
                 [']k'] = '@class.outer',
                 [']r'] = '@loop.outer',
-                [']a'] = '@parameter.inner',
-                -- ["]c"] = commet_txtobj,  -- TODO: Conflict with diff ]c,[c mappings
+                ["]C"] = '@comment.outer',
+                -- [']a'] = '@parameter.inner',
             },
             goto_previous_end = {
                 ['[F'] = '@conditional.outer',
                 ['[M'] = '@function.outer',
                 [']K'] = '@class.outer',
                 ['[R'] = '@loop.outer',
-                ['[A'] = '@parameter.inner',
-                -- ["[C"] = commet_txtobj,
+                -- ["[C"] = '@comment.outer',
+                -- ['[A'] = '@parameter.inner',
             },
             goto_next_end = {
                 [']F'] = '@conditional.outer',
                 [']M'] = '@function.outer',
                 ['[K'] = '@class.outer',
                 [']R'] = '@loop.outer',
-                [']A'] = '@parameter.inner',
-                -- ["]C"] =  commet_txtobj,
+                -- ["]C"] =  '@comment.outer',
+                -- [']A'] = '@parameter.inner',
             },
         },
     },
@@ -220,6 +222,11 @@ treesitter.setup {
         -- },
     },
 }
+
+local context = vim.F.npcall(require, 'treesitter-context')
+if context then
+    context.setup {}
+end
 
 local fts = {}
 for lang, opts in pairs(parsers.list) do
