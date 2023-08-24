@@ -43,6 +43,18 @@ return {
         dependencies = {
             { 'nvim-treesitter/nvim-treesitter' },
         },
+        cmd = { 'TSSecretary' },
+        keys = { '<M-q>' },
+        config = function()
+            local nvim = require 'nvim'
+
+            vim.keymap.set('n', '<M-q>', function()
+                require('query-secretary').query_window_initiate()
+            end, { desc = 'TS Query editing tool' })
+            nvim.command.set('TSSecretary', function()
+                require('query-secretary').query_window_initiate()
+            end, { desc = 'Opens TS secretary window' })
+        end,
     },
     {
         'Badhi/nvim-treesitter-cpp-tools',
