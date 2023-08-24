@@ -4,7 +4,14 @@ if not vim.keymap then
     vim.keymap = nvim.keymap
 end
 
-if not nvim.plugins['vim-commentary'] and not nvim.plugins['Comment.nvim'] and not nvim.plugins['mini.nvim'] then
+local has_mini = nvim.plugins['mini.nvim'] ~= nil
+
+if not has_mini  then
+    vim.keymap.set('n', ']e', [[:<C-U>lua require"mappings".move_line(true)<CR>]], { noremap = true, silent = true })
+    vim.keymap.set('n', '[e', [[:<C-U>lua require"mappings".move_line(false)<CR>]], { noremap = true, silent = true })
+end
+
+if not nvim.plugins['vim-commentary'] and not nvim.plugins['Comment.nvim'] and not has_mini then
     vim.keymap.set(
         'n',
         'gc',
@@ -24,9 +31,4 @@ if not nvim.plugins['vim-commentary'] and not nvim.plugins['Comment.nvim'] and n
         require('utils.functions').toggle_comments(cursor[1] - 1, cursor[1])
         vim.api.nvim_win_set_cursor(0, cursor)
     end, { noremap = true, silent = true, desc = 'Custom comment surrunding current line' })
-end
-
-if not nvim.plugins['mini.nvim'] then
-    vim.keymap.set('n', ']e', [[:<C-U>lua require"mappings".move_line(true)<CR>]], { noremap = true, silent = true })
-    vim.keymap.set('n', '[e', [[:<C-U>lua require"mappings".move_line(false)<CR>]], { noremap = true, silent = true })
 end
