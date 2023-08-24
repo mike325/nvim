@@ -102,7 +102,7 @@ local section_separators = vim.env.NO_COOL_FONTS == nil and get_separators 'arro
 lualine.setup {
     options = {
         icons_enabled = vim.env.NO_COOL_FONTS == nil,
-        -- theme = 'auto',
+        theme = 'catppuccin', -- 'auto',
         component_separators = component_separators,
         section_separators = section_separators,
         -- disabled_filetypes = {},

@@ -95,6 +95,7 @@ return {
         end,
         dependencies = {
             { 'arkav/lualine-lsp-progress' },
+            { 'catppuccin' },
         },
     },
 }
