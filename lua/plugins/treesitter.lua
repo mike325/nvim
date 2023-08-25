@@ -109,7 +109,7 @@ treesitter.setup {
             swap_next = {
                 -- ["<leader>k"] = "@class.outer",
                 -- ["<leader>f"] = "@loop.outer",
-                ["<leader>c"] = "@comment.outer",
+                -- ["<leader>c"] = "@comment.outer",
                 ['<leader>f'] = '@conditional.outer',
                 ['<leader>a'] = '@parameter.inner',
                 ['<leader>m'] = '@function.outer',
@@ -117,7 +117,7 @@ treesitter.setup {
             swap_previous = {
                 -- ["<leader><leader>k"] = "@class.outer",
                 -- ["<leader><leader>f"] = "@loop.outer",
-                ["<leader><leader>c"] = "@comment.outer",
+                -- ["<leader><leader>c"] = "@comment.outer",
                 ['<leader><leader>f'] = '@conditional.outer',
                 ['<leader><leader>a'] = '@parameter.inner',
                 ['<leader><leader>m'] = '@function.outer',
