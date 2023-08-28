@@ -118,6 +118,8 @@ function M.send_grep_job(opts)
     local cmd = opts.cmd or grepprg[1]
     local args = opts.args or {}
     local search = opts.search or vim.fn.expand '<cword>'
+    -- NOTE: Save the search in / for future reference,
+    nvim.reg['/'] = search
     local use_loc = opts.loc
 
     vim.validate {

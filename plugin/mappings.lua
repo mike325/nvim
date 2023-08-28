@@ -31,8 +31,8 @@ vim.keymap.set('c', '<C-j>', '<right>', noremap)
 
 vim.keymap.set('c', '<C-r><C-w>', "<C-r>=escape(expand('<cword>'), '#')<CR>", noremap)
 vim.keymap.set('c', '<C-r><C-n>', [[<C-r>=v:lua.vim.fs.basename(nvim_buf_get_name(0))<CR>]], noremap)
-vim.keymap.set('c', '<C-r><C-p>', [[<C-r>=nvim_buf_get_name(0)<CR>]], noremap)
-vim.keymap.set('c', '<C-r><C-d>', [[<C-r>=v:lua.vim.fs.dirname(nvim_buf_get_name(0))..'/'<CR>]], noremap)
+vim.keymap.set('c', '<C-r><C-p>', [[<C-r>=bufname('%')<CR>]], noremap)
+vim.keymap.set('c', '<C-r><C-d>', [[<C-r>=v:lua.vim.fs.dirname(bufname('%'))..'/'<CR>]], noremap)
 
 vim.keymap.set('n', ',', ':', noremap)
 vim.keymap.set('x', ',', ':', noremap)
@@ -43,22 +43,20 @@ vim.keymap.set('n', 'J', 'm`J``', noremap)
 vim.keymap.set('i', 'jj', '<ESC>', noremap)
 vim.keymap.set('x', '<BS>', '<ESC>', noremap)
 
-vim.keymap.set('n', '<leader>h', '<C-w>h', noremap)
-vim.keymap.set('n', '<leader>j', '<C-w>j', noremap)
-vim.keymap.set('n', '<leader>k', '<C-w>k', noremap)
-vim.keymap.set('n', '<leader>l', '<C-w>l', noremap)
+for key, direction in pairs { h = 'left', j = 'down', k = 'up', l = 'left' } do
+    local map_opts = { noremap = true, desc = 'Move to the window located ' .. direction }
+    vim.keymap.set('n', '<leader>' .. key, '<C-w>' .. key, map_opts)
+end
+
+local idx = 1
+while idx <= 9 do
+    local map_opts = { noremap = true, desc = 'Move to the ' .. idx .. ' Tab' }
+    vim.keymap.set('n', '<leader>' .. idx, idx .. 'gt', map_opts)
+    idx = idx + 1
+end
+vim.keymap.set('n', '<leader>0', '<cmd>tablast<CR>', { noremap = true, desc = 'Move to the last tab' })
 
 vim.keymap.set('n', '<leader>e', '<C-w>=', noremap)
-vim.keymap.set('n', '<leader>1', '1gt', noremap)
-vim.keymap.set('n', '<leader>2', '2gt', noremap)
-vim.keymap.set('n', '<leader>3', '3gt', noremap)
-vim.keymap.set('n', '<leader>4', '4gt', noremap)
-vim.keymap.set('n', '<leader>5', '5gt', noremap)
-vim.keymap.set('n', '<leader>6', '6gt', noremap)
-vim.keymap.set('n', '<leader>7', '7gt', noremap)
-vim.keymap.set('n', '<leader>8', '8gt', noremap)
-vim.keymap.set('n', '<leader>9', '9gt', noremap)
-vim.keymap.set('n', '<leader>0', '<cmd>tablast<CR>', noremap)
 vim.keymap.set('n', '<leader><leader>n', '<cmd>tabnew<CR>', noremap)
 
 vim.keymap.set({ 'n', 'x' }, '&', '<cmd>&&<CR>', noremap)
@@ -126,26 +124,37 @@ vim.keymap.set('n', '<leader>d', function()
 end, { desc = 'Delete current buffer without changing the window layout' })
 
 local mapping_pairs = {
-    a = '',
-    b = 'b',
-    q = 'c',
-    l = 'l',
+    arglist = '',
+    buflist = 'b',
+    quickfix = 'c',
+    loclist = 'l',
 }
 
 for postfix_map, prefix_cmd in pairs(mapping_pairs) do
-    vim.keymap.set('n', '[' .. postfix_map:upper(), ':<C-U>' .. prefix_cmd .. 'first<CR>zvzz', noremap_silent)
-    vim.keymap.set('n', ']' .. postfix_map:upper(), ':<C-U>' .. prefix_cmd .. 'last<CR>zvzz', noremap_silent)
+    local prefix = postfix_map:sub(1, 1)
     vim.keymap.set(
         'n',
-        '[' .. postfix_map,
-        ':<C-U>exe "".(v:count ? v:count : "")."' .. prefix_cmd .. 'previous"<CR>zvzz',
-        noremap_silent
+        '[' .. prefix:upper(),
+        ':<C-U>' .. prefix_cmd .. 'first<CR>zvzz',
+        { noremap = true, silent = true, desc = 'Go to the first element of the ' .. postfix_map }
     )
     vim.keymap.set(
         'n',
-        ']' .. postfix_map,
+        ']' .. prefix:upper(),
+        ':<C-U>' .. prefix_cmd .. 'last<CR>zvzz',
+        { noremap = true, silent = true, desc = 'Go to the last element of the ' .. postfix_map }
+    )
+    vim.keymap.set(
+        'n',
+        '[' .. prefix,
+        ':<C-U>exe "".(v:count ? v:count : "")."' .. prefix_cmd .. 'previous"<CR>zvzz',
+        { noremap = true, silent = true, desc = 'Go to the prev element of the ' .. postfix_map }
+    )
+    vim.keymap.set(
+        'n',
+        ']' .. prefix,
         ':<C-U>exe "".(v:count ? v:count : "")."' .. prefix_cmd .. 'next"<CR>zvzz',
-        noremap_silent
+        { noremap = true, silent = true, desc = 'Go to the next element of the ' .. postfix_map }
     )
 end
 
@@ -312,7 +321,7 @@ nvim.command.set('Find', function(opts)
         end,
     }
     RELOAD('mappings').find(args)
-end, { bang = true, nargs = '+', complete = 'file' })
+end, { bang = true, nargs = '+', complete = 'file', desc = 'Async and recursive :find' })
 
 nvim.command.set('LFind', function(opts)
     local args = {
@@ -336,7 +345,7 @@ nvim.command.set('LFind', function(opts)
         end,
     }
     RELOAD('mappings').find(args)
-end, { bang = true, nargs = '+', complete = 'file' })
+end, { bang = true, nargs = '+', complete = 'file', desc = 'Async and recursive :lfind' })
 
 vim.keymap.set(
     'n',
