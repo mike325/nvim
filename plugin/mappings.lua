@@ -56,7 +56,6 @@ while idx <= 9 do
 end
 vim.keymap.set('n', '<leader>0', '<cmd>tablast<CR>', { noremap = true, desc = 'Move to the last tab' })
 
-vim.keymap.set('n', '<leader>e', '<C-w>=', noremap)
 vim.keymap.set('n', '<leader><leader>n', '<cmd>tabnew<CR>', noremap)
 
 vim.keymap.set({ 'n', 'x' }, '&', '<cmd>&&<CR>', noremap)
@@ -187,14 +186,14 @@ end, { nargs = '*', desc = 'Show big center floating terminal window' })
 
 nvim.command.set('MouseToggle', function()
     RELOAD('mappings').toggle_mouse()
-end)
+end, { desc = 'Enable/Disable Mouse support' })
 
 nvim.command.set('BufKill', function(opts)
     opts = opts or {}
     opts.rm_no_cwd = vim.list_contains(opts.fargs, '-cwd')
     opts.rm_empty = vim.list_contains(opts.fargs, '-empty')
     RELOAD('mappings').bufkill(opts)
-end, { bang = true, nargs = '*', complete = completions.bufkill_options })
+end, { desc = 'Remove unloaded hidden buffers', bang = true, nargs = '*', complete = completions.bufkill_options })
 
 nvim.command.set('VerboseToggle', 'let &verbose=!&verbose | echo "Verbose " . &verbose')
 nvim.command.set('RelativeNumbersToggle', 'set relativenumber! relativenumber?')
@@ -208,21 +207,32 @@ nvim.command.set('WrapToggle', 'setlocal wrap! wrap?')
 
 nvim.command.set('Trim', function(opts)
     RELOAD('mappings').trim(opts)
-end, { nargs = '?', complete = completions.toggle, bang = true })
+end, {
+    desc = 'Enable/Disable auto trim of trailing white spaces',
+    nargs = '?',
+    complete = completions.toggle,
+    bang = true,
+})
 
-nvim.command.set('GonvimSettngs', "execute('edit ~/.gonvim/setting.toml')")
+if executable 'gonvim' then
+    nvim.command.set(
+        'GonvimSettngs',
+        "execute('edit ~/.gonvim/setting.toml')",
+        { desc = "Shortcut to edit gonvim's setting.toml" }
+    )
+end
 
 nvim.command.set('FileType', function(opts)
     vim.opt_local.filetype = opts.args ~= '' and opts.args or 'text'
-end, { nargs = '?', complete = 'filetype' })
+end, { nargs = '?', complete = 'filetype', desc = 'Set filetype' })
 
 nvim.command.set('FileFormat', function(opts)
     vim.opt_local.filetype = opts.args ~= '' and opts.args or 'unix'
-end, { nargs = '?', complete = completions.fileformats })
+end, { nargs = '?', complete = completions.fileformats, desc = 'Set file format' })
 
 nvim.command.set('SpellLang', function(opts)
     RELOAD('utils.functions').spelllangs(opts.args)
-end, { nargs = '?', complete = completions.spells })
+end, { nargs = '?', complete = completions.spells, desc = 'Enable/Disable spelling' })
 
 nvim.command.set('Qopen', function(opts)
     opts.size = tonumber(opts.args)
@@ -230,7 +240,7 @@ nvim.command.set('Qopen', function(opts)
         opts.size = opts.size + 1
     end
     RELOAD('utils.qf').toggle(opts)
-end, { nargs = '?' })
+end, { nargs = '?', desc = 'Open quickfix' })
 
 -- TODO: Check for GUIs
 if sys.name == 'windows' then
@@ -242,33 +252,33 @@ if sys.name == 'windows' then
 else
     nvim.command.set('Chmod', function(opts)
         RELOAD('mappings').chmod(opts)
-    end, { nargs = 1 })
+    end, { nargs = 1, desc = 'Change the permission of the current buffer/file' })
 end
 
 nvim.command.set('MoveFile', function(opts)
     RELOAD('mappings').move_file(opts)
-end, { bang = true, nargs = 1, complete = 'file' })
+end, { bang = true, nargs = 1, complete = 'file', desc = 'Move current file to another location' })
 
 nvim.command.set('RenameFile', function(opts)
     RELOAD('mappings').rename_file(opts)
-end, { bang = true, nargs = 1, complete = 'file' })
+end, { bang = true, nargs = 1, complete = 'file', desc = 'Rename current file to another location' })
 
 nvim.command.set('Mkdir', function(opts)
     vim.fn.mkdir(vim.fn.fnameescape(opts.args), 'p')
-end, { nargs = 1, complete = 'dir' })
+end, { nargs = 1, complete = 'dir', desc = 'mkdir wrapper' })
 
 nvim.command.set('RemoveFile', function(opts)
     local target = opts.args ~= '' and opts.args or vim.api.nvim_buf_get_name(0)
     local utils = RELOAD 'utils.files'
     utils.delete(utils.realpath(target), opts.bang)
-end, { bang = true, nargs = '?', complete = 'file' })
+end, { bang = true, nargs = '?', complete = 'file', desc = 'Remove current file and close the window' })
 
 nvim.command.set('CopyFile', function(opts)
     local utils = RELOAD 'utils.files'
     local src = vim.api.nvim_buf_get_name(0)
     local dest = opts.fargs[1]
     utils.copy(src, dest, opts.bang)
-end, { bang = true, nargs = 1, complete = 'file' })
+end, { bang = true, nargs = 1, complete = 'file', desc = 'Copy current file to another location' })
 
 nvim.command.set('Grep', function(opts)
     local search = opts.fargs[#opts.fargs]

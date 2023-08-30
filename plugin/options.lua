@@ -10,8 +10,8 @@ local function isempty(s)
 end
 
 local dirpaths = {
+    -- swap = 'directory',
     backup = 'backupdir',
-    swap = 'directory',
     undo = 'undodir',
     cache = '',
     session = '',
