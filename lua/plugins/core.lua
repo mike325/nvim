@@ -44,7 +44,7 @@ return {
     { 'nanotee/luv-vimdocs', event = 'CmdlineEnter' },
     { 'tweekmonster/startuptime.vim', cmd = { 'StartupTime' } },
     {
-        'kyazdani42/nvim-web-devicons',
+        'nvim-tree/nvim-web-devicons',
         cond = not vim.env.NO_COOL_FONTS,
     },
     {

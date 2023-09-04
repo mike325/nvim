@@ -60,7 +60,7 @@ local function notes(args, snip, old_state, user_args)
     end
 
     if not RELOAD('utils.treesitter').is_in_node 'comment' then
-        local comment_str = (RELOAD('plugins.luasnip.utils').get_comment():gsub('%%s', ''))
+        local comment_str = (RELOAD('configs.luasnip.utils').get_comment():gsub('%%s', ''))
         table.insert(nodes, t { comment_str })
         nodes = vim.list_extend(nodes, annotation_nodes)
     end
