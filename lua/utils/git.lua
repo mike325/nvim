@@ -167,9 +167,13 @@ local function exec_gitcmd(gitcmd, args, callbacks)
         callbacks_on_success = function(job)
             callbacks(filter_empty(job:output()))
         end,
-        callbacks_on_failure = function(job)
+        callbacks_on_failure = function(job, _)
             local title = 'Git' .. gitcmd:sub(1, 1):upper() .. gitcmd:sub(2, #gitcmd)
-            vim.notify('Failed to execute git ' .. gitcmd, 'ERROR', { title = title })
+            vim.notify(
+                'Failed to execute git ' .. gitcmd .. '\n' .. table.concat(job:output(), '\n'),
+                'ERROR',
+                { title = title }
+            )
         end,
     }
     git:start()
@@ -427,6 +431,26 @@ function M.get_branch(callback)
     end)
 end
 
+function M.get_remote(branch, callback)
+    vim.validate {
+        branch = { branch, 'string' },
+        callback = { callback, 'function', true },
+    }
+
+    local gitcmd = 'rev-parse'
+    local args = {
+        '--abbrev-ref',
+        ('%s@{upstream}'):format(branch),
+    }
+    if not callback then
+        return exec_gitcmd(gitcmd, args)[1]
+    end
+
+    exec_gitcmd(gitcmd, args, function(upstream)
+        callback(upstream[1])
+    end)
+end
+
 M.exec = setmetatable({}, {
     __index = function(_, k)
         vim.validate {
@@ -436,6 +460,7 @@ M.exec = setmetatable({}, {
         local gitcmd = k
         local supported_cmds = {
             'mv',
+            'rm',
         }
 
         if not vim.tbl_contains(supported_cmds, gitcmd) then
@@ -446,8 +471,8 @@ M.exec = setmetatable({}, {
             if not callback then
                 return exec_gitcmd(gitcmd, args)[1] or ''
             end
-            exec_gitcmd(gitcmd, args, function(branch)
-                callback(branch[1] or '')
+            exec_gitcmd(gitcmd, args, function(output)
+                callback(output[1] or '')
             end)
         end
     end,
