@@ -906,7 +906,7 @@ function M.make_executable()
     end
 
     if not M.is_executable(filename) or not M.exists(filename) then
-        -- TODO(miochoa): Add support to pass buffer
+        -- TODO: Add support to pass buffer
         nvim.autocmd.add('BufWritePost', {
             group = 'MakeExecutable',
             buffer = nvim.win.get_buf(0),

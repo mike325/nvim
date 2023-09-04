@@ -11,7 +11,7 @@ if not has_mini  then
     vim.keymap.set('n', '[e', [[:<C-U>lua require"mappings".move_line(false)<CR>]], { noremap = true, silent = true })
 end
 
-if not nvim.plugins['vim-commentary'] and not nvim.plugins['Comment.nvim'] and not has_mini then
+if not nvim.plugins['vim-commentary'] and not nvim.plugins['Comment.nvim'] and not nvim.plugins['mini.nvim'] then
     vim.keymap.set(
         'n',
         'gc',
