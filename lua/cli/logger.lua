@@ -72,12 +72,7 @@ function Logger.get(name)
     return nil
 end
 
-vim.iter({
-    'debug',
-    'info',
-    'warn',
-    'error',
-}):each(function(level)
+for _, level in ipairs { 'debug', 'info', 'warn', 'error' } do
     local log_level = level:upper()
     Logger[level:lower()] = function(self, ...)
         local messages = vim.tbl_map(function(msg)
@@ -114,6 +109,6 @@ vim.iter({
             end
         end
     end
-end)
+end
 
 return Logger
