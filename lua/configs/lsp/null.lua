@@ -79,4 +79,11 @@ end
 M.c = M.cpp
 M.bash = M.sh
 
+if vim.fn.executable 'jq' == 1 then
+    M.json = M.json or { servers = {} }
+    local node = null_ls.builtins.formatting.jq
+    M.json.formatter = node
+    table.insert(M.json.servers, node)
+end
+
 return M

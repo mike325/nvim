@@ -27,14 +27,23 @@ _G['PASTE'] = function(data)
     if not vim then
         error(debug.traceback 'This platform is unsupported')
     end
-    if not vim.tbl_islist(data) then
-        if type(data) == type '' then
-            data = vim.split(data, '\n')
+
+    local tmp = data
+    if not vim.tbl_isarray(tmp) then
+        if type(tmp) == type '' then
+            tmp = vim.split(tmp, '\n')
         else
-            data = vim.split(vim.inspect(data), '\n')
+            tmp = vim.split(vim.inspect(tmp), '\n')
         end
+    else
+        tmp = vim.deepcopy(tmp)
     end
-    vim.paste(data, -1)
+    vim.paste(
+        vim.tbl_map(function(v)
+            return type(v) == type '' and v or vim.inspect(v)
+        end, tmp),
+        -1
+    )
 end
 
 _G['PERF'] = function(msg, ...)

@@ -319,7 +319,6 @@ nvim.command.set('Find', function(opts)
                 local qf_opts = {
                     open = true,
                     jump = false,
-                    context = 'Finder',
                     title = 'Finder',
                     efm = '%f',
                     items = results,
@@ -343,7 +342,6 @@ nvim.command.set('LFind', function(opts)
                     open = true,
                     jump = false,
                     win = nvim.get_current_win(),
-                    context = 'Finder',
                     title = 'Finder',
                     efm = '%f',
                     items = results,

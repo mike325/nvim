@@ -13,7 +13,6 @@ function M.setup()
                     open = true,
                     jump = false,
                 },
-                context = 'Make',
                 title = 'Make',
             },
         }

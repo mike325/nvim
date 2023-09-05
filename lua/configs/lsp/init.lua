@@ -110,6 +110,11 @@ for filetype, _ in pairs(lsp_configs) do
     end
 end
 
+if vim.fn.executable 'jq' == 1 then
+    local null_config = null_configs.json
+    vim.list_extend(null_sources, null_config.servers)
+end
+
 if null_ls and next(null_sources) ~= nil then
     null_ls.setup {
         sources = null_sources,

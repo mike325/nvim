@@ -302,7 +302,6 @@ function M.execute(exe, args)
         cmd = exe,
         args = args,
         verify_exec = false,
-        context = 'Execute',
         title = 'Execute',
     }
 end
@@ -376,7 +375,6 @@ function M.build(build_info)
             end,
             cmd = compiler,
             args = real_flags,
-            context = 'Compile',
             title = 'Compile',
             auto_close = true,
             callbacks = build_info.cb,

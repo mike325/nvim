@@ -547,7 +547,6 @@ function M.messages(opts)
         RELOAD('utils.qf').set_list {
             items = messages,
             title = 'Messages',
-            context = 'Messages',
             open = true,
             efm = efm,
         }
@@ -574,7 +573,6 @@ function M.precommit(opts)
                 jump = false,
                 open = true,
             },
-            context = 'PreCommit',
             title = 'PreCommit',
         },
     }
@@ -832,7 +830,6 @@ function M.gradle(opts)
         cmd = cmd,
         progress = true,
         auto_close = true,
-        context = 'Gradle',
         title = 'Gradle',
         efm = table.concat(vim.opt_global.efm:get(), ','),
     }

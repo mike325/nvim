@@ -384,7 +384,6 @@ function M.filter_qf_diagnostics(opts, win)
 
     local new_qf = {
         title = qf.title,
-        context = qf.context,
         items = filtered_list,
     }
 

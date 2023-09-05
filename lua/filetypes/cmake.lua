@@ -19,7 +19,6 @@ function M.setup()
                     open = true,
                     jump = false,
                 },
-                context = 'CMake',
                 title = 'CMake',
             },
         }
@@ -74,7 +73,6 @@ function M.setup()
                     open = true,
                     jump = false,
                 },
-                context = 'CMake',
                 title = 'CMake',
             },
         }
@@ -110,7 +108,6 @@ function M.setup()
                     open = true,
                     jump = false,
                 },
-                context = 'CMake',
                 title = 'CMake',
             },
             callbacks_on_success = function(_)
