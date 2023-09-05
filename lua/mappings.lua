@@ -727,23 +727,6 @@ function M.autoformat(opts)
     print('Autoformat', vim.b.disable_autoformat and 'disabled' or 'enabled')
 end
 
-function M.create_snapshot(opts)
-    local ok, packer = pcall(require, 'packer')
-    if ok then
-        local date = os.date '%Y-%m-%d'
-        local raw_ver = vim.version()
-        local version = table.concat({ raw_ver.major, raw_ver.minor, raw_ver.patch }, '.')
-        local name = opts.args ~= '' and opts.args or 'clean'
-        local snapshot = ('%s-nvim-%s-%s.json'):format(name, version, date)
-        local success, msg = pcall(packer.snapshot, snapshot)
-        if success then
-            vim.notify('Snapshot: ' .. snapshot .. ' created', 'INFO', { title = 'Packer' })
-        else
-            vim.notify('Failed to create snapshot:\n' .. vim.inspect(msg), 'ERROR', { title = 'Packer' })
-        end
-    end
-end
-
 function M.wall(opts)
     for _, win in ipairs(nvim.tab.list_wins(0)) do
         nvim.buf.call(nvim.win.get_buf(win), function()

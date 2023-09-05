@@ -23,7 +23,7 @@ local fmt = require('luasnip.extras.fmt').fmt
 -- local events = require 'luasnip.util.events'
 -- local conds = require 'luasnip.extras.expand_conditions'
 
-local utils = RELOAD 'plugins.luasnip.utils'
+local utils = RELOAD 'configs.luasnip.utils'
 local saved_text = utils.saved_text
 -- local get_comment = utils.get_comment
 -- local surround_with_func = utils.surround_with_func

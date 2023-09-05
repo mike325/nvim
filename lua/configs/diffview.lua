@@ -4,8 +4,6 @@ if diffview == nil then
     return false
 end
 
-local M = {}
-
 local has_devicons = vim.F.npcall(require, 'nvim-web-devicons')
 diffview.setup {
     diff_binaries = false, -- Show diffs for binaries
@@ -16,5 +14,3 @@ diffview.setup {
         },
     },
 }
-
-return M

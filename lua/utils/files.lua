@@ -42,10 +42,6 @@ function M.normalize(path)
     return vim.fs.normalize(path)
 end
 
-if vim.json and vim.json.encode_escape_forward_slash then
-    vim.json.encode_escape_forward_slash(false)
-end
-
 function M.exists(filename)
     vim.validate { filename = { filename, 'string' } }
     if filename == '' then
@@ -754,7 +750,9 @@ function M.encode_json(data)
     vim.validate {
         data = { data, 'table' },
     }
-    return vim.json.encode(data)
+    local json = vim.json.encode(data)
+    -- NOTE: Remove this once json:new works and expose the internals of cjson
+    return (json:gsub('\\/', '/'))
 end
 
 function M.read_json(filename)
@@ -908,7 +906,7 @@ function M.make_executable()
     end
 
     if not M.is_executable(filename) or not M.exists(filename) then
-        -- TODO(miochoa): Add support to pass buffer
+        -- TODO: Add support to pass buffer
         nvim.autocmd.add('BufWritePost', {
             group = 'MakeExecutable',
             buffer = nvim.win.get_buf(0),

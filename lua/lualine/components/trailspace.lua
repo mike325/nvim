@@ -1,16 +1,14 @@
 local M = require('lualine.component'):extend()
 
+local palette = require('catppuccin.palettes').get_palette()
 local hl = require 'lualine.highlight'
-local utils = require 'lualine.utils.utils'
+-- local utils = require 'lualine.utils.utils'
 
 function M:init(options)
     M.super.init(self, options)
     self.colors = {}
-    self.trailspace = hl.create_component_highlight_group(
-        { fg = 'black', bg = utils.extract_highlight_colors('WarningMsg', 'fg') },
-        'trailspace',
-        self.options
-    )
+    self.trailspace =
+        hl.create_component_highlight_group({ fg = palette.crust, bg = palette.peach }, 'trailspace', self.options)
 end
 
 function M:update_status()

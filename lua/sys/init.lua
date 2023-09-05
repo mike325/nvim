@@ -1,6 +1,5 @@
 local config_dirs = {
     'backup',
-    'swap',
     'undo',
     'session',
 }
@@ -100,5 +99,6 @@ end
 for _, dir_name in ipairs(config_dirs) do
     sys[dir_name] = sys.data .. '/' .. dir_name
 end
+sys.swap = vim.fn.stdpath('state') .. '/swap'
 
 return sys

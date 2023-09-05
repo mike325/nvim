@@ -4,27 +4,6 @@ local get_icon = require('utils.functions').get_icon
 
 local M = {}
 
--- local has_gps, gps = pcall(require, 'nvim-gps')
--- local function where_ami()
---     if has_gps then
---         return gps.is_available() and gps.get_location() or ''
---     end
---
---     local class = require('utils.treesitter').get_current_class()
---     local func = require('utils.treesitter').get_current_func()
---     local location = ''
---
---     if class then
---         location = location .. '  ' .. class[1]
---     end
---
---     if func then
---         location = location .. ' ƒ ' .. func[1]
---     end
---
---     return location
--- end
-
 function M.filename()
     local buf = vim.api.nvim_get_current_buf()
     local bufname = vim.api.nvim_buf_get_name(buf)
@@ -82,10 +61,6 @@ end
 function M.project_root()
     local cwd = getcwd():gsub('\\', '/')
     return cwd:gsub(sys.home, '~')
-end
-
-function M.paste()
-    return vim.opt_local.paste:get() and 'PASTE' or ''
 end
 
 function M.spell()

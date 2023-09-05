@@ -118,6 +118,8 @@ function M.send_grep_job(opts)
     local cmd = opts.cmd or grepprg[1]
     local args = opts.args or {}
     local search = opts.search or vim.fn.expand '<cword>'
+    -- NOTE: Save the search in / for future reference,
+    nvim.reg['/'] = search
     local use_loc = opts.loc
 
     vim.validate {
@@ -285,7 +287,7 @@ function M.external_formatprg(args)
     local cmd = args.cmd
     local buf = args.buffer or vim.api.nvim_get_current_buf()
 
-    local buf_utils = RELOAD('utils.buffers')
+    local buf_utils = RELOAD 'utils.buffers'
 
     local first = args.first or (vim.v.lnum - 1)
     local last = args.last or (first + vim.v.count)
@@ -806,13 +808,13 @@ function M.spelllangs(lang)
 end
 
 function M.get_abbrs(language)
-    return require('plugins.abolish').abolish[language]
+    return require('configs.abolish').abolish[language]
 end
 
 function M.abolish(language)
     local current = vim.bo.spelllang
     local set_abbr = require('nvim.abbrs').set_abbr
-    local abolish = require('plugins.abolish').abolish
+    local abolish = require('configs.abolish').abolish
 
     if nvim.has.cmd 'Abolish' then
         if abolish[current] ~= nil then

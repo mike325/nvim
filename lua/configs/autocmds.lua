@@ -126,14 +126,6 @@ nvim.autocmd.CloseMenu = {
     command = 'if pumvisible() == 0 | pclose | endif',
 }
 
-nvim.autocmd.Reload = {
-    {
-        event = 'BufWritePost',
-        pattern = 'lua/plugins/init.lua',
-        command = 'source lua/plugins/init.lua | PackerCompile',
-    },
-}
-
 nvim.autocmd.FoldText = {
     event = 'FileType',
     pattern = '*',
@@ -176,7 +168,7 @@ end
 
 nvim.autocmd.add('User', {
     pattern = 'FlagsParsed',
-    callback = function(args)
+    callback = function()
         local extensions = {
             c = true,
             h = true,
@@ -211,7 +203,7 @@ nvim.autocmd.LspMappings = {
 
         local null_ls = vim.F.npcall(require, 'null-ls')
         if null_ls and client.name ~= 'null-ls' then
-            local null_configs = require 'plugins.lsp.null'
+            local null_configs = require 'configs.lsp.null'
 
             local ft = vim.bo.filetype
             local has_formatting = client.server_capabilities.documentFormattingProvider
@@ -224,14 +216,14 @@ nvim.autocmd.LspMappings = {
             end
         end
 
-        RELOAD('plugins.lsp.config').lsp_mappings(client, bufnr)
+        RELOAD('configs.lsp.config').lsp_mappings(client, bufnr)
     end,
 }
 
 nvim.autocmd.Alternate = {
     event = 'FileType',
     pattern = 'c,cpp',
-    callback = function(args)
+    callback = function()
         local bufname = vim.api.nvim_buf_get_name(0)
         -- NOTE: should this look in the local path instead of the whole directory?
         if bufname ~= '' and not vim.g.alternates[bufname] then
@@ -243,8 +235,19 @@ nvim.autocmd.Alternate = {
 nvim.autocmd.SSHParser = {
     event = 'BufWritePost',
     pattern = '*/.ssh/config,*\\.ssh\\config',
-    callback = function(args)
+    callback = function()
         RELOAD('threads.parse').ssh_hosts()
+    end,
+}
+
+nvim.autocmd.ApplyColorscheme = {
+    event = 'VimEnter',
+    pattern = '*',
+    callback = function()
+        local ok, _ = pcall(vim.cmd.colorscheme, 'catppuccin')
+        if not ok then
+            vim.cmd.colorscheme 'torte'
+        end
     end,
 }
 

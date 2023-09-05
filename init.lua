@@ -1,4 +1,8 @@
 -- luacheck: max line length 170
+if vim.loader then
+    vim.loader.enable()
+end
+
 local nvim = require 'nvim'
 
 if not nvim.has { 0, 9 } then
@@ -70,21 +74,6 @@ require 'globals'
 local is_min = vim.env.VIM_MIN ~= nil or vim.g.minimal ~= nil
 local is_bare = vim.env.VIM_BARE ~= nil or vim.g.bare ~= nil
 
-local host_plugins = vim.fn.stdpath('data'):gsub('\\', '/') .. '/site/pack/host'
-if vim.fn.isdirectory(host_plugins) == 0 then
-    vim.fn.mkdir(host_plugins .. '/opt/host', 'p')
-    vim.fn.mkdir(host_plugins .. '/start/host', 'p')
-end
-
-if nvim.executable 'git' and not is_bare then
-    if vim.fn.filereadable './plugin/packer_compiled.lua' ~= 1 then
-        require 'setup'()
-        pcall(require, 'plugins')
-    end
-elseif not is_min and not is_bare then
-    vim.notify('Missing git! cannot install plugins', 'WARN', { title = 'Nvim Setup' })
-end
-
 require('threads.parse').ssh_hosts()
 local ssh_config = vim.loop.os_homedir():gsub('\\', '/') .. '/.ssh/config'
 if require('utils.files').is_file(ssh_config) then
@@ -104,13 +93,26 @@ if require('utils.files').is_file(ssh_config) then
     ssh_watcher:start()
 end
 
-vim.cmd.packadd { args = { 'cfilter' }, bang = true }
-vim.cmd.packadd { args = { 'matchit' }, bang = true }
-vim.cmd.packadd { args = { 'termdebug' }, bang = true }
-
 if vim.env.TMUX_WINDOW then
     local socket = vim.fn.stdpath 'cache' .. '/socket.win' .. vim.env.TMUX_WINDOW
     if vim.fn.filereadable(socket) ~= 1 then
         vim.fn.serverstart(socket)
     end
+end
+
+require 'configs.options'
+require 'configs.mappings'
+require 'configs.autocmds'
+
+vim.cmd.packadd { args = { 'cfilter' }, bang = false }
+vim.cmd.packadd { args = { 'matchit' }, bang = false }
+vim.cmd.packadd { args = { 'termdebug' }, bang = false }
+
+if nvim.executable 'git' and not is_bare then
+    local is_setup = require 'setup'()
+    if is_setup then
+        require('lazy').setup('plugins', {})
+    end
+elseif not is_min and not is_bare then
+    vim.notify('Missing git! cannot install plugins', 'WARN', { title = 'Nvim Setup' })
 end

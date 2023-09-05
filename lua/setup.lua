@@ -1,29 +1,39 @@
-local download_packer = function()
-    if vim.fn.input 'Download Packer? (y for yes)' ~= 'y' then
-        return
-    end
+local download_lazy = function()
+    local lazy_root = (vim.fn.stdpath 'data') .. '/lazy'
+    local lazypath = lazy_root .. '/lazy.nvim'
 
-    local directory = string.format('%s/site/pack/packer/start/', string.gsub(vim.fn.stdpath 'data', '\\', '/'))
-    vim.fn.mkdir(directory, 'p')
-
-    vim.notify('Downloading packer.nvim...', 'INFO', { title = 'Packer Setup' })
-    local out = vim.fn.system(
-        string.format('git clone %s %s', 'https://github.com/wbthomason/packer.nvim', directory .. '/packer.nvim')
-    )
-
-    vim.notify(out, 'INFO', { title = 'Packer Setup' })
-    if vim.v.shell_error == 0 then
-        vim.cmd.packadd 'packer.nvim'
+    if vim.loop.fs_stat(lazypath) then
+        vim.opt.rtp:prepend(lazypath)
         return true
     end
 
-    vim.notify('Failed to download packer!! exit code: ' .. vim.v.shell_error, 'ERROR', { title = 'Packer Setup' })
+    if vim.fn.input 'Download lazy? (y for yes): ' ~= 'y' then
+        return false
+    end
+
+    vim.fn.mkdir(lazy_root, 'p')
+    vim.notify('Downloading lazy.nvim...', 'INFO', { title = 'Lazy Setup' })
+    local out = vim.fn.system {
+        'git',
+        'clone',
+        '--filter=blob:none',
+        'https://github.com/folke/lazy.nvim.git',
+        '--branch=stable', -- latest stable release
+        lazypath,
+    }
+
+    if vim.v.shell_error == 0 then
+        vim.notify(out or 'Lazy downloaded in: ' .. lazypath, 'INFO', { title = 'Lazy Setted up!' })
+        vim.opt.rtp:prepend(lazypath)
+        return true
+    end
+    vim.notify('Failed to download lazy!! exit code: ' .. vim.v.shell_error, 'ERROR', { title = 'Lazy Setup' })
     return false
 end
 
 return function()
-    if not pcall(require, 'packer') then
-        return download_packer()
+    if not pcall(require, 'lazy') then
+        return download_lazy()
     end
     return false
 end

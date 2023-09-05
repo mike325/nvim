@@ -27,7 +27,7 @@ if #ls.get_snippets 'c' == 0 then
     ls.add_snippets('c', require 'snippets.c')
 end
 
-local utils = RELOAD 'plugins.luasnip.utils'
+local utils = RELOAD 'configs.luasnip.utils'
 local saved_text = utils.saved_text
 local add_statement_and_include = utils.add_statement_and_include
 -- local get_comment = utils.get_comment
@@ -88,8 +88,8 @@ local function get_move_copy_functions()
 end
 
 local function get_classname()
-    local class = RELOAD('utils.treesitter').get_current_class()
-    if not class then
+    local class_node = RELOAD('utils.treesitter').get_current_class()
+    if not class_node then
         vim.notify('Cursor is not inside a class', 'ERROR')
         return 'Class'
     end
@@ -100,21 +100,13 @@ local function get_classname()
 
     local buf = vim.api.nvim_get_current_buf()
 
-    local node
-    local pos = { class[2] - 1, class[3] - 1 }
-
     -- DEPRECATED: vim.treesitter.(parse_query/query.parse_query/get_node_...) in 0.9
     local parse_func = vim.treesitter.query.parse or vim.treesitter.query.parse_query
     local get_node_text = vim.treesitter.get_node_text or vim.treesitter.query.get_node_text
-    if vim.treesitter.get_node then
-        node = vim.treesitter.get_node { bufnr = buf, pos = pos }
-    else
-        node = vim.treesitter.get_node_at_pos(buf, pos[1], pos[2], {})
-    end
 
     local classname = ''
     local query = parse_func(vim.opt_local.filetype:get(), classname_query)
-    for _, capture, _ in query:iter_captures(node, buf) do
+    for _, capture, _ in query:iter_captures(class_node, buf) do
         -- NOTE: Should match just once
         classname = get_node_text(capture, buf)
     end

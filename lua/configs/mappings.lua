@@ -31,8 +31,8 @@ vim.keymap.set('c', '<C-j>', '<right>', noremap)
 
 vim.keymap.set('c', '<C-r><C-w>', "<C-r>=escape(expand('<cword>'), '#')<CR>", noremap)
 vim.keymap.set('c', '<C-r><C-n>', [[<C-r>=v:lua.vim.fs.basename(nvim_buf_get_name(0))<CR>]], noremap)
-vim.keymap.set('c', '<C-r><C-p>', [[<C-r>=nvim_buf_get_name(0)<CR>]], noremap)
-vim.keymap.set('c', '<C-r><C-d>', [[<C-r>=v:lua.vim.fs.dirname(nvim_buf_get_name(0))..'/'<CR>]], noremap)
+vim.keymap.set('c', '<C-r><C-p>', [[<C-r>=bufname('%')<CR>]], noremap)
+vim.keymap.set('c', '<C-r><C-d>', [[<C-r>=v:lua.vim.fs.dirname(bufname('%'))..'/'<CR>]], noremap)
 
 vim.keymap.set('n', ',', ':', noremap)
 vim.keymap.set('x', ',', ':', noremap)
@@ -43,22 +43,19 @@ vim.keymap.set('n', 'J', 'm`J``', noremap)
 vim.keymap.set('i', 'jj', '<ESC>', noremap)
 vim.keymap.set('x', '<BS>', '<ESC>', noremap)
 
-vim.keymap.set('n', '<leader>h', '<C-w>h', noremap)
-vim.keymap.set('n', '<leader>j', '<C-w>j', noremap)
-vim.keymap.set('n', '<leader>k', '<C-w>k', noremap)
-vim.keymap.set('n', '<leader>l', '<C-w>l', noremap)
+for key, direction in pairs { h = 'left', j = 'down', k = 'up', l = 'left' } do
+    local map_opts = { noremap = true, desc = 'Move to the window located ' .. direction }
+    vim.keymap.set('n', '<leader>' .. key, '<C-w>' .. key, map_opts)
+end
 
-vim.keymap.set('n', '<leader>e', '<C-w>=', noremap)
-vim.keymap.set('n', '<leader>1', '1gt', noremap)
-vim.keymap.set('n', '<leader>2', '2gt', noremap)
-vim.keymap.set('n', '<leader>3', '3gt', noremap)
-vim.keymap.set('n', '<leader>4', '4gt', noremap)
-vim.keymap.set('n', '<leader>5', '5gt', noremap)
-vim.keymap.set('n', '<leader>6', '6gt', noremap)
-vim.keymap.set('n', '<leader>7', '7gt', noremap)
-vim.keymap.set('n', '<leader>8', '8gt', noremap)
-vim.keymap.set('n', '<leader>9', '9gt', noremap)
-vim.keymap.set('n', '<leader>0', '<cmd>tablast<CR>', noremap)
+local idx = 1
+while idx <= 9 do
+    local map_opts = { noremap = true, desc = 'Move to the ' .. idx .. ' Tab' }
+    vim.keymap.set('n', '<leader>' .. idx, idx .. 'gt', map_opts)
+    idx = idx + 1
+end
+vim.keymap.set('n', '<leader>0', '<cmd>tablast<CR>', { noremap = true, desc = 'Move to the last tab' })
+
 vim.keymap.set('n', '<leader><leader>n', '<cmd>tabnew<CR>', noremap)
 
 vim.keymap.set({ 'n', 'x' }, '&', '<cmd>&&<CR>', noremap)
@@ -126,26 +123,37 @@ vim.keymap.set('n', '<leader>d', function()
 end, { desc = 'Delete current buffer without changing the window layout' })
 
 local mapping_pairs = {
-    a = '',
-    b = 'b',
-    q = 'c',
-    l = 'l',
+    arglist = '',
+    buflist = 'b',
+    quickfix = 'c',
+    loclist = 'l',
 }
 
 for postfix_map, prefix_cmd in pairs(mapping_pairs) do
-    vim.keymap.set('n', '[' .. postfix_map:upper(), ':<C-U>' .. prefix_cmd .. 'first<CR>zvzz', noremap_silent)
-    vim.keymap.set('n', ']' .. postfix_map:upper(), ':<C-U>' .. prefix_cmd .. 'last<CR>zvzz', noremap_silent)
+    local prefix = postfix_map:sub(1, 1)
     vim.keymap.set(
         'n',
-        '[' .. postfix_map,
-        ':<C-U>exe "".(v:count ? v:count : "")."' .. prefix_cmd .. 'previous"<CR>zvzz',
-        noremap_silent
+        '[' .. prefix:upper(),
+        ':<C-U>' .. prefix_cmd .. 'first<CR>zvzz',
+        { noremap = true, silent = true, desc = 'Go to the first element of the ' .. postfix_map }
     )
     vim.keymap.set(
         'n',
-        ']' .. postfix_map,
+        ']' .. prefix:upper(),
+        ':<C-U>' .. prefix_cmd .. 'last<CR>zvzz',
+        { noremap = true, silent = true, desc = 'Go to the last element of the ' .. postfix_map }
+    )
+    vim.keymap.set(
+        'n',
+        '[' .. prefix,
+        ':<C-U>exe "".(v:count ? v:count : "")."' .. prefix_cmd .. 'previous"<CR>zvzz',
+        { noremap = true, silent = true, desc = 'Go to the prev element of the ' .. postfix_map }
+    )
+    vim.keymap.set(
+        'n',
+        ']' .. prefix,
         ':<C-U>exe "".(v:count ? v:count : "")."' .. prefix_cmd .. 'next"<CR>zvzz',
-        noremap_silent
+        { noremap = true, silent = true, desc = 'Go to the next element of the ' .. postfix_map }
     )
 end
 
@@ -178,14 +186,14 @@ end, { nargs = '*', desc = 'Show big center floating terminal window' })
 
 nvim.command.set('MouseToggle', function()
     RELOAD('mappings').toggle_mouse()
-end)
+end, { desc = 'Enable/Disable Mouse support' })
 
 nvim.command.set('BufKill', function(opts)
     opts = opts or {}
     opts.rm_no_cwd = vim.list_contains(opts.fargs, '-cwd')
     opts.rm_empty = vim.list_contains(opts.fargs, '-empty')
     RELOAD('mappings').bufkill(opts)
-end, { bang = true, nargs = '*', complete = completions.bufkill_options })
+end, { desc = 'Remove unloaded hidden buffers', bang = true, nargs = '*', complete = completions.bufkill_options })
 
 nvim.command.set('VerboseToggle', 'let &verbose=!&verbose | echo "Verbose " . &verbose')
 nvim.command.set('RelativeNumbersToggle', 'set relativenumber! relativenumber?')
@@ -199,21 +207,32 @@ nvim.command.set('WrapToggle', 'setlocal wrap! wrap?')
 
 nvim.command.set('Trim', function(opts)
     RELOAD('mappings').trim(opts)
-end, { nargs = '?', complete = completions.toggle, bang = true })
+end, {
+    desc = 'Enable/Disable auto trim of trailing white spaces',
+    nargs = '?',
+    complete = completions.toggle,
+    bang = true,
+})
 
-nvim.command.set('GonvimSettngs', "execute('edit ~/.gonvim/setting.toml')")
+if executable 'gonvim' then
+    nvim.command.set(
+        'GonvimSettngs',
+        "execute('edit ~/.gonvim/setting.toml')",
+        { desc = "Shortcut to edit gonvim's setting.toml" }
+    )
+end
 
 nvim.command.set('FileType', function(opts)
     vim.opt_local.filetype = opts.args ~= '' and opts.args or 'text'
-end, { nargs = '?', complete = 'filetype' })
+end, { nargs = '?', complete = 'filetype', desc = 'Set filetype' })
 
 nvim.command.set('FileFormat', function(opts)
     vim.opt_local.filetype = opts.args ~= '' and opts.args or 'unix'
-end, { nargs = '?', complete = completions.fileformats })
+end, { nargs = '?', complete = completions.fileformats, desc = 'Set file format' })
 
 nvim.command.set('SpellLang', function(opts)
     RELOAD('utils.functions').spelllangs(opts.args)
-end, { nargs = '?', complete = completions.spells })
+end, { nargs = '?', complete = completions.spells, desc = 'Enable/Disable spelling' })
 
 nvim.command.set('Qopen', function(opts)
     opts.size = tonumber(opts.args)
@@ -221,7 +240,7 @@ nvim.command.set('Qopen', function(opts)
         opts.size = opts.size + 1
     end
     RELOAD('utils.qf').toggle(opts)
-end, { nargs = '?' })
+end, { nargs = '?', desc = 'Open quickfix' })
 
 -- TODO: Check for GUIs
 if sys.name == 'windows' then
@@ -233,33 +252,33 @@ if sys.name == 'windows' then
 else
     nvim.command.set('Chmod', function(opts)
         RELOAD('mappings').chmod(opts)
-    end, { nargs = 1 })
+    end, { nargs = 1, desc = 'Change the permission of the current buffer/file' })
 end
 
 nvim.command.set('MoveFile', function(opts)
     RELOAD('mappings').move_file(opts)
-end, { bang = true, nargs = 1, complete = 'file' })
+end, { bang = true, nargs = 1, complete = 'file', desc = 'Move current file to another location' })
 
 nvim.command.set('RenameFile', function(opts)
     RELOAD('mappings').rename_file(opts)
-end, { bang = true, nargs = 1, complete = 'file' })
+end, { bang = true, nargs = 1, complete = 'file', desc = 'Rename current file to another location' })
 
 nvim.command.set('Mkdir', function(opts)
     vim.fn.mkdir(vim.fn.fnameescape(opts.args), 'p')
-end, { nargs = 1, complete = 'dir' })
+end, { nargs = 1, complete = 'dir', desc = 'mkdir wrapper' })
 
 nvim.command.set('RemoveFile', function(opts)
     local target = opts.args ~= '' and opts.args or vim.api.nvim_buf_get_name(0)
     local utils = RELOAD 'utils.files'
     utils.delete(utils.realpath(target), opts.bang)
-end, { bang = true, nargs = '?', complete = 'file' })
+end, { bang = true, nargs = '?', complete = 'file', desc = 'Remove current file and close the window' })
 
 nvim.command.set('CopyFile', function(opts)
     local utils = RELOAD 'utils.files'
     local src = vim.api.nvim_buf_get_name(0)
     local dest = opts.fargs[1]
     utils.copy(src, dest, opts.bang)
-end, { bang = true, nargs = 1, complete = 'file' })
+end, { bang = true, nargs = 1, complete = 'file', desc = 'Copy current file to another location' })
 
 nvim.command.set('Grep', function(opts)
     local search = opts.fargs[#opts.fargs]
@@ -312,7 +331,7 @@ nvim.command.set('Find', function(opts)
         end,
     }
     RELOAD('mappings').find(args)
-end, { bang = true, nargs = '+', complete = 'file' })
+end, { bang = true, nargs = '+', complete = 'file', desc = 'Async and recursive :find' })
 
 nvim.command.set('LFind', function(opts)
     local args = {
@@ -336,7 +355,7 @@ nvim.command.set('LFind', function(opts)
         end,
     }
     RELOAD('mappings').find(args)
-end, { bang = true, nargs = '+', complete = 'file' })
+end, { bang = true, nargs = '+', complete = 'file', desc = 'Async and recursive :lfind' })
 
 vim.keymap.set(
     'n',
@@ -470,13 +489,6 @@ end, {
 nvim.command.set('AutoFormat', function(opts)
     RELOAD('mappings').autoformat(opts)
 end, { nargs = '?', complete = completions.toggle, bang = true, desc = 'Toggle Autoformat autocmd' })
-
-local ok, _ = pcall(require, 'packer')
-if ok then
-    nvim.command.set('CreateSnapshot', function(opts)
-        RELOAD('mappings').create_snapshot(opts)
-    end, { nargs = '?', desc = 'Creates a packer snapshot with a standard format' })
-end
 
 nvim.command.set('Wall', function(opts)
     RELOAD('mappings').wall(opts)

@@ -1,7 +1,7 @@
 local nvim = require 'nvim'
 
 vim.opt_local.suffixesadd:prepend '.lua'
-vim.opt_local.suffixesadd:prepend 'init.lua'
+vim.opt_local.suffixesadd:prepend '/init.lua'
 
 local lua_runtime = vim.split(package.path, ';')
 lua_runtime = vim.tbl_map(function(p)
@@ -12,6 +12,7 @@ local runtimepaths = vim.api.nvim_get_runtime_file('', true)
 runtimepaths = vim.tbl_map(function(p)
     return p:gsub('\\', '/') .. '/lua'
 end, runtimepaths)
+table.insert(runtimepaths, './lua/')
 
 vim.opt_local.path:prepend { './lua/', '.' }
 vim.opt_local.path:prepend(require('utils.tables').merge_uniq_list(runtimepaths, lua_runtime))
@@ -74,5 +75,5 @@ require('utils.buffers').setup(ft, {
     define = [[^\s*\(local\s\+\)\?\(function\s\+\(\i\+[.:]\)\?\|\ze\i\+\s*=\s*\|\(\i\+[.:]\)\?\ze\s*=\s*\)]],
     -- TODO: this includeexpr does not include /init.lua files
     includeexpr = [[substitute(v:fname,'\.','/','g')]],
-    include = [[\v\s*(RELOAD|require)]],
+    include = [[\v<(RELOAD|require)>]],
 })

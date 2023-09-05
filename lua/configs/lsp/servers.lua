@@ -232,19 +232,19 @@ local servers = {
             commands = {
                 Switch = {
                     function()
-                        require('plugins.lsp.utils').switch_source_header_splitcmd(0, 'edit')
+                        require('configs.lsp.utils').switch_source_header_splitcmd(0, 'edit')
                     end,
                     description = 'Open source/header in current buffer',
                 },
                 SwitchVSplit = {
                     function()
-                        require('plugins.lsp.utils').switch_source_header_splitcmd(0, 'vsplit')
+                        require('configs.lsp.utils').switch_source_header_splitcmd(0, 'vsplit')
                     end,
                     description = 'Open source/header in a new vsplit',
                 },
                 SwitchSplit = {
                     function()
-                        require('plugins.lsp.utils').switch_source_header_splitcmd(0, 'split')
+                        require('configs.lsp.utils').switch_source_header_splitcmd(0, 'split')
                     end,
                     description = 'Open source/header in a new split',
                 },

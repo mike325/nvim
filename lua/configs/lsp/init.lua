@@ -6,13 +6,13 @@ end
 
 local null_sources = {}
 local null_ls = vim.F.npcall(require, 'null-ls')
-local null_configs = require 'plugins.lsp.null'
+local null_configs = require 'configs.lsp.null'
 
 if null_ls then
     table.insert(null_sources, null_ls.builtins.code_actions.gitsigns)
 end
 
-local lsp_configs = require 'plugins.lsp.servers'
+local lsp_configs = require 'configs.lsp.servers'
 
 vim.lsp.protocol.CompletionItemKind = {
     '', -- Text          = 1;
@@ -70,14 +70,13 @@ local function setup(ft)
     vim.validate { filetype = { ft, 'string' } }
     local cmp = vim.F.npcall(require, 'cmp')
 
-    local server_idx = RELOAD('plugins.lsp.utils').check_language_server(ft)
+    local server_idx = RELOAD('configs.lsp.utils').check_language_server(ft)
     if server_idx then
-        local server = RELOAD('plugins.lsp.servers')[ft][server_idx]
+        local server = RELOAD('configs.lsp.servers')[ft][server_idx]
         local config = server.config or server.exec
         if not settedup_configs[config] then
             settedup_configs[config] = true
             local init = vim.deepcopy(server.options) or {}
-            -- init.on_attach = require('plugins.lsp.config').on_attach
             init.cmd = init.cmd or server.cmd
             if cmp then
                 local cmp_lsp = vim.F.npcall(require, 'cmp_nvim_lsp')

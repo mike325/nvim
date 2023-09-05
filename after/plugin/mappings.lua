@@ -4,6 +4,13 @@ if not vim.keymap then
     vim.keymap = nvim.keymap
 end
 
+local has_mini = nvim.plugins['mini.nvim'] ~= nil
+
+if not has_mini  then
+    vim.keymap.set('n', ']e', [[:<C-U>lua require"mappings".move_line(true)<CR>]], { noremap = true, silent = true })
+    vim.keymap.set('n', '[e', [[:<C-U>lua require"mappings".move_line(false)<CR>]], { noremap = true, silent = true })
+end
+
 if not nvim.plugins['vim-commentary'] and not nvim.plugins['Comment.nvim'] and not nvim.plugins['mini.nvim'] then
     vim.keymap.set(
         'n',
@@ -24,44 +31,4 @@ if not nvim.plugins['vim-commentary'] and not nvim.plugins['Comment.nvim'] and n
         require('utils.functions').toggle_comments(cursor[1] - 1, cursor[1])
         vim.api.nvim_win_set_cursor(0, cursor)
     end, { noremap = true, silent = true, desc = 'Custom comment surrunding current line' })
-end
-
-if not nvim.plugins['nvim-cmp'] then
-    vim.keymap.set(
-        'i',
-        '<TAB>',
-        [[<C-R>=neovim#tab()<CR>]],
-        { noremap = true, silent = true, desc = 'Custom TAB completion' }
-    )
-    vim.keymap.set(
-        'i',
-        '<S-TAB>',
-        [[<C-R>=neovim#shifttab()<CR>]],
-        { noremap = true, silent = true, desc = 'Custom Shift TAB completion' }
-    )
-    vim.keymap.set(
-        'i',
-        '<CR>',
-        [[<C-R>=neovim#enter()<CR>]],
-        { noremap = true, silent = true, desc = 'Custom CR action' }
-    )
-end
-
-if nvim.plugins['vim-fugitive'] then
-    vim.keymap.set('n', '=e', '<cmd>Gedit<CR>', { noremap = true, silent = true, desc = 'Fugitive Gedit shortcut' })
-end
-
-if nvim.plugins['query-secretary'] then
-    vim.keymap.set('n', '<M-q>', function()
-        require('query-secretary').query_window_initiate()
-    end, { desc = 'TS Query editing tool' })
-
-    nvim.command.set('TSSecretary', function()
-        require('query-secretary').query_window_initiate()
-    end, { desc = 'Opens TS secretary window' })
-end
-
-if not nvim.plugins['mini.nvim'] then
-    vim.keymap.set('n', ']e', [[:<C-U>lua require"mappings".move_line(true)<CR>]], { noremap = true, silent = true })
-    vim.keymap.set('n', '[e', [[:<C-U>lua require"mappings".move_line(false)<CR>]], { noremap = true, silent = true })
 end

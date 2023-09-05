@@ -10,8 +10,8 @@ local function isempty(s)
 end
 
 local dirpaths = {
+    -- swap = 'directory',
     backup = 'backupdir',
-    swap = 'directory',
     undo = 'undodir',
     cache = '',
     session = '',
@@ -134,7 +134,10 @@ vim.opt.autowrite = true
 vim.opt.autowriteall = true
 vim.opt.fileencoding = 'utf-8'
 
-vim.opt.pastetoggle = '<f3>'
+-- DEPRECATED: no longer available in 0.10
+if not nvim.has { 0, 10 } then
+    vim.opt.pastetoggle = '<f3>'
+end
 
 if vim.g.gonvim_running ~= nil then
     vim.opt.showmode = false

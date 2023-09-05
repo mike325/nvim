@@ -1,7 +1,6 @@
 local nvim = require 'nvim'
 
 local has_telescope, _ = pcall(require, 'telescope')
--- local servers = require 'plugins.lsp.servers'
 
 local builtin
 if has_telescope then
@@ -167,6 +166,8 @@ function M.lsp_mappings(client, bufnr)
         -- ['<leader>D'] = '<cmd>lua vim.lsp.buf.type_definition()<CR>',
     }
 
+    local cmd_opts = { buffer = true }
+
     -- TODO: Move this config to lsp/server.lua
     if client.name == 'sumneko_lua' or client.name == 'lua_ls' then
         client.server_capabilities.documentFormattingProvider = false
@@ -184,11 +185,17 @@ function M.lsp_mappings(client, bufnr)
         end
     end
 
+    if client.server_capabilities.inlayHintProvider then
+        vim.lsp.inlay_hint(bufnr, true)
+        nvim.command.set('InlayHintsToggle', function()
+            vim.lsp.inlay_hint(bufnr)
+        end, cmd_opts)
+    end
+
     for command, values in pairs(M.commands) do
         if type(values[1]) == 'function' then
-            local opts = { buffer = true }
-            vim.tbl_extend('keep', opts, values[2] or {})
-            nvim.command.set(command, values[1], opts)
+            vim.tbl_extend('keep', cmd_opts, values[2] or {})
+            nvim.command.set(command, values[1], cmd_opts)
         end
     end
 end

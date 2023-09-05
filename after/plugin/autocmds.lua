@@ -8,9 +8,9 @@ if not lsp then
         pattern = '*',
         callback = function(args)
             local ft = vim.opt_local.filetype:get()
-            local server_idx = RELOAD('plugins.lsp.utils').check_language_server(ft)
+            local server_idx = RELOAD('configs.lsp.utils').check_language_server(ft)
             if server_idx then
-                local server = RELOAD('plugins.lsp.servers')[ft][server_idx]
+                local server = RELOAD('configs.lsp.servers')[ft][server_idx]
                 local cmd, name
 
                 if server.options and server.options.cmd then

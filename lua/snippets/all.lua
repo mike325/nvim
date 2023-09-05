@@ -5,7 +5,7 @@ end
 
 local sys = require 'sys'
 
-local utils = RELOAD 'plugins.luasnip.utils'
+local utils = RELOAD 'configs.luasnip.utils'
 
 local s = ls.snippet
 local sn = ls.snippet_node
@@ -60,7 +60,7 @@ local function notes(args, snip, old_state, user_args)
     end
 
     if not RELOAD('utils.treesitter').is_in_node 'comment' then
-        local comment_str = (RELOAD('plugins.luasnip.utils').get_comment():gsub('%%s', ''))
+        local comment_str = (RELOAD('configs.luasnip.utils').get_comment():gsub('%%s', ''))
         table.insert(nodes, t { comment_str })
         nodes = vim.list_extend(nodes, annotation_nodes)
     end
@@ -123,7 +123,7 @@ local function license(_, _, user_args)
         markdown = 1,
     }
 
-    if ft == '' or plain_fts[ft] or require('utils.treesitter').is_in_node 'string' then
+    if ft == '' or plain_fts[ft] or RELOAD('utils.treesitter').is_in_node 'string' then
         return actual_license
     end
     return get_comment(actual_license)
@@ -172,6 +172,7 @@ local annotations = {
     'warn',
     'bug',
     'improve',
+    'deprecated',
 }
 
 for _, annotation in ipairs(annotations) do

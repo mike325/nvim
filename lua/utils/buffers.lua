@@ -299,7 +299,7 @@ function M.detect_indent(buf)
             if indent_str then
                 -- Use TS to avoid multiline strings and comments
                 -- We may need to fallback to lua pattern matching if TS is not available
-                if not has_ts or not is_in_node(blacklist, { idx - 1, #indent_str - 1, idx - 1, #line - 1 }) then
+                if not has_ts or not is_in_node(blacklist, { idx - 1, #indent_str + 1 }) then
                     -- NOTE: we may need to confirm tab indent with more than 1 line and avoid mix indent
                     if indent_str:match '^\t+$' then
                         expandtab = false
@@ -351,7 +351,7 @@ function M.format(opts)
     local whole_file = last - first == nvim.buf.line_count(bufnr) or opts.whole_file
 
     local clients = vim.lsp.buf_get_clients(0)
-    local is_null_ls_formatting_enabled = require('plugins.lsp.config').is_null_ls_formatting_enabled
+    local is_null_ls_formatting_enabled = require('configs.lsp.config').is_null_ls_formatting_enabled
 
     for _, client in pairs(clients) do
         if whole_file and client.server_capabilities.documentFormattingProvider then
