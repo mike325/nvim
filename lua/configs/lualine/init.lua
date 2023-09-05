@@ -1,11 +1,12 @@
 local nvim = require 'nvim'
 local get_icon = require('utils.functions').get_icon
 local get_separators = require('utils.functions').get_separators
+local palette = require('catppuccin.palettes').get_palette()
 
 local section = RELOAD 'configs.lualine.sections'
 
 -- TODO: Add support to live reload these functions
-local lualine = vim.F.npcall(require, 'lualine')
+local lualine = vim.F.npcall(RELOAD, 'lualine')
 if not lualine or vim.g.started_by_firenvim then
     return false
 end
@@ -13,34 +14,36 @@ end
 local has_winbar = nvim.has.option 'winbar'
 
 -- TODO: Winbar should hold current buffer information while the statusline manage repository/workspace stuff
--- winbar info ideas
---  file path
---  local git changes (add/delete/modified lines)
---  Filetype?
---  Readonly
---  unsaved changed
---  Modifiable
---  Buffer diagnostics
+-- Winbar info ideas
+--  - local git changes (add/delete/modified lines)
+--  - Filetype?
+--  - Readonly
+--  - unsaved changed
+--  - Modifiable
+--  - Buffer diagnostics
 
 -- TODO: Enable auto shrink components and remove sections
--- statusline info ideas
---  Mode
---  Spell
---  PASTE
---  Repo info: changed/untracked/staged files, stashes, current branch, pending push/pull
---  Repo diagnostics
---  Repo passed/failed tests
---  Local server status (django?)
---  Build/Compilation status
---  LSP status
+-- Statusline info ideas
+-- - Repo info: changed/untracked/staged files, stashes, current branch, pending push/pull
+-- - Repo diagnostics
+-- - Repo passed/failed tests
+-- - Local server status (django?)
+-- - Build/Compilation status
+-- - LSP status
 
 -- TODO: Stuff that is buffer/window local but may go in the statusline since winbar maybe too small for this
---  File encoding
---  Cursor position
---  Line ending
---  Filetype?
--- Cursor context (TS or LSP)?
--- Count "BUG/TODO/NOTE" indications ?
+-- - File encoding
+-- - Cursor position
+-- - Line ending
+-- - Filetype?
+-- - Cursor context (TS or LSP)?
+-- - Count "BUG/TODO/NOTE" indications ?
+
+local ns = vim.api.nvim_create_namespace 'lualine_diff'
+vim.api.nvim_set_hl(ns, 'StatusLineDiffAdd', { fg = palette.green, bg = palette.surface1 })
+vim.api.nvim_set_hl(ns, 'StatusLineDiffChange', { fg = palette.yellow, bg = palette.surface1 })
+vim.api.nvim_set_hl(ns, 'StatusLineDiffRemove', { fg = palette.red, bg = palette.surface1 })
+vim.api.nvim_set_hl_ns(ns)
 
 local tabline = {}
 local winbar = {}
@@ -194,9 +197,13 @@ lualine.setup {
             },
             {
                 'diff',
+                diff_color = {
+                    added = 'StatusLineDiffAdd',
+                    modified = 'StatusLineDiffChange',
+                    removed = 'StatusLineDiffRemove',
+                },
                 on_click = function(clicks, button, modifiers)
                     local ok, gitsigns = pcall(require, 'gitsigns')
-                    -- TODO: check if qf or trouble are open
                     if ok then
                         gitsigns.setqflist 'attached'
                     end
@@ -227,7 +234,7 @@ lualine.setup {
             {
                 section.filename,
                 color = function()
-                    return vim.bo.modified and { fg = 'orange' } or nil
+                    return vim.bo.modified and { fg = palette.peach } or nil
                 end,
                 fmt = function(name)
                     -- TODO: May add other pattens to avoid truncate other special names

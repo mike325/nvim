@@ -94,8 +94,8 @@ treesitter.setup {
                 ['aa'] = '@parameter.inner',
                 ['ir'] = '@loop.inner', -- "repeat" mnemonic
                 ['ar'] = '@loop.outer',
-                ['ac'] =  '@comment.outer',
-                ['ic'] =  '@comment.outer',
+                ['ac'] = '@comment.outer',
+                ['ic'] = '@comment.outer',
             },
         },
         swap = {
@@ -125,7 +125,7 @@ treesitter.setup {
                 ['[m'] = '@function.outer',
                 ['[k'] = '@class.outer',
                 ['[r'] = '@loop.outer',
-                ["[C"] = '@comment.outer',
+                ['[C'] = '@comment.outer',
                 -- ['[a'] = '@parameter.inner',
             },
             goto_next_start = {
@@ -133,7 +133,7 @@ treesitter.setup {
                 [']m'] = '@function.outer',
                 [']k'] = '@class.outer',
                 [']r'] = '@loop.outer',
-                ["]C"] = '@comment.outer',
+                [']C'] = '@comment.outer',
                 -- [']a'] = '@parameter.inner',
             },
             goto_previous_end = {

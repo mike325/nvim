@@ -22,15 +22,15 @@ return {
         end,
         ft = { 'bib', 'tex', 'latex', 'bibtex' },
     },
-    -- {
-    --     'norcalli/nvim-colorizer.lua',
-    --     config = function()
-    --         -- require('colorizer').setup()
-    --     end,
-    --     opts= {},
-    --     lazy = true,
-    --     -- event = {},
-    -- },
+    {
+        'norcalli/nvim-colorizer.lua',
+        config = function()
+            require('colorizer').setup()
+        end,
+        opts = {},
+        lazy = true,
+        event = { 'CursorHold', 'CursorHoldI', 'BufWritePost', 'TextChanged', 'TextChangedI' },
+    },
     {
         'Yggdroot/indentLine',
         cond = not vim.env.VIM_MIN and not vim.g.minimal,
