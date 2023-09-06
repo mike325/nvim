@@ -36,6 +36,8 @@ vim.g.c_no_if0 = 0
 
 vim.g.tex_flavor = 'latex'
 
+vim.g.ruby_recommended_style = 0
+
 vim.g.terminal_scrollback_buffer_size = 100000
 
 if vim.g.started_by_firenvim then
