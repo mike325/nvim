@@ -198,6 +198,20 @@ nvim.autocmd.LspMappings = {
     event = 'LspAttach',
     pattern = '*',
     callback = function(args)
+
+        if not vim.g.fix_inlay_hl then
+            local comment_hl = vim.api.nvim_get_hl(0, { name = 'Comment' })
+            comment_hl.bold = true
+            comment_hl.underline = false
+            comment_hl.italic = true
+            comment_hl.fg = comment_hl.fg + 26 -- color #6C70a0
+            comment_hl.cterm = comment_hl.cterm or {}
+            comment_hl.cterm.bold = true
+            comment_hl.cterm.italic = true
+            vim.api.nvim_set_hl(0, 'LspInlayHint', comment_hl)
+            vim.g.fix_inlay_hl = true
+        end
+
         local bufnr = args.buf
         local client = vim.lsp.get_client_by_id(args.data.client_id)
 
@@ -240,17 +254,6 @@ nvim.autocmd.SSHParser = {
     end,
 }
 
-nvim.autocmd.ApplyColorscheme = {
-    event = 'VimEnter',
-    pattern = '*',
-    callback = function()
-        local ok, _ = pcall(vim.cmd.colorscheme, 'catppuccin')
-        if not ok then
-            vim.cmd.colorscheme 'torte'
-        end
-    end,
-}
-
 nvim.autocmd.CleanHelps = {
     event = 'WinClosed',
     pattern = '*',
@@ -277,6 +280,21 @@ nvim.autocmd.CleanHelps = {
                     end
                 end
             end
+        end
+    end,
+}
+
+nvim.autocmd.ApplyColorscheme = {
+    event = 'VimEnter',
+    pattern = '*',
+    callback = function()
+        local bare = vim.env.VIM_BARE ~= nil
+        local ok = false
+        if not vim.env.VIM_BARE then
+            ok = pcall(vim.cmd.colorscheme, 'catppuccin')
+        end
+        if bare or not ok then
+            vim.cmd.colorscheme 'slate'
         end
     end,
 }

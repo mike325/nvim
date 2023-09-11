@@ -41,7 +41,6 @@ return {
     { 'nvim-lua/plenary.nvim', lazy = true },
     { 'rcarriga/nvim-notify', lazy = true },
     { 'kevinhwang91/nvim-bqf', lazy = true, ft = 'qf' },
-    { 'nanotee/luv-vimdocs', event = 'CmdlineEnter' },
     { 'tweekmonster/startuptime.vim', cmd = { 'StartupTime' } },
     {
         'nvim-tree/nvim-web-devicons',

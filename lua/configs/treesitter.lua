@@ -187,7 +187,7 @@ treesitter.setup {
         navigation = {
             enable = true,
             keymaps = {
-                goto_definition = '<leader><A-d>',
+                goto_definition = '<leader><C-]>',
                 list_definitions = '<A-l>',
                 goto_next_usage = '<A-n>',
                 goto_previous_usage = '<A-N>',

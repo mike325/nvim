@@ -549,8 +549,18 @@ function M.delete(target, bang)
         end
     end
 
+    local git = RELOAD 'utils.git'
     if M.is_file(target) or bufloaded(target) then
-        if M.is_file(target) then
+        if
+            git.is_git_repo(vim.fs.dirname(target))
+            and not vim.list_contains(vim.tbl_map(M.realpath, git.status().untracked or {}), target)
+        then
+            local result = git.exec.rm { '-f', target }
+            if #result > 0 then
+                vim.notify('Failed to delete the file ' .. target .. '\n' .. result, 'ERROR', { title = 'Delete' })
+                return false
+            end
+        elseif M.is_file(target) then
             if not uv.fs_unlink(target) then
                 vim.notify('Failed to delete the file: ' .. target, 'ERROR', { title = 'Delete' })
                 return false
@@ -566,8 +576,20 @@ function M.delete(target, bang)
         end
         return true
     elseif M.is_dir(target) then
-        local flag = bang and 'rf' or 'd'
-        if vim.fn.delete(target, flag) == -1 then
+        if
+            git.is_git_repo(target)
+            and not vim.list_contains(vim.tbl_map(M.realpath, git.status().untracked or {}), target)
+        then
+            local result = git.exec.rm { bang and '-rf' or '-r', target }
+            if #result > 0 then
+                vim.notify(
+                    'Failed to remove the directory: ' .. target .. '\n' .. result,
+                    'ERROR',
+                    { title = 'Delete' }
+                )
+                return false
+            end
+        elseif vim.fn.delete(target, bang and 'rf' or 'd') == -1 then
             vim.notify('Failed to remove the directory: ' .. target, 'ERROR', { title = 'Delete' })
             return false
         end

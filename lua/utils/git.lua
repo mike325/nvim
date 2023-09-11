@@ -39,6 +39,18 @@ local function filter_empty(tbl)
     end, tbl)
 end
 
+local function notify_error(gitcmd, output, rc)
+    local title = 'Git' .. gitcmd:sub(1, 1):upper() .. gitcmd:sub(2, #gitcmd)
+    if type(output) == type {} then
+        output = table.concat(output, '\n')
+    end
+    vim.notify(
+        'Failed to execute gitcmd: ' .. gitcmd .. ' exited with ' .. rc .. '\n' .. output,
+        'ERROR',
+        { title = title }
+    )
+end
+
 local function exec_sync_gitcmd(cmd, gitcmd)
     -- TODO: This is not a direct replacement, may need to use vim.system but need a cleanup first
     if vim.is_thread() then
@@ -47,7 +59,17 @@ local function exec_sync_gitcmd(cmd, gitcmd)
         return vim.split(output, '\n', { trimempty = true })
     else
         local ok, output = pcall(vim.fn.systemlist, cmd)
-        return ok and output or error(debug.traceback('Failed to execute: ' .. gitcmd .. ', ' .. output))
+        if not ok or vim.v.shell_error ~= 0 then
+            if type(output) == type {} then
+                output = table.concat(output, '\n')
+            end
+            error(
+                debug.traceback(
+                    ('Failed to execute gitcmd: %s, exited with %d\n%s'):format(gitcmd, vim.v.shell_error, output)
+                )
+            )
+        end
+        return output
     end
 end
 
@@ -168,12 +190,7 @@ local function exec_gitcmd(gitcmd, args, callbacks)
             callbacks(filter_empty(job:output()))
         end,
         callbacks_on_failure = function(job, _)
-            local title = 'Git' .. gitcmd:sub(1, 1):upper() .. gitcmd:sub(2, #gitcmd)
-            vim.notify(
-                'Failed to execute git ' .. gitcmd .. '\n' .. table.concat(job:output(), '\n'),
-                'ERROR',
-                { title = title }
-            )
+            notify_error(gitcmd, job:output(), job.rc)
         end,
     }
     git:start()
@@ -378,8 +395,7 @@ function M.get_git_dir(path, callback)
             },
             silent = true,
             callbacks_on_failure = function(job)
-                local title = 'Git' .. gitcmd:sub(1, 1):upper() .. gitcmd:sub(2, #gitcmd)
-                vim.notify('Failed to execute git ' .. gitcmd, 'ERROR', { title = title })
+                notify_error(gitcmd, job:output(), job.rc)
             end,
         }
         git:start()
@@ -408,8 +424,7 @@ function M.get_git_dir(path, callback)
             callback(git_dir)
         end,
         callbacks_on_failure = function(job)
-            local title = 'Git' .. gitcmd:sub(1, 1):upper() .. gitcmd:sub(2, #gitcmd)
-            vim.notify('Failed to execute git ' .. gitcmd, 'ERROR', { title = title })
+            notify_error(gitcmd, job:output(), job.rc)
         end,
     }
     git:start()
@@ -459,15 +474,24 @@ M.exec = setmetatable({}, {
 
         local gitcmd = k
         local supported_cmds = {
-            'mv',
-            'rm',
+            mv = false,
+            add = false,
+            rm = function(args, callback)
+                if not callback then
+                    exec_gitcmd(gitcmd, args)
+                    return ''
+                end
+                exec_gitcmd(gitcmd, args, function(_)
+                    callback ''
+                end)
+            end,
         }
 
-        if not vim.tbl_contains(supported_cmds, gitcmd) then
+        if supported_cmds[gitcmd] == nil then
             error(debug.traceback('Unsupported cmd: ' .. gitcmd .. ', ' .. vim.inspect(supported_cmds)))
         end
 
-        return function(args, callback)
+        local function return_first_line(args, callback)
             if not callback then
                 return exec_gitcmd(gitcmd, args)[1] or ''
             end
@@ -475,6 +499,8 @@ M.exec = setmetatable({}, {
                 callback(output[1] or '')
             end)
         end
+
+        return supported_cmds[gitcmd] or return_first_line
     end,
     __newindex = function(_, _, _)
         error(debug.traceback 'Cannot set values to exec table')

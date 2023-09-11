@@ -63,11 +63,6 @@ vim.g.mapleader = ' '
 
 require 'utils.ft_detect'
 
--- NOTE: overload/replace vim.* functions
-require 'overloads.notify'
-require 'overloads.ui.open'
--- require 'overloads.paste'
-
 require 'completions'
 require 'globals'
 
@@ -104,10 +99,6 @@ require 'configs.options'
 require 'configs.mappings'
 require 'configs.autocmds'
 
-vim.cmd.packadd { args = { 'cfilter' }, bang = false }
-vim.cmd.packadd { args = { 'matchit' }, bang = false }
-vim.cmd.packadd { args = { 'termdebug' }, bang = false }
-
 if nvim.executable 'git' and not is_bare then
     local is_setup = require 'setup'()
     if is_setup then
@@ -116,3 +107,12 @@ if nvim.executable 'git' and not is_bare then
 elseif not is_min and not is_bare then
     vim.notify('Missing git! cannot install plugins', 'WARN', { title = 'Nvim Setup' })
 end
+
+vim.cmd.packadd { args = { 'cfilter' }, bang = false }
+vim.cmd.packadd { args = { 'matchit' }, bang = false }
+vim.cmd.packadd { args = { 'termdebug' }, bang = false }
+
+-- NOTE: overload/replace vim.* functions
+require 'overloads.notify'
+require 'overloads.ui.open'
+-- require 'overloads.paste'

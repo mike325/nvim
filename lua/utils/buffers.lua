@@ -438,7 +438,7 @@ function M.setup(ft, opts)
         if utils.get_formatter then
             local formatter = utils.get_formatter()
             if formatter and vim.opt_local.formatexpr:get() == '' then
-                vim.opt_local.formatexpr = [[luaeval('RELOAD"utils.buffers".format({ft=_A})',&l:filetype)]]
+                vim.opt.formatexpr = "v:lua.RELOAD('utils.buffers').format( { 'ft': &l:filetype })"
             end
             opts.formatexpr = nil
         end
