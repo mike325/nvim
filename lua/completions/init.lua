@@ -136,6 +136,9 @@ local completions = {
         }
         return general_completion(arglead, cmdline, cursorpos, options)
     end,
+    arglist = function(arglead, cmdline, cursorpos)
+        return general_completion(arglead, cmdline, cursorpos, vim.fn.argv())
+    end,
 }
 
 return completions

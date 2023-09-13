@@ -7,14 +7,6 @@ return {
         'tpope/vim-fugitive',
         cmd = { 'G' },
         event = { 'CursorHold', 'CursorHoldI' },
-        config = function()
-            vim.keymap.set(
-                'n',
-                '=e',
-                '<cmd>Gedit<CR>',
-                { noremap = true, silent = true, desc = 'Fugitive Gedit shortcut' }
-            )
-        end,
     },
     {
         'junegunn/gv.vim',

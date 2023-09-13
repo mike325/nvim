@@ -812,3 +812,71 @@ nvim.command.set('Arglist2Loc', function()
     local qfutils = RELOAD 'utils.qf'
     qfutils.dump_files(vim.fn.argv(), { win = 0 })
 end, { desc = 'Dump loclist files to the arglist' })
+
+nvim.command.set('ArgEdit', function(opts)
+    for idx, arg in ipairs(vim.fn.argv()) do
+        if opts.args == arg then
+            vim.cmd.argument(idx)
+            break
+        end
+    end
+end, { nargs = 1, complete = completions.arglist, desc = 'Edit a file in the arglist' })
+
+nvim.command.set('ClearMarks', function()
+    local deleted_marks = 0
+    for idx = vim.fn.char2nr 'A', vim.fn.char2nr 'Z' do
+        local letter = vim.fn.nr2char(idx)
+        local mark = vim.api.nvim_get_mark(letter, {})
+        local filename = mark[4]
+        if filename ~= '' and not require('utils.files').is_file(filename) then
+            deleted_marks = deleted_marks + 1
+            vim.api.nvim_del_mark(letter)
+        end
+    end
+
+    if deleted_marks > 0 then
+        vim.notify('Deleted marks: ' .. deleted_marks, 'INFO', { title = 'ClearMarks' })
+    end
+end, { desc = 'Remove global marks of removed files' })
+
+nvim.command.set('DumpMarks', function()
+    local marks = {}
+    for idx = vim.fn.char2nr 'A', vim.fn.char2nr 'Z' do
+        local letter = vim.fn.nr2char(idx)
+        local mark = vim.api.nvim_get_mark(letter, {})
+        local filename = mark[4]
+        if filename ~= '' and not require('utils.files').is_file(filename) then
+            marks[letter] = mark
+        end
+    end
+    require('utils.files').dump_json('marks.json', marks)
+end, { desc = 'Dump global marks in a local json file' })
+
+nvim.command.set('RemoveMarks', function()
+    local utils = require 'utils.files'
+    local deleted_marks = 0
+    for idx = vim.fn.char2nr 'A', vim.fn.char2nr 'Z' do
+        local letter = vim.fn.nr2char(idx)
+        local mark = vim.api.nvim_get_mark(letter, {})
+        local filename = utils.realpath(mark[4])
+        local cwd = vim.pesc(vim.loop.cwd())
+        if filename ~= '' and (not utils.is_file(filename) or not filename:match('^' .. cwd)) then
+            vim.api.nvim_del_mark(letter)
+        end
+    end
+
+    if deleted_marks > 0 then
+        vim.notify('Deleted marks not in the CWD: ' .. deleted_marks, 'INFO', { title = 'RemoveMarks' })
+    end
+end, { desc = 'Remove all global marks that are outside of the CWD' })
+
+vim.keymap.set('n', '=e', function()
+    local buf = vim.api.nvim_get_current_buf()
+    local filename = vim.api.nvim_buf_get_name(buf)
+    if filename:match '^fugitive://' or not filename:match '^%w+://' then
+        vim.cmd.Gedit()
+    elseif filename:match '^gitsigns://' then
+        local realfile = (filename:gsub('^gitsigns://.+/%.git/[a-zA-Z0-9~^]+:', ''))
+        vim.cmd.edit(realfile)
+    end
+end, { noremap = true, silent = true, desc = 'Fugitive Gedit shortcut' })
