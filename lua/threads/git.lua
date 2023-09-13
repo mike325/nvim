@@ -21,7 +21,13 @@ function M.get_hunks(thread_args)
     if version.major > 0 or version.minor == 0 and version.minor >= 9 then
         diff_opts.linematch = true
     end
-    local files = args.files or require('utils.git').modified_files()
+    local files = args.files
+    if not files and args.revision then
+        files = require('utils.git').modified_files_from_base(args.revision)
+    elseif not files then
+        files = require('utils.git').modified_files()
+    end
+
     local status = require('utils.git').status()
     for _, f in ipairs(files) do
         if utils.is_file(f) then

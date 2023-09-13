@@ -846,11 +846,11 @@ function M.reload_configs(opts)
     local config_dir = vim.fn.stdpath 'config'
     if opts.args == 'all' or opts.args == '' then
         for _, v in ipairs(configs) do
-            vim.cmd.source(config_dir .. '/plugin/' .. v .. '.lua')
+            vim.cmd.source(config_dir .. '/lua/configs/' .. v .. '.lua')
         end
         vim.notify('All configs reloaded!', 'INFO')
     elseif configs[opts.args] then
-        vim.cmd.source(config_dir .. '/plugin/' .. opts.args .. '.lua')
+        vim.cmd.source(config_dir .. '/lua/configs/' .. opts.args .. '.lua')
         vim.notify(opts.args .. ' reloaded!', 'INFO')
     else
         vim.notify('Invalid config name: ' .. opts.args, 'ERROR', { title = 'Reloader' })
@@ -867,7 +867,7 @@ function M.alternate(opts)
     end
 
     -- TODO: Add support for clangd switch header/src command
-    -- local found = RELOAD('plugins.lsp.utils').switch_source_header_splitcmd(bufnr, 'edit')
+    -- local found = RELOAD('configs.lsp.utils').switch_source_header_splitcmd(bufnr, 'edit')
     -- if found then
     --     return
     -- end

@@ -277,6 +277,11 @@ describe('Realpath', function()
         local cwd = vim.loop.cwd()
         assert.equals(realpath '.', forward_path(cwd))
     end)
+
+    it('parent', function()
+        local cwd = vim.loop.cwd()
+        assert.equals(realpath '..', vim.fs.dirname(cwd))
+    end)
 end)
 
 describe('Normalize', function()

@@ -111,7 +111,7 @@ nvim.command.set('Registers', function()
 end)
 
 nvim.command.set('Marks', function()
-    require('telescope.builtin').marks(require('telescope.themes').get_dropdown {})
+    require('telescope.builtin').marks()
 end)
 
 nvim.command.set('Manpages', function()

@@ -48,11 +48,11 @@ for key, direction in pairs { h = 'left', j = 'down', k = 'up', l = 'left' } do
     vim.keymap.set('n', '<leader>' .. key, '<C-w>' .. key, map_opts)
 end
 
-local idx = 1
-while idx <= 9 do
-    local map_opts = { noremap = true, desc = 'Move to the ' .. idx .. ' Tab' }
-    vim.keymap.set('n', '<leader>' .. idx, idx .. 'gt', map_opts)
-    idx = idx + 1
+local tab_idx = 1
+while tab_idx <= 9 do
+    local map_opts = { noremap = true, desc = 'Move to the ' .. tab_idx .. ' Tab' }
+    vim.keymap.set('n', '<leader>' .. tab_idx, tab_idx .. 'gt', map_opts)
+    tab_idx = tab_idx + 1
 end
 vim.keymap.set('n', '<leader>0', '<cmd>tablast<CR>', { noremap = true, desc = 'Move to the last tab' })
 
