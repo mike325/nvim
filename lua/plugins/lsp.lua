@@ -16,12 +16,15 @@ return {
             { 'nvim-lua/plenary.nvim' },
         },
     },
-    -- {
-    --     'weilbith/nvim-floating-tag-preview',
-    --     lazy = true,
-    --     event = { 'CursorHold' },
-    --     dependencies = {
-    --         { 'neovim/nvim-lspconfig' },
-    --     },
-    -- },
+    {
+        'nvimdev/lspsaga.nvim',
+        enabled = false,
+        config = function()
+            require('lspsaga').setup {}
+        end,
+        dependencies = {
+            'nvim-treesitter/nvim-treesitter', -- optional
+            'nvim-tree/nvim-web-devicons', -- optional
+        },
+    },
 }

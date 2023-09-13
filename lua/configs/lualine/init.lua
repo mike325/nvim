@@ -11,6 +11,7 @@ if not lualine or vim.g.started_by_firenvim then
     return false
 end
 
+local noice = vim.F.npcall(require, 'noice')
 local has_winbar = nvim.has.option 'winbar'
 
 -- TODO: Winbar should hold current buffer information while the statusline manage repository/workspace stuff
@@ -44,6 +45,15 @@ vim.api.nvim_set_hl(ns, 'StatusLineDiffAdd', { fg = palette.green, bg = palette.
 vim.api.nvim_set_hl(ns, 'StatusLineDiffChange', { fg = palette.yellow, bg = palette.surface1 })
 vim.api.nvim_set_hl(ns, 'StatusLineDiffRemove', { fg = palette.red, bg = palette.surface1 })
 vim.api.nvim_set_hl_ns(ns)
+
+local noice_component
+if noice then
+    noice_component = {
+        noice.api.statusline.mode.get,
+        cond = noice.api.statusline.mode.has,
+        color = { fg = '#ff9e64' },
+    }
+end
 
 local tabline = {}
 local winbar = {}
@@ -252,6 +262,7 @@ lualine.setup {
             'fileformat',
             'filetype',
             'searchcount',
+            noice_component,
         },
         lualine_y = {
             {

@@ -98,4 +98,14 @@ return {
             { 'catppuccin' },
         },
     },
+    {
+        'folke/noice.nvim',
+        enabled = false,
+        config = function()
+            require 'configs.noice'
+        end,
+        dependencies = {
+            { 'MunifTanjim/nui.nvim' },
+        },
+    },
 }

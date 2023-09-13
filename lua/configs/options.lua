@@ -9,6 +9,8 @@ local function isempty(s)
     return (s == nil or s == '') and true or false
 end
 
+local has_noice = nvim.plugins['noice'] == nil
+
 local dirpaths = {
     -- swap = 'directory',
     backup = 'backupdir',
@@ -111,7 +113,7 @@ vim.opt.listchars = { tab = '▸ ', trail = '•', extends = '❯', precedes = '
 vim.opt.cpoptions = 'aAceFs_B'
 vim.opt.shortmess:append { a = true, c = true }
 
-vim.opt.lazyredraw = true
+vim.opt.lazyredraw = has_noice
 vim.opt.showmatch = true
 
 vim.opt.splitright = true
@@ -146,7 +148,7 @@ if vim.g.gonvim_running ~= nil then
     vim.opt.ruler = false
 else
     vim.opt.titlestring = '%t (%f)'
-    vim.opt.title = true
+    vim.opt.title = has_noice
 end
 
 vim.opt.diffopt:append {
