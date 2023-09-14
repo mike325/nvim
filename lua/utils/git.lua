@@ -160,7 +160,8 @@ local function parse_status(status)
                 elseif file_status == '?' then
                     parsed.untracked = parsed.untracked or {}
                     local filename = gitfile:sub(3, #gitfile)
-                    parsed.untracked[#parsed.untracked + 1] = filename
+                    -- NOTE: Should this be a dict to facilitate lookups ?
+                    table.insert(parsed.untracked, filename)
                     -- parsed.files[filename] = 'untracked'
                     -- elseif gitfile:sub(1, 1) == 'u' then  -- TODO
                     --     parsed.unmerge = parsed.unmerge or {}

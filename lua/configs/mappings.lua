@@ -845,11 +845,14 @@ nvim.command.set('DumpMarks', function()
         local letter = vim.fn.nr2char(idx)
         local mark = vim.api.nvim_get_mark(letter, {})
         local filename = mark[4]
-        if filename ~= '' and not require('utils.files').is_file(filename) then
+        if filename ~= '' and require('utils.files').is_file(filename) then
             marks[letter] = mark
         end
     end
-    require('utils.files').dump_json('marks.json', marks)
+    if next(marks) ~= nil then
+        require('utils.files').dump_json('marks.json', marks)
+        vim.notify('Marks dumped into marks.json', 'INFO', { title = 'DumpMarks' })
+    end
 end, { desc = 'Dump global marks in a local json file' })
 
 nvim.command.set('RemoveMarks', function()
