@@ -327,11 +327,14 @@ function M.dump_files(buffers, opts, win)
 
     local items = {}
     for _, buf in ipairs(buffers) do
+        local filename = type(buf) == type(1) and vim.api.nvim_buf_get_name(buf) or buf
+        local item = { valid = true, lnum = 1, col = 1, text = filename }
         if type(buf) == type(1) then
-            table.insert(items, { bufnr = buf, valid = true })
+            item.bufnr = buf
         else
-            table.insert(items, { filename = buf, valid = true })
+            item.filename = buf
         end
+        table.insert(items, item)
     end
     if #items > 0 then
         opts.items = items

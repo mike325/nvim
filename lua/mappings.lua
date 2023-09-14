@@ -843,14 +843,17 @@ function M.reload_configs(opts)
         options = 'options',
     }
 
+
+    local lua_file_path = '%s/lua/configs/%s.lua'
+
     local config_dir = vim.fn.stdpath 'config'
     if opts.args == 'all' or opts.args == '' then
         for _, v in ipairs(configs) do
-            vim.cmd.source(config_dir .. '/lua/configs/' .. v .. '.lua')
+            vim.cmd.source(lua_file_path:format(config_dir, v))
         end
         vim.notify('All configs reloaded!', 'INFO')
     elseif configs[opts.args] then
-        vim.cmd.source(config_dir .. '/lua/configs/' .. opts.args .. '.lua')
+        vim.cmd.source(lua_file_path:format(config_dir, opts.args))
         vim.notify(opts.args .. ' reloaded!', 'INFO')
     else
         vim.notify('Invalid config name: ' .. opts.args, 'ERROR', { title = 'Reloader' })
