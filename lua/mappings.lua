@@ -271,14 +271,14 @@ function M.find(opts)
         local find = RELOAD('jobs'):new {
             cmd = vim.list_extend(finder, args),
             progress = false,
-            opts = {
-                stdin = 'null',
-            },
+            opts = { stdin = 'null' },
             callbacks = function(job, rc)
-                if opts.cb then
+                if rc == 0 and opts.cb then
                     opts.cb(vim.tbl_filter(function(v)
                         return v ~= ''
                     end, job:output()))
+                elseif rc ~= 0 then
+                    vim.notify('Error!\n' .. table.concat(job:output(), '\n'), 'ERROR', { title = 'Find' })
                 end
             end,
         }
@@ -842,7 +842,6 @@ function M.reload_configs(opts)
         autocmds = 'autocmds',
         options = 'options',
     }
-
 
     local lua_file_path = '%s/lua/configs/%s.lua'
 
