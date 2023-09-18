@@ -316,14 +316,11 @@ nvim.command.set('Find', function(opts)
         target = opts.args,
         cb = function(results)
             if #results > 0 then
-                local qf_opts = {
+                RELOAD('utils.qf').dump_files(results, {
                     open = true,
                     jump = false,
                     title = 'Finder',
-                    efm = '%f',
-                    items = results,
-                }
-                RELOAD('utils.qf').set_list(qf_opts)
+                })
             else
                 vim.notify('No files matching: ' .. opts.fargs[#opts.fargs], 'ERROR', { title = 'Find' })
             end
@@ -338,15 +335,11 @@ nvim.command.set('LFind', function(opts)
         target = opts.args,
         cb = function(results)
             if #results > 0 then
-                local qf_opts = {
+                RELOAD('utils.qf').dump_files(results, {
                     open = true,
                     jump = false,
-                    win = nvim.get_current_win(),
-                    title = 'Finder',
-                    efm = '%f',
-                    items = results,
-                }
-                RELOAD('utils.qf').set_list(qf_opts)
+                    title = 'LFinder',
+                }, nvim.get_current_win())
             else
                 vim.notify('No files matching: ' .. opts.fargs[#opts.fargs], 'ERROR', { title = 'Find' })
             end

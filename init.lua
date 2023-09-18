@@ -13,6 +13,10 @@ if vim.loader then
     vim.loader.enable()
 end
 
+if not vim.list_contains then
+    vim.list_contains = vim.tbl_contains
+end
+
 vim.g.has_ui = #vim.api.nvim_list_uis() > 0
 
 vim.g.loaded_2html_plugin = 1

@@ -22,6 +22,10 @@ function M.init(thread_args)
             vim.fs = require 'vim.fs'
         end
 
+        if not vim.list_contains then
+            vim.list_contains = vim.tbl_contains
+        end
+
         -- NOTE: this only spawns async works, which should be detatch, sync jobs
         --       does not work because `vim.wait` is not avaialble on threads
         if not vim.system then

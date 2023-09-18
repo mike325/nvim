@@ -316,9 +316,6 @@ function M.dump_files(buffers, opts, win)
 
     opts = opts or {}
 
-    local open = opts.open
-    opts.open = nil
-
     vim.validate { win = { opts.win, 'number', true } }
     if not win and opts.win then
         win = opts.win
@@ -331,15 +328,24 @@ function M.dump_files(buffers, opts, win)
         local item = { valid = true, lnum = 1, col = 1, text = filename }
         if type(buf) == type(1) then
             item.bufnr = buf
-        else
+        elseif type(buf) == type '' then
             item.filename = buf
+        else
+            error(debug.traceback('Invalid data type: '..type(buf)))
         end
         table.insert(items, item)
     end
     if #items > 0 then
         opts.items = items
-        opts.open = open
+        if opts.open == nil then
+            opts.open = true
+        end
+
         M.set_list(opts, win)
+
+        if jump then
+            qf_funcs.first(win)
+        end
     else
         vim.notify('No buffers to dump', 'INFO')
     end
