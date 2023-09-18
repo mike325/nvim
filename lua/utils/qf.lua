@@ -331,7 +331,7 @@ function M.dump_files(buffers, opts, win)
         elseif type(buf) == type '' then
             item.filename = buf
         else
-            error(debug.traceback('Invalid data type: '..type(buf)))
+            error(debug.traceback('Invalid data type: ' .. type(buf)))
         end
         table.insert(items, item)
     end
