@@ -9,10 +9,6 @@ if not nvim.has { 0, 9 } then
     vim.api.nvim_err_writeln 'Neovim version is too old!! please use update it'
 end
 
-if vim.loader then
-    vim.loader.enable()
-end
-
 if not vim.list_contains then
     vim.list_contains = vim.tbl_contains
 end

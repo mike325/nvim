@@ -1,7 +1,19 @@
-vim.opt.rtp:append '.'
+-- luacheck: max line length 170
+if vim.loader then
+    vim.loader.enable()
+end
+
 local nvim = require 'nvim'
 
-vim.opt.swapfile = false
+if not nvim.has { 0, 9 } then
+    error 'Neovim version is too old!! please use update it'
+end
+
+if not vim.list_contains then
+    vim.list_contains = vim.tbl_contains
+end
+
+vim.g.has_ui = #vim.api.nvim_list_uis() > 0
 
 vim.g.loaded_2html_plugin = 1
 vim.g.loaded_gzip = 1
@@ -15,12 +27,15 @@ vim.g.loaded_vimballPlugin = 1
 vim.g.loaded_ruby_provider = 0
 vim.g.loaded_node_provider = 0
 vim.g.loaded_perl_provider = 0
+vim.g.loaded_python_provider = 0
+vim.g.loaded_python3_provider = 0
 
 vim.g.show_diagnostics = true
 vim.g.alternates = {}
 vim.g.tests = {}
 vim.g.makefiles = {}
 vim.g.parsed = {}
+vim.g.short_branch_name = true
 
 vim.g.port = 0x8AC
 
@@ -29,19 +44,31 @@ vim.g.port = 0x8AC
 
 if nvim.has 'win32' then
     vim.opt.shell = 'cmd.exe'
-    vim.opt.shellslash = true
+    -- vim.opt.shell = 'powershell'
+    -- vim.opt.shellcmdflag = '-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command [Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.Encoding]::UTF8;'
+    -- vim.opt.shellredir = '2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode'
+    -- vim.opt.shellpipe = '2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode'
+    -- vim.opt.shellquote = ''
+    -- vim.opt.shellxquote = ''
+
+    vim.opt.shellslash = false
 end
 
 if not vim.keymap then
-    vim.keymap = require('nvim').keymap
+    vim.keymap = nvim.keymap
 end
 
+vim.opt.termguicolors = true
 vim.g.mapleader = ' '
 
 require 'utils.ft_detect'
-require 'messages'
+
+-- NOTE: overload/replace vim.* functions
+require 'overloads.notify'
+require 'overloads.ui.open'
+-- require 'overloads.paste'
+
 require 'globals'
--- require('filetypes.python').pynvim_setup()
 
 local package_plugins = vim.fn.stdpath('data'):gsub('\\', '/') .. '/site/pack/packer/start/'
 vim.opt.rtp:append(package_plugins .. 'plenary.nvim/')
