@@ -11,8 +11,14 @@ local function on_change(watcher, err, fname, status)
             if vim.is_callable(cb) then
                 cb(err, fname, status)
             else
-                -- TODO: Add support to send err,fname,status to the autocmd
-                vim.cmd.doautocmd { args = { 'User', cb } }
+                vim.api.nvim_exec_autocmds(cb, {
+                    group = 'User',
+                    data = {
+                        err = err,
+                        fname = fname,
+                        status = status,
+                    },
+                })
             end
         end
     end
