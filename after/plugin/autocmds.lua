@@ -57,7 +57,8 @@ if not treesitter then
     nvim.autocmd.add('FileType', {
         group = 'TreesitterAutocmds',
         -- NOTE: This parsers come bundle with recent neovim releases
-        pattern = 'c,viml,lua,help',
+
+        pattern ='c,lua,query,vim,vimdoc,viml,help',
         callback = function(args)
             local ft_mapping = {}
             if nvim.has { 0, 9 } then

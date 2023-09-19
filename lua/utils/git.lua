@@ -39,6 +39,37 @@ local function filter_empty(tbl)
     end, tbl)
 end
 
+local function normalize_args(args)
+    if vim.is_thread() then
+        return args
+    end
+
+    local function normalize(arg)
+        local normalize_arg = arg
+        if arg == '%' or arg == '#' or arg == '$' then
+            normalize_arg = vim.fn.bufname(arg)
+        elseif arg == '##' then
+            normalize_arg = vim.fn.argv()
+        end
+        return normalize_arg
+    end
+
+    if type(args) == type '' then
+        return normalize(args)
+    end
+
+    local tmp = {}
+    for _, arg in ipairs(args) do
+        local normalize_arg = normalize(arg)
+        if type(normalize_arg) == type {} then
+            vim.list_extend(tmp, normalize_arg)
+        else
+            table.insert(tmp, normalize_arg)
+        end
+    end
+    return tmp
+end
+
 local function notify_error(gitcmd, output, rc)
     local title = 'Git' .. gitcmd:sub(1, 1):upper() .. gitcmd:sub(2, #gitcmd)
     if type(output) == type {} then
@@ -179,7 +210,7 @@ local function exec_gitcmd(gitcmd, args, callbacks)
         callbacks = { callbacks, 'function', true },
     }
 
-    local cmd = M.get_git_cmd(gitcmd, args)
+    local cmd = M.get_git_cmd(gitcmd, normalize_args(args))
     if not callbacks then
         return filter_empty(exec_sync_gitcmd(cmd, gitcmd))
     end
