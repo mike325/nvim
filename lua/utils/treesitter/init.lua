@@ -55,7 +55,7 @@ function M.is_in_node(node, range, buf)
     }
 
     buf = buf or vim.api.nvim_get_current_buf()
-    local ok, _ = pcall(vim.treesitter.get_parser, buf)
+    local ok, parser = pcall(vim.treesitter.get_parser, buf)
     if not ok then
         return false
     end
@@ -69,13 +69,13 @@ function M.is_in_node(node, range, buf)
         node = { node }
     end
 
-    -- NOTE: This fails, need some debugging
-    -- if vim.tbl_contains(node, 'comment') then
-    --     local langtree = parser:language_for_range(range)
-    --     if langtree and langtree:lang() == 'comment' then
-    --         return true
-    --     end
-    -- end
+    if vim.list_contains(node, 'comment') then
+        vim.print('range: ' .. vim.inspect(range))
+        local langtree = parser:language_for_range(range)
+        if langtree and langtree:lang() == 'comment' then
+            return true
+        end
+    end
 
     local tnode
     if vim.treesitter.get_node then
@@ -84,7 +84,7 @@ function M.is_in_node(node, range, buf)
         tnode = vim.treesitter.get_node_at_pos(buf, range[1], range[2], {})
     end
     while tnode and tnode:parent() and tnode ~= tnode:parent() do
-        if vim.tbl_contains(node, tnode:type()) then
+        if vim.list_contains(node, tnode:type()) then
             return true
         end
         tnode = tnode:parent()
@@ -151,7 +151,7 @@ function M.list_buf_nodes(tsquery, buf)
     local langtree = parser:language_for_range { 0, 0, buf_lines, #line }
 
     local results = {}
-    for _, tree in ipairs(langtree:trees()) do
+    for _, tree in pairs(langtree:trees()) do
         local root = tree:root()
         if root then
             results = vim.list_extend(results, M.get_list_nodes(root, tsquery, true, buf))

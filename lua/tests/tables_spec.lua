@@ -83,11 +83,11 @@ describe('Uniq lists', function()
 
     local function check_lists(src, dest, merge)
         for _, src_node in ipairs(src) do
-            assert.is_true(vim.tbl_contains(merge, src_node))
+            assert.is_true(vim.list_contains(merge, src_node))
         end
 
         for _, dest_node in ipairs(dest) do
-            assert.is_true(vim.tbl_contains(merge, dest_node))
+            assert.is_true(vim.list_contains(merge, dest_node))
         end
     end
 
@@ -125,7 +125,7 @@ describe('Uniq lists', function()
             local uniq = uniq_list(lst_dest)
 
             for _, src_node in ipairs(lst_src) do
-                assert.is_true(vim.tbl_contains(uniq, src_node))
+                assert.is_true(vim.list_contains(uniq, src_node))
             end
             assert.same(uniq, lst_src)
         end
@@ -163,7 +163,7 @@ describe('Uniq lists', function()
             local uniq = uniq_unorder(lst_dest)
 
             for _, src_node in ipairs(lst_src) do
-                assert.is_true(vim.tbl_contains(uniq, src_node))
+                assert.is_true(vim.list_contains(uniq, src_node))
             end
             assert.same(vim.fn.sort(uniq), vim.fn.sort(lst_src))
         end

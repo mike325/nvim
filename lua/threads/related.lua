@@ -212,7 +212,7 @@ function M.alternate_src_header(thread_args)
                 name = filename:gsub('%.' .. ext .. '$', '')
             end
 
-            return buf_name_no_ext == name and vim.tbl_contains(extensions[buf_ext], ext)
+            return buf_name_no_ext == name and vim.list_contains(extensions[buf_ext], ext)
         end
 
         candidates = vim.fs.find(filter_func, { type = 'file' })

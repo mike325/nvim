@@ -343,7 +343,7 @@ function M.dump_files(buffers, opts, win)
 
         M.set_list(opts, win)
 
-        if jump then
+        if opts.jump then
             qf_funcs.first(win)
         end
     else

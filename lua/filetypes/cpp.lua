@@ -237,7 +237,7 @@ function M.set_opts(compiler, bufnum)
             end
             local path_var = vim.split(vim.bo[bufnum].path, ',')
             for _, path in ipairs(paths) do
-                if not vim.tbl_contains(path_var, path) then
+                if not vim.list_contains(path_var, path) then
                     vim.bo[bufnum].path = vim.bo[bufnum].path .. ',' .. path
                 end
             end

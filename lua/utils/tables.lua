@@ -12,7 +12,19 @@ end
 
 -- NOTE: This functions are available in Neovim's runtime, but since I consider some of the useful outside of neovim
 --       I decided to replicate them to use in other apps
-function M.tbl_contains(lst, value)
+function M.tbl_contains(tbl, value)
+    assert(type(tbl) == type {}, debug.traceback('Invalid type for tbl: ' .. type(tbl)))
+    for _, node in pairs(tbl) do
+        if node == value then
+            return true
+        elseif type(node) == type(value) and type(value) == type {} then
+            return M.tbl_contains(node, value)
+        end
+    end
+    return false
+end
+
+function M.list_contains(lst, value)
     assert(type(lst) == type {}, debug.traceback('Invalid type for lst: ' .. type(lst)))
     for _, node in ipairs(lst) do
         if node == value then

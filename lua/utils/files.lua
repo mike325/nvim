@@ -880,15 +880,7 @@ function M.is_executable(filename)
     vim.validate {
         filename = { filename, 'string' },
     }
-    if M.is_file(filename) and require('sys').name ~= 'windows' then
-        local fileinfo = vim.loop.fs_stat(filename)
-        local filemode = fileinfo.mode - 32768
-
-        if bit.band(filemode, 0x40) ~= 0 then
-            return true
-        end
-    end
-    return false
+    return vim.loop.fs_access(vim.fs.normalize(filename), 'X')
 end
 
 function M.chmod_exec(buf)
