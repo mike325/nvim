@@ -5,8 +5,6 @@ end
 
 local sys = require 'sys'
 
-local utils = RELOAD 'configs.luasnip.utils'
-
 local s = ls.snippet
 local sn = ls.snippet_node
 local t = ls.text_node
@@ -27,10 +25,12 @@ local p = require('luasnip.extras').partial
 -- local events = require 'luasnip.util.events'
 -- local conds = require 'luasnip.extras.expand_conditions'
 
--- local utils = RELOAD('snippets.utils')
+local utils = RELOAD 'configs.luasnip.utils'
+
 -- local saved_text = utils.saved_text
--- local get_comment = utils.get_comment
 -- local surround_with_func = utils.surround_with_func
+local get_comment = utils.get_comment
+local return_value = utils.return_value
 
 local function notes(args, snip, old_state, user_args)
     local nodes = {}
@@ -59,12 +59,13 @@ local function notes(args, snip, old_state, user_args)
         interactive_node = interactive_node + 1
     end
 
-    if not RELOAD('utils.treesitter').is_in_node 'comment' then
-        local comment_str = (RELOAD('configs.luasnip.utils').get_comment():gsub('%%s', ''))
+    local is_in_comment = RELOAD('utils.treesitter').is_in_node 'comment'
+    if not is_in_comment then
+        local comment_str = (get_comment():gsub('%%s', ''))
         table.insert(nodes, t { comment_str })
-        nodes = vim.list_extend(nodes, annotation_nodes)
     end
 
+    nodes = vim.list_extend(nodes, annotation_nodes)
     table.insert(nodes, i(interactive_node, ''))
 
     local snip_node = sn(nil, nodes)
@@ -72,10 +73,7 @@ local function notes(args, snip, old_state, user_args)
     return snip_node
 end
 
-local return_value = utils.return_value
-local get_comment = utils.get_comment
-
--- TODO: Shoul this chaeck for TS and see if we are in a comment/string ?
+-- TODO: Should this chaeck for TS and see if we are in a comment/string ?
 local function license(_, _, user_args)
     local licenses = {
         mit = {

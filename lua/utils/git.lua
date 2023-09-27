@@ -498,6 +498,34 @@ function M.get_remote(branch, callback)
     end)
 end
 
+function M.get_filecontent(filename, revision, callback)
+    vim.validate {
+        filename = { filename, 'string' },
+        revision = { revision, { 'string', 'function' }, true },
+        callback = { callback, 'function', true },
+    }
+
+
+    if callback and type(revision) == type(callback) then
+        error(debug.traceback('Revision should be a string, cannot provide 2 callbacks'))
+    elseif type(revision) == 'function' then
+        callback = revision
+        revision = nil
+    end
+
+    local file_rev = '%s:%s'
+
+    local gitcmd = 'show'
+    local args = { file_rev:format(revision or '', filename) }
+    if not callback then
+        return exec_gitcmd(gitcmd, args)
+    end
+
+    exec_gitcmd(gitcmd, args, function(content)
+        callback(content)
+    end)
+end
+
 M.exec = setmetatable({}, {
     __index = function(_, k)
         vim.validate {

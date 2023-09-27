@@ -125,11 +125,53 @@ if mini_files then
         },
     }
     nvim.command.set('Files', function(opts)
-        mini_files.open()
-    end, { desc = 'Open mini.files' })
+        local path = opts.bang and vim.api.nvim_buf_get_name(0) or vim.loop.cwd()
+        mini_files.open(path)
+    end, { bang = true, desc = 'Open mini.files' })
+
     vim.keymap.set('n', '-', function()
         mini_files.open()
     end, { noremap = true, silent = true, desc = 'Open mini.files' })
+
+    vim.keymap.set('n', 'g-', function()
+        mini_files.open(vim.api.nvim_buf_get_name(0))
+    end, { noremap = true, silent = true, desc = 'Open mini.files' })
+
+    local show_dotfiles = true
+
+    local filter_show = function(fs_entry)
+        return true
+    end
+
+    local filter_hide = function(fs_entry)
+        return not vim.startswith(fs_entry.name, '.')
+    end
+
+    if vim.g.mini_files_autocmd then
+        vim.api.nvim_del_autocmd(vim.g.mini_files_autocmd)
+        vim.g.mini_files_autocmd = nil
+    end
+
+    vim.g.mini_files_autocmd = vim.api.nvim_create_autocmd('User', {
+        pattern = 'MiniFilesBufferCreate',
+        callback = function(args)
+            local buf_id = args.data.buf_id
+            -- Tweak left-hand side of mapping to your liking
+            vim.keymap.set('n', 'g.', function()
+                show_dotfiles = not show_dotfiles
+                local new_filter = show_dotfiles and filter_show or filter_hide
+                mini_files.refresh { content = { filter = new_filter } }
+            end, { buffer = buf_id, nowait = true })
+
+            local mapping = vim.tbl_filter(function(keymap)
+                return keymap.callback and keymap.lhs == '<CR>'
+            end, vim.api.nvim_buf_get_keymap(buf_id, 'n'))
+
+            if #mapping > 0 then
+                vim.keymap.set('n', '<C-LeftMouse>', mapping[1].callback, { buffer = true, nowait = true })
+            end
+        end,
+    })
 end
 
 local mini_map = vim.F.npcall(require, 'mini.map')

@@ -505,19 +505,69 @@ function M.open_changes(opts)
             revision = arg
         end
     end
+
+    local function get_content(filename)
+        local buf = vim.fn.bufnr(filename)
+        if buf ~= -1 then
+            return table.concat(vim.api.nvim_buf_get_lines(buf, 0, -1, false), '\n')
+        end
+        return require('utils.files').readfile(filename, true)
+    end
+
     local function files_actions(files)
         if #files > 0 then
             files = vim.tbl_filter(function(filename)
                 return require('utils.files').is_file(filename)
             end, files)
             local cwd = vim.pesc(require('utils.files').getcwd()) .. '/'
-            for _, f in ipairs(files) do
+            for idx, filename in ipairs(files) do
                 -- NOTE: using badd since `:edit` load every buffer and `bufadd()` set buffers as hidden
-                vim.cmd.badd((f:gsub('^' .. cwd, '')))
+                filename = filename:gsub('^' .. cwd, '')
+                vim.cmd.badd(filename)
+                files[idx] = filename
             end
             local qfutils = RELOAD 'utils.qf'
+
             if action == 'qf' then
-                qfutils.dump_files(files, { open = true })
+                local diff_opts = { result_type = 'indices', algorithm = 'minimal' }
+                local items = {}
+                require('utils.git').status(function(status)
+                    for _, filename in ipairs(files) do
+                        local item = {
+                            filename = filename,
+                            valid = true,
+                        }
+                        item.col = 1
+                        if opts.bang and revision then
+                            item.text = filename
+                            item.lnum = 1
+                        else
+                            if status.conflict[filename] then
+                                item.text = 'Conflict file'
+                                local content = get_content(filename)
+                                for idx, line in ipairs(vim.split(content, '\n')) do
+                                    if line:match '^<<<<<<<' then
+                                        item.lnum = idx + 1
+                                        break
+                                    end
+                                end
+                            else
+                                if status.stage[filename] or status.workspace[filename] then
+                                    local is_staged = status.stage[filename] ~= nil
+                                    item.text = is_staged and 'Staged file' or 'Modified file'
+                                    local content = is_staged and require('utils.git').get_filecontent(filename) or get_content(filename)
+                                    local revision_content = require('utils.git').get_filecontent(filename, 'HEAD')
+                                    local diffs = vim.diff(content, revision_content, diff_opts)
+                                    item.lnum = diffs[1] and diffs[1][1] or 1
+                                else -- untracked
+                                    item.text = 'Untracked file'
+                                end
+                            end
+                        end
+                        table.insert(items, item)
+                    end
+                    qfutils.set_list { items = items, title = 'OpenChanges', open = not qfutils.is_open() }
+                end)
             elseif action == 'hunks' then
                 RELOAD('threads').queue_thread(RELOAD('threads.git').get_hunks, function(hunks)
                     if next(hunks) ~= nil then
@@ -544,6 +594,49 @@ function M.open_changes(opts)
         end
         RELOAD('utils.git').modified_files(files_actions)
     end
+end
+
+function M.open_conflicts(opts)
+    local action = (opts.args:gsub('^%-+', ''))
+    RELOAD('utils.git').status(function(status)
+        if next(status.conflict) ~= nil then
+            local conflicts = vim.tbl_keys(status.conflict)
+            local cwd = vim.pesc(require('utils.files').getcwd()) .. '/'
+            for idx, filename in ipairs(conflicts) do
+                -- NOTE: using badd since `:edit` load every buffer and `bufadd()` set buffers as hidden
+                filename = filename:gsub('^' .. cwd, '')
+                vim.cmd.badd(filename)
+                conflicts[idx] = filename
+            end
+            local qfutils = RELOAD 'utils.qf'
+
+            local items = {}
+            if action == 'qf' or action == 'hunks' then
+                for _, filename in ipairs(conflicts) do
+                    if status.conflict[filename] then
+                        local content = require('utils.files').readfile(filename)
+                        for idx, line in ipairs(content) do
+                            if line:match '^<<<<<<<' then
+                                table.insert(items, {
+                                    filename = filename,
+                                    valid = true,
+                                    lnum = idx + 1,
+                                    text = content[idx + 1],
+                                })
+                            end
+                        end
+                    end
+                end
+                qfutils.set_list { items = items, title = 'OpenConflicts', open = not qfutils.is_open() }
+            else
+                RELOAD('utils.arglist').add(conflicts, true)
+                if action == 'open' or action == '' then
+                    vim.api.nvim_win_set_buf(0, vim.fn.bufadd(conflicts[1]))
+                    -- else "background" does not :edit the first file
+                end
+            end
+        end
+    end)
 end
 
 function M.get_diagnostic_ns(ns)

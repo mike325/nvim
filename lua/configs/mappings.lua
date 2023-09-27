@@ -658,6 +658,14 @@ if executable 'git' then
         complete = completions.qf_file_options,
         desc = 'Open all modified files in the current git repository',
     })
+
+    nvim.command.set('OpenConflicts', function(opts)
+        RELOAD('utils.buffers').open_conflicts(opts)
+    end, {
+        nargs = '?',
+        complete = completions.qf_file_options,
+        desc = 'Open conflict files in the current git repository',
+    })
 end
 
 -- NOTE: This could be smarter and list the hunks in the QF
