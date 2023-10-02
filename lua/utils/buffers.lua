@@ -555,7 +555,8 @@ function M.open_changes(opts)
                                 if status.stage[filename] or status.workspace[filename] then
                                     local is_staged = status.stage[filename] ~= nil
                                     item.text = is_staged and 'Staged file' or 'Modified file'
-                                    local content = is_staged and require('utils.git').get_filecontent(filename) or get_content(filename)
+                                    local content = is_staged and require('utils.git').get_filecontent(filename)
+                                        or get_content(filename)
                                     local revision_content = require('utils.git').get_filecontent(filename, 'HEAD')
                                     local diffs = vim.diff(content, revision_content, diff_opts)
                                     item.lnum = diffs[1] and diffs[1][1] or 1

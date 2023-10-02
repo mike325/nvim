@@ -823,6 +823,28 @@ nvim.command.set('ArgEdit', function(opts)
     end
 end, { nargs = 1, complete = completions.arglist, desc = 'Edit a file in the arglist' })
 
+nvim.command.set('ArgAddBuf', function(opts)
+    local argadd = RELOAD('utils.arglist').add
+    local cwd = vim.pesc(vim.loop.cwd() .. '/')
+    local buffers = vim.tbl_map(function(buf)
+        return (vim.api.nvim_buf_get_name(buf):gsub(cwd, ''))
+    end, vim.api.nvim_list_bufs())
+    for _, arg in ipairs(opts.fargs) do
+        if arg:match '%*' then
+            arg = (arg:gsub('%*', '.*'))
+            local matches = {}
+            for _, buf in ipairs(buffers) do
+                if buf ~= '' and buf:match(arg) then
+                    table.insert(matches, buf)
+                end
+            end
+            argadd(matches)
+        else
+            argadd(arg)
+        end
+    end
+end, { nargs = '+', complete = completions.buflist, desc = 'Add buffers to the arglist' })
+
 nvim.command.set('ClearMarks', function()
     local deleted_marks = 0
     for idx = vim.fn.char2nr 'A', vim.fn.char2nr 'Z' do
