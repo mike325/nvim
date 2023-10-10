@@ -555,10 +555,14 @@ function M.open_changes(opts)
                                 if status.stage[filename] or status.workspace[filename] then
                                     local is_staged = status.stage[filename] ~= nil
                                     item.text = is_staged and 'Staged file' or 'Modified file'
-                                    local content = is_staged and require('utils.git').get_filecontent(filename)
-                                        or get_content(filename)
+                                    local content
+                                    if is_staged then
+                                        content = table.concat(require('utils.git').get_filecontent(filename), '\n')
+                                    else
+                                        content = get_content(filename)
+                                    end
                                     local revision_content = require('utils.git').get_filecontent(filename, 'HEAD')
-                                    local diffs = vim.diff(content, revision_content, diff_opts)
+                                    local diffs = vim.diff(content, table.concat(revision_content, '\n'), diff_opts)
                                     item.lnum = diffs[1] and diffs[1][1] or 1
                                 else -- untracked
                                     item.text = 'Untracked file'

@@ -51,7 +51,7 @@ if noice then
     noice_component = {
         noice.api.statusline.mode.get,
         cond = noice.api.statusline.mode.has,
-        color = { fg = '#ff9e64' },
+        color = { fg = palette.peach },
     }
 end
 

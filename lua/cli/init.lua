@@ -1,7 +1,7 @@
 -- TODO: This is a setup for script run using -l flag
---
+
 -- Missing things,
--- - stdio handle, specially stdin, stdout/stderr works using vim.notify custom backend
+-- - stdio handle, specially stdin; stdout/stderr works using vim.notify custom backend
 -- - arg parsing
 -- - logging
 
