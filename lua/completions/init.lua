@@ -141,9 +141,14 @@ local completions = {
     end,
     buflist = function(arglead, cmdline, cursorpos)
         local cwd = vim.pesc(vim.loop.cwd() .. '/')
-        local buffers = vim.tbl_map(function(buf)
-            return (vim.api.nvim_buf_get_name(buf):gsub(cwd, ''))
-        end, vim.api.nvim_list_bufs())
+        local buffers = vim.tbl_filter(
+            function(buf)
+                return buf ~= ''
+            end,
+            vim.tbl_map(function(buf)
+                return (vim.api.nvim_buf_get_name(buf):gsub(cwd, ''))
+            end, vim.api.nvim_list_bufs())
+        )
         return general_completion(arglead, cmdline, cursorpos, buffers)
     end,
 }

@@ -1030,6 +1030,11 @@ nnoremap <silent> ]B :<C-U>exe "".(v:count ? v:count : "")."blast"<CR>
 nnoremap <silent> [b :<C-U>exe "".(v:count ? v:count : "")."bprevious"<CR>
 nnoremap <silent> ]b :<C-U>exe "".(v:count ? v:count : "")."bnext"<CR>
 
+nnoremap <silent> [A :<C-U>exe "".(v:count ? v:count : "")."first"<CR>
+nnoremap <silent> ]A :<C-U>exe "".(v:count ? v:count : "")."last"<CR>
+nnoremap <silent> [a :<C-U>exe "".(v:count ? v:count : "")."previous"<CR>
+nnoremap <silent> ]a :<C-U>exe "".(v:count ? v:count : "")."next"<CR>
+
 nnoremap <silent> n :call g:MappingsNiceNext('n')<cr>
 nnoremap <silent> N :call g:MappingsNiceNext('N')<cr>
 
