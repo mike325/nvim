@@ -158,12 +158,12 @@ vim.opt.diffopt:append {
     'indent-heuristic',
     'hiddenoff',
     'closeoff',
-    'algorithm:minimal',
+    'algorithm:patience',
 }
 
 if nvim.has { 0, 9 } then
     vim.opt.diffopt:append {
-        'linematch:60',
+        'linematch:100',
     }
 end
 

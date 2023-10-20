@@ -884,10 +884,13 @@ nvim.command.set('RemoveMarks', function()
     for idx = vim.fn.char2nr 'A', vim.fn.char2nr 'Z' do
         local letter = vim.fn.nr2char(idx)
         local mark = vim.api.nvim_get_mark(letter, {})
-        local filename = utils.realpath(mark[4])
-        local cwd = vim.pesc(vim.loop.cwd())
-        if filename ~= '' and (not utils.is_file(filename) or not filename:match('^' .. cwd)) then
-            vim.api.nvim_del_mark(letter)
+        if mark[4] ~= '' then
+            local filename = utils.realpath(mark[4])
+            local cwd = vim.pesc(vim.loop.cwd())
+            if filename ~= '' and (not utils.is_file(filename) or not filename:match('^' .. cwd)) then
+                vim.api.nvim_del_mark(letter)
+                deleted_marks = deleted_marks + 1
+            end
         end
     end
 
