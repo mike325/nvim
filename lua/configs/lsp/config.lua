@@ -205,7 +205,7 @@ function M.is_null_ls_formatting_enabled(bufnr)
     if not null_ls then
         return false
     end
-    local ft = vim.api.nvim_buf_get_option(bufnr, 'filetype')
+    local ft = vim.bo[bufnr].filetype
     local generators = require('null-ls.generators').get_available(ft, require('null-ls.methods').internal.FORMATTING)
     return #generators > 0
 end

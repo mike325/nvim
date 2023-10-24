@@ -257,7 +257,7 @@ function M.detect_indent(buf)
     end
 
     -- -- Respect modaline
-    -- if vim.api.nvim_buf_get_option(buf, 'modeline') then
+    -- if vim.bo[buf].modeline then
     --     local last_line = vim.api.nvim_buf_get_lines(buf, -2, -1, false)[1]
     --     if last_line and last_line:match '^%s*vim:' then
     --         for _, val in ipairs(vim.split(last_line, ':')) do
@@ -409,9 +409,6 @@ end
 
 function M.setup(ft, opts)
     vim.validate { ft = { ft, 'string', true }, opts = { opts, 'table', true } }
-
-    -- local bufnum = vim.api.nvim_get_current_buf()
-    -- local buftype = vim.api.nvim_buf_get_option(bufnum, 'buftype')
     ft = ft or vim.opt_local.filetype:get()
 
     -- NOTE: C uses C++ setup
@@ -476,7 +473,7 @@ function M.remove_empty(opts, buffers)
     end
 
     local function buf_is_scratch(buf)
-        if vim.api.nvim_buf_get_name(buf) == '' or vim.api.nvim_buf_get_option(buf, 'buftype') == 'nofile' then
+        if vim.api.nvim_buf_get_name(buf) == '' or vim.bo[buf].buftype == 'nofile' then
             return true
         end
         return false

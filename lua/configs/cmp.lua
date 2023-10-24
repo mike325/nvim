@@ -68,16 +68,16 @@ end
 
 vim.list_extend(sources, { { name = 'buffer' }, { name = 'path' } })
 
-local has_words_before = function()
+local function has_words_before()
     local line, col = unpack(vim.api.nvim_win_get_cursor(0))
     return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match '%s' == nil
 end
 
-local t = function(str)
+local function replace_termcodes(str)
     return vim.api.nvim_replace_termcodes(str, true, true, true)
 end
 
-local next_item = function(fallback)
+local function next_item(fallback)
     local neogen = vim.F.npcall(require, 'neogen')
     local ls = vim.F.npcall(require, 'luasnip')
 
@@ -89,8 +89,10 @@ local next_item = function(fallback)
         cmp.select_next_item()
     elseif ls and ls.locally_jumpable(1) then
         ls.jump(1)
+    elseif vim.snippet and vim.snippet.jumpable(1) then
+        vim.snippet.jump(1)
     elseif neogen and neogen.jumpable() then
-        vim.fn.feedkeys(t "<cmd>lua require('neogen').jump_next()<CR>", '')
+        vim.fn.feedkeys(replace_termcodes "<cmd>lua require('neogen').jump_next()<CR>", '')
     elseif has_words_before() then
         cmp.complete()
     else
@@ -99,7 +101,7 @@ local next_item = function(fallback)
     end
 end
 
-local prev_item = function(fallback)
+local function prev_item(fallback)
     local neogen = vim.F.npcall(require, 'neogen')
     local ls = vim.F.npcall(require, 'luasnip')
 
@@ -111,14 +113,16 @@ local prev_item = function(fallback)
         cmp.select_prev_item()
     elseif ls and ls.locally_jumpable(-1) then
         ls.jump(-1)
+    elseif vim.snippet and vim.snippet.jumpable(-1) then
+        vim.snippet.jump(-1)
     elseif neogen and neogen.jumpable(-1) then
-        vim.fn.feedkeys(t "<cmd>lua require('neogen').jump_prev()<CR>", '')
+        vim.fn.feedkeys(replace_termcodes "<cmd>lua require('neogen').jump_prev()<CR>", '')
     else
         fallback()
     end
 end
 
-local enter_item = function(fallback)
+local function enter_item(fallback)
     if luasnip and luasnip.expandable() then
         luasnip.expand()
     elseif cmp.visible() then
@@ -132,7 +136,7 @@ local enter_item = function(fallback)
     end
 end
 
-local close = function(fallback)
+local function close(fallback)
     if luasnip and luasnip.choice_active() then
         luasnip.change_choice(1)
     elseif cmp.visible() then
@@ -143,6 +147,11 @@ local close = function(fallback)
 end
 
 cmp.setup {
+    view = {
+        docs = {
+            auto_open = true,
+        },
+    },
     window = {
         completion = cmp.config.window.bordered(),
         documentation = cmp.config.window.bordered(),
@@ -158,8 +167,15 @@ cmp.setup {
     --     keyword_length = 1,
     -- },
     mapping = {
-        ['<C-d>'] = cmp.mapping.scroll_docs(-4),
-        ['<C-f>'] = cmp.mapping.scroll_docs(4),
+        ['<C-d>'] = function()
+            if cmp.visible_docs() then
+                cmp.close_docs()
+            else
+                cmp.open_docs()
+            end
+        end,
+        ['<C-k>'] = cmp.mapping.scroll_docs(4),
+        ['<C-j>'] = cmp.mapping.scroll_docs(-4),
         ['<C-y>'] = cmp.mapping.confirm {
             behavior = cmp.SelectBehavior.Insert,
             select = true,

@@ -167,8 +167,6 @@ function M.setup()
                 -- NOTE: output is an array of stdout lines, we must join the array in a str
                 --       split it into a single array
                 local output = vim.split(table.concat(job:output(), ','), ',')
-                -- BUG: No idea why this fails
-                -- local path = vim.split(vim.api.nvim_buf_get_option(buf, 'path'), ',')
                 local path = vim.opt_local.path:get()
                 if type(path) == type '' then
                     path = vim.split(path, ',')
