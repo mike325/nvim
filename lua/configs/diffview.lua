@@ -13,4 +13,11 @@ diffview.setup {
             width = 35,
         },
     },
+    keymaps = {
+        view = {
+            ['<leader>q'] = function()
+                require('diffview.config').actions.close(true)
+            end,
+        },
+    },
 }

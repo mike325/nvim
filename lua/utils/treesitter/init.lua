@@ -70,7 +70,6 @@ function M.is_in_node(node, range, buf)
     end
 
     if vim.list_contains(node, 'comment') then
-        vim.print('range: ' .. vim.inspect(range))
         local langtree = parser:language_for_range(range)
         if langtree and langtree:lang() == 'comment' then
             return true
