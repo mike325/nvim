@@ -902,8 +902,8 @@ function M.alternate(opts)
     end
 
     if #candidates > 1 then
-        vim.ui.select(candidates, { prompt = 'Alternate: ' }, function(choise)
-            vim.cmd.edit(choise)
+        vim.ui.select(candidates, { prompt = 'Alternate: ' }, function(choice)
+            vim.cmd.edit(choice)
         end)
     elseif #candidates == 1 then
         vim.cmd.edit(candidates[1])
@@ -944,8 +944,8 @@ function M.alt_makefiles(opts)
     end
 
     if #candidates > 1 then
-        vim.ui.select(candidates, { prompt = 'Makefile: ' }, function(choise)
-            vim.cmd.edit(choise)
+        vim.ui.select(candidates, { prompt = 'Makefile: ' }, function(choice)
+            vim.cmd.edit(choice)
         end)
     elseif #candidates == 1 then
         vim.cmd.edit(candidates[1])
@@ -987,8 +987,8 @@ function M.alternate_test(opts)
     end
 
     if #candidates > 1 then
-        vim.ui.select(candidates, { prompt = 'Test: ' }, function(choise)
-            vim.cmd.edit(choise)
+        vim.ui.select(candidates, { prompt = 'Test: ' }, function(choice)
+            vim.cmd.edit(choice)
         end)
     elseif #candidates == 1 then
         vim.cmd.edit(candidates[1])

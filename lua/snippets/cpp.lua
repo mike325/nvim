@@ -474,16 +474,6 @@ return {
             i(1, '"msg"'),
         })
     ),
-    s(
-        'con',
-        fmt([[const {} {}]], {
-            c(1, {
-                i(1, 'auto'),
-                i(1, 'std::string'),
-            }),
-            i(2, 'v'),
-        })
-    ),
     s('cex', fmt([[constexpr]], {})),
     s(
         'inc',
@@ -529,9 +519,37 @@ return {
         })
     ),
     s(
-        'cau',
-        fmt([[const auto {};]], {
+        'ca',
+        fmt([[const auto {}{};]], {
             i(1, 'v'),
+            c(2, {
+                i(1, ''),
+                sn(nil, {
+                    t { ' = ' },
+                    i(1, 'varname'),
+                }),
+            }),
         })
+    ),
+    s(
+        'try',
+        fmt(
+            [[
+    try {{
+    {}
+    }}
+    catch ({}) {{
+        {}
+    }}
+    ]],
+            {
+                d(1, saved_text, {}, { user_args = { { indent = true } } }),
+                c(2, {
+                    i(1, 'std::exception& exc'),
+                    i(1, '...'),
+                }),
+                i(3, '// exception handling'),
+            }
+        )
     ),
 }

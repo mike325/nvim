@@ -815,13 +815,29 @@ nvim.command.set('Arglist2Loc', function()
 end, { desc = 'Dump loclist files to the arglist' })
 
 nvim.command.set('ArgEdit', function(opts)
-    for idx, arg in ipairs(vim.fn.argv()) do
-        if opts.args == arg then
-            vim.cmd.argument(idx)
-            break
-        end
+
+    if #vim.fn.argv() == 0 then
+        return
     end
-end, { nargs = 1, complete = completions.arglist, desc = 'Edit a file in the arglist' })
+
+    if opts.args ~= '' then
+        for idx, arg in ipairs(vim.fn.argv()) do
+            if opts.args == arg then
+                vim.cmd.argument(idx)
+                break
+            end
+        end
+    else
+        vim.ui.select(vim.fn.argv(), {
+            prompt = 'Select Arg > ',
+            completion = "customlist,v:lua.require'completions'.arglist",
+        }, function(choice, idx)
+            if choice and choice ~= '' then
+                vim.cmd.argument(idx)
+            end
+        end)
+    end
+end, { nargs = '?', complete = completions.arglist, desc = 'Edit a file in the arglist' })
 
 nvim.command.set('ArgAddBuf', function(opts)
     local argadd = RELOAD('utils.arglist').add
