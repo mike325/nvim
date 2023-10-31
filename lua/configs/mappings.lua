@@ -719,19 +719,21 @@ nvim.command.set('VNC', function(opts)
 end, { complete = completions.ssh_hosts_completion, nargs = 1, desc = 'Open a VNC connection to the given host' })
 
 vim.keymap.set('n', '<leader>c', function()
+    local bufnr = vim.api.nvim_get_current_buf()
+
     local options = {
-        filename = function(bufnr)
-            return vim.fs.basename(nvim.buf.get_name(bufnr or 0))
+        filename = function()
+            return vim.fs.basename(nvim.buf.get_name(bufnr))
         end,
         -- extension = true,
-        filepath = function(bufnr)
-            return require('utils.files').realpath(nvim.buf.get_name(bufnr or 0))
+        filepath = function()
+            return require('utils.files').realpath(nvim.buf.get_name(bufnr))
         end,
-        dirname = function(bufnr)
-            return vim.fs.dirname(nvim.buf.get_name(bufnr or 0))
+        dirname = function()
+            return vim.fs.dirname(nvim.buf.get_name(bufnr))
         end,
         bufnr = function()
-            return vim.api.nvim_get_current_buf()
+            return bufnr
         end,
     }
 
@@ -739,9 +741,8 @@ vim.keymap.set('n', '<leader>c', function()
         prompt = 'Select File/Buffer attribute: ',
     }, function(choice)
         if options[choice] then
-            local bufnr = vim.api.nvim_get_current_buf()
-            nvim.reg['+'] = options[choice](bufnr)
-            vim.notify(choice .. ' copied', 'INFO')
+            nvim.reg['+'] = options[choice]()
+            vim.notify('Clipboard value: ' .. nvim.reg['+'], 'INFO', {title = "Item copied succesfully"})
         end
     end)
 end, { noremap = true, desc = 'Copy different Buffer/File related stuff' })
@@ -894,16 +895,19 @@ nvim.command.set('DumpMarks', function()
     end
 end, { desc = 'Dump global marks in a local json file' })
 
-nvim.command.set('RemoveMarks', function()
+nvim.command.set('RemoveForeingMarks', function()
     local utils = require 'utils.files'
     local deleted_marks = 0
     for idx = vim.fn.char2nr 'A', vim.fn.char2nr 'Z' do
         local letter = vim.fn.nr2char(idx)
         local mark = vim.api.nvim_get_mark(letter, {})
         if mark[4] ~= '' then
-            local filename = utils.realpath(mark[4])
+            local filename = mark[4]
+            if utils.is_file(filename) then
+                filename = utils.realpath(filename)
+            end
             local cwd = vim.pesc(vim.loop.cwd())
-            if filename ~= '' and (not utils.is_file(filename) or not filename:match('^' .. cwd)) then
+            if not utils.is_file(filename) or not filename:match('^' .. cwd) then
                 vim.api.nvim_del_mark(letter)
                 deleted_marks = deleted_marks + 1
             end

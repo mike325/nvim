@@ -39,9 +39,6 @@ vim.g.short_branch_name = true
 
 vim.g.port = 0x8AC
 
--- vim.g.minimal = false
--- vim.g.bare = false
-
 if nvim.has 'win32' then
     vim.opt.shell = 'cmd.exe'
     -- vim.opt.shell = 'powershell'
@@ -115,4 +112,6 @@ vim.cmd.packadd { args = { 'termdebug' }, bang = false }
 -- NOTE: overload/replace vim.* functions
 require 'overloads.notify'
 require 'overloads.ui.open'
+require 'overloads.ui.select'
+-- require 'overloads.ui.input'
 -- require 'overloads.paste'

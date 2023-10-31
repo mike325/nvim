@@ -192,3 +192,14 @@ local mini_comment = vim.F.npcall(require, 'mini.comment')
 if mini_comment then
     mini_comment.setup {}
 end
+
+local mini_pick = vim.F.npcall(require, 'mini.pick')
+if mini_pick then
+    mini_pick.setup {
+        mappings = {
+            move_up = '<C-k>',
+            move_down = '<C-j>',
+        },
+    }
+    vim.ui.select = mini_pick.ui_select
+end

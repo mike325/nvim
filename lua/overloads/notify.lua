@@ -24,6 +24,9 @@ if has_ui then
             },
         }
         notify_backend = nvim_notify
+        vim.keymap.set('n', '<C-w>n', function()
+            nvim_notify.dismiss { pending = true, silent = true }
+        end, { noremap = true, silent = true })
     else
         notify_backend = function(msg, level, opts)
             if opts and opts.title then
