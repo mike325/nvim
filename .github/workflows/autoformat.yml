@@ -1,8 +1,8 @@
 name: auto-format
 on: [push]
 
-env:
-  GO_VERSION: go1.18.3
+# env:
+#   GO_VERSION: go1.18.3
 
 jobs:
   build:
@@ -31,10 +31,10 @@ jobs:
 
         # FIX: Temporally fix as currently the latest tag does not have a release
         rm -f ~/.local/bin/shfmt
-        bash < <(curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer)
-        source "$HOME/.gvm/scripts/gvm"
-        gvm install "$GO_VERSION" -B
-        gvm use "$GO_VERSION" --default
+        # bash < <(curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer)
+        # source "$HOME/.gvm/scripts/gvm"
+        # gvm install "$GO_VERSION" -B
+        # gvm use "$GO_VERSION" --default
         go install mvdan.cc/sh/v3/cmd/shfmt@latest
 
         echo "$HOME/.local/bin" >> $GITHUB_PATH
