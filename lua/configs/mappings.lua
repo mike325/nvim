@@ -737,14 +737,18 @@ vim.keymap.set('n', '<leader>c', function()
         end,
     }
 
-    vim.ui.select(vim.tbl_keys(options), {
-        prompt = 'Select File/Buffer attribute: ',
-    }, function(choice)
-        if options[choice] then
-            nvim.reg['+'] = options[choice]()
-            vim.notify('Clipboard value: ' .. nvim.reg['+'], 'INFO', {title = "Item copied succesfully"})
-        end
-    end)
+    vim.ui.select(
+        vim.tbl_keys(options),
+        {
+            prompt = 'Select File/Buffer attribute: ',
+        },
+        vim.schedule_wrap(function(choice)
+            if options[choice] then
+                nvim.reg['+'] = options[choice]()
+                vim.notify('Clipboard value: ' .. nvim.reg['+'], 'INFO', { title = 'Item copied succesfully' })
+            end
+        end)
+    )
 end, { noremap = true, desc = 'Copy different Buffer/File related stuff' })
 
 if executable 'gh' then
@@ -816,7 +820,6 @@ nvim.command.set('Arglist2Loc', function()
 end, { desc = 'Dump loclist files to the arglist' })
 
 nvim.command.set('ArgEdit', function(opts)
-
     if #vim.fn.argv() == 0 then
         return
     end
@@ -829,14 +832,17 @@ nvim.command.set('ArgEdit', function(opts)
             end
         end
     else
-        vim.ui.select(vim.fn.argv(), {
-            prompt = 'Select Arg > ',
-            completion = "customlist,v:lua.require'completions'.arglist",
-        }, function(choice, idx)
-            if choice and choice ~= '' then
-                vim.cmd.argument(idx)
-            end
-        end)
+        vim.ui.select(
+            vim.fn.argv(),
+            {
+                prompt = 'Select Arg > ',
+            },
+            vim.schedule_wrap(function(choice, idx)
+                if choice and choice ~= '' then
+                    vim.cmd.argument(idx)
+                end
+            end)
+        )
     end
 end, { nargs = '?', complete = completions.arglist, desc = 'Edit a file in the arglist' })
 
