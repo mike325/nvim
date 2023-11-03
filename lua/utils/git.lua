@@ -505,9 +505,8 @@ function M.get_filecontent(filename, revision, callback)
         callback = { callback, 'function', true },
     }
 
-
     if callback and type(revision) == type(callback) then
-        error(debug.traceback('Revision should be a string, cannot provide 2 callbacks'))
+        error(debug.traceback 'Revision should be a string, cannot provide 2 callbacks')
     elseif type(revision) == 'function' then
         callback = revision
         revision = nil

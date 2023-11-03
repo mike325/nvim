@@ -198,7 +198,6 @@ nvim.autocmd.LspMappings = {
     event = 'LspAttach',
     pattern = '*',
     callback = function(args)
-
         if not vim.g.fix_inlay_hl then
             local comment_hl = vim.api.nvim_get_hl(0, { name = 'Comment' })
             comment_hl.bold = true

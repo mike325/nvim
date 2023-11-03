@@ -6,7 +6,7 @@ end
 
 local has_mini = nvim.plugins['mini.nvim'] ~= nil
 
-if not has_mini  then
+if not has_mini then
     vim.keymap.set('n', ']e', [[:<C-U>lua require"mappings".move_line(true)<CR>]], { noremap = true, silent = true })
     vim.keymap.set('n', '[e', [[:<C-U>lua require"mappings".move_line(false)<CR>]], { noremap = true, silent = true })
 end

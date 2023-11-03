@@ -32,7 +32,7 @@ function M.add(files, clear)
             local bufname = vim.fn.bufname(buf)
             vim.cmd.argadd((bufname:gsub('^' .. cwd, '')))
         else
-            error(debug.traceback('Invalid file argument: '.. vim.inspect(filename)))
+            error(debug.traceback('Invalid file argument: ' .. vim.inspect(filename)))
         end
     end
 

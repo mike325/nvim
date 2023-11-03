@@ -24,7 +24,7 @@ function Parser:parse(args)
         end
 
         local base_arg = arg
-        if base_arg:match('^%-%-no%-?%w+') then
+        if base_arg:match '^%-%-no%-?%w+' then
             base_arg = '--' .. (base_arg:gsub('^%-%-no%-?', ''))
         end
 
