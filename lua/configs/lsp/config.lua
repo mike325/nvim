@@ -99,7 +99,10 @@ function M.lsp_mappings(client, bufnr)
     }
 
     bufnr = bufnr or nvim.get_current_buf()
-    vim.bo[bufnr].omnifunc = 'v:lua.vim.lsp.omnifunc'
+
+    local is_min = vim.g.minimal and vim.F.npcall(require, 'mini.completion') ~= nil
+    vim.bo[bufnr].omnifunc = is_min and 'v:lua.MiniCompletion.completefunc_lsp' or 'v:lua.vim.lsp.omnifunc'
+
     if vim.bo[bufnr].tagfunc == '' then
         vim.bo[bufnr].tagfunc = 'v:lua.vim.lsp.tagfunc'
     end

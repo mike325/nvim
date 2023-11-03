@@ -4,7 +4,7 @@ if not vim.keymap then
     vim.keymap = nvim.keymap
 end
 
-local has_mini = nvim.plugins['mini.nvim'] ~= nil
+local has_mini = nvim.plugins['mini.nvim'] ~= nil or (vim.g.minimal and vim.F.npcall(require, 'mini.comment') ~= nil)
 
 if not has_mini then
     vim.keymap.set('n', ']e', [[:<C-U>lua require"mappings".move_line(true)<CR>]], { noremap = true, silent = true })

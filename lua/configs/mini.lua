@@ -4,19 +4,24 @@ local sys = require 'sys'
 local is_dir = require('utils.files').is_dir
 local mkdir = require('utils.files').mkdir
 local completions = RELOAD 'completions'
+local noremap = { noremap = true, silent = true }
 
-local mini_doc = vim.F.npcall(require, 'mini.doc')
-if mini_doc then
-    mini_doc.setup {}
+local MiniExtras = vim.F.npcall(require, 'mini.extra')
+if MiniExtras then
+    MiniExtras.setup {}
 end
 
-local mini_sessions = vim.F.npcall(require, 'mini.sessions')
-if mini_sessions then
+if vim.F.npcall(require, 'mini.doc') then
+    require('mini.doc').setup {}
+end
+
+local MiniSessions = vim.F.npcall(require, 'mini.sessions')
+if MiniSessions then
     local sessions_dir = sys.session
     if not is_dir(sessions_dir) then
         mkdir(sessions_dir)
     end
-    mini_sessions.setup {}
+    MiniSessions.setup {}
     nvim.command.set('SessionSave', function(opts)
         local session = opts.args
         if session == '' then
@@ -26,15 +31,15 @@ if mini_sessions then
                 session = session:gsub('^%.+', '')
             end
         end
-        mini_sessions.write(session:gsub('%s+', '_'), { force = true })
+        MiniSessions.write(session:gsub('%s+', '_'), { force = true })
     end, { nargs = '?', complete = completions.session_files })
 
     nvim.command.set('SessionLoad', function(opts)
         local session = opts.args
         if session ~= '' then
-            mini_sessions.read(session, { force = false })
+            MiniSessions.read(session, { force = false })
         else
-            mini_sessions.get_latest()
+            MiniSessions.get_latest()
         end
     end, { nargs = '?', complete = completions.session_files })
 
@@ -47,7 +52,7 @@ if mini_sessions then
             vim.notify('Invalid Session: ' .. session, 'ERROR', { title = 'MiniSession' })
             return
         end
-        mini_sessions.delete(session, { force = bang })
+        MiniSessions.delete(session, { force = bang })
     end, {
         bang = true,
         nargs = 1,
@@ -55,9 +60,8 @@ if mini_sessions then
     })
 end
 
-local mini_move = vim.F.npcall(require, 'mini.move')
-if mini_move then
-    mini_move.setup {
+if vim.F.npcall(require, 'mini.move') then
+    require('mini.move').setup {
         mappings = {
             left = '',
             right = '',
@@ -107,9 +111,9 @@ if mini_splitjoin then
     }
 end
 
-local mini_files = vim.F.npcall(require, 'mini.files')
-if mini_files then
-    mini_files.setup {
+local MiniFiles = vim.F.npcall(require, 'mini.files')
+if MiniFiles then
+    MiniFiles.setup {
         mappings = {
             close = 'q',
             go_in = '<TAB>',
@@ -126,15 +130,15 @@ if mini_files then
     }
     nvim.command.set('Files', function(opts)
         local path = opts.bang and vim.api.nvim_buf_get_name(0) or vim.loop.cwd()
-        mini_files.open(path)
+        MiniFiles.open(path)
     end, { bang = true, desc = 'Open mini.files' })
 
     vim.keymap.set('n', '-', function()
-        mini_files.open()
+        MiniFiles.open()
     end, { noremap = true, silent = true, desc = 'Open mini.files' })
 
     vim.keymap.set('n', 'g-', function()
-        mini_files.open(vim.api.nvim_buf_get_name(0))
+        MiniFiles.open(vim.api.nvim_buf_get_name(0))
     end, { noremap = true, silent = true, desc = 'Open mini.files' })
 
     local show_dotfiles = true
@@ -160,7 +164,7 @@ if mini_files then
             vim.keymap.set('n', 'g.', function()
                 show_dotfiles = not show_dotfiles
                 local new_filter = show_dotfiles and filter_show or filter_hide
-                mini_files.refresh { content = { filter = new_filter } }
+                MiniFiles.refresh { content = { filter = new_filter } }
             end, { buffer = buf_id, nowait = true })
 
             local mapping = vim.tbl_filter(function(keymap)
@@ -174,32 +178,78 @@ if mini_files then
     })
 end
 
-local mini_map = vim.F.npcall(require, 'mini.map')
-if mini_map then
-    mini_map.setup {}
+local MiniMap = vim.F.npcall(require, 'mini.map')
+if MiniMap then
+    MiniMap.setup {}
     nvim.command.set('MiniMap', function(opts)
         if opts.args == 'enable' then
-            mini_map.open()
+            MiniMap.open()
         elseif opts.args == 'disable' then
-            mini_map.close()
+            MiniMap.close()
         else
-            mini_map.toggle()
+            MiniMap.toggle()
         end
     end, { nargs = '?', complete = completions.toggle, desc = 'Open/Close mini.map' })
 end
 
-local mini_comment = vim.F.npcall(require, 'mini.comment')
-if mini_comment then
-    mini_comment.setup {}
+if vim.F.npcall(require, 'mini.comment') then
+    require('mini.comment').setup {}
 end
 
-local mini_pick = vim.F.npcall(require, 'mini.pick')
-if mini_pick then
-    mini_pick.setup {
+local MiniPick = vim.F.npcall(require, 'mini.pick')
+if MiniPick then
+    MiniPick.setup {
         mappings = {
             move_up = '<C-k>',
             move_down = '<C-j>',
         },
     }
-    vim.ui.select = mini_pick.ui_select
+    vim.ui.select = MiniPick.ui_select
+
+    if vim.g.minimal then
+        vim.keymap.set('n', '<leader><C-r>', function()
+            MiniPick.builtin.resume()
+        end, noremap)
+
+        vim.keymap.set('n', '<leader>g', function()
+            MiniPick.builtin.grep()
+        end, noremap)
+
+        vim.keymap.set('n', '<C-p>', function()
+            local is_git = vim.b.project_root and vim.b.project_root.is_git or false
+            local fast_pickers = {
+                fd = true,
+                fdfind = true,
+                rg = true,
+                git = true,
+            }
+            local finder = RELOAD('utils.functions').select_filelist(is_git, true)
+            if fast_pickers[finder[1]] then
+                MiniPick.builtin.cli { command = finder }
+            else
+                -- TODO: add support for threads to have async functionality?
+                MiniPick.builtin.files()
+            end
+        end, noremap)
+
+        vim.keymap.set('n', '<leader><C-p>', function()
+            local finder = RELOAD('utils.functions').select_filelist(false, true)
+            local fast_pickers = {
+                fd = true,
+                fdfind = true,
+                rg = true,
+            }
+            if fast_pickers[finder[1]] then
+                table.insert(finder, '-uuu')
+                MiniPick.builtin.cli { command = finder }
+            else
+                -- TODO: add support for threads to have async functionality?
+                MiniPick.builtin.files()
+            end
+        end, noremap)
+
+        vim.keymap.set('n', '<C-b>', function()
+            MiniPick.builtin.buffers {}
+        end, noremap)
+    end
 end

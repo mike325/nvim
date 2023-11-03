@@ -96,11 +96,22 @@ require 'configs.options'
 require 'configs.mappings'
 require 'configs.autocmds'
 
-if nvim.executable 'git' and not vim.g.bare then
+if nvim.executable 'git' and not vim.g.bare and not vim.g.minimal then
     local is_setup = require 'setup'()
     if is_setup then
         require('lazy').setup('plugins', {})
     end
+elseif vim.g.minimal and not vim.g.bare then
+    vim.cmd.packadd { args = { 'mini.nvim' }, bang = false }
+    nvim.autocmd.SetupMini = {
+        event = 'VimEnter',
+        pattern = '*',
+        once = true,
+        callback = function()
+            require 'configs.mini'
+            vim.cmd.helptags 'ALL'
+        end,
+    }
 elseif not vim.g.minimal and not vim.g.bare then
     vim.notify('Missing git! cannot install plugins', 'WARN', { title = 'Nvim Setup' })
 end
