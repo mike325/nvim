@@ -28,40 +28,6 @@ local i = ls.insert_node
 
 local M = {}
 
--- TODO: Update this with TS support
-function M.get_comment(text)
-    vim.validate {
-        text = {
-            text,
-            function(x)
-                return not x or type(x) == type '' or vim.tbl_islist(x)
-            end,
-            'text must be either a string or an array of lines',
-        },
-    }
-    local comment = vim.opt_local.commentstring:get()
-    comment = comment ~= '' and comment or '// %s'
-    if not comment:match '%s%%s' then
-        comment = comment:format ' %s'
-    end
-    local comment_str
-    if text then
-        if vim.tbl_islist(text) then
-            comment_str = {}
-            for _, line in ipairs(text) do
-                local commented = comment:format(line)
-                if line == '' then
-                    commented = vim.trim(commented)
-                end
-                table.insert(comment_str, commented)
-            end
-        else
-            comment_str = comment:format(text)
-        end
-    end
-    return comment_str or comment
-end
-
 function M.saved_text(args, snip, old_state, user_args)
     local nodes = {}
     old_state = old_state or {}
@@ -80,7 +46,7 @@ function M.saved_text(args, snip, old_state, user_args)
             table.insert(nodes, t(node))
         end
     else
-        local text = user_args.text or M.get_comment 'code'
+        local text = user_args.text or RELOAD('utils.buffers').get_comment 'code'
         if indent ~= '' then
             table.insert(nodes, t(indent))
         end
@@ -134,10 +100,12 @@ function M.else_clause(args, snip, old_state, placeholder)
     local nodes = {}
     local ft = vim.opt_local.filetype:get()
 
+    local get_comment = RELOAD('utils.buffers').get_comment
+
     if snip.captures[1] == 'e' then
         if ft == 'lua' then
             table.insert(nodes, t { '', 'else', '\t' })
-            table.insert(nodes, i(1, M.get_comment 'code'))
+            table.insert(nodes, i(1, get_comment 'code'))
         elseif ft == 'python' then
             table.insert(nodes, t { '', 'else:', '\t' })
             table.insert(nodes, i(1, 'pass'))
@@ -147,11 +115,11 @@ function M.else_clause(args, snip, old_state, placeholder)
             table.insert(nodes, t { '', '' })
         elseif ft == 'go' or ft == 'rust' then
             table.insert(nodes, t { ' else {', '\t' })
-            table.insert(nodes, i(1, M.get_comment 'code'))
+            table.insert(nodes, i(1, get_comment 'code'))
             table.insert(nodes, t { '', '}' })
         else
             table.insert(nodes, t { '', 'else {', '\t' })
-            table.insert(nodes, i(1, M.get_comment 'code'))
+            table.insert(nodes, i(1, get_comment 'code'))
             table.insert(nodes, t { '', '}' })
         end
     else

@@ -25,7 +25,7 @@ local fmt = require('luasnip.extras.fmt').fmt
 
 local utils = RELOAD 'configs.luasnip.utils'
 local saved_text = utils.saved_text
--- local get_comment = utils.get_comment
+-- local get_comment = RELOAD('utils.buffers').get_comment
 -- local surround_with_func = utils.surround_with_func
 
 -- stylua: ignore

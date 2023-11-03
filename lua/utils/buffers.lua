@@ -723,4 +723,40 @@ function M.find_config(opts)
     return config_path
 end
 
+-- TODO: Update this with TS support
+function M.get_comment(text, buf)
+    vim.validate {
+        text = {
+            text,
+            function(x)
+                return not x or type(x) == type '' or vim.tbl_islist(x)
+            end,
+            'text must be either a string or an array of lines',
+        },
+        buf = { buf, 'number', true },
+    }
+    buf = buf or vim.api.nvim_get_current_buf()
+    local comment = vim.bo[buf].commentstring
+    comment = comment ~= '' and comment or '// %s'
+    if not comment:match '%s%%s' then
+        comment = comment:format ' %s'
+    end
+    local comment_str
+    if text then
+        if vim.tbl_islist(text) then
+            comment_str = {}
+            for _, line in ipairs(text) do
+                local commented = comment:format(line)
+                if line == '' then
+                    commented = vim.trim(commented)
+                end
+                table.insert(comment_str, commented)
+            end
+        else
+            comment_str = comment:format(text)
+        end
+    end
+    return comment_str or comment
+end
+
 return M

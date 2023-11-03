@@ -30,7 +30,7 @@ end
 local utils = RELOAD 'configs.luasnip.utils'
 local saved_text = utils.saved_text
 local add_statement_and_include = utils.add_statement_and_include
--- local get_comment = utils.get_comment
+-- local get_comment = RELOAD('utils.buffers').get_comment
 -- local surround_with_func = utils.surround_with_func
 
 ls.filetype_extend('cpp', { 'c' })

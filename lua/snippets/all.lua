@@ -29,7 +29,7 @@ local utils = RELOAD 'configs.luasnip.utils'
 
 -- local saved_text = utils.saved_text
 -- local surround_with_func = utils.surround_with_func
-local get_comment = utils.get_comment
+local get_comment = RELOAD('utils.buffers').get_comment
 local return_value = utils.return_value
 
 local function notes(args, snip, old_state, user_args)
