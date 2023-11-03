@@ -40,15 +40,15 @@ vim.g.short_branch_name = true
 vim.g.port = 0x8AC
 
 if nvim.has 'win32' then
-    vim.opt.shell = 'cmd.exe'
-    -- vim.opt.shell = 'powershell'
-    -- vim.opt.shellcmdflag = '-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command [Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.Encoding]::UTF8;'
-    -- vim.opt.shellredir = '2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode'
-    -- vim.opt.shellpipe = '2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode'
-    -- vim.opt.shellquote = ''
-    -- vim.opt.shellxquote = ''
+    -- vim.opt.shell = 'cmd.exe'
+    vim.opt.shell = 'powershell'
+    vim.opt.shellcmdflag = '-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command [Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.Encoding]::UTF8;'
+    vim.opt.shellredir = '2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode'
+    vim.opt.shellpipe = '2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode'
+    vim.opt.shellquote = ''
+    vim.opt.shellxquote = ''
 
-    vim.opt.shellslash = false
+    vim.opt.shellslash = true
 end
 
 if not vim.keymap then
@@ -63,8 +63,8 @@ require 'utils.ft_detect'
 require 'completions'
 require 'globals'
 
-local is_min = vim.env.VIM_MIN ~= nil or vim.g.minimal ~= nil
-local is_bare = vim.env.VIM_BARE ~= nil or vim.g.bare ~= nil
+vim.g.minimal = vim.env.VIM_MIN ~= nil or vim.g.minimal ~= nil
+vim.g.bare = vim.env.VIM_BARE ~= nil or vim.g.bare ~= nil
 
 require('threads.parse').ssh_hosts()
 local ssh_config = vim.loop.os_homedir():gsub('\\', '/') .. '/.ssh/config'
@@ -96,12 +96,12 @@ require 'configs.options'
 require 'configs.mappings'
 require 'configs.autocmds'
 
-if nvim.executable 'git' and not is_bare then
+if nvim.executable 'git' and not vim.g.bare then
     local is_setup = require 'setup'()
     if is_setup then
         require('lazy').setup('plugins', {})
     end
-elseif not is_min and not is_bare then
+elseif not vim.g.minimal and not vim.g.bare then
     vim.notify('Missing git! cannot install plugins', 'WARN', { title = 'Nvim Setup' })
 end
 

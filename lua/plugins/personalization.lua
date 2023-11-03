@@ -16,7 +16,7 @@ return {
     },
     {
         'lervag/vimtex',
-        cond = vim.fn.executable 'latexmk' == 1 and not vim.env.VIM_MIN and not vim.g.minimal,
+        cond = vim.fn.executable 'latexmk' == 1 and not vim.g.minimal,
         init = function()
             require 'configs.vimtex'
         end,
@@ -33,7 +33,7 @@ return {
     },
     {
         'Yggdroot/indentLine',
-        cond = not vim.env.VIM_MIN and not vim.g.minimal,
+        cond = not vim.g.minimal,
         init = function()
             vim.g.indentLine_fileTypeExclude = {
                 'Telescope',
@@ -59,7 +59,7 @@ return {
     },
     {
         'tommcdo/vim-lion',
-        cond = not vim.env.VIM_MIN and not vim.g.minimal,
+        cond = not vim.g.minimal,
         config = function()
             vim.g.lion_squeeze_spaces = 1
         end,
@@ -68,9 +68,8 @@ return {
     {
         'folke/todo-comments.nvim',
         cond = function()
-            local no_min = vim.env.VIM_MIN == nil and vim.g.minimal == nil
             local has_rg = vim.fn.executable 'rg' == 1
-            return no_min and has_rg
+            return not vim.g.minimal and has_rg
         end,
         config = function()
             require 'configs.todos'
@@ -80,7 +79,7 @@ return {
     },
     {
         'folke/trouble.nvim',
-        cond = not vim.env.VIM_MIN and not vim.g.minimal,
+        cond = not vim.g.minimal,
         config = function()
             require 'configs.trouble'
         end,

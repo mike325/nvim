@@ -1,3 +1,3 @@
-if vim.env.VIM_BARE then
+if vim.g.bare then
     vim.cmd.colorscheme 'slate'
 end

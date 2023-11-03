@@ -3,9 +3,8 @@ return {
         'glacambre/firenvim',
         cond = function()
             local ssh = vim.env.SSH_CONNECTION or false
-            local min = vim.env.VIM_MIN ~= nil or vim.g.minimal ~= nil
             local firenvim = vim.g.started_by_firenvim ~= nil
-            return (not min and not ssh) or firenvim
+            return (not vim.g.minimal and not ssh) or firenvim
         end,
         config = function()
             if vim.g.started_by_firenvim ~= nil then
@@ -18,7 +17,7 @@ return {
     },
     {
         'phaazon/hop.nvim',
-        cond = not vim.env.VIM_MIN and not vim.g.minimal,
+        cond = not vim.g.minimal,
         config = function()
             require 'configs.hop'
         end,

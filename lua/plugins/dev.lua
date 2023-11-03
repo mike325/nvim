@@ -4,14 +4,14 @@ return {
         event = 'VeryLazy',
         -- event = { 'CursorHold', 'CmdlineEnter' },
         cmd = { 'DapStart', 'DapContinue' },
-        cond = not vim.env.VIM_MIN and not vim.g.minimal,
+        cond = not vim.g.minimal,
         config = function()
             require 'configs.dap'
         end,
         dependencies = {
             {
                 'rcarriga/nvim-dap-ui',
-                cond = not vim.env.VIM_MIN and not vim.g.minimal,
+                cond = not vim.g.minimal,
             },
         },
     },

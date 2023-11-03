@@ -287,12 +287,11 @@ nvim.autocmd.ApplyColorscheme = {
     event = 'VimEnter',
     pattern = '*',
     callback = function()
-        local bare = vim.env.VIM_BARE ~= nil
         local ok = false
-        if not vim.env.VIM_BARE then
+        if not vim.g.bare then
             ok = pcall(vim.cmd.colorscheme, 'catppuccin')
         end
-        if bare or not ok then
+        if vim.g.bare or not ok then
             vim.cmd.colorscheme 'slate'
         end
     end,
