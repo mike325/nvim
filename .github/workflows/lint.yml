@@ -39,14 +39,14 @@ jobs:
           # source "$HOME/.gvm/scripts/gvm"
           # gvm install "$GO_VERSION" -B
           # gvm use "$GO_VERSION" --default
-          go install mvdan.cc/sh/v3/cmd/shfmt@latest
+          go install -v mvdan.cc/sh/v3/cmd/shfmt@latest
 
           echo "$HOME/.local/bin" >> $GITHUB_PATH
-          echo "$HOME/.gvm/pkgsets/$GO_VERSION/global/bin/" >> $GITHUB_PATH
+          echo "$HOME/go/bin/" >> $GITHUB_PATH
 
       - name: Fetch install script
         run: |
-          wget https://raw.githubusercontent.com/Mike325/dotfiles/master/install.sh
+          wget https://raw.githubusercontent.com/mike325/dotfiles/master/install.sh
           chmod +x ./install.sh
           ./install.sh --portables --verbose
       - uses: pre-commit/action@v2.0.3

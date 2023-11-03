@@ -35,16 +35,15 @@ jobs:
         # source "$HOME/.gvm/scripts/gvm"
         # gvm install "$GO_VERSION" -B
         # gvm use "$GO_VERSION" --default
-        go install mvdan.cc/sh/v3/cmd/shfmt@latest
+        go install -v mvdan.cc/sh/v3/cmd/shfmt@latest
 
         echo "$HOME/.local/bin" >> $GITHUB_PATH
-        echo "$HOME/.gvm/pkgsets/$GO_VERSION/global/bin/" >> $GITHUB_PATH
+        echo "$HOME/go/bin/" >> $GITHUB_PATH
     - name: Stylua
       run: |
         stylua -s .
     - name: Shfmt
       run: |
-        source "$HOME/.gvm/scripts/gvm"
         shfmt -i 4 -s -ci -kp -w .
     - uses: EndBug/add-and-commit@v4
       with:
