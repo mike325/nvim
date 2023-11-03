@@ -6,11 +6,6 @@ local mkdir = require('utils.files').mkdir
 local completions = RELOAD 'completions'
 local noremap = { noremap = true, silent = true }
 
-local MiniExtras = vim.F.npcall(require, 'mini.extra')
-if MiniExtras then
-    MiniExtras.setup {}
-end
-
 if vim.F.npcall(require, 'mini.doc') then
     require('mini.doc').setup {}
 end
@@ -252,4 +247,9 @@ if MiniPick then
             MiniPick.builtin.buffers {}
         end, noremap)
     end
+end
+
+local MiniExtras = vim.F.npcall(require, 'mini.extra')
+if MiniExtras then
+    MiniExtras.setup {}
 end
