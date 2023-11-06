@@ -351,7 +351,7 @@ function! s:tools_select_grep(is_git, ...) abort
         let l:grepprg = s:tools_grep('ag', l:property)
     elseif executable('grep')
         let l:grepprg = s:tools_grep('grep', l:property)
-    elseif os#name('windows')
+    elseif s:os_name('windows')
         let l:grepprg = s:tools_grep('findstr', l:property)
     endif
 
@@ -377,7 +377,7 @@ function! s:tools_select_filelist(is_git, ...) abort
         let l:filelist = s:tools_filelist('rg')
     elseif executable('ag')
         let l:filelist = s:tools_filelist('ag')
-    elseif os#name('unix')
+    elseif s:os_name('unix')
         let l:filelist = s:tools_filelist('find')
     endif
 
@@ -479,6 +479,25 @@ if has('terminal') || (!has('nvim-0.4') && has('nvim'))
         endif
 
     endfunction
+
+    command! -nargs=* Terminal call s:mappings_terminal(<q-args>)
+
+    tnoremap <ESC> <C-\><C-n>
+
+    if has('nvim')
+        augroup TermSetup
+            autocmd!
+            autocmd TermOpen * setlocal nonumber norelativenumber
+            autocmd TermOpen * nnoremap <silent><nowait><buffer> q :q!<CR>
+        augroup end
+    else
+        augroup TermSetup
+            autocmd!
+            autocmd TerminalOpen * setlocal nonumber norelativenumber
+            autocmd TerminalOpen * nnoremap <silent><nowait><buffer> q :q!<CR>
+        augroup end
+    end
+
 endif
 
 if s:has_option('mouse')
@@ -602,6 +621,24 @@ endfunction
 function! s:mappings_ConncallLevel(level) abort
     let l:level = (!empty(a:level)) ? a:level : (&conceallevel > 0) ? 0 : 2
     let &conceallevel = l:level
+endfunction
+
+function! g:Toggle_qf(qf_type) abort
+    let l:prefix = ''
+    let l:is_open = -1
+    if a:qf_type ==# 'qf'
+        let l:prefix = 'c'
+        let l:is_open = getqflist({ "winid": 0 }).winid != 0
+    else
+        let l:prefix = 'l'
+        let l:is_open = getloclist(win_getid(), { "winid": 0 }).winid != 0
+    end
+
+    if l:is_open
+        call execute(l:prefix . 'close')
+    else
+        call execute('15' . l:prefix . 'open')
+    end
 endfunction
 
 " ------------------------------------------------------------------------------
@@ -854,6 +891,12 @@ set nocursorline
 " ------------------------------------------------------------------------------
 
 let g:mapleader = get(g:, 'mapleader', "\<Space>")
+
+cnoremap <C-r><C-w> <C-r>=escape(expand('<cword>'), '#')<CR>
+cnoremap <C-r><C-n> <C-r>=fnamemodify(expand('%'), ':t')<CR>
+cnoremap <C-r><C-p> <C-r>=bufname('%')<CR>
+cnoremap <C-r><C-d> <C-r>=fnamemodify(expand('%'), ':h').'/'<CR>
+
 nnoremap , :
 xnoremap , :
 
@@ -1038,9 +1081,8 @@ nnoremap <silent> ]a :<C-U>exe "".(v:count ? v:count : "")."next"<CR>
 nnoremap <silent> n :call g:MappingsNiceNext('n')<cr>
 nnoremap <silent> N :call g:MappingsNiceNext('N')<cr>
 
-" TODO: port quick quickfix/loclist toggle to viml
-" nnoremap <silent> =q :ERROR<cr>
-" nnoremap <silent> =l :ERROR<cr>
+nnoremap <silent> =q :call g:Toggle_qf("qf")<cr>
+nnoremap <silent> =l :call g:Toggle_qf("loc")<cr>
 
 " ------------------------------------------------------------------------------
 " Commands
@@ -1179,7 +1221,7 @@ augroup end
 "     autocmd!
 "     autocmd BufNewFile,BufRead,BufEnter * if !exists('b:trim') | let b:trim = 1 | endif
 "     if !s:has_plugin('completor.vim')
-"         autocmd BufWritePre * call autocmd#CleanFile()
+"         autocmd BufWritePre * call s:autocmd_CleanFile()
 "     endif
 " augroup end
 
@@ -1187,9 +1229,7 @@ augroup QuickQuit
     autocmd!
     autocmd BufEnter,BufReadPost __LanguageClient__ nnoremap <silent> <nowait> <buffer> q :q!<CR>
     autocmd BufEnter,BufWinEnter * if &previewwindow | nnoremap <silent> <nowait> <buffer> q :q!<CR>| endif
-    " if  has('terminal') && s:has_autocmd('TerminalOpen')
-    "     autocmd TerminalOpen * nnoremap <silent> <nowait> <buffer> q :q!<CR>
-    " endif
+    autocmd FileType qf nnoremap <silent><nowait><buffer> q :q!<CR>
 augroup end
 
 augroup LocalCR

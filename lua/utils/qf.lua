@@ -179,7 +179,7 @@ function M.set_list(opts, win)
         end
 
         for idx, line in ipairs(opts.lines) do
-            -- NOTE: quickfix is extreamly slow to parse long lines and actually freaze neovim
+            -- NOTE: quickfix is extreamly slow to parse long lines and actually freezes neovim
             --       this hack truncate all big elements to speed up parsing
             if #line > BIG_LINE then
                 opts.lines[idx] = (line:sub(1, BIG_LINE)) .. '...>'

@@ -253,3 +253,40 @@ local MiniExtras = vim.F.npcall(require, 'mini.extra')
 if MiniExtras then
     MiniExtras.setup {}
 end
+
+local MiniPairs = vim.F.npcall(require, 'mini.pairs')
+if MiniPairs then
+    MiniPairs.setup()
+end
+
+if vim.F.npcall(require, 'mini.surround') then
+    require('mini.surround').setup {
+        mappings = {
+            add = 'ys',
+            delete = 'ds',
+            replace = 'cs',
+            find = '',
+            find_left = '',
+            highlight = '',
+            update_n_lines = '',
+        },
+    }
+    -- Remap adding surrounding to Visual mode selection
+    vim.keymap.del('x', 'ys')
+    vim.keymap.set('x', 'S', [[:<C-u>lua MiniSurround.add('visual')<CR>]], { silent = true })
+    -- Make special mapping for "add surrounding for line"
+    -- vim.keymap.set('n', 'yss', 'ys_', { remap = true })
+end
+
+if vim.F.npcall(require, 'mini.ai') then
+    local gen_ai_spec = MiniExtras.gen_ai_spec
+    require('mini.ai').setup {
+        custom_textobjects = {
+            e = gen_ai_spec.buffer(),
+            D = gen_ai_spec.diagnostic(),
+            L = gen_ai_spec.line(),
+            N = gen_ai_spec.number(),
+            i = gen_ai_spec.indent(),
+        },
+    }
+end

@@ -36,7 +36,7 @@ return {
         },
     },
     { 'tpope/vim-abolish' },
-    { 'tpope/vim-repeat' },
+    -- { 'tpope/vim-repeat' },
     { 'nvim-lua/popup.nvim', lazy = true },
     { 'nvim-lua/plenary.nvim', lazy = true },
     { 'rcarriga/nvim-notify', lazy = true },
@@ -53,19 +53,6 @@ return {
         lazy = true,
     },
     {
-        'tpope/vim-surround',
-        event = { 'CursorHold', 'CursorHoldI' },
-        init = function()
-            vim.g['surround_' .. vim.fn.char2nr '¿'] = '¿\r?'
-            vim.g['surround_' .. vim.fn.char2nr '?'] = '¿\r?'
-            vim.g['surround_' .. vim.fn.char2nr '¡'] = '¡\r!'
-            vim.g['surround_' .. vim.fn.char2nr '!'] = '¡\r!'
-            vim.g['surround_' .. vim.fn.char2nr ';'] = ':\r:'
-            vim.g['surround_' .. vim.fn.char2nr ':'] = ':\r:'
-            vim.g['surround_' .. vim.fn.char2nr 'q'] = [[``\r'']]
-        end,
-    },
-    {
         'echasnovski/mini.nvim',
         config = function()
             require 'configs.mini'
@@ -78,33 +65,6 @@ return {
         },
     },
     {
-        'chrisgrieser/nvim-various-textobjs',
-        config = function()
-            require('various-textobjs').setup {
-                useDefaultKeymaps = false,
-            }
-
-            vim.keymap.set({ 'o', 'x' }, 'ie', function()
-                require('various-textobjs').entireBuffer()
-            end)
-
-            -- NOTE: Add missing key text-obj?
-            vim.keymap.set({ 'o', 'x' }, 'av', function()
-                require('various-textobjs').value(true)
-            end)
-            vim.keymap.set({ 'o', 'x' }, 'iv', function()
-                require('various-textobjs').value(true)
-            end)
-
-            vim.keymap.set({ 'o', 'x' }, 'ii', function()
-                require('various-textobjs').indentation(true, true)
-            end)
-            vim.keymap.set({ 'o', 'x' }, 'ai', function()
-                require('various-textobjs').indentation(false, false)
-            end)
-        end,
-    },
-    {
         'ojroques/vim-oscyank',
         event = 'TextYankPost',
         init = function()
@@ -112,13 +72,6 @@ return {
         end,
         config = function()
             require 'configs.oscyank'
-        end,
-    },
-    {
-        'windwp/nvim-autopairs',
-        event = 'InsertEnter',
-        config = function()
-            require 'configs.pairs'
         end,
     },
 }

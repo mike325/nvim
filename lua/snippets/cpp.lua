@@ -152,6 +152,8 @@ local function rule_3_5(_, parent, old_state)
         end
     end
 
+    local first = true
+
     -- local space = false
     if parent.captures[1] ~= '' then
         if not destructor then
@@ -167,11 +169,14 @@ local function rule_3_5(_, parent, old_state)
                 get_choice(),
                 t { ';' },
             })
+            first = false
         end
 
         if not copy_contructor then
+            if not first then
+                vim.list_extend(nodes, { t { '', '' } })
+            end
             vim.list_extend(nodes, {
-                t { '', '' },
                 t { classname },
                 t { '(const ' },
                 t { classname },
@@ -179,11 +184,14 @@ local function rule_3_5(_, parent, old_state)
                 get_choice(),
                 t { ';' },
             })
+            first = false
         end
 
         if not copy_oper then
+            if not first then
+                vim.list_extend(nodes, { t { '', '' } })
+            end
             vim.list_extend(nodes, {
-                t { '', '' },
                 t { classname },
                 t { '& operator=(const ' },
                 t { classname },
@@ -191,13 +199,16 @@ local function rule_3_5(_, parent, old_state)
                 r(choice_nr),
                 t { ';' },
             })
+            first = false
         end
     end
 
     if parent.captures[1] == '5' then
         if not move_contructor then
+            if not first then
+                vim.list_extend(nodes, { t { '', '' } })
+            end
             vim.list_extend(nodes, {
-                t { '', '' },
                 t { classname },
                 t { '(const ' },
                 t { classname },
@@ -205,11 +216,14 @@ local function rule_3_5(_, parent, old_state)
                 get_choice(),
                 t { ';' },
             })
+            first = false
         end
 
         if not move_oper then
+            if not first then
+                vim.list_extend(nodes, { t { '', '' } })
+            end
             vim.list_extend(nodes, {
-                t { '', '' },
                 t { classname },
                 t { '& operator=(const ' },
                 t { classname },
@@ -217,6 +231,7 @@ local function rule_3_5(_, parent, old_state)
                 r(choice_nr),
                 t { ';' },
             })
+            -- first = false
         end
     end
 
