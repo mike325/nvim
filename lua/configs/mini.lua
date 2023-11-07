@@ -33,24 +33,52 @@ if MiniSessions then
         local session = opts.args
         if session ~= '' then
             MiniSessions.read(session, { force = false })
+        elseif opts.bang then
+            MiniSessions.read(MiniSessions.get_latest(), { force = false })
         else
-            MiniSessions.get_latest()
+            local sessions = require('utils.files').get_files(sessions_dir)
+            vim.ui.select(
+                vim.tbl_map(vim.fs.basename, sessions),
+                { prompt = 'Select session file: ' },
+                vim.schedule_wrap(function(choice)
+                    if choice then
+                        MiniSessions.read(choice, { force = false })
+                    end
+                end)
+            )
         end
-    end, { nargs = '?', complete = completions.session_files })
+    end, { bang = true, nargs = '?', complete = completions.session_files })
 
     nvim.command.set('SessionDelete', function(opts)
         local bang = opts.bang
         local session = opts.args
-        local is_file = require('utils.files').is_file
-        local path = sessions_dir .. '/' .. session
-        if not is_file(path) then
-            vim.notify('Invalid Session: ' .. session, 'ERROR', { title = 'MiniSession' })
-            return
+
+        local function delete_session(session_file)
+            local path = sessions_dir .. '/' .. session_file
+            if not require('utils.files').is_file(path) then
+                vim.notify('Invalid Session: ' .. session_file, 'ERROR', { title = 'MiniSession' })
+                return
+            end
+            MiniSessions.delete(session_file, { force = bang })
         end
-        MiniSessions.delete(session, { force = bang })
+
+        if session == '' then
+            local sessions = require('utils.files').get_files(sessions_dir)
+            vim.ui.select(
+                vim.tbl_map(vim.fs.basename, sessions),
+                { prompt = 'Select session file: ' },
+                vim.schedule_wrap(function(choice)
+                    if choice then
+                        delete_session(choice)
+                    end
+                end)
+            )
+        else
+            delete_session(session)
+        end
     end, {
         bang = true,
-        nargs = 1,
+        nargs = '?',
         complete = completions.session_files,
     })
 end
@@ -289,4 +317,88 @@ if vim.F.npcall(require, 'mini.ai') then
             i = gen_ai_spec.indent(),
         },
     }
+end
+
+if vim.g.minimal then
+    if vim.F.npcall(require, 'mini.completion') then
+        -- TODO: Write custom completion func to collect and combine results
+        require('mini.completion').setup {
+            lsp_completion = {
+                source_func = 'omnifunc',
+                auto_setup = false,
+            },
+        }
+        vim.keymap.set('i', '<Tab>', [[pumvisible() ? "\<C-n>" : "\<Tab>"]], { expr = true })
+        vim.keymap.set('i', '<S-Tab>', [[pumvisible() ? "\<C-p>" : "\<S-Tab>"]], { expr = true })
+
+        local keys = {
+            ['cr'] = vim.api.nvim_replace_termcodes('<CR>', true, true, true),
+            ['ctrl-y'] = vim.api.nvim_replace_termcodes('<C-y>', true, true, true),
+            ['ctrl-e'] = vim.api.nvim_replace_termcodes('<C-e>', true, true, true),
+        }
+
+        vim.keymap.set('i', '<CR>', function()
+            if vim.fn.pumvisible() ~= 0 then
+                -- If popup is visible, confirm selected item or add new line otherwise
+                local item_selected = vim.fn.complete_info()['selected'] ~= -1
+                return item_selected and keys['ctrl-y'] or keys['ctrl-e']
+            else
+                -- TODO: Add support for native snippet expansion
+                -- return keys['cr']
+                return MiniPairs.cr()
+            end
+        end, { expr = true })
+    end
+
+    if vim.F.npcall(require, 'mini.cursorword') then
+        require('mini.cursorword').setup()
+    end
+
+    if vim.F.npcall(require, 'mini.indentscope') then
+        require('mini.indentscope').setup()
+    end
+
+    if vim.F.npcall(require, 'mini.hipatterns') then
+        local hipatterns = require 'mini.hipatterns'
+
+        local notes = {
+            hack = false,
+            todo = false,
+            note = false,
+            bug = 'DiagnosticError',
+            fixme = false,
+        }
+
+        local highlighters = {
+            emmylua = {
+                pattern = function(buf_id)
+                    if vim.bo[buf_id].filetype ~= 'lua' then
+                        return nil
+                    end
+                    return '^%s*%-%-%-()@%w+()'
+                end,
+                group = 'Special',
+            },
+            trailing_space = {
+                pattern = '%s+$',
+                group = 'DiagnosticError',
+            },
+            hex_color = hipatterns.gen_highlighter.hex_color(),
+        }
+
+        for pattern, group in pairs(notes) do
+            group = group or ('MiniHipatterns%s'):format(require('utils.strings').capitalize(pattern))
+            table.insert(highlighters, {
+                pattern = function(buf_id)
+                    local get_comment = RELOAD('utils.buffers').get_comment
+                    return get_comment(('%%f[%%w]()%s()%%f[%%W]'):format(pattern:upper()), buf_id)
+                        :gsub('%s', '%%s*')
+                        :gsub('%-', '%%-')
+                end,
+                group = group,
+            })
+        end
+
+        hipatterns.setup { highlighters = highlighters }
+    end
 end

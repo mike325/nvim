@@ -1229,12 +1229,14 @@ augroup QuickQuit
     autocmd!
     autocmd BufEnter,BufReadPost __LanguageClient__ nnoremap <silent> <nowait> <buffer> q :q!<CR>
     autocmd BufEnter,BufWinEnter * if &previewwindow | nnoremap <silent> <nowait> <buffer> q :q!<CR>| endif
-    autocmd FileType qf nnoremap <silent><nowait><buffer> q :q!<CR>
+    autocmd FileType qf,help nnoremap <silent><nowait><buffer> q :q!<CR>
 augroup end
 
 augroup LocalCR
     autocmd!
     autocmd CmdwinEnter * nnoremap <CR> <CR>
+    autocmd Filetype help nnoremap <buffer> <CR> <C-]>
+    autocmd Filetype help nnoremap <buffer> <BS> <C-t>
 augroup end
 
 augroup CloseMenu
