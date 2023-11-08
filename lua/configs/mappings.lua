@@ -784,6 +784,18 @@ if executable 'gh' then
         complete = completions.qf_file_options,
         desc = 'Open all modified files in the current PR',
     })
+
+    nvim.command.set('OpenPR', function(opts)
+        if #opts.fargs > 0 then
+            opts.fargs = vim.list_extend({ '--reviewer' }, table.concat(opts.fargs, ','))
+            opts.args = table.concat(opts.fargs, ' ')
+        end
+        RELOAD('utils.gh').open_pr(opts, function(output) end)
+    end, {
+        nargs = '*',
+        complete = completions.reviewers,
+        desc = 'Open PR with the given reviewers defined in reviewers.json',
+    })
 end
 
 nvim.command.set('Argdo', function(opts)

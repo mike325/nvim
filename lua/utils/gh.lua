@@ -183,4 +183,24 @@ function M.get_pr_checks(opts, callback)
     end)
 end
 
+function M.open_pr(opts, callback)
+    vim.validate {
+        opts = { opts, 'table', true },
+        callback = { callback, 'function', true },
+    }
+    opts = opts or {}
+
+    local ghcmd = 'pr'
+    local args = { 'create', '--assignee', '@me', '--fill'}
+    vim.list_extend(args, opts.fargs)
+
+    if not callback then
+        return exec_ghcmd(ghcmd, args)
+    end
+
+    exec_ghcmd(ghcmd, args, function(output)
+        callback(output)
+    end)
+end
+
 return M

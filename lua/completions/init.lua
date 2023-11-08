@@ -151,6 +151,26 @@ local completions = {
         )
         return general_completion(arglead, cmdline, cursorpos, buffers)
     end,
+    reviewers = function(arglead, cmdline, cursorpos)
+        local reviewers = {}
+        if require('utils.files').is_file('reviewers.json') then
+            reviewers = require('utils.files').read_json('reviewers.json')
+
+            local cmd = vim.tbl_map(function(arg)
+                return vim.trim(arg)
+            end, vim.split(cmdline, '%s+', { trimempty = true }))
+
+            local tmp = {}
+            for _, reviewer in ipairs(reviewers) do
+                if not vim.tbl_contains(cmd, reviewer) then
+                    table.insert(tmp, reviewer)
+                end
+            end
+
+            reviewers = tmp
+        end
+        return general_completion(arglead, cmdline, cursorpos, reviewers)
+    end,
 }
 
 return completions
