@@ -153,8 +153,8 @@ local completions = {
     end,
     reviewers = function(arglead, cmdline, cursorpos)
         local reviewers = {}
-        if require('utils.files').is_file('reviewers.json') then
-            reviewers = require('utils.files').read_json('reviewers.json')
+        if require('utils.files').is_file 'reviewers.json' then
+            reviewers = require('utils.files').read_json 'reviewers.json'
 
             local cmd = vim.tbl_map(function(arg)
                 return vim.trim(arg)

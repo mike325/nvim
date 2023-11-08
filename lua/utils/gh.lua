@@ -191,7 +191,7 @@ function M.open_pr(opts, callback)
     opts = opts or {}
 
     local ghcmd = 'pr'
-    local args = { 'create', '--assignee', '@me', '--fill'}
+    local args = { 'create', '--assignee', '@me', '--fill' }
     vim.list_extend(args, opts.fargs)
 
     if not callback then
