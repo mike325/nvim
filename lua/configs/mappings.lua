@@ -739,9 +739,7 @@ vim.keymap.set('n', '<leader>c', function()
 
     vim.ui.select(
         vim.tbl_keys(options),
-        {
-            prompt = 'Select File/Buffer attribute: ',
-        },
+        { prompt = 'Select File/Buffer attribute: ' },
         vim.schedule_wrap(function(choice)
             if options[choice] then
                 nvim.reg['+'] = options[choice]()

@@ -928,38 +928,61 @@ function M.scp_edit(opts)
     local host = opts.host
     local filename = opts.filename
     local path = opts.path
+    local port = opts.port
 
-    local function get_remote_file(hostname, remote_file, remote_path)
+    local function get_remote_file(hostname, remote_file, remote_path, host_port)
         vim.validate {
             hostname = { hostname, 'string' },
             remote_file = { remote_file, 'string' },
             remote_path = { remote_path, 'string', true },
+            host_port = { host_port, { 'string', 'number' }, true },
         }
 
         if STORAGE.hosts[hostname] then
-            hostname = STORAGE.hosts[hostname].hostname
+            host_port = STORAGE.hosts[hostname].port or host_port
+            hostname = ('%s@%s'):format(STORAGE.hosts[hostname].user, STORAGE.hosts[hostname].hostname)
         end
 
         if remote_path and remote_path ~= '' then
             remote_file = remote_path .. '/' .. remote_file
         end
 
-        local virtual_filename = ('scp://%s:22/%s'):format(hostname, remote_file)
+        local virtual_filename = ('scp://%s:%s/%s'):format(hostname, host_port or '22', remote_file)
         vim.cmd.edit(virtual_filename)
     end
 
-    local function filename_input()
+    local function filename_input(hostname, remote_path, host_port)
+        vim.validate {
+            hostname = { hostname, 'string' },
+            remote_path = { remote_path, 'string', true },
+            host_port = { host_port, { 'string', 'number' }, true },
+        }
+
         if not filename or filename == '' then
-            vim.ui.input({ prompt = 'Enter filename > ' }, function(input)
-                if not input then
-                    vim.notify('Missing filename!', 'ERROR', { title = 'SCPEdit' })
-                    return
-                end
-                filename = input
-                get_remote_file(host, filename, path)
-            end)
+            if STORAGE.hosts[hostname] then
+                host_port = STORAGE.hosts[hostname].port or host_port
+                hostname = ('%s@%s'):format(STORAGE.hosts[hostname].user, STORAGE.hosts[hostname].hostname)
+            end
+
+            vim.ui.select(
+                vim.split(
+                    vim.system({ 'ssh', '-p', host_port or '22', hostname, 'ls', remote_path or '.' }, { text = true })
+                        :wait().stdout,
+                    '\n',
+                    { trimempty = true }
+                ),
+                { prompt = 'Select File/Buffer attribute: ' },
+                vim.schedule_wrap(function(choice)
+                    if not choice then
+                        vim.notify('Missing filename!', 'ERROR', { title = 'SCPEdit' })
+                        return
+                    end
+                    filename = choice
+                    get_remote_file(host, filename, path, port)
+                end)
+            )
         else
-            get_remote_file(host, filename, path)
+            get_remote_file(host, filename, path, port)
         end
     end
 
@@ -973,12 +996,12 @@ function M.scp_edit(opts)
                 return
             end
             host = input
-            filename_input()
+            filename_input(host, path, port)
         end)
     elseif not filename or filename == '' then
-        filename_input()
+        filename_input(host, path, port)
     else
-        get_remote_file(host, filename, path)
+        get_remote_file(host, filename, path, port)
     end
 end
 
