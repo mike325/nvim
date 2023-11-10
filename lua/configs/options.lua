@@ -42,9 +42,7 @@ vim.g.ruby_recommended_style = 0
 
 vim.g.terminal_scrollback_buffer_size = 100000
 
-if vim.g.started_by_firenvim then
-    vim.opt.laststatus = 0
-elseif nvim.has.option 'winbar' then
+if nvim.has.option 'winbar' then
     vim.opt.laststatus = 3
     vim.opt.winbar = '%=%m %f'
 else

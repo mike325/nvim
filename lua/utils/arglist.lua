@@ -3,7 +3,7 @@ local M = {}
 function M.clear()
     local size = vim.fn.argc()
     if size > 0 then
-        vim.cmd.argdelete { range = { 1, size } }
+        vim.cmd.argdelete('*')
     end
 end
 
@@ -38,6 +38,15 @@ function M.add(files, clear)
 
     -- remove duplicates
     vim.cmd.argdedupe()
+end
+
+function M.exec(cmd)
+    for _, filename in ipairs(vim.fn.argv()) do
+        local buf = vim.fn.bufnr(filename)
+        vim.api.nvim_buf_call(buf, function()
+            vim.cmd(cmd)
+        end)
+    end
 end
 
 return M

@@ -797,36 +797,23 @@ if executable 'gh' then
 end
 
 nvim.command.set('Argdo', function(opts)
-    for _, filename in ipairs(vim.fn.argv()) do
-        local buf = vim.fn.bufnr(filename)
-        vim.api.nvim_buf_call(buf, function()
-            vim.cmd(opts.args)
-        end)
-    end
+    RELOAD('utils.arglist').exec(opts.args)
 end, { nargs = '+', desc = 'argdo but without the final Press enter message', complete = 'command' })
 
-nvim.command.set('Arglistclear', function()
-    RELOAD('utils.arglist').clear()
-end, { desc = 'Remove all args from the arglist' })
-
 nvim.command.set('Qf2Arglist', function()
-    local qfutils = RELOAD 'utils.qf'
-    qfutils.qf_to_arglist()
+    RELOAD('utils.qf').qf_to_arglist()
 end, { desc = 'Dump qf files to the arglist' })
 
 nvim.command.set('Loc2Arglist', function()
-    local qfutils = RELOAD 'utils.qf'
-    qfutils.qf_to_arglist { loc = true }
+    RELOAD('utils.qf').qf_to_arglist { loc = true }
 end, { desc = 'Dump loclist files to the arglist' })
 
 nvim.command.set('Arglist2Qf', function()
-    local qfutils = RELOAD 'utils.qf'
-    qfutils.dump_files(vim.fn.argv())
+    RELOAD('utils.qf').dump_files(vim.fn.argv())
 end, { desc = 'Dump loclist files to the arglist' })
 
 nvim.command.set('Arglist2Loc', function()
-    local qfutils = RELOAD 'utils.qf'
-    qfutils.dump_files(vim.fn.argv(), { win = 0 })
+    RELOAD('utils.qf').dump_files(vim.fn.argv(), { win = 0 })
 end, { desc = 'Dump loclist files to the arglist' })
 
 nvim.command.set('ArgEdit', function(opts)

@@ -296,3 +296,15 @@ nvim.autocmd.ApplyColorscheme = {
         end
     end,
 }
+
+nvim.autocmd.CustomUI = {
+    event = 'UIEnter',
+    pattern = '*',
+    callback = function(event)
+        local client = vim.api.nvim_get_chan_info(vim.v.event.chan).client
+        if client ~= nil and client.name == 'Firenvim' then
+            vim.o.laststatus = 0
+            vim.api.nvim_set_keymap('n', '<C-z>', '<cmd>call firenvim#hide_frame()<CR>', { noremap = true })
+        end
+    end,
+}
