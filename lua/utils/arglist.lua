@@ -3,7 +3,7 @@ local M = {}
 function M.clear()
     local size = vim.fn.argc()
     if size > 0 then
-        vim.cmd.argdelete('*')
+        vim.cmd.argdelete '*'
     end
 end
 
