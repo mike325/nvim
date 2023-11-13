@@ -183,7 +183,7 @@ function M.get_pr_checks(opts, callback)
     end)
 end
 
-function M.open_pr(opts, callback)
+function M.create_pr(opts, callback)
     vim.validate {
         opts = { opts, 'table', true },
         callback = { callback, 'function', true },

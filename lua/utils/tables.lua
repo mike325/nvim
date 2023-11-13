@@ -158,7 +158,7 @@ function M.merge_uniq_list(dest, src)
 
     dest = M.uniq_list(dest)
     for _, node in ipairs(src) do
-        if not M.tbl_contains(dest, node) then
+        if not M.list_contains(dest, node) then
             table.insert(dest, node)
         end
     end

@@ -55,58 +55,56 @@ if noice then
     }
 end
 
-local tabline = {}
+local tabline = {
+    lualine_a = {
+        -- project_root,
+        {
+            'tabs',
+            mode = 0,
+            cond = function()
+                return #vim.api.nvim_list_tabpages() > 1
+            end,
+        },
+    },
+    lualine_b = {
+        {
+            'buffers',
+            cond = function()
+                return #vim.api.nvim_list_tabpages() == 1
+            end,
+        },
+        {
+            'windows',
+            cond = function()
+                return #vim.api.nvim_list_tabpages() > 1
+            end,
+        },
+    },
+    lualine_c = {},
+    -- lualine_x = {},
+    lualine_y = {},
+    lualine_z = {
+        section.project_root,
+    },
+}
+
 local winbar = {}
-if not vim.g.started_by_firenvim then
-    tabline = {
-        lualine_a = {
-            -- project_root,
-            {
-                'tabs',
-                mode = 0,
-                cond = function()
-                    return #vim.api.nvim_list_tabpages() > 1
-                end,
-            },
-        },
-        lualine_b = {
-            {
-                'buffers',
-                cond = function()
-                    return #vim.api.nvim_list_tabpages() == 1
-                end,
-            },
-            {
-                'windows',
-                cond = function()
-                    return #vim.api.nvim_list_tabpages() > 1
-                end,
-            },
-        },
+if has_winbar then
+    winbar = {
+        lualine_a = {},
+        lualine_b = {},
         lualine_c = {},
         -- lualine_x = {},
         lualine_y = {},
         lualine_z = {
-            section.project_root,
+            {
+                section.filename,
+                color = function()
+                    return vim.bo.modified and { bg = palette.peach } or nil
+                end,
+            },
         },
     }
-    if has_winbar then
-        winbar = {
-            lualine_a = {},
-            lualine_b = {},
-            lualine_c = {},
-            -- lualine_x = {},
-            lualine_y = {},
-            lualine_z = {
-                {
-                    section.filename,
-                    color = function()
-                        return vim.bo.modified and { bg = 'orange' } or nil
-                    end,
-                },
-            },
-        }
-    end
 end
 
 local component_separators = vim.env.NO_COOL_FONTS == nil and get_separators 'tag' or get_icon 'bar'

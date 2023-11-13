@@ -1,4 +1,3 @@
--- luacheck: max line length 170
 if vim.loader then
     vim.loader.enable()
 end
@@ -11,6 +10,17 @@ end
 
 if not vim.list_contains then
     vim.list_contains = vim.tbl_contains
+end
+
+if not vim.base64 then
+    vim.base64 = {
+        encode = require('utils.strings').base64_encode,
+        decode = require('utils.strings').base64_decode,
+    }
+end
+
+if not vim.keymap then
+    vim.keymap = nvim.keymap
 end
 
 vim.g.has_ui = #vim.api.nvim_list_uis() > 0
@@ -56,10 +66,6 @@ if nvim.has 'win32' then
     vim.opt.shellxquote = ''
 
     vim.opt.shellslash = true
-end
-
-if not vim.keymap then
-    vim.keymap = nvim.keymap
 end
 
 vim.opt.termguicolors = true

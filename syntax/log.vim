@@ -5,7 +5,7 @@ if exists('b:current_syntax')
   finish
 endif
 
-syn match LogURL        "[[:blank:]]\+\zs\(http\(s\)\?\|ftp\(s\)\?\):\/\/[^[:blank:]]\+\ze"
+syn match LogURL        "\+\zs\<\(http\(s\)\?\|ftp\(s\)\?\):\/\/[^[:blank:]]\+\ze"
 syn match LogSpecial    "\(.\|$\|@\|\\\)"
 syn match LogIdentifier "\<\i+"
 
@@ -18,12 +18,10 @@ syn match LogDate "\d\{4}\[/-]\d\{2}\[/-]\d\{2}\(\s\+\d\{2}:\d\{2}\(:\d\{2}\)\?\
 " format DD-MM-YYYY (HH:MM:(SS)?)?
 syn match LogDate "\d\{2}\[/-]\d\{2}\[/-]\d\{4}\(\s\+\d\{2}:\d\{2}\(:\d\{2}\)\?\)\?"
 
-syn keyword LogError error err ERROR Error fail Fail FAIL FAILED failed
-syn keyword LogWarn  warn warning WARN WARNING
-syn keyword LogPass  pass PASS passed PASSED
-syn keyword LogPass  start START started STARTED
-
-syn keyword LogBool  true false TRUE FALSE True False
+syn match LogError "\v\c<(err(or)?|fail(ed)?)>"
+syn match LogWarn  "\v\c<(warn(ing)?)>"
+syn match LogPass  "\v\c<(pass(ed)?|start(ed)?)>"
+syn match LogBool  "\v\c<(true|false)>"
 
 syn region LogString start=+"+ end=+"+
 

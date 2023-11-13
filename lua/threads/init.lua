@@ -26,7 +26,14 @@ function M.init(thread_args)
             vim.list_contains = vim.tbl_contains
         end
 
-        -- NOTE: this only spawns async works, which should be detatch, sync jobs
+        if not vim.base64 then
+            vim.base64 = {
+                encode = require('utils.strings').base64_encode,
+                decode = require('utils.strings').base64_decode,
+            }
+        end
+
+        -- NOTE: this only spawns async jobs, which should be detatch, sync jobs
         --       does not work because `vim.wait` is not avaialble on threads
         if not vim.system then
             local ok, system = pcall(require, 'vim._system')

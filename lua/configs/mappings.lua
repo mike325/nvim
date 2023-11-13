@@ -783,15 +783,19 @@ if executable 'gh' then
         desc = 'Open all modified files in the current PR',
     })
 
-    nvim.command.set('OpenPR', function(opts)
+    nvim.command.set('CreatePR', function(opts)
         if #opts.fargs > 0 then
             opts.fargs = vim.list_extend({ '--reviewer' }, table.concat(opts.fargs, ','))
-            opts.args = table.concat(opts.fargs, ' ')
         end
-        RELOAD('utils.gh').open_pr(opts, function(output) end)
+        if not opts.bang then
+            table.insert(opts.fargs, '--draft')
+        end
+        opts.args = table.concat(opts.fargs, ' ')
+        RELOAD('utils.gh').create_pr(opts, function(output) end)
     end, {
         nargs = '*',
         complete = completions.reviewers,
+        bang = true,
         desc = 'Open PR with the given reviewers defined in reviewers.json',
     })
 end
@@ -831,9 +835,7 @@ nvim.command.set('ArgEdit', function(opts)
     else
         vim.ui.select(
             vim.fn.argv(),
-            {
-                prompt = 'Select Arg > ',
-            },
+            { prompt = 'Select Arg > ' },
             vim.schedule_wrap(function(choice, idx)
                 if choice and choice ~= '' then
                     vim.cmd.argument(idx)

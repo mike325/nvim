@@ -1,4 +1,3 @@
--- luacheck: max line length 170
 if vim.loader then
     vim.loader.enable()
 end
@@ -11,6 +10,17 @@ end
 
 if not vim.list_contains then
     vim.list_contains = vim.tbl_contains
+end
+
+if not vim.base64 then
+    vim.base64 = {
+        encode = require('utils.strings').base64_encode,
+        decode = require('utils.strings').base64_decode,
+    }
+end
+
+if not vim.keymap then
+    vim.keymap = nvim.keymap
 end
 
 vim.g.has_ui = #vim.api.nvim_list_uis() > 0
@@ -39,23 +49,23 @@ vim.g.short_branch_name = true
 
 vim.g.port = 0x8AC
 
--- vim.g.minimal = false
--- vim.g.bare = false
-
 if nvim.has 'win32' then
-    vim.opt.shell = 'cmd.exe'
-    -- vim.opt.shell = 'powershell'
-    -- vim.opt.shellcmdflag = '-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command [Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.Encoding]::UTF8;'
-    -- vim.opt.shellredir = '2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode'
-    -- vim.opt.shellpipe = '2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode'
-    -- vim.opt.shellquote = ''
-    -- vim.opt.shellxquote = ''
+    -- vim.opt.shell = 'cmd.exe'
+    vim.opt.shell = 'powershell'
+    vim.opt.shellcmdflag = table.concat({
+        '-NoLogo',
+        '-NoProfile',
+        '-ExecutionPolicy',
+        'RemoteSigned',
+        '-Command',
+        -- '[Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.Encoding]::UTF8;',
+    }, ' ')
+    vim.opt.shellredir = '2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode'
+    vim.opt.shellpipe = '2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode'
+    vim.opt.shellquote = ''
+    vim.opt.shellxquote = ''
 
-    vim.opt.shellslash = false
-end
-
-if not vim.keymap then
-    vim.keymap = nvim.keymap
+    vim.opt.shellslash = true
 end
 
 vim.opt.termguicolors = true
@@ -63,12 +73,16 @@ vim.g.mapleader = ' '
 
 require 'utils.ft_detect'
 
+require 'globals'
+
+vim.g.minimal = vim.env.VIM_MIN ~= nil or vim.g.minimal ~= nil
+vim.g.bare = vim.env.VIM_BARE ~= nil or vim.g.bare ~= nil
 -- NOTE: overload/replace vim.* functions
 require 'overloads.notify'
 require 'overloads.ui.open'
+require 'overloads.ui.select'
+-- require 'overloads.ui.input'
 -- require 'overloads.paste'
-
-require 'globals'
 
 local package_plugins = vim.fn.stdpath('data'):gsub('\\', '/') .. '/site/pack/packer/start/'
 vim.opt.rtp:append(package_plugins .. 'plenary.nvim/')

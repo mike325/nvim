@@ -162,7 +162,7 @@ local completions = {
 
             local tmp = {}
             for _, reviewer in ipairs(reviewers) do
-                if not vim.tbl_contains(cmd, reviewer) then
+                if not vim.list_contains(cmd, reviewer) then
                     table.insert(tmp, reviewer)
                 end
             end
