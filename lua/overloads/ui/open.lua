@@ -1,3 +1,47 @@
+if not vim.ui.open then
+    vim.ui.open = function(uri)
+        vim.validate {
+            uri = { uri, 'string' },
+        }
+        local is_uri = uri:match '%w+:'
+        if not is_uri then
+            uri = vim.fn.expand(uri)
+        end
+
+        local cmd
+
+        if vim.fn.has 'mac' == 1 then
+            cmd = { 'open', uri }
+        elseif vim.fn.has 'win32' == 1 then
+            if vim.fn.executable 'rundll32' == 1 then
+                cmd = { 'rundll32', 'url.dll,FileProtocolHandler', uri }
+            else
+                return nil, 'vim.ui.open: rundll32 not found'
+            end
+        elseif vim.fn.executable 'wslview' == 1 then
+            cmd = { 'wslview', uri }
+        elseif vim.fn.executable 'xdg-open' == 1 then
+            cmd = { 'xdg-open', uri }
+        else
+            return nil, 'vim.ui.open: no handler found (tried: wslview, xdg-open)'
+        end
+
+        local output = vim.fn.system(cmd)
+        if vim.v.shell_error ~= 0 then
+            local msg = ('vim.ui.open: command failed (%d): %s'):format(vim.v.shell_error, vim.inspect(output))
+            return vim.v.shell_error, msg
+        end
+
+        return {
+            code = 0,
+            signal = 0,
+            stderr = '',
+            stdout = output,
+        },
+            nil
+    end
+end
+
 vim.ui.open = (function(overridden)
     return function(path)
         vim.validate { path = { path, 'string' } }
