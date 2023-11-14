@@ -308,3 +308,21 @@ nvim.autocmd.CustomUI = {
         end
     end,
 }
+
+-- NOTE: Default TMUX clipboard provider support setting system clipboard using OSC 52
+if vim.env.SSH_CONNECTION and not vim.env.TMUX then
+    nvim.autocmd.OSCYank = {
+        event = 'TextYankPost',
+        pattern = '*',
+        callback = function(args)
+            local clipboard_reg = {
+                ['+'] = true,
+                ['*'] = true,
+            }
+            local reg = vim.v.register
+            if vim.v.event.operator == 'y' and (reg == '' or clipboard_reg[reg]) then
+                require('utils.functions').send_osc52(vim.split(nvim.reg[reg], '\n'))
+            end
+        end,
+    }
+end

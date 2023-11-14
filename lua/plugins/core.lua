@@ -64,14 +64,4 @@ return {
             'SessionDelete',
         },
     },
-    {
-        'ojroques/vim-oscyank',
-        event = 'TextYankPost',
-        init = function()
-            vim.g.oscyank_silent = true
-        end,
-        config = function()
-            require 'configs.oscyank'
-        end,
-    },
 }
