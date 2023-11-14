@@ -739,7 +739,7 @@ function M.get_comment(text, buf)
     local comment = vim.bo[buf].commentstring
     comment = comment ~= '' and comment or '// %s'
     if not comment:match '%s%%s' then
-        comment = comment:format ' %s'
+        comment = comment:gsub('%%s', ' %%s')
     end
     local comment_str
     if text then
@@ -753,7 +753,7 @@ function M.get_comment(text, buf)
                 table.insert(comment_str, commented)
             end
         else
-            comment_str = comment:format(text)
+            comment_str = comment:gsub('%%s', text)
         end
     end
     return comment_str or comment
