@@ -13,7 +13,17 @@ if not vim.ui.open then
         if vim.fn.has 'mac' == 1 then
             cmd = { 'open', uri }
         elseif vim.fn.has 'win32' == 1 then
-            if vim.fn.executable 'rundll32' == 1 then
+            if vim.fn.executable 'powershell' == 1 then
+                cmd = {
+                    'powershell',
+                    '-NoLogo',
+                    '-NoProfile',
+                    '-ExecutionPolicy',
+                    'RemoteSigned',
+                    '-Command',
+                    'ii ' .. uri,
+                }
+            elseif vim.fn.executable 'rundll32' == 1 then
                 cmd = { 'rundll32', 'url.dll,FileProtocolHandler', uri }
             else
                 return nil, 'vim.ui.open: rundll32 not found'
