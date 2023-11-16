@@ -5,7 +5,7 @@ if exists('b:current_syntax')
   finish
 endif
 
-syn match LogURL        "\+\zs\<\(http\(s\)\?\|ftp\(s\)\?\):\/\/[^[:blank:]]\+\ze"
+syn match LogURL        "\zs\<\(http\(s\)\?\|ftp\(s\)\?\):\/\/[^[:blank:]]\+\ze"
 syn match LogSpecial    "\(.\|$\|@\|\\\)"
 syn match LogIdentifier "\<\i+"
 
