@@ -68,7 +68,6 @@ local preload = {
 local settedup_configs = {}
 local function setup(ft)
     vim.validate { filetype = { ft, 'string' } }
-    local cmp = vim.F.npcall(require, 'cmp')
 
     local server_idx = RELOAD('configs.lsp.utils').check_language_server(ft)
     if server_idx then
@@ -78,18 +77,14 @@ local function setup(ft)
             settedup_configs[config] = true
             local init = vim.deepcopy(server.options) or {}
             init.cmd = init.cmd or server.cmd
-            if cmp then
+            local capabilities = vim.lsp.protocol.make_client_capabilities()
+            if vim.F.npcall(require, 'cmp') then
                 local cmp_lsp = vim.F.npcall(require, 'cmp_nvim_lsp')
-                local capabilities
                 if cmp_lsp then
-                    if cmp_lsp.default_capabilities then
-                        capabilities = cmp_lsp.default_capabilities()
-                    else
-                        capabilities = cmp_lsp.update_capabilities(vim.lsp.protocol.make_client_capabilities())
-                    end
+                    capabilities = vim.tbl_deep_extend('force', capabilities, cmp_lsp.default_capabilities())
                 end
-                init.capabilities = vim.tbl_deep_extend('keep', init.capabilities or {}, capabilities or {})
             end
+            init.capabilities = vim.tbl_deep_extend('keep', init.capabilities or {}, capabilities or {})
             if preload[config] then
                 preload[config].setup(init)
             else
