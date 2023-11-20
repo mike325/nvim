@@ -31,6 +31,7 @@ local function exec_ghcmd(ghcmd, args, callbacks)
     else
         cmd = vim.list_extend(cmd, args)
     end
+
     if not callbacks then
         return filter_empty(exec_sync_ghcmd(cmd, ghcmd))
     end

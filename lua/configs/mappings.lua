@@ -785,7 +785,7 @@ if executable 'gh' then
 
     nvim.command.set('CreatePR', function(opts)
         if #opts.fargs > 0 then
-            opts.fargs = vim.list_extend({ '--reviewer' }, table.concat(opts.fargs, ','))
+            opts.fargs = vim.list_extend({ '--reviewer' }, { table.concat(opts.fargs, ',') })
         end
         if not opts.bang then
             table.insert(opts.fargs, '--draft')
