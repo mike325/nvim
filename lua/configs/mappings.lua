@@ -791,12 +791,46 @@ if executable 'gh' then
             table.insert(opts.fargs, '--draft')
         end
         opts.args = table.concat(opts.fargs, ' ')
-        RELOAD('utils.gh').create_pr(opts, function(output) end)
+        RELOAD('utils.gh').create_pr(opts, function(output)
+            vim.notify('PR created! ', 'INFO', { title = 'GH' })
+        end)
     end, {
         nargs = '*',
         complete = completions.reviewers,
         bang = true,
         desc = 'Open PR with the given reviewers defined in reviewers.json',
+    })
+
+    nvim.command.set('PrReady', function(opts)
+        local is_ready = true
+        if opts.args == 'draft' then
+            is_ready = false
+        end
+        RELOAD('utils.gh').pr_ready(is_ready, function(output)
+            local msg = ('PR move to %s'):format(opts.args)
+            vim.notify(msg, 'INFO', { title = 'GH' })
+        end)
+    end, {
+        nargs = '?',
+        complete = completions.gh_pr_ready,
+        desc = 'Set PR to ready or to draft',
+    })
+
+    nvim.command.set('EditReviwers', function(opts)
+        local reviewers = { table.concat(opts.fargs, ',') }
+        local command = opts.bang and '--remove-reviewer' or '--add-reviewer'
+        opts.fargs = vim.list_extend({ command }, reviewers)
+        opts.args = table.concat(opts.fargs, ' ')
+        RELOAD('utils.gh').edit_pr(opts, function(output)
+            local action = opts.bang and 'removed' or 'added'
+            local msg = ('Reviewers %s were %s'):format(action, table.concat(reviewers, ''))
+            vim.notify(msg, 'INFO', { title = 'GH' })
+        end)
+    end, {
+        nargs = '+',
+        complete = completions.reviewers,
+        bang = true,
+        desc = 'Add reviewers defined in reviewers.json',
     })
 end
 

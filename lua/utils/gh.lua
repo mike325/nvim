@@ -204,4 +204,48 @@ function M.create_pr(opts, callback)
     end)
 end
 
+-- TODO: Add an auto create option ?
+function M.edit_pr(opts, callback)
+    vim.validate {
+        opts = { opts, 'table', true },
+        callback = { callback, 'function', true },
+    }
+    opts = opts or {}
+
+    local ghcmd = 'pr'
+    local args = { 'edit', require('utils.git').get_branch() }
+    vim.list_extend(args, opts.fargs)
+
+    if not callback then
+        return exec_ghcmd(ghcmd, args)
+    end
+
+    exec_ghcmd(ghcmd, args, function(output)
+        callback(output)
+    end)
+end
+
+-- TODO: Add an auto create option ?
+function M.pr_ready(is_ready, callback)
+    vim.validate {
+        is_ready = { is_ready, 'boolean', true },
+        callback = { callback, 'function', true },
+    }
+
+    local ghcmd = 'pr'
+    local args = { 'ready' }
+
+    if is_ready == false then
+        table.insert(args, '--undo')
+    end
+
+    if not callback then
+        return exec_ghcmd(ghcmd, args)
+    end
+
+    exec_ghcmd(ghcmd, args, function(output)
+        callback(output)
+    end)
+end
+
 return M

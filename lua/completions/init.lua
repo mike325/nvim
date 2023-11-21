@@ -171,6 +171,9 @@ local completions = {
         end
         return general_completion(arglead, cmdline, cursorpos, reviewers)
     end,
+    gh_pr_ready = function(arglead, cmdline, cursorpos)
+        return general_completion(arglead, cmdline, cursorpos, { 'ready', 'draft' })
+    end,
 }
 
 return completions
