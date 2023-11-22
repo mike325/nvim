@@ -807,7 +807,7 @@ if executable 'gh' then
             is_ready = false
         end
         RELOAD('utils.gh').pr_ready(is_ready, function(output)
-            local msg = ('PR move to %s'):format(opts.args)
+            local msg = ('PR move to %s'):format(opts.args == '' and 'ready' or opts.args)
             vim.notify(msg, 'INFO', { title = 'GH' })
         end)
     end, {
