@@ -18,7 +18,7 @@ if ( -Not (Test-Path("$plenary_dir\plenary.nvim")) ) {
     git clone --recursive "https://github.com/nvim-lua/plenary.nvim" "$plenary_dir\plenary.nvim"
 }
 
-nvim --version
+nvim -V1 --version
 
 $exit_code = 0
 # nvim --noplugin -u tests/min.lua --headless -c "PlenaryBustedDirectory lua/tests/ {minimal_init = 'tests/min.lua'}"

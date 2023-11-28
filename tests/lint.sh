@@ -374,7 +374,7 @@ elif [[ -f "$HOME/.luarocks/bin/luacheck" ]]; then
         warn_msg 'Fail luacheck lint test'
     fi
 elif hash nvim 2>/dev/null; then
-    lua_version=$(nvim --version | grep -i luajit | awk '{print $2}')
+    lua_version=$(nvim -V1 --version | grep -i luajit | awk '{print $2}')
     if [[ -f ~/.cache/nvim/packer_hererocks/$lua_version/bin/luacheck ]]; then
         if ! ~/.cache/nvim/packer_hererocks/"$lua_version"/bin/luacheck --std luajit lua/; then
             warn_msg 'Fail luacheck lint test'

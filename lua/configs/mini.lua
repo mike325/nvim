@@ -319,6 +319,16 @@ if vim.F.npcall(require, 'mini.ai') then
     }
 end
 
+if vim.F.npcall(require, 'mini.test') then
+    require('mini.test').setup {
+        collect = {
+            find_files = function()
+                return vim.fn.globpath('lua/tests', '**/*_spec.lua', true, true)
+            end,
+        },
+    }
+end
+
 if vim.g.minimal then
     if vim.F.npcall(require, 'mini.completion') then
         -- TODO: Write custom completion func to collect and combine results

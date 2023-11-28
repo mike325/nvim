@@ -368,7 +368,7 @@ if [[ ! -d "$PLENARY_DIR/plenary.nvim" ]]; then
     fi
 fi
 
-nvim --version | tee -a test.log
+nvim -V1 --version | tee -a test.log
 
 if ! nvim --noplugin -u tests/min.lua --headless -c "PlenaryBustedDirectory lua/tests/ {minimal_init = 'tests/min.lua'}"; then
     error_msg "Failed to run nvim tests"
