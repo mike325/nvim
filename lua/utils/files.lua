@@ -463,6 +463,7 @@ function M.rename(old, new, bang)
     local bufloaded = require('utils.buffers').bufloaded
     new = M.normalize(new)
     old = M.normalize(old)
+    local load_buffer = bufloaded(old)
 
     if not M.exists(new) or bang then
         local cursor_pos
@@ -476,19 +477,6 @@ function M.rename(old, new, bang)
 
         if bufloaded(new) then
             vim.cmd.bwipeout { args = { new }, bang = true }
-        end
-
-        local function switch_buffers()
-            if M.is_file(new) then
-                vim.cmd.edit(new)
-                if cursor_pos then
-                    nvim.win.set_cursor(0, cursor_pos)
-                end
-            end
-
-            if bufloaded(old) then
-                vim.cmd.bwipeout { args = { old }, bang = true }
-            end
         end
 
         local git = RELOAD 'utils.git'
@@ -509,7 +497,16 @@ function M.rename(old, new, bang)
             end
         end
 
-        switch_buffers()
+        if load_buffer and M.is_file(new) then
+            vim.cmd.edit(new)
+            if cursor_pos then
+                nvim.win.set_cursor(0, cursor_pos)
+            end
+        end
+
+        if bufloaded(old) then
+            vim.cmd.bwipeout { args = { old }, bang = true }
+        end
         return true
     elseif M.exists(new) then
         vim.notify(new .. ' exists, use force to override it', 'ERROR', { title = 'Rename' })
