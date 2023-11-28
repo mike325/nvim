@@ -161,11 +161,38 @@ function M.set_list(opts, win)
     opts.open = nil
     opts.jump = nil
 
+    local function fix_line(line)
+        local BIG_LINE = 256
+        if #line > BIG_LINE then
+            line = (line:sub(1, BIG_LINE)) .. '...>'
+        end
+        return vim.api.nvim_replace_termcodes(line, true, false, false)
+    end
+
+    -- NOTE: quickfix is extreamly slow to parse long items and actually freezes neovim
+    --       this hack truncate all big elements to speed up parsing
+    local function short_long_lines(qf_items)
+        if type(qf_items[1]) == type '' then
+            -- list of elements, not parsed yet
+            qf_items = require('utils.tables').clear_lst(qf_items)
+            for idx, line in ipairs(qf_items) do
+                qf_items[idx] = fix_line(line)
+            end
+        else
+            -- list of item, already parse
+            for idx, line in ipairs(qf_items) do
+                if line.text then
+                    qf_items[idx].text = fix_line(line.text)
+                end
+            end
+        end
+        return qf_items
+    end
+
     if type(items[1]) == type {} then
-        opts.items = items
+        opts.items = short_long_lines(items)
     elseif type(items[1]) == type '' then
-        local BIG_LINE = 512
-        opts.lines = require('utils.tables').clear_lst(items)
+        opts.lines = short_long_lines(require('utils.tables').clear_lst(items))
         if not opts.efm or #opts.efm == 0 then
             local efm = vim.opt_local.efm:get()
             if #efm == 0 then
@@ -176,16 +203,6 @@ function M.set_list(opts, win)
 
         if type(opts.efm) == type {} then
             opts.efm = table.concat(opts.efm, ',')
-        end
-
-        for idx, line in ipairs(opts.lines) do
-            -- NOTE: quickfix is extreamly slow to parse long lines and actually freezes neovim
-            --       this hack truncate all big elements to speed up parsing
-            if #line > BIG_LINE then
-                opts.lines[idx] = (line:sub(1, BIG_LINE)) .. '...>'
-                line = opts.lines[idx]
-            end
-            opts.lines[idx] = vim.api.nvim_replace_termcodes(line, true, false, false)
         end
     else
         error(debug.traceback('Invalid items type: ' .. type(items[1])))

@@ -41,3 +41,6 @@ private.vim
 host/
 host.vim
 host.lua
+
+.luarc.json
+pre-push-settings.json

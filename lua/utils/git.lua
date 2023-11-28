@@ -82,6 +82,7 @@ local function notify_error(gitcmd, output, rc)
     )
 end
 
+-- NOTE: Should change this to return the error status and the full output
 local function exec_sync_gitcmd(cmd, gitcmd)
     -- TODO: This is not a direct replacement, may need to use vim.system but need a cleanup first
     if vim.is_thread() then
@@ -480,21 +481,108 @@ end
 
 function M.get_remote(branch, callback)
     vim.validate {
-        branch = { branch, 'string' },
+        branch = { branch, { 'string', 'function' }, true },
         callback = { callback, 'function', true },
     }
 
-    local gitcmd = 'rev-parse'
-    local args = {
-        '--abbrev-ref',
-        ('%s@{upstream}'):format(branch),
-    }
-    if not callback then
-        return exec_gitcmd(gitcmd, args)[1]
+    if branch ~= nil and type(branch) == type(callback) then
+        error(debug.traceback 'Branch need to either be nil or a string')
     end
 
-    exec_gitcmd(gitcmd, args, function(upstream)
-        callback(upstream[1])
+    if type(branch) == 'function' then
+        callback = branch
+        branch = nil
+    end
+
+    local remote_cmd = 'rev-parse'
+    local remote_args = {
+        '--abbrev-ref',
+        '%s@{upstream}',
+    }
+
+    local url_cmd = 'remote'
+    local url_args = {
+        'get-url',
+    }
+
+    local remote_data = {
+        remote = '',
+        url = '',
+        hostname = '',
+    }
+
+    local function get_sync_remote(git_branch)
+        remote_args[#remote_args] = remote_args[#remote_args]:format(git_branch)
+        remote_data.remote = exec_gitcmd(remote_cmd, remote_args)[1]
+
+        table.insert(url_args, (remote_data.remote:gsub('/.*$', '')))
+        remote_data.url = exec_gitcmd(url_cmd, url_args)[1]
+
+        -- test http/ssh
+        local hostname = (remote_data.url:match 'https?://([%w%d_-%.]+)')
+        if not hostname then
+            hostname = (remote_data.url:match '%w+@([%w%d_-%.]+):')
+        end
+        remote_data.hostname = hostname
+
+        return remote_data
+    end
+
+    local function get_async_remote(upstream)
+        remote_data.remote = upstream[1]
+        table.insert(url_args, (upstream[1]:gsub('/.*$', '')))
+        remote_data.url = exec_gitcmd(url_cmd, url_args, function(url)
+            remote_data.url = url[1]
+            -- test http/ssh
+            local hostname = (remote_data.url:match 'https?://([%w%d_-%.]+)')
+            if not hostname then
+                hostname = (remote_data.url:match '%w+@([%w%d_-%.]+):')
+            end
+            remote_data.hostname = hostname
+            callback(remote_data)
+        end)
+    end
+
+    if not branch or branch == '' then
+        if not callback then
+            return get_sync_remote(M.get_branch())
+        end
+
+        M.get_branch(function(current_branch)
+            remote_args[#remote_args] = remote_args[#remote_args]:format(current_branch)
+            exec_gitcmd(remote_cmd, remote_args, get_async_remote)
+        end)
+    else
+        if not callback then
+            return get_sync_remote(branch)
+        end
+
+        remote_args[#remote_args] = remote_args[#remote_args]:format(branch)
+        exec_gitcmd(remote_cmd, remote_args, get_async_remote)
+    end
+end
+
+function M.get_remotes(callback)
+    vim.validate {
+        callback = { callback, 'function', true },
+    }
+
+    local gitcmd = 'remote'
+    local remotes = {}
+
+    if not callback then
+        for _, remote in ipairs(exec_gitcmd(gitcmd, {})) do
+            remotes[remote] = exec_gitcmd(gitcmd, { 'get-url', remote })[1]
+        end
+        return remotes
+    end
+
+    -- TODO: Add true async for all get-url calls
+    exec_gitcmd(gitcmd, {}, function(repo_remotes)
+        for _, remote in ipairs(repo_remotes) do
+            remotes[remote] = exec_gitcmd(gitcmd, { 'get-url', remote })[1]
+        end
+        callback(remotes)
     end)
 end
 

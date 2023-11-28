@@ -248,4 +248,71 @@ function M.pr_ready(is_ready, callback)
     end)
 end
 
+function M.get_repo_reviewers(callback)
+    vim.validate {
+        callback = { callback, 'function', true },
+    }
+
+    local ghcmd = 'api'
+    local args = {
+        '--hostname',
+        'HOSTNAME',
+        '-H',
+        'Accept: application/vnd.github+json',
+        '-H',
+        'X-GitHub-Api-Version: 2022-11-28',
+        '/repos/%s/collaborators',
+    }
+
+    local reviewers = {}
+
+    local function get_approvers(info)
+        for _, user in ipairs(info) do
+            if user.role_name == 'write' or user.role_name == 'admin' then
+                reviewers[user.login] = user
+            end
+        end
+        return reviewers
+    end
+
+    local function parse_api_collaborators(url, cb)
+        local repo
+        local hostname = (url:match 'https?://([%w%d_%-%.]+)')
+        if hostname then
+            repo = url:match 'https?://[%w%d_%-%.]+/(.+)'
+        else
+            hostname = (url:match '%w+@([%w%d_%-%.]+):')
+            repo = url:match '%w+@[%w%d_%-%.]+:(.+)'
+        end
+
+        args[2] = (hostname:gsub('%.git$', ''))
+        args[#args] = args[#args]:format((repo:gsub('%.git$', '')))
+        if not cb then
+            local json = table.concat(exec_ghcmd(ghcmd, args), '\n')
+            return get_approvers(vim.json.decode(json))
+        end
+        exec_ghcmd(ghcmd, args, function(output)
+            local info = vim.json.decode(table.concat(output, ''))
+            callback(get_approvers(info))
+        end)
+    end
+
+    if not callback then
+        local url
+        local ok, remote = pcall(require('utils.git').get_remote)
+        if ok then
+            url = remote.url
+        else
+            local remotes = require('utils.git').get_remotes()
+            url = remotes.origin or next(remotes)
+        end
+        return parse_api_collaborators(url)
+    end
+
+    require('utils.git').get_remotes(function(remotes)
+        local url = remotes.origin or next(remotes)
+        parse_api_collaborators(url, callback)
+    end)
+end
+
 return M
