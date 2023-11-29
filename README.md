@@ -7,12 +7,12 @@ for a while, feel free to change anything to fit your needs. I try to test this 
 although windows is still unstable from time to time
 
 ## Status
-[![Linux Neovim Stable](https://github.com/mike325/.vim/workflows/linux-stable/badge.svg)](https://github.com/mike325/.vim/actions/workflows/linux_stable.yml)
-[![Linux Neovim Nightly](https://github.com/mike325/.vim/workflows/linux-nightly/badge.svg)](https://github.com/mike325/.vim/actions/workflows/linux_nightly.yml)
-[![macOS Neovim Stable](https://github.com/mike325/.vim/workflows/macos-stable/badge.svg)](https://github.com/mike325/.vim/actions/workflows/macos_stable.yml)
-[![macOS Neovim Nightly](https://github.com/mike325/.vim/workflows/macos-nightly/badge.svg)](https://github.com/mike325/.vim/actions/workflows/macos_nightly.yml)
-[![Windows Neovim Stable](https://github.com/mike325/.vim/workflows/windows-stable/badge.svg)](https://github.com/mike325/.vim/actions/workflows/windows_stable.yml)
-[![Windows Neovim Nightly](https://github.com/mike325/.vim/workflows/windows-nightly/badge.svg)](https://github.com/mike325/.vim/actions/workflows/windows_nightly.yml)
+
+
+| Linux                                                                                                                                                             | Window                                                                                                                                                                  | MacOS                                                                                                                                                             |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [![Linux Neovim Stable](https://github.com/mike325/.vim/workflows/linux-stable/badge.svg)](https://github.com/mike325/.vim/actions/workflows/linux_stable.yml)    | [![Windows Neovim Stable](https://github.com/mike325/.vim/workflows/windows-stable/badge.svg)](https://github.com/mike325/.vim/actions/workflows/windows_stable.yml)    | [![macOS Neovim Stable](https://github.com/mike325/.vim/workflows/macos-stable/badge.svg)](https://github.com/mike325/.vim/actions/workflows/macos_stable.yml)    |
+| [![Linux Neovim Nightly](https://github.com/mike325/.vim/workflows/linux-nightly/badge.svg)](https://github.com/mike325/.vim/actions/workflows/linux_nightly.yml) | [![Windows Neovim Nightly](https://github.com/mike325/.vim/workflows/windows-nightly/badge.svg)](https://github.com/mike325/.vim/actions/workflows/windows_nightly.yml) | [![macOS Neovim Nightly](https://github.com/mike325/.vim/workflows/macos-nightly/badge.svg)](https://github.com/mike325/.vim/actions/workflows/macos_nightly.yml) |
 
 ## Install
 
