@@ -483,7 +483,7 @@ describe('Read/Write', function()
         local append_data = '\nappending stuff'
         updatefile(tmp, append_data)
 
-        local data =table.concat(vim.fn.readfile(tmp), '\n')
+        local data = table.concat(vim.fn.readfile(tmp), '\n')
         mini_test.expect.equality(msg .. append_data, data)
     end)
 

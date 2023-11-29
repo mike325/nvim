@@ -87,10 +87,10 @@ require 'overloads.ui.select'
 local data_dir = vim.fn.stdpath('data'):gsub('\\', '/')
 
 local mini_possible_paths = {
-   data_dir .. '/site/pack/host/start/',
-   data_dir .. '/site/pack/host/opt/',
-   data_dir .. '/site/pack/packer/start/',
-   data_dir .. '/site/pack/packer/opt/',
+    data_dir .. '/site/pack/host/start/',
+    data_dir .. '/site/pack/host/opt/',
+    data_dir .. '/site/pack/packer/start/',
+    data_dir .. '/site/pack/packer/opt/',
 }
 
 for _, mini_path in ipairs(mini_possible_paths) do
