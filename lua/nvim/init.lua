@@ -161,7 +161,7 @@ local nvim = {
             end
 
             local ok, plugins = pcall(vim.api.nvim_get_var, 'plugs')
-            if plugins[k] then
+            if ok and plugins[k] then
                 mt[k] = plugins[k]
                 return plugins[k]
             end

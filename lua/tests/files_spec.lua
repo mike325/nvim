@@ -528,7 +528,7 @@ if not is_windows then
     end)
 end
 
--- TODO: Glob and globpath does not return hidden files, cannot be used to verify function correctness
+-- -- TODO: Glob and globpath does not return hidden files, cannot be used to verify function correctness
 -- describe('ls', function()
 --     it("List directory's files/dirs", function()
 --         local ls = require('utils.files').ls
@@ -557,8 +557,14 @@ end
 --         -- local cwd = vim.loop.cwd()
 --         local is_dir = require('utils.files').is_dir
 --
---         mini_test.expect.equality(vim.tbl_filter(is_dir, vim.fn.globpath('.', '*', true, true)), get_dirs '.')
---         mini_test.expect.equality(vim.tbl_filter(is_dir, vim.fn.globpath(homedir, '*', true, true)), get_dirs(homedir))
+--         mini_test.expect.equality(
+--             vim.tbl_filter(is_dir, vim.fn.globpath('.', '*', true, true)),
+--             get_dirs '.'
+--         )
+--         mini_test.expect.equality(
+--             vim.tbl_filter(is_dir, vim.fn.globpath(homedir, '*', true, true)),
+--             get_dirs(homedir)
+--         )
 --     end)
 -- end)
 
