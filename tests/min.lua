@@ -84,7 +84,18 @@ require 'overloads.ui.select'
 -- require 'overloads.ui.input'
 -- require 'overloads.paste'
 
-local package_plugins = vim.fn.stdpath('data'):gsub('\\', '/') .. '/site/pack/packer/start/'
-vim.opt.rtp:append(package_plugins .. 'plenary.nvim/')
+local data_dir = vim.fn.stdpath('data'):gsub('\\', '/')
 
-vim.cmd.runtime 'plugin/plenary.vim'
+local mini_possible_paths = {
+   data_dir .. '/site/pack/host/start/',
+   data_dir .. '/site/pack/host/opt/',
+   data_dir .. '/site/pack/packer/start/',
+   data_dir .. '/site/pack/packer/opt/',
+}
+
+for _, mini_path in ipairs(mini_possible_paths) do
+    vim.opt.rtp:append(mini_path .. 'mini.nvim/')
+end
+
+vim.cmd.packadd { args = { 'mini.nvim' }, bang = false }
+require 'configs.mini'

@@ -319,14 +319,31 @@ if vim.F.npcall(require, 'mini.ai') then
     }
 end
 
-if vim.F.npcall(require, 'mini.test') then
-    require('mini.test').setup {
+local mini_test = vim.F.npcall(require, 'mini.test')
+if mini_test then
+    mini_test.setup {
         collect = {
             find_files = function()
                 return vim.fn.globpath('lua/tests', '**/*_spec.lua', true, true)
             end,
         },
     }
+
+    nvim.command.set('RunLuaTest', function(opts)
+        local test = opts.args
+        if test == '*' then
+            mini_test.execute(mini_test.collect())
+        elseif test == '' then
+            test = vim.api.nvim_buf_get_name(0)
+            if not test:match '.+_spec%.lua$' then
+                mini_test.execute(mini_test.collect())
+            else
+                mini_test.run_file(test)
+            end
+        else
+            mini_test.run_file(vim.fn.expand(test))
+        end
+    end, { nargs = '?', complete = completions.lua_tests })
 end
 
 if vim.g.minimal then

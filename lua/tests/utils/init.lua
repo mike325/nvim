@@ -1,3 +1,4 @@
+local mini_test = require 'mini.test'
 local M = {}
 
 function M.random_string(size)
@@ -70,8 +71,8 @@ end
 function M.check_clear_lst(lst)
     for _, v in ipairs(lst) do
         if type(v) == type '' then
-            assert.is_true(not v:match '%s+$')
-            assert.is_true(not v:match '^%s*$')
+            mini_test.expect.equality(not v:match '%s+$', true)
+            mini_test.expect.equality(not v:match '^%s*$', true)
         end
     end
 end

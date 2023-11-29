@@ -1,3 +1,4 @@
+local mini_test = require 'mini.test'
 -- local random_string = require('tests.utils').random_string
 local random_word = require('tests.utils').random_word
 local random_int = require('tests.utils').random_int
@@ -22,9 +23,9 @@ describe('split_components', function()
                     node = node .. tostring(generator()) .. '.'
                 end
                 local node_lst = split_components(node, pattern)
-                assert.are.equal(size, #node_lst)
+                mini_test.expect.equality(size, #node_lst)
                 for _, n in ipairs(node_lst) do
-                    assert.is_truthy(n:match('^' .. pattern .. '$'))
+                    mini_test.expect.no_equality(n:match('^' .. pattern .. '$'), nil)
                 end
             end
         end
@@ -35,10 +36,10 @@ describe('Capitalize', function()
     local capitalize = require('utils.strings').capitalize
 
     it('words', function()
-        assert.equals('Directory', capitalize 'directory')
-        assert.equals('Directory', capitalize 'Directory')
-        assert.equals('Directory', capitalize 'DIRECTORY')
-        assert.equals('D', capitalize 'd')
-        assert.equals('', capitalize '')
+        mini_test.expect.equality('Directory', capitalize 'directory')
+        mini_test.expect.equality('Directory', capitalize 'Directory')
+        mini_test.expect.equality('Directory', capitalize 'DIRECTORY')
+        mini_test.expect.equality('D', capitalize 'd')
+        mini_test.expect.equality('', capitalize '')
     end)
 end)

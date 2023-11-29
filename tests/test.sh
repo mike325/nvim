@@ -354,23 +354,54 @@ if ! hash nvim 2>/dev/null; then
     exit 1
 fi
 
-if is_windows; then
-    PLENARY_DIR="$HOME/AppData/Local/nvim-data/site/pack/packer/start/"
-else
-    PLENARY_DIR="$HOME/.local/share/nvim/site/pack/packer/start/"
-fi
+locations=(
+    'packer'
+    'host'
+)
 
-if [[ ! -d "$PLENARY_DIR/plenary.nvim" ]]; then
-    mkdir -p "$PLENARY_DIR"
-    if ! git clone --recursive https://github.com/nvim-lua/plenary.nvim "$PLENARY_DIR/plenary.nvim"; then
-        error_msg "Failed to clone plenary"
+plugin_type=(
+    'start'
+    'opt'
+)
+
+MINI_DIR=""
+
+for dir in "${locations[@]}"; do
+    for runtime_type in "${plugin_type[@]}"; do
+        if is_windows; then
+            MINI_PATH="$HOME/AppData/Local/nvim-data/site/pack/$dir/$runtime_type/"
+        else
+            MINI_PATH="$HOME/.local/share/nvim/site/pack/$dir/$runtime_type/"
+        fi
+
+        if [[ -d "$MINI_PATH/mini.nvim" ]]; then
+            verbose_msg "Found mini in $MINI_PATH"
+            MINI_DIR="$MINI_PATH/mini.nvim"
+            break
+        fi
+    done
+    if [[ -n $MINI_DIR ]]; then
+        break
+    fi
+done
+
+if [[ -z $MINI_DIR ]]; then
+    if is_windows; then
+        MINI_PATH="$HOME/AppData/Local/nvim-data/site/host/opt/opt/"
+    else
+        MINI_PATH="$HOME/.local/share/nvim/site/host/opt/opt/"
+    fi
+    mkdir -p "$MINI_DIR"
+    if ! git clone --recursive https://github.com/echasnovski/mini.nvim "$MINI_DIR/mini.nvim"; then
+        error_msg "Failed to clone mini.nvim"
         exit 1
     fi
 fi
 
 nvim -V1 --version | tee -a test.log
 
-if ! nvim --noplugin -u tests/min.lua --headless -c "PlenaryBustedDirectory lua/tests/ {minimal_init = 'tests/min.lua'}"; then
+status_msg "Starting unittests"
+if ! nvim --noplugin -u tests/min.lua --headless --cmd "let g:no_output=1" -c "lua MiniTest.execute(MiniTest.collect())"; then
     error_msg "Failed to run nvim tests"
 fi
 

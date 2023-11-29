@@ -174,6 +174,14 @@ local completions = {
     gh_pr_ready = function(arglead, cmdline, cursorpos)
         return general_completion(arglead, cmdline, cursorpos, { 'ready', 'draft' })
     end,
+    lua_tests = function(arglead, cmdline, cursorpos)
+        return general_completion(
+            arglead,
+            cmdline,
+            cursorpos,
+            vim.fn.globpath('lua/tests', '**/*_spec.lua', true, true)
+        )
+    end,
 }
 
 return completions

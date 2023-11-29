@@ -1,4 +1,4 @@
-require('plenary.async').tests.add_to_env()
+local mini_test = require 'mini.test'
 local is_windows = vim.fn.has 'win32' == 1
 
 local function forward_path(path)
@@ -31,6 +31,16 @@ local dirname_basename_paths = {
     'c:/usr/bin/foo/../',
 }
 
+-- TODO: Add autocmd to auto clean tmp files in cache directory
+-- NOTE: sometimes /tmp is mount on a different drive and linking fail between different volumes
+local function get_cache_tmp()
+    local cache_dir = vim.fn.stdpath('cache'):gsub('\\', '/')
+    local fd, tmpname = vim.uv.fs_mkstemp(cache_dir .. '/test.XXXXXX')
+    vim.uv.fs_close(fd)
+    os.remove(tmpname) -- some functions check the file do not exist before writing to it
+    return tmpname
+end
+
 -- TODO: Missing function tests
 -- is_parent
 -- find_files
@@ -38,35 +48,29 @@ local dirname_basename_paths = {
 -- clean_file
 
 describe('Check file and direcotries', function()
-    local config_dir, init_file, missing, homedir
-
-    before_each(function()
-        homedir = vim.loop.os_homedir()
-        config_dir = vim.fn.stdpath 'config'
-        init_file = config_dir .. '/init.lua'
-        missing = vim.fn.tempname()
-    end)
+    local config_dir = vim.fn.stdpath 'config'
+    local init_file = config_dir .. '/init.lua'
 
     it('exists', function()
         local exists = require('utils.files').exists
-        assert.equals('directory', exists(config_dir))
-        assert.equals('file', exists(init_file))
-        assert.is_false(exists(missing))
+        mini_test.expect.equality('directory', exists(vim.loop.os_homedir()))
+        mini_test.expect.equality('file', exists(init_file))
+        mini_test.expect.equality(exists(vim.fn.tempname()), false)
     end)
 
     it('is_file', function()
         local is_file = require('utils.files').is_file
-        assert.is_true(is_file(init_file))
-        assert.is_false(is_file(config_dir))
-        assert.is_false(is_file(missing))
+        mini_test.expect.equality(is_file(init_file), true)
+        mini_test.expect.equality(is_file(config_dir), false)
+        mini_test.expect.equality(is_file(vim.fn.tempname()), false)
     end)
 
     it('is_dir', function()
         local is_dir = require('utils.files').is_dir
-        assert.is_true(is_dir(config_dir))
-        assert.is_true(is_dir(homedir))
-        assert.is_false(is_dir(init_file))
-        assert.is_false(is_dir(missing))
+        mini_test.expect.equality(is_dir(config_dir), true)
+        mini_test.expect.equality(is_dir(vim.loop.os_homedir()), true)
+        mini_test.expect.equality(is_dir(init_file), false)
+        mini_test.expect.equality(is_dir(vim.fn.tempname()), false)
     end)
 end)
 
@@ -75,30 +79,30 @@ describe('Mkdir', function()
 
     it('Existing Directory', function()
         local homedir = vim.loop.os_homedir()
-        assert.is_true(mkdir(homedir))
+        mini_test.expect.equality(mkdir(homedir), true)
     end)
 
     it('New Directory', function()
         local tmp = vim.fn.tempname()
         local is_dir = require('utils.files').is_dir
-        assert.is_false(is_dir(tmp))
-        assert.is_true(mkdir(tmp))
-        assert.is_true(is_dir(tmp))
+        mini_test.expect.equality(is_dir(tmp), false)
+        mini_test.expect.equality(mkdir(tmp), true)
+        mini_test.expect.equality(is_dir(tmp), true)
     end)
 
     it('Existing file', function()
         local config_dir = vim.fn.stdpath 'config'
         local init_file = config_dir .. '/init.lua'
-        assert.is_false(mkdir(init_file))
+        mini_test.expect.equality(mkdir(init_file), false)
     end)
 
     it('Multiple directories', function()
         local tmp = vim.fn.tempname() .. '/test'
         local is_dir = require('utils.files').is_dir
-        assert.is_false(is_dir(tmp))
-        assert.is_false(mkdir(tmp))
-        assert.is_true(mkdir(tmp, true))
-        assert.is_true(is_dir(tmp))
+        mini_test.expect.equality(is_dir(tmp), false)
+        mini_test.expect.equality(mkdir(tmp), false)
+        mini_test.expect.equality(mkdir(tmp, true), true)
+        mini_test.expect.equality(is_dir(tmp), true)
     end)
 end)
 
@@ -120,7 +124,7 @@ describe('Linking', function()
         end
 
         if dest == nil then
-            dest = vim.fn.tempname()
+            dest = get_cache_tmp()
         end
 
         local link = require('utils.files').link
@@ -130,13 +134,13 @@ describe('Linking', function()
         local check = is_file(src) and is_file or is_dir
 
         if not force then
-            assert.is_false(check(dest))
-            assert.is_true(link(src, dest, sym))
-            assert.is_true(check(dest))
+            mini_test.expect.equality(check(dest), false)
+            mini_test.expect.equality(link(src, dest, sym), true)
+            mini_test.expect.equality(check(dest), true)
         else
-            assert.is_true(check(dest))
-            assert.is_true(link(src, dest, sym, force))
-            assert.is_true(check(dest))
+            mini_test.expect.equality(check(dest), true)
+            mini_test.expect.equality(link(src, dest, sym, force), true)
+            mini_test.expect.equality(check(dest), true)
         end
     end
 
@@ -163,31 +167,31 @@ describe('Linking', function()
     it('Hard link Directory', function()
         local link = require('utils.files').link
         local is_dir = require('utils.files').is_dir
-        local dest = vim.fn.tempname()
-        assert.is_false(is_dir(dest))
-        assert.is_false(link('~', dest))
-        assert.is_false(is_dir(dest))
+        local dest = get_cache_tmp()
+        mini_test.expect.equality(is_dir(dest), false)
+        mini_test.expect.equality(link('~', dest), false)
+        mini_test.expect.equality(is_dir(dest), false)
     end)
 
     it('Missing SRC file/dir', function()
-        local src = vim.fn.tempname()
-        local dest = vim.fn.tempname()
+        local src = get_cache_tmp()
+        local dest = get_cache_tmp()
         local is_file = require('utils.files').is_file
         local is_dir = require('utils.files').is_dir
         local link = require('utils.files').link
 
-        assert.is_false(is_file(dest))
-        assert.is_false(is_dir(dest))
-        assert.has.error(function()
+        mini_test.expect.equality(is_file(dest), false)
+        mini_test.expect.equality(is_dir(dest), false)
+        mini_test.expect.error(function()
             link(src, dest)
         end)
-        assert.is_false(is_file(dest))
-        assert.is_false(is_dir(dest))
+        mini_test.expect.equality(is_file(dest), false)
+        mini_test.expect.equality(is_dir(dest), false)
     end)
 
     describe('Force', function()
         it('Symbolic link to Directory', function()
-            local dest = vim.fn.tempname()
+            local dest = get_cache_tmp()
             testlink('~', dest, true, false)
             testlink('~', dest, true, true)
         end)
@@ -196,7 +200,7 @@ describe('Linking', function()
             it('Symbolic link to File', function()
                 local config_dir = vim.fn.stdpath 'config'
                 local init_file = config_dir .. '/init.lua'
-                local dest = vim.fn.tempname()
+                local dest = get_cache_tmp()
                 testlink(init_file, dest, true, false)
                 testlink(init_file, dest, true, true)
             end)
@@ -205,7 +209,7 @@ describe('Linking', function()
         it('Hard link File', function()
             local config_dir = vim.fn.stdpath 'config'
             local init_file = config_dir .. '/init.lua'
-            local dest = vim.fn.tempname()
+            local dest = get_cache_tmp()
             testlink(init_file, dest, false, false)
             testlink(init_file, dest, false, true)
         end)
@@ -216,24 +220,24 @@ describe('Absolute path', function()
     local is_absolute = require('utils.files').is_absolute
 
     it('Unix/Windows', function()
-        assert.is_true(is_absolute(vim.loop.os_homedir()))
-        assert.is_true(is_absolute(vim.loop.cwd()))
-        assert.is_false(is_absolute '.')
-        assert.is_false(is_absolute '../')
-        assert.is_false(is_absolute 'test')
-        assert.is_false(is_absolute './home')
+        mini_test.expect.equality(is_absolute(vim.loop.os_homedir()), true)
+        mini_test.expect.equality(is_absolute(vim.loop.cwd()), true)
+        mini_test.expect.equality(is_absolute '.', false)
+        mini_test.expect.equality(is_absolute '../', false)
+        mini_test.expect.equality(is_absolute 'test', false)
+        mini_test.expect.equality(is_absolute './home', false)
 
         if is_windows then
-            assert.is_true(is_absolute 'c:/ProgramData')
-            assert.is_true(is_absolute 'D:/data')
-            assert.is_false(is_absolute [[..\\ProgramData]])
-            assert.is_true(is_absolute [[c:\]])
-            assert.is_true(is_absolute [[C:]])
+            mini_test.expect.equality(is_absolute 'c:/ProgramData', true)
+            mini_test.expect.equality(is_absolute 'D:/data', true)
+            mini_test.expect.equality(is_absolute [[..\\ProgramData]], false)
+            mini_test.expect.equality(is_absolute [[c:\]], true)
+            mini_test.expect.equality(is_absolute [[C:]], true)
         else
-            assert.is_true(is_absolute '/')
-            assert.is_true(is_absolute '/tmp/')
-            assert.is_false(is_absolute 'home/')
-            assert.is_true(is_absolute '/../')
+            mini_test.expect.equality(is_absolute '/', true)
+            mini_test.expect.equality(is_absolute '/tmp/', true)
+            mini_test.expect.equality(is_absolute 'home/', false)
+            mini_test.expect.equality(is_absolute '/../', true)
         end
     end)
 end)
@@ -243,24 +247,24 @@ describe('Root path', function()
 
     if is_windows then
         it('Windows', function()
-            assert.is_true(is_root [[c:\]])
-            assert.is_true(is_root 'c:/')
-            assert.is_true(is_root [[C:]])
-            assert.is_true(is_root [[d:\]])
-            assert.is_true(is_root 'D:/')
-            assert.is_true(is_root [[D:]])
-            assert.is_false(is_root 'D:/data')
-            assert.is_false(is_root './home')
-            assert.is_false(is_root [[c:\ProgramData]])
+            mini_test.expect.equality(is_root [[c:\]], true)
+            mini_test.expect.equality(is_root 'c:/', true)
+            mini_test.expect.equality(is_root [[C:]], true)
+            mini_test.expect.equality(is_root [[d:\]], true)
+            mini_test.expect.equality(is_root 'D:/', true)
+            mini_test.expect.equality(is_root [[D:]], true)
+            mini_test.expect.equality(is_root 'D:/data', false)
+            mini_test.expect.equality(is_root './home', false)
+            mini_test.expect.equality(is_root [[c:\ProgramData]], false)
         end)
     else
         it('Unix', function()
-            assert.is_true(is_root '/')
-            assert.is_false(is_root '/home/')
-            assert.is_false(is_root 'home/')
-            assert.is_false(is_root '.')
-            assert.is_false(is_root '../')
-            assert.is_false(is_root 'test')
+            mini_test.expect.equality(is_root '/', true)
+            mini_test.expect.equality(is_root '/home/', false)
+            mini_test.expect.equality(is_root 'home/', false)
+            mini_test.expect.equality(is_root '.', false)
+            mini_test.expect.equality(is_root '../', false)
+            mini_test.expect.equality(is_root 'test', false)
         end)
     end
 end)
@@ -270,17 +274,17 @@ describe('Realpath', function()
 
     it('HOME', function()
         local homedir = vim.loop.os_homedir()
-        assert.equals(realpath '~', forward_path(homedir))
+        mini_test.expect.equality(realpath '~', forward_path(homedir))
     end)
 
     it('CWD', function()
         local cwd = vim.loop.cwd()
-        assert.equals(realpath '.', forward_path(cwd))
+        mini_test.expect.equality(realpath '.', forward_path(cwd))
     end)
 
     it('parent', function()
         local cwd = vim.loop.cwd()
-        assert.equals(realpath '..', vim.fs.dirname(cwd))
+        mini_test.expect.equality(realpath '..', vim.fs.dirname(cwd))
     end)
 end)
 
@@ -289,7 +293,7 @@ describe('Normalize', function()
 
     it('HOME', function()
         local homedir = vim.loop.os_homedir()
-        assert.equals(normalize '~', forward_path(homedir))
+        mini_test.expect.equality(normalize '~', forward_path(homedir))
     end)
 
     if is_windows then
@@ -297,10 +301,10 @@ describe('Normalize', function()
             local windows_path = [[c:\Users]]
 
             vim.opt.shellslash = false
-            assert.equals(normalize(windows_path), forward_path(windows_path))
+            mini_test.expect.equality(normalize(windows_path), forward_path(windows_path))
 
             vim.opt.shellslash = true
-            assert.equals(normalize(windows_path), forward_path(windows_path))
+            mini_test.expect.equality(normalize(windows_path), forward_path(windows_path))
         end)
     end
 end)
@@ -310,42 +314,37 @@ describe('Basename', function()
 
     it('Default', function()
         for _, path in ipairs(dirname_basename_paths) do
-            assert(
-                basename(path) == vim.fn.fnamemodify(path, ':t'),
-                debug.traceback(
-                    ('Error basename %s: %s ~= %s '):format(path, basename(path), vim.fn.fnamemodify(path, ':t'))
-                )
-            )
+            mini_test.expect.equality(basename(path), vim.fn.fnamemodify(path, ':t'))
         end
     end)
 
     -- it('HOME', function()
     --     local username = vim.loop.os_get_passwd().username
-    --     assert.equals(username, basename '~')
-    --     assert.equals(username, basename(vim.loop.os_homedir()))
+    --     mini_test.expect.equality(username, basename '~')
+    --     mini_test.expect.equality(username, basename(vim.loop.os_homedir()))
     -- end)
 
     it('Init file', function()
         local config_dir = vim.fn.stdpath 'config'
         local init_file = config_dir .. '/init.lua'
-        assert.equals('init.lua', basename(init_file))
+        mini_test.expect.equality('init.lua', basename(init_file))
     end)
 
     it('Filename', function()
-        assert.equals('init.lua', basename 'init.lua')
-        assert.equals('test', basename './test')
-        assert.equals('test', basename './test')
+        mini_test.expect.equality('init.lua', basename 'init.lua')
+        mini_test.expect.equality('test', basename './test')
+        mini_test.expect.equality('test', basename './test')
     end)
 
     -- it('Dirname', function()
-    --     assert.equals('test', basename './test/')
-    --     assert.equals('test', basename './test')
+    --     mini_test.expect.equality('test', basename './test/')
+    --     mini_test.expect.equality('test', basename './test')
     -- end)
 
     -- it('CWD', function()
     --     local cwd = forward_path(vim.loop.cwd()):gsub('.*' .. separator(), '')
-    --     assert.equals(cwd, basename '.')
-    --     assert.equals(cwd, basename(vim.loop.cwd()))
+    --     mini_test.expect.equality(cwd, basename '.')
+    --     mini_test.expect.equality(cwd, basename(vim.loop.cwd()))
     -- end)
 end)
 
@@ -355,13 +354,13 @@ describe('Extension', function()
     it('Filename', function()
         local config_dir = vim.fn.stdpath 'config'
         local init_file = config_dir .. '/init.lua'
-        assert.equals('lua', extension(init_file))
-        assert.equals('lua', extension 'init.lua')
-        assert.equals('lua', extension '.././../init.test.lua')
-        assert.equals('cpp', extension './test.cpp')
-        assert.equals('c', extension './test.c')
-        assert.equals('sh', extension '.bashrc.sh')
-        assert.equals('', extension '.bashrc')
+        mini_test.expect.equality('lua', extension(init_file))
+        mini_test.expect.equality('lua', extension 'init.lua')
+        mini_test.expect.equality('lua', extension '.././../init.test.lua')
+        mini_test.expect.equality('cpp', extension './test.cpp')
+        mini_test.expect.equality('c', extension './test.c')
+        mini_test.expect.equality('sh', extension '.bashrc.sh')
+        mini_test.expect.equality('', extension '.bashrc')
     end)
 end)
 
@@ -371,13 +370,13 @@ describe('Filename', function()
     it('without extension', function()
         local config_dir = vim.fn.stdpath 'config'
         local init_file = config_dir .. '/init.lua'
-        assert.equals('init', filename(init_file))
-        assert.equals('init', filename 'init.lua')
-        assert.equals('init.test', filename '.././../init.test.lua')
-        assert.equals('test', filename './test.cpp')
-        assert.equals('test', filename './test.c')
-        assert.equals('.bashrc', filename '.bashrc.sh')
-        assert.equals('.bashrc', filename '.bashrc')
+        mini_test.expect.equality('init', filename(init_file))
+        mini_test.expect.equality('init', filename 'init.lua')
+        mini_test.expect.equality('init.test', filename '.././../init.test.lua')
+        mini_test.expect.equality('test', filename './test.cpp')
+        mini_test.expect.equality('test', filename './test.c')
+        mini_test.expect.equality('.bashrc', filename '.bashrc.sh')
+        mini_test.expect.equality('.bashrc', filename '.bashrc')
     end)
 end)
 
@@ -386,12 +385,7 @@ describe('Dirname', function()
 
     it('Getting dirname from directories and files', function()
         for _, path in ipairs(dirname_basename_paths) do
-            assert(
-                dirname(path) == vim.fn.fnamemodify(path, ':h'),
-                debug.traceback(
-                    ('Error dirname %s: %s ~= %s '):format(path, dirname(path), vim.fn.fnamemodify(path, ':h'))
-                )
-            )
+            mini_test.expect.equality(dirname(path), vim.fn.fnamemodify(path, ':h'))
         end
 
         local config_dir = forward_path(vim.fn.stdpath 'config')
@@ -401,19 +395,19 @@ describe('Dirname', function()
         local init_file = forward_path(config_dir .. '/init.lua')
         -- local homedir = forward_path(vim.loop.os_homedir())
 
-        assert.equals(config_dir, dirname(init_file))
+        mini_test.expect.equality(config_dir, dirname(init_file))
 
-        assert.equals(config_dir:gsub([[[/\]nvim.*]], ''), dirname(config_dir))
-        assert.equals(data_dir:gsub([[[/\]nvim.*]], ''), dirname(data_dir))
-        assert.equals(cache_dir:gsub([[[/\]nvim.*]], ''), dirname(cache_dir))
+        mini_test.expect.equality(config_dir:gsub([[[/\]nvim.*]], ''), dirname(config_dir))
+        mini_test.expect.equality(data_dir:gsub([[[/\]nvim.*]], ''), dirname(data_dir))
+        mini_test.expect.equality(cache_dir:gsub([[[/\]nvim.*]], ''), dirname(cache_dir))
 
-        assert.equals('~', dirname '~/.bashrc')
+        mini_test.expect.equality('~', dirname '~/.bashrc')
         if not is_windows then
-            assert.equals('/', dirname '/')
-            assert.equals('/tmp', dirname '/tmp/test')
+            mini_test.expect.equality('/', dirname '/')
+            mini_test.expect.equality('/tmp', dirname '/tmp/test')
         else
-            assert.equals(forward_path 'c:\\', dirname 'c:\\')
-            assert.equals(forward_path 'c:\\Temp', dirname 'c:\\Temp\\test')
+            mini_test.expect.equality(forward_path 'c:\\', dirname 'c:\\')
+            mini_test.expect.equality(forward_path 'c:\\Temp', dirname 'c:\\Temp\\test')
         end
     end)
 end)
@@ -427,7 +421,7 @@ describe('Read/Write', function()
     local init_file = config_dir .. '/init.lua'
 
     local function check_data(path, data)
-        assert.is_true(is_file(path))
+        mini_test.expect.equality(is_file(path), true)
         local fd = assert(io.open(path))
         local rb_data = fd:read '*a'
         fd:close()
@@ -438,24 +432,24 @@ describe('Read/Write', function()
                 rb_data[#rb_data] = nil
             end
 
-            assert.are.same(rb_data, data)
+            mini_test.expect.equality(rb_data, data)
         else
             -- BUG: Seems like IO does not read \r in windows but it does in unix
             if is_windows and data:match '\r' then
                 rb_data = rb_data:gsub('\n', '\r\n')
             end
-            assert.equals(rb_data, data)
+            mini_test.expect.equality(rb_data, data)
         end
     end
 
     local function write(path, data, cb)
         if not cb then
-            assert.is_true(writefile(path, data))
+            mini_test.expect.equality(writefile(path, data), true)
             check_data(path, data)
         else
             writefile(path, data, function()
                 check_data(path, data)
-                assert.is_true(false)
+                mini_test.expect.equality(false, true)
             end)
         end
     end
@@ -467,7 +461,7 @@ describe('Read/Write', function()
         if not cb then
             check_data(path, readfile(path, split))
         else
-            assert.is_true(is_file(path))
+            mini_test.expect.equality(is_file(path), true)
             readfile(path, split, function(data)
                 check_data(path, data)
             end)
@@ -476,31 +470,26 @@ describe('Read/Write', function()
 
     it('Creating new file', function()
         local msg = 'this is a test'
-        assert.is_false(is_file(tmp))
+        mini_test.expect.equality(is_file(tmp), false)
         write(tmp, msg)
     end)
 
     it('Appending to exists file', function()
         local updatefile = require('utils.files').updatefile
-        assert.is_true(is_file(tmp))
+        mini_test.expect.equality(is_file(tmp), true)
 
-        local fd = assert(io.open(tmp))
-        local msg = fd:read '*a'
-        fd:close()
+        local msg = table.concat(vim.fn.readfile(tmp), '\n')
 
         local append_data = '\nappending stuff'
         updatefile(tmp, append_data)
 
-        fd = assert(io.open(tmp))
-        local data = fd:read '*a'
-        fd:close()
-
-        assert.equals(msg .. append_data, data)
+        local data =table.concat(vim.fn.readfile(tmp), '\n')
+        mini_test.expect.equality(msg .. append_data, data)
     end)
 
     it('Overriding exists file', function()
         local msg = { 'This', 'Should', 'Override', 'the data' }
-        assert.is_true(is_file(tmp))
+        mini_test.expect.equality(is_file(tmp), true)
         write(tmp, msg)
     end)
 
@@ -513,48 +502,6 @@ describe('Read/Write', function()
         read(tmp, true)
         read(init_file, true)
     end)
-
-    -- -- TODO: Need to find a way to test this async functions
-    -- describe('Async', function()
-    --     a.it('Creating new file', function()
-    --         local msg = 'this is a test'
-    --         assert.is_false(is_file(vim.fn.tempname()))
-    --         a.run(function() write(tmp, msg, true) end)
-    --     end)
-    --
-    --     a.it('Appending to exists file', function()
-    --         local updatefile = require('utils.files').updatefile
-    --         assert.is_true(is_file(tmp))
-    --
-    --         local fd = assert(io.open(tmp))
-    --         local msg = fd:read '*a'
-    --         fd:close()
-    --
-    --         local append_data = '\nappending more stuff'
-    --         updatefile(tmp, append_data, function()
-    --             fd = assert(io.open(tmp))
-    --             local data = fd:read '*a'
-    --             fd:close()
-    --             assert.equals(msg .. append_data, data)
-    --         end)
-    --     end)
-    --
-    --     a.it('Overriding exists file', function()
-    --         local msg = { 'This', 'Should', 'Override', 'the data', 'async' }
-    --         assert.is_true(is_file(tmp))
-    --         write(tmp, msg, true)
-    --     end)
-    --
-    --     a.it('Reading file as string', function()
-    --         read(tmp, false, true)
-    --         read(init_file, false, true)
-    --     end)
-    --
-    --     a.it('Reading file as table', function()
-    --         read(tmp, true, true)
-    --         read(init_file, true, true)
-    --     end)
-    -- end)
 end)
 
 if not is_windows then
@@ -567,28 +514,28 @@ if not is_windows then
             local is_file = require('utils.files').is_file
 
             local msg = 'this is a test'
-            assert.is_false(is_file(tmp))
-            assert.is_true(writefile(tmp, msg))
-            assert.is_true(is_file(tmp))
+            mini_test.expect.equality(is_file(tmp), false)
+            mini_test.expect.equality(writefile(tmp, msg), true)
+            mini_test.expect.equality(is_file(tmp), true)
 
             -- TODO: Need to check current permissions
             -- Removing write permissions
-            assert.is_true(chmod(tmp, 400))
-            assert.is_false(writefile(tmp, msg))
-            assert.is_true(chmod(tmp, 600))
-            assert.is_true(writefile(tmp, msg))
+            mini_test.expect.equality(chmod(tmp, 400), true)
+            mini_test.expect.equality(writefile(tmp, msg), false)
+            mini_test.expect.equality(chmod(tmp, 600), true)
+            mini_test.expect.equality(writefile(tmp, msg), true)
         end)
     end)
 end
 
--- -- TODO: Glob and globpath does not return hidden files, cannot be used to verify function correctness
+-- TODO: Glob and globpath does not return hidden files, cannot be used to verify function correctness
 -- describe('ls', function()
 --     it("List directory's files/dirs", function()
 --         local ls = require('utils.files').ls
 --         local homedir = vim.loop.os_homedir()
 --
---         assert.are.same(vim.fn.globpath('.', '*', true, true), ls '.')
---         assert.are.same(vim.fn.globpath(homedir, '*', true, true), ls(homedir))
+--         mini_test.expect.equality(vim.fn.globpath('.', '*', true, true), ls '.')
+--         mini_test.expect.equality(vim.fn.globpath(homedir, '*', true, true), ls(homedir))
 --     end)
 --
 --     it('Getting all files', function()
@@ -597,8 +544,11 @@ end
 --         -- local cwd = vim.loop.cwd()
 --         local is_file = require('utils.files').is_file
 --
---         assert.are.same(vim.tbl_filter(is_file, vim.fn.globpath('.', '*', true, true)), get_files '.')
---         assert.are.same(vim.tbl_filter(is_file, vim.fn.globpath(homedir, '*', true, true)), get_files(homedir))
+--         mini_test.expect.equality(vim.tbl_filter(is_file, vim.fn.globpath('.', '*', true, true)), get_files '.')
+--         mini_test.expect.equality(
+--             vim.tbl_filter(is_file, vim.fn.globpath(homedir, '*', true, true)),
+--             get_files(homedir)
+--         )
 --     end)
 --
 --     it('Getting all directories', function()
@@ -607,8 +557,8 @@ end
 --         -- local cwd = vim.loop.cwd()
 --         local is_dir = require('utils.files').is_dir
 --
---         assert.are.same(vim.tbl_filter(is_dir, vim.fn.globpath('.', '*', true, true)), get_dirs '.')
---         assert.are.same(vim.tbl_filter(is_dir, vim.fn.globpath(homedir, '*', true, true)), get_dirs(homedir))
+--         mini_test.expect.equality(vim.tbl_filter(is_dir, vim.fn.globpath('.', '*', true, true)), get_dirs '.')
+--         mini_test.expect.equality(vim.tbl_filter(is_dir, vim.fn.globpath(homedir, '*', true, true)), get_dirs(homedir))
 --     end)
 -- end)
 
@@ -624,17 +574,17 @@ describe('Rename', function()
         local new_tmpfile = vim.fn.tempname()
         local msg = 'this is a test'
 
-        assert.is_true(writefile(tmpfile, msg))
+        mini_test.expect.equality(writefile(tmpfile, msg), true)
 
-        assert.is_true(is_file(tmpfile))
-        assert.is_false(is_file(new_tmpfile))
+        mini_test.expect.equality(is_file(tmpfile), true)
+        mini_test.expect.equality(is_file(new_tmpfile), false)
 
-        assert.is_true(rename(tmpfile, new_tmpfile))
+        mini_test.expect.equality(rename(tmpfile, new_tmpfile), true)
 
-        assert.is_false(is_file(tmpfile))
-        assert.is_true(is_file(new_tmpfile))
+        mini_test.expect.equality(is_file(tmpfile), false)
+        mini_test.expect.equality(is_file(new_tmpfile), true)
 
-        assert.equals(msg, readfile(new_tmpfile, false))
+        mini_test.expect.equality(msg, readfile(new_tmpfile, false))
     end)
 
     it('file to existing file', function()
@@ -646,19 +596,19 @@ describe('Rename', function()
         local new_tmpfile = vim.fn.tempname()
         local msg = 'this is a test'
 
-        assert.is_true(writefile(tmpfile, msg))
-        assert.is_true(writefile(new_tmpfile, 'this should be just a tmp'))
+        mini_test.expect.equality(writefile(tmpfile, msg), true)
+        mini_test.expect.equality(writefile(new_tmpfile, 'this should be just a tmp'), true)
 
-        assert.is_true(is_file(tmpfile))
-        assert.is_true(is_file(new_tmpfile))
+        mini_test.expect.equality(is_file(tmpfile), true)
+        mini_test.expect.equality(is_file(new_tmpfile), true)
 
-        assert.is_false(rename(tmpfile, new_tmpfile))
-        assert.is_true(rename(tmpfile, new_tmpfile, true))
+        mini_test.expect.equality(rename(tmpfile, new_tmpfile), false)
+        mini_test.expect.equality(rename(tmpfile, new_tmpfile, true), true)
 
-        assert.is_false(is_file(tmpfile))
-        assert.is_true(is_file(new_tmpfile))
+        mini_test.expect.equality(is_file(tmpfile), false)
+        mini_test.expect.equality(is_file(new_tmpfile), true)
 
-        assert.equals(msg, readfile(new_tmpfile, false))
+        mini_test.expect.equality(msg, readfile(new_tmpfile, false))
     end)
 
     it('directory', function()
@@ -668,14 +618,14 @@ describe('Rename', function()
         local tmpfile = vim.fn.tempname()
         local new_tmpfile = vim.fn.tempname()
 
-        assert.is_true(mkdir(tmpfile))
-        assert.is_true(is_dir(tmpfile))
-        assert.is_false(is_dir(new_tmpfile))
+        mini_test.expect.equality(mkdir(tmpfile), true)
+        mini_test.expect.equality(is_dir(tmpfile), true)
+        mini_test.expect.equality(is_dir(new_tmpfile), false)
 
-        assert.is_true(rename(tmpfile, new_tmpfile))
+        mini_test.expect.equality(rename(tmpfile, new_tmpfile), true)
 
-        assert.is_false(is_dir(tmpfile))
-        assert.is_true(is_dir(new_tmpfile))
+        mini_test.expect.equality(is_dir(tmpfile), false)
+        mini_test.expect.equality(is_dir(new_tmpfile), true)
     end)
 
     -- it('file with buffer', function()
@@ -691,11 +641,11 @@ describe('Delete', function()
 
         local tmpfile = vim.fn.tempname()
         local msg = 'this is a test'
-        assert.is_true(writefile(tmpfile, msg))
+        mini_test.expect.equality(writefile(tmpfile, msg), true)
 
-        assert.is_true(is_file(tmpfile))
-        assert.is_true(delete(tmpfile))
-        assert.is_false(is_file(tmpfile))
+        mini_test.expect.equality(is_file(tmpfile), true)
+        mini_test.expect.equality(delete(tmpfile), true)
+        mini_test.expect.equality(is_file(tmpfile), false)
     end)
 
     it('empty directory', function()
@@ -703,11 +653,11 @@ describe('Delete', function()
         local mkdir = require('utils.files').mkdir
 
         local tmpdir = vim.fn.tempname()
-        assert.is_true(mkdir(tmpdir))
+        mini_test.expect.equality(mkdir(tmpdir), true)
 
-        assert.is_true(is_dir(tmpdir))
-        assert.is_true(delete(tmpdir))
-        assert.is_false(is_dir(tmpdir))
+        mini_test.expect.equality(is_dir(tmpdir), true)
+        mini_test.expect.equality(delete(tmpdir), true)
+        mini_test.expect.equality(is_dir(tmpdir), false)
     end)
 
     -- BUG: This seems to fail in GH actions due to homedir having "~"
@@ -721,17 +671,17 @@ describe('Delete', function()
             local writefile = require('utils.files').writefile
 
             local tmpdir = vim.fn.tempname()
-            assert.is_true(mkdir(tmpdir))
-            assert.is_true(is_dir(tmpdir))
+            mini_test.expect.equality(mkdir(tmpdir), true)
+            mini_test.expect.equality(is_dir(tmpdir), true)
 
             local tmpfile = tmpdir .. '/test'
             local msg = 'this is a test'
-            assert.is_true(writefile(tmpfile, msg))
-            assert.is_true(is_file(tmpfile))
+            mini_test.expect.equality(writefile(tmpfile, msg), true)
+            mini_test.expect.equality(is_file(tmpfile), true)
 
-            assert.is_false(delete(tmpdir))
-            assert.is_true(delete(tmpdir, true))
-            assert.is_false(is_dir(tmpdir))
+            mini_test.expect.equality(delete(tmpdir), false)
+            mini_test.expect.equality(delete(tmpdir, true), true)
+            mini_test.expect.equality(is_dir(tmpdir), false)
         end)
     end
 end)
@@ -761,9 +711,9 @@ describe('JSON', function()
         local data = readfile(projections, false)
 
         for _, tst in ipairs(jsons_str) do
-            assert.are.same(vim.fn.json_decode(tst), decode_json(tst))
+            mini_test.expect.equality(vim.fn.json_decode(tst), decode_json(tst))
         end
-        assert.are.same(vim.fn.json_decode(data), decode_json(data))
+        mini_test.expect.equality(vim.fn.json_decode(data), decode_json(data))
     end)
 
     it('Encode', function()
@@ -779,12 +729,12 @@ describe('JSON', function()
         for _, tst in ipairs(jsons) do
             internal = encode_json(tst)
             control = vim.fn.json_encode(tst)
-            assert.are.same(vim.fn.json_decode(control), vim.fn.json_decode(internal))
+            mini_test.expect.equality(vim.fn.json_decode(control), vim.fn.json_decode(internal))
         end
 
         local data = readfile(projections, false)
         internal = encode_json(vim.fn.json_decode(data))
-        assert.are.same(vim.fn.json_decode(data), vim.fn.json_decode(internal))
+        mini_test.expect.equality(vim.fn.json_decode(data), vim.fn.json_decode(internal))
     end)
 
     it('Read', function()
@@ -797,10 +747,10 @@ describe('JSON', function()
         local tmp = vim.fn.tempname()
 
         for _, tst in ipairs(jsons_str) do
-            assert.is_true(writefile(tmp, tst))
-            assert.are.same(vim.fn.json_decode(tst), read_json(tmp))
+            mini_test.expect.equality(writefile(tmp, tst), true)
+            mini_test.expect.equality(vim.fn.json_decode(tst), read_json(tmp))
         end
-        assert.are.same(vim.fn.json_decode(readfile(projections, false)), read_json(projections))
+        mini_test.expect.equality(vim.fn.json_decode(readfile(projections, false)), read_json(projections))
     end)
 
     it('Dump', function()
@@ -814,11 +764,11 @@ describe('JSON', function()
         local tmp = vim.fn.tempname()
 
         for _, tst in ipairs(jsons) do
-            assert.is_true(dump_json(tmp, tst))
-            assert.is_true(writefile(control, vim.fn.json_encode(tst)))
-            assert.are.same(vim.fn.json_decode(readfile(control, false)), vim.fn.json_decode(readfile(tmp)))
+            mini_test.expect.equality(dump_json(tmp, tst), true)
+            mini_test.expect.equality(writefile(control, vim.fn.json_encode(tst)), true)
+            mini_test.expect.equality(vim.fn.json_decode(readfile(control, false)), vim.fn.json_decode(readfile(tmp)))
         end
-        assert.is_true(dump_json(tmp, vim.fn.json_decode(readfile(projections))))
-        assert.are.same(vim.fn.json_decode(readfile(projections, false)), vim.fn.json_decode(readfile(tmp)))
+        mini_test.expect.equality(dump_json(tmp, vim.fn.json_decode(readfile(projections))), true)
+        mini_test.expect.equality(vim.fn.json_decode(readfile(projections, false)), vim.fn.json_decode(readfile(tmp)))
     end)
 end)

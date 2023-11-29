@@ -148,7 +148,7 @@ vim.notify = function(msg, level, opts)
         vim.schedule(function()
             notify(msg, level, opts)
         end)
-    else
+    elseif not vim.g.no_output then
         notify(msg, level, opts)
     end
 end

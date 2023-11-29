@@ -1,3 +1,4 @@
+local mini_test = require 'mini.test'
 local random_string = require('tests.utils').random_string
 local random_generator = require('tests.utils').random_generator
 local random_list = require('tests.utils').random_list
@@ -11,13 +12,13 @@ describe('has_attrs', function()
         for _ = 1, 10 do
             local lst = random_list(math.random(5, 20))
             local node = math.random(1, #lst)
-            assert.is_true(has_attrs(lst, lst[node]))
+            mini_test.expect.equality(has_attrs(lst, lst[node]), true)
 
             node = random_string(math.random(2, 10))
-            assert.is_false(has_attrs(lst, node))
+            mini_test.expect.equality(has_attrs(lst, node), false)
             -- note: this may hit one node and generate a false negative
             node = random_generator()
-            assert.is_false(has_attrs(lst, node))
+            mini_test.expect.equality(has_attrs(lst, node), false)
         end
     end)
 
@@ -26,13 +27,13 @@ describe('has_attrs', function()
             local tbl = random_map(math.random(5, 20))
             local keys = vim.tbl_keys(tbl)
             local idx = math.random(1, #keys)
-            assert.is_true(has_attrs(tbl, tbl[keys[idx]]))
+            mini_test.expect.equality(has_attrs(tbl, tbl[keys[idx]]), true)
 
             local node = random_string(math.random(2, 10))
-            assert.is_false(has_attrs(tbl, node))
+            mini_test.expect.equality(has_attrs(tbl, node), false)
             -- note: this may hit one node and generate a false negative
             node = random_generator()
-            assert.is_false(has_attrs(tbl, node))
+            mini_test.expect.equality(has_attrs(tbl, node), false)
         end
     end)
 
@@ -42,16 +43,16 @@ describe('has_attrs', function()
             local beg_idx = math.random(1, math.floor(#lst / 2))
             local end_idx = math.random(math.floor(#lst / 2), #lst)
             local tmp_lst = vim.list_slice(lst, beg_idx, end_idx)
-            assert.is_true(has_attrs(lst, tmp_lst))
+            mini_test.expect.equality(has_attrs(lst, tmp_lst), true)
 
             table.insert(tmp_lst, random_generator())
-            assert.is_false(has_attrs(lst, tmp_lst))
+            mini_test.expect.equality(has_attrs(lst, tmp_lst), false)
 
             beg_idx = math.random(1, math.floor(#lst / 2))
             end_idx = math.random(math.floor(#lst / 2), #lst)
             tmp_lst = vim.list_slice(lst, beg_idx, end_idx)
             table.insert(tmp_lst, random_generator())
-            assert.is_false(has_attrs(lst, tmp_lst))
+            mini_test.expect.equality(has_attrs(lst, tmp_lst), false)
         end
     end)
 
@@ -66,10 +67,10 @@ describe('has_attrs', function()
             for _, key in ipairs(keys_vals) do
                 table.insert(tbl_in_tbl, tbl[key])
             end
-            assert.is_true(has_attrs(tbl, tbl_in_tbl))
+            mini_test.expect.equality(has_attrs(tbl, tbl_in_tbl), true)
 
             table.insert(tbl_in_tbl, random_generator())
-            assert.is_false(has_attrs(tbl, tbl_in_tbl))
+            mini_test.expect.equality(has_attrs(tbl, tbl_in_tbl), false)
         end
     end)
 end)
@@ -83,11 +84,11 @@ describe('Uniq lists', function()
 
     local function check_lists(src, dest, merge)
         for _, src_node in ipairs(src) do
-            assert.is_true(vim.list_contains(merge, src_node))
+            mini_test.expect.equality(vim.list_contains(merge, src_node), true)
         end
 
         for _, dest_node in ipairs(dest) do
-            assert.is_true(vim.list_contains(merge, dest_node))
+            mini_test.expect.equality(vim.list_contains(merge, dest_node), true)
         end
     end
 
@@ -98,8 +99,10 @@ describe('Uniq lists', function()
             local merged_lst = merge_uniq_list(vim.deepcopy(lst_dest), lst_src)
 
             check_lists(lst_src, lst_dest, merged_lst)
-            assert.equals(#merged_lst, (#lst_src + #lst_dest))
-            assert.same(vim.fn.sort(merged_lst), vim.fn.sort(merge_uniq_unorder(vim.deepcopy(lst_dest), lst_src)))
+            mini_test.expect.equality(
+                vim.fn.sort(merged_lst),
+                vim.fn.sort(merge_uniq_unorder(vim.deepcopy(lst_dest), lst_src))
+            )
         end
     end)
 
@@ -112,8 +115,10 @@ describe('Uniq lists', function()
             local merged_lst = merge_uniq_list(vim.deepcopy(lst_dest), lst_src)
 
             check_lists(lst_src, lst_dest, merged_lst)
-            assert.equals(#merged_lst, (#lst_src + #lst_dest - end_idx))
-            assert.same(vim.fn.sort(merged_lst), vim.fn.sort(merge_uniq_unorder(vim.deepcopy(lst_dest), lst_src)))
+            mini_test.expect.equality(
+                vim.fn.sort(merged_lst),
+                vim.fn.sort(merge_uniq_unorder(vim.deepcopy(lst_dest), lst_src))
+            )
         end
     end)
 
@@ -125,9 +130,9 @@ describe('Uniq lists', function()
             local uniq = uniq_list(lst_dest)
 
             for _, src_node in ipairs(lst_src) do
-                assert.is_true(vim.list_contains(uniq, src_node))
+                mini_test.expect.equality(vim.list_contains(uniq, src_node), true)
             end
-            assert.same(uniq, lst_src)
+            mini_test.expect.equality(uniq, lst_src)
         end
     end)
 
@@ -138,7 +143,10 @@ describe('Uniq lists', function()
             local merged_lst = merge_uniq_unorder(vim.deepcopy(lst_dest), lst_src)
 
             check_lists(lst_src, lst_dest, merged_lst)
-            assert.same(vim.fn.sort(merged_lst), vim.fn.sort(merge_uniq_list(vim.deepcopy(lst_dest), lst_src)))
+            mini_test.expect.equality(
+                vim.fn.sort(merged_lst),
+                vim.fn.sort(merge_uniq_list(vim.deepcopy(lst_dest), lst_src))
+            )
         end
     end)
 
@@ -151,7 +159,10 @@ describe('Uniq lists', function()
             local merged_lst = merge_uniq_unorder(vim.deepcopy(lst_dest), lst_src)
 
             check_lists(lst_src, lst_dest, merged_lst)
-            assert.same(vim.fn.sort(merged_lst), vim.fn.sort(merge_uniq_list(vim.deepcopy(lst_dest), lst_src)))
+            mini_test.expect.equality(
+                vim.fn.sort(merged_lst),
+                vim.fn.sort(merge_uniq_list(vim.deepcopy(lst_dest), lst_src))
+            )
         end
     end)
 
@@ -163,9 +174,9 @@ describe('Uniq lists', function()
             local uniq = uniq_unorder(lst_dest)
 
             for _, src_node in ipairs(lst_src) do
-                assert.is_true(vim.list_contains(uniq, src_node))
+                mini_test.expect.equality(vim.list_contains(uniq, src_node), true)
             end
-            assert.same(vim.fn.sort(uniq), vim.fn.sort(lst_src))
+            mini_test.expect.equality(vim.fn.sort(uniq), vim.fn.sort(lst_src))
         end
     end)
 end)
@@ -214,7 +225,7 @@ describe('str_to_clean_tbl', function()
     it('Sample strings', function()
         for _, v in ipairs(strings) do
             local lst = str_to_clean_tbl(v[1], v[2])
-            assert.is_true(vim.tbl_islist(lst))
+            mini_test.expect.equality(vim.tbl_islist(lst), true)
             check_clear_lst(lst)
         end
     end)
@@ -224,7 +235,7 @@ describe('str_to_clean_tbl', function()
             local str = random_string(150)
             local sep = math.random(0, 10) % 2 == 0 and random_string(1) or ' '
             local lst = str_to_clean_tbl(str, sep)
-            assert.is_true(vim.tbl_islist(lst))
+            mini_test.expect.equality(vim.tbl_islist(lst), true)
             check_clear_lst(lst)
         end
     end)
@@ -237,7 +248,7 @@ describe('shallowcopy', function()
         for _ = 1, 10 do
             local lst = random_list(math.random(1, 20))
             local copied = shallowcopy(lst)
-            assert.are.same(lst, copied)
+            mini_test.expect.equality(lst, copied)
         end
     end)
 
@@ -245,7 +256,7 @@ describe('shallowcopy', function()
         for _ = 1, 10 do
             local tbl = random_map(math.random(1, 20))
             local copied = shallowcopy(tbl)
-            assert.are.same(tbl, copied)
+            mini_test.expect.equality(tbl, copied)
         end
     end)
 
@@ -257,7 +268,7 @@ describe('shallowcopy', function()
             end
             local copied = shallowcopy(nested)
             for idx, _ in ipairs(nested) do
-                assert.equals(nested[idx], copied[idx])
+                mini_test.expect.equality(nested[idx], copied[idx])
             end
         end
     end)
@@ -267,11 +278,11 @@ describe('isempty', function()
     local isempty = require('utils.tables').isempty
 
     it('table', function()
-        assert.is_true(isempty {})
-        assert.is_false(isempty { 1 })
-        assert.is_false(isempty { test = 1 })
-        assert.is_false(isempty { 1, 2, 3, test = 1 })
-        assert.is_false(isempty(random_list(3)))
-        assert.is_false(isempty(random_map(3)))
+        mini_test.expect.equality(isempty {}, true)
+        mini_test.expect.equality(isempty { 1 }, false)
+        mini_test.expect.equality(isempty { test = 1 }, false)
+        mini_test.expect.equality(isempty { 1, 2, 3, test = 1 }, false)
+        mini_test.expect.equality(isempty(random_list(3)), false)
+        mini_test.expect.equality(isempty(random_map(3)), false)
     end)
 end)
