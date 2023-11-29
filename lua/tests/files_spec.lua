@@ -35,8 +35,8 @@ local dirname_basename_paths = {
 -- NOTE: sometimes /tmp is mount on a different drive and linking fail between different volumes
 local function get_cache_tmp()
     local cache_dir = vim.fn.stdpath('cache'):gsub('\\', '/')
-    local fd, tmpname = vim.uv.fs_mkstemp(cache_dir .. '/test.XXXXXX')
-    vim.uv.fs_close(fd)
+    local fd, tmpname = vim.loop.fs_mkstemp(cache_dir .. '/test.XXXXXX')
+    vim.loop.fs_close(fd)
     os.remove(tmpname) -- some functions check the file do not exist before writing to it
     return tmpname
 end
