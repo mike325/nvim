@@ -387,9 +387,9 @@ done
 
 if [[ -z $MINI_DIR ]]; then
     if is_windows; then
-        MINI_DIR="$HOME/AppData/Local/nvim-data/site/host/opt/opt/"
+        MINI_DIR="$HOME/AppData/Local/nvim-data/site/pack/host/opt/"
     else
-        MINI_DIR="$HOME/.local/share/nvim/site/host/opt/opt/"
+        MINI_DIR="$HOME/.local/share/nvim/site/pack/host/opt/"
     fi
     mkdir -p "$MINI_DIR"
     if ! git clone --recursive https://github.com/echasnovski/mini.nvim "$MINI_DIR/mini.nvim"; then
