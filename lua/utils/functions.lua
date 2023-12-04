@@ -1022,18 +1022,22 @@ function M.typos_check(buf)
     local typos = RELOAD('jobs'):new {
         cmd = cmd,
         silent = true,
-        callbacks_on_failure = function(job, rc)
+        callbacks = function(job, rc)
+            local qf_utils = RELOAD 'utils.qf'
             local output = RELOAD('utils.tables').remove_empty(job:output())
+            local diagnostic_ns_name = title:lower()
             if #output > 0 then
-                local qf_utils = RELOAD 'utils.qf'
                 qf_utils.set_list {
-                    title = title,
+                    title = diagnostic_ns_name,
                     items = output,
                     jump = false,
                     open = false,
-                    win = true,
+                    win = 0,
                 }
-                qf_utils.qf_to_diagnostic(title, true)
+                qf_utils.qf_to_diagnostic(diagnostic_ns_name, 0)
+            elseif diagnostic_ns_name == vim.fn.getloclist(0, { title = 1 }).title then
+                qf_utils.clear(0)
+                vim.diagnostic.reset(vim.api.nvim_create_namespace(diagnostic_ns_name))
             end
         end,
     }
