@@ -1031,8 +1031,9 @@ function M.typos_check(buf)
                     items = output,
                     jump = false,
                     open = false,
+                    win = true,
                 }
-                qf_utils.qf_to_diagnostic(title)
+                qf_utils.qf_to_diagnostic(title, true)
             end
         end,
     }

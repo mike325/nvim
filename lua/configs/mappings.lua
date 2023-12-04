@@ -551,13 +551,25 @@ vim.keymap.set('n', '[d', function()
     vim.diagnostic.goto_prev { wrap = true }
 end, { noremap = true, silent = true, desc = 'Go to the prev diagnostic' })
 
+nvim.command.set('Qf2Diag', function()
+    RELOAD('utils.qf').qf_to_diagnostic()
+end)
+
+nvim.command.set('Loc2Diag', function()
+    RELOAD('utils.qf').qf_to_diagnostic(nil, true)
+end)
+
 nvim.command.set('DiagnosticsDump', function(opts)
     local severity = vim.diagnostic.severity[opts.args]
     if severity then
         severity = { min = severity }
     end
-    vim.diagnostic.setqflist { severity = severity }
-    vim.cmd.wincmd 'J'
+    if opts.bang then
+        vim.diagnostic.setqflist { severity = severity }
+        vim.cmd.wincmd 'J'
+    else
+        vim.diagnostic.setloclist { severity = severity }
+    end
 end, { nargs = '?', bang = true, desc = 'Filter Diagnostics in Qf', complete = completions.severity_list })
 
 nvim.command.set('DiagnosticsClear', function(opts)

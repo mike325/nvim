@@ -5,7 +5,7 @@ local M = {}
 local qf_funcs = {
     first = function(win)
         vim.validate {
-            win = { win, 'number', true },
+            win = { win, { 'number', 'boolean' }, true },
         }
         if win then
             vim.cmd.lfirst()
@@ -15,7 +15,7 @@ local qf_funcs = {
     end,
     last = function(win)
         vim.validate {
-            win = { win, 'number', true },
+            win = { win, { 'number', 'boolean' }, true },
         }
         if win then
             vim.cmd.llast()
@@ -25,7 +25,7 @@ local qf_funcs = {
     end,
     open = function(win, size)
         vim.validate {
-            win = { win, 'number', true },
+            win = { win, { 'number', 'boolean' }, true },
             size = { size, 'number', true },
         }
         local cmd = win and 'lopen' or 'copen'
@@ -40,7 +40,7 @@ local qf_funcs = {
     end,
     close = function(win)
         vim.validate {
-            win = { win, 'number', true },
+            win = { win, { 'number', 'boolean' }, true },
         }
         if win then
             vim.cmd.lclose()
@@ -53,12 +53,14 @@ local qf_funcs = {
             items = { items, 'table', true },
             action = { action, 'string' },
             what = { what, 'table', true },
-            win = { win, 'number', true },
+            win = { win, { 'number', 'boolean' }, true },
         }
         items = items or {}
         if win then
+            if type(win) == type(true) or win == 0 then
+                win = vim.api.nvim_get_current_win()
+            end
             -- BUG: For some reason we cannot send what as nil, so it needs to be omitted
-            win = win == 0 and vim.api.nvim_get_current_win() or win
             if not what then
                 vim.fn.setloclist(win, items, action)
             else
@@ -75,7 +77,7 @@ local qf_funcs = {
     get_list = function(what, win)
         vim.validate {
             what = { what, { 'table', 'number' }, true },
-            win = { win, 'number', true },
+            win = { win, { 'number', 'boolean' }, true },
         }
         if type(what) == type(1) then
             assert(type(what) ~= type(win), debug.traceback 'Win and What cannot be both Numbers')
@@ -83,7 +85,9 @@ local qf_funcs = {
             what = nil
         end
         if win then
-            win = win == 0 and vim.api.nvim_get_current_win() or win
+            if type(win) == type(true) or win == 0 then
+                win = vim.api.nvim_get_current_win()
+            end
             if what then
                 return vim.fn.getloclist(win, what)
             end
@@ -109,7 +113,7 @@ end
 function M.open(size, win)
     vim.validate {
         size = { size, 'number', true },
-        win = { win, 'number', true },
+        win = { win, { 'number', 'boolean' }, true },
     }
 
     if not size then
@@ -124,7 +128,7 @@ function M.open(size, win)
 end
 
 function M.close(win)
-    vim.validate { win = { win, 'number', true } }
+    vim.validate { win = { win, { 'number', 'boolean' }, true } }
     qf_funcs.close(win)
 end
 
@@ -136,7 +140,7 @@ function M.set_list(opts, win)
     vim.validate {
         opts = { opts, 'table' },
         items = { opts.items, 'table' },
-        win = { win, 'number', true },
+        win = { win, { 'number', 'boolean' }, true },
         action = { opts.action, 'string', true },
         open = { opts.open, 'boolean', true },
         jump = { opts.jump, 'boolean', true },
@@ -145,10 +149,14 @@ function M.set_list(opts, win)
 
     assert(not opts.lines, debug.traceback 'Cannot set lines using items')
 
-    vim.validate { win = { opts.win, 'number', true } }
+    vim.validate { win = { opts.win, { 'number', 'boolean' }, true } }
     if not win and opts.win then
         win = opts.win
         opts.win = nil
+    end
+
+    if win and type(win) == type(true) then
+        win = vim.api.nvim_get_current_win()
     end
 
     local action = opts.action or ' '
@@ -226,11 +234,12 @@ end
 function M.qf_to_diagnostic(ns, win)
     vim.validate {
         ns = { ns, { 'number', 'string' }, true },
-        win = { win, 'number', true },
+        win = { win, { 'number', 'boolean' }, true },
     }
 
     local qf = qf_funcs.get_list({ items = 1, title = 1 }, win)
 
+    local ns_name
     if not ns or type(ns) == type '' then
         if (not ns and qf.title == '') or (ns == '' and qf.title == '') then
             error(debug.traceback 'Missing namespace or Qf Title')
@@ -238,8 +247,18 @@ function M.qf_to_diagnostic(ns, win)
         if not ns or ns == '' then
             ns = qf.title
         end
-        ns = ns:gsub('%s+', '_')
-        ns = vim.api.nvim_create_namespace(ns:lower())
+        ns_name = ns:gsub('%s+', '_'):lower()
+        ns = vim.api.nvim_create_namespace(ns_name)
+    else
+        for namespace, ns_nr in pairs(vim.api.nvim_get_namespaces()) do
+            if ns_nr == ns then
+                ns_name = namespace
+                break
+            end
+        end
+        if not ns_name then
+            error(debug.traceback(string.format('Invalid NS number %d', ns)))
+        end
     end
     vim.diagnostic.reset(ns)
     if #qf.items > 0 then
@@ -266,15 +285,15 @@ function M.qf_to_diagnostic(ns, win)
                 nvim.autocmd.add('BufEnter', {
                     group = 'Diagnostics' .. ns_name,
                     buffer = buf,
+                    once = true,
                     callback = function()
                         vim.diagnostic.set(ns, buf, diagnostics)
                         vim.diagnostic.show(ns, buf)
                     end,
-                    once = true,
                 })
             end
         end
-        -- vim.diagnostic.show(ns)
+        vim.diagnostic.show(ns)
     end
 end
 
@@ -282,7 +301,7 @@ function M.diagnostics_to_qf(diagnostics, opts, win)
     vim.validate {
         diagnostics = { diagnostics, 'table' },
         opts = { opts, 'table', true },
-        win = { win, 'number', true },
+        win = { win, { 'number', 'boolean' }, true },
     }
     opts = opts or {}
     opts.items = {}
@@ -304,7 +323,7 @@ end
 function M.toggle(opts, win)
     vim.validate {
         opts = { opts, 'table', true },
-        win = { win, 'number', true },
+        win = { win, { 'number', 'boolean' }, true },
     }
     opts = opts or {}
 
@@ -325,7 +344,7 @@ function M.dump_files(buffers, opts, win)
     vim.validate {
         buffers = { buffers, 'table' },
         opts = { opts, { 'table', 'number' }, true },
-        win = { win, 'number', true },
+        win = { win, { 'number', 'boolean' }, true },
     }
 
     if type(opts) == 'number' then
@@ -378,10 +397,10 @@ function M.filter_qf_diagnostics(opts, win)
     opts = opts or {}
     vim.validate {
         level = { opts.level, 'string' },
-        win = { win, 'number', true },
+        win = { win, { 'number', 'boolean' }, true },
     }
 
-    vim.validate { win = { opts.win, 'number', true } }
+    vim.validate { win = { opts.win, { 'number', 'boolean' }, true } }
     if not win and opts.win then
         win = opts.win
         opts.win = nil
