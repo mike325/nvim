@@ -47,16 +47,16 @@ local function pythonPath()
     return exepath 'python3' or exepath 'python'
 end
 
-local vscode_extentions_dir = sys.home .. '/.vscode/extensions'
-if is_dir(vscode_extentions_dir) then
-    for _, ext_dir in ipairs(vim.tbl_map(vim.fs.basename, get_dirs(vscode_extentions_dir))) do
+local vscode_extensions_dir = sys.home .. '/.vscode/extensions'
+if is_dir(vscode_extensions_dir) then
+    for _, ext_dir in ipairs(vim.tbl_map(vim.fs.basename, get_dirs(vscode_extensions_dir))) do
         if ext_dir:match 'cpptools' then
             local debugger = 'OpenDebugAD7'
             if is_windows then
                 debugger = debugger .. '.exe'
             end
 
-            cppdbg = ('%s/%s/debugAdapters/bin/%s'):format(vscode_extentions_dir, ext_dir, debugger)
+            cppdbg = ('%s/%s/debugAdapters/bin/%s'):format(vscode_extensions_dir, ext_dir, debugger)
             if is_file(cppdbg) then
                 dap.adapters.cppdbg = {
                     id = 'cppdbg',

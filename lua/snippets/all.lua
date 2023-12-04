@@ -73,7 +73,7 @@ local function notes(args, snip, old_state, user_args)
     return snip_node
 end
 
--- TODO: Should this chaeck for TS and see if we are in a comment/string ?
+-- TODO: Should this check for TS and see if we are in a comment/string ?
 local function license(_, _, user_args)
     local licenses = {
         mit = {

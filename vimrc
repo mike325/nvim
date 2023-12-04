@@ -817,7 +817,7 @@ set softtabstop=-1
 
 set shiftround     " Use multiple of shiftwidth when indenting with '<' and '>'
 
-" Allow to send unsaved buffers to the backgroud
+" Allow to send unsaved buffers to the background
 set hidden
 
 set autowrite    " Write files when navigating with :next/:previous
@@ -1216,15 +1216,6 @@ augroup LastEditPosition
                 \       exe "normal! g'\""                                                                       |
                 \   endif
 augroup end
-
-" " Trim whitespace in selected files
-" augroup CleanFile
-"     autocmd!
-"     autocmd BufNewFile,BufRead,BufEnter * if !exists('b:trim') | let b:trim = 1 | endif
-"     if !s:has_plugin('completor.vim')
-"         autocmd BufWritePre * call s:autocmd_CleanFile()
-"     endif
-" augroup end
 
 augroup QuickQuit
     autocmd!

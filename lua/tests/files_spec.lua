@@ -47,7 +47,7 @@ end
 -- skeleton_filename
 -- clean_file
 
-describe('Check file and direcotries', function()
+describe('Check file and directories', function()
     local config_dir = vim.fn.stdpath 'config'
     local init_file = config_dir .. '/init.lua'
 
@@ -729,7 +729,7 @@ describe('JSON', function()
         local config_dir = vim.fn.stdpath 'config'
         local projections = config_dir .. '/.projections.json'
 
-        -- NOTE: This cannot be test 1:1 since both encodes generate diferent strings
+        -- NOTE: This cannot be test 1:1 since both encodes generate different strings
         local internal
         local control
         for _, tst in ipairs(jsons) do

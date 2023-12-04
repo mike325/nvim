@@ -101,7 +101,7 @@ local function require_import(_, parent, old_state)
     return snip_node
 end
 
--- TODO: Add pcall snippet and use TS to parse saved function and separete the funcion name and the args
+-- TODO: Add pcall snippet and use TS to parse saved function and separate the function name and the args
 -- stylua: ignore
 return {
     s(
@@ -266,8 +266,8 @@ return {
         i(1, 'plugin'),
     })),
     s('desc', fmt([[
-    describe('{}', funcion()
-        it('{}', funcion()
+    describe('{}', function()
+        it('{}', function()
             {}
         end)
     end)
@@ -277,7 +277,7 @@ return {
         i(3, '-- test'),
     })),
     s('it', fmt([[
-    it('{}', funcion()
+    it('{}', function()
         {}
     end)
     ]],{

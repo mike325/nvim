@@ -33,8 +33,8 @@ function M.init(thread_args)
             }
         end
 
-        -- NOTE: this only spawns async jobs, which should be detatch, sync jobs
-        --       does not work because `vim.wait` is not avaialble on threads
+        -- NOTE: this only spawns async jobs, which should be detach, sync jobs
+        --       does not work because `vim.wait` is not available on threads
         if not vim.system then
             local ok, system = pcall(require, 'vim._system')
             if ok then
@@ -82,7 +82,7 @@ function M.add_thread_context(opts)
 
     -- NOTE: we should group opts into categories
     -- - Thread real args should go into "args" key
-    -- - Dumped fucntions should go into "functions" key
+    -- - Dumped functions should go into "functions" key
     -- - Common context opts should go into a "context" key
     if opts then
         if type(opts) == type {} and not vim.tbl_islist(opts) then

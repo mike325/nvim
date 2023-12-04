@@ -335,9 +335,9 @@ function M.update_var_cb(opts)
     local candidates = opts.candidates
 
     if #candidates > 0 then
-        local udpate_val = vim.g[varname] or {}
-        udpate_val[key] = candidates
-        vim.g[varname] = udpate_val
+        local update_val = vim.g[varname] or {}
+        update_val[key] = candidates
+        vim.g[varname] = update_val
     end
 end
 

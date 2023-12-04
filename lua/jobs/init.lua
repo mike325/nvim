@@ -562,7 +562,7 @@ function Job:start()
 
     if self._timeout and self._timeout > 0 then
         vim.defer_fn(function()
-            vim.notify(('Timeout ! stoping job %s'):format(self._id), 'WARN', { title = 'Job Timeout' })
+            vim.notify(('Timeout ! stopping job %s'):format(self._id), 'WARN', { title = 'Job Timeout' })
             self:stop()
         end, self._timeout)
     end

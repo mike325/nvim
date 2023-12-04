@@ -1007,4 +1007,36 @@ function M.scp_edit(opts)
     end
 end
 
+function M.typos_check(buf)
+    buf = buf or vim.api.nvim_get_current_buf()
+    local bufname = vim.api.nvim_buf_get_name(buf)
+
+    local cmd = {
+        'typos',
+        '--format',
+        'brief',
+        bufname,
+    }
+
+    local title = 'Typos'
+    local typos = RELOAD('jobs'):new {
+        cmd = cmd,
+        silent = true,
+        callbacks_on_failure = function(job, rc)
+            local output = RELOAD('utils.tables').remove_empty(job:output())
+            if #output > 0 then
+                local qf_utils = RELOAD 'utils.qf'
+                qf_utils.set_list {
+                    title = title,
+                    items = output,
+                    jump = false,
+                    open = false,
+                }
+                qf_utils.qf_to_diagnostic(title)
+            end
+        end,
+    }
+    typos:start()
+end
+
 return M

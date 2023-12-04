@@ -113,7 +113,7 @@ Usage:
 
     local desc_str = ''
     if self.description then
-        -- TODO: Add formating options to wrap a certain column
+        -- TODO: Add formatting options to wrap a certain column
         desc_str = ([[
 Description:
     %s
@@ -128,7 +128,7 @@ end
 
 function Parser:add(arg)
     -- TODO: Add support for custom function parsers
-    -- TODO: Add depencency and exclusion between flags
+    -- TODO: Add dependency and exclusion between flags
     -- TODO: Add support for require and optional flags
     -- TODO: Add support for default values
     arg = arg or {}

@@ -10,6 +10,9 @@ function M.setup()
 
     nvim.command.set('CMake', function(opts)
         local args = opts.fargs
+        for idx, arg in ipairs(args) do
+            args[idx] = vim.fn.expand(arg)
+        end
         local Job = RELOAD 'jobs'
         local cmake = Job:new {
             cmd = 'cmake',

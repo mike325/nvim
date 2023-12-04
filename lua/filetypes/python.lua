@@ -210,7 +210,7 @@ end
 
 function M.pynvim_setup()
     -- NOTE: This should speed up startup times
-    -- lets just asume that if we have this two, any user could install pynvim
+    -- lets just assume that if we have this two, any user could install pynvim
     if executable 'python3' and executable 'pip3' then
         vim.g.python3_host_prog = vim.fn.exepath 'python3'
         vim.g.loaded_python_provider = 0

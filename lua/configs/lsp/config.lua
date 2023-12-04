@@ -13,7 +13,7 @@ M.commands = {
     Type = { vim.lsp.buf.type_definition },
     Declaration = { vim.lsp.buf.declaration },
     OutgoingCalls = { vim.lsp.buf.outgoing_calls },
-    IncommingCalls = { vim.lsp.buf.incoming_calls },
+    IncomingCalls = { vim.lsp.buf.incoming_calls },
     Implementation = { vim.lsp.buf.implementation },
     Format = {
         function()

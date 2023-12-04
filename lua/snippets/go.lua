@@ -28,7 +28,7 @@ local saved_text = utils.saved_text
 local else_clause = utils.else_clause
 -- local surround_with_func = utils.surround_with_func
 
--- TODO: Add pcall snippet and use TS to parse saved function and separete the funcion name and the args
+-- TODO: Add pcall snippet and use TS to parse saved function and separate the function name and the args
 -- stylua: ignore
 return {
     s('for', fmt([[
@@ -155,7 +155,7 @@ return {
         ]],
         {
             i(1, 'name'),
-            i(2, 'desciption'),
+            i(2, 'description'),
             d(3, saved_text, {}, {user_args = {{indent = true}}}),
         }
     )),
@@ -165,7 +165,7 @@ return {
         }})
         ]],
         {
-            i(1, 'desciption'),
+            i(1, 'description'),
             d(2, saved_text, {}, {user_args = {{indent = true}}}),
         }
     )),

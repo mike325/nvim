@@ -12,7 +12,7 @@ ExtCmdline = true
 ExtWildmenu = true
 ExtPopupmenu = true
 ExtTabline  = true
-# Gonvim copy the yank text to clipboad
+# Gonvim copy the yank text to clipboard
 Clipboard = true
 # Editor cursor blink
 CursorBlink = false

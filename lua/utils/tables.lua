@@ -270,4 +270,15 @@ function M.inspect(t)
     return tbl
 end
 
+function M.remove_empty(lst)
+    assert(type(lst) == type {}, debug.traceback('Invalid type for tbl: ' .. type(lst)))
+    local tmp = {}
+    for _, v in pairs(lst) do
+        if type(v) ~= type '' or v ~= '' then
+            table.insert(tmp, v)
+        end
+    end
+    return tmp
+end
+
 return M

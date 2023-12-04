@@ -160,7 +160,7 @@ Usage:
 
     Optional Flags
 
-        --nolog         Disable log writting
+        --nolog         Disable log writing
         --nocolor       Disable color output
         -v, --verbose   Enable debug messages
         -h, --help      Display this help message

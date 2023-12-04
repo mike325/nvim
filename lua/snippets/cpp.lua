@@ -131,9 +131,9 @@ local function rule_3_5(_, parent, old_state)
 
     local operators = get_move_copy_functions()
 
-    local copy_contructor = false
+    local copy_constructor = false
     local copy_oper = false
-    local move_contructor = false
+    local move_constructor = false
     local move_oper = false
     local destructor = false
 
@@ -142,11 +142,11 @@ local function rule_3_5(_, parent, old_state)
         if signature:match('virtual ~' .. classname .. '%s*%(') or signature:match('~' .. classname .. '%s*%(') then
             destructor = true
         elseif signature:match(classname .. '%s*%(%w*%s*' .. classname .. '&&') then
-            move_contructor = true
+            move_constructor = true
         elseif signature:match(classname .. '%s*&%s*operator=%(%w*%s*' .. classname .. '&&') then
             move_oper = true
         elseif signature:match(classname .. '%s*%(%w*%s*' .. classname .. '&') then
-            copy_contructor = true
+            copy_constructor = true
         elseif signature:match(classname .. '%s*&%s*operator=%(%w*%s*' .. classname .. '&') then
             copy_oper = true
         end
@@ -172,7 +172,7 @@ local function rule_3_5(_, parent, old_state)
             first = false
         end
 
-        if not copy_contructor then
+        if not copy_constructor then
             if not first then
                 vim.list_extend(nodes, { t { '', '' } })
             end
@@ -204,7 +204,7 @@ local function rule_3_5(_, parent, old_state)
     end
 
     if parent.captures[1] == '5' then
-        if not move_contructor then
+        if not move_constructor then
             if not first then
                 vim.list_extend(nodes, { t { '', '' } })
             end

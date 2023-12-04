@@ -48,7 +48,7 @@ end
 
 _G['PERF'] = function(msg, ...)
     local args = { ... }
-    assert(type(args[1]) == 'function', debug.traceback 'The first argumet must be a function')
+    assert(type(args[1]) == 'function', debug.traceback 'The first argument must be a function')
     assert(not msg or type(msg) == 'string', debug.traceback 'msg must be a string')
     msg = msg or 'Func reference elpse time:'
     local func = args[1]
@@ -64,7 +64,7 @@ end
 if not STORAGE then
     _G['STORAGE'] = {
         modern_git = -1,
-        scratchs = {},
+        scratches = {},
         compile_flags = {},
         databases = {},
         jobs = {},

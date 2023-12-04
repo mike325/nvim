@@ -132,7 +132,7 @@ nvim.autocmd.FoldText = {
     command = "setlocal foldtext=v:lua.RELOAD('utils.functions').foldtext()",
 }
 
--- BufReadPost is triggered after FileType detection, TS may not be attatch yet after
+-- BufReadPost is triggered after FileType detection, TS may not be attach yet after
 -- FileType event, but should be fine to use BufReadPost
 nvim.autocmd.Indent = {
     event = 'BufReadPost',
@@ -308,6 +308,18 @@ nvim.autocmd.CustomUI = {
         end
     end,
 }
+
+if executable 'typos' then
+    nvim.autocmd.TyposCheck = {
+        event = { 'BufWritePost' },
+        pattern = '*',
+        callback = function(args)
+            args = args or {}
+            args.buf = args.buf or vim.api.nvim_get_current_buf()
+            RELOAD('utils.functions').typos_check(args.buf)
+        end,
+    }
+end
 
 -- NOTE: Default TMUX clipboard provider support setting system clipboard using OSC 52
 if vim.env.SSH_CONNECTION and not vim.env.TMUX then

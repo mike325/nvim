@@ -57,7 +57,7 @@ local qf_funcs = {
         }
         items = items or {}
         if win then
-            -- BUG: For some reason we cannot send what as nil, so it needs to be ommited
+            -- BUG: For some reason we cannot send what as nil, so it needs to be omitted
             win = win == 0 and vim.api.nvim_get_current_win() or win
             if not what then
                 vim.fn.setloclist(win, items, action)
@@ -169,7 +169,7 @@ function M.set_list(opts, win)
         return vim.api.nvim_replace_termcodes(line, true, false, false)
     end
 
-    -- NOTE: quickfix is extreamly slow to parse long items and actually freezes neovim
+    -- NOTE: quickfix is extremely slow to parse long items and actually freezes neovim
     --       this hack truncate all big elements to speed up parsing
     local function short_long_lines(qf_items)
         if type(qf_items[1]) == type '' then
@@ -223,18 +223,24 @@ function M.set_list(opts, win)
     end
 end
 
-function M.qf_to_diagnostic(ns_name, win)
+function M.qf_to_diagnostic(ns, win)
     vim.validate {
-        ns_name = { ns_name, 'string', true },
+        ns = { ns, { 'number', 'string' }, true },
         win = { win, 'number', true },
     }
 
     local qf = qf_funcs.get_list({ items = 1, title = 1 }, win)
 
-    assert((ns_name and ns_name ~= '') or qf.title ~= '', debug.traceback 'Missing namespace or Qf Title')
-    ns_name = ns_name or qf.title
-    ns_name = ns_name:gsub('%s+', '_')
-    local ns = vim.api.nvim_create_namespace(ns_name:lower())
+    if not ns or type(ns) == type '' then
+        if (not ns and qf.title == '') or (ns == '' and qf.title == '') then
+            error(debug.traceback 'Missing namespace or Qf Title')
+        end
+        if not ns or ns == '' then
+            ns = qf.title
+        end
+        ns = ns:gsub('%s+', '_')
+        ns = vim.api.nvim_create_namespace(ns:lower())
+    end
     vim.diagnostic.reset(ns)
     if #qf.items > 0 then
         local diagnostics = vim.diagnostic.fromqflist(qf.items)

@@ -7,7 +7,7 @@ local M = {
 
 local is_windows = jit.os == 'Windows'
 
--- TODO: Replace some of these functions with vim.fs conterparts
+-- TODO: Replace some of these functions with vim.fs counterparts
 
 function M.forward_path(path)
     if is_windows then

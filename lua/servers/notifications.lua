@@ -63,7 +63,7 @@ function M.start_server(opts)
     if server:is_active() then
         STORAGE.servers[vim.g.port] = server
     else
-        vim.notify('Port: ' .. vim.g.port .. ' is alrady being used', 'ERROR', { title = 'NotificationServer' })
+        vim.notify('Port: ' .. vim.g.port .. ' is already being used', 'ERROR', { title = 'NotificationServer' })
     end
 end
 

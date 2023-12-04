@@ -373,7 +373,7 @@ if executable 'cscope' and not nvim.has { 0, 9 } then
         local cmd = 'C' .. query:sub(1, 1):upper() .. query:sub(2, #query)
         nvim.command.set(cmd, function(opts)
             RELOAD('mappings').cscope(opts.args, query)
-        end, { nargs = '?', desc = 'cscope commad to find ' .. query .. ' under cursor or arg' })
+        end, { nargs = '?', desc = 'cscope command to find ' .. query .. ' under cursor or arg' })
     end
 end
 
@@ -409,7 +409,7 @@ end, {
 nvim.command.set('ConcealLevel', function()
     local conncall = vim.opt_local.conceallevel:get() or 0
     vim.opt_local.conceallevel = conncall > 0 and 0 or 2
-end, { desc = 'Toogle conceal level between 0 and 2' })
+end, { desc = 'Toggle conceal level between 0 and 2' })
 
 nvim.command.set('Messages', function(opts)
     RELOAD('mappings').messages(opts)
@@ -743,7 +743,7 @@ vim.keymap.set('n', '<leader>c', function()
         vim.schedule_wrap(function(choice)
             if options[choice] then
                 nvim.reg['+'] = options[choice]()
-                vim.notify('Clipboard value: ' .. nvim.reg['+'], 'INFO', { title = 'Item copied succesfully' })
+                vim.notify('Clipboard value: ' .. nvim.reg['+'], 'INFO', { title = 'Item copied successfully' })
             end
         end)
     )
@@ -816,7 +816,7 @@ if executable 'gh' then
         desc = 'Set PR to ready or to draft',
     })
 
-    nvim.command.set('EditReviwers', function(opts)
+    nvim.command.set('EditReviewers', function(opts)
         local reviewers = { table.concat(opts.fargs, ',') }
         local command = opts.bang and '--remove-reviewer' or '--add-reviewer'
         opts.fargs = vim.list_extend({ command }, reviewers)
@@ -934,7 +934,7 @@ nvim.command.set('DumpMarks', function()
     end
 end, { desc = 'Dump global marks in a local json file' })
 
-nvim.command.set('RemoveForeingMarks', function()
+nvim.command.set('RemoveForeignMarks', function()
     local utils = require 'utils.files'
     local deleted_marks = 0
     for idx = vim.fn.char2nr 'A', vim.fn.char2nr 'Z' do

@@ -11,7 +11,7 @@ M.cscope_queries = {
     text = 'find t', -- 4
     file = 'find f', -- 7
     include = 'find i', -- 8
-    assing = 'find a', -- 9
+    assign = 'find a', -- 9
 }
 
 M.precommit_efm = {
@@ -141,7 +141,7 @@ function M.toggle_mouse()
         print 'Mouse Enabled'
     else
         vim.o.mouse = ''
-        print 'Mouse Disbled'
+        print 'Mouse Disabled'
     end
 end
 
@@ -319,6 +319,9 @@ end
 
 function M.async_makeprg(opts)
     local args = opts.fargs
+    for idx, arg in ipairs(args) do
+        args[idx] = vim.fn.expand(arg)
+    end
 
     local ok, val = pcall(nvim.buf.get_option, 0, 'makeprg')
     local cmd = ok and val or vim.o.makeprg
@@ -327,7 +330,7 @@ function M.async_makeprg(opts)
         cmd = cmd:gsub('%%', vim.api.nvim_buf_get_name(0))
     end
 
-    cmd = cmd .. table.concat(args, ' ')
+    cmd = string.format('%s %s', cmd, table.concat(args, ' '))
     local title = cmd:gsub('%s+.*', '')
     RELOAD('utils.functions').async_execute {
         cmd = cmd,
@@ -415,8 +418,8 @@ function M.remote_cmd(host, send)
     local utils = RELOAD 'utils.files'
 
     local filename = vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf())
-    local foward_slash = sys.name == 'windows' and not vim.opt.shellslash:get()
-    if foward_slash then
+    local forward_slash = sys.name == 'windows' and not vim.opt.shellslash:get()
+    if forward_slash then
         filename = filename:gsub('\\', '/')
     end
     local virtual_filename
@@ -428,7 +431,7 @@ function M.remote_cmd(host, send)
             filename = filename:gsub('%.git//?[%w%d]+//?', '')
         end
         virtual_filename = vim.fn.tempname()
-        if foward_slash then
+        if forward_slash then
             virtual_filename = virtual_filename:gsub('\\', '/')
         end
     end
@@ -447,7 +450,7 @@ function M.remote_cmd(host, send)
         utils.writefile(virtual_filename, nvim.buf.get_lines(0, 0, -1, true))
         -- else
         --     filename = realpath(vim.fs.normalize(filename))
-        --     if foward_slash then
+        --     if forward_slash then
         --         filename = filename:gsub('\\', '/')
         --     end
     end
@@ -498,9 +501,9 @@ end
 
 function M.scratch_buffer(opts)
     local ft = opts.args ~= '' and opts.args or vim.bo.filetype
-    local scratchs = STORAGE.scratchs
-    scratchs[ft] = scratchs[ft] or vim.fn.tempname()
-    local buf = vim.fn.bufnr(scratchs[ft], true)
+    local scratches = STORAGE.scratches
+    scratches[ft] = scratches[ft] or vim.fn.tempname()
+    local buf = vim.fn.bufnr(scratches[ft], true)
 
     if ft and ft ~= '' then
         vim.bo[buf].filetype = ft

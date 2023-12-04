@@ -210,7 +210,7 @@ def Settings(**kwargs):
         else:
             pypath = PathToPythonUsedDuringBuild()
 
-        logger.info("Using {0} as python interpeter".format(pypath))
+        logger.info("Using {0} as python interpreter".format(pypath))
 
         return {"interpreter_path": pypath}
 
