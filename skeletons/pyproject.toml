@@ -6,21 +6,7 @@ readme = "README.md"
 authors = [{ name = "Foo", email = "EXAMPLE@gmail.com" }]
 license = { text = "MIT" }
 
-# [build-system]
-# requires = [
-#     "mypy",
-#     "flake8",
-#     "flake8-mypy",
-#     "black",
-#     "mccabe",
-#     "virtualenv",
-# ]
-# build-backend = "setuptools.build_meta"
-
-# NOTE: flake8 does not support pyproject use .flake8 config
 [tool.ruff]
-max-complexity = 20
-max-line-length = 120
 ignore = [
     # E121,
     # E123,
@@ -36,12 +22,12 @@ ignore = [
     "E262", # Comments should start with #
     "E265", # Block comment should start with #
     # E27,
-    "E302", # Expected 2 lines between funcs/classes
-    # E501,
+    # "E302", # Expected 2 lines between funcs/classes
+    # E501, # line too long (156 > 120 characters)
     # E701,
     # E704,
     # H233,
-    "W391", # Blank line and the EOF
+    # "W391", # Blank line and the EOF
     # W503,
     # W504,
     "E402", # module level import not at top file
@@ -56,8 +42,16 @@ exclude = [
     # This contains builds of flake8 that we don't want to check
     "dist",
 ]
+
 [tool.ruff.per-file-ignores]
 "__init__.py" = ["F401"]
+
+[tool.ruff.lint.mccabe]
+# Flag errors (`C901`) whenever the complexity level exceeds 20.
+max-complexity = 20
+
+[tool.ruff.lint.pycodestyle]
+max-line-length = 120
 
 [tool.black]
 line-length = 120
