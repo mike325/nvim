@@ -60,6 +60,12 @@ repos:
       # - id: check-jsonschema
       # - id: check-azure-pipelines
       # - id: check-travis
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    # Ruff version.
+    rev: v0.1.7
+    hooks:
+       - id: ruff
+       # - id: ruff-format
   # # NOTE: temporally disabling this
   # - repo: https://github.com/PyCQA/flake8
   #   rev: '4.0.1'  # Use the sha / tag you want to point at
@@ -135,14 +141,6 @@ repos:
         args: [--check, --verify]
         language: system
         types: [lua]
-      # - id: flake8
-      #   name: flake8
-      #   description: '`flake8` is a command-line utility for enforcing style consistency across Python projects.'
-      #   entry: flake8
-      #   args: [
-      #     '--max-line-length=120',
-      #     '--ignore=E203,E226,E231,E261,E262,E265,E302,W391'
-      #   ]
       #   language: system
       #   types: [python]
       #   require_serial: true
