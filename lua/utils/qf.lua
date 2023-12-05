@@ -287,13 +287,12 @@ function M.qf_to_diagnostic(ns, win)
                     buffer = buf,
                     once = true,
                     callback = function()
-                        vim.diagnostic.set(ns, buf, diagnostics)
+                        vim.diagnostic.set(ns, buf, diagnostic)
                         vim.diagnostic.show(ns, buf)
                     end,
                 })
             end
         end
-        vim.diagnostic.show(ns)
     end
 end
 
