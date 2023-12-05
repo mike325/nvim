@@ -87,6 +87,7 @@ function M.get_formatter(stdin)
     local config_file = RELOAD('utils.buffers').find_config { configs = 'pyproject.toml' }
 
     local cmd
+    -- TODO: Add ruff formatter
     if executable 'black' then
         cmd = { 'black' }
         if not config_file then
@@ -110,7 +111,20 @@ end
 --       either an iterator or a dictionary of linters
 function M.get_linter()
     local cmd
-    if executable 'flake8' then
+    if executable 'ruff' then
+        cmd = { 'ruff' }
+        local config_file = RELOAD('utils.buffers').find_config {
+            configs = {
+                'pyproject.toml',
+                'ruff.toml',
+                '.ruff.toml',
+            },
+        }
+
+        if not config_file then
+            vim.list_extend(cmd, M.makeprg[cmd[1]])
+        end
+    elseif executable 'flake8' then
         cmd = { 'flake8' }
         local global_config = vim.fs.normalize(sys.name == 'windows' and '~/.flake8' or '~/.config/flake8')
         local config_file = RELOAD('utils.buffers').find_config {

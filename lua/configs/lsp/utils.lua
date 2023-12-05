@@ -93,4 +93,41 @@ function M.switch_source_header_splitcmd(bufnr, splitcmd)
     return true
 end
 
+function M.check_null_format(client)
+    local null_ls = vim.F.npcall(require, 'null-ls')
+    if null_ls and client.name ~= 'null-ls' then
+        local null_configs = require 'configs.lsp.null'
+
+        local ft = vim.bo.filetype
+        local has_formatting = client.server_capabilities.documentFormattingProvider
+            or client.server_capabilities.documentRangeFormattingProvider
+
+        if not has_formatting and null_ls and null_configs[ft] and null_configs[ft].formatter then
+            if not null_ls.is_registered(null_configs[ft].formatter.name) then
+                null_ls.register { null_configs[ft].formatter }
+            end
+        end
+    end
+end
+
+function M.check_null_diagnostics(client)
+    local extra_linters = {
+        pylyzer = true,
+        lua_ls = true,
+    }
+    if extra_linters[client.name] then
+        local null_ls = vim.F.npcall(require, 'null-ls')
+        if null_ls and client.name ~= 'null-ls' then
+            local null_configs = require 'configs.lsp.null'
+
+            local ft = vim.bo.filetype
+            if null_ls and null_configs[ft] and null_configs[ft].linter then
+                if not null_ls.is_registered(null_configs[ft].linter.name) then
+                    null_ls.register { null_configs[ft].linter }
+                end
+            end
+        end
+    end
+end
+
 return M
