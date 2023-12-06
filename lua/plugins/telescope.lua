@@ -29,6 +29,7 @@ return {
     },
     {
         'AckslD/nvim-neoclip.lua',
+        enabled = false,
         config = function()
             local db_path
             local has_sqlite = require('sys').has_sqlite

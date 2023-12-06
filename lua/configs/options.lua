@@ -134,7 +134,9 @@ vim.opt.hidden = true
 
 vim.opt.autowrite = true
 vim.opt.autowriteall = true
-vim.opt.fileencoding = 'utf-8'
+if vim.bo.modifiable then
+    vim.opt.fileencoding = 'utf-8'
+end
 
 -- DEPRECATED: no longer available in 0.10
 if not nvim.has { 0, 10 } then

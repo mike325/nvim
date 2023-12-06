@@ -35,7 +35,15 @@ return {
             },
         },
     },
-    { 'tpope/vim-abolish' },
+    {
+        'tpope/vim-abolish',
+        event = 'CmdlineEnter',
+        cmd = {
+            'S',
+            'Subvert',
+            'Abolish',
+        },
+    },
     -- { 'tpope/vim-repeat' },
     { 'nvim-lua/popup.nvim', lazy = true },
     { 'nvim-lua/plenary.nvim', lazy = true },

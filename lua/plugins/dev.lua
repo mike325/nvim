@@ -1,7 +1,7 @@
 return {
     {
         'mfussenegger/nvim-dap',
-        event = 'VeryLazy',
+        -- event = 'VeryLazy',
         -- event = { 'CursorHold', 'CmdlineEnter' },
         cmd = { 'DapStart', 'DapContinue' },
         cond = not vim.g.minimal,
@@ -20,23 +20,21 @@ return {
         config = function()
             require 'configs.luasnip'
         end,
-        event = 'VeryLazy',
-        -- event = 'InsertEnter',
-        lazy = true,
+        event = 'InsertEnter',
     },
     {
         'hrsh7th/nvim-cmp',
         dependencies = {
-            { 'hrsh7th/cmp-nvim-lsp', lazy = true, event = 'VeryLazy' },
-            { 'hrsh7th/cmp-buffer', lazy = true, event = 'VeryLazy' },
-            { 'hrsh7th/cmp-path', lazy = true, event = 'VeryLazy' },
-            { 'hrsh7th/cmp-nvim-lua', lazy = true, event = 'VeryLazy' },
-            { 'hrsh7th/cmp-nvim-lsp-signature-help', lazy = true, event = 'VeryLazy' },
-            { 'onsails/lspkind-nvim', lazy = true, event = 'VeryLazy' },
-            { 'saadparwaiz1/cmp_luasnip', lazy = true, event = 'VeryLazy' },
-            { 'ray-x/cmp-treesitter', lazy = true, event = 'VeryLazy' },
-            { 'lukas-reineke/cmp-under-comparator', lazy = true, event = 'VeryLazy' },
-            { 'hrsh7th/cmp-cmdline', lazy = true, event = 'VeryLazy' },
+            { 'hrsh7th/cmp-nvim-lsp' },
+            { 'hrsh7th/cmp-buffer' },
+            { 'hrsh7th/cmp-path' },
+            { 'hrsh7th/cmp-nvim-lua' },
+            { 'hrsh7th/cmp-nvim-lsp-signature-help' },
+            { 'onsails/lspkind-nvim' },
+            { 'saadparwaiz1/cmp_luasnip' },
+            { 'ray-x/cmp-treesitter' },
+            { 'lukas-reineke/cmp-under-comparator' },
+            { 'hrsh7th/cmp-cmdline' },
         },
         config = function()
             require 'configs.cmp'

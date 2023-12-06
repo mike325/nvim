@@ -92,6 +92,7 @@ return {
         config = function()
             require 'configs.lualine'
         end,
+        event = 'VeryLazy',
         dependencies = {
             { 'arkav/lualine-lsp-progress' },
             { 'catppuccin' },

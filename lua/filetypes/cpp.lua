@@ -10,8 +10,6 @@ local completions = RELOAD 'completions'
 local compile_flags = STORAGE.compile_flags
 local databases = STORAGE.databases
 
-local dap = vim.F.npcall(require, 'dap')
-
 local M = {
     makeprg = {
         ['clang-tidy'] = {
@@ -514,6 +512,7 @@ function M.setup()
     end, { nargs = '*', force = true, buffer = true })
 
     -- TODO: Fallback to TermDebug
+    local dap = vim.F.npcall(require, 'dap')
     if dap then
         nvim.command.set('BuildDebugFile', function(opts)
             local args = opts.fargs

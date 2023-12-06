@@ -4,12 +4,14 @@ return {
         config = function()
             require 'configs.lsp'
         end,
-        lazy = false,
-        priority = 100,
+        event = 'VeryLazy',
+        -- lazy = false,
+        -- priority = 100,
     },
     {
         'jose-elias-alvarez/null-ls.nvim',
-        priority = 90,
+        -- priority = 90,
+        event = 'VeryLazy',
         pin = true,
         dependencies = {
             { 'neovim/nvim-lspconfig' },
