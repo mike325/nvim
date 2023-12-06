@@ -68,21 +68,22 @@ local function setup(ft)
         local server = RELOAD('configs.lsp.servers')[ft][server_idx]
         local config = server.config or server.exec
         if not settedup_configs[config] then
-            settedup_configs[config] = true
-            local init = vim.deepcopy(server.options) or {}
-            init.cmd = init.cmd or server.cmd
-            local capabilities = vim.lsp.protocol.make_client_capabilities()
-            if vim.F.npcall(require, 'cmp') then
-                local cmp_lsp = vim.F.npcall(require, 'cmp_nvim_lsp')
-                if cmp_lsp then
-                    capabilities = vim.tbl_deep_extend('force', capabilities, cmp_lsp.default_capabilities())
+            settedup_configs[config] = function()
+                local init = vim.deepcopy(server.options) or {}
+                init.cmd = init.cmd or server.cmd
+                local capabilities = vim.lsp.protocol.make_client_capabilities()
+                if vim.F.npcall(require, 'cmp') then
+                    local cmp_lsp = vim.F.npcall(require, 'cmp_nvim_lsp')
+                    if cmp_lsp then
+                        capabilities = vim.tbl_deep_extend('force', capabilities, cmp_lsp.default_capabilities())
+                    end
                 end
-            end
-            init.capabilities = vim.tbl_deep_extend('keep', init.capabilities or {}, capabilities or {})
-            if preload[config] then
-                preload[config].setup(init)
-            else
-                lsp[config].setup(init)
+                init.capabilities = vim.tbl_deep_extend('keep', init.capabilities or {}, capabilities or {})
+                if preload[config] then
+                    preload[config].setup(init)
+                else
+                    lsp[config].setup(init)
+                end
             end
         end
         return true
@@ -118,6 +119,17 @@ if null_ls and next(null_sources) ~= nil then
         debug = false,
     }
 end
+
+nvim.autocmd.LspServerSetup = {
+    event = 'UIEnter',
+    once = true,
+    pattern = '*',
+    callback = function()
+        for _, setup_func in ipairs(settedup_configs) do
+            setup_func()
+        end
+    end,
+}
 
 return {
     setup = setup,
