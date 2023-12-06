@@ -58,25 +58,15 @@ return {
     },
     {
         'Badhi/nvim-treesitter-cpp-tools',
+        name = 'nt-cpp-tools',
         cmd = {
             'TSCppDefineClassFunc',
             'TSCppMakeConcreteClass',
-            'TSCppRuleOf3extobjects',
+            'TSCppRuleOf3',
             'TSCppRuleOf5',
         },
         dependencies = {
             { 'nvim-treesitter/nvim-treesitter' },
-        },
-        name = 'nt-cpp-tools',
-        opts = {
-            {
-                preview = {
-                    quit = '<ESC>', -- optional keymapping for quit preview
-                    accept = '<CR>', -- optional keymapping for accept preview
-                },
-                header_extension = 'hpp', -- optional
-                source_extension = 'cpp', -- optional
-            },
         },
     },
     {

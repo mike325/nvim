@@ -60,39 +60,31 @@ local preload = {
 }
 
 local settedup_configs = {}
-nvim.augroup.del 'LspServerSetup'
 local function setup(ft)
     vim.validate { filetype = { ft, 'string' } }
 
     local server_idx = RELOAD('configs.lsp.utils').check_language_server(ft)
     if server_idx then
-        nvim.autocmd.add('FileType', {
-            pattern = ft,
-            group = 'LspServerSetup',
-            once = true,
-            callback = function()
-                local server = RELOAD('configs.lsp.servers')[ft][server_idx]
-                local config = server.config or server.exec
-                if not settedup_configs[config] then
-                    settedup_configs[config] = true
-                    local init = vim.deepcopy(server.options) or {}
-                    init.cmd = init.cmd or server.cmd
-                    local capabilities = vim.lsp.protocol.make_client_capabilities()
-                    if vim.F.npcall(require, 'cmp') then
-                        local cmp_lsp = vim.F.npcall(require, 'cmp_nvim_lsp')
-                        if cmp_lsp then
-                            capabilities = vim.tbl_deep_extend('force', capabilities, cmp_lsp.default_capabilities())
-                        end
-                    end
-                    init.capabilities = vim.tbl_deep_extend('keep', init.capabilities or {}, capabilities or {})
-                    if preload[config] then
-                        preload[config].setup(init)
-                    else
-                        lsp[config].setup(init)
-                    end
+        local server = RELOAD('configs.lsp.servers')[ft][server_idx]
+        local config = server.config or server.exec
+        if not settedup_configs[config] then
+            settedup_configs[config] = true
+            local init = vim.deepcopy(server.options) or {}
+            init.cmd = init.cmd or server.cmd
+            local capabilities = vim.lsp.protocol.make_client_capabilities()
+            if vim.F.npcall(require, 'cmp') then
+                local cmp_lsp = vim.F.npcall(require, 'cmp_nvim_lsp')
+                if cmp_lsp then
+                    capabilities = vim.tbl_deep_extend('force', capabilities, cmp_lsp.default_capabilities())
                 end
-            end,
-        })
+            end
+            init.capabilities = vim.tbl_deep_extend('keep', init.capabilities or {}, capabilities or {})
+            if preload[config] then
+                preload[config].setup(init)
+            else
+                lsp[config].setup(init)
+            end
+        end
         return true
     end
     return false
@@ -115,7 +107,7 @@ for filetype, _ in pairs(lsp_configs) do
     end
 end
 
-if vim.fn.executable 'jq' == 1 then
+if executable 'jq' then
     local null_config = null_configs.json
     vim.list_extend(null_sources, null_config.servers)
 end
