@@ -22,12 +22,28 @@ libDirs = [
 ]
 
 flags = [
-    # '-std=c++17',
+    # "-std=c++20",
+    "-O2",
     "-Wall",
     "-Wextra",
-    "-Weverything",
-    "-Werror",
     "-Wno-c++98-compat",
+    "-Wshadow",
+    "-Wnon-virtual-dtor",
+    "-Wold-style-cast",
+    "-Wcast-align",
+    "-Wunused",
+    "-Woverloaded-virtual",
+    "-Wpedantic",
+    "-Wconversion",
+    "-Wsign-conversion",
+    "-Wnull-dereference",
+    "-Wdouble-promotion",
+    "-Wmisleading-indentation",
+    "-Wduplicated-cond",
+    "-Wduplicated-branches",
+    "-Wlogical-op",
+    "-Wuseless-cast",
+    "-Wformat=2",
 ]
 
 # Make this more dynamic
@@ -84,7 +100,6 @@ def MakeRelativePathsInFlagsAbsolute(working_directory):
     path_flags = ["-isystem", "-I", "-iquote", "--sysroot="]
 
     for libDir in libDirs:
-
         # dir is relative to $HOME
         if libDir.startswith("~"):
             libDir = os.path.expanduser(libDir)

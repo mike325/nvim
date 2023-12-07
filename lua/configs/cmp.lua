@@ -25,6 +25,7 @@ if lspkind then
                 path = '[PATH]',
                 luasnip = '[SNIP]',
                 vsnip = '[SNIP]',
+                snippets = '[SNIP]',
             },
         },
     }
