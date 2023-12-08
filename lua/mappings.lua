@@ -728,7 +728,7 @@ function M.autoformat(opts)
         end
         vim.b.autoformat = not vim.b.autoformat
     end
-    print('Autoformat', vim.b.autoformat and 'enabled' or 'disabled' )
+    print('Autoformat', vim.b.autoformat and 'enabled' or 'disabled')
 end
 
 function M.wall(opts)
