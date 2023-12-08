@@ -719,13 +719,16 @@ end
 
 function M.autoformat(opts)
     if opts.args == 'enable' then
-        vim.b.disable_autoformat = false
+        vim.b.autoformat = true
     elseif opts.args == 'disable' then
-        vim.b.disable_autoformat = true
+        vim.b.autoformat = false
     else
-        vim.b.disable_autoformat = not vim.b.disable_autoformat
+        if vim.b.autoformat == nil then
+            vim.b.autoformat = true
+        end
+        vim.b.autoformat = not vim.b.autoformat
     end
-    print('Autoformat', vim.b.disable_autoformat and 'disabled' or 'enabled')
+    print('Autoformat', vim.b.autoformat and 'enabled' or 'disabled' )
 end
 
 function M.wall(opts)

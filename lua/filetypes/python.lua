@@ -17,6 +17,10 @@ local M = {
                 '%trror: cannot format %f: %m',
             },
         },
+        ruff = {
+            'format',
+            '--line-length=' .. line_length,
+        },
         autopep8 = {
             '-i',
             '--experimental',
@@ -87,8 +91,23 @@ function M.get_formatter(stdin)
     local config_file = RELOAD('utils.buffers').find_config { configs = 'pyproject.toml' }
 
     local cmd
-    -- TODO: Add ruff formatter
-    if executable 'black' then
+    if executable 'ruff' then
+        cmd = { 'ruff' }
+        if not config_file then
+            config_file = RELOAD('utils.buffers').find_config {
+                configs = {
+                    'ruff.toml',
+                    '.ruff.toml',
+                },
+            }
+        end
+
+        if config_file then
+            vim.list_extend(cmd, { '--config', config_file })
+        else
+            vim.list_extend(cmd, M.makeprg[cmd[1]])
+        end
+    elseif executable 'black' then
         cmd = { 'black' }
         if not config_file then
             vim.list_extend(cmd, M.formatprg[cmd[1]])
@@ -123,6 +142,8 @@ function M.get_linter()
 
         if not config_file then
             vim.list_extend(cmd, M.makeprg[cmd[1]])
+        else
+            vim.list_extend(cmd, { '--config', config_file })
         end
     elseif executable 'flake8' then
         cmd = { 'flake8' }

@@ -439,6 +439,11 @@ function M.set_compiler(compiler, opts)
     -- TODO: Add option to pass config path as compiler arg
     if not has_config and compiler_data then
         vim.list_extend(cmd, compiler_data)
+    else
+        local subcmd = opts.subcmd or opts.subcommand
+        if subcmd then
+            table.insert(cmd, subcmd)
+        end
     end
 
     table.insert(cmd, '%')
@@ -907,7 +912,7 @@ if STORAGE.modern_git == -1 then
 end
 
 function M.autoformat(cmd, args)
-    if vim.b.disable_autoformat or vim.t.disable_autoformat or vim.g.disable_autoformat then
+    if vim.b.autoformat == false or vim.t.autoformat == false or vim.g.autoformat == false then
         return
     end
 
