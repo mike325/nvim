@@ -459,10 +459,9 @@ function M.remove_empty(opts, buffers)
     }
 
     local bufs_in_use = {}
-    for _, tab in ipairs(vim.api.nvim_list_tabpages()) do
-        for _, win in ipairs(vim.api.nvim_tabpage_list_wins(tab)) do
-            bufs_in_use[tostring(vim.api.nvim_win_get_buf(win))] = true
-        end
+    -- NOTE: list_wins returns all windows across tabs
+    for _, win in ipairs(vim.api.nvim_list_wins()) do
+        bufs_in_use[tostring(vim.api.nvim_win_get_buf(win))] = true
     end
 
     local function buf_is_empty(buf)

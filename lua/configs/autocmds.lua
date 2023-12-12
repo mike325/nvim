@@ -248,19 +248,13 @@ nvim.autocmd.CleanHelps = {
     callback = function(args)
         if vim.bo[args.buf].filetype == 'help' then
             local clean_helps = true
-            for _, tab in ipairs(vim.api.nvim_list_tabpages()) do
-                for _, win in ipairs(vim.api.nvim_tabpage_list_wins(tab)) do
-                    local buf = vim.api.nvim_win_get_buf(win)
-                    if vim.bo[buf].filetype == 'help' and args.buf ~= buf then
-                        clean_helps = false
-                        break
-                    end
-                end
-                if not clean_helps then
+            for _, win in ipairs(vim.api.nvim_list_wins()) do
+                local buf = vim.api.nvim_win_get_buf(win)
+                if vim.bo[buf].filetype == 'help' and args.buf ~= buf then
+                    clean_helps = false
                     break
                 end
             end
-
             if clean_helps then
                 for _, buf in ipairs(vim.api.nvim_list_bufs()) do
                     if vim.bo[buf].filetype == 'help' then

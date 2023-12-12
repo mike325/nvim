@@ -59,7 +59,7 @@ local preload = {
     },
 }
 
-local settedup_configs = {}
+local setup_func = {}
 local function setup(ft)
     vim.validate { filetype = { ft, 'string' } }
 
@@ -67,8 +67,8 @@ local function setup(ft)
     if server_idx then
         local server = RELOAD('configs.lsp.servers')[ft][server_idx]
         local config = server.config or server.exec
-        if not settedup_configs[config] then
-            settedup_configs[config] = function()
+        if not setup_func[config] then
+            setup_func[config] = function()
                 local init = vim.deepcopy(server.options) or {}
                 init.cmd = init.cmd or server.cmd
                 local capabilities = vim.lsp.protocol.make_client_capabilities()
@@ -125,8 +125,8 @@ nvim.autocmd.LspServerSetup = {
     once = true,
     pattern = '*',
     callback = function()
-        for _, setup_func in ipairs(settedup_configs) do
-            setup_func()
+        for _, func in pairs(setup_func) do
+            func()
         end
     end,
 }

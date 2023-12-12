@@ -31,21 +31,10 @@ local dirname_basename_paths = {
     'c:/usr/bin/foo/../',
 }
 
--- TODO: Add autocmd to auto clean tmp files in cache directory
--- NOTE: sometimes /tmp is mount on a different drive and linking fail between different volumes
-local function get_cache_tmp()
-    local cache_dir = vim.fn.stdpath('cache'):gsub('\\', '/')
-    local fd, tmpname = vim.loop.fs_mkstemp(cache_dir .. '/test.XXXXXX')
-    vim.loop.fs_close(fd)
-    os.remove(tmpname) -- some functions check the file do not exist before writing to it
-    return tmpname
-end
-
 -- TODO: Missing function tests
--- is_parent
--- find_files
--- skeleton_filename
--- clean_file
+-- copy
+-- parents iterator
+-- find_in_dir
 
 describe('Check file and directories', function()
     local config_dir = vim.fn.stdpath 'config'
@@ -107,6 +96,25 @@ describe('Mkdir', function()
 end)
 
 describe('Linking', function()
+    local cached_files = {}
+
+    teardown(function()
+        for _, tmp in ipairs(cached_files) do
+            os.remove(tmp)
+        end
+        cached_files = {}
+    end)
+
+    -- NOTE: sometimes /tmp is mount on a different drive and linking fail between different volumes
+    local function get_cache_tmp()
+        local cache_dir = vim.fn.stdpath('cache'):gsub('\\', '/')
+        local fd, tmpname = vim.loop.fs_mkstemp(cache_dir .. '/test.XXXXXX')
+        vim.loop.fs_close(fd)
+        os.remove(tmpname) -- some functions check the file do not exist before writing to it
+        table.insert(cached_files, tmpname)
+        return tmpname
+    end
+
     local function testlink(src, dest, sym, force)
         vim.validate {
             src = { src, 'string' },
@@ -318,12 +326,6 @@ describe('Basename', function()
         end
     end)
 
-    -- it('HOME', function()
-    --     local username = vim.loop.os_get_passwd().username
-    --     mini_test.expect.equality(username, basename '~')
-    --     mini_test.expect.equality(username, basename(vim.loop.os_homedir()))
-    -- end)
-
     it('Init file', function()
         local config_dir = vim.fn.stdpath 'config'
         local init_file = config_dir .. '/init.lua'
@@ -335,17 +337,6 @@ describe('Basename', function()
         mini_test.expect.equality('test', basename './test')
         mini_test.expect.equality('test', basename './test')
     end)
-
-    -- it('Dirname', function()
-    --     mini_test.expect.equality('test', basename './test/')
-    --     mini_test.expect.equality('test', basename './test')
-    -- end)
-
-    -- it('CWD', function()
-    --     local cwd = forward_path(vim.loop.cwd()):gsub('.*' .. separator(), '')
-    --     mini_test.expect.equality(cwd, basename '.')
-    --     mini_test.expect.equality(cwd, basename(vim.loop.cwd()))
-    -- end)
 end)
 
 describe('Extension', function()
@@ -528,45 +519,64 @@ if not is_windows then
     end)
 end
 
--- -- TODO: Glob and globpath does not return hidden files, cannot be used to verify function correctness
--- describe('ls', function()
---     it("List directory's files/dirs", function()
---         local ls = require('utils.files').ls
---         local homedir = vim.loop.os_homedir()
---
---         mini_test.expect.equality(vim.fn.globpath('.', '*', true, true), ls '.')
---         mini_test.expect.equality(vim.fn.globpath(homedir, '*', true, true), ls(homedir))
---     end)
---
---     it('Getting all files', function()
---         local get_files = require('utils.files').get_files
---         local homedir = vim.loop.os_homedir()
---         -- local cwd = vim.loop.cwd()
---         local is_file = require('utils.files').is_file
---
---         mini_test.expect.equality(vim.tbl_filter(is_file, vim.fn.globpath('.', '*', true, true)), get_files '.')
---         mini_test.expect.equality(
---             vim.tbl_filter(is_file, vim.fn.globpath(homedir, '*', true, true)),
---             get_files(homedir)
---         )
---     end)
---
---     it('Getting all directories', function()
---         local get_dirs = require('utils.files').get_dirs
---         local homedir = vim.loop.os_homedir()
---         -- local cwd = vim.loop.cwd()
---         local is_dir = require('utils.files').is_dir
---
---         mini_test.expect.equality(
---             vim.tbl_filter(is_dir, vim.fn.globpath('.', '*', true, true)),
---             get_dirs '.'
---         )
---         mini_test.expect.equality(
---             vim.tbl_filter(is_dir, vim.fn.globpath(homedir, '*', true, true)),
---             get_dirs(homedir)
---         )
---     end)
--- end)
+describe('ls', function()
+    local homedir = vim.loop.os_homedir()
+
+    it("List directory's files/dirs", function()
+        local ls = require('utils.files').ls
+
+        local dirs = {
+            '.',
+            homedir,
+        }
+
+        for _, dir in ipairs(dirs) do
+            local files = {}
+            for filename, _ in vim.fs.dir(dir) do
+                table.insert(files, string.format('%s/%s', dir, filename))
+            end
+            mini_test.expect.equality(files, ls(dir))
+        end
+    end)
+
+    it('Getting all files', function()
+        local get_files = require('utils.files').get_files
+
+        local dirs = {
+            '.',
+            homedir,
+        }
+
+        for _, dir in ipairs(dirs) do
+            local files = {}
+            for filename, fs_type in vim.fs.dir(dir) do
+                if fs_type == 'file' then
+                    table.insert(files, string.format('%s/%s', dir, filename))
+                end
+            end
+            mini_test.expect.equality(files, get_files(dir))
+        end
+    end)
+
+    it('Getting all directories', function()
+        local get_dirs = require('utils.files').get_dirs
+
+        local dirs = {
+            '.',
+            homedir,
+        }
+
+        for _, dir in ipairs(dirs) do
+            local files = {}
+            for filename, fs_type in vim.fs.dir(dir) do
+                if fs_type == 'directory' then
+                    table.insert(files, string.format('%s/%s', dir, filename))
+                end
+            end
+            mini_test.expect.equality(files, get_dirs(dir))
+        end
+    end)
+end)
 
 describe('Rename', function()
     local rename = require('utils.files').rename
@@ -778,3 +788,51 @@ describe('JSON', function()
         mini_test.expect.equality(vim.fn.json_decode(readfile(projections, false)), vim.fn.json_decode(readfile(tmp)))
     end)
 end)
+
+describe('is_parent', function()
+    local root = is_windows and 'C:/' or '/'
+    local is_parent = require('utils.files').is_parent
+
+    it('directory', function()
+        mini_test.expect.equality(is_parent(root, vim.loop.os_homedir()), true)
+        mini_test.expect.equality(is_parent(vim.loop.os_homedir(), vim.fn.stdpath 'data'), true)
+        mini_test.expect.equality(is_parent(vim.loop.os_homedir(), vim.fn.stdpath 'cache'), true)
+        mini_test.expect.equality(is_parent(vim.loop.os_homedir(), vim.loop.os_tmpdir()), false)
+        mini_test.expect.equality(is_parent(vim.loop.os_tmpdir(), vim.loop.os_homedir()), false)
+    end)
+
+    it('root', function()
+        mini_test.expect.equality(is_parent(root, root), true)
+        if is_windows then
+            mini_test.expect.equality(is_parent('C:', 'C:'), true)
+            mini_test.expect.equality(is_parent('C:', 'C:/'), true)
+            mini_test.expect.equality(is_parent('C:/', 'C:'), true)
+            mini_test.expect.equality(is_parent('C:/', 'C:/'), true)
+            mini_test.expect.equality(is_parent('C:', 'D:'), false)
+            mini_test.expect.equality(is_parent('D:', 'C:/users'), false)
+        end
+    end)
+end)
+
+describe('make_executable', function()
+    local is_executable = require('utils.files').is_executable
+    it('Check executable bit', function()
+        mini_test.expect.equality(is_executable(vim.fn.tempname()), false)
+        mini_test.expect.equality(is_executable(vim.fn.exepath(vim.o.shell)), true)
+    end)
+end)
+
+if not is_windows then
+    describe('chmod_exec', function()
+        local chmod_exec = require('utils.files').chmod_exec
+
+        it('file', function()
+            local tmp = vim.fn.tempname()
+            require('utils.files').writefile(tmp, 'test')
+
+            mini_test.expect.equality(require('utils.files').is_executable(tmp), false)
+            chmod_exec(tmp)
+            mini_test.expect.equality(require('utils.files').is_executable(tmp), true)
+        end)
+    end)
+end

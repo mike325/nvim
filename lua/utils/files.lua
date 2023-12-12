@@ -250,12 +250,12 @@ function M.is_parent(parent, child)
     assert(M.is_dir(parent), debug.traceback(('Parent path is not a directory "%s"'):format(parent)))
     assert(M.is_dir(child), debug.traceback(('Child path is not a directory "%s"'):format(child)))
 
-    child = M.realpath(child)
-    parent = M.realpath(parent)
+    child = M.exists(child) and M.realpath(child) or child
+    parent = M.exists(parent) and M.realpath(parent) or parent
 
     -- TODO: Check windows multi drive root
     local is_child = false
-    if M.is_root(parent) or child:match('^' .. parent) then
+    if child:match('^' .. vim.pesc(parent)) then
         is_child = true
     end
 
@@ -882,9 +882,14 @@ end
 
 function M.chmod_exec(buf)
     vim.validate {
-        buf = { buf, 'number', true },
+        buf = { buf, { 'number', 'string' }, true },
     }
-    local filename = vim.api.nvim_buf_get_name(buf or 0)
+    local filename
+    if type(buf) == type(0) or not buf then
+        filename = vim.api.nvim_buf_get_name(buf or 0)
+    else
+        filename = buf
+    end
     if not M.is_executable(filename) then
         local fileinfo = vim.loop.fs_stat(filename)
         local filemode = fileinfo.mode - 32768

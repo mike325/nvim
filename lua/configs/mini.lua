@@ -319,9 +319,9 @@ if vim.F.npcall(require, 'mini.ai') then
     }
 end
 
-local mini_test = vim.F.npcall(require, 'mini.test')
-if mini_test then
-    mini_test.setup {
+local MiniTest = vim.F.npcall(require, 'mini.test')
+if MiniTest then
+    MiniTest.setup {
         collect = {
             find_files = function()
                 return vim.fn.globpath('lua/tests', '**/*_spec.lua', true, true)
@@ -329,21 +329,27 @@ if mini_test then
         },
     }
 
-    nvim.command.set('RunLuaTest', function(opts)
-        local test = opts.args
-        if test == '*' then
-            mini_test.execute(mini_test.collect())
-        elseif test == '' then
-            test = vim.api.nvim_buf_get_name(0)
-            if not test:match '.+_spec%.lua$' then
-                mini_test.execute(mini_test.collect())
-            else
-                mini_test.run_file(test)
-            end
-        else
-            mini_test.run_file(vim.fn.expand(test))
-        end
-    end, { nargs = '?', complete = completions.lua_tests })
+    nvim.autocmd.NeovimTest = {
+        event = 'Filetype',
+        pattern = 'lua',
+        callback = function(event)
+            nvim.command.set('RunLuaTest', function(opts)
+                local test = opts.args
+                if test == '*' then
+                    MiniTest.execute(MiniTest.collect())
+                elseif test == '' then
+                    test = vim.api.nvim_buf_get_name(0)
+                    if not test:match '.+_spec%.lua$' then
+                        MiniTest.execute(MiniTest.collect())
+                    else
+                        MiniTest.run_file(test)
+                    end
+                else
+                    MiniTest.run_file(vim.fn.expand(test))
+                end
+            end, { buffer = event.buf, nargs = '?', complete = completions.lua_tests })
+        end,
+    }
 end
 
 if vim.g.minimal then
