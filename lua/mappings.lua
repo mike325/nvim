@@ -99,7 +99,6 @@ function M.smart_quit()
         vim.cmd.tabclose { bang = true }
     else
         vim.cmd.quit { bang = true }
-        -- nvim.exec('quit!', false)
     end
 end
 

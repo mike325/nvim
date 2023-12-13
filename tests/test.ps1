@@ -30,4 +30,3 @@ nvim -V1 --version
 nvim --noplugin -u "tests/min.lua" --headless --cmd "let g:no_output=1" -c "lua MiniTest.execute(MiniTest.collect())"
 
 exit $LASTEXITCODE
-

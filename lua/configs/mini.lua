@@ -222,8 +222,8 @@ end
 local MiniPick = vim.F.npcall(require, 'mini.pick')
 if MiniPick then
     local win_config = function()
-        height = math.floor(0.618 * vim.o.lines)
-        width = math.floor(0.618 * vim.o.columns)
+        local height = math.floor(0.618 * vim.o.lines)
+        local width = math.floor(0.618 * vim.o.columns)
         return {
             anchor = 'NW',
             border = 'double',
