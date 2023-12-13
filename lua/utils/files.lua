@@ -182,8 +182,7 @@ function M.is_root(path)
     assert(path ~= '', debug.traceback 'Empty path')
     local root = false
     if is_windows and #path >= 2 then
-        path = M.forward_path(path)
-        root = string.match(path, '^%w:' .. M.separator() .. '?$') ~= nil
+        root = string.match(path, '^%w:[\\/]?$') ~= nil
     elseif not is_windows then
         root = path == '/'
     end
@@ -247,16 +246,16 @@ end
 
 function M.is_parent(parent, child)
     vim.validate { parent = { parent, 'string' }, child = { child, 'string' } }
-    assert(M.is_dir(parent), debug.traceback(('Parent path is not a directory "%s"'):format(parent)))
-    assert(M.is_dir(child), debug.traceback(('Child path is not a directory "%s"'):format(child)))
 
     child = M.exists(child) and M.realpath(child) or child
     parent = M.exists(parent) and M.realpath(parent) or parent
 
-    -- TODO: Check windows multi drive root
     local is_child = false
     if child:match('^' .. vim.pesc(parent)) then
         is_child = true
+    elseif is_windows then
+        -- NOTE: Make sure that both are located on the same drive
+        is_child = M.is_root(parent) and parent:sub(1, 2) == child:sub(1, 2)
     end
 
     return is_child

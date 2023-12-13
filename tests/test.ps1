@@ -27,14 +27,7 @@ if ( -Not (Test-Path("$mini_dir\mini.nvim")) ) {
 }
 
 nvim -V1 --version
+nvim --noplugin -u "tests/min.lua" --headless --cmd "let g:no_output=1" -c "lua MiniTest.execute(MiniTest.collect())"
 
-$exit_code = 0
-# nvim --noplugin -u tests/min.lua --headless -c "PlenaryBustedDirectory lua/tests/ {minimal_init = 'tests/min.lua'}"
-Get-ChildItem -Path .\lua\tests\ | Where-Object {$_.PSIsContainer -eq $false} | ForEach {
-    nvim --noplugin -u "tests/min.lua" --headless --cmd "let g:no_output=1" -c "lua MiniTest.execute(MiniTest.collect())"
-    if ( -not $? ) {
-        $exit_code = 1
-    }
-}
+exit $LASTEXITCODE
 
-exit $exit_code

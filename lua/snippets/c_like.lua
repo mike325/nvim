@@ -54,7 +54,8 @@ local snippets = {
     s(
         { trig = 'if(e?)', regTrig = true },
         fmt([[
-    if({}) {{
+    if({})
+    {{
     {}
     }}{}
     ]], {
@@ -63,7 +64,8 @@ local snippets = {
         d(3, else_clause, {}, {}),
     })),
     s('elif', fmt([[
-    else if({}) {{
+    else if({})
+    {{
     {}
     }}
     ]],{
@@ -71,14 +73,16 @@ local snippets = {
         d(2, saved_text, {}, {user_args = {{indent = true}}}),
     })),
     s('else', fmt([[
-    else {{
+    else
+    {{
     {}
     }}
     ]],{
         d(1, saved_text, {}, {user_args = {{indent = true}}}),
     })),
     s('fori', fmt([[
-    for({} = {}; {} < {}; {}++) {{
+    for({} = {}; {} < {}; {}++)
+    {{
     {}
     }}
     ]], {
@@ -89,8 +93,9 @@ local snippets = {
         r(1),
         d(4, saved_text, {}, {user_args = {{indent = true}}}),
     })),
-    s('w', fmt([[
-    while({}) {{
+    s('wh', fmt([[
+    while({})
+    {{
     {}
     }}
     ]], {
@@ -98,7 +103,8 @@ local snippets = {
         d(2, saved_text, {}, {user_args = {{indent = true}}}),
     })),
     s('fun', fmt([[
-    {} {}({}{}) {{
+    {} {}({}{})
+    {{
     {}
     }}
     ]], {

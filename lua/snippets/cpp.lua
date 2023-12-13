@@ -245,7 +245,8 @@ return {
         'forr',
         fmt(
             [[
-    for(const auto &{} : {}) {{
+    for(const auto &{} : {})
+    {{
     {}
     }}
     ]],
@@ -260,7 +261,8 @@ return {
         { trig = 'mfun', regTrig = true },
         fmt(
             [[
-        {} {}::{}({}) {{
+        {} {}::{}({})
+        {{
         {}
         }}
         ]],
@@ -550,10 +552,12 @@ return {
         'try',
         fmt(
             [[
-    try {{
+    try
+    {{
     {}
     }}
-    catch ({}) {{
+    catch ({})
+    {{
         {}
     }}
     ]],
