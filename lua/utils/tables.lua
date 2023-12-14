@@ -11,7 +11,8 @@ if not debug then
 end
 
 -- NOTE: This functions are available in Neovim's runtime, but since I consider some of the useful outside of neovim
---       I decided to replicate them to use in other apps
+--       I decided to replicate them to use in other apps like wezterm, this way wezterm can import functions from
+--       neovim configs and I don't need to duplicate them
 function M.tbl_contains(tbl, value)
     assert(type(tbl) == type {}, debug.traceback('Invalid type for tbl: ' .. type(tbl)))
     for _, node in pairs(tbl) do

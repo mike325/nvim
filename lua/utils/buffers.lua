@@ -640,13 +640,20 @@ function M.open_conflicts(opts)
     end)
 end
 
-function M.get_diagnostic_ns(ns)
+function M.get_diagnostic_ns(ns, buf)
     vim.validate {
         ns = { ns, 'string' },
+        buf = { buf, 'number', true },
     }
     if ns ~= '' then
         for namespace, attrs in pairs(vim.diagnostic.get_namespaces()) do
             if attrs.name == ns then
+                if buf then
+                    local diagnostics = vim.diagnostic.get(buf, { namespace = namespace })
+                    if #diagnostics == 0 then
+                        return
+                    end
+                end
                 return namespace
             end
         end

@@ -559,60 +559,53 @@ nvim.command.set('Loc2Diag', function()
     RELOAD('utils.qf').qf_to_diagnostic(nil, true)
 end)
 
-nvim.command.set('DiagnosticsDump', function(opts)
-    local severity = vim.diagnostic.severity[opts.args]
-    if severity then
-        severity = { min = severity }
+nvim.command.set('Diagnostics', function(opts)
+    local action = opts.fargs[1]:gsub('^%-+', '')
+    local namespaces = vim.list_slice(opts.fargs, 2, #opts.fargs)
+    if #namespaces == 0 then
+        for _, ns in pairs(vim.diagnostic.get_namespaces()) do
+            table.insert(namespaces, ns.name)
+        end
     end
-    if opts.bang then
-        vim.diagnostic.setqflist { severity = severity }
-        vim.cmd.wincmd 'J'
+
+    if action == 'dump' then
+        local severity = namespaces[1]
+        table.remove(namespaces, 1)
+        if severity then
+            if not vim.log.levels[severity] then
+                error(debug.traceback(string.format('Invalid severity: %s', vim.inspect(severity))))
+            end
+            severity = { min = severity }
+        end
+        if opts.bang then
+            vim.diagnostic.setqflist { severity = severity }
+            vim.cmd.wincmd 'J'
+        else
+            vim.diagnostic.setloclist { severity = severity }
+        end
     else
-        vim.diagnostic.setloclist { severity = severity }
+        action = action == 'clear' and 'reset' or action
+        if not vim.diagnostic[action] then
+            error(debug.traceback(string.format('Invalid diagnostic action: %s', action)))
+        end
+        for _, ns in ipairs(namespaces) do
+            local buf = not opts.bang and vim.api.nvim_get_current_buf() or nil
+            local ns_id = RELOAD('utils.buffers').get_diagnostic_ns(ns, buf)
+            if ns_id then
+                if action == 'enable' or action == 'disable' then
+                    vim.diagnostic[action](buf, ns_id)
+                else
+                    vim.diagnostic[action](ns_id, buf)
+                end
+            end
+        end
     end
-end, { nargs = '?', bang = true, desc = 'Filter Diagnostics in Qf', complete = completions.severity_list })
-
-nvim.command.set('DiagnosticsClear', function(opts)
-    local ns = RELOAD('utils.buffers').get_diagnostic_ns(opts.args)
-    local buf = not opts.bang and vim.api.nvim_get_current_buf() or nil
-    vim.diagnostic.reset(ns, buf)
 end, {
     bang = true,
-    nargs = '?',
-    desc = 'Clear diagnostics from the given NS',
-    complete = completions.diagnostics_namespaces,
+    nargs = '+',
+    desc = 'Manage Diagnostics actions on NS and buffers',
+    complete = completions.diagnostics_completion,
 })
-
-nvim.command.set('DiagnosticsHide', function(opts)
-    local ns = RELOAD('utils.buffers').get_diagnostic_ns(opts.args)
-    local buf = not opts.bang and vim.api.nvim_get_current_buf() or nil
-    vim.diagnostic.hide(ns, buf)
-end, {
-    bang = true,
-    nargs = '?',
-    desc = 'Hide diagnostics from the given NS',
-    complete = completions.diagnostics_namespaces,
-})
-
-nvim.command.set('DiagnosticsShow', function(opts)
-    local ns = RELOAD('utils.buffers').get_diagnostic_ns(opts.args)
-    local buf = not opts.bang and vim.api.nvim_get_current_buf() or nil
-    vim.diagnostic.show(ns, buf)
-end, {
-    bang = true,
-    nargs = '?',
-    desc = 'Show diagnostics from the given NS',
-    complete = completions.diagnostics_namespaces,
-})
-
-nvim.command.set(
-    'DiagnosticsToggle',
-    function(opts)
-        local ns = RELOAD('utils.buffers').get_diagnostic_ns(opts.args)
-        RELOAD('mappings').toggle_diagnostics(ns, opts.bang)
-    end,
-    { bang = true, nargs = '?', desc = 'Toggle column sign diagnostics', complete = completions.diagnostics_namespaces }
-)
 
 if executable 'scp' then
     nvim.command.set('SCPEdit', function(opts)

@@ -286,3 +286,14 @@ describe('isempty', function()
         mini_test.expect.equality(isempty(random_map(3)), false)
     end)
 end)
+
+describe('remove_empty', function()
+    local remove_empty = require('utils.tables').remove_empty
+
+    it('remove empty strings', function()
+        mini_test.expect.equality(remove_empty { '', '' }, {})
+        mini_test.expect.equality(remove_empty { ' ', ' ' }, { ' ', ' ' })
+        mini_test.expect.equality(remove_empty { 'test', '' }, { 'test' })
+        mini_test.expect.equality(remove_empty { '', 'test' }, { 'test' })
+    end)
+end)

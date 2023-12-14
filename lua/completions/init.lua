@@ -46,7 +46,17 @@ local function json_keys_completion(arglead, cmdline, cursorpos, filename, funcs
     return general_completion(arglead, cmdline, cursorpos, keys)
 end
 
-local completions = {
+local diagnostic_actions = {
+    "-enable",
+    "-disable",
+    "-dump",
+    "-clear",
+    "-show",
+    "-hide",
+}
+
+local completions = {}
+completions = vim.tbl_extend('force', completions, {
     ssh_hosts_completion = function(arglead, cmdline, cursorpos)
         return general_completion(arglead, cmdline, cursorpos, vim.tbl_keys(STORAGE.hosts))
     end,
@@ -98,13 +108,6 @@ local completions = {
         end, vim.diagnostic.severity)
         return general_completion(arglead, cmdline, cursorpos, severity_lst)
     end,
-    diagnostics_namespaces = function(arglead, cmdline, cursorpos)
-        local namespaces = {}
-        for _, ns in pairs(vim.diagnostic.get_namespaces()) do
-            table.insert(namespaces, ns.name)
-        end
-        return general_nodash_completion(arglead, cmdline, cursorpos, namespaces)
-    end,
     background_jobs = function(arglead, cmdline, cursorpos)
         local jobs = {}
         for id, job in pairs(STORAGE.jobs) do
@@ -115,10 +118,33 @@ local completions = {
         end
         return general_completion(arglead, cmdline, cursorpos, jobs)
     end,
+    diagnostics_namespaces = function(arglead, cmdline, cursorpos)
+        local namespaces = {}
+        for _, ns in pairs(vim.diagnostic.get_namespaces()) do
+            table.insert(namespaces, ns.name)
+        end
+        return general_nodash_completion(arglead, cmdline, cursorpos, namespaces)
+    end,
+    diagnostics_actions = function(arglead, cmdline, cursorpos)
+        return general_completion(arglead, cmdline, cursorpos, diagnostic_actions)
+    end,
     diagnostics_level = function(arglead, cmdline, cursorpos)
         local levels = vim.deepcopy(vim.log.levels)
         levels.OFF = nil
         return general_completion(arglead, cmdline, cursorpos, vim.tbl_keys(levels))
+    end,
+    diagnostics_completion = function(arglead, cmdline, cursorpos)
+        local cmd = vim.tbl_map(function(arg)
+            return vim.trim(arg)
+        end, vim.split(cmdline, '%s+', { trimempty = true }))
+
+        if #cmd <= 1 or (#cmd == 2 and arglead:match('[%-%w]+$')) then
+            return completions.diagnostics_actions(arglead, cmdline, cursorpos)
+        end
+        if cmd[#cmd] == '-dump' then
+            return completions.diagnostics_level(arglead, cmdline, cursorpos)
+        end
+        return completions.diagnostics_namespaces(arglead, cmdline, cursorpos)
     end,
     qf_file_options = function(arglead, cmdline, cursorpos)
         local options = {
@@ -182,6 +208,6 @@ local completions = {
             vim.fn.globpath('lua/tests', '**/*_spec.lua', true, true)
         )
     end,
-}
+})
 
 return completions
