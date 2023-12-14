@@ -47,12 +47,12 @@ local function json_keys_completion(arglead, cmdline, cursorpos, filename, funcs
 end
 
 local diagnostic_actions = {
-    "-enable",
-    "-disable",
-    "-dump",
-    "-clear",
-    "-show",
-    "-hide",
+    '-enable',
+    '-disable',
+    '-dump',
+    '-clear',
+    '-show',
+    '-hide',
 }
 
 local completions = {}
@@ -138,7 +138,7 @@ completions = vim.tbl_extend('force', completions, {
             return vim.trim(arg)
         end, vim.split(cmdline, '%s+', { trimempty = true }))
 
-        if #cmd <= 1 or (#cmd == 2 and arglead:match('[%-%w]+$')) then
+        if #cmd <= 1 or (#cmd == 2 and arglead:match '[%-%w]+$') then
             return completions.diagnostics_actions(arglead, cmdline, cursorpos)
         end
         if cmd[#cmd] == '-dump' then
