@@ -9,6 +9,13 @@ end
 
 local notify_backend
 local has_ui = #vim.api.nvim_list_uis() > 0
+local function notify_format(msg, level, opts)
+    if opts and opts.title then
+        return ('[%s]: %s'):format(opts.title, msg)
+    end
+    return msg
+end
+
 if has_ui then
     local nvim_notify = vim.F.npcall(require, 'notify')
 
@@ -28,12 +35,6 @@ if has_ui then
             nvim_notify.dismiss { pending = true, silent = true }
         end, { noremap = true, silent = true })
     else
-        local function notify_format(msg, level, opts)
-            if opts and opts.title then
-                msg = ('[%s]: %s'):format(opts.title, msg)
-            end
-            return msg
-        end
         if vim.g.minimal and vim.F.npcall(require, 'mini.notify') then
             require('mini.notify').setup {}
             notify_backend = (function(f)
@@ -93,17 +94,15 @@ else
             WARNING = term_colors.yellow,
         }
 
-        if opts and opts.title then
-            msg = ('[%s]: %s'):format(opts.title, msg)
-        end
+        local text = notify_format(msg, level, opts)
 
         local fd = (level and level == 'ERROR') and 2 or 1
-        local output = ('%s\n'):format(msg)
+        local output = ('%s\n'):format(text)
         local handle_type = vim.loop.guess_handle(fd)
         if handle_type == 'tty' then
             local stdio = vim.loop.new_tty(fd, false)
             if level and level ~= '' then
-                output = ('%s%s%s\n'):format(level_colors[level] or level_colors.INFO, msg, term_colors.reset_color)
+                output = ('%s%s%s\n'):format(level_colors[level] or level_colors.INFO, text, term_colors.reset_color)
             end
             stdio:write(output)
             stdio:close()
