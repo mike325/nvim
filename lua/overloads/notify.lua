@@ -154,6 +154,8 @@ local function notify(msg, level, opts)
 
     if level and type(level) == type '' then
         level = level:upper()
+        -- NOTE: Make sure to use the correct level value if we get an integer
+        level = vim.log.levels[level] or level
     end
     notify_backend(msg, level, opts)
 end
