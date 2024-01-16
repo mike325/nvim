@@ -908,7 +908,11 @@ function M.python(version, args)
     local pyversion = version == 3 and py3 or py2
 
     if pyversion == nil or pyversion == '' then
-        vim.notify('Python' .. pyversion .. ' is not available in the system', vim.log.levels.ERROR, { title = 'Python' })
+        vim.notify(
+            'Python' .. pyversion .. ' is not available in the system',
+            vim.log.levels.ERROR,
+            { title = 'Python' }
+        )
         return -1
     end
 
