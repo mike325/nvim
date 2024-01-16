@@ -249,13 +249,13 @@ return {
         d(2, surround_with_func, {}, {user_args = {{text = 'tbl'}}}),
         i(3, "'node'"),
     })),
-    s('not', fmt([[vim.notify('{}', '{}'{})]],{
+    s('not', fmt([[vim.notify('{}', {}{})]],{
         d(1, surround_with_func, {}, {user_args = {{text = 'msg'}}}),
         c(2, {
-            t{'INFO'},
-            t{'WARN'},
-            t{'ERROR'},
-            t{'DEBUG'},
+            t{'vim.log.levels.INFO'},
+            t{'vim.log.levels.WARN'},
+            t{'vim.log.levels.ERROR'},
+            t{'vim.log.levels.DEBUG'},
         }),
         c(3, {
             t{''},

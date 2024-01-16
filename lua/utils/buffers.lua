@@ -583,7 +583,7 @@ function M.open_changes(opts)
                 end
             end
         else
-            vim.notify('No modified files to open', 'WARN', { title = 'GitStatus' })
+            vim.notify('No modified files to open', vim.log.levels.WARN, { title = 'GitStatus' })
         end
     end
 
@@ -591,7 +591,11 @@ function M.open_changes(opts)
         RELOAD('utils.git').modified_files_from_base(revision, files_actions)
     else
         if opts.bang then
-            vim.notify('Missing revision, opening changes from latest HEAD', 'WARN', { title = 'OpenChanges' })
+            vim.notify(
+                'Missing revision, opening changes from latest HEAD',
+                vim.log.levels.WARN,
+                { title = 'OpenChanges' }
+            )
         end
         RELOAD('utils.git').modified_files(files_actions)
     end

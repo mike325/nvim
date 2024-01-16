@@ -19,7 +19,7 @@ end
 -- TODO: Support bang and disable flags
 function M.start_server(opts)
     if opts.enable and STORAGE.servers[vim.g.port] and STORAGE.servers[vim.g.port]:is_active() then
-        vim.notify('Server already enabled', 'INFO')
+        vim.notify('Server already enabled', vim.log.levels.INFO)
         return
     end
 
@@ -63,7 +63,11 @@ function M.start_server(opts)
     if server:is_active() then
         STORAGE.servers[vim.g.port] = server
     else
-        vim.notify('Port: ' .. vim.g.port .. ' is already being used', 'ERROR', { title = 'NotificationServer' })
+        vim.notify(
+            'Port: ' .. vim.g.port .. ' is already being used',
+            vim.log.levels.ERROR,
+            { title = 'NotificationServer' }
+        )
     end
 end
 

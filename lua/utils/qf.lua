@@ -217,7 +217,7 @@ function M.set_list(opts, win)
     end
 
     if #(opts.items or opts.lines) == 0 then
-        vim.notify('No items to display', 'ERROR', { title = win and 'LocationList' or 'QuickFix' })
+        vim.notify('No items to display', vim.log.levels.ERROR, { title = win and 'LocationList' or 'QuickFix' })
         return
     end
 
@@ -388,7 +388,7 @@ function M.dump_files(buffers, opts, win)
             qf_funcs.first(win)
         end
     else
-        vim.notify('No buffers to dump', 'INFO')
+        vim.notify('No buffers to dump', vim.log.levels.INFO)
     end
 end
 
@@ -411,7 +411,7 @@ function M.filter_qf_diagnostics(opts, win)
     local qf = qf_funcs.get_list({ all = 0 }, win)
 
     if not vim.log.levels[level] then
-        vim.notify('Invalid level: ' .. opts.args, 'ERROR', { title = 'QFDiagnostics' })
+        vim.notify('Invalid level: ' .. opts.args, vim.log.levels.ERROR, { title = 'QFDiagnostics' })
         return
     end
 
@@ -457,7 +457,7 @@ function M.qf_loclist_switcher(opts)
             M.open(loc and win or nil)
         end
     else
-        vim.notify(src .. ' is empty!, nothing to set in the ' .. dest, 'WARN')
+        vim.notify(src .. ' is empty!, nothing to set in the ' .. dest, vim.log.levels.WARN)
     end
 end
 

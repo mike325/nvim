@@ -168,7 +168,7 @@ end
 function M.trim(opts)
     local args = opts.args:lower()
     if args ~= '' and args ~= 'enable' and args ~= 'disable' and args ~= '?' then
-        vim.notify('Invalid arg: ' .. args, 'ERROR', { title = 'Trim' })
+        vim.notify('Invalid arg: ' .. args, vim.log.levels.ERROR, { title = 'Trim' })
         return
     end
 
@@ -213,7 +213,7 @@ function M.chmod(opts)
 
     local mode = opts.args
     if not mode:match '^%d+$' then
-        vim.notify('Not a valid permissions mode: ' .. mode, 'ERROR', { title = 'Chmod' })
+        vim.notify('Not a valid permissions mode: ' .. mode, vim.log.levels.ERROR, { title = 'Chmod' })
         return
     end
     local filename = vim.api.nvim_buf_get_name(0)
@@ -277,7 +277,7 @@ function M.find(opts)
                         return v ~= ''
                     end, job:output()))
                 elseif rc ~= 0 then
-                    vim.notify('Error!\n' .. table.concat(job:output(), '\n'), 'ERROR', { title = 'Find' })
+                    vim.notify('Error!\n' .. table.concat(job:output(), '\n'), vim.log.levels.ERROR, { title = 'Find' })
                 end
             end,
         }
@@ -351,7 +351,7 @@ function M.cscope(cword, query)
     query = M.cscope_queries[query] or 'find g'
     local ok, err = pcall(vim.cmd.cscope, { args = query, cword })
     if not ok then
-        vim.notify('Error!\n' .. err, 'ERROR', { title = 'cscope' })
+        vim.notify('Error!\n' .. err, vim.log.levels.ERROR, { title = 'cscope' })
     end
 end
 
@@ -474,7 +474,7 @@ end
 function M.remote_file(host, send)
     host = M.get_host(host)
     if not host or host == '' then
-        vim.notify('Missing hostname', 'ERROR')
+        vim.notify('Missing hostname', vim.log.levels.ERROR)
         return
     end
 
@@ -492,7 +492,7 @@ function M.remote_file(host, send)
             vim.cmd.checktime()
         end,
         callbacks_on_failure = function(job)
-            vim.notify(table.concat(job:output(), '\n'), 'ERROR', { title = 'SyncFile' })
+            vim.notify(table.concat(job:output(), '\n'), vim.log.levels.ERROR, { title = 'SyncFile' })
         end,
     }
     sync:start()
@@ -616,7 +616,7 @@ function M.zoom_links(opts)
     if links[opts.args] then
         vim.ui.open(links[opts.args])
     else
-        vim.notify('Missing Zoom link ' .. opts.args, 'ERROR', { title = 'Zoom' })
+        vim.notify('Missing Zoom link ' .. opts.args, vim.log.levels.ERROR, { title = 'Zoom' })
     end
 end
 
@@ -643,13 +643,17 @@ function M.diff_files(args)
 
     local files = args.fargs
     if #files ~= 2 and #files ~= 3 then
-        vim.notify('Can only diff 2 or 3 files files', 'ERROR', { title = 'DiffFiles' })
+        vim.notify('Can only diff 2 or 3 files files', vim.log.levels.ERROR, { title = 'DiffFiles' })
         return false
     end
 
     for _, f in ipairs(files) do
         if not utils.is_file(f) then
-            vim.notify(f .. ' is not a regular file or the file does not exits', 'ERROR', { title = 'DiffFiles' })
+            vim.notify(
+                f .. ' is not a regular file or the file does not exits',
+                vim.log.levels.ERROR,
+                { title = 'DiffFiles' }
+            )
             return false
         end
     end
@@ -797,7 +801,7 @@ local function kill_job(jobid)
             local idx = vim.fn.inputlist(cmds)
             jobid = ids[idx]
         else
-            vim.notify('No jobs to kill', 'WARN', { title = 'Job Killer' })
+            vim.notify('No jobs to kill', vim.log.levels.WARN, { title = 'Job Killer' })
         end
     end
 
@@ -855,12 +859,12 @@ function M.reload_configs(opts)
         for _, v in ipairs(configs) do
             vim.cmd.source(lua_file_path:format(config_dir, v))
         end
-        vim.notify('All configs reloaded!', 'INFO')
+        vim.notify('All configs reloaded!', vim.log.levels.INFO)
     elseif configs[opts.args] then
         vim.cmd.source(lua_file_path:format(config_dir, opts.args))
-        vim.notify(opts.args .. ' reloaded!', 'INFO')
+        vim.notify(opts.args .. ' reloaded!', vim.log.levels.INFO)
     else
-        vim.notify('Invalid config name: ' .. opts.args, 'ERROR', { title = 'Reloader' })
+        vim.notify('Invalid config name: ' .. opts.args, vim.log.levels.ERROR, { title = 'Reloader' })
     end
 end
 
@@ -917,7 +921,7 @@ function M.alternate(opts)
     elseif #candidates == 1 then
         vim.cmd.edit(candidates[1])
     else
-        vim.notify('No alternate file found', 'WARN')
+        vim.notify('No alternate file found', vim.log.levels.WARN)
     end
 end
 
@@ -963,7 +967,7 @@ function M.alt_makefiles(opts)
     elseif #candidates == 1 then
         vim.cmd.edit(candidates[1])
     else
-        vim.notify('No makefiles file found', 'WARN')
+        vim.notify('No makefiles file found', vim.log.levels.WARN)
     end
 end
 
@@ -1010,7 +1014,7 @@ function M.alternate_test(opts)
     elseif #candidates == 1 then
         vim.cmd.edit(candidates[1])
     else
-        vim.notify('No test file found', 'WARN')
+        vim.notify('No test file found', vim.log.levels.WARN)
     end
 end
 
@@ -1128,7 +1132,7 @@ function M.vnc(hostname, opts)
         }
         vnc:start()
     else
-        vim.notify('Missing vncviewer executable', 'ERROR', { title = 'VNC' })
+        vim.notify('Missing vncviewer executable', vim.log.levels.ERROR, { title = 'VNC' })
     end
 end
 

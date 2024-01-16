@@ -12,7 +12,7 @@ local download_lazy = function()
     end
 
     vim.fn.mkdir(lazy_root, 'p')
-    vim.notify('Downloading lazy.nvim...', 'INFO', { title = 'Lazy Setup' })
+    vim.notify('Downloading lazy.nvim...', vim.log.levels.INFO, { title = 'Lazy Setup' })
     local out = vim.fn.system {
         'git',
         'clone',
@@ -23,11 +23,15 @@ local download_lazy = function()
     }
 
     if vim.v.shell_error == 0 then
-        vim.notify(out or 'Lazy downloaded in: ' .. lazypath, 'INFO', { title = 'Lazy Setted up!' })
+        vim.notify(out or 'Lazy downloaded in: ' .. lazypath, vim.log.levels.INFO, { title = 'Lazy setup!' })
         vim.opt.rtp:prepend(lazypath)
         return true
     end
-    vim.notify('Failed to download lazy!! exit code: ' .. vim.v.shell_error, 'ERROR', { title = 'Lazy Setup' })
+    vim.notify(
+        'Failed to download lazy!! exit code: ' .. vim.v.shell_error,
+        vim.log.levels.ERROR,
+        { title = 'Lazy Setup' }
+    )
     return false
 end
 

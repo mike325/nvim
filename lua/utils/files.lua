@@ -81,7 +81,7 @@ function M.mkdir(dirname, recurive)
             if not M.exists(base) then
                 ok, msg, _ = uv.fs_mkdir(base, 511)
                 if not ok then
-                    vim.notify(msg, 'ERROR', { title = 'Mkdir' })
+                    vim.notify(msg, vim.log.levels.ERROR, { title = 'Mkdir' })
                     break
                 end
             else
@@ -92,7 +92,7 @@ function M.mkdir(dirname, recurive)
             end
         end
     elseif not ok then
-        vim.notify(msg, 'ERROR', { title = 'Mkdir' })
+        vim.notify(msg, vim.log.levels.ERROR, { title = 'Mkdir' })
     end
     return ok or false
 end
@@ -120,17 +120,17 @@ function M.link(src, dest, sym, force)
     local status, msg, _
 
     if not sym and M.is_dir(src) then
-        vim.notify('Cannot hard link a directory', 'ERROR', { title = 'Link' })
+        vim.notify('Cannot hard link a directory', vim.log.levels.ERROR, { title = 'Link' })
         return false
     end
 
     if not force and M.exists(dest) then
-        vim.notify('Dest already exists in ' .. dest, 'ERROR', { title = 'Link' })
+        vim.notify('Dest already exists in ' .. dest, vim.log.levels.ERROR, { title = 'Link' })
         return false
     elseif force and M.exists(dest) then
         status, msg, _ = uv.fs_unlink(dest)
         if not status then
-            vim.notify(msg, 'ERROR', { title = 'Link' })
+            vim.notify(msg, vim.log.levels.ERROR, { title = 'Link' })
             return false
         end
     end
@@ -142,7 +142,7 @@ function M.link(src, dest, sym, force)
     end
 
     if not status then
-        vim.notify(msg, 'ERROR', { title = 'Link' })
+        vim.notify(msg, vim.log.levels.ERROR, { title = 'Link' })
     end
 
     return status or false
@@ -271,7 +271,7 @@ function M.openfile(path, flags, callback)
 
     local fd, msg, _ = uv.fs_open(path, flags, 438)
     if not fd then
-        vim.notify(msg, 'ERROR', { title = 'OpenFile' })
+        vim.notify(msg, vim.log.levels.ERROR, { title = 'OpenFile' })
         return false
     end
     local ok, rst = pcall(callback, fd)
@@ -302,7 +302,7 @@ local function fs_write(path, data, append, callback)
             local offset = append and stat.size or 0
             local ok, msg, _ = uv.fs_write(fd, data, offset)
             if not ok then
-                vim.notify(msg, 'ERROR', { title = 'Write file' })
+                vim.notify(msg, vim.log.levels.ERROR, { title = 'Write file' })
             end
         end)
     end
@@ -399,7 +399,7 @@ function M.chmod(path, mode, base)
     base = base == nil and 8 or base
     local ok, msg, _ = uv.fs_chmod(path, tonumber(mode, base))
     if not ok then
-        vim.notify(msg, 'ERROR', { title = 'Chmod' })
+        vim.notify(msg, vim.log.levels.ERROR, { title = 'Chmod' })
     end
     return ok or false
 end
@@ -448,11 +448,11 @@ function M.copy(src, dest, bang)
         if status then
             return true
         end
-        vim.notify('Failed to copy ' .. src .. ' to ' .. dest .. '\n' .. msg, 'ERROR', { title = 'Copy' })
+        vim.notify('Failed to copy ' .. src .. ' to ' .. dest .. '\n' .. msg, vim.log.levels.ERROR, { title = 'Copy' })
     elseif M.is_dir(src) then
-        vim.notify('Cannot recursively copy directories', 'ERROR', { title = 'Copy' })
+        vim.notify('Cannot recursively copy directories', vim.log.levels.ERROR, { title = 'Copy' })
     else
-        vim.notify(dest .. ' exists, use force to override it', 'ERROR', { title = 'Copy' })
+        vim.notify(dest .. ' exists, use force to override it', vim.log.levels.ERROR, { title = 'Copy' })
     end
 
     return false
@@ -486,12 +486,12 @@ function M.rename(old, new, bang)
         then
             local result = git.exec.mv { '-f', old, new }
             if #result > 0 then
-                vim.notify('Failed to rename ' .. old .. '\n' .. result, 'ERROR', { title = 'Rename' })
+                vim.notify('Failed to rename ' .. old .. '\n' .. result, vim.log.levels.ERROR, { title = 'Rename' })
                 return false
             end
         else
             if not uv.fs_rename(old, new) then
-                vim.notify('Failed to rename ' .. old, 'ERROR', { title = 'Rename' })
+                vim.notify('Failed to rename ' .. old, vim.log.levels.ERROR, { title = 'Rename' })
                 return false
             end
         end
@@ -508,7 +508,7 @@ function M.rename(old, new, bang)
         end
         return true
     elseif M.exists(new) then
-        vim.notify(new .. ' exists, use force to override it', 'ERROR', { title = 'Rename' })
+        vim.notify(new .. ' exists, use force to override it', vim.log.levels.ERROR, { title = 'Rename' })
     end
 
     return false
@@ -534,13 +534,17 @@ function M.delete(target, bang)
 
     if M.is_dir(target) then
         if target == uv.os_homedir() then
-            vim.notify('Cannot delete home directory', 'ERROR', { title = 'Delete File/Directory' })
+            vim.notify('Cannot delete home directory', vim.log.levels.ERROR, { title = 'Delete File/Directory' })
             return false
         elseif M.is_root(target) then
-            vim.notify('Cannot delete root directory', 'ERROR', { title = 'Delete File/Directory' })
+            vim.notify('Cannot delete root directory', vim.log.levels.ERROR, { title = 'Delete File/Directory' })
             return false
         elseif target == '.' then
-            vim.notify('Cannot delete cwd or parent directory', 'ERROR', { title = 'Delete File/Directory' })
+            vim.notify(
+                'Cannot delete cwd or parent directory',
+                vim.log.levels.ERROR,
+                { title = 'Delete File/Directory' }
+            )
             return false
         end
     end
@@ -553,12 +557,16 @@ function M.delete(target, bang)
         then
             local result = git.exec.rm { '-f', target }
             if #result > 0 then
-                vim.notify('Failed to delete the file ' .. target .. '\n' .. result, 'ERROR', { title = 'Delete' })
+                vim.notify(
+                    'Failed to delete the file ' .. target .. '\n' .. result,
+                    vim.log.levels.ERROR,
+                    { title = 'Delete' }
+                )
                 return false
             end
         elseif M.is_file(target) then
             if not uv.fs_unlink(target) then
-                vim.notify('Failed to delete the file: ' .. target, 'ERROR', { title = 'Delete' })
+                vim.notify('Failed to delete the file: ' .. target, vim.log.levels.ERROR, { title = 'Delete' })
                 return false
             end
         end
@@ -566,7 +574,7 @@ function M.delete(target, bang)
             local command = bang and 'wipeout' or 'delete'
             local ok, error_code = pcall(vim.cmd, { cmd = 'b' .. command, bang = true, args = { target } })
             if not ok and error_code:match 'Vim(.%w+.)\\?:E94' then
-                vim.notify('Failed to ' .. command .. ' buffer ' .. target, 'ERROR', { title = 'Delete' })
+                vim.notify('Failed to ' .. command .. ' buffer ' .. target, vim.log.levels.ERROR, { title = 'Delete' })
                 return false
             end
         end
@@ -580,19 +588,19 @@ function M.delete(target, bang)
             if #result > 0 then
                 vim.notify(
                     'Failed to remove the directory: ' .. target .. '\n' .. result,
-                    'ERROR',
+                    vim.log.levels.ERROR,
                     { title = 'Delete' }
                 )
                 return false
             end
         elseif vim.fn.delete(target, bang and 'rf' or 'd') == -1 then
-            vim.notify('Failed to remove the directory: ' .. target, 'ERROR', { title = 'Delete' })
+            vim.notify('Failed to remove the directory: ' .. target, vim.log.levels.ERROR, { title = 'Delete' })
             return false
         end
         return true
     end
 
-    vim.notify('Non removable target: ' .. target, 'ERROR', { title = 'Delete' })
+    vim.notify('Non removable target: ' .. target, vim.log.levels.ERROR, { title = 'Delete' })
     return false
 end
 

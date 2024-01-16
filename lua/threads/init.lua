@@ -146,14 +146,14 @@ function M.queue_thread(thread, cb, opts)
                 else
                     vim.notify(
                         'Failed to decode return value from thread\nnot valid json data: ' .. o .. '\n' .. data,
-                        'ERROR',
+                        vim.log.levels.ERROR,
                         { title = 'Thread' }
                     )
                 end
             else
                 vim.notify(
                     'Something when wrong, got an empty string from another thread',
-                    'ERROR',
+                    vim.log.levels.ERROR,
                     { title = 'Thread' }
                 )
             end

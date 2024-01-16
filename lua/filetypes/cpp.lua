@@ -292,7 +292,7 @@ function M.execute(exe, args)
     exe = exe or base_cwd .. '/build/main'
     args = args or {}
     if not is_file(exe) and not executable(exe) then
-        vim.notify('Missing executable: ' .. exe, 'ERROR', { title = 'ExecuteProject' })
+        vim.notify('Missing executable: ' .. exe, vim.log.levels.ERROR, { title = 'ExecuteProject' })
         return false
     end
 

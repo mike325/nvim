@@ -77,7 +77,7 @@ local function notify_error(gitcmd, output, rc)
     end
     vim.notify(
         'Failed to execute gitcmd: ' .. gitcmd .. ' exited with ' .. rc .. '\n' .. output,
-        'ERROR',
+        vim.log.levels.ERROR,
         { title = title }
     )
 end

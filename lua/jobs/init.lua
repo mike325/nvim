@@ -388,11 +388,15 @@ function Job:start()
 
     local function general_on_exit(_, rc)
         if rc == 0 and not self.failed then
-            vim.notify(('Job %s succeed!! %s'):format(self.exe, get_icon 'success'), 'INFO', { title = self.exe })
+            vim.notify(
+                ('Job %s succeed!! %s'):format(self.exe, get_icon 'success'),
+                vim.log.levels.INFO,
+                { title = self.exe }
+            )
         else
             vim.notify(
                 ('Job %s failed :c exit with code: %d!! %s'):format(self.exe, rc, get_icon 'error'),
-                'ERROR',
+                vim.log.levels.ERROR,
                 { title = self.exe }
             )
         end
@@ -562,7 +566,7 @@ function Job:start()
 
     if self._timeout and self._timeout > 0 then
         vim.defer_fn(function()
-            vim.notify(('Timeout ! stopping job %s'):format(self._id), 'WARN', { title = 'Job Timeout' })
+            vim.notify(('Timeout ! stopping job %s'):format(self._id), vim.log.levels.WARN, { title = 'Job Timeout' })
             self:stop()
         end, self._timeout)
     end

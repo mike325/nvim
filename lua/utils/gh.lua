@@ -44,7 +44,7 @@ local function exec_ghcmd(ghcmd, args, callbacks)
         end,
         callbacks_on_failure = function(job)
             local title = 'GH' .. ghcmd:sub(1, 1):upper() .. ghcmd:sub(2, #ghcmd)
-            vim.notify('Failed to execute gh ' .. ghcmd, 'ERROR', { title = title })
+            vim.notify('Failed to execute gh ' .. ghcmd, vim.log.levels.ERROR, { title = title })
         end,
     }
     gh:start()

@@ -322,7 +322,7 @@ nvim.command.set('Find', function(opts)
                     title = 'Finder',
                 })
             else
-                vim.notify('No files matching: ' .. opts.fargs[#opts.fargs], 'ERROR', { title = 'Find' })
+                vim.notify('No files matching: ' .. opts.fargs[#opts.fargs], vim.log.levels.ERROR, { title = 'Find' })
             end
         end,
     }
@@ -341,7 +341,7 @@ nvim.command.set('LFind', function(opts)
                     title = 'LFinder',
                 }, nvim.get_current_win())
             else
-                vim.notify('No files matching: ' .. opts.fargs[#opts.fargs], 'ERROR', { title = 'Find' })
+                vim.notify('No files matching: ' .. opts.fargs[#opts.fargs], vim.log.levels.ERROR, { title = 'Find' })
             end
         end,
     }
@@ -748,7 +748,11 @@ vim.keymap.set('n', '<leader>c', function()
         vim.schedule_wrap(function(choice)
             if options[choice] then
                 nvim.reg['+'] = options[choice]()
-                vim.notify('Clipboard value: ' .. nvim.reg['+'], 'INFO', { title = 'Item copied successfully' })
+                vim.notify(
+                    'Clipboard value: ' .. nvim.reg['+'],
+                    vim.log.levels.INFO,
+                    { title = 'Item copied successfully' }
+                )
             end
         end)
     )
@@ -797,7 +801,7 @@ if executable 'gh' then
         end
         opts.args = table.concat(opts.fargs, ' ')
         RELOAD('utils.gh').create_pr(opts, function(output)
-            vim.notify('PR created! ', 'INFO', { title = 'GH' })
+            vim.notify('PR created! ', vim.log.levels.INFO, { title = 'GH' })
         end)
     end, {
         nargs = '*',
@@ -813,7 +817,7 @@ if executable 'gh' then
         end
         RELOAD('utils.gh').pr_ready(is_ready, function(output)
             local msg = ('PR move to %s'):format(opts.args == '' and 'ready' or opts.args)
-            vim.notify(msg, 'INFO', { title = 'GH' })
+            vim.notify(msg, vim.log.levels.INFO, { title = 'GH' })
         end)
     end, {
         nargs = '?',
@@ -829,7 +833,7 @@ if executable 'gh' then
         RELOAD('utils.gh').edit_pr(opts, function(output)
             local action = opts.bang and 'removed' or 'added'
             local msg = ('Reviewers %s were %s'):format(action, table.concat(reviewers, ''))
-            vim.notify(msg, 'INFO', { title = 'GH' })
+            vim.notify(msg, vim.log.levels.INFO, { title = 'GH' })
         end)
     end, {
         nargs = '+',
@@ -919,7 +923,7 @@ nvim.command.set('ClearMarks', function()
     end
 
     if deleted_marks > 0 then
-        vim.notify('Deleted marks: ' .. deleted_marks, 'INFO', { title = 'ClearMarks' })
+        vim.notify('Deleted marks: ' .. deleted_marks, vim.log.levels.INFO, { title = 'ClearMarks' })
     end
 end, { desc = 'Remove global marks of removed files' })
 
@@ -935,7 +939,7 @@ nvim.command.set('DumpMarks', function()
     end
     if next(marks) ~= nil then
         require('utils.files').dump_json('marks.json', marks)
-        vim.notify('Marks dumped into marks.json', 'INFO', { title = 'DumpMarks' })
+        vim.notify('Marks dumped into marks.json', vim.log.levels.INFO, { title = 'DumpMarks' })
     end
 end, { desc = 'Dump global marks in a local json file' })
 
@@ -959,7 +963,7 @@ nvim.command.set('RemoveForeignMarks', function()
     end
 
     if deleted_marks > 0 then
-        vim.notify('Deleted marks not in the CWD: ' .. deleted_marks, 'INFO', { title = 'RemoveMarks' })
+        vim.notify('Deleted marks not in the CWD: ' .. deleted_marks, vim.log.levels.INFO, { title = 'RemoveMarks' })
     end
 end, { desc = 'Remove all global marks that are outside of the CWD' })
 

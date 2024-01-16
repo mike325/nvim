@@ -89,7 +89,7 @@ if require('utils.files').is_file(ssh_config) then
         else
             vim.notify(
                 'Failed to parse sshconfig: ' .. fname .. '\n' .. err,
-                'ERROR',
+                vim.log.levels.ERROR,
                 { title = 'SSHWatcher ' .. status }
             )
             ssh_watcher:stop()
@@ -126,7 +126,7 @@ elseif vim.g.minimal and not vim.g.bare then
         end,
     }
 elseif not vim.g.minimal and not vim.g.bare then
-    vim.notify('Missing git! cannot install plugins', 'WARN', { title = 'Nvim Setup' })
+    vim.notify('Missing git! cannot install plugins', vim.log.levels.WARN, { title = 'Nvim Setup' })
 end
 
 vim.cmd.packadd { args = { 'cfilter' }, bang = false }

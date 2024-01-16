@@ -70,7 +70,7 @@ nvim.command.set('SnippetReload', function()
     if ok then
         vim.notify 'Snippets Reloaded!'
     else
-        vim.notify(msg, 'ERROR', { title = 'Luasnip' })
+        vim.notify(msg, vim.log.levels.ERROR, { title = 'Luasnip' })
     end
 end)
 

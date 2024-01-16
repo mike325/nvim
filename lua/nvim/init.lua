@@ -77,7 +77,7 @@ local function del_augroup(name_id)
     -- local ok, _ = pcall(api_call, name_id)
     -- NOTE: May disable notifications and do a silent fail
     -- if not ok then
-    --     vim.notify(('Augroup %s does not exists'):format(name_id), 'WARN', { title = 'Augroup delete' })
+    --     vim.notify(('Augroup %s does not exists'):format(name_id), vim.log.levels.WARN, { title = 'Augroup delete' })
     -- end
 end
 

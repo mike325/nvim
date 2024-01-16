@@ -59,7 +59,7 @@ vim.keymap.set('n', '=T', function()
         elseif #qf_diagnostics > 0 then
             vim.cmd.Trouble 'quickfix'
         else
-            vim.notify('Nothing to check !', 'WARN', { title = 'Trouble' })
+            vim.notify('Nothing to check !', vim.log.levels.WARN, { title = 'Trouble' })
         end
     end
 end, { noremap = true, silent = true, desc = 'Trouble mapping to toggle diagnostics' })

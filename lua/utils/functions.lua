@@ -170,12 +170,12 @@ function M.send_grep_job(opts)
 
     grep:add_callbacks(function(job, rc)
         if rc == 0 and job:is_empty() then
-            vim.notify('No matching results ' .. search, 'WARN', { title = 'Grep' })
+            vim.notify('No matching results ' .. search, vim.log.levels.WARN, { title = 'Grep' })
         elseif rc ~= 0 then
             if job:is_empty() then
-                vim.notify('No matching results ' .. search, 'WARN', { title = 'Grep' })
+                vim.notify('No matching results ' .. search, vim.log.levels.WARN, { title = 'Grep' })
             else
-                vim.notify(('%s exited with code %s'):format(cmd[1], rc), 'ERROR', { title = 'Grep' })
+                vim.notify(('%s exited with code %s'):format(cmd[1], rc), vim.log.levels.ERROR, { title = 'Grep' })
             end
         end
     end)
@@ -908,7 +908,7 @@ function M.python(version, args)
     local pyversion = version == 3 and py3 or py2
 
     if pyversion == nil or pyversion == '' then
-        vim.notify('Python' .. pyversion .. ' is not available in the system', 'ERROR', { title = 'Python' })
+        vim.notify('Python' .. pyversion .. ' is not available in the system', vim.log.levels.ERROR, { title = 'Python' })
         return -1
     end
 
@@ -990,7 +990,7 @@ function M.scp_edit(opts)
                 { prompt = 'Select File/Buffer attribute: ' },
                 vim.schedule_wrap(function(choice)
                     if not choice then
-                        vim.notify('Missing filename!', 'ERROR', { title = 'SCPEdit' })
+                        vim.notify('Missing filename!', vim.log.levels.ERROR, { title = 'SCPEdit' })
                         return
                     end
                     filename = choice
@@ -1008,7 +1008,7 @@ function M.scp_edit(opts)
             completion = "customlist,v:lua.require'completions'.ssh_hosts_completion",
         }, function(input)
             if not input then
-                vim.notify('Missing hostname!', 'ERROR', { title = 'SCPEdit' })
+                vim.notify('Missing hostname!', vim.log.levels.ERROR, { title = 'SCPEdit' })
                 return
             end
             host = input

@@ -80,7 +80,7 @@ end
 local function get_move_copy_functions()
     local class_node = RELOAD('utils.treesitter').get_current_class()
     if not class_node then
-        vim.notify('Cursor is not inside a class', 'ERROR')
+        vim.notify('Cursor is not inside a class', vim.log.levels.ERROR)
         return {}
     end
 
@@ -90,7 +90,7 @@ end
 local function get_classname()
     local class_node = RELOAD('utils.treesitter').get_current_class()
     if not class_node then
-        vim.notify('Cursor is not inside a class', 'ERROR')
+        vim.notify('Cursor is not inside a class', vim.log.levels.ERROR)
         return 'Class'
     end
     local classname_query = [[

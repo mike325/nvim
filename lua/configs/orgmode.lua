@@ -13,11 +13,11 @@ if not isdir '~/notes/' then
 end
 
 local function general_success(format)
-    vim.notify('Successfully exported to ' .. format, 'INFO', { title = 'Orgmode' })
+    vim.notify('Successfully exported to ' .. format, vim.log.levels.INFO, { title = 'Orgmode' })
 end
 
 local function general_error(err, format)
-    vim.notify(table.concat(err, '\n'), 'ERROR', { title = 'Failed exporting to ' .. format })
+    vim.notify(table.concat(err, '\n'), vim.log.levels.ERROR, { title = 'Failed exporting to ' .. format })
 end
 
 local exporters = {}

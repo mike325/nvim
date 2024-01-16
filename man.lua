@@ -97,7 +97,7 @@ if vim.fn.executable 'git' == 1 then
         })
     end
 elseif not vim.g.minimal and not vim.g.bare then
-    vim.notify('Missing git! cannot install plugins', 'WARN', { title = 'Nvim Setup' })
+    vim.notify('Missing git! cannot install plugins', vim.log.levels.WARN, { title = 'Nvim Setup' })
 end
 
 require 'configs.autocmds'

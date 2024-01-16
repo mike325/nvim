@@ -114,14 +114,14 @@ function M.setup()
                 title = 'CMake',
             },
             callbacks_on_success = function(_)
-                vim.notify('Build completed!', 'INFO', { title = 'CMake' })
+                vim.notify('Build completed!', vim.log.levels.INFO, { title = 'CMake' })
                 if is_file 'build/compile_commands.json' then
                     link('build/compile_commands.json', '.', false, true)
                 end
                 RELOAD('utils.qf').clear()
             end,
             callbacks_on_failure = function(_, rc)
-                vim.notify('CMake Build Failed! :c with exit code: ' .. rc, 'ERROR', { title = 'CMake' })
+                vim.notify('CMake Build Failed! :c with exit code: ' .. rc, vim.log.levels.ERROR, { title = 'CMake' })
             end,
         }
 

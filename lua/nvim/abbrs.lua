@@ -6,7 +6,11 @@ local M = {}
 function M.set_abbr(abbr)
     vim.validate { abbreviation = { abbr, 'table' } }
     if not abbr.mode or not abbr.lhs then
-        vim.notify('Missing arguments!! set_abbr need a mode and a lhs attribbutes', 'ERROR', { title = 'Nvim Abbrs' })
+        vim.notify(
+            'Missing arguments!! set_abbr need a mode and a lhs attribbutes',
+            vim.log.levels.ERROR,
+            { title = 'Nvim Abbrs' }
+        )
         return false
     end
 
@@ -54,7 +58,7 @@ function M.set_abbr(abbr)
             table.insert(command, rhs)
         end
     else
-        vim.notify('Unsupported mode: ' .. vim.inspect(mode), 'ERROR', { title = 'Nvim Abbrs' })
+        vim.notify('Unsupported mode: ' .. vim.inspect(mode), vim.log.levels.ERROR, { title = 'Nvim Abbrs' })
         return false
     end
 

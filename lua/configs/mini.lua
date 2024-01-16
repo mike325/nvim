@@ -56,7 +56,7 @@ if MiniSessions then
         local function delete_session(session_file)
             local path = sessions_dir .. '/' .. session_file
             if not require('utils.files').is_file(path) then
-                vim.notify('Invalid Session: ' .. session_file, 'ERROR', { title = 'MiniSession' })
+                vim.notify('Invalid Session: ' .. session_file, vim.log.levels.ERROR, { title = 'MiniSession' })
                 return
             end
             MiniSessions.delete(session_file, { force = bang })
@@ -428,6 +428,10 @@ if vim.g.minimal then
 
     if vim.F.npcall(require, 'mini.cursorword') then
         require('mini.cursorword').setup()
+    end
+
+    if vim.F.npcall(require, 'mini.notify') then
+        require('mini.notify').setup()
     end
 
     if vim.F.npcall(require, 'mini.indentscope') then

@@ -28,26 +28,39 @@ if has_ui then
             nvim_notify.dismiss { pending = true, silent = true }
         end, { noremap = true, silent = true })
     else
-        notify_backend = function(msg, level, opts)
+        local function notify_format(msg, level, opts)
             if opts and opts.title then
                 msg = ('[%s]: %s'):format(opts.title, msg)
             end
+            return msg
+        end
+        if vim.g.minimal and vim.F.npcall(require, 'mini.notify') then
+            require('mini.notify').setup {}
+            notify_backend = (function(f)
+                return function(msg, level, opts)
+                    local text = notify_format(msg, level, opts)
+                    f(text, level, opts)
+                end
+            end)(require('mini.notify').make_notify())
+        else
+            notify_backend = function(msg, level, opts)
+                local notification = notify_format(msg, level, opts)
+                local msg_hl = {
+                    hl_group.hint,
+                    hl_group.info,
+                    hl_group.warn,
+                    hl_group.error,
+                    [0] = hl_group.error,
+                    DEBUG = hl_group.hint,
+                    ERROR = hl_group.error,
+                    INFO = hl_group.info,
+                    TRACE = hl_group.error,
+                    WARN = hl_group.warn,
+                    WARNING = hl_group.warn,
+                }
 
-            local msg_hl = {
-                hl_group.error,
-                hl_group.warn,
-                hl_group.info,
-                hl_group.hint,
-                [0] = hl_group.error,
-                TRACE = hl_group.error,
-                ERROR = hl_group.error,
-                WARN = hl_group.warn,
-                WARNING = hl_group.warn,
-                INFO = hl_group.info,
-                DEBUG = hl_group.hint,
-            }
-
-            vim.api.nvim_echo({ { msg, level and msg_hl[level] or msg_hl.INFO } }, true, {})
+                vim.api.nvim_echo({ { notification, level and msg_hl[level] or msg_hl.INFO } }, true, {})
+            end
         end
     end
 else
@@ -67,13 +80,17 @@ else
         }
 
         local level_colors = {
-            TRACE = term_colors.red,
+            term_colors.purple,
+            term_colors.green,
+            term_colors.yellow,
+            term_colors.red,
+            [0] = term_colors.red,
+            DEBUG = term_colors.purple,
             ERROR = term_colors.red,
+            INFO = term_colors.green,
+            TRACE = term_colors.red,
             WARN = term_colors.yellow,
             WARNING = term_colors.yellow,
-            INFO = term_colors.green,
-            HINT = term_colors.blue,
-            DEBUG = term_colors.purple,
         }
 
         if opts and opts.title then
