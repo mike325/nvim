@@ -323,6 +323,15 @@ def _parseArgs():
             else:
                 setattr(ns, self.dest, option[2:4] != "no")
 
+    class NegateActionWithArg(argparse.Action):
+        def __call__(self, parser, ns, values, option):
+            if len(option) < 4:
+                setattr(ns, self.dest, True if values is None or values == "" else values)
+            elif option[2:4] == "no":
+                setattr(ns, self.dest, False)
+            else:
+                setattr(ns, self.dest, values)
+
     class ChangeLogFile(argparse.Action):
         def __call__(self, parser, ns, values, option):
             if option[2:4] == "no":

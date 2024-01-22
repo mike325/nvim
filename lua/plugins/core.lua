@@ -48,7 +48,16 @@ return {
     { 'nvim-lua/popup.nvim', lazy = true },
     { 'nvim-lua/plenary.nvim', lazy = true },
     { 'rcarriga/nvim-notify', lazy = true },
-    { 'kevinhwang91/nvim-bqf', lazy = true, ft = 'qf' },
+    {
+        'kevinhwang91/nvim-bqf',
+        lazy = true,
+        ft = 'qf',
+        opts = {
+            auto_enable = true,
+            auto_resize_height = true,
+            func_map = {},
+        },
+    },
     { 'tweekmonster/startuptime.vim', cmd = { 'StartupTime' } },
     {
         'nvim-tree/nvim-web-devicons',

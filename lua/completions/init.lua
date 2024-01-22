@@ -99,6 +99,9 @@ completions = vim.tbl_extend('force', completions, {
     toggle = function(arglead, cmdline, cursorpos)
         return general_completion(arglead, cmdline, cursorpos, { 'enable', 'disable' })
     end,
+    toggle_dash = function(arglead, cmdline, cursorpos)
+        return general_completion(arglead, cmdline, cursorpos, { '-enable', '-disable' })
+    end,
     reload_configs = function(arglead, cmdline, cursorpos)
         return general_completion(arglead, cmdline, cursorpos, { 'all', 'mappings', 'commands', 'autocmds', 'options' })
     end,
