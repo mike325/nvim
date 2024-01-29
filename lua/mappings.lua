@@ -464,15 +464,19 @@ function M.remote_cmd(host, send)
     return rcmd
 end
 
-function M.get_host(host)
+function M.get_host(host, send)
     if not host or host == '' then
-        host = vim.fn.input('Enter hostname > ', '', "customlist,v:lua.require'completions'.ssh_hosts_completion")
+        local prompt = 'Enter hostname > '
+        if send ~= nil then
+            prompt = send and 'Send file to > ' or 'Get file from > '
+        end
+        host = vim.fn.input(prompt, '', "customlist,v:lua.require'completions'.ssh_hosts_completion")
     end
     return host
 end
 
 function M.remote_file(host, send)
-    host = M.get_host(host)
+    host = M.get_host(host, send)
     if not host or host == '' then
         vim.notify('Missing hostname', vim.log.levels.ERROR)
         return
