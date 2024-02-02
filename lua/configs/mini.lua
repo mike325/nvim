@@ -6,17 +6,34 @@ local mkdir = require('utils.files').mkdir
 local completions = RELOAD 'completions'
 local noremap = { noremap = true, silent = true }
 
-if vim.F.npcall(require, 'mini.doc') then
-    require('mini.doc').setup {}
+local mini = {}
+local function load_simple_module(plugin)
+    local mini_plugin = 'mini.' .. plugin
+    local module = vim.F.npcall(require, mini_plugin)
+    if module then
+        mini[plugin] = module
+        require(mini_plugin).setup {}
+    end
 end
 
-local MiniSessions = vim.F.npcall(require, 'mini.sessions')
-if MiniSessions then
+local simple_mini = {
+    'doc',
+    'fuzzy',
+    'comment',
+    'extra',
+    'pairs',
+    'sessions'
+}
+
+for _, plugin in ipairs(simple_mini) do
+    load_simple_module(plugin)
+end
+
+if mini.sessions then
     local sessions_dir = sys.session
     if not is_dir(sessions_dir) then
         mkdir(sessions_dir)
     end
-    MiniSessions.setup {}
     nvim.command.set('SessionSave', function(opts)
         local session = opts.args
         if session == '' then
@@ -26,15 +43,15 @@ if MiniSessions then
                 session = session:gsub('^%.+', '')
             end
         end
-        MiniSessions.write(session:gsub('%s+', '_'), { force = true })
+        mini.sessions.write(session:gsub('%s+', '_'), { force = true })
     end, { nargs = '?', complete = completions.session_files })
 
     nvim.command.set('SessionLoad', function(opts)
         local session = opts.args
         if session ~= '' then
-            MiniSessions.read(session, { force = false })
+            mini.sessions.read(session, { force = false })
         elseif opts.bang then
-            MiniSessions.read(MiniSessions.get_latest(), { force = false })
+            mini.sessions.read(mini.sessions.get_latest(), { force = false })
         else
             local sessions = require('utils.files').get_files(sessions_dir)
             vim.ui.select(
@@ -42,7 +59,7 @@ if MiniSessions then
                 { prompt = 'Select session file: ' },
                 vim.schedule_wrap(function(choice)
                     if choice then
-                        MiniSessions.read(choice, { force = false })
+                        mini.sessions.read(choice, { force = false })
                     end
                 end)
             )
@@ -56,10 +73,10 @@ if MiniSessions then
         local function delete_session(session_file)
             local path = sessions_dir .. '/' .. session_file
             if not require('utils.files').is_file(path) then
-                vim.notify('Invalid Session: ' .. session_file, vim.log.levels.ERROR, { title = 'MiniSession' })
+                vim.notify('Invalid Session: ' .. session_file, vim.log.levels.ERROR, { title = 'mini.session' })
                 return
             end
-            MiniSessions.delete(session_file, { force = bang })
+            mini.sessions.delete(session_file, { force = bang })
         end
 
         if session == '' then
@@ -134,9 +151,9 @@ if mini_splitjoin then
     }
 end
 
-local MiniFiles = vim.F.npcall(require, 'mini.files')
-if MiniFiles then
-    MiniFiles.setup {
+mini.files = vim.F.npcall(require, 'mini.files')
+if mini.files then
+    mini.files.setup {
         mappings = {
             close = 'q',
             go_in = '<TAB>',
@@ -153,15 +170,15 @@ if MiniFiles then
     }
     nvim.command.set('Files', function(opts)
         local path = opts.bang and vim.api.nvim_buf_get_name(0) or vim.loop.cwd()
-        MiniFiles.open(path)
+        mini.files.open(path)
     end, { bang = true, desc = 'Open mini.files' })
 
     vim.keymap.set('n', '-', function()
-        MiniFiles.open()
+        mini.files.open()
     end, { noremap = true, silent = true, desc = 'Open mini.files' })
 
     vim.keymap.set('n', 'g-', function()
-        MiniFiles.open(vim.api.nvim_buf_get_name(0))
+        mini.files.open(vim.api.nvim_buf_get_name(0))
     end, { noremap = true, silent = true, desc = 'Open mini.files' })
 
     local show_dotfiles = true
@@ -180,14 +197,14 @@ if MiniFiles then
     end
 
     vim.g.mini_files_autocmd = vim.api.nvim_create_autocmd('User', {
-        pattern = 'MiniFilesBufferCreate',
+        pattern = 'mini.filesBufferCreate',
         callback = function(args)
             local buf_id = args.data.buf_id
             -- Tweak left-hand side of mapping to your liking
             vim.keymap.set('n', 'g.', function()
                 show_dotfiles = not show_dotfiles
                 local new_filter = show_dotfiles and filter_show or filter_hide
-                MiniFiles.refresh { content = { filter = new_filter } }
+                mini.files.refresh { content = { filter = new_filter } }
             end, { buffer = buf_id, nowait = true })
 
             local mapping = vim.tbl_filter(function(keymap)
@@ -201,26 +218,22 @@ if MiniFiles then
     })
 end
 
-local MiniMap = vim.F.npcall(require, 'mini.map')
-if MiniMap then
-    MiniMap.setup {}
+mini.map = vim.F.npcall(require, 'mini.map')
+if mini.map then
+    mini.map.setup {}
     nvim.command.set('MiniMap', function(opts)
         if opts.args == 'enable' then
-            MiniMap.open()
+            mini.map.open()
         elseif opts.args == 'disable' then
-            MiniMap.close()
+            mini.map.close()
         else
-            MiniMap.toggle()
+            mini.map.toggle()
         end
     end, { nargs = '?', complete = completions.toggle, desc = 'Open/Close mini.map' })
 end
 
-if vim.F.npcall(require, 'mini.comment') then
-    require('mini.comment').setup {}
-end
-
-local MiniPick = vim.F.npcall(require, 'mini.pick')
-if MiniPick then
+mini.pick = vim.F.npcall(require, 'mini.pick')
+if mini.pick then
     local win_config = function()
         local height = math.floor(0.618 * vim.o.lines)
         local width = math.floor(0.618 * vim.o.columns)
@@ -234,7 +247,7 @@ if MiniPick then
         }
     end
 
-    MiniPick.setup {
+    mini.pick.setup {
         window = {
             config = win_config,
         },
@@ -243,15 +256,15 @@ if MiniPick then
             move_down = '<C-j>',
         },
     }
-    vim.ui.select = MiniPick.ui_select
+    vim.ui.select = mini.pick.ui_select
 
     if vim.g.minimal then
         vim.keymap.set('n', '<leader><C-r>', function()
-            MiniPick.builtin.resume()
+            mini.pick.builtin.resume()
         end, noremap)
 
         vim.keymap.set('n', '<leader>g', function()
-            MiniPick.builtin.grep()
+            mini.pick.builtin.grep()
         end, noremap)
 
         vim.keymap.set('n', '<C-p>', function()
@@ -264,10 +277,10 @@ if MiniPick then
             }
             local finder = RELOAD('utils.functions').select_filelist(is_git, true)
             if fast_pickers[finder[1]] then
-                MiniPick.builtin.cli { command = finder }
+                mini.pick.builtin.cli { command = finder }
             else
                 -- TODO: add support for threads to have async functionality?
-                MiniPick.builtin.files()
+                mini.pick.builtin.files()
             end
         end, noremap)
 
@@ -280,27 +293,17 @@ if MiniPick then
             }
             if fast_pickers[finder[1]] then
                 table.insert(finder, '-uuu')
-                MiniPick.builtin.cli { command = finder }
+                mini.pick.builtin.cli { command = finder }
             else
                 -- TODO: add support for threads to have async functionality?
-                MiniPick.builtin.files()
+                mini.pick.builtin.files()
             end
         end, noremap)
 
         vim.keymap.set('n', '<C-b>', function()
-            MiniPick.builtin.buffers {}
+            mini.pick.builtin.buffers {}
         end, noremap)
     end
-end
-
-local MiniExtras = vim.F.npcall(require, 'mini.extra')
-if MiniExtras then
-    MiniExtras.setup {}
-end
-
-local MiniPairs = vim.F.npcall(require, 'mini.pairs')
-if MiniPairs then
-    MiniPairs.setup()
 end
 
 if vim.F.npcall(require, 'mini.surround') then
@@ -323,7 +326,7 @@ if vim.F.npcall(require, 'mini.surround') then
 end
 
 if vim.F.npcall(require, 'mini.ai') then
-    local gen_ai_spec = MiniExtras.gen_ai_spec
+    local gen_ai_spec = mini.extra.gen_ai_spec
     require('mini.ai').setup {
         custom_textobjects = {
             e = gen_ai_spec.buffer(),
@@ -335,9 +338,9 @@ if vim.F.npcall(require, 'mini.ai') then
     }
 end
 
-local MiniTest = vim.F.npcall(require, 'mini.test')
-if MiniTest then
-    MiniTest.setup {
+mini.test = vim.F.npcall(require, 'mini.test')
+if mini.test then
+    mini.test.setup {
         collect = {
             find_files = function()
                 return vim.fn.globpath('lua/tests', '**/*_spec.lua', true, true)
@@ -354,16 +357,16 @@ if MiniTest then
                 nvim.command.set('RunLuaTests', function(opts)
                     local test = opts.args
                     if test == '*' then
-                        MiniTest.execute(MiniTest.collect())
+                        mini.test.execute(mini.test.collect())
                     elseif test == '' then
                         test = vim.api.nvim_buf_get_name(0)
                         if not test:match '.+_spec%.lua$' then
-                            MiniTest.execute(MiniTest.collect())
+                            mini.test.execute(mini.test.collect())
                         else
-                            MiniTest.run_file(test)
+                            mini.test.run_file(test)
                         end
                     else
-                        MiniTest.run_file(vim.fn.expand(test))
+                        mini.test.run_file(vim.fn.expand(test))
                     end
                 end, {
                     buffer = event.buf,
@@ -380,9 +383,9 @@ if MiniTest then
             callback = function(event)
                 nvim.command.set('ExecuteLuaTest', function(opts)
                     if opts.bang then
-                        MiniTest.run_file(nvim.buf.get_name(0))
+                        mini.test.run_file(nvim.buf.get_name(0))
                     else
-                        MiniTest.run_at_location()
+                        mini.test.run_at_location()
                     end
                 end, {
                     buffer = event.buf,
@@ -396,6 +399,16 @@ if MiniTest then
 end
 
 if vim.g.minimal then
+    local simple_minimal = {
+        'cursorword',
+        'notify',
+        'indentscope',
+    }
+
+    for _, plugin in ipairs(simple_minimal) do
+        load_simple_module(plugin)
+    end
+
     if vim.F.npcall(require, 'mini.completion') then
         -- TODO: Write custom completion func to collect and combine results
         require('mini.completion').setup {
@@ -421,22 +434,11 @@ if vim.g.minimal then
             else
                 -- TODO: Add support for native snippet expansion
                 -- return keys['cr']
-                return MiniPairs.cr()
+                return mini.pairs.cr()
             end
         end, { expr = true })
     end
 
-    if vim.F.npcall(require, 'mini.cursorword') then
-        require('mini.cursorword').setup()
-    end
-
-    if vim.F.npcall(require, 'mini.notify') then
-        require('mini.notify').setup()
-    end
-
-    if vim.F.npcall(require, 'mini.indentscope') then
-        require('mini.indentscope').setup()
-    end
 
     if vim.F.npcall(require, 'mini.hipatterns') then
         local hipatterns = require 'mini.hipatterns'
