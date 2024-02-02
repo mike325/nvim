@@ -5,34 +5,34 @@ if not treesitter then
     return false
 end
 
--- local languages = {
---     'bash',
---     'bibtex',
---     'c',
---     'cmake',
---     'comment',
---     'cpp',
---     'dockerfile',
---     'go',
---     'ini',
---     'java',
---     'json',
---     'jsonc',
---     'latex',
---     'lua',
---     'make',
---     'markdown',
---     'perl',
---     'python',
---     'query',
---     'rst',
---     'rust',
---     'todotxt',
---     'toml',
---     'vim',
---     'vimdoc',
---     'yaml',
--- }
+local languages = {
+    'bash',
+    'bibtex',
+    'c',
+    'cmake',
+    'comment',
+    'cpp',
+    'dockerfile',
+    'go',
+    'ini',
+    'java',
+    'json',
+    'jsonc',
+    'latex',
+    'lua',
+    'make',
+    'markdown',
+    'perl',
+    'python',
+    'query',
+    'rst',
+    'rust',
+    'todotxt',
+    'toml',
+    'vim',
+    'vimdoc',
+    'yaml',
+}
 
 local parsers = require 'nvim-treesitter.parsers'
 
@@ -49,7 +49,7 @@ if cpp_tools then
 end
 
 treesitter.setup {
-    -- ensure_installed = languages,
+    ensure_installed = languages,
     indent = {
         enable = true,
     },

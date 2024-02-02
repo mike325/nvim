@@ -115,4 +115,10 @@ return {
         i(2, 'CONDITION'),
         i(3, ':'),
     })),
+    s('ign', fmt([[# shellcheck disable=SC{}]],{
+        i(1, 'RULE'),
+    })),
+    s('shellcheck', fmt([[# shellcheck disable=SC{}]],{
+        i(1, 'RULE'),
+    })),
 }
