@@ -22,7 +22,7 @@ local simple_mini = {
     'comment',
     'extra',
     'pairs',
-    'sessions'
+    'sessions',
 }
 
 for _, plugin in ipairs(simple_mini) do
@@ -438,7 +438,6 @@ if vim.g.minimal then
             end
         end, { expr = true })
     end
-
 
     if vim.F.npcall(require, 'mini.hipatterns') then
         local hipatterns = require 'mini.hipatterns'
