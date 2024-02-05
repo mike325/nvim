@@ -11,7 +11,8 @@ local function on_change(watcher, err, fname, status)
             if vim.is_callable(cb) then
                 cb(err, fname, status)
             else
-                vim.api.nvim_exec_autocmds(cb, {
+                local autocmd_name = cb
+                vim.api.nvim_exec_autocmds(autocmd_name, {
                     group = 'User',
                     data = {
                         err = err,
@@ -30,14 +31,20 @@ local function on_change(watcher, err, fname, status)
     end, 100)
 end
 
-function Watcher:new(filename, cb)
+function Watcher:new(filename, cb, autocmd)
     vim.validate {
         filename = { filename, 'string' },
         cb = { cb, { 'table', 'function', 'string' } },
+        autocmd = { autocmd, { 'table', 'string' }, true },
     }
 
     if type(cb) ~= type {} then
         cb = { cb }
+    end
+
+    if autocmd then
+        autocmd = type(autocmd) == type {} and autocmd or { autocmd }
+        cb = vim.list_extend(cb, autocmd)
     end
 
     local watcher = vim.loop.new_fs_event()

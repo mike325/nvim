@@ -497,7 +497,8 @@ function M.rename(old, new, bang)
         end
 
         if load_buffer and M.is_file(new) then
-            vim.cmd.edit(new)
+            local cwd = vim.pesc(vim.loop.cwd() .. '/')
+            vim.cmd.edit((new:gsub(cwd, '')))
             if cursor_pos then
                 nvim.win.set_cursor(0, cursor_pos)
             end

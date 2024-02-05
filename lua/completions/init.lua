@@ -1,4 +1,4 @@
-local utils = RELOAD 'completions.utils'
+local utils = require 'completions.utils'
 local utils_io = require 'utils.files'
 
 local diagnostic_actions = {

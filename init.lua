@@ -73,8 +73,8 @@ vim.g.mapleader = ' '
 
 require 'utils.ft_detect'
 
-require 'completions'
 require 'globals'
+require 'completions'
 
 vim.g.minimal = vim.env.VIM_MIN ~= nil or vim.g.minimal ~= nil
 vim.g.bare = vim.env.VIM_BARE ~= nil or vim.g.bare ~= nil
@@ -94,7 +94,7 @@ if require('utils.files').is_file(ssh_config) then
             )
             ssh_watcher:stop()
         end
-    end)
+    end, 'SSHParser')
     ssh_watcher:start()
 end
 

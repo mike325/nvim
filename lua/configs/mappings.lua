@@ -894,7 +894,8 @@ nvim.command.set('ArgAddBuf', function(opts)
     local buffers = vim.tbl_map(function(buf)
         return (vim.api.nvim_buf_get_name(buf):gsub(cwd, ''))
     end, vim.api.nvim_list_bufs())
-    for _, arg in ipairs(opts.fargs) do
+    local args = #opts.fargs > 0 and opts.fargs or { '%' }
+    for _, arg in ipairs(args) do
         if arg:match '%*' then
             arg = (arg:gsub('%*', '.*'))
             local matches = {}
@@ -908,7 +909,7 @@ nvim.command.set('ArgAddBuf', function(opts)
             argadd(arg)
         end
     end
-end, { nargs = '+', complete = completions.buflist, desc = 'Add buffers to the arglist' })
+end, { nargs = '*', complete = completions.buflist, desc = 'Add buffers to the arglist' })
 
 nvim.command.set('ClearMarks', function()
     local deleted_marks = 0

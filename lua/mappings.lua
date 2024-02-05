@@ -628,14 +628,15 @@ function M.edit(args)
     local utils = RELOAD 'utils.files'
 
     local globs = args.fargs
+    local cwd = vim.pesc(vim.loop.cwd() .. '/')
     for _, g in ipairs(globs) do
         if utils.is_file(g) then
-            vim.cmd.edit(g)
+            vim.cmd.edit((g:gsub(cwd, '')))
         elseif g:match '%*' then
             local files = vim.fn.glob(g, false, true, false)
             for _, f in ipairs(files) do
                 if utils.is_file(f) then
-                    vim.cmd.edit(f)
+                    vim.cmd.edit((f:gsub(cwd, '')))
                 end
             end
         end
@@ -669,7 +670,8 @@ function M.diff_files(args)
         else
             vim.cmd.vsplit()
         end
-        vim.cmd.edit(f)
+        local cwd = vim.pesc(vim.loop.cwd() .. '/')
+        vim.cmd.edit((f:gsub(cwd, '')))
     end
 
     for _, w in ipairs(nvim.tab.list_wins(0)) do
@@ -872,6 +874,29 @@ function M.reload_configs(opts)
     end
 end
 
+local function select_from_lst(args, prompt)
+    vim.validate {
+        args = { args, { 'string', 'table' } },
+        prompt = { prompt, 'string', true },
+    }
+
+    prompt = prompt or 'Select file: '
+    local cwd = vim.pesc(vim.loop.cwd() .. '/')
+    if #args > 1 then
+        vim.ui.select(
+            args,
+            { prompt = prompt },
+            vim.schedule_wrap(function(choice)
+                vim.cmd.edit((choice:gsub(cwd, '')))
+            end)
+        )
+    elseif #args == 1 then
+        vim.cmd.edit((args[1]:gsub(cwd, '')))
+    else
+        vim.notify('No file found', vim.log.levels.WARN)
+    end
+end
+
 function M.alternate(opts)
     local bufnr = vim.api.nvim_get_current_buf()
     opts.buf = vim.api.nvim_buf_get_name(bufnr)
@@ -914,19 +939,7 @@ function M.alternate(opts)
         candidates = alternates[buf]
     end
 
-    if #candidates > 1 then
-        vim.ui.select(
-            candidates,
-            { prompt = 'Alternate: ' },
-            vim.schedule_wrap(function(choice)
-                vim.cmd.edit(choice)
-            end)
-        )
-    elseif #candidates == 1 then
-        vim.cmd.edit(candidates[1])
-    else
-        vim.notify('No alternate file found', vim.log.levels.WARN)
-    end
+    select_from_lst(candidates, 'Alternate: ')
 end
 
 function M.alt_makefiles(opts)
@@ -960,19 +973,7 @@ function M.alt_makefiles(opts)
         candidates = vim.g.makefiles[opts.basedir]
     end
 
-    if #candidates > 1 then
-        vim.ui.select(
-            candidates,
-            { prompt = 'Makefile: ' },
-            vim.schedule_wrap(function(choice)
-                vim.cmd.edit(choice)
-            end)
-        )
-    elseif #candidates == 1 then
-        vim.cmd.edit(candidates[1])
-    else
-        vim.notify('No makefiles file found', vim.log.levels.WARN)
-    end
+    select_from_lst(candidates, 'Makefile: ')
 end
 
 function M.alternate_test(opts)
@@ -1007,19 +1008,7 @@ function M.alternate_test(opts)
         candidates = alternates[opts.buf]
     end
 
-    if #candidates > 1 then
-        vim.ui.select(
-            candidates,
-            { prompt = 'Test: ' },
-            vim.schedule_wrap(function(choice)
-                vim.cmd.edit(choice)
-            end)
-        )
-    elseif #candidates == 1 then
-        vim.cmd.edit(candidates[1])
-    else
-        vim.notify('No test file found', vim.log.levels.WARN)
-    end
+    select_from_lst(candidates, 'Test: ')
 end
 
 function M.show_background_jobs()

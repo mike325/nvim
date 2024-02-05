@@ -9,12 +9,16 @@ end
 
 function M.add(files, clear)
     vim.validate {
-        files = { files, 'table' },
+        files = { files, { 'table', 'string', 'number' } },
         clear = { clear, 'boolean', true },
     }
     if clear then
         M.clear()
     end
+    if type(files) ~= type {} then
+        files = { files }
+    end
+
     local cwd = vim.pesc(require('utils.files').getcwd()) .. '/'
     for _, filename in ipairs(files) do
         if type(filename) == type '' then
