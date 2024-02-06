@@ -122,6 +122,10 @@ vim.keymap.set('n', '<leader>d', function()
     RELOAD('utils.buffers').delete()
 end, { desc = 'Delete current buffer without changing the window layout' })
 
+vim.keymap.set('n', '<leader><leader>d', function()
+    RELOAD('utils.buffers').delete(vim.api.nvim_get_current_buf(), true)
+end, { desc = 'Wipe current buffer without changing the window layout' })
+
 local mapping_pairs = {
     arglist = '',
     buflist = 'b',
