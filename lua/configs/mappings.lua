@@ -873,7 +873,7 @@ end, { nargs = '?', complete = completions.arglist, desc = 'Edit a file in the a
 
 vim.keymap.set('n', '<leader>e', function()
     RELOAD('utils.arglist').edit()
-end, { noremap = true, silent = true, desc = 'Edit a file in the arglist'  })
+end, { noremap = true, silent = true, desc = 'Edit a file in the arglist' })
 
 nvim.command.set('ArgAddBuf', function(opts)
     local argadd = RELOAD('utils.arglist').add
