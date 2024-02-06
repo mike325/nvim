@@ -8,12 +8,13 @@ local function on_change(watcher, err, fname, status)
     -- Do work...
     if not watcher._wait then
         for _, cb in ipairs(watcher._cb) do
-            if vim.is_callable(cb) then
-                cb(err, fname, status)
-            else
-                local autocmd_name = cb
+            cb(err, fname, status)
+        end
+
+        for _, autocmd_name in ipairs(watcher._autocmd) do
+            if type(autocmd_name) == type '' then
                 vim.api.nvim_exec_autocmds(autocmd_name, {
-                    group = 'User',
+                    event = 'User',
                     data = {
                         err = err,
                         fname = fname,
@@ -31,20 +32,23 @@ local function on_change(watcher, err, fname, status)
     end, 100)
 end
 
-function Watcher:new(filename, cb, autocmd)
+-- TODO: Add support for autocmd groups ?
+function Watcher:new(filename, autocmd, cb)
     vim.validate {
         filename = { filename, 'string' },
-        cb = { cb, { 'table', 'function', 'string' } },
-        autocmd = { autocmd, { 'table', 'string' }, true },
+        autocmd = { autocmd, { 'function', 'string' } },
+        cb = { cb, { 'function' }, true },
     }
+
+    if not cb and type(autocmd) == 'function' then
+        cb = { autocmd }
+        autocmd = {}
+    elseif type(autocmd) == type '' then
+        autocmd = { autocmd }
+    end
 
     if type(cb) ~= type {} then
         cb = { cb }
-    end
-
-    if autocmd then
-        autocmd = type(autocmd) == type {} and autocmd or { autocmd }
-        cb = vim.list_extend(cb, autocmd)
     end
 
     local watcher = vim.loop.new_fs_event()
@@ -52,6 +56,7 @@ function Watcher:new(filename, cb, autocmd)
         _filename = realpath(normalize(filename)),
         _watcher = watcher,
         _cb = cb,
+        _autocmd = autocmd,
         _wait = false,
     }
 
@@ -87,13 +92,10 @@ end
 
 function Watcher:subscribe(cb)
     vim.validate {
-        cb = { cb, { 'function', 'table', 'string' } },
+        cb = { cb, { 'function', 'string' } },
     }
 
-    if type(cb) ~= type {} then
-        cb = { cb }
-    end
-    vim.list_extend(self._cb, cb)
+    vim.list_extend(type(cb) == type '' and self._autocmd or self._cb, cb)
 end
 
 return Watcher

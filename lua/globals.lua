@@ -74,5 +74,6 @@ if not STORAGE then
         remotes = {},
         servers = {},
         loggers = {},
+        watchers = {},
     }
 end
