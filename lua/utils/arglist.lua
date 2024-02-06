@@ -53,4 +53,33 @@ function M.exec(cmd)
     end
 end
 
+function M.edit(argument)
+    vim.validate {
+        argument = { argument, 'string', true },
+    }
+
+    if #vim.fn.argv() == 0 then
+        return
+    end
+
+    if argument and argument ~= '' then
+        for idx, arg in ipairs(vim.fn.argv()) do
+            if arg == argument then
+                vim.cmd.argument(idx)
+                break
+            end
+        end
+    else
+        vim.ui.select(
+            vim.fn.argv(),
+            { prompt = 'Select Arg > ' },
+            vim.schedule_wrap(function(choice, idx)
+                if choice and choice ~= '' then
+                    vim.cmd.argument(idx)
+                end
+            end)
+        )
+    end
+end
+
 return M
