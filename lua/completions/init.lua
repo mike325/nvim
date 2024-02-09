@@ -163,6 +163,30 @@ completions = vim.tbl_extend('force', completions, {
         end
         return utils.general_completion(arglead, cmdline, cursorpos, reviewers)
     end,
+    gh_edit_reviewers = function(arglead, cmdline, cursorpos)
+        local cmd = vim.tbl_map(function(arg)
+            return vim.trim(arg)
+        end, vim.split(cmdline, '%s+', { trimempty = true }))
+
+        if #cmd == 1 or (#cmd == 2 and cmdline:sub(#cmdline, #cmdline) ~= ' ') then
+            return utils.general_completion(arglead, cmdline, cursorpos, { '-add', '-remove' })
+        end
+
+        local reviewers = {}
+        if require('utils.files').is_file 'reviewers.json' then
+            reviewers = require('utils.files').read_json 'reviewers.json'
+
+            local tmp = {}
+            for _, reviewer in ipairs(reviewers) do
+                if not vim.list_contains(cmd, reviewer) then
+                    table.insert(tmp, reviewer)
+                end
+            end
+
+            reviewers = tmp
+        end
+        return utils.general_nodash_completion(arglead, cmdline, cursorpos, reviewers)
+    end,
     gh_pr_ready = function(arglead, cmdline, cursorpos)
         return utils.general_completion(arglead, cmdline, cursorpos, { 'ready', 'draft' })
     end,

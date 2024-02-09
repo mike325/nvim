@@ -82,6 +82,27 @@ function M.get_pr_changes(opts, callback)
     end)
 end
 
+function M.open_pr(pr)
+    vim.validate {
+        pr = { pr, 'number', true },
+    }
+
+    local ghcmd = 'pr'
+    local args = { 'view' }
+
+    if pr then
+        table.insert(args, pr)
+    end
+
+    vim.list_extend(args, {'--json', 'url' })
+
+    local function open_url(output)
+        local json = vim.json.decode(table.concat(output, '\n'))
+        vim.ui.open(json.url)
+    end
+    open_url(exec_ghcmd(ghcmd, args))
+end
+
 function M.list_repo_pr(opts, callback)
     vim.validate {
         opts = { opts, 'table', true },
@@ -193,7 +214,7 @@ function M.create_pr(opts, callback)
 
     local ghcmd = 'pr'
     local args = { 'create', '--assignee', '@me', '--fill' }
-    vim.list_extend(args, opts.fargs)
+    vim.list_extend(args, opts.args or {})
 
     if not callback then
         return exec_ghcmd(ghcmd, args)
@@ -214,7 +235,7 @@ function M.edit_pr(opts, callback)
 
     local ghcmd = 'pr'
     local args = { 'edit', require('utils.git').get_branch() }
-    vim.list_extend(args, opts.fargs)
+    vim.list_extend(args, opts.args or {})
 
     if not callback then
         return exec_ghcmd(ghcmd, args)

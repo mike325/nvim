@@ -763,40 +763,7 @@ vim.keymap.set('n', '<leader>c', function()
 end, { noremap = true, desc = 'Copy different Buffer/File related stuff' })
 
 if executable 'gh' then
-    nvim.command.set('OpenPRFiles', function(opts)
-        local action = opts.args:gsub('%-', '')
-        RELOAD('utils.gh').get_pr_changes(opts, function(output)
-            local files = output.files
-            local revision = output.revision
-            local cwd = vim.pesc(require('utils.files').getcwd()) .. '/'
-            for _, f in ipairs(files) do
-                -- NOTE: using badd since `:edit` load every buffer and `bufadd()` set buffers as hidden
-                vim.cmd.badd((f:gsub('^' .. cwd, '')))
-            end
-            local qfutils = RELOAD 'utils.qf'
-            if action == 'qf' then
-                qfutils.dump_files(files, { open = true })
-            elseif action == 'hunks' then
-                RELOAD('threads').queue_thread(RELOAD('threads.git').get_hunks, function(hunks)
-                    if next(hunks) ~= nil then
-                        qfutils.set_list {
-                            items = hunks.items,
-                            title = 'OpenPRChanges',
-                            open = not qfutils.is_open(),
-                        }
-                    end
-                end, { revision = revision, files = files })
-            elseif action == 'open' or action == '' then
-                vim.api.nvim_win_set_buf(0, vim.fn.bufadd(files[1]))
-            end
-        end)
-    end, {
-        nargs = '?',
-        complete = completions.qf_file_options,
-        desc = 'Open all modified files in the current PR',
-    })
-
-    nvim.command.set('CreatePR', function(opts)
+    nvim.command.set('PRCreate', function(opts)
         if #opts.fargs > 0 then
             opts.fargs = vim.list_extend({ '--reviewer' }, { table.concat(opts.fargs, ',') })
         end
@@ -804,7 +771,7 @@ if executable 'gh' then
             table.insert(opts.fargs, '--draft')
         end
         opts.args = table.concat(opts.fargs, ' ')
-        RELOAD('utils.gh').create_pr(opts, function(output)
+        RELOAD('utils.gh').create_pr({ args = opts.fargs }, function(output)
             vim.notify('PR created! ', vim.log.levels.INFO, { title = 'GH' })
         end)
     end, {
@@ -812,6 +779,40 @@ if executable 'gh' then
         complete = completions.reviewers,
         bang = true,
         desc = 'Open PR with the given reviewers defined in reviewers.json',
+    })
+
+    nvim.command.set('PrOpen', function(opts)
+        local gh = RELOAD 'utils.gh'
+
+        local pr
+        if opts.args ~= '' then
+            pr = tonumber(opts.args)
+        elseif not opts.bang then
+            gh.list_repo_pr({}, function(list_pr)
+                local titles = vim.tbl_map(function(pull_request)
+                    return pull_request.title
+                end, vim.deepcopy(list_pr))
+                vim.ui.select(
+                    titles,
+                    { prompt = 'Select PR: ' },
+                    vim.schedule_wrap(function(choice)
+                        if choice ~= '' then
+                            local pr_id = vim.tbl_filter(function(pull_request)
+                                return pull_request.title == choice
+                            end, list_pr)[1].number
+                            gh.open_pr(pr_id)
+                        end
+                    end)
+                )
+            end)
+            return
+        end
+
+        gh.open_pr(pr)
+    end, {
+        nargs = 0,
+        bang = true,
+        desc = 'Open PR in the browser',
     })
 
     nvim.command.set('PrReady', function(opts)
@@ -831,19 +832,19 @@ if executable 'gh' then
 
     nvim.command.set('EditReviewers', function(opts)
         local reviewers = { table.concat(opts.fargs, ',') }
-        local command = opts.bang and '--remove-reviewer' or '--add-reviewer'
+        local action = opts.fargs[1]:gsub('^%-+', '')
+        local command = action == 'add' and '--add-reviewer' or '--remove-reviewer'
         opts.fargs = vim.list_extend({ command }, reviewers)
         opts.args = table.concat(opts.fargs, ' ')
-        RELOAD('utils.gh').edit_pr(opts, function(output)
-            local action = opts.bang and 'removed' or 'added'
-            local msg = ('Reviewers %s were %s'):format(action, table.concat(reviewers, ''))
+        RELOAD('utils.gh').edit_pr({ args = opts.fargs }, function(output)
+            local msg = ('Reviewers %s were %s'):format(action .. 'ed', table.concat(reviewers, ''))
             vim.notify(msg, vim.log.levels.INFO, { title = 'GH' })
         end)
     end, {
         nargs = '+',
-        complete = completions.reviewers,
+        complete = completions.gh_edit_reviewers,
         bang = true,
-        desc = 'Add reviewers defined in reviewers.json',
+        desc = 'Add/Remove reviewers defined in reviewers.json',
     })
 end
 

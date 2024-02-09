@@ -13,8 +13,9 @@ local function on_change(watcher, err, fname, status)
 
         for _, autocmd_name in ipairs(watcher._autocmd) do
             if type(autocmd_name) == type '' then
-                vim.api.nvim_exec_autocmds(autocmd_name, {
-                    event = 'User',
+                vim.api.nvim_exec_autocmds('User', {
+                    pattern = autocmd_name,
+                    -- group = '',
                     data = {
                         err = err,
                         fname = fname,
