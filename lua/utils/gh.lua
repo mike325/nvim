@@ -94,7 +94,7 @@ function M.open_pr(pr)
         table.insert(args, pr)
     end
 
-    vim.list_extend(args, {'--json', 'url' })
+    vim.list_extend(args, { '--json', 'url' })
 
     local function open_url(output)
         local json = vim.json.decode(table.concat(output, '\n'))
