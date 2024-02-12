@@ -35,14 +35,19 @@ if has_ui then
             nvim_notify.dismiss { pending = true, silent = true }
         end, { noremap = true, silent = true })
     else
-        if vim.g.minimal and vim.F.npcall(require, 'mini.notify') then
-            require('mini.notify').setup {}
+        local mini_notify = vim.F.npcall(require, 'mini.notify')
+        if mini_notify then
+            mini_notify.setup {}
             notify_backend = (function(f)
                 return function(msg, level, opts)
                     local text = notify_format(msg, level, opts)
                     f(text, level, opts)
                 end
-            end)(require('mini.notify').make_notify())
+            end)(mini_notify.make_notify())
+
+            vim.keymap.set('n', '<C-w>n', function()
+                mini_notify.clear()
+            end, { noremap = true, silent = true })
         else
             notify_backend = function(msg, level, opts)
                 local notification = notify_format(msg, level, opts)
