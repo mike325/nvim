@@ -365,17 +365,17 @@ function M.modified_files_from_base(revision, callback)
         -- revision branch/commit
     }
     if not callback then
-        table.insert(args, (revision or M.base_branch()) .. '...')
+        table.insert(args, string.format('%s...', (revision or M.base_branch())))
         return exec_gitcmd(gitcmd, args) or {}
     end
     if revision then
-        table.insert(args, revision .. '...')
+        table.insert(args, string.format('%s...', revision))
         exec_gitcmd(gitcmd, args, function(files)
             callback(files)
         end)
     else
         M.base_branch(function(branch)
-            table.insert(args, branch .. '...')
+            table.insert(args, string.format('%s...', branch))
             exec_gitcmd(gitcmd, args, function(files)
                 callback(files)
             end)
