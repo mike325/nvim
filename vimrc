@@ -257,7 +257,6 @@ function! s:tools_GitVersion(...) abort
     return a:000[l:i] ==# get(l:components, l:i)
 endfunction
 
-
 function! s:tools_ignores(tool) abort
     let l:excludes = []
 
@@ -640,6 +639,69 @@ function! g:Toggle_qf(qf_type) abort
     else
         call execute('15' . l:prefix . 'open')
     end
+endfunction
+
+function! g:Arg_add_buf(filename, clear) abort
+    if a:clear && argc() > 0
+        argdelete *
+    endif
+
+    let l:files = type(a:filename) != type([]) ?  [a:filename] : a:filename
+    if len(l:files) == 0
+        let l:files += ['%']
+    elseif len(l:files) == 1 && l:files[0] == '*'
+        let l:files = []
+        for l:buf in range(1, bufnr('$'))
+            if bufexists(l:buf)
+                let l:bufname = bufname(l:buf)
+                if l:bufname != ''
+                    let l:files += [l:bufname]
+                endif
+            endif
+        endfor
+    endif
+
+    for l:filename in l:files
+        let l:buf = bufnr(l:filename)
+        if l:buf == -1
+            execute "badd " . l:filename
+        endif
+        execute "argadd " . l:filename
+    endfor
+
+    " NOTE: Not all versions of vim have argdedupe
+    silent! argdedupe
+endfunction
+
+function! g:Arg_edit(arg) abort
+    if argc() == 0
+        return
+    endif
+
+    if a:arg != ''
+        let l:idx = 1
+        for l:arg in argv()
+            if a:arg == l:arg
+                execute "argument " . l:idx
+                return
+            endif
+            let l:idx += 1
+        endfor
+        throw "Invalid argument name"
+    endif
+
+    let l:args = []
+    let l:idx = 1
+
+    for l:arg in argv()
+        let l:args += [string(idx) . '. ' . l:arg]
+        let l:idx += 1
+    endfor
+
+    let l:choice = inputlist(l:args)
+    if l:choice > 0
+        execute "argument " . l:choice
+    endif
 endfunction
 
 " ------------------------------------------------------------------------------
@@ -1089,6 +1151,8 @@ nnoremap <silent> =l :call g:Toggle_qf("loc")<cr>
 " Commands
 " ------------------------------------------------------------------------------
 
+command! -nargs=0 Reload source $HOME/.vimrc | echomsg "Config Reload!"
+
 if s:has_option('relativenumber')
     command! RelativeNumbersToggle set relativenumber! relativenumber?
 endif
@@ -1194,6 +1258,13 @@ command! -bang -nargs=? -complete=file Remove
     \ unlet s:bang |
     \ unlet s:target
 
+command! -bang -nargs=* -complete=buffer ArgAddBuf
+    \ let s:bang = empty(<bang>0) ? 0 : 1 |
+    \ call g:Arg_add_buf([<f-args>], s:bang) |
+    \ unlet s:bang |
+
+command! -nargs=? -complete=arglist ArgEdit call g:Arg_edit(empty(<q-args>) ?  '' : expand(<q-args>))
+
 " ------------------------------------------------------------------------------
 " Autocmds
 " ------------------------------------------------------------------------------
@@ -1222,6 +1293,13 @@ augroup QuickQuit
     autocmd BufEnter,BufReadPost __LanguageClient__ nnoremap <silent> <nowait> <buffer> q :q!<CR>
     autocmd BufEnter,BufWinEnter * if &previewwindow | nnoremap <silent> <nowait> <buffer> q :q!<CR>| endif
     autocmd FileType qf,help nnoremap <silent><nowait><buffer> q :q!<CR>
+augroup end
+
+" TODO: differentiate between quickfix and loclist
+augroup QuickFix
+    autocmd!
+    autocmd FileType qf nnoremap <silent><nowait><buffer> < :colder<CR>
+    autocmd FileType qf nnoremap <silent><nowait><buffer> > :cnewer<CR>
 augroup end
 
 augroup LocalCR

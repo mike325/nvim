@@ -52,7 +52,10 @@ function M.get_prg_info(prg)
 end
 
 function M.check_version(sys_version, target_version)
-    vim.validate { system_version = { sys_version, 'table' }, target_version = { target_version, 'table' } }
+    vim.validate {
+        system_version = { sys_version, 'table' },
+        target_version = { target_version, 'table' },
+    }
 
     for i, _ in pairs(target_version) do
         if type(target_version[i]) == 'string' then
