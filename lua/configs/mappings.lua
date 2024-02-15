@@ -899,6 +899,15 @@ nvim.command.set('ArgAddBuf', function(opts)
     end
 end, { nargs = '*', complete = completions.buflist, desc = 'Add buffers to the arglist' })
 
+vim.keymap.set('n', '<leader>A', function()
+    RELOAD('utils.arglist').add { '%' }
+end, { noremap = true, silent = true, desc = 'Add current buffer to the arglist' })
+
+vim.keymap.set('n', '<leader>D', function()
+    local cwd = vim.pesc(vim.loop.cwd() .. '/')
+    vim.cmd.argdelete((vim.api.nvim_buf_get_name(0):gsub(cwd, '')))
+end, { noremap = true, silent = true, desc = 'Delete current buffer to the arglist' })
+
 nvim.command.set('ClearMarks', function()
     local deleted_marks = 0
     for idx = vim.fn.char2nr 'A', vim.fn.char2nr 'Z' do

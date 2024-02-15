@@ -641,7 +641,7 @@ function! g:Toggle_qf(qf_type) abort
     end
 endfunction
 
-function! s:arg_add_buf(filename, clear) abort
+function! g:Arg_add_buf(filename, clear) abort
     if a:clear && argc() > 0
         argdelete *
     endif
@@ -1163,6 +1163,8 @@ nnoremap <silent> =q :call g:Toggle_qf("qf")<cr>
 nnoremap <silent> =l :call g:Toggle_qf("loc")<cr>
 
 nnoremap <silent> <leader>e :call g:Arg_edit('')<cr>
+nnoremap <silent> <leader>A :call g:Arg_add_buf([expand("%")],v:false)<cr>
+nnoremap <silent> <leader>D :call execute("argdelete " . expand("%"))<cr>
 
 " ------------------------------------------------------------------------------
 " Commands
@@ -1277,7 +1279,7 @@ command! -bang -nargs=? -complete=file Remove
 
 command! -bang -nargs=* -complete=buffer ArgAddBuf
     \ let s:bang = empty(<bang>0) ? 0 : 1 |
-    \ call s:arg_add_buf([<f-args>], s:bang) |
+    \ call g:Arg_add_buf([<f-args>], s:bang) |
     \ unlet s:bang |
 
 command! -nargs=? -complete=arglist ArgEdit call g:Arg_edit(empty(<q-args>) ?  '' : expand(<q-args>))
