@@ -704,6 +704,21 @@ function! g:Arg_edit(arg) abort
     endif
 endfunction
 
+function! g:Edit(args) abort
+    for l:glob in a:args
+        if filereadable(l:glob)
+            execute 'edit ' . l:glob
+        elseif l:glob =~? '\*'
+            let l:files = glob(l:glob, v:false, v:true, v:false)
+            for l:file in l:files
+                if filereadable(l:file)
+                    execute 'edit ' . l:file
+                endif
+            endfor
+        endif
+    endfor
+endfunction
+
 " ------------------------------------------------------------------------------
 " Options
 " ------------------------------------------------------------------------------
@@ -1264,6 +1279,8 @@ command! -bang -nargs=* -complete=buffer ArgAddBuf
     \ unlet s:bang |
 
 command! -nargs=? -complete=arglist ArgEdit call g:Arg_edit(empty(<q-args>) ?  '' : expand(<q-args>))
+
+command! -nargs=+ -complete=file Edit call g:Edit([<f-args>])
 
 " ------------------------------------------------------------------------------
 " Autocmds
