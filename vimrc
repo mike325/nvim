@@ -673,7 +673,7 @@ function! s:arg_add_buf(filename, clear) abort
     silent! argdedupe
 endfunction
 
-function! s:arg_edit(arg) abort
+function! g:Arg_edit(arg) abort
     if argc() == 0
         return
     endif
@@ -1162,6 +1162,8 @@ nnoremap <silent> N :call g:MappingsNiceNext('N')<cr>
 nnoremap <silent> =q :call g:Toggle_qf("qf")<cr>
 nnoremap <silent> =l :call g:Toggle_qf("loc")<cr>
 
+nnoremap <silent> <leader>e :call g:Arg_edit('')<cr>
+
 " ------------------------------------------------------------------------------
 " Commands
 " ------------------------------------------------------------------------------
@@ -1278,7 +1280,7 @@ command! -bang -nargs=* -complete=buffer ArgAddBuf
     \ call s:arg_add_buf([<f-args>], s:bang) |
     \ unlet s:bang |
 
-command! -nargs=? -complete=arglist ArgEdit call s:arg_edit(empty(<q-args>) ?  '' : expand(<q-args>))
+command! -nargs=? -complete=arglist ArgEdit call g:Arg_edit(empty(<q-args>) ?  '' : expand(<q-args>))
 
 command! -nargs=+ -complete=file Edit call s:edit([<f-args>])
 
