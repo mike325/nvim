@@ -641,7 +641,7 @@ function! g:Toggle_qf(qf_type) abort
     end
 endfunction
 
-function! g:Arg_add_buf(filename, clear) abort
+function! s:arg_add_buf(filename, clear) abort
     if a:clear && argc() > 0
         argdelete *
     endif
@@ -673,7 +673,7 @@ function! g:Arg_add_buf(filename, clear) abort
     silent! argdedupe
 endfunction
 
-function! g:Arg_edit(arg) abort
+function! s:arg_edit(arg) abort
     if argc() == 0
         return
     endif
@@ -704,7 +704,7 @@ function! g:Arg_edit(arg) abort
     endif
 endfunction
 
-function! g:Edit(args) abort
+function! s:edit(args) abort
     for l:glob in a:args
         if filereadable(l:glob)
             execute 'edit ' . l:glob
@@ -1275,12 +1275,12 @@ command! -bang -nargs=? -complete=file Remove
 
 command! -bang -nargs=* -complete=buffer ArgAddBuf
     \ let s:bang = empty(<bang>0) ? 0 : 1 |
-    \ call g:Arg_add_buf([<f-args>], s:bang) |
+    \ call s:arg_add_buf([<f-args>], s:bang) |
     \ unlet s:bang |
 
-command! -nargs=? -complete=arglist ArgEdit call g:Arg_edit(empty(<q-args>) ?  '' : expand(<q-args>))
+command! -nargs=? -complete=arglist ArgEdit call s:arg_edit(empty(<q-args>) ?  '' : expand(<q-args>))
 
-command! -nargs=+ -complete=file Edit call g:Edit([<f-args>])
+command! -nargs=+ -complete=file Edit call s:edit([<f-args>])
 
 " ------------------------------------------------------------------------------
 " Autocmds
