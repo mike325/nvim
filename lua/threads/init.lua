@@ -72,7 +72,7 @@ function M.init(thread_args)
         args = {
             args = {},
             context = { (vim.loop.cwd():gsub('\\', '/')) },
-            functions = {}
+            functions = {},
         }
     end
 
