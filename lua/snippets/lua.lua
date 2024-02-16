@@ -13,7 +13,7 @@ local c = ls.choice_node
 local d = ls.dynamic_node
 -- local l = require('luasnip.extras').lambda
 local r = require('luasnip.extras').rep
--- local p = require('luasnip.extras').partial
+local p = require('luasnip.extras').partial
 -- local m = require('luasnip.extras').match
 -- local n = require('luasnip.extras').nonempty
 -- local dl = require('luasnip.extras').dynamic_lambda
@@ -381,6 +381,39 @@ return {
                     i(2, 'arg'),
                 }),
             }),
+        }
+    )),
+    s(
+        { trig = 'cli' }, fmt([[
+        #!{}
+
+        local cli_setup
+        local error_msg
+
+        cli_setup = pcall(require, 'cli')
+        if not cli_setup then
+            local config_dir = (vim.fn.stdpath('config'):gsub('\\', '/'))
+            local host_dir = string.format('%s/site/pack/host/start/host/', (vim.fn.stdpath('data'):gsub('\\', '/')))
+            vim.opt.runtimepath:append {{ config_dir, host_dir }}
+            cli_setup, error_msg = pcall(require, 'cli')
+            if not cli_setup then
+                error(debug.traceback(error_msg))
+            end
+        end
+
+        local log = require('cli.logger'):new()
+
+        ]], {
+            p(function()
+                if require('sys').name ~= 'windows' then
+                    local env_version = vim.version.parse(vim.fn.system('env --version'))
+                    if env_version >= vim.version.parse('8.30') then
+                        local env_path = require('utils.files').exepath('env')
+                        return string.format('%s -S "nvim -l"', env_path)
+                    end
+                end
+                return string.format('%s -l', vim.v.progpath)
+            end),
         }
     )),
 }

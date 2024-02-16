@@ -143,7 +143,14 @@ local general_snips = {
             -- stylua: ignore
             if ft == 'lua' then
                 -- stylua: ignore
-                return '#!' .. vim.v.progpath .. ' -l'
+                if require('sys').name ~= 'windows' then
+                    local env_version = vim.version.parse(vim.fn.system('env --version'))
+                    if env_version >= vim.version.parse('8.30') then
+                        local env_path = require('utils.files').exepath('env')
+                        return string.format('#!%s -S "nvim -l"', env_path)
+                    end
+                end
+                return string.format('#!%s -l', vim.v.progpath)
             end
 
             -- stylua: ignore
