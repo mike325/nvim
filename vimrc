@@ -401,7 +401,7 @@ function! s:mappings_general_completion(arglead, cmdline, cursorpos, options) ab
 endfunction
 
 function! s:mappings_inside_empty_pairs() abort
-    let l:rsp = v:false
+    let l:rsp = 0
     let l:pairs = {
         \ '"': '"',
         \ "'": "'",
@@ -709,7 +709,7 @@ function! s:edit(args) abort
         if filereadable(l:glob)
             execute 'edit ' . l:glob
         elseif l:glob =~? '\*'
-            let l:files = glob(l:glob, v:false, v:true, v:false)
+            let l:files = glob(l:glob, 0, 1, 0)
             for l:file in l:files
                 if filereadable(l:file)
                     execute 'edit ' . l:file
@@ -955,13 +955,25 @@ set fileencoding=utf-8
 set background=dark
 set cursorline
 
+" TODO: support old versions of vim
+let s:fix_colorscheme = 0
 if !has('nvim')
     set t_Co=256
-    let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-    let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+    try
+        let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+        let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+    catch /E355/
+        let s:fix_colorscheme = 1
+    endtry
 endif
 
 colorscheme torte
+
+if s:fix_colorscheme
+    hi! Normal ctermbg=NONE guibg=NONE
+    hi! NonText ctermbg=NONE guibg=NONE
+endif
+
 set nocursorline
 
 " ------------------------------------------------------------------------------
@@ -1163,7 +1175,7 @@ nnoremap <silent> =q :call g:Toggle_qf("qf")<cr>
 nnoremap <silent> =l :call g:Toggle_qf("loc")<cr>
 
 nnoremap <silent> <leader>e :call g:Arg_edit('')<cr>
-nnoremap <silent> <leader>A :call g:Arg_add_buf([expand("%")],v:false)<cr>
+nnoremap <silent> <leader>A :call g:Arg_add_buf([expand("%")],0)<cr>
 nnoremap <silent> <leader>D :call execute("argdelete " . expand("%"))<cr>
 
 " ------------------------------------------------------------------------------
@@ -1202,11 +1214,16 @@ endif
 command! TrimToggle call g:MappingsTrim()
 
 if has('nvim-0.2') || s:has_patch('7.4.2044')
+    command! -nargs=? -complete=arglist ArgEdit call g:Arg_edit(empty(<q-args>) ?  '' : expand(<q-args>))
+
     command! -nargs=? -complete=customlist,s:mappings_spells SpellLang
                 \ let s:spell = (empty(<q-args>)) ?  'en' : expand(<q-args>) |
                 \ call s:tools_spelllangs(s:spell) |
                 \ unlet s:spell
+
 else
+    command! -nargs=? ArgEdit call g:Arg_edit(empty(<q-args>) ?  '' : expand(<q-args>))
+
     command! -nargs=? SpellLang
                 \ let s:spell = (empty(<q-args>)) ?  'en' : expand(<q-args>) |
                 \ call s:tools_spelllangs(s:spell) |
@@ -1282,8 +1299,6 @@ command! -bang -nargs=* -complete=buffer ArgAddBuf
     \ call g:Arg_add_buf([<f-args>], s:bang) |
     \ unlet s:bang |
 
-command! -nargs=? -complete=arglist ArgEdit call g:Arg_edit(empty(<q-args>) ?  '' : expand(<q-args>))
-
 command! -nargs=+ -complete=file Edit call s:edit([<f-args>])
 
 " ------------------------------------------------------------------------------
@@ -1350,8 +1365,8 @@ if executable('nvim')
 
             let l:cmd += ['--server', l:socket, '--remote-silent', expand('%:p')]
         else
-            let l:has_server = v:false
-            let l:has_remote_cmd = v:false
+            let l:has_server = 0
+            let l:has_remote_cmd = 0
 
             for l:i in range(len(a:000))
                 if a:000[l:i] == '%'
@@ -1362,13 +1377,13 @@ if executable('nvim')
                         return 1
                     endif
 
-                    let l:has_server = v:true
+                    let l:has_server = 1
                 elseif a:000[l:i] =~? '^--remote'
-                    let l:has_remote_cmd = v:true
+                    let l:has_remote_cmd = 1
                 endif
             endfor
 
-            if l:has_server != v:true
+            if l:has_server != 1
                 if !filewritable(l:socket)
                     call s:echoerr('Socket: "' .. l:socket .. '" does not exists' )
                     return 1
@@ -1377,7 +1392,7 @@ if executable('nvim')
                 let l:cmd += ['--server', l:socket]
             endif
 
-            if l:has_remote_cmd != v:true
+            if l:has_remote_cmd != 1
                 let l:cmd += ['--remote-silent']
             endif
 
