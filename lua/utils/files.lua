@@ -290,7 +290,7 @@ local function fs_write(path, data, append, callback)
             'a string or an array',
         },
         append = { append, 'boolean', true },
-        callback = { callback, 'function', true },
+        callback = { callback, { 'function', 'boolean' }, true },
     }
 
     data = type(data) ~= type '' and table.concat(data, '\n') or data
@@ -307,7 +307,7 @@ local function fs_write(path, data, append, callback)
         end)
     end
 
-    uv.fs_open(path, 'r+', 438, function(oerr, fd)
+    uv.fs_open(path, 'w+', 438, function(oerr, fd)
         assert(not oerr, oerr)
         uv.fs_fstat(fd, function(serr, stat)
             assert(not serr, serr)
@@ -316,7 +316,9 @@ local function fs_write(path, data, append, callback)
                 assert(not rerr, rerr)
                 uv.fs_close(fd, function(cerr)
                     assert(not cerr, cerr)
-                    return callback()
+                    if type(callback) == 'function' then
+                        return callback()
+                    end
                 end)
             end)
         end)
@@ -335,8 +337,8 @@ end
 function M.readfile(path, split, callback)
     vim.validate {
         path = { path, 'string' },
-        callback = { callback, 'function', true },
         split = { split, 'boolean', true },
+        callback = { callback, { 'function', 'boolean' }, true },
     }
     assert(M.is_file(path), debug.traceback('Not a file: ' .. path))
     if split == nil then
@@ -370,7 +372,7 @@ function M.readfile(path, split, callback)
                             data[#data] = nil
                         end
                     end
-                    return callback(data)
+                    return type(callback) == 'function' and callback(data) or data
                 end)
             end)
         end)

@@ -39,7 +39,7 @@ completions = vim.tbl_extend('force', completions, {
     end,
     session_files = function(arglead, cmdline, cursorpos)
         local sessions = utils_io.get_files(require('sys').session)
-        return utils.general_completion(arglead, cmdline, cursorpos, vim.tbl_map(utils.filename, sessions))
+        return utils.general_completion(arglead, cmdline, cursorpos, vim.tbl_map(vim.fs.basename, sessions))
     end,
     fileformats = function(arglead, cmdline, cursorpos)
         return utils.general_completion(arglead, cmdline, cursorpos, { 'unix', 'dos' })
@@ -47,7 +47,7 @@ completions = vim.tbl_extend('force', completions, {
     spells = function(arglead, cmdline, cursorpos)
         local spells = utils_io.get_files(require('sys').base .. '/spell')
         spells = vim.tbl_map(function(spell)
-            return (utils.filename(spell):gsub('%..*', ''))
+            return (vim.fs.basename(spell):gsub('%..*', ''))
         end, spells)
         return utils.general_completion(arglead, cmdline, cursorpos, spells)
     end,

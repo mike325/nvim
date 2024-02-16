@@ -50,18 +50,30 @@ function M.init(thread_args)
     end
 
     local args = thread_args
-    if thread_args and type(thread_args) == type '' and thread_args ~= '' then
-        args = vim.json.decode(thread_args)
+    if thread_args then
+        if type(thread_args) == type '' and thread_args ~= '' then
+            args = vim.json.decode(thread_args)
 
-        args.args = args.args or {}
-        args.context = args.context or {}
-        args.functions = args.functions or {}
+            args.args = args.args or {}
+            args.context = args.context or { (vim.loop.cwd():gsub('\\', '/')) }
+            args.functions = args.functions or {}
 
-        if next(args.functions) ~= nil then
-            for k, v in pairs(args.functions) do
-                args.functions[k] = loadstring(v)
+            if next(args.functions) ~= nil then
+                for k, v in pairs(args.functions) do
+                    args.functions[k] = loadstring(v)
+                end
             end
+        elseif type(thread_args) == type {} then
+            args.args = args.args or {}
+            args.context = args.context or { (vim.loop.cwd():gsub('\\', '/')) }
+            args.functions = args.functions or {}
         end
+    else
+        args = {
+            args = {},
+            context = { (vim.loop.cwd():gsub('\\', '/')) },
+            functions = {}
+        }
     end
 
     return args
@@ -113,7 +125,7 @@ function M.add_thread_context(opts)
     end
     context.dirname = vim.fs.dirname(context.bufname)
     context.buf_is_virtual = prefix ~= nil or vim.opt_local.buftype:get() ~= '' or context.bufname == ''
-    context.cwd = context.cwd or vim.loop.cwd():gsub('\\', '/')
+    context.cwd = context.cwd or (vim.loop.cwd():gsub('\\', '/'))
 
     thread_opts.context = context
     thread_opts.version = vim.version()

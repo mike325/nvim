@@ -955,7 +955,6 @@ set fileencoding=utf-8
 set background=dark
 set cursorline
 
-" TODO: support old versions of vim
 let s:fix_colorscheme = 0
 if !has('nvim')
     set t_Co=256
