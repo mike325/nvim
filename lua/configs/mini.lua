@@ -7,26 +7,66 @@ local completions = RELOAD 'completions'
 local noremap = { noremap = true, silent = true }
 
 local mini = {}
-local function load_simple_module(plugin)
+local function load_simple_module(plugin, config)
     local mini_plugin = 'mini.' .. plugin
     local module = vim.F.npcall(require, mini_plugin)
     if module then
         mini[plugin] = module
-        require(mini_plugin).setup {}
+        require(mini_plugin).setup(config or {})
     end
 end
 
 local simple_mini = {
-    'doc',
-    'fuzzy',
-    'comment',
-    'extra',
-    'pairs',
-    'sessions',
+    doc = {},
+    fuzzy = {},
+    comment = {},
+    extra = {},
+    pairs = {},
+    sessions = {},
+    map = {},
+    surround = {
+        mappings = {
+            add = 'ys',
+            delete = 'ds',
+            replace = 'cs',
+            find = '',
+            find_left = '',
+            highlight = '',
+            update_n_lines = '',
+        },
+    },
+    files = {
+        mappings = {
+            close = 'q',
+            go_in = '<TAB>',
+            go_in_plus = '<CR>',
+            go_out = '<BS>',
+            go_out_plus = 'H',
+            reset = '<F5>',
+            reveal_cwd = '@',
+            show_help = 'g?',
+            synchronize = '=',
+            trim_left = '<',
+            trim_right = '>',
+        },
+    },
+    move = {
+        mappings = {
+            left = '',
+            right = '',
+            down = ']e',
+            up = '[e',
+
+            line_left = '',
+            line_right = '',
+            line_down = ']e',
+            line_up = '[e',
+        },
+    },
 }
 
-for _, plugin in ipairs(simple_mini) do
-    load_simple_module(plugin)
+for plugin, config in ipairs(simple_mini) do
+    load_simple_module(plugin, config)
 end
 
 if mini.sessions then
@@ -100,22 +140,6 @@ if mini.sessions then
     })
 end
 
-if vim.F.npcall(require, 'mini.move') then
-    require('mini.move').setup {
-        mappings = {
-            left = '',
-            right = '',
-            down = ']e',
-            up = '[e',
-
-            line_left = '',
-            line_right = '',
-            line_down = ']e',
-            line_up = '[e',
-        },
-    }
-end
-
 local mini_splitjoin = vim.F.npcall(require, 'mini.splitjoin')
 if mini_splitjoin then
     local gen_hook = mini_splitjoin.gen_hook
@@ -153,21 +177,6 @@ end
 
 mini.files = vim.F.npcall(require, 'mini.files')
 if mini.files then
-    mini.files.setup {
-        mappings = {
-            close = 'q',
-            go_in = '<TAB>',
-            go_in_plus = '<CR>',
-            go_out = '<BS>',
-            go_out_plus = 'H',
-            reset = '<F5>',
-            reveal_cwd = '@',
-            show_help = 'g?',
-            synchronize = '=',
-            trim_left = '<',
-            trim_right = '>',
-        },
-    }
     nvim.command.set('Files', function(opts)
         local path = opts.bang and vim.api.nvim_buf_get_name(0) or vim.loop.cwd()
         mini.files.open(path)
@@ -218,9 +227,7 @@ if mini.files then
     })
 end
 
-mini.map = vim.F.npcall(require, 'mini.map')
 if mini.map then
-    mini.map.setup {}
     nvim.command.set('MiniMap', function(opts)
         if opts.args == 'enable' then
             mini.map.open()
@@ -306,18 +313,7 @@ if mini.pick then
     end
 end
 
-if vim.F.npcall(require, 'mini.surround') then
-    require('mini.surround').setup {
-        mappings = {
-            add = 'ys',
-            delete = 'ds',
-            replace = 'cs',
-            find = '',
-            find_left = '',
-            highlight = '',
-            update_n_lines = '',
-        },
-    }
+if mini.surround then
     -- Remap adding surrounding to Visual mode selection
     vim.keymap.del('x', 'ys')
     vim.keymap.set('x', 'S', [[:<C-u>lua MiniSurround.add('visual')<CR>]], { silent = true })
@@ -325,7 +321,7 @@ if vim.F.npcall(require, 'mini.surround') then
     -- vim.keymap.set('n', 'yss', 'ys_', { remap = true })
 end
 
-if vim.F.npcall(require, 'mini.ai') then
+if vim.F.npcall(require, 'mini.ai') and mini.extra then
     local gen_ai_spec = mini.extra.gen_ai_spec
     require('mini.ai').setup {
         custom_textobjects = {

@@ -1,8 +1,7 @@
 local nvim = require 'nvim'
-local uv = vim.loop
 
 local M = {
-    getcwd = uv.cwd,
+    getcwd = vim.loop.cwd,
 }
 
 local is_windows = jit.os == 'Windows'
@@ -36,7 +35,7 @@ function M.normalize(path)
     vim.validate { path = { path, 'string' } }
     assert(path ~= '', debug.traceback 'Empty path')
     if path == '%' then
-        local cwd = ((uv.cwd() .. '/'):gsub('\\', '/'):gsub('/+', '/'))
+        local cwd = ((vim.loop.cwd() .. '/'):gsub('\\', '/'):gsub('/+', '/'))
         path = (vim.api.nvim_buf_get_name(0):gsub(vim.pesc(cwd), ''))
     end
     return vim.fs.normalize(path)
@@ -47,7 +46,7 @@ function M.exists(filename)
     if filename == '' then
         return false
     end
-    local stat = uv.fs_stat(M.normalize(filename))
+    local stat = vim.loop.fs_stat(M.normalize(filename))
     return stat and stat.type or false
 end
 
@@ -69,7 +68,7 @@ function M.mkdir(dirname, recurive)
         return true
     end
     dirname = M.normalize(dirname)
-    local ok, msg, err = uv.fs_mkdir(dirname, 511)
+    local ok, msg, err = vim.loop.fs_mkdir(dirname, 511)
     if err == 'ENOENT' and recurive then
         local dirs = vim.split(dirname, M.separator() .. '+')
         local base = dirs[1] == '' and '/' or dirs[1]
@@ -79,7 +78,7 @@ function M.mkdir(dirname, recurive)
         for _, dir in ipairs(dirs) do
             base = base .. M.separator() .. dir
             if not M.exists(base) then
-                ok, msg, _ = uv.fs_mkdir(base, 511)
+                ok, msg, _ = vim.loop.fs_mkdir(base, 511)
                 if not ok then
                     vim.notify(msg, vim.log.levels.ERROR, { title = 'Mkdir' })
                     break
@@ -128,7 +127,7 @@ function M.link(src, dest, sym, force)
         vim.notify('Dest already exists in ' .. dest, vim.log.levels.ERROR, { title = 'Link' })
         return false
     elseif force and M.exists(dest) then
-        status, msg, _ = uv.fs_unlink(dest)
+        status, msg, _ = vim.loop.fs_unlink(dest)
         if not status then
             vim.notify(msg, vim.log.levels.ERROR, { title = 'Link' })
             return false
@@ -136,9 +135,9 @@ function M.link(src, dest, sym, force)
     end
 
     if sym then
-        status, msg = uv.fs_symlink(src, dest, 438)
+        status, msg = vim.loop.fs_symlink(src, dest, 438)
     else
-        status, msg = uv.fs_link(src, dest)
+        status, msg = vim.loop.fs_link(src, dest)
     end
 
     if not status then
@@ -165,7 +164,7 @@ function M.is_absolute(path)
     vim.validate { path = { path, 'string' } }
     assert(path ~= '', debug.traceback 'Empty path')
     if path:sub(1, 1) == '~' then
-        path = path:gsub('~', uv.os_homedir())
+        path = path:gsub('~', vim.loop.os_homedir())
     end
 
     local is_abs = false
@@ -192,7 +191,7 @@ end
 function M.realpath(path)
     vim.validate { path = { path, 'string' } }
     assert(M.exists(path), debug.traceback(([[Path "%s" doesn't exists]]):format(path)))
-    return (uv.fs_realpath(M.normalize(path)):gsub('\\', '/'))
+    return (vim.loop.fs_realpath(M.normalize(path)):gsub('\\', '/'))
 end
 
 function M.basename(file)
@@ -269,13 +268,13 @@ function M.openfile(path, flags, callback)
     }
     assert(path ~= '', debug.traceback 'Empty path')
 
-    local fd, msg, _ = uv.fs_open(path, flags, 438)
+    local fd, msg, _ = vim.loop.fs_open(path, flags, 438)
     if not fd then
         vim.notify(msg, vim.log.levels.ERROR, { title = 'OpenFile' })
         return false
     end
     local ok, rst = pcall(callback, fd)
-    assert(uv.fs_close(fd))
+    assert(vim.loop.fs_close(fd))
     return rst or ok
 end
 
@@ -298,23 +297,23 @@ local function fs_write(path, data, append, callback)
 
     if not callback then
         return M.openfile(path, flags, function(fd)
-            local stat = uv.fs_fstat(fd)
+            local stat = vim.loop.fs_fstat(fd)
             local offset = append and stat.size or 0
-            local ok, msg, _ = uv.fs_write(fd, data, offset)
+            local ok, msg, _ = vim.loop.fs_write(fd, data, offset)
             if not ok then
                 vim.notify(msg, vim.log.levels.ERROR, { title = 'Write file' })
             end
         end)
     end
 
-    uv.fs_open(path, 'w+', 438, function(oerr, fd)
+    vim.loop.fs_open(path, 'w+', 438, function(oerr, fd)
         assert(not oerr, oerr)
-        uv.fs_fstat(fd, function(serr, stat)
+        vim.loop.fs_fstat(fd, function(serr, stat)
             assert(not serr, serr)
             local offset = append and stat.size or 0
-            uv.fs_write(fd, data, offset, function(rerr)
+            vim.loop.fs_write(fd, data, offset, function(rerr)
                 assert(not rerr, rerr)
-                uv.fs_close(fd, function(cerr)
+                vim.loop.fs_close(fd, function(cerr)
                     assert(not cerr, cerr)
                     if type(callback) == 'function' then
                         return callback()
@@ -346,8 +345,8 @@ function M.readfile(path, split, callback)
     end
     if not callback then
         return M.openfile(path, 'r', function(fd)
-            local stat = assert(uv.fs_fstat(fd))
-            local data = assert(uv.fs_read(fd, stat.size, 0))
+            local stat = assert(vim.loop.fs_fstat(fd))
+            local data = assert(vim.loop.fs_read(fd, stat.size, 0))
             if split then
                 data = vim.split(data, '[\r]?\n')
                 -- NOTE: This seems to always read an extra linefeed so we remove it if it's empty
@@ -358,13 +357,13 @@ function M.readfile(path, split, callback)
             return data
         end)
     end
-    uv.fs_open(path, 'r', 438, function(oerr, fd)
+    vim.loop.fs_open(path, 'r', 438, function(oerr, fd)
         assert(not oerr, oerr)
-        uv.fs_fstat(fd, function(serr, stat)
+        vim.loop.fs_fstat(fd, function(serr, stat)
             assert(not serr, serr)
-            uv.fs_read(fd, stat.size, 0, function(rerr, data)
+            vim.loop.fs_read(fd, stat.size, 0, function(rerr, data)
                 assert(not rerr, rerr)
-                uv.fs_close(fd, function(cerr)
+                vim.loop.fs_close(fd, function(cerr)
                     assert(not cerr, cerr)
                     if split then
                         data = vim.split(data, '[\r]?\n')
@@ -399,7 +398,7 @@ function M.chmod(path, mode, base)
     }
     assert(path ~= '', debug.traceback 'Empty path')
     base = base == nil and 8 or base
-    local ok, msg, _ = uv.fs_chmod(path, tonumber(mode, base))
+    local ok, msg, _ = vim.loop.fs_chmod(path, tonumber(mode, base))
     if not ok then
         vim.notify(msg, vim.log.levels.ERROR, { title = 'Chmod' })
     end
@@ -413,12 +412,12 @@ function M.ls(path, opts)
     }
     opts = opts or {}
 
-    local dir_it = uv.fs_scandir(path)
+    local dir_it = vim.loop.fs_scandir(path)
     local filename, ftype
     local results = {}
 
     repeat
-        filename, ftype = uv.fs_scandir_next(dir_it)
+        filename, ftype = vim.loop.fs_scandir_next(dir_it)
         if filename and (not opts.type or opts.type == ftype) then
             table.insert(results, path .. M.separator() .. filename)
         end
@@ -446,7 +445,7 @@ function M.copy(src, dest, bang)
                 return false
             end
         end
-        local status, msg = uv.fs_copyfile(src, dest)
+        local status, msg = vim.loop.fs_copyfile(src, dest)
         if status then
             return true
         end
@@ -492,7 +491,7 @@ function M.rename(old, new, bang)
                 return false
             end
         else
-            if not uv.fs_rename(old, new) then
+            if not vim.loop.fs_rename(old, new) then
                 vim.notify('Failed to rename ' .. old, vim.log.levels.ERROR, { title = 'Rename' })
                 return false
             end
@@ -536,7 +535,7 @@ function M.delete(target, bang)
     end
 
     if M.is_dir(target) then
-        if target == uv.os_homedir() then
+        if target == vim.loop.os_homedir() then
             vim.notify('Cannot delete home directory', vim.log.levels.ERROR, { title = 'Delete File/Directory' })
             return false
         elseif M.is_root(target) then
@@ -568,7 +567,7 @@ function M.delete(target, bang)
                 return false
             end
         elseif M.is_file(target) then
-            if not uv.fs_unlink(target) then
+            if not vim.loop.fs_unlink(target) then
                 vim.notify('Failed to delete the file: ' .. target, vim.log.levels.ERROR, { title = 'Delete' })
                 return false
             end
@@ -790,7 +789,7 @@ function M.read_json(filename)
     }
     assert(filename ~= '', debug.traceback 'Empty filename')
     if filename:sub(1, 1) == '~' then
-        filename = filename:gsub('~', uv.os_homedir())
+        filename = filename:gsub('~', vim.loop.os_homedir())
     end
     assert(M.is_file(filename), debug.traceback('Not a file: ' .. filename))
     return M.decode_json(M.readfile(filename, false))
@@ -800,7 +799,7 @@ function M.dump_json(filename, data)
     vim.validate { filename = { filename, 'string' }, data = { data, 'table' } }
     assert(filename ~= '', debug.traceback 'Empty filename')
     if filename:sub(1, 1) == '~' then
-        filename = filename:gsub('~', uv.os_homedir())
+        filename = filename:gsub('~', vim.loop.os_homedir())
     end
     return M.writefile(filename, M.encode_json(data))
 end
