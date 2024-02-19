@@ -1351,14 +1351,14 @@ augroup end
 
 if executable('nvim')
     function! s:nvim(...) abort
-        let l:cachedir = $HOME..'/.cache/nvim'
-        let l:socket = $TMUX_WINDOW ? l:cachedir..'/socket.win'..$TMUX_WINDOW : l:cachedir..'/socket'
+        let l:cachedir = $HOME . '/.cache/nvim'
+        let l:socket = $TMUX_WINDOW ? l:cachedir . '/socket.win' . $TMUX_WINDOW : l:cachedir . '/socket'
 
         let l:cmd = ['nvim'] " , '--server', l:socket, '--remote-silent']
 
         if len(a:000) == 0
             if !filewritable(l:socket)
-                call s:echoerr('Socket: "' .. l:socket .. '" does not exists' )
+                call s:echoerr('Socket: "' . l:socket . '" does not exists' )
                 return 1
             endif
 
@@ -1372,7 +1372,7 @@ if executable('nvim')
                     let a:000[l:i] = expand('%:p')
                 elseif a:000[l:i] =~? '^--server'
                     if !filewritable(a:000[l:i + 1])
-                        call s:echoerr('Socket: "' .. a:000[l:i + 1] .. '" does not exists' )
+                        call s:echoerr('Socket: "' . a:000[l:i + 1] . '" does not exists' )
                         return 1
                     endif
 
@@ -1384,7 +1384,7 @@ if executable('nvim')
 
             if l:has_server != 1
                 if !filewritable(l:socket)
-                    call s:echoerr('Socket: "' .. l:socket .. '" does not exists' )
+                    call s:echoerr('Socket: "' . l:socket . '" does not exists' )
                     return 1
                 endif
 

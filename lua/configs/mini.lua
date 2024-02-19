@@ -65,7 +65,7 @@ local simple_mini = {
     },
 }
 
-for plugin, config in ipairs(simple_mini) do
+for plugin, config in pairs(simple_mini) do
     load_simple_module(plugin, config)
 end
 
