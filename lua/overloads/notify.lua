@@ -21,7 +21,7 @@ if has_ui then
     local mini_notify = vim.F.npcall(require, 'mini.notify')
 
     if vim.g.vscode then
-        local vscode = require('vscode-neovim')
+        local vscode = require 'vscode-neovim'
         notify_backend = (function(f)
             return function(msg, level, opts)
                 local text = notify_format(msg, level, opts)
