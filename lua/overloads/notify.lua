@@ -173,7 +173,7 @@ end
 
 -- NOTE: Schedule notifications allow us to use them in thread's callbacks
 vim.notify = function(msg, level, opts)
-    if vim.is_thread() then
+    if vim.is_thread() or vim.in_fast_event() then
         vim.schedule(function()
             notify(msg, level, opts)
         end)

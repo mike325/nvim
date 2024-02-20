@@ -14,10 +14,15 @@ return {
         dependencies = {
             { 'tpope/vim-fugitive' },
         },
+        cond = function()
+            return not vim.g.vscode
+        end,
     },
     {
         'sindrets/diffview.nvim',
-        cond = require('storage').has_version('git', { '2', '31', '0' }),
+        cond = function()
+            return not vim.g.vscode and require('storage').has_version('git', { '2', '31', '0' })
+        end,
         config = function()
             require 'configs.diffview'
             vim.keymap.set(
@@ -36,6 +41,9 @@ return {
     {
         'lewis6991/gitsigns.nvim',
         event = { 'CursorHold', 'CursorHoldI' },
+        cond = function()
+            return not vim.g.vscode
+        end,
         dependencies = {
             { 'nvim-lua/plenary.nvim' },
         },
@@ -113,6 +121,9 @@ return {
         end,
         config = function()
             vim.api.nvim_set_keymap('n', '=m', '<Plug>(git-messenger)', { silent = true, nowait = true })
+        end,
+        cond = function()
+            return not vim.g.vscode
         end,
     },
 }

@@ -8,6 +8,9 @@ return {
         'catppuccin/nvim',
         name = 'catppuccin',
         lazy = false,
+        cond = function()
+            return not vim.g.vscode
+        end,
         opts = {
             flavour = 'mocha', -- latte, frappe, macchiato, mocha
             integrations = {
@@ -50,15 +53,32 @@ return {
     { 'rcarriga/nvim-notify', lazy = true },
     {
         'kevinhwang91/nvim-bqf',
+        cond = function()
+            return not vim.g.vscode
+        end,
         lazy = true,
         ft = 'qf',
         opts = {
             auto_enable = true,
             auto_resize_height = true,
-            func_map = {},
+            func_map = {
+                -- drop = 'o',
+                -- openc = 'O',
+                -- split = '<C-s>',
+                -- tabdrop = '<C-t>',
+                -- -- set to empty string to disable
+                -- tabc = '',
+                -- ptogglemode = 'z,',
+            },
         },
     },
-    { 'tweekmonster/startuptime.vim', cmd = { 'StartupTime' } },
+    {
+        'tweekmonster/startuptime.vim',
+        cmd = { 'StartupTime' },
+        cond = function()
+            return not vim.g.vscode
+        end,
+    },
     {
         'nvim-tree/nvim-web-devicons',
         cond = not vim.env.NO_COOL_FONTS,

@@ -33,7 +33,9 @@ return {
     },
     {
         'Yggdroot/indentLine',
-        cond = not vim.g.minimal,
+        cond = function()
+            return not vim.g.vscode and not vim.g.minimal
+        end,
         init = function()
             vim.g.indentLine_fileTypeExclude = {
                 'Telescope',
@@ -79,7 +81,7 @@ return {
     },
     {
         'folke/trouble.nvim',
-        cond = not vim.g.minimal,
+        cond = not vim.g.minimal and not vim.g.vscode,
         config = function()
             require 'configs.trouble'
         end,
@@ -89,6 +91,9 @@ return {
 
     {
         'nvim-lualine/lualine.nvim',
+        cond = function()
+            return not vim.g.vscode
+        end,
         config = function()
             require 'configs.lualine'
         end,
@@ -101,6 +106,9 @@ return {
     {
         'folke/noice.nvim',
         enabled = false,
+        -- cond = function()
+        --     return not vim.g.vscode
+        -- end,
         config = function()
             require 'configs.noice'
         end,

@@ -24,6 +24,9 @@ return {
         config = function()
             require('lspsaga').setup {}
         end,
+        cond = function()
+            return not vim.g.vscode
+        end,
         dependencies = {
             'nvim-treesitter/nvim-treesitter', -- optional
             'nvim-tree/nvim-web-devicons', -- optional

@@ -4,7 +4,9 @@ return {
         -- event = 'VeryLazy',
         -- event = { 'CursorHold', 'CmdlineEnter' },
         cmd = { 'DapStart', 'DapContinue' },
-        cond = not vim.g.minimal,
+        cond = function()
+            return not vim.g.vscode and not vim.g.minimal
+        end,
         config = function()
             require 'configs.dap'
         end,
@@ -40,6 +42,9 @@ return {
             require 'configs.cmp'
         end,
         event = 'InsertEnter',
+        cond = function()
+            return not vim.g.vscode
+        end,
         -- after = 'nvim-lspconfig',
     },
 }

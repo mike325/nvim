@@ -1,6 +1,9 @@
 return {
     {
         'nvim-telescope/telescope.nvim',
+        cond = function()
+            return not vim.g.vscode
+        end,
         config = function()
             require 'configs.telescope'
         end,
@@ -24,7 +27,7 @@ return {
             else
                 compiler = vim.fn.executable 'gcc' == 1 or vim.fn.executable 'clang' == 1
             end
-            return compiler
+            return compiler and not vim.g.vscode
         end,
     },
     {
