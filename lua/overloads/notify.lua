@@ -18,8 +18,35 @@ end
 
 if has_ui then
     local nvim_notify = vim.F.npcall(require, 'notify')
+    local mini_notify = vim.F.npcall(require, 'mini.notify')
 
-    if nvim_notify then
+    if vim.g.vscode then
+        local vscode = require('vscode-neovim')
+        notify_backend = (function(f)
+            return function(msg, level, opts)
+                local text = notify_format(msg, level, opts)
+                f(text, level, opts)
+            end
+        end)(vscode.notify)
+    elseif mini_notify then
+        local nvim = require 'nvim'
+        mini_notify.setup {}
+
+        notify_backend = (function(f)
+            return function(msg, level, opts)
+                local text = notify_format(msg, level, opts)
+                f(text, level, opts)
+            end
+        end)(mini_notify.make_notify())
+
+        vim.keymap.set('n', '<C-w>n', function()
+            mini_notify.clear()
+        end, { noremap = true, silent = true })
+
+        nvim.command.set('Notifications', function(opts)
+            mini_notify.show_history()
+        end, { nargs = 0, desc = 'Show all notifications' })
+    elseif nvim_notify then
         local get_icon = require('utils.functions').get_icon
         nvim_notify.setup {
             icons = {
@@ -35,44 +62,23 @@ if has_ui then
             nvim_notify.dismiss { pending = true, silent = true }
         end, { noremap = true, silent = true })
     else
-        local mini_notify = vim.F.npcall(require, 'mini.notify')
-        if mini_notify then
-            local nvim = require 'nvim'
-            mini_notify.setup {}
+        notify_backend = function(msg, level, opts)
+            local notification = notify_format(msg, level, opts)
+            local msg_hl = {
+                hl_group.hint,
+                hl_group.info,
+                hl_group.warn,
+                hl_group.error,
+                [0] = hl_group.error,
+                DEBUG = hl_group.hint,
+                ERROR = hl_group.error,
+                INFO = hl_group.info,
+                TRACE = hl_group.error,
+                WARN = hl_group.warn,
+                WARNING = hl_group.warn,
+            }
 
-            notify_backend = (function(f)
-                return function(msg, level, opts)
-                    local text = notify_format(msg, level, opts)
-                    f(text, level, opts)
-                end
-            end)(mini_notify.make_notify())
-
-            vim.keymap.set('n', '<C-w>n', function()
-                mini_notify.clear()
-            end, { noremap = true, silent = true })
-
-            nvim.command.set('Notifications', function(opts)
-                mini_notify.show_history()
-            end, { nargs = 0, desc = 'Show all notifications' })
-        else
-            notify_backend = function(msg, level, opts)
-                local notification = notify_format(msg, level, opts)
-                local msg_hl = {
-                    hl_group.hint,
-                    hl_group.info,
-                    hl_group.warn,
-                    hl_group.error,
-                    [0] = hl_group.error,
-                    DEBUG = hl_group.hint,
-                    ERROR = hl_group.error,
-                    INFO = hl_group.info,
-                    TRACE = hl_group.error,
-                    WARN = hl_group.warn,
-                    WARNING = hl_group.warn,
-                }
-
-                vim.api.nvim_echo({ { notification, level and msg_hl[level] or msg_hl.INFO } }, true, {})
-            end
+            vim.api.nvim_echo({ { notification, level and msg_hl[level] or msg_hl.INFO } }, true, {})
         end
     end
 else
