@@ -1,26 +1,28 @@
 local nvim = require 'nvim'
 local sys = require 'sys'
 
-local exepath = require('utils.files').exepath
-local getcwd = require('utils.files').getcwd
-local is_dir = require('utils.files').is_dir
-local is_file = require('utils.files').is_file
-local get_dirs = require('utils.files').get_dirs
-
-local is_windows = sys.name == 'windows'
+-- TODO:
+-- - Define all mappings when session start and remove them on session close
+-- - Centralize all this commands in :Dap and use completion for each subcmd
+-- - Add option to attach to process and to remote debug
 
 local dap = vim.F.npcall(require, 'dap')
 if not dap then
     return false
 end
 
+local is_windows = sys.name == 'windows'
+
 local executable = require('utils.files').executable
+local exepath = require('utils.files').exepath
+local getcwd = require('utils.files').getcwd
+local is_dir = require('utils.files').is_dir
+local is_file = require('utils.files').is_file
+local get_dirs = require('utils.files').get_dirs
 
 local lldb = exepath 'lldb-vscode'
-local cppdbg
-
 if not lldb then
-    for version = 8, 13 do
+    for version = 8, 30 do
         lldb = exepath('lldb-vscode-' .. tostring(version))
         if lldb then
             break
@@ -47,6 +49,7 @@ local function pythonPath()
     return exepath 'python3' or exepath 'python'
 end
 
+local cppdbg
 local vscode_extensions_dir = sys.home .. '/.vscode/extensions'
 if is_dir(vscode_extensions_dir) then
     for _, ext_dir in ipairs(vim.tbl_map(vim.fs.basename, get_dirs(vscode_extensions_dir))) do
@@ -63,7 +66,6 @@ if is_dir(vscode_extensions_dir) then
                     type = 'executable',
                     command = is_windows and cppdbg:gsub('/', '\\') or cppdbg,
                 }
-                break
             end
         end
     end
@@ -104,7 +106,7 @@ if lldb then
         type = 'lldb',
         request = 'launch',
         program = function()
-            return vim.fn.input('Path to executable: ', getcwd() .. '/', 'file')
+            return vim.fn.input('Path to executable: ', '', 'file')
         end,
         cwd = '${workspaceFolder}',
         stopOnEntry = false,
@@ -119,7 +121,7 @@ if cppdbg then
         type = 'cppdbg',
         request = 'launch',
         program = function()
-            return vim.fn.input('Path to executable: ', getcwd() .. '/', 'file')
+            return vim.fn.input('Path to executable: ', '', 'file')
         end,
         cwd = '${workspaceFolder}',
         stopOnEntry = true,
@@ -148,103 +150,82 @@ nvim.autocmd.DapConfig = {
     end,
 }
 
-local function list_breakpoints()
-    dap.list_breakpoints()
-    RELOAD('utils.qf').toggle()
-end
-
 local args = { noremap = true, silent = true }
-
--- require('dap.ui.variables').hover()
--- require('dap.ui.variables').scopes()
--- require('dap.ui.variables').visual_hover()
--- require('dap.ui.variables').toggle_multiline_display()
-
-vim.keymap.set('n', '<F5>', require('dap').continue, args)
-vim.keymap.set('n', '<F4>', function()
-    require('dap').terminate()
-    require('dap').close()
-end, args)
-vim.keymap.set('n', '=c', require('dap').run_to_cursor, args)
-vim.keymap.set('n', ']s', require('dap').step_over, args)
-vim.keymap.set('n', ']S', require('dap').step_into, args)
-vim.keymap.set('n', '[s', require('dap').step_out, args)
-vim.keymap.set('n', '=b', require('dap').toggle_breakpoint, args)
-vim.keymap.set('n', '=B', function()
-    require('dap').set_breakpoint(vim.fn.input 'Breakpoint condition: ')
-end, args)
-vim.keymap.set('n', '=r', require('dap').repl.toggle, args)
-vim.keymap.set('n', '<leader>L', list_breakpoints, args)
-vim.keymap.set('n', 'gK', require('dap.ui.widgets').hover, args)
-
-nvim.command.set('DapToggleBreakpoint', function()
-    require('dap').toggle_breakpoint()
-end)
-
-nvim.command.set('DapRun2Cursor', function()
-    require('dap').run_to_cursor()
-end)
-
-nvim.command.set('DapBreakpoint', function()
-    require('dap').set_breakpoint()
-end)
-
-nvim.command.set('DapListBreakpoint', function()
-    list_breakpoints()
-end)
-
-nvim.command.set('DapStart', function()
-    require('dap').continue()
-end)
-
-nvim.command.set('DapStop', function()
-    require('dap').terminate()
-    require('dap').close()
-end)
-
-nvim.command.set('DapContinue', function()
-    require('dap').continue()
-end)
-
-nvim.command.set('DapRepl', function()
-    require('dap').repl.toggle()
-end)
-
-nvim.command.set('DapInfo', function()
-    require('dap.ui.widgets').hover()
-end)
-
-nvim.command.set('DapStepOver', function(_)
-    require('dap').step_over()
-end, { nargs = '?' })
-
-nvim.command.set('DapStepInto', function(_)
-    require('dap').step_into()
-end, { nargs = '?' })
-
-nvim.command.set('DapStepOut', function(_)
-    require('dap').step_out()
-end, { nargs = '?' })
 
 local dapui = vim.F.npcall(require, 'dapui')
 if dapui then
     dapui.setup {}
 
     nvim.command.set('DapUI', function()
-        require('dapui').toggle 'sidebar'
+        dapui.toggle()
     end, {})
 
-    vim.keymap.set('n', '=I', require('dapui').toggle, { noremap = true, silent = true })
+    vim.keymap.set('n', '=I', require('dapui').toggle, args)
 
     dap.listeners.after.event_initialized['dapui_config'] = function()
-        dapui.open 'sidebar'
+        dapui.open()
     end
     dap.listeners.before.event_terminated['dapui_config'] = function()
-        dapui.close 'sidebar'
+        dapui.close()
     end
     dap.listeners.before.event_exited['dapui_config'] = function()
-        dapui.close 'sidebar'
+        dapui.close()
     end
 end
+
+local function stop_debug_session()
+    dap.terminate()
+    dap.close()
+    if dapui then
+        dapui.close()
+    end
+end
+
+local function list_breakpoints()
+    dap.list_breakpoints()
+    RELOAD('utils.qf').toggle()
+end
+
+vim.keymap.set('n', '<F5>', dap.continue, args)
+vim.keymap.set('n', '<F4>', stop_debug_session, args)
+vim.keymap.set('n', '=c', dap.continue, args)
+vim.keymap.set('n', '=C', stop_debug_session, args)
+vim.keymap.set('n', ']s', dap.step_over, args)
+vim.keymap.set('n', ']S', dap.step_into, args)
+vim.keymap.set('n', '[s', dap.step_out, args)
+vim.keymap.set('n', '=b', dap.toggle_breakpoint, args)
+vim.keymap.set('n', 'gK', require('dap.ui.widgets').hover, args)
+vim.keymap.set('n', '=r', dap.repl.toggle, args)
+vim.keymap.set('n', '<leader>L', list_breakpoints, args)
+
+vim.keymap.set('n', '=B', function()
+    local condition = vim.fn.input 'Breakpoint condition: '
+    if condition ~= '' then
+        dap.set_breakpoint(condition)
+    end
+end, args)
+
+nvim.command.set('DapStop', stop_debug_session)
+nvim.command.set('DapListBreakpoint', list_breakpoints)
+
+nvim.command.set('DapClearBreakpoints', function()
+    dap.clear_breakpoints()
+end)
+
+nvim.command.set('DapRun2Cursor', function()
+    dap.run_to_cursor()
+end)
+
+nvim.command.set('DapStart', function()
+    dap.continue()
+end)
+
+nvim.command.set('DapContinue', function()
+    dap.continue()
+end)
+
+nvim.command.set('DapRepl', function()
+    dap.repl.toggle()
+end)
 
 return true
