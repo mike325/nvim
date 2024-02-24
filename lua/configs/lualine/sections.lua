@@ -75,4 +75,9 @@ function M.session()
     return vim.v.this_session or ''
 end
 
+function M.dap()
+    local dap = vim.F.npcall(require, 'dap')
+    return dap and dap.status() or ''
+end
+
 return M

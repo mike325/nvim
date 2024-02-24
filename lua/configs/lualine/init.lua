@@ -166,7 +166,7 @@ lualine.setup {
                     end
                     return branch
                 end,
-                on_click = function(clicks, button, modifiers)
+                on_click = function()
                     vim.g.short_branch_name = not vim.g.short_branch_name
                 end,
             },
@@ -180,11 +180,14 @@ lualine.setup {
                 end,
             },
             {
+                section.dap,
+            },
+            {
                 'qf_counter',
                 cond = function()
                     return #vim.fn.getqflist() > 0
                 end,
-                on_click = function(clicks, button, modifiers)
+                on_click = function()
                     RELOAD('utils.qf').toggle()
                 end,
             },
@@ -193,7 +196,7 @@ lualine.setup {
                 cond = function()
                     return #vim.fn.getloclist(vim.api.nvim_get_current_win()) > 0
                 end,
-                on_click = function(clicks, button, modifiers)
+                on_click = function()
                     RELOAD('utils.qf').toggle { win = vim.api.nvim_get_current_win() }
                 end,
             },
@@ -210,7 +213,7 @@ lualine.setup {
                     modified = 'StatusLineDiffChange',
                     removed = 'StatusLineDiffRemove',
                 },
-                on_click = function(clicks, button, modifiers)
+                on_click = function()
                     local ok, gitsigns = pcall(require, 'gitsigns')
                     if ok then
                         gitsigns.setqflist 'attached'
@@ -226,14 +229,14 @@ lualine.setup {
                     info = get_icon 'info',
                     hint = get_icon 'hint',
                 },
-                on_click = function(clicks, button, modifiers)
+                on_click = function()
                     vim.diagnostic.setqflist()
                     vim.cmd.wincmd 'J'
                 end,
             },
             {
                 'bg_jobs',
-                on_click = function(clicks, button, modifiers)
+                on_click = function()
                     RELOAD('mappings').show_background_jobs()
                 end,
             },

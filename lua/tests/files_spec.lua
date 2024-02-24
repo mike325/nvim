@@ -812,7 +812,7 @@ describe('is_parent', function()
     end)
 end)
 
-describe('make_executable', function()
+describe('is_executable', function()
     local is_executable = require('utils.files').is_executable
     it('Check executable bit', function()
         mini_test.expect.equality(is_executable(vim.fn.tempname()), false)

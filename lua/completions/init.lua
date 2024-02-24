@@ -198,6 +198,20 @@ completions = vim.tbl_extend('force', completions, {
             vim.fn.globpath('lua/tests', '**/*_spec.lua', true, true)
         )
     end,
+    dap_commands = function(arglead, cmdline, cursorpos)
+        local cmds = {
+            'stop',
+            'start',
+            'continue',
+            'repl',
+            'breakpoint',
+            'list',
+            'clear',
+            'run2cursor',
+            'restart',
+        }
+        return utils.general_completion(arglead, cmdline, cursorpos, cmds)
+    end,
 })
 
 return completions

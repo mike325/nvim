@@ -3,7 +3,6 @@ local sys = require 'sys'
 
 -- TODO:
 -- - Define all mappings when session start and remove them on session close
--- - Centralize all this commands in :Dap and use completion for each subcmd
 -- - Add option to attach to process and to remote debug
 
 local dap = vim.F.npcall(require, 'dap')
@@ -11,19 +10,14 @@ if not dap then
     return false
 end
 
+local utils = RELOAD 'utils.files'
+local completions = RELOAD 'completions'
 local is_windows = sys.name == 'windows'
 
-local executable = require('utils.files').executable
-local exepath = require('utils.files').exepath
-local getcwd = require('utils.files').getcwd
-local is_dir = require('utils.files').is_dir
-local is_file = require('utils.files').is_file
-local get_dirs = require('utils.files').get_dirs
-
-local lldb = exepath 'lldb-vscode'
+local lldb = utils.exepath 'lldb-vscode'
 if not lldb then
     for version = 8, 30 do
-        lldb = exepath('lldb-vscode-' .. tostring(version))
+        lldb = utils.exepath('lldb-vscode-' .. tostring(version))
         if lldb then
             break
         end
@@ -36,23 +30,23 @@ local function pythonPath()
     -- The code below looks for a `venv` or `.venv` folder in the current directly
     -- and uses the python within.
     -- You could adapt this - to for example use the `VIRTUAL_ENV` environment variable.
-    local cwd = getcwd()
+    local cwd = utils.getcwd()
 
     if vim.env.VIRTUAL_ENV then
         return vim.env.VIRTUAL_ENV .. '/bin/python'
-    elseif executable(cwd .. '/venv/bin/python') then
+    elseif utils.executable(cwd .. '/venv/bin/python') then
         return cwd .. '/venv/bin/python'
-    elseif executable(cwd .. '/.venv/bin/python') then
+    elseif utils.executable(cwd .. '/.venv/bin/python') then
         return cwd .. '/.venv/bin/python'
     end
 
-    return exepath 'python3' or exepath 'python'
+    return utils.exepath 'python3' or utils.exepath 'python'
 end
 
 local cppdbg
 local vscode_extensions_dir = sys.home .. '/.vscode/extensions'
-if is_dir(vscode_extensions_dir) then
-    for _, ext_dir in ipairs(vim.tbl_map(vim.fs.basename, get_dirs(vscode_extensions_dir))) do
+if utils.is_dir(vscode_extensions_dir) then
+    for _, ext_dir in ipairs(vim.tbl_map(vim.fs.basename, utils.get_dirs(vscode_extensions_dir))) do
         if ext_dir:match 'cpptools' then
             local debugger = 'OpenDebugAD7'
             if is_windows then
@@ -60,7 +54,10 @@ if is_dir(vscode_extensions_dir) then
             end
 
             cppdbg = ('%s/%s/debugAdapters/bin/%s'):format(vscode_extensions_dir, ext_dir, debugger)
-            if is_file(cppdbg) then
+            if utils.is_file(cppdbg) then
+                if not is_windows and not utils.is_executable(cppdbg) then
+                    utils.chmod_exec(cppdbg)
+                end
                 dap.adapters.cppdbg = {
                     id = 'cppdbg',
                     type = 'executable',
@@ -79,7 +76,7 @@ if lldb then
     }
 end
 
-if executable 'python3' or executable 'python' then
+if utils.executable 'python3' or utils.executable 'python' then
     dap.adapters.python = {
         type = 'executable',
         command = pythonPath(),
@@ -155,11 +152,6 @@ local args = { noremap = true, silent = true }
 local dapui = vim.F.npcall(require, 'dapui')
 if dapui then
     dapui.setup {}
-
-    nvim.command.set('DapUI', function()
-        dapui.toggle()
-    end, {})
-
     vim.keymap.set('n', '=I', require('dapui').toggle, args)
 
     dap.listeners.after.event_initialized['dapui_config'] = function()
@@ -183,7 +175,7 @@ end
 
 local function list_breakpoints()
     dap.list_breakpoints()
-    RELOAD('utils.qf').toggle()
+    RELOAD('utils.qf').open()
 end
 
 vim.keymap.set('n', '<F5>', dap.continue, args)
@@ -205,27 +197,24 @@ vim.keymap.set('n', '=B', function()
     end
 end, args)
 
-nvim.command.set('DapStop', stop_debug_session)
-nvim.command.set('DapListBreakpoint', list_breakpoints)
+nvim.command.set('Dap', function(opts)
+    local subcmd = opts.args:gsub('^%-+', '')
 
-nvim.command.set('DapClearBreakpoints', function()
-    dap.clear_breakpoints()
-end)
+    local cmd_func = {
+        stop = stop_debug_session,
+        start = dap.continue,
+        continue = dap.continue,
+        restart = dap.restart,
+        repl = dap.repl.toggle,
+        breakpoint = dap.toggle_breakpoint,
+        list = list_breakpoints,
+        clear = dap.clear_breakpoints,
+        run2cursor = dap.run_to_cursor,
+    }
 
-nvim.command.set('DapRun2Cursor', function()
-    dap.run_to_cursor()
-end)
-
-nvim.command.set('DapStart', function()
-    dap.continue()
-end)
-
-nvim.command.set('DapContinue', function()
-    dap.continue()
-end)
-
-nvim.command.set('DapRepl', function()
-    dap.repl.toggle()
-end)
+    if cmd_func[subcmd] then
+        cmd_func[subcmd]()
+    end
+end, { desc = 'Manage DAP sessions', nargs = 1, complete = completions.dap_commands })
 
 return true
