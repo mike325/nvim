@@ -39,15 +39,15 @@ _header = """
   .`                                 `/
 """
 
-_VERSION = "0.1.0"
-_AUTHOR = "Mike"
+__version__ = "0.1.0"
+__author__ = "Mike"
 
 _log: logging.Logger
 # _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-_SCRIPTNAME = os.path.basename(__file__)
+_SCRIPTNAME: str = os.path.basename(__file__)
 _log_file: Optional[str] = os.path.splitext(_SCRIPTNAME)[0] + ".log"
 
-_verbose = False
+_verbose: bool = False
 # _is_windows = os.name == 'nt'
 # _home = os.environ['USERPROFILE' if _is_windows else 'HOME']
 
@@ -256,7 +256,7 @@ def createLogger(
         with open(filename, "a") as log:
             log.write(_header)
             # log.write(f'\nDate: {datetime.datetime.date()}')
-            log.write(f"\nAuthor:   {_AUTHOR}\nVersion:  {_VERSION}\n\n")
+            log.write(f"\nAuthor:   {__author__}\nVersion:  {__version__}\n\n")
 
         file_handler = logging.FileHandler(filename=filename)
         file_handler.setLevel(file_level)
@@ -332,14 +332,6 @@ def _parseArgs():
             else:
                 setattr(ns, self.dest, values)
 
-    class ChangeLogFile(argparse.Action):
-        def __call__(self, parser, ns, values, option):
-            if option[2:4] == "no":
-                setattr(ns, self.dest, None)
-            else:
-                pass
-                setattr(ns, self.dest, values)
-
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
@@ -358,7 +350,7 @@ def _parseArgs():
         "--nolog",
         "--no-log",
         dest="logfile",
-        action=ChangeLogFile,
+        action=NegateActionWithArg,
         default=_log_file,
         nargs="?",
         type=str,
@@ -421,7 +413,7 @@ def main():
     args = _parseArgs()
 
     if args.show_version:
-        print(f"{_header}\nAuthor:   {_AUTHOR}\nVersion:  {_VERSION}")
+        print(f"{_header}\nAuthor:   {__author__}\nVersion:  {__version__}")
         return 0
 
     stdout_level = args.stdout_logging if not args.verbose else "debug"

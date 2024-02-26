@@ -180,13 +180,14 @@ end
 
 vim.keymap.set('n', '<F5>', dap.continue, args)
 vim.keymap.set('n', '<F4>', stop_debug_session, args)
+vim.keymap.set('n', 'gK', require('dap.ui.widgets').hover, args)
 vim.keymap.set('n', '=c', dap.continue, args)
 vim.keymap.set('n', '=C', stop_debug_session, args)
 vim.keymap.set('n', ']s', dap.step_over, args)
-vim.keymap.set('n', ']S', dap.step_into, args)
 vim.keymap.set('n', '[s', dap.step_out, args)
+vim.keymap.set('n', ']S', dap.step_into, args)
+vim.keymap.set('n', '[S', dap.step_out, args)
 vim.keymap.set('n', '=b', dap.toggle_breakpoint, args)
-vim.keymap.set('n', 'gK', require('dap.ui.widgets').hover, args)
 vim.keymap.set('n', '=r', dap.repl.toggle, args)
 vim.keymap.set('n', '<leader>L', list_breakpoints, args)
 
