@@ -6,7 +6,7 @@ if not lsp then
     nvim.autocmd.StartLSP = {
         event = 'FileType',
         pattern = '*',
-        callback = function(args)
+        callback = function(_)
             local ft = vim.opt_local.filetype:get()
             local server_idx = RELOAD('configs.lsp.utils').check_language_server(ft)
             if server_idx then
@@ -43,11 +43,19 @@ if not lsp then
 
                 local root_dir = vim.fs.dirname(vim.fs.find(markers, { upward = true })[1]) or vim.loop.cwd()
 
-                vim.lsp.start {
+                local opts = {
                     name = name,
                     cmd = cmd,
                     root_dir = root_dir,
                 }
+
+                local neodev = vim.F.npcall(require, 'neodev.lsp')
+                if neodev and ft == 'lua' then
+                    opts.before_init = neodev.before_init
+                    opts.settings = { Lua = {} }
+                end
+
+                vim.lsp.start(opts)
             end
         end,
     }
@@ -66,7 +74,6 @@ if not treesitter then
             end
             local filetype = vim.bo[args.buf].filetype
             vim.treesitter.start(args.buf, ft_mapping[filetype] or filetype)
-            -- vim.bo[args.buf].syntax = 'on'  -- only if additional legacy syntax is needed
         end,
     })
 end
@@ -75,7 +82,7 @@ if not nvim.plugins['nvim-bqf'] then
     nvim.autocmd.add('FileType', {
         group = 'QuickfixMappings',
         pattern = 'qf',
-        callback = function(args)
+        callback = function(_)
             local is_loclist = vim.fn.getwininfo(vim.api.nvim_get_current_win())[1].loclist == 1
             local cmd_prefix = is_loclist and 'l' or 'c'
             vim.keymap.set(

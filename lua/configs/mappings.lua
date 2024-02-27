@@ -678,7 +678,7 @@ if executable 'git' then
 end
 
 -- NOTE: This could be smarter and list the hunks in the QF
-nvim.command.set('ModifiedDump', function(opts)
+nvim.command.set('ModifiedDump', function(_)
     RELOAD('utils.qf').dump_files(
         vim.tbl_filter(function(buf)
             return vim.bo[buf].modified
@@ -716,7 +716,7 @@ nvim.command.set('TrimWhites', function(opts)
     RELOAD('utils.files').trimwhites(nvim.get_current_buf(), { opts.line1 - 1, opts.line2 })
 end, { range = '%', desc = 'Alias to <,>s/\\s\\+$//g' })
 
-nvim.command.set('ParseSSHConfig', function(opts)
+nvim.command.set('ParseSSHConfig', function(_)
     local hosts = RELOAD('threads.parsers').sshconfig()
     for host, attrs in pairs(hosts) do
         STORAGE.hosts[host] = attrs
@@ -771,7 +771,7 @@ if executable 'gh' then
             table.insert(opts.fargs, '--draft')
         end
         opts.args = table.concat(opts.fargs, ' ')
-        RELOAD('utils.gh').create_pr({ args = opts.fargs }, function(output)
+        RELOAD('utils.gh').create_pr({ args = opts.fargs }, function(_)
             vim.notify('PR created! ', vim.log.levels.INFO, { title = 'GH' })
         end)
     end, {
@@ -820,7 +820,7 @@ if executable 'gh' then
         if opts.args == 'draft' then
             is_ready = false
         end
-        RELOAD('utils.gh').pr_ready(is_ready, function(output)
+        RELOAD('utils.gh').pr_ready(is_ready, function(_)
             local msg = ('PR move to %s'):format(opts.args == '' and 'ready' or opts.args)
             vim.notify(msg, vim.log.levels.INFO, { title = 'GH' })
         end)
@@ -836,7 +836,7 @@ if executable 'gh' then
         local command = action == 'add' and '--add-reviewer' or '--remove-reviewer'
         opts.fargs = vim.list_extend({ command }, reviewers)
         opts.args = table.concat(opts.fargs, ' ')
-        RELOAD('utils.gh').edit_pr({ args = opts.fargs }, function(output)
+        RELOAD('utils.gh').edit_pr({ args = opts.fargs }, function(_)
             local msg = ('Reviewers %s were %s'):format(action .. 'ed', table.concat(reviewers, ''))
             vim.notify(msg, vim.log.levels.INFO, { title = 'GH' })
         end)

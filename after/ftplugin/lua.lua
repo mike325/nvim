@@ -17,7 +17,7 @@ table.insert(runtimepaths, './lua/')
 vim.opt_local.path:prepend { './lua/', '.' }
 vim.opt_local.path:prepend(require('utils.tables').merge_uniq_list(runtimepaths, lua_runtime))
 
-nvim.command.set('HelpNeovim', function(opts)
+nvim.command.set('HelpNeovim', function(_)
     local original_iskeyword = vim.bo.iskeyword
 
     vim.bo.iskeyword = vim.bo.iskeyword .. ',.'
@@ -54,7 +54,7 @@ nvim.command.set('HelpNeovim', function(opts)
         end
 
         if not ok then
-            local split_word = vim.split(word, '.', true)
+            local split_word = vim.split(word, '.', { trimempty = true })
             ok = pcall(vim.cmd.help, split_word[#split_word])
         end
 
@@ -68,6 +68,7 @@ end, {
     desc = 'Open Neovim help with word under cursor',
 })
 
+-- vim.opt_local.omnifunc = 'v:lua.vim.lua_omnifunc' -- TODO: make this play nicely with LSP
 vim.opt_local.keywordprg = ':HelpNeovim'
 
 local ft = vim.opt_local.filetype:get()

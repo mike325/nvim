@@ -16,7 +16,7 @@ local servers = {
     kotlin = { { exec = 'kotlin-language-server', config = 'kotlin_language_server' } },
     rust = {
         { exec = 'rust-analyzer', config = 'rust_analyzer' },
-        { exec = 'rustup', config = 'rust_analyzer', cmd = { 'rustup', 'run', 'stable', 'rust-analyzer' } },
+        { exec = 'rustup',        config = 'rust_analyzer', cmd = { 'rustup', 'run', 'stable', 'rust-analyzer' } },
     },
     tex = {
         {
@@ -82,11 +82,15 @@ local servers = {
                             -- (most likely LuaJIT in the case of Neovim)
                             version = 'LuaJIT',
                             -- Setup your lua path
-                            path = lua_runtime,
+                            -- path = lua_runtime,
                         },
                         workspace = {
                             -- Make the server aware of Neovim runtime files
-                            library = vim.api.nvim_get_runtime_file('', true),
+                            -- library = vim.api.nvim_get_runtime_file('', true),
+                            checkThirdParty = false,
+                            library = {
+                                vim.env.VIMRUNTIME,
+                            },
                         },
                         telemetry = {
                             enable = false,

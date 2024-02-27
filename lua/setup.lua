@@ -23,7 +23,7 @@ local download_lazy = function()
     }
 
     if vim.v.shell_error == 0 then
-        vim.notify(out or 'Lazy downloaded in: ' .. lazypath, vim.log.levels.INFO, { title = 'Lazy setup!' })
+        vim.notify((out or 'Lazy downloaded in: ') .. lazypath, vim.log.levels.INFO, { title = 'Lazy setup!' })
         vim.opt.rtp:prepend(lazypath)
         return true
     end

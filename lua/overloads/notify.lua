@@ -9,7 +9,7 @@ end
 
 local notify_backend
 local has_ui = #vim.api.nvim_list_uis() > 0
-local function notify_format(msg, level, opts)
+local function notify_format(msg, _, opts)
     if opts and opts.title then
         return ('[%s]: %s'):format(opts.title, msg)
     end
@@ -43,7 +43,7 @@ if has_ui then
             mini_notify.clear()
         end, { noremap = true, silent = true })
 
-        nvim.command.set('Notifications', function(opts)
+        nvim.command.set('Notifications', function(_)
             mini_notify.show_history()
         end, { nargs = 0, desc = 'Show all notifications' })
     elseif nvim_notify then

@@ -87,6 +87,9 @@ local function exec_sync_gitcmd(cmd, gitcmd)
     -- TODO: This is not a direct replacement, may need to use vim.system but need a cleanup first
     if vim.is_thread() then
         local git = io.popen(table.concat(cmd, ' '), 'r')
+        if not git then
+            return {}
+        end
         local output = git:read '*a'
         return vim.split(output, '\n', { trimempty = true })
     else

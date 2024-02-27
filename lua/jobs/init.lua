@@ -433,7 +433,7 @@ function Job:start()
 
     self._opts.cwd = utils_io.realpath(_cwd)
 
-    local function on_exit_wrapper(_, rc, event)
+    local function on_exit_wrapper(_, rc, _)
         jobs[tostring(self._id)] = nil
         -- NOTE: restart in progress, will come back after the new exit
         if self._restarted then

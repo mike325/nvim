@@ -147,12 +147,10 @@ nvim.autocmd.DapConfig = {
     end,
 }
 
-local args = { noremap = true, silent = true }
-
 local dapui = vim.F.npcall(require, 'dapui')
 if dapui then
     dapui.setup {}
-    vim.keymap.set('n', '=I', require('dapui').toggle, args)
+    vim.keymap.set('n', '=I', require('dapui').toggle, { noremap = true, silent = true })
 
     dap.listeners.after.event_initialized['dapui_config'] = function()
         dapui.open()
@@ -178,25 +176,25 @@ local function list_breakpoints()
     RELOAD('utils.qf').open()
 end
 
-vim.keymap.set('n', '<F5>', dap.continue, args)
-vim.keymap.set('n', '<F4>', stop_debug_session, args)
-vim.keymap.set('n', 'gK', require('dap.ui.widgets').hover, args)
-vim.keymap.set('n', '=c', dap.continue, args)
-vim.keymap.set('n', '=C', stop_debug_session, args)
-vim.keymap.set('n', ']s', dap.step_over, args)
-vim.keymap.set('n', '[s', dap.step_out, args)
-vim.keymap.set('n', ']S', dap.step_into, args)
-vim.keymap.set('n', '[S', dap.step_out, args)
-vim.keymap.set('n', '=b', dap.toggle_breakpoint, args)
-vim.keymap.set('n', '=r', dap.repl.toggle, args)
-vim.keymap.set('n', '<leader>L', list_breakpoints, args)
+vim.keymap.set('n', '<F5>', dap.continue, { noremap = true, silent = true })
+vim.keymap.set('n', '<F4>', stop_debug_session, { noremap = true, silent = true })
+vim.keymap.set('n', 'gK', require('dap.ui.widgets').hover, { noremap = true, silent = true })
+vim.keymap.set('n', '=c', dap.continue, { noremap = true, silent = true })
+vim.keymap.set('n', '=C', stop_debug_session, { noremap = true, silent = true })
+vim.keymap.set('n', ']s', dap.step_over, { noremap = true, silent = true })
+vim.keymap.set('n', '[s', dap.step_out, { noremap = true, silent = true })
+vim.keymap.set('n', ']S', dap.step_into, { noremap = true, silent = true })
+vim.keymap.set('n', '[S', dap.step_out, { noremap = true, silent = true })
+vim.keymap.set('n', '=b', dap.toggle_breakpoint, { noremap = true, silent = true })
+vim.keymap.set('n', '=r', dap.repl.toggle, { noremap = true, silent = true })
+vim.keymap.set('n', '<leader>L', list_breakpoints, { noremap = true, silent = true })
 
 vim.keymap.set('n', '=B', function()
     local condition = vim.fn.input 'Breakpoint condition: '
     if condition ~= '' then
         dap.set_breakpoint(condition)
     end
-end, args)
+end, { noremap = true, silent = true })
 
 nvim.command.set('Dap', function(opts)
     local subcmd = opts.args:gsub('^%-+', '')

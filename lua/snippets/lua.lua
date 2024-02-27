@@ -70,7 +70,7 @@ local function require_import(_, parent, old_state)
             table.insert(
                 nodes,
                 f(function(module)
-                    local name = vim.split(module[1][1], '.', true)
+                    local name = vim.split(module[1][1], '.', { trimempty = true })
                     if name[#name] and name[#name] ~= '' then
                         return name[#name]
                     elseif #name - 1 > 0 and name[#name - 1] ~= '' then
@@ -284,62 +284,63 @@ return {
         i(1, 'DESCRIPTION'),
         i(2, '-- test'),
     })),
-    s(
-        { trig = '(n?)eq', regTrig = true },
-        fmt([[assert.{}({}, {})]],{
-        f(function(_, snip)
-            -- stylua: ignore
-            if snip.captures[1] == 'n' then
-                -- stylua: ignore
-                return 'are_not.same('
-            end
-            -- stylua: ignore
-            return 'are.same('
-        end, {}),
-        i(1, 'expected'),
-        i(2, 'result'),
-    })),
-    s(
-        { trig = '(n?)eq', regTrig = true },
-        fmt([[assert.{}({}, {})]],{
-        f(function(_, snip)
-            -- stylua: ignore
-            if snip.captures[1] == 'n' then
-                -- stylua: ignore
-                return 'are_not.equal('
-            end
-            -- stylua: ignore
-            return 'are.equal('
-        end, {}),
-        i(1, 'expected'),
-        i(2, 'result'),
-    })),
-    s('haserr', fmt([[assert.has.error(function() {} end{})]],{
-        i(1, 'error()'),
-        c(2, {
-            t{''},
-            sn(nil, { t{", '"}, i(1, 'error'), t{"'"} }),
-        }),
-    })),
-    s(
-        { trig = 'is(_?)true', regTrig = true },
-        fmt([[assert.is_true({})]], {
-            d(1, surround_with_func, {}, {user_args = {{text = 'true'}}}),
-        }
-    )),
-    s(
-        { trig = 'is(_?)false', regTrig = true },
-        fmt([[assert.is_false({})]], {
-            d(1, surround_with_func, {}, {user_args = {{text = 'false'}}}),
-        }
-    )),
     s('pr', fmt([[print({})]],{
         i(1, 'msg'),
     })),
-    s('istruthy', fmt([[assert.is_truthy({})]],{ d(1, surround_with_func, {}, {user_args = {{text = 'true'}}}), })),
-    s('isfalsy', fmt([[assert.is_falsy({})]],{ d(1, surround_with_func, {}, {user_args = {{text = 'false'}}}), })),
-    s('truthy', fmt([[assert.is_truthy({})]],{ d(1, surround_with_func, {}, {user_args = {{text = 'true'}}}), })),
-    s('falsy', fmt([[assert.is_falsy({})]],{ d(1, surround_with_func, {}, {user_args = {{text = 'false'}}}), })),
+    -- TODO: Add support for mini tests
+    -- s(
+    --     { trig = '(n?)eq', regTrig = true },
+    --     fmt([[assert.{}({}, {})]],{
+    --     f(function(_, snip)
+    --         -- stylua: ignore
+    --         if snip.captures[1] == 'n' then
+    --             -- stylua: ignore
+    --             return 'are_not.same('
+    --         end
+    --         -- stylua: ignore
+    --         return 'are.same('
+    --     end, {}),
+    --     i(1, 'expected'),
+    --     i(2, 'result'),
+    -- })),
+    -- s(
+    --     { trig = '(n?)eq', regTrig = true },
+    --     fmt([[assert.{}({}, {})]],{
+    --     f(function(_, snip)
+    --         -- stylua: ignore
+    --         if snip.captures[1] == 'n' then
+    --             -- stylua: ignore
+    --             return 'are_not.equal('
+    --         end
+    --         -- stylua: ignore
+    --         return 'are.equal('
+    --     end, {}),
+    --     i(1, 'expected'),
+    --     i(2, 'result'),
+    -- })),
+    -- s('haserr', fmt([[assert.has.error(function() {} end{})]],{
+    --     i(1, 'error()'),
+    --     c(2, {
+    --         t{''},
+    --         sn(nil, { t{", '"}, i(1, 'error'), t{"'"} }),
+    --     }),
+    -- })),
+    -- s(
+    --     { trig = 'is(_?)true', regTrig = true },
+    --     fmt([[assert.is_true({})]], {
+    --         d(1, surround_with_func, {}, {user_args = {{text = 'true'}}}),
+    --     }
+    -- )),
+    -- s(
+    --     { trig = 'is(_?)false', regTrig = true },
+    --     fmt([[assert.is_false({})]], {
+    --         d(1, surround_with_func, {}, {user_args = {{text = 'false'}}}),
+    --     }
+    -- )),
+    -- s('istruthy', fmt([[assert.is_truthy({})]],{ d(1, surround_with_func, {}, {user_args = {{text = 'true'}}}), })),
+    -- s('isfalsy', fmt([[assert.is_falsy({})]],{ d(1, surround_with_func, {}, {user_args = {{text = 'false'}}}), })),
+    -- s('truthy', fmt([[assert.is_truthy({})]],{ d(1, surround_with_func, {}, {user_args = {{text = 'true'}}}), })),
+    -- s('falsy', fmt([[assert.is_falsy({})]],{ d(1, surround_with_func, {}, {user_args = {{text = 'false'}}}), })),
     s(
         { trig = 'error' },
         fmt([[error(debug.traceback({}))]], {
@@ -409,7 +410,7 @@ return {
                     local env_version = vim.version.parse(vim.fn.system('env --version'))
                     if env_version >= vim.version.parse('8.30') then
                         local env_path = require('utils.files').exepath('env')
-                        return string.format('%s -S "nvim -l"', env_path)
+                        return string.format('%s -S nvim -l', env_path)
                     end
                 end
                 return string.format('%s -l', vim.v.progpath)

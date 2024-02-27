@@ -10,6 +10,9 @@ local function exec_sync_ghcmd(cmd, ghcmd)
     -- TODO: This is not a direct replacement, may need to use vim.system but need a cleanup first
     if vim.is_thread() then
         local gh = io.popen(table.concat(cmd, ' '), 'r')
+        if not gh then
+            return {}
+        end
         local output = gh:read '*a'
         return vim.split(output, '\n', { trimempty = true })
     else
@@ -42,7 +45,7 @@ local function exec_ghcmd(ghcmd, args, callbacks)
         callbacks_on_success = function(job)
             callbacks(filter_empty(job:output()))
         end,
-        callbacks_on_failure = function(job)
+        callbacks_on_failure = function(_)
             local title = 'GH' .. ghcmd:sub(1, 1):upper() .. ghcmd:sub(2, #ghcmd)
             vim.notify('Failed to execute gh ' .. ghcmd, vim.log.levels.ERROR, { title = title })
         end,

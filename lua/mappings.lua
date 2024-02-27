@@ -84,7 +84,7 @@ function M.smart_insert()
     local current_line = vim.fn.line '.'
     local last_line = vim.fn.line '$'
     local buftype = vim.bo.buftype
-    if #vim.fn.getline '.' == 0 and last_line ~= current_line and buftype ~= 'terminal' then
+    if #vim.api.nvim_get_current_line() == 0 and last_line ~= current_line and buftype ~= 'terminal' then
         return '"_ddO'
     end
     return 'i'
@@ -339,7 +339,7 @@ function M.async_makeprg(opts)
         callbacks_on_success = function()
             vim.cmd.checktime()
         end,
-        callbacks_on_failure = function(job)
+        callbacks_on_failure = function(_)
             RELOAD('utils.qf').qf_to_diagnostic(title)
         end,
     }
@@ -740,7 +740,7 @@ function M.autoformat(opts)
     print('Autoformat', vim.b.autoformat and 'enabled' or 'disabled')
 end
 
-function M.wall(opts)
+function M.wall(_)
     for _, win in ipairs(nvim.tab.list_wins(0)) do
         nvim.buf.call(nvim.win.get_buf(win), function()
             vim.cmd.update()
@@ -748,7 +748,7 @@ function M.wall(opts)
     end
 end
 
-function M.alternate_grep(opts)
+function M.alternate_grep(_)
     vim.t.lock_grep = not vim.t.lock_grep
     local is_git = false
     if vim.t.lock_grep then

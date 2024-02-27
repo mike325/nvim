@@ -212,7 +212,7 @@ function M.extension(path)
     path = M.normalize(path)
     if not M.is_dir(path) then
         local filename = M.basename(path)
-        extension = filename:match '^.+(%..+)$' or ''
+        extension = filename and filename:match '^.+(%..+)$' or ''
     end
     return #extension >= 2 and extension:sub(2, #extension) or extension
 end
@@ -670,9 +670,9 @@ function M.skeleton_filename(opts)
     end
 
     if skeleton and M.is_file(skeleton) then
-        local lines = M.readfile(skeleton)
+        local lines = M.readfile(skeleton) or {}
         for i = 1, #lines do
-            local line = lines[i]
+            local line = lines[i] or ''
             if line ~= '' then
                 local macro = filename:upper()
                 line = line:gsub('%%NAME_H', macro .. '_H')

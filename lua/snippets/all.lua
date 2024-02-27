@@ -32,7 +32,7 @@ local utils = RELOAD 'configs.luasnip.utils'
 local get_comment = RELOAD('utils.buffers').get_comment
 local return_value = utils.return_value
 
-local function notes(args, snip, old_state, user_args)
+local function notes(_, _, old_state, user_args)
     local nodes = {}
     old_state = old_state or {}
     user_args = user_args or {}
@@ -147,7 +147,7 @@ local general_snips = {
                     local env_version = vim.version.parse(vim.fn.system('env --version'))
                     if env_version >= vim.version.parse('8.30') then
                         local env_path = require('utils.files').exepath('env')
-                        return string.format('#!%s -S "nvim -l"', env_path)
+                        return string.format('#!%s -S nvim -l', env_path)
                     end
                 end
                 return string.format('#!%s -l', vim.v.progpath)
