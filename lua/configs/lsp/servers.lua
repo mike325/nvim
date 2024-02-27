@@ -16,7 +16,7 @@ local servers = {
     kotlin = { { exec = 'kotlin-language-server', config = 'kotlin_language_server' } },
     rust = {
         { exec = 'rust-analyzer', config = 'rust_analyzer' },
-        { exec = 'rustup',        config = 'rust_analyzer', cmd = { 'rustup', 'run', 'stable', 'rust-analyzer' } },
+        { exec = 'rustup', config = 'rust_analyzer', cmd = { 'rustup', 'run', 'stable', 'rust-analyzer' } },
     },
     tex = {
         {
