@@ -435,7 +435,7 @@ function M.get_dirs(path)
 end
 
 function M.copy(src, dest, force)
-    vim.validate { force = { force, 'boolean', true }, }
+    vim.validate { force = { force, 'boolean', true } }
     src = M.normalize(src)
     dest = M.normalize(dest)
     dest = M.is_dir(dest) and dest .. '/' .. vim.fs.basename(src) or dest
