@@ -183,7 +183,7 @@ function M.send_grep_job(opts)
 end
 
 -- TODO: call opfun functions directly instead of using a viml wrapper
-function M.opfun_grep(select, visual)
+function M.opfun_grep(_, visual)
     local select_save = vim.o.selection
     vim.o.selection = 'inclusive'
 
@@ -378,7 +378,7 @@ function M.async_execute(opts)
     }
 
     if opts.auto_close or opts.autoclose then
-        script:callbacks_on_success(function(job)
+        script:callbacks_on_success(function(_)
             if vim.t.progress_win and not vim.g.active_job then
                 nvim.win.close(vim.t.progress_win, true)
             end
@@ -1040,7 +1040,7 @@ function M.typos_check(buf)
     local typos = RELOAD('jobs'):new {
         cmd = cmd,
         silent = true,
-        callbacks = function(job, rc)
+        callbacks = function(job, _)
             local qf_utils = RELOAD 'utils.qf'
             local output = RELOAD('utils.tables').remove_empty(job:output())
             local diagnostic_ns_name = title:lower()

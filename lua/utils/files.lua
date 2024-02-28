@@ -434,18 +434,14 @@ function M.get_dirs(path)
     return M.ls(path, { type = 'directory' })
 end
 
-function M.copy(src, dest, bang)
+function M.copy(src, dest, force)
+    vim.validate { force = { force, 'boolean', true }, }
     src = M.normalize(src)
     dest = M.normalize(dest)
     dest = M.is_dir(dest) and dest .. '/' .. vim.fs.basename(src) or dest
 
-    if not M.is_dir(src) and (not M.exists(dest) or bang) then
-        if M.exists(dest) and bang then
-            if not M.delete(dest, bang) then
-                return false
-            end
-        end
-        local status, msg = vim.loop.fs_copyfile(src, dest)
+    if not M.is_dir(src) and (not M.exists(dest) or force) then
+        local status, msg = vim.loop.fs_copyfile(src, dest, { excl = not force })
         if status then
             return true
         end

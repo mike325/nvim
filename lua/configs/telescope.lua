@@ -102,10 +102,6 @@ vim.keymap.set('n', '<C-b>', function()
     builtin.buffers {}
 end, noremap)
 
-nvim.command.set('Oldfiles', function()
-    require('telescope.builtin').oldfiles {}
-end)
-
 nvim.command.set('Registers', function()
     require('telescope.builtin').registers(require('telescope.themes').get_dropdown {})
 end)

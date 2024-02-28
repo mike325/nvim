@@ -8,6 +8,7 @@ function Logger:new(opts)
         name = { opts.name, 'string', true },
         file = { opts.file, { 'string', 'boolean' }, true },
         stdout = { opts.stdout, 'boolean', true },
+        level = { opts.level, { 'string', 'number' }, true },
         stdout_level = { opts.stdout_level, { 'string', 'number' }, true },
         file_level = { opts.file_level, { 'string', 'number' }, true },
     }
@@ -22,9 +23,9 @@ function Logger:new(opts)
     end
 
     if opts.stdout or opts.stdout == nil then
-        obj._stdout_level = opts.stdout_level or vim.lsp.log_levels.INFO
+        obj._stdout_level = opts.stdout_level or opts.level or vim.lsp.log_levels.INFO
         if type(obj._stdout_level) ~= type(0) then
-            obj._stdout_level = vim.lsp.log_levels[obj._stdout_level] or vim.lsp.log_levels.INFO
+            obj._stdout_level = vim.lsp.log_levels[obj._stdout_level:upper()] or vim.lsp.log_levels.INFO
         end
     else
         obj._stdout_level = -1
@@ -32,9 +33,9 @@ function Logger:new(opts)
 
     if opts.file then
         obj._file = type(opts.file) == type '' and opts.file or obj._name .. '.log'
-        obj._file_level = opts.file_level or vim.lsp.log_levels.DEBUG
+        obj._file_level = opts.file_level or opts.level or vim.lsp.log_levels.DEBUG
         if type(obj._file_level) ~= type(0) then
-            obj._file_level = vim.lsp.log_levels[obj._file_level] or vim.lsp.log_levels.DEBUG
+            obj._file_level = vim.lsp.log_levels[obj._file_level:upper()] or vim.lsp.log_levels.DEBUG
         end
     else
         obj._file_level = -1

@@ -535,9 +535,7 @@ function M.messages(opts)
     local args = opts.args
     if args == '' then
         local messages = nvim.exec('messages', true)
-        messages = vim.tbl_filter(function(v)
-            return not v:match '^%s*$'
-        end, vim.split(messages, '\n+'))
+        messages = vim.split(messages, '\n+', {trimempty = true})
 
         -- WARN: This is a WA to avoid EFM detecting ^I as part of a file in lua tracebacks
         for idx, msg in ipairs(messages) do

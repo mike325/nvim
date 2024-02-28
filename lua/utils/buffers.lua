@@ -662,7 +662,6 @@ function M.get_diagnostic_ns(ns, buf)
             end
         end
     end
-    return
 end
 
 function M.push_tag(args)

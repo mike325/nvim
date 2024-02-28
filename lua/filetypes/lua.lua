@@ -34,7 +34,7 @@ local M = {
 }
 
 -- TODO: Extract config file lookup function to centralize the logic
-function M.get_formatter(stdin)
+function M.get_formatter(_)
     local cmd
     if executable 'stylua' then
         cmd = { 'stylua' }

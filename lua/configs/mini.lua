@@ -192,7 +192,7 @@ if mini.files then
 
     local show_dotfiles = true
 
-    local filter_show = function(fs_entry)
+    local filter_show = function(_)
         return true
     end
 

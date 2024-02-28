@@ -17,7 +17,7 @@ function M.get_hunks(thread_args)
         diffs = {},
     }
     local diff_opts = { result_type = 'indices', algorithm = 'minimal' }
-    local version = thread_args.version
+    local version = vim.is_thread() and thread_args.version or vim.version()
     if version.major > 0 or version.minor == 0 and version.minor >= 9 then
         diff_opts.linematch = true
     end

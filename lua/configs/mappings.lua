@@ -689,7 +689,7 @@ end, {
     desc = 'Dump all unsaved files into the QF',
 })
 
-nvim.command.set('ModifiedSave', function(opts)
+nvim.command.set('ModifiedSave', function(_)
     local modified = vim.tbl_filter(function(buf)
         return vim.bo[buf].modified
     end, vim.api.nvim_list_bufs())
@@ -702,12 +702,12 @@ end, {
     desc = 'Save all modified buffers',
 })
 
-nvim.command.set('Qf2Loc', function(opts)
+nvim.command.set('Qf2Loc', function(_)
     local qfutils = RELOAD 'utils.qf'
     qfutils.qf_loclist_switcher { loc = true }
 end, { desc = "Move the current QF to the window's location list" })
 
-nvim.command.set('Loc2Qf', function(opts)
+nvim.command.set('Loc2Qf', function(_)
     local qfutils = RELOAD 'utils.qf'
     qfutils.qf_loclist_switcher()
 end, { desc = "Move the current window's location list to the QF" })
@@ -975,3 +975,15 @@ vim.keymap.set('n', '=e', function()
         vim.cmd.edit(realfile)
     end
 end, { noremap = true, silent = true, desc = 'Fugitive Gedit shortcut' })
+
+nvim.command.set('Oldfiles', function()
+    vim.ui.select(
+        vim.v.oldfiles,
+        { prompt = 'Select file: ' },
+        vim.schedule_wrap(function(choice)
+            if choice then
+                vim.cmd.edit(choice)
+            end
+        end)
+    )
+end, { nargs = 0, desc = 'Edit a file from oldfiles' })

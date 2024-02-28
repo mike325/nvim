@@ -623,9 +623,20 @@ M.exec = setmetatable({}, {
         }
 
         local gitcmd = k
+
+        local function return_first_line(args, callback)
+            if not callback then
+                return exec_gitcmd(gitcmd, args)[1] or ''
+            end
+            exec_gitcmd(gitcmd, args, function(output)
+                callback(output[1] or '')
+            end)
+        end
+
         local supported_cmds = {
-            mv = false,
-            add = false,
+            mv = return_first_line,
+            add = return_first_line,
+            restore = return_first_line,
             rm = function(args, callback)
                 if not callback then
                     exec_gitcmd(gitcmd, args)
@@ -641,16 +652,7 @@ M.exec = setmetatable({}, {
             error(debug.traceback('Unsupported cmd: ' .. gitcmd .. ', ' .. vim.inspect(supported_cmds)))
         end
 
-        local function return_first_line(args, callback)
-            if not callback then
-                return exec_gitcmd(gitcmd, args)[1] or ''
-            end
-            exec_gitcmd(gitcmd, args, function(output)
-                callback(output[1] or '')
-            end)
-        end
-
-        return supported_cmds[gitcmd] or return_first_line
+        return supported_cmds[gitcmd]
     end,
     __newindex = function(_, _, _)
         error(debug.traceback 'Cannot set values to exec table')
