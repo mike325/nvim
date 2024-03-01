@@ -434,6 +434,27 @@ function M.get_dirs(path)
     return M.ls(path, { type = 'directory' })
 end
 
+local function copy_undofile(old_fname, new_fname)
+    vim.validate {
+        old_fname = { old_fname, 'string' },
+        new_fname = { new_fname, 'string' },
+    }
+
+    local ok = false
+    local old_undofile = vim.fn.undofile(old_fname)
+    if M.is_file(old_undofile) then
+        local new_undofile = vim.fn.undofile(new_fname)
+        vim.fn.mkdir(assert(vim.fs.dirname(new_undofile)), 'p')
+
+        if M.is_file(old_fname) then
+            ok = vim.loop.fs_copyfile(old_fname, new_fname, { excl = false })
+        else
+            ok = vim.loop.fs_rename(old_fname, new_fname)
+        end
+    end
+    return ok
+end
+
 function M.copy(src, dest, force)
     vim.validate { force = { force, 'boolean', true } }
     src = M.normalize(src)
@@ -443,6 +464,7 @@ function M.copy(src, dest, force)
     if not M.is_dir(src) and (not M.exists(dest) or force) then
         local status, msg = vim.loop.fs_copyfile(src, dest, { excl = not force })
         if status then
+            copy_undofile(src, dest)
             return true
         end
         vim.notify('Failed to copy ' .. src .. ' to ' .. dest .. '\n' .. msg, vim.log.levels.ERROR, { title = 'Copy' })
@@ -504,6 +526,8 @@ function M.rename(old, new, bang)
         if bufloaded(old) then
             vim.cmd.bwipeout { args = { old }, bang = true }
         end
+
+        copy_undofile(old, new)
         return true
     elseif M.exists(new) then
         vim.notify(new .. ' exists, use force to override it', vim.log.levels.ERROR, { title = 'Rename' })
