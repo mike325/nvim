@@ -148,6 +148,86 @@ local function del_command(name, buffer)
     end
 end
 
+local function is_lazy_setup()
+    return vim.F.npcall(require, 'lazy')
+end
+
+local function get_lazypath()
+    local lazy_root = string.format('%s/lazy', vim.fn.stdpath 'data')
+    vim.g.lazypath = vim.g.lazypath or string.format('%s/lazy.nvim', lazy_root)
+    return vim.g.lazypath
+end
+
+local function download_lazy(lazypath)
+    vim.g.lazy_setup = false
+
+    vim.fn.mkdir(vim.fs.dirname(lazypath), 'p')
+    vim.notify('Downloading lazy.nvim...', vim.log.levels.INFO, { title = 'Lazy Setup' })
+    local out = vim.fn.system {
+        'git',
+        'clone',
+        '--filter=blob:none',
+        'https://github.com/folke/lazy.nvim.git',
+        '--branch=stable', -- latest stable release
+        lazypath,
+    }
+
+    if vim.v.shell_error == 0 then
+        vim.notify((out or 'Lazy downloaded in: ') .. lazypath, vim.log.levels.INFO, { title = 'Lazy setup!' })
+        vim.opt.rtp:prepend(lazypath)
+        vim.g.lazy_setup = true
+    else
+        vim.notify(
+            string.format('Failed to download lazy!! exit code: %d', vim.v.shell_error),
+            vim.log.levels.ERROR,
+            { title = 'Lazy Setup' }
+        )
+    end
+    return vim.g.lazy_setup
+end
+
+local function setup_lazy(download)
+    vim.validate {
+        download = { download, 'boolean', true },
+    }
+
+    local lazy_root = string.format('%s/lazy', vim.fn.stdpath 'data')
+    vim.g.lazypath = vim.g.lazypath or string.format('%s/lazy.nvim', lazy_root)
+    vim.g.lazy_setup = vim.loop.fs_stat(vim.g.lazypath) ~= nil
+
+    if vim.g.lazy_setup then
+        vim.opt.rtp:prepend(vim.g.lazypath)
+    elseif download and vim.fn.executable 'git' == 1 and vim.fn.input 'Download lazy? (y for yes): ' == 'y' then
+        vim.g.lazy_setup = download_lazy(vim.g.lazypath)
+    end
+
+    if vim.g.lazy_setup then
+        require('lazy').setup('plugins', {
+            ui = { border = 'rounded' },
+            -- dev = { path = vim.g.projects_dir },
+            install = {
+                missing = false, -- Do not automatically install on startup.
+            },
+            -- change_detection = { notify = false },
+            performance = {
+                rtp = {
+                    disabled_plugins = {
+                        'gzip',
+                        'netrwPlugin',
+                        'rplugin',
+                        'tarPlugin',
+                        'tohtml',
+                        'tutor',
+                        'zipPlugin',
+                    },
+                },
+            },
+        })
+    end
+
+    return vim.g.lazy_setup
+end
+
 -- Took from https://github.com/norcalli/nvim_utils
 -- GPL3 apply to the nvim object
 local nvim = {
@@ -419,6 +499,12 @@ local nvim = {
         vim.validate { exe = { exe, 'string' } }
         return vim.fn.executable(exe) == 1
     end,
+    setup = {
+        lazy = setup_lazy,
+        get_lazypath = get_lazypath,
+        is_lazy_setup = is_lazy_setup,
+        download_lazy = download_lazy,
+    },
 }
 
 setmetatable(nvim, {

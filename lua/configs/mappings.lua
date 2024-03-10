@@ -987,3 +987,9 @@ nvim.command.set('Oldfiles', function()
         end)
     )
 end, { nargs = 0, desc = 'Edit a file from oldfiles' })
+
+if not vim.g.lazy_setup and not vim.g.bare and not vim.g.minimal then
+    nvim.command.set('SetupLazy', function()
+        nvim.setup.lazy(true)
+    end, { nargs = 0, desc = 'initial lazy setup' })
+end

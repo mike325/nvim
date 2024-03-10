@@ -109,33 +109,16 @@ require 'configs.options'
 require 'configs.mappings'
 require 'configs.autocmds'
 
-if nvim.executable 'git' and not vim.g.bare and not vim.g.minimal then
-    local is_setup = require 'setup'()
-    if is_setup then
-        require('lazy').setup('plugins', {
-            ui = { border = 'rounded' },
-            -- dev = { path = vim.g.projects_dir },
-            install = {
-                missing = false, -- Do not automatically install on startup.
-            },
-            -- change_detection = { notify = false },
-            performance = {
-                rtp = {
-                    disabled_plugins = {
-                        'gzip',
-                        'netrwPlugin',
-                        'rplugin',
-                        'tarPlugin',
-                        'tohtml',
-                        'tutor',
-                        'zipPlugin',
-                    },
-                },
-            },
-        })
-    end
+if not vim.g.bare and not vim.g.minimal then
+    nvim.setup.lazy(false)
 elseif vim.g.minimal and not vim.g.bare then
-    vim.cmd.packadd { args = { 'mini.nvim' }, bang = false }
+    local lazy_root = vim.fs.dirname(nvim.setup.get_lazypath())
+    local mini_lazy = string.format('%s/mini.nvim', lazy_root)
+    if vim.loop.fs_stat(mini_lazy) then
+        vim.opt.rtp:prepend(mini_lazy)
+    else
+        vim.cmd.packadd { args = { 'mini.nvim' }, bang = false }
+    end
     nvim.autocmd.SetupMini = {
         event = 'VimEnter',
         pattern = '*',
