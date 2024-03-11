@@ -123,7 +123,6 @@ local function prev_item(fallback)
 end
 
 local function enter_item(fallback)
-
     local ls = vim.F.npcall(require, 'luasnip')
     if ls and ls.expandable() then
         ls.expand()
@@ -139,7 +138,6 @@ local function enter_item(fallback)
 end
 
 local function close(fallback)
-
     local ls = vim.F.npcall(require, 'luasnip')
     if ls and ls.choice_active() then
         ls.change_choice(1)
