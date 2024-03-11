@@ -43,15 +43,6 @@ vim.api.nvim_create_autocmd({ 'BufWritePre' }, {
     end,
 })
 
-vim.api.nvim_create_autocmd({ 'BufNewFile', 'BufReadPre', 'BufEnter' }, {
-    desc = 'Highlight yanked text',
-    group = vim.api.nvim_create_augroup('TextYankPost', { clear = true }),
-    pattern = '*',
-    callback = function()
-        vim.highlight.on_yank { higroup = 'IncSearch', timeout = 1000 }
-    end,
-})
-
 vim.api.nvim_create_autocmd({ 'TermOpen' }, {
     desc = 'Initialize terminal buffer and disable certains local options',
     group = vim.api.nvim_create_augroup('TerminalAutocmds', { clear = true }),
@@ -142,7 +133,7 @@ vim.api.nvim_create_autocmd({ 'BufReadPost' }, {
 local import_fix = vim.api.nvim_create_augroup('ImportFix', { clear = true })
 if executable 'goimports' then
     vim.api.nvim_create_autocmd({ 'BufWritePost' }, {
-        desc = 'Fix go imports before saving',
+        desc = 'Fix go imports after saving',
         group = import_fix,
         pattern = '*.go',
         callback = function(args)
@@ -152,7 +143,7 @@ if executable 'goimports' then
 end
 
 if executable 'isort' then
-    vim.api.nvim_create_autocmd({ 'FileType' }, {
+    vim.api.nvim_create_autocmd({ 'BufWritePost' }, {
         desc = 'Fix python imports before saving',
         group = import_fix,
         pattern = '*.{py,ipy}',
@@ -164,6 +155,7 @@ if executable 'isort' then
     })
 end
 
+-- TODO: Make this listen to a file watcher
 vim.api.nvim_create_autocmd({ 'User' }, {
     desc = 'Parse compiler flags and set C/C++ options based on them',
     group = vim.api.nvim_create_augroup('ParseCompileFlags', { clear = true }),
@@ -307,6 +299,15 @@ if executable 'typos' then
         end,
     })
 end
+
+vim.api.nvim_create_autocmd({ 'TextYankPost' }, {
+    desc = 'Highlight yanked text',
+    group = vim.api.nvim_create_augroup('HighlightYank', { clear = true }),
+    pattern = '*',
+    callback = function()
+        vim.highlight.on_yank { higroup = 'IncSearch', timeout = 1000 }
+    end,
+})
 
 -- NOTE: Default TMUX clipboard provider support setting system clipboard using OSC 52
 if vim.env.SSH_CONNECTION and not vim.env.TMUX then

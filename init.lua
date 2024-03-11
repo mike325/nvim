@@ -107,6 +107,7 @@ end
 
 require 'configs.options'
 require 'configs.mappings'
+require 'configs.commands'
 require 'configs.autocmds'
 
 if not vim.g.bare and not vim.g.minimal then

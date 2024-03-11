@@ -119,6 +119,7 @@ vim.api.nvim_create_autocmd({ 'VimEnter' }, {
     callback = function(_)
         require 'configs.options'
         require 'configs.mappings'
+        require 'configs.commands'
 
         -- NOTE: overload/replace vim.* functions
         require 'overloads.notify'

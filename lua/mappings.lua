@@ -851,7 +851,7 @@ end
 function M.reload_configs(opts)
     local configs = {
         mappings = 'mappings',
-        commands = 'mappings',
+        commands = 'commands',
         autocmds = 'autocmds',
         options = 'options',
     }
