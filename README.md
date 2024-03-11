@@ -30,6 +30,23 @@ git clone --recursive "https://github.com/mike325/nvim.git" "$env:USERPROFILE/Ap
 
 Feel free to change anything to fit your needs!
 
+My configs do not install any plugins by default, lazy is not detected during startup the command `SetupLazy` will be available to
+configure and setup lazy and all plugins.
+
+It also support 3 different startup modes, a full "normal" startup with all plugins, a minimal startup available with `VIM_MIN` environment
+variable which only tries to setup [mini.nvim](https://github.com/echasnovski/mini.nvim/) and a bare startup using `VIM_BARE` which start neovim
+without any external plugins.
+
+To use any of this just setup the environment variable before startup neovim
+```sh
+VIM_MIN=1 nvim  # Will start neovim in mini mode
+VIM_BARE=1 nvim  # Will start neovim without any plugins
+```
+
+The configuration is very flexible and would try to setup and work on different environments,
+plugins are installed only when they are supported in the system neovim is running, Ex. do not
+install [vimtex](https://github.com/lervag/vimtex) if latex is not available.
+
 ## Development
 
 To execute the available test just run `make` on Linux/macOS or `./test/test.ps1` on windows
