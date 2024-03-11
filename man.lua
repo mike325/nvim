@@ -95,15 +95,16 @@ if vim.g.minimal and not vim.g.bare then
     end
 
     if ok then
-        nvim.autocmd.SetupMini = {
-            event = 'VimEnter',
+        vim.api.nvim_create_autocmd('VimEnter', {
+            desc = 'Setup Mini plugins',
+            group = vim.api.nvim_create_augroup('SetupMini', { clear = true }),
             pattern = '*',
             once = true,
             callback = function()
                 require 'configs.mini'
                 vim.cmd.helptags 'ALL'
             end,
-        }
+        })
     end
 elseif not vim.g.minimal and not vim.g.bare then
     vim.notify('Missing git! cannot install plugins', vim.log.levels.WARN, { title = 'Nvim Setup' })
@@ -111,9 +112,10 @@ end
 
 require 'configs.autocmds'
 vim.api.nvim_create_autocmd({ 'VimEnter' }, {
+    desc = 'Setup neovim in Man mode',
+    group = vim.api.nvim_create_augroup('SetupMan', {}),
     pattern = '*',
     once = true,
-    group = vim.api.nvim_create_augroup('SetupMan', {}),
     callback = function(_)
         require 'configs.options'
         require 'configs.mappings'
@@ -127,9 +129,10 @@ vim.api.nvim_create_autocmd({ 'VimEnter' }, {
     end,
 })
 
-vim.api.nvim_create_autocmd({ 'filetype' }, {
-    pattern = 'man',
+vim.api.nvim_create_autocmd({ 'FileType' }, {
+    desc = 'Force man setup specific filetype options',
     group = vim.api.nvim_create_augroup('ForceMapConfigs', {}),
+    pattern = 'man',
     callback = function(_)
         vim.cmd.luafile(vim.api.nvim_get_runtime_file('after/ftplugin/man.lua', false))
     end,

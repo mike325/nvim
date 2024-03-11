@@ -939,8 +939,9 @@ function M.make_executable()
 
     local shebang = nvim.buf.get_lines(0, 0, 1, true)[1]
     if not shebang or not shebang:match '^#!.+' then
-        nvim.autocmd.add('BufWritePre', {
-            group = 'MakeExecutable',
+        vim.api.nvim_create_autocmd({ 'BufWritePre' }, {
+            desc = 'Defer make executable until before save',
+            group = vim.api.nvim_create_augroup('MakeExecutable', { clear = false }),
             buffer = nvim.win.get_buf(0),
             callback = function()
                 M.make_executable()
@@ -952,8 +953,9 @@ function M.make_executable()
 
     if not M.is_executable(filename) or not M.exists(filename) then
         -- TODO: Add support to pass buffer
-        nvim.autocmd.add('BufWritePost', {
-            group = 'MakeExecutable',
+        vim.api.nvim_create_autocmd({ 'BufWritePost' }, {
+            desc = 'Actually make the buffer/file executable after safe',
+            group = vim.api.nvim_create_augroup('MakeExecutable', { clear = false }),
             buffer = nvim.win.get_buf(0),
             callback = function()
                 M.chmod_exec()

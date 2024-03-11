@@ -243,11 +243,12 @@ end
 
 if #fts > 0 then
     -- TODO: Check module availability for each language
-    nvim.autocmd.TreesitterAutocmds = {
-        event = 'FileType',
+    vim.api.nvim_create_autocmd('FileType', {
+        desc = 'Setup treesitter fold expression',
+        group = vim.api.nvim_create_augroup('TreesitterFold', { clear = true }),
         pattern = fts,
         command = 'setlocal foldenable foldmethod=expr foldexpr=nvim_treesitter#foldexpr()',
-    }
+    })
 end
 
 -- Expose languages to VimL

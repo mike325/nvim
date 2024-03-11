@@ -5,14 +5,15 @@ local M = {}
 local function autowipe(win, buffer)
     vim.validate { window = { win, 'number' }, buffer = { buffer, 'number' } }
 
-    nvim.autocmd.add('WinClosed', {
+    vim.api.nvim_create_autocmd({ 'WinClosed' }, {
+        desc = 'Wipe temp buffer on WinClosed',
+        group = vim.api.nvim_create_augroup('AutoCloseWindow', { clear = false }),
         pattern = tostring(win),
         callback = function()
             if vim.api.nvim_buf_is_valid(buffer) then
                 vim.api.nvim_buf_delete(buffer, { force = true })
             end
         end,
-        group = 'AutoCloseWindow',
         once = true,
         nested = true,
     })
@@ -21,14 +22,15 @@ end
 local function close_on_move(win, buffer)
     vim.validate { window = { win, 'number' } }
 
-    nvim.autocmd.add('CursorMoved', {
+    vim.api.nvim_create_autocmd({ 'CursorMoved' }, {
+        desc = 'Auto-Close window on cursor move',
+        group = vim.api.nvim_create_augroup('AutoCloseWindow', { clear = false }),
         buffer = buffer or vim.api.nvim_get_current_buf(),
         callback = function()
             if vim.api.nvim_win_is_valid(win) then
                 vim.api.nvim_win_close(win, true)
             end
         end,
-        group = 'AutoCloseWindow',
         once = true,
         nested = true,
     })
@@ -38,28 +40,30 @@ local function close_on_leave(win, buffer)
     vim.validate { window = { win, 'number' } }
 
     if win then
-        nvim.autocmd.add('WinLeave', {
+        vim.api.nvim_create_autocmd({ 'WinLeave' }, {
+            desc = 'Auto-Close temp window on leave',
+            group = vim.api.nvim_create_augroup('AutoCloseWindow', { clear = false }),
             pattern = tostring(win),
             callback = function()
                 if vim.api.nvim_win_is_valid(win) then
                     vim.api.nvim_win_close(win, true)
                 end
             end,
-            group = 'AutoCloseWindow',
             once = true,
             nested = true,
         })
     end
 
     if buffer then
-        nvim.autocmd.add('BufLeave', {
+        vim.api.nvim_create_autocmd({ 'BufLeave' }, {
+            desc = 'Auto-Close temp window on buffer leave',
+            group = vim.api.nvim_create_augroup('AutoCloseWindow', { clear = false }),
             buffer = buffer,
             callback = function()
                 if vim.api.nvim_win_is_valid(win) then
                     vim.api.nvim_win_close(win, true)
                 end
             end,
-            group = 'AutoCloseWindow',
             once = true,
             nested = true,
         })
@@ -140,12 +144,13 @@ function M.progress(buffer, job)
             zindex = 1, -- very low priority
         })
 
-        nvim.autocmd.JobProgress = {
-            event = 'WinClosed',
+        vim.api.nvim_create_autocmd('WinClosed', {
+            desc = 'Remove t:progress_win variable on progress window close',
+            group = vim.api.nvim_create_augroup('JobProgress', { clear = true }),
             pattern = tostring(vim.t.progress_win),
             command = 'unlet t:progress_win',
             once = true,
-        }
+        })
 
         if scratch then
             autowipe(vim.t.progress_win, buffer)
@@ -289,10 +294,11 @@ function M.input(opts, on_confirm)
     autowipe(win, buffer)
     close_on_leave(win, buffer)
 
-    nvim.autocmd.add({ 'BufWipeout', 'BufUnload', 'BufLeave', 'BufWinLeave' }, {
+    vim.api.nvim_create_autocmd({ 'BufWipeout', 'BufUnload', 'BufLeave', 'BufWinLeave' }, {
+        desc = 'Put neovim in normal mode once the temp buffer is wipe/leaved',
+        group = vim.api.nvim_create_augroup('AutoCloseWindow', { clear = false }),
         buffer = buffer,
         command = 'stopinsert',
-        group = 'AutoCloseWindow',
         once = true,
         nested = true,
     })

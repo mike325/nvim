@@ -120,8 +120,9 @@ if null_ls and next(null_sources) ~= nil then
     }
 end
 
-nvim.autocmd.LspServerSetup = {
-    event = 'UIEnter',
+vim.api.nvim_create_autocmd('UIEnter', {
+    desc = 'Delay LSP server setup until UI enters',
+    group = vim.api.nvim_create_augroup('LspServerSetup', { clear = true }),
     once = true,
     pattern = '*',
     callback = function()
@@ -129,7 +130,7 @@ nvim.autocmd.LspServerSetup = {
             func()
         end
     end,
-}
+})
 
 return {
     setup = setup,

@@ -117,9 +117,9 @@ return {
             end, {}),
             i(1, 'name'),
             i(2, 'args'),
-            d(3, saved_text, {}, {user_args = {{indent = true}}}),
+            d(3, saved_text, {}, { user_args = { { indent = true } } }),
         }
-    )),
+        )),
     s('for', fmt([[
     for {}, {} in ipairs({}) do
     {}
@@ -128,7 +128,7 @@ return {
         i(1, 'k'),
         i(2, 'v'),
         i(3, 'tbl'),
-        d(4, saved_text, {}, {user_args = {{indent = true}}}),
+        d(4, saved_text, {}, { user_args = { { indent = true } } }),
     })),
     s('forp', fmt([[
     for {}, {} in pairs({}) do
@@ -138,7 +138,7 @@ return {
         i(1, 'k'),
         i(2, 'v'),
         i(3, 'tbl'),
-        d(4, saved_text, {}, {user_args = {{indent = true}}}),
+        d(4, saved_text, {}, { user_args = { { indent = true } } }),
     })),
     s('fori', fmt([[
     for {} = {}, {} do
@@ -148,15 +148,15 @@ return {
         i(1, 'idx'),
         i(2, '0'),
         i(3, '10'),
-        d(4, saved_text, {}, {user_args = {{indent = true}}}),
+        d(4, saved_text, {}, { user_args = { { indent = true } } }),
     })),
     s(
         { trig = "if(e?)", regTrig = true },
         {
-            t{"if "}, i(1, 'condition'), t{" then", ""},
-                d(2, saved_text, {}, {user_args = {{indent = true}}}),
+            t { "if " }, i(1, 'condition'), t { " then", "" },
+            d(2, saved_text, {}, { user_args = { { indent = true } } }),
             d(3, else_clause, {}, {}),
-            t{"", "end"},
+            t { "", "end" },
         }
     ),
     s('w', fmt([[
@@ -165,21 +165,21 @@ return {
     end
     ]], {
         i(1, 'true'),
-        d(2, saved_text, {}, {user_args = {{indent = true}}}),
+        d(2, saved_text, {}, { user_args = { { indent = true } } }),
     })),
     s('elif', fmt([[
     elseif {} then
     {}
-    ]],{
+    ]], {
         i(1, 'condition'),
-        d(2, saved_text, {}, {user_args = {{indent = true}}}),
+        d(2, saved_text, {}, { user_args = { { indent = true } } }),
     })),
     s('elseif', fmt([[
     elseif {} then
     {}
-    ]],{
+    ]], {
         i(1, 'condition'),
-        d(2, saved_text, {}, {user_args = {{indent = true}}}),
+        d(2, saved_text, {}, { user_args = { { indent = true } } }),
     })),
     s(
         { trig = '(l?)req(f?)', regTrig = true },
@@ -191,25 +191,25 @@ return {
         i(1, 'var'),
         i(2, '{}'),
     })),
-    s("ign", { t{"-- stylua: ignore"} }),
-    s("sty", { t{"-- stylua: ignore"} }),
+    s("ign", { t { "-- stylua: ignore" } }),
+    s("sty", { t { "-- stylua: ignore" } }),
     s("val", {
-        t({"vim.validate {"}),
-            t{'', "\t"}, i(1, 'arg'), t{" = { "}, r(1), t{", "},
-                c(2, {
-                    i(1, "'string'"),
-                    i(1, "'table'"),
-                    i(1, "'function'"),
-                    i(1, "'number'"),
-                    i(1, "'boolean'"),
-                }),
-                c(3, {
-                    t{""},
-                    t{", true"},
-                }),
-            t({" },"}),
-            d(4, rec_val, {}),
-        t({'', "}"}),
+        t({ "vim.validate {" }),
+        t { '', "\t" }, i(1, 'arg'), t { " = { " }, r(1), t { ", " },
+        c(2, {
+            i(1, "'string'"),
+            i(1, "'table'"),
+            i(1, "'function'"),
+            i(1, "'number'"),
+            i(1, "'boolean'"),
+        }),
+        c(3, {
+            t { "" },
+            t { ", true" },
+        }),
+        t({ " }," }),
+        d(4, rec_val, {}),
+        t({ '', "}" }),
     }),
     s('command', fmt([[
     nvim.command.set({}, {}, {})
@@ -221,48 +221,60 @@ return {
     s('map', fmt([[
     vim.keymap.set('{}', '{}', {}, {{ {} }})
     ]], {
-            i(1, 'n'),
-            i(2, 'LHS'),
-            i(3, 'RHS'),
-            i(4, ''),
+        i(1, 'n'),
+        i(2, 'LHS'),
+        i(3, 'RHS'),
+        i(4, ''),
     })),
     s('au', fmt([[
-    nvim.autocmd.{} = {{
-        event = '{}',
+    vim.api.nvim_create_autocmd({{ '{}' }}, {{
+        desc = '{}',
+        group = {},
         pattern = '{}',
-    }}
+        -- callback = function(event) end,
+    }})
     ]], {
-            i(1, 'AuGroup'),
-            i(2, 'event'),
-            i(3, 'pattern'),
+        i(1, 'BufEnter'),
+        c(2, {
+            t { 'group_id' },
+            sn(nil, {
+                t { "vim.api.nvim_create_augroup('" },
+                i(1, 'GroupName'),
+                t { "', { " },
+                i(2, 'clear = true'),
+                t { " })" },
+            }),
+        }),
+        i(3, 'pattern'),
+        i(4, 'description'),
     })),
-    s('lext', fmt([[vim.list_extend({}, {})]],{
-        d(1, surround_with_func, {}, {user_args = {{text = 'tbl'}}}),
+    s('lext', fmt([[vim.list_extend({}, {})]], {
+        d(1, surround_with_func, {}, { user_args = { { text = 'tbl' } } }),
         i(2, "'node'"),
     })),
-    s('text', fmt([[vim.tbl_extend('{}', {}, {})]],{
+    s('text', fmt([[vim.tbl_extend('{}', {}, {})]], {
         c(1, {
-            t{'force'},
-            t{'keep'},
-            t{'error'},
+            t { 'force' },
+            t { 'keep' },
+            t { 'error' },
         }),
-        d(2, surround_with_func, {}, {user_args = {{text = 'tbl'}}}),
+        d(2, surround_with_func, {}, { user_args = { { text = 'tbl' } } }),
         i(3, "'node'"),
     })),
-    s('not', fmt([[vim.notify('{}', {}{})]],{
-        d(1, surround_with_func, {}, {user_args = {{text = 'msg'}}}),
+    s('not', fmt([[vim.notify('{}', {}{})]], {
+        d(1, surround_with_func, {}, { user_args = { { text = 'msg' } } }),
         c(2, {
-            t{'vim.log.levels.INFO'},
-            t{'vim.log.levels.WARN'},
-            t{'vim.log.levels.ERROR'},
-            t{'vim.log.levels.DEBUG'},
+            t { 'vim.log.levels.INFO' },
+            t { 'vim.log.levels.WARN' },
+            t { 'vim.log.levels.ERROR' },
+            t { 'vim.log.levels.DEBUG' },
         }),
         c(3, {
-            t{''},
-            sn(nil, { t{', { title = '}, i(1, "'title'"), t{' }'} }),
+            t { '' },
+            sn(nil, { t { ', { title = ' }, i(1, "'title'"), t { ' }' } }),
         }),
     })),
-    s('use', fmt([[use {{ '{}' }}]],{
+    s('use', fmt([[use {{ '{}' }}]], {
         i(1, 'plugin'),
     })),
     s('desc', fmt([[
@@ -271,7 +283,7 @@ return {
             {}
         end)
     end)
-    ]],{
+    ]], {
         i(1, 'DESCRIPTION'),
         i(2, 'DESCRIPTION'),
         i(3, '-- test'),
@@ -280,11 +292,11 @@ return {
     it('{}', function()
         {}
     end)
-    ]],{
+    ]], {
         i(1, 'DESCRIPTION'),
         i(2, '-- test'),
     })),
-    s('pr', fmt([[print({})]],{
+    s('pr', fmt([[print({})]], {
         i(1, 'msg'),
     })),
     -- TODO: Add support for mini tests
@@ -346,21 +358,21 @@ return {
         fmt([[error(debug.traceback({}))]], {
             i(1, 'msg'),
         }
-    )),
+        )),
     s(
         { trig = 'ass' },
         fmt([[assert({}, debug.traceback({}))]], {
             i(1, 'condition'),
             i(2, 'msg'),
         }
-    )),
+        )),
     s(
         { trig = 'debug' },
         fmt([[assert({}, debug.traceback({}))]], {
             i(1, 'condition'),
             i(2, 'msg'),
         }
-    )),
+        )),
     s(
         { trig = 'pcall' },
         fmt([[local {}, {} = pcall({})]], {
@@ -383,7 +395,7 @@ return {
                 }),
             }),
         }
-    )),
+        )),
     s(
         { trig = 'cli' }, fmt([[
         #!{}
@@ -416,5 +428,5 @@ return {
                 return string.format('%s -l', vim.v.progpath)
             end),
         }
-    )),
+        )),
 }

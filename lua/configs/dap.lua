@@ -139,13 +139,14 @@ sign('DapBreakpoint', { text = '●', texthl = 'DapBreakpoint', linehl = '', num
 sign('DapBreakpointCondition', { text = '●', texthl = 'DapBreakpointCondition', linehl = '', numhl = '' })
 sign('DapLogPoint', { text = '◆', texthl = 'DapLogPoint', linehl = '', numhl = '' })
 
-nvim.autocmd.DapConfig = {
-    event = 'Filetype',
+vim.api.nvim_create_autocmd('Filetype', {
+    desc = 'Setup dap completion in REPL',
+    group = vim.api.nvim_create_augroup('DapConfig', { clear = true }),
     pattern = 'dap-repl',
     callback = function()
         require('dap.ext.autocompl').attach()
     end,
-}
+})
 
 local dapui = vim.F.npcall(require, 'dapui')
 if dapui then

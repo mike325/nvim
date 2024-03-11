@@ -282,8 +282,9 @@ function M.qf_to_diagnostic(ns, win)
                 vim.diagnostic.set(ns, buf, diagnostic)
                 vim.diagnostic.show(ns, buf)
             else
-                nvim.autocmd.add('BufEnter', {
-                    group = 'Diagnostics' .. ns_name,
+                vim.api.nvim_create_autocmd({ 'BufEnter' }, {
+                    desc = 'Defere diagnostics show until the buffer is re-enter',
+                    group = vim.api.nvim_create_augroup(string.format('Diagnostics%s', ns_name), { clear = false }),
                     buffer = buf,
                     once = true,
                     callback = function()

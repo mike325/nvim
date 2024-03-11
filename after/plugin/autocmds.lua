@@ -1,8 +1,9 @@
 local nvim = require 'nvim'
 
 if not nvim.plugins['nvim-lspconfig'] then
-    nvim.autocmd.StartLSP = {
-        event = 'FileType',
+    vim.api.nvim_create_autocmd('FileType', {
+        desc = 'Basic LSP setup when lspconfig is not install',
+        group = vim.api.nvim_create_augroup('StartLSP', { clear = true }),
         pattern = '*',
         callback = function(_)
             local ft = vim.opt_local.filetype:get()
@@ -56,15 +57,14 @@ if not nvim.plugins['nvim-lspconfig'] then
                 vim.lsp.start(opts)
             end
         end,
-    }
+    })
 end
 
 if not nvim.plugins['nvim-treesitter'] then
-    nvim.autocmd.add('FileType', {
-        group = 'TreesitterAutocmds',
-        -- NOTE: This parsers come bundle with recent neovim releases
-
-        pattern = 'c,lua,query,vim,vimdoc,viml,help',
+    vim.api.nvim_create_autocmd({ 'FileType' }, {
+        desc = 'Basic TS setup when nvim-treesitter is not install',
+        group = vim.api.nvim_create_augroup('TreesitterSetup', { clear = true }),
+        pattern = 'c,lua,query,vim,vimdoc,viml,help', -- NOTE: This parsers come bundle with recent neovim releases
         callback = function(args)
             local ft_mapping = {}
             if nvim.has { 0, 9 } then
@@ -77,8 +77,9 @@ if not nvim.plugins['nvim-treesitter'] then
 end
 
 if not nvim.plugins['nvim-bqf'] then
-    nvim.autocmd.add('FileType', {
-        group = 'QuickfixMappings',
+    vim.api.nvim_create_autocmd({ 'FileType' }, {
+        desc = 'Setup Qf mappings to navigate old/new lists',
+        group = vim.api.nvim_create_augroup('QuickfixMappings', { clear = true }),
         pattern = 'qf',
         callback = function(_)
             local is_loclist = vim.fn.getwininfo(vim.api.nvim_get_current_win())[1].loclist == 1

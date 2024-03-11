@@ -176,6 +176,7 @@ vim.opt.numberwidth = 1
 vim.opt.foldenable = false
 vim.opt.foldmethod = 'syntax'
 vim.opt.foldlevel = 99
+vim.opt.foldtext = "v:lua.RELOAD('utils.functions').foldtext()"
 
 vim.opt.signcolumn = 'auto:2'
 

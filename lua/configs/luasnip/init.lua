@@ -95,12 +95,13 @@ end
 --     override_priority = 2000,
 -- }
 
-nvim.autocmd.AutoLoadSnippets = {
-    event = 'Filetype',
+vim.api.nvim_create_autocmd('Filetype', {
+    desc = 'Auto load ft snippet using custom loader',
+    group = vim.api.nvim_create_augroup('AutoLoadSnippets', { clear = true }),
     pattern = '*',
     callback = function()
         load_snippets()
     end,
-}
+})
 
 return true

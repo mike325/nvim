@@ -200,12 +200,9 @@ if mini.files then
         return not vim.startswith(fs_entry.name, '.')
     end
 
-    if vim.g.mini_files_autocmd then
-        vim.api.nvim_del_autocmd(vim.g.mini_files_autocmd)
-        vim.g.mini_files_autocmd = nil
-    end
-
-    vim.g.mini_files_autocmd = vim.api.nvim_create_autocmd('User', {
+    vim.api.nvim_create_autocmd('User', {
+        desc = 'Re-map mouse click and g. in MiniFiles buffer to open and show hidden files',
+        group = vim.api.nvim_create_augroup('MiniFilesCreate', { clear = true }),
         pattern = 'mini.filesBufferCreate',
         callback = function(args)
             local buf_id = args.data.buf_id
@@ -344,54 +341,55 @@ if mini.test then
         },
     }
 
-    nvim.autocmd.NeovimTest = {
-        {
-            event = 'Filetype',
-            pattern = 'lua',
-            desc = 'Create command to execute lua test',
-            callback = function(event)
-                nvim.command.set('RunLuaTests', function(opts)
-                    local test = opts.args
-                    if test == '*' then
+    local neovim_test = vim.api.nvim_create_augroup('NeovimTest', { clear = true })
+
+    vim.api.nvim_create_autocmd({ 'Filetype' }, {
+        desc = 'Create Mini test commands to execute and manage tests',
+        group = neovim_test,
+        pattern = 'lua',
+        callback = function(event)
+            nvim.command.set('RunLuaTests', function(opts)
+                local test = opts.args
+                if test == '*' then
+                    mini.test.execute(mini.test.collect())
+                elseif test == '' then
+                    test = vim.api.nvim_buf_get_name(0)
+                    if not test:match '.+_spec%.lua$' then
                         mini.test.execute(mini.test.collect())
-                    elseif test == '' then
-                        test = vim.api.nvim_buf_get_name(0)
-                        if not test:match '.+_spec%.lua$' then
-                            mini.test.execute(mini.test.collect())
-                        else
-                            mini.test.run_file(test)
-                        end
                     else
-                        mini.test.run_file(vim.fn.expand(test))
+                        mini.test.run_file(test)
                     end
-                end, {
-                    buffer = event.buf,
-                    nargs = '?',
-                    complete = completions.lua_tests,
-                    desc = 'Execute a lua test or a collection of tests',
-                })
-            end,
-        },
-        {
-            event = 'BufReadPost',
-            pattern = '*_spec.lua',
-            desc = 'Create command to execute lua test at location',
-            callback = function(event)
-                nvim.command.set('ExecuteLuaTest', function(opts)
-                    if opts.bang then
-                        mini.test.run_file(nvim.buf.get_name(0))
-                    else
-                        mini.test.run_at_location()
-                    end
-                end, {
-                    buffer = event.buf,
-                    bang = true,
-                    -- complete = completions.lua_tests,
-                    desc = 'Execute a lua especific test in the cursor location',
-                })
-            end,
-        },
-    }
+                else
+                    mini.test.run_file(vim.fn.expand(test))
+                end
+            end, {
+                buffer = event.buf,
+                nargs = '?',
+                complete = completions.lua_tests,
+                desc = 'Execute a lua test or a collection of tests',
+            })
+        end,
+    })
+
+    vim.api.nvim_create_autocmd({ 'BufReadPost' }, {
+        desc = 'Create command to execute lua test at location',
+        group = neovim_test,
+        pattern = '*_spec.lua',
+        callback = function(event)
+            nvim.command.set('ExecuteLuaTest', function(opts)
+                if opts.bang then
+                    mini.test.run_file(nvim.buf.get_name(0))
+                else
+                    mini.test.run_at_location()
+                end
+            end, {
+                buffer = event.buf,
+                bang = true,
+                -- complete = completions.lua_tests,
+                desc = 'Execute a lua especific test in the cursor location',
+            })
+        end,
+    })
 end
 
 if vim.g.minimal then

@@ -124,15 +124,16 @@ elseif vim.g.minimal and not vim.g.bare then
     end
 
     if ok then
-        nvim.autocmd.SetupMini = {
-            event = 'VimEnter',
+        vim.api.nvim_create_autocmd('VimEnter', {
+            desc = 'Setup Mini plugins',
+            group = vim.api.nvim_create_augroup('SetupMini', { clear = true }),
             pattern = '*',
             once = true,
             callback = function()
                 require 'configs.mini'
                 vim.cmd.helptags 'ALL'
             end,
-        }
+        })
     end
 elseif not vim.g.minimal and not vim.g.bare then
     vim.notify('Missing git! cannot install plugins', vim.log.levels.WARN, { title = 'Nvim Setup' })

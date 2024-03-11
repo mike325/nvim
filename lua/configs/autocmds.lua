@@ -2,53 +2,59 @@ local nvim = require 'nvim'
 local executable = require('utils.files').executable
 
 if require('sys').name ~= 'windows' then
-    nvim.autocmd.MakeExecutable = {
-        {
-            event = 'BufReadPost',
-            pattern = '*',
-            callback = function()
-                RELOAD('utils.files').make_executable()
-            end,
-        },
-        {
-            event = 'FileType',
-            pattern = 'python,lua,sh,bash,zsh,tcsh,csh,ruby,perl',
-            callback = function()
-                RELOAD('utils.files').make_executable()
-            end,
-        },
-    }
+    local make_executable = vim.api.nvim_create_augroup('MakeExecutable', { clear = true })
+
+    vim.api.nvim_create_autocmd({ 'BufReadPost' }, {
+        desc = "Check if the file is executable and add autocmds to make it executable if it's not",
+        group = make_executable,
+        pattern = '*',
+        callback = function()
+            RELOAD('utils.files').make_executable()
+        end,
+    })
+
+    vim.api.nvim_create_autocmd({ 'Filetype' }, {
+        desc = "Check if the file is executable and add autocmds to make it executable if it's not",
+        group = make_executable,
+        pattern = 'python,lua,sh,bash,zsh,tcsh,csh,ruby,perl',
+        callback = function()
+            RELOAD('utils.files').make_executable()
+        end,
+    })
 end
 
-nvim.autocmd.CleanFile = {
-    {
-        event = { 'BufNewFile', 'BufReadPre', 'BufEnter' },
-        pattern = '*',
-        callback = function()
-            if vim.b.trim == nil then
-                vim.b.trim = true
-            end
-        end,
-    },
-    {
-        event = 'BufWritePre',
-        pattern = '*',
-        callback = function()
-            RELOAD('utils.files').clean_file()
-        end,
-    },
-}
+local clean_file = vim.api.nvim_create_augroup('CleanFile', { clear = true })
+vim.api.nvim_create_autocmd({ 'BufNewFile', 'BufReadPre', 'BufEnter' }, {
+    desc = 'Initialize trim variable',
+    group = clean_file,
+    pattern = '*',
+    callback = function()
+        if vim.b.trim == nil then
+            vim.b.trim = true
+        end
+    end,
+})
+vim.api.nvim_create_autocmd({ 'BufWritePre' }, {
+    desc = 'Remove trailing spaces and some other artifacts',
+    group = clean_file,
+    pattern = '*',
+    callback = function()
+        RELOAD('utils.files').clean_file()
+    end,
+})
 
-nvim.autocmd.YankHL = {
-    event = 'TextYankPost',
+vim.api.nvim_create_autocmd({ 'BufNewFile', 'BufReadPre', 'BufEnter' }, {
+    desc = 'Highlight yanked text',
+    group = vim.api.nvim_create_augroup('TextYankPost', { clear = true }),
     pattern = '*',
     callback = function()
         vim.highlight.on_yank { higroup = 'IncSearch', timeout = 1000 }
     end,
-}
+})
 
-nvim.autocmd.TerminalAutocmds = {
-    event = 'TermOpen',
+vim.api.nvim_create_autocmd({ 'TermOpen' }, {
+    desc = 'Initialize terminal buffer and disable certains local options',
+    group = vim.api.nvim_create_augroup('TerminalAutocmds', { clear = true }),
     pattern = '*',
     callback = function()
         vim.opt.swapfile = false
@@ -58,95 +64,86 @@ nvim.autocmd.TerminalAutocmds = {
         vim.opt.number = false
         vim.opt.cursorline = false
     end,
-}
+})
 
-nvim.autocmd.AutoResize = {
-    event = 'VimResized',
+vim.api.nvim_create_autocmd({ 'VimResized' }, {
+    desc = 'Auto rezise windows to equalize sizes',
+    group = vim.api.nvim_create_augroup('AutoResize', { clear = true }),
     pattern = '*',
     command = 'wincmd =',
-}
+})
 
-nvim.autocmd.LastEditPosition = {
-    event = 'BufReadPost',
+vim.api.nvim_create_autocmd({ 'BufReadPost' }, {
+    desc = 'Move the cursor to the last known location',
+    group = vim.api.nvim_create_augroup('LastEditPosition', { clear = true }),
     pattern = '*',
     callback = function()
         RELOAD('utils.buffers').last_position()
     end,
-}
+})
 
-nvim.autocmd.Skeletons = {
-    event = 'BufNewFile',
+vim.api.nvim_create_autocmd({ 'BufNewFile' }, {
+    desc = 'Initialize buffer with skeleton template',
+    group = vim.api.nvim_create_augroup('Skeletons', { clear = true }),
     pattern = '*',
     callback = function()
         RELOAD('utils.files').skeleton_filename()
     end,
-}
+})
 
-nvim.autocmd.ProjectConfig = {
-    event = { 'DirChanged', 'BufNewFile', 'BufReadPre', 'BufEnter', 'VimEnter' },
+vim.api.nvim_create_autocmd({ 'DirChanged', 'BufNewFile', 'BufReadPre', 'BufEnter', 'VimEnter' }, {
+    desc = 'Setup project specific configs',
+    group = vim.api.nvim_create_augroup('ProjectConfig', { clear = true }),
     pattern = '*',
     callback = function()
         RELOAD('utils.functions').project_config(vim.deepcopy(vim.v.event))
     end,
-}
+})
 
-nvim.autocmd.LocalCR = {
-    event = 'CmdwinEnter',
+vim.api.nvim_create_autocmd({ 'CmdwinEnter' }, {
+    desc = 'Revert <CR> value to default behavior in command line window',
+    group = vim.api.nvim_create_augroup('LocalCR', { clear = true }),
     pattern = '*',
     command = 'nnoremap <CR> <CR>',
-}
+})
 
-nvim.autocmd.QuickQuit = {
-    {
-        event = { 'BufEnter', 'BufReadPost' },
-        pattern = '__LanguageClient__',
-        command = 'nnoremap <silent> <nowait> <buffer> q :q!<CR>',
-    },
-    {
-        event = { 'BufEnter', 'BufWinEnter' },
-        pattern = '*',
-        command = 'if &previewwindow | nnoremap <silent> <nowait> <buffer> q :q!<CR>| endif',
-    },
-    {
-        event = 'TermOpen',
-        pattern = '*',
-        command = 'nnoremap <silent><nowait><buffer> q :q!<CR>',
-    },
-}
+vim.api.nvim_create_autocmd({ 'TermOpen' }, {
+    desc = 'Map q to quick exit terminal buffers',
+    group = vim.api.nvim_create_augroup('QuickQuit', { clear = true }),
+    pattern = '*',
+    command = 'nnoremap <silent><nowait><buffer> q :q!<CR>',
+})
 
-nvim.autocmd.DisableTemps = {
-    event = { 'BufNewFile', 'BufReadPre', 'BufEnter' },
+vim.api.nvim_create_autocmd({ 'BufNewFile', 'BufReadPre', 'BufEnter' }, {
+    desc = 'Disable swap, backup and undofiles on all buffers under /tmp/*',
+    group = vim.api.nvim_create_augroup('DisableTemps', { clear = true }),
     pattern = '/tmp/*',
     command = 'setlocal noswapfile nobackup noundofile',
-}
+})
 
-nvim.autocmd.CloseMenu = {
-    event = { 'InsertLeave', 'CompleteDone' },
+vim.api.nvim_create_autocmd({ 'InsertLeave', 'CompleteDone' }, {
+    desc = 'Auto close completion window',
+    group = vim.api.nvim_create_augroup('CloseMenu', { clear = true }),
     pattern = '*',
     command = 'if pumvisible() == 0 | pclose | endif',
-}
-
-nvim.autocmd.FoldText = {
-    event = 'FileType',
-    pattern = '*',
-    command = "setlocal foldtext=v:lua.RELOAD('utils.functions').foldtext()",
-}
+})
 
 -- BufReadPost is triggered after FileType detection, TS may not be attach yet after
 -- FileType event, but should be fine to use BufReadPost
-nvim.autocmd.Indent = {
-    event = 'BufReadPost',
+vim.api.nvim_create_autocmd({ 'BufReadPost' }, {
+    desc = 'Tries to detect indentation level of the newly opened buffer',
+    group = vim.api.nvim_create_augroup('Indent', { clear = true }),
     pattern = '*',
     callback = function()
         RELOAD('utils.buffers').detect_indent()
     end,
-}
+})
 
--- TODO: should this check if the filea actually change before fixing imports?
-nvim.augroup.del 'ImportFix'
+local import_fix = vim.api.nvim_create_augroup('ImportFix', { clear = true })
 if executable 'goimports' then
-    nvim.autocmd.add('BufWritePost', {
-        group = 'ImportFix',
+    vim.api.nvim_create_autocmd({ 'BufWritePost' }, {
+        desc = 'Fix go imports before saving',
+        group = import_fix,
         pattern = '*.go',
         callback = function(args)
             RELOAD('utils.functions').autoformat('goimports', { '-w', args.file })
@@ -155,8 +152,9 @@ if executable 'goimports' then
 end
 
 if executable 'isort' then
-    nvim.autocmd.add('BufWritePost', {
-        group = 'ImportFix',
+    vim.api.nvim_create_autocmd({ 'FileType' }, {
+        desc = 'Fix python imports before saving',
+        group = import_fix,
         pattern = '*.{py,ipy}',
         callback = function(args)
             local format_args = RELOAD('filetypes.python').formatprg.isort
@@ -166,7 +164,9 @@ if executable 'isort' then
     })
 end
 
-nvim.autocmd.add('User', {
+vim.api.nvim_create_autocmd({ 'User' }, {
+    desc = 'Parse compiler flags and set C/C++ options based on them',
+    group = vim.api.nvim_create_augroup('ParseCompileFlags', { clear = true }),
     pattern = 'FlagsParsed',
     callback = function()
         local extensions = {
@@ -194,8 +194,9 @@ nvim.autocmd.add('User', {
     end,
 })
 
-nvim.autocmd.LspMappings = {
-    event = 'LspAttach',
+vim.api.nvim_create_autocmd('LspAttach', {
+    desc = 'Setup LPS mappings and hint highlights',
+    group = vim.api.nvim_create_augroup('LspMappings', { clear = true }),
     pattern = '*',
     callback = function(args)
         if not vim.g.fix_inlay_hl then
@@ -220,10 +221,11 @@ nvim.autocmd.LspMappings = {
 
         RELOAD('configs.lsp.config').lsp_mappings(client, bufnr)
     end,
-}
+})
 
-nvim.autocmd.Alternate = {
-    event = 'FileType',
+vim.api.nvim_create_autocmd('FileType', {
+    desc = 'Setup header/source alternate',
+    group = vim.api.nvim_create_augroup('Alternate', { clear = true }),
     pattern = 'c,cpp',
     callback = function()
         local bufname = vim.api.nvim_buf_get_name(0)
@@ -232,18 +234,21 @@ nvim.autocmd.Alternate = {
             RELOAD('threads.related').async_lookup_alternate()
         end
     end,
-}
+})
 
-nvim.autocmd.SSHParser = {
-    event = 'BufWritePost',
+-- TODO: Make this a User autocmd and retrigger when changed
+vim.api.nvim_create_autocmd('BufWritePost', {
+    desc = 'Re-Parse ssh hosts',
+    group = vim.api.nvim_create_augroup('SSHParser', { clear = true }),
     pattern = '*/.ssh/config,*\\.ssh\\config',
     callback = function()
         RELOAD('threads.parse').ssh_hosts()
     end,
-}
+})
 
-nvim.autocmd.CleanHelps = {
-    event = 'WinClosed',
+vim.api.nvim_create_autocmd('WinClosed', {
+    desc = 'Wipe all help files once there are no more elp buffers assign to any window',
+    group = vim.api.nvim_create_augroup('CleanHelps', { clear = true }),
     pattern = '*',
     callback = function(args)
         if vim.bo[args.buf].filetype == 'help' then
@@ -264,20 +269,22 @@ nvim.autocmd.CleanHelps = {
             end
         end
     end,
-}
+})
 
-nvim.autocmd.ApplyColorscheme = {
-    event = 'VimEnter',
+vim.api.nvim_create_autocmd('VimEnter', {
+    desc = 'Apply colorscheme after all initialization',
+    group = vim.api.nvim_create_augroup('ApplyColorscheme', { clear = true }),
     pattern = '*',
     callback = function()
         if not vim.g.bare then
             pcall(vim.cmd.colorscheme, 'catppuccin')
         end
     end,
-}
+})
 
-nvim.autocmd.CustomUI = {
-    event = 'UIEnter',
+vim.api.nvim_create_autocmd('UIEnter', {
+    desc = 'Overwrite <c-z> for firenvim',
+    group = vim.api.nvim_create_augroup('CustomUI', { clear = true }),
     pattern = '*',
     callback = function(_)
         local client = vim.api.nvim_get_chan_info(vim.v.event.chan).client
@@ -286,24 +293,26 @@ nvim.autocmd.CustomUI = {
             vim.api.nvim_set_keymap('n', '<C-z>', '<cmd>call firenvim#hide_frame()<CR>', { noremap = true })
         end
     end,
-}
+})
 
 if executable 'typos' then
-    nvim.autocmd.TyposCheck = {
-        event = { 'BufWritePost' },
+    vim.api.nvim_create_autocmd({ 'BufWritePost' }, {
+        desc = 'Check for typos on safe',
+        group = vim.api.nvim_create_augroup('TyposCheck', { clear = true }),
         pattern = '*',
         callback = function(args)
             args = args or {}
             args.buf = args.buf or vim.api.nvim_get_current_buf()
             RELOAD('utils.functions').typos_check(args.buf)
         end,
-    }
+    })
 end
 
 -- NOTE: Default TMUX clipboard provider support setting system clipboard using OSC 52
 if vim.env.SSH_CONNECTION and not vim.env.TMUX then
-    nvim.autocmd.OSCYank = {
-        event = 'TextYankPost',
+    vim.api.nvim_create_autocmd('TextYankPost', {
+        desc = 'Send yanked text to system clipboard using OSC 52 sequences',
+        group = vim.api.nvim_create_augroup('OSCYank', { clear = true }),
         pattern = '*',
         callback = function(_)
             local clipboard_reg = {
@@ -315,5 +324,5 @@ if vim.env.SSH_CONNECTION and not vim.env.TMUX then
                 require('utils.functions').send_osc52(vim.split(nvim.reg[reg], '\n'))
             end
         end,
-    }
+    })
 end
