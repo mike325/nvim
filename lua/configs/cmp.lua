@@ -6,7 +6,6 @@ if not cmp then
     return false
 end
 
-local ls = vim.F.npcall(require, 'luasnip')
 local orgmode = vim.F.npcall(require, 'orgmode')
 
 local lspkind = vim.F.npcall(require, 'lspkind')
@@ -59,7 +58,7 @@ if has_treesitter() then
     table.insert(sources, { name = 'treesitter' })
 end
 
-if ls then
+if nvim.plugins.LuaSnip then
     table.insert(sources, { name = 'luasnip', option = { use_show_condition = false } })
 end
 
@@ -81,6 +80,7 @@ end
 local function next_item(fallback)
     local neogen = vim.F.npcall(require, 'neogen')
 
+    local ls = vim.F.npcall(require, 'luasnip')
     if ls then
         ls.unlink_current_if_deleted()
     end
@@ -104,6 +104,7 @@ end
 local function prev_item(fallback)
     local neogen = vim.F.npcall(require, 'neogen')
 
+    local ls = vim.F.npcall(require, 'luasnip')
     if ls then
         ls.unlink_current_if_deleted()
     end
@@ -122,6 +123,8 @@ local function prev_item(fallback)
 end
 
 local function enter_item(fallback)
+
+    local ls = vim.F.npcall(require, 'luasnip')
     if ls and ls.expandable() then
         ls.expand()
     elseif cmp.visible() then
@@ -136,6 +139,8 @@ local function enter_item(fallback)
 end
 
 local function close(fallback)
+
+    local ls = vim.F.npcall(require, 'luasnip')
     if ls and ls.choice_active() then
         ls.change_choice(1)
     elseif cmp.visible() then
@@ -157,6 +162,7 @@ cmp.setup {
     },
     snippet = {
         expand = function(args)
+            local ls = vim.F.npcall(require, 'luasnip')
             if ls then
                 ls.lsp_expand(args.body)
             end

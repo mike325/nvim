@@ -72,7 +72,7 @@ local function setup(ft)
                 local init = vim.deepcopy(server.options) or {}
                 init.cmd = init.cmd or server.cmd
                 local capabilities = vim.lsp.protocol.make_client_capabilities()
-                if vim.F.npcall(require, 'cmp') then
+                if nvim.plugins['nvim-cmp'] then
                     local cmp_lsp = vim.F.npcall(require, 'cmp_nvim_lsp')
                     if cmp_lsp then
                         capabilities = vim.tbl_deep_extend('force', capabilities, cmp_lsp.default_capabilities())

@@ -19,6 +19,11 @@ return {
                 'jbyuki/one-small-step-for-vimkind',
                 cond = not vim.g.minimal,
             },
+            {
+                'folke/neodev.nvim',
+                cond = not vim.g.minimal,
+                opts = {},
+            },
         },
     },
     {
@@ -26,7 +31,7 @@ return {
         config = function()
             require 'configs.luasnip'
         end,
-        event = 'InsertEnter',
+        event = { 'InsertEnter', 'CursorHold' },
     },
     {
         'hrsh7th/nvim-cmp',
@@ -45,22 +50,18 @@ return {
         config = function()
             require 'configs.cmp'
         end,
-        event = 'InsertEnter',
+        event = { 'InsertEnter', 'CursorHold' },
         cond = function()
             return not vim.g.vscode
         end,
         -- after = 'nvim-lspconfig',
     },
     {
-        'folke/neodev.nvim',
-        opts = {},
-    },
-    {
         'neovim/nvim-lspconfig',
         config = function()
             require 'configs.lsp'
         end,
-        event = 'VeryLazy',
+        -- event = 'VeryLazy',
         -- lazy = false,
         -- priority = 100,
     },
@@ -85,7 +86,7 @@ return {
         end,
         dependencies = {
             'nvim-treesitter/nvim-treesitter', -- optional
-            'nvim-tree/nvim-web-devicons', -- optional
+            'nvim-tree/nvim-web-devicons',     -- optional
         },
     },
 }

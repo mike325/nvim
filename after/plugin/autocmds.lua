@@ -1,8 +1,6 @@
 local nvim = require 'nvim'
-local lsp = vim.F.npcall(require, 'lspconfig')
-local treesitter = vim.F.npcall(require, 'nvim-treesitter.configs')
 
-if not lsp then
+if not nvim.plugins['nvim-lspconfig'] then
     nvim.autocmd.StartLSP = {
         event = 'FileType',
         pattern = '*',
@@ -61,7 +59,7 @@ if not lsp then
     }
 end
 
-if not treesitter then
+if not nvim.plugins['nvim-treesitter'] then
     nvim.autocmd.add('FileType', {
         group = 'TreesitterAutocmds',
         -- NOTE: This parsers come bundle with recent neovim releases
