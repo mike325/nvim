@@ -82,19 +82,28 @@ if vim.env.TMUX_WINDOW then
     end
 end
 
-if vim.fn.executable 'git' == 1 then
-    vim.opt.packpath:append(string.format('%s/site/', vim.fn.stdpath 'data'))
-    local ok, _ = pcall(vim.cmd.packadd, { args = { 'mini.nvim' }, bang = false })
+if vim.g.minimal and not vim.g.bare then
+    local lazy_root = vim.fs.dirname(nvim.setup.get_lazypath())
+    local mini_lazy = string.format('%s/mini.nvim', lazy_root)
+
+    local ok, _
+    if vim.loop.fs_stat(mini_lazy) then
+        vim.opt.rtp:prepend(mini_lazy)
+        ok = true
+    else
+        ok, _ = pcall(vim.cmd.packadd, { args = { 'mini.nvim' }, bang = true })
+    end
+
     if ok then
-        vim.api.nvim_create_autocmd({ 'VimEnter' }, {
+        nvim.autocmd.SetupMini = {
+            event = 'VimEnter',
             pattern = '*',
             once = true,
-            group = vim.api.nvim_create_augroup('SetupMini', {}),
-            callback = function(_)
+            callback = function()
                 require 'configs.mini'
                 vim.cmd.helptags 'ALL'
             end,
-        })
+        }
     end
 elseif not vim.g.minimal and not vim.g.bare then
     vim.notify('Missing git! cannot install plugins', vim.log.levels.WARN, { title = 'Nvim Setup' })

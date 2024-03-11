@@ -115,7 +115,7 @@ elseif vim.g.minimal and not vim.g.bare then
     local lazy_root = vim.fs.dirname(nvim.setup.get_lazypath())
     local mini_lazy = string.format('%s/mini.nvim', lazy_root)
 
-    local ok = false
+    local ok, _
     if vim.loop.fs_stat(mini_lazy) then
         vim.opt.rtp:prepend(mini_lazy)
         ok = true
@@ -138,9 +138,9 @@ elseif not vim.g.minimal and not vim.g.bare then
     vim.notify('Missing git! cannot install plugins', vim.log.levels.WARN, { title = 'Nvim Setup' })
 end
 
-vim.cmd.packadd { args = { 'cfilter' }, bang = false }
-vim.cmd.packadd { args = { 'matchit' }, bang = false }
-vim.cmd.packadd { args = { 'termdebug' }, bang = false }
+vim.cmd.packadd { args = { 'cfilter' }, bang = true }
+vim.cmd.packadd { args = { 'matchit' }, bang = true }
+vim.cmd.packadd { args = { 'termdebug' }, bang = true }
 
 -- NOTE: overload/replace vim.* functions
 require 'overloads.notify'
