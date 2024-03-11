@@ -270,12 +270,8 @@ nvim.autocmd.ApplyColorscheme = {
     event = 'VimEnter',
     pattern = '*',
     callback = function()
-        local ok = false
         if not vim.g.bare then
-            ok = pcall(vim.cmd.colorscheme, 'catppuccin')
-        end
-        if vim.g.bare or not ok then
-            vim.cmd.colorscheme 'slate'
+            pcall(vim.cmd.colorscheme, 'catppuccin')
         end
     end,
 }
@@ -283,7 +279,7 @@ nvim.autocmd.ApplyColorscheme = {
 nvim.autocmd.CustomUI = {
     event = 'UIEnter',
     pattern = '*',
-    callback = function(event)
+    callback = function(_)
         local client = vim.api.nvim_get_chan_info(vim.v.event.chan).client
         if client ~= nil and client.name == 'Firenvim' then
             vim.o.laststatus = 0
@@ -309,7 +305,7 @@ if vim.env.SSH_CONNECTION and not vim.env.TMUX then
     nvim.autocmd.OSCYank = {
         event = 'TextYankPost',
         pattern = '*',
-        callback = function(args)
+        callback = function(_)
             local clipboard_reg = {
                 ['+'] = true,
                 ['*'] = true,
