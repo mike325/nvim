@@ -25,8 +25,8 @@ function M.compile_flags(thread_args)
     thread_args = require('threads').init(thread_args)
     local utils = require 'utils.files'
 
-    if not thread_args.args  or not thread_args.args.flags_file then
-        error(debug.traceback('Missing flags_file in compile_flags parser function!'))
+    if not thread_args.args or not thread_args.args.flags_file then
+        error(debug.traceback 'Missing flags_file in compile_flags parser function!')
     end
 
     local flags_file = thread_args.args.flags_file
@@ -60,8 +60,8 @@ function M.compiledb(thread_args)
     thread_args = require('threads').init(thread_args)
     local utils = require 'utils.files'
 
-    if not thread_args.args  or not thread_args.args.flags_file then
-        error(debug.traceback('Missing flags_file in compiledb parser function!'))
+    if not thread_args.args or not thread_args.args.flags_file then
+        error(debug.traceback 'Missing flags_file in compiledb parser function!')
     end
 
     local flags_file = thread_args.args.flags_file

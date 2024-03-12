@@ -308,7 +308,8 @@ vim.api.nvim_create_autocmd({ 'User' }, {
                     'fs_event failed!\n fname: %s\nErr: %s\nStatus: %s',
                     fname,
                     vim.inspect(err),
-                    vim.inspect(status)),
+                    vim.inspect(status)
+                ),
                 vim.log.levels.ERROR,
                 { title = event.match }
             )
@@ -328,7 +329,7 @@ vim.api.nvim_create_autocmd({ 'User' }, {
         if not err or err == '' then
             -- NOTE: Could be that the file got removed or move, verify it does exist
             if require('utils.files').is_file(fname) then
-                RELOAD('threads.parse').compile_flags({ flags_file = fname })
+                RELOAD('threads.parse').compile_flags { flags_file = fname }
             end
         else
             vim.notify(
@@ -336,7 +337,8 @@ vim.api.nvim_create_autocmd({ 'User' }, {
                     'fs_event failed!\n fname: %s\nErr: %s\nStatus: %s',
                     fname,
                     vim.inspect(err),
-                    vim.inspect(status)),
+                    vim.inspect(status)
+                ),
                 vim.log.levels.ERROR,
                 { title = event.match }
             )

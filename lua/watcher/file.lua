@@ -90,8 +90,8 @@ function Watcher:start()
         self._filename,
         {
             watch_entry = false, -- true = when dir, watch dir inode, not dir content
-            stat = false,        -- true = don't use inotify/kqueue but periodic check, not implemented
-            recursive = false,   -- true = watch dirs inside dirs
+            stat = false, -- true = don't use inotify/kqueue but periodic check, not implemented
+            recursive = false, -- true = watch dirs inside dirs
         },
         vim.schedule_wrap(function(...)
             on_change(self, ...)
