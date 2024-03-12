@@ -226,6 +226,15 @@ return {
         i(3, 'RHS'),
         i(4, ''),
     })),
+    s('aug', fmt([[
+    vim.api.nvim_create_augroup('{}', {{ clear = {} }})
+    ]], {
+        i(1, 'GroupID'),
+        c(2, {
+            t { 'true' },
+            t { 'false' },
+        }),
+    })),
     s('au', fmt([[
     vim.api.nvim_create_autocmd({{ '{}' }}, {{
         desc = '{}',
@@ -235,7 +244,8 @@ return {
     }})
     ]], {
         i(1, 'BufEnter'),
-        c(2, {
+        i(2, 'description'),
+        c(3, {
             t { 'group_id' },
             sn(nil, {
                 t { "vim.api.nvim_create_augroup('" },
@@ -245,8 +255,7 @@ return {
                 t { " })" },
             }),
         }),
-        i(3, 'pattern'),
-        i(4, 'description'),
+        i(4, 'pattern'),
     })),
     s('lext', fmt([[vim.list_extend({}, {})]], {
         d(1, surround_with_func, {}, { user_args = { { text = 'tbl' } } }),

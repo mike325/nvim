@@ -185,90 +185,66 @@ function M.get_args(compiler, bufnum, flags_location)
     return args or M.makeprg[compiler] or {}
 end
 
-function M.set_opts(compiler, bufnum)
+function M.set_file_opts(flags_file, bufnum)
+    if executable 'clang-tidy' then
+        local tidy = vim.list_extend({ 'clang-tidy' }, M.makeprg['clang-tidy'])
+        vim.bo[bufnum].makeprg = table.concat(tidy, ' ') .. ' %'
+        if M.makeprg['clang-tidy'].efm then
+            vim.bo[bufnum].errorformat = table.concat(M.makeprg['clang-tidy'].efm, ',')
+        end
+    end
+
+    local paths = {}
+    local filename = nvim.buf.get_name(bufnum)
+    if is_file(filename) then
+        filename = realpath(filename)
+    end
+
+    local function set_source_options(fname)
+        if databases[fname] then
+            paths = databases[fname].includes
+        elseif compile_flags[flags_file] then
+            paths = compile_flags[flags_file].includes
+        end
+        local path_var = vim.split(vim.bo[bufnum].path, ',')
+        for _, path in ipairs(paths) do
+            if not vim.list_contains(path_var, path) then
+                vim.bo[bufnum].path = vim.bo[bufnum].path .. ',' .. path
+            end
+        end
+    end
+
+    if filename:match '%.hpp$' or filename:match '%.h$' then
+        if vim.g.alternates[filename] then
+            set_source_options(vim.g.alternates[filename][1])
+        else
+            local srcname = vim.fs.basename(filename):gsub('%.hpp$', '.cpp'):gsub('%.h$', '.c')
+            RELOAD('threads.functions').async_find {
+                target = srcname,
+                cb = function(data)
+                    if #data > 0 then
+                        local alternates = vim.g.alternates
+                        alternates[filename] = data
+                        vim.g.alternates = alternates
+                        if vim.api.nvim_buf_is_valid(bufnum) then
+                            set_source_options(data[1])
+                        end
+                    end
+                end,
+            }
+        end
+    else
+        set_source_options(filename)
+    end
+end
+
+function M.set_default_opts(compiler, bufnum)
     vim.validate {
         compiler = { compiler, 'string' },
         bufnum = { bufnum, 'number' },
     }
-
-    local args
-    local flags_file = vim.fs.find(
-        { 'compile_flags.txt', 'compile_commands.json' },
-        { upward = true, type = 'file', limit = math.huge }
-    )
-
-    if #flags_file > 0 then
-        local db
-        for _, filename in ipairs(flags_file) do
-            if vim.fs.basename(filename) == 'compile_commands.json' then
-                db = filename
-                break
-            end
-        end
-        flags_file = db or flags_file[1]
-    else
-        flags_file = nil
-    end
-
-    if flags_file then
-        if executable 'clang-tidy' then
-            local tidy = vim.list_extend({ 'clang-tidy' }, M.makeprg['clang-tidy'])
-            vim.bo[bufnum].makeprg = table.concat(tidy, ' ') .. ' %'
-            if M.makeprg['clang-tidy'].efm then
-                vim.bo[bufnum].errorformat = table.concat(M.makeprg['clang-tidy'].efm, ',')
-            end
-        end
-
-        args = M.get_args(compiler, bufnum, flags_file)
-
-        local paths = {}
-        local filename = nvim.buf.get_name(bufnum)
-        if is_file(filename) then
-            filename = realpath(filename)
-        end
-
-        local function set_source_options(fname)
-            if databases[fname] then
-                paths = databases[fname].includes
-            elseif compile_flags[flags_file] then
-                paths = compile_flags[flags_file].includes
-            end
-            local path_var = vim.split(vim.bo[bufnum].path, ',')
-            for _, path in ipairs(paths) do
-                if not vim.list_contains(path_var, path) then
-                    vim.bo[bufnum].path = vim.bo[bufnum].path .. ',' .. path
-                end
-            end
-        end
-
-        if filename:match '%.hpp$' or filename:match '%.h$' then
-            if vim.g.alternates[filename] then
-                set_source_options(vim.g.alternates[filename][1])
-            else
-                local srcname = vim.fs.basename(filename):gsub('%.hpp$', '.cpp'):gsub('%.h$', '.c')
-                RELOAD('threads.functions').async_find {
-                    target = srcname,
-                    cb = function(data)
-                        if #data > 0 then
-                            local alternates = vim.g.alternates
-                            alternates[filename] = data
-                            vim.g.alternates = alternates
-                            if vim.api.nvim_buf_is_valid(bufnum) then
-                                set_source_options(data[1])
-                            end
-                        end
-                    end,
-                }
-            end
-        else
-            set_source_options(filename)
-        end
-    end
-
-    if not args then
-        args = M.get_args(compiler, bufnum)
-        vim.bo[bufnum].makeprg = ('%s %s %%'):format(compiler, table.concat(args, ' '))
-    end
+    local args = M.get_args(compiler, bufnum)
+    vim.bo[bufnum].makeprg = ('%s %s %%'):format(compiler, table.concat(args, ' '))
 end
 
 function M.get_formatter(stdin)
@@ -396,20 +372,54 @@ function M.setup()
         return
     end
 
+    local bufnum = nvim.get_current_buf()
+
     -- TODO: Add support for other build commands like gradle
-    local makefile = vim.fs.find('Makefile', { upward = true, type = 'file' })[1]
-    if makefile and executable 'make' then
-        require('filetypes.make').setup()
+    if executable 'make' then
+        local makefile = vim.fs.find('Makefile', { upward = true, type = 'file' })[1]
+        if makefile then
+            require('filetypes.make').setup()
+        end
     end
 
-    local cmake = vim.fs.find('CMakeLists.txt', { upward = true, type = 'file' })[1]
-    if cmake and executable 'cmake' then
-        require('filetypes.cmake').setup()
+    if executable 'cmake' then
+        local cmake = vim.fs.find('CMakeLists.txt', { upward = true, type = 'file' })[1]
+        if cmake then
+            require('filetypes.cmake').setup()
+        end
     end
 
-    -- TODO: Add a watcher to compile_commands.json and compile_flags.txt and update the
-    --       flags on any file update
-    M.set_opts(compiler, nvim.get_current_buf())
+    local flags_file = vim.fs.find(
+        { 'compile_flags.txt', 'compile_commands.json' },
+        { upward = true, type = 'file', limit = math.huge }
+    )
+
+    if #flags_file > 0 then
+        local db
+        for _, filename in ipairs(flags_file) do
+            if vim.fs.basename(filename) == 'compile_commands.json' then
+                db = filename
+                break
+            end
+        end
+
+        flags_file = realpath(db or flags_file[1])
+        local parsed_files = vim.g.parsed_flags or {}
+
+        if not parsed_files[flags_file] then
+            RELOAD('threads.parse').compile_flags {
+                root = vim.fs.dirname(flags_file),
+                flags_file = flags_file,
+            }
+
+            -- NOTE: Setting default options while we parse the flags
+            M.set_default_opts(compiler, bufnum)
+        else
+            M.set_file_opts(flags_file, bufnum)
+        end
+    else
+        M.set_default_opts(compiler, bufnum)
+    end
 
     nvim.command.set('BuildProject', function(opts)
         local args = opts.fargs

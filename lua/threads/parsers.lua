@@ -25,6 +25,10 @@ function M.compile_flags(thread_args)
     thread_args = require('threads').init(thread_args)
     local utils = require 'utils.files'
 
+    if not thread_args.args  or not thread_args.args.flags_file then
+        error(debug.traceback('Missing flags_file in compile_flags parser function!'))
+    end
+
     local flags_file = thread_args.args.flags_file
     local data = utils.readfile(flags_file, true)
     local inc_parser = require('threads.parsers').includes
@@ -56,10 +60,24 @@ function M.compiledb(thread_args)
     thread_args = require('threads').init(thread_args)
     local utils = require 'utils.files'
 
+    if not thread_args.args  or not thread_args.args.flags_file then
+        error(debug.traceback('Missing flags_file in compiledb parser function!'))
+    end
+
     local flags_file = thread_args.args.flags_file
 
+    if vim.is_thread() then
+        -- NOTE: Sleeping for 100s, json may be completely dump yet
+        vim.loop.sleep(100)
+    end
+
     local data = utils.readfile(flags_file, false)
-    local json = vim.json.decode(data)
+    local ok, json = pcall(vim.json.decode, data)
+    if not ok then
+        local tmp = os.tmpname()
+        utils.writefile(tmp, data)
+        error(debug.traceback('Failed to parse json!, broken json dumped in: ' .. tmp))
+    end
     local inc_parser = require('threads.parsers').includes
 
     local databases = {}

@@ -52,7 +52,6 @@ vim.g.show_diagnostics = true
 vim.g.alternates = {}
 vim.g.tests = {}
 vim.g.makefiles = {}
-vim.g.parsed = {}
 vim.g.short_branch_name = true
 
 vim.g.port = 0x8AC
@@ -78,10 +77,12 @@ end
 
 vim.opt.termguicolors = true
 vim.g.mapleader = ' '
-require 'globals'
 
 vim.g.minimal = vim.env.VIM_MIN ~= nil or vim.g.minimal ~= nil
 vim.g.bare = vim.env.VIM_BARE ~= nil or vim.g.bare ~= nil
+
+require 'globals'
+
 -- NOTE: overload/replace vim.* functions
 require 'overloads.notify'
 require 'overloads.ui.open'

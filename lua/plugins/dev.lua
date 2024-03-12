@@ -16,6 +16,10 @@ return {
                 cond = not vim.g.minimal,
             },
             {
+                'theHamsta/nvim-dap-virtual-text',
+                opts = { virt_text_pos = 'eol' },
+            },
+            {
                 'jbyuki/one-small-step-for-vimkind',
                 cond = not vim.g.minimal,
             },

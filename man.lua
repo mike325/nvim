@@ -38,7 +38,6 @@ vim.g.show_diagnostics = true
 vim.g.alternates = {}
 vim.g.tests = {}
 vim.g.makefiles = {}
-vim.g.parsed = {}
 vim.g.short_branch_name = true
 
 vim.g.port = 0x8AC
@@ -67,11 +66,6 @@ vim.g.mapleader = ' '
 
 vim.opt.runtimepath:append(vim.fn.stdpath 'config')
 
-require 'utils.ft_detect'
-
-require 'completions'
-require 'globals'
-
 vim.g.minimal = true
 vim.g.bare = true
 
@@ -81,6 +75,14 @@ if vim.env.TMUX_WINDOW then
         vim.fn.serverstart(socket)
     end
 end
+
+require 'utils.ft_detect'
+
+require 'completions'
+require 'globals'
+require 'watch_files'
+
+require('threads.parse').ssh_hosts()
 
 if vim.g.minimal and not vim.g.bare then
     local lazy_root = vim.fs.dirname(nvim.setup.get_lazypath())

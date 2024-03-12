@@ -569,35 +569,6 @@ function M.project_config(event)
         M.set_grep(false, true)
     end
 
-    if nvim.has { 0, 8 } then
-        -- NOTE: this could be also search in another thread, we may have too many search in bufenter/filetype events
-
-        local is_c_project = vim.fs.find(
-            { 'CMakeLists.txt', 'compile_flags.txt', 'compile_commands.json', '.clang-format', '.clang-tidy' },
-            { upward = true, type = 'file' }
-        )[1]
-
-        if is_c_project then
-            -- NOTE: This may take a lot of time and even though it wont hang the UI it still can hang neovim's exit
-            --       which means neovim can't be closed before it finishes indexing
-            -- RELOAD('threads.related').async_gather_alternates { path = vim.fs.dirname(is_c_project) }
-
-            local compile_flags = vim.fs.find(
-                { 'compile_flags.txt', 'compile_commands.json' },
-                { upward = true, type = 'file' }
-            )
-
-            local flags_root = vim.fs.dirname(compile_flags[1])
-            vim.g.parsed = vim.g.parsed or {}
-            if #compile_flags > 0 and not vim.g.parsed[flags_root] then
-                RELOAD('threads.parse').compile_flags {
-                    root = flags_root,
-                    flags_file = compile_flags[1],
-                }
-            end
-        end
-    end
-
     local project = vim.fs.find({ '.project.lua', 'project.lua' }, { upward = true, type = 'file' })[1]
     if project then
         vim.secure.read(project)

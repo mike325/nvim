@@ -155,37 +155,6 @@ if executable 'isort' then
     })
 end
 
--- TODO: Make this listen to a file watcher
-vim.api.nvim_create_autocmd({ 'User' }, {
-    desc = 'Parse compiler flags and set C/C++ options based on them',
-    group = vim.api.nvim_create_augroup('ParseCompileFlags', { clear = true }),
-    pattern = 'FlagsParsed',
-    callback = function()
-        local extensions = {
-            c = true,
-            h = true,
-            cc = true,
-            cpp = true,
-            cxx = true,
-            hpp = true,
-            hxx = true,
-        }
-
-        local cpp = RELOAD 'filetypes.cpp'
-        for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-            local bufname = vim.api.nvim_buf_get_name(buf)
-            local ext = vim.fn.fnamemodify(bufname, ':e')
-            if extensions[ext] then
-                if ext == 'c' or ext == 'h' then
-                    cpp.set_opts(cpp.get_compiler 'c', buf)
-                else
-                    cpp.set_opts(cpp.get_compiler 'cpp', buf)
-                end
-            end
-        end
-    end,
-})
-
 vim.api.nvim_create_autocmd('LspAttach', {
     desc = 'Setup LPS mappings and hint highlights',
     group = vim.api.nvim_create_augroup('LspMappings', { clear = true }),
@@ -225,16 +194,6 @@ vim.api.nvim_create_autocmd('FileType', {
         if bufname ~= '' and not vim.g.alternates[bufname] then
             RELOAD('threads.related').async_lookup_alternate()
         end
-    end,
-})
-
--- TODO: Make this a User autocmd and retrigger when changed
-vim.api.nvim_create_autocmd('BufWritePost', {
-    desc = 'Re-Parse ssh hosts',
-    group = vim.api.nvim_create_augroup('SSHParser', { clear = true }),
-    pattern = '*/.ssh/config,*\\.ssh\\config',
-    callback = function()
-        RELOAD('threads.parse').ssh_hosts()
     end,
 })
 
@@ -327,3 +286,87 @@ if vim.env.SSH_CONNECTION and not vim.env.TMUX then
         end,
     })
 end
+
+local watcher = vim.api.nvim_create_augroup('Watcher', { clear = false })
+vim.api.nvim_create_autocmd({ 'User' }, {
+    desc = 'Trigger ssh config reparse',
+    group = watcher,
+    pattern = 'ParseSSH',
+    callback = function(event)
+        local fname = event.data.fname
+        local err = event.data.err
+        local status = event.data.status
+
+        if not err or err == '' then
+            -- NOTE: Could be that the file got removed or move, verify it does exist
+            if require('utils.files').is_file(fname) then
+                RELOAD('threads.parse').ssh_hosts()
+            end
+        else
+            vim.notify(
+                string.format(
+                    'fs_event failed!\n fname: %s\nErr: %s\nStatus: %s',
+                    fname,
+                    vim.inspect(err),
+                    vim.inspect(status)),
+                vim.log.levels.ERROR,
+                { title = event.match }
+            )
+        end
+    end,
+})
+
+vim.api.nvim_create_autocmd({ 'User' }, {
+    desc = 'Parse compiler flags and set C/C++ options based on them',
+    group = watcher,
+    pattern = 'ParseFlags',
+    callback = function(event)
+        local fname = event.data.fname
+        local err = event.data.err
+        local status = event.data.status
+
+        if not err or err == '' then
+            -- NOTE: Could be that the file got removed or move, verify it does exist
+            if require('utils.files').is_file(fname) then
+                RELOAD('threads.parse').compile_flags({ flags_file = fname })
+            end
+        else
+            vim.notify(
+                string.format(
+                    'fs_event failed!\n fname: %s\nErr: %s\nStatus: %s',
+                    fname,
+                    vim.inspect(err),
+                    vim.inspect(status)),
+                vim.log.levels.ERROR,
+                { title = event.match }
+            )
+        end
+    end,
+})
+
+vim.api.nvim_create_autocmd({ 'User' }, {
+    desc = 'Compile flags are already parsed, this autocmd sets/resets C/C++ options for all buffers',
+    group = vim.api.nvim_create_augroup('ParseCompileFlags', { clear = true }),
+    pattern = 'FlagsParsed',
+    callback = function(event)
+        local extensions = {
+            c = true,
+            h = true,
+            cc = true,
+            cpp = true,
+            cxx = true,
+            hpp = true,
+            hxx = true,
+        }
+
+        local flags_file = event.data.flags_file
+        local cpp = RELOAD 'filetypes.cpp'
+        for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+            local bufname = vim.api.nvim_buf_get_name(buf)
+            local ext = vim.fn.fnamemodify(bufname, ':e')
+            if extensions[ext] then
+                cpp.set_file_opts(flags_file, buf)
+            end
+        end
+    end,
+})

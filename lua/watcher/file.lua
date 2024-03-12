@@ -15,7 +15,7 @@ local function on_change(watcher, err, fname, status)
             if type(autocmd_name) == type '' then
                 vim.api.nvim_exec_autocmds('User', {
                     pattern = autocmd_name,
-                    -- group = '',
+                    group = vim.api.nvim_create_augroup('Watcher', { clear = false }),
                     data = {
                         err = err,
                         fname = fname,
@@ -41,6 +41,8 @@ function Watcher:new(filename, autocmd, cb)
         cb = { cb, { 'function' }, true },
     }
 
+    filename = realpath(normalize(filename))
+
     if not cb and type(autocmd) == 'function' then
         cb = { autocmd }
         autocmd = {}
@@ -52,16 +54,32 @@ function Watcher:new(filename, autocmd, cb)
         cb = { cb }
     end
 
-    local watcher = vim.loop.new_fs_event()
-    local obj = {
-        _filename = realpath(normalize(filename)),
-        _watcher = watcher,
-        _cb = cb,
-        _autocmd = autocmd,
-        _wait = false,
-    }
+    -- NOTE: Allow just 1 watcher per file
+    local watcher_obj
+    if STORAGE.watchers[filename] then
+        watcher_obj = STORAGE.watchers[filename]
 
-    return setmetatable(obj, self)
+        for _, callback in ipairs(cb or {}) do
+            watcher_obj:subscribe(callback)
+        end
+
+        for _, au in ipairs(autocmd or {}) do
+            watcher_obj:subscribe(au)
+        end
+    else
+        local watcher = vim.loop.new_fs_event()
+        local obj = {
+            _filename = filename,
+            _watcher = watcher,
+            _cb = cb or {},
+            _autocmd = autocmd or {},
+            _wait = false,
+        }
+
+        STORAGE.watchers[filename] = setmetatable(obj, self)
+    end
+
+    return STORAGE.watchers[filename]
 end
 
 -- NOTE: For some reason we get notified more than once, need this flag and a defer to
@@ -72,8 +90,8 @@ function Watcher:start()
         self._filename,
         {
             watch_entry = false, -- true = when dir, watch dir inode, not dir content
-            stat = false, -- true = don't use inotify/kqueue but periodic check, not implemented
-            recursive = false, -- true = watch dirs inside dirs
+            stat = false,        -- true = don't use inotify/kqueue but periodic check, not implemented
+            recursive = false,   -- true = watch dirs inside dirs
         },
         vim.schedule_wrap(function(...)
             on_change(self, ...)
@@ -89,6 +107,12 @@ end
 function Watcher:restart()
     self._watcher:stop()
     self._watcher:start()
+end
+
+function Watcher:reset()
+    self._watcher:stop()
+    self._watcher._cb = {}
+    self._watcher._autocmd = {}
 end
 
 function Watcher:subscribe(cb)

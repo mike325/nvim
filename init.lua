@@ -44,7 +44,6 @@ vim.g.show_diagnostics = true
 vim.g.alternates = {}
 vim.g.tests = {}
 vim.g.makefiles = {}
-vim.g.parsed = {}
 vim.g.short_branch_name = true
 
 vim.g.port = 0x8AC
@@ -71,32 +70,8 @@ end
 vim.opt.termguicolors = true
 vim.g.mapleader = ' '
 
-require 'utils.ft_detect'
-
-require 'globals'
-require 'completions'
-
 vim.g.minimal = vim.env.VIM_MIN ~= nil or vim.g.minimal ~= nil
 vim.g.bare = vim.env.VIM_BARE ~= nil or vim.g.bare ~= nil
-
-require('threads.parse').ssh_hosts()
-local ssh_config = vim.loop.os_homedir():gsub('\\', '/') .. '/.ssh/config'
-if require('utils.files').is_file(ssh_config) then
-    local ssh_watcher
-    ssh_watcher = require('watcher.file'):new(ssh_config, 'SSHParser', function(err, fname, status)
-        if not err or err == '' then
-            require('threads.parse').ssh_hosts()
-        else
-            vim.notify(
-                'Failed to parse sshconfig: ' .. fname .. '\n' .. err,
-                vim.log.levels.ERROR,
-                { title = 'SSHWatcher ' .. status }
-            )
-            ssh_watcher:stop()
-        end
-    end)
-    ssh_watcher:start()
-end
 
 if vim.env.TMUX_WINDOW then
     local socket = vim.fn.stdpath 'cache' .. '/socket.win' .. vim.env.TMUX_WINDOW
@@ -105,10 +80,18 @@ if vim.env.TMUX_WINDOW then
     end
 end
 
+require 'utils.ft_detect'
+
+require 'globals'
+require 'completions'
+require 'watch_files'
+
 require 'configs.options'
 require 'configs.mappings'
 require 'configs.commands'
 require 'configs.autocmds'
+
+require('threads.parse').ssh_hosts()
 
 if not vim.g.bare and not vim.g.minimal then
     nvim.setup.lazy(false)

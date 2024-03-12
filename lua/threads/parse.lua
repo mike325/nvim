@@ -2,11 +2,14 @@ local M = {}
 
 function M.ssh_hosts(opts)
     local parsers = RELOAD 'threads.parsers'
-    RELOAD('threads').queue_thread(parsers.sshconfig, function(hosts)
-        for host, attrs in pairs(hosts) do
-            STORAGE.hosts[host] = attrs
-        end
-    end, opts or {})
+    local ssh_config = string.format('%s/.ssh/config', (vim.loop.os_homedir():gsub('\\', '/')))
+    if require('utils.files').is_file(ssh_config) then
+        RELOAD('threads').queue_thread(parsers.sshconfig, function(hosts)
+            for host, attrs in pairs(hosts) do
+                STORAGE.hosts[host] = attrs
+            end
+        end, opts or {})
+    end
 end
 
 function M.compile_flags(opts)
@@ -25,7 +28,6 @@ function M.compile_flags(opts)
     -- opts.flags = flags_type == 'compile_flags.txt' and STORAGE.compile_flags or STORAGE.databases
 
     local thread_func = parse_func[flags_type]
-
     RELOAD('threads').queue_thread(thread_func, function(results)
         local ftype = vim.fs.basename(results.flags_file)
         if ftype == 'compile_flags.txt' then
@@ -36,10 +38,18 @@ function M.compile_flags(opts)
                 STORAGE.databases[source_name] = flags
             end
         end
-        local parsed = vim.g.parsed or {}
-        parsed[vim.fs.dirname(results.flags_file)] = true
-        vim.g.parsed = parsed
-        vim.cmd.doautocmd { args = { 'User', 'FlagsParsed' } }
+
+        local parsed_files = vim.g.parsed_flags or {}
+        parsed_files[results.flags_file] = true
+        vim.g.parsed_flags = parsed_files
+
+        vim.api.nvim_exec_autocmds('User', {
+            pattern = 'FlagsParsed',
+            group = vim.api.nvim_create_augroup('ParseCompileFlags', { clear = false }),
+            data = {
+                flags_file = results.flags_file,
+            },
+        })
     end, opts or {})
 end
 
