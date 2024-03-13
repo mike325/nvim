@@ -226,7 +226,7 @@ dap.listeners.before.event_terminated['DapMappings'] = function()
 end
 
 local function clear_virtual_text()
-    vim.api.nvim_buf_clear_namespace(0, vim.api.nvim_create_namespace('nvim-dap-virtual-text'), 0, -1)
+    vim.api.nvim_buf_clear_namespace(0, vim.api.nvim_create_namespace 'nvim-dap-virtual-text', 0, -1)
 end
 
 nvim.command.set('Dap', function(opts)
