@@ -14,6 +14,20 @@ local utils = RELOAD 'utils.files'
 local completions = RELOAD 'completions'
 local is_windows = sys.name == 'windows'
 
+local default_remote_nvim_port = 8086
+dap.adapters.nlua = function(callback, config)
+    callback { type = 'server', host = config.host or '127.0.0.1', port = config.port or default_remote_nvim_port }
+end
+
+dap.configurations.lua = {
+    {
+        type = 'nlua',
+        request = 'attach',
+        name = "Attach to running Neovim instance",
+        -- program = function() require('osv').launch({ port = 8086 }) end,
+    }
+}
+
 local lldb = utils.exepath 'lldb-vscode'
 if not lldb then
     for version = 8, 30 do
@@ -175,11 +189,23 @@ if dapui then
 end
 
 local function stop_debug_session()
+    if vim.bo.filetype == 'lua' and vim.g.remote_nvim then
+        require('osv').stop()
+        vim.g.remote_nvim = nil
+    end
     dap.terminate()
     dap.close()
 end
 
 local function start_debug_session()
+    if vim.bo.filetype == 'lua' and not vim.g.remote_nvim then
+        vim.g.remote_nvim = require('osv').launch {
+            port = default_remote_nvim_port,
+            -- args = {
+            --     '--listen',
+            -- }
+        }
+    end
     dap.continue()
 end
 
@@ -207,6 +233,11 @@ dap.listeners.after.event_initialized['DapMappings'] = function()
             dap.set_breakpoint(condition)
         end
     end, { noremap = true, silent = true })
+    if vim.g.remote_nvim then
+        nvim.command.set('RunThis', function()
+            require('osv').run_this()
+        end)
+    end
 end
 
 dap.listeners.before.event_terminated['DapMappings'] = function()
@@ -223,6 +254,8 @@ dap.listeners.before.event_terminated['DapMappings'] = function()
     vim.keymap.del('n', '=r')
     vim.keymap.del('n', '=b')
     vim.keymap.del('n', '=B')
+
+    nvim.command.det('RunThis')
 end
 
 local function clear_virtual_text()
