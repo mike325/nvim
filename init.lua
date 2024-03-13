@@ -123,9 +123,8 @@ elseif not vim.g.minimal and not vim.g.bare then
     vim.notify('Missing git! cannot install plugins', vim.log.levels.WARN, { title = 'Nvim Setup' })
 end
 
-vim.cmd.packadd { args = { 'cfilter' }, bang = true }
-vim.cmd.packadd { args = { 'matchit' }, bang = true }
-vim.cmd.packadd { args = { 'termdebug' }, bang = true }
+vim.cmd.packadd { args = { 'matchit' }, bang = false }
+vim.cmd.packadd { args = { 'termdebug' }, bang = false }
 
 -- NOTE: overload/replace vim.* functions
 require 'overloads.notify'

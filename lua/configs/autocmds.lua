@@ -287,7 +287,7 @@ if vim.env.SSH_CONNECTION and not vim.env.TMUX then
     })
 end
 
-local watcher = vim.api.nvim_create_augroup('Watcher', { clear = false })
+local watcher = vim.api.nvim_create_augroup('Watcher', { clear = true })
 vim.api.nvim_create_autocmd({ 'User' }, {
     desc = 'Trigger ssh config reparse',
     group = watcher,
@@ -339,6 +339,34 @@ vim.api.nvim_create_autocmd({ 'User' }, {
                     vim.inspect(err),
                     vim.inspect(status)
                 ),
+                vim.log.levels.ERROR,
+                { title = event.match }
+            )
+        end
+    end,
+})
+
+vim.api.nvim_create_autocmd({ 'User' }, {
+    desc = 'Reload lua configs',
+    group = watcher,
+    pattern = 'ConfigReloader',
+    callback = function(event)
+        local fname = event.data.fname
+        local err = event.data.err
+        local status = event.data.status
+
+        if not err or err == '' then
+            -- NOTE: Could be that the file got removed or move, verify it does exist
+            if require('utils.files').is_file(fname) then
+                RELOAD('mappings').reload_configs(fname)
+            end
+        else
+            vim.notify(
+                string.format(
+                    'fs_event failed!\n fname: %s\nErr: %s\nStatus: %s',
+                    fname,
+                    vim.inspect(err),
+                    vim.inspect(status)),
                 vim.log.levels.ERROR,
                 { title = event.match }
             )

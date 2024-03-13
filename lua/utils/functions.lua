@@ -1033,4 +1033,15 @@ function M.typos_check(buf)
     typos:start()
 end
 
+function M.watch_config_file(fname)
+    vim.validate {
+        fname = { fname, 'string' },
+    }
+
+    if require('utils.files').is_file(fname) then
+        local real_fname = require('utils.files').realpath(fname)
+        require('watcher.file'):new(real_fname, 'ConfigReloader'):start()
+    end
+end
+
 return M

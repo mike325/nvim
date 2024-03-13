@@ -848,27 +848,50 @@ function M.gradle(opts)
     }
 end
 
-function M.reload_configs(opts)
-    local configs = {
-        mappings = 'mappings',
-        commands = 'commands',
-        autocmds = 'autocmds',
-        options = 'options',
+function M.reload_configs(files)
+    vim.validate {
+        files = { files, { 'table', 'string' } },
     }
 
-    local lua_file_path = '%s/lua/configs/%s.lua'
+    if type(files) == type '' then
+        files = { files }
+    end
 
-    local config_dir = vim.fn.stdpath 'config'
-    if opts.args == 'all' or opts.args == '' then
-        for _, v in ipairs(configs) do
-            vim.cmd.source(lua_file_path:format(config_dir, v))
+    if #files == 0 then
+        vim.notify('No files to reload', vim.log.levels.WARN, { title = 'Reloader' })
+        return
+    end
+
+    local success = {}
+    local fail = {}
+
+    for _, fname in ipairs(files) do
+        local ok, _ = pcall(vim.cmd.source, fname)
+        if ok then
+            table.insert(success, fname)
+        else
+            table.insert(fail, fname)
         end
-        vim.notify('All configs reloaded!', vim.log.levels.INFO)
-    elseif configs[opts.args] then
-        vim.cmd.source(lua_file_path:format(config_dir, opts.args))
-        vim.notify(opts.args .. ' reloaded!', vim.log.levels.INFO)
+    end
+
+    if #fail > 0 then
+        vim.notify(
+            string.format('Failed to reload:\n %s', table.concat(fail, '\n ')),
+            vim.log.levels.ERROR,
+            { title = 'Reloader' }
+        )
+    elseif #success == 1 then
+        vim.notify(
+            string.format('Successfully reloaded:\n%s', success[1]),
+            vim.log.levels.INFO,
+            { title = 'Reloader' }
+        )
     else
-        vim.notify('Invalid config name: ' .. opts.args, vim.log.levels.ERROR, { title = 'Reloader' })
+        vim.notify(
+            string.format('Successfully reloaded %d files', #success),
+            vim.log.levels.INFO,
+            { title = 'Reloader' }
+        )
     end
 end
 

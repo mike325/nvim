@@ -4,13 +4,13 @@
 set nocompatible
 
 if v:version >= 800
-    silent! packadd! cfilter
-    silent! packadd! termdebug
+    silent! packadd cfilter
+    silent! packadd termdebug
 endif
 
 if v:version >= 704 && !has('nvim')
-    silent! packadd! matchparen
-    silent! packadd! matchit
+    silent! packadd matchparen
+    silent! packadd matchit
 endif
 
 " ------------------------------------------------------------------------------

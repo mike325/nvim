@@ -6,6 +6,11 @@ local mkdir = require('utils.files').mkdir
 local completions = RELOAD 'completions'
 local noremap = { noremap = true, silent = true }
 
+local me = debug.getinfo(1, 'S')
+if me and me.source then
+    require('utils.functions').watch_config_file((me.source:sub(2)))
+end
+
 local mini = {}
 local function load_simple_module(plugin, config)
     local mini_plugin = 'mini.' .. plugin

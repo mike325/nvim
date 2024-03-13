@@ -272,7 +272,29 @@ end, {
 })
 
 nvim.command.set('Reloader', function(opts)
-    RELOAD('mappings').reload_configs(opts)
+    local configs = {
+        mappings = 'mappings',
+        commands = 'commands',
+        autocmds = 'autocmds',
+        options = 'options',
+    }
+
+    local files = {}
+
+    local lua_file_path = '%s/lua/configs/%s.lua'
+    local config_dir = vim.fn.stdpath 'config'
+    if opts.args == 'all' or opts.args == '' then
+        for _, v in ipairs(configs) do
+            table.insert(files, lua_file_path:format(config_dir, v))
+        end
+    elseif configs[opts.args] then
+        table.insert(files, lua_file_path:format(config_dir, opts.args))
+    else
+        vim.notify('Invalid config name: ' .. opts.args, vim.log.levels.ERROR, { title = 'Reloader' })
+        return
+    end
+
+    RELOAD('mappings').reload_configs(files)
 end, {
     nargs = '?',
     desc = 'Change between git grep and the best available alternative',
