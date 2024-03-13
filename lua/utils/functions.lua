@@ -34,6 +34,7 @@ if not vim.env.NO_COOL_FONTS then
         success = '✓', -- ✓ -- ✔ -- 
         fail = '✗',
         bug = '',
+        breakpoint = '●',
         todo = '',
         hack = ' ',
         perf = ' ',
@@ -63,6 +64,7 @@ else
         build = '⛭', -- b
         success = '✓', -- ✓ -- ✔ -- 
         fail = '✗',
+        breakpoint = '⦿',
         bug = 'B', -- 🐛' -- B
         todo = '⦿',
         hack = '☠',

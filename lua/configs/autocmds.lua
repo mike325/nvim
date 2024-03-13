@@ -290,7 +290,7 @@ end
 vim.api.nvim_create_autocmd({ 'User' }, {
     desc = 'Load debug keymaps',
     pattern = 'TermdebugStartPre',
-    callback = function(event)
+    callback = function(_)
         vim.keymap.set('n', '<F5>', '<cmd>Continue<CR>', { noremap = true, silent = true })
         vim.keymap.set('n', '=c', '<cmd>Continue<CR>', { noremap = true, silent = true })
 
@@ -304,11 +304,11 @@ vim.api.nvim_create_autocmd({ 'User' }, {
         vim.keymap.set('n', ']S', '<cmd>Step<CR>', { noremap = true, silent = true })
         vim.keymap.set('n', '[S', '<cmd>Finish<CR>', { noremap = true, silent = true })
 
-        -- vim.keymap.set('n', '=r', dap.repl.toggle, { noremap = true, silent = true })
-        -- vim.keymap.set('n', '<leader>L', list_breakpoints, { noremap = true, silent = true })
-
         vim.keymap.set('n', '=b', '<cmd>Break<CR>', { noremap = true, silent = true })
         vim.keymap.set('n', '=B', '<cmd>Clear<CR>', { noremap = true, silent = true })
+
+        -- vim.keymap.set('n', '=r', dap.repl.toggle, { noremap = true, silent = true })
+        -- vim.keymap.set('n', '<leader>L', list_breakpoints, { noremap = true, silent = true })
     end,
 })
 
@@ -317,14 +317,18 @@ vim.api.nvim_create_autocmd({ 'User' }, {
     pattern = 'TermdebugStopPost',
     callback = function(_)
         vim.keymap.del('n', '<F5>')
-        vim.keymap.del('n', '<F4>')
-        -- vim.keymap.del('n', 'gK')
         vim.keymap.del('n', '=c')
+
+        vim.keymap.del('n', '<F4>')
         vim.keymap.del('n', '=C')
+
+        -- vim.keymap.del('n', 'gK')
+
         vim.keymap.del('n', ']s')
         vim.keymap.del('n', '[s')
         vim.keymap.del('n', ']S')
         vim.keymap.del('n', '[S')
+
         vim.keymap.del('n', '=b')
         vim.keymap.del('n', '=B')
 

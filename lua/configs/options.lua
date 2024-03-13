@@ -294,3 +294,13 @@ for _, level in pairs { 'Error', 'Hint', 'Warn', 'Info' } do
         { text = require('utils.functions').get_icon(level:lower()), texthl = sign_str .. level }
     )
 end
+
+-- Debug config
+local termdebug_config = vim.g.termdebug_config or {}
+termdebug_config.sign = '*'
+termdebug_config.disasm_window = 0
+termdebug_config.variables_window = 1
+termdebug_config.variables_window_height = 15
+vim.g.termdebug_config = termdebug_config
+
+vim.api.nvim_set_hl(0, 'debugBreakpoint', { link = 'Error' })
