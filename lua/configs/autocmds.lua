@@ -366,7 +366,8 @@ vim.api.nvim_create_autocmd({ 'User' }, {
                     'fs_event failed!\n fname: %s\nErr: %s\nStatus: %s',
                     fname,
                     vim.inspect(err),
-                    vim.inspect(status)),
+                    vim.inspect(status)
+                ),
                 vim.log.levels.ERROR,
                 { title = event.match }
             )

@@ -881,11 +881,7 @@ function M.reload_configs(files)
             { title = 'Reloader' }
         )
     elseif #success == 1 then
-        vim.notify(
-            string.format('Successfully reloaded:\n%s', success[1]),
-            vim.log.levels.INFO,
-            { title = 'Reloader' }
-        )
+        vim.notify(string.format('Successfully reloaded:\n%s', success[1]), vim.log.levels.INFO, { title = 'Reloader' })
     else
         vim.notify(
             string.format('Successfully reloaded %d files', #success),
