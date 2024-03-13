@@ -287,6 +287,53 @@ if vim.env.SSH_CONNECTION and not vim.env.TMUX then
     })
 end
 
+vim.api.nvim_create_autocmd({ 'User' }, {
+    desc = 'Load debug keymaps',
+    pattern = 'TermdebugStartPre',
+    callback = function(event)
+        vim.keymap.set('n', '<F5>', '<cmd>Continue<CR>', { noremap = true, silent = true })
+        vim.keymap.set('n', '=c', '<cmd>Continue<CR>', { noremap = true, silent = true })
+
+        vim.keymap.set('n', '<F4>', '<cmd>Stop<CR>', { noremap = true, silent = true })
+        vim.keymap.set('n', '=C', '<cmd>Stop<CR>', { noremap = true, silent = true })
+
+        -- vim.keymap.set('n', 'gK', require('dap.ui.widgets').hover, { noremap = true, silent = true })
+
+        vim.keymap.set('n', ']s', '<cmd>Over<CR>', { noremap = true, silent = true })
+        vim.keymap.set('n', '[s', '<cmd>Finish<CR>', { noremap = true, silent = true })
+        vim.keymap.set('n', ']S', '<cmd>Step<CR>', { noremap = true, silent = true })
+        vim.keymap.set('n', '[S', '<cmd>Finish<CR>', { noremap = true, silent = true })
+
+
+        -- vim.keymap.set('n', '=r', dap.repl.toggle, { noremap = true, silent = true })
+        -- vim.keymap.set('n', '<leader>L', list_breakpoints, { noremap = true, silent = true })
+
+        vim.keymap.set('n', '=b', '<cmd>Break<CR>', { noremap = true, silent = true })
+        vim.keymap.set('n', '=B', '<cmd>Clear<CR>', { noremap = true, silent = true })
+    end,
+})
+
+vim.api.nvim_create_autocmd({ 'User' }, {
+    desc = 'Cleanup debug keymaps',
+    pattern = 'TermdebugStopPost',
+    callback = function(_)
+        vim.keymap.del('n', '<F5>')
+        vim.keymap.del('n', '<F4>')
+        -- vim.keymap.del('n', 'gK')
+        vim.keymap.del('n', '=c')
+        vim.keymap.del('n', '=C')
+        vim.keymap.del('n', ']s')
+        vim.keymap.del('n', '[s')
+        vim.keymap.del('n', ']S')
+        vim.keymap.del('n', '[S')
+        vim.keymap.del('n', '=b')
+        vim.keymap.del('n', '=B')
+
+        -- vim.keymap.del('n', '=r')
+        -- vim.keymap.del('n', '<leader>L')
+    end,
+})
+
 local watcher = vim.api.nvim_create_augroup('Watcher', { clear = true })
 vim.api.nvim_create_autocmd({ 'User' }, {
     desc = 'Trigger ssh config reparse',

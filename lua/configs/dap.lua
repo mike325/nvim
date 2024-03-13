@@ -181,25 +181,42 @@ local function list_breakpoints()
     RELOAD('utils.qf').open()
 end
 
-vim.keymap.set('n', '<F5>', start_debug_session, { noremap = true, silent = true })
-vim.keymap.set('n', '<F4>', stop_debug_session, { noremap = true, silent = true })
-vim.keymap.set('n', 'gK', require('dap.ui.widgets').hover, { noremap = true, silent = true })
-vim.keymap.set('n', '=c', start_debug_session, { noremap = true, silent = true })
-vim.keymap.set('n', '=C', stop_debug_session, { noremap = true, silent = true })
-vim.keymap.set('n', ']s', dap.step_over, { noremap = true, silent = true })
-vim.keymap.set('n', '[s', dap.step_out, { noremap = true, silent = true })
-vim.keymap.set('n', ']S', dap.step_into, { noremap = true, silent = true })
-vim.keymap.set('n', '[S', dap.step_out, { noremap = true, silent = true })
-vim.keymap.set('n', '=b', dap.toggle_breakpoint, { noremap = true, silent = true })
-vim.keymap.set('n', '=r', dap.repl.toggle, { noremap = true, silent = true })
-vim.keymap.set('n', '<leader>L', list_breakpoints, { noremap = true, silent = true })
+dap.listeners.after.event_initialized['DapMappings'] = function()
+    vim.keymap.set('n', '<F5>', start_debug_session, { noremap = true, silent = true })
+    vim.keymap.set('n', '=c', start_debug_session, { noremap = true, silent = true })
+    vim.keymap.set('n', '<F4>', stop_debug_session, { noremap = true, silent = true })
+    vim.keymap.set('n', '=C', stop_debug_session, { noremap = true, silent = true })
+    vim.keymap.set('n', 'gK', require('dap.ui.widgets').hover, { noremap = true, silent = true })
+    vim.keymap.set('n', ']s', dap.step_over, { noremap = true, silent = true })
+    vim.keymap.set('n', '[s', dap.step_out, { noremap = true, silent = true })
+    vim.keymap.set('n', ']S', dap.step_into, { noremap = true, silent = true })
+    vim.keymap.set('n', '[S', dap.step_out, { noremap = true, silent = true })
+    vim.keymap.set('n', '<leader>L', list_breakpoints, { noremap = true, silent = true })
+    vim.keymap.set('n', '=r', dap.repl.toggle, { noremap = true, silent = true })
+    vim.keymap.set('n', '=b', dap.toggle_breakpoint, { noremap = true, silent = true })
+    vim.keymap.set('n', '=B', function()
+        local condition = vim.fn.input 'Breakpoint condition: '
+        if condition ~= '' then
+            dap.set_breakpoint(condition)
+        end
+    end, { noremap = true, silent = true })
+end
 
-vim.keymap.set('n', '=B', function()
-    local condition = vim.fn.input 'Breakpoint condition: '
-    if condition ~= '' then
-        dap.set_breakpoint(condition)
-    end
-end, { noremap = true, silent = true })
+dap.listeners.before.event_terminated['DapMappings'] = function()
+    vim.keymap.del('n', '<F5>')
+    vim.keymap.del('n', '=c')
+    vim.keymap.del('n', '<F4>')
+    vim.keymap.del('n', '=C')
+    vim.keymap.del('n', 'gK')
+    vim.keymap.del('n', ']s')
+    vim.keymap.del('n', '[s')
+    vim.keymap.del('n', ']S')
+    vim.keymap.del('n', '[S')
+    vim.keymap.del('n', '<leader>L')
+    vim.keymap.del('n', '=r')
+    vim.keymap.del('n', '=b')
+    vim.keymap.del('n', '=B')
+end
 
 nvim.command.set('Dap', function(opts)
     local subcmd = opts.args:gsub('^%-+', '')
