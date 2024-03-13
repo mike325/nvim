@@ -717,7 +717,7 @@ if not vim.g.lazy_setup and not vim.g.bare and not vim.g.minimal then
 end
 
 nvim.command.set('RemoteTermdebug', function(opts)
-    RELOAD('utils.debug').remote_attach_debugger({ hostname = opts.args })
+    RELOAD('utils.debug').remote_attach_debugger { hostname = opts.args }
 end, {
     nargs = 1,
     desc = 'Start a Termdebug remote session using gdbserver',
