@@ -723,3 +723,12 @@ end, {
     desc = 'Start a Termdebug remote session using gdbserver',
     complete = completions.ssh_hosts_completion,
 })
+
+nvim.command.set('ClearBufNS', function(opts)
+    local ns = vim.api.nvim_create_namespace(opts.args)
+    vim.api.nvim_buf_clear_namespace(0, ns, 0, -1)
+end, {
+    nargs = 1,
+    desc = 'Clear buffer namespace',
+    complete = completions.namespaces,
+})

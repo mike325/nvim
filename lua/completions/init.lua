@@ -209,10 +209,14 @@ completions = vim.tbl_extend('force', completions, {
             'list',
             'clear',
             'run2cursor',
+            'clear_virtual_text',
             'remote_attach',
             -- 'remote_run',
         }
         return utils.general_completion(arglead, cmdline, cursorpos, cmds)
+    end,
+    namespaces = function(arglead, cmdline, cursorpos)
+        return utils.general_completion(arglead, cmdline, cursorpos, vim.tbl_keys(vim.api.nvim_get_namespaces()))
     end,
 })
 
