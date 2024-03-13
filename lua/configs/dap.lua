@@ -23,9 +23,9 @@ dap.configurations.lua = {
     {
         type = 'nlua',
         request = 'attach',
-        name = "Attach to running Neovim instance",
+        name = 'Attach to running Neovim instance',
         -- program = function() require('osv').launch({ port = 8086 }) end,
-    }
+    },
 }
 
 local lldb = utils.exepath 'lldb-vscode'
@@ -255,7 +255,7 @@ dap.listeners.before.event_terminated['DapMappings'] = function()
     vim.keymap.del('n', '=b')
     vim.keymap.del('n', '=B')
 
-    nvim.command.det('RunThis')
+    nvim.command.det 'RunThis'
 end
 
 local function clear_virtual_text()
