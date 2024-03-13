@@ -304,7 +304,6 @@ vim.api.nvim_create_autocmd({ 'User' }, {
         vim.keymap.set('n', ']S', '<cmd>Step<CR>', { noremap = true, silent = true })
         vim.keymap.set('n', '[S', '<cmd>Finish<CR>', { noremap = true, silent = true })
 
-
         -- vim.keymap.set('n', '=r', dap.repl.toggle, { noremap = true, silent = true })
         -- vim.keymap.set('n', '<leader>L', list_breakpoints, { noremap = true, silent = true })
 
