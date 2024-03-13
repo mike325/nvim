@@ -136,24 +136,18 @@ dap.configurations.rust = dap.configurations.cpp
 
 local sign = vim.fn.sign_define
 sign('DapLogPoint', { text = '◆', texthl = 'DapLogPoint', linehl = '', numhl = '' })
-sign(
-    'DapBreakpoint',
-    {
-        text = require('utils.functions').get_icon('breakpoint'),
-        texthl = 'DapBreakpoint',
-        linehl = '',
-        numhl = ''
-    }
-)
-sign(
-    'DapBreakpointCondition',
-    {
-        text = require('utils.functions').get_icon('breakpoint'),
-        texthl = 'DapBreakpointCondition',
-        linehl = '',
-        numhl = ''
-    }
-)
+sign('DapBreakpoint', {
+    text = require('utils.functions').get_icon 'breakpoint',
+    texthl = 'DapBreakpoint',
+    linehl = '',
+    numhl = '',
+})
+sign('DapBreakpointCondition', {
+    text = require('utils.functions').get_icon 'breakpoint',
+    texthl = 'DapBreakpointCondition',
+    linehl = '',
+    numhl = '',
+})
 
 vim.api.nvim_create_autocmd('Filetype', {
     desc = 'Setup dap completion in REPL',
