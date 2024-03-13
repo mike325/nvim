@@ -177,9 +177,6 @@ end
 local function stop_debug_session()
     dap.terminate()
     dap.close()
-    if dapui then
-        dapui.close()
-    end
 end
 
 local function start_debug_session()
@@ -241,6 +238,8 @@ nvim.command.set('Dap', function(opts)
         list = list_breakpoints,
         clear = dap.clear_breakpoints,
         run2cursor = dap.run_to_cursor,
+        remote_attach = RELOAD('utils.debug').remote_dap_attach,
+        -- remote_run = require('utils.debug').remote_dap_run,
     }
 
     if cmd_func[subcmd] then

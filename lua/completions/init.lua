@@ -203,12 +203,14 @@ completions = vim.tbl_extend('force', completions, {
             'stop',
             'start',
             'continue',
+            'restart',
             'repl',
             'breakpoint',
             'list',
             'clear',
             'run2cursor',
-            'restart',
+            'remote_attach',
+            -- 'remote_run',
         }
         return utils.general_completion(arglead, cmdline, cursorpos, cmds)
     end,
