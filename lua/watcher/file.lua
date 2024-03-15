@@ -4,6 +4,7 @@ local normalize = require('utils.files').normalize
 local Watcher = {}
 Watcher.__index = Watcher
 
+-- TODO: Check if this will still works if the file is removed and re-created
 local function on_change(watcher, err, _, status)
     -- Do work...
     if not watcher._wait then

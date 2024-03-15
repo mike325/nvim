@@ -135,7 +135,7 @@ local function del_command(name, buffer)
         buffer = {
             buffer,
             function(b)
-                return type(b) == type(true) or type(b) == type(0)
+                return not b or type(b) == type(true) or type(b) == type(0)
             end,
             'a boolean or a number',
         },

@@ -449,7 +449,14 @@ return {
         )
     ),
     s(
-        'sst',
+        'strs',
+        fmt([[std::{} {}]], {
+            p(add_statement_and_include, 'stringstream', 'sstream'),
+            i(1, 'ss'),
+        })
+    ),
+    s(
+        'sstream',
         fmt([[std::{} {}]], {
             p(add_statement_and_include, 'stringstream', 'sstream'),
             i(1, 'ss'),

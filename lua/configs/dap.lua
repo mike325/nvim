@@ -188,6 +188,11 @@ if dapui then
     end
 end
 
+local function clear_virtual_text()
+    -- TODO: Should this cycle all buffers ?
+    vim.api.nvim_buf_clear_namespace(0, vim.api.nvim_create_namespace 'nvim-dap-virtual-text', 0, -1)
+end
+
 local function stop_debug_session()
     if vim.bo.filetype == 'lua' and vim.g.remote_nvim then
         require('osv').stop()
@@ -195,6 +200,11 @@ local function stop_debug_session()
     end
     dap.terminate()
     dap.close()
+    if dapui then
+        dapui.close()
+    end
+
+    clear_virtual_text()
 end
 
 local function start_debug_session()
@@ -226,6 +236,7 @@ dap.listeners.after.event_initialized['DapMappings'] = function()
     vim.keymap.set('n', '[S', dap.step_out, { noremap = true, silent = true })
     vim.keymap.set('n', '<leader>L', list_breakpoints, { noremap = true, silent = true })
     vim.keymap.set('n', '=r', dap.repl.toggle, { noremap = true, silent = true })
+    vim.keymap.set('n', '=R', dap.run_to_cursor, { noremap = true, silent = true })
     vim.keymap.set('n', '=b', dap.toggle_breakpoint, { noremap = true, silent = true })
     vim.keymap.set('n', '=B', function()
         local condition = vim.fn.input 'Breakpoint condition: '
@@ -238,6 +249,18 @@ dap.listeners.after.event_initialized['DapMappings'] = function()
             require('osv').run_this()
         end)
     end
+
+    local repl = require 'dap.repl'
+    local function print_expr(expr)
+        repl.execute(string.format('-exec p %s', expr))
+    end
+    repl.commands = vim.tbl_extend('force', repl.commands, {
+        exit = { '.exit', 'exit' },
+        custom_commands = {
+            ['.print'] = print_expr,
+            ['.p'] = print_expr,
+        },
+    })
 end
 
 dap.listeners.before.event_terminated['DapMappings'] = function()
@@ -252,14 +275,11 @@ dap.listeners.before.event_terminated['DapMappings'] = function()
     vim.keymap.del('n', '[S')
     vim.keymap.del('n', '<leader>L')
     vim.keymap.del('n', '=r')
+    vim.keymap.det('n', '=R')
     vim.keymap.del('n', '=b')
     vim.keymap.del('n', '=B')
 
-    nvim.command.det 'RunThis'
-end
-
-local function clear_virtual_text()
-    vim.api.nvim_buf_clear_namespace(0, vim.api.nvim_create_namespace 'nvim-dap-virtual-text', 0, -1)
+    nvim.command.del 'RunThis'
 end
 
 nvim.command.set('Dap', function(opts)

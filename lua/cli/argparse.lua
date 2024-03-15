@@ -78,6 +78,7 @@ function Parser:parse(args)
     return parsed_args
 end
 
+-- NOTE: Allow arg table to be passed ?
 function Parser:new(description, name, version)
     vim.validate {
         description = { description, 'string', true },
