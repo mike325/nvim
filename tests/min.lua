@@ -70,7 +70,7 @@ end
 vim.opt.termguicolors = true
 vim.g.mapleader = ' '
 
-require 'utils.ft_detect'
+require 'utils.filetype_detect'
 
 require 'globals'
 

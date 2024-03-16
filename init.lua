@@ -80,7 +80,7 @@ if vim.env.TMUX_WINDOW then
     end
 end
 
-require 'utils.ft_detect'
+require 'utils.filetype_detect'
 
 require 'globals'
 require 'completions'

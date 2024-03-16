@@ -30,6 +30,9 @@ vim.filetype.add {
         ['zsh.sh'] = 'zsh',
     },
     pattern = {
+        ['.*/%.vscode/.*%.json'] = 'jsonc',
+        ['.*/vscode/.*%.json'] = 'jsonc',
+        ['.*/Code/.*%.json'] = 'jsonc',
         ['.*/etc/nginx/.*'] = 'nginx',
         ['config%.txt'] = 'dosini',
         ['%.bash_.*'] = 'sh',
