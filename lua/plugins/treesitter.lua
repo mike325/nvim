@@ -24,13 +24,6 @@ return {
     -- { 'David-Kunz/markid' },
     -- { 'nvim-treesitter/nvim-tree-docs' },
     {
-        'nvim-treesitter/playground',
-        cmd = 'TSPlaygroundToggle',
-        dependencies = {
-            { 'nvim-treesitter/nvim-treesitter' },
-        },
-    },
-    {
         'nvim-treesitter/nvim-treesitter-context',
         name = 'treesitter-context',
         event = { 'CursorHold', 'CursorHoldI' },

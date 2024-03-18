@@ -202,9 +202,9 @@ function M.set_file_opts(flags_file, bufnum)
 
     local function set_source_options(fname)
         if databases[fname] then
-            paths = databases[fname].includes
+            paths = databases[fname].includes or {}
         elseif compile_flags[flags_file] then
-            paths = compile_flags[flags_file].includes
+            paths = compile_flags[flags_file].includes or {}
         end
         local path_var = vim.split(vim.bo[bufnum].path, ',')
         for _, path in ipairs(paths) do
@@ -265,9 +265,9 @@ end
 
 function M.execute(exe, args)
     local base_cwd = getcwd()
-    exe = exe or base_cwd .. '/build/main'
+    exe = exe or (base_cwd .. '/build/main')
     args = args or {}
-    if not is_file(exe) and not executable(exe) then
+    if not is_file(exe) or not executable(exe) then
         vim.notify('Missing executable: ' .. exe, vim.log.levels.ERROR, { title = 'ExecuteProject' })
         return false
     end
@@ -351,7 +351,9 @@ function M.build(build_info)
             args = real_flags,
             title = 'Compile',
             auto_close = true,
-            callbacks = build_info.cb,
+            callbacks = function(job, rc)
+                build_info.cb(compile_output, real_flags, job, rc)
+            end,
         }
     end
 

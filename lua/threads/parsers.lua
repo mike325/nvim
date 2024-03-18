@@ -35,19 +35,17 @@ function M.compile_flags(thread_args)
 
     flags_file = utils.realpath(flags_file)
     local compile_flags = {
-        [flags_file] = {
-            flags = {},
-            includes = {},
-        },
+        flags = {},
+        includes = {},
     }
 
     for _, line in pairs(data) do
         if line:sub(1, 1) == '-' or line:sub(1, 1) == '/' then
-            table.insert(compile_flags[flags_file].flags, line)
+            table.insert(compile_flags.flags, line)
         end
     end
 
-    compile_flags[flags_file].includes = inc_parser(compile_flags[flags_file].flags)
+    compile_flags.includes = inc_parser(compile_flags.flags)
 
     local results = {
         flags_file = flags_file,
