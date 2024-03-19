@@ -44,10 +44,10 @@ function M.get_compiler(ft)
 
     if vim.env[env[ft]] and executable(vim.env[env[ft]]) then
         return vim.env[env[ft]]
-    elseif vim.b[ft..'_compiler'] then
-        return vim.b[ft..'_compiler']
-    elseif vim.g[ft..'_compiler'] then
-        return vim.g[ft..'_compiler']
+    elseif vim.b[ft .. '_compiler'] then
+        return vim.b[ft .. '_compiler']
+    elseif vim.g[ft .. '_compiler'] then
+        return vim.g[ft .. '_compiler']
     end
 
     local compiler
@@ -210,9 +210,9 @@ function M.build(build_info)
     }
     build_info = build_info or {}
 
-    if executable 'make' and is_file('Makefile') then
+    if executable 'make' and is_file 'Makefile' then
         RELOAD('filetypes.make.utils').execute(build_info.args or {})
-    elseif executable 'cmake' and is_file('CMakeLists.txt') then
+    elseif executable 'cmake' and is_file 'CMakeLists.txt' then
         -- NOTE: Should this also configure ?
         RELOAD('filetypes.cmake.mappings').build(build_info)
     else

@@ -669,7 +669,6 @@ M.exec = setmetatable({}, {
                     callback()
                 end)
             end,
-
         }
 
         if supported_cmds[gitcmd] == nil then

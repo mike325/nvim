@@ -282,7 +282,7 @@ function M.setup()
         local makefile = vim.fs.find('Makefile', { upward = true, type = 'file' })[1]
         if makefile then
             vim.b.makefile = makefile
-            RELOAD('filetypes.make.mappings')
+            RELOAD 'filetypes.make.mappings'
         end
     end
 
@@ -290,7 +290,7 @@ function M.setup()
         local cmake = vim.fs.find('CMakeLists.txt', { upward = true, type = 'file' })[1]
         if cmake then
             vim.b.cmakefile = cmake
-            RELOAD('filetypes.cmake.mappings')
+            RELOAD 'filetypes.cmake.mappings'
         end
     end
 

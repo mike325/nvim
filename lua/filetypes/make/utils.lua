@@ -30,7 +30,7 @@ end
 function M.copy_template()
     local template = string.format('%s/skeletons/Makefile', vim.fn.stdpath('config'):gsub('\\', '/'))
     local utils = require 'utils.files'
-    if not utils.is_file('Makefile') then
+    if not utils.is_file 'Makefile' then
         utils.copy(template, '.')
     end
 end

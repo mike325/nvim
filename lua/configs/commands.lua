@@ -735,14 +735,14 @@ end, {
 
 nvim.command.set('SetupMake', function()
     RELOAD('filetypes.make.utils').copy_template()
-    RELOAD('filetypes.make.mappings')
+    RELOAD 'filetypes.make.mappings'
 end, { nargs = 0, desc = 'Copy Makefile template into cwd' })
 
 -- TODO: Support make and cmake
 nvim.command.set('InitCppProject', function()
     local utils = require 'utils.files'
 
-    for _, dir in ipairs({ 'src', 'include' }) do
+    for _, dir in ipairs { 'src', 'include' } do
         utils.mkdir(dir)
     end
 
@@ -759,14 +759,14 @@ nvim.command.set('InitCppProject', function()
         utils.copy(template, dest)
     end
 
-    RELOAD('filetypes.cpp.mappings')
+    RELOAD 'filetypes.cpp.mappings'
 
     require('utils.git').exec.init()
 
-    if executable('make') then
+    if executable 'make' then
         RELOAD('filetypes.make.utils').copy_template()
-        RELOAD('filetypes.make.mappings')
+        RELOAD 'filetypes.make.mappings'
     end
 
-    vim.cmd.edit('src/main.cpp')
+    vim.cmd.edit 'src/main.cpp'
 end, { force = true, desc = 'Initialize a C/C++ project' })

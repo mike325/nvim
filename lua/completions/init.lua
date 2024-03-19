@@ -19,12 +19,7 @@ completions = vim.tbl_extend('force', completions, {
         return utils.general_completion(arglead, cmdline, cursorpos, { 'tmux', 'kitty', 'default' })
     end,
     build_type = function(arglead, cmdline, cursorpos)
-        return utils.general_completion(
-            arglead,
-            cmdline,
-            cursorpos,
-            vim.tbl_keys(require 'filetypes.cpp.build_types')
-        )
+        return utils.general_completion(arglead, cmdline, cursorpos, vim.tbl_keys(require 'filetypes.cpp.build_types'))
     end,
     gitfiles_workspace = function(arglead, cmdline, cursorpos)
         local gitstatus = require('utils.git').status()

@@ -37,7 +37,7 @@ end, {
     force = true,
     buffer = true,
     complete = completions.build_type,
-    desc = 'Compile C/C++ project calling directly the compiler'
+    desc = 'Compile C/C++ project calling directly the compiler',
 })
 
 nvim.command.set('Build', function(opts)
@@ -67,7 +67,7 @@ end, {
     force = true,
     buffer = true,
     complete = completions.build_type,
-    desc = 'Build C/C++ project using the projects build system'
+    desc = 'Build C/C++ project using the projects build system',
 })
 
 nvim.command.set('Execute', function(opts)
@@ -103,7 +103,7 @@ end, {
     force = true,
     buffer = true,
     complete = completions.build_type,
-    desc = 'Build and Execute C/C++ project'
+    desc = 'Build and Execute C/C++ project',
 })
 
 -- TODO: Fallback to TermDebug
@@ -111,7 +111,7 @@ if nvim.plugins['nvim-dap'] then
     nvim.command.set('BuildDebugFile', function(opts)
         local dap = vim.F.npcall(require, 'dap')
         if not dap then
-            error(debug.traceback("Missing DAP!"))
+            error(debug.traceback 'Missing DAP!')
         end
 
         local args = opts.fargs
@@ -124,7 +124,9 @@ if nvim.plugins['nvim-dap'] then
             compiler = cpp_utils.get_compiler(),
             build_type = 'debug',
             flags = flags,
-            cb = function() dap.continue() end,
+            cb = function()
+                dap.continue()
+            end,
             single = true,
         }
     end, {
@@ -136,7 +138,7 @@ if nvim.plugins['nvim-dap'] then
     nvim.command.set('BuildDebug', function(opts)
         local dap = vim.F.npcall(require, 'dap')
         if not dap then
-            error(debug.traceback("Missing DAP!"))
+            error(debug.traceback 'Missing DAP!')
         end
 
         -- local args = opts.fargs
@@ -148,7 +150,9 @@ if nvim.plugins['nvim-dap'] then
             compiler = cpp_utils.get_compiler(),
             build_type = 'debug',
             flags = opts.fargs,
-            cb = function() dap.continue() end,
+            cb = function()
+                dap.continue()
+            end,
         }
     end, {
         nargs = '*',
