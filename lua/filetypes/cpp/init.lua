@@ -4,8 +4,6 @@ local executable = require('utils.files').executable
 -- local readfile = require('utils.files').readfile
 local is_file = require('utils.files').is_file
 local realpath = require('utils.files').realpath
-local getcwd = require('utils.files').getcwd
-local completions = RELOAD 'completions'
 
 local compile_flags = STORAGE.compile_flags
 local databases = STORAGE.databases
@@ -243,8 +241,16 @@ function M.set_default_opts(compiler, bufnum)
         compiler = { compiler, 'string' },
         bufnum = { bufnum, 'number' },
     }
-    local args = M.get_args(compiler, bufnum)
-    vim.bo[bufnum].makeprg = ('%s %s %%'):format(compiler, table.concat(args, ' '))
+    if executable 'clang-tidy' then
+        local tidy = vim.list_extend({ 'clang-tidy' }, M.makeprg['clang-tidy'])
+        vim.bo[bufnum].makeprg = table.concat(tidy, ' ') .. ' %'
+        if M.makeprg['clang-tidy'].efm then
+            vim.bo[bufnum].errorformat = table.concat(M.makeprg['clang-tidy'].efm, ',')
+        end
+    else
+        local args = M.get_args(compiler, bufnum)
+        vim.bo[bufnum].makeprg = ('%s %s %%'):format(compiler, table.concat(args, ' '))
+    end
 end
 
 function M.get_formatter(stdin)
@@ -263,111 +269,6 @@ function M.get_formatter(stdin)
     return cmd
 end
 
-function M.execute(exe, args)
-    local base_cwd = getcwd()
-    exe = exe or (base_cwd .. '/build/main')
-    args = args or {}
-    if not is_file(exe) or not executable(exe) then
-        vim.notify('Missing executable: ' .. exe, vim.log.levels.ERROR, { title = 'ExecuteProject' })
-        return false
-    end
-
-    RELOAD('utils.functions').async_execute {
-        cmd = exe,
-        args = args,
-        verify_exec = false,
-        title = 'Execute',
-    }
-end
-
-function M.build(build_info)
-    local flags = build_info.flags or {}
-    local compiler = build_info.compiler or M.get_compiler()
-
-    if type(flags) ~= type {} then
-        flags = { flags }
-    end
-
-    local base_cwd = getcwd()
-    local ft = vim.opt_local.filetype:get()
-
-    local compile_output = base_cwd .. '/build/main'
-    if nvim.has 'win32' then
-        compile_output = compile_output .. '.exe'
-    end
-
-    local flags_file = vim.fs.find(
-        { 'compile_flags.txt', 'compile_commands.json' },
-        { upward = true, type = 'file', limit = math.huge }
-    )
-
-    if #flags_file > 0 then
-        local db
-        for _, filename in ipairs(flags_file) do
-            if vim.fs.basename(filename) == 'compile_commands.json' then
-                db = filename
-                break
-            end
-        end
-        flags_file = db or flags_file[1]
-    else
-        flags_file = nil
-    end
-
-    vim.list_extend(flags, M.get_args(compiler, nvim.get_current_buf(), flags_file))
-    vim.list_extend(flags, { '-o', compile_output })
-
-    if build_info.build_type then
-        local build_flags = { '-O2' }
-        if build_info.build_type:lower() == 'debug' then
-            build_flags = { '-Og', '-g' }
-        elseif build_info.build_type:lower() == 'relwithdebinfo' then
-            build_flags = { '-O2', '-g' }
-        elseif build_info.build_type:lower() == 'minsizerel' then
-            build_flags = { '-Oz' }
-        end
-        local tmp_flags = {}
-        for _, flag in ipairs(flags) do
-            if not flag:match '^-O%d?$' and not flag:match '^-g%d?$' then
-                table.insert(tmp_flags, flag)
-            end
-        end
-        flags = vim.list_extend(tmp_flags, build_flags)
-    end
-
-    local compile = function(real_flags)
-        -- -- TODO: Replace mismatch std
-        -- for idx, real_flags in ipairs(real_flags) do
-        --     if real_flags:match '%-%-std' then
-        --         -- code
-        --     end
-        -- end
-
-        RELOAD('utils.functions').async_execute {
-            pre_execute = function()
-                require('utils.files').mkdir 'build'
-            end,
-            cmd = compiler,
-            args = real_flags,
-            title = 'Compile',
-            auto_close = true,
-            callbacks = function(job, rc)
-                build_info.cb(compile_output, real_flags, job, rc)
-            end,
-        }
-    end
-
-    if not build_info.single then
-        local files = vim.fs.find(function(filename)
-            return filename:match('%.' .. ft .. '$') ~= nil
-        end, { type = 'file', limit = math.huge })
-        compile(vim.list_extend(flags, files))
-    else
-        table.insert(flags, nvim.buf.get_name(0))
-        compile(flags)
-    end
-end
-
 function M.setup()
     local compiler = M.get_compiler()
     if not compiler then
@@ -380,14 +281,16 @@ function M.setup()
     if executable 'make' then
         local makefile = vim.fs.find('Makefile', { upward = true, type = 'file' })[1]
         if makefile then
-            require('filetypes.make').setup()
+            vim.b.makefile = makefile
+            RELOAD('filetypes.make.mappings')
         end
     end
 
     if executable 'cmake' then
         local cmake = vim.fs.find('CMakeLists.txt', { upward = true, type = 'file' })[1]
         if cmake then
-            require('filetypes.cmake').setup()
+            vim.b.cmakefile = cmake
+            RELOAD('filetypes.cmake.mappings')
         end
     end
 
@@ -421,144 +324,6 @@ function M.setup()
         end
     else
         M.set_default_opts(compiler, bufnum)
-    end
-
-    nvim.command.set('BuildProject', function(opts)
-        local args = opts.fargs
-        local flags = {}
-        local build_type
-
-        local builds = {
-            debug = true,
-            release = true,
-            minsizerel = true,
-            relwithdebinfo = true,
-        }
-
-        for _, arg in ipairs(args) do
-            if builds[arg:lower()] then
-                build_type = arg
-            else
-                table.insert(flags, arg)
-            end
-        end
-        M.build {
-            compiler = compiler,
-            build_type = build_type,
-            flags = flags,
-        }
-    end, {
-        nargs = '*',
-        force = true,
-        buffer = true,
-        complete = completions.cmake_build,
-    })
-
-    nvim.command.set('BuildFile', function(opts)
-        local args = opts.fargs
-        local flags = {}
-        local build_type
-
-        local builds = {
-            debug = true,
-            release = true,
-            minsizerel = true,
-            relwithdebinfo = true,
-        }
-
-        for _, arg in ipairs(args) do
-            if builds[arg:lower()] then
-                build_type = arg
-            else
-                table.insert(flags, arg)
-            end
-        end
-
-        M.build {
-            compiler = compiler,
-            build_type = build_type,
-            flags = flags,
-            single = true,
-        }
-    end, {
-        nargs = '*',
-        force = true,
-        buffer = true,
-        complete = completions.cmake_build,
-    })
-
-    nvim.command.set('BuildExecuteProject', function(opts)
-        local args = opts.fargs
-        local flags = {}
-        local build_type
-
-        local builds = {
-            debug = true,
-            release = true,
-            relwithdebinfo = true,
-        }
-
-        for _, arg in ipairs(args) do
-            if builds[arg:lower()] then
-                build_type = arg
-            else
-                table.insert(flags, arg)
-            end
-        end
-
-        M.build {
-            compiler = compiler,
-            build_type = build_type,
-            flags = flags,
-            cb = M.execute,
-        }
-    end, {
-        nargs = '*',
-        force = true,
-        buffer = true,
-        complete = completions.cmake_build,
-    })
-
-    nvim.command.set('ExecuteProject', function(opts)
-        M.execute(nil, opts.fargs)
-    end, { nargs = '*', force = true, buffer = true })
-
-    -- TODO: Fallback to TermDebug
-    local dap = vim.F.npcall(require, 'dap')
-    if dap then
-        nvim.command.set('BuildDebugFile', function(opts)
-            local args = opts.fargs
-            local flags = {}
-
-            vim.list_extend(flags, args)
-            M.build {
-                compiler = compiler,
-                build_type = 'debug',
-                flags = flags,
-                cb = dap.continue,
-                single = true,
-            }
-        end, {
-            nargs = '*',
-            force = true,
-            buffer = true,
-        })
-
-        nvim.command.set('BuildDebug', function(opts)
-            -- local args = opts.fargs
-            -- local flags = {}
-            -- vim.list_extend(flags, args)
-            M.build {
-                compiler = compiler,
-                build_type = 'debug',
-                flags = opts.fargs,
-                cb = dap.continue,
-            }
-        end, {
-            nargs = '*',
-            force = true,
-            buffer = true,
-        })
     end
 end
 

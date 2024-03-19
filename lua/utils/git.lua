@@ -625,6 +625,10 @@ M.exec = setmetatable({}, {
         local gitcmd = k
 
         local function return_first_line(args, callback)
+            vim.validate {
+                args = { args, { 'string', 'table' }, true },
+                callback = { callback, 'function', true },
+            }
             if not callback then
                 return exec_gitcmd(gitcmd, args)[1] or ''
             end
@@ -638,14 +642,34 @@ M.exec = setmetatable({}, {
             add = return_first_line,
             restore = return_first_line,
             rm = function(args, callback)
+                vim.validate {
+                    args = { args, { 'string', 'table' }, true },
+                    callback = { callback, 'function', true },
+                }
                 if not callback then
                     exec_gitcmd(gitcmd, args)
                     return ''
                 end
                 exec_gitcmd(gitcmd, args, function(_)
-                    callback ''
+                    callback()
                 end)
             end,
+            init = function(args, callback)
+                vim.validate {
+                    args = { args, { 'string', 'table' }, true },
+                    callback = { callback, 'function', true },
+                }
+                if not args or #args == 0 then
+                    args = { '--initial-branch=main' }
+                end
+                if not callback then
+                    return exec_gitcmd(gitcmd, args)
+                end
+                exec_gitcmd(gitcmd, args, function(_)
+                    callback()
+                end)
+            end,
+
         }
 
         if supported_cmds[gitcmd] == nil then

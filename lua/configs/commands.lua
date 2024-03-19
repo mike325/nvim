@@ -732,3 +732,41 @@ end, {
     desc = 'Clear buffer namespace',
     complete = completions.namespaces,
 })
+
+nvim.command.set('SetupMake', function()
+    RELOAD('filetypes.make.utils').copy_template()
+    RELOAD('filetypes.make.mappings')
+end, { nargs = 0, desc = 'Copy Makefile template into cwd' })
+
+-- TODO: Support make and cmake
+nvim.command.set('InitCppProject', function()
+    local utils = require 'utils.files'
+
+    for _, dir in ipairs({ 'src', 'include' }) do
+        utils.mkdir(dir)
+    end
+
+    local config_path = vim.fn.stdpath('config'):gsub('\\', '/')
+    local templates = {
+        ['main.cpp'] = './src/main.cpp',
+        ['compile_flags.txt'] = 'compile_flags.txt',
+        ['clang-tidy'] = '.clang-tidy',
+        ['clang-format'] = '.clang-format',
+    }
+
+    for src, dest in pairs(templates) do
+        local template = string.format('%s/skeletons/%s', config_path, src)
+        utils.copy(template, dest)
+    end
+
+    RELOAD('filetypes.cpp.mappings')
+
+    require('utils.git').exec.init()
+
+    if executable('make') then
+        RELOAD('filetypes.make.utils').copy_template()
+        RELOAD('filetypes.make.mappings')
+    end
+
+    vim.cmd.edit('src/main.cpp')
+end, { force = true, desc = 'Initialize a C/C++ project' })

@@ -1,7 +1,8 @@
 local executable = require('utils.files').executable
 
-vim.opt_local.expandtab = true
-
-if executable 'make' then
-    RELOAD('filetypes.make').setup()
+if executable('make') then
+    local ft = vim.opt_local.filetype:get()
+    require('utils.buffers').setup(ft, {
+        expandtab = true,
+    })
 end

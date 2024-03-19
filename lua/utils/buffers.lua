@@ -416,9 +416,9 @@ function M.setup(ft, opts)
         ft = 'cpp'
     end
 
-    local ok, utils = pcall(RELOAD, 'filetypes.' .. ft)
+    local utils = vim.F.npcall(RELOAD, string.format('filetypes.%s', ft))
     opts = opts or {}
-    if ok then
+    if utils then
         if utils.get_linter then
             local linter = utils.get_linter()
             if linter then
@@ -442,6 +442,16 @@ function M.setup(ft, opts)
 
         if utils.setup then
             utils.setup()
+        end
+    end
+
+    local ft_mappings = string.format('lua/filetypes/%s/mappings.lua', ft)
+    local mappings = vim.api.nvim_get_runtime_file(ft_mappings, true)
+    if #mappings > 0 then
+        for _, fname in ipairs(mappings) do
+            local module = fname:gsub('^.*/lua/', ''):gsub('%.lua$', ''):gsub('/', '.')
+            vim.F.npcall(RELOAD, module)
+            require('utils.functions').watch_config_file(fname)
         end
     end
 

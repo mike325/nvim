@@ -18,12 +18,12 @@ completions = vim.tbl_extend('force', completions, {
     oscyank = function(arglead, cmdline, cursorpos)
         return utils.general_completion(arglead, cmdline, cursorpos, { 'tmux', 'kitty', 'default' })
     end,
-    cmake_build = function(arglead, cmdline, cursorpos)
+    build_type = function(arglead, cmdline, cursorpos)
         return utils.general_completion(
             arglead,
             cmdline,
             cursorpos,
-            { 'Debug', 'Release', 'MinSizeRel', 'RelWithDebInfo' }
+            vim.tbl_keys(require 'filetypes.cpp.build_types')
         )
     end,
     gitfiles_workspace = function(arglead, cmdline, cursorpos)
