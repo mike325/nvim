@@ -1,6 +1,6 @@
-TARGET   = main
-SOURCES  = main.cpp
-CXXFLAGS =  -std=c++17               \
+TARGET   := main
+
+CXXFLAGS := -std=c++17               \
 			-O2                      \
 			-Wall                    \
 			-Wextra                  \
@@ -14,34 +14,39 @@ CXXFLAGS =  -std=c++17               \
 			-Wpedantic               \
 			-Wconversion             \
 			-Wsign-conversion        \
-			-Wnull-dereference       \
 			-Wdouble-promotion       \
-			-Wmisleading-indentation \
-			-Wduplicated-cond        \
-			-Wduplicated-branches    \
-			-Wlogical-op             \
-			-Wuseless-cast           \
 			-Wformat=2               \
 			-g
-INCLUDE  =
-LDFLAGS  =
 
-OBJS     = $(addprefix build/,$(SOURCES:.cpp=.o))
-DEPS     = $(OBJS:.o=.d)
+BUILD_DIR := build
 
-all: $(TARGET)
+SRCS_DIR := src
+SRCS     := main.cpp
 
-build/%.o: %.cpp
+INC_DIRS  := include
+INC_FLAGS := $(addprefix -I,$(INC_DIRS))
+
+LDFLAGS :=
+
+OBJS := $(addprefix $(BUILD_DIR)/,$(SRCS_DIR)/$(SRCS:.cpp=.o))
+DEPS := $(OBJS:.o=.d)
+
+all: $(BUILD_DIR)/$(TARGET)
+
+$(BUILD_DIR)/%.o: %.cpp
 	@mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) $(INCLUDE) -c -MMD -o $@ $<
+	$(CXX) $(CXXFLAGS) $(INC_FLAGS) -c -MP -MMD -o $@ $<
 
-$(TARGET): $(OBJS)
+$(BUILD_DIR)/$(TARGET): $(OBJS)
 	@mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJS) $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) -o  $(BUILD_DIR)/$(TARGET) $(OBJS) $(LDFLAGS)
 
 -include $(DEPS)
 
 .PHONY: all clean
 
 clean:
-	@rm -rvf $(TARGET) $(OBJS) $(DEPS)
+	@rm -rvf $(BUILD_DIR) compile_flags.txt
+
+compile_flags:
+	$(shell echo $(CXXFLAGS) | tr ' ' '\n' > compile_flags.txt)
