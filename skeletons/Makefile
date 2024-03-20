@@ -18,6 +18,8 @@ CXXFLAGS := -std=c++17               \
 			-Wformat=2               \
 			-g
 
+LIBS := # -lboost_system
+
 BUILD_DIR := build
 
 SRCS_DIR := src
@@ -35,18 +37,18 @@ all: $(BUILD_DIR)/$(TARGET)
 
 $(BUILD_DIR)/%.o: %.cpp
 	@mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) $(INC_FLAGS) -c -MP -MMD -o $@ $<
+	$(CXX) $(CXXFLAGS) $(LIBS) $(INC_FLAGS) -c -MP -MMD -o $@ $<
 
 $(BUILD_DIR)/$(TARGET): $(OBJS)
 	@mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) -o  $(BUILD_DIR)/$(TARGET) $(OBJS) $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) $(LIBS) -o  $(BUILD_DIR)/$(TARGET) $(OBJS) $(LDFLAGS)
 
 -include $(DEPS)
 
-.PHONY: all clean
+.PHONY: all clean compile_flags
 
 clean:
 	@rm -rvf $(BUILD_DIR) compile_flags.txt
 
 compile_flags:
-	$(shell echo $(CXXFLAGS) | tr ' ' '\n' > compile_flags.txt)
+	$(shell echo $(CXXFLAGS) $(LIBS) | tr ' ' '\n' > compile_flags.txt)
