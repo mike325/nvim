@@ -1,5 +1,3 @@
-local nvim = require 'nvim'
-
 local M = {}
 
 local qf_funcs = {

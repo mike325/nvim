@@ -1,6 +1,6 @@
 local nvim = require 'nvim'
 
-local executable = require('utils.files').executable
+-- local executable = require('utils.files').executable
 -- local readfile = require('utils.files').readfile
 -- local is_file = require('utils.files').is_file
 -- local realpath = require('utils.files').realpath
