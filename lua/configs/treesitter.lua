@@ -247,7 +247,7 @@ if #fts > 0 then
         desc = 'Setup treesitter fold expression',
         group = vim.api.nvim_create_augroup('TreesitterFold', { clear = true }),
         pattern = fts,
-        command = 'setlocal foldenable foldmethod=expr foldexpr=nvim_treesitter#foldexpr()',
+        command = 'setlocal foldmethod=expr foldexpr=v:lua.vim.treesitter.foldexpr()',
     })
 end
 

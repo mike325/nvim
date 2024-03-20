@@ -174,9 +174,10 @@ vim.opt.wrap = false
 vim.opt.colorcolumn = '80'
 vim.opt.numberwidth = 1
 vim.opt.foldenable = false
-vim.opt.foldmethod = 'syntax'
 vim.opt.foldlevel = 99
-vim.opt.foldtext = "v:lua.RELOAD('utils.functions').foldtext()"
+vim.opt.foldmethod = 'syntax'
+vim.o.foldtext = ''
+vim.o.fillchars = 'fold: '
 
 vim.opt.signcolumn = 'auto:2'
 
