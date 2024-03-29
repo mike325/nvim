@@ -33,21 +33,26 @@ if not vim.ui.open then
         elseif vim.fn.executable 'xdg-open' == 1 then
             cmd = { 'xdg-open', uri }
         else
-            return nil, 'vim.ui.open: no handler found (tried: wslview, xdg-open)'
+            return nil, 'vim.ui.open: no handler found (tried: open, wslview, xdg-open and powershell)'
         end
 
         local output = vim.fn.system(cmd)
         if vim.v.shell_error ~= 0 then
             local msg = ('vim.ui.open: command failed (%d): %s'):format(vim.v.shell_error, vim.inspect(output))
-            return vim.v.shell_error, msg
+            return {
+                code = vim.v.shell_error,
+                signal = 0,
+                stderr = output,
+                stdout = '',
+            }, msg
         end
 
         return {
-            code = 0,
-            signal = 0,
-            stderr = '',
-            stdout = output,
-        },
+                code = 0,
+                signal = 0,
+                stderr = '',
+                stdout = output,
+            },
             nil
     end
 end
@@ -58,11 +63,11 @@ vim.ui.open = (function(overridden)
         if path:match '^https?://.+' and vim.env.SSH_CONNECTION then
             require('utils.functions').send_osc1337('open', '"' .. path .. '"')
             return {
-                code = 0,
-                signal = 0,
-                stderr = '',
-                stdout = '',
-            },
+                    code = 0,
+                    signal = 0,
+                    stderr = '',
+                    stdout = '',
+                },
                 nil
         end
         return overridden(path)

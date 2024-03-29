@@ -9,6 +9,7 @@ end
 
 local notify_backend
 local has_ui = #vim.api.nvim_list_uis() > 0
+
 local function notify_format(msg, _, opts)
     if opts and opts.title then
         return ('[%s]: %s'):format(opts.title, msg)
