@@ -225,10 +225,10 @@ local function list_breakpoints()
 end
 
 dap.listeners.after.event_initialized['DapMappings'] = function()
-    vim.keymap.set('n', '<F5>', start_debug_session, { noremap = true, silent = true, desc = "Start debug session" })
-    vim.keymap.set('n', '=c', start_debug_session, { noremap = true, silent = true, desc = "Start debug session" })
-    vim.keymap.set('n', '<F4>', stop_debug_session, { noremap = true, silent = true, desc = "Stop debug session" })
-    vim.keymap.set('n', '=C', stop_debug_session, { noremap = true, silent = true, desc = "Stop debug session" })
+    vim.keymap.set('n', '<F5>', start_debug_session, { noremap = true, silent = true, desc = 'Start debug session' })
+    vim.keymap.set('n', '=c', start_debug_session, { noremap = true, silent = true, desc = 'Start debug session' })
+    vim.keymap.set('n', '<F4>', stop_debug_session, { noremap = true, silent = true, desc = 'Stop debug session' })
+    vim.keymap.set('n', '=C', stop_debug_session, { noremap = true, silent = true, desc = 'Stop debug session' })
     vim.keymap.set(
         'n',
         'gK',

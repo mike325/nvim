@@ -14,7 +14,7 @@ return {
             {
                 'rcarriga/nvim-dap-ui',
                 cond = not vim.g.minimal,
-                dependencies = { "nvim-neotest/nvim-nio" },
+                dependencies = { 'nvim-neotest/nvim-nio' },
             },
             {
                 'theHamsta/nvim-dap-virtual-text',
