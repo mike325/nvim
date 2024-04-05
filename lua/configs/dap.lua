@@ -120,7 +120,7 @@ if lldb then
             return vim.fn.input('Path to executable: ', '', 'file')
         end,
         cwd = '${workspaceFolder}',
-        stopOnEntry = false,
+        stopOnEntry = true,
         args = {},
         runInTerminal = false,
     })
@@ -175,7 +175,7 @@ vim.api.nvim_create_autocmd('Filetype', {
 local dapui = vim.F.npcall(require, 'dapui')
 if dapui then
     dapui.setup {}
-    vim.keymap.set('n', '=I', require('dapui').toggle, { noremap = true, silent = true })
+    vim.keymap.set('n', '=I', dapui.toggle, { noremap = true, silent = true })
 
     dap.listeners.after.event_initialized['dapui_config'] = function()
         dapui.open()
@@ -225,25 +225,30 @@ local function list_breakpoints()
 end
 
 dap.listeners.after.event_initialized['DapMappings'] = function()
-    vim.keymap.set('n', '<F5>', start_debug_session, { noremap = true, silent = true })
-    vim.keymap.set('n', '=c', start_debug_session, { noremap = true, silent = true })
-    vim.keymap.set('n', '<F4>', stop_debug_session, { noremap = true, silent = true })
-    vim.keymap.set('n', '=C', stop_debug_session, { noremap = true, silent = true })
-    vim.keymap.set('n', 'gK', require('dap.ui.widgets').hover, { noremap = true, silent = true })
-    vim.keymap.set('n', ']s', dap.step_over, { noremap = true, silent = true })
-    vim.keymap.set('n', '[s', dap.step_out, { noremap = true, silent = true })
-    vim.keymap.set('n', ']S', dap.step_into, { noremap = true, silent = true })
-    vim.keymap.set('n', '[S', dap.step_out, { noremap = true, silent = true })
-    vim.keymap.set('n', '<leader>L', list_breakpoints, { noremap = true, silent = true })
-    vim.keymap.set('n', '=r', dap.repl.toggle, { noremap = true, silent = true })
-    vim.keymap.set('n', '=R', dap.run_to_cursor, { noremap = true, silent = true })
-    vim.keymap.set('n', '=b', dap.toggle_breakpoint, { noremap = true, silent = true })
+    vim.keymap.set('n', '<F5>', start_debug_session, { noremap = true, silent = true, desc = "Start debug session" })
+    vim.keymap.set('n', '=c', start_debug_session, { noremap = true, silent = true, desc = "Start debug session" })
+    vim.keymap.set('n', '<F4>', stop_debug_session, { noremap = true, silent = true, desc = "Stop debug session" })
+    vim.keymap.set('n', '=C', stop_debug_session, { noremap = true, silent = true, desc = "Stop debug session" })
+    vim.keymap.set(
+        'n',
+        'gK',
+        require('dap.ui.widgets').hover,
+        { noremap = true, silent = true, desc = 'Show debug info' }
+    )
+    vim.keymap.set('n', ']s', dap.step_over, { noremap = true, silent = true, desc = 'step over' })
+    vim.keymap.set('n', '[s', dap.step_out, { noremap = true, silent = true, desc = 'step out' })
+    vim.keymap.set('n', ']S', dap.step_into, { noremap = true, silent = true, desc = 'step into' })
+    vim.keymap.set('n', '[S', dap.step_out, { noremap = true, silent = true, desc = 'step out' })
+    vim.keymap.set('n', '<leader>L', list_breakpoints, { noremap = true, silent = true, desc = 'show breakpoints' })
+    vim.keymap.set('n', '=r', dap.repl.toggle, { noremap = true, silent = true, desc = 'toggle repl' })
+    vim.keymap.set('n', '=R', dap.run_to_cursor, { noremap = true, silent = true, desc = 'run to cursor position' })
+    vim.keymap.set('n', '=b', dap.toggle_breakpoint, { noremap = true, silent = true, desc = 'toggle breakpoint' })
     vim.keymap.set('n', '=B', function()
         local condition = vim.fn.input 'Breakpoint condition: '
         if condition ~= '' then
             dap.set_breakpoint(condition)
         end
-    end, { noremap = true, silent = true })
+    end, { noremap = true, silent = true, desc = 'Set conditional breakpoint' })
     if vim.g.remote_nvim then
         nvim.command.set('RunThis', function()
             require('osv').run_this()
@@ -275,11 +280,14 @@ dap.listeners.before.event_terminated['DapMappings'] = function()
     vim.keymap.del('n', '[S')
     vim.keymap.del('n', '<leader>L')
     vim.keymap.del('n', '=r')
-    vim.keymap.det('n', '=R')
+    vim.keymap.del('n', '=R')
     vim.keymap.del('n', '=b')
     vim.keymap.del('n', '=B')
 
-    nvim.command.del 'RunThis'
+    if vim.g.remote_nvim then
+        nvim.command.del 'RunThis'
+        -- vim.g.remote_nvim = nil
+    end
 end
 
 nvim.command.set('Dap', function(opts)

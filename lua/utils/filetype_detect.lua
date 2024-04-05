@@ -28,6 +28,8 @@ vim.filetype.add {
         ['nginx.conf'] = 'nginx',
         ['tmux.conf'] = 'tmux',
         ['zsh.sh'] = 'zsh',
+        ['clang-format'] = 'yaml',
+        ['clang-tidy'] = 'yaml',
     },
     pattern = {
         ['.*/%.vscode/.*%.json'] = 'jsonc',

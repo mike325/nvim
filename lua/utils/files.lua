@@ -482,6 +482,7 @@ function M.rename(old, new, bang)
     new = M.normalize(new)
     old = M.normalize(old)
     local load_buffer = bufloaded(old)
+    local cwd = vim.pesc(vim.loop.cwd() .. '/')
 
     if not M.exists(new) or bang then
         local cursor_pos
@@ -516,7 +517,6 @@ function M.rename(old, new, bang)
         end
 
         if load_buffer and M.is_file(new) then
-            local cwd = vim.pesc(vim.loop.cwd() .. '/')
             vim.cmd.edit((new:gsub(cwd, '')))
             if cursor_pos then
                 nvim.win.set_cursor(0, cursor_pos)

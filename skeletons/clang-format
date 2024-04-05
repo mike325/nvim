@@ -1,4 +1,5 @@
-# BasedOnStyle:  WebKit
+---
+BasedOnStyle: Google
 AccessModifierOffset: -2
 AlignAfterOpenBracket: DontAlign
 AlignConsecutiveAssignments: false
@@ -9,42 +10,42 @@ AlignTrailingComments: false
 AllowAllParametersOfDeclarationOnNextLine: false
 AllowShortBlocksOnASingleLine: true
 AllowShortCaseLabelsOnASingleLine: false
-AllowShortFunctionsOnASingleLine: All
-AllowShortIfStatementsOnASingleLine: true
-AllowShortLoopsOnASingleLine: true
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
 AllowAllArgumentsOnNextLine: true
 AllowAllParametersOfDeclarationOnNextLine: true
 AlwaysBreakAfterDefinitionReturnType: None
 AlwaysBreakAfterReturnType: None
 AlwaysBreakBeforeMultilineStrings: true
+AllowShortFunctionsOnASingleLine: Empty
 AlwaysBreakTemplateDeclarations: false
 BinPackArguments: false
 BinPackParameters: false
-BreakAfterJavaFieldAnnotations: true
-BreakBeforeBinaryOperators: NonAssignment
 BreakBeforeBraces: Allman
 # BreakBeforeBraces: Custom
 # BraceWrapping:
-#     - AfterCaseLabel: true
-#     - AfterClass: true
-#     - AfterControlStatement: true
-#     - AfterEnum: true
-#     - AfterFunction: true
-#     - AfterNamespace: true
-#     - AfterStruct: true
-#     - AfterUnion: true
-#     - AfterExternBlock: true
-#     - BeforeCatch: true
-#     - BeforeElse: true
-#     - BeforeLambdaBody: false
-#     - BeforeWhile: false
-#     - SplitEmptyFunction: false
-#     - SplitEmptyRecord: false
-#     - SplitEmptyNamespace: false
+#    # AfterCaseLabel: true
+#    AfterClass: true
+#    AfterControlStatement: true
+#    AfterEnum: true
+#    AfterFunction: true
+#    AfterNamespace: true
+#    AfterObjCDeclaration: true
+#    AfterStruct: true
+#    AfterUnion: true
+#    AfterExternBlock: true
+#    BeforeCatch: true
+#    BeforeElse: true
+#    BeforeLambdaBody: false
+#    BeforeWhile: false
+#    IndentBraces: false
+#    SplitEmptyFunction: false
+#    SplitEmptyRecord: false
+#    SplitEmptyNamespace: false
+BreakBeforeBinaryOperators: NonAssignment
 BreakInheritanceList: BeforeComma
 BreakBeforeTernaryOperators: true
-# BreakConstructorInitializers:  AfterColon
-BreakConstructorInitializers: BeforeComma
+BreakConstructorInitializers:  AfterColon
 BreakStringLiterals: true
 ColumnLimit:     120
 CommentPragmas:  '^ IWYU pragma:'
@@ -68,20 +69,17 @@ IncludeCategories:
     Priority:        3
   - Regex:           '.*'
     Priority:        1
+IncludeBlocks: Preserve
 IndentCaseLabels: true
+IndentPPDirectives: None
 IndentWrappedFunctionNames: true
 JavaScriptQuotes: Leave
 JavaScriptWrapImports: true
 KeepEmptyLinesAtTheStartOfBlocks: true
 Language: Cpp
-# MacroBlockBegin: ''
-# MacroBlockEnd:   ''
 MaxEmptyLinesToKeep: 2
 NamespaceIndentation: None
-ObjCBlockIndentWidth: 4
-ObjCSpaceAfterProperty: true
-ObjCSpaceBeforeProtocolList: false
-PointerAlignment: Right
+PointerAlignment: Left
 PenaltyBreakBeforeFirstCallParameter: 10
 PenaltyBreakComment: 100
 PenaltyBreakFirstLessLess: 10
@@ -95,9 +93,14 @@ SortUsingDeclarations: false
 SpaceAfterCStyleCast: false
 SpaceAfterTemplateKeyword: false
 SpaceBeforeAssignmentOperators: true
+SpaceBeforeCpp11BracedList: false
+SpaceBeforeCtorInitializerColon: true
+SpaceBeforeInheritanceColon: true
+SpaceBeforeParens: Never
+SpaceBeforeRangeBasedForLoopColon: true
 SpaceBeforeParens: ControlStatements
 SpaceInEmptyParentheses: false
-SpacesBeforeTrailingComments: 0
+SpacesBeforeTrailingComments: 1
 SpacesInAngles:  false
 SpacesInCStyleCastParentheses: false
 SpacesInContainerLiterals: true
@@ -107,3 +110,5 @@ Standard:  Cpp11
 TabWidth:  4
 IndentWidth: 4
 UseTab:    Never
+
+...

@@ -1349,6 +1349,12 @@ augroup CloseMenu
     autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
 augroup end
 
+augroup SetFormatters
+    autocmd!
+    autocmd Filetype json if executable('jq') | setlocal formatprg=jq\ . | endif
+    autocmd Filetype xml if executable('xmllint') | setlocal formatprg=xmllint\ --format\ - | endif
+augroup end
+
 if executable('nvim')
     function! s:nvim(...) abort
         let l:cachedir = $HOME . '/.cache/nvim'
