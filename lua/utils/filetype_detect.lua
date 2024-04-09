@@ -37,6 +37,7 @@ vim.filetype.add {
         ['.*/Code/.*%.json'] = 'jsonc',
         ['.*/etc/nginx/.*'] = 'nginx',
         ['config%.txt'] = 'dosini',
+        ['/boot/firmware/config.txt'] = 'dosini',
         ['%.bash_.*'] = 'sh',
         ['%.bashrc%..*'] = 'sh',
         ['www%.overleaf%.com_.*%.txt'] = 'tex',
