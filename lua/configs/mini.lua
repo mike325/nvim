@@ -21,6 +21,12 @@ local function load_simple_module(plugin, config)
     end
 end
 
+local diffopts = {}
+vim.tbl_map(function(opt)
+    local k, v = unpack(vim.split(opt, ':'))
+    diffopts[k] = v or true
+end, vim.split(vim.o.diffopt, ','))
+
 local simple_mini = {
     doc = {},
     fuzzy = {},
@@ -65,6 +71,27 @@ local simple_mini = {
             line_right = '',
             line_down = ']e',
             line_up = '[e',
+        },
+    },
+    diff = {
+        view = {
+            style = vim.go.number and 'number' or 'sign',
+            -- style = 'sign',
+            signs = { add = '+', change = '~', delete = '-' },
+        },
+        mappings = {
+            apply = 'gh',
+            reset = 'gH',
+            textobject = '',
+            goto_first = '[C',
+            goto_prev = '[c',
+            goto_next = ']c',
+            goto_last = ']C',
+        },
+        options = {
+            algorithm = diffopts.algorithm or 'histogram',
+            indent_heuristic = diffopts['indent-heuristic'],
+            linematch = tonumber(diffopts.linematch) or 60,
         },
     },
 }
@@ -321,9 +348,20 @@ end
 if mini.surround then
     -- Remap adding surrounding to Visual mode selection
     vim.keymap.del('x', 'ys')
-    vim.keymap.set('x', 'S', [[:<C-u>lua MiniSurround.add('visual')<CR>]], { silent = true })
+    vim.keymap.set(
+        'x',
+        'S',
+        [[:<C-u>lua MiniSurround.add('visual')<CR>]],
+        { silent = true, desc = 'Visual mini surround mapping' }
+    )
     -- Make special mapping for "add surrounding for line"
     -- vim.keymap.set('n', 'yss', 'ys_', { remap = true })
+end
+
+if mini.diff then
+    vim.keymap.set('n', '=f', function()
+        mini.diff.toggle_overlay(0)
+    end, { desc = 'Toggle mini diff overlay' })
 end
 
 if vim.F.npcall(require, 'mini.ai') and mini.extra then

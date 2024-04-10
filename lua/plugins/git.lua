@@ -37,10 +37,10 @@ return {
             { 'nvim-lua/plenary.nvim' },
         },
     },
-
     {
         'lewis6991/gitsigns.nvim',
         event = { 'CursorHold', 'CursorHoldI' },
+        enabled = false,
         cond = function()
             return not vim.g.vscode
         end,
@@ -113,6 +113,7 @@ return {
     },
     {
         'rhysd/git-messenger.vim',
+        enabled = false,
         lazy = true,
         keys = '=m',
         cmd = 'GitMessenger',
