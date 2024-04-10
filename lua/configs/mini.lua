@@ -69,7 +69,7 @@ local simple_mini = {
     },
 }
 
-if not nvim.has{0, 10} then
+if not nvim.has { 0, 10 } then
     simple_mini.comment = {}
 end
 
