@@ -502,15 +502,16 @@ function M.remove_empty(opts, buffers)
 end
 
 function M.open_changes(opts)
-    local action = 'open'
-    local revision
-    for _, arg in ipairs(opts.fargs) do
-        if arg:match '^%-' then
-            action = (arg:gsub('^%-+', ''))
-        else
-            revision = arg
-        end
-    end
+    vim.validate {
+        opts = { opts, 'table' },
+        action = { opts.action, 'string' },
+        revision = { opts.revision, 'number', true },
+        clear = { opts.clear, 'boolean' },
+    }
+
+    local action = opts.action
+    local revision = opts.revision
+    local clear = opts.clear == nil and true or opts.clear
 
     local function get_content(filename)
         local buf = vim.fn.bufnr(filename)
@@ -544,7 +545,7 @@ function M.open_changes(opts)
                             valid = true,
                         }
                         item.col = 1
-                        if opts.bang and revision then
+                        if revision then
                             item.text = filename
                             item.lnum = 1
                         else
@@ -586,7 +587,7 @@ function M.open_changes(opts)
                     end
                 end, { revision = revision, files = files })
             else
-                RELOAD('utils.arglist').add(files, true)
+                RELOAD('utils.arglist').add(files, clear)
                 if action == 'open' or action == '' then
                     vim.api.nvim_win_set_buf(0, vim.fn.bufadd(files[1]))
                     -- else "background" does not :edit the first file
@@ -597,16 +598,9 @@ function M.open_changes(opts)
         end
     end
 
-    if opts.bang and revision then
+    if revision then
         RELOAD('utils.git').modified_files_from_base(revision, files_actions)
     else
-        if opts.bang then
-            vim.notify(
-                'Missing revision, opening changes from latest HEAD',
-                vim.log.levels.WARN,
-                { title = 'OpenChanges' }
-            )
-        end
         RELOAD('utils.git').modified_files(files_actions)
     end
 end

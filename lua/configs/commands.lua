@@ -441,7 +441,26 @@ end, {
 
 if executable 'git' then
     nvim.command.set('OpenChanges', function(opts)
-        RELOAD('utils.buffers').open_changes(opts)
+        local action = 'open'
+        local revision
+        for _, arg in ipairs(opts.fargs) do
+            if arg:match '^%-' then
+                action = (arg:gsub('^%-+', ''))
+            else
+                revision = arg
+            end
+        end
+
+        if opts.bang and (not revision or revision == '') then
+            vim.notify(
+                'Missing revision, opening changes from latest HEAD',
+                vim.log.levels.WARN,
+                { title = 'OpenChanges' }
+            )
+            revision = nil
+        end
+
+        RELOAD('utils.buffers').open_changes({ action = action, revision = revision, clear = true })
     end, {
         bang = true,
         nargs = '*',
