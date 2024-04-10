@@ -460,7 +460,7 @@ if executable 'git' then
             revision = nil
         end
 
-        RELOAD('utils.buffers').open_changes({ action = action, revision = revision, clear = true })
+        RELOAD('utils.buffers').open_changes { action = action, revision = revision, clear = true }
     end, {
         bang = true,
         nargs = '*',
