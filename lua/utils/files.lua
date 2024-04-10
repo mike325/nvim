@@ -499,20 +499,42 @@ function M.rename(old, new, bang)
         end
 
         local git = RELOAD 'utils.git'
+        local is_git = git.is_git_repo(vim.fs.dirname(old))
+        local is_untracked = is_git and vim.list_contains(vim.tbl_map(M.realpath, git.status().untracked or {}), old)
 
-        if
-            git.is_git_repo(vim.fs.dirname(old))
-            and not vim.list_contains(vim.tbl_map(M.realpath, git.status().untracked or {}), old)
-        then
-            local result = git.exec.mv { '-f', old, new }
-            if #result > 0 then
-                vim.notify('Failed to rename ' .. old .. '\n' .. result, vim.log.levels.ERROR, { title = 'Rename' })
-                return false
+        local move_with_git = false
+        if is_git and not is_untracked then
+            local dest_in_git = new:match('^' .. cwd)
+            if dest_in_git then
+                move_with_git = true
+                local result = git.exec.mv { '-f', old, new }
+                if #result > 0 then
+                    vim.notify(
+                        'Failed to rename ' .. old .. ' with git.\n' .. result,
+                        vim.log.levels.ERROR,
+                        { title = 'Rename' }
+                    )
+                    return false
+                end
             end
-        else
-            if not vim.loop.fs_rename(old, new) then
-                vim.notify('Failed to rename ' .. old, vim.log.levels.ERROR, { title = 'Rename' })
+        end
+
+        -- TODO: Support git-rm when the dest is outside of the git repo
+        if not move_with_git then
+            local success, err = vim.loop.fs_rename(old, new)
+            if not success and not err:match '^EXDEV:' then
+                vim.notify('Failed to rename ' .. old .. '\n' .. err, vim.log.levels.ERROR, { title = 'Rename' })
                 return false
+            else
+                success, err = vim.loop.fs_copyfile(old, new)
+                if success then
+                    success, err = vim.loop.fs_unlink(old)
+                end
+
+                if not success then
+                    vim.notify('Failed to rename ' .. old .. '\n' .. err, vim.log.levels.ERROR, { title = 'Rename' })
+                    return false
+                end
             end
         end
 
@@ -572,11 +594,11 @@ function M.delete(target, bang)
     end
 
     local git = RELOAD 'utils.git'
+    local is_git = git.is_git_repo(vim.fs.dirname(target))
+    local is_untracked = is_git and vim.list_contains(vim.tbl_map(M.realpath, git.status().untracked or {}), target)
+
     if M.is_file(target) or bufloaded(target) then
-        if
-            git.is_git_repo(vim.fs.dirname(target))
-            and not vim.list_contains(vim.tbl_map(M.realpath, git.status().untracked or {}), target)
-        then
+        if is_git and not is_untracked then
             local result = git.exec.rm { '-f', target }
             if #result > 0 then
                 vim.notify(
@@ -602,10 +624,7 @@ function M.delete(target, bang)
         end
         return true
     elseif M.is_dir(target) then
-        if
-            git.is_git_repo(target)
-            and not vim.list_contains(vim.tbl_map(M.realpath, git.status().untracked or {}), target)
-        then
+        if is_git and not is_untracked then
             local result = git.exec.rm { bang and '-rf' or '-r', target }
             if #result > 0 then
                 vim.notify(
