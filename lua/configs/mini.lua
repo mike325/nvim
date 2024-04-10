@@ -24,7 +24,6 @@ end
 local simple_mini = {
     doc = {},
     fuzzy = {},
-    comment = {},
     extra = {},
     pairs = {},
     sessions = {},
@@ -69,6 +68,10 @@ local simple_mini = {
         },
     },
 }
+
+if not nvim.has{0, 10} then
+    simple_mini.comment = {}
+end
 
 for plugin, config in pairs(simple_mini) do
     load_simple_module(plugin, config)

@@ -1,9 +1,22 @@
 local M = {}
 
-function M.clear()
-    local size = vim.fn.argc()
-    if size > 0 then
-        vim.cmd.argdelete '*'
+function M.clear(all)
+    vim.validate {
+        all = { all, 'boolean', true },
+    }
+
+    if all then
+        local size = vim.fn.argc()
+        if size > 0 then
+            vim.cmd.argdelete '*'
+        end
+    else
+        -- NOTE: sessions may load invalid files in the arglist
+        for _, arg in ipairs(vim.fn.argv()) do
+            if not require('utils.files').is_file(arg) then
+                vim.cmd.argdelete(arg)
+            end
+        end
     end
 end
 

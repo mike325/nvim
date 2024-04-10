@@ -11,7 +11,9 @@ if not has_mini then
     vim.keymap.set('n', '[e', [[:<C-U>lua require"mappings".move_line(false)<CR>]], { noremap = true, silent = true })
 end
 
-if not nvim.plugins['vim-commentary'] and not nvim.plugins['Comment.nvim'] and not has_mini then
+-- NOTE: Neovim 0.10 now have builtin comment support, this is no longer needed
+local missing_comment = not nvim.plugins['vim-commentary'] and not nvim.plugins['Comment.nvim'] and not has_mini
+if not nvim.has { 0, 10 } and missing_comment then
     vim.keymap.set(
         'n',
         'gc',

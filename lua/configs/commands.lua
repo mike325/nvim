@@ -618,6 +618,10 @@ nvim.command.set('ArgEdit', function(opts)
     RELOAD('utils.arglist').edit(opts.args)
 end, { nargs = '?', complete = completions.arglist, desc = 'Edit a file in the arglist' })
 
+nvim.command.set('ArgClear', function(opts)
+    RELOAD('utils.arglist').clear(opts.bang)
+end, { nargs = 0, bang = true, desc = 'Delete all or invalid arguments' })
+
 nvim.command.set('ArgAddBuf', function(opts)
     local argadd = RELOAD('utils.arglist').add
     local cwd = vim.pesc(vim.loop.cwd() .. '/')
