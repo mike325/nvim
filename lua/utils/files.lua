@@ -522,18 +522,21 @@ function M.rename(old, new, bang)
         -- TODO: Support git-rm when the dest is outside of the git repo
         if not move_with_git then
             local success, err = vim.loop.fs_rename(old, new)
-            if not success and not err:match '^EXDEV:' then
-                vim.notify('Failed to rename ' .. old .. '\n' .. err, vim.log.levels.ERROR, { title = 'Rename' })
-                return false
-            else
-                success, err = vim.loop.fs_copyfile(old, new)
-                if success then
-                    success, err = vim.loop.fs_unlink(old)
-                end
-
-                if not success then
+            if not success then
+                if err and not err:match '^EXDEV:' then
                     vim.notify('Failed to rename ' .. old .. '\n' .. err, vim.log.levels.ERROR, { title = 'Rename' })
                     return false
+                else
+                    -- TODO: support directories
+                    success, err = vim.loop.fs_copyfile(old, new)
+                    if success then
+                        success, err = vim.loop.fs_unlink(old)
+                    end
+
+                    if not success then
+                        vim.notify('Failed to rename ' .. old .. '\n' .. err, vim.log.levels.ERROR, { title = 'Rename' })
+                        return false
+                    end
                 end
             end
         end

@@ -138,10 +138,6 @@ local servers = {
                 },
             },
         },
-        -- {
-        --     exec = 'ruff',
-        --     cmd = { 'ruff', 'server', '--preview' },
-        -- },
         {
             exec = 'pylsp',
             options = {
@@ -163,16 +159,27 @@ local servers = {
                             jedi_completion = {
                                 include_params = true,
                             },
-                            mccabe = {
-                                threshold = 20,
+                            ruff = {
+                                enabled = true,       -- Enable the plugin
+                                formatEnabled = true, -- Enable formatting using ruffs formatter
                             },
                             pycodestyle = {
-                                maxLineLength = 120,
+                                enabled = false
                             },
-                        },
+                            pyflakes = {
+                                enabled = false
+                            },
+                            mccabe = {
+                                enabled = false
+                            }
+                        }
                     },
                 },
             },
+        },
+        {
+            exec = 'ruff',
+            cmd = { 'ruff', 'server', '--preview' },
         },
         {
             config = 'pyright',

@@ -90,36 +90,37 @@ vim.list_extend(M.makeprg.pycodestyle, M.makeprg.flake8)
 function M.get_formatter(stdin)
     local cmd
 
-    local config_file = RELOAD('utils.buffers').find_config { configs = 'pyproject.toml' }
     if executable 'ruff' then
         cmd = { 'ruff', 'format' }
-        if not config_file then
-            config_file = RELOAD('utils.buffers').find_config {
-                configs = {
-                    'ruff.toml',
-                    '.ruff.toml',
-                },
-            }
-        end
+        local config_file = RELOAD('utils.buffers').find_config {
+            configs = {
+                'ruff.toml',
+                '.ruff.toml',
+                'pyproject.toml',
+            },
+        }
 
         if config_file then
             vim.list_extend(cmd, { '--config', config_file })
         else
             vim.list_extend(cmd, M.makeprg[cmd[1]])
         end
-    elseif executable 'black' then
-        cmd = { 'black' }
-        if not config_file then
-            vim.list_extend(cmd, M.formatprg[cmd[1]])
-        else
-            vim.list_extend(cmd, { '--config', config_file })
-        end
-    elseif executable 'yapf' or executable 'autopep8' then
-        cmd = { executable 'yapf' and 'yapf' or 'autopep8' }
-        if not config_file then
-            vim.list_extend(cmd, M.formatprg[cmd[1]])
-        else
-            table.insert(cmd, '-i')
+    else
+        local config_file = RELOAD('utils.buffers').find_config { configs = 'pyproject.toml' }
+        if executable 'black' then
+            cmd = { 'black' }
+            if not config_file then
+                vim.list_extend(cmd, M.formatprg[cmd[1]])
+            else
+                vim.list_extend(cmd, { '--config', config_file })
+            end
+        elseif executable 'yapf' or executable 'autopep8' then
+            cmd = { executable 'yapf' and 'yapf' or 'autopep8' }
+            if not config_file then
+                vim.list_extend(cmd, M.formatprg[cmd[1]])
+            else
+                table.insert(cmd, '-i')
+            end
         end
     end
 
@@ -131,12 +132,12 @@ end
 function M.get_linter()
     local cmd
     if executable 'ruff' then
-        cmd = { 'ruff' }
+        cmd = { 'ruff', 'check' }
         local config_file = RELOAD('utils.buffers').find_config {
             configs = {
-                'pyproject.toml',
                 'ruff.toml',
                 '.ruff.toml',
+                'pyproject.toml',
             },
         }
 
