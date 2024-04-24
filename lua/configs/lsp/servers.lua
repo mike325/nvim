@@ -138,24 +138,10 @@ local servers = {
                 },
             },
         },
-        {
-            config = 'pyright',
-            exec = 'pyright-langserver',
-            cmd = { 'pyright-langserver', '--stdio' },
-            options = {
-                settings = {
-                    python = {
-                        analysis = {
-                            autoSearchPaths = true,
-                            diagnosticMode = 'workspace',
-                            useLibraryCodeForTypes = true,
-                            typeCheckingMode = 'basic', -- "off", "basic", "strict"
-                            -- extraPaths = {},
-                        },
-                    },
-                },
-            },
-        },
+        -- {
+        --     exec = 'ruff',
+        --     cmd = { 'ruff', 'server', '--preview' },
+        -- },
         {
             exec = 'pylsp',
             options = {
@@ -183,6 +169,24 @@ local servers = {
                             pycodestyle = {
                                 maxLineLength = 120,
                             },
+                        },
+                    },
+                },
+            },
+        },
+        {
+            config = 'pyright',
+            exec = 'pyright-langserver',
+            cmd = { 'pyright-langserver', '--stdio' },
+            options = {
+                settings = {
+                    python = {
+                        analysis = {
+                            autoSearchPaths = true,
+                            diagnosticMode = 'workspace',
+                            useLibraryCodeForTypes = true,
+                            typeCheckingMode = 'basic', -- "off", "basic", "strict"
+                            -- extraPaths = {},
                         },
                     },
                 },

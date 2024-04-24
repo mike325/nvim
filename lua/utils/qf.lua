@@ -462,6 +462,12 @@ end
 
 function M.qf_to_arglist(opts)
     opts = opts or {}
+    vim.validate {
+        opts = { opts, 'table', true },
+        clear = { opts.clear, 'boolean', true },
+    }
+
+    local clear = opts.clear == nil and true or opts.clear
     local loc = opts.loc
     local win = opts.win
     if loc and not win then
@@ -475,7 +481,7 @@ function M.qf_to_arglist(opts)
             table.insert(files, buf)
         end
     end
-    RELOAD('utils.arglist').add(files, true)
+    RELOAD('utils.arglist').add(files, clear)
 end
 
 return M

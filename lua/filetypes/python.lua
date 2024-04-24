@@ -88,9 +88,9 @@ local M = {
 vim.list_extend(M.makeprg.pycodestyle, M.makeprg.flake8)
 
 function M.get_formatter(stdin)
-    local config_file = RELOAD('utils.buffers').find_config { configs = 'pyproject.toml' }
-
     local cmd
+
+    local config_file = RELOAD('utils.buffers').find_config { configs = 'pyproject.toml' }
     if executable 'ruff' then
         cmd = { 'ruff' }
         if not config_file then

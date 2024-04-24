@@ -1,7 +1,6 @@
 return {
     {
         'mfussenegger/nvim-dap',
-        -- event = 'VeryLazy',
         -- event = { 'CursorHold', 'CmdlineEnter' },
         cmd = { 'DapStart', 'DapContinue' },
         cond = function()
@@ -66,7 +65,6 @@ return {
         config = function()
             require 'configs.lsp'
         end,
-        -- event = 'VeryLazy',
         -- lazy = false,
         -- priority = 100,
     },
