@@ -92,7 +92,7 @@ function M.get_formatter(stdin)
 
     local config_file = RELOAD('utils.buffers').find_config { configs = 'pyproject.toml' }
     if executable 'ruff' then
-        cmd = { 'ruff' }
+        cmd = { 'ruff', 'format' }
         if not config_file then
             config_file = RELOAD('utils.buffers').find_config {
                 configs = {
