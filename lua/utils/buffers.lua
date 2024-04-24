@@ -505,7 +505,7 @@ function M.open_changes(opts)
     vim.validate {
         opts = { opts, 'table' },
         action = { opts.action, 'string' },
-        revision = { opts.revision, 'number', true },
+        revision = { opts.revision, 'string', true },
         clear = { opts.clear, 'boolean' },
     }
 

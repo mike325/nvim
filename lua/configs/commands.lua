@@ -617,13 +617,13 @@ nvim.command.set('Argdo', function(opts)
     RELOAD('utils.arglist').exec(opts.args)
 end, { nargs = '+', desc = 'argdo but without the final Press enter message', complete = 'command' })
 
-nvim.command.set('Qf2Arglist', function()
-    RELOAD('utils.qf').qf_to_arglist()
-end, { desc = 'Dump qf files to the arglist' })
+nvim.command.set('Qf2Arglist', function(opts)
+    RELOAD('utils.qf').qf_to_arglist { clear = opts.bang }
+end, { bang = true, desc = 'Dump qf files to the arglist' })
 
-nvim.command.set('Loc2Arglist', function()
-    RELOAD('utils.qf').qf_to_arglist { loc = true }
-end, { desc = 'Dump loclist files to the arglist' })
+nvim.command.set('Loc2Arglist', function(opts)
+    RELOAD('utils.qf').qf_to_arglist { loc = true, clear = opts.bang }
+end, { bang = true, desc = 'Dump loclist files to the arglist' })
 
 nvim.command.set('Arglist2Qf', function()
     RELOAD('utils.qf').dump_files(vim.fn.argv())
