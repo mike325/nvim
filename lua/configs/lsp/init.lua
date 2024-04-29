@@ -95,7 +95,7 @@ local null_sources = {}
 local null_ls = vim.F.npcall(require, 'null-ls')
 local null_configs = require 'configs.lsp.null'
 
-if null_ls then
+if null_ls and pcall(require, 'gitsigns') then
     table.insert(null_sources, null_ls.builtins.code_actions.gitsigns)
 end
 
