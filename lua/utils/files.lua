@@ -534,7 +534,11 @@ function M.rename(old, new, bang)
                     end
 
                     if not success then
-                        vim.notify('Failed to rename ' .. old .. '\n' .. err, vim.log.levels.ERROR, { title = 'Rename' })
+                        vim.notify(
+                            'Failed to rename ' .. old .. '\n' .. err,
+                            vim.log.levels.ERROR,
+                            { title = 'Rename' }
+                        )
                         return false
                     end
                 end

@@ -160,19 +160,19 @@ local servers = {
                                 include_params = true,
                             },
                             ruff = {
-                                enabled = true,       -- Enable the plugin
+                                enabled = true, -- Enable the plugin
                                 formatEnabled = true, -- Enable formatting using ruffs formatter
                             },
                             pycodestyle = {
-                                enabled = false
+                                enabled = false,
                             },
                             pyflakes = {
-                                enabled = false
+                                enabled = false,
                             },
                             mccabe = {
-                                enabled = false
-                            }
-                        }
+                                enabled = false,
+                            },
+                        },
                     },
                 },
             },
