@@ -1,4 +1,5 @@
 return {
+    { 'imsnif/kdl.vim' },
     {
         'vimwiki/vimwiki',
         init = function()
