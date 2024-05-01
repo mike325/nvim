@@ -189,9 +189,9 @@ function M.lsp_mappings(client, bufnr)
     end
 
     if client.server_capabilities.inlayHintProvider and nvim.has { 0, 10 } then
-        vim.lsp.inlay_hint.enable(bufnr, true)
+        vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
         nvim.command.set('InlayHintsToggle', function()
-            vim.lsp.inlay_hint.enable(bufnr, not vim.lsp.inlay_hint.is_enabled(bufnr))
+            vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled(bufnr), { bufnr = bufnr })
         end, cmd_opts)
     end
 

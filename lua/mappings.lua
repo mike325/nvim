@@ -700,8 +700,9 @@ function M.custom_compiler(opts)
     local compiler = opts.args
     local base_path = 'after/compiler/'
     local compilers = vim.tbl_map(vim.fs.basename, vim.api.nvim_get_runtime_file(base_path .. '*.lua', true))
-    if vim.list_contains(compilers, (compiler:gsub('%.lua$', ''))) then
-        vim.cmd.runtime { bang = true, args = { base_path .. compiler } }
+    local mapped = vim.tbl_map(function(c) return (c:gsub('%.lua$', '')) end, compilers)
+    if vim.list_contains(mapped, compiler) then
+        vim.cmd.runtime { bang = true, args = { base_path .. compiler .. '.lua' } }
     else
         local language = vim.opt_local.filetype:get()
         local has_compiler, compiler_data = pcall(RELOAD, 'filetypes.' .. language)

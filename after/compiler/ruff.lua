@@ -1,8 +1,9 @@
 local set_compiler = RELOAD('utils.functions').set_compiler
 set_compiler('ruff', {
+    subcommand = 'check',
     configs = {
-        'pyproject.toml',
         'ruff.toml',
         '.ruff.toml',
+        'pyproject.toml',
     },
 })

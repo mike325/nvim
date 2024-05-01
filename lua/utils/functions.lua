@@ -444,11 +444,8 @@ function M.set_compiler(compiler, opts)
         -- TODO: Add option to pass config path as compiler arg
         if not has_config and compiler_data then
             vim.list_extend(cmd, compiler_data)
-        else
-            local subcmd = opts.subcmd or opts.subcommand
-            if subcmd then
-                table.insert(cmd, subcmd)
-            end
+        elseif opts.subcmd or opts.subcommand then
+            table.insert(cmd, opts.subcmd or opts.subcommand)
         end
 
         efm = compiler_data.efm or compiler_data.errorformat or opts.efm or opts.errorformat
