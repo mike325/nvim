@@ -272,9 +272,16 @@ vim.keymap.set('n', '<leader>c', function()
         { prompt = 'Select File/Buffer attribute: ' },
         vim.schedule_wrap(function(choice)
             if options[choice] then
-                nvim.reg['+'] = options[choice]()
+                local send_to_term = vim.env.SSH_CONNECTION and not vim.env.TMUX
+                local register = send_to_term and '"' or '+'
+                if send_to_term then
+                    require('utils.functions').send_osc52(vim.split(nvim.reg['"'], '\n'))
+                end
+
+                nvim.reg[register] = options[choice]()
+
                 vim.notify(
-                    'Clipboard value: ' .. nvim.reg['+'],
+                    'Clipboard value: ' .. nvim.reg[register],
                     vim.log.levels.INFO,
                     { title = 'Item copied successfully' }
                 )
