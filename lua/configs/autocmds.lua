@@ -278,6 +278,7 @@ if vim.env.SSH_CONNECTION and not vim.env.TMUX then
             local clipboard_reg = {
                 ['+'] = true,
                 ['*'] = true,
+                ['"'] = true,
             }
             local reg = vim.v.register
             if vim.v.event.operator == 'y' and (reg == '' or clipboard_reg[reg]) then
