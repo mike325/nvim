@@ -74,11 +74,11 @@ if not nvim.plugins['nvim-treesitter'] then
                 markdown = true,
             }
 
-            if nvim.has { 0, 9 } then
-                ft_mapping.help = 'vimdoc'
-            elseif not nvim.has { 0, 10 } and nightly_ft[filetype] then
+            if not nvim.has { 0, 10 } and nightly_ft[filetype] then
                 -- these fts are not available yet
                 return
+            elseif nvim.has { 0, 9 } then
+                ft_mapping.help = 'vimdoc'
             end
             vim.treesitter.start(args.buf, ft_mapping[filetype] or filetype)
         end,
