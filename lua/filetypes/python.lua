@@ -189,13 +189,19 @@ function M.setup()
             pyprog = vim.split((shebang:gsub('^#!', '')), ' ', { trimempty = true })
         end
 
-        if not pyprog then
-            pyprog = executable 'python3' and { 'python3' } or { 'python' }
+        if not pyprog or not is_file(pyprog[1]) then
+            for _, exec in ipairs { 'python3', 'python2', 'python' } do
+                if executable(exec) then
+                    pyprog = { exec }
+                    break
+                end
+            end
+            if not pyprog then
+                error(debug.traceback('Missing python executable!'))
+            end
         end
 
-        local cmd = pyprog
-        cmd = vim.list_extend(cmd, { '-c', 'import sys; print(",".join(sys.path))' })
-
+        local cmd = vim.list_extend(pyprog, { '-c', 'import sys; print(",".join(sys.path))' })
         local get_path = RELOAD('jobs'):new {
             cmd = cmd,
             silent = true,
