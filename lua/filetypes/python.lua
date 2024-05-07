@@ -197,7 +197,7 @@ function M.setup()
                 end
             end
             if not pyprog then
-                error(debug.traceback('Missing python executable!'))
+                error(debug.traceback 'Missing python executable!')
             end
         end
 
