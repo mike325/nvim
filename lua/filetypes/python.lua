@@ -3,6 +3,7 @@ local sys = require 'sys'
 
 local is_file = require('utils.files').is_file
 local executable = require('utils.files').executable
+local iswin = sys.name == 'windows'
 
 local plugins = require('nvim').plugins
 
@@ -148,7 +149,7 @@ function M.get_linter()
         end
     elseif executable 'flake8' then
         cmd = { 'flake8' }
-        local global_config = vim.fs.normalize(sys.name == 'windows' and '~/.flake8' or '~/.config/flake8')
+        local global_config = vim.fs.normalize(iswin and '~/.flake8' or '~/.config/flake8')
         local config_file = RELOAD('utils.buffers').find_config {
             configs = {
                 'tox.ini',
@@ -183,6 +184,17 @@ function M.setup()
         local buf = nvim.get_current_buf()
         local merge_uniq_list = require('utils.tables').merge_uniq_list
 
+        local function update_buffer_path(paths)
+            if vim.b.python_path then
+                if type(vim.b.python_path) == type '' then
+                    vim.b.python_path = vim.split(vim.b.python_path, ',')
+                end
+                paths = merge_uniq_list(paths, vim.b.python_path)
+            end
+
+            vim.bo[buf].path = table.concat(paths, ',')
+        end
+
         local pyprog
         local shebang = vim.api.nvim_buf_get_lines(buf, 0, 1, true)[1]
         if shebang and shebang:match '^#!' then
@@ -196,36 +208,29 @@ function M.setup()
                     break
                 end
             end
-            if not pyprog then
-                error(debug.traceback 'Missing python executable!')
-            end
         end
 
-        local cmd = vim.list_extend(pyprog, { '-c', 'import sys; print(",".join(sys.path))' })
-        local get_path = RELOAD('jobs'):new {
-            cmd = cmd,
-            silent = true,
-            callbacks_on_success = function(job)
-                -- NOTE: output is an array of stdout lines, we must join the array in a str
-                --       split it into a single array
-                local output = vim.split(table.concat(job:output(), ','), ',')
-                local path = vim.opt_local.path:get()
-                if type(path) == type '' then
-                    path = vim.split(path, ',')
-                end
-                path = merge_uniq_list(path, output)
-
-                if vim.b.python_path then
-                    if type(vim.b.python_path) == type '' then
-                        vim.b.python_path = vim.split(vim.b.python_path, ',')
+        if pyprog then
+            local cmd = vim.list_extend(pyprog, { '-c', 'import sys; print(",".join(sys.path))' })
+            local get_path = RELOAD('jobs'):new {
+                cmd = cmd,
+                silent = true,
+                callbacks_on_success = function(job)
+                    -- NOTE: output is an array of stdout lines, we must join the array in a str
+                    --       split it into a single array
+                    local output = vim.split(table.concat(job:output(), ','), ',')
+                    local path = vim.opt_local.path:get()
+                    if type(path) == type '' then
+                        path = vim.split(path, ',')
                     end
-                    path = merge_uniq_list(path, vim.b.python_path)
-                end
-
-                vim.bo[buf].path = table.concat(path, ',')
-            end,
-        }
-        get_path:start()
+                    update_buffer_path(merge_uniq_list(path, output))
+                end,
+            }
+            get_path:start()
+        elseif vim.env.PYTHONPATH then
+            local paths = vim.split(vim.env.PYTHONPATH, iswin and ';' or ':')
+            update_buffer_path(paths)
+        end
     end
 
     nvim.command.set('Execute', function(cmd_opts)
