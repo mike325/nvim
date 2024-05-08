@@ -98,11 +98,18 @@ vim.api.nvim_create_autocmd({ 'CmdwinEnter' }, {
     command = 'nnoremap <CR> <CR>',
 })
 
+local quickquit_au = vim.api.nvim_create_augroup('QuickQuit', { clear = true })
 vim.api.nvim_create_autocmd({ 'TermOpen' }, {
     desc = 'Map q to quick exit terminal buffers',
-    group = vim.api.nvim_create_augroup('QuickQuit', { clear = true }),
+    group = quickquit_au,
     pattern = '*',
-    command = 'nnoremap <silent><nowait><buffer> q :q!<CR>',
+    command = 'nnoremap <silent><nowait><buffer> q <cmd>q!<CR>',
+})
+vim.api.nvim_create_autocmd({ 'Filetype' }, {
+    desc = 'Map q to quick exit certains buffers',
+    group = quickquit_au,
+    pattern = 'qf,help,query,man',
+    command = 'nnoremap <silent><nowait><buffer> q <cmd>q!<CR>',
 })
 
 vim.api.nvim_create_autocmd({ 'BufNewFile', 'BufReadPre', 'BufEnter' }, {
