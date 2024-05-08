@@ -459,3 +459,20 @@ vim.api.nvim_create_autocmd({ 'User' }, {
         end
     end,
 })
+
+vim.api.nvim_create_autocmd({ 'BufReadPost', }, {
+    desc = 'Override gx URL on lua/plugin/* specs',
+    group = vim.api.nvim_create_augroup('PluginOpen', { clear = true }),
+    pattern = '*lua/plugins/*.lua',
+    callback = function()
+        vim.keymap.set('n', 'gx', function()
+            local cfile = vim.fn.expand '<cfile>'
+            local cword = vim.fn.expand '<cWORD>'
+            local uri = cword:match '^[%w]+://' and cword or cfile
+            if cfile:match('%w+/[%w%.%-]+') then
+                uri = string.format('https://github.com/%s', cfile)
+            end
+            vim.ui.open(uri)
+        end, { noremap = true, buffer = true, desc = 'Append github host to plugin spec' })
+    end,
+})
