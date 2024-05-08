@@ -229,13 +229,6 @@ if executable 'scp' then
     )
 end
 
--- TODO: Make this accept movements and visual selections
-vim.keymap.set('n', 'gx', function()
-    local cfile = vim.fn.expand '<cfile>'
-    local cword = vim.fn.expand '<cWORD>'
-    vim.ui.open(cword:match '^[%w]+://' and cword or cfile)
-end, { noremap = true, silent = true, desc = 'Override gx to use vim.ui.open' })
-
 vim.opt.formatexpr = "v:lua.RELOAD('utils.buffers').format( { 'ft': &l:filetype })"
 vim.keymap.set('n', '=F', function()
     RELOAD('utils.buffers').format { whole_file = true }
@@ -335,3 +328,12 @@ vim.keymap.set('n', '=e', function()
         vim.cmd.edit(realfile)
     end
 end, { noremap = true, silent = true, desc = 'Fugitive Gedit shortcut' })
+
+if not nvim.has { 0, 10 } then
+    -- TODO: Make this accept movements and visual selections
+    vim.keymap.set('n', 'gx', function()
+        local cfile = vim.fn.expand '<cfile>'
+        local cword = vim.fn.expand '<cWORD>'
+        vim.ui.open(cword:match '^[%w]+://' and cword or cfile)
+    end, { noremap = true, silent = true, desc = 'Override gx to use vim.ui.open' })
+end
