@@ -158,9 +158,24 @@ for postfix_map, prefix_cmd in pairs(mapping_pairs) do
     )
 end
 
-vim.keymap.set('n', ']<Space>', [[:<C-U>lua require"mappings".add_nl(true)<CR>]], { noremap = true, silent = true, desc = 'Add N spaces down the cursor' })
-vim.keymap.set('n', '[<Space>', [[:<C-U>lua require"mappings".add_nl(false)<CR>]], { noremap = true, silent = true, desc = 'Add N spaces up the cursor' })
-vim.keymap.set('n', '<C-L>', '<cmd>nohlsearch|diffupdate<CR>', { noremap = true, silent = true, desc = 'Clear search and update diff' })
+vim.keymap.set(
+    'n',
+    ']<Space>',
+    [[:<C-U>lua require"mappings".add_nl(true)<CR>]],
+    { noremap = true, silent = true, desc = 'Add N spaces down the cursor' }
+)
+vim.keymap.set(
+    'n',
+    '[<Space>',
+    [[:<C-U>lua require"mappings".add_nl(false)<CR>]],
+    { noremap = true, silent = true, desc = 'Add N spaces up the cursor' }
+)
+vim.keymap.set(
+    'n',
+    '<C-L>',
+    '<cmd>nohlsearch|diffupdate<CR>',
+    { noremap = true, silent = true, desc = 'Clear search and update diff' }
+)
 
 vim.keymap.set('n', '=q', function()
     RELOAD('utils.qf').toggle()
@@ -200,8 +215,18 @@ vim.keymap.set('n', 'gss', function()
 end, { noremap = true, silent = true, desc = 'Grep search word under cursor' })
 
 if executable 'scp' then
-    vim.keymap.set('n', '<leader><leader>s', '<cmd>SendFile<CR>', { noremap = true, silent = true, desc = 'Send the current file to a remote host' })
-    vim.keymap.set('n', '<leader><leader>g', '<cmd>GetFile<CR>', { noremap = true, silent = true, desc = 'Get the current equivalent file from a remote host' })
+    vim.keymap.set(
+        'n',
+        '<leader><leader>s',
+        '<cmd>SendFile<CR>',
+        { noremap = true, silent = true, desc = 'Send the current file to a remote host' }
+    )
+    vim.keymap.set(
+        'n',
+        '<leader><leader>g',
+        '<cmd>GetFile<CR>',
+        { noremap = true, silent = true, desc = 'Get the current equivalent file from a remote host' }
+    )
 end
 
 -- TODO: Make this accept movements and visual selections
