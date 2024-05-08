@@ -171,11 +171,11 @@ function M.lsp_mappings(client, bufnr)
 
     local cmd_opts = { buffer = true }
 
-    -- -- TODO: Move this config to lsp/server.lua
-    -- if client.name == 'sumneko_lua' or client.name == 'lua_ls' then
-    --     client.server_capabilities.documentFormattingProvider = false
-    --     client.server_capabilities.documentRangeFormattingProvider = false
-    -- end
+    -- TODO: Move this config to lsp/server.lua
+    if require('utils.files').executable 'stylua' and (client.name == 'sumneko_lua' or client.name == 'lua_ls') then
+        client.server_capabilities.documentFormattingProvider = false
+        client.server_capabilities.documentRangeFormattingProvider = false
+    end
 
     -- NOTE: use HelpNeovim defined in after/ftplugin
     if vim.opt_local.filetype:get() == 'lua' then
