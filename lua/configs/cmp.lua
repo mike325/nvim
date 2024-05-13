@@ -89,7 +89,7 @@ local function next_item(fallback)
         cmp.select_next_item()
     elseif ls and ls.locally_jumpable(1) then
         ls.jump(1)
-    elseif vim.snippet and vim.snippet.jumpable(1) then
+    elseif vim.snippet and vim.snippet.active({ direction = 1 }) then
         vim.snippet.jump(1)
     elseif neogen and neogen.jumpable() then
         vim.fn.feedkeys(replace_termcodes "<cmd>lua require('neogen').jump_next()<CR>", '')
@@ -113,7 +113,7 @@ local function prev_item(fallback)
         cmp.select_prev_item()
     elseif ls and ls.locally_jumpable(-1) then
         ls.jump(-1)
-    elseif vim.snippet and vim.snippet.jumpable(-1) then
+    elseif vim.snippet and vim.snippet.active({ direction = -1 }) then
         vim.snippet.jump(-1)
     elseif neogen and neogen.jumpable(-1) then
         vim.fn.feedkeys(replace_termcodes "<cmd>lua require('neogen').jump_prev()<CR>", '')

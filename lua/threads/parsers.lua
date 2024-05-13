@@ -65,7 +65,7 @@ function M.compiledb(thread_args)
     local flags_file = thread_args.args.flags_file
 
     if vim.is_thread() then
-        -- NOTE: Sleeping for 100s, json may be completely dump yet
+        -- NOTE: Sleeping for 100ms, json may be completely dump yet
         vim.loop.sleep(100)
     end
 
