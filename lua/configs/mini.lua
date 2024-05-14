@@ -519,8 +519,11 @@ if vim.g.minimal then
             hack = false,
             todo = false,
             note = false,
-            bug = 'DiagnosticError',
             fixme = false,
+            fix = false,
+            warn = 'DiagnosticWarn',
+            bug = 'DiagnosticError',
+            error = 'DiagnosticError',
         }
 
         local highlighters = {
@@ -534,7 +537,7 @@ if vim.g.minimal then
                 group = 'Special',
             },
             trailing_space = {
-                pattern = '%s+$',
+                pattern = '%f[%s]%s*$',
                 group = 'DiagnosticError',
             },
             hex_color = mini.hipatterns.gen_highlighter.hex_color(),
@@ -543,17 +546,26 @@ if vim.g.minimal then
 
         for pattern, group in pairs(notes) do
             group = group or ('MiniHipatterns%s'):format(require('utils.strings').capitalize(pattern))
-            table.insert(highlighters, {
-                pattern = function(buf_id)
-                    local get_comment = RELOAD('utils.buffers').get_comment
-                    return get_comment(('%%f[%%w]()%s()%%f[%%W]'):format(pattern:upper()), buf_id)
-                        :gsub('%s', '%%s*')
-                        :gsub('%-', '%%-')
-                end,
+            highlighters['comment_' .. pattern] = {
+                pattern = {
+                    function(buf_id)
+                        local get_comment = RELOAD('utils.buffers').get_comment
+                        return get_comment(('()%s%%%%(%%%%w+%%%%)():?'):format(pattern:upper()), buf_id)
+                            :gsub('%s', '%%s*')
+                            :gsub('%-', '%%-')
+                    end,
+                    function(buf_id)
+                        local get_comment = RELOAD('utils.buffers').get_comment
+                        return get_comment(('()%s():?'):format(pattern:upper()), buf_id)
+                            :gsub('%s', '%%s*')
+                            :gsub('%-', '%%-')
+                    end,
+                },
                 group = group,
-            })
+            }
         end
 
         mini.hipatterns.config.highlighters = highlighters
+        pcall(mini.hipatterns.update)
     end
 end
