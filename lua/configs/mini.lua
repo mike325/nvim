@@ -27,6 +27,25 @@ vim.tbl_map(function(opt)
     diffopts[k] = v or true
 end, vim.split(vim.o.diffopt, ','))
 
+local censor_extmark_opts = function(_, match, _)
+    local mask = string.rep('*', vim.fn.strchars(match))
+    return {
+        virt_text = { { mask, 'Comment' } },
+        virt_text_pos = 'overlay',
+        priority = 200,
+        right_gravity = false,
+    }
+end
+
+local password_table = {
+    pattern = {
+        'password:? ()%S+()',
+        'password_usr:? ()%S+()',
+    },
+    group = '',
+    extmark_opts = censor_extmark_opts,
+}
+
 local simple_mini = {
     doc = {},
     fuzzy = {},
@@ -92,6 +111,11 @@ local simple_mini = {
             algorithm = diffopts.algorithm or 'histogram',
             indent_heuristic = diffopts['indent-heuristic'],
             linematch = tonumber(diffopts.linematch) or 60,
+        },
+    },
+    hipatterns = {
+        highlighters = {
+            pw = password_table, -- Cloaking Passwords
         },
     },
 }
@@ -438,6 +462,17 @@ if mini.test then
     })
 end
 
+if mini.hipatterns then
+    vim.keymap.set('n', '<leader>P', function()
+        if next(mini.hipatterns.config.highlighters.pw) == nil then
+            mini.hipatterns.config.highlighters.pw = password_table
+        else
+            mini.hipatterns.config.highlighters.pw = {}
+        end
+        vim.cmd 'edit'
+    end, { desc = 'Toggle Password Cloaking' })
+end
+
 if vim.g.minimal then
     local simple_minimal = {
         'cursorword',
@@ -479,9 +514,7 @@ if vim.g.minimal then
         end, { expr = true })
     end
 
-    if vim.F.npcall(require, 'mini.hipatterns') then
-        local hipatterns = require 'mini.hipatterns'
-
+    if mini.hipatterns then
         local notes = {
             hack = false,
             todo = false,
@@ -504,7 +537,8 @@ if vim.g.minimal then
                 pattern = '%s+$',
                 group = 'DiagnosticError',
             },
-            hex_color = hipatterns.gen_highlighter.hex_color(),
+            hex_color = mini.hipatterns.gen_highlighter.hex_color(),
+            pw = password_table, -- Cloaking Passwords
         }
 
         for pattern, group in pairs(notes) do
@@ -520,6 +554,6 @@ if vim.g.minimal then
             })
         end
 
-        hipatterns.setup { highlighters = highlighters }
+        mini.hipatterns.config.highlighters = highlighters
     end
 end
