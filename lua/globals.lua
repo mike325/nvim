@@ -29,7 +29,7 @@ _G['PASTE'] = function(data)
     end
 
     local tmp = data
-    if not vim.tbl_isarray(tmp) then
+    if not vim.isarray(tmp) then
         if type(tmp) == type '' then
             tmp = vim.split(tmp, '\n')
         else

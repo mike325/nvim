@@ -26,7 +26,7 @@ function M.add(files, clear)
         clear = { clear, 'boolean', true },
     }
     if clear then
-        M.clear()
+        M.clear(true)
     end
     if type(files) ~= type {} then
         files = { files }

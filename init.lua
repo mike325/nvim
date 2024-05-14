@@ -12,6 +12,10 @@ if not vim.list_contains then
     vim.list_contains = vim.tbl_contains
 end
 
+if not vim.isarray then
+    vim.isarray = vim.tbl_islist
+end
+
 if not vim.base64 then
     vim.base64 = {
         encode = require('utils.strings').base64_encode,

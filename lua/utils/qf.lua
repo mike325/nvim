@@ -199,19 +199,19 @@ function M.set_list(opts, win)
         opts.items = short_long_lines(items)
     elseif type(items[1]) == type '' then
         opts.lines = short_long_lines(require('utils.tables').clear_lst(items))
-        if not opts.efm or #opts.efm == 0 then
-            local efm = vim.opt_local.efm:get()
-            if #efm == 0 then
-                efm = vim.opt_global.efm:get()
-            end
-            opts.efm = efm
-        end
-
-        if type(opts.efm) == type {} then
-            opts.efm = table.concat(opts.efm, ',')
-        end
     else
         error(debug.traceback('Invalid items type: ' .. type(items[1])))
+    end
+
+    if not opts.efm or #opts.efm == 0 then
+        local efm = vim.opt_local.efm:get()
+        if #efm == 0 then
+            efm = vim.opt_global.efm:get()
+        end
+        opts.efm = efm
+    end
+    if type(opts.efm) == type {} then
+        opts.efm = table.concat(opts.efm, ',')
     end
 
     if #(opts.items or opts.lines) == 0 then
