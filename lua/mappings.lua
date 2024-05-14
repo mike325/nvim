@@ -744,7 +744,7 @@ end
 function M.wall(_)
     for _, win in ipairs(nvim.tab.list_wins(0)) do
         nvim.buf.call(nvim.win.get_buf(win), function()
-            vim.cmd.update()
+            vim.cmd.update { mods = { noautocmd = true } }
         end)
     end
 end

@@ -495,7 +495,7 @@ nvim.command.set('ModifiedSave', function(_)
     end, vim.api.nvim_list_bufs())
     for _, buf in ipairs(modified) do
         vim.api.nvim_buf_call(buf, function()
-            vim.cmd.update()
+            vim.cmd.update { mods = { noautocmd = true } }
         end)
     end
 end, {
