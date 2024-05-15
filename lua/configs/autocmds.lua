@@ -105,12 +105,6 @@ vim.api.nvim_create_autocmd({ 'TermOpen' }, {
     pattern = '*',
     command = 'nnoremap <silent><nowait><buffer> q <cmd>q!<CR>',
 })
-vim.api.nvim_create_autocmd({ 'Filetype' }, {
-    desc = 'Map q to quick exit certains buffers',
-    group = quickquit_au,
-    pattern = 'qf,help,query,man',
-    command = 'nnoremap <silent><nowait><buffer> q <cmd>q!<CR>',
-})
 
 vim.api.nvim_create_autocmd({ 'BufNewFile', 'BufReadPre', 'BufEnter' }, {
     desc = 'Disable swap, backup and undofiles on all buffers under /tmp/*',
