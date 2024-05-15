@@ -93,6 +93,18 @@ describe('Mkdir', function()
         mini_test.expect.equality(mkdir(tmp, true), true)
         mini_test.expect.equality(is_dir(tmp), true)
     end)
+
+    it('Recursive non existing', function()
+        local is_dir = require('utils.files').is_dir
+        local dirs = {
+            vim.fn.tempname() .. '/this/is/a/deep/test/',
+        }
+        for _, dir in ipairs(dirs) do
+            mini_test.expect.equality(is_dir(dir), false)
+            mini_test.expect.equality(mkdir(dir, true), true)
+            mini_test.expect.equality(is_dir(dir), true)
+        end
+    end)
 end)
 
 describe('Linking', function()

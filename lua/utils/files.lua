@@ -70,13 +70,21 @@ function M.mkdir(dirname, recurive)
     dirname = M.normalize(dirname)
     local ok, msg, err = vim.loop.fs_mkdir(dirname, 511)
     if err == 'ENOENT' and recurive then
-        local dirs = vim.split(dirname, M.separator() .. '+')
-        local base = dirs[1] == '' and '/' or dirs[1]
-        if dirs[1] == '' or M.is_root(dirs[1]) then
-            table.remove(dirs, 1)
+        local is_abs = M.is_absolute(dirname)
+        local dirs = vim.split(dirname, M.separator() .. '+', { trimempty = true })
+        local base = ''
+        if is_abs then
+            base = is_windows and dirs[1] or '/'
+            if is_windows then
+                table.remove(dirs, 1)
+            end
         end
         for _, dir in ipairs(dirs) do
-            base = base .. M.separator() .. dir
+            if base ~= '/' and base ~= '' then
+                base = base .. M.separator() .. dir
+            else
+                base = base .. dir
+            end
             if not M.exists(base) then
                 ok, msg, _ = vim.loop.fs_mkdir(base, 511)
                 if not ok then

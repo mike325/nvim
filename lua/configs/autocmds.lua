@@ -177,6 +177,13 @@ vim.api.nvim_create_autocmd('LspAttach', {
         local bufnr = args.buf
         local client = vim.lsp.get_client_by_id(args.data.client_id)
 
+        if client and client.name == 'clangd' then
+            local tmpdir = client.config.cmd_env and client.config.cmd_env.TMPDIR or nil
+            if tmpdir and not require('utils.files').is_dir(tmpdir) then
+                require('utils.files').mkdir(tmpdir, true)
+            end
+        end
+
         local lsp_utils = RELOAD 'configs.lsp.utils'
         lsp_utils.check_null_format(client)
         lsp_utils.check_null_diagnostics(client)
