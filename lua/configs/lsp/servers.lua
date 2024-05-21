@@ -73,6 +73,9 @@ local servers = {
             options = {
                 settings = {
                     Lua = {
+                        hint = {
+                            enable = true,
+                        },
                         -- completion = {
                         --     keywordSnippet = 'Enable',
                         --     callSnippet = 'Both',
@@ -156,12 +159,17 @@ local servers = {
                 settings = {
                     pylsp = {
                         plugins = {
-                            jedi_completion = {
-                                include_params = true,
-                            },
                             ruff = {
                                 enabled = true, -- Enable the plugin
                                 formatEnabled = true, -- Enable formatting using ruffs formatter
+                            },
+                            -- jedi = {
+                            --     extra_paths = {}
+                            -- },
+                            jedi_completion = {
+                                enabled = true,
+                                fuzzy = true,
+                                include_params = true,
                             },
                             pycodestyle = {
                                 enabled = false,

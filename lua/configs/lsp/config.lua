@@ -27,17 +27,17 @@ M.commands = {
     },
     Rename = {
         function()
-            vim.lsp.buf.rename {}
+            vim.lsp.buf.rename()
         end,
     },
     Signature = {
         function()
-            vim.lsp.buf.signature_help {}
+            vim.lsp.buf.signature_help()
         end,
     },
     Hover = {
         function()
-            vim.lsp.buf.hover {}
+            vim.lsp.buf.hover()
         end,
     },
     Definition = {

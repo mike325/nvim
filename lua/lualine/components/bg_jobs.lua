@@ -9,10 +9,10 @@ function M:init(options)
 end
 
 function M:update_status()
-    local keys = vim.tbl_keys(STORAGE.jobs) or {}
-    if #keys > 0 then
+    local procs = #vim.api.nvim_get_proc_children(vim.loop.os_getpid())
+    if procs > 0 then
         -- local icon = vim.env.NO_COOL_FONTS and 'Jobs' or require('utils.functions').get_icon('perf')
-        return ('%sJobs: %s'):format(hl.component_format_highlight(self.jobs_hl), #keys)
+        return ('%sJobs: %s'):format(hl.component_format_highlight(self.jobs_hl), procs)
     end
     return ''
 end
