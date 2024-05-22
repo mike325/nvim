@@ -247,7 +247,6 @@ vim.api.nvim_create_autocmd('LspAttach', {
     group = vim.api.nvim_create_augroup('LspMappings', { clear = true }),
     pattern = '*',
     callback = function(args)
-
         if not vim.g.fix_inlay_hl then
             local comment_hl = vim.api.nvim_get_hl(0, { name = 'Comment' })
             comment_hl.bold = true
@@ -357,7 +356,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
             client.server_capabilities.hoverProvider = false
         end
 
-        if nvim.has { 0, 10 } and client.supports_method(methods.textDocument_inlayHint)  then
+        if nvim.has { 0, 10 } and client.supports_method(methods.textDocument_inlayHint) then
             -- Initial inlay hint display.
             vim.defer_fn(function()
                 local mode = vim.api.nvim_get_mode().mode

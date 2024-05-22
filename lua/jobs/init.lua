@@ -141,10 +141,7 @@ function Job:new(job)
             args = vim.list_slice(cmd, 2, #cmd)
         end
     else
-        assert(
-            type(job) == type {} and not vim.islist(job),
-            debug.traceback 'New must receive a table not an array'
-        )
+        assert(type(job) == type {} and not vim.islist(job), debug.traceback 'New must receive a table not an array')
 
         if job.cmd and job.exe then
             error(debug.traceback 'Cannot have bot job.cmd and job.exe')
