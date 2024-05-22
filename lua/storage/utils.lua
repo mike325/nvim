@@ -16,7 +16,7 @@ function M.insert_row(tbl_name, data, db_path)
     }
 
     db_path = db_path or STORAGE.db_path
-    data = not vim.tbl_islist(data) and { data } or data
+    data = not vim.islist(data) and { data } or data
 
     if sqlite then
         return sqlite.with_open(db_path, function(db)

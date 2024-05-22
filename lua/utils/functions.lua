@@ -388,7 +388,7 @@ function M.async_execute(opts)
     end
 
     if opts.pre_execute then
-        opts.pre_execute = vim.tbl_islist(opts.pre_execute) and opts.pre_execute or { opts.pre_execute }
+        opts.pre_execute = vim.islist(opts.pre_execute) and opts.pre_execute or { opts.pre_execute }
         for _, func in ipairs(opts.pre_execute) do
             func()
         end
@@ -601,7 +601,7 @@ function M.ignores(tool, excludes, lst)
         lst = false
     end
 
-    if not vim.tbl_islist(excludes) then
+    if not vim.islist(excludes) then
         excludes = { excludes }
     end
 
@@ -678,7 +678,7 @@ function M.grep(tool, attr, lst)
         grep = lst and vim.split(grep, '%s+') or grep
     end
 
-    if vim.tbl_islist(grep) then
+    if vim.islist(grep) then
         grep = vim.tbl_filter(function(k)
             return not k:match '^%s*$'
         end, grep)
@@ -714,7 +714,7 @@ function M.filelist(tool, lst)
         filelist = lst and vim.split(filelist, '%s+') or filelist
     end
 
-    if vim.tbl_islist(filelist) then
+    if vim.islist(filelist) then
         filelist = vim.tbl_filter(function(k)
             return not k:match '^%s*$'
         end, filelist)

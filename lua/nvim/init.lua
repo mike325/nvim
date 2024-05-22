@@ -87,7 +87,7 @@ local function add_autocmd(event, opts)
         event = {
             event,
             function(e)
-                return type(e) == type '' or vim.tbl_islist(e)
+                return type(e) == type '' or vim.islist(e)
             end,
             'an array of events or a event string',
         },
@@ -288,7 +288,7 @@ local nvim = {
         __call = function(_, feature)
             if type(feature) == type {} then
                 vim.validate {
-                    version = { feature, vim.tbl_islist, 'a nvim version string to list' },
+                    version = { feature, vim.islist, 'a nvim version string to list' },
                 }
                 local nvim_version = {
                     vim.version().major,
@@ -428,7 +428,7 @@ local nvim = {
                     del_augroup(k)
                 elseif type(v) == type {} then
                     local autocmds
-                    if vim.tbl_islist(v) then
+                    if vim.islist(v) then
                         autocmds = vim.deepcopy(v)
                     else
                         autocmds = { v }
@@ -473,7 +473,7 @@ local nvim = {
         __newindex = function(_, k, v)
             if type(k) == type '' and k ~= '' and type(v) == type {} then
                 local autocmds
-                if vim.tbl_islist(v) then
+                if vim.islist(v) then
                     autocmds = vim.deepcopy(v)
                 else
                     autocmds = { v }

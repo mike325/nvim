@@ -123,7 +123,7 @@ end
 
 function M.get_indent_block(lines)
     vim.validate { lines = { lines, 'table' } }
-    assert(vim.tbl_islist(lines), debug.traceback 'Lines must be an array')
+    assert(vim.islist(lines), debug.traceback 'Lines must be an array')
 
     local indent_level
     for _, line in pairs(lines) do
@@ -143,7 +143,7 @@ end
 
 function M.get_indent_block_level(lines)
     vim.validate { lines = { lines, 'table' } }
-    assert(vim.tbl_islist(lines), debug.traceback 'Lines must be an array')
+    assert(vim.islist(lines), debug.traceback 'Lines must be an array')
 
     local indent_level = M.get_indent_block(lines)
     return math.floor(indent_level / M.get_indent())
@@ -177,7 +177,7 @@ end
 
 function M.indent(lines, level)
     vim.validate { lines = { lines, 'table' }, level = { level, 'number' } }
-    assert(vim.tbl_islist(lines), debug.traceback 'Lines must be an array')
+    assert(vim.islist(lines), debug.traceback 'Lines must be an array')
 
     if level == 0 or #lines == 0 then
         return lines
@@ -351,7 +351,7 @@ function M.format(opts)
     local whole_file = last - first == nvim.buf.line_count(bufnr) or opts.whole_file
 
     local clients = vim.lsp.buf_get_clients(0)
-    local is_null_ls_formatting_enabled = require('configs.lsp.config').is_null_ls_formatting_enabled
+    local is_null_ls_formatting_enabled = require('configs.lsp.utils').is_null_ls_formatting_enabled
 
     for _, client in pairs(clients) do
         if whole_file and client.server_capabilities.documentFormattingProvider then
@@ -742,7 +742,7 @@ function M.get_comment(text, buf)
         text = {
             text,
             function(x)
-                return not x or type(x) == type '' or vim.tbl_islist(x)
+                return not x or type(x) == type '' or vim.islist(x)
             end,
             'text must be either a string or an array of lines',
         },
@@ -756,7 +756,7 @@ function M.get_comment(text, buf)
     end
     local comment_str
     if text then
-        if vim.tbl_islist(text) then
+        if vim.islist(text) then
             comment_str = {}
             for _, line in ipairs(text) do
                 local commented = comment:format(line)

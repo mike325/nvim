@@ -2,18 +2,20 @@ if vim.loader then
     vim.loader.enable()
 end
 
-local nvim = require 'nvim'
-
-if not nvim.has { 0, 9 } then
-    vim.api.nvim_err_writeln 'Neovim version is too old!! please use update it'
-end
-
 if not vim.list_contains then
     vim.list_contains = vim.tbl_contains
 end
 
 if not vim.isarray then
     vim.isarray = vim.tbl_islist
+end
+
+if not vim.islist then
+    vim.islist = vim.tbl_islist
+end
+
+if not vim.version.gt(vim.version(), { 0, 9 }) then
+    vim.api.nvim_err_writeln 'Neovim version is too old!! please use update it'
 end
 
 if not vim.base64 then
@@ -23,6 +25,7 @@ if not vim.base64 then
     }
 end
 
+local nvim = require 'nvim'
 if not vim.keymap then
     vim.keymap = nvim.keymap
 end
@@ -52,7 +55,7 @@ vim.g.short_branch_name = true
 
 vim.g.port = 0x8AC
 
-if nvim.has 'win32' then
+if vim.fn.has 'win32' == 1 then
     -- vim.opt.shell = 'cmd.exe'
     vim.opt.shell = 'powershell'
     vim.opt.shellcmdflag = table.concat({

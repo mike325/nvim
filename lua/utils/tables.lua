@@ -35,7 +35,7 @@ function M.list_contains(lst, value)
     return false
 end
 
-function M.tbl_islist(tbl)
+function M.islist(tbl)
     if type(tbl) ~= type {} then
         return false
     end
@@ -144,7 +144,7 @@ function M.uniq_list(lst)
 end
 
 function M.uniq_unorder(lst)
-    assert(M.tbl_islist(lst), debug.traceback 'Uniq only works with array-like tables')
+    assert(M.islist(lst), debug.traceback 'Uniq only works with array-like tables')
 
     local uniq_items = {}
     for _, node in ipairs(lst) do
@@ -155,7 +155,7 @@ function M.uniq_unorder(lst)
 end
 
 function M.merge_uniq_list(dest, src)
-    assert(M.tbl_islist(dest) and M.tbl_islist(src), debug.traceback 'Source and dest must be arrays')
+    assert(M.islist(dest) and M.islist(src), debug.traceback 'Source and dest must be arrays')
 
     dest = M.uniq_list(dest)
     for _, node in ipairs(src) do
@@ -167,7 +167,7 @@ function M.merge_uniq_list(dest, src)
 end
 
 function M.merge_uniq_unorder(dest, src)
-    assert(M.tbl_islist(dest) and M.tbl_islist(src), debug.traceback 'Source and dest must be arrays')
+    assert(M.islist(dest) and M.islist(src), debug.traceback 'Source and dest must be arrays')
 
     local uniq_items = {}
 
@@ -184,7 +184,7 @@ end
 
 -- NOTE: Should this function also trim trailing spaces ?
 function M.clear_lst(lst)
-    assert(M.tbl_islist(lst), debug.traceback 'List must be an array')
+    assert(M.islist(lst), debug.traceback 'List must be an array')
     return vim.tbl_map(
         function(v)
             return type(v) == type '' and v:gsub('%s+$', '') or v
@@ -240,7 +240,7 @@ function M.inspect(t)
         return t
     end
     local tbl = '{'
-    if M.tbl_islist(t) then
+    if M.islist(t) then
         for _, v in ipairs(t) do
             if type(v) == 'table' or special[type(v)] then
                 v = M.inspect(v)

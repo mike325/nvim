@@ -40,14 +40,14 @@ function M.is_in_node(node, range, buf)
         node = {
             node,
             function(n)
-                return type(n) == type '' or vim.tbl_islist(n)
+                return type(n) == type '' or vim.islist(n)
             end,
             'should be a string or an array',
         },
         range = {
             range,
             function(r)
-                return r == nil or vim.tbl_islist(r)
+                return r == nil or vim.islist(r)
             end,
             'an array or nil',
         },
@@ -65,7 +65,7 @@ function M.is_in_node(node, range, buf)
         range[1] = range[1] - 1
     end
 
-    if not vim.tbl_islist(node) then
+    if not vim.islist(node) then
         node = { node }
     end
 
@@ -79,7 +79,7 @@ function M.is_in_node(node, range, buf)
 
     local tnode
     if vim.treesitter.get_node then
-        tnode = vim.treesitter.get_node { bufnr = buf, pos = range }
+        tnode = vim.treesitter.get_node { ignore_injections = true, bufnr = buf, pos = range }
     else
         tnode = vim.treesitter.get_node_at_pos(buf, range[1], range[2], {})
     end

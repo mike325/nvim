@@ -1,6 +1,92 @@
 local nvim = require 'nvim'
 local executable = require('utils.files').executable
 
+local has_telescope = nvim.plugins['telescope.nvim'] ~= nil
+local methods = vim.lsp.protocol.Methods
+
+local commands = {
+    Type = { vim.lsp.buf.type_definition },
+    Declaration = { vim.lsp.buf.declaration },
+    OutgoingCalls = { vim.lsp.buf.outgoing_calls },
+    IncomingCalls = { vim.lsp.buf.incoming_calls },
+    Implementation = { vim.lsp.buf.implementation },
+    Format = {
+        function()
+            RELOAD('utils.buffers').format()
+        end,
+    },
+    RangeFormat = {
+        function()
+            RELOAD('utils.buffers').format()
+        end,
+    },
+    Rename = {
+        function()
+            vim.lsp.buf.rename()
+        end,
+    },
+    Signature = {
+        function()
+            vim.lsp.buf.signature_help()
+        end,
+    },
+    Hover = {
+        function()
+            vim.lsp.buf.hover()
+        end,
+    },
+    Definition = {
+        function()
+            if has_telescope then
+                require('telescope.builtin').lsp_definitions()
+            else
+                vim.lsp.buf.definition()
+            end
+        end,
+    },
+    References = {
+        function()
+            if has_telescope then
+                require('telescope.builtin').lsp_references()
+            else
+                vim.lsp.buf.references()
+            end
+        end,
+    },
+    -- Diagnostics = {
+    --     function()
+    --         if has_telescope then
+    --             require('telescope.builtin').diagnostics()
+    --         else
+    --             vim.diagnostic.setloclist()
+    --         end
+    --     end,
+    -- },
+    DocSymbols = {
+        function()
+            if has_telescope then
+                require('telescope.builtin').lsp_document_symbols()
+            else
+                vim.lsp.buf.document_symbol()
+            end
+        end,
+    },
+    WorkSymbols = {
+        function()
+            if has_telescope then
+                require('telescope.builtin').lsp_workspace_symbols()
+            else
+                vim.lsp.buf.workspace_symbol()
+            end
+        end,
+    },
+    CodeAction = {
+        function()
+            vim.lsp.buf.lsp_code_actions()
+        end,
+    },
+}
+
 if require('sys').name ~= 'windows' then
     local make_executable = vim.api.nvim_create_augroup('MakeExecutable', { clear = true })
 
@@ -161,6 +247,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
     group = vim.api.nvim_create_augroup('LspMappings', { clear = true }),
     pattern = '*',
     callback = function(args)
+
         if not vim.g.fix_inlay_hl then
             local comment_hl = vim.api.nvim_get_hl(0, { name = 'Comment' })
             comment_hl.bold = true
@@ -176,19 +263,152 @@ vim.api.nvim_create_autocmd('LspAttach', {
 
         local bufnr = args.buf
         local client = vim.lsp.get_client_by_id(args.data.client_id)
+        if not client then
+            return
+        end
 
-        if client and client.name == 'clangd' then
+        if client.name == 'clangd' then
             local tmpdir = client.config.cmd_env and client.config.cmd_env.TMPDIR or nil
             if tmpdir and not require('utils.files').is_dir(tmpdir) then
                 require('utils.files').mkdir(tmpdir, true)
             end
         end
 
+        local is_min = vim.g.minimal and vim.F.npcall(require, 'mini.completion') ~= nil
+        vim.bo[bufnr].omnifunc = is_min and 'v:lua.MiniCompletion.completefunc_lsp' or 'v:lua.vim.lsp.omnifunc'
+
+        if vim.bo[bufnr].tagfunc == '' then
+            vim.bo[bufnr].tagfunc = 'v:lua.vim.lsp.tagfunc'
+        end
+
+        -- TODO: Migrate this to use methods from internal LSP API
+        local mappings = {
+            ['gd'] = {
+                capability = 'declarationProvider',
+                mapping = function()
+                    vim.lsp.buf.declaration()
+                end,
+            },
+            ['gi'] = {
+                capability = 'implementationProvider',
+                mapping = function()
+                    vim.lsp.buf.implementation()
+                end,
+            },
+            ['gr'] = {
+                capability = 'referencesProvider',
+                mapping = function()
+                    if has_telescope then
+                        require('telescope.builtin').lsp_references()
+                    else
+                        vim.lsp.buf.references()
+                    end
+                end,
+            },
+            ['K'] = {
+                capability = 'hoverProvider',
+                mapping = function()
+                    vim.lsp.buf.hover()
+                end,
+            },
+            ['<leader>r'] = {
+                capability = 'renameProvider',
+                mapping = function()
+                    vim.lsp.buf.rename()
+                end,
+            },
+            ['ga'] = {
+                capability = 'codeActionProvider',
+                mapping = function()
+                    vim.lsp.buf.code_action()
+                end,
+            },
+            ['gh'] = {
+                capability = 'signatureHelpProvider',
+                mapping = function()
+                    vim.lsp.buf.signature_help()
+                end,
+            },
+            ['<leader>s'] = {
+                mapping = function()
+                    if has_telescope then
+                        require('telescope.builtin').lsp_document_symbols()
+                    else
+                        vim.lsp.buf.document_symbol {}
+                    end
+                end,
+            },
+            -- ['<space>wa'] = '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>',
+            -- ['<space>wr'] = '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>',
+            -- ['<space>wl'] = '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>',
+            -- ['<leader>D'] = '<cmd>lua vim.lsp.buf.type_definition()<CR>',
+        }
+
+        local cmd_opts = { buffer = true }
+
+        -- TODO: Move this config to lsp/server.lua
+        if require('utils.files').executable 'stylua' and (client.name == 'sumneko_lua' or client.name == 'lua_ls') then
+            client.server_capabilities.documentFormattingProvider = false
+            client.server_capabilities.documentRangeFormattingProvider = false
+        end
+
+        -- NOTE: use HelpNeovim defined in after/ftplugin
+        if vim.opt_local.filetype:get() == 'lua' then
+            client.server_capabilities.hoverProvider = false
+        end
+
+        if nvim.has { 0, 10 } and client.supports_method(methods.textDocument_inlayHint)  then
+            -- Initial inlay hint display.
+            vim.defer_fn(function()
+                local mode = vim.api.nvim_get_mode().mode
+                vim.lsp.inlay_hint.enable(mode == 'n' or mode == 'v', { bufnr = bufnr })
+                vim.b.inlay_hints_enabled = vim.lsp.inlay_hint.is_enabled { bufnr = bufnr }
+            end, 500)
+
+            nvim.command.set('InlayHintsToggle', function()
+                vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = bufnr }, { bufnr = bufnr })
+                vim.b.inlay_hints_enabled = vim.lsp.inlay_hint.is_enabled { bufnr = bufnr }
+            end, cmd_opts)
+
+            local inlay_hints_group = vim.api.nvim_create_augroup('InlayHintsToggle', { clear = true })
+            vim.api.nvim_create_autocmd('InsertEnter', {
+                group = inlay_hints_group,
+                desc = 'Enable inlay hints',
+                buffer = bufnr,
+                callback = function()
+                    if vim.lsp.inlay_hint.is_enabled { bufnr = bufnr } then
+                        vim.lsp.inlay_hint.enable(false, { bufnr = bufnr })
+                    end
+                end,
+            })
+            vim.api.nvim_create_autocmd('InsertLeave', {
+                group = inlay_hints_group,
+                desc = 'Disable inlay hints',
+                buffer = bufnr,
+                callback = function()
+                    if vim.b.inlay_hints_enabled then
+                        vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
+                    end
+                end,
+            })
+        end
+
+        for mapping, val in pairs(mappings) do
+            if not val.capability or client.server_capabilities[val.capability] then
+                vim.keymap.set('n', mapping, val.mapping, { silent = true, buffer = bufnr, noremap = true })
+            end
+        end
+
+        for command, values in pairs(commands) do
+            if type(values[1]) == 'function' then
+                vim.tbl_extend('keep', cmd_opts, values[2] or {})
+                nvim.command.set(command, values[1], cmd_opts)
+            end
+        end
+
         local lsp_utils = RELOAD 'configs.lsp.utils'
         lsp_utils.check_null_format(client)
         lsp_utils.check_null_diagnostics(client)
-
-        RELOAD('configs.lsp.config').lsp_mappings(client, bufnr)
     end,
 })
 

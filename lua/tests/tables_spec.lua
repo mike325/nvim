@@ -225,7 +225,7 @@ describe('str_to_clean_tbl', function()
     it('Sample strings', function()
         for _, v in ipairs(strings) do
             local lst = str_to_clean_tbl(v[1], v[2])
-            mini_test.expect.equality(vim.tbl_islist(lst), true)
+            mini_test.expect.equality(vim.islist(lst), true)
             check_clear_lst(lst)
         end
     end)
@@ -235,7 +235,7 @@ describe('str_to_clean_tbl', function()
             local str = random_string(150)
             local sep = math.random(0, 10) % 2 == 0 and random_string(1) or ' '
             local lst = str_to_clean_tbl(str, sep)
-            mini_test.expect.equality(vim.tbl_islist(lst), true)
+            mini_test.expect.equality(vim.islist(lst), true)
             check_clear_lst(lst)
         end
     end)

@@ -133,7 +133,7 @@ function Job:new(job)
         else
             exe = cmd
         end
-    elseif type(job) == type {} and vim.tbl_islist(job) then
+    elseif type(job) == type {} and vim.islist(job) then
         assert(#job > 0, debug.traceback 'Missing command')
         cmd = job
         exe = cmd[1]
@@ -142,7 +142,7 @@ function Job:new(job)
         end
     else
         assert(
-            type(job) == type {} and not vim.tbl_islist(job),
+            type(job) == type {} and not vim.islist(job),
             debug.traceback 'New must receive a table not an array'
         )
 
@@ -159,14 +159,14 @@ function Job:new(job)
         end
 
         assert(
-            (type(exe) == type '' or (type(exe) == type {} and vim.tbl_islist(exe))) and #exe > 0,
+            (type(exe) == type '' or (type(exe) == type {} and vim.islist(exe))) and #exe > 0,
             debug.traceback('Invalid cmd value ' .. vim.inspect(exe) .. ' it must be a str or an array')
         )
 
         if args then
             -- NOTE: allow exe = '' and (args = {} or args = '')
             assert(
-                type(exe) == type '' and (type(args) == type '' or (type(args) == type {} and vim.tbl_islist(args))),
+                type(exe) == type '' and (type(args) == type '' or (type(args) == type {} and vim.islist(args))),
                 debug.traceback 'Invalid args, args must be either a string or an array and cmd must be a string'
             )
 
@@ -199,7 +199,7 @@ function Job:new(job)
     obj.args = args
     obj._cmd = cmd
 
-    if type(job) == type {} and not vim.tbl_islist(job) then
+    if type(job) == type {} and not vim.islist(job) then
         vim.validate { interactive = { job.interactive, 'boolean', true } }
         obj.interactive = job.interactive
 
@@ -601,7 +601,7 @@ function Job:send(data)
         data = {
             data,
             function(d)
-                return type(d) == type '' or (type(d) == type {} and vim.tbl_islist(d))
+                return type(d) == type '' or (type(d) == type {} and vim.islist(d))
             end,
             'string or string convertible data',
         },

@@ -114,7 +114,7 @@ function M.get_git_cmd(gitcmd, args)
     get_git_dir(cmd)
     rm_pager(cmd)
     table.insert(cmd, gitcmd)
-    if vim.tbl_islist(args) then
+    if vim.islist(args) then
         vim.list_extend(cmd, args)
     else
         table.insert(cmd, args)
@@ -127,7 +127,7 @@ local function parse_status(status)
         status = {
             status,
             function(s)
-                return type(s) == type '' or vim.tbl_islist(s)
+                return type(s) == type '' or vim.islist(s)
             end,
             'valid git status format',
         },
@@ -324,7 +324,7 @@ function M.modified_files(location, callback)
         end
         local files = {}
         for _, git_files in pairs(status) do
-            if vim.tbl_islist(git_files) then
+            if vim.islist(git_files) then
                 vim.list_extend(files, git_files)
             elseif type(git_files) == type {} then
                 vim.list_extend(files, vim.tbl_keys(git_files))

@@ -132,7 +132,7 @@ function M.has_version(prg, target_version)
         target_version = {
             target_version,
             function(v)
-                return not v or (type(v) == type {} and vim.tbl_islist(v))
+                return not v or (type(v) == type {} and vim.islist(v))
             end,
             'valid target version table',
         },

@@ -292,7 +292,7 @@ local function fs_write(path, data, append, callback)
         data = {
             data,
             function(d)
-                return type(d) == type '' or vim.tbl_islist(d)
+                return type(d) == type '' or vim.islist(d)
             end,
             'a string or an array',
         },

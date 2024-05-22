@@ -97,7 +97,7 @@ function M.add_thread_context(opts)
     -- - Dumped functions should go into "functions" key
     -- - Common context opts should go into a "context" key
     if opts then
-        if type(opts) == type {} and not vim.tbl_islist(opts) then
+        if type(opts) == type {} and not vim.islist(opts) then
             for k, v in pairs(opts) do
                 if type(v) == 'function' then
                     thread_opts.functions[k] = string.dump(v)

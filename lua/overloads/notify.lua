@@ -164,7 +164,7 @@ local function notify(msg, level, opts)
         options = {
             opts,
             function(o)
-                return not o or (type(o) == type {} and not vim.tbl_islist(o))
+                return not o or (type(o) == type {} and not vim.islist(o))
             end,
             'table of options',
         },

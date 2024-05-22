@@ -2,12 +2,20 @@ if vim.loader then
     vim.loader.enable()
 end
 
-if not vim.version.gt(vim.version(), { 0, 9 }) then
-    vim.api.nvim_err_writeln 'Neovim version is too old!! please use update it'
-end
-
 if not vim.list_contains then
     vim.list_contains = vim.tbl_contains
+end
+
+if not vim.isarray then
+    vim.isarray = vim.tbl_islist
+end
+
+if not vim.islist then
+    vim.islist = vim.tbl_islist
+end
+
+if not vim.version.gt(vim.version(), { 0, 9 }) then
+    vim.api.nvim_err_writeln 'Neovim version is too old!! please use update it'
 end
 
 if not vim.base64 then
@@ -15,6 +23,11 @@ if not vim.base64 then
         encode = require('utils.strings').base64_encode,
         decode = require('utils.strings').base64_decode,
     }
+end
+
+local nvim = require 'nvim'
+if not vim.keymap then
+    vim.keymap = nvim.keymap
 end
 
 vim.g.has_ui = #vim.api.nvim_list_uis() > 0
@@ -78,8 +91,8 @@ end
 
 require 'utils.filetype_detect'
 
-require 'completions'
 require 'globals'
+require 'completions'
 require 'watch_files'
 
 require('threads.parse').ssh_hosts()

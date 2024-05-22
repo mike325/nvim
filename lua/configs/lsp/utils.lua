@@ -26,7 +26,7 @@ function M.check_language_server(languages)
         languages = {
             languages,
             function(l)
-                return not l or type(l) == type '' or vim.tbl_islist(l)
+                return not l or type(l) == type '' or vim.islist(l)
             end,
             'a string or a list of strings',
         },
@@ -39,7 +39,7 @@ function M.check_language_server(languages)
                 return server_idx
             end
         end
-    elseif vim.tbl_islist(languages) then
+    elseif vim.islist(languages) then
         for _, language in pairs(languages) do
             local servers = langservers[language]
             if servers then
@@ -130,6 +130,16 @@ function M.check_null_diagnostics(client)
             end
         end
     end
+end
+
+function M.is_null_ls_formatting_enabled(bufnr)
+    local null_ls = vim.F.npcall(require, 'null-ls')
+    if not null_ls then
+        return false
+    end
+    local ft = vim.bo[bufnr].filetype
+    local generators = require('null-ls.generators').get_available(ft, require('null-ls.methods').internal.FORMATTING)
+    return #generators > 0
 end
 
 return M

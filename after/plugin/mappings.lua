@@ -4,6 +4,7 @@ if not vim.keymap then
     vim.keymap = nvim.keymap
 end
 
+-- TODO: Lazy check for mini
 local has_mini = nvim.plugins['mini.nvim'] ~= nil or (vim.g.minimal and vim.F.npcall(require, 'mini.comment') ~= nil)
 
 if not has_mini then
