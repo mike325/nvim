@@ -18,7 +18,6 @@ if not vim.version.gt(vim.version(), { 0, 9 }) then
     vim.api.nvim_err_writeln 'Neovim version is too old!! please use update it'
 end
 
-
 vim.opt.runtimepath:append(vim.fn.stdpath 'config')
 if not vim.base64 then
     vim.base64 = {
