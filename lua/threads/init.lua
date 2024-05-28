@@ -124,7 +124,7 @@ function M.add_thread_context(opts)
         end
     end
     context.dirname = vim.fs.dirname(context.bufname)
-    context.buf_is_virtual = prefix ~= nil or vim.opt_local.buftype:get() ~= '' or context.bufname == ''
+    context.buf_is_virtual = prefix ~= nil or vim.bo.buftype ~= '' or context.bufname == ''
     context.cwd = context.cwd or (vim.loop.cwd():gsub('\\', '/'))
 
     thread_opts.context = context

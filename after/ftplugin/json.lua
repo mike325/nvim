@@ -1,5 +1,5 @@
 -- " Json is used as config files, this enables comments for them
-vim.opt_local.commentstring = '// %s'
+vim.bo.commentstring = '// %s'
 if vim.fn.executable 'jq' == 1 then
-    vim.opt_local.formatprg = 'jq .'
+    vim.bo.formatprg = 'jq .'
 end

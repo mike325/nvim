@@ -422,7 +422,7 @@ function M.set_compiler(compiler, opts)
 
     opts = opts or {}
 
-    local language = opts.language or vim.opt_local.filetype:get()
+    local language = opts.language or vim.bo.filetype
     local option = opts.option or 'makeprg'
 
     local cmd = { compiler }
@@ -785,9 +785,9 @@ end
 function M.spelllangs(lang)
     if lang and lang ~= '' then
         M.abolish(lang)
-        vim.opt_local.spelllang = lang
+        vim.bo.spelllang = lang
     end
-    P(vim.opt_local.spelllang:get()[1])
+    vim.print(vim.bo.spelllang)
 end
 
 function M.get_abbrs(language)

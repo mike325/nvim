@@ -68,10 +68,10 @@ end, {
     desc = 'Open Neovim help with word under cursor',
 })
 
--- vim.opt_local.omnifunc = 'v:lua.vim.lua_omnifunc' -- TODO: make this play nicely with LSP
-vim.opt_local.keywordprg = ':HelpNeovim'
+-- vim.bo.omnifunc = 'v:lua.vim.lua_omnifunc' -- TODO: make this play nicely with LSP
+vim.bo.keywordprg = ':HelpNeovim'
 
-local ft = vim.opt_local.filetype:get()
+local ft = vim.bo.filetype
 require('utils.buffers').setup(ft, {
     define = [[^\s*\(local\s\+\)\?\(function\s\+\(\i\+[.:]\)\?\|\ze\i\+\s*=\s*\|\(\i\+[.:]\)\?\ze\s*=\s*\)]],
     -- TODO: this includeexpr does not include /init.lua files

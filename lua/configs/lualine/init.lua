@@ -270,9 +270,9 @@ lualine.setup {
                 'trailspace',
                 separator = { left = section_separators.right, right = '' },
                 cond = function()
-                    local ft = vim.opt_local.filetype:get()
-                    local ro = vim.opt_local.readonly:get()
-                    local mod = vim.opt_local.modifiable:get()
+                    local ft = vim.bo.filetype
+                    local ro = vim.bo.readonly
+                    local mod = vim.bo.modifiable
                     local disable = {
                         help = true,
                         log = true,
@@ -284,9 +284,9 @@ lualine.setup {
                 'mixindent',
                 separator = { left = section_separators.right, right = '' },
                 cond = function()
-                    local ft = vim.opt_local.filetype:get()
-                    local ro = vim.opt_local.readonly:get()
-                    local mod = vim.opt_local.modifiable:get()
+                    local ft = vim.bo.filetype
+                    local ro = vim.bo.readonly
+                    local mod = vim.bo.modifiable
                     local disable = {
                         help = true,
                         log = true,
@@ -297,7 +297,7 @@ lualine.setup {
             {
                 section.wordcount,
                 cond = function()
-                    local ft = vim.opt_local.filetype:get()
+                    local ft = vim.bo.filetype
                     local count = {
                         latex = true,
                         tex = true,

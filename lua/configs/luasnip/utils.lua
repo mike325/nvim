@@ -98,7 +98,7 @@ end
 
 function M.else_clause(args, snip, old_state, placeholder)
     local nodes = {}
-    local ft = vim.opt_local.filetype:get()
+    local ft = vim.bo.filetype
 
     local get_comment = RELOAD('utils.buffers').get_comment
 

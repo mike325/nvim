@@ -152,14 +152,14 @@ end
 function M.get_indent_string(indent)
     vim.validate { indent = { indent, 'number', true } }
 
-    local expand = vim.opt_local.expandtab:get()
+    local expand = vim.bo.expandtab
     indent = indent or M.get_indent()
     local spaces = not expand and '\t' or string.rep(' ', indent)
     return spaces
 end
 
 local function normalize_indent(lines, indent)
-    local expand = vim.opt_local.expandtab:get()
+    local expand = vim.bo.expandtab
     local spaces = M.get_indent_string(indent)
 
     for i = 1, #lines do
@@ -186,7 +186,7 @@ function M.indent(lines, level)
     local abslevel = math.abs(level)
 
     local indent = M.get_indent()
-    local expand = vim.opt_local.expandtab:get()
+    local expand = vim.bo.expandtab
     local tmp_lines = vim.deepcopy(lines)
 
     tmp_lines = normalize_indent(tmp_lines, abslevel)
@@ -339,7 +339,7 @@ end
 function M.format(opts)
     opts = opts or {}
 
-    local ft = opts.ft or vim.opt_local.filetype:get()
+    local ft = opts.ft or vim.bo.filetype
     local bufnr = vim.api.nvim_get_current_buf()
     local external_formatprg = RELOAD('utils.functions').external_formatprg
     local ok, utils = pcall(RELOAD, 'filetypes.' .. ft)
@@ -409,7 +409,7 @@ end
 
 function M.setup(ft, opts)
     vim.validate { ft = { ft, 'string', true }, opts = { opts, 'table', true } }
-    ft = ft or vim.opt_local.filetype:get()
+    ft = ft or vim.bo.filetype
 
     -- NOTE: C uses C++ setup
     if ft == 'c' then

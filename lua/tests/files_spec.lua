@@ -320,10 +320,10 @@ describe('Normalize', function()
         it('Windows Path', function()
             local windows_path = [[c:\Users]]
 
-            vim.opt.shellslash = false
+            vim.go.shellslash = false
             mini_test.expect.equality(normalize(windows_path), forward_path(windows_path))
 
-            vim.opt.shellslash = true
+            vim.go.shellslash = true
             mini_test.expect.equality(normalize(windows_path), forward_path(windows_path))
         end)
     end

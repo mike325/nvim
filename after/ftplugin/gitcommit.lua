@@ -1,13 +1,10 @@
-vim.opt_local.bufhidden = 'delete'
-vim.opt_local.readonly = false
+vim.bo.bufhidden = 'delete'
+vim.bo.readonly = false
+vim.bo.expandtab = true
+vim.bo.modifiable = true
+vim.bo.swapfile = false
+vim.bo.textwidth = 80
 
-vim.opt_local.expandtab = true
+vim.bo.complete = table.concat(vim.list_extend(vim.split(vim.bo.complete, ','), { 'k', 'kspell' }), ',')
 
-vim.opt_local.modifiable = true
-vim.opt_local.swapfile = false
-
-vim.opt_local.spell = true
-
-vim.opt_local.complete:append { 'k', 'kspell' }
-
-vim.opt_local.textwidth = 80
+vim.wo.spell = true

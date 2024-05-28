@@ -1,2 +1,2 @@
-vim.opt_local.comments = ':;,:#'
-vim.opt_local.commentstring = '; %s'
+vim.bo.comments = ':;,:#'
+vim.bo.commentstring = '; %s'

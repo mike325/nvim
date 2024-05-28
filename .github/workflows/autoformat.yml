@@ -12,18 +12,17 @@ jobs:
     - uses: actions/checkout@v4
     - name: Fetch install script
       run: |
-        sudo apt-get update
-        sudo apt-get install -y \
-          bison              \
-          curl               \
-          git                \
-          shellcheck         \
-          python3-setuptools \
-          python-setuptools  \
-          python3-pip        \
-          python3-virtualenv \
-          luarocks           \
-          golang
+        sudo apt update
+        sudo apt install -y      \
+              bison              \
+              curl               \
+              git                \
+              shellcheck         \
+              python3-setuptools \
+              python3-pip        \
+              python3-virtualenv \
+              luarocks           \
+              golang
 
         wget https://raw.githubusercontent.com/mike325/dotfiles/master/install.sh -O /tmp/install.sh
         chmod +x /tmp/install.sh

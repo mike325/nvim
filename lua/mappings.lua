@@ -110,10 +110,10 @@ function M.floating_terminal(opts)
     if cmd ~= '' then
         shell = cmd
     elseif sys.name == 'windows' then
-        if vim.regex([[^cmd\(\.exe\)\?$]]):match_str(vim.opt.shell:get()) then
+        if vim.regex([[^cmd\(\.exe\)\?$]]):match_str(vim.go.shell) then
             shell = 'powershell -noexit -executionpolicy bypass '
         else
-            shell = vim.opt.shell:get()
+            shell = vim.go.shell
         end
     else
         shell = vim.fn.fnamemodify(vim.env.SHELL or '', ':t')
@@ -417,7 +417,7 @@ function M.remote_cmd(host, send)
     local utils = RELOAD 'utils.files'
 
     local filename = vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf())
-    local forward_slash = sys.name == 'windows' and not vim.opt.shellslash:get()
+    local forward_slash = sys.name == 'windows' and not vim.go.shellslash
     if forward_slash then
         filename = filename:gsub('\\', '/')
     end
@@ -591,7 +591,7 @@ function M.repl(opts)
         if vim.b.relp_cmd then
             cmd = vim.b.relp_cmd
         else
-            cmd = vim.opt_local.filetype:get()
+            cmd = vim.bo.filetype
         end
     end
 
@@ -706,7 +706,7 @@ function M.custom_compiler(opts)
     if vim.list_contains(mapped, compiler) then
         vim.cmd.runtime { bang = true, args = { base_path .. compiler .. '.lua' } }
     else
-        local language = vim.opt_local.filetype:get()
+        local language = vim.bo.filetype
         local has_compiler, compiler_data = pcall(RELOAD, 'filetypes.' .. language)
 
         if has_compiler and (compiler_data.makeprg or compiler_data.formatprg) then

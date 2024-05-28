@@ -305,3 +305,7 @@ termdebug_config.variables_window_height = 15
 vim.g.termdebug_config = termdebug_config
 
 vim.api.nvim_set_hl(0, 'debugBreakpoint', { link = 'Error' })
+
+vim.o.jumpoptions = 'stack'
+
+vim.o.formatexpr = "v:lua.RELOAD('utils.buffers').format( { 'ft': &l:filetype })"

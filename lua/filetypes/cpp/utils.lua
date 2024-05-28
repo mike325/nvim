@@ -125,7 +125,7 @@ function M.compile(build_info)
     end
 
     local base_cwd = getcwd()
-    local ft = vim.opt_local.filetype:get()
+    local ft = vim.bo.filetype
 
     local compile_output = base_cwd .. '/build/main'
     if nvim.has 'win32' then

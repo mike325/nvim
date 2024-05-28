@@ -61,11 +61,11 @@ if executable 'gonvim' then
 end
 
 nvim.command.set('FileType', function(opts)
-    vim.opt_local.filetype = opts.args ~= '' and opts.args or 'text'
+    vim.bo.filetype = opts.args ~= '' and opts.args or 'text'
 end, { nargs = '?', complete = 'filetype', desc = 'Set filetype' })
 
 nvim.command.set('FileFormat', function(opts)
-    vim.opt_local.filetype = opts.args ~= '' and opts.args or 'unix'
+    vim.bo.filetype = opts.args ~= '' and opts.args or 'unix'
 end, { nargs = '?', complete = completions.fileformats, desc = 'Set file format' })
 
 nvim.command.set('SpellLang', function(opts)
@@ -221,8 +221,8 @@ end, {
 })
 
 nvim.command.set('ConcealLevel', function()
-    local conncall = vim.opt_local.conceallevel:get() or 0
-    vim.opt_local.conceallevel = conncall > 0 and 0 or 2
+    local conncall = vim.wo.conceallevel or 0
+    vim.wo.conceallevel = conncall > 0 and 0 or 2
 end, { desc = 'Toggle conceal level between 0 and 2' })
 
 nvim.command.set('Messages', function(opts)

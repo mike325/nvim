@@ -105,7 +105,7 @@ local function get_classname()
     local get_node_text = vim.treesitter.get_node_text or vim.treesitter.query.get_node_text
 
     local classname = ''
-    local query = parse_func(vim.opt_local.filetype:get(), classname_query)
+    local query = parse_func(vim.bo.filetype, classname_query)
     for _, capture, _ in query:iter_captures(class_node, buf) do
         -- NOTE: Should match just once
         classname = get_node_text(capture, buf)

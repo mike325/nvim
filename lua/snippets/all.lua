@@ -101,7 +101,7 @@ local function license(_, _, user_args)
         },
     }
 
-    local ft = vim.opt_local.filetype:get()
+    local ft = vim.bo.filetype
 
     local actual_license = licenses[user_args[1]] or licenses.mit
     for idx, line in ipairs(actual_license) do
@@ -134,7 +134,7 @@ local general_snips = {
     s('#!', {
         p(function()
             -- stylua: ignore
-            local ft = vim.opt_local.filetype:get()
+            local ft = vim.bo.filetype
             -- stylua: ignore
             local executables = {
                 python = 'python3'

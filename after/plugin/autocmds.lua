@@ -6,7 +6,7 @@ if not nvim.plugins['nvim-lspconfig'] then
         group = vim.api.nvim_create_augroup('StartLSP', { clear = true }),
         pattern = '*',
         callback = function(_)
-            local ft = vim.opt_local.filetype:get()
+            local ft = vim.bo.filetype
             local server_idx = RELOAD('configs.lsp.utils').check_language_server(ft)
             if server_idx then
                 local server = RELOAD('configs.lsp.servers')[ft][server_idx]

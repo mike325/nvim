@@ -56,9 +56,9 @@ vim.g.short_branch_name = true
 vim.g.port = 0x8AC
 
 if vim.fn.has 'win32' == 1 then
-    -- vim.opt.shell = 'cmd.exe'
-    vim.opt.shell = 'powershell'
-    vim.opt.shellcmdflag = table.concat({
+    -- vim.go.shell = 'cmd.exe'
+    vim.go.shell = 'powershell'
+    vim.go.shellcmdflag = table.concat({
         '-NoLogo',
         '-NoProfile',
         '-ExecutionPolicy',
@@ -66,15 +66,15 @@ if vim.fn.has 'win32' == 1 then
         '-Command',
         -- '[Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.Encoding]::UTF8;',
     }, ' ')
-    vim.opt.shellredir = '2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode'
-    vim.opt.shellpipe = '2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode'
-    vim.opt.shellquote = ''
-    vim.opt.shellxquote = ''
+    vim.go.shellredir = '2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode'
+    vim.go.shellpipe = '2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode'
+    vim.go.shellquote = ''
+    vim.go.shellxquote = ''
 
-    vim.opt.shellslash = true
+    vim.go.shellslash = true
 end
 
-vim.opt.termguicolors = true
+vim.go.termguicolors = true
 vim.g.mapleader = ' '
 
 require 'utils.filetype_detect'

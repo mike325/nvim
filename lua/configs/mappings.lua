@@ -229,7 +229,6 @@ if executable 'scp' then
     )
 end
 
-vim.opt.formatexpr = "v:lua.RELOAD('utils.buffers').format( { 'ft': &l:filetype })"
 vim.keymap.set('n', '=F', function()
     RELOAD('utils.buffers').format { whole_file = true }
 end, { noremap = true, silent = true, desc = 'Format the current buffer with the prefer formatting prg' })

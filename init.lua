@@ -14,9 +14,12 @@ if not vim.islist then
     vim.islist = vim.tbl_islist
 end
 
-if not vim.version.gt(vim.version(), { 0, 9 }) then
+local nvim = require 'nvim'
+
+if not nvim.has { 0, 9 } then
     vim.api.nvim_err_writeln 'Neovim version is too old!! please use update it'
 end
+
 
 if not vim.base64 then
     vim.base64 = {
@@ -25,7 +28,6 @@ if not vim.base64 then
     }
 end
 
-local nvim = require 'nvim'
 if not vim.keymap then
     vim.keymap = nvim.keymap
 end
@@ -55,10 +57,10 @@ vim.g.short_branch_name = true
 
 vim.g.port = 0x8AC
 
-if vim.fn.has 'win32' == 1 then
-    -- vim.opt.shell = 'cmd.exe'
-    vim.opt.shell = 'powershell'
-    vim.opt.shellcmdflag = table.concat({
+if nvim.has 'win32' then
+    -- vim.go.shell = 'cmd.exe'
+    vim.go.shell = 'powershell'
+    vim.go.shellcmdflag = table.concat({
         '-NoLogo',
         '-NoProfile',
         '-ExecutionPolicy',
@@ -66,15 +68,15 @@ if vim.fn.has 'win32' == 1 then
         '-Command',
         -- '[Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.Encoding]::UTF8;',
     }, ' ')
-    vim.opt.shellredir = '2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode'
-    vim.opt.shellpipe = '2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode'
-    vim.opt.shellquote = ''
-    vim.opt.shellxquote = ''
+    vim.go.shellredir = '2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode'
+    vim.go.shellpipe = '2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode'
+    vim.go.shellquote = ''
+    vim.go.shellxquote = ''
 
-    vim.opt.shellslash = true
+    vim.go.shellslash = true
 end
 
-vim.opt.termguicolors = true
+vim.go.termguicolors = true
 vim.g.mapleader = ' '
 
 vim.g.minimal = vim.env.VIM_MIN ~= nil or vim.g.minimal ~= nil

@@ -134,12 +134,11 @@ vim.api.nvim_create_autocmd({ 'TermOpen' }, {
     group = vim.api.nvim_create_augroup('TerminalAutocmds', { clear = true }),
     pattern = '*',
     callback = function()
-        vim.opt.swapfile = false
-        vim.opt.backup = false
-        vim.opt.undofile = false
-        vim.opt.relativenumber = false
-        vim.opt.number = false
-        vim.opt.cursorline = false
+        vim.bo.swapfile = false
+        vim.bo.undofile = false
+        vim.wo.relativenumber = false
+        vim.wo.number = false
+        vim.wo.cursorline = false
     end,
 })
 
@@ -352,7 +351,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
         end
 
         -- NOTE: use HelpNeovim defined in after/ftplugin
-        if vim.opt_local.filetype:get() == 'lua' then
+        if vim.bo.filetype == 'lua' then
             client.server_capabilities.hoverProvider = false
         end
 

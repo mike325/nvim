@@ -1,4 +1,4 @@
-local ft = vim.opt_local.filetype:get()
+local ft = vim.bo.filetype
 require('utils.buffers').setup(ft, {
     expandtab = false,
     tabstop = 4,

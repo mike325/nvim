@@ -13,23 +13,22 @@ jobs:
       - uses: actions/setup-python@v5
       - name: OS Info
         run: |
-          sudo apt-get update
-          sudo apt-get install wget
+          sudo apt update
+          sudo apt install wget
           mkdir -p ~/.local/bin/
           wget https://raw.githubusercontent.com/dylanaraps/neofetch/master/neofetch && chmod +x ./neofetch && ./neofetch
       - name: Install dependencies
         run: |
-          sudo apt-get install -y \
-            bison              \
-            curl               \
-            git                \
-            shellcheck         \
-            python3-setuptools \
-            python-setuptools  \
-            python3-pip        \
-            python3-virtualenv \
-            luarocks           \
-            golang
+          sudo apt install -y      \
+                bison              \
+                curl               \
+                git                \
+                shellcheck         \
+                python3-setuptools \
+                python3-pip        \
+                python3-virtualenv \
+                luarocks           \
+                golang
 
           sudo luarocks install luacheck
 

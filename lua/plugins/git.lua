@@ -57,7 +57,7 @@ return {
                     [']c'] = {
                         mode = 'n',
                         mapping = function()
-                            if vim.opt_local.diff:get() then
+                            if vim.wo.diff then
                                 vim.cmd.normal { bang = true, args = { ']c' } }
                             else
                                 require('gitsigns.actions').next_hunk()

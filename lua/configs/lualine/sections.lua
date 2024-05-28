@@ -64,8 +64,8 @@ function M.project_root()
 end
 
 function M.spell()
-    if vim.opt_local.spell:get() then
-        local lang = vim.opt_local.spelllang:get()[1] or 'en'
+    if vim.wo.spell then
+        local lang = vim.bo.spelllang or 'en'
         return ('[%s]'):format(lang:upper())
     end
     return ''

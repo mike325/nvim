@@ -33,7 +33,7 @@ local function load_snippets(ft)
 
     local ok
     local snip_msg = ''
-    ft = ft or vim.opt_local.filetype:get()
+    ft = ft or vim.bo.filetype
 
     for runtimepath, opts in pairs(runtimepaths) do
         for _, snips in ipairs(vim.api.nvim_get_runtime_file(runtimepath .. 'all.lua', true)) do
