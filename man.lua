@@ -18,6 +18,8 @@ if not vim.version.gt(vim.version(), { 0, 9 }) then
     vim.api.nvim_err_writeln 'Neovim version is too old!! please use update it'
 end
 
+
+vim.opt.runtimepath:append(vim.fn.stdpath 'config')
 if not vim.base64 then
     vim.base64 = {
         encode = require('utils.strings').base64_encode,
@@ -76,8 +78,6 @@ end
 
 vim.go.termguicolors = true
 vim.g.mapleader = ' '
-
-vim.opt.runtimepath:append(vim.fn.stdpath 'config')
 
 vim.g.minimal = true
 vim.g.bare = true
