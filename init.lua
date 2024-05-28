@@ -20,7 +20,6 @@ if not nvim.has { 0, 9 } then
     vim.api.nvim_err_writeln 'Neovim version is too old!! please use update it'
 end
 
-
 if not vim.base64 then
     vim.base64 = {
         encode = require('utils.strings').base64_encode,
