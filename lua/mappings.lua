@@ -464,26 +464,10 @@ function M.remote_cmd(host, send)
     return rcmd
 end
 
-function M.get_host(host, send)
-    if not host or host == '' then
-        local prompt = 'Enter hostname > '
-        if send ~= nil then
-            prompt = send and 'Send file to > ' or 'Get file from > '
-        end
-        host = vim.fn.input(prompt, '', "customlist,v:lua.require'completions'.ssh_hosts_completion")
-    end
-    return host
-end
-
 function M.remote_file(host, send)
-    host = M.get_host(host, send)
-    if not host or host == '' then
-        vim.notify('Missing hostname', vim.log.levels.ERROR)
+    host = RELOAD('utils.network').get_ssh_host(host)
+    if not host then
         return
-    end
-
-    if STORAGE.hosts[host] then
-        host = STORAGE.hosts[host].hostname
     end
 
     local cmd = M.remote_cmd(host, send)
@@ -1118,12 +1102,8 @@ function M.vnc(hostname, opts)
     local executable = RELOAD('utils.files').executable
 
     local components = vim.split(hostname, ':')
-    hostname = components[1]
+    hostname = RELOAD('utils.network').get_remote_host(components[1])
     local port = components[2] or '1' -- '10'
-
-    if STORAGE.hosts[hostname] then
-        hostname = STORAGE.hosts[hostname].hostname
-    end
 
     if vim.env.SSH_CONNECTION then
         RELOAD('utils.functions').send_osc1337('vnc', hostname .. ':' .. port)

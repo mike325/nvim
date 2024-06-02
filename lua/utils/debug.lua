@@ -1,27 +1,5 @@
 local M = {}
 
-function M.get_hostname(host)
-    vim.validate {
-        host = { host, 'string', true },
-    }
-
-    if not host or host == '' then
-        host = vim.fn.input('Hostname > ', '', "customlist,v:lua.require'completions'.ssh_hosts_completion")
-        if not host or host == '' then
-            vim.notify('Missing hostname!', vim.log.levels.ERROR, { title = 'GetRemoteProcess' })
-            return false
-        end
-    end
-    if STORAGE.hosts[host] then
-        if STORAGE.hosts[host].user then
-            host = string.format('%s@%s', STORAGE.hosts[host].user, STORAGE.hosts[host].hostname)
-        else
-            host = STORAGE.hosts[host].hostname
-        end
-    end
-    return host
-end
-
 function M.get_remote_processes(opts, cb)
     vim.validate {
         opts = { opts, 'table', true },
@@ -68,7 +46,7 @@ function M.get_remote_processes(opts, cb)
         return processes
     end
 
-    host = M.get_hostname(host)
+    host = RELOAD('utils.network').get_ssh_host(host)
     if not host then
         return
     end
@@ -102,10 +80,11 @@ function M.remote_attach_debugger(opts)
     }
     opts = opts or {}
 
-    local host = M.get_hostname(opts.hostname)
+    local host = RELOAD('utils.network').get_ssh_host(opts.hostname)
     if not host then
         return
     end
+
     M.get_remote_processes({ hostname = host, filter = opts.filter }, function(processes)
         local process_lst = vim.tbl_map(function(p)
             return string.format('%s %s', p.process, table.concat(p.args, ' '))
@@ -139,7 +118,7 @@ function M.remote_dap_attach(host, pid, filemap, env)
         return false
     end
 
-    host = M.get_hostname(host)
+    host = RELOAD('utils.network').get_ssh_host(host)
     if not host then
         return
     end

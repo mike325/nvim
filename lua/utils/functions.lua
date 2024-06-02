@@ -930,7 +930,7 @@ function M.scp_edit(opts)
 
         if STORAGE.hosts[hostname] then
             host_port = STORAGE.hosts[hostname].port or host_port
-            hostname = ('%s@%s'):format(STORAGE.hosts[hostname].user, STORAGE.hosts[hostname].hostname)
+            hostname = RELOAD('utils.network').get_ssh_host(hostname)
         end
 
         if remote_path and remote_path ~= '' then
@@ -951,7 +951,7 @@ function M.scp_edit(opts)
         if not filename or filename == '' then
             if STORAGE.hosts[hostname] then
                 host_port = STORAGE.hosts[hostname].port or host_port
-                hostname = ('%s@%s'):format(STORAGE.hosts[hostname].user, STORAGE.hosts[hostname].hostname)
+                hostname = RELOAD('utils.network').get_ssh_host(hostname)
             end
 
             vim.ui.select(
