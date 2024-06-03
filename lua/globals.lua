@@ -1,17 +1,17 @@
-_G['RELOAD'] = function(pkg)
+_G['RELOAD'] = function(modname)
     if vim then
         if vim.is_thread() then
-            package.loaded[pkg] = nil
+            package.loaded[modname] = nil
         elseif vim.v.vim_did_enter == 1 then
-            package.loaded[pkg] = nil
+            package.loaded[modname] = nil
             if vim.loader and vim.loader.enabled then
-                vim.loader.reset(pkg)
+                vim.loader.reset(modname)
             end
         end
     else
-        package.loaded[pkg] = nil
+        package.loaded[modname] = nil
     end
-    return require(pkg)
+    return require(modname)
 end
 
 _G['P'] = function(...)

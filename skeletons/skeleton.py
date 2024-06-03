@@ -7,14 +7,15 @@ import os
 import subprocess
 import sys
 
-# from typing import Dict
 from typing import Optional
+from typing import Dict
 from typing import List
 from typing import Sequence
 from typing import TextIO
 from typing import Any
 from typing import Union
 from typing import cast
+from collections import namedtuple
 from dataclasses import dataclass, field
 
 _header = """
@@ -47,9 +48,47 @@ _log: logging.Logger
 _SCRIPTNAME: str = os.path.basename(__file__)
 _log_file: Optional[str] = os.path.splitext(_SCRIPTNAME)[0] + ".log"
 
+_has_colors: bool = True
 _verbose: bool = False
 # _is_windows = os.name == 'nt'
 # _home = os.environ['USERPROFILE' if _is_windows else 'HOME']
+
+Colors = namedtuple(
+    "Colors",
+    [
+        "grey",
+        "green",
+        "magenta",
+        "purple",
+        "blue",
+        "yellow",
+        "red",
+        "bold_white",
+        "bold_red",
+        "reset",
+    ],
+)
+
+COLOR = Colors(
+    grey="\x1b[38;21m",
+    green="\x1b[32m",
+    magenta="\x1b[35m",
+    purple="\x1b[35m",
+    blue="\x1b[44;1m",
+    yellow="\x1b[38;5;226m",
+    red="\x1b[38;5;196m",
+    bold_white="\x1b[37;1m",
+    bold_red="\x1b[31;1m",
+    reset="\x1b[0m",
+)
+
+
+def color_str(msg: Any, color: str, bg: Optional[str] = None):
+    if _has_colors:
+        return "{color}{bg}{msg}{reset}".format(
+            color=color, bg=bg if bg is not None else "", msg=msg, reset=COLOR.reset
+        )
+    return msg if isinstance(msg, str) else '{}'.format(msg)
 
 
 @dataclass
@@ -158,13 +197,15 @@ def createLogger(
     color: bool = True,
     filename: Optional[str] = "dummy.log",
     name: str = "MainLogger",
-):
+) -> logging.Logger:
     """Creates logging obj
 
     Args:
-        stdout_level: logging level displayed into the terminal
-        file_level: logging level saved into the logging file
-        color: Enable/Disable color console output
+        stdout_level (int): = logging.INFO,
+        file_level (int): = logging.DEBUG,
+        color (bool): = True,
+        filename (Optional[str]): = "dummy.log",
+        name (str): = "MainLogger",
 
     Returns:
         Logger with file and tty handlers
@@ -185,38 +226,31 @@ def createLogger(
         class PrimitiveFormatter(logging.Formatter):
             """Logging colored formatter, adapted from https://stackoverflow.com/a/56944256/3638629"""
 
-            def __init__(self, fmt, log_colors=None):
+            def __init__(self, fmt, log_colors: Optional[Dict[str, str]] = None):
                 super().__init__()
                 self.fmt = fmt
 
-                colors = {
-                    "grey": "\x1b[38;21m",
-                    "green": "\x1b[32m",
-                    "magenta": "\x1b[35m",
-                    "purple": "\x1b[35m",
-                    "blue": "\x1b[38;5;39m",
-                    "yellow": "\x1b[38;5;226m",
-                    "red": "\x1b[38;5;196m",
-                    "bold_red": "\x1b[31;1m",
-                    "reset": "\x1b[0m",
-                }
+                self.FORMATS = {}
+                if _has_colors:
+                    log_colors = log_colors if log_colors is not None else {}
 
-                if log_colors is None:
-                    log_colors = {}
+                    log_colors["DEBUG"] = log_colors["DEBUG"] if "DEBUG" in log_colors else COLOR.magenta
+                    log_colors["INFO"] = log_colors["INFO"] if "INFO" in log_colors else COLOR.green
+                    log_colors["WARNING"] = log_colors["WARNING"] if "WARNING" in log_colors else COLOR.yellow
+                    log_colors["ERROR"] = log_colors["ERROR"] if "ERROR" in log_colors else COLOR.red
+                    log_colors["CRITICAL"] = log_colors["CRITICAL"] if "CRITICAL" in log_colors else COLOR.bold_red
 
-                log_colors["DEBUG"] = log_colors["DEBUG"] if "DEBUG" in log_colors else "magenta"
-                log_colors["INFO"] = log_colors["INFO"] if "INFO" in log_colors else "green"
-                log_colors["WARNING"] = log_colors["WARNING"] if "WARNING" in log_colors else "yellow"
-                log_colors["ERROR"] = log_colors["ERROR"] if "ERROR" in log_colors else "red"
-                log_colors["CRITICAL"] = log_colors["CRITICAL"] if "CRITICAL" in log_colors else "bold_red"
-
-                self.FORMATS = {
-                    logging.DEBUG: colors[log_colors["DEBUG"]] + self.fmt + colors["reset"],
-                    logging.INFO: colors[log_colors["INFO"]] + self.fmt + colors["reset"],
-                    logging.WARNING: colors[log_colors["WARNING"]] + self.fmt + colors["reset"],
-                    logging.ERROR: colors[log_colors["ERROR"]] + self.fmt + colors["reset"],
-                    logging.CRITICAL: colors[log_colors["CRITICAL"]] + self.fmt + colors["reset"],
-                }
+                    self.FORMATS[logging.DEBUG] = log_colors["DEBUG"] + self.fmt + COLOR.reset
+                    self.FORMATS[logging.INFO] = log_colors["INFO"] + self.fmt + COLOR.reset
+                    self.FORMATS[logging.WARNING] = log_colors["WARNING"] + self.fmt + COLOR.reset
+                    self.FORMATS[logging.ERROR] = log_colors["ERROR"] + self.fmt + COLOR.reset
+                    self.FORMATS[logging.CRITICAL] = log_colors["CRITICAL"] + self.fmt + COLOR.reset
+                else:
+                    self.FORMATS[logging.DEBUG] = self.fmt
+                    self.FORMATS[logging.INFO] = self.fmt
+                    self.FORMATS[logging.WARNING] = self.fmt
+                    self.FORMATS[logging.ERROR] = self.fmt
+                    self.FORMATS[logging.CRITICAL] = self.fmt
 
             def format(self, record):
                 log_fmt = self.FORMATS.get(record.levelno)
@@ -228,23 +262,23 @@ def createLogger(
     # This means both 0 and 100 silence all output
     stdout_level = 100 if stdout_level == 0 else stdout_level
 
-    has_color = ColorFormatter is not None and color
+    has_color_formatter = ColorFormatter is not None and color
 
     stdout_handler = logging.StreamHandler(sys.stdout)
     stdout_handler.setLevel(stdout_level)
     logformat = "{color}%(levelname)-8s | %(message)s"
     logformat = logformat.format(
-        color="%(log_color)s" if has_color else "",
-        # reset='%(reset)s' if has_color else '',
+        color="%(log_color)s" if has_color_formatter else "",
+        # reset='%(reset)s' if has_color_formatter else '',
     )
     stdout_format = Formatter(
         logformat,
         log_colors={
-            "DEBUG": "purple",
-            "INFO": "green",
-            "WARNING": "yellow",
-            "ERROR": "red",
-            "CRITICAL": "red",
+            "DEBUG": COLOR.purple,
+            "INFO": COLOR.green,
+            "WARNING": COLOR.yellow,
+            "ERROR": COLOR.red,
+            "CRITICAL": COLOR.bold_red,
         },
     )
     stdout_handler.setFormatter(stdout_format)
@@ -252,7 +286,6 @@ def createLogger(
     logger.addHandler(stdout_handler)
 
     if file_level > 0 and file_level < 100 and filename is not None:
-
         with open(filename, "a") as log:
             log.write(_header)
             # log.write(f'\nDate: {datetime.datetime.date()}')
@@ -316,21 +349,21 @@ def _parseArgs():
     """
 
     class NegateAction(argparse.Action):
-        def __call__(self, parser, ns, values, option):
+        def __call__(self, parser, namespace, values, option_string=None):
             global _protocol
-            if len(option) == 2:
-                setattr(ns, self.dest, True)
+            if option_string is not None and len(option_string) < 4:
+                setattr(namespace, self.dest, True)
             else:
-                setattr(ns, self.dest, option[2:4] != "no")
+                setattr(namespace, self.dest, option_string[2:4] != "no")
 
     class NegateActionWithArg(argparse.Action):
-        def __call__(self, parser, ns, values, option):
-            if len(option) < 4:
-                setattr(ns, self.dest, True if values is None or values == "" else values)
-            elif option[2:4] == "no":
-                setattr(ns, self.dest, False)
+        def __call__(self, parser, namespace, values, option_string=None):
+            if option_string is not None and len(option_string) < 4:
+                setattr(namespace, self.dest, True if values is None or values == "" else values)
+            elif option_string[2:4] == "no":
+                setattr(namespace, self.dest, False)
             else:
-                setattr(ns, self.dest, values)
+                setattr(namespace, self.dest, values)
 
     parser = argparse.ArgumentParser()
 
@@ -408,7 +441,7 @@ def main():
         exit code, 0 in success any other integer in failure
 
     """
-    global _log
+    global _log, _has_colors
 
     args = _parseArgs()
 
@@ -421,6 +454,8 @@ def main():
 
     stdout_level = stdout_level if not args.quiet else 0
     file_level = file_level if not args.quiet else 0
+
+    _has_colors = args.color
 
     _log = createLogger(
         stdout_level=_str_to_logging(stdout_level),
