@@ -8,6 +8,48 @@ license = { text = "MIT" }
 
 [tool.ruff]
 line-length = 120
+indent-width = 4
+
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".ipynb_checkpoints",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pyenv",
+    ".pytest_cache",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    ".vscode",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "site-packages",
+    "venv",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle
+    "F",   # Pyflakes
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "SIM", # flake8-simplify
+    "I",   # isort
+]
+
 ignore = [
     # E121,
     # E123,
@@ -43,6 +85,11 @@ exclude = [
     # This contains builds of flake8 that we don't want to check
     "dist",
 ]
+
+[tool.ruff.format]
+quote-style = "double"
+# indent-style = "tab"
+docstring-code-format = true
 
 [tool.ruff.per-file-ignores]
 "__init__.py" = ["F401"]

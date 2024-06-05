@@ -88,7 +88,7 @@ def color_str(msg: Any, color: str, bg: Optional[str] = None) -> str:
         return "{color}{bg}{msg}{reset}".format(
             color=color, bg=bg if bg is not None else "", msg=msg, reset=COLOR.reset
         )
-    return msg if isinstance(msg, str) else '{}'.format(msg)
+    return msg if isinstance(msg, str) else str(msg)
 
 
 @dataclass
