@@ -6,17 +6,9 @@ import logging
 import os
 import subprocess
 import sys
-
-from typing import Optional
-from typing import Dict
-from typing import List
-from typing import Sequence
-from typing import TextIO
-from typing import Any
-from typing import Union
-from typing import cast
 from collections import namedtuple
 from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional, Sequence, TextIO, Union, cast
 
 _header = """
                     -`
@@ -92,7 +84,7 @@ def color_str(msg: Any, color: str, bg: Optional[str] = None) -> str:
 
 
 @dataclass
-class Job(object):
+class Job:
     """docstring for Job"""
 
     cmd: Sequence[str]
