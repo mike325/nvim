@@ -83,7 +83,7 @@ COLOR = Colors(
 )
 
 
-def color_str(msg: Any, color: str, bg: Optional[str] = None):
+def color_str(msg: Any, color: str, bg: Optional[str] = None) -> str:
     if _has_colors:
         return "{color}{bg}{msg}{reset}".format(
             color=color, bg=bg if bg is not None else "", msg=msg, reset=COLOR.reset
@@ -201,16 +201,20 @@ def createLogger(
     """Creates logging obj
 
     Args:
-        stdout_level (int): = logging.INFO,
-        file_level (int): = logging.DEBUG,
-        color (bool): = True,
-        filename (Optional[str]): = "dummy.log",
-        name (str): = "MainLogger",
+        stdout_level (int): = logging.INFO, logging level displayed into the terminal
+        file_level (int): = logging.DEBUG, logging level saved into the logging file
+        color (bool): = True, Enable/Disable color console output
+        filename (Optional[str]): = "dummy.log", Location of the logging file
+        name (str): = "MainLogger", Name of the logger object
 
     Returns:
         Logger with file and tty handlers
 
     """
+    global _has_colors
+
+    _has_colors = color
+
     logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)
 
@@ -227,6 +231,8 @@ def createLogger(
             """Logging colored formatter, adapted from https://stackoverflow.com/a/56944256/3638629"""
 
             def __init__(self, fmt, log_colors: Optional[Dict[str, str]] = None):
+                global _has_colors
+
                 super().__init__()
                 self.fmt = fmt
 
@@ -234,11 +240,11 @@ def createLogger(
                 if _has_colors:
                     log_colors = log_colors if log_colors is not None else {}
 
-                    log_colors["DEBUG"] = log_colors["DEBUG"] if "DEBUG" in log_colors else COLOR.magenta
-                    log_colors["INFO"] = log_colors["INFO"] if "INFO" in log_colors else COLOR.green
-                    log_colors["WARNING"] = log_colors["WARNING"] if "WARNING" in log_colors else COLOR.yellow
-                    log_colors["ERROR"] = log_colors["ERROR"] if "ERROR" in log_colors else COLOR.red
-                    log_colors["CRITICAL"] = log_colors["CRITICAL"] if "CRITICAL" in log_colors else COLOR.bold_red
+                    log_colors["DEBUG"] = log_colors.get("DEBUG", COLOR.magenta)
+                    log_colors["INFO"] = log_colors.get("INFO", COLOR.green)
+                    log_colors["WARNING"] = log_colors.get("WARNING", COLOR.yellow)
+                    log_colors["ERROR"] = log_colors.get("ERROR", COLOR.red)
+                    log_colors["CRITICAL"] = log_colors.get("CRITICAL", COLOR.bold_red)
 
                     self.FORMATS[logging.DEBUG] = log_colors["DEBUG"] + self.fmt + COLOR.reset
                     self.FORMATS[logging.INFO] = log_colors["INFO"] + self.fmt + COLOR.reset
@@ -398,6 +404,7 @@ def _parseArgs():
     )
 
     parser.add_argument(
+        "-v",
         "--verbose",
         dest="verbose",
         action="store_true",
@@ -406,6 +413,7 @@ def _parseArgs():
     )
 
     parser.add_argument(
+        "-q",
         "--quiet",
         dest="quiet",
         action="store_true",

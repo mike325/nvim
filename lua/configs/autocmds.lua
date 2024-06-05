@@ -1,92 +1,6 @@
 local nvim = require 'nvim'
 local executable = require('utils.files').executable
 
-local has_telescope = nvim.plugins['telescope.nvim'] ~= nil
-local methods = vim.lsp.protocol.Methods
-
-local commands = {
-    Type = { vim.lsp.buf.type_definition },
-    Declaration = { vim.lsp.buf.declaration },
-    OutgoingCalls = { vim.lsp.buf.outgoing_calls },
-    IncomingCalls = { vim.lsp.buf.incoming_calls },
-    Implementation = { vim.lsp.buf.implementation },
-    Format = {
-        function()
-            RELOAD('utils.buffers').format()
-        end,
-    },
-    RangeFormat = {
-        function()
-            RELOAD('utils.buffers').format()
-        end,
-    },
-    Rename = {
-        function()
-            vim.lsp.buf.rename()
-        end,
-    },
-    Signature = {
-        function()
-            vim.lsp.buf.signature_help()
-        end,
-    },
-    Hover = {
-        function()
-            vim.lsp.buf.hover()
-        end,
-    },
-    Definition = {
-        function()
-            if has_telescope then
-                require('telescope.builtin').lsp_definitions()
-            else
-                vim.lsp.buf.definition()
-            end
-        end,
-    },
-    References = {
-        function()
-            if has_telescope then
-                require('telescope.builtin').lsp_references()
-            else
-                vim.lsp.buf.references()
-            end
-        end,
-    },
-    -- Diagnostics = {
-    --     function()
-    --         if has_telescope then
-    --             require('telescope.builtin').diagnostics()
-    --         else
-    --             vim.diagnostic.setloclist()
-    --         end
-    --     end,
-    -- },
-    DocSymbols = {
-        function()
-            if has_telescope then
-                require('telescope.builtin').lsp_document_symbols()
-            else
-                vim.lsp.buf.document_symbol()
-            end
-        end,
-    },
-    WorkSymbols = {
-        function()
-            if has_telescope then
-                require('telescope.builtin').lsp_workspace_symbols()
-            else
-                vim.lsp.buf.workspace_symbol()
-            end
-        end,
-    },
-    CodeAction = {
-        function()
-            vim.lsp.buf.lsp_code_actions()
-        end,
-    },
-}
-
 if require('sys').name ~= 'windows' then
     local make_executable = vim.api.nvim_create_augroup('MakeExecutable', { clear = true })
 
@@ -249,7 +163,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
         if not vim.g.fix_inlay_hl then
             local comment_hl = vim.api.nvim_get_hl(0, { name = 'Comment' })
             comment_hl.bold = true
-            comment_hl.underline = false
+            comment_hl.underline = nil
             comment_hl.italic = true
             comment_hl.fg = comment_hl.fg + 26 -- color #6C70a0
             comment_hl.cterm = comment_hl.cterm or {}
@@ -259,25 +173,62 @@ vim.api.nvim_create_autocmd('LspAttach', {
             vim.g.fix_inlay_hl = true
         end
 
-        local bufnr = args.buf
-        local client = vim.lsp.get_client_by_id(args.data.client_id)
-        if not client then
-            return
-        end
+        local has_telescope = nvim.plugins['telescope.nvim'] ~= nil
+        local methods = vim.lsp.protocol.Methods
 
-        if client.name == 'clangd' then
-            local tmpdir = client.config.cmd_env and client.config.cmd_env.TMPDIR or nil
-            if tmpdir and not require('utils.files').is_dir(tmpdir) then
-                require('utils.files').mkdir(tmpdir, true)
-            end
-        end
-
-        local is_min = vim.g.minimal and vim.F.npcall(require, 'mini.completion') ~= nil
-        vim.bo[bufnr].omnifunc = is_min and 'v:lua.MiniCompletion.completefunc_lsp' or 'v:lua.vim.lsp.omnifunc'
-
-        if vim.bo[bufnr].tagfunc == '' then
-            vim.bo[bufnr].tagfunc = 'v:lua.vim.lsp.tagfunc'
-        end
+        local commands = {
+            Type = vim.lsp.buf.type_definition,
+            Declaration = vim.lsp.buf.declaration,
+            OutgoingCalls = vim.lsp.buf.outgoing_calls,
+            IncomingCalls = vim.lsp.buf.incoming_calls,
+            Implementation = vim.lsp.buf.implementation,
+            Format = function()
+                RELOAD('utils.buffers').format()
+            end,
+            RangeFormat = function()
+                RELOAD('utils.buffers').format()
+            end,
+            Rename = function()
+                vim.lsp.buf.rename()
+            end,
+            Signature = function()
+                vim.lsp.buf.signature_help()
+            end,
+            Hover = function()
+                vim.lsp.buf.hover()
+            end,
+            Definition = function()
+                if has_telescope then
+                    require('telescope.builtin').lsp_definitions()
+                else
+                    vim.lsp.buf.definition()
+                end
+            end,
+            References = function()
+                if has_telescope then
+                    require('telescope.builtin').lsp_references()
+                else
+                    vim.lsp.buf.references()
+                end
+            end,
+            DocSymbols = function()
+                if has_telescope then
+                    require('telescope.builtin').lsp_document_symbols()
+                else
+                    vim.lsp.buf.document_symbol()
+                end
+            end,
+            WorkSymbols = function()
+                if has_telescope then
+                    require('telescope.builtin').lsp_workspace_symbols()
+                else
+                    vim.lsp.buf.workspace_symbol()
+                end
+            end,
+            CodeAction = function()
+                vim.lsp.buf.lsp_code_actions()
+            end,
+        }
 
         -- TODO: Migrate this to use methods from internal LSP API
         local mappings = {
@@ -342,6 +293,26 @@ vim.api.nvim_create_autocmd('LspAttach', {
             -- ['<leader>D'] = '<cmd>lua vim.lsp.buf.type_definition()<CR>',
         }
 
+        local bufnr = args.buf
+        local client = vim.lsp.get_client_by_id(args.data.client_id)
+        if not client then
+            return
+        end
+
+        if client.name == 'clangd' then
+            local tmpdir = client.config.cmd_env and client.config.cmd_env.TMPDIR or nil
+            if tmpdir and not require('utils.files').is_dir(tmpdir) then
+                require('utils.files').mkdir(tmpdir, true)
+            end
+        end
+
+        local is_min = vim.g.minimal and vim.F.npcall(require, 'mini.completion') ~= nil
+        vim.bo[bufnr].omnifunc = is_min and 'v:lua.MiniCompletion.completefunc_lsp' or 'v:lua.vim.lsp.omnifunc'
+
+        if vim.bo[bufnr].tagfunc == '' then
+            vim.bo[bufnr].tagfunc = 'v:lua.vim.lsp.tagfunc'
+        end
+
         local cmd_opts = { buffer = true }
 
         -- TODO: Move this config to lsp/server.lua
@@ -397,11 +368,8 @@ vim.api.nvim_create_autocmd('LspAttach', {
             end
         end
 
-        for command, values in pairs(commands) do
-            if type(values[1]) == 'function' then
-                vim.tbl_extend('keep', cmd_opts, values[2] or {})
-                nvim.command.set(command, values[1], cmd_opts)
-            end
+        for command, cmd_func in pairs(commands) do
+            nvim.command.set(command, cmd_func, cmd_opts)
         end
 
         local lsp_utils = RELOAD 'configs.lsp.utils'
