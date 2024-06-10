@@ -1,5 +1,10 @@
 vim.filetype.add {
     extension = {
+        pu = 'plantuml',
+        uml = 'plantuml',
+        puml = 'plantuml',
+        iuml = 'plantuml',
+        plantuml = 'plantuml',
         nginx = 'nginx',
         conf = 'dosini',
         si = 'dosini',

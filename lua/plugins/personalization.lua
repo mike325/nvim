@@ -1,4 +1,5 @@
 return {
+    { 'aklt/plantuml-syntax' },
     { 'imsnif/kdl.vim' },
     {
         'vimwiki/vimwiki',

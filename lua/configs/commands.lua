@@ -793,3 +793,17 @@ nvim.command.set('InitCppProject', function()
 
     vim.cmd.edit 'src/main.cpp'
 end, { force = true, desc = 'Initialize a C/C++ project' })
+
+if executable 'plantuml' then
+    nvim.command.set('ToggleAutoUMLRender', function()
+        if vim.b.auto_render_uml == nil then
+            vim.b.auto_render_uml = true
+        end
+        vim.b.auto_render_uml = not vim.b.auto_render_uml
+        vim.notify(
+            'PlantUML Render ' .. (vim.b.auto_render_uml and 'Enabled' or 'Disabled'),
+            vim.log.levels.INFO,
+            { title = 'AutoRenderUML' }
+        )
+    end, { desc = 'Disable/Enable Auto PlantUML render' })
+end

@@ -663,3 +663,25 @@ vim.api.nvim_create_autocmd({ 'BufReadPost' }, {
         end, { noremap = true, buffer = true, desc = 'Append github host to plugin spec' })
     end,
 })
+
+if executable 'plantuml' then
+    vim.api.nvim_create_autocmd({ 'BufWritePost' }, {
+        desc = 'Auto Render plantuml',
+        group = vim.api.nvim_create_augroup('AutoRenderUML', { clear = true }),
+        pattern = '*.{pu,uml,puml,iuml,plantuml}',
+        callback = function(args)
+            local buf = args.buf or 0
+
+            if vim.b[buf].auto_render_uml or vim.b[buf].auto_render_uml == nil then
+                local filename = vim.api.nvim_buf_get_name(buf)
+                RELOAD('utils.functions').async_execute {
+                    cmd = { 'plantuml', filename },
+                    title = 'PlantUMLRender',
+                    progress = false,
+                    autoclose = true,
+                }
+                vim.b[buf].auto_render_uml = true
+            end
+        end,
+    })
+end
