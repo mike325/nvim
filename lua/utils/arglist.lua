@@ -36,6 +36,9 @@ function M.add(files, clear)
     for _, filename in ipairs(files) do
         if type(filename) == type '' then
             local buf = vim.fn.bufnr(filename)
+            if filename == '%' then
+                filename = vim.fn.bufname(buf)
+            end
             filename = (filename:gsub('^' .. cwd, ''))
             if buf == -1 then
                 vim.cmd.badd(filename)
