@@ -186,4 +186,43 @@ function M.remote_dap_attach(host, pid, filemap, env)
     end
 end
 
+function M.local_launch_dap(program, args, env, stopAtEntry)
+    vim.validate {
+        program = { program, { 'string', 'function' }, true },
+        args = { args, 'table', true },
+        env = { env, 'table', true },
+        stopAtEntry = { stopAtEntry, 'boolean', true },
+    }
+
+    local dap = vim.F.npcall(require, 'dap')
+    if not dap or not require('utils.files').executable('gdb') then
+        return false
+    end
+
+    if env and not vim.islist(env) then
+        local tmp = {}
+        for var, val in pairs(env) do
+            table.insert(tmp, {name = var, value = val})
+        end
+        env = tmp
+    end
+
+    if stopAtEntry == nil then
+        stopAtEntry = true
+    end
+
+    dap.run {
+        name = 'Local launch GDB',
+        type = 'cppdbg',
+        request = 'launch',
+        stopAtEntry = stopAtEntry,
+        program = program,
+        args = args,
+        environment = env,
+        debuggerPath = vim.fn.exepath 'gdb',
+        cwd = '${workspaceFolder}',
+        MIMode = 'gdb',
+    }
+end
+
 return M
