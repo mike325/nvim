@@ -195,14 +195,14 @@ function M.local_launch_dap(program, args, env, stopAtEntry)
     }
 
     local dap = vim.F.npcall(require, 'dap')
-    if not dap or not require('utils.files').executable('gdb') then
+    if not dap or not require('utils.files').executable 'gdb' then
         return false
     end
 
     if env and not vim.islist(env) then
         local tmp = {}
         for var, val in pairs(env) do
-            table.insert(tmp, {name = var, value = val})
+            table.insert(tmp, { name = var, value = val })
         end
         env = tmp
     end
