@@ -135,7 +135,7 @@ local M = {
         end,
         cond = function()
             return vim.v.this_session ~= ''
-        end
+        end,
     },
     dap = {
         component = function()
