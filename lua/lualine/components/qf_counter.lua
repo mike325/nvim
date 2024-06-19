@@ -2,6 +2,7 @@ local M = require('lualine.component'):extend()
 
 local palette = require('catppuccin.palettes').get_palette()
 local hl = require 'lualine.highlight'
+local statusline = require 'statusline'
 
 function M:init(options)
     M.super.init(self, options)
@@ -10,17 +11,9 @@ function M:init(options)
 end
 
 function M:update_status()
-    local qf_values = vim.fn.getqflist { items = 0, idx = 0 }
-    if #qf_values.items > 0 then
-        local valid = 0
-        for _, item in ipairs(qf_values.items) do
-            if item.valid == 1 then
-                valid = valid + 1
-            end
-        end
-        if valid > 0 then
-            return ('%s%s %s:%s'):format(hl.component_format_highlight(self.qf_counter), 'QF', qf_values.idx, valid)
-        end
+    local qf_values = statusline.qf_counter.component()
+    if qf_values ~= '' then
+        return ('%s%s'):format(hl.component_format_highlight(self.qf_counter), qf_values)
     end
     return ''
 end

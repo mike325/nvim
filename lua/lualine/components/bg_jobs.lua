@@ -1,5 +1,6 @@
 local M = require('lualine.component'):extend()
 
+local statusline = require 'statusline'
 local palette = require('catppuccin.palettes').get_palette()
 local hl = require 'lualine.highlight'
 
@@ -9,10 +10,9 @@ function M:init(options)
 end
 
 function M:update_status()
-    local procs = #vim.api.nvim_get_proc_children(vim.loop.os_getpid())
-    if procs > 0 then
-        -- local icon = vim.env.NO_COOL_FONTS and 'Jobs' or require('utils.functions').get_icon('perf')
-        return ('%sJobs: %s'):format(hl.component_format_highlight(self.jobs_hl), procs)
+    local text = statusline.jobs.component()
+    if text ~= '' then
+        return ('%s%s'):format(hl.component_format_highlight(self.jobs_hl), text)
     end
     return ''
 end

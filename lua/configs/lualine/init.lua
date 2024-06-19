@@ -3,13 +3,13 @@ local get_icon = require('utils.functions').get_icon
 local get_separators = require('utils.functions').get_separators
 local palette = require('catppuccin.palettes').get_palette()
 
-local section = RELOAD 'configs.lualine.sections'
-
 -- TODO: Add support to live reload these functions
 local lualine = vim.F.npcall(RELOAD, 'lualine')
 if not lualine or vim.g.started_by_firenvim then
     return false
 end
+
+local statusline = require 'statusline'
 
 local noice = vim.F.npcall(require, 'noice')
 local has_winbar = nvim.has.option 'winbar'
@@ -84,7 +84,7 @@ local tabline = {
     -- lualine_x = {},
     lualine_y = {},
     lualine_z = {
-        section.project_root,
+        statusline.project_root(),
     },
 }
 
@@ -98,7 +98,7 @@ if has_winbar then
         lualine_y = {},
         lualine_z = {
             {
-                section.filename,
+                statusline.filename(),
                 color = function()
                     return vim.bo.modified and { bg = palette.peach } or nil
                 end,
@@ -123,17 +123,11 @@ lualine.setup {
     sections = {
         lualine_a = {
             {
-                'mode',
+                statusline.mode(),
                 separator = { left = section_separators.right, right = section_separators.left },
-                fmt = function(str)
-                    if str:match '^%w%-%w' then
-                        return str:sub(1, 1) .. str:sub(3, 3)
-                    end
-                    return str:sub(1, 1)
-                end,
             },
             {
-                section.spell,
+                statusline.spell(),
             },
         },
         lualine_b = {
@@ -171,40 +165,29 @@ lualine.setup {
                 end,
             },
             {
-                section.session,
-                fmt = function(str)
-                    if str ~= '' then
-                        return ('S: %s'):format((str:gsub('^.+/', '')))
-                    end
-                    return ''
-                end,
+                statusline.session(),
+                cond = statusline.session.cond,
             },
             {
-                section.dap,
+                statusline.dap(),
             },
             {
                 'qf_counter',
-                cond = function()
-                    return #vim.fn.getqflist() > 0
-                end,
+                cond = statusline.cond,
                 on_click = function()
                     RELOAD('utils.qf').toggle()
                 end,
             },
             {
                 'loc_counter',
-                cond = function()
-                    return #vim.fn.getloclist(vim.api.nvim_get_current_win()) > 0
-                end,
+                cond = statusline.loc_counter.cond,
                 on_click = function()
                     RELOAD('utils.qf').toggle { win = vim.api.nvim_get_current_win() }
                 end,
             },
             {
                 'arglist_counter',
-                cond = function()
-                    return vim.fn.argc() > 0
-                end,
+                cond = statusline.arglist.cond,
             },
             {
                 'diff',
@@ -243,7 +226,7 @@ lualine.setup {
         },
         lualine_c = {
             {
-                section.filename,
+                statusline.filename(),
                 color = function()
                     return vim.bo.modified and { fg = palette.peach } or nil
                 end,
@@ -267,45 +250,18 @@ lualine.setup {
         },
         lualine_y = {
             {
-                'trailspace',
+                statusline.trailspace(),
+                cond = statusline.trailspace.cond,
                 separator = { left = section_separators.right, right = '' },
-                cond = function()
-                    local ft = vim.bo.filetype
-                    local ro = vim.bo.readonly
-                    local mod = vim.bo.modifiable
-                    local disable = {
-                        help = true,
-                        log = true,
-                    }
-                    return not disable[ft] and not ro and mod
-                end,
             },
             {
                 'mixindent',
+                cond = statusline.mixindent.cond,
                 separator = { left = section_separators.right, right = '' },
-                cond = function()
-                    local ft = vim.bo.filetype
-                    local ro = vim.bo.readonly
-                    local mod = vim.bo.modifiable
-                    local disable = {
-                        help = true,
-                        log = true,
-                    }
-                    return not disable[ft] and not ro and mod
-                end,
             },
             {
-                section.wordcount,
-                cond = function()
-                    local ft = vim.bo.filetype
-                    local count = {
-                        latex = true,
-                        tex = true,
-                        markdown = true,
-                        vimwiki = true,
-                    }
-                    return count[ft] ~= nil
-                end,
+                statusline.wordcount(),
+                cond = statusline.wordcount.cond,
             },
             {
                 'progress',

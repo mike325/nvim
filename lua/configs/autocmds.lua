@@ -81,15 +81,6 @@ vim.api.nvim_create_autocmd({ 'BufNewFile' }, {
     end,
 })
 
-vim.api.nvim_create_autocmd({ 'DirChanged', 'BufNewFile', 'BufReadPre', 'BufEnter', 'VimEnter' }, {
-    desc = 'Setup project specific configs',
-    group = vim.api.nvim_create_augroup('ProjectConfig', { clear = true }),
-    pattern = '*',
-    callback = function()
-        RELOAD('utils.functions').project_config(vim.deepcopy(vim.v.event))
-    end,
-})
-
 vim.api.nvim_create_autocmd({ 'CmdwinEnter' }, {
     desc = 'Revert <CR> value to default behavior in command line window',
     group = vim.api.nvim_create_augroup('LocalCR', { clear = true }),
@@ -682,6 +673,63 @@ if executable 'plantuml' then
                 }
                 vim.b[buf].auto_render_uml = true
             end
+        end,
+    })
+end
+
+vim.api.nvim_create_autocmd({ 'DirChanged', 'BufNewFile', 'BufReadPre', 'BufEnter', 'VimEnter' }, {
+    desc = 'Setup project specific configs',
+    group = vim.api.nvim_create_augroup('ProjectConfig', { clear = true }),
+    pattern = '*',
+    callback = function()
+        RELOAD('utils.functions').project_config(vim.deepcopy(vim.v.event))
+    end,
+})
+
+if executable 'git' then
+    local git_info = vim.api.nvim_create_augroup('GitInfo', { clear = true })
+    vim.api.nvim_create_autocmd({ 'DirChanged', 'VimEnter' }, {
+        desc = 'Async Project info Getter',
+        group = git_info,
+        pattern = '*',
+        callback = function(data)
+            local cwd = vim.loop.cwd()
+            if data.event == 'VimEnter' then
+                vim.t.is_in_git = false
+            end
+            if executable 'git' and require('utils.git').is_git_repo(cwd) then
+                vim.t.is_in_git = true
+                require('utils.git').get_git_info(cwd, function(info)
+                    vim.t.git_info = info
+                    local index = info.git_dir .. '/index'
+                    if require('utils.files').is_file(index) then
+                        local autocmd = 'RefreshGitInfo'
+                        require('watcher.file'):new(index, autocmd):start()
+                        vim.api.nvim_exec_autocmds('User', {
+                            pattern = autocmd,
+                            group = watcher,
+                            data = {
+                                err = nil,
+                                fname = index,
+                                status = true,
+                            },
+                        })
+                    end
+                end)
+            end
+        end,
+    })
+
+    vim.api.nvim_create_autocmd({ 'User' }, {
+        desc = 'Get Current git branch',
+        group = watcher,
+        pattern = 'RefreshGitInfo',
+        callback = function(_)
+            require('utils.git').branch(function(branch)
+                local info = vim.t.git_info
+                info.branch = branch
+                vim.t.git_info = info
+            end)
         end,
     })
 end

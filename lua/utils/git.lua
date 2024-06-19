@@ -404,11 +404,78 @@ function M.is_git_repo(root)
     return #results > 0 and results[1] or false
 end
 
+function M.get_git_info(path, callback)
+    vim.validate {
+        path = { path, 'string', true },
+        callback = { callback, 'function', true },
+    }
+
+    path = path or require('utils.files').getcwd()
+
+    local gitcmd = 'rev-parse'
+    local args = {
+        '--git-dir',
+        '--show-toplevel',
+        '--is-inside-git-dir',
+        '--is-bare-repository',
+        '--is-inside-work-tree',
+    }
+
+    local cmd = { 'git' }
+    rm_colors(cmd)
+    rm_pager(cmd)
+    table.insert(cmd, gitcmd)
+    vim.list_extend(cmd, args)
+
+    local function parse_output(output)
+        local info_values = filter_empty(output)
+        local git_dir = info_values[1]
+        if git_dir == '.git' then
+            git_dir = (('%s/%s'):format(path, git_dir):gsub('/+', '/'))
+        end
+
+        return {
+            git_dir = git_dir,
+            root = info_values[2],
+            inside_git = info_values[3],
+            is_bare = info_values[4],
+            inside_worktree = info_values[5],
+        }
+    end
+
+    local git = RELOAD('jobs'):new {
+        cmd = cmd,
+        opts = {
+            cwd = path,
+        },
+        silent = true,
+        callbacks_on_success = function(job)
+            if callback then
+                callback(parse_output(job:output()))
+            end
+        end,
+        callbacks_on_failure = function(job)
+            notify_error(gitcmd, job:output(), job.rc)
+        end,
+    }
+
+    git:start()
+    if not callback then
+        git:wait()
+        if git.rc == 0 then
+            return parse_output(git:output())
+        end
+        return false
+    end
+end
+
 function M.get_git_dir(path, callback)
     vim.validate {
         path = { path, 'string', true },
         callback = { callback, 'function', true },
     }
+
+    path = path or require('utils.files').getcwd()
 
     local gitcmd = 'rev-parse'
     local args = {
@@ -421,29 +488,12 @@ function M.get_git_dir(path, callback)
     table.insert(cmd, gitcmd)
     vim.list_extend(cmd, args)
 
-    path = path or require('utils.files').getcwd()
-
-    if not callback then
-        local git = RELOAD('jobs'):new {
-            cmd = cmd,
-            opts = {
-                cwd = path,
-            },
-            silent = true,
-            callbacks_on_failure = function(job)
-                notify_error(gitcmd, job:output(), job.rc)
-            end,
-        }
-        git:start()
-        git:wait()
-        if git.rc == 0 then
-            local git_dir = table.concat(filter_empty(git:output()))
-            if git_dir == '.git' then
-                return (('%s/%s'):format(path, git_dir):gsub('/+', '/'))
-            end
-            return git_dir
+    local function parse_output(output)
+        local git_dir = table.concat(filter_empty(output))
+        if git_dir == '.git' then
+            return (('%s/%s'):format(path, git_dir):gsub('/+', '/'))
         end
-        return false
+        return git_dir
     end
 
     local git = RELOAD('jobs'):new {
@@ -453,17 +503,23 @@ function M.get_git_dir(path, callback)
         },
         silent = true,
         callbacks_on_success = function(job)
-            local git_dir = table.concat(filter_empty(job:output()))
-            if git_dir == '.git' then
-                git_dir = (('%s/%s'):format(path, git_dir):gsub('/+', '/'))
+            if callback then
+                callback(parse_output(job:output()))
             end
-            callback(git_dir)
         end,
         callbacks_on_failure = function(job)
             notify_error(gitcmd, job:output(), job.rc)
         end,
     }
+
     git:start()
+    if not callback then
+        git:wait()
+        if git.rc == 0 then
+            return parse_output(git:output())
+        end
+        return false
+    end
 end
 
 function M.get_branch(callback)
