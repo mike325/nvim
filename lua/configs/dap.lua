@@ -227,6 +227,8 @@ end
 vim.keymap.set('n', '<F5>', start_debug_session, { noremap = true, silent = true, desc = 'Start debug session' })
 
 dap.listeners.after.event_initialized['DapMappings'] = function()
+    vim.g.dap_sessions_started = true
+
     vim.keymap.set('n', '=c', start_debug_session, { noremap = true, silent = true, desc = 'Start debug session' })
     vim.keymap.set('n', '<F4>', stop_debug_session, { noremap = true, silent = true, desc = 'Stop debug session' })
     vim.keymap.set('n', '=C', stop_debug_session, { noremap = true, silent = true, desc = 'Stop debug session' })
@@ -270,6 +272,8 @@ dap.listeners.after.event_initialized['DapMappings'] = function()
 end
 
 dap.listeners.before.event_terminated['DapMappings'] = function()
+    vim.g.dap_sessions_started = false
+
     vim.keymap.del('n', '=c')
     vim.keymap.del('n', '<F4>')
     vim.keymap.del('n', '=C')

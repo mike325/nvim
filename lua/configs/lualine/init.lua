@@ -170,6 +170,7 @@ lualine.setup {
             },
             {
                 statusline.dap(),
+                cond = statusline.dap.cond,
             },
             {
                 'qf_counter',

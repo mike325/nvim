@@ -1,3 +1,4 @@
+local nvim = require 'nvim'
 local sys = require 'sys'
 local getcwd = require('utils.files').getcwd
 local get_icon = require('utils.functions').get_icon
@@ -139,8 +140,13 @@ local M = {
     },
     dap = {
         component = function()
-            local dap = vim.F.npcall(require, 'dap')
-            return dap and dap.status() or ''
+            if nvim.plugins['nvim-dap'] and vim.g.dap_sessions_started then
+                return vim.F.npcall(require, 'dap').status()
+            end
+            return ''
+        end,
+        cond = function()
+            return nvim.plugins['nvim-dap'] and vim.g.dap_sessions_started
         end,
     },
     arglist = {

@@ -477,13 +477,12 @@ vim.api.nvim_create_autocmd({ 'User' }, {
     desc = 'Load debug keymaps',
     pattern = 'TermdebugStartPre',
     callback = function(_)
+        -- TODO: Extract F5 mapping and wrap it with TermDebug/Dap choice
         vim.keymap.set('n', '<F5>', '<cmd>Continue<CR>', { noremap = true, silent = true })
         vim.keymap.set('n', '=c', '<cmd>Continue<CR>', { noremap = true, silent = true })
 
         vim.keymap.set('n', '<F4>', '<cmd>Stop<CR>', { noremap = true, silent = true })
         vim.keymap.set('n', '=C', '<cmd>Stop<CR>', { noremap = true, silent = true })
-
-        -- vim.keymap.set('n', 'gK', require('dap.ui.widgets').hover, { noremap = true, silent = true })
 
         vim.keymap.set('n', ']s', '<cmd>Over<CR>', { noremap = true, silent = true })
         vim.keymap.set('n', '[s', '<cmd>Finish<CR>', { noremap = true, silent = true })
@@ -492,9 +491,6 @@ vim.api.nvim_create_autocmd({ 'User' }, {
 
         vim.keymap.set('n', '=b', '<cmd>Break<CR>', { noremap = true, silent = true })
         vim.keymap.set('n', '=B', '<cmd>Clear<CR>', { noremap = true, silent = true })
-
-        -- vim.keymap.set('n', '=r', dap.repl.toggle, { noremap = true, silent = true })
-        -- vim.keymap.set('n', '<leader>L', list_breakpoints, { noremap = true, silent = true })
     end,
 })
 
