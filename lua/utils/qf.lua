@@ -172,7 +172,7 @@ function M.set_list(opts, win)
         if #line > BIG_LINE then
             line = (line:sub(1, BIG_LINE)) .. '...>'
         end
-        return vim.api.nvim_replace_termcodes(line, true, false, false)
+        return line
     end
 
     -- NOTE: quickfix is extremely slow to parse long items and actually freezes neovim

@@ -514,66 +514,6 @@ function M.get_separators(sep_type)
     return separators[sep_type]
 end
 
-function M.project_config(event)
-    if vim.is_thread() then
-        return
-    end
-
-    local cwd = event.cwd or getcwd()
-    cwd = cwd:gsub('\\', '/')
-
-    if vim.b.project_root and vim.b.project_root['cwd'] == cwd then
-        return vim.b.project_root
-    end
-
-    local root = M.find_project_root(cwd)
-
-    if #root == 0 then
-        root = vim.fn.fnamemodify(cwd, ':p')
-    end
-
-    root = vim.fs.normalize(root)
-
-    if vim.b.project_root and root == vim.b.project_root['root'] then
-        return vim.b.project_root
-    end
-
-    local is_git = RELOAD('utils.git').is_git_repo(root)
-    local git_dir = is_git and git_dirs[cwd] or nil
-    -- local filetype = vim.bo.filetype
-    -- local buftype = vim.bo.buftype
-
-    vim.b.project_root = {
-        cwd = cwd,
-        root = root,
-        is_git = is_git,
-        git_dir = git_dir,
-    }
-
-    if is_git and not git_dir then
-        -- TODO: This should trigger an autocmd to update alternates, tests and everything else with the correct root
-        -- TODO: Add support for worktrees
-        RELOAD('utils.git').get_git_dir('.', function(dir)
-            local project = vim.b.project_root
-            project.git_dir = dir
-            git_dirs[cwd] = dir
-            vim.b.project_root = project
-            vim.opt_local.tags = { './tags', vim.b.project_root.git_dir .. '/tags' }
-        end)
-    end
-
-    if not vim.t.lock_grep then
-        M.set_grep(is_git, true)
-    else
-        M.set_grep(false, true)
-    end
-
-    local project = vim.fs.find({ '.project.lua', 'project.lua' }, { upward = true, type = 'file' })[1]
-    if project then
-        vim.secure.read(project)
-    end
-end
-
 function M.find_project_root(path)
     assert(type(path) == 'string' and path ~= '', ([[Not a path: "%s"]]):format(path))
     local root

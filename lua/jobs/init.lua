@@ -510,9 +510,7 @@ function Job:start()
         end
 
         data = vim.tbl_map(function(k)
-            k = vim.api.nvim_replace_termcodes(k, true, false, false)
-            k = k:gsub('?%[[:;0-9]*m', '')
-            return k
+            return (k:gsub('?%[[:;0-9]*m', ''))
         end, data)
 
         return data

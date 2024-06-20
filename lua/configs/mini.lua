@@ -331,7 +331,7 @@ if mini.pick then
         end, noremap)
 
         vim.keymap.set('n', '<C-p>', function()
-            local is_git = vim.b.project_root and vim.b.project_root.is_git or false
+            local is_git = vim.t.is_in_git
             local fast_pickers = {
                 fd = true,
                 fdfind = true,
@@ -496,9 +496,9 @@ if vim.g.minimal then
         vim.keymap.set('i', '<S-Tab>', [[pumvisible() ? "\<C-p>" : "\<S-Tab>"]], { expr = true })
 
         local keys = {
-            ['cr'] = vim.api.nvim_replace_termcodes('<CR>', true, true, true),
-            ['ctrl-y'] = vim.api.nvim_replace_termcodes('<C-y>', true, true, true),
-            ['ctrl-e'] = vim.api.nvim_replace_termcodes('<C-e>', true, true, true),
+            ['cr'] = vim.keycode '<CR>',
+            ['ctrl-y'] = vim.keycode '<C-y>',
+            ['ctrl-e'] = vim.keycode '<C-e>',
         }
 
         vim.keymap.set('i', '<CR>', function()
@@ -589,7 +589,7 @@ if vim.g.minimal then
                             hl = 'MiniStatuslineDevinfo',
                             strings = {
                                 statusline.clearcase.component(),
-                                vim.t.git_info and vim.t.git_info.branch or '',
+                                statusline.git_branch.component(),
                                 diagnostics,
                                 statusline.session.component(),
                                 statusline.dap.component(),

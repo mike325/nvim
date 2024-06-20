@@ -27,8 +27,8 @@ local function rm_pager(cmd)
 end
 
 local function get_git_dir(cmd)
-    if vim.b and vim.b.project_root and vim.b.project_root.git_dir then
-        return vim.list_extend(cmd or {}, { '--git-dir', vim.b.project_root.git_dir })
+    if vim.t.git_info then
+        return vim.list_extend(cmd or {}, { '--git-dir', vim.t.git_info.git_dir })
     end
     return {}
 end

@@ -677,40 +677,59 @@ if executable 'plantuml' then
     })
 end
 
-vim.api.nvim_create_autocmd({ 'DirChanged', 'BufNewFile', 'BufReadPre', 'BufEnter', 'VimEnter' }, {
+local project_config = vim.api.nvim_create_augroup('ProjectConfig', { clear = true })
+vim.api.nvim_create_autocmd({ 'DirChanged', 'TabNew', 'VimEnter' }, {
     desc = 'Setup project specific configs',
-    group = vim.api.nvim_create_augroup('ProjectConfig', { clear = true }),
+    group = project_config,
     pattern = '*',
     callback = function()
-        RELOAD('utils.functions').project_config(vim.deepcopy(vim.v.event))
+        if not vim.t.project_read then
+            local project = vim.fs.find({ '.project.lua', 'project.lua' }, { upward = true, type = 'file' })[1]
+            if project then
+                vim.secure.read(project)
+            end
+            vim.t.project_read = true
+        end
+    end,
+})
+
+vim.api.nvim_create_autocmd({ 'VimEnter', 'BufNew', 'BufReadPre' }, {
+    desc = 'Setup project specific configs for buffers',
+    group = project_config,
+    pattern = '*',
+    callback = function()
+        require('utils.functions').set_grep(vim.t.is_in_git, true)
     end,
 })
 
 if executable 'git' then
     local git_info = vim.api.nvim_create_augroup('GitInfo', { clear = true })
-    vim.api.nvim_create_autocmd({ 'DirChanged', 'VimEnter' }, {
+    vim.api.nvim_create_autocmd({ 'DirChanged', 'TabNew', 'VimEnter' }, {
         desc = 'Async Project info Getter',
         group = git_info,
         pattern = '*',
         callback = function(data)
+            -- TODO: should this be cache into a table?
             local cwd = vim.loop.cwd()
             if data.event == 'VimEnter' then
                 vim.t.is_in_git = false
             end
             if executable 'git' and require('utils.git').is_git_repo(cwd) then
                 vim.t.is_in_git = true
+                local is_git = not vim.t.lock_grep
+                require('utils.functions').set_grep(is_git, true)
                 require('utils.git').get_git_info(cwd, function(info)
                     vim.t.git_info = info
-                    local index = info.git_dir .. '/index'
-                    if require('utils.files').is_file(index) then
+                    local head = info.git_dir .. '/HEAD'
+                    if require('utils.files').is_file(head) then
                         local autocmd = 'RefreshGitInfo'
-                        require('watcher.file'):new(index, autocmd):start()
+                        require('watcher.file'):new(head, autocmd):start()
                         vim.api.nvim_exec_autocmds('User', {
                             pattern = autocmd,
                             group = watcher,
                             data = {
                                 err = nil,
-                                fname = index,
+                                fname = head,
                                 status = true,
                             },
                         })

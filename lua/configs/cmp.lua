@@ -73,10 +73,6 @@ local function has_words_before()
     return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match '%s' == nil
 end
 
-local function replace_termcodes(str)
-    return vim.api.nvim_replace_termcodes(str, true, true, true)
-end
-
 local function next_item(fallback)
     local neogen = vim.F.npcall(require, 'neogen')
 
@@ -92,7 +88,7 @@ local function next_item(fallback)
     elseif vim.snippet and vim.snippet.active { direction = 1 } then
         vim.snippet.jump(1)
     elseif neogen and neogen.jumpable() then
-        vim.fn.feedkeys(replace_termcodes "<cmd>lua require('neogen').jump_next()<CR>", '')
+        vim.fn.feedkeys(vim.keycode "<cmd>lua require('neogen').jump_next()<CR>", '')
     elseif has_words_before() then
         cmp.complete()
     else

@@ -212,6 +212,41 @@ local M = {
             return #vim.fn.getloclist(vim.api.nvim_get_current_win()) > 0
         end,
     },
+    git_branch = {
+        component = function()
+            local branch = ''
+            if vim.t.git_info and vim.t.git_info.branch then
+                branch = vim.t.git_info.branch
+                local shrink
+                local patterns = {
+                    '^(%w+[/-]%w+[/-]%d+[/-])',
+                    '^(%w+[/-]%d+[/-])',
+                    '^(%w+[/-])',
+                }
+                if #branch > 30 and vim.g.short_branch_name then
+                    for _, pattern in ipairs(patterns) do
+                        shrink = branch:match(pattern)
+                        if shrink then
+                            branch = shrink:sub(1, #shrink - 1)
+                            break
+                        end
+                    end
+                elseif #branch > 15 then
+                    for _, pattern in ipairs(patterns) do
+                        shrink = branch:match(pattern)
+                        if shrink then
+                            branch = branch:gsub(vim.pesc(shrink), '')
+                            break
+                        end
+                    end
+                end
+            end
+            return branch
+        end,
+        cond = function()
+            return vim.t.git_info ~= nil
+        end,
+    },
 }
 
 for _, component in pairs(M) do

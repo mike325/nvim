@@ -736,14 +736,10 @@ end
 function M.alternate_grep(_)
     vim.t.lock_grep = not vim.t.lock_grep
     local is_git = false
-    if vim.t.lock_grep then
-        require('utils.functions').set_grep(is_git, true)
-    else
-        if vim.b.project_root then
-            is_git = vim.b.project_root.is_git
-        end
-        require('utils.functions').set_grep(is_git, true)
+    if not vim.t.lock_grep then
+        is_git = vim.t.is_in_git
     end
+    require('utils.functions').set_grep(is_git, true)
     local grepprg = require('utils.functions').select_grep(is_git, nil, true)
     print(' Using: ' .. grepprg[1] .. ' as grepprg')
 end

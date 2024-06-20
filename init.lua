@@ -14,9 +14,13 @@ if not vim.islist then
     vim.islist = vim.tbl_islist
 end
 
-local nvim = require 'nvim'
+if not vim.keycode then
+    vim.keycode = function(str)
+        return vim.api.nvim_replace_termcodes(str, true, true, true)
+    end
+end
 
-if not nvim.has { 0, 9 } then
+if not vim.version.gt(vim.version(), { 0, 9 }) then
     vim.api.nvim_err_writeln 'Neovim version is too old!! please use update it'
 end
 
@@ -27,6 +31,7 @@ if not vim.base64 then
     }
 end
 
+local nvim = require 'nvim'
 if not vim.keymap then
     vim.keymap = nvim.keymap
 end

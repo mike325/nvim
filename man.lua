@@ -14,6 +14,12 @@ if not vim.islist then
     vim.islist = vim.tbl_islist
 end
 
+if not vim.keycode then
+    vim.keycode = function(str)
+        return vim.api.nvim_replace_termcodes(str, true, true, true)
+    end
+end
+
 if not vim.version.gt(vim.version(), { 0, 9 }) then
     vim.api.nvim_err_writeln 'Neovim version is too old!! please use update it'
 end
@@ -56,7 +62,7 @@ vim.g.short_branch_name = true
 
 vim.g.port = 0x8AC
 
-if vim.fn.has 'win32' == 1 then
+if nvim.has 'win32' then
     -- vim.go.shell = 'cmd.exe'
     vim.go.shell = 'powershell'
     vim.go.shellcmdflag = table.concat({

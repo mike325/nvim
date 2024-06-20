@@ -84,7 +84,7 @@ vim.keymap.set('n', '<leader>g', function()
 end, noremap)
 
 vim.keymap.set('n', '<C-p>', function()
-    local is_git = vim.b.project_root and vim.b.project_root.is_git or false
+    local is_git = vim.t.is_in_git
     builtin.find_files {
         find_command = RELOAD('utils.functions').select_filelist(is_git, true),
     }
