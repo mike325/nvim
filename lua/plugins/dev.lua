@@ -3,6 +3,7 @@ return {
         'mfussenegger/nvim-dap',
         -- event = { 'CursorHold', 'CmdlineEnter' },
         cmd = { 'DapStart', 'DapContinue' },
+        keys = { '<F5>' },
         cond = function()
             return not vim.g.vscode and not vim.g.minimal
         end,

@@ -137,7 +137,6 @@ elseif not vim.g.minimal and not vim.g.bare then
 end
 
 vim.cmd.packadd { args = { 'matchit' }, bang = false }
-vim.cmd.packadd { args = { 'termdebug' }, bang = false }
 
 -- NOTE: overload/replace vim.* functions
 require 'overloads.notify'

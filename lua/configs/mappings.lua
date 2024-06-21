@@ -336,3 +336,20 @@ if not nvim.has { 0, 10 } then
         vim.ui.open(cword:match '^[%w]+://' and cword or cfile)
     end, { noremap = true, silent = true, desc = 'Override gx to use vim.ui.open' })
 end
+
+vim.keymap.set('n', '<F5>', function()
+    local dap = vim.F.npcall(require, 'dap')
+    if dap then
+        dap.continue()
+    else
+        if vim.g.termdebug_session then
+            vim.cmd.Continue()
+        else
+            if not vim.g.loaded_termdebug then
+                vim.cmd.packadd { args = { 'termdebug' }, bang = false }
+                vim.g.loaded_termdebug = true
+            end
+            vim.cmd.Termdebug()
+        end
+    end
+end, { noremap = true, silent = true, desc = 'Start a Debug session' })

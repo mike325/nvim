@@ -224,8 +224,6 @@ local function list_breakpoints()
     RELOAD('utils.qf').open()
 end
 
-vim.keymap.set('n', '<F5>', start_debug_session, { noremap = true, silent = true, desc = 'Start debug session' })
-
 dap.listeners.after.event_initialized['DapMappings'] = function()
     vim.g.dap_sessions_started = true
 

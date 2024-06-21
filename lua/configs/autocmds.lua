@@ -477,8 +477,7 @@ vim.api.nvim_create_autocmd({ 'User' }, {
     desc = 'Load debug keymaps',
     pattern = 'TermdebugStartPre',
     callback = function(_)
-        -- TODO: Extract F5 mapping and wrap it with TermDebug/Dap choice
-        vim.keymap.set('n', '<F5>', '<cmd>Continue<CR>', { noremap = true, silent = true })
+        vim.g.termdebug_session = true
         vim.keymap.set('n', '=c', '<cmd>Continue<CR>', { noremap = true, silent = true })
 
         vim.keymap.set('n', '<F4>', '<cmd>Stop<CR>', { noremap = true, silent = true })
@@ -498,13 +497,12 @@ vim.api.nvim_create_autocmd({ 'User' }, {
     desc = 'Cleanup debug keymaps',
     pattern = 'TermdebugStopPost',
     callback = function(_)
-        vim.keymap.del('n', '<F5>')
+        vim.g.termdebug_session = false
+
         vim.keymap.del('n', '=c')
 
         vim.keymap.del('n', '<F4>')
         vim.keymap.del('n', '=C')
-
-        -- vim.keymap.del('n', 'gK')
 
         vim.keymap.del('n', ']s')
         vim.keymap.del('n', '[s')
@@ -513,9 +511,6 @@ vim.api.nvim_create_autocmd({ 'User' }, {
 
         vim.keymap.del('n', '=b')
         vim.keymap.del('n', '=B')
-
-        -- vim.keymap.del('n', '=r')
-        -- vim.keymap.del('n', '<leader>L')
     end,
 })
 
