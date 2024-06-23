@@ -112,7 +112,7 @@ local function prev_item(fallback)
     elseif vim.snippet and vim.snippet.active { direction = -1 } then
         vim.snippet.jump(-1)
     elseif neogen and neogen.jumpable(-1) then
-        vim.fn.feedkeys(replace_termcodes "<cmd>lua require('neogen').jump_prev()<CR>", '')
+        vim.fn.feedkeys(vim.keycode "<cmd>lua require('neogen').jump_prev()<CR>", '')
     else
         fallback()
     end

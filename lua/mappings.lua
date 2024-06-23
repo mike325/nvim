@@ -38,7 +38,7 @@ M.precommit_efm = {
 function M.backspace()
     local ok, _ = pcall(vim.cmd.pop)
     if not ok then
-        local key = nvim.replace_termcodes('<C-o>', true, false, true)
+        local key = vim.keycode '<C-o>'
         nvim.feedkeys(key, 'n', true)
         -- local jumps
         -- ok, jumps = pcall(nvim.exec, 'jumps', true)
@@ -523,7 +523,7 @@ function M.messages(opts)
 
         -- WARN: This is a WA to avoid EFM detecting ^I as part of a file in lua tracebacks
         for idx, msg in ipairs(messages) do
-            messages[idx] = nvim.replace_termcodes(msg, true, false, true)
+            messages[idx] = vim.keycode(msg)
             if msg:match '%^I' and #msg > 2 then
                 messages[idx] = msg:gsub('%^I', '')
             end
