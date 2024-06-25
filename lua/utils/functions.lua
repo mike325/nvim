@@ -7,8 +7,6 @@ local getcwd = require('utils.files').getcwd
 
 local M = {}
 
-local git_dirs = {}
-
 -- Separators
 -- 
 -- 
