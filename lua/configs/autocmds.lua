@@ -669,7 +669,7 @@ if executable 'plantuml' then
 end
 
 local project_config = vim.api.nvim_create_augroup('ProjectConfig', { clear = true })
-vim.api.nvim_create_autocmd({ 'DirChanged', 'TabNew', 'VimEnter' }, {
+vim.api.nvim_create_autocmd({ 'DirChanged', 'TabNewEntered', 'VimEnter' }, {
     desc = 'Setup project specific configs',
     group = project_config,
     pattern = '*',
@@ -695,7 +695,7 @@ vim.api.nvim_create_autocmd({ 'VimEnter', 'BufNew', 'BufReadPre' }, {
 
 if executable 'git' then
     local git_info = vim.api.nvim_create_augroup('GitInfo', { clear = true })
-    vim.api.nvim_create_autocmd({ 'DirChanged', 'TabNew', 'VimEnter' }, {
+    vim.api.nvim_create_autocmd({ 'DirChanged', 'TabNewEntered', 'VimEnter' }, {
         desc = 'Async Project info Getter',
         group = git_info,
         pattern = '*',

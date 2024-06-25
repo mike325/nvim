@@ -116,7 +116,9 @@ function M.send_grep_job(opts)
 
     opts = opts or {}
 
-    local grepprg = vim.split(vim.bo.grepprg or vim.o.grepprg, '%s+')
+    local grepprg = vim.bo.grepprg ~= '' and vim.bo.grepprg or vim.o.grepprg
+    grepprg = vim.split(grepprg, '%s+', { trimempty = true })
+
     local cmd = opts.cmd or grepprg[1]
     local args = opts.args or {}
     local search = opts.search or vim.fn.expand '<cword>'

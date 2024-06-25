@@ -108,11 +108,12 @@ end, { bang = true, nargs = 1, complete = 'file', desc = 'Copy current file to a
 nvim.command.set('Grep', function(opts)
     local search = opts.fargs[#opts.fargs]
     opts.fargs[#opts.fargs] = nil
+
     local args = opts.fargs
     if #args > 0 then
         local grepprg = vim.tbl_filter(function(k)
             return not k:match '^%s*$'
-        end, RELOAD('utils.functions').select_grep(false, nil, true))
+        end, RELOAD('utils.functions').select_grep(vim.t.is_in_git, nil, true))
 
         vim.list_extend(args, vim.list_slice(grepprg, 2, #grepprg))
     end
@@ -127,7 +128,7 @@ nvim.command.set('LGrep', function(opts)
     if #args > 0 then
         local grepprg = vim.tbl_filter(function(k)
             return not k:match '^%s*$'
-        end, RELOAD('utils.functions').select_grep(false, nil, true))
+        end, RELOAD('utils.functions').select_grep(vim.t.is_in_git, nil, true))
 
         vim.list_extend(args, vim.list_slice(grepprg, 2, #grepprg))
     end
