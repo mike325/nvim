@@ -523,7 +523,6 @@ function M.open_changes(opts)
 
     local function files_actions(files)
         if #files > 0 then
-
             local blacklist = {
                 png = true,
                 jpg = true,
@@ -537,7 +536,7 @@ function M.open_changes(opts)
             }
 
             files = vim.tbl_filter(function(filename)
-                local utils = require('utils.files')
+                local utils = require 'utils.files'
                 return utils.is_file(filename) and not blacklist[utils.extension(filename)]
             end, files)
             local cwd = vim.pesc(require('utils.files').getcwd()) .. '/'
