@@ -523,8 +523,22 @@ function M.open_changes(opts)
 
     local function files_actions(files)
         if #files > 0 then
+
+            local blacklist = {
+                png = true,
+                jpg = true,
+                jpeg = true,
+                hif = true,
+                zip = true,
+                ['7z'] = true,
+                gif = true,
+                docx = true,
+                xlsm = true,
+            }
+
             files = vim.tbl_filter(function(filename)
-                return require('utils.files').is_file(filename)
+                local utils = require('utils.files')
+                return utils.is_file(filename) and not blacklist[utils.extension(filename)]
             end, files)
             local cwd = vim.pesc(require('utils.files').getcwd()) .. '/'
             for idx, filename in ipairs(files) do
