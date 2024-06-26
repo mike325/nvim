@@ -1,8 +1,4 @@
-local has_sqlite, sqlite = pcall(require, 'sqlite')
-local has_lib, _ = pcall(require, 'sqlite.defs')
-if not has_lib or not has_sqlite then
-    sqlite = false
-end
+local sqlite = vim.F.npcall(require, 'sqlite')
 
 local M = {}
 

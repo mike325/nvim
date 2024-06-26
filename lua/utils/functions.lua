@@ -585,11 +585,11 @@ function M.grep(tool, attr, lst)
     local property = (attr and attr ~= '') and attr or 'grepprg'
     local excludes = vim.split(vim.o.backupskip, ',+')
 
-    local modern_git = STORAGE.modern_git
+    -- local modern_git = STORAGE.modern_git
 
     local greplist = {
         git = {
-            grepprg = 'git --no-pager grep ' .. (modern_git and '--column' or '') .. ' --no-color -Iin ',
+            grepprg = 'git --no-pager grep --column --no-color -Iin ',
             grepformat = '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m',
         },
         rg = {
@@ -828,10 +828,6 @@ function M.python(version, args)
 
     local split_type = vim.o.splitbelow and 'botright' or 'topleft'
     vim.cmd { cmd = 'split', args = { 'term://' .. pyversion .. ' ' .. args }, mods = { split = split_type } }
-end
-
-if STORAGE.modern_git == -1 then
-    STORAGE.modern_git = require('storage').has_version('git', { '2', '19' })
 end
 
 function M.autoformat(cmd, args)

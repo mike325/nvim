@@ -1,5 +1,8 @@
 return {
     {
+        'tpope/vim-dadbod',
+    },
+    {
         'mfussenegger/nvim-dap',
         -- event = { 'CursorHold', 'CmdlineEnter' },
         cmd = { 'DapStart', 'DapContinue' },

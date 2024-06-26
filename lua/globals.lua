@@ -66,7 +66,7 @@ if not STORAGE then
         modern_git = -1,
         scratches = {},
         compile_flags = {},
-        databases = {},
+        compile_commands_dbs = {},
         jobs = {},
         autocmds = {},
         filelists = {},
@@ -75,5 +75,6 @@ if not STORAGE then
         servers = {},
         loggers = {},
         watchers = {},
+        databases = {},
     }
 end

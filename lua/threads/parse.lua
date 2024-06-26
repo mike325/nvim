@@ -25,7 +25,7 @@ function M.compile_flags(opts)
     }
 
     local flags_type = vim.fs.basename(opts.flags_file)
-    -- opts.flags = flags_type == 'compile_flags.txt' and STORAGE.compile_flags or STORAGE.databases
+    -- opts.flags = flags_type == 'compile_flags.txt' and STORAGE.compile_flags or STORAGE.compile_commands_dbs
 
     local thread_func = parse_func[flags_type]
     RELOAD('threads').queue_thread(thread_func, function(results)
@@ -35,7 +35,7 @@ function M.compile_flags(opts)
             STORAGE.compile_flags[flags_file] = results.flags
         else
             for source_name, flags in pairs(results.flags) do
-                STORAGE.databases[source_name] = flags
+                STORAGE.compile_commands_dbs[source_name] = flags
             end
         end
 

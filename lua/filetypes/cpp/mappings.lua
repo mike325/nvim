@@ -8,7 +8,7 @@ local nvim = require 'nvim'
 local completions = RELOAD 'completions'
 
 -- local compile_flags = STORAGE.compile_flags
--- local databases = STORAGE.databases
+-- local compile_commands_dbs = STORAGE.compile_commands_dbs
 
 nvim.command.set('Compile', function(opts)
     local flags = {}

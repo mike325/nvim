@@ -78,7 +78,7 @@ function M.compiledb(thread_args)
     end
     local inc_parser = require('threads.parsers').includes
 
-    local databases = {}
+    local compile_commands_dbs = {}
 
     for _, source in pairs(json) do
         local source_name
@@ -93,16 +93,16 @@ function M.compiledb(thread_args)
         elseif source.command then
             args = vim.split(source.command, ' ')
         end
-        databases[source_name] = {}
-        databases[source_name].filename = source_name
-        databases[source_name].compiler = args[1]
-        databases[source_name].flags = vim.list_slice(args, 2, #args)
-        databases[source_name].includes = inc_parser(databases[source_name].flags)
+        compile_commands_dbs[source_name] = {}
+        compile_commands_dbs[source_name].filename = source_name
+        compile_commands_dbs[source_name].compiler = args[1]
+        compile_commands_dbs[source_name].flags = vim.list_slice(args, 2, #args)
+        compile_commands_dbs[source_name].includes = inc_parser(compile_commands_dbs[source_name].flags)
     end
 
     local results = {
         flags_file = flags_file,
-        flags = databases,
+        flags = compile_commands_dbs,
     }
     return vim.is_thread() and vim.json.encode(results) or results
 end

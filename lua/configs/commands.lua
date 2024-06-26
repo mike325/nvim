@@ -665,22 +665,28 @@ nvim.command.set('ArgAddBuf', function(opts)
     end
 end, { nargs = '*', complete = completions.buflist, desc = 'Add buffers to the arglist' })
 
-nvim.command.set('ClearMarks', function()
+nvim.command.set('ClearMarks', function(opts)
     local deleted_marks = 0
     for idx = vim.fn.char2nr 'A', vim.fn.char2nr 'Z' do
         local letter = vim.fn.nr2char(idx)
-        local mark = vim.api.nvim_get_mark(letter, {})
-        local filename = mark[4]
-        if filename ~= '' and not require('utils.files').is_file(filename) then
-            deleted_marks = deleted_marks + 1
+        if not opts.bang then
+            local mark = vim.api.nvim_get_mark(letter, {})
+            local filename = mark[4]
+            if filename ~= '' and not require('utils.files').is_file(filename) then
+                deleted_marks = deleted_marks + 1
+                vim.api.nvim_del_mark(letter)
+            end
+        else
             vim.api.nvim_del_mark(letter)
         end
     end
 
-    if deleted_marks > 0 then
+    if not opts.bang and deleted_marks > 0 then
         vim.notify('Deleted marks: ' .. deleted_marks, vim.log.levels.INFO, { title = 'ClearMarks' })
+    elseif opts.bang then
+        vim.notify('All global marks cleared', vim.log.levels.INFO, { title = 'Marks' })
     end
-end, { desc = 'Remove global marks of removed files' })
+end, { bang = true, desc = 'Remove global marks of inexistent files' })
 
 nvim.command.set('DumpMarks', function()
     local marks = {}

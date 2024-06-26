@@ -6,7 +6,7 @@ local is_file = require('utils.files').is_file
 local realpath = require('utils.files').realpath
 
 local compile_flags = STORAGE.compile_flags
-local databases = STORAGE.databases
+local compile_commands_dbs = STORAGE.compile_commands_dbs
 
 local M = {
     makeprg = {
@@ -170,8 +170,8 @@ function M.get_args(compiler, bufnum, flags_location)
         flags_location = realpath(flags_location)
         local name = vim.fs.basename(flags_location)
         if name == 'compile_commands.json' then
-            if databases[bufname] then
-                args = databases[bufname].flags
+            if compile_commands_dbs[bufname] then
+                args = compile_commands_dbs[bufname].flags
             end
         else
             if compile_flags[flags_location] then
@@ -199,8 +199,8 @@ function M.set_file_opts(flags_file, bufnum)
     end
 
     local function set_source_options(fname)
-        if databases[fname] then
-            paths = databases[fname].includes or {}
+        if compile_commands_dbs[fname] then
+            paths = compile_commands_dbs[fname].includes or {}
         elseif compile_flags[flags_file] then
             paths = compile_flags[flags_file].includes or {}
         end

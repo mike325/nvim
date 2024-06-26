@@ -87,7 +87,6 @@ return {
         'tami5/sqlite.lua',
         name = 'sqlite',
         cond = require('sys').has_sqlite,
-        lazy = true,
     },
     {
         'echasnovski/mini.nvim',
