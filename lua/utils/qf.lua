@@ -204,12 +204,9 @@ function M.set_list(opts, win)
     end
 
     if not opts.efm or #opts.efm == 0 then
-        local efm = vim.opt_local.efm:get()
-        if #efm == 0 then
-            efm = vim.opt_global.efm:get()
-        end
-        opts.efm = efm
+        opts.efm = vim.go.efm
     end
+
     if type(opts.efm) == type {} then
         opts.efm = table.concat(opts.efm, ',')
     end
