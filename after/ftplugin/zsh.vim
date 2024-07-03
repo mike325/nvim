@@ -14,3 +14,13 @@ if !has#plugin('nvim-treesitter')
     setlocal foldmethod=syntax
 endif
 
+let s:dirs = [
+            \ vars#home() . '/.config/shell/zfunctions',
+            \ vars#home() . '/.zsh/zfunctions',
+            \ vars#home() . '/.zsh',
+            \ vars#home() . '/.config/shell',
+            \ ]
+
+for s:dir in s:dirs
+    setlocal path^=s:dir
+endfor

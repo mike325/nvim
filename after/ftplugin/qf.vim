@@ -1,6 +1,9 @@
 " Quickfix settings
 " github.com/mike325/.vim
 
+packadd cfilter
+let g:loaded_cfilter = v:true
+
 setlocal colorcolumn=
 setlocal nospell
 

@@ -5,33 +5,26 @@ ignore =
     # E121,
     # E123,
     # E126,
-    # Whitespace before :
-    E203,
+    E203, # Whitespace before :
     # E221,
-    # Whitespace around operators
-    E226,
+    E226, # Whitespace around operators
     # E228,
-    # Missing whitespace after ,
-    E231,
+    E231, # Missing whitespace after ,
     # E24,
     # E251,
-    # 2 spaces before inline comment
-    E261,
-    # Comments should start with #
-    E262,
-    # Block comment should start with #
-    E265,
+    E261, # 2 spaces before inline comment
+    E262, # Comments should start with #
+    E265, # Block comment should start with #
     # E27,
-    # Expected 2 lines between funcs/classes
-    E302,
+    E302, # Expected 2 lines between funcs/classes
     # E501,
     # E701,
     # E704,
     # H233,
-    # Blank line and the EOF
-    W391,
+    W391, # Blank line and the EOF
     # W503,
     # W504,
+    E402, # module level import not at top file
 exclude =
     # No need to traverse our git directory
     .git,

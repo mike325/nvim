@@ -1,4 +1,4 @@
 " requirements Settings
 " github.com/mike325/.vim
 
-setlocal commentstring=#%s
+setlocal commentstring=#\ %s

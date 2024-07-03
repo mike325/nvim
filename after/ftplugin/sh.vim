@@ -7,6 +7,8 @@ setlocal tabstop=4
 setlocal shiftwidth=0
 setlocal softtabstop=-1
 
+let &l:define = '^\(\(function\s\+\)\?\ze\i\+()\|\s*\(local\s\+\)\?\ze\k\+=.*\)'
+
 let g:is_bash = 1
 " let g:is_sh = 1
 " let g:is_posix = 1

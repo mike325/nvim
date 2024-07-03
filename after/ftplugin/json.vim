@@ -4,6 +4,8 @@
 if has#python()
     let s:python_prog = exists('g:python3_host_prog') ? g:python3_host_prog : g:python_host_prog
     let &formatprg = s:python_prog . ' -m json.tool'
+elseif executable('jq')
+    setlocal formatprg=jq\ .
 endif
 
 setlocal expandtab
@@ -15,4 +17,3 @@ setlocal softtabstop=-1
 
 " Json is used as config files, this enables comments for them
 setlocal commentstring=//\ %s
-

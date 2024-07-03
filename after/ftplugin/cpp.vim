@@ -11,7 +11,6 @@ setlocal shiftwidth=0
 setlocal softtabstop=-1
 
 setlocal commentstring=//\ %s
-
 let &l:define = '^\(#\s*define\|[a-z]*\s*const\(expr\)\?\s*[a-z]*\)'
 
 if executable('cppman')

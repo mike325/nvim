@@ -7,5 +7,9 @@ if has#option('formatprg')
     endif
 endif
 
+setlocal noexpandtab
+setlocal tabstop=4
+setlocal shiftwidth=0
+setlocal softtabstop=-1
 setlocal foldmethod=syntax
 nnoremap <silent><buffer> <CR> :call mappings#cr()<CR>

@@ -2,6 +2,7 @@
 " github.com/mike325/.vim
 
 " setlocal bufhidden=hide
+setlocal foldenable
 setlocal foldmethod=syntax
 
 setlocal nobackup

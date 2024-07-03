@@ -1,0 +1,183 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: check-xml
+      - id: check-yaml
+      - id: check-toml
+      - id: check-json
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-added-large-files
+      - id: check-case-conflict
+      - id: detect-private-key
+      - id: check-docstring-first
+      - id: check-merge-conflict
+      - id: check-shebang-scripts-are-executable
+      - id: check-vcs-permalinks
+      - id: check-symlinks
+      - id: mixed-line-ending
+      # - id: pretty-format-json
+  - repo: https://github.com/jumanjihouse/pre-commit-hooks
+    rev: master
+    hooks:
+      # - id: bundler-audit
+      - id: check-mailmap
+      - id: forbid-binary
+      # - id: forbid-space-in-indent
+      - id: git-check       # Configure in .gitattributes
+      # - id: git-dirty     # Configure in .gitignore
+      # - id: markdownlint  # Configure in .mdlrc, depends on Ruby
+      # - id: protect-first-parent
+      # - id: require-ascii
+      # - id: script-must-have-extension
+      # - id: script-must-not-have-extension
+      # - id: shellcheck
+      # - id: shfmt
+  - repo: https://github.com/Lucas-C/pre-commit-hooks
+    rev: v1.2.0
+    hooks:
+      - id: remove-crlf
+      - id: remove-tabs
+        exclude: |
+            (?x)^(
+                UltiSnips/.*|
+                Makefile.*|
+                \.git.*|
+                .*\.make|
+                .*\.go$
+            )$
+        # args: [ '--whitespaces-count', '2' ]  # defaults to: 4
+  - repo: https://github.com/sirosen/check-jsonschema
+    rev: 0.28.4
+    hooks:
+      - id: check-github-workflows
+      - id: check-github-actions
+      # - id: check-jsonschema
+      # - id: check-azure-pipelines
+      # - id: check-travis
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.4.7
+    hooks:
+       - id: ruff
+       - id: ruff-format
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.10.0
+    hooks:
+      - id: mypy
+        # args: [
+        #   # '--ignore-missing-imports',
+        #   '--warn-unreachable',
+        #   '--warn-return-any',
+        #   # '--follow-imports', 'silent',  # {normal,silent,skip,error}
+        # ]
+  - repo: https://github.com/Vimjas/vint
+    rev: v0.4a4
+    hooks:
+      - id: vint
+        args: ['--enable-neovim', '-t', '-w']
+        exclude: |
+            (?x)^(
+                plug/.*|
+                ftdetect/.*
+            )$
+  # - repo: https://github.com/jlebar/pre-commit-hooks.git
+  #   hooks:
+  #     # pre-commit 2.9.0 and newer should be able to use the following
+  #     # (note: untested).
+  #     - id: clang-format-diff
+  #       types_or: [c++, c] # , java, javascript, objective-c, protobuf, c#
+  - repo: https://github.com/pocc/pre-commit-hooks
+    rev: master
+    hooks:
+      - id: clang-format
+        args: [--style=Google]
+      # - id: clang-tidy
+      # - id: oclint
+      # - id: uncrustify
+      # - id: cppcheck
+      # - id: cpplint
+      # - id: include-what-you-use
+  - repo: https://github.com/dnephin/pre-commit-golang
+    rev: master
+    hooks:
+      - id: go-fmt
+      # - id: go-vet
+      # - id: go-lint
+      # - id: go-imports
+      # - id: go-cyclo
+      #   args: [-over=15]
+      # - id: validate-toml
+      # - id: no-go-testing
+      # - id: golangci-lint
+      # - id: go-critic
+      # - id: go-unit-tests
+      # - id: go-build
+      # - id: go-mod-tidy
+  - repo: https://github.com/doublify/pre-commit-rust
+    rev: master
+    hooks:
+      - id: fmt
+        # args: ['--verbose', '--edition', '2018', '--']
+  - repo: local
+    hooks:
+      - id: shellcheck
+        name: shellcheck
+        description: Shell correctness
+        entry: shellcheck
+        args: ['-f', 'gcc', '-x', '-e', '1117']
+        exclude: |
+            (?x)^(
+                shell/zfunctions/.*|
+                shell/scripts/.*|
+                .*\.(t)?csh|
+                .*zsh.*|
+                .*\.zsh
+            )$
+        language: system
+        types: [shell]
+      - id: shfmt
+        name: shfmt
+        description: Format shell scripts
+        entry: shfmt
+        args: ['-i', '4', '-s', '-ci', '-kp', '-d']
+        exclude: |
+            (?x)^(
+                shell/zfunctions/.*|
+                shell/scripts/.*|
+                .*\.(t)?csh|
+                .*zsh.*|
+                .*\.zsh
+            )$
+        types: [shell]
+        # language: system
+        language: golang
+        minimum_pre_commit_version: 2.4.0
+        additional_dependencies: [mvdan.cc/sh/v3/cmd/shfmt@v3.3.1]
+      # - id: luacheck
+      #   name: luacheck
+      #   description: Lua check
+      #   entry: luacheck
+      #   args: ['--std', 'luajit', '--formatter', 'plain', '--codes']
+      #   language: system
+      #   types: [lua]
+      # - id: stylua
+      #   name: stylua
+      #   description: Format Lua files
+      #   entry: stylua
+      #   args: ['--check', '--verify']
+      #   language: system
+      #   types: [lua]
+      # - id: flake8
+      #   name: flake8
+      #   description: '`flake8` is a command-line utility for enforcing style consistency across Python projects.'
+      #   entry: flake8
+      #   args: [
+      #     '--max-line-length=120',
+      #     '--ignore=E203,E226,E231,E261,E262,E265,E302,W391'
+      #   ]
+      #   language: system
+      #   types: [python]
+      #   require_serial: true
