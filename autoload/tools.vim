@@ -352,27 +352,46 @@ function! tools#filelist(tool) abort
                 \ 'ag'   : 'ag -l --follow --nocolor --nogroup --hidden ' . tools#ignores('ag'). '-g ""',
                 \ 'find' : "find . -type f -iname '*' ".tools#ignores('find'),
                 \}
+    return l:filelist[a:tool]
+endfunction
 
+function! tools#find(tool) abort
+    let l:filelist = {
+                \ 'git'  : 'git --no-pager ls-files -co --exclude-standard -- :',
+                \ 'fd'   : 'fd ' . tools#ignores('fd') . ' --type f --hidden --follow --color never --glob ',
+                \ 'rg'   : 'rg --color never --no-search-zip --hidden --trim --files --iglob ',
+                \ 'find' : "find . -type f ".tools#ignores('find')." -iname ",
+                \}
     return l:filelist[a:tool]
 endfunction
 
 " Small wrap to avoid change code all over the repo
+function! tools#select_find(is_git) abort
+    if executable('git') && a:is_git
+        return tools#find('git')
+    else
+        for l:find in ['fd', 'rg', 'find']
+            if executable(l:find)
+                return tools#find(l:find)
+            endif
+        endfor
+    endif
+    return ''
+endfunction
+
+" Small wrap to avoid change code all over the repo
 function! tools#select_grep(is_git, ...) abort
-    let l:grepprg = ''
     let l:property = (a:0 > 0) ? a:000[0] : 'grepprg'
     if executable('git') && a:is_git
-        let l:grepprg = tools#grep('git', l:property)
-    elseif executable('rg')
-        let l:grepprg = tools#grep('rg', l:property)
-    elseif executable('ag')
-        let l:grepprg = tools#grep('ag', l:property)
-    elseif executable('grep')
-        let l:grepprg = tools#grep('grep', l:property)
-    elseif os#name('windows')
-        let l:grepprg = tools#grep('findstr', l:property)
+        return tools#grep('git', l:property)
+    else
+        for l:grep in ['rg', 'ag', 'grep', 'findstr']
+            if executable(l:grep)
+                return tools#grep(l:grep, l:property)
+            endif
+        endfor
     endif
-
-    return l:grepprg
+    return ''
 endfunction
 
 function! tools#set_grep(is_git, is_local) abort

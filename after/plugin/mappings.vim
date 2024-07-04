@@ -185,10 +185,40 @@ nnoremap ^ 0
 " select last inserted text
 nnoremap gV `[v`]
 
-" repeat last command for each line of a visual selection
-" xnoremap . :normal .<CR>
+nnoremap <leader>d :bdelete!<CR>
+
+nnoremap <silent> [Q  :<C-U>exe "".(v:count ? v:count : "")."cfirst"<CR>zvzz
+nnoremap <silent> ]Q  :<C-U>exe "".(v:count ? v:count : "")."clast"<CR>zvzz
+nnoremap <silent> [q  :<C-U>exe "".(v:count ? v:count : "")."cprevious"<CR>zvzz
+nnoremap <silent> ]q  :<C-U>exe "".(v:count ? v:count : "")."cnext"<CR>zvzz
+
+nnoremap <silent> [L  :<C-U>exe "".(v:count ? v:count : "")."lfirst"<CR>zvzz
+nnoremap <silent> ]L  :<C-U>exe "".(v:count ? v:count : "")."llast"<CR>zvzz
+nnoremap <silent> [l  :<C-U>exe "".(v:count ? v:count : "")."lprevious"<CR>zvzz
+nnoremap <silent> ]l  :<C-U>exe "".(v:count ? v:count : "")."lnext"<CR>zvzz
+
+nnoremap <silent> [B :<C-U>exe "".(v:count ? v:count : "")."bfirst"<CR>
+nnoremap <silent> ]B :<C-U>exe "".(v:count ? v:count : "")."blast"<CR>
+nnoremap <silent> [b :<C-U>exe "".(v:count ? v:count : "")."bprevious"<CR>
+nnoremap <silent> ]b :<C-U>exe "".(v:count ? v:count : "")."bnext"<CR>
+
+nnoremap <silent> [A :<C-U>exe "".(v:count ? v:count : "")."first"<CR>
+nnoremap <silent> ]A :<C-U>exe "".(v:count ? v:count : "")."last"<CR>
+nnoremap <silent> [a :<C-U>exe "".(v:count ? v:count : "")."previous"<CR>
+nnoremap <silent> ]a :<C-U>exe "".(v:count ? v:count : "")."next"<CR>
+
+"nnoremap <silent> =q :call g:Toggle_qf("qf")<cr>
+"nnoremap <silent> =l :call g:Toggle_qf("loc")<cr>
+nnoremap <silent> <leader>e :call arglist#edit('')<cr>
+nnoremap <silent> <leader>A :call arglist#add([expand("%")], 0)<cr>
+nnoremap <silent> <leader>D :call execute("argdelete " . expand("%"))<cr>
+
+call tools#set_grep(0, 0)
+call tools#set_grep(0, 1)
 
 " }}} EndTabBufferManagement
+
+command! -nargs=1 Find call mappings#find(<q-args>)
 
 if has('terminal')
     tnoremap <ESC> <C-\><C-n>
