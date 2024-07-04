@@ -1,0 +1,59 @@
+name: auto-format
+on: [push]
+
+# env:
+#   GO_VERSION: go1.18.3
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Fetch install script
+      run: |
+        sudo apt update
+        sudo apt install -y      \
+              bison              \
+              curl               \
+              git                \
+              shellcheck         \
+              python3-setuptools \
+              python3-pip        \
+              python3-virtualenv \
+              luarocks           \
+              golang
+
+        wget https://raw.githubusercontent.com/mike325/dotfiles/master/install.sh -O /tmp/install.sh
+        chmod +x /tmp/install.sh
+        /tmp/install.sh --nolog --portables --verbose --force
+
+        # FIX: Temporally fix as currently the latest tag does not have a release
+        rm -f ~/.local/bin/shfmt
+        # bash < <(curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer)
+        # source "$HOME/.gvm/scripts/gvm"
+        # gvm install "$GO_VERSION" -B
+        # gvm use "$GO_VERSION" --default
+        go install -v mvdan.cc/sh/v3/cmd/shfmt@latest
+
+        python3 -m pip install --user ruff
+
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
+        echo "$HOME/go/bin/" >> $GITHUB_PATH
+    - name: Stylua
+      run: |
+        stylua -s .
+    - name: Shfmt
+      run: |
+        shfmt -i 4 -s -ci -kp -w .
+    - name: Ruff
+      run: |
+        ruff format .
+        ruff check --fix .
+    - uses: EndBug/add-and-commit@v4
+      with:
+        author_name: Autoformatter
+        author_email: autoformatter@users.noreply.github.com
+        message: ':art: Committing stylua and shfmt changes'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}

@@ -19,4 +19,3 @@ pynvim>=0.3.1
 # NOTE: sometimes vint cause some problems in python2
 # NOTE: to use vim-vint in windows, use --dev
 vim-vint>=0.3.19
-neovim-remote>=2.0.10

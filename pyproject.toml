@@ -1,0 +1,117 @@
+[project]
+name = "dotvim"
+version = "0.2"
+description = "vim's config files"
+readme = "README.md"
+authors = [{ name = "mike325", email = "mike325@users.noreply.github.com" }]
+license = { text = "MIT" }
+
+[tool.ruff]
+line-length = 120
+indent-width = 4
+
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".ipynb_checkpoints",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pyenv",
+    ".pytest_cache",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    ".vscode",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "site-packages",
+    "venv",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle
+    "F",   # Pyflakes
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "SIM", # flake8-simplify
+    "I",   # isort
+]
+
+ignore = [
+    "E203", # Whitespace before :
+    "E226", # Whitespace around operators
+    "E231", # Missing whitespace after ,
+    "E261", # 2 spaces before inline comment
+    "E262", # Comments should start with #
+    "E265", # Block comment should start with #
+    "E402", # module level import not at top file
+]
+
+[tool.ruff.format]
+quote-style = "double"
+# indent-style = "tab"
+docstring-code-format = true
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+
+[tool.ruff.lint.mccabe]
+# Flag errors (`C901`) whenever the complexity level exceeds 20.
+max-complexity = 20
+
+[tool.ruff.lint.pycodestyle]
+max-line-length = 120
+
+[tool.black]
+line-length = 120
+target-version = ['py37']
+# include = '\.pyi?$'
+exclude = '''
+    (
+    /(
+        \.eggs       # exclude a few common directories in the
+        | \.git          # root of the project
+        | \.hg
+        | \.mypy_cache
+        | \.tox
+        | \.venv
+        | _build
+        | buck-out
+        | build
+        | dist
+    )/
+    )
+'''
+
+[tool.mypy]
+python_version = "3.8"
+# sqlite_cache = true
+# check_untyped_defs = true
+# disallow_any_generics = true
+# disallow_incomplete_defs = true
+# disallow_untyped_defs = true
+ignore_missing_imports = true
+warn_redundant_casts = true
+warn_unreachable = true
+warn_return_any = true
+warn_unused_ignores = true
+no_implicit_optional = true
+# follow_imports = "silent"  # {normal,silent,skip,error}
+
+# mypy per-module options:
+# [[tool.mypy.overrides]]
+# module = "mycode.foo.*"
+# disallow_untyped_defs = true

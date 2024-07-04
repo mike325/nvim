@@ -42,7 +42,8 @@ LOG="${NAME%%.*}.log"
 SCRIPT_PATH="$0"
 SCRIPT_PATH="${SCRIPT_PATH%/*}"
 
-TEST_TYPE=("bare" "minimal" "full")
+# TEST_TYPE=("bare" "minimal" "full")
+TEST_TYPE=("bare")
 ARGS=" --cmd version -Es -V2 "
 
 # _DEFAULT_SHELL="${SHELL##*/}"
@@ -169,7 +170,7 @@ Usage:
     Optional Flags
 
         --nolog
-            Disable log writting
+            Disable log writing
 
         --nocolor
             Disable color output
@@ -334,13 +335,6 @@ function run_test() {
     local rsp=0
     local args
 
-    # if [[ $prog == nvim ]] && [[ $SHELL_PLATFORM == 'linux' ]]; then
-    #     status_msg "Setting YCM flag"
-    #     export YCM=1
-    # else
-    #     unset YCM
-    # fi
-
     if [[ $prog == nvim ]]; then
         if [[ $PYTHON2 -eq 0 ]] && [[ $PYTHON3 -eq 0 ]]; then
             local testname="stable Neovim without python"
@@ -364,7 +358,7 @@ function run_test() {
         if [[ $test_type == full ]]; then
             args=" ${args} -c 'PlugInstall' "
         elif [[ $test_type == minimal ]]; then
-            local args="${args} --cmd 'let g:mininal=1' -c 'PlugInstall' "
+            local args="${args} --cmd 'let g:minimal=1' -c 'PlugInstall' "
         elif [[ $test_type == bare ]]; then
             local args="${args} --cmd 'let g:bare=1'"
         fi

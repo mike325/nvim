@@ -139,18 +139,7 @@ else
         Plug 'Raimondi/delimitMate'
     endif
 
-    if has#minimal()
-
-        if has('nvim-0.5')
-            Plug 'hrsh7th/nvim-compe'
-
-            if tools#CheckLanguageServer()
-                Plug 'neovim/nvim-lspconfig'
-                Plug 'glepnir/lspsaga.nvim'
-            endif
-        endif
-
-    elseif has#minimal() && v:version >= 704
+    if has#minimal() && v:version >= 704
         Plug 'lifepillar/vim-mucomplete'
     elseif !has#minimal()
         runtime! plugin/plugins.vim

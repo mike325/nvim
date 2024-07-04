@@ -1,93 +1,62 @@
 # Dotvim files
 
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 
-[![Github Status](https://github.com/Mike325/.vim/workflows/neovimfiles/badge.svg)](https://github.com/Mike325/.vim/actions)
+This repo have my personal Vim settings for latest stable and nightly, I have been collecting and tweaking
+for a while, feel free to change anything to fit your needs. I try to test this configs in Windows, MacOS and Linux
+although windows is still unstable from time to time
 
----
-
-This repo have mi personal Vim/Neovim settings that I have been collecting
+This repo have mi personal Vim settings that I have been collecting
 for a while, feel free to change anything to fit your needs or suggest me
 something that you think could be useful.
 
 Since I use Vim in quite different environments my settings tries to get
 the same behavior, as much as possible, for most of the cases.
 
-This settings require Vim >= 7.4* or Neovim >= 0.17,
+This settings require Vim >= 7.4* ,
 **python** and **lua** support are optional **but** highly recommend!
 
 I have personally tested this configurations in the following environment:
 
-| Linux            | Terminal vim   | gVim     | Terminal Neovim |
-|------------------|----------------|----------|-----------------|
-| Ubuntu 14.04     | v7.4.52        | N/A      | v0.2.0/v0.17    |
-| Ubuntu 16.04     | v7.4.52        | N/A      | v0.2.0/v0.17    |
-| Debian 8/8.5     | v7.4.143       | N/A      | v0.2.0/v0.17    |
-| SUSE 11          | v8.0.104/v7.3* | N/A      | v0.2.0/v0.17    |
-| ArchLinux        | v8.0.427       | N/A      | v0.2.0/v0.17    |
+| Linux        | Terminal vim  | gVim |
+|--------------|---------------|------|
+| Ubuntu 20.04 | v8.0          | N/A  |
+| Ubuntu 22.04 | v9.0          | N/A  |
+| Debian 12    | v8.0          | N/A  |
+| RHLE   7/8   | v9.0          | N/A  |
+| ArchLinux    | v9.0          | N/A  |
 
-| Android          | Terminal vim | gVim     | Terminal Neovim |
-|------------------|--------------|----------|-----------------|
-| Marshmallow      | v8.0.104     | N/A      | v0.2-dev        |
-| Nougat           | v8.0.104     | N/A      | v0.2-dev        |
-
-| Windows 8.1      | Terminal vim   | gVim     | Terminal Neovim | Neovim-qt |
-|------------------|----------------|----------|-----------------|-----------|
-| Cywing           | v8.0/v7.4.143  | N/A      | N/A             | N/A       |
-| Git bash (msys)  | v8.0/v7.4.143  | N/A      | N/A             | N/A       |
-| Native (64 bits) | N/A            | v8.0.398 | N/A             | v0.2.0    |
-
+| Windows 10/11    | Terminal vim | gVim  |
+|------------------|--------------|-------|
+| Cywing           | v9.0         | N/A   |
+| Git bash (msys)  | v9.0         | N/A   |
+| Native (64 bits) | N/A          | v9.0  |
 
 **Note**: Even though I have made some limited test with Vim 7.3 they have been
-mostly simple editions, the recommend Vim version is still 7.4 or Neovim 0.17
+mostly simple editions, the recommend Vim version is still 7.4
 
-**Note 2**: I have not use this settings on a Mac, because I don't have one, feel
-free to use my vim files and tell me if they worked for you.
+**Note 2**: This is a branch from forked from my old legacy branch, which means this branch will not
+be updated as much as `master` but it keeps compatibility with vim in more regards
+
+## Status
+
+| Linux                                                                                                                                                                  | Window                                                                                                                                                                       | MacOS                                                                                                                                                                  |
+| -----------------------------------------------------------------------------------------------------------------------------------------------------------------      | -----------------------------------------------------------------------------------------------------------------------------------------------------------------------      | -----------------------------------------------------------------------------------------------------------------------------------------------------------------      |
+| [![linux-stable](https://github.com/mike325/nvim/actions/workflows/linux_stable.yml/badge.svg)](https://github.com/mike325/nvim/actions/workflows/linux_stable.yml)    | [![windows-stable](https://github.com/mike325/nvim/actions/workflows/windows_stable.yml/badge.svg)](https://github.com/mike325/nvim/actions/workflows/windows_stable.yml)    | [![macos-stable](https://github.com/mike325/nvim/actions/workflows/macos_stable.yml/badge.svg)](https://github.com/mike325/nvim/actions/workflows/macos_stable.yml)    |
+| [![linux-nightly](https://github.com/mike325/nvim/actions/workflows/linux_nightly.yml/badge.svg)](https://github.com/mike325/nvim/actions/workflows/linux_nightly.yml) | [![windows-nightly](https://github.com/mike325/nvim/actions/workflows/windows_nightly.yml/badge.svg)](https://github.com/mike325/nvim/actions/workflows/windows_nightly.yml) | [![macos-nightly](https://github.com/mike325/nvim/actions/workflows/macos_nightly.yml/badge.svg)](https://github.com/mike325/nvim/actions/workflows/macos_nightly.yml) |
 
 ## Install
----
 
-You can test my settings by cloning this repo into your `$HOME`
-
-```sh
-git clone --recursive https://github.com/mike325/.vim.git ~/.vim
-
-ln -s ~/.vim/init.vim ~/.vimrc
-```
-
-If you are using gVim in Windows you may want to use the following procedure:
-(inside git bash)
-```sh
-git clone --recursive https://github.com/mike325/.vim.git ~/vimfiles
-
-cp ~/vimfiles/init.vim ~/_vimrc
-```
-
-If you are using [Neovim](https://neovim.io/) you just need to link the repo
-to `~/.config/nvim`
+If you are using [vim](https://github.com/vim/vim) you just need to just clone the repo to `~/.vim`
 
 ```sh
-ln -s $HOME/.vim $HOME/.config/nvim
+git clone --branch=vim --recursive https://github.com/mike325/nvim.git ~/.vim
 ```
 
-or just clone it there
+To use the dotfiles in Windows clone the repo in the following location `$env:USERPROFILE/vimfiles`
 
 ```sh
-git clone --recursive https://github.com/mike325/.vim.git ~/.config/nvim
+git clone --branch=vim --recursive "https://github.com/mike325/nvim.git" "$env:USERPROFILE/vimfiles"
 ```
-
-To use Neovim in Windows (highly unstable and not well tested) clone the repo
-in the following location
-
-```sh
-git clone --recursive https://github.com/mike325/.vim.git ~/AppData/Local/nvim/
-```
-Once you have cloned the repo just run `:PlugInstall` inside Vim/Neovim to
-complete the installation process or start (n)vim as `vim +PlugInstall`
-
-If you want to deactivate some plugins just comment its line in the init.vim, ex.
-`" Plug 'majutsushi/tagbar'`, since most of the plugins settings are load only when
-they are in the vim's runtimepath it will be deactivated in the next start;
-you also want you remove the plugin's folder just run `:PlugClean` after you restart
-(n)vim.
 
 Feel free to change anything to fit your needs!

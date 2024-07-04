@@ -131,21 +131,6 @@ if !empty($YCM) && empty($NO_PYTHON_DEV) &&
     else
         Plug 'ycm-core/YouCompleteMe', { 'branch': 'legacy-py2', 'do': function('plugins#youcompleteme#install'), 'frozen': 1, 'dir': vars#basedir().'/plugged/frozen_ycm'}
     endif
-
-elseif has('nvim-0.5')
-
-    Plug 'hrsh7th/nvim-compe'
-
-    if tools#CheckLanguageServer()
-        Plug 'neovim/nvim-lspconfig'
-        Plug 'glepnir/lspsaga.nvim'
-    endif
-
-    " TODO: Integrate this with treesitter
-    " if executable('ccls')
-    "     Plug 'jackguo380/vim-lsp-cxx-highlight'
-    " endif
-
 elseif v:version >= 704
     Plug 'lifepillar/vim-mucomplete'
 endif

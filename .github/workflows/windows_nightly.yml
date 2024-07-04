@@ -1,0 +1,47 @@
+name: windows-nightly
+on: [push, pull_request]
+
+jobs:
+  windows-build:
+    name: Testing install script in ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ windows-latest, windows-2022, windows-2019 ]
+
+    env:
+      GITHUB: true
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Enable Chocolatey
+        shell: powershell
+        run: |
+          Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+      - name: Install system packages
+        shell: powershell
+        run: |
+          choco install -y curl cmake
+      - name: Fetch script
+        shell: bash
+        run: |
+          curl -OL https://raw.githubusercontent.com/mike325/dotfiles/master/install.sh
+          chmod +x ./install.sh
+      - uses: rhysd/action-setup-vim@v1.3.4
+        with:
+          version: nightly
+          configure-args: |
+            --with-features=huge --enable-fail-if-missing --disable-nls
+      - name: Install dotfile
+        shell: bash
+        run: |
+          git clone --branch=vim --recursive "https://github.com/mike325/nvim.git" "$USERPROFILE/vimfiles"
+          cp -rf "$USERPROFILE/vimfiles" "$USERPROFILE/.vim"
+      - name: Test stable Vim
+        shell: powershell
+        run: |
+          $env:PATH = "$env:USERPROFILE\.local\bin;$env:PATH"
+          # $env:PATH = "C:\tools\neovim\Neovim\bin;$env:PATH"
+          # $env:PATH = "C:\tools\neovim\nvim-win64\bin;$env:PATH"
+          ./tests/test.ps1

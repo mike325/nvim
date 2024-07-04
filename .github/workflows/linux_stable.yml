@@ -1,0 +1,36 @@
+name: linux-stable
+on: [push, pull_request]
+
+jobs:
+  linux-build:
+    name: Testing install script in ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, ubuntu-20.04, ubuntu-22.04 ]
+
+    env:
+      GITHUB: true
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: OS Info
+        run: |
+          sudo apt install -y wget
+          wget https://raw.githubusercontent.com/dylanaraps/neofetch/master/neofetch && chmod +x ./neofetch && ./neofetch
+      - name: Install system packages
+        run: |
+          sudo apt install -y curl git build-essential
+      - name: Fetch script
+        run: |
+          curl -OL https://raw.githubusercontent.com/mike325/dotfiles/master/install.sh
+          chmod +x ./install.sh
+      - uses: rhysd/action-setup-vim@v1.3.4
+      - name: Install dotfile
+        run: |
+          git clone --branch=vim --recursive "https://github.com/mike325/nvim.git" "$HOME/.vim"
+      - name: Test stable Vim
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          make
