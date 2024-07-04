@@ -268,7 +268,7 @@ if executable('svn')
     command! -nargs=* SVNstatus execute('!svn status ' . <q-args>)
     command! -complete=file -nargs=+ SVN execute('!svn ' . <q-args>)
     command! -complete=file -nargs=* SVNupdate execute('!svn update ' . <q-args>)
-    command! -complete=file -bang SVNread execute('!svn revert ' . expand("%")) |
+    command! -complete=file -nargs=? -bang SVNread execute('!svn revert ' .(empty(<q-args>)? expand("%") : expand(<q-args>)) ) |
                 \ let s:bang = empty(<bang>0) ? '' : '!' |
                 \ execute('edit'.s:bang) |
                 \ unlet s:bang
