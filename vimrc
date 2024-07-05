@@ -8,7 +8,7 @@ if v:version >= 800
     silent! packadd termdebug
 endif
 
-if v:version >= 704 && !has('nvim')
+if v:version >= 704
     silent! packadd matchparen
     silent! packadd matchit
 endif
@@ -121,9 +121,7 @@ function! s:os_type(os) abort
 endfunction
 
 function! s:os_cache() abort
-    if has('nvim-0.2')
-        return stdpath('cache')
-    elseif !empty($XDG_CACHE_HOME)
+    if !empty($XDG_CACHE_HOME)
         return $XDG_CACHE_HOME . '/nvim'
     endif
     " Point vim to nvim cache since some lsp are install here
@@ -168,9 +166,7 @@ function! s:setupdirs() abort
 
     let s:datadir = expand($XDG_DATA_HOME) . (s:os_name('windows') ? '/nvim-data' : '/nvim')
 
-    if has('nvim')
-        let s:basedir = substitute(has('nvim-0.2') ? stdpath('config') : $XDG_CONFIG_HOME . '/nvim', '\', '/', 'g' )
-    elseif s:os_name('windows')
+    if s:os_name('windows')
         " if $USERPROFILE and ~ expansions are different, then gVim may be running as portable
         let l:userprofile = substitute( expand($USERPROFILE), '\', '/', 'g' )
         let l:prog_home = substitute( expand('~'), '\', '/', 'g' )
@@ -260,7 +256,7 @@ endfunction
 function! s:tools_ignores(tool) abort
     let l:excludes = []
 
-    if has('nvim-0.2') || v:version >= 800 || s:has_patch('7.4.2044')
+    if v:version >= 800 || s:has_patch('7.4.2044')
         let l:excludes = map(split(copy(&backupskip), ','), {key, val -> substitute(val, '.*', "'\\0'", 'g') })
     endif
 
@@ -386,8 +382,8 @@ endfunction
 
 function! s:tools_spelllangs(lang) abort
     call s:tools_abolish(a:lang)
-    execute 'setlocal spelllang='.a:lang
-    execute 'setlocal spelllang?'
+    setlocal spelllang=a:lang
+    echo &l:spelllang
 endfunction
 
 function! s:tools_oldfiles(arglead, cmdline, cursorpos) abort
@@ -398,35 +394,6 @@ endfunction
 
 function! s:mappings_general_completion(arglead, cmdline, cursorpos, options) abort
     return filter(a:options, "v:val =~? join(split(a:arglead, '\zs'), '.*')")
-endfunction
-
-function! s:mappings_inside_empty_pairs() abort
-    let l:rsp = 0
-    let l:pairs = {
-        \ '"': '"',
-        \ "'": "'",
-        \ ')': '(',
-        \ '}': '{',
-        \ ']': '[',
-        \ '>': '<',
-        \}
-        " \ '(': ')',
-        " \ '{': '}',
-        " \ '[': ']',
-        " \ '<': '>',
-
-    let l:line = nvim_get_current_line()
-    let [l:ln, l:col] = nvim_win_get_cursor(0)
-
-    if l:col > 0
-        let l:close = l:line[l:col]
-        let l:open = l:line[l:col - 1]
-        if get(l:pairs, l:close, -1) != -1
-            let l:rsp = l:pairs[l:close] == l:open
-        endif
-    endif
-
-    return l:rsp
 endfunction
 
 function! g:MappingsEnter() abort
@@ -465,11 +432,7 @@ if has('terminal') || (!has('nvim-0.4') && has('nvim'))
             endif
         endif
 
-        if has('nvim')
-            execute l:split . ' 20split term://' . l:shell
-        else
-            call term_start(l:shell . a:cmd, {'term_rows': 20})
-        endif
+        call term_start(l:shell . a:cmd, {'term_rows': 20})
 
         wincmd J
         setlocal nonumber norelativenumber
@@ -484,35 +447,27 @@ if has('terminal') || (!has('nvim-0.4') && has('nvim'))
 
     tnoremap <ESC> <C-\><C-n>
 
-    if has('nvim')
-        augroup TermSetup
-            autocmd!
-            autocmd TermOpen * setlocal nonumber norelativenumber
-            autocmd TermOpen * nnoremap <silent><nowait><buffer> q :q!<CR>
-        augroup end
-    else
-        augroup TermSetup
-            autocmd!
-            autocmd TerminalOpen * setlocal nonumber norelativenumber
-            autocmd TerminalOpen * nnoremap <silent><nowait><buffer> q :q!<CR>
-        augroup end
-    end
+    augroup TermSetup
+        autocmd!
+        autocmd TerminalOpen * setlocal nonumber norelativenumber
+        autocmd TerminalOpen * nnoremap <silent><nowait><buffer> q :q!<CR>
+    augroup end
 
 endif
 
 if s:has_option('mouse')
     function! s:mappings_ToggleMouse() abort
         if &mouse ==# ''
-            execute 'set mouse=a'
+            set mouse=a
             echo 'mouse'
         else
-            execute 'set mouse='
+            set mouse=
             echo 'nomouse'
         endif
     endfunction
 endif
 
-if has('nvim') || v:version >= 704
+if v:version >= 704
     function! s:mappings_format(arglead, cmdline, cursorpos) abort
         return s:mappings_general_completion(a:arglead, a:cmdline, a:cursorpos, ['unix', 'dos', 'mac'])
     endfunction
@@ -623,27 +578,21 @@ function! s:mappings_ConncallLevel(level) abort
     let &conceallevel = l:level
 endfunction
 
-function! g:Toggle_qf(qf_type) abort
-    let l:prefix = ''
-    let l:is_open = -1
-    if a:qf_type ==# 'qf'
-        let l:prefix = 'c'
-        let l:is_open = getqflist({ "winid": 0 }).winid != 0
+function! g:Arglist_clear(all) abort
+    if a:all
+        argdelete *
     else
-        let l:prefix = 'l'
-        let l:is_open = getloclist(win_getid(), { "winid": 0 }).winid != 0
-    end
-
-    if l:is_open
-        call execute(l:prefix . 'close')
-    else
-        call execute('15' . l:prefix . 'open')
-    end
+        for l:filename in argv()
+            if ! filereadable(l:filename)
+                call execute('argdelete ' . l:filename)
+            endif
+        endfor
+    endif
 endfunction
 
-function! g:Arg_add_buf(filename, clear) abort
-    if a:clear && argc() > 0
-        argdelete *
+function! g:Arglist_add(filename, clear) abort
+    if a:clear
+        call g:Arglist_clear(1)
     endif
 
     let l:files = type(a:filename) != type([]) ?  [a:filename] : a:filename
@@ -662,19 +611,20 @@ function! g:Arg_add_buf(filename, clear) abort
     endif
 
     for l:filename in l:files
-        let l:buf = bufnr(l:filename)
+        let l:buf = type(l:filename) == type(1) ? l:filename : bufnr(l:filename)
         if l:buf == -1
             execute "badd " . l:filename
         endif
-        execute "argadd " . l:filename
+        execute "argadd " . (type(l:filename) == type(1) ? bufname(l:filename) : l:filename)
     endfor
 
     " NOTE: Not all versions of vim have argdedupe
     silent! argdedupe
 endfunction
 
-function! g:Arg_edit(arg) abort
+function! g:Arglist_edit(arg) abort
     if argc() == 0
+        echomsg "Empty arglist"
         return
     endif
 
@@ -704,6 +654,243 @@ function! g:Arg_edit(arg) abort
     endif
 endfunction
 
+function! s:qf_first(win) abort
+    if a:win
+        lfirst
+    else
+        cfirst
+    endif
+endfunction
+
+function! s:qf_last(win) abort
+    if a:win
+        llast
+    else
+        clast
+    endif
+endfunction
+
+function! s:qf_open(win, size) abort
+    let l:cmd = a:win ? 'lopen' : 'copen'
+    if a:win
+        call execute(l:cmd . " " . a:size)
+    else
+        let l:direction = &g:splitbelow ? 'botright' : 'topleft'
+        call execute(l:direction . " " . l:cmd . " " . a:size)
+    endif
+endfunction
+
+function! s:qf_close(win) abort
+    if a:win
+        lclose
+    else
+        cclose
+    endif
+endfunction
+
+function! s:qf_set_list(items, action, what, win) abort
+    let l:items = len(a:items) > 0 ? a:items : []
+    if a:win
+        let l:win = a:win
+        if type(l:win) == type(v:true) || l:win == 0
+            let l:win = win_getid()
+        endif
+        if type(a:what) == type({}) && len(a:what) > 0
+            call setloclist(l:win, l:items, a:action, a:what)
+        else
+            call setloclist(l:win, l:items, a:action)
+        endif
+    else
+        if type(a:what) == type({}) && len(a:what) > 0
+            call setqflist(l:items, a:action, a:what)
+        else
+            call setqflist(l:items, a:action)
+        endif
+    endif
+endfunction
+
+function! s:qf_get_list(what, win) abort
+    let l:what = a:what
+    let l:win = a:win
+    if type(l:what) == type(1)
+        if type(l:what) == type(l:win)
+            throw "what and win cannot be the same type"
+        endif
+        let l:win = l:what
+        let l:what = v:null
+    endif
+    if l:win
+        if type(l:win) == type(v:true) || l:win == 0
+            let l:win = win_getid()
+        endif
+        if type(l:what) == type({}) && len(l:what) > 0
+            return getloclist(l:win, l:what)
+        endif
+        return getloclist(l:win)
+    endif
+    if type(l:what) == type({}) && len(l:what) > 0
+        return getqflist(l:what)
+    endif
+    return getqflist()
+endfunction
+
+function! g:Qf_is_open(...) abort
+    let l:win = get(a:000, 0, 0)
+    if l:win
+        return getloclist(win_getid(), { "winid": 0 }).winid != 0
+    endif
+    return getqflist({ "winid": 0 }).winid != 0
+endfunction
+
+function! g:Qf_open(...) abort
+    let l:win = get(a:000, 0, 0)
+    let l:size = get(a:000, 1, 15)
+    if !g:Qf_is_open(l:win)
+        call s:qf_open(l:win, l:size)
+    endif
+endfunction
+
+function! g:Qf_close(...) abort
+    let l:win = get(a:000, 0, 0)
+    if g:Qf_is_open(l:win)
+        call s:qf_close(l:win)
+    endif
+endfunction
+
+function! g:Qf_toggle(...) abort
+    let l:win = get(a:000, 0, 0)
+    let l:size = get(a:000, 1, 15)
+    if g:Qf_is_open(l:win)
+        call s:qf_close(l:win)
+    else
+        call s:qf_open(l:win, l:size)
+    endif
+endfunction
+
+function! g:Qf_get_list(...) abort
+    let l:what = get(a:000, 0, {})
+    let l:win = get(a:000, 1, 0)
+    return s:qf_get_list(l:what, l:win)
+endfunction
+
+function! g:Qf_set_list(...) abort
+    let l:opts = get(a:000, 0, {})
+    let l:win = get(a:000, 1, 0)
+
+    let l:action = get(l:opts, 'action', ' ')
+    let l:items = get(l:opts, 'items', [])
+    let l:open = get(l:opts, 'open', v:true)
+    let l:jump = get(l:opts, 'jump', v:true)
+
+    for l:key in ['action', 'items', 'open', 'jump']
+        if has_key(l:opts, l:key)
+            call remove(l:opts, l:key)
+        endif
+    endfor
+
+    if type(l:items) != type([]) || len(l:items) == 0
+        echoerr 'No items to display'
+        return
+    endif
+
+    if type(l:items[1]) == type({})
+        let l:opts['items'] = l:items
+    elseif type(l:items[1]) == type('')
+        let l:opts['lines'] = l:items
+    else
+        execute "throw 'Invalid items type: ". string(type(l:items[1])) . "'"
+    endif
+
+    let l:efm = get(l:opts, 'efm', &g:efm)
+    if type(l:efm) == type([])
+        let l:efm = join(l:efm, ',')
+    endif
+    let l:opts['efm'] = l:efm
+
+    call s:qf_set_list([], l:action, l:opts, l:win)
+    if l:open
+        call g:Qf_open(l:win)
+    endif
+
+    if l:jump
+        call s:qf_first(l:win)
+    endif
+endfunction
+
+function! g:Qf_clear(...) abort
+    let l:win = get(a:000, 0, 0)
+    call s:qf_set_list([], ' ', v:null, l:win)
+    call g:Qf_close(l:win)
+endfunction
+
+function! g:Qf_dump_files(buffers, ...) abort
+    let l:opts = get(a:000, 0, {})
+    let l:win = get(a:000, 1, 0)
+
+    let l:items = []
+    for l:buf in a:buffers
+        let l:filename = type(l:buf) == type(1) ? bufname(l:buf) : l:buf
+
+        let l:item = { 'valid': v:true, 'lnum': 1, 'col': 1, 'text': l:filename }
+        if type(l:buf) == type(1)
+            let l:item['bufnr'] = l:buf
+        else
+            let l:item['filename'] = l:buf
+        endif
+        let l:items += [l:item]
+    endfor
+
+    if len(l:items) > 0
+        let l:open = get(l:opts, 'open', v:false)
+        let l:jump = get(l:opts, 'jump', v:true)
+
+        call g:Qf_set_list({'items': l:items, 'open': l:open, 'jump': l:jump}, l:win)
+    else
+        echoerr "No files to dump"
+    endif
+endfunction
+
+function! g:Qf_to_arglist(...) abort
+    let l:opts = get(a:000, 0, {})
+    let l:win = get(a:000, 1, 0)
+
+    let l:clear = get(l:opts, 'clear', ' ')
+    for l:key in ['clear']
+        if has_key(l:opts, l:key)
+            call remove(l:opts, l:key)
+        endif
+    endfor
+
+    if type(l:win) == type(v:true)
+        let l:win = win_getid()
+    endif
+
+    let l:items = g:Qf_get_list({ 'items': v:true }, l:win)['items']
+    let l:files = []
+    for l:item in l:items
+        let l:buf = get(l:item, 'bufnr', 0)
+        if l:buf && bufexists(l:buf)
+            let l:files += [l:buf]
+        endif
+    endfor
+    call g:Arglist_add(l:files, l:clear)
+endfunction
+
+function! g:Find(glob) abort
+    let l:glob = "'" . a:glob . "'"
+    let l:cmd = tools#select_find(0)
+    let l:results = systemlist(l:cmd . l:glob)
+    if v:shell_error == 0
+        if len(l:results) > 0
+            call qf#dump_files(l:results)
+        else
+            echomsg "No matches found for " . a:glob
+        endif
+    else
+        echoerr "Failed to execute find"
+    endif
+endfunction
+
 function! s:edit(args) abort
     for l:glob in a:args
         if filereadable(l:glob)
@@ -723,23 +910,21 @@ endfunction
 " Options
 " ------------------------------------------------------------------------------
 
-call s:tools_set_grep(0, 0)
-
 if exists('+syntax')
     syntax on
 endif
 
 set diffopt^=vertical
 
-if s:has_patch('8.1.0360') || has('nvim')
+if s:has_patch('8.1.0360')
     set diffopt^=indent-heuristic,algorithm:patience
 endif
 
-if s:has_patch('8.1.1361') || has('nvim')
+if s:has_patch('8.1.1361')
     set diffopt^=hiddenoff
 endif
 
-if s:has_patch('8.1.2289') || has('nvim')
+if s:has_patch('8.1.2289')
     set diffopt^=iwhiteall,iwhiteeol
 else
     set diffopt^=iwhite
@@ -1052,7 +1237,7 @@ nnoremap g/ ms/\v
 " TODO
 nnoremap <expr> i g:MappingsIndentWithI()
 
-if has('nvim') || v:version >= 704
+if v:version >= 704
     " Change word under cursor and dot repeat
     nnoremap c* m`*``cgn
     nnoremap c# m`#``cgN
@@ -1089,9 +1274,6 @@ nnoremap <leader>k <C-w>k
 nnoremap <leader>l <C-w>l
 nnoremap <leader>b <C-w>b
 nnoremap <leader>t <C-w>t
-
-" Equally resize buffer splits
-nnoremap <leader>e <C-w>=
 
 nnoremap <leader>1 1gt
 nnoremap <leader>2 2gt
@@ -1170,16 +1352,31 @@ nnoremap <silent> ]a :<C-U>exe "".(v:count ? v:count : "")."next"<CR>
 nnoremap <silent> n :call g:MappingsNiceNext('n')<cr>
 nnoremap <silent> N :call g:MappingsNiceNext('N')<cr>
 
-nnoremap <silent> =q :call g:Toggle_qf("qf")<cr>
-nnoremap <silent> =l :call g:Toggle_qf("loc")<cr>
+nnoremap <silent> =q :call g:Qf_toggle()<cr>
+nnoremap <silent> =l :call g:Qf_toggle(1)<cr>
 
-nnoremap <silent> <leader>e :call g:Arg_edit('')<cr>
-nnoremap <silent> <leader>A :call g:Arg_add_buf([expand("%")],0)<cr>
+nnoremap <silent> <leader>e :call g:Arglist_edit('')<cr>
+nnoremap <silent> <leader>A :call g:Arglist_add([expand("%")],0)<cr>
 nnoremap <silent> <leader>D :call execute("argdelete " . expand("%"))<cr>
+
+call s:tools_set_grep(0, 0)
+call s:tools_set_grep(0, 1)
 
 " ------------------------------------------------------------------------------
 " Commands
 " ------------------------------------------------------------------------------
+
+command! -nargs=? Qopen call g:Qf_toggle(0, expand(<q-args>))
+command! Qf2Arglist call g:Qf_to_arglist()
+command! Loc2Arglist call g:Qf_to_arglist({}, 1)
+command! -nargs=1 Find call g:Find(<q-args>)
+
+command! -bang -nargs=* -complete=buffer ArgAddBuf
+    \ let s:bang = empty(<bang>0) ? 0 : 1 |
+    \ call g:Arglist_add([<f-args>], s:bang) |
+    \ unlet s:bang |
+
+command! -nargs=+ -complete=file Edit call s:edit([<f-args>])
 
 command! -nargs=0 Reload source $HOME/.vimrc | echomsg "Config Reload!"
 
@@ -1205,24 +1402,21 @@ command! SpellToggle      setlocal spell! spell?
 command! WrapToggle       setlocal wrap! wrap?
 command! VerboseToggle    let &verbose=!&verbose | echo "Verbose " . &verbose
 
-if has('nvim') || v:version >= 704
+if v:version >= 704
     command! -nargs=? -complete=filetype FileType call s:mappings_SetFileData('filetype', <q-args>, 'text')
     command! -nargs=? -complete=customlist,s:mappings_format FileFormat call s:mappings_SetFileData('fileformat', <q-args>, 'unix')
 endif
 
 command! TrimToggle call g:MappingsTrim()
 
-if has('nvim-0.2') || s:has_patch('7.4.2044')
-    command! -nargs=? -complete=arglist ArgEdit call g:Arg_edit(empty(<q-args>) ?  '' : expand(<q-args>))
-
+if s:has_patch('7.4.2044')
+    command! -nargs=? -complete=arglist ArgEdit call g:Arglist_edit(empty(<q-args>) ?  '' : expand(<q-args>))
     command! -nargs=? -complete=customlist,s:mappings_spells SpellLang
                 \ let s:spell = (empty(<q-args>)) ?  'en' : expand(<q-args>) |
                 \ call s:tools_spelllangs(s:spell) |
                 \ unlet s:spell
-
 else
-    command! -nargs=? ArgEdit call g:Arg_edit(empty(<q-args>) ?  '' : expand(<q-args>))
-
+    command! -nargs=? ArgEdit call g:Arglist_edit(empty(<q-args>) ?  '' : expand(<q-args>))
     command! -nargs=? SpellLang
                 \ let s:spell = (empty(<q-args>)) ?  'en' : expand(<q-args>) |
                 \ call s:tools_spelllangs(s:spell) |
@@ -1293,13 +1487,6 @@ command! -bang -nargs=? -complete=file Remove
     \ unlet s:bang |
     \ unlet s:target
 
-command! -bang -nargs=* -complete=buffer ArgAddBuf
-    \ let s:bang = empty(<bang>0) ? 0 : 1 |
-    \ call g:Arg_add_buf([<f-args>], s:bang) |
-    \ unlet s:bang |
-
-command! -nargs=+ -complete=file Edit call s:edit([<f-args>])
-
 " ------------------------------------------------------------------------------
 " Autocmds
 " ------------------------------------------------------------------------------
@@ -1354,66 +1541,5 @@ augroup SetFormatters
     autocmd Filetype json if executable('jq') | setlocal formatprg=jq\ . | endif
     autocmd Filetype xml if executable('xmllint') | setlocal formatprg=xmllint\ --format\ - | endif
 augroup end
-
-if executable('nvim')
-    function! s:nvim(...) abort
-        let l:cachedir = $HOME . '/.cache/nvim'
-        let l:socket = $TMUX_WINDOW ? l:cachedir . '/socket.win' . $TMUX_WINDOW : l:cachedir . '/socket'
-
-        let l:cmd = ['nvim'] " , '--server', l:socket, '--remote-silent']
-
-        if len(a:000) == 0
-            if !filewritable(l:socket)
-                call s:echoerr('Socket: "' . l:socket . '" does not exists' )
-                return 1
-            endif
-
-            let l:cmd += ['--server', l:socket, '--remote-silent', expand('%:p')]
-        else
-            let l:has_server = 0
-            let l:has_remote_cmd = 0
-
-            for l:i in range(len(a:000))
-                if a:000[l:i] == '%'
-                    let a:000[l:i] = expand('%:p')
-                elseif a:000[l:i] =~? '^--server'
-                    if !filewritable(a:000[l:i + 1])
-                        call s:echoerr('Socket: "' . a:000[l:i + 1] . '" does not exists' )
-                        return 1
-                    endif
-
-                    let l:has_server = 1
-                elseif a:000[l:i] =~? '^--remote'
-                    let l:has_remote_cmd = 1
-                endif
-            endfor
-
-            if l:has_server != 1
-                if !filewritable(l:socket)
-                    call s:echoerr('Socket: "' . l:socket . '" does not exists' )
-                    return 1
-                endif
-
-                let l:cmd += ['--server', l:socket]
-            endif
-
-            if l:has_remote_cmd != 1
-                let l:cmd += ['--remote-silent']
-            endif
-
-            let l:cmd += a:000
-        endif
-
-        call system(join(l:cmd, ' '))
-    endfunction
-
-    function! s:send_file(filename) abort
-        let l:filename = a:filename == "" ? expand('%') : a:filename
-        call s:nvim(fnamemodify(l:filename, ':p'))
-    endfunction
-
-    command! -complete=file -nargs=? SendFile call s:send_file(<q-args>)
-    command! -complete=file -nargs=* Nvim call s:nvim(<f-args>)
-endif
 
 filetype plugin indent on

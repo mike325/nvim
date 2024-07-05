@@ -21,7 +21,7 @@ repos:
       - id: mixed-line-ending
       # - id: pretty-format-json
   - repo: https://github.com/jumanjihouse/pre-commit-hooks
-    rev: master
+    rev: 3.0.0
     hooks:
       # TODO: Migrate some checks to python to make them "universal"
       # - id: bundler-audit
@@ -53,7 +53,7 @@ repos:
   #           )$
   #       # args: [ '--whitespaces-count', '2' ]  # defaults to: 4
   - repo: https://github.com/sirosen/check-jsonschema
-    rev: 0.28.4
+    rev: 0.28.6
     hooks:
       - id: check-github-workflows
       - id: check-github-actions
@@ -61,16 +61,16 @@ repos:
       # - id: check-azure-pipelines
       # - id: check-travis
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.4.7
+    rev: v0.5.0
     hooks:
        - id: ruff
        - id: ruff-format
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.10.0
+    rev: v1.10.1
     hooks:
       - id: mypy
   - repo: https://github.com/Vimjas/vint
-    rev: v0.4a4
+    rev: v0.4a3
     hooks:
       - id: vint
         args: ['--enable-neovim', '-t', '-w']

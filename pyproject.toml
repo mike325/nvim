@@ -1,7 +1,7 @@
 [project]
-name = "dotnvim"
+name = "dotvim"
 version = "0.2"
-description = "neovim's config files"
+description = "Neovim/Vim's config files"
 readme = "README.md"
 authors = [{ name = "mike325", email = "mike325@users.noreply.github.com" }]
 license = { text = "MIT" }
@@ -97,7 +97,7 @@ exclude = '''
 '''
 
 [tool.mypy]
-python_version = "3.7"
+python_version = "3.8"
 # sqlite_cache = true
 # check_untyped_defs = true
 # disallow_any_generics = true

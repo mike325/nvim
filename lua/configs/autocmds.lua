@@ -743,3 +743,17 @@ if executable 'git' then
         end,
     })
 end
+
+vim.api.nvim_create_autocmd({ 'VimLeavePre' }, {
+    desc = 'Write Simple DB tables to json files',
+    group = vim.api.nvim_create_augroup('WriteDB', { clear = true }),
+    pattern = '*',
+    callback = function()
+        for name, data in pairs(STORAGE.databases or {}) do
+            local location = data.path
+            local tables = data.tables
+            local filename = ('%s/%s.json'):format(location, name)
+            require('utils.files').dump_json(filename, tables)
+        end
+    end,
+})
