@@ -222,6 +222,7 @@ command! -nargs=? Qopen call qf#toggle(0, expand(<q-args>))
 command! Qf2Arglist call qf#to_arglist()
 command! Loc2Arglist call qf#to_arglist({}, 1)
 command! -nargs=1 Find call mappings#find(<q-args>)
+command! -nargs=+ -complete=file Edit call mappings#edit([<f-args>])
 
 if has('terminal')
     tnoremap <ESC> <C-\><C-n>

@@ -320,3 +320,18 @@ function! mappings#find(glob) abort
         echoerr 'Failed to execute find'
     endif
 endfunction
+
+function! mappings#edit(args) abort
+    for l:glob in a:args
+        if filereadable(l:glob)
+            execute 'edit ' . l:glob
+        elseif l:glob =~? '\*'
+            let l:files = glob(l:glob, 0, 1, 0)
+            for l:file in l:files
+                if filereadable(l:file)
+                    execute 'edit ' . l:file
+                endif
+            endfor
+        endif
+    endfor
+endfunction
