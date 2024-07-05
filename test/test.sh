@@ -30,11 +30,10 @@ WARN_COUNT=0
 ERR_COUNT=0
 
 VIM=0
-NVIM=0
 
 PROGS=()
-PYTHON2=0
-PYTHON3=0
+# PYTHON2=0
+# PYTHON3=0
 
 NAME="$0"
 NAME="${NAME##*/}"
@@ -294,42 +293,7 @@ function exit_append() {
 }
 
 function get_runtime_files() {
-    prog="$1"
-    if is_windows; then
-        if [[ $prog == nvim ]]; then
-            echo "$HOME/AppData/Local/nvim/init.vim"
-        else
-            echo "$HOME/.vim/vimrc"
-        fi
-    else
-        if [[ $prog == nvim ]]; then
-            echo "$HOME/.config/nvim/init.vim"
-        else
-            echo "$HOME/.vim/vimrc"
-        fi
-    fi
-}
-
-function install_pynvim() {
-    if hash pip3 2>/dev/null; then
-        pip3 install --user wheel pynvim
-        PYTHON3=1
-    else
-        warn_msg "Skipping python 3 test with Neovim"
-    fi
-
-    if hash pip2 2>/dev/null; then
-        pip2 install --user wheel pynvim
-        PYTHON2=1
-    else
-        warn_msg "Skipping python 2 test with Neovim"
-    fi
-
-    if [[ $PYTHON2 -eq 1 ]] || [[ $PYTHON3 -eq 1 ]]; then
-        return 0
-    fi
-
-    return 1
+    echo "$HOME/.vim/vimrc"
 }
 
 function run_test() {
@@ -337,15 +301,7 @@ function run_test() {
     local rsp=0
     local args
 
-    if [[ $prog == nvim ]]; then
-        if [[ $PYTHON2 -eq 0 ]] && [[ $PYTHON3 -eq 0 ]]; then
-            local testname="stable Neovim without python"
-        else
-            local testname="stable Neovim with python"
-        fi
-    else
-        local testname="stock Vim"
-    fi
+    local testname="stock Vim"
 
     local exit_args=" -c 'autocmd VimEnter * qa!' "
 
@@ -369,10 +325,7 @@ function run_test() {
         verbose_msg "Using $(get_runtime_files "${prog}")"
 
         verbose_msg "Running ${prog} ${args}"
-        if  [[ $prog == nvim ]] && ! hash nvim 2>/dev/null; then
-            error_msg "Neovim is not install or is missing in the path, test ${test_type} ${testname} fail"
-            rsp=1
-        elif ! eval "${prog} ${args}"; then
+        if ! eval "${prog} ${args}"; then
             error_msg "${test_type} ${testname} fail"
             rsp=1
         fi
@@ -401,10 +354,6 @@ while [[ $# -gt 0 ]]; do
             VIM=1
             ALL=0
             ;;
-        -n | --neovim | --nvim)
-            NVIM=1
-            ALL=0
-            ;;
         *)
             initlog
             error_msg "Unknown argument $key"
@@ -418,17 +367,16 @@ done
 initlog
 
 if [[ $ALL -eq 1 ]]; then
-    PROGS=("vim" "nvim")
+    PROGS=("vim")
 else
     [[ $VIM -eq 1 ]] && PROGS+=("vim")
-    [[ $NVIM -eq 1 ]] && PROGS=("nvim")
 fi
 
 for prog in "${PROGS[@]}"; do
     run_test "$prog"
 done
 
-if { [[ $ALL -eq 1 ]] || [[ $NVIM -eq 1 ]];  } &&  install_pynvim; then
+if [[ $ALL -eq 1 ]]; then
     run_test "$prog"
 fi
 
