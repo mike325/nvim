@@ -360,7 +360,7 @@ function! tools#find(tool) abort
                 \ 'git'  : 'git --no-pager ls-files -co --exclude-standard -- :',
                 \ 'fd'   : 'fd ' . tools#ignores('fd') . ' --type f --hidden --follow --color never --glob ',
                 \ 'rg'   : 'rg --color never --no-search-zip --hidden --trim --files --iglob ',
-                \ 'find' : "find . -type f ".tools#ignores('find')." -iname ",
+                \ 'find' : 'find . -type f '.tools#ignores('find').' -iname ',
                 \}
     return l:filelist[a:tool]
 endfunction

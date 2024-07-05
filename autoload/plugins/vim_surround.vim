@@ -9,10 +9,9 @@ endif
 
 let g:config_surround = 1
 
-let g:surround_{char2nr("¿")} = "¿\r?"
-let g:surround_{char2nr("?")} = "¿\r?"
-let g:surround_{char2nr("¡")} = "¡\r!"
-let g:surround_{char2nr("!")} = "¡\r!"
-let g:surround_{char2nr(";")} = ":\r:"
-let g:surround_{char2nr(":")} = ":\r:"
-let g:surround_{char2nr('q')} = "``\r''"
+let g:surround_{char2nr('¿')} = '¿\r?'
+let g:surround_{char2nr('?')} = '¿\r?'
+let g:surround_{char2nr('¡')} = '¡\r!'
+let g:surround_{char2nr('!')} = '¡\r!'
+let g:surround_{char2nr(';')} = ':\r:'
+let g:surround_{char2nr(':')} = ':\r:'

@@ -314,9 +314,9 @@ function! mappings#find(glob) abort
         if len(l:results) > 0
             call qf#dump_files(l:results)
         else
-            echomsg "No matches found for " . a:glob
+            echomsg 'No matches found for ' . a:glob
         endif
     else
-        echoerr "Failed to execute find"
+        echoerr 'Failed to execute find'
     endif
 endfunction

@@ -84,4 +84,3 @@ elseif os#name('windows')
     endif
     unlet s:windows_find
 endif
-

@@ -20,10 +20,10 @@ endfunction
 function! s:qf_open(win, size) abort
     let l:cmd = a:win ? 'lopen' : 'copen'
     if a:win
-        call execute(l:cmd . " " . a:size)
+        call execute(l:cmd . ' ' . a:size)
     else
         let l:direction = &g:splitbelow ? 'botright' : 'topleft'
-        call execute(l:direction . " " . l:cmd . " " . a:size)
+        call execute(l:direction . ' ' . l:cmd . ' ' . a:size)
     endif
 endfunction
 
@@ -61,7 +61,7 @@ function! s:qf_get_list(what, win) abort
     let l:win = a:win
     if type(l:what) == type(1)
         if type(l:what) == type(l:win)
-            throw "what and win cannot be the same type"
+            throw 'what and win cannot be the same type'
         endif
         let l:win = l:what
         let l:what = v:null
@@ -84,9 +84,9 @@ endfunction
 function! qf#is_open(...) abort
     let l:win = get(a:000, 0, 0)
     if l:win
-        return getloclist(win_getid(), { "winid": 0 }).winid != 0
+        return getloclist(win_getid(), { 'winid': 0 }).winid != 0
     endif
-    return getqflist({ "winid": 0 }).winid != 0
+    return getqflist({ 'winid': 0 }).winid != 0
 endfunction
 
 function! qf#open(...) abort
@@ -193,7 +193,7 @@ function! qf#dump_files(buffers, ...) abort
 
         call qf#set_list({'items': l:items, 'open': l:open, 'jump': l:jump}, l:win)
     else
-        echoerr "No files to dump"
+        echoerr 'No files to dump'
     endif
 endfunction
 

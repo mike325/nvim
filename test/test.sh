@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2317
 
 #
 #                              -`
@@ -100,6 +101,7 @@ case "$SHELL_PLATFORM" in
         OS='macos'
         ;;
     bsd)
+        # shellcheck disable=SC2034
         OS='bsd'
         ;;
 esac

@@ -36,18 +36,18 @@ function! arglist#add(filename, clear) abort
     for l:filename in l:files
         let l:buf = type(l:filename) == type(1) ? l:filename : bufnr(l:filename)
         if l:buf == -1
-            execute "badd " . l:filename
+            execute 'badd ' . l:filename
         endif
-        execute "argadd " . (type(l:filename) == type(1) ? bufname(l:filename) : l:filename)
+        execute 'argadd ' . (type(l:filename) == type(1) ? bufname(l:filename) : l:filename)
     endfor
 
     " NOTE: Not all versions of vim have argdedupe
-    silent! argdedupe
+    silent! execute('argdedupe')
 endfunction
 
 function! arglist#edit(arg) abort
     if argc() == 0
-        echomsg "Empty arglist"
+        echomsg 'Empty arglist'
         return
     endif
 
@@ -55,12 +55,12 @@ function! arglist#edit(arg) abort
         let l:idx = 1
         for l:arg in argv()
             if a:arg == l:arg
-                execute "argument " . l:idx
+                execute 'argument ' . l:idx
                 return
             endif
             let l:idx += 1
         endfor
-        throw "Invalid argument name"
+        throw 'Invalid argument name'
     endif
 
     let l:args = []
@@ -73,7 +73,7 @@ function! arglist#edit(arg) abort
 
     let l:choice = inputlist(l:args)
     if l:choice > 0
-        execute "argument " . l:choice
+        execute 'argument ' . l:choice
     endif
 endfunction
 

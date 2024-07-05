@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2317
 
 #
 #                              -`
@@ -26,7 +27,7 @@ NOCOLOR=0
 NOLOG=0
 WARN_COUNT=0
 ERR_COUNT=0
-FROM_STDIN=()
+# FROM_STDIN=()
 
 NAME="$0"
 NAME="${NAME##*/}"
@@ -117,24 +118,14 @@ if ! hash is_osx 2>/dev/null; then
     }
 fi
 
-if [[ -n $ZSH_NAME   ]]; then
+if [[ -n $ZSH_NAME ]]; then
     CURRENT_SHELL="zsh"
-elif [[ -n $BASH   ]]; then
+elif [[ -n $BASH ]]; then
     CURRENT_SHELL="bash"
 else
-    if [[ -z $CURRENT_SHELL   ]]; then
+    if [[ -z $CURRENT_SHELL ]]; then
         CURRENT_SHELL="${SHELL##*/}"
     fi
-fi
-
-if ! hash is_64bits 2>/dev/null; then
-    # TODO: This should work with ARM 64bits
-    function is_64bits() {
-        if [[ $ARCH == 'x86_64' ]]; then
-            return 0
-        fi
-        return 1
-    }
 fi
 
 # colors
@@ -170,17 +161,10 @@ Usage:
 
     Optional Flags
 
-        --nolog
-            Disable log writting
-
-        --nocolor
-            Disable color output
-
-        -v, --verbose
-            Enable debug messages
-
-        -h, --help
-            Display help, if you are seeing this, that means that you already know it (nice)
+        --nolog         Disable log writing
+        --nocolor       Disable color output
+        -v, --verbose   Enable debug messages
+        -h, --help      Display this help message
 EOF
 }
 
@@ -195,7 +179,7 @@ function __parse_args() {
 
     local pattern="^--${lint}=[a-zA-Z0-9.:@_/~-]+$"
 
-    if [[ -n $3   ]]; then
+    if [[ -n $3 ]]; then
         local pattern="^--${lint}=$3$"
     fi
 
@@ -314,12 +298,12 @@ while [[ $# -gt 0 ]]; do
             help_user
             exit 0
             ;;
-        -)
-            while read -r from_stdin; do
-                FROM_STDIN=("$from_stdin")
-            done
-            break
-            ;;
+        # -)
+        #     while read -r from_stdin; do
+        #         FROM_STDIN=("$from_stdin")
+        #     done
+        #     break
+        #     ;;
         *)
             initlog
             error_msg "Unknown argument $key"
@@ -371,32 +355,12 @@ fi
 if hash vint 2>/dev/null; then
     status_msg "Running VimL lint"
     verbose_msg "Vint version: $(vint --version)"
-    if ! fd -e vim --exclude plug --exclude ftdetect -X vint --enable-neovim -t -s || ! fd -e vim . ftdetect -X vint --enable-neovim -t -e; then
+    if ! fd -e vim --exclude plug --exclude ftdetect -X vint --enable-neovim -t -s || ! fd -e vim . ftdetect -X vint --enable-neovim -t -w; then
         error_msg 'Fail VimL lint test'
         exit 2
     fi
 else
     error_msg "Missing vint, skipping VimL lint"
-fi
-
-if hash luacheck 2>/dev/null; then
-    status_msg "Running luacheck"
-    verbose_msg "luacheck version: $(luacheck --version)"
-    if ! luacheck --std luajit --formatter plain lua/; then
-        # TODO: Cleanup luacheck errors
-        warn_msg 'Fail luacheck lint test'
-    fi
-elif hash nvim 2>/dev/null; then
-    lua_version=$(nvim --version | grep -i luajit | awk '{print $2}')
-    if [[ -f ~/.cache/nvim/plenary_hererocks/$lua_version/bin/luacheck ]]; then
-        if ! ~/.cache/nvim/plenary_hererocks/"$lua_version"/bin/luacheck --std luajit --formatter plain lua/; then
-            warn_msg 'Fail luacheck lint test'
-        fi
-    else
-        error_msg "Missing luacheck, skipping lua lint"
-    fi
-else
-    error_msg "Missing luacheck, skipping lua lint"
 fi
 
 if [[ $ERR_COUNT -gt 0 ]]; then

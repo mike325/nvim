@@ -1,8 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import logging
 import os
 import sys
+from typing import List
 
 import ycm_core
 
@@ -22,18 +23,34 @@ libDirs = [
 ]
 
 flags = [
-    # '-std=c++17',
+    # "-std=c++20",
+    "-O2",
     "-Wall",
     "-Wextra",
-    "-Weverything",
-    "-Werror",
     "-Wno-c++98-compat",
+    "-Wshadow",
+    "-Wnon-virtual-dtor",
+    "-Wold-style-cast",
+    "-Wcast-align",
+    "-Wunused",
+    "-Woverloaded-virtual",
+    "-Wpedantic",
+    "-Wconversion",
+    "-Wsign-conversion",
+    "-Wnull-dereference",
+    "-Wdouble-promotion",
+    "-Wmisleading-indentation",
+    "-Wduplicated-cond",
+    "-Wduplicated-branches",
+    "-Wlogical-op",
+    "-Wuseless-cast",
+    "-Wformat=2",
 ]
 
 # Make this more dynamic
 LINUX_INCLUDES = ["-I/usr/lib/", "-I/usr/include/"]
 
-WINDOWS_INCLUDES = [
+WINDOWS_INCLUDES: List[str] = [
     # TODO
 ]
 
@@ -98,7 +115,7 @@ def MakeRelativePathsInFlagsAbsolute(working_directory):
             # Add to flags if dir contains a header file and is not
             # one of the metadata dirs (examples and extras).
             if any(IsHeaderFile(x) for x in files) and path.find("examples") == -1 and path.find("extras") == -1:
-                logger.info("Directory contains header files - %s" % path)
+                logger.info(f"Directory contains header files - {path}")
                 flags.append("-I" + path)
 
     for flag in flags:
@@ -115,7 +132,7 @@ def MakeRelativePathsInFlagsAbsolute(working_directory):
                 break
 
             if flag.startswith(path_flag):
-                path = flag[len(path_flag) :]
+                path = flag[len(path_flag) : :]
                 new_flag = path_flag + os.path.join(working_directory, path)
                 break
 
@@ -161,7 +178,7 @@ def PathToPythonUsedDuringBuild():
 def Settings(**kwargs):
     language = kwargs["language"]
     filename = kwargs["filename"]
-    client_data = None if "client_data" not in kwargs else kwargs["client_data"]
+    client_data = kwargs.get("client_data", None)
 
     if language == "cfamily":
         # If the file is a header, try to find the corresponding source file and
@@ -209,7 +226,7 @@ def Settings(**kwargs):
         else:
             pypath = PathToPythonUsedDuringBuild()
 
-        logger.info(f"Using {pypath} as python interpeter")
+        logger.info(f"Using {pypath} as python interpreter")
 
         return {"interpreter_path": pypath}
 
