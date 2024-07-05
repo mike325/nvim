@@ -37,4 +37,4 @@ jobs:
       - name: Test nightly Vim
         run: |
           export PATH="$HOME/.local/bin:$PATH"
-          make
+          ./test/test.sh

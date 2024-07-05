@@ -30,4 +30,4 @@ jobs:
       - name: Test stable Vim
         run: |
           export PATH="$HOME/.local/bin:$PATH"
-          make
+          ./test/test.sh

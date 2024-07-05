@@ -8,7 +8,7 @@ if v:version >= 800
     silent! packadd termdebug
 endif
 
-if v:version >= 704 && !has('nvim')
+if v:version >= 704
     silent! packadd matchparen
     silent! packadd matchit
 endif
@@ -121,9 +121,7 @@ function! s:os_type(os) abort
 endfunction
 
 function! s:os_cache() abort
-    if has('nvim-0.2')
-        return stdpath('cache')
-    elseif !empty($XDG_CACHE_HOME)
+    if !empty($XDG_CACHE_HOME)
         return $XDG_CACHE_HOME . '/nvim'
     endif
     " Point vim to nvim cache since some lsp are install here
@@ -168,9 +166,7 @@ function! s:setupdirs() abort
 
     let s:datadir = expand($XDG_DATA_HOME) . (s:os_name('windows') ? '/nvim-data' : '/nvim')
 
-    if has('nvim')
-        let s:basedir = substitute(has('nvim-0.2') ? stdpath('config') : $XDG_CONFIG_HOME . '/nvim', '\', '/', 'g' )
-    elseif s:os_name('windows')
+    if s:os_name('windows')
         " if $USERPROFILE and ~ expansions are different, then gVim may be running as portable
         let l:userprofile = substitute( expand($USERPROFILE), '\', '/', 'g' )
         let l:prog_home = substitute( expand('~'), '\', '/', 'g' )
@@ -260,7 +256,7 @@ endfunction
 function! s:tools_ignores(tool) abort
     let l:excludes = []
 
-    if has('nvim-0.2') || v:version >= 800 || s:has_patch('7.4.2044')
+    if v:version >= 800 || s:has_patch('7.4.2044')
         let l:excludes = map(split(copy(&backupskip), ','), {key, val -> substitute(val, '.*', "'\\0'", 'g') })
     endif
 
@@ -400,35 +396,6 @@ function! s:mappings_general_completion(arglead, cmdline, cursorpos, options) ab
     return filter(a:options, "v:val =~? join(split(a:arglead, '\zs'), '.*')")
 endfunction
 
-function! s:mappings_inside_empty_pairs() abort
-    let l:rsp = 0
-    let l:pairs = {
-        \ '"': '"',
-        \ "'": "'",
-        \ ')': '(',
-        \ '}': '{',
-        \ ']': '[',
-        \ '>': '<',
-        \}
-        " \ '(': ')',
-        " \ '{': '}',
-        " \ '[': ']',
-        " \ '<': '>',
-
-    let l:line = nvim_get_current_line()
-    let [l:ln, l:col] = nvim_win_get_cursor(0)
-
-    if l:col > 0
-        let l:close = l:line[l:col]
-        let l:open = l:line[l:col - 1]
-        if get(l:pairs, l:close, -1) != -1
-            let l:rsp = l:pairs[l:close] == l:open
-        endif
-    endif
-
-    return l:rsp
-endfunction
-
 function! g:MappingsEnter() abort
     if pumvisible()
         return "\<C-y>"
@@ -465,11 +432,7 @@ if has('terminal') || (!has('nvim-0.4') && has('nvim'))
             endif
         endif
 
-        if has('nvim')
-            execute l:split . ' 20split term://' . l:shell
-        else
-            call term_start(l:shell . a:cmd, {'term_rows': 20})
-        endif
+        call term_start(l:shell . a:cmd, {'term_rows': 20})
 
         wincmd J
         setlocal nonumber norelativenumber
@@ -484,19 +447,11 @@ if has('terminal') || (!has('nvim-0.4') && has('nvim'))
 
     tnoremap <ESC> <C-\><C-n>
 
-    if has('nvim')
-        augroup TermSetup
-            autocmd!
-            autocmd TermOpen * setlocal nonumber norelativenumber
-            autocmd TermOpen * nnoremap <silent><nowait><buffer> q :q!<CR>
-        augroup end
-    else
-        augroup TermSetup
-            autocmd!
-            autocmd TerminalOpen * setlocal nonumber norelativenumber
-            autocmd TerminalOpen * nnoremap <silent><nowait><buffer> q :q!<CR>
-        augroup end
-    end
+    augroup TermSetup
+        autocmd!
+        autocmd TerminalOpen * setlocal nonumber norelativenumber
+        autocmd TerminalOpen * nnoremap <silent><nowait><buffer> q :q!<CR>
+    augroup end
 
 endif
 
@@ -512,7 +467,7 @@ if s:has_option('mouse')
     endfunction
 endif
 
-if has('nvim') || v:version >= 704
+if v:version >= 704
     function! s:mappings_format(arglead, cmdline, cursorpos) abort
         return s:mappings_general_completion(a:arglead, a:cmdline, a:cursorpos, ['unix', 'dos', 'mac'])
     endfunction
@@ -961,15 +916,15 @@ endif
 
 set diffopt^=vertical
 
-if s:has_patch('8.1.0360') || has('nvim')
+if s:has_patch('8.1.0360')
     set diffopt^=indent-heuristic,algorithm:patience
 endif
 
-if s:has_patch('8.1.1361') || has('nvim')
+if s:has_patch('8.1.1361')
     set diffopt^=hiddenoff
 endif
 
-if s:has_patch('8.1.2289') || has('nvim')
+if s:has_patch('8.1.2289')
     set diffopt^=iwhiteall,iwhiteeol
 else
     set diffopt^=iwhite
@@ -1282,7 +1237,7 @@ nnoremap g/ ms/\v
 " TODO
 nnoremap <expr> i g:MappingsIndentWithI()
 
-if has('nvim') || v:version >= 704
+if v:version >= 704
     " Change word under cursor and dot repeat
     nnoremap c* m`*``cgn
     nnoremap c# m`#``cgN
@@ -1447,14 +1402,14 @@ command! SpellToggle      setlocal spell! spell?
 command! WrapToggle       setlocal wrap! wrap?
 command! VerboseToggle    let &verbose=!&verbose | echo "Verbose " . &verbose
 
-if has('nvim') || v:version >= 704
+if v:version >= 704
     command! -nargs=? -complete=filetype FileType call s:mappings_SetFileData('filetype', <q-args>, 'text')
     command! -nargs=? -complete=customlist,s:mappings_format FileFormat call s:mappings_SetFileData('fileformat', <q-args>, 'unix')
 endif
 
 command! TrimToggle call g:MappingsTrim()
 
-if has('nvim-0.2') || s:has_patch('7.4.2044')
+if s:has_patch('7.4.2044')
     command! -nargs=? -complete=arglist ArgEdit call g:Arglist_edit(empty(<q-args>) ?  '' : expand(<q-args>))
     command! -nargs=? -complete=customlist,s:mappings_spells SpellLang
                 \ let s:spell = (empty(<q-args>)) ?  'en' : expand(<q-args>) |
@@ -1586,66 +1541,5 @@ augroup SetFormatters
     autocmd Filetype json if executable('jq') | setlocal formatprg=jq\ . | endif
     autocmd Filetype xml if executable('xmllint') | setlocal formatprg=xmllint\ --format\ - | endif
 augroup end
-
-if executable('nvim')
-    function! s:nvim(...) abort
-        let l:cachedir = $HOME . '/.cache/nvim'
-        let l:socket = $TMUX_WINDOW ? l:cachedir . '/socket.win' . $TMUX_WINDOW : l:cachedir . '/socket'
-
-        let l:cmd = ['nvim'] " , '--server', l:socket, '--remote-silent']
-
-        if len(a:000) == 0
-            if !filewritable(l:socket)
-                call s:echoerr('Socket: "' . l:socket . '" does not exists' )
-                return 1
-            endif
-
-            let l:cmd += ['--server', l:socket, '--remote-silent', expand('%:p')]
-        else
-            let l:has_server = 0
-            let l:has_remote_cmd = 0
-
-            for l:i in range(len(a:000))
-                if a:000[l:i] == '%'
-                    let a:000[l:i] = expand('%:p')
-                elseif a:000[l:i] =~? '^--server'
-                    if !filewritable(a:000[l:i + 1])
-                        call s:echoerr('Socket: "' . a:000[l:i + 1] . '" does not exists' )
-                        return 1
-                    endif
-
-                    let l:has_server = 1
-                elseif a:000[l:i] =~? '^--remote'
-                    let l:has_remote_cmd = 1
-                endif
-            endfor
-
-            if l:has_server != 1
-                if !filewritable(l:socket)
-                    call s:echoerr('Socket: "' . l:socket . '" does not exists' )
-                    return 1
-                endif
-
-                let l:cmd += ['--server', l:socket]
-            endif
-
-            if l:has_remote_cmd != 1
-                let l:cmd += ['--remote-silent']
-            endif
-
-            let l:cmd += a:000
-        endif
-
-        call system(join(l:cmd, ' '))
-    endfunction
-
-    function! s:send_file(filename) abort
-        let l:filename = a:filename == "" ? expand('%') : a:filename
-        call s:nvim(fnamemodify(l:filename, ':p'))
-    endfunction
-
-    command! -complete=file -nargs=? SendFile call s:send_file(<q-args>)
-    command! -complete=file -nargs=* Nvim call s:nvim(<f-args>)
-endif
 
 filetype plugin indent on
