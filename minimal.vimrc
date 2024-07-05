@@ -623,27 +623,21 @@ function! s:mappings_ConncallLevel(level) abort
     let &conceallevel = l:level
 endfunction
 
-function! g:Toggle_qf(qf_type) abort
-    let l:prefix = ''
-    let l:is_open = -1
-    if a:qf_type ==# 'qf'
-        let l:prefix = 'c'
-        let l:is_open = getqflist({ "winid": 0 }).winid != 0
+function! g:Arglist_clear(all) abort
+    if a:all
+        argdelete *
     else
-        let l:prefix = 'l'
-        let l:is_open = getloclist(win_getid(), { "winid": 0 }).winid != 0
-    end
-
-    if l:is_open
-        call execute(l:prefix . 'close')
-    else
-        call execute('15' . l:prefix . 'open')
-    end
+        for l:filename in argv()
+            if ! filereadable(l:filename)
+                call execute('argdelete ' . l:filename)
+            endif
+        endfor
+    endif
 endfunction
 
-function! g:Arg_add_buf(filename, clear) abort
-    if a:clear && argc() > 0
-        argdelete *
+function! g:Arglist_add(filename, clear) abort
+    if a:clear
+        call g:Arglist_clear(1)
     endif
 
     let l:files = type(a:filename) != type([]) ?  [a:filename] : a:filename
@@ -662,19 +656,20 @@ function! g:Arg_add_buf(filename, clear) abort
     endif
 
     for l:filename in l:files
-        let l:buf = bufnr(l:filename)
+        let l:buf = type(l:filename) == type(1) ? l:filename : bufnr(l:filename)
         if l:buf == -1
             execute "badd " . l:filename
         endif
-        execute "argadd " . l:filename
+        execute "argadd " . (type(l:filename) == type(1) ? bufname(l:filename) : l:filename)
     endfor
 
     " NOTE: Not all versions of vim have argdedupe
     silent! argdedupe
 endfunction
 
-function! g:Arg_edit(arg) abort
+function! g:Arglist_edit(arg) abort
     if argc() == 0
+        echomsg "Empty arglist"
         return
     endif
 
@@ -701,6 +696,243 @@ function! g:Arg_edit(arg) abort
     let l:choice = inputlist(l:args)
     if l:choice > 0
         execute "argument " . l:choice
+    endif
+endfunction
+
+function! s:qf_first(win) abort
+    if a:win
+        lfirst
+    else
+        cfirst
+    endif
+endfunction
+
+function! s:qf_last(win) abort
+    if a:win
+        llast
+    else
+        clast
+    endif
+endfunction
+
+function! s:qf_open(win, size) abort
+    let l:cmd = a:win ? 'lopen' : 'copen'
+    if a:win
+        call execute(l:cmd . " " . a:size)
+    else
+        let l:direction = &g:splitbelow ? 'botright' : 'topleft'
+        call execute(l:direction . " " . l:cmd . " " . a:size)
+    endif
+endfunction
+
+function! s:qf_close(win) abort
+    if a:win
+        lclose
+    else
+        cclose
+    endif
+endfunction
+
+function! s:qf_set_list(items, action, what, win) abort
+    let l:items = len(a:items) > 0 ? a:items : []
+    if a:win
+        let l:win = a:win
+        if type(l:win) == type(v:true) || l:win == 0
+            let l:win = win_getid()
+        endif
+        if type(a:what) == type({}) && len(a:what) > 0
+            call setloclist(l:win, l:items, a:action, a:what)
+        else
+            call setloclist(l:win, l:items, a:action)
+        endif
+    else
+        if type(a:what) == type({}) && len(a:what) > 0
+            call setqflist(l:items, a:action, a:what)
+        else
+            call setqflist(l:items, a:action)
+        endif
+    endif
+endfunction
+
+function! s:qf_get_list(what, win) abort
+    let l:what = a:what
+    let l:win = a:win
+    if type(l:what) == type(1)
+        if type(l:what) == type(l:win)
+            throw "what and win cannot be the same type"
+        endif
+        let l:win = l:what
+        let l:what = v:null
+    endif
+    if l:win
+        if type(l:win) == type(v:true) || l:win == 0
+            let l:win = win_getid()
+        endif
+        if type(l:what) == type({}) && len(l:what) > 0
+            return getloclist(l:win, l:what)
+        endif
+        return getloclist(l:win)
+    endif
+    if type(l:what) == type({}) && len(l:what) > 0
+        return getqflist(l:what)
+    endif
+    return getqflist()
+endfunction
+
+function! g:Qf_is_open(...) abort
+    let l:win = get(a:000, 0, 0)
+    if l:win
+        return getloclist(win_getid(), { "winid": 0 }).winid != 0
+    endif
+    return getqflist({ "winid": 0 }).winid != 0
+endfunction
+
+function! g:Qf_open(...) abort
+    let l:win = get(a:000, 0, 0)
+    let l:size = get(a:000, 1, 15)
+    if !g:Qf_is_open(l:win)
+        call s:qf_open(l:win, l:size)
+    endif
+endfunction
+
+function! g:Qf_close(...) abort
+    let l:win = get(a:000, 0, 0)
+    if g:Qf_is_open(l:win)
+        call s:qf_close(l:win)
+    endif
+endfunction
+
+function! g:Qf_toggle(...) abort
+    let l:win = get(a:000, 0, 0)
+    let l:size = get(a:000, 1, 15)
+    if g:Qf_is_open(l:win)
+        call s:qf_close(l:win)
+    else
+        call s:qf_open(l:win, l:size)
+    endif
+endfunction
+
+function! g:Qf_get_list(...) abort
+    let l:what = get(a:000, 0, {})
+    let l:win = get(a:000, 1, 0)
+    return s:qf_get_list(l:what, l:win)
+endfunction
+
+function! g:Qf_set_list(...) abort
+    let l:opts = get(a:000, 0, {})
+    let l:win = get(a:000, 1, 0)
+
+    let l:action = get(l:opts, 'action', ' ')
+    let l:items = get(l:opts, 'items', [])
+    let l:open = get(l:opts, 'open', v:true)
+    let l:jump = get(l:opts, 'jump', v:true)
+
+    for l:key in ['action', 'items', 'open', 'jump']
+        if has_key(l:opts, l:key)
+            call remove(l:opts, l:key)
+        endif
+    endfor
+
+    if type(l:items) != type([]) || len(l:items) == 0
+        echoerr 'No items to display'
+        return
+    endif
+
+    if type(l:items[1]) == type({})
+        let l:opts['items'] = l:items
+    elseif type(l:items[1]) == type('')
+        let l:opts['lines'] = l:items
+    else
+        execute "throw 'Invalid items type: ". string(type(l:items[1])) . "'"
+    endif
+
+    let l:efm = get(l:opts, 'efm', &g:efm)
+    if type(l:efm) == type([])
+        let l:efm = join(l:efm, ',')
+    endif
+    let l:opts['efm'] = l:efm
+
+    call s:qf_set_list([], l:action, l:opts, l:win)
+    if l:open
+        call g:Qf_open(l:win)
+    endif
+
+    if l:jump
+        call s:qf_first(l:win)
+    endif
+endfunction
+
+function! g:Qf_clear(...) abort
+    let l:win = get(a:000, 0, 0)
+    call s:qf_set_list([], ' ', v:null, l:win)
+    call g:Qf_close(l:win)
+endfunction
+
+function! g:Qf_dump_files(buffers, ...) abort
+    let l:opts = get(a:000, 0, {})
+    let l:win = get(a:000, 1, 0)
+
+    let l:items = []
+    for l:buf in a:buffers
+        let l:filename = type(l:buf) == type(1) ? bufname(l:buf) : l:buf
+
+        let l:item = { 'valid': v:true, 'lnum': 1, 'col': 1, 'text': l:filename }
+        if type(l:buf) == type(1)
+            let l:item['bufnr'] = l:buf
+        else
+            let l:item['filename'] = l:buf
+        endif
+        let l:items += [l:item]
+    endfor
+
+    if len(l:items) > 0
+        let l:open = get(l:opts, 'open', v:false)
+        let l:jump = get(l:opts, 'jump', v:true)
+
+        call g:Qf_set_list({'items': l:items, 'open': l:open, 'jump': l:jump}, l:win)
+    else
+        echoerr "No files to dump"
+    endif
+endfunction
+
+function! g:Qf_to_arglist(...) abort
+    let l:opts = get(a:000, 0, {})
+    let l:win = get(a:000, 1, 0)
+
+    let l:clear = get(l:opts, 'clear', ' ')
+    for l:key in ['clear']
+        if has_key(l:opts, l:key)
+            call remove(l:opts, l:key)
+        endif
+    endfor
+
+    if type(l:win) == type(v:true)
+        let l:win = win_getid()
+    endif
+
+    let l:items = g:Qf_get_list({ 'items': v:true }, l:win)['items']
+    let l:files = []
+    for l:item in l:items
+        let l:buf = get(l:item, 'bufnr', 0)
+        if l:buf && bufexists(l:buf)
+            let l:files += [l:buf]
+        endif
+    endfor
+    call g:Arglist_add(l:files, l:clear)
+endfunction
+
+function! g:Find(glob) abort
+    let l:glob = "'" . a:glob . "'"
+    let l:cmd = tools#select_find(0)
+    let l:results = systemlist(l:cmd . l:glob)
+    if v:shell_error == 0
+        if len(l:results) > 0
+            call qf#dump_files(l:results)
+        else
+            echomsg "No matches found for " . a:glob
+        endif
+    else
+        echoerr "Failed to execute find"
     endif
 endfunction
 
@@ -973,9 +1205,6 @@ endif
 
 set nocursorline
 
-call s:tools_set_grep(0, 0)
-call s:tools_set_grep(0, 1)
-
 " ------------------------------------------------------------------------------
 " Mappings
 " ------------------------------------------------------------------------------
@@ -1091,9 +1320,6 @@ nnoremap <leader>l <C-w>l
 nnoremap <leader>b <C-w>b
 nnoremap <leader>t <C-w>t
 
-" Equally resize buffer splits
-nnoremap <leader>e <C-w>=
-
 nnoremap <leader>1 1gt
 nnoremap <leader>2 2gt
 nnoremap <leader>3 3gt
@@ -1171,16 +1397,31 @@ nnoremap <silent> ]a :<C-U>exe "".(v:count ? v:count : "")."next"<CR>
 nnoremap <silent> n :call g:MappingsNiceNext('n')<cr>
 nnoremap <silent> N :call g:MappingsNiceNext('N')<cr>
 
-nnoremap <silent> =q :call g:Toggle_qf("qf")<cr>
-nnoremap <silent> =l :call g:Toggle_qf("loc")<cr>
+nnoremap <silent> =q :call g:Qf_toggle()<cr>
+nnoremap <silent> =l :call g:Qf_toggle(1)<cr>
 
-nnoremap <silent> <leader>e :call g:Arg_edit('')<cr>
-nnoremap <silent> <leader>A :call g:Arg_add_buf([expand("%")],0)<cr>
+nnoremap <silent> <leader>e :call g:Arglist_edit('')<cr>
+nnoremap <silent> <leader>A :call g:Arglist_add([expand("%")],0)<cr>
 nnoremap <silent> <leader>D :call execute("argdelete " . expand("%"))<cr>
+
+call s:tools_set_grep(0, 0)
+call s:tools_set_grep(0, 1)
 
 " ------------------------------------------------------------------------------
 " Commands
 " ------------------------------------------------------------------------------
+
+command! -nargs=? Qopen call g:Qf_toggle(0, expand(<q-args>))
+command! Qf2Arglist call g:Qf_to_arglist()
+command! Loc2Arglist call g:Qf_to_arglist({}, 1)
+command! -nargs=1 Find call g:Find(<q-args>)
+
+command! -bang -nargs=* -complete=buffer ArgAddBuf
+    \ let s:bang = empty(<bang>0) ? 0 : 1 |
+    \ call g:Arglist_add([<f-args>], s:bang) |
+    \ unlet s:bang |
+
+command! -nargs=+ -complete=file Edit call s:edit([<f-args>])
 
 command! -nargs=0 Reload source $HOME/.vimrc | echomsg "Config Reload!"
 
@@ -1214,16 +1455,13 @@ endif
 command! TrimToggle call g:MappingsTrim()
 
 if has('nvim-0.2') || s:has_patch('7.4.2044')
-    command! -nargs=? -complete=arglist ArgEdit call g:Arg_edit(empty(<q-args>) ?  '' : expand(<q-args>))
-
+    command! -nargs=? -complete=arglist ArgEdit call g:Arglist_edit(empty(<q-args>) ?  '' : expand(<q-args>))
     command! -nargs=? -complete=customlist,s:mappings_spells SpellLang
                 \ let s:spell = (empty(<q-args>)) ?  'en' : expand(<q-args>) |
                 \ call s:tools_spelllangs(s:spell) |
                 \ unlet s:spell
-
 else
-    command! -nargs=? ArgEdit call g:Arg_edit(empty(<q-args>) ?  '' : expand(<q-args>))
-
+    command! -nargs=? ArgEdit call g:Arglist_edit(empty(<q-args>) ?  '' : expand(<q-args>))
     command! -nargs=? SpellLang
                 \ let s:spell = (empty(<q-args>)) ?  'en' : expand(<q-args>) |
                 \ call s:tools_spelllangs(s:spell) |
@@ -1293,13 +1531,6 @@ command! -bang -nargs=? -complete=file Remove
     \ endif |
     \ unlet s:bang |
     \ unlet s:target
-
-command! -bang -nargs=* -complete=buffer ArgAddBuf
-    \ let s:bang = empty(<bang>0) ? 0 : 1 |
-    \ call g:Arg_add_buf([<f-args>], s:bang) |
-    \ unlet s:bang |
-
-command! -nargs=+ -complete=file Edit call s:edit([<f-args>])
 
 " ------------------------------------------------------------------------------
 " Autocmds

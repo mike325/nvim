@@ -221,7 +221,6 @@ call tools#set_grep(0, 1)
 command! -nargs=? Qopen call qf#toggle(0, expand(<q-args>))
 command! Qf2Arglist call qf#to_arglist()
 command! Loc2Arglist call qf#to_arglist({}, 1)
-
 command! -nargs=1 Find call mappings#find(<q-args>)
 
 if has('terminal')
@@ -281,11 +280,13 @@ endif
 command! TrimToggle call mappings#Trim()
 
 if has('nvim-0.2') || has#patch('7.4.2044')
+    command! -nargs=? -complete=arglist ArgEdit call arglist#edit(empty(<q-args>) ?  '' : expand(<q-args>))
     command! -nargs=? -complete=customlist,mappings#spells SpellLang
                 \ let s:spell = (empty(<q-args>)) ?  'en' : expand(<q-args>) |
                 \ call tools#spelllangs(s:spell) |
                 \ unlet s:spell
 else
+    command! -nargs=? ArgEdit call arglist#edit(empty(<q-args>) ?  '' : expand(<q-args>))
     command! -nargs=? SpellLang
                 \ let s:spell = (empty(<q-args>)) ?  'en' : expand(<q-args>) |
                 \ call tools#spelllangs(s:spell) |
