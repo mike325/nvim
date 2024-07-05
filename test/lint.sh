@@ -53,41 +53,41 @@ if [ -z "$SHELL_PLATFORM" ]; then
         export SHELL_PLATFORM="$TRAVIS_OS_NAME"
     else
         case "$OSTYPE" in
-        *'linux'*) export SHELL_PLATFORM='linux' ;;
-        *'darwin'*) export SHELL_PLATFORM='osx' ;;
-        *'freebsd'*) export SHELL_PLATFORM='bsd' ;;
-        *'cygwin'*) export SHELL_PLATFORM='cygwin' ;;
-        *'msys'*) export SHELL_PLATFORM='msys' ;;
-        *'windows'*) export SHELL_PLATFORM='windows' ;;
-        *) export SHELL_PLATFORM='unknown' ;;
+            *'linux'*) export SHELL_PLATFORM='linux' ;;
+            *'darwin'*) export SHELL_PLATFORM='osx' ;;
+            *'freebsd'*) export SHELL_PLATFORM='bsd' ;;
+            *'cygwin'*) export SHELL_PLATFORM='cygwin' ;;
+            *'msys'*) export SHELL_PLATFORM='msys' ;;
+            *'windows'*) export SHELL_PLATFORM='windows' ;;
+            *) export SHELL_PLATFORM='unknown' ;;
         esac
     fi
 fi
 
 case "$SHELL_PLATFORM" in
-# TODO: support more linux distros
-linux)
-    if [[ -f /etc/arch-release ]]; then
-        OS='arch'
-    elif [[ "$(cat /etc/issue)" == Ubuntu* ]]; then
-        OS='ubuntu'
-    elif [[ -f /etc/debian_version ]] || [[ "$(cat /etc/issue)" == Debian* ]]; then
-        if [[ $ARCH == *\ armv7* ]]; then # Raspberry pi 3 uses armv7 cpu
-            OS='raspbian'
-        else
-            OS='debian'
+    # TODO: support more linux distros
+    linux)
+        if [[ -f /etc/arch-release ]]; then
+            OS='arch'
+        elif [[ "$(cat /etc/issue)" == Ubuntu* ]]; then
+            OS='ubuntu'
+        elif [[ -f /etc/debian_version ]] || [[ "$(cat /etc/issue)" == Debian* ]]; then
+            if [[ $ARCH == *\ armv7* ]]; then # Raspberry pi 3 uses armv7 cpu
+                OS='raspbian'
+            else
+                OS='debian'
+            fi
         fi
-    fi
-    ;;
-cygwin | msys | windows)
-    OS='windows'
-    ;;
-osx)
-    OS='macos'
-    ;;
-bsd)
-    OS='bsd'
-    ;;
+        ;;
+    cygwin | msys | windows)
+        OS='windows'
+        ;;
+    osx)
+        OS='macos'
+        ;;
+    bsd)
+        OS='bsd'
+        ;;
 esac
 
 if ! hash is_windows 2>/dev/null; then
@@ -117,12 +117,12 @@ if ! hash is_osx 2>/dev/null; then
     }
 fi
 
-if [[ -n "$ZSH_NAME" ]]; then
+if [[ -n $ZSH_NAME   ]]; then
     CURRENT_SHELL="zsh"
-elif [[ -n "$BASH" ]]; then
+elif [[ -n $BASH   ]]; then
     CURRENT_SHELL="bash"
 else
-    if [[ -z "$CURRENT_SHELL" ]]; then
+    if [[ -z $CURRENT_SHELL   ]]; then
         CURRENT_SHELL="${SHELL##*/}"
     fi
 fi
@@ -195,7 +195,7 @@ function __parse_args() {
 
     local pattern="^--${lint}=[a-zA-Z0-9.:@_/~-]+$"
 
-    if [[ -n "$3" ]]; then
+    if [[ -n $3   ]]; then
         local pattern="^--${lint}=$3$"
     fi
 
@@ -301,31 +301,31 @@ function exit_append() {
 while [[ $# -gt 0 ]]; do
     key="$1"
     case "$key" in
-    --nolog)
-        NOLOG=1
-        ;;
-    --nocolor)
-        NOCOLOR=1
-        ;;
-    -v | --verbose)
-        VERBOSE=1
-        ;;
-    -h | --help)
-        help_user
-        exit 0
-        ;;
-    -)
-        while read -r from_stdin; do
-            FROM_STDIN=("$from_stdin")
-        done
-        break
-        ;;
-    *)
-        initlog
-        error_msg "Unknown argument $key"
-        help_user
-        exit 1
-        ;;
+        --nolog)
+            NOLOG=1
+            ;;
+        --nocolor)
+            NOCOLOR=1
+            ;;
+        -v | --verbose)
+            VERBOSE=1
+            ;;
+        -h | --help)
+            help_user
+            exit 0
+            ;;
+        -)
+            while read -r from_stdin; do
+                FROM_STDIN=("$from_stdin")
+            done
+            break
+            ;;
+        *)
+            initlog
+            error_msg "Unknown argument $key"
+            help_user
+            exit 1
+            ;;
     esac
     shift
 done

@@ -1,14 +1,15 @@
 #!/usr/bin/env python
 
+import logging
 import os
 import sys
-import logging
+
 import ycm_core
 
 # Logger for additional logging.
 # To enable debug logging, add `let g:ycm_server_log_level = 'debug'` to
 # your .vimrc file.
-logger = logging.getLogger('ycm_extra_conf')
+logger = logging.getLogger("ycm_extra_conf")
 
 # This is the list of all directories to search for header files.
 # Dirs in this list can be paths relative to this file, absolute
@@ -22,49 +23,46 @@ libDirs = [
 
 flags = [
     # '-std=c++17',
-    '-Wall',
-    '-Wextra',
-    '-Weverything',
-    '-Werror',
-    '-Wno-c++98-compat',
+    "-Wall",
+    "-Wextra",
+    "-Weverything",
+    "-Werror",
+    "-Wno-c++98-compat",
 ]
 
 # Make this more dynamic
-LINUX_INCLUDES = [
-    '-I/usr/lib/',
-    '-I/usr/include/'
-]
+LINUX_INCLUDES = ["-I/usr/lib/", "-I/usr/include/"]
 
 WINDOWS_INCLUDES = [
     # TODO
 ]
 
 SOURCE_EXTENSIONS = [
-    '.cpp',
-    '.cxx',
-    '.cc',
-    '.c',
-    '.s',
-    '.ino',
-    '.m',
-    '.mm',
+    ".cpp",
+    ".cxx",
+    ".cc",
+    ".c",
+    ".s",
+    ".ino",
+    ".m",
+    ".mm",
 ]
 
 SOURCE_DIRECTORIES = [
-    'src',
+    "src",
 ]
 
 HEADER_EXTENSIONS = [
-    '.h',
-    '.hxx',
-    '.hpp',
-    '.hh',
+    ".h",
+    ".hxx",
+    ".hpp",
+    ".hh",
 ]
 
-flags += WINDOWS_INCLUDES if os.name == 'nt' else LINUX_INCLUDES
+flags += WINDOWS_INCLUDES if os.name == "nt" else LINUX_INCLUDES
 
 database = None
-compilation_database_folder = ''
+compilation_database_folder = ""
 
 # Check the directory where 'compile_commands.json' live
 if os.path.exists(compilation_database_folder):
@@ -83,16 +81,15 @@ def MakeRelativePathsInFlagsAbsolute(working_directory):
 
     new_flags = []
     make_next_absolute = False
-    path_flags = ['-isystem', '-I', '-iquote', '--sysroot=']
+    path_flags = ["-isystem", "-I", "-iquote", "--sysroot="]
 
     for libDir in libDirs:
-
         # dir is relative to $HOME
-        if libDir.startswith('~'):
+        if libDir.startswith("~"):
             libDir = os.path.expanduser(libDir)
 
         # dir is relative to `working_directory`
-        if not libDir.startswith('/'):
+        if not libDir.startswith("/"):
             libDir = os.path.join(working_directory, libDir)
 
         # Else, assume dir is absolute
@@ -100,17 +97,16 @@ def MakeRelativePathsInFlagsAbsolute(working_directory):
         for path, _, files in os.walk(libDir):
             # Add to flags if dir contains a header file and is not
             # one of the metadata dirs (examples and extras).
-            if any(IsHeaderFile(x) for x in files) and\
-               path.find("examples") == -1 and path.find("extras") == -1:
+            if any(IsHeaderFile(x) for x in files) and path.find("examples") == -1 and path.find("extras") == -1:
                 logger.info("Directory contains header files - %s" % path)
-                flags.append('-I' + path)
+                flags.append("-I" + path)
 
     for flag in flags:
         new_flag = flag
 
         if make_next_absolute:
             make_next_absolute = False
-            if not flag.startswith('/'):
+            if not flag.startswith("/"):
                 new_flag = os.path.join(working_directory, flag)
 
         for path_flag in path_flags:
@@ -119,7 +115,7 @@ def MakeRelativePathsInFlagsAbsolute(working_directory):
                 break
 
             if flag.startswith(path_flag):
-                path = flag[len(path_flag):]
+                path = flag[len(path_flag) :]
                 new_flag = path_flag + os.path.join(working_directory, path)
                 break
 
@@ -129,7 +125,7 @@ def MakeRelativePathsInFlagsAbsolute(working_directory):
 
 
 def NormalizePath(path):
-    return path if os.name != 'nt' else path.replace('\\', '/')
+    return path if os.name != "nt" else path.replace("\\", "/")
 
 
 def IsHeaderFile(filename):
@@ -155,7 +151,7 @@ def GetCompilationInfoForFile(filename):
 
 
 def PathToPythonUsedDuringBuild():
-    filepath = os.path.join(DirectoryOfThisScript(), 'python_version.txt')
+    filepath = os.path.join(DirectoryOfThisScript(), "python_version.txt")
     if os.path.isfile(filepath):
         with open(filepath) as f:
             return f.read().strip()
@@ -163,11 +159,11 @@ def PathToPythonUsedDuringBuild():
 
 
 def Settings(**kwargs):
-    language = kwargs['language']
-    filename = kwargs['filename']
-    client_data = None if 'client_data' not in kwargs else kwargs['client_data']
+    language = kwargs["language"]
+    filename = kwargs["filename"]
+    client_data = None if "client_data" not in kwargs else kwargs["client_data"]
 
-    if language == 'cfamily':
+    if language == "cfamily":
         # If the file is a header, try to find the corresponding source file and
         # retrieve its flags from the compilation database if using one. This is
         # necessary since compilation databases don't have entries for header files.
@@ -201,50 +197,44 @@ def Settings(**kwargs):
         # return {'flags': final_flags, 'do_cache': True}
 
         return {
-            'flags': final_flags,
-            'include_paths_relative_to_dir': relative_to,
-            'override_filename': filename,
-            'do_cache': True,
+            "flags": final_flags,
+            "include_paths_relative_to_dir": relative_to,
+            "override_filename": filename,
+            "do_cache": True,
         }
 
-    elif language == 'python':
-        if client_data is not None and 'g:ycm_python_interpreter_path' in client_data:
-            pypath = client_data['g:ycm_python_interpreter_path']
+    elif language == "python":
+        if client_data is not None and "g:ycm_python_interpreter_path" in client_data:
+            pypath = client_data["g:ycm_python_interpreter_path"]
         else:
             pypath = PathToPythonUsedDuringBuild()
 
-        logger.info('Using {0} as python interpeter'.format(pypath))
+        logger.info(f"Using {pypath} as python interpeter")
 
-        return {
-            'interpreter_path': pypath
-        }
+        return {"interpreter_path": pypath}
 
-    elif language == 'java':
-        return {
-            'ls': {
-                'java.format.onType.enabled': True
-            }
-        }
+    elif language == "java":
+        return {"ls": {"java.format.onType.enabled": True}}
 
     return {}
 
 
 def FlagsForFile(filename, **kwargs):
-    """ DEPRECATED in favor of 'Settings' function
+    """DEPRECATED in favor of 'Settings' function
 
-        Resolve compilation flags for every C/C++ files
+    Resolve compilation flags for every C/C++ files
     """
     settings = kwargs
-    settings['filename'] = filename
+    settings["filename"] = filename
 
-    if 'language' not in settings:
-        settings['language'] = ''
+    if "language" not in settings:
+        settings["language"] = ""
 
-        extension = os.path.splitext(settings['filename'])[1]
+        extension = os.path.splitext(settings["filename"])[1]
 
         if extension in SOURCE_EXTENSIONS or extension in HEADER_EXTENSIONS:
-            settings['language'] = 'cfamily'
-        elif extension == 'py':
-            settings['language'] = 'python'
+            settings["language"] = "cfamily"
+        elif extension == "py":
+            settings["language"] = "python"
 
     return Settings(**settings)
