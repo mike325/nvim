@@ -34,11 +34,11 @@ function! arglist#add(filename, clear) abort
     endif
 
     for l:filename in l:files
-        let l:buf = bufnr(l:filename)
+        let l:buf = type(l:filename) == type(1) ? l:filename : bufnr(l:filename)
         if l:buf == -1
             execute "badd " . l:filename
         endif
-        execute "argadd " . l:filename
+        execute "argadd " . (type(l:filename) == type(1) ? bufname(l:filename) : l:filename)
     endfor
 
     " NOTE: Not all versions of vim have argdedupe

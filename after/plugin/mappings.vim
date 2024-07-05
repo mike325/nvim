@@ -207,8 +207,8 @@ nnoremap <silent> ]A :<C-U>exe "".(v:count ? v:count : "")."last"<CR>
 nnoremap <silent> [a :<C-U>exe "".(v:count ? v:count : "")."previous"<CR>
 nnoremap <silent> ]a :<C-U>exe "".(v:count ? v:count : "")."next"<CR>
 
-"nnoremap <silent> =q :call g:Toggle_qf("qf")<cr>
-"nnoremap <silent> =l :call g:Toggle_qf("loc")<cr>
+nnoremap <silent> =q :call qf#toggle()<cr>
+nnoremap <silent> =l :call qf#toggle(1)<cr>
 nnoremap <silent> <leader>e :call arglist#edit('')<cr>
 nnoremap <silent> <leader>A :call arglist#add([expand("%")], 0)<cr>
 nnoremap <silent> <leader>D :call execute("argdelete " . expand("%"))<cr>
@@ -217,6 +217,10 @@ call tools#set_grep(0, 0)
 call tools#set_grep(0, 1)
 
 " }}} EndTabBufferManagement
+
+command! -nargs=? Qopen call qf#toggle(0, expand(<q-args>))
+command! Qf2Arglist call qf#to_arglist()
+command! Loc2Arglist call qf#to_arglist({}, 1)
 
 command! -nargs=1 Find call mappings#find(<q-args>)
 
@@ -289,10 +293,6 @@ else
 endif
 
 command! -nargs=? ConncallLevel  call mappings#ConncallLevel(expand(<q-args>))
-
-" Avoid dispatch command conflict
-" QuickfixOpen
-command! -nargs=? Qopen execute((&splitbelow) ? 'botright' : 'topleft' ) . ' copen ' . expand(<q-args>)
 
 if executable('svn')
     command! -nargs=* SVNstatus execute('!svn status ' . <q-args>)

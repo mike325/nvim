@@ -312,11 +312,7 @@ function! mappings#find(glob) abort
     let l:results = systemlist(l:cmd . l:glob)
     if v:shell_error == 0
         if len(l:results) > 0
-            let l:efm = &g:efm
-            let l:efm = "%f," . l:efm
-            call setqflist([], 'r', {"title": "Find", "lines": l:results, "efm": l:efm})
-            "call qf#open(0)
-            cfirst
+            call qf#dump_files(l:results)
         else
             echomsg "No matches found for " . a:glob
         endif
