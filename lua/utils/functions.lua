@@ -425,38 +425,42 @@ function M.set_compiler(compiler, opts)
     local language = opts.language or vim.bo.filetype
     local option = opts.option or 'makeprg'
 
-    local cmd = { compiler }
-    local ok, ft_compilers = pcall(RELOAD, 'filetypes.' .. language)
-    local efm
-    if ok then
-        local compiler_data = ft_compilers[option][compiler] or {}
-
-        local has_config = false
-        if opts.configs then
-            local config_files = vim.fs.find(opts.configs, { upward = true, type = 'file' })
-            has_config = #config_files > 0
+    local function get_args(configs, configflag, fallback_args)
+        if configs and configflag then
+            local config_files = vim.fs.find(configs, { upward = true, type = 'file' })
+            if config_files[1] then
+                return { configflag, config_files[1] }
+            end
+        elseif opts.global_config and is_file(opts.global_config) then
+            return { configflag, opts.global_config }
         end
 
-        if not has_config and opts.global_config and is_file(opts.global_config) then
-            has_config = true
-        end
-
-        -- TODO: Add option to pass config path as compiler arg
-        if not has_config and compiler_data then
-            vim.list_extend(cmd, compiler_data)
-        elseif opts.subcmd or opts.subcommand then
-            table.insert(cmd, opts.subcmd or opts.subcommand)
-        end
-
-        efm = compiler_data.efm or compiler_data.errorformat or opts.efm or opts.errorformat
-    elseif opts.args then
-        vim.list_extend(cmd, type(opts.args) == type {} and opts.args or { opts.args })
-        efm = opts.efm or opts.errorformat
-    else
-        error(debug.traceback(string.format('Invalid compiler: %s', compiler)))
+        return fallback_args
     end
 
-    -- table.insert(cmd, '%')
+    local cmd = { compiler }
+    if opts.subcmd or opts.subcommand then
+        table.insert(cmd, opts.subcmd or opts.subcommand)
+    end
+
+    local efm = opts.efm or opts.errorformat or vim.go.errorformat
+
+    local ok, ft_compilers = pcall(RELOAD, 'filetypes.' .. language)
+    local args
+    if ok then
+        local compiler_data = ft_compilers[option][compiler]
+        if compiler_data then
+            args = compiler_data
+            efm = opts.efm or opts.errorformat or compiler_data.efm or compiler_data.errorformat or efm
+        end
+    end
+
+    if opts.args then
+        args = type(opts.args) == type {} and opts.args or { opts.args }
+    end
+
+    local extra_args = get_args(opts.configs, opts.config_flag, args or {})
+    vim.list_extend(cmd, extra_args)
 
     local has_cmd = nvim.has.command 'CompilerSet'
     if not has_cmd then
@@ -469,7 +473,8 @@ function M.set_compiler(compiler, opts)
     vim.cmd.CompilerSet('makeprg=' .. table.concat(replace_indent(cmd), '\\ '))
 
     if efm then
-        vim.cmd.CompilerSet('errorformat=' .. table.concat(efm, ','):gsub(' ', '\\ '))
+        efm = type(efm) == type {} and table.concat(efm, ',') or efm
+        vim.cmd.CompilerSet('errorformat=' .. (efm:gsub(' ', '\\ ')))
     end
 
     vim.b.current_compiler = compiler
