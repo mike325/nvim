@@ -64,18 +64,29 @@ function M.compiledb(thread_args)
 
     local flags_file = thread_args.args.flags_file
 
-    if vim.is_thread() then
-        -- NOTE: Sleeping for 100ms, json may be completely dump yet
-        vim.loop.sleep(100)
+    local delay = 100
+    local retries = 3
+
+    local ok, json, data
+    while retries > 0 do
+        data = utils.readfile(flags_file, false)
+        ok, json = pcall(vim.json.decode, data)
+        if not ok then
+            -- NOTE: json may be completely dumped yet
+            vim.loop.sleep(delay)
+            delay = delay * 2
+        else
+            break
+        end
+        retries = retries - 1
     end
 
-    local data = utils.readfile(flags_file, false)
-    local ok, json = pcall(vim.json.decode, data)
     if not ok then
         local tmp = os.tmpname()
         utils.writefile(tmp, data)
         error(debug.traceback('Failed to parse json!, broken json dumped in: ' .. tmp))
     end
+
     local inc_parser = require('threads.parsers').includes
 
     local compile_commands_dbs = {}
