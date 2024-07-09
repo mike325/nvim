@@ -25,7 +25,7 @@ let g:config_lsc = 1
 " ... or set only the commands you want mapped without defaults.
 " Complete default mappings are:
 let g:lsc_auto_map = {
-    \ 'defaults': v:true,
+    \ 'defaults': 1,
     \ 'GoToDefinition': '<c-]>',
     \ 'FindReferences': 'gr',
     \ 'NextReference': '',

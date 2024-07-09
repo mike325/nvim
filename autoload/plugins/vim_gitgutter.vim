@@ -11,7 +11,7 @@ let g:config_gitgutter = 1
 
 let g:gitgutter_map_keys = 0
 let g:gitgutter_sign_allow_clobber = 1
-let g:gitgutter_grep = split(tools#select_grep(v:false), ' ')[0]
+let g:gitgutter_grep = split(tools#select_grep(0), ' ')[0]
 let g:gitgutter_close_preview_on_escape = 1
 
 nmap ]h <Plug>(GitGutterNextHunk)

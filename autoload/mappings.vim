@@ -8,7 +8,7 @@ function! mappings#general_completion(arglead, cmdline, cursorpos, options) abor
 endfunction
 
 function! mappings#inside_empty_pairs() abort
-    let l:rsp = v:false
+    let l:rsp = 0
     let l:pairs = {
         \ '"': '"',
         \ "'": "'",
@@ -58,7 +58,7 @@ function! mappings#enter() abort
             return l:selected ? compe#confirm('<CR>') : compe#close('<C-e>')
         elseif has#plugin('completion-nvim')
             if ! l:selected
-                call nvim_select_popupmenu_item(-1 , v:false , v:true ,{})
+                call nvim_select_popupmenu_item(-1 , 0, 1, {})
             endif
             call luaeval("require'completion'.confirmCompletion()")
             return l:selected ? "\<C-y>" : ''

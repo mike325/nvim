@@ -673,10 +673,10 @@ endfunction
 function! s:qf_open(win, size) abort
     let l:cmd = a:win ? 'lopen' : 'copen'
     if a:win
-        call execute(l:cmd . " " . a:size)
+        execute l:cmd . ' ' . a:size
     else
         let l:direction = &g:splitbelow ? 'botright' : 'topleft'
-        call execute(l:direction . " " . l:cmd . " " . a:size)
+        execute l:direction . ' ' . l:cmd . ' ' . a:size
     endif
 endfunction
 
@@ -692,7 +692,7 @@ function! s:qf_set_list(items, action, what, win) abort
     let l:items = len(a:items) > 0 ? a:items : []
     if a:win
         let l:win = a:win
-        if type(l:win) == type(v:true) || l:win == 0
+        if type(l:win) == type(1) || l:win == 0
             let l:win = win_getid()
         endif
         if type(a:what) == type({}) && len(a:what) > 0
@@ -714,47 +714,48 @@ function! s:qf_get_list(what, win) abort
     let l:win = a:win
     if type(l:what) == type(1)
         if type(l:what) == type(l:win)
-            throw "what and win cannot be the same type"
+            throw 'what and win cannot be the same type'
         endif
         let l:win = l:what
         let l:what = v:null
     endif
     if l:win
-        if type(l:win) == type(v:true) || l:win == 0
+        if type(l:win) == type(0) && l:win == 0
             let l:win = win_getid()
         endif
-        if type(l:what) == type({}) && len(l:what) > 0
+        if v:version >= 800 && type(l:what) == type({}) && len(l:what) > 0
             return getloclist(l:win, l:what)
         endif
         return getloclist(l:win)
     endif
-    if type(l:what) == type({}) && len(l:what) > 0
+    if v:version >= 800 && type(l:what) == type({}) && len(l:what) > 0
         return getqflist(l:what)
     endif
     return getqflist()
 endfunction
 
 function! g:Qf_is_open(...) abort
+    " TODO: add support for older versions
+    if v:version < 800
+        return 0
+    endif
+
     let l:win = get(a:000, 0, 0)
     if l:win
-        return getloclist(win_getid(), { "winid": 0 }).winid != 0
+        return getloclist(win_getid(), { 'winid': 0 }).winid != 0
     endif
-    return getqflist({ "winid": 0 }).winid != 0
+    return getqflist({ 'winid': 0 }).winid != 0
 endfunction
 
 function! g:Qf_open(...) abort
     let l:win = get(a:000, 0, 0)
     let l:size = get(a:000, 1, 15)
-    if !g:Qf_is_open(l:win)
-        call s:qf_open(l:win, l:size)
-    endif
+    call s:qf_open(l:win, l:size)
 endfunction
 
 function! g:Qf_close(...) abort
     let l:win = get(a:000, 0, 0)
-    if g:Qf_is_open(l:win)
-        call s:qf_close(l:win)
-    endif
+    call s:qf_close(l:win)
 endfunction
 
 function! g:Qf_toggle(...) abort
@@ -779,8 +780,8 @@ function! g:Qf_set_list(...) abort
 
     let l:action = get(l:opts, 'action', ' ')
     let l:items = get(l:opts, 'items', [])
-    let l:open = get(l:opts, 'open', v:true)
-    let l:jump = get(l:opts, 'jump', v:true)
+    let l:open = get(l:opts, 'open', 1)
+    let l:jump = get(l:opts, 'jump', 1)
 
     for l:key in ['action', 'items', 'open', 'jump']
         if has_key(l:opts, l:key)
@@ -831,7 +832,7 @@ function! g:Qf_dump_files(buffers, ...) abort
     for l:buf in a:buffers
         let l:filename = type(l:buf) == type(1) ? bufname(l:buf) : l:buf
 
-        let l:item = { 'valid': v:true, 'lnum': 1, 'col': 1, 'text': l:filename }
+        let l:item = { 'valid': 1, 'lnum': 1, 'col': 1, 'text': l:filename }
         if type(l:buf) == type(1)
             let l:item['bufnr'] = l:buf
         else
@@ -841,12 +842,12 @@ function! g:Qf_dump_files(buffers, ...) abort
     endfor
 
     if len(l:items) > 0
-        let l:open = get(l:opts, 'open', v:false)
-        let l:jump = get(l:opts, 'jump', v:true)
+        let l:open = get(l:opts, 'open', 0)
+        let l:jump = get(l:opts, 'jump', 1)
 
         call g:Qf_set_list({'items': l:items, 'open': l:open, 'jump': l:jump}, l:win)
     else
-        echoerr "No files to dump"
+        echoerr 'No files to dump'
     endif
 endfunction
 
@@ -861,11 +862,11 @@ function! g:Qf_to_arglist(...) abort
         endif
     endfor
 
-    if type(l:win) == type(v:true)
+    if type(l:win) == type(0) && l:win == 0
         let l:win = win_getid()
     endif
 
-    let l:items = g:Qf_get_list({ 'items': v:true }, l:win)['items']
+    let l:items = g:Qf_get_list({ 'items': 1 }, l:win)['items']
     let l:files = []
     for l:item in l:items
         let l:buf = get(l:item, 'bufnr', 0)

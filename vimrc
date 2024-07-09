@@ -53,13 +53,12 @@ endif
 
 " Disable built-in plugins
 let g:loaded_2html_plugin      = 1
-let g:loaded_gzip              = 1
 let g:loaded_rrhelper          = 1
-let g:loaded_tarPlugin         = 1
-let g:loaded_zipPlugin         = 1
 let g:loaded_tutor_mode_plugin = 1
-let g:loaded_tarPlugin         = 1
 let g:loaded_vimballPlugin     = 1
+" let g:loaded_gzip              = 1
+" let g:loaded_tarPlugin         = 1
+" let g:loaded_zipPlugin         = 1
 
 if has('nvim')
     lua require('python').setup()
