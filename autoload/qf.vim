@@ -70,20 +70,24 @@ function! s:qf_get_list(what, win) abort
         if type(l:win) == type(0) && l:win == 0
             let l:win = win_getid()
         endif
-        if v:version >= 800 && type(l:what) == type({}) && len(l:what) > 0
+        if has#patch('7.4.2215') && type(l:what) == type({}) && len(l:what) > 0
             return getloclist(l:win, l:what)
         endif
         return getloclist(l:win)
     endif
-    if v:version >= 800 && type(l:what) == type({}) && len(l:what) > 0
+    if has#patch('7.4.2215') && type(l:what) == type({}) && len(l:what) > 0
         return getqflist(l:what)
     endif
     return getqflist()
 endfunction
 
 function! qf#is_open(...) abort
-    " TODO: add support for older versions
-    if v:version < 800
+    if !has#patch('7.4.2215')
+        for l:buf in tabpagebuflist()
+            if getbufvar(buf, '&filetype') == 'qf'
+                return 1
+            end
+        endfor
         return 0
     endif
 

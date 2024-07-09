@@ -735,8 +735,12 @@ function! s:qf_get_list(what, win) abort
 endfunction
 
 function! g:Qf_is_open(...) abort
-    " TODO: add support for older versions
     if v:version < 800
+        for l:buf in tabpagebuflist()
+            if getbufvar(buf, '&filetype') == 'qf'
+                return 1
+            end
+        endfor
         return 0
     endif
 
