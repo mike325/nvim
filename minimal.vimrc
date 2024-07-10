@@ -735,20 +735,20 @@ function! s:qf_get_list(what, win) abort
 endfunction
 
 function! g:Qf_is_open(...) abort
-    if v:version < 800
-        for l:buf in tabpagebuflist()
-            if getbufvar(buf, '&filetype') == 'qf'
-                return 1
-            end
-        endfor
-        return 0
+    if v:version >= 800
+        let l:win = get(a:000, 0, 0)
+        if l:win
+            return getloclist(win_getid(), { 'winid': 0 }).winid != 0
+        endif
+        return getqflist({ 'winid': 0 }).winid != 0
     endif
 
-    let l:win = get(a:000, 0, 0)
-    if l:win
-        return getloclist(win_getid(), { 'winid': 0 }).winid != 0
-    endif
-    return getqflist({ 'winid': 0 }).winid != 0
+    for l:buf in tabpagebuflist()
+        if getbufvar(buf, '&filetype') == 'qf'
+            return 1
+        endif
+    endfor
+    return 0
 endfunction
 
 function! g:Qf_open(...) abort

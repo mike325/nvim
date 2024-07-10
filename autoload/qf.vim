@@ -82,20 +82,21 @@ function! s:qf_get_list(what, win) abort
 endfunction
 
 function! qf#is_open(...) abort
-    if !has#patch('7.4.2215')
-        for l:buf in tabpagebuflist()
-            if getbufvar(buf, '&filetype') == 'qf'
-                return 1
-            end
-        endfor
-        return 0
+    " TODO: check correct version
+    if has#patch('7.4.2215')
+        let l:win = get(a:000, 0, 0)
+        if l:win
+            return getloclist(win_getid(), { 'winid': 0 }).winid != 0
+        endif
+        return getqflist({ 'winid': 0 }).winid != 0
     endif
 
-    let l:win = get(a:000, 0, 0)
-    if l:win
-        return getloclist(win_getid(), { 'winid': 0 }).winid != 0
-    endif
-    return getqflist({ 'winid': 0 }).winid != 0
+    for l:buf in tabpagebuflist()
+        if getbufvar(buf, '&filetype') == 'qf'
+            return 1
+        endif
+    endfor
+    return 0
 endfunction
 
 function! qf#open(...) abort
