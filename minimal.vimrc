@@ -1,17 +1,29 @@
-" vimrc Settings
-" github.com/mike325/.vim
+" ############################################################################
+"
+"
+"                                     -`
+"                     ...            .o+`
+"                  .+++s+   .h`.    `ooo/
+"                 `+++%++  .h+++   `+oooo:
+"                 +++o+++ .hhs++. `+oooooo:
+"                 +s%%so%.hohhoo'  'oooooo+:
+"                 `+ooohs+h+sh++`/:  ++oooo+:
+"                  hh+o+hoso+h+`/++++.+++++++:
+"                   `+h+++h.+ `/++++++++++++++:
+"                            `/+++ooooooooooooo/`
+"                           ./ooosssso++osssssso+`
+"                          .oossssso-````/osssss::`
+"                         -osssssso.      :ssss``to.
+"                        :osssssss/  Mike  osssl   +
+"                       /ossssssss/   8a   +sssslb
+"                     `/ossssso+/:-        -:/+ossss'.-
+"                    `+sso+:-`                 `.-/+oso:
+"                   `++:.  github.com/mike325/nvim  `-/+/
+"                   .`                                 `/
+"
+" ############################################################################
 
 set nocompatible
-
-if v:version >= 800
-    silent! packadd cfilter
-    silent! packadd termdebug
-endif
-
-if v:version >= 704
-    silent! packadd matchparen
-    silent! packadd matchit
-endif
 
 " ------------------------------------------------------------------------------
 " Functions
@@ -81,6 +93,20 @@ function! s:has_plugin(plugin) abort
         return has_key(g:plugs, a:plugin)
     endif
     return 0
+endfunction
+
+function! s:has_async() abort
+    let l:async = 0
+
+    if has('nvim') || v:version > 800 || ( v:version == 800 && has#patch('8.0.902') )
+        let l:async = 1
+    elseif v:version ==# 704 && s:has_patch('7.4.1689')
+        let l:async = 1
+    elseif has('job') && has('timers') && has('channel')
+        let l:async = 1
+    endif
+
+    return l:async
 endfunction
 
 function! s:os_get_type() abort
@@ -723,19 +749,19 @@ function! s:qf_get_list(what, win) abort
         if type(l:win) == type(0) && l:win == 0
             let l:win = win_getid()
         endif
-        if v:version >= 800 && type(l:what) == type({}) && len(l:what) > 0
+        if s:has_patch('7.4.2200') && type(l:what) == type({}) && len(l:what) > 0
             return getloclist(l:win, l:what)
         endif
         return getloclist(l:win)
     endif
-    if v:version >= 800 && type(l:what) == type({}) && len(l:what) > 0
+    if s:has_patch('7.4.2200') && type(l:what) == type({}) && len(l:what) > 0
         return getqflist(l:what)
     endif
     return getqflist()
 endfunction
 
 function! g:Qf_is_open(...) abort
-    if v:version >= 800
+    if s:has_patch('7.4.2200')
         let l:win = get(a:000, 0, 0)
         if l:win
             return getloclist(win_getid(), { 'winid': 0 }).winid != 0
@@ -914,6 +940,28 @@ endfunction
 " ------------------------------------------------------------------------------
 " Options
 " ------------------------------------------------------------------------------
+
+if s:os_name('windows')
+    "set shell=powershell.exe
+    "set shellcmdflag=-NoLogo\ -NoProfile\ -ExecutionPolicy\ RemoteSigned\ -Command
+    "set shellxquote=
+    "let &shellquote = ''
+    "let &shellpipe  = '| Out-File -Encoding UTF8 %s'
+    "let &shellredir = '| Out-File -Encoding UTF8 %s'
+    "" set shellxquote=(
+    set shell=cmd.exe
+    set shellslash
+endif
+
+if v:version >= 800
+    silent! packadd cfilter
+    silent! packadd termdebug
+endif
+
+if v:version >= 704
+    silent! packadd matchparen
+    silent! packadd matchit
+endif
 
 if exists('+syntax')
     syntax on

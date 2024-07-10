@@ -1,6 +1,5 @@
 " ############################################################################
 "
-"                             Plugin installation
 "
 "                                     -`
 "                     ...            .o+`
@@ -19,7 +18,7 @@
 "                       /ossssssss/   8a   +sssslb
 "                     `/ossssso+/:-        -:/+ossss'.-
 "                    `+sso+:-`                 `.-/+oso:
-"                   `++:.  github.com/mike325/.vim  `-/+/
+"                   `++:.  github.com/mike325/nvim  `-/+/
 "                   .`                                 `/
 "
 " ############################################################################
@@ -29,17 +28,15 @@ set nocompatible
 let g:mapleader = "\<Space>"
 
 if os#name('windows')
-    " if has('nvim-0.5')
-    "     set shell=powershell.exe
-    "     set shellcmdflag=-NoLogo\ -NoProfile\ -ExecutionPolicy\ RemoteSigned\ -Command
-    "     set shellxquote=
-    "     let &shellquote = ''
-    "     let &shellpipe  = '| Out-File -Encoding UTF8 %s'
-    "     let &shellredir = '| Out-File -Encoding UTF8 %s'
-    "     " set shellxquote=(
-    " else
+    "set shell=powershell.exe
+    "set shellcmdflag=-NoLogo\ -NoProfile\ -ExecutionPolicy\ RemoteSigned\ -Command
+    "set shellxquote=
+    "let &shellquote = ''
+    "let &shellpipe  = '| Out-File -Encoding UTF8 %s'
+    "let &shellredir = '| Out-File -Encoding UTF8 %s'
+    "" set shellxquote=(
     set shell=cmd.exe
-    " endif
+    set shellslash
 endif
 
 " If there are no plugins available and we don't have git fallback to minimal mode
@@ -70,6 +67,7 @@ endif
 
 if v:version >= 800
     silent! packadd! cfilter
+    silent! packadd termdebug
 endif
 
 if v:version >= 704 && !has('nvim')

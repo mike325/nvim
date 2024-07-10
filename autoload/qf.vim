@@ -70,20 +70,19 @@ function! s:qf_get_list(what, win) abort
         if type(l:win) == type(0) && l:win == 0
             let l:win = win_getid()
         endif
-        if has#patch('7.4.2215') && type(l:what) == type({}) && len(l:what) > 0
+        if has#patch('7.4.2200') && type(l:what) == type({}) && len(l:what) > 0
             return getloclist(l:win, l:what)
         endif
         return getloclist(l:win)
     endif
-    if has#patch('7.4.2215') && type(l:what) == type({}) && len(l:what) > 0
+    if has#patch('7.4.2200') && type(l:what) == type({}) && len(l:what) > 0
         return getqflist(l:what)
     endif
     return getqflist()
 endfunction
 
 function! qf#is_open(...) abort
-    " TODO: check correct version
-    if has#patch('7.4.2215')
+    if has#patch('7.4.2200')
         let l:win = get(a:000, 0, 0)
         if l:win
             return getloclist(win_getid(), { 'winid': 0 }).winid != 0
