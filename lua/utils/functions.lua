@@ -142,7 +142,9 @@ function M.send_grep_job(opts)
         win = opts.win or vim.api.nvim_get_current_win()
     end
 
-    cmd = { cmd }
+    if type(cmd) ~= type {} then
+        cmd = { cmd }
+    end
     args = vim.tbl_filter(function(k)
         return not k:match '^%s*$'
     end, args)
