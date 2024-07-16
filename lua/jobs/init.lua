@@ -455,6 +455,10 @@ function Job:start()
             end
         end
 
+        if vim.t.progress_win and not vim.g.active_job then
+            nvim.win.close(vim.t.progress_win, true)
+        end
+
         if _user_on_exit then
             _user_on_exit(self, rc)
         elseif not self.silent then
@@ -558,6 +562,10 @@ function Job:start()
     self._isalive = true
     self._pid = vim.fn.jobpid(self._id)
     -- TODO: Should all jobs be pluggable ?
+
+    if self._show_progress then
+        self:progress()
+    end
 
     if self._timeout and self._timeout > 0 then
         vim.defer_fn(function()

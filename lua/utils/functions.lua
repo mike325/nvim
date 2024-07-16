@@ -445,7 +445,11 @@ function M.set_compiler(compiler, opts)
         table.insert(cmd, opts.subcmd or opts.subcommand)
     end
 
-    local efm = opts.efm or opts.errorformat or vim.go.errorformat
+    local efm = opts.efm or opts.errorformat
+    if not efm then
+        efm = vim.opt_global.errorformat:get()
+        table.remove(efm, 1)
+    end
 
     local ok, ft_compilers = pcall(RELOAD, 'filetypes.' .. language)
     local args

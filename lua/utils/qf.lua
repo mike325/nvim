@@ -203,17 +203,19 @@ function M.set_list(opts, win)
         error(debug.traceback('Invalid items type: ' .. type(items[1])))
     end
 
-    if not opts.efm or #opts.efm == 0 then
-        opts.efm = vim.go.efm
-    end
-
-    if type(opts.efm) == type {} then
-        opts.efm = table.concat(opts.efm, ',')
-    end
-
     if #(opts.items or opts.lines) == 0 then
         vim.notify('No items to display', vim.log.levels.ERROR, { title = win and 'LocationList' or 'QuickFix' })
         return
+    elseif opts.lines and #opts.lines > 0 then
+        if not opts.efm or #opts.efm == 0 then
+            opts.efm = vim.go.efm
+        end
+
+        if type(opts.efm) == type {} then
+            opts.efm = table.concat(opts.efm, ',')
+        end
+    else
+        opts.efm = nil -- Items already parsed, no need for efm
     end
 
     qf_funcs.set_list({}, action, opts, win)

@@ -5,6 +5,7 @@ if not STORAGE.db_path then
     STORAGE.db_path = sys.db_root .. '/aztlan.db'
 end
 
+-- TODO: Setup this in autocmd
 require('storage.versions').setup()
 
 local M = {

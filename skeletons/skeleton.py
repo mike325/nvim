@@ -146,6 +146,8 @@ class Job:
         _log.debug(f"Executing cmd: {self.cmd}")
         _log.debug("Sending job to background" if background else "Running in foreground")
         process = subprocess.Popen(self.cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd=cwd)
+        # NOTE: Python 3.6 does not support text= arg
+        # process = subprocess.Popen(self.cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=cwd)
         self.pid = process.pid
 
         self.stdout = []
@@ -154,9 +156,11 @@ class Job:
         while True:
             stdout = cast(TextIO, process.stdout).readline()
             stderr = cast(TextIO, process.stderr).readline()
+            # if (stdout == b"" and stderr == b"") and process.poll() is not None: # for python 3.6
             if (stdout == "" and stderr == "") and process.poll() is not None:
                 break
             elif stdout:
+                # stdout = stdout.rstrip().decode("utf-8") # python 3.6
                 stdout = stdout.strip().replace("\n", "")
                 self.stdout.append(stdout)
                 if background:
@@ -164,6 +168,7 @@ class Job:
                 else:
                     _log.info(stdout)
             elif stderr:
+                # stderr = stderr.rstrip().decode("utf-8") # python 3.6
                 stderr = stderr.strip().replace("\n", "")
                 self.stderr.append(stderr)
                 _log.error(stderr)
