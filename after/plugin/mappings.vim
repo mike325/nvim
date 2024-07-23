@@ -461,4 +461,15 @@ if !has#plugin('vim-fugitive') && executable('git')
     nnoremap <leader>gr :Gread<CR>
 endif
 
+command! -nargs=1 -complete=shellcmd EditPathScript
+    \ let s:cmd_str = expand(<q-args>) |
+    \ let s:cmd = exepath(s:cmd_str) |
+    \ if empty(s:cmd) |
+    \   call tools#echoerr("Cannot find: " . s:cmd_str . " in the PATH") |
+    \ else |
+    \   execute 'edit ' . s:cmd |
+    \ endif |
+    \ unlet s:cmd_str |
+    \ unlet s:cmd
+
 " }}} END Fallback Plugin mapping

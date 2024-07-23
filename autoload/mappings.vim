@@ -317,7 +317,7 @@ function! mappings#find(glob) abort
             echomsg 'No matches found for ' . a:glob
         endif
     else
-        echoerr 'Failed to execute find'
+        call tools#echoerr('Failed to execute find')
     endif
 endfunction
 

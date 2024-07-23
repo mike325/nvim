@@ -141,7 +141,7 @@ function! qf#set_list(...) abort
     endfor
 
     if type(l:items) != type([]) || len(l:items) == 0
-        echoerr 'No items to display'
+        call tools#echoerr('No items to display')
         return
     endif
 
@@ -198,7 +198,7 @@ function! qf#dump_files(buffers, ...) abort
 
         call qf#set_list({'items': l:items, 'open': l:open, 'jump': l:jump}, l:win)
     else
-        echoerr 'No files to dump'
+        call tools#echoerr('No files to dump')
     endif
 endfunction
 
