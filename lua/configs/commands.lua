@@ -812,3 +812,14 @@ if executable 'plantuml' then
         )
     end, { desc = 'Disable/Enable Auto PlantUML render' })
 end
+
+nvim.command.set('EditPathScript', function(opts)
+    local cmd_str = opts.args
+    local cmd = vim.fn.exepath(cmd_str)
+    if cmd == '' then
+        vim.notify(('Cannot find: %s in PATH'):format(cmd_str), vim.log.levels.ERROR, { title = 'EditPathScript' })
+        return
+    end
+
+    vim.cmd.edit(cmd)
+end, { nargs = 1, complete = 'shellcmd', desc = 'Open a script located somewhere in path' })

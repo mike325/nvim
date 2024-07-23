@@ -102,10 +102,11 @@ local simple_mini = {
             apply = 'gh',
             reset = 'gH',
             textobject = '',
+            -- TODO: Add support to jump to TS context
             goto_first = '[C',
+            goto_last = ']C',
             goto_prev = '[c',
             goto_next = ']c',
-            goto_last = ']C',
         },
         options = {
             algorithm = diffopts.algorithm or 'histogram',

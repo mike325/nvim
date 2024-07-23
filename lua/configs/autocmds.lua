@@ -297,6 +297,17 @@ vim.api.nvim_create_autocmd('LspAttach', {
             end
         end
 
+        if client.name == 'pylsp' then
+            local extra_paths = vim.tbl_get(client, 'config', 'settings', 'pylsp', 'plugins', 'jedi', 'extra_paths')
+            if extra_paths and #extra_paths > 0 then
+                local path = vim.opt_local.path:get()
+                for _, extra in ipairs(extra_paths) do
+                    table.insert(path, 1, extra)
+                end
+                vim.opt_local.path = path
+            end
+        end
+
         local is_min = vim.g.minimal and vim.F.npcall(require, 'mini.completion') ~= nil
         vim.bo[bufnr].omnifunc = is_min and 'v:lua.MiniCompletion.completefunc_lsp' or 'v:lua.vim.lsp.omnifunc'
 

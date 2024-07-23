@@ -55,8 +55,6 @@ vim.keymap.set('n', '<leader>0', '<cmd>tablast<CR>', { noremap = true, desc = 'M
 
 vim.keymap.set('n', '<leader><leader>n', '<cmd>tabnew<CR>', { noremap = true })
 
-vim.keymap.set({ 'n', 'x' }, '&', '<cmd>&&<CR>', { noremap = true })
-
 vim.keymap.set('n', '/', "m'/", { noremap = true })
 vim.keymap.set('n', 'g/', "m'/\\v", { noremap = true })
 vim.keymap.set('n', '0', '^', { noremap = true })
@@ -245,14 +243,6 @@ end, { noremap = true, silent = true, desc = 'Toggle diagnostics in the location
 vim.keymap.set('n', '=d', function()
     vim.diagnostic.open_float()
 end, { noremap = true, silent = true, desc = 'Show diagnostics under the cursor in a floating window' })
-
-vim.keymap.set('n', ']d', function()
-    vim.diagnostic.goto_next { wrap = true }
-end, { noremap = true, silent = true, desc = 'Go to the next diagnostic' })
-
-vim.keymap.set('n', '[d', function()
-    vim.diagnostic.goto_prev { wrap = true }
-end, { noremap = true, silent = true, desc = 'Go to the prev diagnostic' })
 
 vim.keymap.set('n', '=j', function(opts)
     RELOAD('mappings').show_background_jobs(opts)

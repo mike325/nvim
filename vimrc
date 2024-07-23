@@ -820,7 +820,7 @@ function! g:Qf_set_list(...) abort
     endfor
 
     if type(l:items) != type([]) || len(l:items) == 0
-        echoerr 'No items to display'
+        call s:echoerr('No items to display')
         return
     endif
 
@@ -877,7 +877,7 @@ function! g:Qf_dump_files(buffers, ...) abort
 
         call g:Qf_set_list({'items': l:items, 'open': l:open, 'jump': l:jump}, l:win)
     else
-        echoerr 'No files to dump'
+        call s:echoerr('No files to dump')
     endif
 endfunction
 
@@ -918,7 +918,7 @@ function! g:Find(glob) abort
             echomsg "No matches found for " . a:glob
         endif
     else
-        echoerr "Failed to execute find"
+        call s:echoerr("Failed to execute find")
     endif
 endfunction
 
@@ -1539,6 +1539,17 @@ command! -bang -nargs=? -complete=file Remove
     \ endif |
     \ unlet s:bang |
     \ unlet s:target
+
+command! -nargs=1 -complete=shellcmd EditPathScript
+    \ let s:cmd_str = expand(<q-args>) |
+    \ let s:cmd = exepath(s:cmd_str) |
+    \ if empty(s:cmd) |
+    \   call s:echoerr("Cannot find: " . s:cmd_str . " in the PATH") |
+    \ else |
+    \   execute 'edit ' . s:cmd |
+    \ endif |
+    \ unlet s:cmd_str |
+    \ unlet s:cmd
 
 " ------------------------------------------------------------------------------
 " Autocmds

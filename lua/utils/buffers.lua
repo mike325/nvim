@@ -46,6 +46,7 @@ function M.delete(bufnr, wipe)
     assert(not bufnr or bufnr > 0, debug.traceback 'Buffer must be greater than 0')
 
     bufnr = bufnr or vim.api.nvim_get_current_buf()
+    local bufname = vim.api.nvim_buf_get_name(bufnr)
     local is_duplicated = false
     local is_wipe = vim.bo[bufnr].bufhidden == 'wipe'
     local prev_buf = vim.fn.expand '#' ~= '' and vim.fn.bufnr(vim.fn.expand '#') or -1
@@ -94,6 +95,9 @@ function M.delete(bufnr, wipe)
         -- TODO: maybe should ask for confirmation in non scratch modified buffers
         if wipe or vim.bo[bufnr].modified then
             action = { force = true }
+            if vim.list_contains(vim.tbl_map(require('utils.files').realpath, vim.fn.argv()), bufname) then
+                vim.cmd.argdelete(bufname)
+            end
         end
         nvim.buf.delete(bufnr, action)
     end
