@@ -37,7 +37,6 @@ function! set#initconfigs() abort " Vim's InitConfig {{{
     endfor
 
     let l:persistent_settings = (has('nvim')) ? 'shada' : 'viminfo'
-
     execute 'set ' . l:persistent_settings . "=!,/1000,'1000,<1000,:1000,s10000,h"
     if l:persistent_settings ==# 'viminfo'
         execute 'set ' . l:persistent_settings . '+=n' . fnameescape(l:parent_dir .'/'. l:persistent_settings)
