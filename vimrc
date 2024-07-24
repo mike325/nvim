@@ -1213,6 +1213,8 @@ endif
 
 set nocursorline
 
+set viminfo=!,/1000,'1000,<1000,:1000,s10000,h
+
 " ------------------------------------------------------------------------------
 " Mappings
 " ------------------------------------------------------------------------------
@@ -1431,7 +1433,35 @@ command! -bang -nargs=* -complete=buffer ArgAddBuf
 
 command! -nargs=+ -complete=file Edit call s:edit([<f-args>])
 
-command! -nargs=0 Reload source $HOME/.vimrc | echomsg "Config Reload!"
+command! -nargs=0 Reload
+    \ let s:home = s:vars_home() |
+    \ let s:vim_dir = '' |
+    \ let s:vimrcs = empty($MYVIMRC) ? [] : [$MYVIMRC] |
+    \ if s:os_name('windows') |
+    \     let s:home = substitute(s:home, '\', '/', 'g' ) |
+    \     let s:vim_dir = 'vimfiles' |
+    \     let s:vimrcs += [s:home . '/_vimrc'] |
+    \ else |
+    \     let s:vim_dir = '.vim' |
+    \     let s:vimrcs += [s:home . '/.vimrc'] |
+    \ endif |
+    \ let s:vimrcs += [s:home . '/' . s:vim_dir . '/vimrc', s:home . '/vimrc'] |
+    \ let s:reloaded = 0 |
+    \ for s:vimrc in s:vimrcs |
+    \     if filereadable(s:vimrc) |
+    \         execute 'source ' . s:vimrc |
+    \         echomsg "Config: " . s:vimrc . " Reload!" |
+    \         let s:reloaded = 1 |
+    \         break |
+    \     endif |
+    \ endfor |
+    \ if s:reloaded == 0 |
+    \     call s:echoerr('Could not find vimrc!') |
+    \ endif |
+    \ unlet s:home |
+    \ unlet s:vim_dir |
+    \ unlet s:vimrcs |
+    \ unlet s:reloaded
 
 if s:has_option('relativenumber')
     command! RelativeNumbersToggle set relativenumber! relativenumber?
