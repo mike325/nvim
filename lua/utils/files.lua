@@ -630,8 +630,13 @@ function M.delete(target, bang)
             end
         end
         if bufloaded(target) then
-            local command = bang and 'wipeout' or 'delete'
-            local ok, error_code = pcall(vim.cmd, { cmd = 'b' .. command, bang = true, args = { target } })
+            local command = bang and 'bwipeout' or 'bdelete'
+
+            if vim.list_contains(vim.tbl_map(M.realpath, vim.fn.argv()), target) then
+                vim.cmd.argdelete(target)
+            end
+
+            local ok, error_code = pcall(vim.cmd, { cmd = command, bang = true, args = { target } })
             if not ok and error_code:match 'Vim(.%w+.)\\?:E94' then
                 vim.notify('Failed to ' .. command .. ' buffer ' .. target, vim.log.levels.ERROR, { title = 'Delete' })
                 return false
