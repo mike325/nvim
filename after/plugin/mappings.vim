@@ -11,10 +11,12 @@ let g:mapleader = get(g:, 'mapleader', "\<Space>")
 
 let g:mappings_loaded = 1
 
-if has('nvim-0.4')
-    lua require('settings/mappings')
-    finish
-endif
+nnoremap <F3> :setlocal paste! paste?<CR>
+
+cnoremap <C-r><C-w> <C-r>=escape(expand('<cword>'), '#')<CR>
+cnoremap <C-r><C-n> <C-r>=fnamemodify(expand('%'), ':t')<CR>
+cnoremap <C-r><C-p> <C-r>=bufname('%')<CR>
+cnoremap <C-r><C-d> <C-r>=fnamemodify(expand('%'), ':h').'/'<CR>
 
 nnoremap , :
 xnoremap , :
@@ -69,7 +71,7 @@ if !has#patch('8.1.2289')
 endif
 
 " Seems like a good idea, may activate it later
-" nnoremap <expr> q &diff ? ":diffoff!\<bar>only\<cr>" : "q"
+nnoremap <expr> q &diff ? ":diffoff!\<bar>only\<cr>" : "q"
 
 " Move vertically by visual line unless preceded by a count. If a movement is
 " greater than 3 then automatically add to the jumplist.
@@ -165,8 +167,14 @@ cabbrev Gti Git
 cabbrev W   w
 cabbrev Q   q
 cabbrev q1  q!
+cabbrev qa1 qa!
 cabbrev w1  w!
 cabbrev wA! wa!
+cabbrev wa1 wa!
+cabbrev QA! qa!
+cabbrev QA1 qa!
+cabbrev Qa! qa!
+cabbrev Qa1 qa!
 
 " Use C-p and C-n to move in command's history
 cnoremap <C-n> <down>
@@ -209,6 +217,7 @@ nnoremap <silent> ]a :<C-U>exe "".(v:count ? v:count : "")."next"<CR>
 
 nnoremap <silent> =q :call qf#toggle()<cr>
 nnoremap <silent> =l :call qf#toggle(1)<cr>
+
 nnoremap <silent> <leader>e :call arglist#edit('')<cr>
 nnoremap <silent> <leader>A :call arglist#add([expand("%")], 0)<cr>
 nnoremap <silent> <leader>D :call execute("argdelete " . expand("%"))<cr>
@@ -234,19 +243,6 @@ if has('terminal')
     command! -nargs=? Terminal call mappings#terminal(<q-args>)
 endif
 
-" Fucking typos
-cabbrev Gti Git
-cabbrev W  w
-cabbrev Q  q
-cabbrev q1 q!
-cabbrev qa1 qa!
-cabbrev w1 w!
-cabbrev wA! wa!
-cabbrev wa1 wa!
-cabbrev QA! qa!
-cabbrev QA1 qa!
-cabbrev Qa! qa!
-cabbrev Qa1 qa!
 
 if executable('powershell')
     command! PowershellToggle call windows#toggle_powershell()
@@ -309,8 +305,11 @@ if executable('svn')
                 \ let s:bang = empty(<bang>0) ? '' : '!' |
                 \ execute('edit'.s:bang) |
                 \ unlet s:bang
-
 endif
+
+" Avoid dispatch command conflict
+" QuickfixOpen
+command! -nargs=? Qopen execute((&splitbelow) ? 'botright' : 'topleft' ) . ' copen ' . expand(<q-args>)
 
 " ####### Fallback Plugin mapping {{{
 

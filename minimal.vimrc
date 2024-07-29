@@ -527,6 +527,14 @@ function! g:MappingsTrim() abort
     return 0
 endfunction
 
+function! s:mappings_bs() abort
+    try
+        execute 'pop'
+    catch /E\(55\(5\|6\)\|73\|92\)/
+        execute "normal! \<C-o>"
+    endtry
+endfunction
+
 function! s:mappings_cr() abort
     let l:cword = expand('<cword>')
     try
@@ -1185,7 +1193,9 @@ set nofoldenable
 set foldmethod=syntax
 set foldlevel=99
 " set foldcolumn=0
-set fileencoding=utf-8
+if &l:modifiable
+    set fileencoding=utf-8
+endif
 
 " set noshowmode
 " let &statusline = '%< [%f]%=%-5.(%y%r%m%w%q%) %-14.(%l,%c%V%) %P '
@@ -1220,6 +1230,8 @@ set viminfo=!,/1000,'1000,<1000,:1000,s10000,h
 " ------------------------------------------------------------------------------
 
 let g:mapleader = get(g:, 'mapleader', "\<Space>")
+
+nnoremap <F3> :setlocal paste! paste?<CR>
 
 cnoremap <C-r><C-w> <C-r>=escape(expand('<cword>'), '#')<CR>
 cnoremap <C-r><C-n> <C-r>=fnamemodify(expand('%'), ':t')<CR>
@@ -1288,8 +1300,8 @@ nnoremap <leader><leader>e :echo expand("%")<CR>
 " Very Magic sane regex searches
 nnoremap / ms/
 nnoremap g/ ms/\v
+" nnoremap gs :%s/\v
 
-" TODO
 nnoremap <expr> i g:MappingsIndentWithI()
 
 if v:version >= 704
@@ -1330,6 +1342,9 @@ nnoremap <leader>l <C-w>l
 nnoremap <leader>b <C-w>b
 nnoremap <leader>t <C-w>t
 
+" Equally resize buffer splits
+nnoremap <leader>e <C-w>=
+
 nnoremap <leader>1 1gt
 nnoremap <leader>2 2gt
 nnoremap <leader>3 3gt
@@ -1353,6 +1368,7 @@ xnoremap <leader>8 <ESC>8gt
 xnoremap <leader>9 <ESC>9gt
 xnoremap <leader>0 <ESC>:tablast<CR>
 
+cabbrev Gti Git
 cabbrev W   w
 cabbrev Q   q
 cabbrev q1  q!
@@ -1485,6 +1501,7 @@ command! SpellToggle      setlocal spell! spell?
 command! WrapToggle       setlocal wrap! wrap?
 command! VerboseToggle    let &verbose=!&verbose | echo "Verbose " . &verbose
 
+
 if v:version >= 704
     command! -nargs=? -complete=filetype FileType call s:mappings_SetFileData('filetype', <q-args>, 'text')
     command! -nargs=? -complete=customlist,s:mappings_format FileFormat call s:mappings_SetFileData('fileformat', <q-args>, 'unix')
@@ -1507,6 +1524,16 @@ else
 endif
 
 command! -nargs=? ConncallLevel  call s:mappings_ConncallLevel(expand(<q-args>))
+
+if executable('svn')
+    command! -nargs=* SVNstatus execute('!svn status ' . <q-args>)
+    command! -complete=file -nargs=+ SVN execute('!svn ' . <q-args>)
+    command! -complete=file -nargs=* SVNupdate execute('!svn update ' . <q-args>)
+    command! -complete=file -nargs=? -bang SVNread execute('!svn revert ' .(empty(<q-args>)? expand("%") : expand(<q-args>)) ) |
+                \ let s:bang = empty(<bang>0) ? '' : '!' |
+                \ execute('edit'.s:bang) |
+                \ unlet s:bang
+endif
 
 " Avoid dispatch command conflict
 " QuickfixOpen
@@ -1593,6 +1620,24 @@ if v:version > 702
         autocmd WinLeave    * if &buftype !=# 'terminal' | setlocal norelativenumber number | endif
         autocmd InsertLeave * if &buftype !=# 'terminal' | setlocal relativenumber number | endif
         autocmd InsertEnter * if &buftype !=# 'terminal' | setlocal norelativenumber number | endif
+    augroup end
+endif
+
+if executable('tmux') && s:has_autocmd('TextYankPost')
+    function! s:copy_yanked_text(data) abort
+        if !empty($TMUX_VERSION)
+            let l:reg = a:data['regname']
+            let l:operator = a:data['operator']
+            echomsg string(a:data)
+            if l:operator == 'y' && (l:reg == '' || l:reg == '*' || l:reg == '+' || l:reg == '"')
+                call system("tmux load-buffer -", join(a:data['regcontents'], '\n'))
+            endif
+        endif
+    endfunction
+
+    augroup CopyYankToTmux
+        autocmd!
+        autocmd TextYankPost * call s:copy_yanked_text(v:event)
     augroup end
 endif
 
