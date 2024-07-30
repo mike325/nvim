@@ -48,6 +48,45 @@ let s:ignores_patterns = {
             \   'full_name_files': ['tags', 'cscope', 'shada', 'viminfo', 'COMMIT_EDITMSG'],
             \}
 
+let s:wildignores = [
+    \   '*.spl',
+    \   '*.aux',
+    \   '*.out',
+    \   '*.o',
+    \   '*.pyc',
+    \   '*.gz',
+    \   '*.pdf',
+    \   '*.sw',
+    \   '*.swp',
+    \   '*.swo',
+    \   '*.swap',
+    \   '*.com',
+    \   '*.exe',
+    \   '*.so',
+    \   '*/cache/*',
+    \   '*/__pycache__/*',
+    \ ]
+
+let s:no_backup = [
+    \   '*/.git/*',
+    \   '*/.svn/*',
+    \   '*.xml',
+    \   '*.log',
+    \   '*.bin',
+    \   '*.7z',
+    \   '*.dmg',
+    \   '*.gz',
+    \   '*.iso',
+    \   '*.jar',
+    \   '*.rar',
+    \   '*.tar',
+    \   '*.zip',
+    \   'TAGS',
+    \   'tags',
+    \   'GTAGS',
+    \   'COMMIT_EDITMSG',
+    \]
+
 " Set the default work dir
 let s:basedir = ''
 let s:homedir = ''
@@ -58,6 +97,10 @@ function! s:echoerr(msg) abort
     echohl ErrorMsg
     echomsg a:msg
     echohl
+endfunction
+
+function! s:has_gui() abort
+    return ( has('nvim') && ( exists('g:gonvim_running') || exists('g:GuiLoaded') || exists('veonim') )) || ( !has('nvim') && has('gui_running') )
 endfunction
 
 function! s:has_patch(patch) abort
@@ -98,7 +141,7 @@ endfunction
 function! s:has_async() abort
     let l:async = 0
 
-    if has('nvim') || v:version > 800 || ( v:version == 800 && has#patch('8.0.902') )
+    if has('nvim') || v:version > 800 || ( v:version == 800 && s:has_patch('8.0.902') )
         let l:async = 1
     elseif v:version ==# 704 && s:has_patch('7.4.1689')
         let l:async = 1
@@ -287,32 +330,32 @@ function! s:tools_ignores(tool) abort
     endif
 
     let l:ignores = {
-                \ 'fd'       : '',
-                \ 'find'     : ' -regextype egrep ',
-                \ 'ag'       : '',
-                \ 'grep'     : '',
+                \ 'fd'       : [],
+                \ 'find'     : ['-regextype', 'egrep', '!', '\\(' ],
+                \ 'ag'       : [],
+                \ 'rg'       : [],
+                \ 'grep'     : [],
                 \ }
 
     if !empty(l:excludes)
-        if executable('ag')
-            let l:ignores['ag'] .= ' --ignore ' . join(l:excludes, ' --ignore ' ) . ' '
-        endif
-        if executable('fd')
-            if filereadable(s:vars_home() . '/.config/git/ignore')
-                let l:ignores['fd'] .= ' --ignore-file '. s:vars_home() .'/.config/git/ignore'
-            else
-                let l:ignores['fd'] .= ' -E ' . join(l:excludes, ' -E ' ) . ' '
+        let l:idx = 0
+        for l:exc in l:excludes
+            if !empty(l:exc)
+                let l:ignores['fd'] += ['--exclude ' . l:exc]
+                let l:ignores['find'] += ['-iwholename ' . l:exc]
+                if l:idx < len(l:excludes)
+                    let l:ignores['find'] += ['-or']
+                endif
+                let l:ignores['ag'] += [' --ignore ' . l:exc]
+                let l:ignores['grep'] += ['--exclude=' . l:exc]
+                let l:ignores['rg'] += [' --iglob=!' . l:exc]
+                let l:idx += 1
             endif
-        endif
-        if executable('find')
-            let l:ignores['find'] .= ' ! \( -iwholename ' . join(l:excludes, ' -or -iwholename ' ) . ' \) '
-        endif
-        if executable('grep')
-            let l:ignores['grep'] .= ' --exclude=' . join(l:excludes, ' --exclude=' ) . ' '
-        endif
+        endfor
     endif
+    let l:ignores['find'] += ['\\)']
 
-    return has_key(l:ignores, a:tool) ? l:ignores[a:tool] : ''
+    return has_key(l:ignores, a:tool) ? join(l:ignores[a:tool], ' ') : ''
 endfunction
 
 " Small wrap to avoid change code all over the repo
@@ -327,7 +370,7 @@ function! s:tools_grep(tool, ...) abort
                 \       'grepformat': '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m',
                 \    },
                 \   'rg' : {
-                \       'grepprg':  'rg -S --hidden --color never --no-search-zip --trim --vimgrep ',
+                \       'grepprg':  'rg -SHn --no-binary --trim --color=never --no-heading --column --no-search-zip --hidden ',
                 \       'grepformat': '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m'
                 \   },
                 \   'ag' : {
@@ -351,13 +394,12 @@ endfunction
 " Just like GrepTool but for listing files
 function! s:tools_filelist(tool) abort
     let l:filelist = {
-                \ 'git'  : 'git --no-pager ls-files -co --exclude-standard',
-                \ 'fd'   : 'fd ' . s:tools_ignores('fd') . ' --type f --hidden --follow --color never . .',
-                \ 'rg'   : 'rg --color never --no-search-zip --hidden --trim --files',
-                \ 'ag'   : 'ag -l --follow --nocolor --nogroup --hidden ' . s:tools_ignores('ag'). '-g ""',
-                \ 'find' : "find . -type f -iname '*' ".s:tools_ignores('find'),
+                \ 'git'  : 'git --no-pager ls-files -c --exclude-standard ',
+                \ 'fd'   : 'fd --type=file --hidden --color=never  ' . s:tools_ignores('fd') . ' ',
+                \ 'rg'   : 'rg --no-binary --color=never --no-search-zip --hidden --trim --files ' . s:tools_ignores('rg') . ' ',
+                \ 'ag'   : 'ag -l --follow --nocolor --nogroup --hidden ' . s:tools_ignores('ag'). '-g ',
+                \ 'find' : "find . -type f ".s:tools_ignores('find') . " ",
                 \}
-
     return l:filelist[a:tool]
 endfunction
 
@@ -472,13 +514,6 @@ if has('terminal') || (!has('nvim-0.4') && has('nvim'))
     command! -nargs=* Terminal call s:mappings_terminal(<q-args>)
 
     tnoremap <ESC> <C-\><C-n>
-
-    augroup TermSetup
-        autocmd!
-        autocmd TerminalOpen * setlocal nonumber norelativenumber
-        autocmd TerminalOpen * nnoremap <silent><nowait><buffer> q :q!<CR>
-    augroup end
-
 endif
 
 if s:has_option('mouse')
@@ -525,6 +560,14 @@ function! g:MappingsTrim() abort
     endif
 
     return 0
+endfunction
+
+function! s:mappings_bs() abort
+    try
+        execute 'pop'
+    catch /E\(55\(5\|6\)\|73\|92\)/
+        execute "normal! \<C-o>"
+    endtry
 endfunction
 
 function! s:mappings_cr() abort
@@ -909,11 +952,21 @@ endfunction
 
 function! g:Find(glob) abort
     let l:glob = "'" . a:glob . "'"
-    let l:cmd = tools#select_find(0)
-    let l:results = systemlist(l:cmd . l:glob)
+    let l:cmd = s:tools_select_filelist(0)
+    if l:cmd =~# '^rg'
+        let l:cmd = l:cmd . ' --iglob=' . l:glob
+    elseif l:cmd =~# '^fd'
+        let l:cmd = l:cmd . ' --glob ' . l:glob . ' .'
+    elseif l:cmd =~# '^find'
+        let l:cmd = l:cmd . ' -iname=' . l:glob
+    else
+        let l:cmd = l:cmd . l:glob
+    endif
+
+    let l:results = systemlist(l:cmd)
     if v:shell_error == 0
         if len(l:results) > 0
-            call qf#dump_files(l:results)
+            call g:Qf_dump_files(l:results)
         else
             echomsg "No matches found for " . a:glob
         endif
@@ -937,18 +990,48 @@ function! s:edit(args) abort
     endfor
 endfunction
 
+function! s:clean_file() abort
+    " Sometimes we don't want to remove spaces
+    let l:buftypes = 'nofile\|help\|quickfix\|terminal'
+    let l:filetypes = 'bin\|hex\|log\|git\|man\|terminal'
+
+    if mode() !=# 'n' && ( b:trim != 1 || &buftype =~? l:buftypes || &filetype ==? l:filetypes || &filetype ==? '' )
+        return
+    endif
+
+    "Save last cursor position
+    let l:savepos = getpos('.')
+    " Save last search query
+    let l:oldquery = getreg('/')
+
+    " Cleaning line endings
+    execute '%s/\s\+$//e'
+    call histdel('search', -1)
+
+    " Yep I some times I copy this things form the terminal
+    silent! execute '%s/\(\s\+\)┊/\1 /ge'
+    call histdel('search', -1)
+
+    if &fileformat ==# 'unix'
+        silent! execute '%s/\r$//ge'
+        call histdel('search', -1)
+    endif
+
+    call setpos('.', l:savepos)
+    call setreg('/', l:oldquery)
+endfunction
+
 " ------------------------------------------------------------------------------
 " Options
 " ------------------------------------------------------------------------------
 
 if s:os_name('windows')
-    "set shell=powershell.exe
-    "set shellcmdflag=-NoLogo\ -NoProfile\ -ExecutionPolicy\ RemoteSigned\ -Command
-    "set shellxquote=
-    "let &shellquote = ''
-    "let &shellpipe  = '| Out-File -Encoding UTF8 %s'
-    "let &shellredir = '| Out-File -Encoding UTF8 %s'
-    "" set shellxquote=(
+    " set shell=powershell.exe
+    " set shellcmdflag=-NoLogo\ -NoProfile\ -ExecutionPolicy\ RemoteSigned\ -Command
+    " set shellxquote=
+    " let &shellquote = ''
+    " let &shellpipe  = has('nvim') ? '2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode' : '>'
+    " let &shellredir = '2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode'
     set shell=cmd.exe
     set shellslash
 endif
@@ -967,20 +1050,72 @@ if exists('+syntax')
     syntax on
 endif
 
-set diffopt^=vertical
+" Hidden path in `vars#basedir()` with all generated files
+let s:parent_dir = s:vars_datadir()
 
-if s:has_patch('8.1.0360')
-    set diffopt^=indent-heuristic,algorithm:patience
+if !isdirectory(s:parent_dir) && s:has_func('mkdir')
+    call mkdir(fnameescape(s:parent_dir), 'p')
 endif
 
-if s:has_patch('8.1.1361')
-    set diffopt^=hiddenoff
+let s:dirpaths = {
+    \ '/backup'   : 'backupdir',
+    \ '/swap'     : 'directory',
+    \ '/undo_vim' : 'undodir',
+    \ '/cache'    : '',
+    \ '/sessions' : '',
+    \}
+
+" Better backup, swap and undos storage
+set backup
+
+if s:has_option('undofile')
+    set undofile " persistent undos - undo after you re-open the file
 endif
 
-if s:has_patch('8.1.2289')
-    set diffopt^=iwhiteall,iwhiteeol
+" Config all
+for [s:dirname, s:dir_setting] in items(s:dirpaths)
+    if !isdirectory(fnameescape( s:parent_dir . s:dirname )) && s:has_func('mkdir')
+        call mkdir(fnameescape( s:parent_dir . s:dirname ), 'p')
+    endif
+
+    if s:dir_setting !=# '' && s:has_option(s:dir_setting)
+        execute 'set ' . s:dir_setting . '=' . fnameescape(s:parent_dir . s:dirname)
+    endif
+endfor
+
+let s:persistent_settings = (has('nvim')) ? 'shada' : 'viminfo'
+execute 'set ' . s:persistent_settings . "=!,/1000,'1000,<1000,:1000,s10000,h"
+if s:persistent_settings ==# 'viminfo'
+    execute 'set ' . s:persistent_settings . '+=n' . fnameescape(s:parent_dir .'/'. s:persistent_settings)
+endif
+
+if s:os_name('windows') && &shellslash
+    let s:wildignores += map(split(&backupskip, ','), 'substitute(v:val, "\\", "/", "g")')
 else
-    set diffopt^=iwhite
+    let s:wildignores += split(&backupskip, ',')
+endif
+
+let &wildignore = join(s:wildignores, ',')
+let &backupskip = join(s:wildignores + s:no_backup, ',')
+
+" Fucking hate stock vim in MAC
+if !s:os_name('macos')
+    " Default should be internal,filler,closeoff
+    set diffopt^=vertical
+
+    if s:has_patch('8.1.0360')
+        set diffopt^=indent-heuristic,algorithm:patience
+    endif
+
+    if s:has_patch('8.1.1361')
+        set diffopt^=hiddenoff
+    endif
+
+    if s:has_patch('8.1.2289')
+        set diffopt^=iwhiteall,iwhiteeol
+    else
+        set diffopt^=iwhite
+    endif
 endif
 
 if s:has_option('winaltkeys')
@@ -989,6 +1124,13 @@ endif
 
 if s:has_option('renderoptions')
     set renderoptions=type:directx
+endif
+
+if s:os_name('windows')
+    behave xterm
+    " if has#option('completeslash')
+    "     set completeslash='slash'
+    " endif
 endif
 
 " Allow lua omni completion
@@ -1037,14 +1179,15 @@ endif
 " Clipboard {{{
 " Set the defaults, which we may change depending where we run (Neo)vim
 
-" Enable mouse
-" This can be disable wit MouseToggle cmd
+" Disable mouse at all
+" This can be re-enable wit MouseToggle cmd
 if has('mouse')
-    set mouse=a
+    set mouse=
 endif
 " set nocompatible
 
 set ttyfast
+" set t_Co=255
 set t_vb= " ...disable the visual effect
 
 set autoindent
@@ -1086,6 +1229,20 @@ endif
 if s:has_patch('8.1.1902')
     set completeopt+=popup
     set completepopup=height:10,width:60,highlight:Pmenu,border:off
+endif
+
+" Don't use the system's clipboard whenever we run in SSH session or we don't have 'clipboard' option available
+" NOTE: Windows terminal doesn't have mouse support, so this wont have effect for vim/neovim TUI
+if empty($SSH_CONNECTION) && has('clipboard')
+    " We assume that Vim's magic clipboard will work (hopefully, not warranty)
+    set clipboard+=unnamedplus,unnamed
+    if has('mouse')
+        set mouse=a    " We have mouse support, so we use it
+        set mousehide  " Hide mouse when typing text
+    endif
+else
+    " let g:clipboard = {}
+    set clipboard=
 endif
 
 if v:version >= 704
@@ -1140,6 +1297,10 @@ set autowriteall " Write files when exit (Neo)vim
 
 set listchars=tab:>\ ,trail:-,extends:$,precedes:$
 
+if has('path_extra')
+    setglobal tags^=.git/tags
+endif
+
 if !&sidescrolloff
     set sidescrolloff=5
 endif
@@ -1185,7 +1346,9 @@ set nofoldenable
 set foldmethod=syntax
 set foldlevel=99
 " set foldcolumn=0
-set fileencoding=utf-8
+if &l:modifiable
+    set fileencoding=utf-8
+endif
 
 " set noshowmode
 " let &statusline = '%< [%f]%=%-5.(%y%r%m%w%q%) %-14.(%l,%c%V%) %P '
@@ -1213,13 +1376,16 @@ endif
 
 set nocursorline
 
-set viminfo=!,/1000,'1000,<1000,:1000,s10000,h
+call s:tools_set_grep(0, 0)
+call s:tools_set_grep(0, 1)
 
 " ------------------------------------------------------------------------------
 " Mappings
 " ------------------------------------------------------------------------------
 
 let g:mapleader = get(g:, 'mapleader', "\<Space>")
+
+nnoremap <F3> :setlocal paste! paste?<CR>
 
 cnoremap <C-r><C-w> <C-r>=escape(expand('<cword>'), '#')<CR>
 cnoremap <C-r><C-n> <C-r>=fnamemodify(expand('%'), ':t')<CR>
@@ -1245,13 +1411,27 @@ nnoremap J m`J``
 " Better <ESC> mappings
 imap jj <Esc>
 
-nnoremap <silent> <BS> <C-o>
-
+nnoremap <silent> <BS> :call s:mappings_bs()<CR>
 xnoremap <BS> <ESC>
 
 inoremap <silent> <TAB>   <C-R>=g:MappingsTab()<CR>
 inoremap <silent> <S-TAB> <C-R>=g:MappingsShiftTab()<CR>
 inoremap <silent> <CR>    <C-R>=g:MappingsEnter()<CR>
+
+" We assume that if we are running neovim from windows without s:has_gui we are
+" running from cmd or powershell, windows terminal send <C-h> when backspace is press
+if has('nvim') && s:os_name('windows') && !s:has_gui()
+    nnoremap <silent> <C-h> :call s:mappings_bs()<CR>
+    " nnoremap <C-h> <ESC>
+    xnoremap <C-h> <ESC>
+
+    if !exists('g:started_by_firenvim')
+        " We can't sent neovim to background in cmd or powershell
+        nnoremap <C-z> <nop>
+    endif
+endif
+
+inoremap <C-U> <C-G>u<C-U>
 
 " Use <C-L> to clear the highlighting of :set hlsearch.
 if maparg('<C-L>', 'n') ==# ''
@@ -1288,8 +1468,8 @@ nnoremap <leader><leader>e :echo expand("%")<CR>
 " Very Magic sane regex searches
 nnoremap / ms/
 nnoremap g/ ms/\v
+" nnoremap gs :%s/\v
 
-" TODO
 nnoremap <expr> i g:MappingsIndentWithI()
 
 if v:version >= 704
@@ -1353,6 +1533,7 @@ xnoremap <leader>8 <ESC>8gt
 xnoremap <leader>9 <ESC>9gt
 xnoremap <leader>0 <ESC>:tablast<CR>
 
+cabbrev Gti Git
 cabbrev W   w
 cabbrev Q   q
 cabbrev q1  q!
@@ -1384,6 +1565,10 @@ nnoremap gV `[v`]
 
 nnoremap <leader>d :bdelete!<CR>
 
+if !s:has_plugin('nerdtree')
+    nnoremap - :Explore<CR>
+endif
+
 nnoremap <silent> [Q  :<C-U>exe "".(v:count ? v:count : "")."cfirst"<CR>zvzz
 nnoremap <silent> ]Q  :<C-U>exe "".(v:count ? v:count : "")."clast"<CR>zvzz
 nnoremap <silent> [q  :<C-U>exe "".(v:count ? v:count : "")."cprevious"<CR>zvzz
@@ -1413,9 +1598,6 @@ nnoremap <silent> =l :call g:Qf_toggle(1)<cr>
 nnoremap <silent> <leader>e :call g:Arglist_edit('')<cr>
 nnoremap <silent> <leader>A :call g:Arglist_add([expand("%")],0)<cr>
 nnoremap <silent> <leader>D :call execute("argdelete " . expand("%"))<cr>
-
-call s:tools_set_grep(0, 0)
-call s:tools_set_grep(0, 1)
 
 " ------------------------------------------------------------------------------
 " Commands
@@ -1463,6 +1645,39 @@ command! -nargs=0 Reload
     \ unlet s:vimrcs |
     \ unlet s:reloaded
 
+if executable('powershell')
+    let g:sh_defaults = {
+        \ 'shell': &shell,
+        \ 'shellcmdflag': &shellcmdflag,
+        \ 'shellquote': &shellquote,
+        \ 'shellxquote': &shellxquote,
+        \ 'shellpipe': &shellpipe,
+        \ 'shellredir': &shellredir
+        \}
+
+    function! s:windows_toggle_powershell() abort
+        if &shell =~# 'powershell\(.exe\)\?'
+            let opts = g:sh_defaults
+            let &shell        = opts.shell
+            let &shellquote   = opts.shellquote
+            let &shellpipe    = opts.shellpipe
+            let &shellredir   = opts.shellredir
+            let &shellcmdflag = opts.shellcmdflag
+            let &shellxquote  = opts.shellxquote
+        else
+            set shell=powershell.exe
+            set shellcmdflag=-NoLogo\ -NoProfile\ -ExecutionPolicy\ RemoteSigned\ -Command
+            set shellxquote=
+            let &shellquote = ''
+            let &shellpipe  = has('nvim') ? '2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode' : '>'
+            let &shellredir = '2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode'
+        endif
+        echomsg 'Current shell ' . &shell
+    endfunction
+
+    command! PowershellToggle call s:windows_toggle_powershell()
+endif
+
 if s:has_option('relativenumber')
     command! RelativeNumbersToggle set relativenumber! relativenumber?
 endif
@@ -1507,6 +1722,16 @@ else
 endif
 
 command! -nargs=? ConncallLevel  call s:mappings_ConncallLevel(expand(<q-args>))
+
+if executable('svn')
+    command! -nargs=* SVNstatus execute('!svn status ' . <q-args>)
+    command! -complete=file -nargs=+ SVN execute('!svn ' . <q-args>)
+    command! -complete=file -nargs=* SVNupdate execute('!svn update ' . <q-args>)
+    command! -complete=file -nargs=? -bang SVNread execute('!svn revert ' .(empty(<q-args>)? expand("%") : expand(<q-args>)) ) |
+                \ let s:bang = empty(<bang>0) ? '' : '!' |
+                \ execute('edit'.s:bang) |
+                \ unlet s:bang
+endif
 
 " Avoid dispatch command conflict
 " QuickfixOpen
@@ -1570,6 +1795,31 @@ command! -bang -nargs=? -complete=file Remove
     \ unlet s:bang |
     \ unlet s:target
 
+if executable('git')
+    if has('terminal')
+        command! -nargs=+ Git     term_start('git ' . <q-args>, {'       term_rows': 20})
+        command! -nargs=* Gstatus term_start('git status ' . <q-args>, {'term_rows': 20})
+        command! -nargs=* Gpush   term_start('git push ' .<q-args>, {'   term_rows': 20})
+    else
+        command! -nargs=+ Git     execute(((&splitbelow) ? 'botright' : 'topleft' ) . ' 20split gitcmd | 0,$delete | 0read !git ' . <q-args>)
+        command! -nargs=* Gstatus execute(((&splitbelow) ? 'botright' : 'topleft' ) . ' 20split gitcmd | 0,$delete | 0read !git status ' . <q-args>)
+        command! -nargs=* Gpush   execute(((&splitbelow) ? 'botright' : 'topleft' ) . ' 20split gitcmd | 0,$delete | 0read !git push ' .<q-args>)
+    endif
+
+    command! -nargs=* Gcommit execute('!git commit ' . <q-args>)
+    command! -nargs=* Gpull  execute('!git pull ' .<q-args>)
+    command! -nargs=* Gwrite  execute('!git add ' . expand("%") . ' ' .<q-args>)
+    command! -bang Gread execute('!git reset HEAD ' . expand("%") . ' && git checkout -- ' . expand("%")) |
+                \ let s:bang = empty(<bang>0) ? '' : '!' |
+                \ execute('edit'.s:bang) |
+                \ unlet s:bang
+
+    nnoremap <leader>gw :Gwrite<CR>
+    nnoremap <leader>gs :Gstatus<CR>
+    nnoremap <leader>gc :Gcommit<CR>
+    nnoremap <leader>gr :Gread<CR>
+endif
+
 command! -nargs=1 -complete=shellcmd EditPathScript
     \ let s:cmd_str = expand(<q-args>) |
     \ let s:cmd = exepath(s:cmd_str) |
@@ -1585,16 +1835,35 @@ command! -nargs=1 -complete=shellcmd EditPathScript
 " Autocmds
 " ------------------------------------------------------------------------------
 
-if v:version > 702
-    " TODO make a function to save the state of the toggles
-    augroup Numbers
+" We don't need Vim's temp files here
+augroup DisableTemps
+    autocmd!
+    autocmd BufNewFile,BufReadPre,BufEnter /tmp/* setlocal noswapfile nobackup noundofile
+augroup end
+
+" TODO make a function to save the state of the toggles
+augroup Numbers
+    autocmd!
+    autocmd WinEnter    * if &buftype !=# 'terminal' | setlocal relativenumber number | endif
+    autocmd WinLeave    * if &buftype !=# 'terminal' | setlocal norelativenumber number | endif
+    autocmd InsertLeave * if &buftype !=# 'terminal' | setlocal relativenumber number | endif
+    autocmd InsertEnter * if &buftype !=# 'terminal' | setlocal norelativenumber number | endif
+augroup end
+
+if s:has_autocmd('TerminalOpen')
+    augroup TerminalAutocmds
         autocmd!
-        autocmd WinEnter    * if &buftype !=# 'terminal' | setlocal relativenumber number | endif
-        autocmd WinLeave    * if &buftype !=# 'terminal' | setlocal norelativenumber number | endif
-        autocmd InsertLeave * if &buftype !=# 'terminal' | setlocal relativenumber number | endif
-        autocmd InsertEnter * if &buftype !=# 'terminal' | setlocal norelativenumber number | endif
+        autocmd TerminalOpen * setlocal relativenumber number nocursorline
+        autocmd TerminalOpen * setlocal noswapfile nobackup noundofile
+        autocmd TerminalOpen * setlocal bufhidden=wipe
     augroup end
 endif
+
+" Auto resize all windows
+augroup AutoResize
+    autocmd!
+    autocmd VimResized * wincmd =
+augroup end
 
 augroup LastEditPosition
     autocmd!
@@ -1602,6 +1871,13 @@ augroup LastEditPosition
                 \   if line("'\"") > 1 && line("'\"") <= line("$") && &filetype !~# "\v(gitcommit|fugitive|git)" |
                 \       exe "normal! g'\""                                                                       |
                 \   endif
+augroup end
+
+" Trim whitespace in selected files
+augroup CleanFile
+    autocmd!
+    autocmd BufNewFile,BufRead,BufEnter * if !exists('b:trim') | let b:trim = 1 | endif
+    autocmd BufWritePre * call s:clean_file()
 augroup end
 
 augroup QuickQuit
@@ -1614,15 +1890,22 @@ augroup end
 " TODO: differentiate between quickfix and loclist
 augroup QuickFix
     autocmd!
-    autocmd FileType qf nnoremap <silent><nowait><buffer> < :colder<CR>
-    autocmd FileType qf nnoremap <silent><nowait><buffer> > :cnewer<CR>
+    autocmd FileType qf nnoremap <silent><nowait><buffer> o <CR>:call execute(getwininfo(win_getid())[0].loclist == 1 ? 'lclose' : 'cclose')<CR>
+    autocmd FileType qf nnoremap <silent><nowait><buffer> < :call execute(getwininfo(win_getid())[0].loclist == 1 ? 'lolder' : 'colder')<CR>
+    autocmd FileType qf nnoremap <silent><nowait><buffer> > :call execute(getwininfo(win_getid())[0].loclist == 1 ? 'lnewer' : 'cnewer')<CR>
+    autocmd FileType qf setlocal nospell colorcolumn=
+augroup end
+
+" TODO: differentiate between quickfix and loclist
+augroup HelpConfig
+    autocmd!
+    autocmd Filetype help nnoremap <silent><nowait><buffer> <CR> <C-]>
+    autocmd Filetype help nnoremap <silent><nowait><buffer> <BS> <C-t>
 augroup end
 
 augroup LocalCR
     autocmd!
     autocmd CmdwinEnter * nnoremap <CR> <CR>
-    autocmd Filetype help nnoremap <buffer> <CR> <C-]>
-    autocmd Filetype help nnoremap <buffer> <BS> <C-t>
 augroup end
 
 augroup CloseMenu
@@ -1635,5 +1918,23 @@ augroup SetFormatters
     autocmd Filetype json if executable('jq') | setlocal formatprg=jq\ . | endif
     autocmd Filetype xml if executable('xmllint') | setlocal formatprg=xmllint\ --format\ - | endif
 augroup end
+
+if executable('tmux') && s:has_autocmd('TextYankPost')
+    function! s:copy_yanked_text(data) abort
+        if !empty($TMUX_VERSION)
+            let l:reg = a:data['regname']
+            let l:operator = a:data['operator']
+            echomsg string(a:data)
+            if l:operator == 'y' && (l:reg == '' || l:reg == '*' || l:reg == '+' || l:reg == '"')
+                call system("tmux load-buffer -", join(a:data['regcontents'], '\n'))
+            endif
+        endif
+    endfunction
+
+    augroup CopyYankToTmux
+        autocmd!
+        autocmd TextYankPost * call s:copy_yanked_text(v:event)
+    augroup end
+endif
 
 filetype plugin indent on
