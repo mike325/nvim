@@ -22,17 +22,14 @@ augroup DisableTemps
     autocmd BufNewFile,BufReadPre,BufEnter /tmp/* setlocal noswapfile nobackup noundofile
 augroup end
 
-if v:version > 702
-    " TODO make a function to save the state of the toggles
-    augroup Numbers
-        autocmd!
-        autocmd WinEnter    * if &buftype !=# 'terminal' | setlocal relativenumber number | endif
-        autocmd WinLeave    * if &buftype !=# 'terminal' | setlocal norelativenumber number | endif
-        autocmd InsertLeave * if &buftype !=# 'terminal' | setlocal relativenumber number | endif
-        autocmd InsertEnter * if &buftype !=# 'terminal' | setlocal norelativenumber number | endif
-    augroup end
-
-endif
+" TODO make a function to save the state of the toggles
+augroup Numbers
+    autocmd!
+    autocmd WinEnter    * if &buftype !=# 'terminal' | setlocal relativenumber number | endif
+    autocmd WinLeave    * if &buftype !=# 'terminal' | setlocal norelativenumber number | endif
+    autocmd InsertLeave * if &buftype !=# 'terminal' | setlocal relativenumber number | endif
+    autocmd InsertEnter * if &buftype !=# 'terminal' | setlocal norelativenumber number | endif
+augroup end
 
 if has#autocmd('TerminalOpen')
     augroup TerminalAutocmds
@@ -57,9 +54,6 @@ augroup LastEditPosition
                 \   endif
 augroup end
 
-
-" TODO To be improve
-
 " Trim whitespace in selected files
 augroup CleanFile
     autocmd!
@@ -73,9 +67,6 @@ augroup QuickQuit
     autocmd!
     autocmd BufEnter,BufReadPost __LanguageClient__ nnoremap <silent> <nowait> <buffer> q :q!<CR>
     autocmd BufEnter,BufWinEnter * if &previewwindow | nnoremap <silent> <nowait> <buffer> q :q!<CR>| endif
-    " if  has('terminal') && has#autocmd('TerminalOpen')
-    "     autocmd TerminalOpen * nnoremap <silent> <nowait> <buffer> q :q!<CR>
-    " endif
 augroup end
 
 augroup LocalCR
@@ -104,3 +95,21 @@ augroup CloseMenu
     autocmd!
     autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
 augroup end
+
+if executable('tmux') && has#autocmd('TextYankPost')
+    function! s:copy_yanked_text(data) abort
+        if !empty($TMUX_VERSION)
+            let l:reg = a:data['regname']
+            let l:operator = a:data['operator']
+            echomsg string(a:data)
+            if l:operator == 'y' && (l:reg == '' || l:reg == '*' || l:reg == '+' || l:reg == '"')
+                call system("tmux load-buffer -", join(a:data['regcontents'], '\n'))
+            endif
+        endif
+    endfunction
+
+    augroup CopyYankToTmux
+        autocmd!
+        autocmd TextYankPost * call s:copy_yanked_text(v:event)
+    augroup end
+endif

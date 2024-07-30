@@ -277,37 +277,38 @@ endfunction
 function! tools#ignores(tool) abort
     let l:excludes = []
 
-    if has('nvim-0.2') || v:version >= 800 || has#patch('7.4.2044')
+    if v:version >= 800 || has#patch('7.4.2044')
+        " let l:excludes = split(copy(&backupskip), ',') " , {key, val -> substitute(val, '.*', '"\\0"', 'g') }
         let l:excludes = map(split(copy(&backupskip), ','), {key, val -> substitute(val, '.*', "'\\0'", 'g') })
     endif
 
     let l:ignores = {
-                \ 'fd'       : '',
-                \ 'find'     : ' -regextype egrep ',
-                \ 'ag'       : '',
-                \ 'grep'     : '',
+                \ 'fd'       : [],
+                \ 'find'     : ['-regextype', 'egrep', '!', '\\(' ],
+                \ 'ag'       : [],
+                \ 'rg'       : [],
+                \ 'grep'     : [],
                 \ }
 
     if !empty(l:excludes)
-        if executable('ag')
-            let l:ignores['ag'] .= ' --ignore ' . join(l:excludes, ' --ignore ' ) . ' '
-        endif
-        if executable('fd')
-            if filereadable(vars#home() . '/.config/git/ignore')
-                let l:ignores['fd'] .= ' --ignore-file '. vars#home() .'/.config/git/ignore'
-            else
-                let l:ignores['fd'] .= ' -E ' . join(l:excludes, ' -E ' ) . ' '
+        let l:idx = 0
+        for l:exc in l:excludes
+            if !empty(l:exc)
+                let l:ignores['fd'] += ['--exclude ' . l:exc]
+                let l:ignores['find'] += ['-iwholename ' . l:exc]
+                if l:idx < len(l:excludes)
+                    let l:ignores['find'] += ['-or']
+                endif
+                let l:ignores['ag'] += [' --ignore ' . l:exc]
+                let l:ignores['grep'] += ['--exclude=' . l:exc]
+                let l:ignores['rg'] += [' --iglob=!' . l:exc]
+                let l:idx += 1
             endif
-        endif
-        if executable('find')
-            let l:ignores['find'] .= ' ! \( -iwholename ' . join(l:excludes, ' -or -iwholename ' ) . ' \) '
-        endif
-        if executable('grep')
-            let l:ignores['grep'] .= ' --exclude=' . join(l:excludes, ' --exclude=' ) . ' '
-        endif
+        endfor
     endif
+    let l:ignores['find'] += ['\\)']
 
-    return has_key(l:ignores, a:tool) ? l:ignores[a:tool] : ''
+    return has_key(l:ignores, a:tool) ? join(l:ignores[a:tool], ' ') : ''
 endfunction
 
 " Small wrap to avoid change code all over the repo
@@ -322,11 +323,11 @@ function! tools#grep(tool, ...) abort
                 \       'grepformat': '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m',
                 \    },
                 \   'rg' : {
-                \       'grepprg':  'rg -S --hidden --color never --no-search-zip --trim --vimgrep ',
+                \       'grepprg':  'rg -SHn --no-binary --trim --color=never --no-heading --column --no-search-zip --hidden ',
                 \       'grepformat': '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m'
                 \   },
                 \   'ag' : {
-                \       'grepprg': 'ag -S --follow --nogroup --nocolor --hidden --vimgrep '.tools#ignores('ag'),
+                \       'grepprg': 'ag -S --follow --nogroup --nocolor --hidden --vimgrep '. tools#ignores('ag'),
                 \       'grepformat': '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m'
                 \   },
                 \   'grep' : {
@@ -346,37 +347,14 @@ endfunction
 " Just like GrepTool but for listing files
 function! tools#filelist(tool) abort
     let l:filelist = {
-                \ 'git'  : 'git --no-pager ls-files -co --exclude-standard',
-                \ 'fd'   : 'fd ' . tools#ignores('fd') . ' --type f --hidden --follow --color never . .',
-                \ 'rg'   : 'rg --color never --no-search-zip --hidden --trim --files',
-                \ 'ag'   : 'ag -l --follow --nocolor --nogroup --hidden ' . tools#ignores('ag'). '-g ""',
-                \ 'find' : "find . -type f -iname '*' ".tools#ignores('find'),
+                \ 'git'  : 'git --no-pager ls-files -c --exclude-standard ',
+                \ 'fd'   : 'fd --type=file --hidden --color=never  ' . tools#ignores('fd') . ' ',
+                \ 'rg'   : 'rg --no-binary --color=never --no-search-zip --hidden --trim --files ' . tools#ignores('rg') . ' ',
+                \ 'ag'   : 'ag -l --follow --nocolor --nogroup --hidden ' . tools#ignores('ag'). '-g ',
+                \ 'find' : "find . -type f ". tools#ignores('find') . " ",
                 \}
-    return l:filelist[a:tool]
-endfunction
 
-function! tools#find(tool) abort
-    let l:filelist = {
-                \ 'git'  : 'git --no-pager ls-files -co --exclude-standard -- :',
-                \ 'fd'   : 'fd ' . tools#ignores('fd') . ' --type f --hidden --follow --color never --glob ',
-                \ 'rg'   : 'rg --color never --no-search-zip --hidden --trim --files --iglob ',
-                \ 'find' : 'find . -type f '.tools#ignores('find').' -iname ',
-                \}
     return l:filelist[a:tool]
-endfunction
-
-" Small wrap to avoid change code all over the repo
-function! tools#select_find(is_git) abort
-    if executable('git') && a:is_git
-        return tools#find('git')
-    else
-        for l:find in ['fd', 'rg', 'find']
-            if executable(l:find)
-                return tools#find(l:find)
-            endif
-        endfor
-    endif
-    return ''
 endfunction
 
 " Small wrap to avoid change code all over the repo

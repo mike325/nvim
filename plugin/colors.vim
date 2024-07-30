@@ -42,9 +42,21 @@ try
         colorscheme onedark
     else
         colorscheme torte
+
+        " if s:fix_colorscheme
+        "     hi! Normal ctermbg=NONE guibg=NONE
+        "     hi! NonText ctermbg=NONE guibg=NONE
+        " endif
+
         set nocursorline
     endif
 catch /E185/
     colorscheme torte
+
+    " if s:fix_colorscheme
+    "     hi! Normal ctermbg=NONE guibg=NONE
+    "     hi! NonText ctermbg=NONE guibg=NONE
+    " endif
+
     set nocursorline
 endtry

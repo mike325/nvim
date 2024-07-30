@@ -14,4 +14,4 @@ setlocal buflisted
 
 nnoremap <buffer><silent><nowait> q :q!<CR>
 nnoremap <buffer><silent><nowait> <CR> <C-]>
-nnoremap <silent><buffer> <CR> :call mappings#cr()<CR>
+nnoremap <buffer><silent><nowait> <CR> :call mappings#cr()<CR>

@@ -308,16 +308,26 @@ endfunction
 
 function! mappings#find(glob) abort
     let l:glob = "'" . a:glob . "'"
-    let l:cmd = tools#select_find(0)
-    let l:results = systemlist(l:cmd . l:glob)
+    let l:cmd = tools#select_filelist(0)
+    if l:cmd =~# '^rg'
+        let l:cmd = l:cmd . ' --iglob=' . l:glob
+    elseif l:cmd =~# '^fd'
+        let l:cmd = l:cmd . ' --glob ' . l:glob . ' .'
+    elseif l:cmd =~# '^find'
+        let l:cmd = l:cmd . ' -iname=' . l:glob
+    else
+        let l:cmd = l:cmd . l:glob
+    endif
+
+    let l:results = systemlist(l:cmd)
     if v:shell_error == 0
         if len(l:results) > 0
             call qf#dump_files(l:results)
         else
-            echomsg 'No matches found for ' . a:glob
+            echomsg "No matches found for " . a:glob
         endif
     else
-        call tools#echoerr('Failed to execute find')
+        call tools#echoerr("Failed to execute find")
     endif
 endfunction
 

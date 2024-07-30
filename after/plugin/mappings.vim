@@ -137,9 +137,6 @@ nnoremap <leader>l <C-w>l
 nnoremap <leader>b <C-w>b
 nnoremap <leader>t <C-w>t
 
-" Equally resize buffer splits
-nnoremap <leader>e <C-w>=
-
 nnoremap <leader>1 1gt
 nnoremap <leader>2 2gt
 nnoremap <leader>3 3gt
@@ -221,9 +218,6 @@ nnoremap <silent> =l :call qf#toggle(1)<cr>
 nnoremap <silent> <leader>e :call arglist#edit('')<cr>
 nnoremap <silent> <leader>A :call arglist#add([expand("%")], 0)<cr>
 nnoremap <silent> <leader>D :call execute("argdelete " . expand("%"))<cr>
-
-call tools#set_grep(0, 0)
-call tools#set_grep(0, 1)
 
 " }}} EndTabBufferManagement
 
@@ -332,25 +326,6 @@ if !has#plugin('vim-indexed-search')
     " nnoremap # #zz
     nnoremap <silent> n :call mappings#NiceNext('n')<cr>
     nnoremap <silent> N :call mappings#NiceNext('N')<cr>
-endif
-
-if !has#plugin('vim-unimpaired')
-
-    nnoremap <silent> [Q  :<C-U>exe "".(v:count ? v:count : "")."cfirst"<CR>zvzz
-    nnoremap <silent> ]Q  :<C-U>exe "".(v:count ? v:count : "")."clast"<CR>zvzz
-    nnoremap <silent> [q  :<C-U>exe "".(v:count ? v:count : "")."cprevious"<CR>zvzz
-    nnoremap <silent> ]q  :<C-U>exe "".(v:count ? v:count : "")."cnext"<CR>zvzz
-
-    nnoremap <silent> [L  :<C-U>exe "".(v:count ? v:count : "")."lfirst"<CR>zvzz
-    nnoremap <silent> ]L  :<C-U>exe "".(v:count ? v:count : "")."llast"<CR>zvzz
-    nnoremap <silent> [l  :<C-U>exe "".(v:count ? v:count : "")."lprevious"<CR>zvzz
-    nnoremap <silent> ]l  :<C-U>exe "".(v:count ? v:count : "")."lnext"<CR>zvzz
-
-    nnoremap <silent> [B :<C-U>exe "".(v:count ? v:count : "")."bfirst"<CR>
-    nnoremap <silent> ]B :<C-U>exe "".(v:count ? v:count : "")."blast"<CR>
-    nnoremap <silent> [b :<C-U>exe "".(v:count ? v:count : "")."bprevious"<CR>
-    nnoremap <silent> ]b :<C-U>exe "".(v:count ? v:count : "")."bnext"<CR>
-
 endif
 
 if !has#plugin('vim-vinegar') && !has#plugin('nerdtree')

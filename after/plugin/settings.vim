@@ -38,7 +38,6 @@ if !os#name('macos')
     endif
 endif
 
-
 if has#option('winaltkeys')
     set winaltkeys=no
 endif
@@ -87,7 +86,7 @@ if has#option('langnoremap')
 endif
 
 set nrformats=hex
-set shortmess=filnxtToO
+set shortmess=filnxtToOac
 
 if has#patch('7.4.1065')
     set nrformats+=bin
@@ -171,9 +170,6 @@ endif
 
 " }}} END Clipboard
 
-" This is adjusted inside autocmd.vim to use git according to the dir changes events
-call tools#set_grep(0, 0)
-
 if v:version >= 704
     set formatoptions+=r " Auto insert comment with <Enter>...
     set formatoptions+=o " ...or o/O
@@ -218,7 +214,7 @@ set softtabstop=-1
 
 set shiftround     " Use multiple of shiftwidth when indenting with '<' and '>'
 
-" Allow to send unsaved buffers to the backgroud
+" Allow to send unsaved buffers to the background
 set hidden
 
 set autowrite    " Write files when navigating with :next/:previous
@@ -256,7 +252,6 @@ set nojoinspaces         " Use only 1 space after "." when joining lines, not 2
 set visualbell           " Visual bell instead of beeps, but...
 set fileformats=unix,dos " File mode unix by default
 set undolevels=10000     " Set the number the undos per file
-set shortmess+=ac
 
 " Folding settings
 " set foldnestmax=10     " deepest fold is 10 levels
@@ -289,13 +284,37 @@ set nofoldenable
 set foldmethod=syntax
 set foldlevel=99
 " set foldcolumn=0
-set fileencoding=utf-8
+if &l:modifiable
+    set fileencoding=utf-8
+endif
+
+" set noshowmode
+" let &statusline = '%< [%f]%=%-5.(%y%r%m%w%q%) %-14.(%l,%c%V%) %P '
+
+set background=dark
+set cursorline
 
 if has#bare() && has#plugin('vim-airline')
     " We already have the statusline, we don't need this
     set noshowmode
 endif
 
+let s:fix_colorscheme = 0
+if !has('nvim')
+    set t_Co=256
+    try
+        let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+        let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+    catch /E355/
+        let s:fix_colorscheme = 1
+    endtry
+endif
+
+set nocursorline
+
 if !has#plugin('vim-airline')
     let &statusline = '%< [%f]%=%-5.(%y%r%m%w%q%) %-14.(%l,%c%V%) %P '
 endif
+
+call tools#set_grep(0, 0)
+call tools#set_grep(0, 1)
