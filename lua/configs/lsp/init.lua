@@ -63,9 +63,7 @@ local setup_func = {}
 local function setup(ft)
     vim.validate { filetype = { ft, 'string' } }
 
-    local server_idx = RELOAD('configs.lsp.utils').check_language_server(ft)
-    if server_idx then
-        local server = RELOAD('configs.lsp.servers')[ft][server_idx]
+    local function config_lsp(server)
         local config = server.config or server.exec
         if not setup_func[config] then
             setup_func[config] = function()
@@ -83,6 +81,21 @@ local function setup(ft)
                     preload[config].setup(init)
                 else
                     lsp[config].setup(init)
+                end
+            end
+        end
+    end
+
+    local server_idx = RELOAD('configs.lsp.utils').check_language_server(ft)
+    if server_idx then
+        local server = RELOAD('configs.lsp.servers')[ft][server_idx]
+        config_lsp(server)
+        -- NOTE: Always setup ruff in lsp mode
+        if ft == 'python' and (server.exec and server.exec ~= 'ruff' and executable 'ruff') then
+            for _, serv in pairs(RELOAD('configs.lsp.servers')[ft]) do
+                if serv.exec and serv.exec == 'ruff' then
+                    config_lsp(serv)
+                    break
                 end
             end
         end

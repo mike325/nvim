@@ -127,6 +127,24 @@ local servers = {
     },
     python = {
         {
+            config = 'pyright',
+            exec = 'pyright-langserver',
+            cmd = { 'pyright-langserver', '--stdio' },
+            options = {
+                settings = {
+                    python = {
+                        analysis = {
+                            autoSearchPaths = true,
+                            diagnosticMode = 'workspace',
+                            useLibraryCodeForTypes = true,
+                            typeCheckingMode = 'basic', -- "off", "basic", "strict"
+                            -- extraPaths = {},
+                        },
+                    },
+                },
+            },
+        },
+        {
             config = 'pylyzer',
             exec = 'pylyzer',
             cmd = { 'pylyzer', '--server' },
@@ -188,24 +206,6 @@ local servers = {
         {
             exec = 'ruff',
             cmd = { 'ruff', 'server', '--preview' },
-        },
-        {
-            config = 'pyright',
-            exec = 'pyright-langserver',
-            cmd = { 'pyright-langserver', '--stdio' },
-            options = {
-                settings = {
-                    python = {
-                        analysis = {
-                            autoSearchPaths = true,
-                            diagnosticMode = 'workspace',
-                            useLibraryCodeForTypes = true,
-                            typeCheckingMode = 'basic', -- "off", "basic", "strict"
-                            -- extraPaths = {},
-                        },
-                    },
-                },
-            },
         },
         {
             exec = 'jedi-language-server',
