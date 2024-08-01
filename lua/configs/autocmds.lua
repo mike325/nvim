@@ -297,8 +297,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
             end
         end
 
-        if client.name == 'pylsp' then
-            local extra_paths = vim.tbl_get(client, 'config', 'settings', 'pylsp', 'plugins', 'jedi', 'extra_paths')
+        local function add_extra_paths(extra_paths)
             if extra_paths and #extra_paths > 0 then
                 local path = vim.opt_local.path:get()
                 for _, extra in ipairs(extra_paths) do
@@ -306,6 +305,17 @@ vim.api.nvim_create_autocmd('LspAttach', {
                 end
                 vim.opt_local.path = path
             end
+        end
+
+        if client.name == 'pylsp' then
+            local extra_paths = vim.tbl_get(client, 'config', 'settings', 'pylsp', 'plugins', 'jedi', 'extra_paths')
+            add_extra_paths(extra_paths)
+        elseif client.name == 'pyright' then
+            local extra_paths = vim.tbl_get(client, 'config', 'settings', 'python', 'analysis', 'extraPaths')
+            add_extra_paths(extra_paths)
+            local include_paths = vim.tbl_get(client, 'config', 'settings', 'python', 'analysis', 'include')
+            add_extra_paths(include_paths)
+            -- elseif client.name == 'pylyzer' then
         end
 
         local is_min = vim.g.minimal and vim.F.npcall(require, 'mini.completion') ~= nil

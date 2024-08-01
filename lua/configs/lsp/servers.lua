@@ -127,9 +127,17 @@ local servers = {
     },
     python = {
         {
-            config = 'pyright',
-            exec = 'pyright-langserver',
-            cmd = { 'pyright-langserver', '--stdio' },
+            exec = 'basedpyright',
+            cmd = {
+                'basedpyright',
+                -- '--stdio',
+                -- '--pythonplatform',
+                -- 'Linux',
+                -- '--pythonversion',
+                -- '3.8',
+                '--threads',
+                '4',
+            },
             options = {
                 settings = {
                     python = {
@@ -138,14 +146,16 @@ local servers = {
                             diagnosticMode = 'workspace',
                             useLibraryCodeForTypes = true,
                             typeCheckingMode = 'basic', -- "off", "basic", "strict"
+                            verboseOutput = true,
                             -- extraPaths = {},
+                            reportMissingImports = 'none',
+                            ['dummy-variables-rgx'] = '(Fake+[a-zA-Z0-9]*?$)|(Stub+[a-zA-Z0-9]*?$)',
                         },
                     },
                 },
             },
         },
         {
-            config = 'pylyzer',
             exec = 'pylyzer',
             cmd = { 'pylyzer', '--server' },
             options = {
@@ -181,9 +191,9 @@ local servers = {
                                 enabled = true, -- Enable the plugin
                                 formatEnabled = true, -- Enable formatting using ruffs formatter
                             },
-                            -- jedi = {
-                            --     extra_paths = {}
-                            -- },
+                            jedi = {
+                                extra_paths = {},
+                            },
                             jedi_completion = {
                                 enabled = true,
                                 fuzzy = true,
@@ -230,15 +240,13 @@ local servers = {
             options = {
                 cmd = {
                     'clangd',
-                    '--background-index',
                     '--clang-tidy',
                     '--header-insertion=iwyu',
                     '--function-arg-placeholders',
                     '--completion-style=bundled',
                     -- '--pch-storage=memory',
-                    -- '--suggest-missing-includes',  -- NOTE: Obsolete in recent versions
-                    -- '--index', -- NOTE: Obsolete in recent versions
-                    -- '--cross-file-rename', -- NOTE: Available only in clangd >= 10
+                    '--background-index',
+                    '--malloc-trim',
                     '--log=error',
                 },
                 cmd_env = {

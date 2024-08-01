@@ -392,6 +392,21 @@ end
 if vim.F.npcall(require, 'mini.ai') and mini.extra then
     local gen_ai_spec = mini.extra.gen_ai_spec
     require('mini.ai').setup {
+        mappings = {
+            -- -- Main textobject prefixes
+            -- around = 'a',
+            -- inside = 'i',
+            --
+            -- -- Next/last textobjects
+            -- around_next = 'an',
+            -- inside_next = 'in',
+            -- around_last = 'al',
+            -- inside_last = 'il',
+
+            -- Move cursor to corresponding edge of `a` textobject
+            goto_left = '',
+            goto_right = '',
+        },
         custom_textobjects = {
             e = gen_ai_spec.buffer(),
             D = gen_ai_spec.diagnostic(),
