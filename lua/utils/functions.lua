@@ -290,14 +290,14 @@ function M.external_formatprg(args)
     }
 
     local cmd = args.cmd
-    local buf = args.buffer or vim.api.nvim_get_current_buf()
+    local bufnr = args.bufnr or vim.api.nvim_get_current_buf()
 
     local buf_utils = RELOAD 'utils.buffers'
 
     local first = args.first or (vim.v.lnum - 1)
     local last = args.last or (first + vim.v.count)
 
-    local lines = vim.api.nvim_buf_get_lines(buf, first, last, false)
+    local lines = vim.api.nvim_buf_get_lines(bufnr, first, last, false)
     local indent_level = buf_utils.get_indent_block_level(lines)
     local tmpfile = vim.fn.tempname()
 
@@ -325,7 +325,7 @@ function M.external_formatprg(args)
         callbacks_on_success = function(_)
             local fmt_lines = require('utils.files').readfile(tmpfile)
             fmt_lines = buf_utils.indent(fmt_lines, indent_level)
-            vim.api.nvim_buf_set_lines(buf, first, last, false, fmt_lines)
+            vim.api.nvim_buf_set_lines(bufnr, first, last, false, fmt_lines)
             vim.fn.winrestview(view)
         end,
     }

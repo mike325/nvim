@@ -228,13 +228,19 @@ function M.set_list(opts, win)
     end
 end
 
-function M.qf_to_diagnostic(ns, win)
+function M.qf_to_diagnostic(ns, win, items)
     vim.validate {
         ns = { ns, { 'number', 'string' }, true },
         win = { win, { 'number', 'boolean' }, true },
     }
 
-    local qf = qf_funcs.get_list({ items = 1, title = 1 }, win)
+    local qf
+    if items then
+        local title = (ns and ns ~= '') and ns or 'Diagnostics'
+        qf = { title = title, items = items }
+    else
+        qf = qf_funcs.get_list({ items = 1, title = 1 }, win)
+    end
 
     local ns_name
     if not ns or type(ns) == type '' then
