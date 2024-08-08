@@ -1924,7 +1924,6 @@ if executable('tmux') && s:has_autocmd('TextYankPost')
         if !empty($TMUX_VERSION)
             let l:reg = a:data['regname']
             let l:operator = a:data['operator']
-            echomsg string(a:data)
             if l:operator == 'y' && (l:reg == '' || l:reg == '*' || l:reg == '+' || l:reg == '"')
                 call system("tmux load-buffer -", join(a:data['regcontents'], '\n'))
             endif

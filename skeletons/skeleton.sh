@@ -23,6 +23,7 @@
 #            .`                                 `/
 
 VERBOSE=0
+QUIET=0
 NOCOLOR=0
 NOLOG=0
 WARN_COUNT=0
@@ -82,10 +83,12 @@ case "$SHELL_PLATFORM" in
     linux)
         if [[ -f /etc/arch-release ]]; then
             OS='arch'
-        elif [[ "$(cat /etc/issue)" == Ubuntu* ]]; then
+        elif [[ -f /etc/redhat-release ]] && [[ "$(cat /etc/redhat-release)" == Red\ Hat* ]]; then
+            OS='redhat'
+        elif [[ -f /etc/issue ]] && [[ "$(cat /etc/issue)" == Ubuntu* ]]; then
             OS='ubuntu'
         elif [[ -f /etc/debian_version ]] || [[ "$(cat /etc/issue)" == Debian* ]]; then
-            if [[ $ARCH == *\ armv7* ]]; then # Raspberry pi 3 uses armv7 cpu
+            if [[ $ARCH =~ armv.* ]] || [[ $ARCH == aarch64 ]]; then
                 OS='raspbian'
             else
                 OS='debian'
@@ -130,7 +133,7 @@ if ! hash is_osx 2>/dev/null; then
     }
 fi
 
-if hash is_root 2>/dev/null; then
+if ! hash is_root 2>/dev/null; then
     function is_root() {
         if ! is_windows && [[ $EUID -eq 0 ]]; then
             return 0
@@ -139,9 +142,20 @@ if hash is_root 2>/dev/null; then
     }
 fi
 
-if hash has_sudo 2>/dev/null; then
+if ! hash has_sudo 2>/dev/null; then
     function has_sudo() {
         if ! is_windows && hash sudo 2>/dev/null && [[ "$(groups)" =~ sudo ]]; then
+            return 0
+        fi
+        return 1
+    }
+fi
+
+if ! hash is_arm 2>/dev/null; then
+    function is_arm() {
+        local arch
+        arch="$(uname -m)"
+        if [[ $arch =~ ^arm ]] || [[ $arch =~ ^aarch ]]; then
             return 0
         fi
         return 1
@@ -194,16 +208,19 @@ Usage:
         --nolog         Disable log writing
         --nocolor       Disable color output
         -v, --verbose   Enable debug messages
+        -q, --quiet     Suppress all output but the errors
         -h, --help      Display this help message
 EOF
 }
 
 function warn_msg() {
     local msg="$1"
-    if [[ $NOCOLOR -eq 0 ]]; then
-        printf "${yellow}[!] Warning:${reset_color}\t %s\n" "$msg"
-    else
-        printf "[!] Warning:\t %s\n" "$msg"
+    if [[ $QUIET -eq 0 ]]; then
+        if [[ $NOCOLOR -eq 0 ]]; then
+            printf "${yellow}[!] Warning:${reset_color}\t %s\n" "$msg"
+        else
+            printf "[!] Warning:\t %s\n" "$msg"
+        fi
     fi
     WARN_COUNT=$((WARN_COUNT + 1))
     if [[ $NOLOG -eq 0 ]]; then
@@ -228,10 +245,12 @@ function error_msg() {
 
 function status_msg() {
     local msg="$1"
-    if [[ $NOCOLOR -eq 0 ]]; then
-        printf "${green}[*] Info:${reset_color}\t %s\n" "$msg"
-    else
-        printf "[*] Info:\t %s\n" "$msg"
+    if [[ $QUIET -eq 0 ]]; then
+        if [[ $NOCOLOR -eq 0 ]]; then
+            printf "${green}[*] Info:${reset_color}\t %s\n" "$msg"
+        else
+            printf "[*] Info:\t %s\n" "$msg"
+        fi
     fi
     if [[ $NOLOG -eq 0 ]]; then
         printf "[*] Info:\t\t %s\n" "$msg" >>"${LOG}"
@@ -312,6 +331,38 @@ function exit_append() {
     return 0
 }
 
+function raw_output() {
+    local msg="echo \"$1\""
+    if [[ $NOLOG -eq 0 ]]; then
+        msg="$msg | tee ${LOG}"
+    fi
+    if ! sh -c "$msg"; then
+        return 1
+    fi
+    return 0
+}
+
+function shell_exec() {
+    local cmd="$1"
+    if [[ $QUIET -eq 0 ]]; then
+        if [[ $NOLOG -eq 0 ]]; then
+            cmd="$cmd | tee ${LOG}"
+        fi
+        if ! sh -c "$cmd"; then
+            return 1
+        fi
+    elif [[ $NOLOG -eq 0 ]]; then
+        if ! sh -c "$cmd >> ${LOG}"; then
+            return 1
+        fi
+    else
+        if ! sh -c "$cmd &>/dev/null"; then
+            return 1
+        fi
+    fi
+    return 0
+}
+
 while [[ $# -gt 0 ]]; do
     key="$1"
     case "$key" in
@@ -323,6 +374,9 @@ while [[ $# -gt 0 ]]; do
             ;;
         -v | --verbose)
             VERBOSE=1
+            ;;
+        -q | --quiet)
+            QUIET=1
             ;;
         -h | --help)
             help_user
@@ -350,6 +404,8 @@ verbose_msg "Current Shell : ${CURRENT_SHELL}"
 verbose_msg "Platform      : ${SHELL_PLATFORM}"
 verbose_msg "Architecture  : ${ARCH}"
 verbose_msg "OS            : ${OS}"
+
+# mapfile -t VAR < <(cmd)
 
 #######################################################################
 #                           CODE Goes Here                            #
