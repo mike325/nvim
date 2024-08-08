@@ -411,6 +411,29 @@ function M.format(opts)
     return 1
 end
 
+function M.lint(opts)
+    opts = opts or {}
+
+    local ft = opts.ft or vim.bo.filetype
+    local bufnr = vim.api.nvim_get_current_buf()
+    local external_linterprg = RELOAD('utils.functions').external_linterprg
+    local ok, utils = pcall(RELOAD, 'filetypes.' .. ft)
+
+    -- local clients = vim.lsp.buf_get_clients(0)
+    if ok and utils.get_linter then
+        local cmd = utils.get_linter()
+        if cmd then
+            external_linterprg {
+                cmd = cmd,
+                bufnr = bufnr,
+                efm = utils.makeprg[cmd[1]].efm,
+            }
+        end
+    end
+
+    return 1
+end
+
 function M.setup(ft, opts)
     vim.validate { ft = { ft, 'string', true }, opts = { opts, 'table', true } }
     ft = ft or vim.bo.filetype

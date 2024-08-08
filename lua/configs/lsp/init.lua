@@ -122,8 +122,8 @@ for filetype, _ in pairs(lsp_configs) do
 end
 
 if executable 'jq' then
-    local null_config = null_configs.json
-    vim.list_extend(null_sources, null_config.servers)
+    local null_config = null_configs.json or {}
+    vim.list_extend(null_sources, null_config.servers or {})
 end
 
 if null_ls and next(null_sources) ~= nil then

@@ -4,6 +4,7 @@
 import argparse
 import logging
 import os
+import re
 import subprocess
 import sys
 from collections import namedtuple
@@ -81,6 +82,25 @@ def color_str(msg: Any, color: str, bg: Optional[str] = None) -> str:
             color=color, bg=bg if bg is not None else "", msg=msg, reset=COLOR.reset
         )
     return msg if isinstance(msg, str) else str(msg)
+
+
+def clear_list(str_list: List[str]) -> List[str]:
+    tmp = []
+    empty_str = re.compile(r"^\s*$")
+    for i in str_list:
+        if i and not empty_str.match(i):
+            tmp.append(i)
+    return tmp
+
+
+def uniq_list(duplicates: List[Any]) -> List[Any]:
+    return list(set(duplicates))
+
+
+def merge_uniq(src: List[Any], dest: List[Any]) -> List[Any]:
+    tmp_src = set(src)
+    tmp_dest = set(dest)
+    return list(tmp_src.union(tmp_dest))
 
 
 @dataclass
@@ -213,6 +233,8 @@ def createLogger(
     _has_colors = color
 
     logger = logging.getLogger(name)
+    if len(logger.handlers) > 0:
+        return logger
     logger.setLevel(logging.DEBUG)
 
     ColorFormatter: Any = None
@@ -353,7 +375,6 @@ def _parseArgs():
 
     class NegateAction(argparse.Action):
         def __call__(self, parser, namespace, values, option_string=None):
-            global _protocol
             if option_string is not None and len(option_string) < 4:
                 setattr(namespace, self.dest, True)
             else:

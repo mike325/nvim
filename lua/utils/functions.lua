@@ -333,6 +333,32 @@ function M.external_formatprg(args)
     formatprg:start()
 end
 
+function M.external_linterprg(args)
+    vim.validate {
+        args = { args, 'table' },
+        cmd = { args.cmd, 'table' },
+    }
+
+    local cmd = args.cmd
+    local bufnr = args.buffer or vim.api.nvim_get_current_buf()
+    local efm = args.efm
+    if not efm then
+        efm = vim.bo.efm ~= '' and vim.bo.efm or vim.go.efm
+    end
+    table.insert(cmd, vim.api.nvim_buf_get_name(bufnr))
+
+    local linter = RELOAD('jobs'):new {
+        cmd = cmd,
+        silent = true,
+        callbacks_on_failure = function(job, rc)
+            local items = vim.fn.getqflist({ lines = job:output(), efm = efm }).items
+            RELOAD('utils.qf').qf_to_diagnostic(cmd[1], false, items)
+        end,
+    }
+
+    linter:start()
+end
+
 function M.async_execute(opts)
     vim.validate {
         opts = { opts, 'table' },
