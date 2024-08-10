@@ -39,6 +39,18 @@ return {
         config = function()
             require 'configs.luasnip'
         end,
+        build = function(plugin)
+            local has_compiler = vim.fn.executable 'gcc' == 1 or vim.fn.executable 'clang' == 1
+            local has_make = vim.fn.executable 'make' == 1
+            if not has_compiler or not has_make then
+                return 0
+            end
+            local plugin_dir = plugin.dir
+            local cmd = { 'make', 'install_jsregexp' }
+            local rc = vim.system(cmd, { text = true, cwd = plugin_dir }):wait()
+            _G['luasnip_build_log'] = rc
+            return rc.code == 0
+        end,
         event = { 'InsertEnter', 'CursorHold' },
     },
     {
