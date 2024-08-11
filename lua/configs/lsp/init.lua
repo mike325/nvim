@@ -64,6 +64,14 @@ local function setup(ft)
     vim.validate { filetype = { ft, 'string' } }
 
     local function config_lsp(server)
+        if
+            ft == 'python'
+            and (server.exec and server.exec ~= 'ruff' and executable 'ruff')
+            and nvim.plugins.YouCompleteMe
+        then
+            return false
+        end
+
         local config = server.config or server.exec
         if not setup_func[config] then
             setup_func[config] = function()
@@ -81,9 +89,11 @@ local function setup(ft)
                     preload[config].setup(init)
                 else
                     lsp[config].setup(init)
+                    return true
                 end
             end
         end
+        return false
     end
 
     local server_idx = RELOAD('configs.lsp.utils').check_language_server(ft)
