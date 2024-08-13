@@ -334,7 +334,7 @@ function exit_append() {
 function raw_output() {
     local msg="echo \"$1\""
     if [[ $NOLOG -eq 0 ]]; then
-        msg="$msg | tee ${LOG}"
+        msg="$msg | tee -a ${LOG}"
     fi
     if ! sh -c "$msg"; then
         return 1
@@ -346,7 +346,7 @@ function shell_exec() {
     local cmd="$1"
     if [[ $VERBOSE -eq 1 ]]; then
         if [[ $NOLOG -eq 0 ]]; then
-            cmd="$cmd | tee ${LOG}"
+            cmd="$cmd | tee -a ${LOG}"
         fi
         if ! sh -c "$cmd"; then
             return 1
