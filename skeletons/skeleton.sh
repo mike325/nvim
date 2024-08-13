@@ -22,8 +22,12 @@
 #            `++:.                           `-/+/
 #            .`                                 `/
 
+VERSION="0.1"
+AUTHOR=""
+
 VERBOSE=0
 QUIET=0
+PRINT_VERSION=0
 NOCOLOR=0
 NOLOG=0
 WARN_COUNT=0
@@ -209,6 +213,7 @@ Usage:
         --nocolor       Disable color output
         -v, --verbose   Enable debug messages
         -q, --quiet     Suppress all output but the errors
+        -V, --version   Print script version and exits
         -h, --help      Display this help message
 EOF
 }
@@ -366,6 +371,10 @@ function shell_exec() {
 while [[ $# -gt 0 ]]; do
     key="$1"
     case "$key" in
+        # --log)
+        #     # In case log is disable by default
+        #     NOLOG=1
+        #     ;;
         --nolog)
             NOLOG=1
             ;;
@@ -377,6 +386,9 @@ while [[ $# -gt 0 ]]; do
             ;;
         -q | --quiet)
             QUIET=1
+            ;;
+        -V | --version)
+            PRINT_VERSION=1
             ;;
         -h | --help)
             help_user
@@ -398,12 +410,26 @@ while [[ $# -gt 0 ]]; do
     shift
 done
 
+if [[ ! -t 1 ]]; then
+    NOCOLOR=1
+fi
+
+if [[ $PRINT_VERSION -eq 1 ]]; then
+    echo -e "\n$NAME version: ${VERSION}"
+    exit 0
+fi
+
 initlog
-verbose_msg "Log Disable   : ${NOLOG}"
-verbose_msg "Current Shell : ${CURRENT_SHELL}"
-verbose_msg "Platform      : ${SHELL_PLATFORM}"
-verbose_msg "Architecture  : ${ARCH}"
-verbose_msg "OS            : ${OS}"
+if [[ -n $AUTHOR ]]; then
+    verbose_msg "Author         : ${AUTHOR}"
+fi
+verbose_msg "Script version : ${VERSION}"
+verbose_msg "Date           : $(date)"
+verbose_msg "Log Disable    : ${NOLOG}"
+verbose_msg "Current Shell  : ${CURRENT_SHELL}"
+verbose_msg "Platform       : ${SHELL_PLATFORM}"
+verbose_msg "Architecture   : ${ARCH}"
+verbose_msg "OS             : ${OS}"
 
 # mapfile -t VAR < <(cmd)
 
