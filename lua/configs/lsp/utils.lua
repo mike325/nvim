@@ -112,8 +112,6 @@ end
 
 function M.check_null_diagnostics(client)
     local extra_linters = {
-        pylyzer = true,
-        pylsp = true,
         lua_ls = true,
     }
     if extra_linters[client.name] then
