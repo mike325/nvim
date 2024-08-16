@@ -475,6 +475,7 @@ vim.api.nvim_create_autocmd({ 'TextYankPost' }, {
 })
 
 -- NOTE: Default TMUX clipboard provider support setting system clipboard using OSC 52
+-- TODO: Detect if the current terminal support OSC?
 if vim.env.SSH_CONNECTION and not vim.env.TMUX then
     vim.api.nvim_create_autocmd('TextYankPost', {
         desc = 'Send yanked text to system clipboard using OSC 52 sequences',

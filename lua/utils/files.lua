@@ -958,7 +958,7 @@ function M.chmod_exec(buf)
     else
         filename = buf
     end
-    if not M.is_executable(filename) then
+    if filename ~= '' and M.is_file(filename) and not M.is_executable(filename) then
         local fileinfo = vim.loop.fs_stat(filename)
         local filemode = fileinfo.mode - 32768
         M.chmod(filename, bit.bor(filemode, 0x48), 10)
@@ -990,7 +990,10 @@ function M.make_executable()
         return
     end
 
-    if not M.is_executable(filename) or not M.exists(filename) then
+    if
+        not M.is_executable(filename)
+        or (not M.exists(filename) and filename ~= '' and not filename:match '^[%w%d_]+://')
+    then
         -- TODO: Add support to pass buffer
         vim.api.nvim_create_autocmd({ 'BufWritePost' }, {
             desc = 'Actually make the buffer/file executable after safe',

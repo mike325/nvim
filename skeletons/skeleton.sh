@@ -368,12 +368,25 @@ function shell_exec() {
     return 0
 }
 
+# mapfile -t VAR < <(cmd)
+function parse_cmd_output() {
+    local cmd="$1"
+    local exit_with_error=0
+
+    # TODO: Read cmd exit code
+    while IFS= read -r line; do
+        raw_output "$line"
+    done < <(sh -c "$cmd")
+
+    return $exit_with_error
+}
+
 while [[ $# -gt 0 ]]; do
     key="$1"
     case "$key" in
         # --log)
         #     # In case log is disable by default
-        #     NOLOG=1
+        #     NOLOG=0
         #     ;;
         --nolog)
             NOLOG=1
@@ -430,8 +443,6 @@ verbose_msg "Current Shell  : ${CURRENT_SHELL}"
 verbose_msg "Platform       : ${SHELL_PLATFORM}"
 verbose_msg "Architecture   : ${ARCH}"
 verbose_msg "OS             : ${OS}"
-
-# mapfile -t VAR < <(cmd)
 
 #######################################################################
 #                           CODE Goes Here                            #
