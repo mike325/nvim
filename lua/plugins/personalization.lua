@@ -62,14 +62,6 @@ return {
         event = { 'VeryLazy', 'Filetype' },
     },
     {
-        'tommcdo/vim-lion',
-        cond = not vim.g.minimal,
-        config = function()
-            vim.g.lion_squeeze_spaces = 1
-        end,
-        event = 'VeryLazy',
-    },
-    {
         'folke/todo-comments.nvim',
         cond = function()
             local has_rg = vim.fn.executable 'rg' == 1

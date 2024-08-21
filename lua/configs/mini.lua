@@ -47,6 +47,12 @@ local password_table = {
 }
 
 local simple_mini = {
+    align = {
+        mappings = {
+            start = 'gl',
+            start_with_preview = 'gL',
+        },
+    },
     doc = {},
     fuzzy = {},
     extra = {},
