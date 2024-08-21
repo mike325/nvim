@@ -104,43 +104,22 @@ require 'configs.mappings'
 require 'configs.commands'
 require 'configs.autocmds'
 
-require('threads.parse').ssh_hosts()
-
-if not vim.g.bare and not vim.g.minimal then
-    nvim.setup.lazy(false)
-elseif vim.g.minimal and not vim.g.bare then
-    local lazy_root = vim.fs.dirname(nvim.setup.get_lazypath())
-    local mini_lazy = string.format('%s/mini.nvim', lazy_root)
-
-    local ok, _
-    if vim.loop.fs_stat(mini_lazy) then
-        vim.opt.rtp:prepend(mini_lazy)
-        ok = true
-    else
-        ok, _ = pcall(vim.cmd.packadd, { args = { 'mini.nvim' }, bang = true })
-    end
-
-    if ok then
-        vim.api.nvim_create_autocmd('VimEnter', {
-            desc = 'Setup Mini plugins',
-            group = vim.api.nvim_create_augroup('SetupMini', { clear = true }),
-            pattern = '*',
-            once = true,
-            callback = function()
-                require 'configs.mini'
-                vim.cmd.helptags 'ALL'
-            end,
-        })
-    end
-elseif not vim.g.minimal and not vim.g.bare then
-    vim.notify('Missing git! cannot install plugins', vim.log.levels.WARN, { title = 'Nvim Setup' })
-end
-
+nvim.setup(false)
 vim.cmd.packadd { args = { 'matchit' }, bang = false }
 
 -- NOTE: overload/replace vim.* functions
 require 'overloads.notify'
 require 'overloads.ui.open'
-require 'overloads.ui.select'
--- require 'overloads.ui.input'
--- require 'overloads.paste'
+
+if vim.g.has_ui then
+    require 'overloads.ui.select'
+    -- require 'overloads.ui.input'
+    -- require 'overloads.paste'
+
+    require('threads.parse').ssh_hosts()
+else
+    local hosts = require('threads.parsers').sshconfig()
+    for host, attrs in pairs(hosts) do
+        STORAGE.hosts[host] = attrs
+    end
+end

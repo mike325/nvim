@@ -148,42 +148,118 @@ local function del_command(name, buffer)
     end
 end
 
-local function is_lazy_setup()
-    return vim.F.npcall(require, 'lazy')
-end
-
 local function get_lazypath()
     local lazy_root = string.format('%s/lazy', vim.fn.stdpath 'data')
     vim.g.lazypath = vim.g.lazypath or string.format('%s/lazy.nvim', lazy_root)
     return vim.g.lazypath
 end
 
-local function download_lazy(lazypath)
-    vim.g.lazy_setup = false
+local function get_mini_path()
+    local path_package = (vim.fn.stdpath 'data') .. '/site'
+    local mini_path = path_package .. '/pack/deps/start/mini.nvim'
 
-    vim.fn.mkdir(vim.fs.dirname(lazypath), 'p')
-    vim.notify('Downloading lazy.nvim...', vim.log.levels.INFO, { title = 'Lazy Setup' })
-    local out = vim.fn.system {
+    local lazy_root = get_lazypath()
+    if vim.loop.fs_stat(lazy_root) then
+        mini_path = string.format('%s/mini.nvim', vim.fs.dirname(lazy_root))
+    else
+        local locations = {
+            'deps',
+            'host',
+            'packer',
+        }
+        for _, location in ipairs(locations) do
+            local plugin_loc = path_package .. string.format('/pack/%s/start/mini.nvim', location)
+            if vim.loop.fs_stat(plugin_loc) then
+                mini_path = plugin_loc
+                break
+            end
+        end
+    end
+    return mini_path
+end
+
+local function clone_repo(repo, path, branch)
+    if vim.fn.executable 'git' ~= 1 then
+        return false
+    end
+    vim.fn.mkdir(vim.fs.dirname(path), 'p')
+    vim.notify('Downloading repo...', vim.log.levels.INFO, { title = 'Clone' })
+
+    local url = repo:match '^%w+://' and repo or string.format('https://github.com/%s.git', repo)
+    local cmd = {
         'git',
         'clone',
         '--filter=blob:none',
-        'https://github.com/folke/lazy.nvim.git',
-        '--branch=stable', -- latest stable release
-        lazypath,
+        url,
     }
 
+    if branch then
+        table.insert(cmd, string.format('--branch=%s', branch))
+    end
+    table.insert(cmd, path)
+
+    local out = vim.fn.system(cmd)
     if vim.v.shell_error == 0 then
-        vim.notify((out or 'Lazy downloaded in: ') .. lazypath, vim.log.levels.INFO, { title = 'Lazy setup!' })
-        vim.opt.rtp:prepend(lazypath)
-        vim.g.lazy_setup = true
+        vim.notify((out or 'Repo cloned to: ') .. path, vim.log.levels.INFO, { title = 'Repo cloned' })
     else
         vim.notify(
-            string.format('Failed to download lazy!! exit code: %d', vim.v.shell_error),
+            string.format('Failed to clone repo!! exit code: %d', vim.v.shell_error),
             vim.log.levels.ERROR,
-            { title = 'Lazy Setup' }
+            { title = 'Clone' }
         )
     end
+    return vim.v.shell_error == 0
+end
+
+local function download_lazy(lazypath)
+    lazypath = lazypath or get_lazypath()
+    local repo = 'folke/lazy.nvim'
+    vim.g.lazy_setup = clone_repo(repo, lazypath, 'stable')
+    if vim.g.lazy_setup then
+        vim.opt.rtp:prepend(lazypath)
+    end
     return vim.g.lazy_setup
+end
+
+local function download_mini(mini_path)
+    mini_path = mini_path or get_mini_path()
+    local repo = 'echasnovski/mini.nvim'
+    vim.g.mini_setup = clone_repo(repo, mini_path)
+    return vim.g.mini_setup
+end
+
+local function setup_mini(download)
+    vim.validate {
+        download = { download, 'boolean', true },
+    }
+
+    vim.g.mini_path = get_mini_path()
+    vim.g.mini_setup = vim.loop.fs_stat(vim.g.mini_path) ~= nil
+
+    if vim.g.mini_setup and vim.g.mini_path:match '/lazy' then
+        vim.opt.rtp:prepend(vim.g.mini_path)
+        vim.cmd.helptags 'ALL'
+    elseif vim.g.mini_setup then
+        vim.cmd 'packadd mini.nvim | helptags ALL'
+    elseif download and vim.fn.executable 'git' == 1 and vim.fn.input 'Download lazy? (y for yes): ' == 'y' then
+        vim.g.mini_setup = download_mini(vim.g.mini_path)
+        if vim.g.mini_path:match '/lazy' then
+            vim.opt.rtp:prepend(vim.g.mini_path)
+            vim.cmd.helptags 'ALL'
+        else
+            vim.cmd 'packadd mini.nvim | helptags ALL'
+        end
+        vim.notify('Installed `mini.nvim`', vim.log.levels.INFO, { title = 'Mini' })
+        vim.cmd.redraw()
+    end
+
+    if vim.g.mini_setup then
+        require('mini.deps').setup { path = { package = (vim.fn.stdpath 'data') .. '/site/' } }
+        _G['MiniDeps'].later(function()
+            require 'configs.mini'
+        end)
+    end
+    return vim.g.mini_setup
 end
 
 local function setup_lazy(download)
@@ -191,8 +267,7 @@ local function setup_lazy(download)
         download = { download, 'boolean', true },
     }
 
-    local lazy_root = string.format('%s/lazy', vim.fn.stdpath 'data')
-    vim.g.lazypath = vim.g.lazypath or string.format('%s/lazy.nvim', lazy_root)
+    vim.g.lazypath = get_lazypath()
     vim.g.lazy_setup = vim.loop.fs_stat(vim.g.lazypath) ~= nil
 
     if vim.g.lazy_setup then
@@ -499,12 +574,22 @@ local nvim = {
         vim.validate { exe = { exe, 'string' } }
         return vim.fn.executable(exe) == 1
     end,
-    setup = {
+    setup = setmetatable({
         lazy = setup_lazy,
         get_lazypath = get_lazypath,
-        is_lazy_setup = is_lazy_setup,
         download_lazy = download_lazy,
-    },
+        mini = setup_mini,
+        get_mini_path = get_mini_path,
+        download_mini = download_mini,
+    }, {
+        __call = function(_, download)
+            if not vim.g.bare and not vim.g.minimal then
+                setup_lazy(download)
+            elseif vim.g.minimal and not vim.g.bare then
+                setup_mini(download)
+            end
+        end,
+    }),
 }
 
 setmetatable(nvim, {

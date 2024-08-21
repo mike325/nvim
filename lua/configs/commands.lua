@@ -738,10 +738,10 @@ nvim.command.set('Oldfiles', function()
     )
 end, { nargs = 0, desc = 'Edit a file from oldfiles' })
 
-if not vim.g.lazy_setup and not vim.g.bare and not vim.g.minimal then
-    nvim.command.set('SetupLazy', function()
-        nvim.setup.lazy(true)
-    end, { nargs = 0, desc = 'initial lazy setup' })
+if not vim.g.bare then
+    nvim.command.set('SetupNeovim', function()
+        nvim.setup(true)
+    end, { nargs = 0, desc = 'Initial Neovim setup' })
 end
 
 nvim.command.set('RemoteTermdebug', function(opts)
