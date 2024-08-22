@@ -725,14 +725,6 @@ function M.autoformat(opts)
     print('Autoformat', vim.b.autoformat and 'enabled' or 'disabled')
 end
 
-function M.wall(_)
-    for _, win in ipairs(nvim.tab.list_wins(0)) do
-        nvim.buf.call(nvim.win.get_buf(win), function()
-            vim.cmd.update { mods = { noautocmd = true } }
-        end)
-    end
-end
-
 function M.alternate_grep(_)
     vim.t.lock_grep = not vim.t.lock_grep
     local is_git = false

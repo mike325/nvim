@@ -134,7 +134,8 @@ nvim.command.set('LGrep', function(opts)
     RELOAD('utils.functions').send_grep_job { loc = true, search = search, args = args }
 end, { nargs = '+', complete = 'file' })
 
-nvim.command.set('Find', function(opts)
+local function find_files(opts, win)
+    local title = (not win and 'C' or 'L') .. 'Find'
     local args = {
         args = opts.fargs,
         target = opts.args,
@@ -143,33 +144,22 @@ nvim.command.set('Find', function(opts)
                 RELOAD('utils.qf').dump_files(results, {
                     open = true,
                     jump = false,
-                    title = 'Finder',
-                })
+                    title = title,
+                }, win)
             else
-                vim.notify('No files matching: ' .. opts.fargs[#opts.fargs], vim.log.levels.ERROR, { title = 'Find' })
+                vim.notify('No files matching: ' .. opts.fargs[#opts.fargs], vim.log.levels.ERROR, { title = title })
             end
         end,
     }
     RELOAD('mappings').find(args)
+end
+
+nvim.command.set('CFind', function(opts)
+    find_files(opts)
 end, { bang = true, nargs = '+', complete = 'file', desc = 'Async and recursive :find' })
 
 nvim.command.set('LFind', function(opts)
-    local args = {
-        args = opts.fargs,
-        target = opts.args,
-        cb = function(results)
-            if #results > 0 then
-                RELOAD('utils.qf').dump_files(results, {
-                    open = true,
-                    jump = false,
-                    title = 'LFinder',
-                }, nvim.get_current_win())
-            else
-                vim.notify('No files matching: ' .. opts.fargs[#opts.fargs], vim.log.levels.ERROR, { title = 'Find' })
-            end
-        end,
-    }
-    RELOAD('mappings').find(args)
+    find_files(opts, nvim.get_current_win())
 end, { bang = true, nargs = '+', complete = 'file', desc = 'Async and recursive :lfind' })
 
 nvim.command.set('Make', function(opts)
@@ -304,9 +294,16 @@ nvim.command.set('AutoFormat', function(opts)
     RELOAD('mappings').autoformat(opts)
 end, { nargs = '?', complete = completions.toggle, bang = true, desc = 'Toggle Autoformat autocmd' })
 
-nvim.command.set('Wall', function(opts)
-    RELOAD('mappings').wall(opts)
-end, { desc = 'Saves all visible windows' })
+nvim.command.set('Wall', function()
+    local modified = vim.tbl_filter(function(buf)
+        return vim.bo[buf].modified and not vim.bo[buf].readonly
+    end, vim.api.nvim_list_bufs())
+    for _, buf in ipairs(modified) do
+        vim.api.nvim_buf_call(buf, function()
+            vim.cmd.update { mods = { noautocmd = true } }
+        end)
+    end
+end, { desc = 'Save all modified buffers' })
 
 nvim.command.set('AlternateGrep', function()
     RELOAD('mappings').alternate_grep()
@@ -486,19 +483,6 @@ nvim.command.set('ModifiedDump', function(_)
     )
 end, {
     desc = 'Dump all unsaved files into the QF',
-})
-
-nvim.command.set('ModifiedSave', function(_)
-    local modified = vim.tbl_filter(function(buf)
-        return vim.bo[buf].modified
-    end, vim.api.nvim_list_bufs())
-    for _, buf in ipairs(modified) do
-        vim.api.nvim_buf_call(buf, function()
-            vim.cmd.update { mods = { noautocmd = true } }
-        end)
-    end
-end, {
-    desc = 'Save all modified buffers',
 })
 
 nvim.command.set('Qf2Loc', function(_)
