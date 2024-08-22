@@ -53,6 +53,9 @@ local simple_mini = {
             start_with_preview = 'gL',
         },
     },
+    icons = {
+        style = vim.env.NO_COOL_FONTS == nil and 'glyph' or 'ascii',
+    },
     doc = {},
     fuzzy = {},
     extra = {},
@@ -133,6 +136,14 @@ end
 
 for plugin, config in pairs(simple_mini) do
     load_simple_module(plugin, config)
+end
+
+if mini.icons then
+    mini.icons.mock_nvim_web_devicons()
+    if not _G['MiniDeps'] then
+        require('mini.deps').setup { path = { package = (vim.fn.stdpath 'data') .. '/site/' } }
+    end
+    _G['MiniDeps'].later(mini.icons.tweak_lsp_kind)
 end
 
 if mini.sessions then

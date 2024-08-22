@@ -80,10 +80,6 @@ return {
         end,
     },
     {
-        'nvim-tree/nvim-web-devicons',
-        cond = not vim.env.NO_COOL_FONTS,
-    },
-    {
         'tami5/sqlite.lua',
         name = 'sqlite',
         cond = require('sys').has_sqlite,

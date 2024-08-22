@@ -27,6 +27,6 @@ if ( -Not (Test-Path("$mini_dir\mini.nvim")) ) {
 }
 
 nvim -V1 --version
-nvim --noplugin -u "tests/min.lua" --headless --cmd "let g:no_output=1" -c "lua MiniTest.execute(MiniTest.collect())"
+nvim --noplugin --headless --cmd 'let g:minimal=1' --cmd "let g:no_output=1" -c "lua MiniTest.execute(MiniTest.collect())"
 
 exit $LASTEXITCODE

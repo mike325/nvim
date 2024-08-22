@@ -400,9 +400,8 @@ if [[ -z $MINI_DIR ]]; then
 fi
 
 nvim -V1 --version | tee -a test.log
-
 status_msg "Starting unittests"
-if ! nvim --noplugin -u tests/min.lua --headless --cmd "let g:no_output=1" -c "lua MiniTest.execute(MiniTest.collect())"; then
+if ! nvim --noplugin --headless --cmd 'let g:minimal=1' --cmd "let g:no_output=1" -c "lua MiniTest.execute(MiniTest.collect())"; then
     error_msg "Failed to run nvim tests"
 fi
 

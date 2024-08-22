@@ -6,7 +6,6 @@ end
 
 local nvim = require 'nvim'
 local get_icon = require('utils.functions').get_icon
-local has_devicon = pcall(require, 'nvim-web-devicons')
 
 trouble.setup {
     position = 'bottom',
@@ -14,7 +13,7 @@ trouble.setup {
     width = 50,
     mode = 'document_diagnostics', -- "lsp_workspace_diagnostics", "quickfix", "lsp_references", "loclist"
     auto_close = true,
-    icons = has_devicon,
+    icons = true,
     use_lsp_diagnostic_signs = false,
     signs = {
         error = get_icon 'error',
