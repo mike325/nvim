@@ -219,10 +219,13 @@ local M = {
         end,
     },
     git_branch = {
-        component = function()
-            local branch = ''
-            if vim.t.git_info and vim.t.git_info.branch then
+        component = function(branch, icon)
+            branch = branch or ''
+            if not branch or branch == '' and vim.t.git_info and vim.t.git_info.branch then
                 branch = vim.t.git_info.branch
+            end
+
+            if branch and branch ~= '' then
                 local shrink
                 local patterns = {
                     '^(%w+[/-]%w+[/-]%d+[/-])',
@@ -246,7 +249,11 @@ local M = {
                         end
                     end
                 end
+                if icon then
+                    branch = string.format('%s %s', get_icon 'git_branch', branch)
+                end
             end
+
             return branch
         end,
         cond = function()

@@ -622,7 +622,7 @@ if vim.g.minimal then
                             hl = 'MiniStatuslineDevinfo',
                             strings = {
                                 statusline.clearcase.component(),
-                                statusline.git_branch.component(),
+                                statusline.git_branch.component(nil, true),
                                 diagnostics,
                                 statusline.session.component(),
                                 statusline.dap.component(),
