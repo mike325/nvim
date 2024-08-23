@@ -47,6 +47,13 @@ local password_table = {
 }
 
 local simple_mini = {
+    doc = {},
+    fuzzy = {},
+    extra = {},
+    pairs = {},
+    sessions = {},
+    map = {},
+    git = {},
     align = {
         mappings = {
             start = 'gl',
@@ -56,12 +63,6 @@ local simple_mini = {
     icons = {
         style = vim.env.NO_COOL_FONTS == nil and 'glyph' or 'ascii',
     },
-    doc = {},
-    fuzzy = {},
-    extra = {},
-    pairs = {},
-    sessions = {},
-    map = {},
     surround = {
         mappings = {
             add = 'ys',

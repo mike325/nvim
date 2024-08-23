@@ -27,7 +27,7 @@ local function rm_pager(cmd)
 end
 
 local function get_git_dir(cmd)
-    if vim.t.git_info then
+    if not vim.is_thread() and vim.t.git_info then
         return vim.list_extend(cmd or {}, { '--git-dir', vim.t.git_info.git_dir })
     end
     return {}
@@ -435,7 +435,7 @@ function M.get_git_info(path, callback)
         end
 
         return {
-            git_dir = git_dir,
+            git_dir = (git_dir:gsub('\\', '/')),
             root = info_values[2],
             inside_git = info_values[3],
             is_bare = info_values[4],
@@ -493,7 +493,7 @@ function M.get_git_dir(path, callback)
         if git_dir == '.git' then
             return (('%s/%s'):format(path, git_dir):gsub('/+', '/'))
         end
-        return git_dir
+        return (git_dir:gsub('\\', '/'))
     end
 
     local git = RELOAD('jobs'):new {
