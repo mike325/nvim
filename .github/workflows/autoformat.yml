@@ -25,16 +25,19 @@ jobs:
               golang
 
         wget https://raw.githubusercontent.com/mike325/dotfiles/master/install.sh -O /tmp/install.sh
+
         chmod +x /tmp/install.sh
         /tmp/install.sh --nolog --portables --verbose --force
 
+        sudo luarocks install luacheck
+
         # FIX: Temporally fix as currently the latest tag does not have a release
-        rm -f ~/.local/bin/shfmt
+        # rm -f ~/.local/bin/shfmt
         # bash < <(curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer)
         # source "$HOME/.gvm/scripts/gvm"
         # gvm install "$GO_VERSION" -B
         # gvm use "$GO_VERSION" --default
-        go install -v mvdan.cc/sh/v3/cmd/shfmt@latest
+        # go install mvdan.cc/sh/v3/cmd/shfmt@latest
 
         python3 -m pip install --user ruff
 
