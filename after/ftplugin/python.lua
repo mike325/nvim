@@ -7,3 +7,6 @@ require('utils.buffers').setup(ft, {
     makeprg = [[python3 -c "import py_compile,sys; sys.stderr=sys.stdout; py_compile.compile(r'%')"]],
     errorformat = '%C %.%#,%A  File "%f", line %l%.%#,%Z%[%^ ]%@=%m',
 })
+
+vim.keymap.set('ia', 'false', 'False', { buffer = true })
+vim.keymap.set('ia', 'true', 'True', { buffer = true })
