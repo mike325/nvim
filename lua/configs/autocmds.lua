@@ -70,7 +70,7 @@ vim.api.nvim_create_autocmd({ 'VimEnter', 'BufReadPost' }, {
     desc = 'Set abbreviations',
     group = abbreviations,
     callback = function()
-        RELOAD('utils.functions').set_abbrs('', 'en')
+        RELOAD('utils.functions').set_abbrs('', vim.bo.spelllang)
     end,
 })
 
