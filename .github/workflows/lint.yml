@@ -30,11 +30,6 @@ jobs:
                 luarocks           \
                 golang
 
-          wget https://raw.githubusercontent.com/mike325/dotfiles/master/install.sh -O /tmp/install.sh
-
-          chmod +x /tmp/install.sh
-          /tmp/install.sh --nolog --portables --verbose --force
-
           sudo luarocks install luacheck
 
           # FIX: Temporally fix as currently the latest tag does not have a release
@@ -52,5 +47,5 @@ jobs:
         run: |
           wget https://raw.githubusercontent.com/mike325/dotfiles/master/install.sh
           chmod +x ./install.sh
-          ./install.sh --portables --verbose
+          ./install.sh --nolog --portables --verbose
       - uses: pre-commit/action@v2.0.3

@@ -25,7 +25,6 @@ jobs:
               golang
 
         wget https://raw.githubusercontent.com/mike325/dotfiles/master/install.sh -O /tmp/install.sh
-
         chmod +x /tmp/install.sh
         /tmp/install.sh --nolog --portables --verbose --force
 
