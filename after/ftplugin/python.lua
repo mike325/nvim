@@ -9,4 +9,7 @@ require('utils.buffers').setup(ft, {
 })
 
 vim.keymap.set('ia', 'false', 'False', { buffer = true })
+vim.keymap.set('ia', 'flase', 'False', { buffer = true })
+vim.keymap.set('ia', 'Flase', 'False', { buffer = true })
+
 vim.keymap.set('ia', 'true', 'True', { buffer = true })

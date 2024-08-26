@@ -56,6 +56,24 @@ vim.api.nvim_create_autocmd({ 'TermOpen' }, {
     end,
 })
 
+local abbreviations = vim.api.nvim_create_augroup('Abbreviations', { clear = true })
+vim.api.nvim_create_autocmd({ 'OptionSet' }, {
+    pattern = 'spelllang',
+    desc = 'Set abbreviations',
+    group = abbreviations,
+    callback = function()
+        RELOAD('utils.functions').set_abbrs(vim.v.option_old, vim.v.option_new)
+    end,
+})
+vim.api.nvim_create_autocmd({ 'VimEnter', 'BufReadPost' }, {
+    pattern = '*',
+    desc = 'Set abbreviations',
+    group = abbreviations,
+    callback = function()
+        RELOAD('utils.functions').set_abbrs('', 'en')
+    end,
+})
+
 vim.api.nvim_create_autocmd({ 'VimResized' }, {
     desc = 'Auto rezise windows to equalize sizes',
     group = vim.api.nvim_create_augroup('AutoResize', { clear = true }),

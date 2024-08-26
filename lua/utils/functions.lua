@@ -761,87 +761,46 @@ end
 
 function M.spelllangs(lang)
     if lang and lang ~= '' then
-        M.abolish(lang)
         vim.bo.spelllang = lang
     end
     vim.print(vim.bo.spelllang)
 end
 
-function M.get_abbrs(language)
-    return require('configs.abolish').abolish[language]
-end
-
-function M.abolish(language)
-    local current = vim.bo.spelllang
-    local set_abbr = require('nvim.abbrs').set_abbr
-    local abolish = require('configs.abolish').abolish
+function M.set_abbrs(old_lang, new_lang)
+    if old_lang == new_lang or vim.bo.spelllang ~= new_lang then
+        return
+    end
+    local abolish = RELOAD('configs.abolish').abolish
+    local capitalize = require('utils.strings').capitalize
 
     if nvim.has.cmd 'Abolish' then
-        if abolish[current] ~= nil then
-            for base, _ in pairs(abolish[current]) do
+        if abolish[old_lang] ~= nil then
+            for base, _ in pairs(abolish[old_lang]) do
                 vim.cmd.Abolish { args = { '-delete', '-buffer', base } }
             end
         end
-        if abolish[language] ~= nil then
-            for base, replace in pairs(abolish[language]) do
+        if abolish[new_lang] ~= nil then
+            for base, replace in pairs(abolish[new_lang]) do
                 vim.cmd.Abolish { args = { '-buffer', base, replace } }
             end
         end
     else
-        local function remove_abbr(base)
-            set_abbr {
-                mode = 'i',
-                lhs = base,
-                args = { silent = true, buffer = true },
-            }
-
-            set_abbr {
-                mode = 'i',
-                lhs = base:upper(),
-                args = { silent = true, buffer = true },
-            }
-
-            set_abbr {
-                mode = 'i',
-                lhs = base:gsub('%a', string.upper, 1),
-                args = { silent = true, buffer = true },
-            }
-        end
-
-        local function change_abbr(base, replace)
-            set_abbr {
-                mode = 'i',
-                lhs = base,
-                rhs = replace,
-                args = { buffer = true },
-            }
-
-            set_abbr {
-                mode = 'i',
-                lhs = base:upper(),
-                rhs = replace:upper(),
-                args = { buffer = true },
-            }
-
-            set_abbr {
-                mode = 'i',
-                lhs = base:gsub('%a', string.upper, 1),
-                rhs = replace:gsub('%a', string.upper, 1),
-                args = { buffer = true },
-            }
-        end
-
-        if abolish[current] ~= nil then
-            for base, _ in pairs(abolish[current]) do
-                if not string.match(base, '{.+}') then
-                    remove_abbr(base)
+        if abolish[old_lang] ~= nil then
+            for base, _ in pairs(abolish[old_lang]) do
+                -- TODO: Use abolish transformations
+                if not base:match '%{' then
+                    pcall(vim.keymap.del, 'ia', base, { buffer = true })
+                    pcall(vim.keymap.del, 'ia', base:upper(), { buffer = true })
+                    pcall(vim.keymap.del, 'ia', capitalize(base), { buffer = true })
                 end
             end
         end
-        if abolish[language] ~= nil then
-            for base, replace in pairs(abolish[language]) do
-                if not string.match(base, '{.+}') then
-                    change_abbr(base, replace)
+        if abolish[new_lang] ~= nil then
+            for base, replace in pairs(abolish[new_lang]) do
+                if not base:match '%{' and not replace:match '%{' then
+                    vim.keymap.set('ia', base, replace, { buffer = true })
+                    vim.keymap.set('ia', base:upper(), replace:upper(), { buffer = true })
+                    vim.keymap.set('ia', capitalize(base), capitalize(replace), { buffer = true })
                 end
             end
         end

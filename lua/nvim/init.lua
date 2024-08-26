@@ -344,6 +344,9 @@ local nvim = {
         end,
     }),
     has = setmetatable({
+        cmd = function(cmd)
+            return vim.api.nvim_call_function('exists', { ':' .. cmd }) == 2
+        end,
         command = function(command)
             return vim.api.nvim_call_function('exists', { ':' .. command }) == 2
         end,
