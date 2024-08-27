@@ -172,12 +172,13 @@ local M = {
     },
     clearcase = {
         component = function()
-            if vim.env.CLEARCASE_CMDLINE then
-                local pattern = '^' .. sys.username .. '_at_'
-                if vim.env.CLEARCASE_CMDLINE:match(pattern) then
-                    return ' ' .. vim.split(vim.env.CLEARCASE_CMDLINE, ' ')[2]:gsub(pattern, '')
+            if vim.env.CLEARCASE_ROOT then
+                local view_name = vim.env.CLEARCASE_ROOT
+                local pattern = '^/view/' .. sys.username .. '_at_'
+                if view_name:match(pattern) then
+                    view_name = (view_name:gsub(pattern, ''))
                 end
-                return ' ' .. vim.split(vim.env.CLEARCASE_CMDLINE, ' ')[2]
+                return ' ' .. view_name
             end
             return ''
         end,
