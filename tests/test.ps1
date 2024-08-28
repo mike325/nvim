@@ -21,12 +21,11 @@ else {
     $mini_dir = "$mini_dir\start"
 }
 
-
 if ( -Not (Test-Path("$mini_dir\mini.nvim")) ) {
     git clone --recursive "https://github.com/echasnovski/mini.nvim" "$mini_dir\mini.nvim"
 }
 
 nvim -V1 --version
-nvim --noplugin --headless --cmd 'let g:minimal=1' --cmd "let g:no_output=1" -c "lua MiniTest.execute(MiniTest.collect())"
+nvim --headless --cmd 'let g:minimal=1' --cmd "let g:no_output=1" -c "lua MiniTest.execute(MiniTest.collect())"
 
 exit $LASTEXITCODE
