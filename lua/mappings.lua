@@ -921,7 +921,6 @@ function M.alternate(opts)
     -- TODO: alternates should be buffer local
     local alternates = vim.g.alternates or {}
     if not alternates[buf] or bang then
-
         if #candidates == 0 then
             local results = RELOAD('threads.related').alternate_src_header(RELOAD('threads').add_thread_context(opts))
             if results.candidates then
