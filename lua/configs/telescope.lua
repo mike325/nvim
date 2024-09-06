@@ -94,6 +94,7 @@ vim.keymap.set('n', '<leader><C-p>', function()
     local finder = RELOAD('utils.functions').select_filelist(false, true)
     if finder[1] == 'fd' or finder[1] == 'fdfind' or finder[1] == 'rg' then
         table.insert(finder, '-uuu')
+        table.insert(finder, '-L')
     end
     builtin.find_files { find_command = finder }
 end, noremap)

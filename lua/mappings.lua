@@ -914,15 +914,21 @@ function M.alternate(opts)
         opts.buf = vim.loop.fs_realpath(opts.buf)
     end
 
-    local candidates
+    local candidates = {}
     local buf = opts.buf
     local bang = opts.bang
 
     -- TODO: alternates should be buffer local
     local alternates = vim.g.alternates or {}
     if not alternates[buf] or bang then
-        local results = RELOAD('threads.related').alternate_src_header(RELOAD('threads').add_thread_context(opts))
-        candidates = results.candidates or {}
+
+        if #candidates == 0 then
+            local results = RELOAD('threads.related').alternate_src_header(RELOAD('threads').add_thread_context(opts))
+            if results.candidates then
+                candidates = vim.list_extend(candidates, results.candidates)
+            end
+        end
+
         if #candidates > 0 then
             alternates[buf] = candidates
             vim.g.alternates = alternates

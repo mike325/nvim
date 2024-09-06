@@ -53,7 +53,6 @@ local simple_mini = {
     pairs = {},
     sessions = {},
     map = {},
-    git = {},
     align = {
         mappings = {
             start = 'gl',
@@ -375,6 +374,7 @@ if mini.pick then
             }
             if fast_pickers[finder[1]] then
                 table.insert(finder, '-uuu')
+                table.insert(finder, '-L')
                 mini.pick.builtin.cli { command = finder }
             else
                 -- TODO: add support for threads to have async functionality?
@@ -509,23 +509,38 @@ end
 
 if vim.g.minimal then
     local simple_minimal = {
-        'cursorword',
-        'notify',
-        'indentscope',
-    }
-
-    for _, plugin in ipairs(simple_minimal) do
-        load_simple_module(plugin)
-    end
-
-    if vim.F.npcall(require, 'mini.completion') then
-        -- TODO: Write custom completion func to collect and combine results
-        require('mini.completion').setup {
+        cursorword = {},
+        notify = {},
+        indentscope = {},
+        git = {},
+        completion = {
             lsp_completion = {
                 source_func = 'omnifunc',
                 auto_setup = false,
             },
-        }
+        },
+    }
+
+    for plugin, config in pairs(simple_minimal) do
+        load_simple_module(plugin, config)
+    end
+
+    if mini.git then
+        nvim.command.set('Gwrite', function(opts)
+            local filename = (not opts.args or opts.args == '') and vim.api.nvim_buf_get_name(0) or opts.args
+            if filename == '' or filename:match '^%w+://' then
+                return
+            end
+
+            local cwd = vim.pesc(vim.loop.cwd() .. '/')
+            filename = (filename:gsub('^' .. cwd, ''))
+
+            vim.cmd.write { filename, bang = opts.bang }
+            vim.cmd.Git { args = { 'add', filename } }
+        end, { bang = true, nargs = '?', complete = 'file' })
+    end
+
+    if mini.completion then
         vim.keymap.set('i', '<Tab>', [[pumvisible() ? "\<C-n>" : "\<Tab>"]], { expr = true })
         vim.keymap.set('i', '<S-Tab>', [[pumvisible() ? "\<C-p>" : "\<S-Tab>"]], { expr = true })
 
