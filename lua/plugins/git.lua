@@ -3,10 +3,24 @@ if vim.fn.executable 'git' == 0 then
 end
 
 return {
+
     {
         'tpope/vim-fugitive',
         cmd = { 'G' },
         event = { 'CursorHold', 'CursorHoldI' },
+    },
+    {
+        'tpope/vim-rhubarb',
+        lazy = false,
+        dependencies = {
+            { 'tpope/vim-fugitive' },
+        },
+        init = function()
+            vim.g.github_enterprise_urls = { vim.env.GITHUB_ENTERPRISE_URL }
+        end,
+        cond = function()
+            return not vim.g.vscode
+        end,
     },
     {
         'junegunn/gv.vim',
