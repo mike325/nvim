@@ -1896,6 +1896,15 @@ augroup QuickFix
     autocmd FileType qf setlocal nospell colorcolumn=
 augroup end
 
+augroup Plantuml
+    autocmd!
+    autocmd BufNewFile,BufRead *.pu,*.uml,*.puml,*.iuml,*.plantuml setlocal filetype=plantuml
+    autocmd BufWritePost *.pu,*.uml,*.puml,*.iuml,*.plantuml if get(b:, 'plantuml_autobuild', 0) | call system('plantuml ' . bufname('%')) | endif
+    autocmd Filetype plantuml command! -buffer OpenPlantUML call system('xdg-open ' . fnamemodify(bufname('%'), ':r') . '.png')
+    autocmd Filetype plantuml command! -buffer AutoBuild let b:plantuml_autobuild = ! get(b:, 'plantuml_autobuild', 0) | echomsg (b:plantuml_autobuild ? 'AutoBuild plantuml is On!' : 'AutoBuild plantuml is Off!')
+    autocmd Filetype plantuml setlocal makeprg=plantuml\ %
+augroup end
+
 " TODO: differentiate between quickfix and loclist
 augroup HelpConfig
     autocmd!

@@ -207,6 +207,7 @@ local function parse_status(status)
     return parsed
 end
 
+-- TODO: There's a misconfigure setting somewhere that makes git output ~80 column text
 local function exec_gitcmd(gitcmd, args, callbacks)
     vim.validate {
         gitcmd = { gitcmd, 'string' },
@@ -216,14 +217,14 @@ local function exec_gitcmd(gitcmd, args, callbacks)
 
     local cmd = M.get_git_cmd(gitcmd, normalize_args(args))
     if not callbacks then
-        return filter_empty(exec_sync_gitcmd(cmd, gitcmd))
+        return exec_sync_gitcmd(cmd, gitcmd)
     end
 
     local git = RELOAD('jobs'):new {
         cmd = cmd,
         silent = true,
         callbacks_on_success = function(job)
-            callbacks(filter_empty(job:output()))
+            callbacks(job:output())
         end,
         callbacks_on_failure = function(job, _)
             notify_error(gitcmd, job:output(), job.rc)

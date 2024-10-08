@@ -426,6 +426,7 @@ function M.ls(path, opts)
 
     repeat
         filename, ftype = vim.loop.fs_scandir_next(dir_it)
+        ftype = ftype or vim.uv.fs_stat(vim.fs.joinpath(path, filename)).type
         if filename and (not opts.type or opts.type == ftype) then
             table.insert(results, path .. M.separator() .. filename)
         end
@@ -882,6 +883,7 @@ function M.dir(path, opts)
                     if name == nil then
                         break
                     end
+                    t = t or vim.uv.fs_stat(vim.fs.joinpath(path, name)).type
                     coroutine.yield(name, t)
                 end
             end
@@ -897,6 +899,7 @@ function M.dir(path, opts)
             local fs = vim.loop.fs_scandir(vim.fs.normalize(dir))
             while fs do
                 local name, t = vim.loop.fs_scandir_next(fs)
+                t = t or vim.uv.fs_stat(vim.fs.joinpath(dir, name)).type
                 if not name then
                     break
                 end

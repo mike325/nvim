@@ -68,81 +68,7 @@ end
 
 vim.list_extend(sources, { { name = 'buffer' }, { name = 'path' } })
 
-local function has_words_before()
-    local line, col = unpack(vim.api.nvim_win_get_cursor(0))
-    return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match '%s' == nil
-end
-
-local function next_item(fallback)
-    local neogen = vim.F.npcall(require, 'neogen')
-
-    local ls = vim.F.npcall(require, 'luasnip')
-    if ls then
-        ls.unlink_current_if_deleted()
-    end
-
-    if cmp.visible() then
-        cmp.select_next_item()
-    elseif ls and ls.locally_jumpable(1) then
-        ls.jump(1)
-    elseif vim.snippet and vim.snippet.active { direction = 1 } then
-        vim.snippet.jump(1)
-    elseif neogen and neogen.jumpable() then
-        vim.fn.feedkeys(vim.keycode "<cmd>lua require('neogen').jump_next()<CR>", '')
-    elseif has_words_before() then
-        cmp.complete()
-    else
-        -- The fallback function is treated as original mapped key. In this case, it might be `<Tab>`.
-        fallback()
-    end
-end
-
-local function prev_item(fallback)
-    local neogen = vim.F.npcall(require, 'neogen')
-
-    local ls = vim.F.npcall(require, 'luasnip')
-    if ls then
-        ls.unlink_current_if_deleted()
-    end
-
-    if cmp.visible() then
-        cmp.select_prev_item()
-    elseif ls and ls.locally_jumpable(-1) then
-        ls.jump(-1)
-    elseif vim.snippet and vim.snippet.active { direction = -1 } then
-        vim.snippet.jump(-1)
-    elseif neogen and neogen.jumpable(-1) then
-        vim.fn.feedkeys(vim.keycode "<cmd>lua require('neogen').jump_prev()<CR>", '')
-    else
-        fallback()
-    end
-end
-
-local function enter_item(fallback)
-    local ls = vim.F.npcall(require, 'luasnip')
-    if ls and ls.expandable() then
-        ls.expand()
-    elseif cmp.visible() then
-        if not cmp.get_selected_entry() then
-            cmp.close()
-        else
-            cmp.confirm { behavior = cmp.ConfirmBehavior.Replace, select = false }
-        end
-    else
-        fallback()
-    end
-end
-
-local function close(fallback)
-    local ls = vim.F.npcall(require, 'luasnip')
-    if ls and ls.choice_active() then
-        ls.change_choice(1)
-    elseif cmp.visible() then
-        cmp.close()
-    else
-        fallback()
-    end
-end
+local maps = require('completions.mappings')
 
 cmp.setup {
     enabled = function()
@@ -195,10 +121,10 @@ cmp.setup {
             select = true,
         },
         -- TODO: May move this functions to utils.functions to auto reload them
-        ['<C-e>'] = cmp.mapping(close, { 'i', 's' }),
-        ['<CR>'] = cmp.mapping(enter_item, { 'i', 's' }),
-        ['<Tab>'] = cmp.mapping(next_item, { 'i', 's' }),
-        ['<S-Tab>'] = cmp.mapping(prev_item, { 'i', 's' }),
+        ['<C-e>'] = cmp.mapping(maps.close, { 'i', 's' }),
+        ['<CR>'] = cmp.mapping(maps.enter_item, { 'i', 's' }),
+        ['<Tab>'] = cmp.mapping(maps.next_item, { 'i', 's' }),
+        ['<S-Tab>'] = cmp.mapping(maps.prev_item, { 'i', 's' }),
         ['<C-n>'] = cmp.mapping.select_next_item { behavior = cmp.SelectBehavior.Insert },
         ['<C-p>'] = cmp.mapping.select_prev_item { behavior = cmp.SelectBehavior.Insert },
     },

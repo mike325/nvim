@@ -36,6 +36,7 @@ ERR_COUNT=0
 
 NAME="$0"
 NAME="${NAME##*/}"
+NAME="${NAME##*-}"
 LOG="${NAME%%.*}.log"
 
 SCRIPT_PATH="$0"

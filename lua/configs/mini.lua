@@ -335,6 +335,8 @@ if mini.pick then
         mappings = {
             move_up = '<C-k>',
             move_down = '<C-j>',
+            mark = '<c-x>',     -- default mapping, but I want to see it in my config
+            mark_all = '<c-a>', -- default mapping, but I want to see it in my config
         },
     }
     vim.ui.select = mini.pick.ui_select
@@ -538,29 +540,36 @@ if vim.g.minimal then
             vim.cmd.write { filename, bang = opts.bang }
             vim.cmd.Git { args = { 'add', filename } }
         end, { bang = true, nargs = '?', complete = 'file' })
-    end
 
-    if mini.completion then
-        vim.keymap.set('i', '<Tab>', [[pumvisible() ? "\<C-n>" : "\<Tab>"]], { expr = true })
-        vim.keymap.set('i', '<S-Tab>', [[pumvisible() ? "\<C-p>" : "\<S-Tab>"]], { expr = true })
-
-        local keys = {
-            ['cr'] = vim.keycode '<CR>',
-            ['ctrl-y'] = vim.keycode '<C-y>',
-            ['ctrl-e'] = vim.keycode '<C-e>',
-        }
-
-        vim.keymap.set('i', '<CR>', function()
-            if vim.fn.pumvisible() ~= 0 then
-                -- If popup is visible, confirm selected item or add new line otherwise
-                local item_selected = vim.fn.complete_info()['selected'] ~= -1
-                return item_selected and keys['ctrl-y'] or keys['ctrl-e']
-            else
-                -- TODO: Add support for native snippet expansion
-                -- return keys['cr']
-                return mini.pairs.cr()
+        nvim.command.set('Gvdiff', function(opts)
+            local filename = (not opts.args or opts.args == '') and vim.api.nvim_buf_get_name(0) or opts.args
+            if filename == '' or filename:match '^%w+://' then
+                return
             end
-        end, { expr = true })
+            local cwd = vim.pesc(vim.loop.cwd() .. '/')
+            filename = (filename:gsub('^' .. cwd, ''))
+            local buf = vim.fn.bufnr(filename)
+            local pos
+            if buf == vim.api.nvim_win_get_buf(0) then
+                pos = vim.api.nvim_win_get_cursor(0)
+            end
+
+            RELOAD('utils.git').get_filecontent(filename, nil, function(content)
+                vim.cmd.tabnew(filename)
+                if pos then
+                    vim.api.nvim_win_set_cursor(0, pos)
+                end
+                local rev_buf = vim.api.nvim_create_buf(false, true)
+                vim.api.nvim_buf_set_name(rev_buf, string.format('git://%s', filename))
+                vim.api.nvim_buf_set_lines(rev_buf, 0, -1, false, content)
+                vim.bo[rev_buf].bufhidden = 'wipe'
+                vim.bo[rev_buf].filetype = vim.bo[buf].filetype
+                vim.api.nvim_open_win(rev_buf, false, { split = 'right', win = 0 })
+
+                vim.api.nvim_buf_call(buf, vim.cmd.diffthis)
+                vim.api.nvim_buf_call(rev_buf, vim.cmd.diffthis)
+            end)
+        end, { bang = true, nargs = '?', complete = 'file' })
     end
 
     if mini.hipatterns then
@@ -618,21 +627,21 @@ if vim.g.minimal then
         pcall(mini.hipatterns.update)
     end
 
-    local MiniStatusline = vim.F.npcall(require, 'mini.statusline')
-    if MiniStatusline then
-        MiniStatusline.setup {
+    mini.statusline = vim.F.npcall(require, 'mini.statusline')
+    if mini.statusline then
+        mini.statusline.setup {
             set_vim_settings = false,
             content = {
                 active = function()
                     local statusline = require 'statusline'
-                    local _, mode_hl = MiniStatusline.section_mode { trunc_width = 120 }
-                    local diagnostics = MiniStatusline.section_diagnostics { trunc_width = 75 }
-                    local filename = MiniStatusline.section_filename { trunc_width = 140 }
-                    local fileinfo = MiniStatusline.section_fileinfo { trunc_width = 120 }
-                    local location = MiniStatusline.section_location { trunc_width = 75 }
-                    local search = MiniStatusline.section_searchcount { trunc_width = 75 }
+                    local _, mode_hl = mini.statusline.section_mode { trunc_width = 120 }
+                    local diagnostics = mini.statusline.section_diagnostics { trunc_width = 75 }
+                    local filename = mini.statusline.section_filename { trunc_width = 140 }
+                    local fileinfo = mini.statusline.section_fileinfo { trunc_width = 120 }
+                    local location = mini.statusline.section_location { trunc_width = 75 }
+                    local search = mini.statusline.section_searchcount { trunc_width = 75 }
 
-                    return MiniStatusline.combine_groups {
+                    return mini.statusline.combine_groups {
                         { hl = mode_hl, strings = { statusline.mode.component(), statusline.spell.component() } },
                         {
                             hl = 'MiniStatuslineDevinfo',
@@ -657,5 +666,10 @@ if vim.g.minimal then
                 end,
             },
         }
+    end
+
+    mini.tabline = vim.F.npcall(require, 'mini.tabline')
+    if mini.tabline then
+        mini.tabline.setup {}
     end
 end

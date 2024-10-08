@@ -241,7 +241,7 @@ local function setup_mini(download)
         vim.cmd.helptags 'ALL'
     elseif vim.g.mini_setup then
         vim.cmd 'packadd mini.nvim | helptags ALL'
-    elseif download and vim.fn.executable 'git' == 1 and vim.fn.input 'Download lazy? (y for yes): ' == 'y' then
+    elseif download and vim.fn.executable 'git' == 1 and vim.fn.input 'Download mini.nvim? (y for yes): ' == 'y' then
         vim.g.mini_setup = download_mini(vim.g.mini_path)
         if vim.g.mini_path:match '/lazy' then
             vim.opt.rtp:prepend(vim.g.mini_path)
@@ -254,9 +254,16 @@ local function setup_mini(download)
     end
 
     if vim.g.mini_setup then
-        require('mini.deps').setup { path = { package = (vim.fn.stdpath 'data') .. '/site/' } }
-        _G['MiniDeps'].now(function()
+        local MiniDeps = require('mini.deps')
+        MiniDeps.setup { path = { package = (vim.fn.stdpath 'data') .. '/site/' } }
+
+        MiniDeps.now(function()
             require 'configs.mini'
+        end)
+
+        MiniDeps.later(function()
+            pcall(vim.cmd.packadd, { bang = true, args = { 'LuaSnip' } })
+            pcall(require, 'configs.luasnip')
         end)
     end
     return vim.g.mini_setup

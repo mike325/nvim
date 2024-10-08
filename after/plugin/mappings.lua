@@ -6,6 +6,7 @@ end
 
 -- TODO: Lazy check for mini
 local has_mini = nvim.plugins['mini.nvim'] ~= nil or (vim.g.minimal and vim.F.npcall(require, 'mini.comment') ~= nil)
+local has_cmp = nvim.plugins['nvim-cmp']
 
 if not has_mini then
     vim.keymap.set('n', ']e', [[:<C-U>lua require"mappings".move_line(true)<CR>]], { noremap = true, silent = true })
@@ -34,4 +35,28 @@ if not nvim.has { 0, 10 } and missing_comment then
         require('utils.functions').toggle_comments(cursor[1] - 1, cursor[1])
         vim.api.nvim_win_set_cursor(0, cursor)
     end, { noremap = true, silent = true, desc = 'Custom comment surrunding current line' })
+end
+
+if not has_cmp then
+    local maps = require 'completions.mappings'
+
+    vim.keymap.set({ 'i', 's' }, '<Tab>', function()
+        maps.next_item()
+    end, { noremap = true })
+
+    vim.keymap.set({ 'i', 's' }, '<S-Tab>', function()
+        maps.prev_item()
+    end, { noremap = true })
+
+    vim.keymap.set({ 'i', 's' }, '<CR>', function()
+        maps.enter_item()
+    end, { noremap = true })
+
+    vim.keymap.set({ 'i', 's' }, '<c-y>', function()
+        maps.enter_item()
+    end, { noremap = true })
+
+    vim.keymap.set({ 'i', 's' }, '<c-e>', function()
+        maps.close()
+    end, { noremap = true })
 end
