@@ -675,7 +675,7 @@ function M.toggle_diagnostics(ns, force)
         vim.diagnostic.enable(buf, ns)
         vim.diagnostic.show(ns, buf)
     else
-        vim.diagnostic.disable(buf, ns)
+        vim.diagnostic.enable(false, {bufnr = buf, ns_id = ns})
         vim.diagnostic.hide(ns, buf)
     end
 end
@@ -898,11 +898,14 @@ function M.alternate(opts)
         return
     end
 
-    -- TODO: Add support for clangd switch header/src command
-    -- local found = RELOAD('configs.lsp.utils').switch_source_header_splitcmd(bufnr, 'edit')
-    -- if found then
-    --     return
-    -- end
+    local server = vim.lsp.get_clients({ name = 'clangd', bufnr = bufnr })[1]
+    if server then
+        local found = RELOAD('configs.lsp.utils').switch_source_header_splitcmd(bufnr, 'edit')
+        if not found then
+            vim.print 'No alternate found!'
+        end
+        return
+    end
 
     local prefix = opts.buf:match '^%w+://'
     opts.buf = opts.buf:gsub('^%w+://', '')
