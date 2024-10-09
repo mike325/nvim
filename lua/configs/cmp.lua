@@ -68,7 +68,7 @@ end
 
 vim.list_extend(sources, { { name = 'buffer' }, { name = 'path' } })
 
-local maps = require('completions.mappings')
+local maps = require 'completions.mappings'
 
 cmp.setup {
     enabled = function()

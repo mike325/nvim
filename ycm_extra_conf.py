@@ -178,7 +178,7 @@ def PathToPythonUsedDuringBuild():
 def Settings(**kwargs):
     language = kwargs["language"]
     filename = kwargs["filename"]
-    client_data = kwargs.get("client_data", None)
+    client_data = kwargs.get("client_data")
 
     if language == "cfamily":
         # If the file is a header, try to find the corresponding source file and

@@ -335,7 +335,7 @@ if mini.pick then
         mappings = {
             move_up = '<C-k>',
             move_down = '<C-j>',
-            mark = '<c-x>',     -- default mapping, but I want to see it in my config
+            mark = '<c-x>', -- default mapping, but I want to see it in my config
             mark_all = '<c-a>', -- default mapping, but I want to see it in my config
         },
     }

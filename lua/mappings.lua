@@ -675,7 +675,7 @@ function M.toggle_diagnostics(ns, force)
         vim.diagnostic.enable(buf, ns)
         vim.diagnostic.show(ns, buf)
     else
-        vim.diagnostic.enable(false, {bufnr = buf, ns_id = ns})
+        vim.diagnostic.enable(false, { bufnr = buf, ns_id = ns })
         vim.diagnostic.hide(ns, buf)
     end
 end
