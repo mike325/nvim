@@ -2,6 +2,7 @@ local nvim = require 'nvim'
 local sys = require 'sys'
 
 local is_dir = require('utils.files').is_dir
+local is_file = require('utils.files').is_file
 local mkdir = require('utils.files').mkdir
 local completions = RELOAD 'completions'
 local noremap = { noremap = true, silent = true }
@@ -154,7 +155,7 @@ if mini.sessions then
     nvim.command.set('SessionSave', function(opts)
         local session = opts.args
         if session == '' then
-            local getcwd = require('utils.files').getcwd
+            local getcwd = vim.loop.cwd
             session = vim.v.this_session ~= '' and vim.v.this_session or vim.fs.basename(getcwd())
             if session:match '^%.' then
                 session = session:gsub('^%.+', '')
@@ -189,7 +190,7 @@ if mini.sessions then
 
         local function delete_session(session_file)
             local path = sessions_dir .. '/' .. session_file
-            if not require('utils.files').is_file(path) then
+            if not is_file(path) then
                 vim.notify('Invalid Session: ' .. session_file, vim.log.levels.ERROR, { title = 'mini.session' })
                 return
             end

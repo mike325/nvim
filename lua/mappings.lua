@@ -901,10 +901,9 @@ function M.alternate(opts)
     local server = vim.lsp.get_clients({ name = 'clangd', bufnr = bufnr })[1]
     if server then
         local found = RELOAD('configs.lsp.utils').switch_source_header_splitcmd(bufnr, 'edit')
-        if not found then
-            vim.print 'No alternate found!'
+        if found then
+            return
         end
-        return
     end
 
     local prefix = opts.buf:match '^%w+://'
