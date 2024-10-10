@@ -57,7 +57,7 @@ vim.filetype.add {
                 local shebang = vim.api.nvim_buf_get_lines(bufnr, 0, 1, false)[1]
                 if shebang then
                     local nvim_path = vim.pesc(vim.v.progpath)
-                    local nvim_env_regex = vim.regex [[^#!\(env\|/usr/bin/env\|/bin/env\)\s\+\<nvim\>]]
+                    local nvim_env_regex = vim.regex [[^#!\(env\|/usr/bin/env\|/bin/env\)\s\+\(\(-S\)\s\+\)\?\<nvim\>]]
                     if shebang:match(('^#!%s'):format(nvim_path)) or nvim_env_regex:match_str(shebang) then
                         return 'lua'
                     end
