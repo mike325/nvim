@@ -25,21 +25,22 @@ function M.next_item(fallback)
     if cmp and cmp.visible() then
         cmp.select_next_item()
     elseif vim.fn.pumvisible() ~= 0 then
-        vim.fn.feedkeys(vim.keycode '<c-n>', 'n')
+        vim.api.nvim_feedkeys(vim.keycode '<c-n>', 'n', false)
     else
         if ls and ls.locally_jumpable(1) then
             ls.jump(1)
         elseif vim.snippet and vim.snippet.active { direction = 1 } then
             vim.snippet.jump(1)
         elseif neogen and neogen.jumpable() then
-            vim.fn.feedkeys(vim.keycode "<cmd>lua require('neogen').jump_next()<CR>", '')
+            vim.api.nvim_feedkeys(vim.keycode "<cmd>lua require('neogen').jump_next()<CR>", 'n', false)
         elseif has_words_before() then
             if cmp then
                 cmp.complete()
             end
-        else
-            -- The fallback function is treated as original mapped key. In this case, it might be `<Tab>`.
+        elseif fallback then
             fallback()
+        else
+            vim.api.nvim_feedkeys(vim.keycode '<tab>', 'n', false)
         end
     end
 end
@@ -60,16 +61,18 @@ function M.prev_item(fallback)
     if cmp and cmp.visible() then
         cmp.select_prev_item()
     elseif vim.fn.pumvisible() ~= 0 then
-        vim.fn.feedkeys(vim.keycode '<c-p>', 'n')
+        vim.api.nvim_feedkeys(vim.keycode '<c-p>', 'n', false)
     else
         if ls and ls.locally_jumpable(-1) then
             ls.jump(-1)
         elseif vim.snippet and vim.snippet.active { direction = -1 } then
             vim.snippet.jump(-1)
         elseif neogen and neogen.jumpable(-1) then
-            vim.fn.feedkeys(vim.keycode "<cmd>lua require('neogen').jump_prev()<CR>", '')
-        else
+            vim.api.nvim_feedkeys(vim.keycode "<cmd>lua require('neogen').jump_prev()<CR>", 'n', false)
+        elseif fallback then
             fallback()
+        else
+            vim.api.nvim_feedkeys(vim.keycode '<S-tab>', 'n', false)
         end
     end
 end
@@ -93,14 +96,16 @@ function M.enter_item(fallback)
     elseif vim.fn.pumvisible() ~= 0 then
         local item_selected = vim.fn.complete_info()['selected'] ~= -1
         if item_selected then
-            vim.fn.feedkeys(vim.keycode '<c-y>', 'n')
+            vim.api.nvim_feedkeys(vim.keycode '<c-y>', 'n', false)
         else
-            vim.fn.feedkeys(vim.keycode '<c-e>', 'n')
+            vim.api.nvim_feedkeys(vim.keycode '<c-e>', 'n', false)
         end
     elseif _G['MiniPairs'] then
-        vim.fn.feedkeys(_G['MiniPairs'].cr(), 'n')
+        vim.api.nvim_feedkeys(vim.keycode(_G['MiniPairs'].cr()), 'n', false)
     elseif fallback then
         fallback()
+    else
+        vim.api.nvim_feedkeys(vim.keycode '<cr>', 'n', false)
     end
 end
 
@@ -119,14 +124,16 @@ function M.close(fallback)
     elseif vim.fn.pumvisible() ~= 0 then
         local item_selected = vim.fn.complete_info()['selected'] ~= -1
         if item_selected then
-            vim.fn.feedkeys(vim.keycode '<c-y>', 'n')
+            vim.api.nvim_feedkeys(vim.keycode '<c-y>', 'n', false)
         else
-            vim.fn.feedkeys(vim.keycode '<c-e>', 'n')
+            vim.api.nvim_feedkeys(vim.keycode '<c-e>', 'n', false)
         end
     elseif _G['MiniPairs'] then
-        vim.fn.feedkeys(_G['MiniPairs'].cr(), 'n')
+        vim.api.nvim_feedkeys(vim.keycode(_G['MiniPairs'].cr()), 'n', false)
     elseif fallback then
         fallback()
+    else
+        vim.api.nvim_feedkeys(vim.keycode '<cr>', 'n', false)
     end
 end
 
