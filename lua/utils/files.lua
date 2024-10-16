@@ -937,11 +937,7 @@ function M.find(filename, opts)
         opts = { opts, 'table', true },
     }
 
-    if nvim.has { 0, 8 } then
-        return vim.fs.find(filename, opts)
-    end
-    -- TODO: Implement this for neovim < 0.8
-    error(debug.traceback 'Not implemented yet')
+    return vim.fs.find(filename, opts)
 end
 
 function M.is_executable(filename)

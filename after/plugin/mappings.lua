@@ -9,8 +9,8 @@ local has_mini = nvim.plugins['mini.nvim'] ~= nil or (vim.g.minimal and vim.F.np
 local has_cmp = nvim.plugins['nvim-cmp']
 
 if not has_mini then
-    vim.keymap.set('n', ']e', [[:<C-U>lua require"mappings".move_line(true)<CR>]], { noremap = true, silent = true })
-    vim.keymap.set('n', '[e', [[:<C-U>lua require"mappings".move_line(false)<CR>]], { noremap = true, silent = true })
+    vim.keymap.set('n', ']e', [[:<C-U>lua require"mappings.keymaps".move_line(true)<CR>]], { noremap = true, silent = true })
+    vim.keymap.set('n', '[e', [[:<C-U>lua require"mappings.keymaps".move_line(false)<CR>]], { noremap = true, silent = true })
 end
 
 -- NOTE: Neovim 0.10 now have builtin comment support, this is no longer needed

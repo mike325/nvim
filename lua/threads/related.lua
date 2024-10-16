@@ -309,7 +309,6 @@ function M.alternate_test(thread_args)
     return vim.is_thread() and vim.json.encode(results) or results
 end
 
--- NOTE: This does not work yet since find in nvim-0.8 can not search upward in different threads
 function M.related_makefiles(thread_args)
     thread_args = require('threads').init(thread_args)
 

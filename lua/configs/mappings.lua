@@ -66,10 +66,10 @@ vim.keymap.set('t', '<ESC>', '<C-\\><C-n>', { noremap = true })
 vim.keymap.set('n', '<BS>', '<C-o>', { noremap = true, silent = true })
 
 vim.keymap.set('n', 'n', function()
-    RELOAD('mappings').nicenext 'n'
+    RELOAD('mappings.keymaps').nicenext 'n'
 end, { noremap = true, silent = true, desc = 'n and center view' })
 vim.keymap.set('n', 'N', function()
-    RELOAD('mappings').nicenext 'N'
+    RELOAD('mappings.keymaps').nicenext 'N'
 end, { noremap = true, silent = true, desc = 'N and center view' })
 
 vim.keymap.set('n', '<S-tab>', '<C-o>', { noremap = true })
@@ -93,7 +93,7 @@ vim.keymap.set(
 vim.keymap.set('n', '<leader><leader>e', '<cmd>echo expand("%")<CR>', { noremap = true })
 
 vim.keymap.set('n', 'i', function()
-    return RELOAD('mappings').smart_insert()
+    return RELOAD('mappings.keymaps').smart_insert()
 end, { noremap = true, expr = true, desc = 'Smart insert/indent' })
 
 vim.keymap.set('n', 'c*', 'm`*``cgn', { noremap = true })
@@ -108,7 +108,7 @@ vim.keymap.set({ 'n', 'x' }, '¡', '^', { noremap = true })
 vim.keymap.set('n', '<leader>p', '<C-^>', { noremap = true, desc = 'Shortcut to switch to alternate buffer' })
 
 vim.keymap.set('n', '<leader>q', function()
-    RELOAD('mappings').smart_quit()
+    RELOAD('mappings.keymaps').smart_quit()
 end, { noremap = true, silent = true, desc = 'Quit/close windows and tabs' })
 
 vim.keymap.set('i', '<C-U>', '<C-G>u<C-U>', { noremap = true })
@@ -159,13 +159,13 @@ end
 vim.keymap.set(
     'n',
     ']<Space>',
-    [[:<C-U>lua require"mappings".add_nl(true)<CR>]],
+    [[:<C-U>lua require"mappings.keymaps".add_nl(true)<CR>]],
     { noremap = true, silent = true, desc = 'Add N spaces down the cursor' }
 )
 vim.keymap.set(
     'n',
     '[<Space>',
-    [[:<C-U>lua require"mappings".add_nl(false)<CR>]],
+    [[:<C-U>lua require"mappings.keymaps".add_nl(false)<CR>]],
     { noremap = true, silent = true, desc = 'Add N spaces up the cursor' }
 )
 vim.keymap.set(

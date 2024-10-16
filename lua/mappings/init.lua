@@ -3,17 +3,6 @@ local nvim = require 'nvim'
 
 local M = {}
 
-M.cscope_queries = {
-    symbol = 'find s', -- 0
-    definition = 'find g', -- 1
-    calling = 'find d', -- 2
-    callers = 'find c', -- 3
-    text = 'find t', -- 4
-    file = 'find f', -- 7
-    include = 'find i', -- 8
-    assign = 'find a', -- 9
-}
-
 M.precommit_efm = {
     '%f:%l:%c: %t%n %m',
     '%f:%l:%c:%t: %m',
@@ -34,115 +23,6 @@ M.precommit_efm = {
     '+++ %f',
     'reformatted %f',
 }
-
-function M.backspace()
-    local ok, _ = pcall(vim.cmd.pop)
-    if not ok then
-        local key = vim.keycode '<C-o>'
-        nvim.feedkeys(key, 'n', true)
-        -- local jumps
-        -- ok, jumps = pcall(nvim.exec, 'jumps', true)
-        -- if ok and #jumps > 0 then
-        --     jumps = vim.split(jumps, '\n')
-        --     table.remove(jumps, 1)
-        --     table.remove(jumps, #jumps)
-        --     local current_jump
-        --     for i=1,#jumps do
-        --         local jump = vim.trim(jumps[i]);
-        --         jump = split(jump, ' ');
-        --         if jump[1] == 0 then
-        --             current_jump = i;
-        --         end
-        --         jumps[i] = jump;
-        --     end
-        --     if current_jump > 1 then
-        --         local current_buf = nvim.win.get_buf(0)
-        --         local jump_buf = jumps[current_jump - 1][4]
-        --         if current_buf ~= jump_buf then
-        --             if not nvim.buf.is_valid(jump_buf) or not nvim.buf.is_loaded(jump_buf) then
-        --                 vim.cmd.edit{ args = {jump_buf} }
-        --             end
-        --         end
-        --         nvim.win.set_cursor(0, jumps[current_jump - 1][2], jumps[current_jump - 1][3])
-        --     end
-        -- end
-    end
-end
-
-function M.nicenext(dir)
-    local view = vim.fn.winsaveview()
-    local ok, msg = pcall(vim.cmd.normal, { args = { dir }, bang = true })
-    if ok and view.topline ~= vim.fn.winsaveview().topline then
-        vim.cmd.normal { args = { 'zz' }, bang = true }
-    elseif not ok then
-        local err = (msg:match 'Vim:E486: Pattern not found:.*')
-        vim.api.nvim_err_writeln(err or msg)
-    end
-end
-
-function M.smart_insert()
-    local current_line = vim.fn.line '.'
-    local last_line = vim.fn.line '$'
-    local buftype = vim.bo.buftype
-    if #vim.api.nvim_get_current_line() == 0 and last_line ~= current_line and buftype ~= 'terminal' then
-        return '"_ddO'
-    end
-    return 'i'
-end
-
-function M.smart_quit()
-    local tabs = nvim.list_tabpages()
-    local wins = nvim.tab.list_wins(0)
-    if #wins > 1 and vim.fn.expand '%' ~= '[Command Line]' then
-        nvim.win.hide(0)
-    elseif #tabs > 1 then
-        vim.cmd.tabclose { bang = true }
-    else
-        vim.cmd.quit { bang = true }
-    end
-end
-
-function M.floating_terminal(opts)
-    local cmd = opts.args
-    local shell
-    local executable = RELOAD('utils.files').executable
-
-    if cmd ~= '' then
-        shell = cmd
-    elseif sys.name == 'windows' then
-        if vim.regex([[^cmd\(\.exe\)\?$]]):match_str(vim.go.shell) then
-            shell = 'powershell -noexit -executionpolicy bypass '
-        else
-            shell = vim.go.shell
-        end
-    else
-        shell = vim.fn.fnamemodify(vim.env.SHELL or '', ':t')
-        if vim.regex([[\(t\)\?csh]]):match_str(shell) then
-            shell = executable 'zsh' and 'zsh' or (executable 'bash' and 'bash' or shell)
-        end
-    end
-
-    local win = RELOAD('utils.windows').big_center()
-
-    vim.wo[win].number = false
-    vim.wo[win].relativenumber = false
-
-    vim.fn.termopen(shell)
-
-    if cmd ~= '' then
-        vim.cmd.startinsert()
-    end
-end
-
-function M.toggle_mouse()
-    if vim.o.mouse == '' then
-        vim.o.mouse = 'a'
-        print 'Mouse Enabled'
-    else
-        vim.o.mouse = ''
-        print 'Mouse Disabled'
-    end
-end
 
 function M.bufkill(opts)
     opts = opts or {}
@@ -343,16 +223,6 @@ function M.async_makeprg(opts)
             RELOAD('utils.qf').qf_to_diagnostic(title)
         end,
     }
-end
-
--- NOTE: This does not work from neovim >= 0.8
-function M.cscope(cword, query)
-    cword = (cword and cword ~= '') and cword or vim.fn.expand '<cword>'
-    query = M.cscope_queries[query] or 'find g'
-    local ok, err = pcall(vim.cmd.cscope, { args = query, cword })
-    if not ok then
-        vim.notify('Error!\n' .. err, vim.log.levels.ERROR, { title = 'cscope' })
-    end
 end
 
 -- TODO: Improve this with globs and pattern matching
@@ -1039,54 +909,6 @@ function M.show_job_progress(opts)
         local job = STORAGE.jobs[id]
         job:progress()
     end
-end
-
-function M.add_nl(down)
-    local cursor_pos = nvim.win.get_cursor(0)
-    local lines = { '' }
-    local count = vim.v['count1']
-    if count > 1 then
-        for _ = 2, count, 1 do
-            table.insert(lines, '')
-        end
-    end
-
-    local cmd
-    if not down then
-        cursor_pos[1] = cursor_pos[1] + count
-        cmd = '[ '
-    else
-        cmd = '] '
-    end
-
-    nvim.put(lines, 'l', down, true)
-    nvim.win.set_cursor(0, cursor_pos)
-    pcall(vim.fn['repeat#set'], cmd, count)
-end
-
-function M.move_line(down)
-    -- local cmd
-    local lines = { '' }
-    local count = vim.v.count1
-
-    if count > 1 then
-        for _ = 2, count, 1 do
-            table.insert(lines, '')
-        end
-    end
-
-    if down then
-        -- cmd = ']e'
-        count = vim.fn.line '$' < vim.fn.line '.' + count and vim.fn.line '$' or vim.fn.line '.' + count
-    else
-        -- cmd = '[e'
-        count = vim.fn.line '.' - count - 1 < 1 and 1 or vim.fn.line '.' - count - 1
-    end
-
-    vim.cmd.move(count)
-    vim.cmd.normal { bang = true, args = { '==' } }
-    -- TODO: Make repeat work
-    -- pcall(vim.fn['repeat#set'], cmd, count)
 end
 
 function M.vnc(hostname, opts)

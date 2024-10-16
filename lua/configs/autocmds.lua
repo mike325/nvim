@@ -797,3 +797,21 @@ vim.api.nvim_create_autocmd({ 'VimLeavePre' }, {
         end
     end,
 })
+
+local focus_au = vim.api.nvim_create_augroup('FocusStatus', { clear = true })
+vim.api.nvim_create_autocmd({ 'VimEnter', 'FocusGained' }, {
+    desc = 'Update focus status',
+    group = focus_au,
+    pattern = '*',
+    callback = function()
+        vim.g.in_focus = true
+    end,
+})
+vim.api.nvim_create_autocmd({ 'FocusLost' }, {
+    desc = 'Update focus status',
+    group = focus_au,
+    pattern = '*',
+    callback = function()
+        vim.g.in_focus = false
+    end,
+})

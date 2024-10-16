@@ -1194,7 +1194,9 @@ set autoindent
 set autoread
 set background=dark
 set backspace=indent,eol,start
-set cscopeverbose
+if !has('nvim')
+    set cscopeverbose
+endif
 " set encoding=utf-8     " The encoding displayed.
 set nofsync
 set hlsearch
@@ -1367,7 +1369,9 @@ if !has('nvim')
     endtry
 endif
 
-colorscheme torte
+if !has('nvim')
+    colorscheme torte
+endif
 
 if s:fix_colorscheme
     hi! Normal ctermbg=NONE guibg=NONE

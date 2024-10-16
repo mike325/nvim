@@ -246,10 +246,6 @@ if executable 'nvr' then
     vim.env.snvr = 'nvr --servername ' .. vim.v.servername .. ' -cc split --remote-silent'
 end
 
-if not nvim.has { 0, 9 } then
-    vim.opt.cscopequickfix = { 's-', 'c-', 'd-', 'i-', 't-', 'e-', 'a-', 'g-' }
-end
-
 if nvim.has { 0, 9 } then
     vim.opt.splitkeep = 'screen'
 end

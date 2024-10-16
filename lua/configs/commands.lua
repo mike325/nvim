@@ -19,11 +19,11 @@ nvim.command.set('ClearLoc', function()
 end)
 
 nvim.command.set('Terminal', function(opts)
-    RELOAD('mappings').floating_terminal(opts)
+    RELOAD('mappings.commands').floating_terminal(opts)
 end, { nargs = '*', desc = 'Show big center floating terminal window' })
 
 nvim.command.set('MouseToggle', function()
-    RELOAD('mappings').toggle_mouse()
+    RELOAD('mappings.commands').toggle_mouse()
 end, { desc = 'Enable/Disable Mouse support' })
 
 nvim.command.set('BufKill', function(opts)
@@ -166,15 +166,6 @@ nvim.command.set('Make', function(opts)
     RELOAD('mappings').async_makeprg(opts)
 end, { nargs = '*', desc = 'Async execution of current makeprg' })
 
-if executable 'cscope' and not nvim.has { 0, 9 } then
-    for query, _ in pairs(require('mappings').cscope_queries) do
-        local cmd = 'C' .. query:sub(1, 1):upper() .. query:sub(2, #query)
-        nvim.command.set(cmd, function(opts)
-            RELOAD('mappings').cscope(opts.args, query)
-        end, { nargs = '?', desc = 'cscope command to find ' .. query .. ' under cursor or arg' })
-    end
-end
-
 if executable 'scp' then
     nvim.command.set('SendFile', function(opts)
         RELOAD('mappings').remote_file(opts.args, true)
@@ -315,28 +306,21 @@ if executable 'gradle' then
     end, { nargs = '+', desc = 'Execute Gradle async' })
 end
 
--- TODO: Add support for nvim < 0.8
-if nvim.has { 0, 8 } then
-    nvim.command.set('Alternate', function(opts)
-        RELOAD('mappings').alternate(opts)
-    end, { nargs = 0, desc = 'Alternate between files', bang = true })
+nvim.command.set('Alternate', function(opts)
+    RELOAD('mappings').alternate(opts)
+end, { nargs = 0, desc = 'Alternate between files', bang = true })
 
-    nvim.command.set('A', function(opts)
-        RELOAD('mappings').alternate(opts)
-    end, { nargs = 0, desc = 'Alternate between files', bang = true })
+nvim.command.set('A', function(opts)
+    RELOAD('mappings').alternate(opts)
+end, { nargs = 0, desc = 'Alternate between files', bang = true })
 
-    nvim.command.set('AlternateTest', function(opts)
-        RELOAD('mappings').alternate_test(opts)
-    end, { nargs = 0, desc = 'Alternate between source and test files', bang = true })
+nvim.command.set('AlternateTest', function(opts)
+    RELOAD('mappings').alternate_test(opts)
+end, { nargs = 0, desc = 'Alternate between source and test files', bang = true })
 
-    nvim.command.set('T', function(opts)
-        RELOAD('mappings').alternate_test(opts)
-    end, { nargs = 0, desc = 'Alternate between source and test files', bang = true })
-
-    -- nvim.command.set('AltMakefile', function(opts)
-    --     RELOAD('mappings').alt_makefiles(opts)
-    -- end, { nargs = 0, desc = 'Open related makefile', bang = true })
-end
+nvim.command.set('T', function(opts)
+    RELOAD('mappings').alternate_test(opts)
+end, { nargs = 0, desc = 'Alternate between source and test files', bang = true })
 
 nvim.command.set('NotificationServer', function(opts)
     opts.enable = opts.args == 'enable' or opts.args == ''
