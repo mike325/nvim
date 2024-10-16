@@ -1194,7 +1194,9 @@ set autoindent
 set autoread
 set background=dark
 set backspace=indent,eol,start
-set cscopeverbose
+if !has('nvim')
+    set cscopeverbose
+endif
 " set encoding=utf-8     " The encoding displayed.
 set nofsync
 set hlsearch
@@ -1367,7 +1369,9 @@ if !has('nvim')
     endtry
 endif
 
-colorscheme torte
+if !has('nvim')
+    colorscheme torte
+endif
 
 if s:fix_colorscheme
     hi! Normal ctermbg=NONE guibg=NONE
@@ -1894,6 +1898,15 @@ augroup QuickFix
     autocmd FileType qf nnoremap <silent><nowait><buffer> < :call execute(getwininfo(win_getid())[0].loclist == 1 ? 'lolder' : 'colder')<CR>
     autocmd FileType qf nnoremap <silent><nowait><buffer> > :call execute(getwininfo(win_getid())[0].loclist == 1 ? 'lnewer' : 'cnewer')<CR>
     autocmd FileType qf setlocal nospell colorcolumn=
+augroup end
+
+augroup Plantuml
+    autocmd!
+    autocmd BufNewFile,BufRead *.pu,*.uml,*.puml,*.iuml,*.plantuml setlocal filetype=plantuml
+    autocmd BufWritePost *.pu,*.uml,*.puml,*.iuml,*.plantuml if get(b:, 'plantuml_autobuild', 0) | call system('plantuml ' . bufname('%')) | endif
+    autocmd Filetype plantuml command! -buffer OpenPlantUML call system('xdg-open ' . fnamemodify(bufname('%'), ':r') . '.png')
+    autocmd Filetype plantuml command! -buffer AutoBuild let b:plantuml_autobuild = ! get(b:, 'plantuml_autobuild', 0) | echomsg (b:plantuml_autobuild ? 'AutoBuild plantuml is On!' : 'AutoBuild plantuml is Off!')
+    autocmd Filetype plantuml setlocal makeprg=plantuml\ %
 augroup end
 
 " TODO: differentiate between quickfix and loclist

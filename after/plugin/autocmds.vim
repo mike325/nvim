@@ -96,6 +96,11 @@ augroup CloseMenu
     autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
 augroup end
 
+augroup Plantuml
+    autocmd!
+    autocmd BufWritePost *.pu,*.uml,*.puml,*.iuml,*.plantuml if get(b:, 'plantuml_autobuild', 0) | call system('plantuml ' . bufname('%')) | endif
+augroup end
+
 if executable('tmux') && has#autocmd('TextYankPost')
     function! s:copy_yanked_text(data) abort
         if !empty($TMUX_VERSION)
