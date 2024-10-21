@@ -213,10 +213,8 @@ function M.find(opts)
                         table.insert(candidates, vim.fs.joinpath(path, fname))
                     end
                 elseif not blacklist[fname] then
-                    local results = vim.fs.find(
-                        target,
-                        { type = 'file', limit = math.huge, path = vim.fs.joinpath(path, fname) }
-                    )
+                    local results =
+                        vim.fs.find(target, { type = 'file', limit = math.huge, path = vim.fs.joinpath(path, fname) })
                     if #results > 0 then
                         candidates = vim.list_extend(candidates, results)
                     end
@@ -824,7 +822,6 @@ function M.alternate(opts)
     -- TODO: alternates should be buffer local
     local alternates = vim.g.alternates or {}
     if not alternates[buf] or bang then
-
         -- TODO: Searching in path could be faster than vim.fs.find but
         --       this need that headers also have the same path as source files
         local extensions = {

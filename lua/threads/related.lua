@@ -44,10 +44,8 @@ function M.gather_srcs_headers(thread_args)
                 table.insert(candidates, vim.fs.joinpath(path, fname))
             end
         elseif not blacklist[fname] then
-            local results = vim.fs.find(
-                filter_func,
-                { type = 'file', limit = math.huge, path = vim.fs.joinpath(path, fname) }
-            )
+            local results =
+                vim.fs.find(filter_func, { type = 'file', limit = math.huge, path = vim.fs.joinpath(path, fname) })
             if #results > 0 then
                 candidates = vim.list_extend(candidates, results)
             end
@@ -143,10 +141,8 @@ function M.gather_tests(thread_args)
                 table.insert(candidates, vim.fs.joinpath(path, fname))
             end
         elseif not blacklist[fname] then
-            local results = vim.fs.find(
-                filter_func,
-                { type = 'file', limit = math.huge, path = vim.fs.joinpath(path, fname) }
-            )
+            local results =
+                vim.fs.find(filter_func, { type = 'file', limit = math.huge, path = vim.fs.joinpath(path, fname) })
             if #results > 0 then
                 candidates = vim.list_extend(candidates, results)
             end
