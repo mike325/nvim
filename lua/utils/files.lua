@@ -937,7 +937,36 @@ function M.find(filename, opts)
         opts = { opts, 'table', true },
     }
 
-    return vim.fs.find(filename, opts)
+    local blacklist = {
+        ['.git'] = true,
+        ['.svn'] = true,
+        ['.cache'] = true,
+        ['__pycache__'] = true,
+        ['.vscode'] = true,
+        ['.vscode_clangd_setup'] = true,
+        ['node_modules'] = true,
+    }
+
+    local candidates = {}
+    local path = '.'
+    opts.path = opts.path or path
+    for fname, ftype in vim.fs.dir(path) do
+        if ftype == 'file' then
+            if
+                (type(filename) == type '' and filename == fname)
+                or (type(filename) == type {} and vim.list_contains(filename, fname))
+                or (type(filename) == 'function' and filename(fname))
+            then
+                table.insert(candidates, vim.fs.joinpath(path, fname))
+            end
+        elseif not blacklist[fname] then
+            local results = vim.fs.find(filename, opts)
+            if #results > 0 then
+                candidates = vim.list_extend(candidates, results)
+            end
+        end
+    end
+    return candidates
 end
 
 function M.is_executable(filename)

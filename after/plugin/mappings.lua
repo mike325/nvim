@@ -47,26 +47,24 @@ if not nvim.has { 0, 10 } and missing_comment then
     end, { noremap = true, silent = true, desc = 'Custom comment surrunding current line' })
 end
 
-if not has_cmp then
-    local maps = require 'completions.mappings'
+local maps = require 'completions.mappings'
 
-    vim.keymap.set({ 'i', 's' }, '<Tab>', function()
-        maps.next_item()
-    end, { noremap = true })
+vim.keymap.set({ 'i', 's' }, '<Tab>', function()
+    maps.next_item()
+end, { noremap = true })
 
-    vim.keymap.set({ 'i', 's' }, '<S-Tab>', function()
-        maps.prev_item()
-    end, { noremap = true })
+vim.keymap.set({ 'i', 's' }, '<S-Tab>', function()
+    maps.prev_item()
+end, { noremap = true })
 
-    vim.keymap.set({ 'i', 's' }, '<CR>', function()
-        maps.enter_item()
-    end, { noremap = true })
+vim.keymap.set({ 'i', 's' }, '<CR>', function()
+    maps.enter_item()
+end, { noremap = true })
 
-    vim.keymap.set({ 'i', 's' }, '<c-y>', function()
-        maps.enter_item()
-    end, { noremap = true })
+vim.keymap.set({ 'i', 's' }, '<c-y>', function()
+    maps.enter_item()
+end, { noremap = true })
 
-    vim.keymap.set({ 'i', 's' }, '<c-e>', function()
-        maps.close()
-    end, { noremap = true })
-end
+vim.keymap.set({ 'i', 's' }, '<c-e>', function()
+    maps.close()
+end, { noremap = true })

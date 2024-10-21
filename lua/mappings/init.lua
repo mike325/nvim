@@ -191,7 +191,38 @@ function M.find(opts)
                 end,
             }
         else
-            return vim.fs.find(target, { type = 'file', limit = math.huge })
+            local blacklist = {
+                ['.git'] = true,
+                ['.svn'] = true,
+                ['.cache'] = true,
+                ['__pycache__'] = true,
+                ['.vscode'] = true,
+                ['.vscode_clangd_setup'] = true,
+                ['node_modules'] = true,
+            }
+
+            local candidates = {}
+            local path = '.'
+            for fname, ftype in vim.fs.dir(path) do
+                if ftype == 'file' then
+                    if
+                        (type(target) == type '' and target == fname)
+                        or (type(target) == type {} and vim.list_contains(target, fname))
+                        or (type(target) == 'function' and target(fname))
+                    then
+                        table.insert(candidates, vim.fs.joinpath(path, fname))
+                    end
+                elseif not blacklist[fname] then
+                    local results = vim.fs.find(
+                        target,
+                        { type = 'file', limit = math.huge, path = vim.fs.joinpath(path, fname) }
+                    )
+                    if #results > 0 then
+                        candidates = vim.list_extend(candidates, results)
+                    end
+                end
+            end
+            return candidates
         end
     end
 end
@@ -793,6 +824,37 @@ function M.alternate(opts)
     -- TODO: alternates should be buffer local
     local alternates = vim.g.alternates or {}
     if not alternates[buf] or bang then
+
+        -- TODO: Searching in path could be faster than vim.fs.find but
+        --       this need that headers also have the same path as source files
+        local extensions = {
+            c = { 'h' },
+            h = { 'c' },
+            cc = { 'hpp', 'hxx' },
+            cpp = { 'hpp', 'hxx' },
+            cxx = { 'hpp', 'hxx' },
+            hpp = { 'cpp', 'cxx', 'cc' },
+            hxx = { 'cpp', 'cxx', 'cc' },
+        }
+        local bn = vim.fs.basename(buf)
+        local ext = require('utils.files').extension(bn)
+        local name_no_ext = bn:gsub('%.' .. ext .. '$', '')
+        for _, path in ipairs(vim.split(vim.bo.path, ',')) do
+            if path ~= '' and require('utils.files').is_dir(path) then
+                for item, itype in vim.fs.dir(path, {}) do
+                    if itype == 'file' then
+                        local iext = require('utils.files').extension(item)
+                        if
+                            name_no_ext == (item:gsub('%.' .. iext .. '$', ''))
+                            and vim.list_contains(extensions[ext], iext)
+                        then
+                            table.insert(candidates, path .. '/' .. item)
+                        end
+                    end
+                end
+            end
+        end
+
         if #candidates == 0 then
             local results = RELOAD('threads.related').alternate_src_header(RELOAD('threads').add_thread_context(opts))
             if results.candidates then

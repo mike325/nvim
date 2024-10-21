@@ -51,7 +51,21 @@ local simple_mini = {
     doc = {},
     fuzzy = {},
     extra = {},
-    pairs = {},
+    pairs = {
+        mappings = {
+            ['('] = { action = 'open', pair = '()', neigh_pattern = '[^\\].', register = { cr = false } },
+            ['['] = { action = 'open', pair = '[]', neigh_pattern = '[^\\].', register = { cr = false } },
+            ['{'] = { action = 'open', pair = '{}', neigh_pattern = '[^\\].', register = { cr = false } },
+
+            [')'] = { action = 'close', pair = '()', neigh_pattern = '[^\\].', register = { cr = false } },
+            [']'] = { action = 'close', pair = '[]', neigh_pattern = '[^\\].', register = { cr = false } },
+            ['}'] = { action = 'close', pair = '{}', neigh_pattern = '[^\\].', register = { cr = false } },
+
+            ['"'] = { action = 'closeopen', pair = '""', neigh_pattern = '[^\\].', register = { cr = false } },
+            ["'"] = { action = 'closeopen', pair = "''", neigh_pattern = '[^%a\\].', register = { cr = false } },
+            ['`'] = { action = 'closeopen', pair = '``', neigh_pattern = '[^\\].', register = { cr = false } },
+        },
+    },
     sessions = {},
     map = {},
     align = {
@@ -377,7 +391,7 @@ if mini.pick then
             }
             if fast_pickers[finder[1]] then
                 table.insert(finder, '-uuu')
-                table.insert(finder, '-L')
+                -- table.insert(finder, '-L')
                 mini.pick.builtin.cli { command = finder }
             else
                 -- TODO: add support for threads to have async functionality?

@@ -40,15 +40,45 @@ function M.find(thread_args)
         end
     end
 
+    local blacklist = {
+        ['.git'] = true,
+        ['.svn'] = true,
+        ['.cache'] = true,
+        ['__pycache__'] = true,
+        ['.vscode'] = true,
+        ['.vscode_clangd_setup'] = true,
+        ['node_modules'] = true,
+    }
+
     local opts = args.opts or { type = 'file' }
     if not opts.limit then
         opts.limit = math.huge
     end
-    local results = vim.fs.find(target, opts)
-    thread_args.results = results
+
+    local candidates = {}
+    local path = '.'
+    opts.path = opts.path or path
+    for fname, ftype in vim.fs.dir(path) do
+        if ftype == 'file' then
+            if
+                (type(target) == type '' and target == fname)
+                or (type(target) == type {} and vim.list_contains(target, fname))
+                or (type(target) == 'function' and target(fname))
+            then
+                table.insert(candidates, vim.fs.joinpath(path, fname))
+            end
+        elseif not blacklist[fname] then
+            local results = vim.fs.find(target, opts)
+            if #results > 0 then
+                candidates = vim.list_extend(candidates, results)
+            end
+        end
+    end
+
+    thread_args.results = candidates
     thread_args.functions = nil
     thread_args.args = nil
-    return (vim.is_thread() and encode) and vim.json.encode(results) or results
+    return (vim.is_thread() and encode) and vim.json.encode(candidates) or candidates
 end
 
 function M.async_find(opts)

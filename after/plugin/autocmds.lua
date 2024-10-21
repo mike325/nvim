@@ -64,20 +64,11 @@ if not nvim.plugins['nvim-treesitter'] then
     vim.api.nvim_create_autocmd({ 'FileType' }, {
         desc = 'Basic TS setup when nvim-treesitter is not install',
         group = vim.api.nvim_create_augroup('TreesitterSetup', { clear = true }),
-        pattern = 'c,lua,vim,vimdoc,help,query,python,bash,markdown',
+        pattern = 'c,lua,vim,vimdoc,help,query,markdown',
         callback = function(args)
             local ft_mapping = {}
             local filetype = vim.bo[args.buf].filetype
-            local nightly_ft = {
-                python = true,
-                bash = true,
-                markdown = true,
-            }
-
-            if not nvim.has { 0, 10 } and nightly_ft[filetype] then
-                -- these fts are not available yet
-                return
-            elseif nvim.has { 0, 9 } then
+            if nvim.has { 0, 9 } then
                 ft_mapping.help = 'vimdoc'
             end
             vim.treesitter.start(args.buf, ft_mapping[filetype] or filetype)

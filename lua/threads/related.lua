@@ -18,6 +18,16 @@ function M.gather_srcs_headers(thread_args)
         hxx = { 'cpp', 'cxx', 'cc' },
     }
 
+    local blacklist = {
+        ['.git'] = true,
+        ['.svn'] = true,
+        ['.cache'] = true,
+        ['__pycache__'] = true,
+        ['.vscode'] = true,
+        ['.vscode_clangd_setup'] = true,
+        ['node_modules'] = true,
+    }
+
     local args = thread_args.args
     local alternates = {}
     local path = args.path or '.'
@@ -26,7 +36,23 @@ function M.gather_srcs_headers(thread_args)
         local ext = extension(filename)
         return extensions[ext] ~= nil
     end
-    local candidates = vim.fs.find(filter_func, { type = 'file', limit = math.huge, path = path })
+
+    local candidates = {}
+    for fname, ftype in vim.fs.dir(path) do
+        if ftype == 'file' then
+            if filter_func(fname) then
+                table.insert(candidates, vim.fs.joinpath(path, fname))
+            end
+        elseif not blacklist[fname] then
+            local results = vim.fs.find(
+                filter_func,
+                { type = 'file', limit = math.huge, path = vim.fs.joinpath(path, fname) }
+            )
+            if #results > 0 then
+                candidates = vim.list_extend(candidates, results)
+            end
+        end
+    end
 
     local tmp = {}
     local idxs = {}
@@ -90,6 +116,16 @@ function M.gather_tests(thread_args)
         java = true,
     }
 
+    local blacklist = {
+        ['.git'] = true,
+        ['.svn'] = true,
+        ['.cache'] = true,
+        ['__pycache__'] = true,
+        ['.vscode'] = true,
+        ['.vscode_clangd_setup'] = true,
+        ['node_modules'] = true,
+    }
+
     local args = thread_args.args
 
     local tests = {}
@@ -100,14 +136,28 @@ function M.gather_tests(thread_args)
         return extensions[ext] ~= nil
     end
 
-    local candidates = vim.fs.find(filter_func, { type = 'file', limit = math.huge, path = path })
+    local candidates = {}
+    for fname, ftype in vim.fs.dir(path) do
+        if ftype == 'file' then
+            if filter_func(fname) then
+                table.insert(candidates, vim.fs.joinpath(path, fname))
+            end
+        elseif not blacklist[fname] then
+            local results = vim.fs.find(
+                filter_func,
+                { type = 'file', limit = math.huge, path = vim.fs.joinpath(path, fname) }
+            )
+            if #results > 0 then
+                candidates = vim.list_extend(candidates, results)
+            end
+        end
+    end
 
     local tmp = {}
     local idxs = {}
     for _, filename in ipairs(candidates) do
         local realfile = vim.loop.fs_realpath(filename)
         tmp[realfile] = {}
-        -- NOTE: Hope to not find repeated files
         idxs[basename(filename)] = realfile
     end
 
@@ -195,6 +245,16 @@ function M.alternate_src_header(thread_args)
         hxx = { 'cpp', 'cxx', 'cc' },
     }
 
+    local blacklist = {
+        ['.git'] = true,
+        ['.svn'] = true,
+        ['.cache'] = true,
+        ['__pycache__'] = true,
+        ['.vscode'] = true,
+        ['.vscode_clangd_setup'] = true,
+        ['node_modules'] = true,
+    }
+
     local candidates = {}
     local buf = thread_args.context.bufname
     local buf_name = basename(buf)
@@ -215,7 +275,19 @@ function M.alternate_src_header(thread_args)
             return buf_name_no_ext == name and vim.list_contains(extensions[buf_ext], ext)
         end
 
-        candidates = vim.fs.find(filter_func, { type = 'file' })
+        local path = '.'
+        for fname, ftype in vim.fs.dir(path) do
+            if ftype == 'file' then
+                if filter_func(fname) then
+                    table.insert(candidates, vim.fs.joinpath(path, fname))
+                end
+            elseif not blacklist[fname] then
+                local results = vim.fs.find(filter_func, { type = 'file', path = vim.fs.joinpath(path, fname) })
+                if #results > 0 then
+                    candidates = vim.list_extend(candidates, results)
+                end
+            end
+        end
     end
 
     local results = {
@@ -255,6 +327,16 @@ function M.alternate_test(thread_args)
         '[_%.]spec%.' .. buf_ext .. '$',
         '^[tT][eE][sS][tT][_%.]' .. base_bufname,
         '[%._][tT][eE][sS][tT]%.' .. buf_ext .. '$',
+    }
+
+    local blacklist = {
+        ['.git'] = true,
+        ['.svn'] = true,
+        ['.cache'] = true,
+        ['__pycache__'] = true,
+        ['.vscode'] = true,
+        ['.vscode_clangd_setup'] = true,
+        ['node_modules'] = true,
     }
 
     local function is_test(filename)
@@ -297,7 +379,19 @@ function M.alternate_test(thread_args)
 
         local filter_func = is_test(base_bufname) and find_src or find_test
 
-        candidates = vim.fs.find(filter_func, { type = 'file' })
+        local path = '.'
+        for fname, ftype in vim.fs.dir(path) do
+            if ftype == 'file' then
+                if filter_func(fname) then
+                    table.insert(candidates, vim.fs.joinpath(path, fname))
+                end
+            elseif not blacklist[fname] then
+                local results = vim.fs.find(filter_func, { type = 'file', path = vim.fs.joinpath(path, fname) })
+                if #results > 0 then
+                    candidates = vim.list_extend(candidates, results)
+                end
+            end
+        end
     end
 
     local results = {

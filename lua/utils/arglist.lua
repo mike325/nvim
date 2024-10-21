@@ -39,11 +39,13 @@ function M.add(files, clear)
             if filename == '%' then
                 filename = vim.fn.bufname(buf)
             end
-            filename = (filename:gsub('^' .. cwd, ''))
-            if buf == -1 then
-                vim.cmd.badd(filename)
+            if require('utils.files').is_file(filename) or buf ~= -1 then
+                filename = (filename:gsub('^' .. cwd, ''))
+                if buf == -1 then
+                    vim.cmd.badd(filename)
+                end
+                vim.cmd.argadd(filename)
             end
-            vim.cmd.argadd(filename)
         elseif type(filename) == type(0) then
             local buf = filename
             if not vim.api.nvim_buf_is_valid(buf) then
@@ -95,6 +97,23 @@ function M.edit(argument)
                 end
             end)
         )
+    end
+end
+
+function M.marks_to_arglist(opts)
+    local marks = {}
+    local cwd = vim.pesc(vim.loop.cwd() .. '/')
+    for idx = vim.fn.char2nr 'A', vim.fn.char2nr 'Z' do
+        local letter = vim.fn.nr2char(idx)
+        local mark = vim.api.nvim_get_mark(letter, {})
+        local filename = mark[4]
+        if filename ~= '' and require('utils.files').is_file(filename) then
+            table.insert(marks, (filename:gsub('^' .. cwd, '')))
+        end
+    end
+
+    if #marks > 0 then
+        M.add(marks, opts.clear)
     end
 end
 

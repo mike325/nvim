@@ -788,6 +788,9 @@ nvim.command.set('EditPathScript', function(opts)
         vim.notify(('Cannot find: %s in PATH'):format(cmd_str), vim.log.levels.ERROR, { title = 'EditPathScript' })
         return
     end
-
     vim.cmd.edit(cmd)
 end, { nargs = 1, complete = 'shellcmd', desc = 'Open a script located somewhere in path' })
+
+nvim.command.set('Marks2Arglist', function(opts)
+    RELOAD('utils.arglist').marks_to_arglist { clear = opts.bang }
+end, { bang = true, desc = 'Dump global marks files to the arglist' })

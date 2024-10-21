@@ -194,10 +194,35 @@ function M.compile(build_info)
     end
 
     if not build_info.single then
-        local files = vim.fs.find(function(filename)
-            return filename:match('%.' .. ft .. '$') ~= nil
-        end, { type = 'file', limit = math.huge })
-        compile(vim.list_extend(flags, files))
+        local blacklist = {
+            ['.git'] = true,
+            ['.svn'] = true,
+            ['.cache'] = true,
+            ['__pycache__'] = true,
+            ['.vscode'] = true,
+            ['.vscode_clangd_setup'] = true,
+            ['node_modules'] = true,
+        }
+
+        local candidates = {}
+        local function filter_func(fname)
+            return fname:match('%.' .. ft .. '$') ~= nil
+        end
+        local path = '.'
+        for fname, ftype in vim.fs.dir(path) do
+            if ftype == 'file' then
+                if filter_func(fname) then
+                    table.insert(candidates, vim.fs.joinpath(path, fname))
+                end
+            elseif not blacklist[fname] then
+                local results = vim.fs.find(filter_func, { type = 'file', limit = math.huge, vim.fs.joinpath(path, fname) })
+                if #results > 0 then
+                    candidates = vim.list_extend(candidates, results)
+                end
+            end
+        end
+
+        compile(vim.list_extend(flags, candidates))
     else
         table.insert(flags, nvim.buf.get_name(0))
         compile(flags)
