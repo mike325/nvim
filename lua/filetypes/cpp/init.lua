@@ -201,6 +201,16 @@ function M.set_file_opts(flags_file, bufnum)
     local function set_source_options(fname)
         if compile_commands_dbs[fname] then
             paths = compile_commands_dbs[fname].includes or {}
+            if fname:match '%.hpp$' or fname:match '%.h$' then
+                local fname_basename = vim.fs.basename(fname)
+                for source_name, _ in pairs(compile_commands_dbs) do
+                    local source_basename = vim.fs.basename(source_name)
+                    if source_basename:gsub('%.cpp$', '.hpp') == fname_basename or source_basename:gsub('%.c$', '.h') == fname_basename then
+                        paths = compile_commands_dbs[source_name].includes or {}
+                        break
+                    end
+                end
+            end
         elseif compile_flags[flags_file] then
             paths = compile_flags[flags_file].includes or {}
         end

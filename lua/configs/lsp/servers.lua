@@ -127,6 +127,47 @@ local servers = {
     },
     python = {
         {
+            exec = 'pylsp',
+            options = {
+                cmd = {
+                    'pylsp',
+                    '--check-parent-process',
+                    '--log-file=/tmp/pylsp.log',
+                },
+                capabilities = {
+                    textDocument = {
+                        completion = {
+                            completionItem = { snippetSupport = true },
+                        },
+                    },
+                },
+                settings = {
+                    pylsp = {
+                        plugins = {
+                            jedi = {
+                                extra_paths = {},
+                            },
+                            jedi_completion = {
+                                enabled = true,
+                                fuzzy = true,
+                                include_params = true,
+                            },
+                            ruff = {
+                                enabled = false, -- Enable the plugin
+                                formatEnabled = false, -- Enable formatting using ruffs formatter
+                            },
+                            pylsp_mypy = { enabled = true, },
+                            pylint = { enabled = true, },
+                            pycodestyle = { enabled = true, },
+                            black = { enabled = true, },
+                            pyflakes = { enabled = true, },
+                            mccabe = { enabled = true, },
+                        },
+                    },
+                },
+            },
+        },
+        {
             exec = 'basedpyright',
             cmd = {
                 'basedpyright',
@@ -162,53 +203,9 @@ local servers = {
                 settings = {
                     python = {
                         checkOnType = false,
-                        diagnostics = true,
+                        diagnostics = false,
                         inlayHints = true,
                         smartCompletion = true,
-                    },
-                },
-            },
-        },
-        {
-            exec = 'pylsp',
-            options = {
-                cmd = {
-                    'pylsp',
-                    '--check-parent-process',
-                    '--log-file=' .. sys.tmp 'pylsp.log',
-                },
-                capabilities = {
-                    textDocument = {
-                        completion = {
-                            completionItem = { snippetSupport = true },
-                        },
-                    },
-                },
-                settings = {
-                    pylsp = {
-                        plugins = {
-                            ruff = {
-                                enabled = true, -- Enable the plugin
-                                formatEnabled = true, -- Enable formatting using ruffs formatter
-                            },
-                            jedi = {
-                                extra_paths = {},
-                            },
-                            jedi_completion = {
-                                enabled = true,
-                                fuzzy = true,
-                                include_params = true,
-                            },
-                            pycodestyle = {
-                                enabled = false,
-                            },
-                            pyflakes = {
-                                enabled = false,
-                            },
-                            mccabe = {
-                                enabled = false,
-                            },
-                        },
                     },
                 },
             },

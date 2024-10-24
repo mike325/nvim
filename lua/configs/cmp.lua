@@ -30,15 +30,17 @@ if lspkind then
     }
 end
 
-local custom_comparators = {
-    clangd_comparator = vim.F.npcall(require, 'clangd_extensions.cmp_scores'),
-    underscore = vim.F.npcall(require, 'cmp-under-comparator'),
-}
+local custom_comparators = {}
+local underscore = vim.F.npcall(require, 'cmp-under-comparator')
+-- local clangd = vim.F.npcall(require, 'clangd_extensions.cmp_scores'),
+
+if underscore then
+    custom_comparators.underscore = underscore.under
+end
 
 local comparators = vim.deepcopy(cmp.get_config().sorting.comparators)
-
-for _, comparator in ipairs(custom_comparators) do
-    table.insert(comparators, 4, comparator)
+for _, comparator in pairs(custom_comparators) do
+    table.insert(comparators, 2, comparator)
 end
 
 local function has_treesitter()
@@ -67,8 +69,6 @@ if orgmode then
 end
 
 vim.list_extend(sources, { { name = 'buffer' }, { name = 'path' } })
-
-local maps = require 'completions.mappings'
 
 cmp.setup {
     enabled = function()

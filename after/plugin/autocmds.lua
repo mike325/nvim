@@ -10,43 +10,68 @@ if not nvim.plugins['nvim-lspconfig'] then
             local server_idx = RELOAD('configs.lsp.utils').check_language_server(ft)
             if server_idx then
                 local server = RELOAD('configs.lsp.servers')[ft][server_idx]
-                local cmd, name
 
-                if server.options and server.options.cmd then
-                    cmd = server.options.cmd
-                elseif server.cmd then
-                    cmd = server.cmd
-                elseif server.exec then
-                    cmd = server.exec
+                local function get_cmd()
+                    local cmd
+                    if server.options and server.options.cmd then
+                        cmd = server.options.cmd
+                    elseif server.cmd then
+                        cmd = server.cmd
+                    elseif server.exec then
+                        cmd = server.exec
+                    end
+
+                    if cmd and type(cmd) ~= type {} then
+                        cmd = { cmd }
+                    end
+
+                    return cmd
+                end
+
+                local function get_name()
+                    local name
+                    if server.config then
+                        name = server.config
+                    elseif server.exec then
+                        name = server.exec
+                    end
+                    return name
+                end
+
+                local function get_root()
+                    local markers = { '.git' }
+                    if server.markers then
+                        vim.list_extend(markers, server.markers)
+                    end
+                    local root_dir = vim.fs.find(markers, { upward = true })[1]
+                    return root_dir and vim.fs.dirname(root_dir) or vim.uv.cwd()
+                end
+
+                local opts = {}
+                if server.options and type(server.options) == type {} then
+                    opts = vim.deepcopy(server.options)
+                    if not opts.cmd then
+                        opts.cmd = get_cmd()
+                        if not opts.cmd then
+                            return
+                        end
+                    end
+
+                    if not opts.name then
+                        opts.name = get_name() or opts.cmd[1]
+                    end
+
+                    if not opts.root_dir then
+                        opts.root_dir = get_root()
+                    end
                 else
-                    -- missing server startup cmd
-                    return
+                    opts.cmd = get_cmd()
+                    if not opts.cmd then
+                        return
+                    end
+                    opts.name = get_name() or opts.cmd[1]
+                    opts.root_dir = get_root()
                 end
-                if type(cmd) ~= type {} then
-                    cmd = { cmd }
-                end
-
-                if server.config then
-                    name = server.config
-                elseif server.exec then
-                    name = server.exec
-                else
-                    name = cmd[1]
-                end
-
-                -- TODO: Add especific ft markers, like cargo, pyproject, etc
-                local markers = { '.git' }
-                if server.markers then
-                    vim.list_extend(markers, server.markers)
-                end
-
-                local root_dir = vim.fs.dirname(vim.fs.find(markers, { upward = true })[1]) or vim.loop.cwd()
-
-                local opts = {
-                    name = name,
-                    cmd = cmd,
-                    root_dir = root_dir,
-                }
 
                 local neodev = vim.F.npcall(require, 'neodev.lsp')
                 if neodev and ft == 'lua' then
