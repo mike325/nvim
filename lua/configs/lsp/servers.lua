@@ -156,12 +156,12 @@ local servers = {
                                 enabled = false, -- Enable the plugin
                                 formatEnabled = false, -- Enable formatting using ruffs formatter
                             },
-                            pylsp_mypy = { enabled = true, },
-                            pylint = { enabled = true, },
-                            pycodestyle = { enabled = true, },
-                            black = { enabled = true, },
-                            pyflakes = { enabled = true, },
-                            mccabe = { enabled = true, },
+                            pylsp_mypy = { enabled = true },
+                            pylint = { enabled = true },
+                            pycodestyle = { enabled = true },
+                            black = { enabled = true },
+                            pyflakes = { enabled = true },
+                            mccabe = { enabled = true },
                         },
                     },
                 },
