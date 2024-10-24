@@ -159,7 +159,7 @@ local function get_mini_path()
     local mini_path = path_package .. '/pack/deps/start/mini.nvim'
 
     local lazy_root = get_lazypath()
-    if vim.loop.fs_stat(lazy_root) then
+    if vim.uv.fs_stat(lazy_root) then
         mini_path = string.format('%s/mini.nvim', vim.fs.dirname(lazy_root))
     else
         local locations = {
@@ -169,7 +169,7 @@ local function get_mini_path()
         }
         for _, location in ipairs(locations) do
             local plugin_loc = path_package .. string.format('/pack/%s/start/mini.nvim', location)
-            if vim.loop.fs_stat(plugin_loc) then
+            if vim.uv.fs_stat(plugin_loc) then
                 mini_path = plugin_loc
                 break
             end
@@ -234,7 +234,7 @@ local function setup_mini(download)
     }
 
     vim.g.mini_path = get_mini_path()
-    vim.g.mini_setup = vim.loop.fs_stat(vim.g.mini_path) ~= nil
+    vim.g.mini_setup = vim.uv.fs_stat(vim.g.mini_path) ~= nil
 
     if vim.g.mini_setup and vim.g.mini_path:match '/lazy' then
         vim.opt.rtp:prepend(vim.g.mini_path)
@@ -275,7 +275,7 @@ local function setup_lazy(download)
     }
 
     vim.g.lazypath = get_lazypath()
-    vim.g.lazy_setup = vim.loop.fs_stat(vim.g.lazypath) ~= nil
+    vim.g.lazy_setup = vim.uv.fs_stat(vim.g.lazypath) ~= nil
 
     if vim.g.lazy_setup then
         vim.opt.rtp:prepend(vim.g.lazypath)

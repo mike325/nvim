@@ -55,7 +55,7 @@ function M.gather_srcs_headers(thread_args)
     local tmp = {}
     local idxs = {}
     for _, filename in ipairs(candidates) do
-        local realfile = vim.loop.fs_realpath(filename)
+        local realfile = vim.uv.fs_realpath(filename)
         tmp[realfile] = {}
         local basename_file = basename(filename)
         if basename_file then
@@ -67,7 +67,7 @@ function M.gather_srcs_headers(thread_args)
     end
 
     for _, filename in ipairs(candidates) do
-        filename = vim.loop.fs_realpath(filename)
+        filename = vim.uv.fs_realpath(filename)
         local file_name = basename(filename)
         local file_ext = extension(file_name)
         local file_name_no_ext = filename
@@ -152,13 +152,13 @@ function M.gather_tests(thread_args)
     local tmp = {}
     local idxs = {}
     for _, filename in ipairs(candidates) do
-        local realfile = vim.loop.fs_realpath(filename)
+        local realfile = vim.uv.fs_realpath(filename)
         tmp[realfile] = {}
         idxs[basename(filename)] = realfile
     end
 
     for _, filename in ipairs(candidates) do
-        filename = vim.loop.fs_realpath(filename)
+        filename = vim.uv.fs_realpath(filename)
         local file_name = basename(filename)
         local file_ext = extension(file_name)
         local file_name_no_ext = filename

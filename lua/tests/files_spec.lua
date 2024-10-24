@@ -42,7 +42,7 @@ describe('Check file and directories', function()
 
     it('exists', function()
         local exists = require('utils.files').exists
-        mini_test.expect.equality('directory', exists(vim.loop.os_homedir()))
+        mini_test.expect.equality('directory', exists(vim.uv.os_homedir()))
         mini_test.expect.equality('file', exists(init_file))
         mini_test.expect.equality(exists(vim.fn.tempname()), false)
     end)
@@ -57,7 +57,7 @@ describe('Check file and directories', function()
     it('is_dir', function()
         local is_dir = require('utils.files').is_dir
         mini_test.expect.equality(is_dir(config_dir), true)
-        mini_test.expect.equality(is_dir(vim.loop.os_homedir()), true)
+        mini_test.expect.equality(is_dir(vim.uv.os_homedir()), true)
         mini_test.expect.equality(is_dir(init_file), false)
         mini_test.expect.equality(is_dir(vim.fn.tempname()), false)
     end)
@@ -67,7 +67,7 @@ describe('Mkdir', function()
     local mkdir = require('utils.files').mkdir
 
     it('Existing Directory', function()
-        local homedir = vim.loop.os_homedir()
+        local homedir = vim.uv.os_homedir()
         mini_test.expect.equality(mkdir(homedir), true)
     end)
 
@@ -120,8 +120,8 @@ describe('Linking', function()
     -- NOTE: sometimes /tmp is mount on a different drive and linking fail between different volumes
     local function get_cache_tmp()
         local cache_dir = vim.fn.stdpath('cache'):gsub('\\', '/')
-        local fd, tmpname = vim.loop.fs_mkstemp(cache_dir .. '/test.XXXXXX')
-        vim.loop.fs_close(fd)
+        local fd, tmpname = vim.uv.fs_mkstemp(cache_dir .. '/test.XXXXXX')
+        vim.uv.fs_close(fd)
         os.remove(tmpname) -- some functions check the file do not exist before writing to it
         table.insert(cached_files, tmpname)
         return tmpname
@@ -240,8 +240,8 @@ describe('Absolute path', function()
     local is_absolute = require('utils.files').is_absolute
 
     it('Unix/Windows', function()
-        mini_test.expect.equality(is_absolute(vim.loop.os_homedir()), true)
-        mini_test.expect.equality(is_absolute(vim.loop.cwd()), true)
+        mini_test.expect.equality(is_absolute(vim.uv.os_homedir()), true)
+        mini_test.expect.equality(is_absolute(vim.uv.cwd()), true)
         mini_test.expect.equality(is_absolute '.', false)
         mini_test.expect.equality(is_absolute '../', false)
         mini_test.expect.equality(is_absolute 'test', false)
@@ -293,17 +293,17 @@ describe('Realpath', function()
     local realpath = require('utils.files').realpath
 
     it('HOME', function()
-        local homedir = vim.loop.os_homedir()
+        local homedir = vim.uv.os_homedir()
         mini_test.expect.equality(realpath '~', forward_path(homedir))
     end)
 
     it('CWD', function()
-        local cwd = vim.loop.cwd()
+        local cwd = vim.uv.cwd()
         mini_test.expect.equality(realpath '.', forward_path(cwd))
     end)
 
     it('parent', function()
-        local cwd = vim.loop.cwd()
+        local cwd = vim.uv.cwd()
         mini_test.expect.equality(realpath '..', vim.fs.dirname(cwd))
     end)
 end)
@@ -312,7 +312,7 @@ describe('Normalize', function()
     local normalize = require('utils.files').normalize
 
     it('HOME', function()
-        local homedir = vim.loop.os_homedir()
+        local homedir = vim.uv.os_homedir()
         mini_test.expect.equality(normalize '~', forward_path(homedir))
     end)
 
@@ -396,7 +396,7 @@ describe('Dirname', function()
         local cache_dir = forward_path(vim.fn.stdpath 'cache')
 
         local init_file = forward_path(config_dir .. '/init.lua')
-        -- local homedir = forward_path(vim.loop.os_homedir())
+        -- local homedir = forward_path(vim.uv.os_homedir())
 
         mini_test.expect.equality(config_dir, dirname(init_file))
 
@@ -532,7 +532,7 @@ if not is_windows then
 end
 
 describe('ls', function()
-    local homedir = vim.loop.os_homedir()
+    local homedir = vim.uv.os_homedir()
 
     it("List directory's files/dirs", function()
         local ls = require('utils.files').ls
@@ -806,10 +806,10 @@ describe('is_parent', function()
     local is_parent = require('utils.files').is_parent
 
     it('directory', function()
-        mini_test.expect.equality(is_parent(root, vim.loop.os_homedir()), true)
-        mini_test.expect.equality(is_parent(vim.loop.os_homedir(), vim.fn.stdpath 'data'), true)
-        mini_test.expect.equality(is_parent(vim.loop.os_homedir(), vim.fn.stdpath 'cache'), true)
-        mini_test.expect.equality(is_parent(vim.loop.os_tmpdir(), vim.loop.os_homedir()), false)
+        mini_test.expect.equality(is_parent(root, vim.uv.os_homedir()), true)
+        mini_test.expect.equality(is_parent(vim.uv.os_homedir(), vim.fn.stdpath 'data'), true)
+        mini_test.expect.equality(is_parent(vim.uv.os_homedir(), vim.fn.stdpath 'cache'), true)
+        mini_test.expect.equality(is_parent(vim.uv.os_tmpdir(), vim.uv.os_homedir()), false)
     end)
 
     it('root', function()

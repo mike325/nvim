@@ -116,9 +116,9 @@ else
 
         local fd = (level and level == 'ERROR') and 2 or 1
         local output = ('%s\n'):format(text)
-        local handle_type = vim.loop.guess_handle(fd)
+        local handle_type = vim.uv.guess_handle(fd)
         if handle_type == 'tty' then
-            local stdio = vim.loop.new_tty(fd, false)
+            local stdio = vim.uv.new_tty(fd, false)
             if level and level ~= '' then
                 output = ('%s%s%s\n'):format(level_colors[level] or level_colors.INFO, text, term_colors.reset_color)
             end
@@ -126,17 +126,17 @@ else
             stdio:close()
         elseif handle_type == 'file' then
             -- NOTE: Not using utils.files since they call notify for errors, making this recursive
-            local stdio = assert(vim.loop.fs_open(('/proc/%s/fd/%s'):format(vim.fn.getpid(), fd), 'a+', 438))
+            local stdio = assert(vim.uv.fs_open(('/proc/%s/fd/%s'):format(vim.fn.getpid(), fd), 'a+', 438))
 
-            local ok, err, _ = vim.loop.fs_write(stdio, output, 0)
+            local ok, err, _ = vim.uv.fs_write(stdio, output, 0)
             if not ok then
                 vim.print(err)
             end
 
-            assert(vim.loop.fs_close(stdio))
+            assert(vim.uv.fs_close(stdio))
         elseif handle_type == 'pipe' then
             -- TODO: Migrate this to libuv
-            -- local stdio = vim.loop.new_pipe(false)
+            -- local stdio = vim.uv.new_pipe(false)
             -- assert(stdio:open(fd) == 0)
             -- stdio:write(output)
             -- stdio:close()
@@ -146,7 +146,7 @@ else
                 io.stderr:write(output)
             end
         else
-            error(debug.traceback(('Unknown fd handle type: %s\n'):format(vim.loop.guess_handle(fd))))
+            error(debug.traceback(('Unknown fd handle type: %s\n'):format(vim.uv.guess_handle(fd))))
         end
     end
 end

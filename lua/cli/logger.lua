@@ -52,11 +52,11 @@ local function async_append_log(filename, data, cb)
         data = { data, 'string' },
         cb = { cb, 'function', true },
     }
-    vim.loop.fs_open(filename, 'a+', 438, function(oerr, fd)
+    vim.uv.fs_open(filename, 'a+', 438, function(oerr, fd)
         assert(not oerr, oerr)
-        vim.loop.fs_write(fd, data .. '\n', 0, function(rerr)
+        vim.uv.fs_write(fd, data .. '\n', 0, function(rerr)
             assert(not rerr, rerr)
-            vim.loop.fs_close(fd, function(cerr)
+            vim.uv.fs_close(fd, function(cerr)
                 assert(not cerr, cerr)
                 if cb then
                     cb()

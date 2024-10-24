@@ -610,7 +610,7 @@ end, { nargs = 0, bang = true, desc = 'Delete all or invalid arguments' })
 
 nvim.command.set('ArgAddBuf', function(opts)
     local argadd = RELOAD('utils.arglist').add
-    local cwd = vim.pesc(vim.loop.cwd() .. '/')
+    local cwd = vim.pesc(vim.uv.cwd() .. '/')
     local buffers = vim.tbl_map(function(buf)
         return (vim.api.nvim_buf_get_name(buf):gsub(cwd, ''))
     end, vim.api.nvim_list_bufs())
@@ -681,7 +681,7 @@ nvim.command.set('RemoveForeignMarks', function()
             if utils.is_file(filename) then
                 filename = utils.realpath(filename)
             end
-            local cwd = vim.pesc(vim.loop.cwd())
+            local cwd = vim.pesc(vim.uv.cwd())
             if not utils.is_file(filename) or not filename:match('^' .. cwd) then
                 vim.api.nvim_del_mark(letter)
                 deleted_marks = deleted_marks + 1

@@ -163,7 +163,7 @@ local M = {
     },
     jobs = {
         component = function()
-            local procs = #vim.api.nvim_get_proc_children(vim.loop.os_getpid())
+            local procs = #vim.api.nvim_get_proc_children(vim.uv.os_getpid())
             if procs > 0 then
                 return ('%s: %s'):format('Jobs', procs)
             end

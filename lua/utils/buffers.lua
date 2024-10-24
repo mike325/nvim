@@ -723,7 +723,7 @@ function M.push_tag(args)
     assert(buf or filename, debug.traceback 'Missing both, buf number and filename')
     assert(args.cmd or args.pos, debug.traceback 'Missing both, position and cmd')
 
-    local cwd = vim.pesc(vim.loop.cwd()) .. '/'
+    local cwd = vim.pesc(vim.uv.cwd()) .. '/'
 
     if not buf then
         filename = args.filename:gsub('^' .. cwd, '')

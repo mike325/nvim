@@ -509,7 +509,7 @@ function M.edit(args)
     local utils = RELOAD 'utils.files'
 
     local globs = args.fargs
-    local cwd = vim.pesc(vim.loop.cwd() .. '/')
+    local cwd = vim.pesc(vim.uv.cwd() .. '/')
     for _, g in ipairs(globs) do
         if utils.is_file(g) then
             vim.cmd.edit((g:gsub(cwd, '')))
@@ -551,7 +551,7 @@ function M.diff_files(args)
         else
             vim.cmd.vsplit()
         end
-        local cwd = vim.pesc(vim.loop.cwd() .. '/')
+        local cwd = vim.pesc(vim.uv.cwd() .. '/')
         vim.cmd.edit((f:gsub(cwd, '')))
     end
 
@@ -772,7 +772,7 @@ local function select_from_lst(args, prompt)
     }
 
     prompt = prompt or 'Select file: '
-    local cwd = vim.pesc(vim.loop.cwd() .. '/')
+    local cwd = vim.pesc(vim.uv.cwd() .. '/')
     if #args > 1 then
         vim.ui.select(
             args,
@@ -812,7 +812,7 @@ function M.alternate(opts)
     end
 
     if require('utils.files').is_file(opts.buf) then
-        opts.buf = vim.loop.fs_realpath(opts.buf)
+        opts.buf = vim.uv.fs_realpath(opts.buf)
     end
 
     local candidates = {}
@@ -920,7 +920,7 @@ function M.alternate_test(opts)
     end
 
     if require('utils.files').is_file(opts.buf) then
-        opts.buf = vim.loop.fs_realpath(opts.buf)
+        opts.buf = vim.uv.fs_realpath(opts.buf)
     end
 
     local candidates

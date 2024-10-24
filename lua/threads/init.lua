@@ -6,14 +6,14 @@ function M.init(thread_args)
         if not vim.env then
             vim.env = setmetatable({}, {
                 __index = function(_, k)
-                    local v = vim.loop.os_getenv(k)
+                    local v = vim.uv.os_getenv(k)
                     if v == nil then
                         return nil
                     end
                     return v
                 end,
                 __newindex = function(_, k, v)
-                    vim.loop.os_setenv(k, v)
+                    vim.uv.os_setenv(k, v)
                 end,
             })
         end
@@ -55,7 +55,7 @@ function M.init(thread_args)
             args = vim.json.decode(thread_args)
 
             args.args = args.args or {}
-            args.context = args.context or { (vim.loop.cwd():gsub('\\', '/')) }
+            args.context = args.context or { (vim.uv.cwd():gsub('\\', '/')) }
             args.functions = args.functions or {}
 
             if next(args.functions) ~= nil then
@@ -65,13 +65,13 @@ function M.init(thread_args)
             end
         elseif type(thread_args) == type {} then
             args.args = args.args or {}
-            args.context = args.context or { (vim.loop.cwd():gsub('\\', '/')) }
+            args.context = args.context or { (vim.uv.cwd():gsub('\\', '/')) }
             args.functions = args.functions or {}
         end
     else
         args = {
             args = {},
-            context = { (vim.loop.cwd():gsub('\\', '/')) },
+            context = { (vim.uv.cwd():gsub('\\', '/')) },
             functions = {},
         }
     end
@@ -125,7 +125,7 @@ function M.add_thread_context(opts)
     end
     context.dirname = vim.fs.dirname(context.bufname)
     context.buf_is_virtual = prefix ~= nil or vim.bo.buftype ~= '' or context.bufname == ''
-    context.cwd = context.cwd or (vim.loop.cwd():gsub('\\', '/'))
+    context.cwd = context.cwd or (vim.uv.cwd():gsub('\\', '/'))
 
     thread_opts.context = context
     thread_opts.version = vim.version()
@@ -148,7 +148,7 @@ function M.queue_thread(thread, cb, opts)
     -- - copy of all global, buffer and tab variables vim ?
     -- - pcall thread function and collect errors
     -- - Parse thread opts/function/args before calling the thread function
-    local work = vim.loop.new_work(
+    local work = vim.uv.new_work(
         thread,
         vim.schedule_wrap(function(o)
             if type(o) == type '' and o ~= '' then

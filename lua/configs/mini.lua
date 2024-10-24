@@ -169,7 +169,7 @@ if mini.sessions then
     nvim.command.set('SessionSave', function(opts)
         local session = opts.args
         if session == '' then
-            local getcwd = vim.loop.cwd
+            local getcwd = vim.uv.cwd
             session = vim.v.this_session ~= '' and vim.v.this_session or vim.fs.basename(getcwd())
             if session:match '^%.' then
                 session = session:gsub('^%.+', '')
@@ -270,7 +270,7 @@ end
 mini.files = vim.F.npcall(require, 'mini.files')
 if mini.files then
     nvim.command.set('Files', function(opts)
-        local path = opts.bang and vim.api.nvim_buf_get_name(0) or vim.loop.cwd()
+        local path = opts.bang and vim.api.nvim_buf_get_name(0) or vim.uv.cwd()
         mini.files.open(path)
     end, { bang = true, desc = 'Open mini.files' })
 
@@ -549,7 +549,7 @@ if vim.g.minimal then
                 return
             end
 
-            local cwd = vim.pesc(vim.loop.cwd() .. '/')
+            local cwd = vim.pesc(vim.uv.cwd() .. '/')
             filename = (filename:gsub('^' .. cwd, ''))
 
             vim.cmd.write { filename, bang = opts.bang }
@@ -561,7 +561,7 @@ if vim.g.minimal then
             if filename == '' or filename:match '^%w+://' then
                 return
             end
-            local cwd = vim.pesc(vim.loop.cwd() .. '/')
+            local cwd = vim.pesc(vim.uv.cwd() .. '/')
             filename = (filename:gsub('^' .. cwd, ''))
             local buf = vim.fn.bufnr(filename)
             local pos

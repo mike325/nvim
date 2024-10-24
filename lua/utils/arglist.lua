@@ -102,7 +102,7 @@ end
 
 function M.marks_to_arglist(opts)
     local marks = {}
-    local cwd = vim.pesc(vim.loop.cwd() .. '/')
+    local cwd = vim.pesc(vim.uv.cwd() .. '/')
     for idx = vim.fn.char2nr 'A', vim.fn.char2nr 'Z' do
         local letter = vim.fn.nr2char(idx)
         local mark = vim.api.nvim_get_mark(letter, {})

@@ -748,7 +748,7 @@ if executable 'git' then
         pattern = '*',
         callback = function(data)
             -- TODO: should this be cache into a table?
-            local cwd = vim.loop.cwd()
+            local cwd = vim.uv.cwd()
             if data.event == 'VimEnter' then
                 vim.t.is_in_git = false
             end

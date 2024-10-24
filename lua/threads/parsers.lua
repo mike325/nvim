@@ -73,7 +73,7 @@ function M.compiledb(thread_args)
         ok, json = pcall(vim.json.decode, data)
         if not ok then
             -- NOTE: json may be completely dumped yet
-            vim.loop.sleep(delay)
+            vim.uv.sleep(delay)
             delay = delay * 2
         else
             break
@@ -122,7 +122,7 @@ function M.sshconfig()
     require('threads').init()
 
     local utils = require 'utils.files'
-    local ssh_config = vim.loop.os_homedir() .. '/.ssh/config'
+    local ssh_config = vim.uv.os_homedir() .. '/.ssh/config'
 
     local hosts = {}
     if utils.is_file(ssh_config) then

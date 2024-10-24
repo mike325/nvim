@@ -127,7 +127,7 @@ completions = vim.tbl_extend('force', completions, {
         return utils.general_completion(arglead, cmdline, cursorpos, vim.fn.argv())
     end,
     buflist = function(arglead, cmdline, cursorpos)
-        local cwd = vim.pesc(vim.loop.cwd() .. '/')
+        local cwd = vim.pesc(vim.uv.cwd() .. '/')
         local buffers = vim.tbl_filter(
             function(buf)
                 return buf ~= ''

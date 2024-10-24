@@ -66,7 +66,7 @@ function Watcher:new(filename, autocmd, cb)
             watcher_obj:subscribe(au)
         end
     else
-        local watcher = vim.loop.new_fs_event()
+        local watcher = vim.uv.new_fs_event()
         local obj = {
             _filename = filename,
             _watcher = watcher,

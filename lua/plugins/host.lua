@@ -6,7 +6,7 @@ local plugin_path = '%s/site/pack/%s/start/%s'
 local plugin_names = {
     'host',
     'work',
-    vim.loop.os_gethostname(),
+    vim.uv.os_gethostname(),
 }
 
 for _, plugin in ipairs(plugin_names) do

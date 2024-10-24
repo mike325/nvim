@@ -1,4 +1,4 @@
-local ssh_config = vim.loop.os_homedir():gsub('\\', '/') .. '/.ssh/config'
+local ssh_config = vim.uv.os_homedir():gsub('\\', '/') .. '/.ssh/config'
 
 -- TODO: Add some lua files to enable auto reloading of settings
 local watch_files = {

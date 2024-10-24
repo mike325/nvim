@@ -12,7 +12,7 @@ if not has_mini and not nvim.plugins['vim-fugitive'] then
             return
         end
 
-        local cwd = vim.pesc(vim.loop.cwd() .. '/')
+        local cwd = vim.pesc(vim.uv.cwd() .. '/')
         filename = (filename:gsub('^' .. cwd, ''))
 
         vim.cmd.write { filename, bang = opts.bang }

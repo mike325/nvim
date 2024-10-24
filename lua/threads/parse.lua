@@ -2,7 +2,7 @@ local M = {}
 
 function M.ssh_hosts(opts)
     local parsers = RELOAD 'threads.parsers'
-    local ssh_config = string.format('%s/.ssh/config', (vim.loop.os_homedir():gsub('\\', '/')))
+    local ssh_config = string.format('%s/.ssh/config', (vim.uv.os_homedir():gsub('\\', '/')))
     if require('utils.files').is_file(ssh_config) then
         RELOAD('threads').queue_thread(parsers.sshconfig, function(hosts)
             for host, attrs in pairs(hosts) do

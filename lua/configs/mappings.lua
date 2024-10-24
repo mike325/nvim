@@ -304,7 +304,7 @@ vim.keymap.set('n', '<leader>A', function()
 end, { noremap = true, silent = true, desc = 'Add current buffer to the arglist' })
 
 vim.keymap.set('n', '<leader>D', function()
-    local cwd = vim.pesc(vim.loop.cwd() .. '/')
+    local cwd = vim.pesc(vim.uv.cwd() .. '/')
     vim.cmd.argdelete((vim.api.nvim_buf_get_name(0):gsub(cwd, '')))
 end, { noremap = true, silent = true, desc = 'Delete current buffer to the arglist' })
 

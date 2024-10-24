@@ -22,7 +22,7 @@ local function system_name()
 end
 
 local function homedir()
-    local home = vim.loop.os_homedir()
+    local home = vim.uv.os_homedir()
     return forward_slash(home)
 end
 
@@ -84,7 +84,7 @@ local sys = {
     luajit = luajit_version(),
     db_root = db_root_path(),
     has_sqlite = has_sqlite(),
-    user = vim.loop.os_get_passwd(),
+    user = vim.uv.os_get_passwd(),
     version = version(),
 }
 
