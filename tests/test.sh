@@ -388,9 +388,9 @@ done
 
 if [[ -z $MINI_DIR ]]; then
     if is_windows; then
-        MINI_DIR="$HOME/AppData/Local/nvim-data/site/pack/host/opt/"
+        MINI_DIR="$HOME/AppData/Local/nvim-data/site/pack/deps/start/"
     else
-        MINI_DIR="$HOME/.local/share/nvim/site/pack/host/opt/"
+        MINI_DIR="$HOME/.local/share/nvim/site/pack/deps/start/"
     fi
     mkdir -p "$MINI_DIR"
     if ! git clone --recursive https://github.com/echasnovski/mini.nvim "$MINI_DIR/mini.nvim"; then
@@ -401,7 +401,7 @@ fi
 
 nvim -V1 --version | tee -a test.log
 status_msg "Starting unittests"
-if ! nvim --headless --cmd 'let g:minimal=1' --cmd "let g:no_output=1" -c "lua MiniTest.execute(MiniTest.collect())"; then
+if ! nvim --headless --cmd 'let g:minimal=1' --cmd "let g:no_output=1" -c "lua require'nvim'.setup(true)" -c "lua MiniTest.execute(MiniTest.collect())"; then
     error_msg "Failed to run nvim tests"
 fi
 
