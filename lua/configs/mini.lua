@@ -198,6 +198,34 @@ if mini.sessions then
         end
     end, { bang = true, nargs = '?', complete = completions.session_files })
 
+    nvim.command.set('SessionEdit', function(opts)
+        local session = opts.args
+
+        local function edit_sessions_file(session_name)
+            local session_file = sessions_dir .. '/' .. session_name
+            if not is_file(session_file) then
+                vim.notify('Invalid Session: ' .. session_name, vim.log.levels.ERROR, { title = 'mini.session' })
+                return
+            end
+            vim.cmd.edit(session_file)
+        end
+
+        if session == '' then
+            local sessions = require('utils.files').get_files(sessions_dir)
+            vim.ui.select(
+                vim.tbl_map(vim.fs.basename, sessions),
+                { prompt = 'Select session file: ' },
+                vim.schedule_wrap(function(choice)
+                    if choice then
+                        edit_sessions_file(choice)
+                    end
+                end)
+            )
+        else
+            edit_sessions_file(session)
+        end
+    end, { bang = true, nargs = '?', complete = completions.session_files })
+
     nvim.command.set('SessionDelete', function(opts)
         local bang = opts.bang
         local session = opts.args
