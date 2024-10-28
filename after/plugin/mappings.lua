@@ -6,7 +6,6 @@ end
 
 -- TODO: Lazy check for mini
 local has_mini = nvim.plugins['mini.nvim'] ~= nil or (vim.g.minimal and vim.F.npcall(require, 'mini.comment') ~= nil)
-local has_cmp = nvim.plugins['nvim-cmp']
 
 if not has_mini then
     vim.keymap.set(
