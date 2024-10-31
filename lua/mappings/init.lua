@@ -778,7 +778,9 @@ local function select_from_lst(args, prompt)
             args,
             { prompt = prompt },
             vim.schedule_wrap(function(choice)
-                vim.cmd.edit((choice:gsub(cwd, '')))
+                if choice then
+                    vim.cmd.edit((choice:gsub(cwd, '')))
+                end
             end)
         )
     elseif #args == 1 then
@@ -816,14 +818,11 @@ function M.alternate(opts)
     end
 
     local candidates = {}
+    local alternates = vim.g.alternates or {}
     local buf = opts.buf
     local bang = opts.bang
 
-    -- TODO: alternates should be buffer local
-    local alternates = vim.g.alternates or {}
     if not alternates[buf] or bang then
-        -- TODO: Searching in path could be faster than vim.fs.find but
-        --       this need that headers also have the same path as source files
         local extensions = {
             c = { 'h' },
             h = { 'c' },
@@ -836,6 +835,7 @@ function M.alternate(opts)
         local bn = vim.fs.basename(buf)
         local ext = require('utils.files').extension(bn)
         local name_no_ext = bn:gsub('%.' .. ext .. '$', '')
+        local alternat_dict = {}
         for _, path in ipairs(vim.split(vim.bo.path, ',')) do
             if path ~= '' and require('utils.files').is_dir(path) then
                 for item, itype in vim.fs.dir(path, {}) do
@@ -844,8 +844,10 @@ function M.alternate(opts)
                         if
                             name_no_ext == (item:gsub('%.' .. iext .. '$', ''))
                             and vim.list_contains(extensions[ext], iext)
+                            and not alternat_dict[vim.fs.joinpath(path, item)]
                         then
-                            table.insert(candidates, path .. '/' .. item)
+                            table.insert(candidates, vim.fs.joinpath(path, item))
+                            alternat_dict[vim.fs.joinpath(path, item)] = true
                         end
                     end
                 end

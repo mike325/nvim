@@ -51,9 +51,9 @@ local function version()
 end
 
 local function has_sqlite()
-    local os = system_name()
+    local os_name = system_name()
     -- TODO: search for dll in windows, .so in unix
-    if os == 'windows' then
+    if os_name == 'windows' then
         local sqlite_path = forward_slash(cachedir() .. '/sqlite3.dll')
         if filereadable(sqlite_path) then
             vim.g.sqlite_clib_path = sqlite_path

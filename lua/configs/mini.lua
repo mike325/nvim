@@ -175,8 +175,8 @@ if mini.sessions then
                 session = session:gsub('^%.+', '')
             end
         end
-        mini.sessions.write(session:gsub('%s+', '_'), { force = true })
-    end, { nargs = '?', complete = completions.session_files })
+        mini.sessions.write(session:gsub('%s+', '_'), { force = opts.bang })
+    end, { bang = true, nargs = '?', complete = completions.session_files })
 
     nvim.command.set('SessionLoad', function(opts)
         local session = opts.args
