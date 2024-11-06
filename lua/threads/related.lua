@@ -1,7 +1,7 @@
 local M = {}
 
 -- NOTE: May save this to disk in a json cache file
-function M.gather_srcs_headers(thread_args)
+function M.gather_srcs_headers(thread_args, async)
     thread_args = require('threads').init(thread_args)
 
     local basename = require('utils.files').basename
@@ -92,10 +92,15 @@ function M.gather_srcs_headers(thread_args)
         end
     end
 
-    return vim.is_thread() and vim.json.encode(alternates) or alternates
+    local rt = vim.is_thread() and vim.json.encode(alternates) or alternates
+    if async then
+        vim.uv.async_send(async, rt)
+        return
+    end
+    return rt
 end
 
-function M.gather_tests(thread_args)
+function M.gather_tests(thread_args, async)
     -- local encode = type(thread_args) == type ''
     thread_args = require('threads').init(thread_args)
 
@@ -222,10 +227,15 @@ function M.gather_tests(thread_args)
         end
     end
 
-    return vim.is_thread() and vim.json.encode(tests) or tests
+    local rt = vim.is_thread() and vim.json.encode(tests) or tests
+    if async then
+        vim.uv.async_send(async, rt)
+        return
+    end
+    return rt
 end
 
-function M.alternate_src_header(thread_args)
+function M.alternate_src_header(thread_args, async)
     thread_args = require('threads').init(thread_args)
 
     local basename = require('utils.files').basename
@@ -292,10 +302,15 @@ function M.alternate_src_header(thread_args)
         varname = 'alternates',
     }
 
-    return vim.is_thread() and vim.json.encode(results) or results
+    local rt = vim.is_thread() and vim.json.encode(results) or results
+    if async then
+        vim.uv.async_send(async, rt)
+        return
+    end
+    return rt
 end
 
-function M.alternate_test(thread_args)
+function M.alternate_test(thread_args, async)
     thread_args = require('threads').init(thread_args)
 
     local basename = require('utils.files').basename
@@ -396,10 +411,15 @@ function M.alternate_test(thread_args)
         varname = 'tests',
     }
 
-    return vim.is_thread() and vim.json.encode(results) or results
+    local rt = vim.is_thread() and vim.json.encode(results) or results
+    if async then
+        vim.uv.async_send(async, rt)
+        return
+    end
+    return rt
 end
 
-function M.related_makefiles(thread_args)
+function M.related_makefiles(thread_args, async)
     thread_args = require('threads').init(thread_args)
 
     -- NOTE: current buffer's directory
@@ -415,7 +435,12 @@ function M.related_makefiles(thread_args)
         varname = 'makefiles',
     }
 
-    return vim.is_thread() and vim.json.encode(results) or results
+    local rt = vim.is_thread() and vim.json.encode(results) or results
+    if async then
+        vim.uv.async_send(async, rt)
+        return
+    end
+    return rt
 end
 
 function M.update_var_cb(opts)

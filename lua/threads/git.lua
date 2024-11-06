@@ -1,6 +1,6 @@
 local M = {}
 
-function M.get_hunks(thread_args)
+function M.get_hunks(thread_args, async)
     thread_args = require('threads').init(thread_args)
 
     local utils = require 'utils.files'
@@ -52,7 +52,12 @@ function M.get_hunks(thread_args)
         end
     end
 
-    return vim.is_thread() and vim.json.encode(hunks) or hunks
+    local rt = vim.is_thread() and vim.json.encode(hunks) or hunks
+    if async then
+        vim.uv.async_send(async, rt)
+        return
+    end
+    return rt
 end
 
 return M

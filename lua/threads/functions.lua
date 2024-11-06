@@ -1,6 +1,6 @@
 local M = {}
 
-function M.find(thread_args)
+function M.find(thread_args, async)
     local encode = type(thread_args) == type ''
     thread_args = require('threads').init(thread_args)
 
@@ -78,7 +78,12 @@ function M.find(thread_args)
     thread_args.results = candidates
     thread_args.functions = nil
     thread_args.args = nil
-    return (vim.is_thread() and encode) and vim.json.encode(candidates) or candidates
+    local rt = (vim.is_thread() and encode) and vim.json.encode(candidates) or candidates
+    if async then
+        vim.uv.async_send(async, rt)
+        return
+    end
+    return rt
 end
 
 function M.async_find(opts)

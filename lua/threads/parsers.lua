@@ -21,7 +21,7 @@ function M.includes(args)
 end
 
 -- TODO: Add support to inherit c/cpp source paths
-function M.compile_flags(thread_args)
+function M.compile_flags(thread_args, async)
     thread_args = require('threads').init(thread_args)
     local utils = require 'utils.files'
 
@@ -51,10 +51,16 @@ function M.compile_flags(thread_args)
         flags_file = flags_file,
         flags = compile_flags,
     }
-    return vim.is_thread() and vim.json.encode(results) or results
+
+    local rt = vim.is_thread() and vim.json.encode(results) or results
+    if async then
+        vim.uv.async_send(async, rt)
+        return
+    end
+    return rt
 end
 
-function M.compiledb(thread_args)
+function M.compiledb(thread_args, async)
     thread_args = require('threads').init(thread_args)
     local utils = require 'utils.files'
 
@@ -115,10 +121,16 @@ function M.compiledb(thread_args)
         flags_file = flags_file,
         flags = compile_commands_dbs,
     }
-    return vim.is_thread() and vim.json.encode(results) or results
+
+    local rt = vim.is_thread() and vim.json.encode(results) or results
+    if async then
+        vim.uv.async_send(async, rt)
+        return
+    end
+    return rt
 end
 
-function M.sshconfig()
+function M.sshconfig(_, async)
     require('threads').init()
 
     local utils = require 'utils.files'
@@ -143,10 +155,16 @@ function M.sshconfig()
             end
         end
     end
-    return vim.is_thread() and vim.json.encode(hosts) or hosts
+
+    local rt = vim.is_thread() and vim.json.encode(hosts) or hosts
+    if async then
+        vim.uv.async_send(async, rt)
+        return
+    end
+    return rt
 end
 
-function M.yaml(thread_args)
+function M.yaml(thread_args, async)
     thread_args = require('threads').init(thread_args)
 
     local filename = thread_args.args.filename
@@ -205,7 +223,12 @@ function M.yaml(thread_args)
         end
     end
 
-    return vim.is_thread() and vim.json.encode(yaml_dict) or yaml_dict
+    local rt = vim.is_thread() and vim.json.encode(yaml_dict) or yaml_dict
+    if async then
+        vim.uv.async_send(async, rt)
+        return
+    end
+    return rt
 end
 
 return M

@@ -8,7 +8,7 @@ if not vim.keycode then
     end
 end
 
-if not vim.version.gt(vim.version(), { 0, 9 }) then
+if vim.version.lt(vim.version(), { 0, 9 }) then
     vim.api.nvim_err_writeln 'Neovim version is too old!! please use update it'
 end
 

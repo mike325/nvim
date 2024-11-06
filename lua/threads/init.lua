@@ -149,31 +149,27 @@ function M.queue_thread(thread, cb, opts)
     -- - copy of all global, buffer and tab variables vim ?
     -- - pcall thread function and collect errors
     -- - Parse thread opts/function/args before calling the thread function
-    local work = vim.uv.new_work(
-        thread,
-        vim.schedule_wrap(function(o)
-            if type(o) == type '' and o ~= '' then
-                local ok, data = pcall(vim.json.decode, o)
-                if ok then
-                    cb(data)
-                else
-                    vim.notify(
-                        'Failed to decode return value from thread\nnot valid json data: ' .. o .. '\n' .. data,
-                        vim.log.levels.ERROR,
-                        { title = 'Thread' }
-                    )
-                end
+    local async = vim.uv.new_async(vim.schedule_wrap(function(o)
+        if type(o) == type '' and o ~= '' then
+            local ok, data = pcall(vim.json.decode, o)
+            if ok then
+                cb(data)
             else
                 vim.notify(
-                    'Something when wrong, got an empty string from another thread',
+                    'Failed to decode return value from thread\nnot valid json data: ' .. o .. '\n' .. data,
                     vim.log.levels.ERROR,
                     { title = 'Thread' }
                 )
             end
-        end)
-    )
-
-    work:queue(vim.json.encode(M.add_thread_context(opts)))
+        else
+            vim.notify(
+                'Something when wrong, got an empty string from another thread',
+                vim.log.levels.ERROR,
+                { title = 'Thread' }
+            )
+        end
+    end))
+    vim.uv.new_thread(thread, vim.json.encode(M.add_thread_context(opts)), async)
 end
 
 return M
