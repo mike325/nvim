@@ -100,21 +100,4 @@ function M.edit(argument)
     end
 end
 
-function M.marks_to_arglist(opts)
-    local marks = {}
-    local cwd = vim.pesc(vim.uv.cwd() .. '/')
-    for idx = vim.fn.char2nr 'A', vim.fn.char2nr 'Z' do
-        local letter = vim.fn.nr2char(idx)
-        local mark = vim.api.nvim_get_mark(letter, {})
-        local filename = mark[4]
-        if filename ~= '' and require('utils.files').is_file(filename) then
-            table.insert(marks, (filename:gsub('^' .. cwd, '')))
-        end
-    end
-
-    if #marks > 0 then
-        M.add(marks, opts.clear)
-    end
-end
-
 return M

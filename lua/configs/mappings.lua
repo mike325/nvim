@@ -303,6 +303,19 @@ vim.keymap.set('n', '<leader>A', function()
     RELOAD('utils.arglist').add { '%' }
 end, { noremap = true, silent = true, desc = 'Add current buffer to the arglist' })
 
+vim.keymap.set('n', '<leader>Q', function()
+    local cursor = vim.api.nvim_win_get_cursor(0)
+    RELOAD('utils.qf').dump_files({ { bufnr = 0, lnum = cursor[1], col = cursor[2] } }, { action = 'a', open = false })
+end, { noremap = true, silent = true, desc = 'Add current buffer to the quickfix' })
+
+vim.keymap.set('n', '<leader>L', function()
+    local cursor = vim.api.nvim_win_get_cursor(0)
+    RELOAD('utils.qf').dump_files(
+        { { bufnr = 0, lnum = cursor[1], col = cursor[2] } },
+        { action = 'a', open = false, win = 0 }
+    )
+end, { noremap = true, silent = true, desc = 'Add current buffer to the loclist' })
+
 vim.keymap.set('n', '<leader>D', function()
     local cwd = vim.pesc(vim.uv.cwd() .. '/')
     vim.cmd.argdelete((vim.api.nvim_buf_get_name(0):gsub(cwd, '')))

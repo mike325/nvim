@@ -631,39 +631,29 @@ nvim.command.set('ArgAddBuf', function(opts)
     end
 end, { nargs = '*', complete = completions.buflist, desc = 'Add buffers to the arglist' })
 
-nvim.command.set('ClearMarks', function(opts)
-    local deleted_marks = 0
-    for idx = vim.fn.char2nr 'A', vim.fn.char2nr 'Z' do
-        local letter = vim.fn.nr2char(idx)
-        if not opts.bang then
-            local mark = vim.api.nvim_get_mark(letter, {})
-            local filename = mark[4]
-            if filename ~= '' and not require('utils.files').is_file(filename) then
-                deleted_marks = deleted_marks + 1
-                vim.api.nvim_del_mark(letter)
-            end
-        else
-            vim.api.nvim_del_mark(letter)
-        end
-    end
+nvim.command.set('Marks2Arglist', function(opts)
+    RELOAD('utils.marks').marks_to_arglist { clear = opts.bang }
+end, { bang = true, desc = 'Dump global marks files to the arglist' })
 
-    if not opts.bang and deleted_marks > 0 then
-        vim.notify('Deleted marks: ' .. deleted_marks, vim.log.levels.INFO, { title = 'ClearMarks' })
+nvim.command.set('Marks2Quickfix', function(opts)
+    RELOAD('utils.marks').marks_to_quickfix()
+end, { bang = true, desc = 'Dump global marks files to the quickfix' })
+
+nvim.command.set('Marks2LocList', function(opts)
+    RELOAD('utils.marks').marks_to_quickfix { win = 0 }
+end, { bang = true, desc = 'Dump global marks files to the loclist' })
+
+nvim.command.set('MarksClear', function(opts)
+    RELOAD('utils.marks').clear(opts)
+    if not opts.bang then
+        vim.notify('Ghost marks removed', vim.log.levels.INFO, { title = 'ClearMarks' })
     elseif opts.bang then
-        vim.notify('All global marks cleared', vim.log.levels.INFO, { title = 'Marks' })
+        vim.notify('All global marks cleared', vim.log.levels.INFO, { title = 'ClearMarks' })
     end
 end, { bang = true, desc = 'Remove global marks of inexistent files' })
 
-nvim.command.set('DumpMarks', function()
-    local marks = {}
-    for idx = vim.fn.char2nr 'A', vim.fn.char2nr 'Z' do
-        local letter = vim.fn.nr2char(idx)
-        local mark = vim.api.nvim_get_mark(letter, {})
-        local filename = mark[4]
-        if filename ~= '' and require('utils.files').is_file(filename) then
-            marks[letter] = mark
-        end
-    end
+nvim.command.set('MarksDump', function()
+    local marks = RELOAD('utils.marks').get_global_marks()
     if next(marks) ~= nil then
         require('utils.files').dump_json('marks.json', marks)
         vim.notify('Marks dumped into marks.json', vim.log.levels.INFO, { title = 'DumpMarks' })
@@ -673,22 +663,19 @@ end, { desc = 'Dump global marks in a local json file' })
 nvim.command.set('RemoveForeignMarks', function()
     local utils = require 'utils.files'
     local deleted_marks = 0
-    for idx = vim.fn.char2nr 'A', vim.fn.char2nr 'Z' do
-        local letter = vim.fn.nr2char(idx)
-        local mark = vim.api.nvim_get_mark(letter, {})
-        if mark[4] ~= '' then
-            local filename = mark[4]
+    local marks = RELOAD('utils.marks').get_global_marks()
+    if next(marks) ~= nil then
+        local cwd = vim.pesc(vim.uv.cwd())
+        for filename, mark in pairs(marks) do
             if utils.is_file(filename) then
                 filename = utils.realpath(filename)
             end
-            local cwd = vim.pesc(vim.uv.cwd())
             if not utils.is_file(filename) or not filename:match('^' .. cwd) then
-                vim.api.nvim_del_mark(letter)
+                vim.api.nvim_del_mark(mark.letter)
                 deleted_marks = deleted_marks + 1
             end
         end
     end
-
     if deleted_marks > 0 then
         vim.notify('Deleted marks not in the CWD: ' .. deleted_marks, vim.log.levels.INFO, { title = 'RemoveMarks' })
     end
@@ -790,7 +777,3 @@ nvim.command.set('EditPathScript', function(opts)
     end
     vim.cmd.edit(cmd)
 end, { nargs = 1, complete = 'shellcmd', desc = 'Open a script located somewhere in path' })
-
-nvim.command.set('Marks2Arglist', function(opts)
-    RELOAD('utils.arglist').marks_to_arglist { clear = opts.bang }
-end, { bang = true, desc = 'Dump global marks files to the arglist' })

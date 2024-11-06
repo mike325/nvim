@@ -799,13 +799,13 @@ function M.alternate(opts)
         return
     end
 
-    local server = vim.lsp.get_clients({ name = 'clangd', bufnr = bufnr })[1]
-    if server then
-        local found = RELOAD('configs.lsp.utils').switch_source_header_splitcmd(bufnr, 'edit')
-        if found then
-            return
-        end
-    end
+    -- local server = vim.lsp.get_clients({ name = 'clangd', bufnr = bufnr })[1]
+    -- if server then
+    --     local found = RELOAD('configs.lsp.utils').switch_source_header_splitcmd(bufnr, 'edit')
+    --     if found then
+    --         return
+    --     end
+    -- end
 
     local prefix = opts.buf:match '^%w+://'
     opts.buf = opts.buf:gsub('^%w+://', '')
@@ -862,7 +862,7 @@ function M.alternate(opts)
         end
 
         if #candidates > 0 then
-            alternates[buf] = candidates
+            alternates[buf] = require('utils.tables').uniq_unorder(candidates)
             vim.g.alternates = alternates
         end
     else

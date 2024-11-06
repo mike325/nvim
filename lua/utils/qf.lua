@@ -369,14 +369,38 @@ function M.dump_files(buffers, opts, win)
 
     local items = {}
     for _, buf in ipairs(buffers) do
-        local filename = type(buf) == type(1) and vim.api.nvim_buf_get_name(buf) or buf
-        local item = { valid = true, lnum = 1, col = 1, text = filename }
-        if type(buf) == type(1) then
-            item.bufnr = buf
-        elseif type(buf) == type '' then
-            item.filename = buf
+        local item = {}
+        if type(buf) == type {} then
+            item = buf
+            item.lnum = item.lnum or 1
+            item.col = item.col or 1
+            if item.valid == nil then
+                item.valid = true
+            end
+            assert(
+                item.bufnr or item.filename,
+                debug.traceback('Missing bufnr or filename in item: ' .. vim.inspect(buf))
+            )
+            if item.bufnr == 0 then
+                item.bufnr = vim.api.nvim_get_current_buf()
+            end
+            if not item.text then
+                if item.bufnr then
+                    item.text = vim.api.nvim_buf_get_lines(item.bufnr, item.lnum - 1, item.lnum, false)[1]
+                else
+                    item.text = item.filename
+                end
+            end
         else
-            error(debug.traceback('Invalid data type: ' .. type(buf)))
+            local filename = type(buf) == type(1) and vim.api.nvim_buf_get_name(buf) or buf
+            item = { valid = true, lnum = 1, col = 1, text = filename }
+            if type(buf) == type(1) then
+                item.bufnr = buf
+            elseif type(buf) == type '' then
+                item.filename = buf
+            else
+                error(debug.traceback('Invalid data type: ' .. type(buf)))
+            end
         end
         table.insert(items, item)
     end
