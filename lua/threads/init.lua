@@ -3,6 +3,11 @@ local M = {}
 function M.init(thread_args)
     if vim.is_thread() then
         require 'globals'
+
+        if not vim.deprecate then
+            vim.deprecate = function() end
+        end
+
         if not vim.env then
             vim.env = setmetatable({}, {
                 __index = function(_, k)
@@ -20,10 +25,6 @@ function M.init(thread_args)
 
         if not vim.fs then
             vim.fs = require 'vim.fs'
-        end
-
-        if not vim.list_contains then
-            vim.list_contains = vim.tbl_contains
         end
 
         if not vim.base64 then

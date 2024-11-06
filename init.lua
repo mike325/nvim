@@ -2,18 +2,6 @@ if vim.loader then
     vim.loader.enable()
 end
 
-if not vim.list_contains then
-    vim.list_contains = vim.tbl_contains
-end
-
-if not vim.isarray then
-    vim.isarray = vim.tbl_islist
-end
-
-if not vim.islist then
-    vim.islist = vim.tbl_islist
-end
-
 if not vim.keycode then
     vim.keycode = function(str)
         return vim.api.nvim_replace_termcodes(str, true, true, true)

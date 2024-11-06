@@ -16,10 +16,6 @@ if not nvim.has { 0, 9 } then
     os.exit(1)
 end
 
-if not vim.list_contains then
-    vim.list_contains = vim.tbl_contains
-end
-
 if not vim.base64 then
     vim.base64 = {
         encode = require('utils.strings').base64_encode,
