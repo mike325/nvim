@@ -212,7 +212,7 @@ end, { nargs = '?', complete = 'messages', desc = 'Populate quickfix with the :m
 if executable 'pre-commit' then
     nvim.command.set('PreCommit', function(opts)
         RELOAD('mappings').precommit(opts)
-    end, { nargs = '*' })
+    end, { bang = true, nargs = '*' })
 end
 
 -- TODO: Add support to change between local and osc/remote open

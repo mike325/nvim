@@ -70,6 +70,7 @@ function M.marks_to_quickfix(opts)
             items = items,
             title = 'Marks',
             open = true,
+            win = opts.win,
         }
     end
 end

@@ -448,8 +448,12 @@ end
 
 function M.precommit(opts)
     local args = opts.fargs
+    local cmd = 'pre-commit'
+    if opts.bang and #args == 0 then
+        args = { 'run', '--all' }
+    end
     local precommit = RELOAD('jobs'):new {
-        cmd = 'pre-commit',
+        cmd = cmd,
         args = args,
         -- progress = true,
         qf = {

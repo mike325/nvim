@@ -369,7 +369,7 @@ function M.dump_files(buffers, opts, win)
 
     local items = {}
     for _, buf in ipairs(buffers) do
-        local item = {}
+        local item
         if type(buf) == type {} then
             item = buf
             item.lnum = item.lnum or 1
