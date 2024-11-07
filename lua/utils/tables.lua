@@ -158,8 +158,15 @@ function M.merge_uniq_list(dest, src)
     assert(M.islist(dest) and M.islist(src), debug.traceback 'Source and dest must be arrays')
 
     dest = M.uniq_list(dest)
+
+    local hash_dest = {}
+    for _, node in ipairs(dest) do
+        hash_dest[node] = true
+    end
+
     for _, node in ipairs(src) do
-        if not M.list_contains(dest, node) then
+        if not hash_dest[node] then
+            hash_dest[node] = true
             table.insert(dest, node)
         end
     end
