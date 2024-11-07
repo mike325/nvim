@@ -192,37 +192,32 @@ function M.set_file_opts(flags_file, bufnum)
         end
     end
 
-    local paths = {}
     local filename = nvim.buf.get_name(bufnum)
     if is_file(filename) then
         filename = realpath(filename)
     end
 
     local function set_source_options(fname)
+        local paths = {}
         if compile_commands_dbs[fname] then
             paths = compile_commands_dbs[fname].includes or {}
-            if fname:match '%.hpp$' or fname:match '%.h$' then
-                local fname_basename = vim.fs.basename(fname)
-                for source_name, _ in pairs(compile_commands_dbs) do
-                    local source_basename = vim.fs.basename(source_name)
-                    if
-                        source_basename:gsub('%.cpp$', '.hpp') == fname_basename
-                        or source_basename:gsub('%.c$', '.h') == fname_basename
-                    then
-                        paths = compile_commands_dbs[source_name].includes or {}
-                        break
-                    end
-                end
-            end
         elseif compile_flags[flags_file] then
             paths = compile_flags[flags_file].includes or {}
-        end
-        local path_var = vim.split(vim.bo[bufnum].path, ',')
-        for _, path in ipairs(paths) do
-            if not vim.list_contains(path_var, path) then
-                vim.bo[bufnum].path = vim.bo[bufnum].path .. ',' .. path
+        elseif fname:match '%.hpp$' or fname:match '%.h$' then
+            local fname_basename = vim.fs.basename(fname)
+            for source_name, _ in pairs(compile_commands_dbs) do
+                local source_basename = vim.fs.basename(source_name)
+                if
+                    source_basename:gsub('%.cpp$', '.hpp') == fname_basename
+                    or source_basename:gsub('%.c$', '.h') == fname_basename
+                then
+                    paths = compile_commands_dbs[source_name].includes or {}
+                    break
+                end
             end
         end
+        local path_var = vim.split(vim.bo[bufnum].path, ',')
+        vim.bo[bufnum].path = table.concat(require('utils.tables').merge_uniq_unorder(path_var, paths), ',')
     end
 
     set_source_options(filename)
