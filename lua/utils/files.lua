@@ -864,18 +864,13 @@ function M.dump_json(filename, data)
 
     local json = M.encode_json(data)
     if M.executable 'jq' then
-        local on_exit = function(obj)
-            if obj.code == 0 then
-                M.writefile(filename, obj.stdout, true)
-            else
-                M.writefile(filename, json)
-            end
+        local job = vim.system({ 'jq', '.' }, { text = true, stdin = json }):wait()
+        if job.code == 0 then
+            return M.writefile(filename, job.stdout)
         end
-        vim.system({ 'jq', '.' }, { text = true, stdin = json }, on_exit)
-        return
     end
 
-    M.writefile(filename, json)
+    return M.writefile(filename, json)
 end
 
 -- NOTE: dir/parents where took from neovim fs.lua source code

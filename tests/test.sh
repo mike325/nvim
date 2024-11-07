@@ -356,6 +356,7 @@ if ! hash nvim 2>/dev/null; then
 fi
 
 locations=(
+    'deps'
     'packer'
     'host'
 )
