@@ -299,13 +299,10 @@ function M.setup()
         local parsed_files = vim.g.parsed_flags or {}
 
         if not parsed_files[flags_file] then
-            if not vim.g.compile_flags_parse then
-                vim.g.compile_flags_parse = true
-                RELOAD('threads.parse').compile_flags {
-                    root = vim.fs.dirname(flags_file),
-                    flags_file = flags_file,
-                }
-            end
+            RELOAD('threads.parse').compile_flags {
+                root = vim.fs.dirname(flags_file),
+                flags_file = flags_file,
+            }
 
             -- NOTE: Setting default options while we parse the flags
             M.set_default_opts(compiler, bufnum)
