@@ -225,28 +225,7 @@ function M.set_file_opts(flags_file, bufnum)
         end
     end
 
-    if filename:match '%.hpp$' or filename:match '%.h$' then
-        if vim.g.alternates[filename] then
-            set_source_options(vim.g.alternates[filename][1])
-        else
-            local srcname = vim.fs.basename(filename):gsub('%.hpp$', '.cpp'):gsub('%.h$', '.c')
-            RELOAD('threads.functions').async_find {
-                target = srcname,
-                cb = function(data)
-                    if #data > 0 then
-                        local alternates = vim.g.alternates
-                        alternates[filename] = data
-                        vim.g.alternates = alternates
-                        if vim.api.nvim_buf_is_valid(bufnum) then
-                            set_source_options(data[1])
-                        end
-                    end
-                end,
-            }
-        end
-    else
-        set_source_options(filename)
-    end
+    set_source_options(filename)
 end
 
 function M.set_default_opts(compiler, bufnum)
@@ -325,10 +304,13 @@ function M.setup()
         local parsed_files = vim.g.parsed_flags or {}
 
         if not parsed_files[flags_file] then
-            RELOAD('threads.parse').compile_flags {
-                root = vim.fs.dirname(flags_file),
-                flags_file = flags_file,
-            }
+            if not vim.g.compile_flags_parse then
+                vim.g.compile_flags_parse = true
+                RELOAD('threads.parse').compile_flags {
+                    root = vim.fs.dirname(flags_file),
+                    flags_file = flags_file,
+                }
+            end
 
             -- NOTE: Setting default options while we parse the flags
             M.set_default_opts(compiler, bufnum)
