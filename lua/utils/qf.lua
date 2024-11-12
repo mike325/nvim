@@ -168,7 +168,7 @@ function M.set_list(opts, win)
     opts.jump = nil
 
     local function fix_line(line)
-        local BIG_LINE = 256
+        local BIG_LINE = 512
         if #line > BIG_LINE then
             line = (line:sub(1, BIG_LINE)) .. '...>'
         end

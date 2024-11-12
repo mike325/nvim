@@ -643,8 +643,8 @@ nvim.command.set('Marks2LocList', function(opts)
     RELOAD('utils.marks').marks_to_quickfix { win = 0 }
 end, { bang = true, desc = 'Dump global marks files to the loclist' })
 
-nvim.command.set('MarksClear', function(opts)
-    RELOAD('utils.marks').clear(opts)
+nvim.command.set('ClearMarks', function(opts)
+    RELOAD('utils.marks').clear { force = opts.bang }
     if not opts.bang then
         vim.notify('Ghost marks removed', vim.log.levels.INFO, { title = 'ClearMarks' })
     elseif opts.bang then
@@ -652,13 +652,17 @@ nvim.command.set('MarksClear', function(opts)
     end
 end, { bang = true, desc = 'Remove global marks of inexistent files' })
 
-nvim.command.set('MarksDump', function()
-    local marks = RELOAD('utils.marks').get_global_marks()
-    if next(marks) ~= nil then
-        require('utils.files').dump_json('marks.json', marks)
-        vim.notify('Marks dumped into marks.json', vim.log.levels.INFO, { title = 'DumpMarks' })
+nvim.command.set('DumpMarks', function(opts)
+    if RELOAD('utils.marks').dump_marks { file = opts.args } then
+        vim.notify('Marks dumped to marks.json', vim.log.levels.INFO, { title = 'Marks' })
     end
-end, { desc = 'Dump global marks in a local json file' })
+end , {nargs = '?', complete = 'file', desc = 'Dump global marks in a local json file' })
+
+nvim.command.set('LoadMarks', function(opts)
+    if RELOAD('utils.marks').load_marks { file = opts.args } then
+        vim.notify('Marks Loaded', vim.log.levels.INFO, { title = 'Marks' })
+    end
+end, { nargs = '?', complete = 'file', desc = 'Load global marks from json file' })
 
 nvim.command.set('RemoveForeignMarks', function()
     local utils = require 'utils.files'
@@ -666,12 +670,13 @@ nvim.command.set('RemoveForeignMarks', function()
     local marks = RELOAD('utils.marks').get_global_marks()
     if next(marks) ~= nil then
         local cwd = vim.pesc(vim.uv.cwd())
-        for filename, mark in pairs(marks) do
+        for letter, mark in pairs(marks) do
+            local filename = (mark.filename:gsub(cwd, ''))
             if utils.is_file(filename) then
                 filename = utils.realpath(filename)
             end
             if not utils.is_file(filename) or not filename:match('^' .. cwd) then
-                vim.api.nvim_del_mark(mark.letter)
+                vim.api.nvim_del_mark(letter)
                 deleted_marks = deleted_marks + 1
             end
         end

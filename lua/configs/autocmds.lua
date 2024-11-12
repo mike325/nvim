@@ -822,3 +822,27 @@ vim.api.nvim_create_autocmd({ 'FocusLost' }, {
         vim.g.in_focus = false
     end,
 })
+
+local load_marks_au = vim.api.nvim_create_augroup('LoadMarks', { clear = true })
+vim.api.nvim_create_autocmd({ 'SessionLoadPost' }, {
+    desc = 'Load Marks after session load',
+    group = load_marks_au,
+    pattern = '*',
+    callback = function()
+        if require('utils.files').is_file('marks.json') then
+            RELOAD('utils.marks').load_marks()
+        end
+    end,
+})
+
+local dump_marks_au = vim.api.nvim_create_augroup('DumpMarks', { clear = true })
+vim.api.nvim_create_autocmd({ 'SessionWritePost', 'VimLeavePre' }, {
+    desc = 'Dump Marks after session write',
+    group = dump_marks_au,
+    pattern = '*',
+    callback = function(data)
+        if data.event == 'SessionWritePost' or (data.event == 'VimLeavePre' and vim.v.this_session ~= '') then
+            RELOAD('utils.marks').dump_marks()
+        end
+    end,
+})
