@@ -656,7 +656,7 @@ nvim.command.set('DumpMarks', function(opts)
     if RELOAD('utils.marks').dump_marks { file = opts.args } then
         vim.notify('Marks dumped to marks.json', vim.log.levels.INFO, { title = 'Marks' })
     end
-end , {nargs = '?', complete = 'file', desc = 'Dump global marks in a local json file' })
+end, { nargs = '?', complete = 'file', desc = 'Dump global marks in a local json file' })
 
 nvim.command.set('LoadMarks', function(opts)
     if RELOAD('utils.marks').load_marks { file = opts.args } then

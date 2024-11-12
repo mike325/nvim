@@ -829,7 +829,7 @@ vim.api.nvim_create_autocmd({ 'SessionLoadPost' }, {
     group = load_marks_au,
     pattern = '*',
     callback = function()
-        if require('utils.files').is_file('marks.json') then
+        if require('utils.files').is_file 'marks.json' then
             RELOAD('utils.marks').load_marks()
         end
     end,
