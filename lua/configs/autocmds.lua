@@ -846,3 +846,13 @@ vim.api.nvim_create_autocmd({ 'SessionWritePost', 'VimLeavePre' }, {
         end
     end,
 })
+
+vim.api.nvim_create_autocmd({ 'QuickFixCmdPost' }, {
+    desc = 'Load cfilter',
+    group = vim.api.nvim_create_augroup('LoadCfilter', { clear = true }),
+    pattern = '*',
+    once = true,
+    callback = function()
+        vim.cmd.packadd('cfilter')
+    end,
+})
