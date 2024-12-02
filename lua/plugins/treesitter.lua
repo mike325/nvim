@@ -19,18 +19,11 @@ return {
         dependencies = {
             { 'nvim-treesitter/nvim-treesitter-refactor' },
             { 'nvim-treesitter/nvim-treesitter-textobjects' },
+            { 'nvim-treesitter/nvim-treesitter-context', },
         },
     },
     -- { 'David-Kunz/markid' },
     -- { 'nvim-treesitter/nvim-tree-docs' },
-    {
-        'nvim-treesitter/nvim-treesitter-context',
-        name = 'treesitter-context',
-        event = { 'CursorHold', 'CursorHoldI' },
-        dependencies = {
-            { 'nvim-treesitter/nvim-treesitter' },
-        },
-    },
     {
         'ziontee113/query-secretary',
         dependencies = {

@@ -143,7 +143,7 @@ function M.link(src, dest, sym, force)
     end
 
     if sym then
-        status, msg = vim.uv.fs_symlink(src, dest, 438)
+        status, msg = vim.uv.fs_symlink(src, dest, { junction = true })
     else
         status, msg = vim.uv.fs_link(src, dest)
     end
