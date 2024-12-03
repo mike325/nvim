@@ -137,9 +137,11 @@ local function rule_3_5(_, parent, old_state)
     local move_oper = false
     local destructor = false
 
+    local destructor_signature = '%s~%s%%s*%%('
+
     for _, method in ipairs(operators) do
         local signature = vim.trim(method[1])
-        if signature:match('virtual ~' .. classname .. '%s*%(') or signature:match('~' .. classname .. '%s*%(') then
+        if signature:match(string.format(destructor_signature, 'virtual%s+', classname)) or signature:match(string.format(destructor_signature, '', classname)) then
             destructor = true
         elseif signature:match(classname .. '%s*%(%w*%s*' .. classname .. '&&') then
             move_constructor = true

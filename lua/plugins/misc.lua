@@ -12,6 +12,7 @@ return {
     },
     {
         'phaazon/hop.nvim',
+        enabled = false,
         cond = not vim.g.minimal,
         config = function()
             require 'configs.hop'

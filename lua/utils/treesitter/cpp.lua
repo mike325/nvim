@@ -63,6 +63,7 @@ function M.get_class_operators(text)
     local copy_move_functions = [[
         (class_specifier body:(field_declaration_list (function_definition ) @operator ))
         (struct_specifier body:(field_declaration_list (function_definition) @operator))
+        ((declaration declarator:(function_declarator declarator:(destructor_name (identifier)))) @destructor)
     ]]
 
     return ts_utils.get_list_nodes(class_node, copy_move_functions, text)

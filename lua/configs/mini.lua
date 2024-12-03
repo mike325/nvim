@@ -51,6 +51,12 @@ local simple_mini = {
     doc = {},
     fuzzy = {},
     extra = {},
+    jump2d = {
+        -- Module mappings. Use `''` (empty string) to disable one.
+        mappings = {
+            start_jumping = '',
+        },
+    },
     pairs = {
         mappings = {
             ['('] = { action = 'open', pair = '()', neigh_pattern = '[^\\].', register = { cr = false } },
@@ -354,6 +360,15 @@ if mini.map then
             mini.map.toggle()
         end
     end, { nargs = '?', complete = completions.toggle, desc = 'Open/Close mini.map' })
+end
+
+if mini.jump2d then
+    vim.keymap.set(
+        'n',
+        '\\',
+        '<Cmd>lua MiniJump2d.start(MiniJump2d.builtin_opts.single_character)<CR>',
+        { nowait = true, silent = true }
+    )
 end
 
 mini.pick = vim.F.npcall(require, 'mini.pick')
