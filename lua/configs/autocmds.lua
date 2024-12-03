@@ -332,9 +332,10 @@ vim.api.nvim_create_autocmd('LspAttach', {
 
         local is_min = vim.g.minimal and vim.F.npcall(require, 'mini.completion') ~= nil
         vim.bo[bufnr].omnifunc = is_min and 'v:lua.MiniCompletion.completefunc_lsp' or 'v:lua.vim.lsp.omnifunc'
-        -- if vim.bo[bufnr].tagfunc == '' then
-        --     vim.bo[bufnr].tagfunc = 'v:lua.vim.lsp.tagfunc'
-        -- end
+        if client.supports_method(methods.textDocument_foldingRange) then
+            vim.wo.foldmethod = 'expr'
+            vim.wo.foldexpr = 'v:lua.vim.lsp.foldexpr()'
+        end
 
         local cmd_opts = { buffer = true }
 
