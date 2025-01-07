@@ -101,11 +101,12 @@ function M.load_marks(opts)
         local buf = vim.api.nvim_get_current_buf()
 
         local marks = require('utils.files').read_json(loc)
-        local cwd = vim.pesc(vim.uv.cwd())
+        local cwd = vim.pesc(vim.uv.cwd() .. '/')
 
         for letter, mark in pairs(marks) do
             local filename = (mark.filename:gsub(cwd, ''))
             local mark_buf = vim.fn.bufadd(filename)
+            vim.fn.bufload(mark_buf)
 
             -- TODO: check if buffer is loaded
             vim.cmd.edit {

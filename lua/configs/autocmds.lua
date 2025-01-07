@@ -330,8 +330,12 @@ vim.api.nvim_create_autocmd('LspAttach', {
             -- elseif client.name == 'pylyzer' then
         end
 
-        local is_min = vim.g.minimal and vim.F.npcall(require, 'mini.completion') ~= nil
-        vim.bo[bufnr].omnifunc = is_min and 'v:lua.MiniCompletion.completefunc_lsp' or 'v:lua.vim.lsp.omnifunc'
+        -- vim.bo[bufnr].omnifunc = 'v:lua.vim.lsp.omnifunc'
+        -- if vim.g.minimal or not nvim.plugins['nvim-cmp'] then
+        --     local has_mini = vim.F.npcall(require, 'mini.completion') ~= nil
+        --     vim.bo[bufnr].omnifunc = has_mini and 'v:lua.MiniCompletion.completefunc_lsp' or 'v:lua.vim.lsp.omnifunc'
+        -- end
+
         if client.supports_method(methods.textDocument_foldingRange) then
             vim.wo.foldmethod = 'expr'
             vim.wo.foldexpr = 'v:lua.vim.lsp.foldexpr()'
@@ -468,7 +472,7 @@ vim.api.nvim_create_autocmd('UIEnter', {
 })
 
 if executable 'typos' then
-    vim.api.nvim_create_autocmd({ 'BufWritePost' }, {
+    vim.api.nvim_create_autocmd({ 'BufWritePost', 'BufReadPost' }, {
         desc = 'Check for typos on safe',
         group = vim.api.nvim_create_augroup('TyposCheck', { clear = true }),
         pattern = '*',
@@ -813,10 +817,9 @@ vim.api.nvim_create_autocmd({ 'FocusLost' }, {
     end,
 })
 
-local load_marks_au = vim.api.nvim_create_augroup('LoadMarks', { clear = true })
 vim.api.nvim_create_autocmd({ 'SessionLoadPost' }, {
     desc = 'Load Marks after session load',
-    group = load_marks_au,
+    group = vim.api.nvim_create_augroup('LoadMarks', { clear = true }),
     pattern = '*',
     callback = function()
         if require('utils.files').is_file 'marks.json' then
@@ -825,10 +828,9 @@ vim.api.nvim_create_autocmd({ 'SessionLoadPost' }, {
     end,
 })
 
-local dump_marks_au = vim.api.nvim_create_augroup('DumpMarks', { clear = true })
 vim.api.nvim_create_autocmd({ 'SessionWritePost', 'VimLeavePre' }, {
     desc = 'Dump Marks after session write',
-    group = dump_marks_au,
+    group = vim.api.nvim_create_augroup('DumpMarks', { clear = true }),
     pattern = '*',
     callback = function(data)
         if data.event == 'SessionWritePost' or (data.event == 'VimLeavePre' and vim.v.this_session ~= '') then

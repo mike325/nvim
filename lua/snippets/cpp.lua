@@ -138,18 +138,20 @@ local function rule_3_5(_, parent, old_state)
     local destructor = false
 
     local destructor_signature = '%s~%s%%s*%%('
+    local oper_signature = '%s%%s*&%%s*operator=%%(%s%%s*%s%s%%s+'
+    local constructor_signature = '%s%%s*%%(%s%%s*%s%s%%s+'
 
     for _, method in ipairs(operators) do
         local signature = vim.trim(method[1])
-        if signature:match(string.format(destructor_signature, 'virtual%s+', classname)) or signature:match(string.format(destructor_signature, '', classname)) then
+        if signature:match(destructor_signature:format('virtual%s+', classname)) or signature:match(destructor_signature:format('', classname)) then
             destructor = true
-        elseif signature:match(classname .. '%s*%(%w*%s*' .. classname .. '&&') then
+        elseif signature:match(constructor_signature:format(classname, 'const', classname, '&&')) or signature:match(constructor_signature:format(classname, '', classname, '&&')) then
             move_constructor = true
-        elseif signature:match(classname .. '%s*&%s*operator=%(%w*%s*' .. classname .. '&&') then
+        elseif signature:match(oper_signature:format(classname, 'const', classname, '&&')) or signature:match(oper_signature:format(classname, '', classname, '&&')) then
             move_oper = true
-        elseif signature:match(classname .. '%s*%(%w*%s*' .. classname .. '&') then
+        elseif signature:match(constructor_signature:format(classname, 'const', classname, '&')) or signature:match(constructor_signature:format(classname, '', classname, '&')) then
             copy_constructor = true
-        elseif signature:match(classname .. '%s*&%s*operator=%(%w*%s*' .. classname .. '&') then
+        elseif signature:match(oper_signature:format(classname, 'const', classname, '&')) or signature:match(oper_signature:format(classname, '', classname, '&')) then
             copy_oper = true
         end
     end

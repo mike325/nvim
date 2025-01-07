@@ -363,12 +363,33 @@ if mini.map then
 end
 
 if mini.jump2d then
-    vim.keymap.set(
-        'n',
-        '\\',
-        '<Cmd>lua MiniJump2d.start(MiniJump2d.builtin_opts.single_character)<CR>',
-        { nowait = true, silent = true }
-    )
+    vim.keymap.set('n', '\\', function()
+        local ignore_case_single_char = {
+            spotter = function()
+                return {}
+            end,
+            allowed_lines = { blank = false, fold = false },
+        }
+        ignore_case_single_char.hooks = {
+            before_start = function()
+                vim.api.nvim_echo(
+                    { { '(mini.jum2d) ', 'DiagnosticSignWarn' }, { 'Enter a search character: ' } },
+                    true,
+                    {}
+                )
+                local char = vim.fn.getcharstr()
+                if char then
+                    if char:match '^[a-zA-Z]$' then
+                        ignore_case_single_char.spotter =
+                            mini.jump2d.gen_pattern_spotter(string.format('[%s%s]', char:lower(), char:upper()))
+                    else
+                        ignore_case_single_char.spotter = mini.jump2d.gen_pattern_spotter(vim.pesc(char))
+                    end
+                end
+            end,
+        }
+        mini.jump2d.start(ignore_case_single_char)
+    end, { nowait = true, silent = true })
 end
 
 mini.pick = vim.F.npcall(require, 'mini.pick')
@@ -567,18 +588,22 @@ if mini.hipatterns then
     end, { desc = 'Toggle Password Cloaking' })
 end
 
+if vim.g.minimal or not nvim.plugins['nvim-cmp'] then
+    local completion_setup = {
+        completion = {},
+    }
+
+    for plugin, config in pairs(completion_setup) do
+        load_simple_module(plugin, config)
+    end
+end
+
 if vim.g.minimal then
     local simple_minimal = {
         cursorword = {},
         notify = {},
         indentscope = {},
         git = {},
-        completion = {
-            lsp_completion = {
-                source_func = 'omnifunc',
-                auto_setup = false,
-            },
-        },
     }
 
     for plugin, config in pairs(simple_minimal) do

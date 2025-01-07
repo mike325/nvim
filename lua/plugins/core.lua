@@ -13,6 +13,26 @@ return {
         end,
         opts = {
             flavour = 'mocha', -- latte, frappe, macchiato, mocha
+            performance = {
+                -- cache = {
+                --     enabled = false,
+                -- },
+                -- reset_packpath = true, -- reset the package path to improve startup time
+                rtp = {
+                    -- reset = true,
+                    -- paths = {},
+                    disabled_plugins = {
+                        "gzip",
+                        -- "matchit",
+                        -- "matchparen",
+                        -- "netrwPlugin",
+                        "tarPlugin",
+                        "tohtml",
+                        "tutor",
+                        "zipPlugin",
+                    },
+                },
+            },
             integrations = {
                 cmp = true,
                 gitsigns = true,

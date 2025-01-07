@@ -1049,6 +1049,7 @@ function M.find_in_dir(args)
     vim.validate {
         pattern = { args.pattern, { 'function', 'table', 'string' } },
         dir = { args.dir, 'string', true },
+        limit = { args.limit, 'number', true },
         callback = { args.callback, 'function', true },
     }
 
@@ -1078,6 +1079,7 @@ function M.find_in_dir(args)
             opts = {
                 type = 'file',
                 path = dir,
+                limit = args.limit,
             },
             cb = args.callback,
         }

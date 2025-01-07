@@ -21,38 +21,27 @@ local function check_lsp(servers)
     return false
 end
 
-function M.check_language_server(languages)
+function M.get_server_config(lang, name)
     vim.validate {
-        languages = {
-            languages,
-            function(l)
-                return not l or type(l) == type '' or vim.islist(l)
-            end,
-            'a string or a list of strings',
-        },
+        lang = { lang, 'string' },
+        name = { name, 'string' },
     }
 
-    if not languages or #languages == 0 then
-        for _, servers in pairs(langservers) do
-            local server_idx = check_lsp(servers)
-            if server_idx then
-                return server_idx
+    if langservers[lang] then
+        for _, server in ipairs(langservers[lang]) do
+            if server.exec == name or server.config == name then
+                return server
             end
         end
-    elseif vim.islist(languages) then
-        for _, language in pairs(languages) do
-            local servers = langservers[language]
-            if servers then
-                local server_idx = check_lsp(servers)
-                if server_idx then
-                    return server_idx
-                end
-            end
-        end
-    elseif langservers[languages] then
-        return check_lsp(langservers[languages])
     end
+    return false
+end
 
+function M.check_language_server(lang)
+    vim.validate { lang = { lang, 'string' } }
+    if langservers[lang] then
+        return check_lsp(langservers[lang])
+    end
     return false
 end
 
