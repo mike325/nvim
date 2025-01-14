@@ -589,13 +589,7 @@ if mini.hipatterns then
 end
 
 if vim.g.minimal or not nvim.plugins['nvim-cmp'] then
-    local completion_setup = {
-        completion = {},
-    }
-
-    for plugin, config in pairs(completion_setup) do
-        load_simple_module(plugin, config)
-    end
+    load_simple_module('completion', {})
 end
 
 if vim.g.minimal then

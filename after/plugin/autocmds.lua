@@ -6,86 +6,34 @@ if not nvim.plugins['nvim-lspconfig'] then
         group = vim.api.nvim_create_augroup('StartLSP', { clear = true }),
         pattern = '*',
         callback = function(_)
-            local lang_markers = {
-                python = {
-                    'pyproject.toml',
-                    'ruff.toml',
-                },
-                c = {
-                    'Makefile',
-                    'CMakeLists.txt',
-                    'compile_commands.json',
-                },
-            }
-            lang_markers.cpp = lang_markers.c
             local ft = vim.bo.filetype
-
-            local function get_cmd(server)
-                local cmd
-                if server.options and server.options.cmd then
-                    cmd = server.options.cmd
-                elseif server.cmd then
-                    cmd = server.cmd
-                elseif server.exec then
-                    cmd = server.exec
-                end
-
-                if cmd and type(cmd) ~= type {} then
-                    cmd = { cmd }
-                end
-
-                return cmd
-            end
-
-            local function get_name(server)
-                local name
-                if server.config then
-                    name = server.config
-                elseif server.exec then
-                    name = server.exec
-                else
-                    name = get_cmd(server)[1]
-                end
-                return name
-            end
-
-            local function get_root(server)
-                local markers = { '.git', '.svn' }
-                if lang_markers[ft] then
-                    vim.list_extend(markers, lang_markers[ft])
-                end
-                if server.markers then
-                    vim.list_extend(markers, server.markers)
-                end
-                local root_dir = vim.fs.find(markers, { upward = true })[1]
-                return root_dir and vim.fs.dirname(root_dir) or vim.uv.cwd()
-            end
+            local utils = RELOAD 'configs.lsp.utils'
 
             local function setup_server(server)
                 local opts = {}
                 if server.options and type(server.options) == type {} then
                     opts = vim.deepcopy(server.options)
                     if not opts.cmd then
-                        opts.cmd = get_cmd(server)
+                        opts.cmd = utils.get_cmd(server)
                         if not opts.cmd then
                             return
                         end
                     end
 
                     if not opts.name then
-                        opts.name = get_name(server) or opts.cmd[1]
+                        opts.name = utils.get_name(server) or opts.cmd[1]
                     end
 
                     if not opts.root_dir then
-                        opts.root_dir = get_root(server)
+                        opts.root_dir = utils.get_root(server)
                     end
                 else
-                    opts.cmd = get_cmd(server)
+                    opts.cmd = utils.get_cmd(server)
                     if not opts.cmd then
                         return
                     end
-                    opts.name = get_name(server) or opts.cmd[1]
-                    opts.root_dir = get_root(server)
+                    opts.name = utils.get_name(server) or opts.cmd[1]
+                    opts.root_dir = utils.get_root(server)
                 end
 
                 local neodev = vim.F.npcall(require, 'neodev.lsp')
@@ -99,12 +47,12 @@ if not nvim.plugins['nvim-lspconfig'] then
 
             local servers = {}
 
-            local server_idx = RELOAD('configs.lsp.utils').check_language_server(ft)
+            local server_idx = utils.check_language_server(ft)
             if server_idx then
                 local server = RELOAD('configs.lsp.servers')[ft][server_idx]
                 table.insert(servers, setup_server(server))
-                if ft == 'python' and vim.fs.basename(get_name(server)) ~= 'ruff' and nvim.executable('ruff') then
-                    server = require('configs.lsp.utils').get_server_config(ft, 'ruff')
+                if ft == 'python' and vim.fs.basename(utils.get_name(server)) ~= 'ruff' and nvim.executable 'ruff' then
+                    server = utils.get_server_config(ft, 'ruff')
                     table.insert(servers, setup_server(server))
                 end
             end

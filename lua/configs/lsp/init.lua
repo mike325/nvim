@@ -58,18 +58,16 @@ local function setup(ft)
         end
     end
 
-    local server_idx = RELOAD('configs.lsp.utils').check_language_server(ft)
+    local utils = RELOAD 'configs.lsp.utils'
+    local server_idx = utils.check_language_server(ft)
+
     if server_idx then
         local server = RELOAD('configs.lsp.servers')[ft][server_idx]
         config_lsp(server)
         -- NOTE: Always setup ruff in lsp mode
-        if ft == 'python' and (server.exec and server.exec ~= 'ruff' and executable 'ruff') then
-            for _, serv in pairs(RELOAD('configs.lsp.servers')[ft]) do
-                if serv.exec and serv.exec == 'ruff' then
-                    config_lsp(serv)
-                    break
-                end
-            end
+        if ft == 'python' and vim.fs.basename(utils.get_name(server)) ~= 'ruff' and nvim.executable 'ruff' then
+            local ruff_config = utils.get_server_config(ft, 'ruff')
+            config_lsp(ruff_config)
         end
         return true
     end

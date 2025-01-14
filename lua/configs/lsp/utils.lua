@@ -21,15 +21,87 @@ local function check_lsp(servers)
     return false
 end
 
+function M.get_cmd(server)
+    local cmd
+    if server.options and server.options.cmd then
+        cmd = server.options.cmd
+    elseif server.cmd then
+        cmd = server.cmd
+    elseif server.exec then
+        cmd = server.exec
+    end
+
+    if cmd and type(cmd) ~= type {} then
+        cmd = { cmd }
+    end
+
+    return cmd
+end
+
+function M.get_name(server)
+    local name
+    if server.config then
+        name = server.config
+    elseif server.exec then
+        name = server.exec
+    else
+        name = M.get_cmd(server)[1]
+    end
+    return name
+end
+
+function M.get_root(server, ft)
+    ft = ft or vim.bo.filetype
+
+    local lang_markers = {
+        python = {
+            'pyproject.toml',
+            'ruff.toml',
+        },
+        c = {
+            'Makefile',
+            'CMakeLists.txt',
+            'compile_commands.json',
+        },
+    }
+    lang_markers.cpp = lang_markers.c
+
+    local markers = { '.git', '.svn' }
+
+    if lang_markers[ft] then
+        vim.list_extend(markers, lang_markers[ft])
+    end
+    if server.markers then
+        vim.list_extend(markers, server.markers)
+    end
+    local root_dir = vim.fs.find(markers, { upward = true })[1]
+    return root_dir and vim.fs.dirname(root_dir) or vim.uv.cwd()
+end
+
 function M.get_server_config(lang, name)
     vim.validate {
         lang = { lang, 'string' },
         name = { name, 'string' },
     }
 
+    local configs = {
+        ruff = { 'ruff.toml', 'pyproject.toml' },
+        pylsp = { 'pyproject.toml' },
+    }
+
     if langservers[lang] then
         for _, server in ipairs(langservers[lang]) do
             if server.exec == name or server.config == name then
+                if configs[name] then
+                    local config = configs[name]
+                    local path = vim.fs.find(config, { upward = true, type = 'file' })[1]
+                    if path then
+                        if not server.cmd then
+                            server.cmd = { server.exec or server.config }
+                        end
+                        vim.list_extend(server.cmd, { '--config', path })
+                    end
+                end
                 return server
             end
         end

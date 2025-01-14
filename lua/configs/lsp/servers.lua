@@ -152,16 +152,20 @@ local servers = {
                                 fuzzy = true,
                                 include_params = true,
                             },
+                            flake8 = {
+                                enabled = true,
+                                config = './.flake8',
+                            },
                             ruff = {
                                 enabled = false, -- Enable the plugin
                                 formatEnabled = false, -- Enable formatting using ruffs formatter
                             },
                             pylsp_mypy = { enabled = true },
-                            pylint = { enabled = true },
-                            pycodestyle = { enabled = true },
-                            black = { enabled = true },
                             pyflakes = { enabled = true },
                             mccabe = { enabled = true },
+                            pylint = { enabled = true },
+                            pycodestyle = { enabled = false },
+                            black = { enabled = false },
                         },
                     },
                 },
@@ -212,7 +216,13 @@ local servers = {
         },
         {
             exec = 'ruff',
-            cmd = { 'ruff', 'server', '--preview' },
+            cmd = {
+                'ruff',
+                'server',
+                '--preview',
+                -- '--config',
+                -- './ruff.toml',
+            },
         },
         {
             exec = 'jedi-language-server',
