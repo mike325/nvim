@@ -49,7 +49,7 @@ if not nvim.plugins['nvim-lspconfig'] then
 
             local server_idx = utils.check_language_server(ft)
             if server_idx then
-                local server = RELOAD('configs.lsp.servers')[ft][server_idx]
+                local server = utils.get_server_config(ft, server_idx)
                 table.insert(servers, setup_server(server))
                 if ft == 'python' and vim.fs.basename(utils.get_name(server)) ~= 'ruff' and nvim.executable 'ruff' then
                     server = utils.get_server_config(ft, 'ruff')

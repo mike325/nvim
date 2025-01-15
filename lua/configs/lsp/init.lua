@@ -4,7 +4,7 @@ if not lsp then
     return false
 end
 
-local lsp_configs = require 'configs.lsp.servers'
+local langservers = require 'configs.lsp.servers'
 local nvim = require 'nvim'
 local executable = require('utils.files').executable
 
@@ -62,7 +62,7 @@ local function setup(ft)
     local server_idx = utils.check_language_server(ft)
 
     if server_idx then
-        local server = RELOAD('configs.lsp.servers')[ft][server_idx]
+        local server = utils.get_server_config(ft, server_idx)
         config_lsp(server)
         -- NOTE: Always setup ruff in lsp mode
         if ft == 'python' and vim.fs.basename(utils.get_name(server)) ~= 'ruff' and nvim.executable 'ruff' then
@@ -82,7 +82,7 @@ if null_ls and pcall(require, 'gitsigns') then
     table.insert(null_sources, null_ls.builtins.code_actions.gitsigns)
 end
 
-for filetype, _ in pairs(lsp_configs) do
+for filetype, _ in pairs(langservers) do
     local has_server = setup(filetype)
     local null_config = null_configs[filetype]
 

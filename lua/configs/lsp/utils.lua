@@ -81,7 +81,7 @@ end
 function M.get_server_config(lang, name)
     vim.validate {
         lang = { lang, 'string' },
-        name = { name, 'string' },
+        name = { name, { 'string', 'number' } },
     }
 
     local configs = {
@@ -90,20 +90,24 @@ function M.get_server_config(lang, name)
     }
 
     if langservers[lang] then
-        for _, server in ipairs(langservers[lang]) do
-            if server.exec == name or server.config == name then
-                if configs[name] then
-                    local config = configs[name]
-                    local path = vim.fs.find(config, { upward = true, type = 'file' })[1]
-                    if path then
-                        if not server.cmd then
-                            server.cmd = { server.exec or server.config }
+        if type(name) == type '' then
+            for _, server in ipairs(langservers[lang]) do
+                if server.exec == name or server.config == name then
+                    if configs[name] then
+                        local config = configs[name]
+                        local path = vim.fs.find(config, { upward = true, type = 'file' })[1]
+                        if path then
+                            if not server.cmd then
+                                server.cmd = { server.exec or server.config }
+                            end
+                            vim.list_extend(server.cmd, { '--config', path })
                         end
-                        vim.list_extend(server.cmd, { '--config', path })
                     end
+                    return server
                 end
-                return server
             end
+        else
+            return langservers[lang][name] or false
         end
     end
     return false
