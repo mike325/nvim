@@ -32,24 +32,24 @@ if not nvim.plugins['nvim-lspconfig'] then
                     if not opts.cmd then
                         return
                     end
-                    opts.name = utils.get_name(server) or opts.cmd[1]
+                    opts.name = utils.get_name(server)
                     opts.root_dir = utils.get_root(server)
                 end
 
-                local neodev = vim.F.npcall(require, 'neodev.lsp')
-                if neodev and ft == 'lua' then
-                    opts.before_init = neodev.before_init
-                    opts.settings = { Lua = {} }
+                if ft == 'lua' then
+                    local neodev = vim.F.npcall(require, 'neodev.lsp')
+                    if neodev then
+                        opts.before_init = neodev.before_init
+                        opts.settings = { Lua = {} }
+                    end
                 end
 
                 return opts
             end
 
             local servers = {}
-
-            local server_idx = utils.check_language_server(ft)
-            if server_idx then
-                local server = utils.get_server_config(ft, server_idx)
+            local server = utils.check_language_server(ft)
+            if server then
                 table.insert(servers, setup_server(server))
                 if ft == 'python' and vim.fs.basename(utils.get_name(server)) ~= 'ruff' and nvim.executable 'ruff' then
                     server = utils.get_server_config(ft, 'ruff')
@@ -58,8 +58,8 @@ if not nvim.plugins['nvim-lspconfig'] then
             end
 
             if #servers > 0 then
-                for _, server in ipairs(servers) do
-                    vim.lsp.start(server)
+                for _, server_config in ipairs(servers) do
+                    vim.lsp.start(server_config)
                 end
             end
         end,

@@ -247,6 +247,7 @@ local servers = {
             options = {
                 cmd = {
                     'clangd',
+                    '--fallback-style=Google',
                     '--clang-tidy',
                     '--header-insertion=iwyu',
                     '--function-arg-placeholders',

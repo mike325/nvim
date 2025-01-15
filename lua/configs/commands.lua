@@ -782,3 +782,20 @@ nvim.command.set('EditPathScript', function(opts)
     end
     vim.cmd.edit(cmd)
 end, { nargs = 1, complete = 'shellcmd', desc = 'Open a script located somewhere in path' })
+
+nvim.command.set('LSPDumpConfig', function(opts)
+    if #opts.fargs < 2 then
+        vim.notify(
+            'Missing arguments, need a filetype and a server name',
+            vim.log.levels.ERROR,
+            { title = 'LSPDumpConfig' }
+        )
+        return
+    end
+    local lsp_utils = RELOAD 'configs.lsp.utils'
+    local ft = opts.fargs[1]
+    local name = opts.fargs[2]
+    local server = lsp_utils.get_server_config(ft, name)
+    lsp_utils.dump_config_to_json(ft, server)
+    vim.notify('Config dumpt into lsp.json', vim.log.levels.INFO, { title = 'LSPDumpConfig' })
+end, { nargs = '+', complete = completions.lsp_configs, desc = 'Dump default lsp config into lsp.json' })

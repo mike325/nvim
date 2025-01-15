@@ -213,6 +213,25 @@ completions = vim.tbl_extend('force', completions, {
     namespaces = function(arglead, cmdline, cursorpos)
         return utils.general_completion(arglead, cmdline, cursorpos, vim.tbl_keys(vim.api.nvim_get_namespaces()))
     end,
+    lsp_configs = function(arglead, cmdline, cursorpos)
+        local langservers = require 'configs.lsp.servers'
+
+        local cmd = vim.tbl_map(function(arg)
+            return vim.trim(arg)
+        end, vim.split(cmdline, '%s+', { trimempty = true }))
+
+        if #cmd == 1 or (#cmd == 2 and cmdline:sub(#cmdline, #cmdline) ~= ' ') then
+            return utils.general_completion(arglead, cmdline, cursorpos, vim.tbl_keys(langservers))
+        end
+
+        local lsp_utils = require 'configs.lsp.utils'
+        local servers = {}
+        for _, server in ipairs(langservers[cmd[2]] or {}) do
+            table.insert(servers, lsp_utils.get_name(server))
+        end
+
+        return utils.general_completion(arglead, cmdline, cursorpos, servers)
+    end,
 })
 
 return completions

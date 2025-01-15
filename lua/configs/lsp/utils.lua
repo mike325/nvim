@@ -3,23 +3,9 @@ local sys = require 'sys'
 local executable = require('utils.files').executable
 local is_dir = require('utils.files').is_dir
 local langservers = require 'configs.lsp.servers'
+local config_file = 'lsp.json'
 
 local M = {}
-
-local function check_lsp(servers)
-    if type(servers) ~= type {} then
-        servers = { servers }
-    end
-    for idx, server in pairs(servers) do
-        local dir = is_dir(sys.cache .. '/lspconfig/' .. (server.config or server.exec))
-        local exec = server.exec and executable(server.exec) or false
-        if exec or dir then
-            return idx
-        end
-    end
-
-    return false
-end
 
 function M.get_cmd(server)
     local cmd
@@ -78,36 +64,85 @@ function M.get_root(server, ft)
     return root_dir and vim.fs.dirname(root_dir) or vim.uv.cwd()
 end
 
+function M.load_config_from_json(json_filename)
+    local utils_io = RELOAD 'utils.files'
+    json_filename = json_filename or vim.fs.find(config_file, { upward = true, type = 'file' })[1]
+    if json_filename then
+        local configs = utils_io.read_json(json_filename)
+        if configs.languageserver then
+            return configs.languageserver
+        end
+    end
+    return false
+end
+
+function M.dump_config_to_json(ft, server)
+    local utils_io = RELOAD 'utils.files'
+    local configs = { langservers = {} }
+    local json_filename = vim.fs.find(config_file, { upward = true, type = 'file' })[1]
+    if json_filename then
+        configs = utils_io.read_json(json_filename)
+    end
+    configs.langservers[ft] = server
+    configs.langservers[ft].commands = nil
+    utils_io.dump_json(config_file, configs)
+end
+
 function M.get_server_config(lang, name)
     vim.validate {
         lang = { lang, 'string' },
-        name = { name, { 'string', 'number' } },
+        name = { name, { 'string', 'number' }, true },
     }
 
-    local configs = {
-        ruff = { 'ruff.toml', 'pyproject.toml' },
-        pylsp = { 'pyproject.toml' },
-    }
+    local function get_config_cmd(server)
+        local tmp_server = vim.deepcopy(server)
+
+        local configs = {
+            ruff = { 'ruff.toml', 'pyproject.toml' },
+            pylsp = { 'pyproject.toml' },
+        }
+
+        if configs[name] then
+            local config = configs[name]
+            local path = vim.fs.find(config, { upward = true, type = 'file' })[1]
+            if path then
+                local cmd
+                if tmp_server.cmd then
+                    cmd = tmp_server.cmd
+                elseif (tmp_server.options or {}).cmd then
+                    cmd = tmp_server.options.cmd
+                else
+                    cmd = { tmp_server.exec or tmp_server.config }
+                    tmp_server.cmd = cmd
+                end
+                vim.list_extend(cmd, { '--config', path })
+            end
+        end
+        return tmp_server
+    end
 
     if langservers[lang] then
-        if type(name) == type '' then
-            for _, server in ipairs(langservers[lang]) do
-                if server.exec == name or server.config == name then
-                    if configs[name] then
-                        local config = configs[name]
-                        local path = vim.fs.find(config, { upward = true, type = 'file' })[1]
-                        if path then
-                            if not server.cmd then
-                                server.cmd = { server.exec or server.config }
-                            end
-                            vim.list_extend(server.cmd, { '--config', path })
-                        end
+        if name then
+            if type(name) == type '' then
+                for _, server in ipairs(langservers[lang]) do
+                    if server.exec == name or server.config == name then
+                        return get_config_cmd(server)
                     end
-                    return server
+                end
+            else
+                local server = langservers[lang][name]
+                if server then
+                    return get_config_cmd(server)
                 end
             end
         else
-            return langservers[lang][name] or false
+            for _, server in ipairs(langservers[lang]) do
+                local dir = is_dir(sys.cache .. '/lspconfig/' .. (server.config or server.exec))
+                local exec = server.exec and executable(server.exec) or false
+                if exec or dir then
+                    return get_config_cmd(server)
+                end
+            end
         end
     end
     return false
@@ -115,20 +150,25 @@ end
 
 function M.check_language_server(lang)
     vim.validate { lang = { lang, 'string' } }
-    if langservers[lang] then
-        return check_lsp(langservers[lang])
+
+    local utils_io = RELOAD 'utils.files'
+    local json_filename = vim.fs.find(config_file, { upward = true, type = 'file' })[1]
+    if json_filename then
+        local config = utils_io.read_json(json_filename)
+        if config.langservers and config.langservers[lang] then
+            vim.print(config.langservers[lang])
+            return config.langservers[lang]
+        end
     end
-    return false
+    return M.get_server_config(lang)
 end
 
 function M.get_language_server_cmd(filetype)
     vim.validate { filetype = { filetype, 'string' } }
-    local server_idx = M.check_language_server(filetype)
-    if not server_idx then
+    local server = M.check_language_server(filetype)
+    if not server then
         return {}
     end
-
-    local server = langservers[filetype][server_idx]
     local exec
     if server.options and server.options.cmd then
         exec = server.options.cmd
