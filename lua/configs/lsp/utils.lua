@@ -156,7 +156,6 @@ function M.check_language_server(lang)
     if json_filename then
         local config = utils_io.read_json(json_filename)
         if config.langservers and config.langservers[lang] then
-            vim.print(config.langservers[lang])
             return config.langservers[lang]
         end
     end
