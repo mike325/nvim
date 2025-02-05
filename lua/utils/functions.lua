@@ -479,7 +479,7 @@ function M.set_compiler(compiler, opts)
 
     local ok, ft_compilers = pcall(RELOAD, 'filetypes.' .. language)
     local args
-    if ok then
+    if ok and ft_compilers[option] then
         local compiler_data = ft_compilers[option][compiler]
         if compiler_data then
             args = compiler_data
@@ -962,6 +962,86 @@ function M.typos_check(buf)
         end,
     }
     typos:start()
+end
+
+function M.lint_buffer(linter, opts)
+    vim.validate {
+        linter = { linter, 'string' },
+        opts = { opts, 'table', true },
+    }
+
+    opts = opts or {}
+
+    local language = opts.language or opts.filetype or vim.bo.filetype
+    local buf = opts.buf or vim.api.nvim_get_current_buf()
+    local bufname = opts.bufname or opts.filename or vim.api.nvim_buf_get_name(buf)
+
+    local function get_args(configs, configflag, fallback_args)
+        if configs and configflag then
+            local config_files = vim.fs.find(configs, { upward = true, type = 'file' })
+            if config_files[1] then
+                return { configflag, config_files[1] }
+            end
+        elseif opts.global_config and is_file(opts.global_config) then
+            return { configflag, opts.global_config }
+        end
+
+        return fallback_args
+    end
+
+    local cmd = { linter }
+    if opts.subcmd or opts.subcommand then
+        table.insert(cmd, opts.subcmd or opts.subcommand)
+    end
+
+    local efm = opts.efm or opts.errorformat
+    if not efm then
+        efm = vim.opt_global.errorformat:get()
+        table.remove(efm, 1)
+    end
+
+    local ok, ft_linters = pcall(RELOAD, 'filetypes.' .. language)
+    local args
+    if ok and ft_linters.makeprg then
+        local linter_data = ft_linters.makeprg[linter]
+        if linter_data then
+            args = linter_data
+            efm = opts.efm or opts.errorformat or linter_data.efm or linter_data.errorformat or efm
+        end
+    end
+
+    if opts.args then
+        args = type(opts.args) == type {} and opts.args or { opts.args }
+    end
+
+    local extra_args = get_args(opts.configs, opts.config_flag, args or {})
+    vim.list_extend(cmd, extra_args)
+    table.insert(cmd, bufname)
+
+    local title = require('utils.strings').capitalize(linter)
+    local linter_job = RELOAD('jobs'):new {
+        cmd = cmd,
+        silent = true,
+        callbacks = function(job, _)
+            local qf_utils = RELOAD 'utils.qf'
+            local output = RELOAD('utils.tables').remove_empty(job:output())
+            local diagnostic_ns_name = title:lower()
+            if #output > 0 then
+                qf_utils.set_list {
+                    title = diagnostic_ns_name,
+                    items = output,
+                    jump = false,
+                    open = false,
+                    win = 0,
+                }
+                qf_utils.qf_to_diagnostic(diagnostic_ns_name, 0)
+            elseif diagnostic_ns_name == vim.fn.getloclist(0, { title = 1 }).title then
+                qf_utils.clear(0)
+                vim.diagnostic.reset(vim.api.nvim_create_namespace(diagnostic_ns_name))
+            end
+        end,
+    }
+    linter_job:start()
 end
 
 function M.watch_config_file(fname)

@@ -169,7 +169,6 @@ vim.api.nvim_create_autocmd('LspAttach', {
     group = vim.api.nvim_create_augroup('LspMappings', { clear = true }),
     pattern = '*',
     callback = function(args)
-
         local bufnr = args.buf
         local client = vim.lsp.get_client_by_id(args.data.client_id)
         if not client then
@@ -477,12 +476,53 @@ if executable 'typos' then
         group = vim.api.nvim_create_augroup('TyposCheck', { clear = true }),
         pattern = '*',
         callback = function(args)
+            local blacklist = {
+                help = true,
+                man = true,
+            }
             args = args or {}
             args.buf = args.buf or vim.api.nvim_get_current_buf()
-            RELOAD('utils.functions').typos_check(args.buf)
+            local ft = vim.filetype.match { buf = args.buf, filename = vim.api.nvim_buf_get_name(args.buf) }
+            if not blacklist[ft] and vim.bo.buftype == '' then
+                RELOAD('utils.functions').typos_check(args.buf)
+            end
         end,
     })
 end
+
+local linters_au = vim.api.nvim_create_augroup('Linters', { clear = true })
+vim.api.nvim_create_autocmd({ 'Filetype' }, {
+    desc = 'Setup linters',
+    group = linters_au,
+    pattern = '*',
+    callback = function(ft_args)
+        local whitelist = {
+            bash = 'shellcheck',
+            sh = 'shellcheck',
+            fish = 'shellcheck',
+        }
+        local buf = ft_args.buf
+        local filename = ft_args.file
+        local ft = vim.filetype.match { buf = buf, filename = filename } or vim.bo.filetype
+        if vim.bo.buftype == '' and whitelist[ft] and executable(whitelist[ft]) then
+            local real_ft = { bash = 'sh' }
+            vim.api.nvim_create_autocmd({ 'BufWritePost' }, {
+                desc = 'Get shell scripts linting',
+                group = linters_au,
+                buffer = buf,
+                callback = function(buf_args)
+                    if whitelist[buf_args.file] then
+                        RELOAD('utils.functions').lint_buffer(
+                            'shellcheck',
+                            { filetype = real_ft[ft] or ft, filename = filename }
+                        )
+                    end
+                end,
+            })
+            RELOAD('utils.functions').lint_buffer(whitelist[ft], { filetype = real_ft[ft] or ft, filename = filename })
+        end
+    end,
+})
 
 vim.api.nvim_create_autocmd({ 'TextYankPost' }, {
     desc = 'Highlight yanked text',

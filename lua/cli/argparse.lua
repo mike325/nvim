@@ -7,15 +7,13 @@ function Parser:parse(args)
     }
 
     args = vim.deepcopy(args or _G.arg or {})
-    args[0] = nil
-
     -- if next(self._flags) == nil then
     --     error(debug.traceback 'There are no flags to parse, use the add() method to create new rules')
     --     return
     -- end
 
     local parsed_args = {}
-    local idx = 1
+    local idx = 2
     while idx <= #args do
         local arg = args[idx]
         if arg == '-h' or arg == '--help' then
