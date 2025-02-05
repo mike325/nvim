@@ -11,8 +11,8 @@ local languages = vim.tbl_map(vim.fs.basename, vim.api.nvim_get_runtime_file('lu
 -- TODO: Respect config files Ex. compile_commands.json, stylua.toml, pyproject.toml, etc
 for _, lang in ipairs(languages) do
     lang = lang:gsub('%.lua$', '')
-    local ok, module = pcall(require, 'filetypes.' .. lang)
-    if ok then
+    local module = vim.F.npcall(require, 'filetypes.' .. lang)
+    if module then
         if module.get_formatter or module.get_linter then
             M[lang] = {
                 servers = {},

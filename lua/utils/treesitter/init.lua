@@ -55,8 +55,7 @@ function M.is_in_node(node, range, buf)
     }
 
     buf = buf or vim.api.nvim_get_current_buf()
-    local ok, _ = pcall(vim.treesitter.get_parser, buf)
-    if not ok then
+    if not pcall(vim.treesitter.get_parser, buf) then
         return false
     end
 
@@ -103,8 +102,8 @@ function M.get_list_nodes(root_node, tsquery, text, buf)
 
     buf = buf or vim.api.nvim_get_current_buf()
 
-    local ok, parser = pcall(vim.treesitter.get_parser, buf)
-    if not ok then
+    local parser = vim.F.npcall(vim.treesitter.get_parser, buf)
+    if not parser then
         return {}
     end
 
@@ -140,8 +139,8 @@ function M.list_buf_nodes(tsquery, buf)
 
     buf = buf or vim.api.nvim_get_current_buf()
 
-    local ok, parser = pcall(vim.treesitter.get_parser, buf)
-    if not ok then
+    local parser = vim.F.npcall(vim.treesitter.get_parser, buf)
+    if not parser then
         return {}
     end
 
@@ -227,8 +226,7 @@ end
 function M.has_ts(buf)
     vim.validate { buf = { buf, 'number', true } }
     buf = buf or vim.api.nvim_get_current_buf()
-    local ok, _ = pcall(vim.treesitter.get_parser, buf)
-    return ok
+    return (pcall(vim.treesitter.get_parser, buf))
 end
 
 return M

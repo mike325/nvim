@@ -4,8 +4,7 @@ local nvim = require 'nvim'
 local M = {}
 
 function M.backspace()
-    local ok, _ = pcall(vim.cmd.pop)
-    if not ok then
+    if not pcall(vim.cmd.pop) then
         local key = vim.keycode '<C-o>'
         nvim.feedkeys(key, 'n', true)
         -- local jumps

@@ -6,11 +6,7 @@ local function get_autocmd(opts)
     }
     opts = opts or {}
 
-    local ok, autocmds = pcall(vim.api.nvim_get_autocmds, opts)
-    if not ok then
-        autocmds = {}
-    end
-    return autocmds
+    return vim.F.npcall(vim.api.nvim_get_autocmds, opts) or {}
 end
 
 local function get_augroup(name_id)
@@ -322,14 +318,13 @@ local nvim = {
                 return x
             end
 
-            local ok, plugins = pcall(vim.api.nvim_get_var, 'plugs')
-            if ok and plugins[k] then
+            local plugins = vim.F.npcall(vim.api.nvim_get_var, 'plugs') or {}
+            if plugins[k] then
                 mt[k] = plugins[k]
                 return plugins[k]
             end
 
             local lazy = vim.F.npcall(require, 'lazy')
-            ok = lazy ~= nil
             if lazy then
                 plugins = lazy.plugins()
                 for _, plugin in ipairs(plugins) do
@@ -340,7 +335,7 @@ local nvim = {
                 end
             end
 
-            if not ok and packer_plugins then
+            if packer_plugins then
                 plugins = packer_plugins
                 if plugins[k] and plugins[k].loaded then
                     return plugins[k]
@@ -408,16 +403,15 @@ local nvim = {
     }),
     env = setmetatable({}, {
         __index = function(_, k)
-            local ok, value = pcall(vim.api.nvim_call_function, 'getenv', { k })
-            if not ok then
+            local value = vim.F.npcall(vim.api.nvim_call_function, 'getenv', { k })
+            if not value then
                 value = vim.api.nvim_call_function('expand', { '$' .. k })
                 value = value == k and nil or value
             end
             return value or nil
         end,
         __newindex = function(_, k, v)
-            local ok, _ = pcall(vim.api.nvim_call_function, 'setenv', { k, v })
-            if not ok then
+            if not pcall(vim.api.nvim_call_function, 'setenv', { k, v }) then
                 v = type(v) == 'string' and '"' .. v .. '"' or v
                 local _ = vim.api.nvim_eval('let $' .. k .. ' = ' .. v)
             end
@@ -476,8 +470,7 @@ local nvim = {
     }),
     reg = setmetatable({}, {
         __index = function(_, k)
-            local ok, value = pcall(vim.api.nvim_call_function, 'getreg', { k })
-            return ok and value or nil
+            return vim.F.npcall(vim.api.nvim_call_function, 'getreg', { k })
         end,
         __newindex = function(_, k, v)
             if v == nil then
@@ -609,9 +602,8 @@ setmetatable(nvim, {
             return mt[k]
         end
 
-        local ok, x = pcall(RELOAD, 'nvim.' .. k)
-
-        if not ok then
+        local x = vim.F.npcall(RELOAD, 'nvim.' .. k)
+        if not x then
             x = vim.api['nvim_' .. k]
             if not x then
                 x = vim[k]

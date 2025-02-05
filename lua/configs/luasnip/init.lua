@@ -37,8 +37,8 @@ local function load_snippets(ft)
 
     for runtimepath, opts in pairs(runtimepaths) do
         for _, snips in ipairs(vim.api.nvim_get_runtime_file(runtimepath .. 'all.lua', true)) do
-            ok, snip_msg = pcall(dofile, snips)
-            if not ok then
+            snip_msg = vim.F.npcall(dofile, snips)
+            if not snip_msg then
                 goto fail
             end
             opts.key = snips
@@ -46,8 +46,8 @@ local function load_snippets(ft)
         end
 
         for _, snips in ipairs(vim.api.nvim_get_runtime_file(runtimepath .. ft .. '.lua', true)) do
-            ok, snip_msg = pcall(dofile, snips)
-            if not ok then
+            snip_msg = vim.F.npcall(dofile, snips)
+            if not snip_msg then
                 goto fail
             end
             opts.key = snips

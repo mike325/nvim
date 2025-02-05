@@ -1,4 +1,3 @@
--- local _, sqlite = pcall(require, 'sqlite')
 local sys = require 'sys'
 
 if not STORAGE.db_path then

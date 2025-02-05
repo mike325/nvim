@@ -29,8 +29,8 @@ function M.start_server(opts)
             assert(not err, err)
 
             if chunk then
-                local ok, json = pcall(vim.json.decode, chunk)
-                if ok then
+                local json = vim.F.npcall(vim.json.decode, chunk)
+                if json then
                     local stop = false
                     for action, data in pairs(json) do
                         if action == 'notification' then

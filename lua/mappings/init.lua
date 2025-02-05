@@ -231,8 +231,8 @@ function M.async_makeprg(opts)
         args[idx] = vim.fn.expand(arg)
     end
 
-    local ok, val = pcall(nvim.buf.get_option, 0, 'makeprg')
-    local cmd = ok and val or vim.o.makeprg
+    local val = vim.F.npcall(nvim.buf.get_option, 0, 'makeprg')
+    local cmd = val or vim.o.makeprg
 
     if cmd:sub(#cmd, #cmd) == '%' then
         cmd = cmd:gsub('%%', vim.api.nvim_buf_get_name(0))
@@ -744,8 +744,7 @@ function M.reload_configs(files)
     local fail = {}
 
     for _, fname in ipairs(files) do
-        local ok, _ = pcall(vim.cmd.source, fname)
-        if ok then
+        if pcall(vim.cmd.source, fname) then
             table.insert(success, fname)
         else
             table.insert(fail, fname)

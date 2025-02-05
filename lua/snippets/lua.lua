@@ -384,16 +384,9 @@ return {
         )),
     s(
         { trig = 'pcall' },
-        fmt([[local {}, {} = pcall({})]], {
-            c(1, {
-                i(1, 'ok'),
-                i(1, '_'),
-            }),
+        fmt([[local {} = vim.F.npcall({})]], {
+            i(1, 'module'),
             c(2, {
-                i(1, 'module'),
-                i(1, '_'),
-            }),
-            c(3, {
                 sn(nil, {
                     i(1, 'func'),
                 }),

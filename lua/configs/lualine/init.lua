@@ -175,8 +175,8 @@ lualine.setup {
                     removed = 'StatusLineDiffRemove',
                 },
                 on_click = function()
-                    local ok, gitsigns = pcall(require, 'gitsigns')
-                    if ok then
+                    local gitsigns = vim.F.npcall(require, 'gitsigns')
+                    if gitsigns then
                         gitsigns.setqflist 'attached'
                     end
                 end,

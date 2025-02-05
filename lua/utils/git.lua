@@ -93,8 +93,8 @@ local function exec_sync_gitcmd(cmd, gitcmd)
         local output = git:read '*a'
         return vim.split(output, '\n', { trimempty = true })
     else
-        local ok, output = pcall(vim.fn.systemlist, cmd)
-        if not ok or vim.v.shell_error ~= 0 then
+        local output = vim.F.npcall(vim.fn.systemlist, cmd)
+        if not output or vim.v.shell_error ~= 0 then
             if type(output) == type {} then
                 output = table.concat(output, '\n')
             end

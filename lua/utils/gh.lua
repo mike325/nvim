@@ -16,8 +16,8 @@ local function exec_sync_ghcmd(cmd, ghcmd)
         local output = gh:read '*a'
         return vim.split(output, '\n', { trimempty = true })
     else
-        local ok, output = pcall(vim.fn.systemlist, cmd)
-        return ok and output or error(debug.traceback('Failed to execute: ' .. ghcmd .. ', ' .. output))
+        local output = vim.F.npcall(vim.fn.systemlist, cmd)
+        return output or error(debug.traceback('Failed to execute: ' .. ghcmd .. ', ' .. output))
     end
 end
 
@@ -323,8 +323,8 @@ function M.get_repo_reviewers(callback)
 
     if not callback then
         local url
-        local ok, remote = pcall(require('utils.git').get_remote)
-        if ok then
+        local remote = vim.F.npcall(require('utils.git').get_remote)
+        if remote then
             url = remote.url
         else
             local remotes = require('utils.git').get_remotes()

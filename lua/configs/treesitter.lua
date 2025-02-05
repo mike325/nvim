@@ -83,9 +83,9 @@ treesitter.setup {
                 return true
             end
 
-            local ok, stats = pcall(vim.uv.fs_stat, vim.api.nvim_buf_get_name(buf))
+            local stats = vim.F.npcall(vim.uv.fs_stat, vim.api.nvim_buf_get_name(buf))
             -- Disable for files larger than 1MB.
-            return ok and stats and stats.size > (1024 * 1024)
+            return stats and stats.size > (1024 * 1024)
         end,
     },
     textobjects = {

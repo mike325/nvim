@@ -477,9 +477,9 @@ function M.set_compiler(compiler, opts)
         table.remove(efm, 1)
     end
 
-    local ok, ft_compilers = pcall(RELOAD, 'filetypes.' .. language)
     local args
-    if ok and ft_compilers[option] then
+    local ft_compilers = vim.F.npcall(RELOAD, 'filetypes.' .. language)
+    if ft_compilers and ft_compilers[option] then
         local compiler_data = ft_compilers[option][compiler]
         if compiler_data then
             args = compiler_data
@@ -1000,9 +1000,9 @@ function M.lint_buffer(linter, opts)
         table.remove(efm, 1)
     end
 
-    local ok, ft_linters = pcall(RELOAD, 'filetypes.' .. language)
     local args
-    if ok and ft_linters.makeprg then
+    local ft_linters = vim.F.npcall(RELOAD, 'filetypes.' .. language)
+    if ft_linters and ft_linters.makeprg then
         local linter_data = ft_linters.makeprg[linter]
         if linter_data then
             args = linter_data

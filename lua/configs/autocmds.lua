@@ -480,11 +480,11 @@ if executable 'typos' then
                 help = true,
                 man = true,
             }
-            args = args or {}
-            args.buf = args.buf or vim.api.nvim_get_current_buf()
-            local ft = vim.filetype.match { buf = args.buf, filename = vim.api.nvim_buf_get_name(args.buf) }
+            local buf = args.buf
+            local filename = args.file
+            local ft = vim.filetype.match { buf = buf, filename = filename } or vim.bo.filetype
             if not blacklist[ft] and vim.bo.buftype == '' then
-                RELOAD('utils.functions').typos_check(args.buf)
+                RELOAD('utils.functions').typos_check(buf)
             end
         end,
     })

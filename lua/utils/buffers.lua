@@ -253,8 +253,8 @@ function M.detect_indent(buf)
 
     local ft = vim.bo[buf].filetype
     local buftype = vim.bo[buf].buftype
-    local ok, indent_set = pcall(vim.api.nvim_buf_get_var, buf, 'indent_set')
-    indent_set = ok and indent_set or false
+    local indent_set = vim.F.npcall(vim.api.nvim_buf_get_var, buf, 'indent_set')
+    indent_set = indent_set or false
 
     if ignore_fts[ft] or indent_set or buftype ~= '' then
         return
@@ -346,7 +346,7 @@ function M.format(opts)
     local ft = opts.ft or vim.bo.filetype
     local bufnr = vim.api.nvim_get_current_buf()
     local external_formatprg = RELOAD('utils.functions').external_formatprg
-    local ok, utils = pcall(RELOAD, 'filetypes.' .. ft)
+    local utils = vim.F.npcall(RELOAD, 'filetypes.' .. ft)
 
     local view = vim.fn.winsaveview()
 
@@ -388,7 +388,7 @@ function M.format(opts)
         end
     end
 
-    if ok and utils.get_formatter then
+    if utils and utils.get_formatter then
         local cmd = utils.get_formatter()
         if cmd then
             if opts.whole_file then
@@ -418,10 +418,10 @@ function M.lint(opts)
     local ft = opts.ft or vim.bo.filetype
     local bufnr = vim.api.nvim_get_current_buf()
     local external_linterprg = RELOAD('utils.functions').external_linterprg
-    local ok, utils = pcall(RELOAD, 'filetypes.' .. ft)
+    local utils = vim.F.npcall(RELOAD, 'filetypes.' .. ft)
 
     -- local clients = vim.lsp.buf_get_clients(0)
-    if ok and utils.get_linter then
+    if utils and utils.get_linter then
         local cmd = utils.get_linter()
         if cmd then
             external_linterprg {

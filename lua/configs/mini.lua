@@ -416,6 +416,7 @@ if mini.pick then
             move_down = '<C-j>',
             mark = '<c-x>', -- default mapping, but I want to see it in my config
             mark_all = '<c-a>', -- default mapping, but I want to see it in my config
+            choose_marked = '<M-CR>', -- default mapping, but I want to see it in my config
         },
     }
     vim.ui.select = mini.pick.ui_select
