@@ -379,6 +379,7 @@ function parse_cmd_output() {
         raw_output "$line"
     done < <(sh -c "$cmd")
 
+    # shellcheck disable=SC2086
     return $exit_with_error
 }
 

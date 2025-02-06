@@ -350,7 +350,7 @@ function M.external_linterprg(args)
     local linter = RELOAD('jobs'):new {
         cmd = cmd,
         silent = true,
-        callbacks_on_failure = function(job, rc)
+        callbacks_on_failure = function(job, _)
             local items = vim.fn.getqflist({ lines = job:output(), efm = efm }).items
             RELOAD('utils.qf').qf_to_diagnostic(cmd[1], false, items)
         end,
@@ -473,8 +473,7 @@ function M.set_compiler(compiler, opts)
 
     local efm = opts.efm or opts.errorformat
     if not efm then
-        efm = vim.opt_global.errorformat:get()
-        table.remove(efm, 1)
+        efm = vim.go.efm
     end
 
     local args
@@ -942,22 +941,15 @@ function M.typos_check(buf)
     local typos = RELOAD('jobs'):new {
         cmd = cmd,
         silent = true,
-        callbacks = function(job, _)
+        callbacks = function(job, rc)
             local qf_utils = RELOAD 'utils.qf'
             local output = RELOAD('utils.tables').remove_empty(job:output())
-            local diagnostic_ns_name = title:lower()
-            if #output > 0 then
-                qf_utils.set_list {
-                    title = diagnostic_ns_name,
-                    items = output,
-                    jump = false,
-                    open = false,
-                    win = 0,
-                }
-                qf_utils.qf_to_diagnostic(diagnostic_ns_name, 0)
-            elseif diagnostic_ns_name == vim.fn.getloclist(0, { title = 1 }).title then
-                qf_utils.clear(0)
-                vim.diagnostic.reset(vim.api.nvim_create_namespace(diagnostic_ns_name))
+            local diagnostic_ns_name = vim.api.nvim_create_namespace(title:lower())
+            if rc ~= 0 and #output > 0 then
+                local items = vim.fn.getqflist({ lines = output, efm = vim.go.efm }).items
+                qf_utils.qf_to_diagnostic(diagnostic_ns_name, 0, items)
+            else
+                vim.diagnostic.reset(diagnostic_ns_name, buf)
             end
         end,
     }
@@ -996,8 +988,7 @@ function M.lint_buffer(linter, opts)
 
     local efm = opts.efm or opts.errorformat
     if not efm then
-        efm = vim.opt_global.errorformat:get()
-        table.remove(efm, 1)
+        efm = vim.go.efm
     end
 
     local args
@@ -1008,6 +999,10 @@ function M.lint_buffer(linter, opts)
             args = linter_data
             efm = opts.efm or opts.errorformat or linter_data.efm or linter_data.errorformat or efm
         end
+    end
+
+    if type(efm) == type {} then
+        efm = table.concat(efm, '\n')
     end
 
     if opts.args then
@@ -1022,22 +1017,15 @@ function M.lint_buffer(linter, opts)
     local linter_job = RELOAD('jobs'):new {
         cmd = cmd,
         silent = true,
-        callbacks = function(job, _)
+        callbacks = function(job, rc)
             local qf_utils = RELOAD 'utils.qf'
             local output = RELOAD('utils.tables').remove_empty(job:output())
-            local diagnostic_ns_name = title:lower()
-            if #output > 0 then
-                qf_utils.set_list {
-                    title = diagnostic_ns_name,
-                    items = output,
-                    jump = false,
-                    open = false,
-                    win = 0,
-                }
-                qf_utils.qf_to_diagnostic(diagnostic_ns_name, 0)
-            elseif diagnostic_ns_name == vim.fn.getloclist(0, { title = 1 }).title then
-                qf_utils.clear(0)
-                vim.diagnostic.reset(vim.api.nvim_create_namespace(diagnostic_ns_name))
+            local diagnostic_ns_name = vim.api.nvim_create_namespace(title:lower())
+            if rc ~= 0 and #output > 0 then
+                local items = vim.fn.getqflist({ lines = output, efm = efm }).items
+                qf_utils.qf_to_diagnostic(diagnostic_ns_name, 0, items)
+            else
+                vim.diagnostic.reset(diagnostic_ns_name, buf)
             end
         end,
     }

@@ -218,6 +218,9 @@ function M.set_file_opts(flags_file, bufnum)
         end
         local path_var = vim.split(vim.bo[bufnum].path, ',')
         vim.bo[bufnum].path = table.concat(require('utils.tables').merge_uniq_unorder(path_var, paths), ',')
+        if #paths == 0 and _G['add_default_paths'] then
+            _G['add_default_paths'](bufnum)
+        end
     end
 
     set_source_options(filename)

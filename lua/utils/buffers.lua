@@ -371,7 +371,8 @@ function M.format(opts)
             end
         elseif client.server_capabilities.documentRangeFormattingProvider then
             if client.name ~= 'null-ls' or is_null_ls_formatting_enabled(bufnr) then
-                local last_idx = vim.api.nvim_buf_get_lines(0, last, last + 1, false)[1] -- #nvim.buf.get_lines(0, last, last + 1, false)[1]
+                -- #nvim.buf.get_lines(0, last, last + 1, false)[1]
+                local last_idx = vim.api.nvim_buf_get_lines(0, last, last + 1, false)[1]
                 vim.lsp.buf.format {
                     async = false,
                     id = client.id,

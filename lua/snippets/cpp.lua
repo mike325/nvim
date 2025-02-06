@@ -55,7 +55,7 @@ local function smart_ptr(_, snip)
 
     return ptr
 end
-local function chrono_sleep(_, parent, old_state)
+local function chrono_sleep(_, _, old_state)
     local cpp = RELOAD 'utils.treesitter.cpp'
     cpp.add_include('chrono', 'sys')
     cpp.add_include('thread', 'sys')
@@ -143,15 +143,30 @@ local function rule_3_5(_, parent, old_state)
 
     for _, method in ipairs(operators) do
         local signature = vim.trim(method[1])
-        if signature:match(destructor_signature:format('virtual%s+', classname)) or signature:match(destructor_signature:format('', classname)) then
+        if
+            signature:match(destructor_signature:format('virtual%s+', classname))
+            or signature:match(destructor_signature:format('', classname))
+        then
             destructor = true
-        elseif signature:match(constructor_signature:format(classname, 'const', classname, '&&')) or signature:match(constructor_signature:format(classname, '', classname, '&&')) then
+        elseif
+            signature:match(constructor_signature:format(classname, 'const', classname, '&&'))
+            or signature:match(constructor_signature:format(classname, '', classname, '&&'))
+        then
             move_constructor = true
-        elseif signature:match(oper_signature:format(classname, 'const', classname, '&&')) or signature:match(oper_signature:format(classname, '', classname, '&&')) then
+        elseif
+            signature:match(oper_signature:format(classname, 'const', classname, '&&'))
+            or signature:match(oper_signature:format(classname, '', classname, '&&'))
+        then
             move_oper = true
-        elseif signature:match(constructor_signature:format(classname, 'const', classname, '&')) or signature:match(constructor_signature:format(classname, '', classname, '&')) then
+        elseif
+            signature:match(constructor_signature:format(classname, 'const', classname, '&'))
+            or signature:match(constructor_signature:format(classname, '', classname, '&'))
+        then
             copy_constructor = true
-        elseif signature:match(oper_signature:format(classname, 'const', classname, '&')) or signature:match(oper_signature:format(classname, '', classname, '&')) then
+        elseif
+            signature:match(oper_signature:format(classname, 'const', classname, '&'))
+            or signature:match(oper_signature:format(classname, '', classname, '&'))
+        then
             copy_oper = true
         end
     end
