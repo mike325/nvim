@@ -32,6 +32,11 @@ function M.add(files, clear)
         files = { files }
     end
 
+    -- local label = vim.t.label
+    -- if not label and vim.v.this_session ~= '' then
+    --     label = vim.fs.basename(vim.v.this_session)
+    -- end
+
     local cwd = vim.pesc(require('utils.files').getcwd()) .. '/'
     for _, filename in ipairs(files) do
         if type(filename) == type '' then
@@ -45,6 +50,9 @@ function M.add(files, clear)
                     vim.cmd.badd(filename)
                 end
                 vim.cmd.argadd(filename)
+                -- if label then
+                --     require('configs.mini.utils').add_file_to_label(label, filename)
+                -- end
             end
         elseif type(filename) == type(0) then
             local buf = filename
@@ -53,6 +61,9 @@ function M.add(files, clear)
             end
             local bufname = vim.fn.bufname(buf)
             vim.cmd.argadd((bufname:gsub('^' .. cwd, '')))
+            -- if label then
+            --     require('configs.mini.utils').add_file_to_label(label, bufname)
+            -- end
         else
             error(debug.traceback('Invalid file argument: ' .. vim.inspect(filename)))
         end

@@ -610,26 +610,22 @@ end, { nargs = 0, bang = true, desc = 'Delete all or invalid arguments' })
 
 nvim.command.set('ArgAddBuf', function(opts)
     local argadd = RELOAD('utils.arglist').add
-    local cwd = vim.pesc(vim.uv.cwd() .. '/')
-    local buffers = vim.tbl_map(function(buf)
-        return (vim.api.nvim_buf_get_name(buf):gsub(cwd, ''))
-    end, vim.api.nvim_list_bufs())
-    local args = #opts.fargs > 0 and opts.fargs or { '%' }
-    for _, arg in ipairs(args) do
-        if arg:match '%*' then
-            arg = (arg:gsub('%*', '.*'))
-            local matches = {}
-            for _, buf in ipairs(buffers) do
-                if buf ~= '' and buf:match(arg) then
-                    table.insert(matches, buf)
-                end
-            end
-            argadd(matches)
-        else
-            argadd(arg)
-        end
+    local args = opts.fargs
+    if #args == 0 then
+        table.insert(args, '%')
+    elseif #args == 1 and args[1] == '*' then
+        local cwd = vim.pesc(vim.uv.cwd() .. '/')
+        local buffers = vim.iter(vim.api.nvim_list_bufs())
+            :map(function(buf)
+                return (vim.api.nvim_buf_get_name(buf):gsub(cwd, ''))
+            end)
+            :filter(function(bufname)
+                return bufname ~= '' and not bufname:match('^%w+://') and not bufname:match('^Mini%w+:.*')
+            end)
+        args = buffers:totable()
     end
-end, { nargs = '*', complete = completions.buflist, desc = 'Add buffers to the arglist' })
+    argadd(args, opts.bang)
+end, { bang = true, nargs = '*', complete = completions.buflist, desc = 'Add buffers to the arglist' })
 
 nvim.command.set('Marks2Arglist', function(opts)
     RELOAD('utils.marks').marks_to_arglist { clear = opts.bang }

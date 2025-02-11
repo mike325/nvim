@@ -864,6 +864,10 @@ vim.api.nvim_create_autocmd({ 'SessionLoadPost' }, {
         if require('utils.files').is_file 'marks.json' then
             RELOAD('utils.marks').load_marks()
         end
+        if vim.fn.argc() > 0 and vim.v.this_session ~= '' then
+            local session_name = vim.fs.basename(vim.v.this_session)
+            require('configs.mini.utils').add_file_to_label(session_name, vim.fn.argv())
+        end
     end,
 })
 

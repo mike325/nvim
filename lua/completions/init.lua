@@ -128,15 +128,14 @@ completions = vim.tbl_extend('force', completions, {
     end,
     buflist = function(arglead, cmdline, cursorpos)
         local cwd = vim.pesc(vim.uv.cwd() .. '/')
-        local buffers = vim.tbl_filter(
-            function(buf)
-                return buf ~= ''
-            end,
-            vim.tbl_map(function(buf)
+        local buffers = vim.iter(vim.api.nvim_list_bufs())
+            :map(function(buf)
                 return (vim.api.nvim_buf_get_name(buf):gsub(cwd, ''))
-            end, vim.api.nvim_list_bufs())
-        )
-        return utils.general_completion(arglead, cmdline, cursorpos, buffers)
+            end)
+            :filter(function(bufname)
+                return bufname ~= '' and not bufname:match '^%w+://' and not bufname:match '^Mini%w+:.*'
+            end)
+        return utils.general_completion(arglead, cmdline, cursorpos, buffers:totable())
     end,
     reviewers = function(arglead, cmdline, cursorpos)
         local reviewers = {}
@@ -231,6 +230,14 @@ completions = vim.tbl_extend('force', completions, {
         end
 
         return utils.general_completion(arglead, cmdline, cursorpos, servers)
+    end,
+    local_labels = function(arglead, cmdline, cursorpos)
+        local labels = require('configs.mini.utils').get_labels(false)
+        return utils.general_completion(arglead, cmdline, cursorpos, labels)
+    end,
+    global_labels = function(arglead, cmdline, cursorpos)
+        local labels = require('configs.mini.utils').get_labels(true)
+        return utils.general_completion(arglead, cmdline, cursorpos, labels)
     end,
 })
 

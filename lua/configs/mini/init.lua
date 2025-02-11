@@ -51,6 +51,7 @@ local simple_mini = {
     doc = {},
     fuzzy = {},
     extra = {},
+    visits = {},
     jump2d = {
         -- Module mappings. Use `''` (empty string) to disable one.
         mappings = {
@@ -167,11 +168,185 @@ if mini.icons then
     _G['MiniDeps'].later(mini.icons.tweak_lsp_kind)
 end
 
+if mini.visits then
+    local function select_label(label, cwd)
+        vim.validate {
+            label = { label, 'string', true },
+            cwd = { cwd, 'string', true },
+        }
+
+        local utils = RELOAD 'configs.mini.utils'
+        local sort = mini.visits.gen_sort.default { recency_weight = 0 }
+        local select_opts = { sort = sort }
+        label = label or utils.get_label()
+        if label and vim.list_contains(mini.visits.list_labels(cwd, nil), label) then
+            select_opts.filter = function(data)
+                return (data.labels or {})[label]
+            end
+        end
+        mini.visits.select_path(cwd, select_opts)
+    end
+
+    nvim.command.set('SelectLabel', function(opts)
+        local label = opts.args
+        if label and label ~= '' then
+            vim.t.label = label
+            vim.notify('Label changed to: ' .. vim.t.label, vim.log.levels.INFO)
+        else
+            local labels = RELOAD('configs.mini.utils').get_labels(false)
+            if #labels > 0 then
+                vim.ui.select(
+                    labels,
+                    { prompt = 'Select label:' },
+                    vim.schedule_wrap(function(choice)
+                        if choice then
+                            vim.t.label = choice
+                            vim.notify('Label changed to: ' .. choice, vim.log.levels.INFO)
+                        end
+                    end)
+                )
+            end
+        end
+    end, { bang = true, nargs = '?', complete = completions.local_labels, desc = 'Select Label for the current tab' })
+
+    nvim.command.set('LabelCreate', function(opts)
+        if opts.args == '' then
+            vim.ui.input({
+                prompt = 'Enter label > ',
+            }, function(input)
+                if not input then
+                    vim.notify('Missing label!', vim.log.levels.ERROR, { title = 'LabelCreate' })
+                    return
+                end
+                mini.visits.add_label(input)
+            end)
+        else
+            mini.visits.add_label(opts.args)
+        end
+    end, { nargs = '?', desc = 'Create a new label' })
+
+    nvim.command.set(
+        'Arglist2Label',
+        function(opts)
+            if vim.fn.argc() == 0 then
+                return
+            end
+
+            local utils = RELOAD 'configs.mini.utils'
+            local label = opts.args ~= '' and opts.args or utils.get_label()
+            if not label or label == '' then
+                return
+            end
+
+            utils.add_file_to_label(label, vim.fn.argv())
+        end,
+        { bang = true, nargs = '?', complete = completions.local_labels, desc = 'Dump arglist into the current label' }
+    )
+
+    nvim.command.set('Label2Arglist', function(opts)
+        local utils = RELOAD 'configs.mini.utils'
+        local label = opts.args ~= '' and opts.args or utils.get_label()
+        if not label or label == '' then
+            return
+        end
+
+        local paths = utils.get_labeled_files(label, true)
+        RELOAD('utils.arglist').add(paths, opts.bang)
+    end, {
+        bang = true,
+        nargs = '?',
+        complete = completions.local_labels,
+        desc = 'Dump current label files into the arglist',
+    })
+
+    nvim.command.set('Label2Qf', function(opts)
+        local utils = RELOAD 'configs.mini.utils'
+        local label = opts.args ~= '' and opts.args or utils.get_label()
+        if not label or label == '' then
+            return
+        end
+
+        local paths = utils.get_labeled_files(label, true)
+        RELOAD('utils.qf').dump_files(paths, {
+            open = true,
+            jump = false,
+            title = label,
+        })
+    end, {
+        bang = true,
+        nargs = '?',
+        complete = completions.local_labels,
+        desc = 'Dump current label files into the quickfix',
+    })
+
+    nvim.command.set('ClearTabLabel', function(_)
+        vim.t.label = nil
+    end, { nargs = 0, desc = 'Remove current label' })
+
+    nvim.command.set('ClearLabel', function(opts)
+        local utils = RELOAD 'configs.mini.utils'
+        local label = opts.args ~= '' and opts.args or utils.get_label()
+        if label then
+            utils.clear_label(label, opts.bang)
+        end
+    end, {
+        bang = true,
+        nargs = 1,
+        complete = completions.local_labels,
+        desc = 'Remove invalid or all files from a label',
+    })
+
+    vim.keymap.set('n', '<c-\\>', function(_)
+        local utils = RELOAD 'configs.mini.utils'
+        local label = utils.get_label()
+        select_label(label, label and '' or vim.uv.cwd())
+    end, { desc = 'Select a file from either session, tab or cwd label' })
+
+    vim.keymap.set('n', '<leader>E', function(_)
+        mini.visits.select_path ''
+    end, { desc = 'Select a file all recent paths' })
+
+    vim.keymap.set('n', '<leader><leader>A', function(_)
+        local utils = RELOAD 'configs.mini.utils'
+        local label = utils.get_label()
+        if label then
+            utils.add_file_to_label(label, vim.api.nvim_get_current_buf())
+        end
+    end, { desc = 'Add the current file to the active label' })
+
+    vim.keymap.set('n', '<leader><leader>D', function(_)
+        local utils = RELOAD 'configs.mini.utils'
+        local label = utils.get_label()
+        if label then
+            mini.visits.remove_label(label, vim.api.nvim_buf_get_name(0))
+        end
+    end, { desc = 'Remove the current file to the active label' })
+
+    vim.api.nvim_create_autocmd({ 'BufWritePre' }, {
+        desc = 'Save modified file into label',
+        group = vim.api.nvim_create_augroup('VisitLabel', { clear = true }),
+        pattern = '*',
+        callback = function()
+            local blacklist = {
+                gitcommit = true,
+            }
+            if vim.bo.modified and not blacklist[vim.bo.ft] and vim.bo.buftype == '' then
+                local utils = RELOAD 'configs.mini.utils'
+                local label = utils.get_label()
+                if label then
+                    utils.add_file_to_label(label, vim.api.nvim_get_current_buf())
+                end
+            end
+        end,
+    })
+end
+
 if mini.sessions then
     local sessions_dir = sys.session
     if not is_dir(sessions_dir) then
         mkdir(sessions_dir)
     end
+
     nvim.command.set('SessionSave', function(opts)
         local session = opts.args
         if session == '' then
@@ -181,7 +356,8 @@ if mini.sessions then
                 session = session:gsub('^%.+', '')
             end
         end
-        mini.sessions.write(session:gsub('%s+', '_'), { force = opts.bang })
+        local session_name = (session:gsub('%s+', '_'))
+        mini.sessions.write(session_name, { force = opts.bang })
     end, { bang = true, nargs = '?', complete = completions.session_files })
 
     nvim.command.set('SessionLoad', function(opts)
@@ -197,7 +373,8 @@ if mini.sessions then
                 { prompt = 'Select session file: ' },
                 vim.schedule_wrap(function(choice)
                     if choice then
-                        mini.sessions.read(choice, { force = false })
+                        local session_name = choice
+                        mini.sessions.read(session_name, { force = false })
                     end
                 end)
             )
