@@ -291,7 +291,7 @@ local function setup_lazy(download)
                 rtp = {
                     disabled_plugins = {
                         'gzip',
-                        'netrwPlugin',
+                        -- 'netrwPlugin',
                         'rplugin',
                         'tarPlugin',
                         'tohtml',
