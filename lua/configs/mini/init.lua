@@ -209,7 +209,7 @@ if mini.visits then
         end
     end, { bang = true, nargs = '?', complete = completions.local_labels, desc = 'Select Label for the current tab' })
 
-    nvim.command.set('LabelCreate', function(opts)
+    nvim.command.set('CreateLabel', function(opts)
         if opts.args == '' then
             vim.ui.input({
                 prompt = 'Enter label > ',
@@ -296,7 +296,7 @@ if mini.visits then
         desc = 'Remove invalid or all files from a label',
     })
 
-    vim.keymap.set('n', '<c-\\>', function(_)
+    vim.keymap.set('n', '<leader>\\', function(_)
         local utils = RELOAD 'configs.mini.utils'
         local label = utils.get_label()
         select_label(label, label and '' or vim.uv.cwd())
