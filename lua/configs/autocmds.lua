@@ -505,16 +505,17 @@ vim.api.nvim_create_autocmd({ 'Filetype' }, {
         local buf = ft_args.buf
         local filename = ft_args.file
         local ft = vim.filetype.match { buf = buf, filename = filename } or vim.bo.filetype
-        if vim.bo.buftype == '' and whitelist[ft] and executable(whitelist[ft]) then
+        local exe = whitelist[ft]
+        if vim.bo.buftype == '' and exe and executable(exe) then
             local real_ft = { bash = 'sh' }
-            RELOAD('utils.functions').lint_buffer(whitelist[ft], { filetype = real_ft[ft] or ft, filename = filename })
+            RELOAD('utils.functions').lint_buffer(exe, { filetype = real_ft[ft] or ft, filename = filename })
             vim.api.nvim_create_autocmd({ 'BufWritePost' }, {
                 desc = 'Lint code on save',
                 group = linters_au,
                 buffer = buf,
                 callback = function(_)
                     RELOAD('utils.functions').lint_buffer(
-                        'shellcheck',
+                        exe,
                         { filetype = real_ft[ft] or ft, filename = filename }
                     )
                 end,
