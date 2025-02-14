@@ -215,15 +215,6 @@ if executable 'pre-commit' then
     end, { bang = true, nargs = '*' })
 end
 
--- TODO: Add support to change between local and osc/remote open
-nvim.command.set('Open', function(opts)
-    vim.ui.open(opts.args)
-end, {
-    nargs = 1,
-    complete = 'file',
-    desc = 'Open file in the default OS external program',
-})
-
 nvim.command.set('Repl', function(opts)
     RELOAD('mappings').repl(opts)
 end, { nargs = '*', complete = 'filetype' })
@@ -620,7 +611,7 @@ nvim.command.set('ArgAddBuf', function(opts)
                 return (vim.api.nvim_buf_get_name(buf):gsub(cwd, ''))
             end)
             :filter(function(bufname)
-                return bufname ~= '' and not bufname:match('^%w+://') and not bufname:match('^Mini%w+:.*')
+                return bufname ~= '' and not bufname:match '^%w+://' and not bufname:match '^Mini%w+:.*'
             end)
         args = buffers:totable()
     end

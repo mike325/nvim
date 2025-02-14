@@ -13,6 +13,12 @@ return {
         end,
         opts = {
             flavour = 'mocha', -- latte, frappe, macchiato, mocha
+            ui = { border = 'rounded' },
+            -- change_detection = { notify = false },
+            -- dev = { path = vim.g.projects_dir },
+            install = {
+                missing = false, -- Do not automatically install on startup.
+            },
             performance = {
                 -- cache = {
                 --     enabled = false,

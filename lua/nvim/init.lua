@@ -281,24 +281,55 @@ local function setup_lazy(download)
 
     if vim.g.lazy_setup then
         require('lazy').setup('plugins', {
+            flavour = 'mocha', -- latte, frappe, macchiato, mocha
             ui = { border = 'rounded' },
+            -- change_detection = { notify = false },
             -- dev = { path = vim.g.projects_dir },
             install = {
                 missing = false, -- Do not automatically install on startup.
             },
-            -- change_detection = { notify = false },
             performance = {
+                -- cache = {
+                --     enabled = false,
+                -- },
+                -- reset_packpath = true, -- reset the package path to improve startup time
                 rtp = {
+                    -- reset = true,
+                    -- paths = {},
                     disabled_plugins = {
                         'gzip',
-                        -- 'netrwPlugin',
-                        'rplugin',
+                        -- "matchit",
+                        -- "matchparen",
+                        -- "netrwPlugin",
                         'tarPlugin',
                         'tohtml',
                         'tutor',
                         'zipPlugin',
                     },
                 },
+            },
+            integrations = {
+                cmp = true,
+                gitsigns = true,
+                nvimtree = false,
+                telescope = true,
+                notify = true,
+                mini = true,
+                hop = true,
+                dap = {
+                    enabled = true,
+                    enable_ui = true,
+                },
+                native_lsp = {
+                    enabled = true,
+                    underlines = {
+                        errors = { 'undercurl' },
+                    },
+                },
+                treesitter = true,
+                treesitter_context = true,
+                -- lsp_trouble = true,
+                vimwiki = true,
             },
         })
     end

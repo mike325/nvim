@@ -19,3 +19,13 @@ if not has_mini and not nvim.plugins['vim-fugitive'] then
         require('utils.git').exec.add(filename)
     end, { bang = true, nargs = '?', complete = 'file' })
 end
+
+-- TODO: Add support to change between local and osc/remote open
+-- NOTE: Override Netrw command
+nvim.command.set('Open', function(opts)
+    vim.ui.open(opts.args)
+end, {
+    nargs = 1,
+    complete = 'file',
+    desc = 'Open file in the default OS external program',
+})

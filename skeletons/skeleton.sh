@@ -383,6 +383,69 @@ function parse_cmd_output() {
     return $exit_with_error
 }
 
+function has_fetcher() {
+    if hash curl 2>/dev/null || hash wget 2>/dev/null; then
+        return 0
+    fi
+    return 1
+}
+
+function download_asset() {
+
+    if [[ $# -lt 2 ]]; then
+        error_msg "Not enough args"
+        return 1
+    fi
+
+    if ! has_fetcher; then
+        error_msg "This system has neither curl nor wget to download the asset $1"
+        return 2
+    fi
+
+    local asset="$1"
+    local url="$2"
+    local dest=""
+    if [[ -n $3 ]]; then
+        local dest="$3"
+    fi
+
+    local cmd=""
+    verbose_msg "Fetching $url"
+
+    if hash curl 2>/dev/null; then
+        cmd='curl -L '
+        if [[ $VERBOSE -eq 0 ]]; then
+            cmd="$cmd -s "
+        fi
+        cmd="$cmd $url"
+        if [[ -n $dest ]]; then
+            cmd="$cmd -o $dest"
+        fi
+    else  # If not curl, wget is available since we checked with "has_fetcher"
+        cmd='wget '
+        if [[ $VERBOSE -eq 0 ]]; then
+            cmd="$cmd -q "
+        fi
+        if [[ -n $dest ]]; then
+            cmd="$cmd -O $dest"
+        fi
+        cmd="$cmd $url"
+    fi
+
+    if [[ ! -d $dest ]] && [[ ! -f $dest ]]; then
+        verbose_msg "Downloading $asset"
+        if sh -c "$cmd"; then
+            return 0
+        else
+            error_msg "Failed to download $asset"
+            return 5
+        fi
+    else
+        warn_msg "$asset already exists in $dest, skipping download"
+        return 5
+    fi
+}
+
 while [[ $# -gt 0 ]]; do
     key="$1"
     case "$key" in
