@@ -349,7 +349,9 @@ function raw_output() {
 }
 
 function shell_exec() {
+    # TODO: Redirect stderr to stdout?  2>&1
     local cmd="$1"
+    verbose_msg "cmd: $cmd"
     if [[ $VERBOSE -eq 1 ]]; then
         if [[ $NOLOG -eq 0 ]]; then
             cmd="$cmd | tee -a ${LOG}"
