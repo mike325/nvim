@@ -1037,13 +1037,13 @@ if s:os_name('windows')
 endif
 
 if v:version >= 800
-    silent! packadd cfilter
-    silent! packadd termdebug
+    silent! packadd! cfilter
+    silent! packadd! termdebug
 endif
 
-if v:version >= 704
-    silent! packadd matchparen
-    silent! packadd matchit
+if v:version >= 704 && !has('nvim')
+    silent! packadd! matchparen
+    silent! packadd! matchit
 endif
 
 if exists('+syntax')
@@ -1187,7 +1187,6 @@ endif
 " set nocompatible
 
 set ttyfast
-" set t_Co=255
 set t_vb= " ...disable the visual effect
 
 set autoindent
