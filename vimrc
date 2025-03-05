@@ -67,7 +67,7 @@ endif
 
 if v:version >= 800
     silent! packadd! cfilter
-    silent! packadd termdebug
+    silent! packadd! termdebug
 endif
 
 if v:version >= 704 && !has('nvim')

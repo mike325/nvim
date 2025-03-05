@@ -107,7 +107,6 @@ endif
 " set nocompatible
 
 set ttyfast
-set t_Co=255
 set t_vb= " ...disable the visual effect
 
 set autoindent
