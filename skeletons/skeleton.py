@@ -7,8 +7,9 @@ import os
 import subprocess
 import sys
 from collections import namedtuple
+from collections.abc import Sequence
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Sequence, TextIO, Union, cast
+from typing import Any, Dict, List, Optional, TextIO, Union, cast
 
 _header = """
                     -`
