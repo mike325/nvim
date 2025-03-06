@@ -1,15 +1,9 @@
 local M = {}
 
 function M.parser(data)
-    vim.validate {
-        data = {
-            data,
-            function(d)
-                return type(d) == type '' or type(d) == type {}
-            end,
-            'valid string or table representation of config data',
-        },
-    }
+    vim.validate('data', data, function(d)
+        return type(d) == type '' or type(d) == type {}
+    end, false, 'valid string or table representation of config data')
 
     data = type(data) ~= 'table' and vim.split(data, '\n') or data
 

@@ -133,11 +133,9 @@ end
 
 -- C/C++ only
 function M.add_statement_and_include(statement, include, include_type)
-    vim.validate {
-        statement = { statement, 'string' },
-        include = { include, 'string', true },
-        include_type = { include_type, 'string', true },
-    }
+    vim.validate('statement', statement, 'string')
+    vim.validate('include', include, 'string', true)
+    vim.validate('include_type', include_type, 'string', true)
     include = include or statement
     include_type = include_type or 'sys'
 

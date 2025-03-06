@@ -87,13 +87,12 @@ function M.find(thread_args, async)
 end
 
 function M.async_find(opts)
-    vim.validate {
-        opts = { opts, 'table' },
-        cb = { opts.cb, 'function' },
-        target = { opts.target, { 'string', 'table' }, true },
-        filter = { opts.filter, 'function', true },
-        path = { opts.path, 'string', true },
-    }
+    vim.validate('opts', opts, 'table')
+    vim.validate('cb', opts.cb, 'function')
+    vim.validate('target', opts.target, { 'string', 'table' }, true)
+    vim.validate('filter', opts.filter, 'function', true)
+    vim.validate('path', opts.path, 'string', true)
+
     assert(opts.filter or opts.target, debug.traceback 'Missing both filter and target opts')
 
     local find_opts = {

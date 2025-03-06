@@ -128,12 +128,10 @@ describe('Linking', function()
     end
 
     local function testlink(src, dest, sym, force)
-        vim.validate {
-            src = { src, 'string' },
-            dest = { dest, 'string', true },
-            force = { force, 'boolean', true },
-            sym = { sym, 'boolean', true },
-        }
+        vim.validate('src', src, 'string')
+        vim.validate('dest', dest, 'string', true)
+        vim.validate('force', force, 'boolean', true)
+        vim.validate('sym', sym, 'boolean', true)
 
         if sym == nil then
             sym = false

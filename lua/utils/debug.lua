@@ -1,10 +1,8 @@
 local M = {}
 
 function M.get_remote_processes(opts, cb)
-    vim.validate {
-        opts = { opts, 'table', true },
-        cb = { cb, 'function', true },
-    }
+    vim.validate('opts', opts, 'table', true)
+    vim.validate('cb', cb, 'function', true)
     opts = opts or {}
 
     local filter = opts.filter or ''
@@ -75,9 +73,7 @@ function M.get_remote_processes(opts, cb)
 end
 
 function M.remote_attach_debugger(opts)
-    vim.validate {
-        opts = { opts, 'table', true },
-    }
+    vim.validate('opts', opts, 'table', true)
     opts = opts or {}
 
     local host = RELOAD('utils.network').get_ssh_host(opts.hostname)
@@ -107,12 +103,10 @@ function M.remote_attach_debugger(opts)
 end
 
 function M.remote_dap_attach(host, pid, filemap, env)
-    vim.validate {
-        host = { host, 'string', true },
-        pid = { pid, 'string', true },
-        filemap = { filemap, 'table', true },
-        env = { env, 'table', true },
-    }
+    vim.validate('host', host, 'string', true)
+    vim.validate('pid', pid, 'string', true)
+    vim.validate('filemap', filemap, 'table', true)
+    vim.validate('env', env, 'table', true)
     local dap = vim.F.npcall(require, 'dap')
     if not dap then
         return false
@@ -187,12 +181,10 @@ function M.remote_dap_attach(host, pid, filemap, env)
 end
 
 function M.local_launch_dap(program, args, env, stopAtEntry)
-    vim.validate {
-        program = { program, { 'string', 'function' }, true },
-        args = { args, 'table', true },
-        env = { env, 'table', true },
-        stopAtEntry = { stopAtEntry, 'boolean', true },
-    }
+    vim.validate('program', program, { 'string', 'function' }, true)
+    vim.validate('args', args, 'table', true)
+    vim.validate('env', env, 'table', true)
+    vim.validate('stopAtEntry', stopAtEntry, 'boolean', true)
 
     local dap = vim.F.npcall(require, 'dap')
     if not dap or not require('utils.files').executable 'gdb' then

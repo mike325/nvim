@@ -2,9 +2,7 @@ local M = {}
 
 local qf_funcs = {
     first = function(win)
-        vim.validate {
-            win = { win, { 'number', 'boolean' }, true },
-        }
+        vim.validate('win', win, { 'number', 'boolean' }, true)
         if win then
             vim.cmd.lfirst()
         else
@@ -12,9 +10,7 @@ local qf_funcs = {
         end
     end,
     last = function(win)
-        vim.validate {
-            win = { win, { 'number', 'boolean' }, true },
-        }
+        vim.validate('win', win, { 'number', 'boolean' }, true)
         if win then
             vim.cmd.llast()
         else
@@ -22,10 +18,8 @@ local qf_funcs = {
         end
     end,
     open = function(win, size)
-        vim.validate {
-            win = { win, { 'number', 'boolean' }, true },
-            size = { size, 'number', true },
-        }
+        vim.validate('win', win, { 'number', 'boolean' }, true)
+        vim.validate('size', size, 'number', true)
         local cmd = win and 'lopen' or 'copen'
         -- TODO: botright and topleft does not seem to work with vim.cmd, need some digging
         -- TODO: for some reason vim.cmd.copen/lopen does not accept arguments
@@ -37,9 +31,7 @@ local qf_funcs = {
         end
     end,
     close = function(win)
-        vim.validate {
-            win = { win, { 'number', 'boolean' }, true },
-        }
+        vim.validate('win', win, { 'number', 'boolean' }, true)
         if win then
             vim.cmd.lclose()
         else
@@ -47,12 +39,10 @@ local qf_funcs = {
         end
     end,
     set_list = function(items, action, what, win)
-        vim.validate {
-            items = { items, 'table', true },
-            action = { action, 'string' },
-            what = { what, 'table', true },
-            win = { win, { 'number', 'boolean' }, true },
-        }
+        vim.validate('items', items, 'table', true)
+        vim.validate('action', action, 'string')
+        vim.validate('what', what, 'table', true)
+        vim.validate('win', win, { 'number', 'boolean' }, true)
         items = items or {}
         if win then
             if type(win) == type(true) or win == 0 then
@@ -73,10 +63,8 @@ local qf_funcs = {
         end
     end,
     get_list = function(what, win)
-        vim.validate {
-            what = { what, { 'table', 'number' }, true },
-            win = { win, { 'number', 'boolean' }, true },
-        }
+        vim.validate('what', what, { 'table', 'number' }, true)
+        vim.validate('win', win, { 'number', 'boolean' }, true)
         if type(what) == type(1) then
             assert(type(what) ~= type(win), debug.traceback 'Win and What cannot be both Numbers')
             win = what
@@ -109,10 +97,8 @@ function M.is_open(win)
 end
 
 function M.open(size, win)
-    vim.validate {
-        size = { size, 'number', true },
-        win = { win, { 'number', 'boolean' }, true },
-    }
+    vim.validate('size', size, 'number', true)
+    vim.validate('win', win, { 'number', 'boolean' }, true)
 
     if not size then
         -- TODO: should this count only valid entries?
@@ -126,7 +112,7 @@ function M.open(size, win)
 end
 
 function M.close(win)
-    vim.validate { win = { win, { 'number', 'boolean' }, true } }
+    vim.validate('win', win, { 'number', 'boolean' }, true)
     qf_funcs.close(win)
 end
 
@@ -135,19 +121,17 @@ function M.get_list(what, win)
 end
 
 function M.set_list(opts, win)
-    vim.validate {
-        opts = { opts, 'table' },
-        items = { opts.items, 'table' },
-        win = { win, { 'number', 'boolean' }, true },
-        action = { opts.action, 'string', true },
-        open = { opts.open, 'boolean', true },
-        jump = { opts.jump, 'boolean', true },
-        efm = { opts.efm, { 'string', 'table' }, true },
-    }
+    vim.validate('opts', opts, 'table')
+    vim.validate('items', opts.items, 'table')
+    vim.validate('win', win, { 'number', 'boolean' }, true)
+    vim.validate('action', opts.action, 'string', true)
+    vim.validate('open', opts.open, 'boolean', true)
+    vim.validate('jump', opts.jump, 'boolean', true)
+    vim.validate('efm', opts.efm, { 'string', 'table' }, true)
 
     assert(not opts.lines, debug.traceback 'Cannot set lines using items')
 
-    vim.validate { win = { opts.win, { 'number', 'boolean' }, true } }
+    vim.validate('win', opts.win, { 'number', 'boolean' }, true)
     if not win and opts.win then
         win = opts.win
         opts.win = nil
@@ -229,10 +213,8 @@ function M.set_list(opts, win)
 end
 
 function M.qf_to_diagnostic(ns, win, items)
-    vim.validate {
-        ns = { ns, { 'number', 'string' }, true },
-        win = { win, { 'number', 'boolean' }, true },
-    }
+    vim.validate('ns', ns, { 'number', 'string' }, true)
+    vim.validate('win', win, { 'number', 'boolean' }, true)
 
     local qf
     if items then
@@ -301,11 +283,9 @@ function M.qf_to_diagnostic(ns, win, items)
 end
 
 function M.diagnostics_to_qf(diagnostics, opts, win)
-    vim.validate {
-        diagnostics = { diagnostics, 'table' },
-        opts = { opts, 'table', true },
-        win = { win, { 'number', 'boolean' }, true },
-    }
+    vim.validate('diagnostics', diagnostics, 'table')
+    vim.validate('opts', opts, 'table', true)
+    vim.validate('win', win, { 'number', 'boolean' }, true)
     opts = opts or {}
     opts.items = {}
     win = win or opts.win
@@ -324,13 +304,11 @@ function M.diagnostics_to_qf(diagnostics, opts, win)
 end
 
 function M.toggle(opts, win)
-    vim.validate {
-        opts = { opts, 'table', true },
-        win = { win, { 'number', 'boolean' }, true },
-    }
+    vim.validate('opts', opts, 'table', true)
+    vim.validate('win', win, { 'number', 'boolean' }, true)
     opts = opts or {}
 
-    vim.validate { win = { opts.win, 'number', true } }
+    vim.validate('win', opts.win, 'number', true)
     if not win and opts.win then
         win = opts.win
         opts.win = nil
@@ -344,11 +322,9 @@ function M.toggle(opts, win)
 end
 
 function M.dump_files(buffers, opts, win)
-    vim.validate {
-        buffers = { buffers, 'table' },
-        opts = { opts, { 'table', 'number' }, true },
-        win = { win, { 'number', 'boolean' }, true },
-    }
+    vim.validate('buffers', buffers, 'table')
+    vim.validate('opts', opts, { 'table', 'number' }, true)
+    vim.validate('win', win, { 'number', 'boolean' }, true)
 
     if type(opts) == 'number' then
         if not win then
@@ -361,7 +337,7 @@ function M.dump_files(buffers, opts, win)
 
     opts = opts or {}
 
-    vim.validate { win = { opts.win, 'number', true } }
+    vim.validate('win', opts.win, 'number', true)
     if not win and opts.win then
         win = opts.win
         opts.win = nil
@@ -422,12 +398,10 @@ end
 
 function M.filter_qf_diagnostics(opts, win)
     opts = opts or {}
-    vim.validate {
-        level = { opts.level, 'string' },
-        win = { win, { 'number', 'boolean' }, true },
-    }
+    vim.validate('level', opts.level, 'string')
+    vim.validate('win', win, { 'number', 'boolean' }, true)
 
-    vim.validate { win = { opts.win, { 'number', 'boolean' }, true } }
+    vim.validate('win', opts.win, { 'number', 'boolean' }, true)
     if not win and opts.win then
         win = opts.win
         opts.win = nil
@@ -491,10 +465,8 @@ end
 
 function M.qf_to_arglist(opts)
     opts = opts or {}
-    vim.validate {
-        opts = { opts, 'table', true },
-        clear = { opts.clear, 'boolean', true },
-    }
+    vim.validate('opts', opts, 'table', true)
+    vim.validate('clear', opts.clear, 'boolean', true)
 
     local clear = opts.clear == nil and true or opts.clear
     local loc = opts.loc

@@ -30,15 +30,7 @@ local function sync_insert_version(prg)
 end
 
 function M.get_prg_info(prg)
-    vim.validate {
-        program = {
-            prg,
-            function(p)
-                return type(p) == type '' and p ~= ''
-            end,
-            'valid program executable',
-        },
-    }
+    vim.validate('program', prg, { 'string' })
     if sqlite then
         return sqlite.with_open(db_path, function(db)
             return db:select('versions', { where = { name = prg } })
@@ -48,10 +40,8 @@ function M.get_prg_info(prg)
 end
 
 function M.check_version(sys_version, target_version)
-    vim.validate {
-        system_version = { sys_version, 'table' },
-        target_version = { target_version, 'table' },
-    }
+    vim.validate('system_version', sys_version, 'table')
+    vim.validate('target_version', target_version, 'table')
 
     for i, _ in pairs(target_version) do
         if type(target_version[i]) == 'string' then
@@ -74,16 +64,8 @@ function M.check_version(sys_version, target_version)
 end
 
 function M.get_version(prg, force)
-    vim.validate {
-        force = { force, 'boolean', true },
-        program = {
-            prg,
-            function(p)
-                return type(p) == type '' and p ~= ''
-            end,
-            'valid program executable',
-        },
-    }
+    vim.validate('program', prg, 'string', false)
+    vim.validate('force', force, 'boolean', true)
     local entries = M.get_prg_info(prg)
     if not entries and force then
         entries = sync_insert_version(prg)
@@ -92,22 +74,8 @@ function M.get_version(prg, force)
 end
 
 function M.set_version(prg, version)
-    vim.validate {
-        version = {
-            version,
-            function(v)
-                return not v or (type(v) == type '' and v ~= '')
-            end,
-            'valid version string',
-        },
-        program = {
-            prg,
-            function(p)
-                return type(p) == type '' and p ~= ''
-            end,
-            'valid program executable',
-        },
-    }
+    vim.validate('program', prg, 'string')
+    vim.validate('version', version, 'string', true)
 
     if not version then
         async_insert_version(prg)
@@ -118,22 +86,8 @@ function M.set_version(prg, version)
 end
 
 function M.has_version(prg, target_version)
-    vim.validate {
-        program = {
-            prg,
-            function(p)
-                return type(p) == type '' and p ~= ''
-            end,
-            'valid program executable',
-        },
-        target_version = {
-            target_version,
-            function(v)
-                return not v or (type(v) == type {} and vim.islist(v))
-            end,
-            'valid target version table',
-        },
-    }
+    vim.validate('program', prg, 'string')
+    vim.validate('target_version', target_version, { 'string', 'table' }, true)
 
     if not require('utils.files').executable(prg) then
         return false

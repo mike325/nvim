@@ -168,9 +168,7 @@ function M.yaml(thread_args, async)
     thread_args = require('threads').init(thread_args)
 
     local filename = thread_args.args.filename
-    vim.validate {
-        filename = { filename, 'string' },
-    }
+    vim.validate('filename', filename, 'string')
 
     local utils = require 'utils.files'
     local ok, parser = pcall(require, 'yaml')

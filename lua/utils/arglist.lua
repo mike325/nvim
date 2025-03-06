@@ -1,9 +1,7 @@
 local M = {}
 
 function M.clear(all)
-    vim.validate {
-        all = { all, 'boolean', true },
-    }
+    vim.validate('all', all, 'boolean', true)
 
     if all then
         local size = vim.fn.argc()
@@ -21,10 +19,8 @@ function M.clear(all)
 end
 
 function M.add(files, clear)
-    vim.validate {
-        files = { files, { 'table', 'string', 'number' } },
-        clear = { clear, 'boolean', true },
-    }
+    vim.validate('files', files, { 'table', 'string', 'number' })
+    vim.validate('clear', clear, 'boolean', true)
     if clear then
         M.clear(true)
     end
@@ -83,9 +79,7 @@ function M.exec(cmd)
 end
 
 function M.edit(argument)
-    vim.validate {
-        argument = { argument, 'string', true },
-    }
+    vim.validate('argument', argument, 'string', true)
 
     if #vim.fn.argv() == 0 then
         return

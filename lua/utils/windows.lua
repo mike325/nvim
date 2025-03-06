@@ -3,7 +3,8 @@ local nvim = require 'nvim'
 local M = {}
 
 local function autowipe(win, buffer)
-    vim.validate { window = { win, 'number' }, buffer = { buffer, 'number' } }
+    vim.validate('window', win, 'number')
+    vim.validate('buffer', buffer, 'number')
 
     vim.api.nvim_create_autocmd({ 'WinClosed' }, {
         desc = 'Wipe temp buffer on WinClosed',
@@ -20,7 +21,7 @@ local function autowipe(win, buffer)
 end
 
 local function close_on_move(win, buffer)
-    vim.validate { window = { win, 'number' } }
+    vim.validate('window', win, 'number')
 
     vim.api.nvim_create_autocmd({ 'CursorMoved' }, {
         desc = 'Auto-Close window on cursor move',
@@ -37,7 +38,7 @@ local function close_on_move(win, buffer)
 end
 
 local function close_on_leave(win, buffer)
-    vim.validate { window = { win, 'number' } }
+    vim.validate('window', win, 'number')
 
     if win then
         vim.api.nvim_create_autocmd({ 'WinLeave' }, {
@@ -114,10 +115,8 @@ function M.big_center(buffer)
 end
 
 function M.progress(buffer, job)
-    vim.validate {
-        buffer = { buffer, 'number', true },
-        job = { job, 'number', true },
-    }
+    vim.validate('buffer', buffer, 'number', true)
+    vim.validate('job', job, 'number', true)
 
     local columns = vim.opt.columns:get()
     local lines = vim.opt.lines:get()
@@ -171,9 +170,7 @@ function M.progress(buffer, job)
 end
 
 function M.lower_window(buffer)
-    vim.validate {
-        buffer = { buffer, 'number', true },
-    }
+    vim.validate('buffer', buffer, 'number', true)
 
     local columns = vim.opt.columns:get()
     local lines = vim.opt.lines:get()
@@ -207,9 +204,7 @@ function M.lower_window(buffer)
 end
 
 function M.cursor_window(buffer, auto_size)
-    vim.validate {
-        buffer = { buffer, 'number', true },
-    }
+    vim.validate('buffer', buffer, 'number', true)
 
     -- local columns = vim.opt.columns:get()
     -- local lines = vim.opt.lines:get()
@@ -262,10 +257,8 @@ function M.cursor_window(buffer, auto_size)
 end
 
 function M.input(opts, on_confirm)
-    vim.validate {
-        opts = { opts, 'table' },
-        on_confirm = { on_confirm, 'function' },
-    }
+    vim.validate('opts', opts, 'table')
+    vim.validate('on_confirm', on_confirm, 'function')
 
     -- local columns = vim.opt.columns:get()
     -- local lines = vim.opt.lines:get()

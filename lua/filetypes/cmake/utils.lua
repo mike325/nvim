@@ -6,9 +6,7 @@ local is_file = require('utils.files').is_file
 local link = require('utils.files').link
 
 function M.execute(args)
-    vim.validate {
-        arg = { arg, 'table', true },
-    }
+    vim.validate('arg', arg, 'table', true)
     args = args or {}
 
     for idx, arg in ipairs(args) do
@@ -33,9 +31,7 @@ function M.execute(args)
 end
 
 local function link_compile_commands(build_dir)
-    vim.validate {
-        build_dir = { build_dir, 'string' },
-    }
+    vim.validate('build_dir', build_dir, 'string')
     local fname = string.format('%s/compile_commands.json', build_dir)
     if is_file(fname) then
         link(fname, '.', false, true)
@@ -43,9 +39,7 @@ local function link_compile_commands(build_dir)
 end
 
 function M.build(opts)
-    vim.validate {
-        opts = { opts, 'table', true },
-    }
+    vim.validate('opts', opts, 'table', true)
     opts = opts or {}
 
     -- Release, Debug, RelWithDebInfo, etc.
@@ -91,9 +85,7 @@ function M.build(opts)
 end
 
 function M.config(opts)
-    vim.validate {
-        opts = { opts, 'table', true },
-    }
+    vim.validate('opts', opts, 'table', true)
     opts = opts or {}
 
     local build_type = opts.build_type or 'RelWithDebInfo'

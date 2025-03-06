@@ -81,9 +81,7 @@ function M.init(thread_args)
 end
 
 function M.add_thread_context(opts)
-    vim.validate {
-        opts = { opts, { 'string', 'table', 'number', 'bool' }, true },
-    }
+    vim.validate('opts', opts, { 'string', 'table', 'number', 'bool' }, true)
 
     opts = opts or {}
 
@@ -135,11 +133,9 @@ function M.add_thread_context(opts)
 end
 
 function M.queue_thread(thread, cb, opts)
-    vim.validate {
-        thread = { thread, 'function' },
-        cb = { cb, 'function' },
-        opts = { opts, { 'string', 'table', 'number', 'bool' }, true },
-    }
+    vim.validate('thread', thread, 'function')
+    vim.validate('cb', cb, 'function')
+    vim.validate('opts', opts, { 'string', 'table', 'number', 'bool' }, true)
 
     -- TODO: There should be a way to init the threads common state using M.init() and pcall the `thread` function
     -- Common init state

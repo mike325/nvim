@@ -32,9 +32,7 @@ local env = {
 
 -- TODO: current compiler should be cached into an internal buf/tab/global var
 function M.get_compiler(ft)
-    vim.validate {
-        ft = { ft, 'string', true },
-    }
+    vim.validate('ft', ft, 'string', true)
     ft = ft or vim.bo.filetype
 
     -- safe check
@@ -61,11 +59,9 @@ function M.get_compiler(ft)
 end
 
 function M.get_args(compiler, bufnum, flags_location)
-    vim.validate {
-        compiler = { compiler, 'string' },
-        bufnum = { bufnum, 'number', true },
-        flags_location = { flags_location, 'string', true },
-    }
+    vim.validate('compiler', compiler, 'string')
+    vim.validate('bufnum', bufnum, 'number', true)
+    vim.validate('flags_location', flags_location, 'string', true)
 
     local args
     local bufname = nvim.buf.get_name(bufnum)
@@ -91,10 +87,8 @@ function M.get_args(compiler, bufnum, flags_location)
 end
 
 function M.execute(exe, args)
-    vim.validate {
-        exe = { exe, 'string', true },
-        arg = { arg, 'table', true },
-    }
+    vim.validate('exe', exe, 'string', true)
+    vim.validate('arg', arg, 'table', true)
 
     exe = exe or (getcwd() .. '/build/main')
     args = args or {}
@@ -112,9 +106,7 @@ function M.execute(exe, args)
 end
 
 function M.compile(build_info)
-    vim.validate {
-        build_info = { build_info, 'table', true },
-    }
+    vim.validate('build_info', build_info, 'table', true)
     build_info = build_info or {}
 
     local flags = build_info.flags or {}
@@ -231,9 +223,7 @@ function M.compile(build_info)
 end
 
 function M.build(build_info)
-    vim.validate {
-        build_info = { build_info, 'table', true },
-    }
+    vim.validate('build_info', build_info, 'table', true)
     build_info = build_info or {}
 
     if executable 'make' and is_file 'Makefile' then

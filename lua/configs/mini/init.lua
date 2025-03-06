@@ -170,10 +170,8 @@ end
 
 if mini.visits then
     local function select_label(label, cwd)
-        vim.validate {
-            label = { label, 'string', true },
-            cwd = { cwd, 'string', true },
-        }
+        vim.validate('label', label, 'string', true)
+        vim.validate('cwd', cwd, 'string', true)
 
         local utils = RELOAD 'configs.mini.utils'
         local sort = mini.visits.gen_sort.default { recency_weight = 0 }
