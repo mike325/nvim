@@ -21,28 +21,21 @@ function M.last_position()
 end
 
 function M.bufloaded(buffer)
-    vim.validate {
-        buffer = {
-            buffer,
-            function(b)
-                return type(b) == type '' or type(b) == type(1)
-            end,
-            'filepath string or a buffer number',
-        },
-    }
+    vim.validate('buffer', buffer, { 'string', 'number' })
     -- return vim.api.nvim_buf_is_loaded(bufnr)
     return vim.fn.bufloaded(buffer) == 1
 end
 
 function M.is_modified(bufnr)
-    vim.validate { buffer = { bufnr, 'number', true } }
+    vim.validate('buffer', bufnr, 'number', true)
 
     bufnr = bufnr or nvim.get_current_buf()
     return vim.bo[bufnr].modified
 end
 
 function M.delete(bufnr, wipe)
-    vim.validate { buffer = { bufnr, 'number', true }, wipe = { wipe, 'boolean', true } }
+    vim.validate('buffer', bufnr, 'number', true)
+    vim.validate('wipe', wipe, 'boolean', true)
     assert(not bufnr or bufnr > 0, debug.traceback 'Buffer must be greater than 0')
 
     bufnr = bufnr or vim.api.nvim_get_current_buf()
@@ -126,7 +119,7 @@ function M.get_indent()
 end
 
 function M.get_indent_block(lines)
-    vim.validate { lines = { lines, 'table' } }
+    vim.validate('lines', lines, 'table')
     assert(vim.islist(lines), debug.traceback 'Lines must be an array')
 
     local indent_level
@@ -146,7 +139,7 @@ function M.get_indent_block(lines)
 end
 
 function M.get_indent_block_level(lines)
-    vim.validate { lines = { lines, 'table' } }
+    vim.validate('lines', lines, 'table')
     assert(vim.islist(lines), debug.traceback 'Lines must be an array')
 
     local indent_level = M.get_indent_block(lines)
@@ -154,7 +147,7 @@ function M.get_indent_block_level(lines)
 end
 
 function M.get_indent_string(indent)
-    vim.validate { indent = { indent, 'number', true } }
+    vim.validate('indent', indent, 'number', true)
 
     local expand = vim.bo.expandtab
     indent = indent or M.get_indent()
@@ -180,7 +173,8 @@ local function normalize_indent(lines, indent)
 end
 
 function M.indent(lines, level)
-    vim.validate { lines = { lines, 'table' }, level = { level, 'number' } }
+    vim.validate('lines', lines, 'table')
+    vim.validate('level', level, 'number')
     assert(vim.islist(lines), debug.traceback 'Lines must be an array')
 
     if level == 0 or #lines == 0 then
@@ -230,7 +224,7 @@ end
 -- TODO: Respect indent format from editorconfig and other files
 -- TODO: Cache indent settings using SQLite?
 function M.detect_indent(buf)
-    vim.validate { buffer = { buf, 'number', true } }
+    vim.validate('buffer', buf, 'number', true)
 
     buf = buf or vim.api.nvim_get_current_buf()
 
@@ -330,7 +324,7 @@ function M.detect_indent(buf)
 end
 
 function M.replace_indent(cmd)
-    vim.validate { cmd = { cmd, 'table' } }
+    vim.validate('cmd', cmd, 'table')
     for idx, arg in ipairs(cmd) do
         if arg == '$WIDTH' then
             cmd[idx] = M.get_indent()
@@ -437,7 +431,8 @@ function M.lint(opts)
 end
 
 function M.setup(ft, opts)
-    vim.validate { ft = { ft, 'string', true }, opts = { opts, 'table', true } }
+    vim.validate('ft', ft, 'string', true)
+    vim.validate('opts', opts, 'table', true)
     ft = ft or vim.bo.filetype
 
     -- NOTE: C uses C++ setup
@@ -492,10 +487,8 @@ end
 function M.remove_empty(opts, buffers)
     opts = opts or {}
     buffers = buffers or vim.api.nvim_list_bufs()
-    vim.validate {
-        buffers = { buffers, 'table' },
-        opts = { opts, 'table' },
-    }
+    vim.validate('buffers', buffers, 'table')
+    vim.validate('opts', opts, 'table')
 
     local bufs_in_use = {}
     -- NOTE: list_wins returns all windows across tabs
@@ -531,12 +524,10 @@ function M.remove_empty(opts, buffers)
 end
 
 function M.open_changes(opts)
-    vim.validate {
-        opts = { opts, 'table' },
-        action = { opts.action, 'string' },
-        revision = { opts.revision, 'string', true },
-        clear = { opts.clear, 'boolean' },
-    }
+    vim.validate('opts', opts, 'table')
+    vim.validate('action', opts.action, 'string')
+    vim.validate('revision', opts.revision, 'string', true)
+    vim.validate('clear', opts.clear, 'boolean')
 
     local action = opts.action
     local revision = opts.revision
@@ -691,10 +682,8 @@ function M.open_conflicts(opts)
 end
 
 function M.get_diagnostic_ns(ns, buf)
-    vim.validate {
-        ns = { ns, 'string' },
-        buf = { buf, 'number', true },
-    }
+    vim.validate('ns', ns, 'string')
+    vim.validate('buf', buf, 'number', true)
     if ns ~= '' then
         for namespace, attrs in pairs(vim.diagnostic.get_namespaces()) do
             if attrs.name == ns then
@@ -712,13 +701,11 @@ end
 
 function M.push_tag(args)
     args = args or {}
-    vim.validate {
-        cmd = { args.cmd, 'string', true },
-        pos = { args.pos, 'table', true },
-        tagname = { args.tagname, 'string', true },
-        filename = { args.filename, 'string', true },
-        buf = { args.buf, 'number', true },
-    }
+    vim.validate('cmd', args.cmd, 'string', true)
+    vim.validate('pos', args.pos, 'table', true)
+    vim.validate('tagname', args.tagname, 'string', true)
+    vim.validate('filename', args.filename, 'string', true)
+    vim.validate('buf', args.buf, 'number', true)
 
     local buf = args.buf
     local filename = args.filename
@@ -752,10 +739,8 @@ end
 
 function M.find_config(opts)
     opts = opts or {}
-    vim.validate {
-        configs = { opts.configs, { 'string', 'table' } },
-        dirs = { opts.dirs, { 'string', 'table' }, true },
-    }
+    vim.validate('configs', opts.configs, { 'string', 'table' })
+    vim.validate('dirs', opts.dirs, { 'string', 'table' }, true)
 
     local dirs = opts.dirs or { vim.fs.dirname(vim.api.nvim_buf_get_name(0)), require('utils.files').getcwd() }
     if type(dirs) ~= type {} then
@@ -780,16 +765,8 @@ end
 
 -- TODO: Update this with TS support
 function M.get_comment(text, buf)
-    vim.validate {
-        text = {
-            text,
-            function(x)
-                return not x or type(x) == type '' or vim.islist(x)
-            end,
-            'text must be either a string or an array of lines',
-        },
-        buf = { buf, 'number', true },
-    }
+    vim.validate('buf', buf, 'number', true)
+    vim.validate('text', text, { 'string', 'table' }, true)
     buf = buf or vim.api.nvim_get_current_buf()
     local comment = vim.bo[buf].commentstring
     comment = comment ~= '' and comment or '// %s'

@@ -32,7 +32,7 @@ local function join_paths(...)
 end
 
 function M.normalize(path)
-    vim.validate { path = { path, 'string' } }
+    vim.validate('path', path, 'string')
     assert(path ~= '', debug.traceback 'Empty path')
     if path == '%' then
         local cwd = ((vim.uv.cwd() .. '/'):gsub('\\', '/'):gsub('/+', '/'))
@@ -42,7 +42,7 @@ function M.normalize(path)
 end
 
 function M.exists(filename)
-    vim.validate { filename = { filename, 'string' } }
+    vim.validate('filename', filename, 'string')
     if filename == '' then
         return false
     end
@@ -59,10 +59,8 @@ function M.is_file(filename)
 end
 
 function M.mkdir(dirname, recurive)
-    vim.validate {
-        dirname = { dirname, 'string' },
-        recurive = { recurive, 'boolean', true },
-    }
+    vim.validate('dirname', dirname, 'string')
+    vim.validate('recurive', recurive, 'boolean', true)
     assert(dirname ~= '', debug.traceback 'Empty dirname')
     if M.is_dir(dirname) then
         return true
@@ -105,12 +103,10 @@ function M.mkdir(dirname, recurive)
 end
 
 function M.link(src, dest, sym, force)
-    vim.validate {
-        source = { src, 'string' },
-        destination = { dest, 'string' },
-        use_symbolic = { sym, 'boolean', true },
-        force = { force, 'boolean', true },
-    }
+    vim.validate('source', src, 'string')
+    vim.validate('destination', dest, 'string')
+    vim.validate('use_symbolic', sym, 'boolean', true)
+    vim.validate('force', force, 'boolean', true)
     assert(src ~= '', debug.traceback 'Empty source')
     assert(dest ~= '', debug.traceback 'Empty destination')
     assert(M.exists(src), debug.traceback('link source ' .. src .. ' does not exists'))
@@ -156,20 +152,20 @@ function M.link(src, dest, sym, force)
 end
 
 function M.executable(exec)
-    vim.validate { exec = { exec, 'string' } }
+    vim.validate('exec', exec, 'string')
     assert(exec ~= '', debug.traceback 'Empty executable string')
     return vim.fn.executable(exec) == 1
 end
 
 function M.exepath(exec)
-    vim.validate { exec = { exec, 'string' } }
+    vim.validate('exec', exec, 'string')
     assert(exec ~= '', debug.traceback 'Empty executable string')
     local path = vim.fn.exepath(exec)
     return path ~= '' and path or false
 end
 
 function M.is_absolute(path)
-    vim.validate { path = { path, 'string' } }
+    vim.validate('path', path, 'string')
     assert(path ~= '', debug.traceback 'Empty path')
     if path:sub(1, 1) == '~' then
         path = path:gsub('~', vim.uv.os_homedir())
@@ -185,7 +181,7 @@ function M.is_absolute(path)
 end
 
 function M.is_root(path)
-    vim.validate { path = { path, 'string' } }
+    vim.validate('path', path, 'string')
     assert(path ~= '', debug.traceback 'Empty path')
     local root = false
     if is_windows and #path >= 2 then
@@ -197,13 +193,13 @@ function M.is_root(path)
 end
 
 function M.realpath(path)
-    vim.validate { path = { path, 'string' } }
+    vim.validate('path', path, 'string')
     assert(M.exists(path), debug.traceback(([[Path "%s" doesn't exists]]):format(path)))
     return (vim.uv.fs_realpath(M.normalize(path)):gsub('\\', '/'))
 end
 
 function M.basename(file)
-    vim.validate { file = { file, 'string', true } }
+    vim.validate('file', file, 'string', true)
     if file == nil then
         return nil
     end
@@ -214,7 +210,7 @@ function M.basename(file)
 end
 
 function M.extension(path)
-    vim.validate { path = { path, 'string' } }
+    vim.validate('path', path, 'string')
     assert(path ~= '', debug.traceback 'Empty path')
     local extension = ''
     path = M.normalize(path)
@@ -226,14 +222,14 @@ function M.extension(path)
 end
 
 function M.filename(path)
-    vim.validate { path = { path, 'string' } }
+    vim.validate('path', path, 'string')
     local name = vim.fs.basename(path)
     local extension = M.extension(name)
     return extension ~= '' and (name:gsub('%.' .. extension .. '$', '')) or name
 end
 
 function M.dirname(file)
-    vim.validate { file = { file, 'string', true } }
+    vim.validate('file', file, 'string', true)
     if file == nil then
         return nil
     end
@@ -252,7 +248,8 @@ function M.dirname(file)
 end
 
 function M.is_parent(parent, child)
-    vim.validate { parent = { parent, 'string' }, child = { child, 'string' } }
+    vim.validate('parent', parent, 'string')
+    vim.validate('child', child, 'string')
 
     child = M.exists(child) and M.realpath(child) or child
     parent = M.exists(parent) and M.realpath(parent) or parent
@@ -269,11 +266,9 @@ function M.is_parent(parent, child)
 end
 
 function M.openfile(path, flags, callback)
-    vim.validate {
-        path = { path, 'string' },
-        flags = { flags, 'string' },
-        callback = { callback, 'function' },
-    }
+    vim.validate('path', path, 'string')
+    vim.validate('flags', flags, 'string')
+    vim.validate('callback', callback, 'function')
     assert(path ~= '', debug.traceback 'Empty path')
 
     local fd, msg, _ = vim.uv.fs_open(path, flags, 438)
@@ -287,18 +282,10 @@ function M.openfile(path, flags, callback)
 end
 
 local function fs_write(path, data, append, callback)
-    vim.validate {
-        path = { path, 'string' },
-        data = {
-            data,
-            function(d)
-                return type(d) == type '' or vim.islist(d)
-            end,
-            'a string or an array',
-        },
-        append = { append, 'boolean', true },
-        callback = { callback, { 'function', 'boolean' }, true },
-    }
+    vim.validate('path', path, 'string')
+    vim.validate('data', data, { 'string', 'table' })
+    vim.validate('append', append, 'boolean', true)
+    vim.validate('callback', callback, { 'function', 'boolean' }, true)
 
     data = type(data) ~= type '' and table.concat(data, '\n') or data
     local flags = append and 'a+' or 'w+'
@@ -342,11 +329,9 @@ function M.updatefile(path, data, callback)
 end
 
 function M.readfile(path, split, callback)
-    vim.validate {
-        path = { path, 'string' },
-        split = { split, 'boolean', true },
-        callback = { callback, { 'function', 'boolean' }, true },
-    }
+    vim.validate('path', path, 'string')
+    vim.validate('split', split, 'boolean', true)
+    vim.validate('callback', callback, { 'function', 'boolean' }, true)
     assert(M.is_file(path), debug.traceback('Not a file: ' .. path))
     if split == nil then
         split = true
@@ -391,19 +376,13 @@ function M.chmod(path, mode, base)
         return
     end
 
-    vim.validate {
-        path = { path, 'string' },
-        mode = {
-            mode,
-            function(m)
-                local isnumber = type(m) == type(1)
-                -- TODO: check for hex and bin ?
-                local isrepr = type(m) == type '' and m ~= ''
-                return isnumber or isrepr
-            end,
-            'valid integer representation',
-        },
-    }
+    vim.validate('path', path, 'string')
+    vim.validate('mode', mode, function(m)
+        local isnumber = type(m) == type(1)
+        -- TODO: check for hex and bin ?
+        local isrepr = type(m) == type '' and m ~= ''
+        return isnumber or isrepr
+    end, false, 'valid integer representation')
     assert(path ~= '', debug.traceback 'Empty path')
     base = base == nil and 8 or base
     local ok, msg, _ = vim.uv.fs_chmod(path, tonumber(mode, base))
@@ -414,10 +393,8 @@ function M.chmod(path, mode, base)
 end
 
 function M.ls(path, opts)
-    vim.validate {
-        path = { path, 'string' },
-        opts = { opts, 'table', true },
-    }
+    vim.validate('path', path, 'string')
+    vim.validate('opts', opts, 'table', true)
     opts = opts or {}
 
     local dir_it = vim.uv.fs_scandir(path)
@@ -444,10 +421,8 @@ function M.get_dirs(path)
 end
 
 local function copy_undofile(old_fname, new_fname)
-    vim.validate {
-        old_fname = { old_fname, 'string' },
-        new_fname = { new_fname, 'string' },
-    }
+    vim.validate('old_fname', old_fname, 'string')
+    vim.validate('new_fname', new_fname, 'string')
 
     local ok = false
     local old_undofile = vim.fn.undofile(old_fname)
@@ -465,7 +440,7 @@ local function copy_undofile(old_fname, new_fname)
 end
 
 function M.copy(src, dest, force)
-    vim.validate { force = { force, 'boolean', true } }
+    vim.validate('force', force, 'boolean', true)
     src = M.normalize(src)
     dest = M.normalize(dest)
     dest = M.is_dir(dest) and dest .. '/' .. vim.fs.basename(src) or dest
@@ -571,10 +546,8 @@ function M.rename(old, new, bang)
 end
 
 function M.delete(target, bang)
-    vim.validate {
-        target = { target, 'string' },
-        bang = { bang, 'boolean', true },
-    }
+    vim.validate('target', target, 'string')
+    vim.validate('bang', bang, 'boolean', true)
 
     local bufloaded = require('utils.buffers').bufloaded
 
@@ -741,10 +714,8 @@ function M.skeleton_filename(opts)
 end
 
 function M.trimwhites(buf, range)
-    vim.validate {
-        buf = { buf, 'number', true },
-        range = { range, 'table', true },
-    }
+    vim.validate('buf', buf, 'number', true)
+    vim.validate('range', range, 'table', true)
     assert(not range or #range == 2, debug.traceback 'range must be {start, end} format')
     range = range or { 0, -1 }
     buf = buf or nvim.get_current_buf()
@@ -821,9 +792,7 @@ function M.clean_file()
 end
 
 function M.decode_json(data)
-    vim.validate {
-        data = { data, { 'string', 'table' } },
-    }
+    vim.validate('data', data, { 'string', 'table' })
     if type(data) == type {} then
         data = table.concat(data, '\n')
     end
@@ -831,18 +800,14 @@ function M.decode_json(data)
 end
 
 function M.encode_json(data)
-    vim.validate {
-        data = { data, 'table' },
-    }
+    vim.validate('data', data, 'table')
     local json = vim.json.encode(data)
     -- NOTE: Remove this once json:new works and expose the internals of cjson
     return (json:gsub('\\/', '/'))
 end
 
 function M.read_json(filename)
-    vim.validate {
-        filename = { filename, 'string' },
-    }
+    vim.validate('filename', filename, 'string')
     assert(filename ~= '', debug.traceback 'Empty filename')
     if filename:sub(1, 1) == '~' then
         filename = filename:gsub('~', vim.uv.os_homedir())
@@ -852,7 +817,8 @@ function M.read_json(filename)
 end
 
 function M.dump_json(filename, data)
-    vim.validate { filename = { filename, 'string' }, data = { data, 'table' } }
+    vim.validate('filename', filename, 'string')
+    vim.validate('data', data, 'table')
     assert(filename ~= '', debug.traceback 'Empty filename')
     if filename:sub(1, 1) == '~' then
         filename = filename:gsub('~', vim.uv.os_homedir())
@@ -873,11 +839,9 @@ end
 function M.dir(path, opts)
     opts = opts or {}
 
-    vim.validate {
-        path = { path, { 'string' } },
-        depth = { opts.depth, { 'number' }, true },
-        skip = { opts.skip, { 'function' }, true },
-    }
+    vim.validate('path', path, { 'string' })
+    vim.validate('depth', opts.depth, { 'number' }, true)
+    vim.validate('skip', opts.skip, { 'function' }, true)
 
     if not opts.depth or opts.depth == 1 then
         return coroutine.wrap(function()
@@ -924,7 +888,7 @@ function M.dir(path, opts)
 end
 
 function M.parents(dir)
-    vim.validate { dir = { dir, 'string' } }
+    vim.validate('dir', dir, 'string')
     dir = M.realpath(dir)
     return coroutine.wrap(function()
         local parent = M.dirname(dir)
@@ -937,10 +901,8 @@ function M.parents(dir)
 end
 
 function M.find(filename, opts)
-    vim.validate {
-        filename = { filename, { 'function', 'string', 'table' } },
-        opts = { opts, 'table', true },
-    }
+    vim.validate('filename', filename, { 'function', 'string', 'table' })
+    vim.validate('opts', opts, 'table', true)
 
     local blacklist = {
         ['.git'] = true,
@@ -975,16 +937,12 @@ function M.find(filename, opts)
 end
 
 function M.is_executable(filename)
-    vim.validate {
-        filename = { filename, 'string' },
-    }
+    vim.validate('filename', filename, 'string')
     return vim.uv.fs_access(vim.fs.normalize(filename), 'X')
 end
 
 function M.chmod_exec(buf)
-    vim.validate {
-        buf = { buf, { 'number', 'string' }, true },
-    }
+    vim.validate('buf', buf, { 'number', 'string' }, true)
     local filename
     if type(buf) == type(0) or not buf then
         filename = vim.api.nvim_buf_get_name(buf or 0)
@@ -1042,12 +1000,10 @@ end
 
 function M.find_in_dir(args)
     args = args or {}
-    vim.validate {
-        pattern = { args.pattern, { 'function', 'table', 'string' } },
-        dir = { args.dir, 'string', true },
-        limit = { args.limit, 'number', true },
-        callback = { args.callback, 'function', true },
-    }
+    vim.validate('pattern', args.pattern, { 'function', 'table', 'string' })
+    vim.validate('dir', args.dir, 'string', true)
+    vim.validate('limit', args.limit, 'number', true)
+    vim.validate('callback', args.callback, 'function', true)
 
     local dir
     if args.dir and args.dir ~= '' then

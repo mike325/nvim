@@ -9,10 +9,8 @@ function M.get_label()
 end
 
 function M.add_file_to_label(label, file)
-    vim.validate {
-        label = { label, 'string' },
-        file = { file, { 'number', 'string', 'table' } },
-    }
+    vim.validate('label', label, 'string')
+    vim.validate('file', file, { 'number', 'string', 'table' })
 
     local mini_visits = _G['MiniVisits'] or vim.F.npcall(require, 'mini.visits')
     if mini_visits then
@@ -30,9 +28,7 @@ function M.add_file_to_label(label, file)
 end
 
 function M.get_labels(global)
-    vim.validate {
-        global = { global, 'boolean', true },
-    }
+    vim.validate('global', global, 'boolean', true)
     local labels = {}
     local mini_visits = _G['MiniVisits'] or vim.F.npcall(require, 'mini.visits')
     if mini_visits then
@@ -43,9 +39,7 @@ function M.get_labels(global)
 end
 
 function M.get_labeled_files(label, valid)
-    vim.validate {
-        label = { label, 'string' },
-    }
+    vim.validate('label', label, 'string')
     local paths = {}
     local mini_visits = _G['MiniVisits'] or vim.F.npcall(require, 'mini.visits')
     if mini_visits then
@@ -63,10 +57,8 @@ function M.get_labeled_files(label, valid)
 end
 
 function M.clear_label(label, force)
-    vim.validate {
-        label = { label, 'string' },
-        force = { force, 'boolean', true },
-    }
+    vim.validate('label', label, 'string')
+    vim.validate('force', force, 'boolean', true)
     local mini_visits = _G['MiniVisits'] or vim.F.npcall(require, 'mini.visits')
     if mini_visits then
         if force then

@@ -5,10 +5,8 @@ local completion = "customlist,v:lua.require'completions'.ssh_hosts_completion"
 local error_msg = 'Missing hostname!'
 
 function M.get_ssh_host(host, cb)
-    vim.validate {
-        host = { host, 'string', true },
-        cb = { cb, 'function', true },
-    }
+    vim.validate('host', host, 'string', true)
+    vim.validate('cb', cb, 'function', true)
 
     local function get_actual_hostname(hostname)
         if STORAGE.hosts[hostname] then
@@ -48,10 +46,8 @@ function M.get_ssh_host(host, cb)
 end
 
 function M.get_remote_host(host, cb)
-    vim.validate {
-        host = { host, 'string', true },
-        cb = { cb, 'function', true },
-    }
+    vim.validate('host', host, 'string', true)
+    vim.validate('cb', cb, 'function', true)
 
     local function get_actual_hostname(hostname)
         if STORAGE.hosts[hostname] then

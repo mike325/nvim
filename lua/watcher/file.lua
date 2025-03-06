@@ -34,11 +34,9 @@ end
 
 -- TODO: Add support for autocmd groups ?
 function Watcher:new(filename, autocmd, cb)
-    vim.validate {
-        filename = { filename, 'string' },
-        autocmd = { autocmd, { 'function', 'string' } },
-        cb = { cb, { 'function' }, true },
-    }
+    vim.validate('filename', filename, 'string')
+    vim.validate('autocmd', autocmd, { 'function', 'string' })
+    vim.validate('cb', cb, { 'function' }, true)
 
     filename = realpath(normalize(filename))
 
@@ -119,9 +117,7 @@ function Watcher:is_active()
 end
 
 function Watcher:subscribe(cb)
-    vim.validate {
-        cb = { cb, { 'function', 'string' } },
-    }
+    vim.validate('cb', cb, { 'function', 'string' })
 
     if type(cb) == type '' then
         -- NOTE: Do not duplicate autocmds

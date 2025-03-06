@@ -126,12 +126,10 @@ function M.rename_file(opts)
 end
 
 function M.find(opts)
-    vim.validate {
-        opts = { opts, 'table' },
-        args = { opts.args, 'table', true },
-        target = { opts.target, 'string', true },
-        cb = { opts.cb, 'function', true },
-    }
+    vim.validate('opts', opts, 'table')
+    vim.validate('args', opts.args, 'table', true)
+    vim.validate('target', opts.target, 'string', true)
+    vim.validate('cb', opts.cb, 'function', true)
 
     local finder = RELOAD('utils.functions').select_filelist(false, true)
 
@@ -334,15 +332,9 @@ function M.remote_cmd(host, send)
         end
     end
 
-    vim.validate {
-        filename = {
-            filename,
-            function(f)
-                return utils.is_file(f) or virtual_filename
-            end,
-            'a valid file',
-        },
-    }
+    vim.validate('filename', filename, function(f)
+        return utils.is_file(f) or virtual_filename ~= nil
+    end, false, 'a valid file')
 
     if virtual_filename and send then
         utils.writefile(virtual_filename, nvim.buf.get_lines(0, 0, -1, true))
@@ -567,11 +559,8 @@ function M.diff_files(args)
 end
 
 function M.toggle_diagnostics(ns, force)
-    vim.validate {
-        ns = { ns, 'number', true },
-        force = { force, 'boolean', true },
-    }
-
+    vim.validate('ns', ns, 'number', true)
+    vim.validate('force', force, 'boolean', true)
     vim.g.show_diagnostics = not vim.g.show_diagnostics
     local buf = not force and vim.api.nvim_get_current_buf() or nil
     if vim.g.show_diagnostics then
@@ -727,9 +716,7 @@ function M.gradle(opts)
 end
 
 function M.reload_configs(files)
-    vim.validate {
-        files = { files, { 'table', 'string' } },
-    }
+    vim.validate('files', files, { 'table', 'string' })
 
     if type(files) == type '' then
         files = { files }
@@ -769,10 +756,8 @@ function M.reload_configs(files)
 end
 
 local function select_from_lst(args, prompt)
-    vim.validate {
-        args = { args, { 'string', 'table' } },
-        prompt = { prompt, 'string', true },
-    }
+    vim.validate('args', args, { 'string', 'table' })
+    vim.validate('prompt', prompt, 'string', true)
 
     prompt = prompt or 'Select file: '
     local cwd = vim.pesc(vim.uv.cwd() .. '/')
@@ -976,10 +961,8 @@ function M.show_job_progress(opts)
 end
 
 function M.vnc(hostname, opts)
-    vim.validate {
-        hostname = { hostname, 'string' },
-        opts = { opts, 'table', true },
-    }
+    vim.validate('hostname', hostname, 'string')
+    vim.validate('opts', opts, 'table', true)
     local executable = RELOAD('utils.files').executable
 
     local components = vim.split(hostname, ':')

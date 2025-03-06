@@ -176,9 +176,7 @@ function M.setup()
         return
     end
 
-    vim.validate {
-        python_path = { vim.b.python_path, { 'string', 'table' }, true },
-    }
+    vim.validate('python_path', vim.b.python_path, { 'string', 'table' }, true)
 
     if not plugins['vim-apathy'] then
         local buf = nvim.get_current_buf()

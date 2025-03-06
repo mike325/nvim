@@ -123,15 +123,7 @@ function M.get_git_cmd(gitcmd, args)
 end
 
 local function parse_status(status)
-    vim.validate {
-        status = {
-            status,
-            function(s)
-                return type(s) == type '' or vim.islist(s)
-            end,
-            'valid git status format',
-        },
-    }
+    vim.validate('status', status, { 'string', 'table' })
 
     if type(status) == 'string' then
         status = vim.split(status, '[\n\r]+')
@@ -209,11 +201,9 @@ end
 
 -- TODO: There's a misconfigure setting somewhere that makes git output ~80 column text
 local function exec_gitcmd(gitcmd, args, callbacks)
-    vim.validate {
-        gitcmd = { gitcmd, 'string' },
-        args = { args, { 'string', 'table' } },
-        callbacks = { callbacks, 'function', true },
-    }
+    vim.validate('gitcmd', gitcmd, 'string')
+    vim.validate('args', args, { 'string', 'table' })
+    vim.validate('callbacks', callbacks, 'function', true)
 
     local cmd = M.get_git_cmd(gitcmd, normalize_args(args))
     if not callbacks then
@@ -234,7 +224,7 @@ local function exec_gitcmd(gitcmd, args, callbacks)
 end
 
 function M.status(callback)
-    vim.validate { callback = { callback, 'function', true } }
+    vim.validate('callback', callback, 'function', true)
 
     local gitcmd = 'status'
     local args = {
@@ -251,7 +241,7 @@ function M.status(callback)
 end
 
 function M.branch(callback)
-    vim.validate { callback = { callback, 'function', true } }
+    vim.validate('callback', callback, 'function', true)
 
     local gitcmd = 'rev-parse'
     local args = {
@@ -267,10 +257,8 @@ function M.branch(callback)
 end
 
 function M.base_branch(base, callback)
-    vim.validate {
-        base = { base, { 'string', 'function' }, true },
-        callback = { callback, 'function', true },
-    }
+    vim.validate('base', base, { 'string', 'function' }, true)
+    vim.validate('callback', callback, 'function', true)
 
     if type(base) == type(callback) and base ~= nil then
         error(debug.traceback 'base and callback cannot be the same type')
@@ -299,10 +287,8 @@ function M.base_branch(base, callback)
 end
 
 function M.modified_files(location, callback)
-    vim.validate {
-        location = { location, { 'string', 'function' }, true },
-        callback = { callback, 'function', true },
-    }
+    vim.validate('location', location, { 'string', 'function' }, true)
+    vim.validate('callback', callback, 'function', true)
 
     if type(location) == type(callback) and location ~= nil then
         error(debug.traceback 'location and callback cannot be the same type')
@@ -343,10 +329,8 @@ function M.modified_files(location, callback)
 end
 
 function M.modified_files_from_base(revision, callback)
-    vim.validate {
-        revision = { revision, { 'string', 'function' }, true },
-        callback = { callback, 'function', true },
-    }
+    vim.validate('revision', revision, { 'string', 'function' }, true)
+    vim.validate('callback', callback, 'function', true)
 
     if type(revision) == type(callback) and revision ~= nil then
         error(debug.traceback 'revision and callback cannot be the same type')
@@ -388,9 +372,7 @@ function M.modified_files_from_base(revision, callback)
 end
 
 function M.is_git_repo(root)
-    vim.validate {
-        root = { root, 'string' },
-    }
+    vim.validate('root', root, 'string')
 
     local is_file = require('utils.files').is_file
     local is_dir = require('utils.files').is_dir
@@ -406,10 +388,8 @@ function M.is_git_repo(root)
 end
 
 function M.get_git_info(path, callback)
-    vim.validate {
-        path = { path, 'string', true },
-        callback = { callback, 'function', true },
-    }
+    vim.validate('path', path, 'string', true)
+    vim.validate('callback', callback, 'function', true)
 
     path = path or require('utils.files').getcwd()
 
@@ -471,10 +451,8 @@ function M.get_git_info(path, callback)
 end
 
 function M.get_git_dir(path, callback)
-    vim.validate {
-        path = { path, 'string', true },
-        callback = { callback, 'function', true },
-    }
+    vim.validate('path', path, 'string', true)
+    vim.validate('callback', callback, 'function', true)
 
     path = path or require('utils.files').getcwd()
 
@@ -524,7 +502,7 @@ function M.get_git_dir(path, callback)
 end
 
 function M.get_branch(callback)
-    vim.validate { callback = { callback, 'function', true } }
+    vim.validate('callback', callback, 'function', true)
 
     local gitcmd = 'branch'
     local args = {
@@ -540,10 +518,8 @@ function M.get_branch(callback)
 end
 
 function M.get_remote(branch, callback)
-    vim.validate {
-        branch = { branch, { 'string', 'function' }, true },
-        callback = { callback, 'function', true },
-    }
+    vim.validate('branch', branch, { 'string', 'function' }, true)
+    vim.validate('callback', callback, 'function', true)
 
     if branch ~= nil and type(branch) == type(callback) then
         error(debug.traceback 'Branch need to either be nil or a string')
@@ -623,9 +599,7 @@ function M.get_remote(branch, callback)
 end
 
 function M.get_remotes(callback)
-    vim.validate {
-        callback = { callback, 'function', true },
-    }
+    vim.validate('callback', callback, 'function', true)
 
     local gitcmd = 'remote'
     local remotes = {}
@@ -647,11 +621,9 @@ function M.get_remotes(callback)
 end
 
 function M.get_filecontent(filename, revision, callback)
-    vim.validate {
-        filename = { filename, 'string' },
-        revision = { revision, { 'string', 'function' }, true },
-        callback = { callback, 'function', true },
-    }
+    vim.validate('filename', filename, 'string')
+    vim.validate('revision', revision, { 'string', 'function' }, true)
+    vim.validate('callback', callback, 'function', true)
 
     if callback and type(revision) == type(callback) then
         error(debug.traceback 'Revision should be a string, cannot provide 2 callbacks')
@@ -675,17 +647,13 @@ end
 
 M.exec = setmetatable({}, {
     __index = function(_, k)
-        vim.validate {
-            gitcmd = { k, 'string' },
-        }
+        vim.validate('gitcmd', k, 'string')
 
         local gitcmd = k
 
         local function return_first_line(args, callback)
-            vim.validate {
-                args = { args, { 'string', 'table' }, true },
-                callback = { callback, 'function', true },
-            }
+            vim.validate('args', args, { 'string', 'table' }, true)
+            vim.validate('callback', callback, 'function', true)
             if not callback then
                 return exec_gitcmd(gitcmd, args)[1] or ''
             end
@@ -699,10 +667,8 @@ M.exec = setmetatable({}, {
             add = return_first_line,
             restore = return_first_line,
             rm = function(args, callback)
-                vim.validate {
-                    args = { args, { 'string', 'table' }, true },
-                    callback = { callback, 'function', true },
-                }
+                vim.validate('args', args, { 'string', 'table' }, true)
+                vim.validate('callback', callback, 'function', true)
                 if not callback then
                     exec_gitcmd(gitcmd, args)
                     return ''
@@ -712,10 +678,8 @@ M.exec = setmetatable({}, {
                 end)
             end,
             init = function(args, callback)
-                vim.validate {
-                    args = { args, { 'string', 'table' }, true },
-                    callback = { callback, 'function', true },
-                }
+                vim.validate('args', args, { 'string', 'table' }, true)
+                vim.validate('callback', callback, 'function', true)
                 if not args or #args == 0 then
                     args = { '--initial-branch=main' }
                 end

@@ -2,9 +2,7 @@ local Parser = {}
 Parser.__index = Parser
 
 function Parser:parse(args)
-    vim.validate {
-        args = { args, 'table', true },
-    }
+    vim.validate('args', args, 'table', true)
 
     args = vim.deepcopy(args or _G.arg or {})
     -- if next(self._flags) == nil then
@@ -78,11 +76,9 @@ end
 
 -- NOTE: Allow arg table to be passed ?
 function Parser:new(description, name, version)
-    vim.validate {
-        description = { description, 'string', true },
-        name = { name, 'string', true },
-        version = { version, { 'string', 'number' }, true },
-    }
+    vim.validate('description', description, 'string', true)
+    vim.validate('name', name, 'string', true)
+    vim.validate('version', version, { 'string', 'number' }, true)
 
     local obj = {}
     obj.description = description
@@ -131,14 +127,10 @@ function Parser:add(arg)
     -- TODO: Add support for require and optional flags
     -- TODO: Add support for default values
     arg = arg or {}
-    vim.validate {
-        arg = { arg.flags, { 'table', 'string' } },
-        flag_type = { arg.type, 'string' },
-        description = { arg.description, 'string', true },
-        name = { arg.name, 'string', true },
-        -- default = { arg.default, arg.type, true },
-        -- parser = { arg.parser, 'function', true },
-    }
+    vim.validate('arg', arg.flags, { 'table', 'string' })
+    vim.validate('flag_type', arg.type, 'string')
+    vim.validate('description', arg.description, 'string', true)
+    vim.validate('name', arg.name, 'string', true)
 
     local flags = type(arg.flags) == type {} and arg.flags or { arg.flags }
 

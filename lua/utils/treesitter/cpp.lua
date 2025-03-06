@@ -1,10 +1,8 @@
 local M = {}
 
 function M.add_include(module, module_type)
-    vim.validate {
-        module = { module, 'string' },
-        module_type = { module_type, 'string', true },
-    }
+    vim.validate('module', module, 'string')
+    vim.validate('module_type', module_type, 'string', true)
     assert(
         not module_type or module_type == 'system' or module_type == 'sys' or module_type == 'local',
         debug.traceback 'module_type must be either sys or local'
@@ -47,9 +45,7 @@ function M.add_include(module, module_type)
 end
 
 function M.get_class_operators(text)
-    vim.validate {
-        text = { text, 'boolean', true },
-    }
+    vim.validate('text', text, 'boolean', true)
 
     local functions = {}
 

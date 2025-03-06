@@ -335,7 +335,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
         --     vim.bo[bufnr].omnifunc = has_mini and 'v:lua.MiniCompletion.completefunc_lsp' or 'v:lua.vim.lsp.omnifunc'
         -- end
 
-        if client.supports_method(methods.textDocument_foldingRange) then
+        if client:supports_method(methods.textDocument_foldingRange) then
             vim.wo.foldmethod = 'expr'
             vim.wo.foldexpr = 'v:lua.vim.lsp.foldexpr()'
         end
@@ -353,7 +353,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
             client.server_capabilities.hoverProvider = false
         end
 
-        if nvim.has { 0, 10 } and client.supports_method(methods.textDocument_inlayHint) then
+        if nvim.has { 0, 10 } and client:supports_method(methods.textDocument_inlayHint) then
             -- Initial inlay hint display.
             vim.defer_fn(function()
                 local mode = vim.api.nvim_get_mode().mode
@@ -385,7 +385,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
         end
 
         for method, map in pairs(method_mappings) do
-            if client.supports_method(method) then
+            if client:supports_method(method) then
                 if map.keymap then
                     vim.keymap.set('n', map.keymap, map.func, { silent = true, buffer = bufnr, noremap = true })
                 end

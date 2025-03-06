@@ -13,10 +13,8 @@ function M.ssh_hosts(opts)
 end
 
 function M.compile_flags(opts)
-    vim.validate {
-        opts = { opts, 'table' },
-        flags_file = { opts.flags_file, 'string' },
-    }
+    vim.validate('opts', opts, 'table')
+    vim.validate('flags_file', opts.flags_file, 'string')
 
     local parsers = RELOAD 'threads.parsers'
     local parse_func = {

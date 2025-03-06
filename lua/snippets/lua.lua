@@ -28,34 +28,6 @@ local saved_text = utils.saved_text
 local else_clause = utils.else_clause
 local surround_with_func = utils.surround_with_func
 
-local function rec_val()
-    return sn(nil, {
-        c(1, {
-            t { '' },
-            sn(nil, {
-                t { '', '\t' },
-                i(1, 'arg'),
-                t { ' = { ' },
-                r(1),
-                t { ', ' },
-                c(2, {
-                    i(1, "'string'"),
-                    i(1, "'table'"),
-                    i(1, "'function'"),
-                    i(1, "'number'"),
-                    i(1, "'boolean'"),
-                }),
-                c(3, {
-                    t { '' },
-                    t { ', true' },
-                }),
-                t { ' },' },
-                d(4, rec_val, {}),
-            }),
-        }),
-    })
-end
-
 local function require_import(_, parent, old_state)
     local nodes = {}
 
@@ -193,9 +165,11 @@ return {
     })),
     s("ign", { t { "-- stylua: ignore" } }),
     s("sty", { t { "-- stylua: ignore" } }),
+    -- TODO: Use new signature
     s("val", {
-        t({ "vim.validate {" }),
-        t { '', "\t" }, i(1, 'arg'), t { " = { " }, r(1), t { ", " },
+        t({ 'vim.validate("' }),
+        i(1, 'arg'), t { '", ' },
+        r(1), t { ", " },
         c(2, {
             i(1, "'string'"),
             i(1, "'table'"),
@@ -206,10 +180,9 @@ return {
         c(3, {
             t { "" },
             t { ", true" },
+            t { ", false" },
         }),
-        t({ " }," }),
-        d(4, rec_val, {}),
-        t({ '', "}" }),
+        t({ ")" }),
     }),
     s('command', fmt([[
     nvim.command.set({}, {}, {})

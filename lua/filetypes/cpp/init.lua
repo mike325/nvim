@@ -129,9 +129,7 @@ local env = {
 
 -- TODO: current compiler should be cached into an internal buf/tab/global var
 function M.get_compiler(ft)
-    vim.validate {
-        ft = { ft, 'string', true },
-    }
+    vim.validate('ft', ft, 'string', true)
     ft = ft or vim.bo.filetype
 
     -- safe check
@@ -154,11 +152,9 @@ function M.get_compiler(ft)
 end
 
 function M.get_args(compiler, bufnum, flags_location)
-    vim.validate {
-        compiler = { compiler, 'string' },
-        bufnum = { bufnum, 'number', true },
-        flags_location = { flags_location, 'string', true },
-    }
+    vim.validate('compiler', compiler, 'string')
+    vim.validate('bufnum', bufnum, 'number', true)
+    vim.validate('flags_location', flags_location, 'string', true)
 
     local args
     local bufname = nvim.buf.get_name(bufnum)
@@ -227,10 +223,8 @@ function M.set_file_opts(flags_file, bufnum)
 end
 
 function M.set_default_opts(compiler, bufnum)
-    vim.validate {
-        compiler = { compiler, 'string' },
-        bufnum = { bufnum, 'number' },
-    }
+    vim.validate('compiler', compiler, 'string')
+    vim.validate('bufnum', bufnum, 'number')
     if executable 'clang-tidy' then
         local tidy = vim.list_extend({ 'clang-tidy' }, M.makeprg['clang-tidy'])
         vim.bo[bufnum].makeprg = table.concat(tidy, ' ') .. ' %'

@@ -33,7 +33,7 @@ local preload = {
 
 local setup_func = {}
 local function setup(ft)
-    vim.validate { filetype = { ft, 'string' } }
+    vim.validate('filetype', ft, 'string')
 
     local function config_lsp(server)
         local config = server.config or server.exec

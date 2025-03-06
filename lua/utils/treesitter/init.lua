@@ -36,23 +36,9 @@ end
 -- @param buf number: buffer number
 -- @return true or false otherwise
 function M.is_in_node(node, range, buf)
-    vim.validate {
-        node = {
-            node,
-            function(n)
-                return type(n) == type '' or vim.islist(n)
-            end,
-            'should be a string or an array',
-        },
-        range = {
-            range,
-            function(r)
-                return r == nil or vim.islist(r)
-            end,
-            'an array or nil',
-        },
-        buf = { buf, 'number', true },
-    }
+    vim.validate('node', node, { 'string', 'table' })
+    vim.validate('range', range, 'table', true)
+    vim.validate('buf', buf, 'number', true)
 
     buf = buf or vim.api.nvim_get_current_buf()
     if not pcall(vim.treesitter.get_parser, buf) then
@@ -93,12 +79,10 @@ function M.is_in_node(node, range, buf)
 end
 
 function M.get_list_nodes(root_node, tsquery, text, buf)
-    vim.validate {
-        root_node = { root_node, { 'userdata', 'table' } },
-        tsquery = { tsquery, 'string' },
-        text = { text, 'boolean', true },
-        buf = { buf, 'number', true },
-    }
+    vim.validate('root_node', root_node, { 'userdata', 'table' })
+    vim.validate('tsquery', tsquery, 'string')
+    vim.validate('text', text, 'boolean', true)
+    vim.validate('buf', buf, 'number', true)
 
     buf = buf or vim.api.nvim_get_current_buf()
 
@@ -132,10 +116,8 @@ function M.get_list_nodes(root_node, tsquery, text, buf)
 end
 
 function M.list_buf_nodes(tsquery, buf)
-    vim.validate {
-        tsquery = { tsquery, 'string' },
-        buf = { buf, 'number', true },
-    }
+    vim.validate('tsquery', tsquery, 'string')
+    vim.validate('buf', buf, 'number', true)
 
     buf = buf or vim.api.nvim_get_current_buf()
 
@@ -161,9 +143,7 @@ function M.list_buf_nodes(tsquery, buf)
 end
 
 function M.get_current_node(node_name, range)
-    vim.validate {
-        node_name = { node_name, 'table' },
-    }
+    vim.validate('node_name', node_name, 'table')
 
     if not M.has_ts() then
         return nil
@@ -224,7 +204,7 @@ function M.is_in_class()
 end
 
 function M.has_ts(buf)
-    vim.validate { buf = { buf, 'number', true } }
+    vim.validate('buf', buf, 'number', true)
     buf = buf or vim.api.nvim_get_current_buf()
     return (pcall(vim.treesitter.get_parser, buf))
 end

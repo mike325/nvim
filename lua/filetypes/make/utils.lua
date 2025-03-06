@@ -1,9 +1,7 @@
 local M = {}
 
 function M.execute(args)
-    vim.validate {
-        arg = { arg, 'table', true },
-    }
+    vim.validate('arg', arg, 'table', true)
     args = args or {}
 
     for idx, arg in ipairs(args) do

@@ -22,11 +22,9 @@ local function exec_sync_ghcmd(cmd, ghcmd)
 end
 
 local function exec_ghcmd(ghcmd, args, callbacks)
-    vim.validate {
-        ghcmd = { ghcmd, 'string' },
-        args = { args, { 'string', 'table' } },
-        callbacks = { callbacks, 'function', true },
-    }
+    vim.validate('ghcmd', ghcmd, 'string')
+    vim.validate('args', args, { 'string', 'table' })
+    vim.validate('callbacks', callbacks, 'function', true)
 
     local cmd = { 'gh', ghcmd }
     if type(args) == 'string' then
@@ -54,10 +52,8 @@ local function exec_ghcmd(ghcmd, args, callbacks)
 end
 
 function M.get_pr_changes(opts, callback)
-    vim.validate {
-        opts = { opts, 'table', true },
-        callback = { callback, 'function', true },
-    }
+    vim.validate('opts', opts, 'table', true)
+    vim.validate('callback', callback, 'function', true)
     -- opts = opts or {}
 
     local ghcmd = 'pr'
@@ -86,9 +82,7 @@ function M.get_pr_changes(opts, callback)
 end
 
 function M.open_pr(pr)
-    vim.validate {
-        pr = { pr, 'number', true },
-    }
+    vim.validate('pr', pr, 'number', true)
 
     local ghcmd = 'pr'
     local args = { 'view' }
@@ -107,10 +101,8 @@ function M.open_pr(pr)
 end
 
 function M.list_repo_pr(opts, callback)
-    vim.validate {
-        opts = { opts, 'table', true },
-        callback = { callback, 'function', true },
-    }
+    vim.validate('opts', opts, 'table', true)
+    vim.validate('callback', callback, 'function', true)
     opts = opts or {}
 
     local ghcmd = 'pr'
@@ -144,10 +136,8 @@ function M.list_repo_pr(opts, callback)
         }
 
         for filter, value in pairs(opts.filters) do
-            vim.validate {
-                filter = { filter, 'string' },
-                value = { value, { 'string', 'number', 'bool' } },
-            }
+            vim.validate('filter', filter, 'string')
+            vim.validate('value', value, { 'string', 'number', 'bool' })
             if filter_args[filter] then
                 table.insert(filters, '--' .. filter)
                 if filter ~= 'draft' then
@@ -172,10 +162,8 @@ function M.list_repo_pr(opts, callback)
 end
 
 function M.get_pr_checks(opts, callback)
-    vim.validate {
-        opts = { opts, 'table', true },
-        callback = { callback, 'function', true },
-    }
+    vim.validate('opts', opts, 'table', true)
+    vim.validate('callback', callback, 'function', true)
     opts = opts or {}
 
     local ghcmd = 'pr'
@@ -209,10 +197,8 @@ function M.get_pr_checks(opts, callback)
 end
 
 function M.create_pr(opts, callback)
-    vim.validate {
-        opts = { opts, 'table', true },
-        callback = { callback, 'function', true },
-    }
+    vim.validate('opts', opts, 'table', true)
+    vim.validate('callback', callback, 'function', true)
     opts = opts or {}
 
     local ghcmd = 'pr'
@@ -230,10 +216,8 @@ end
 
 -- TODO: Add an auto create option ?
 function M.edit_pr(opts, callback)
-    vim.validate {
-        opts = { opts, 'table', true },
-        callback = { callback, 'function', true },
-    }
+    vim.validate('opts', opts, 'table', true)
+    vim.validate('callback', callback, 'function', true)
     opts = opts or {}
 
     local ghcmd = 'pr'
@@ -251,10 +235,8 @@ end
 
 -- TODO: Add an auto create option ?
 function M.pr_ready(is_ready, callback)
-    vim.validate {
-        is_ready = { is_ready, 'boolean', true },
-        callback = { callback, 'function', true },
-    }
+    vim.validate('is_ready', is_ready, 'boolean', true)
+    vim.validate('callback', callback, 'function', true)
 
     local ghcmd = 'pr'
     local args = { 'ready' }
@@ -273,9 +255,7 @@ function M.pr_ready(is_ready, callback)
 end
 
 function M.get_repo_reviewers(callback)
-    vim.validate {
-        callback = { callback, 'function', true },
-    }
+    vim.validate('callback', callback, 'function', true)
 
     local ghcmd = 'api'
     local args = {

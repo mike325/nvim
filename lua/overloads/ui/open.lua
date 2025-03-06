@@ -1,8 +1,6 @@
 if not vim.ui.open then
     vim.ui.open = function(uri)
-        vim.validate {
-            uri = { uri, 'string' },
-        }
+        vim.validate('uri', uri, 'string')
         local is_uri = uri:match '%w+:'
         if not is_uri then
             uri = vim.fn.expand(uri)
@@ -60,7 +58,7 @@ end
 
 vim.ui.open = (function(overridden)
     return function(path)
-        vim.validate { path = { path, 'string' } }
+        vim.validate('path', path, 'string')
         if path:match '^https?://.+' and vim.env.SSH_CONNECTION then
             require('utils.functions').send_osc1337('open', '"' .. path .. '"')
             return {

@@ -152,23 +152,9 @@ else
 end
 
 local function notify(msg, level, opts)
-    vim.validate {
-        message = { msg, 'string' },
-        level = {
-            level,
-            function(l)
-                return not l or type(l) == type '' or type(l) == type(1)
-            end,
-            'string or integer log level',
-        },
-        options = {
-            opts,
-            function(o)
-                return not o or (type(o) == type {} and not vim.islist(o))
-            end,
-            'table of options',
-        },
-    }
+    vim.validate('message', msg, 'string')
+    vim.validate('level', level, { 'string', 'number' }, true)
+    vim.validate('opts', opts, { 'table' }, true)
 
     if level and type(level) == type '' then
         level = level:upper()

@@ -3,15 +3,13 @@ Logger.__index = Logger
 
 function Logger:new(opts)
     opts = opts or {}
-    vim.validate {
-        opts = { opts, 'table' },
-        name = { opts.name, 'string', true },
-        file = { opts.file, { 'string', 'boolean' }, true },
-        stdout = { opts.stdout, 'boolean', true },
-        level = { opts.level, { 'string', 'number' }, true },
-        stdout_level = { opts.stdout_level, { 'string', 'number' }, true },
-        file_level = { opts.file_level, { 'string', 'number' }, true },
-    }
+    vim.validate('opts', opts, 'table')
+    vim.validate('name', opts.name, 'string', true)
+    vim.validate('file', opts.file, { 'string', 'boolean' }, true)
+    vim.validate('stdout', opts.stdout, 'boolean', true)
+    vim.validate('level', opts.level, { 'string', 'number' }, true)
+    vim.validate('stdout_level', opts.stdout_level, { 'string', 'number' }, true)
+    vim.validate('file_level', opts.file_level, { 'string', 'number' }, true)
 
     local obj = {
         _init = false,
@@ -47,11 +45,10 @@ function Logger:new(opts)
 end
 
 local function async_append_log(filename, data, cb)
-    vim.validate {
-        filename = { filename, 'string' },
-        data = { data, 'string' },
-        cb = { cb, 'function', true },
-    }
+    vim.validate('filename', filename, 'string')
+    vim.validate('data', data, 'string')
+    vim.validate('cb', cb, 'function', true)
+
     vim.uv.fs_open(filename, 'a+', 438, function(oerr, fd)
         assert(not oerr, oerr)
         vim.uv.fs_write(fd, data .. '\n', 0, function(rerr)

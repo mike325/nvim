@@ -1,24 +1,14 @@
 require 'globals'
 
 local function get_autocmd(opts)
-    vim.validate {
-        opts = { opts, 'table', true },
-    }
+    vim.validate('opts', opts, 'table', true)
     opts = opts or {}
 
     return vim.F.npcall(vim.api.nvim_get_autocmds, opts) or {}
 end
 
 local function get_augroup(name_id)
-    vim.validate {
-        name_id = {
-            name_id,
-            function(n)
-                return type(n) == type '' or type(n) == type(0)
-            end,
-            'Augroup name string or id number',
-        },
-    }
+    vim.validate('name_id', name_id, { 'string', 'number' }, false, 'Augroup name string or id number')
     return get_autocmd { group = name_id }
 end
 
@@ -38,10 +28,8 @@ end
 -- end
 
 local function add_augroup(name, clear)
-    vim.validate {
-        name = { name, 'string' },
-        clear = { clear, 'boolean', true },
-    }
+    vim.validate('name', name, 'string')
+    vim.validate('clear', clear, 'boolean', true)
 
     local groups = get_augroup(name)
     if #groups == 0 or clear then
@@ -51,22 +39,12 @@ local function add_augroup(name, clear)
 end
 
 local function clear_augroup(name)
-    vim.validate {
-        name = { name, 'string' },
-    }
+    vim.validate('name', name, 'string')
     vim.api.nvim_create_augroup(name, { clear = true })
 end
 
 local function del_augroup(name_id)
-    vim.validate {
-        name_id = {
-            name_id,
-            function(n)
-                return type(n) == type '' or type(n) == type(0)
-            end,
-            'Augroup name string or id number',
-        },
-    }
+    vim.validate('name_id', name_id, { 'string', 'number' }, false, 'Augroup name string or id number')
 
     local api_call = type(name_id) == type '' and vim.api.nvim_del_augroup_by_name or vim.api.nvim_del_augroup_by_id
     pcall(api_call, name_id)
@@ -78,16 +56,8 @@ local function del_augroup(name_id)
 end
 
 local function add_autocmd(event, opts)
-    vim.validate {
-        opts = { opts, 'table', true },
-        event = {
-            event,
-            function(e)
-                return type(e) == type '' or vim.islist(e)
-            end,
-            'an array of events or a event string',
-        },
-    }
+    vim.validate('opts', opts, 'table', true)
+    vim.validate('event', event, { 'table', 'string' }, false, 'an array of events or a event string')
 
     local clear = opts.clear
     opts.clear = nil
@@ -104,17 +74,9 @@ local function add_autocmd(event, opts)
 end
 
 local function add_command(name, cmd, opts)
-    vim.validate {
-        name = { name, 'string' },
-        cmd = {
-            cmd,
-            function(c)
-                return type(c) == type '' or vim.is_callable(c)
-            end,
-            'a string or a lua function',
-        },
-        opts = { opts, 'table', true },
-    }
+    vim.validate('name', name, 'string')
+    vim.validate('cmd', cmd, { 'string', 'callable' })
+    vim.validate('opts', opts, 'table', true)
     opts = opts or {}
     if opts.buffer then
         local buffer = type(opts.buffer) == type(0) and opts.buffer or 0
@@ -126,16 +88,8 @@ local function add_command(name, cmd, opts)
 end
 
 local function del_command(name, buffer)
-    vim.validate {
-        name = { name, 'string' },
-        buffer = {
-            buffer,
-            function(b)
-                return not b or type(b) == type(true) or type(b) == type(0)
-            end,
-            'a boolean or a number',
-        },
-    }
+    vim.validate('name', name, 'string')
+    vim.validate('buffer', buffer, { 'boolean', 'number' })
     if buffer then
         buffer = type(buffer) == type(0) and buffer or 0
         vim.api.nvim_buf_del_user_command(buffer, name)
@@ -225,9 +179,7 @@ local function download_mini(mini_path)
 end
 
 local function setup_mini(download)
-    vim.validate {
-        download = { download, 'boolean', true },
-    }
+    vim.validate('download', download, 'boolean', true)
 
     vim.g.mini_path = get_mini_path()
     vim.g.mini_setup = vim.uv.fs_stat(vim.g.mini_path) ~= nil
@@ -266,9 +218,7 @@ local function setup_mini(download)
 end
 
 local function setup_lazy(download)
-    vim.validate {
-        download = { download, 'boolean', true },
-    }
+    vim.validate('download', download, 'boolean', true)
 
     vim.g.lazypath = get_lazypath()
     vim.g.lazy_setup = vim.uv.fs_stat(vim.g.lazypath) ~= nil
@@ -398,9 +348,7 @@ local nvim = {
     }, {
         __call = function(_, feature)
             if type(feature) == type {} then
-                vim.validate {
-                    version = { feature, vim.islist, 'a nvim version string to list' },
-                }
+                vim.validate('version', feature, vim.islist, false, 'a nvim version string to list')
                 local nvim_version = {
                     vim.version().major,
                     vim.version().minor,
@@ -564,9 +512,7 @@ local nvim = {
         add = add_autocmd,
         get = get_autocmd,
         del = function(id)
-            vim.validate {
-                id = { id, 'number' },
-            }
+            vim.validate('id', id, 'number')
             pcall(vim.api.nvim_del_autocmd, id)
         end,
     }, {
@@ -605,7 +551,7 @@ local nvim = {
         end,
     }),
     executable = function(exe)
-        vim.validate { exe = { exe, 'string' } }
+        vim.validate('exe', exe, 'string')
         return vim.fn.executable(exe) == 1
     end,
     setup = setmetatable({

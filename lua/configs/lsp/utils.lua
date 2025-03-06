@@ -89,10 +89,8 @@ function M.dump_config_to_json(ft, server)
 end
 
 function M.get_server_config(lang, name)
-    vim.validate {
-        lang = { lang, 'string' },
-        name = { name, { 'string', 'number' }, true },
-    }
+    vim.validate('lang', lang, 'string')
+    vim.validate('name', name, { 'string', 'number' }, true)
 
     local function get_config_cmd(server)
         local tmp_server = vim.deepcopy(server)
@@ -149,7 +147,7 @@ function M.get_server_config(lang, name)
 end
 
 function M.check_language_server(lang)
-    vim.validate { lang = { lang, 'string' } }
+    vim.validate('lang', lang, 'string')
 
     local utils_io = RELOAD 'utils.files'
     local json_filename = vim.fs.find(config_file, { upward = true, type = 'file' })[1]
@@ -163,7 +161,7 @@ function M.check_language_server(lang)
 end
 
 function M.get_language_server_cmd(filetype)
-    vim.validate { filetype = { filetype, 'string' } }
+    vim.validate('filetype', filetype, 'string')
     local server = M.check_language_server(filetype)
     if not server then
         return {}

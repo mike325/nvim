@@ -110,9 +110,7 @@ function M.get_icon(icon)
 end
 
 function M.send_grep_job(opts)
-    vim.validate {
-        opts = { opts, 'table', true },
-    }
+    vim.validate('opts', opts, 'table', true)
 
     opts = opts or {}
 
@@ -126,12 +124,10 @@ function M.send_grep_job(opts)
     nvim.reg['/'] = search
     local use_loc = opts.loc
 
-    vim.validate {
-        cmd = { cmd, 'string' },
-        args = { args, 'table' },
-        search = { search, 'string' },
-        use_loc = { use_loc, 'boolean', true },
-    }
+    vim.validate('cmd', cmd, 'string')
+    vim.validate('args', args, 'table')
+    vim.validate('search', search, 'string')
+    vim.validate('use_loc', use_loc, 'boolean', true)
 
     if cmd == grepprg[1] and #args == 0 then
         vim.list_extend(args, vim.list_slice(grepprg, 2, #grepprg))
@@ -284,10 +280,8 @@ function M.opfun_comment(_, visual)
 end
 
 function M.external_formatprg(args)
-    vim.validate {
-        args = { args, 'table' },
-        cmd = { args.cmd, 'table' },
-    }
+    vim.validate('args', args, 'table')
+    vim.validate('cmd', args.cmd, 'table')
 
     local cmd = args.cmd
     local bufnr = args.bufnr or vim.api.nvim_get_current_buf()
@@ -334,10 +328,8 @@ function M.external_formatprg(args)
 end
 
 function M.external_linterprg(args)
-    vim.validate {
-        args = { args, 'table' },
-        cmd = { args.cmd, 'table' },
-    }
+    vim.validate('args', args, 'table')
+    vim.validate('cmd', args.cmd, 'table')
 
     local cmd = args.cmd
     local bufnr = args.buffer or vim.api.nvim_get_current_buf()
@@ -360,10 +352,8 @@ function M.external_linterprg(args)
 end
 
 function M.async_execute(opts)
-    vim.validate {
-        opts = { opts, 'table' },
-        cmd = { opts.cmd, { 'table', 'string' } },
-    }
+    vim.validate('opts', opts, 'table')
+    vim.validate('cmd', opts.cmd, { 'table', 'string' })
 
     local cmd = opts.cmd
     local args = opts.args
@@ -443,10 +433,8 @@ function M.foldtext()
 end
 
 function M.set_compiler(compiler, opts)
-    vim.validate {
-        compiler = { compiler, 'string' },
-        opts = { opts, 'table', true },
-    }
+    vim.validate('compiler', compiler, 'string')
+    vim.validate('opts', opts, 'table', true)
 
     opts = opts or {}
 
@@ -568,11 +556,9 @@ function M.find_project_root(path)
 end
 
 function M.ignores(tool, excludes, lst)
-    vim.validate {
-        tool = { tool, 'string' },
-        excludes = { excludes, { 'string', 'table' } },
-        lst = { lst, 'boolean', true },
-    }
+    vim.validate('tool', tool, 'string')
+    vim.validate('excludes', excludes, { 'string', 'table' })
+    vim.validate('lst', lst, 'boolean', true)
 
     if lst == nil then
         lst = false
@@ -853,12 +839,10 @@ function M.scp_edit(opts)
     local port = opts.port
 
     local function get_remote_file(hostname, remote_file, remote_path, host_port)
-        vim.validate {
-            hostname = { hostname, 'string' },
-            remote_file = { remote_file, 'string' },
-            remote_path = { remote_path, 'string', true },
-            host_port = { host_port, { 'string', 'number' }, true },
-        }
+        vim.validate('hostname', hostname, 'string')
+        vim.validate('remote_file', remote_file, 'string')
+        vim.validate('remote_path', remote_path, 'string', true)
+        vim.validate('host_port', host_port, { 'string', 'number' }, true)
 
         if STORAGE.hosts[hostname] then
             host_port = STORAGE.hosts[hostname].port or host_port
@@ -874,11 +858,9 @@ function M.scp_edit(opts)
     end
 
     local function filename_input(hostname, remote_path, host_port)
-        vim.validate {
-            hostname = { hostname, 'string' },
-            remote_path = { remote_path, 'string', true },
-            host_port = { host_port, { 'string', 'number' }, true },
-        }
+        vim.validate('hostname', hostname, 'string')
+        vim.validate('remote_path', remote_path, 'string', true)
+        vim.validate('host_port', host_port, { 'string', 'number' }, true)
 
         if not filename or filename == '' then
             if STORAGE.hosts[hostname] then
@@ -958,10 +940,8 @@ function M.typos_check(buf)
 end
 
 function M.lint_buffer(linter, opts)
-    vim.validate {
-        linter = { linter, 'string' },
-        opts = { opts, 'table', true },
-    }
+    vim.validate('linter', linter, 'string')
+    vim.validate('opts', opts, 'table', true)
 
     opts = opts or {}
 
@@ -1034,9 +1014,7 @@ function M.lint_buffer(linter, opts)
 end
 
 function M.watch_config_file(fname)
-    vim.validate {
-        fname = { fname, 'string' },
-    }
+    vim.validate('fname', fname, 'string')
 
     if require('utils.files').is_file(fname) then
         local real_fname = require('utils.files').realpath(fname)

@@ -5,11 +5,9 @@ local M = {}
 -- TODO: Add support to pass db objects
 -- TODO: Add support for persistent db using json
 function M.insert_row(tbl_name, data, db_path)
-    vim.validate {
-        tbl_name = { tbl_name, 'string' },
-        data = { data, 'table' },
-        db_path = { db_path, 'string', true },
-    }
+    vim.validate('tbl_name', tbl_name, 'string')
+    vim.validate('data', data, 'table')
+    vim.validate('db_path', db_path, 'string', true)
 
     db_path = db_path or STORAGE.db_path
     data = not vim.islist(data) and { data } or data
@@ -70,10 +68,8 @@ function M.insert_row(tbl_name, data, db_path)
 end
 
 function M.tbl_exists(tbl_name, db_path)
-    vim.validate {
-        tbl_name = { tbl_name, 'string' },
-        db_path = { db_path, 'string', true },
-    }
+    vim.validate('tbl_name', tbl_name, 'string')
+    vim.validate('db_path', db_path, 'string', true)
 
     local exists
     db_path = db_path or STORAGE.db_path
@@ -89,12 +85,10 @@ function M.tbl_exists(tbl_name, db_path)
 end
 
 function M.create_tbl(tbl_name, tbl_schema, init_data, db_path)
-    vim.validate {
-        tbl_name = { tbl_name, 'string' },
-        tbl_schema = { tbl_schema, 'table' },
-        db_path = { db_path, 'string', true },
-        init_data = { init_data, 'table', true },
-    }
+    vim.validate('tbl_name', tbl_name, 'string')
+    vim.validate('tbl_schema', tbl_schema, 'table')
+    vim.validate('db_path', db_path, 'string', true)
+    vim.validate('init_data', init_data, 'table', true)
 
     db_path = db_path or STORAGE.db_path
 
