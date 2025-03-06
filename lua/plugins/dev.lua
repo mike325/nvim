@@ -55,6 +55,7 @@ return {
     },
     {
         'hrsh7th/nvim-cmp',
+        enabled = false,
         dependencies = {
             { 'hrsh7th/cmp-nvim-lsp' },
             { 'hrsh7th/cmp-buffer' },
@@ -86,6 +87,7 @@ return {
     },
     {
         'jose-elias-alvarez/null-ls.nvim',
+        enabled = false,
         -- priority = 90,
         event = 'VeryLazy',
         pin = true,
