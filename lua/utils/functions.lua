@@ -505,7 +505,8 @@ function M.set_compiler(compiler, opts)
 
     if efm then
         efm = type(efm) == type {} and table.concat(efm, ',') or efm
-        vim.cmd.CompilerSet('errorformat=' .. (efm:gsub(' ', '\\ ')))
+        -- TODO: fix this with non local options
+        vim.bo.efm = efm
     end
 
     vim.b.current_compiler = compiler

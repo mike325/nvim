@@ -506,6 +506,9 @@ fi
 verbose_msg "Script version : ${VERSION}"
 verbose_msg "Date           : $(date)"
 verbose_msg "Log Disable    : ${NOLOG}"
+if [[ $NOLOG -eq 0 ]]; then
+    verbose_msg "Log location   : ${LOG}"
+fi
 verbose_msg "Current Shell  : ${CURRENT_SHELL}"
 verbose_msg "Platform       : ${SHELL_PLATFORM}"
 verbose_msg "Architecture   : ${ARCH}"

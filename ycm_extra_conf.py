@@ -50,9 +50,7 @@ flags = [
 # Make this more dynamic
 LINUX_INCLUDES = ["-I/usr/lib/", "-I/usr/include/"]
 
-WINDOWS_INCLUDES: List[str] = [
-    # TODO
-]
+WINDOWS_INCLUDES: List[str] = []
 
 SOURCE_EXTENSIONS = [
     ".cpp",
