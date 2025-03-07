@@ -234,14 +234,14 @@ local function setup_mini(download)
 
     if vim.g.mini_setup and vim.g.mini_path:match '/lazy' then
         vim.opt.rtp:prepend(vim.g.mini_path)
-        vim.cmd.helptags 'ALL'
+        -- vim.cmd.helptags 'ALL'
     elseif vim.g.mini_setup then
         vim.cmd 'packadd mini.nvim | helptags ALL'
     elseif download and vim.fn.executable 'git' == 1 and vim.fn.input 'Download mini.nvim? (y for yes): ' == 'y' then
         vim.g.mini_setup = download_mini(vim.g.mini_path)
         if vim.g.mini_path:match '/lazy' then
             vim.opt.rtp:prepend(vim.g.mini_path)
-            vim.cmd.helptags 'ALL'
+            -- vim.cmd.helptags 'ALL'
         else
             vim.cmd 'packadd mini.nvim | helptags ALL'
         end
