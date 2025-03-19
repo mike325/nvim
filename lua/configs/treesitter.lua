@@ -7,7 +7,6 @@ end
 
 local languages = {
     'bash',
-    'bibtex',
     'cmake',
     'comment',
     'cpp',
@@ -22,7 +21,6 @@ local languages = {
     'java',
     'json',
     'jsonc',
-    'latex',
     'make',
     'matlab',
     'perl',
@@ -32,6 +30,7 @@ local languages = {
     'todotxt',
     'toml',
     'yaml',
+    -- Default languages
     -- 'c',
     -- 'lua',
     -- 'markdown',
@@ -40,6 +39,11 @@ local languages = {
     -- 'vim',
     -- 'vimdoc',
 }
+
+if nvim.executable('tree-sitter') then
+    table.insert(languages, 'latex')
+    table.insert(languages, 'bibtex')
+end
 
 local parsers = require 'nvim-treesitter.parsers'
 
