@@ -514,10 +514,7 @@ vim.api.nvim_create_autocmd({ 'Filetype' }, {
                 group = linters_au,
                 buffer = buf,
                 callback = function(_)
-                    RELOAD('utils.functions').lint_buffer(
-                        exe,
-                        { filetype = real_ft[ft] or ft, filename = filename }
-                    )
+                    RELOAD('utils.functions').lint_buffer(exe, { filetype = real_ft[ft] or ft, filename = filename })
                 end,
             })
         end
@@ -727,7 +724,10 @@ vim.api.nvim_create_autocmd({ 'BufReadPost' }, {
     end,
 })
 
-if executable 'plantuml' then
+if
+    executable 'plantuml'
+    or (executable 'java' and require('utils.files').is_file(vim.fn.stdpath 'state' .. '/utils/plantuml.jar'))
+then
     vim.api.nvim_create_autocmd({ 'BufWritePost' }, {
         desc = 'Auto Render plantuml',
         group = vim.api.nvim_create_augroup('AutoRenderUML', { clear = true }),
@@ -737,8 +737,22 @@ if executable 'plantuml' then
 
             if vim.b[buf].auto_render_uml or vim.b[buf].auto_render_uml == nil then
                 local filename = vim.api.nvim_buf_get_name(buf)
+
+                local cmd = {}
+                -- TODO: Search for the jar file in different locations
+                if
+                    executable 'java'
+                    and require('utils.files').is_file(vim.fn.stdpath 'state' .. '/utils/plantuml.jar')
+                then
+                    local jar_path = vim.fn.stdpath 'state' .. '/utils/plantuml.jar'
+                    vim.list_extend(cmd, { 'java', '-jar', jar_path })
+                else
+                    table.insert(cmd, 'plantuml')
+                end
+
+                table.insert(cmd, filename)
                 RELOAD('utils.functions').async_execute {
-                    cmd = { 'plantuml', filename },
+                    cmd = cmd,
                     title = 'PlantUMLRender',
                     progress = false,
                     autoclose = true,

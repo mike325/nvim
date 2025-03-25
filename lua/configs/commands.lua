@@ -746,7 +746,10 @@ nvim.command.set('InitCppProject', function()
     vim.cmd.edit 'src/main.cpp'
 end, { force = true, desc = 'Initialize a C/C++ project' })
 
-if executable 'plantuml' then
+if
+    executable 'plantuml'
+    or (executable 'java' and require('utils.files').is_file(vim.fn.stdpath 'state' .. '/utils/plantuml.jar'))
+then
     nvim.command.set('ToggleAutoUMLRender', function()
         if vim.b.auto_render_uml == nil then
             vim.b.auto_render_uml = true
