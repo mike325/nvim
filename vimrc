@@ -1369,7 +1369,7 @@ if !has('nvim')
 endif
 
 if !has('nvim')
-    colorscheme torte
+    colorscheme slate
 endif
 
 if s:fix_colorscheme

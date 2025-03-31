@@ -451,8 +451,10 @@ vim.api.nvim_create_autocmd('VimEnter', {
     group = vim.api.nvim_create_augroup('ApplyColorscheme', { clear = true }),
     pattern = '*',
     callback = function()
-        if not vim.g.bare then
+        if not vim.g.bare and not vim.g.minimal then
             pcall(vim.cmd.colorscheme, 'catppuccin')
+        else
+            vim.cmd.colorscheme('slate')
         end
     end,
 })
