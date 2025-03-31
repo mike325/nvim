@@ -163,7 +163,7 @@ end
 if mini.icons then
     mini.icons.mock_nvim_web_devicons()
     if not _G['MiniDeps'] then
-        require('mini.deps').setup { path = { package = (vim.fn.stdpath 'data') .. '/site/' } }
+        require('mini.deps').setup {}
     end
     _G['MiniDeps'].later(mini.icons.tweak_lsp_kind)
 end

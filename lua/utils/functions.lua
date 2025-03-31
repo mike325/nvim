@@ -949,7 +949,7 @@ function M.typos_check(buf)
             if rc ~= 0 and #output > 0 then
                 local items = vim.fn.getqflist({ lines = output, efm = vim.go.efm }).items
                 qf_utils.qf_to_diagnostic(diagnostic_ns_name, 0, items)
-            else
+            elseif vim.api.nvim_buf_is_valid(buf) then
                 vim.diagnostic.reset(diagnostic_ns_name, buf)
             end
         end,
@@ -1025,7 +1025,7 @@ function M.lint_buffer(linter, opts)
             if rc ~= 0 and #output > 0 then
                 local items = vim.fn.getqflist({ lines = output, efm = efm }).items
                 qf_utils.qf_to_diagnostic(diagnostic_ns_name, 0, items)
-            else
+            elseif vim.api.nvim_buf_is_valid(buf) then
                 vim.diagnostic.reset(diagnostic_ns_name, buf)
             end
         end,

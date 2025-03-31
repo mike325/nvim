@@ -251,7 +251,7 @@ local function setup_mini(download)
 
     if vim.g.mini_setup then
         local MiniDeps = require 'mini.deps'
-        MiniDeps.setup { path = { package = (vim.fn.stdpath 'data') .. '/site/' } }
+        MiniDeps.setup {}
 
         MiniDeps.now(function()
             require 'configs.mini'
