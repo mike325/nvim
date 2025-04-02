@@ -1,6 +1,6 @@
+-- TODO: make these more "local" to avoid loading extra scripts
 local sys = require 'sys'
 local nvim = require 'nvim'
-
 local mkdir = require('utils.files').mkdir
 local is_dir = require('utils.files').is_dir
 local executable = require('utils.files').executable

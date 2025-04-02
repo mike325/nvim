@@ -243,23 +243,32 @@ end, {
 })
 
 nvim.command.set('Reloader', function(opts)
-    local configs = {
-        mappings = 'mappings',
-        commands = 'commands',
-        autocmds = 'autocmds',
-        options = 'options',
-    }
-
-    local files = {}
-
-    local lua_file_path = '%s/lua/configs/%s.lua'
-    local config_dir = vim.fn.stdpath 'config'
-    if opts.args == 'all' or opts.args == '' then
-        for _, v in ipairs(configs) do
-            table.insert(files, lua_file_path:format(config_dir, v))
+    local get_files = function(path)
+        local files = {}
+        path = vim.fs.joinpath(vim.fn.stdpath 'config', path)
+        for fname, ftype in vim.fs.dir(path) do
+            if ftype == 'file' then
+                local basename = require('utils.files').filename(vim.fs.basename(fname))
+                files[basename] = vim.fs.joinpath(path, fname)
+            end
         end
-    elseif configs[opts.args] then
-        table.insert(files, lua_file_path:format(config_dir, opts.args))
+        return files
+    end
+
+    local plugins = get_files('plugin')
+    local after_plugins = get_files('after/plugin')
+    local files = {}
+    if opts.args == 'all' or opts.args == '' then
+        vim.list_extend(files, vim.tbl_values(plugins))
+        vim.list_extend(files, vim.tbl_values(after_plugins))
+    elseif plugins[opts.args] or after_plugins[opts.args] then
+        if plugins[opts.args] then
+            table.insert(files, plugins[opts.args])
+        end
+
+        if after_plugins[opts.args] then
+            table.insert(files, after_plugins[opts.args])
+        end
     else
         vim.notify('Invalid config name: ' .. opts.args, vim.log.levels.ERROR, { title = 'Reloader' })
         return

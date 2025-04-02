@@ -56,12 +56,21 @@ completions = vim.tbl_extend('force', completions, {
         return utils.general_completion(arglead, cmdline, cursorpos, { '-enable', '-disable' })
     end,
     reload_configs = function(arglead, cmdline, cursorpos)
-        return utils.general_completion(
-            arglead,
-            cmdline,
-            cursorpos,
-            { 'all', 'mappings', 'commands', 'autocmds', 'options' }
-        )
+        local get_files = function(path)
+            return vim.iter(vim.fs.dir(vim.fs.joinpath(vim.fn.stdpath 'config', path)))
+                :filter(function(c)
+                    return c:match '%.lua$' or c:match '%.vim'
+                end)
+                :map(function(c)
+                    return require('utils.files').filename(vim.fs.basename(c))
+                end)
+                :totable()
+        end
+        local uniq = require('utils.tables').merge_uniq_unorder
+        local files = { 'all' }
+        files = uniq(files, get_files 'plugin')
+        files = uniq(files, get_files 'after/plugin')
+        return utils.general_completion(arglead, cmdline, cursorpos, files)
     end,
     severity_list = function(arglead, cmdline, cursorpos)
         local severity_lst = vim.tbl_filter(function(s)

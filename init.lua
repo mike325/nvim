@@ -19,11 +19,6 @@ if not vim.base64 then
     }
 end
 
-local nvim = require 'nvim'
-if not vim.keymap then
-    vim.keymap = nvim.keymap
-end
-
 vim.g.has_ui = #vim.api.nvim_list_uis() > 0
 
 vim.g.loaded_2html_plugin = 1
@@ -49,7 +44,7 @@ vim.g.short_branch_name = true
 
 vim.g.port = 0x8AC
 
-if nvim.has 'win32' then
+if vim.fn.has 'win32' == 1 then
     -- vim.go.shell = 'cmd.exe'
     vim.go.shell = 'powershell'
     vim.go.shellcmdflag = table.concat({
@@ -72,40 +67,42 @@ vim.go.termguicolors = true
 vim.g.mapleader = ' '
 
 vim.g.minimal = vim.env.VIM_MIN ~= nil or vim.g.minimal ~= nil
-vim.g.bare = vim.env.VIM_BARE ~= nil or vim.g.bare ~= nil
-
-if vim.env.TMUX_WINDOW then
-    local socket = vim.fn.stdpath 'cache' .. '/socket.win' .. vim.env.TMUX_WINDOW
-    if vim.fn.filereadable(socket) ~= 1 then
-        vim.fn.serverstart(socket)
-    end
-end
-
-require 'utils.filetype_detect'
+vim.g.bare = vim.env.VIM_BARE ~= nil or vim.g.bare ~= nil or not vim.g.has_ui
 
 require 'globals'
-require 'completions'
-require 'watch_files'
-
-require 'configs.options'
-require 'configs.mappings'
-require 'configs.commands'
-require 'configs.autocmds'
-
-nvim.setup(false)
-vim.cmd.packadd { args = { 'matchit' }, bang = false }
+require 'utils.filetype_detect'
 
 -- NOTE: overload/replace vim.* functions
 require 'overloads.notify'
 require 'overloads.ui.open'
 
+
 if vim.g.has_ui then
+    -- TODO: Add support for gum to ask for input/select items in CLI mode
     require 'overloads.ui.select'
     -- require 'overloads.ui.input'
     -- require 'overloads.paste'
 
+    require 'completions'
+    require 'watch_files'
     require('threads.parse').ssh_hosts()
+
+    if vim.env.TMUX_WINDOW then
+        local socket = vim.fn.stdpath 'cache' .. '/socket.win' .. vim.env.TMUX_WINDOW
+        if vim.fn.filereadable(socket) ~= 1 then
+            vim.fn.serverstart(socket)
+        end
+    end
+
+    require('nvim').setup(false)
+    vim.cmd.packadd { args = { 'matchit' }, bang = false }
 else
+    -- TODO: This is a setup for script run using -l flag
+
+    -- Missing things,
+    -- - stdio handle, specially stdin; stdout/stderr works using vim.notify custom backend
+    -- - generic arg parsing
+    -- - logging to file
     local hosts = require('threads.parsers').sshconfig()
     for host, attrs in pairs(hosts) do
         STORAGE.hosts[host] = attrs

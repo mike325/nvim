@@ -354,7 +354,7 @@ function M.format(opts)
     local last = first + vim.v.count - 1
     local whole_file = last - first == nvim.buf.line_count(bufnr) or opts.whole_file
 
-    local clients = vim.lsp.buf_get_clients(0)
+    local clients = nvim.has { 0, 11 } and vim.lsp.get_clients { bufnr = bufnr } or vim.lsp.buf_get_clients(0)
     local is_null_ls_formatting_enabled = require('configs.lsp.utils').is_null_ls_formatting_enabled
 
     for _, client in pairs(clients) do
@@ -421,7 +421,6 @@ function M.lint(opts)
     local external_linterprg = RELOAD('utils.functions').external_linterprg
     local utils = vim.F.npcall(RELOAD, 'filetypes.' .. ft)
 
-    -- local clients = vim.lsp.buf_get_clients(0)
     if utils and utils.get_linter then
         local cmd = utils.get_linter()
         if cmd then

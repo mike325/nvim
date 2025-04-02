@@ -7,9 +7,6 @@ for idx, level in ipairs(levels) do
     hl_group[names[idx]] = lsp_sign .. level
 end
 
-local notify_backend
-local has_ui = #vim.api.nvim_list_uis() > 0
-
 local function notify_format(msg, _, opts)
     if opts and opts.title then
         return ('[%s]: %s'):format(opts.title, msg)
@@ -17,7 +14,8 @@ local function notify_format(msg, _, opts)
     return msg
 end
 
-if has_ui then
+local notify_backend
+if vim.g.has_ui then
     local nvim_notify = vim.F.npcall(require, 'notify')
     local mini_notify = vim.F.npcall(require, 'mini.notify')
 

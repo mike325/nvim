@@ -454,7 +454,7 @@ vim.api.nvim_create_autocmd('VimEnter', {
         if not vim.g.bare and not vim.g.minimal then
             pcall(vim.cmd.colorscheme, 'catppuccin')
         else
-            vim.cmd.colorscheme('slate')
+            vim.cmd.colorscheme 'slate'
         end
     end,
 })
@@ -658,11 +658,14 @@ vim.api.nvim_create_autocmd({ 'User' }, {
     group = watcher,
     pattern = 'ConfigReloader',
     callback = function(event)
-        local fname = event.data.fname
-        local err = event.data.err
-        local status = event.data.status
+        event = event or {}
+        event.data = event.data or {}
 
-        if not err or err == '' then
+        local fname = event.data.fname or event.fname
+        local err = event.data.err or event.err
+        local status = event.data.status or event.status
+
+        if fname and (not err or err == '') then
             -- NOTE: Could be that the file got removed or move, verify it does exist
             if require('utils.files').is_file(fname) then
                 RELOAD('mappings').reload_configs(fname)
@@ -671,7 +674,7 @@ vim.api.nvim_create_autocmd({ 'User' }, {
             vim.notify(
                 string.format(
                     'fs_event failed!\n fname: %s\nErr: %s\nStatus: %s',
-                    fname,
+                    vim.inspect(fname),
                     vim.inspect(err),
                     vim.inspect(status)
                 ),
