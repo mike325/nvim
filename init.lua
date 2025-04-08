@@ -76,7 +76,6 @@ require 'utils.filetype_detect'
 require 'overloads.notify'
 require 'overloads.ui.open'
 
-
 if vim.g.has_ui then
     -- TODO: Add support for gum to ask for input/select items in CLI mode
     require 'overloads.ui.select'
@@ -98,7 +97,6 @@ if vim.g.has_ui then
     vim.cmd.packadd { args = { 'matchit' }, bang = false }
 else
     -- TODO: This is a setup for script run using -l flag
-
     -- Missing things,
     -- - stdio handle, specially stdin; stdout/stderr works using vim.notify custom backend
     -- - generic arg parsing

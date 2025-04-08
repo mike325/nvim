@@ -11,6 +11,7 @@ local languages = {
     'comment',
     'cpp',
     'dockerfile',
+    'editorconfig',
     'git_config',
     'git_rebase',
     'gitattributes',
