@@ -756,12 +756,12 @@ then
                 end
 
                 table.insert(cmd, filename)
-                RELOAD('utils.functions').async_execute {
+                local plantuml = RELOAD('jobs'):new {
                     cmd = cmd,
-                    title = 'PlantUMLRender',
                     progress = false,
                     autoclose = true,
                 }
+                plantuml:start()
                 vim.b[buf].auto_render_uml = true
             end
         end,

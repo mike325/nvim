@@ -57,18 +57,18 @@ function M.get_remote_processes(opts, cb)
     }
 
     if cb then
-        RELOAD('utils.functions').async_execute {
+        local get_processes = RELOAD('jobs'):new {
             cmd = remote_cmd,
             progress = false,
             auto_close = true,
             silent = true,
-            title = 'GetRemoteProcess',
             callbacks_on_success = function(job)
                 if cb then
                     cb(parse_output(job:output()))
                 end
             end,
         }
+        get_processes:start()
         return
     end
     return parse_output(vim.fn.systemlist(remote_cmd))

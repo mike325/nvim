@@ -240,11 +240,10 @@ function M.async_makeprg(opts)
 
     cmd = string.format('%s %s', cmd, table.concat(args, ' '))
     local title = cmd:gsub('%s+.*', '')
-    RELOAD('utils.functions').async_execute {
+    local makeprg = RELOAD('jobs'):new {
         cmd = cmd,
         progress = false,
         auto_close = true,
-        title = title:sub(1, 1):upper() .. title:sub(2, #title),
         callbacks_on_success = function()
             vim.cmd.checktime()
         end,
@@ -252,6 +251,7 @@ function M.async_makeprg(opts)
             RELOAD('utils.qf').qf_to_diagnostic(title)
         end,
     }
+    makeprg:start()
 end
 
 -- TODO: Improve this with globs and pattern matching
@@ -710,20 +710,6 @@ function M.toggle_progress_win()
     else
         vim.api.nvim_win_close(vim.t.progress_win, true)
     end
-end
-
-function M.gradle(opts)
-    local args = opts.fargs
-    local cmd = { 'gradle', '--quiet' }
-
-    cmd = vim.list_extend(cmd, args)
-    RELOAD('utils.functions').async_execute {
-        cmd = cmd,
-        progress = true,
-        auto_close = true,
-        title = 'Gradle',
-        efm = table.concat(vim.opt_global.efm:get(), ','),
-    }
 end
 
 function M.reload_configs(files)
