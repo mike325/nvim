@@ -4,7 +4,6 @@ local executable = require('utils.files').executable
 -- local readfile = require('utils.files').readfile
 local is_file = require('utils.files').is_file
 local realpath = require('utils.files').realpath
-local getcwd = require('utils.files').getcwd
 
 local compile_flags = STORAGE.compile_flags
 local compile_commands_dbs = STORAGE.compile_commands_dbs

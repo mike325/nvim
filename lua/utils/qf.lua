@@ -253,7 +253,11 @@ function M.qf_to_diagnostic(ns, win, items)
         ns_name = ns:gsub('%s+', '_'):lower()
         ns = vim.api.nvim_create_namespace(ns_name)
     else
-        ns_name = (vim.iter(vim.api.nvim_get_namespaces()):find(function(_, id) return id == ns end))
+        ns_name = (
+            vim.iter(vim.api.nvim_get_namespaces()):find(function(_, id)
+                return id == ns
+            end)
+        )
         if not ns_name then
             error(debug.traceback(string.format('Invalid NS number %d', ns)))
         end
@@ -264,9 +268,9 @@ function M.qf_to_diagnostic(ns, win, items)
     if #qf.items > 0 then
         local diagnostics = vim.diagnostic.fromqflist(qf.items)
         local buf_diagnostics = vim.iter(diagnostics):fold({}, function(bufs, diag)
-            local buf = tostring(diag.bufnr);
-            bufs[buf] = bufs[buf] or {};
-            table.insert(bufs[buf], diag);
+            local buf = tostring(diag.bufnr)
+            bufs[buf] = bufs[buf] or {}
+            table.insert(bufs[buf], diag)
             return bufs
         end)
 

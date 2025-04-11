@@ -41,7 +41,7 @@ local languages = {
     -- 'vimdoc',
 }
 
-if nvim.executable('tree-sitter') then
+if nvim.executable 'tree-sitter' then
     table.insert(languages, 'latex')
     table.insert(languages, 'bibtex')
 end

@@ -1,6 +1,6 @@
 local nvim = require 'nvim'
 
-local get_icon = require 'utils.ui'.get_icon
+local get_icon = require('utils.ui').get_icon
 
 local todo = vim.F.npcall(require, 'todo-comments')
 

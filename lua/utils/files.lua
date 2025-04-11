@@ -536,9 +536,9 @@ function M.rename(old, new, bang)
                     return false
                 else
                     -- TODO: support directories
-                    success, msg, _ = vim.uv.fs_copyfile(old, new)
+                    success, msg = vim.uv.fs_copyfile(old, new)
                     if success then
-                        success, msg, _ = vim.uv.fs_unlink(old)
+                        success, msg = vim.uv.fs_unlink(old)
                     end
 
                     if not success then
@@ -550,7 +550,7 @@ function M.rename(old, new, bang)
         end
 
         if bufloaded(old) and M.is_file(new) then
-            vim.cmd.edit((new:gsub(cwd, '')))
+            vim.cmd.edit((new:gsub(vim.fs.normalize(vim.uv.cwd()), '')))
             if cursor_pos then
                 nvim.win.set_cursor(0, cursor_pos)
             end
@@ -1096,7 +1096,7 @@ function M.find_in_dir(args)
 end
 
 function M.watch_config_file(fname)
-    vim.validate { fname = { fname, 'string' }, }
+    vim.validate { fname = { fname, 'string' } }
     if M.is_file(fname) then
         local real_fname = M.realpath(fname)
         require('watcher.file'):new(real_fname, 'ConfigReloader'):start()

@@ -90,55 +90,6 @@ def DirectoryOfThisScript():
     return os.path.dirname(os.path.abspath(__file__))
 
 
-def MakeRelativePathsInFlagsAbsolute(working_directory):
-    if not working_directory:
-        return list(flags)
-
-    new_flags = []
-    make_next_absolute = False
-    path_flags = ["-isystem", "-I", "-iquote", "--sysroot="]
-
-    for libDir in libDirs:
-        # dir is relative to $HOME
-        if libDir.startswith("~"):
-            libDir = os.path.expanduser(libDir)
-
-        # dir is relative to `working_directory`
-        if not libDir.startswith("/"):
-            libDir = os.path.join(working_directory, libDir)
-
-        # Else, assume dir is absolute
-
-        for path, _, files in os.walk(libDir):
-            # Add to flags if dir contains a header file and is not
-            # one of the metadata dirs (examples and extras).
-            if any(IsHeaderFile(x) for x in files) and path.find("examples") == -1 and path.find("extras") == -1:
-                logger.info(f"Directory contains header files - {path}")
-                flags.append("-I" + path)
-
-    for flag in flags:
-        new_flag = flag
-
-        if make_next_absolute:
-            make_next_absolute = False
-            if not flag.startswith("/"):
-                new_flag = os.path.join(working_directory, flag)
-
-        for path_flag in path_flags:
-            if flag == path_flag:
-                make_next_absolute = True
-                break
-
-            if flag.startswith(path_flag):
-                path = flag[len(path_flag) : :]
-                new_flag = path_flag + os.path.join(working_directory, path)
-                break
-
-        if new_flag:
-            new_flags.append(new_flag)
-    return new_flags
-
-
 def NormalizePath(path):
     return path if os.name != "nt" else path.replace("\\", "/")
 
