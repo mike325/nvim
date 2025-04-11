@@ -547,7 +547,7 @@ if vim.env.SSH_CONNECTION and not vim.env.TMUX then
             }
             local reg = vim.v.register
             if vim.v.event.operator == 'y' and (reg == '' or clipboard_reg[reg]) then
-                require('utils.functions').send_osc52(vim.split(nvim.reg[reg], '\n'))
+                require('utils.osc').send_osc52(vim.split(nvim.reg[reg], '\n'))
             end
         end,
     })

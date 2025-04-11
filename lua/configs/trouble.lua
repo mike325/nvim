@@ -5,7 +5,7 @@ if trouble == nil then
 end
 
 local nvim = require 'nvim'
-local get_icon = require('utils.functions').get_icon
+local get_icon = require('utils.ui').get_icon
 
 trouble.setup {
     position = 'bottom',

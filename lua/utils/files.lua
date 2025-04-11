@@ -490,8 +490,6 @@ function M.rename(old, new, bang)
     local bufloaded = require('utils.buffers').bufloaded
     new = M.normalize(new)
     old = M.normalize(old)
-    local load_buffer = bufloaded(old)
-    local cwd = vim.pesc(vim.uv.cwd() .. '/')
 
     if not M.exists(new) or bang then
         local cursor_pos
@@ -513,6 +511,7 @@ function M.rename(old, new, bang)
 
         local move_with_git = false
         if is_git and not is_untracked then
+            local cwd = vim.pesc(vim.uv.cwd() .. '/')
             local dest_in_git = new:match('^' .. cwd)
             if dest_in_git then
                 move_with_git = true
@@ -550,7 +549,7 @@ function M.rename(old, new, bang)
             end
         end
 
-        if load_buffer and M.is_file(new) then
+        if bufloaded(old) and M.is_file(new) then
             vim.cmd.edit((new:gsub(cwd, '')))
             if cursor_pos then
                 nvim.win.set_cursor(0, cursor_pos)
@@ -1094,6 +1093,14 @@ function M.find_in_dir(args)
         },
     }
     return results
+end
+
+function M.watch_config_file(fname)
+    vim.validate { fname = { fname, 'string' }, }
+    if M.is_file(fname) then
+        local real_fname = M.realpath(fname)
+        require('watcher.file'):new(real_fname, 'ConfigReloader'):start()
+    end
 end
 
 return M

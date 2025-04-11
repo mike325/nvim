@@ -1,6 +1,6 @@
 local nvim = require 'nvim'
-local get_icon = require('utils.functions').get_icon
-local get_separators = require('utils.functions').get_separators
+local get_icon = require('utils.ui').get_icon
+local get_separators = require('utils.ui').get_separators
 local palette = require('catppuccin.palettes').get_palette()
 
 -- TODO: Add support to live reload these functions

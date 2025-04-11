@@ -9,7 +9,7 @@ local noremap = { noremap = true, silent = true }
 
 local me = debug.getinfo(1, 'S')
 if me and me.source then
-    require('utils.functions').watch_config_file((me.source:sub(2)))
+    require('utils.files').watch_config_file((me.source:sub(2)))
 end
 
 local mini = {}

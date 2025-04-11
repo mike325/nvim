@@ -1,7 +1,7 @@
 local nvim = require 'nvim'
 local sys = require 'sys'
 local getcwd = require('utils.files').getcwd
-local get_icon = require('utils.functions').get_icon
+local get_icon = require('utils.ui').get_icon
 
 local function qf_counter(loc)
     local title = loc and 'Loc' or 'Qf'

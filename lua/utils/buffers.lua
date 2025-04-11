@@ -36,7 +36,6 @@ end
 
 function M.is_modified(bufnr)
     vim.validate { buffer = { bufnr, 'number', true } }
-
     bufnr = bufnr or nvim.get_current_buf()
     return vim.bo[bufnr].modified
 end
@@ -103,17 +102,6 @@ function M.delete(bufnr, wipe)
     end
 end
 
-function M.get_option(option, default)
-    local ok, opt = pcall(nvim.buf.get_option, 0, option)
-    if not ok then
-        ok, opt = pcall(nvim.get_option, 0, option)
-        if not ok then
-            opt = default
-        end
-    end
-    return opt
-end
-
 function M.get_indent()
     local indent = vim.opt_local.softtabstop:get()
     if indent <= 0 then
@@ -155,7 +143,6 @@ end
 
 function M.get_indent_string(indent)
     vim.validate { indent = { indent, 'number', true } }
-
     local expand = vim.bo.expandtab
     indent = indent or M.get_indent()
     local spaces = not expand and '\t' or string.rep(' ', indent)
@@ -479,7 +466,7 @@ function M.setup(ft, opts)
         for _, fname in ipairs(mappings) do
             local module = fname:gsub('^.*/lua/', ''):gsub('%.lua$', ''):gsub('/', '.')
             vim.F.npcall(RELOAD, module)
-            require('utils.functions').watch_config_file(fname)
+            require('utils.files').watch_config_file(fname)
         end
     end
 
@@ -687,26 +674,6 @@ function M.open_conflicts(opts)
             end
         end
     end)
-end
-
-function M.get_diagnostic_ns(ns, buf)
-    vim.validate {
-        ns = { ns, 'string' },
-        buf = { buf, 'number', true },
-    }
-    if ns ~= '' then
-        for namespace, attrs in pairs(vim.diagnostic.get_namespaces()) do
-            if attrs.name == ns then
-                if buf then
-                    local diagnostics = vim.diagnostic.get(buf, { namespace = namespace })
-                    if #diagnostics == 0 then
-                        return
-                    end
-                end
-                return namespace
-            end
-        end
-    end
 end
 
 function M.push_tag(args)

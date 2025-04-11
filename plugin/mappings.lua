@@ -209,7 +209,7 @@ vim.keymap.set(
     { noremap = true, silent = true, desc = 'Grep search visual selection' }
 )
 vim.keymap.set('n', 'gss', function()
-    RELOAD('utils.functions').send_grep_job()
+    RELOAD('utils.async').grep()
 end, { noremap = true, silent = true, desc = 'Grep search word under cursor' })
 
 if executable 'scp' then
@@ -282,7 +282,7 @@ vim.keymap.set('n', '<leader>c', function()
 
                 -- local send_to_term = vim.env.SSH_CONNECTION and not vim.env.TMUX
                 -- if send_to_term then
-                --     require('utils.functions').send_osc52(vim.split(nvim.reg['"'], '\n'))
+                --     require('utils.osc').send_osc52(vim.split(nvim.reg['"'], '\n'))
                 -- end
 
                 vim.notify(

@@ -288,7 +288,7 @@ local sign_str = 'DiagnosticSign'
 for _, level in pairs { 'Error', 'Hint', 'Warn', 'Info' } do
     vim.fn.sign_define(
         sign_str .. level,
-        { text = require('utils.functions').get_icon(level:lower()), texthl = sign_str .. level }
+        { text = require('utils.ui').get_icon(level:lower()), texthl = sign_str .. level }
     )
 end
 
