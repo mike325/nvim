@@ -181,7 +181,7 @@ local servers = {
                 -- '--pythonversion',
                 -- '3.8',
                 '--threads',
-                '4',
+                vim.uv.available_parallelism(),
             },
             options = {
                 settings = {
