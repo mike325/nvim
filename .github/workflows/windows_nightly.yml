@@ -28,7 +28,7 @@ jobs:
         run: |
           curl -OL https://raw.githubusercontent.com/mike325/dotfiles/master/install.sh
           chmod +x ./install.sh
-      - uses: rhysd/action-setup-vim@v1.3.4
+      - uses: rhysd/action-setup-vim@v1.4.2
         with:
           neovim: true
           version: nightly
