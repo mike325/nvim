@@ -255,8 +255,8 @@ nvim.command.set('Reloader', function(opts)
         return files
     end
 
-    local plugins = get_files('plugin')
-    local after_plugins = get_files('after/plugin')
+    local plugins = get_files 'plugin'
+    local after_plugins = get_files 'after/plugin'
     local files = {}
     if opts.args == 'all' or opts.args == '' then
         vim.list_extend(files, vim.tbl_values(plugins))

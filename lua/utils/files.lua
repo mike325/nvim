@@ -537,9 +537,9 @@ function M.rename(old, new, bang)
                     return false
                 else
                     -- TODO: support directories
-                    success, msg, _ = vim.uv.fs_copyfile(old, new)
+                    success, msg = vim.uv.fs_copyfile(old, new)
                     if success then
-                        success, msg, _ = vim.uv.fs_unlink(old)
+                        success, msg = vim.uv.fs_unlink(old)
                     end
 
                     if not success then
