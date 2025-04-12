@@ -375,7 +375,6 @@ for dir in "${locations[@]}"; do
         else
             MINI_PATH="$HOME/.local/share/nvim/site/pack/$dir/$runtime_type/"
         fi
-
         if [[ -d "$MINI_PATH/mini.nvim" ]]; then
             verbose_msg "Found mini in $MINI_PATH"
             MINI_DIR="$MINI_PATH/mini.nvim"
@@ -389,20 +388,25 @@ done
 
 if [[ -z $MINI_DIR ]]; then
     if is_windows; then
-        MINI_DIR="$HOME/AppData/Local/nvim-data/site/pack/deps/start/"
+        MINI_DIR="$HOME/AppData/Local/nvim-data/site/pack/deps/start"
     else
-        MINI_DIR="$HOME/.local/share/nvim/site/pack/deps/start/"
+        MINI_DIR="$HOME/.local/share/nvim/site/pack/deps/start"
     fi
-    mkdir -p "$MINI_DIR"
-    if ! git clone --recursive https://github.com/echasnovski/mini.nvim "$MINI_DIR/mini.nvim"; then
-        error_msg "Failed to clone mini.nvim"
-        exit 1
+
+    if [[ ! -d $MINI_DIR ]]; then
+        status_msg "Clonning repository"
+        if ! git clone --recursive https://github.com/echasnovski/mini.nvim "$MINI_DIR/mini.nvim"; then
+            error_msg "Failed to clone mini.nvim"
+            exit 1
+        fi
+    else
+        verbose_msg "Mini already clonned"
     fi
 fi
 
 nvim -V1 --version | tee -a test.log
 status_msg "Starting unittests"
-if ! nvim --headless --cmd 'let g:minimal=1' --cmd "let g:no_output=1" -c "lua require'nvim'.setup(true)" -c "lua MiniTest.execute(MiniTest.collect())"; then
+if ! nvim --headless --cmd 'let g:minimal=1' --cmd "let g:no_output=1" --cmd "lua require'nvim'.setup(true)" -c "lua MiniTest.execute(MiniTest.collect())"; then
     error_msg "Failed to run nvim tests"
 fi
 

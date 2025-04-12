@@ -154,20 +154,21 @@ local function get_mini_path()
     local path_package = (vim.fn.stdpath 'data') .. '/site'
     local mini_path = path_package .. '/pack/deps/start/mini.nvim'
 
-    local lazy_root = get_lazypath()
-    if vim.uv.fs_stat(lazy_root) then
-        mini_path = string.format('%s/mini.nvim', vim.fs.dirname(lazy_root))
-    else
-        local locations = {
-            'deps',
-            'host',
-            'packer',
-        }
-        for _, location in ipairs(locations) do
-            local plugin_loc = path_package .. string.format('/pack/%s/start/mini.nvim', location)
-            if vim.uv.fs_stat(plugin_loc) then
-                mini_path = plugin_loc
-                break
+    if not vim.uv.fs_stat(mini_path) then
+        if vim.uv.fs_stat(get_lazypath()) then
+            mini_path = string.format('%s/mini.nvim', vim.fs.dirname(get_lazypath()))
+        else
+            local locations = {
+                'deps',
+                'host',
+                'packer',
+            }
+            for _, location in ipairs(locations) do
+                local plugin_loc = path_package .. string.format('/pack/%s/start/mini.nvim', location)
+                if vim.uv.fs_stat(plugin_loc) then
+                    mini_path = plugin_loc
+                    break
+                end
             end
         end
     end
@@ -234,14 +235,16 @@ local function setup_mini(download)
 
     if vim.g.mini_setup and vim.g.mini_path:match '/lazy' then
         vim.opt.rtp:prepend(vim.g.mini_path)
-        -- vim.cmd.helptags 'ALL'
     elseif vim.g.mini_setup then
-        vim.cmd 'packadd mini.nvim | helptags ALL'
-    elseif download and vim.fn.executable 'git' == 1 and vim.fn.input 'Download mini.nvim? (y for yes): ' == 'y' then
+        vim.cmd 'packadd mini.nvim'
+    elseif
+        download
+        and vim.fn.executable 'git' == 1
+        and (vim.fn.input 'Download mini.nvim? (y for yes): ' == 'y' or not vim.g.has_ui)
+    then
         vim.g.mini_setup = download_mini(vim.g.mini_path)
         if vim.g.mini_path:match '/lazy' then
             vim.opt.rtp:prepend(vim.g.mini_path)
-            -- vim.cmd.helptags 'ALL'
         else
             vim.cmd 'packadd mini.nvim | helptags ALL'
         end
