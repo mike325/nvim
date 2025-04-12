@@ -531,7 +531,7 @@ function M.rename(old, new, bang)
         if not move_with_git then
             local success, msg, err = vim.uv.fs_rename(old, new)
             if not success then
-                if err and not err == 'EXDEV' then
+                if err and err ~= 'EXDEV' then
                     vim.notify(msg, vim.log.levels.ERROR, { title = 'Rename' })
                     return false
                 else
