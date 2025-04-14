@@ -1,6 +1,6 @@
 local M = {}
 
--- Separators
+-- Extra icons
 -- 
 -- 
 -- ▶
