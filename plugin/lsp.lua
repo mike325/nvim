@@ -17,15 +17,15 @@ end
 local lsp_configs = 'after/lsp'
 local configs = vim.api.nvim_get_runtime_file(('%s/*.lua'):format(lsp_configs), true)
 
-vim.iter(configs)
+local servers = vim.iter(configs)
     :filter(function(config)
         local fname = vim.fs.basename(config)
         return not vim.list_contains(python_servers, (fname:gsub('%.lua$', ''))) and has_server(config)
     end)
-    :map(vim.fs.basename)
-    :each(function(config)
-        vim.lsp.enable((config:gsub('%.lua$', '')))
-    end)
+    :map(function(config)
+        return (vim.fs.basename(config):gsub('%.lua$', ''))
+    end):totable()
+vim.lsp.enable(servers)
 
 local python_configs = vim.iter(configs)
     :filter(function(config)

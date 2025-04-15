@@ -11,19 +11,33 @@
 -- - clangd relies on a [JSON compilation database](https://clang.llvm.org/docs/JSONCompilationDatabase.html)
 --   specified as compile_commands.json, see https://clangd.llvm.org/installation#compile_commandsjson
 local pch_dirs = './.cache/clangd/pchs/'
+local root_markers = {
+    '.clangd',
+    '.clang-tidy',
+    '.clang-format',
+    'compile_commands.json',
+    'compile_flags.txt',
+    'configure.ac', -- AutoTools
+    'Makefile',
+    'CMakeLists.txt',
+    '.git',
+}
+
+local default_cmd = {
+    'clangd',
+    '--fallback-style=Google',
+    '--clang-tidy',
+    '--header-insertion=iwyu',
+    '--function-arg-placeholders',
+    '--completion-style=bundled',
+    -- '--pch-storage=memory',
+    '--background-index',
+    -- '--malloc-trim',
+    '--log=error',
+}
+
 return {
-    cmd = {
-        'clangd',
-        '--fallback-style=Google',
-        '--clang-tidy',
-        '--header-insertion=iwyu',
-        '--function-arg-placeholders',
-        '--completion-style=bundled',
-        -- '--pch-storage=memory',
-        '--background-index',
-        '--malloc-trim',
-        '--log=error',
-    },
+    cmd = default_cmd,
     filetypes = {
         'c',
         'cpp',
@@ -32,17 +46,34 @@ return {
         'cuda',
         'proto',
     },
-    root_markers = {
-        '.clangd',
-        '.clang-tidy',
-        '.clang-format',
-        'compile_commands.json',
-        'compile_flags.txt',
-        'configure.ac', -- AutoTools
-        'Makefile',
-        'CMakeLists.txt',
-        '.git',
-    },
+    -- init_options = {
+    --     usePlaceholders = true,
+    --     completeUnimported = true,
+    --     clangdFileStatus = true,
+    -- },
+    root_dir = function(bufnr, on_dir)
+        local fname = vim.api.nvim_buf_get_name(bufnr)
+        local root = vim.fs.root(fname, root_markers)
+        if root then
+            if vim.fn.isdirectory(pch_dirs) == 0 then
+                vim.fn.mkdir(pch_dirs, 'p')
+            end
+
+            -- -- TODO: this is not reflected for the current LSP, just the next
+            -- local local_config = vim.fs.find('clangd.json', { path = root, upward = true, type = 'file' })[1]
+            -- if local_config then
+            --     local utils_io = require 'utils.files'
+            --     local ok, configs = pcall(utils_io.read_json, local_config)
+            --     if ok and configs.cmd then
+            --         vim.lsp.config.clangd = { cmd = configs.cmd }
+            --     end
+            -- else
+            --     vim.lsp.config.clangd = { cmd = default_cmd }
+            -- end
+
+            on_dir(root)
+        end
+    end,
     cmd_env = {
         TMPDIR = pch_dirs,
     },
@@ -54,16 +85,7 @@ return {
         },
         offsetEncoding = { 'utf-8', 'utf-16' },
     },
-    -- init_options = {
-    --     usePlaceholders = true,
-    --     completeUnimported = true,
-    --     clangdFileStatus = true,
-    -- },
     on_attach = function()
-        if vim.fn.isdirectory(pch_dirs) == 0 then
-            vim.fn.mkdir(pch_dirs, 'p')
-        end
-
         vim.api.nvim_buf_create_user_command(0, 'ClangdSwitch', function()
             require('configs.lsp.utils').switch_source_header_splitcmd(0, 'edit')
         end, { desc = 'Switch between source/header' })
