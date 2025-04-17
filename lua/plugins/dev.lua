@@ -74,25 +74,12 @@ return {
         cond = function()
             return not vim.g.vscode
         end,
-        -- after = 'nvim-lspconfig',
     },
     {
         'neovim/nvim-lspconfig',
-        config = function()
-            require 'configs.lsp'
-        end,
-        -- lazy = false,
+        lazy = true,
+        -- enabled = false,
         -- priority = 100,
-    },
-    {
-        'jose-elias-alvarez/null-ls.nvim',
-        -- priority = 90,
-        event = 'VeryLazy',
-        pin = true,
-        dependencies = {
-            { 'neovim/nvim-lspconfig' },
-            { 'nvim-lua/plenary.nvim' },
-        },
     },
     {
         'nvimdev/lspsaga.nvim',

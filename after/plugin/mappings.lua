@@ -22,30 +22,6 @@ if not has_mini then
     )
 end
 
--- NOTE: Neovim 0.10 now have builtin comment support, this is no longer needed
-local missing_comment = not nvim.plugins['vim-commentary'] and not nvim.plugins['Comment.nvim'] and not has_mini
-if not nvim.has { 0, 10 } and missing_comment then
-    vim.keymap.set(
-        'n',
-        'gc',
-        '<cmd>set opfunc=neovim#comment<CR>g@',
-        { noremap = true, silent = true, desc = 'Custom comment surrunding {motion}' }
-    )
-
-    vim.keymap.set(
-        'v',
-        'gc',
-        ':<C-U>call neovim#comment(visualmode(), v:true)<CR>',
-        { noremap = true, silent = true, desc = 'Custom comment surrunding visual selection' }
-    )
-
-    vim.keymap.set('n', 'gcc', function()
-        local cursor = vim.api.nvim_win_get_cursor(0)
-        require('utils.functions').toggle_comments(cursor[1] - 1, cursor[1])
-        vim.api.nvim_win_set_cursor(0, cursor)
-    end, { noremap = true, silent = true, desc = 'Custom comment surrunding current line' })
-end
-
 local maps = require 'completions.mappings'
 
 vim.keymap.set({ 'i', 's' }, '<Tab>', function()

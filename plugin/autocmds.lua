@@ -191,13 +191,13 @@ vim.api.nvim_create_autocmd('LspAttach', {
         local has_telescope = nvim.plugins['telescope.nvim'] ~= nil
         local methods = vim.lsp.protocol.Methods
         local method_mappings = {
-            [methods.textDocument_declaration] = {
-                func = function()
-                    vim.lsp.buf.declaration()
-                end,
-                keymap = 'gd',
-                command = 'Declaration',
-            },
+            -- [methods.textDocument_declaration] = {
+            --     func = function()
+            --         vim.lsp.buf.declaration()
+            --     end,
+            --     keymap = 'gd',
+            --     command = 'Declaration',
+            -- },
             [methods.textDocument_implementation] = {
                 func = function()
                     vim.lsp.buf.implementation()
@@ -547,7 +547,7 @@ if vim.env.SSH_CONNECTION and not vim.env.TMUX then
             }
             local reg = vim.v.register
             if vim.v.event.operator == 'y' and (reg == '' or clipboard_reg[reg]) then
-                require('utils.functions').send_osc52(vim.split(nvim.reg[reg], '\n'))
+                require('utils.osc').send_osc52(vim.split(nvim.reg[reg], '\n'))
             end
         end,
     })
@@ -756,12 +756,12 @@ then
                 end
 
                 table.insert(cmd, filename)
-                RELOAD('utils.functions').async_execute {
+                local plantuml = RELOAD('jobs'):new {
                     cmd = cmd,
-                    title = 'PlantUMLRender',
                     progress = false,
                     autoclose = true,
                 }
+                plantuml:start()
                 vim.b[buf].auto_render_uml = true
             end
         end,

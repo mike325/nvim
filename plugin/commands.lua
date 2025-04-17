@@ -116,7 +116,7 @@ nvim.command.set('Grep', function(opts)
 
         vim.list_extend(args, vim.list_slice(grepprg, 2, #grepprg))
     end
-    RELOAD('utils.functions').send_grep_job { search = search, args = args }
+    RELOAD('utils.async').grep { search = search, args = args }
 end, { nargs = '+', complete = 'file' })
 
 nvim.command.set('LGrep', function(opts)
@@ -131,7 +131,7 @@ nvim.command.set('LGrep', function(opts)
         vim.list_extend(args, vim.list_slice(grepprg, 2, #grepprg))
     end
 
-    RELOAD('utils.functions').send_grep_job { loc = true, search = search, args = args }
+    RELOAD('utils.async').grep { loc = true, search = search, args = args }
 end, { nargs = '+', complete = 'file' })
 
 local function find_files(opts, win)
@@ -300,12 +300,6 @@ nvim.command.set('AlternateGrep', function()
     RELOAD('mappings').alternate_grep()
 end, { nargs = 0, desc = 'Change between git grep and the best available alternative' })
 
-if executable 'gradle' then
-    nvim.command.set('Gradle', function(opts)
-        RELOAD('mappings').gradle(opts)
-    end, { nargs = '+', desc = 'Execute Gradle async' })
-end
-
 nvim.command.set('Alternate', function(opts)
     RELOAD('mappings').alternate(opts)
 end, { nargs = 0, desc = 'Alternate between files', bang = true })
@@ -344,11 +338,15 @@ end)
 
 nvim.command.set('Diagnostics', function(opts)
     local action = opts.fargs[1]:gsub('^%-+', '')
+    local all_namespaces = vim.iter(vim.diagnostic.get_namespaces()):fold({}, function(diag_ns, ns)
+        diag_ns[ns.name] = ns
+        diag_ns[ns.name].id = vim.api.nvim_create_namespace(ns.name)
+        return diag_ns
+    end)
+
     local namespaces = vim.list_slice(opts.fargs, 2, #opts.fargs)
     if #namespaces == 0 then
-        for _, ns in pairs(vim.diagnostic.get_namespaces()) do
-            table.insert(namespaces, ns.name)
-        end
+        namespaces = vim.tbl_keys(all_namespaces)
     end
 
     if action == 'dump' then
@@ -371,15 +369,13 @@ nvim.command.set('Diagnostics', function(opts)
         if not vim.diagnostic[action] then
             error(debug.traceback(string.format('Invalid diagnostic action: %s', action)))
         end
-        for _, ns in ipairs(namespaces) do
-            local buf = not opts.bang and vim.api.nvim_get_current_buf() or nil
-            local ns_id = RELOAD('utils.buffers').get_diagnostic_ns(ns, buf)
-            if ns_id then
-                if action == 'enable' or action == 'disable' then
-                    vim.diagnostic[action](buf, ns_id)
-                else
-                    vim.diagnostic[action](ns_id, buf)
-                end
+        local buf = not opts.bang and vim.api.nvim_get_current_buf() or nil
+        for ns in vim.iter(namespaces) do
+            local ns_id = all_namespaces[ns].id
+            if action == 'enable' or action == 'disable' then
+                vim.diagnostic[action](buf, ns_id)
+            else
+                vim.diagnostic[action](ns_id, buf)
             end
         end
     end

@@ -232,27 +232,6 @@ function M.setup()
             update_buffer_path(paths)
         end
     end
-
-    nvim.command.set('Execute', function(cmd_opts)
-        local exepath = vim.fn.exepath
-
-        local buffer = nvim.buf.get_name(nvim.get_current_buf())
-        local filename = is_file(buffer) and buffer or vim.fn.tempname()
-
-        if not is_file(buffer) then
-            require('utils.files').writefile(filename, nvim.buf.get_lines(0, 0, -1, true))
-        end
-
-        local opts = {
-            cmd = executable 'python3' and exepath 'python3' or exepath 'python',
-            {
-                '-u',
-                filename,
-            },
-        }
-        vim.list_extend(opts.args, cmd_opts.fargs)
-        RELOAD('utils.functions').async_execute(opts)
-    end, { nargs = '*', buffer = true })
 end
 
 function M.pynvim_setup()

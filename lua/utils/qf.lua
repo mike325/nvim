@@ -253,46 +253,39 @@ function M.qf_to_diagnostic(ns, win, items)
         ns_name = ns:gsub('%s+', '_'):lower()
         ns = vim.api.nvim_create_namespace(ns_name)
     else
-        for namespace, ns_nr in pairs(vim.api.nvim_get_namespaces()) do
-            if ns_nr == ns then
-                ns_name = namespace
-                break
-            end
-        end
+        ns_name = (
+            vim.iter(vim.api.nvim_get_namespaces()):find(function(_, id)
+                return id == ns
+            end)
+        )
         if not ns_name then
             error(debug.traceback(string.format('Invalid NS number %d', ns)))
         end
     end
+
     vim.diagnostic.reset(ns)
+
     if #qf.items > 0 then
         local diagnostics = vim.diagnostic.fromqflist(qf.items)
-        if not diagnostics or #diagnostics == 0 then
-            return
-        end
-
-        local buf_diagnostics = {}
-        for _, diagnostic in ipairs(diagnostics) do
-            local bufnr = tostring(diagnostic.bufnr)
-            if not buf_diagnostics[bufnr] then
-                buf_diagnostics[bufnr] = {}
-            end
-            table.insert(buf_diagnostics[bufnr], diagnostic)
-        end
+        local buf_diagnostics = vim.iter(diagnostics):fold({}, function(bufs, diag)
+            local buf = tostring(diag.bufnr)
+            bufs[buf] = bufs[buf] or {}
+            table.insert(bufs[buf], diag)
+            return bufs
+        end)
 
         for buf, diagnostic in pairs(buf_diagnostics) do
-            buf = tonumber(buf)
-            if vim.api.nvim_buf_is_loaded(buf) then
-                vim.diagnostic.set(ns, buf, diagnostic)
-                vim.diagnostic.show(ns, buf)
+            local bufnr = tonumber(buf)
+            if vim.api.nvim_buf_is_loaded(bufnr) then
+                vim.diagnostic.set(ns, bufnr, diagnostic)
             else
                 vim.api.nvim_create_autocmd({ 'BufEnter' }, {
                     desc = 'Defere diagnostics show until the buffer is re-enter',
                     group = vim.api.nvim_create_augroup(string.format('Diagnostics%s', ns_name), { clear = false }),
-                    buffer = buf,
+                    buffer = bufnr,
                     once = true,
                     callback = function()
-                        vim.diagnostic.set(ns, buf, diagnostic)
-                        vim.diagnostic.show(ns, buf)
+                        vim.diagnostic.set(ns, bufnr, diagnostic)
                     end,
                 })
             end
