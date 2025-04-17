@@ -75,7 +75,10 @@ return {
             local path = client.workspace_folders[1].name
             if
                 path ~= vim.fn.stdpath 'config'
-                and (vim.uv.fs_stat(path .. '/.luarc.json') or vim.uv.fs_stat(path .. '/.luarc.jsonc'))
+                and (
+                    vim.uv.fs_stat(vim.fs.joinpath(path, '.luarc.json'))
+                    or vim.uv.fs_stat(vim.fs.joinpath(path, '.luarc.jsonc'))
+                )
             then
                 return
             end
@@ -101,16 +104,6 @@ return {
                 --       see https://github.com/neovim/nvim-lspconfig/issues/3189
                 -- library = vim.api.nvim_get_runtime_file("", true)
             },
-        })
-    end,
-    settings = {
-        Lua = {
-            hint = {
-                enable = true,
-            },
-            telemetry = {
-                enable = false,
-            },
             diagnostics = {
                 globals = {
                     'packer_plugins',
@@ -133,6 +126,11 @@ return {
                     'assert',
                 },
             },
+        })
+    end,
+    settings = {
+        Lua = {
+            hint = { enable = true },
         },
     },
 }

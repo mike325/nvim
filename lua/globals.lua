@@ -68,6 +68,7 @@ if not STORAGE then
         compile_flags = {},
         compile_commands_dbs = {},
         jobs = {},
+        async = {},
         autocmds = {},
         filelists = {},
         hosts = {},

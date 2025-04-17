@@ -264,6 +264,11 @@ local function setup_mini(download)
             pcall(vim.cmd.packadd, { bang = true, args = { 'LuaSnip' } })
             pcall(require, 'configs.luasnip')
         end)
+
+        MiniDeps.later(function()
+            pcall(vim.cmd.packadd, { bang = false, args = { 'nvim-treesitter' } })
+            pcall(require, 'configs.treesitter')
+        end)
     end
     return vim.g.mini_setup
 end

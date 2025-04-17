@@ -10,7 +10,7 @@
 --   ```
 -- - clangd relies on a [JSON compilation database](https://clang.llvm.org/docs/JSONCompilationDatabase.html)
 --   specified as compile_commands.json, see https://clangd.llvm.org/installation#compile_commandsjson
-local pch_dirs = './.cache/clangd/pchs/'
+local pch_dir = './.cache/clangd/pchs/'
 local root_markers = {
     '.clangd',
     '.clang-tidy',
@@ -30,10 +30,10 @@ local default_cmd = {
     '--header-insertion=iwyu',
     '--function-arg-placeholders',
     '--completion-style=bundled',
-    -- '--pch-storage=memory',
     '--background-index',
-    -- '--malloc-trim',
     '--log=error',
+    -- '--pch-storage=memory',
+    -- '--malloc-trim',
 }
 
 return {
@@ -51,31 +51,37 @@ return {
     --     completeUnimported = true,
     --     clangdFileStatus = true,
     -- },
-    root_dir = function(bufnr, on_dir)
-        local fname = vim.api.nvim_buf_get_name(bufnr)
-        local root = vim.fs.root(fname, root_markers)
-        if root then
-            if vim.fn.isdirectory(pch_dirs) == 0 then
-                vim.fn.mkdir(pch_dirs, 'p')
-            end
-
-            -- -- TODO: this is not reflected for the current LSP, just the next
-            -- local local_config = vim.fs.find('clangd.json', { path = root, upward = true, type = 'file' })[1]
-            -- if local_config then
-            --     local utils_io = require 'utils.files'
-            --     local ok, configs = pcall(utils_io.read_json, local_config)
-            --     if ok and configs.cmd then
-            --         vim.lsp.config.clangd = { cmd = configs.cmd }
-            --     end
-            -- else
-            --     vim.lsp.config.clangd = { cmd = default_cmd }
-            -- end
-
-            on_dir(root)
+    -- root_dir = function(bufnr, on_dir)
+    --     local fname = vim.api.nvim_buf_get_name(bufnr)
+    --     local root = vim.fs.root(fname, root_markers)
+    --     if root then
+    --         on_dir(root)
+    --     end
+    -- end,
+    root_markers = root_markers,
+    on_init = function(client)
+        if require('utils.files').is_dir(pch_dir) then
+            require('utils.files').mkdir(pch_dir, true)
         end
+
+        -- TODO: this is not reflected for the current LSP, just the next
+        -- local local_config = vim.fs.find('clangd.json', {
+        --     path = client.config.root_dir,
+        --     upward = true,
+        --     type = 'file',
+        -- })[1]
+        -- if local_config then
+        --     local utils_io = require 'utils.files'
+        --     local ok, configs = pcall(utils_io.read_json, local_config)
+        --     if ok and configs.cmd then
+        --         client.config.cmd = configs.cmd
+        --     end
+        -- elseif require('sys').name ~= 'windows' then
+        --     table.insert(client.config.cmd, '--malloc-trim')
+        -- end
     end,
     cmd_env = {
-        TMPDIR = pch_dirs,
+        TMPDIR = pch_dir,
     },
     capabilities = {
         textDocument = {
