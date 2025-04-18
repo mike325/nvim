@@ -48,4 +48,5 @@ jobs:
           wget https://raw.githubusercontent.com/mike325/dotfiles/master/install.sh
           chmod +x ./install.sh
           ./install.sh --nolog --portables --verbose
+          rm -f *.log
       - uses: pre-commit/action@v3.0.1
