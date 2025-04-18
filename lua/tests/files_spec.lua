@@ -470,7 +470,7 @@ describe('list directories', function()
             local files = {}
             for filename, fs_type in vim.fs.dir(dir) do
                 if fs_type == 'file' then
-                    table.insert(files, string.format('%s/%s', dir, filename))
+                    table.insert(files, vim.fs.joinpath(dir, filename))
                 end
             end
             mini_test.expect.equality(files, get_files(dir))
@@ -489,7 +489,7 @@ describe('list directories', function()
             local files = {}
             for filename, fs_type in vim.fs.dir(dir) do
                 if fs_type == 'directory' then
-                    table.insert(files, string.format('%s/%s', dir, filename))
+                    table.insert(files, vim.fs.joinpath(dir, filename))
                 end
             end
             mini_test.expect.equality(files, get_dirs(dir))
