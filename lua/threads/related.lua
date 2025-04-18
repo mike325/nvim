@@ -4,9 +4,7 @@ local M = {}
 function M.gather_srcs_headers(thread_args, async)
     thread_args = require('threads').init(thread_args)
 
-    local basename = require('utils.files').basename
     local extension = require('utils.files').extension
-    -- local dirname = require('utils.files').dirname
 
     local extensions = {
         c = { 'h' },
@@ -57,7 +55,7 @@ function M.gather_srcs_headers(thread_args, async)
     for _, filename in ipairs(candidates) do
         local realfile = vim.uv.fs_realpath(filename)
         tmp[realfile] = {}
-        local basename_file = basename(filename)
+        local basename_file = vim.fs.basename(filename)
         if basename_file then
             if not idxs[basename_file] then
                 idxs[basename_file] = {}
@@ -68,7 +66,7 @@ function M.gather_srcs_headers(thread_args, async)
 
     for _, filename in ipairs(candidates) do
         filename = vim.uv.fs_realpath(filename)
-        local file_name = basename(filename)
+        local file_name = vim.fs.basename(filename)
         local file_ext = extension(file_name)
         local file_name_no_ext = filename
         if file_ext and file_ext ~= '' then
@@ -76,7 +74,7 @@ function M.gather_srcs_headers(thread_args, async)
         end
 
         for _, alt_ext in pairs(extensions[file_ext]) do
-            local alt_candidate = basename(file_name_no_ext .. '.' .. alt_ext)
+            local alt_candidate = vim.fs.basename(file_name_no_ext .. '.' .. alt_ext)
             if idxs[alt_candidate] then
                 if not tmp[filename] then
                     tmp[filename] = {}
@@ -104,7 +102,6 @@ function M.gather_tests(thread_args, async)
     -- local encode = type(thread_args) == type ''
     thread_args = require('threads').init(thread_args)
 
-    local basename = require('utils.files').basename
     local extension = require('utils.files').extension
 
     local extensions = {
@@ -159,12 +156,12 @@ function M.gather_tests(thread_args, async)
     for _, filename in ipairs(candidates) do
         local realfile = vim.uv.fs_realpath(filename)
         tmp[realfile] = {}
-        idxs[basename(filename)] = realfile
+        idxs[vim.fs.basename(filename)] = realfile
     end
 
     for _, filename in ipairs(candidates) do
         filename = vim.uv.fs_realpath(filename)
-        local file_name = basename(filename)
+        local file_name = vim.fs.basename(filename)
         local file_ext = extension(file_name)
         local file_name_no_ext = filename
         if file_ext and file_ext ~= '' then
@@ -238,7 +235,6 @@ end
 function M.alternate_src_header(thread_args, async)
     thread_args = require('threads').init(thread_args)
 
-    local basename = require('utils.files').basename
     local extension = require('utils.files').extension
 
     local extensions = {
@@ -263,7 +259,7 @@ function M.alternate_src_header(thread_args, async)
 
     local candidates = {}
     local buf = thread_args.context.bufname
-    local buf_name = basename(buf)
+    local buf_name = vim.fs.basename(buf)
     local buf_ext = extension(buf_name)
     local buf_name_no_ext = buf_name
     if buf_ext and buf_ext ~= '' then
@@ -313,7 +309,6 @@ end
 function M.alternate_test(thread_args, async)
     thread_args = require('threads').init(thread_args)
 
-    local basename = require('utils.files').basename
     local extension = require('utils.files').extension
 
     local extensions = {
@@ -330,7 +325,7 @@ function M.alternate_test(thread_args, async)
 
     local candidates = {}
     local bufname = thread_args.context.bufname
-    local base_bufname = basename(bufname)
+    local base_bufname = vim.fs.basename(bufname)
     local buf_ext = extension(base_bufname)
 
     -- TODO: look into tst/test directory for the same name
@@ -371,7 +366,7 @@ function M.alternate_test(thread_args, async)
 
         local src_name
         if is_test(base_bufname) then
-            src_name = basename(bufname)
+            src_name = vim.fs.basename(bufname)
             for _, pattern in ipairs(test_patterns) do
                 src_name = src_name:gsub(pattern, '')
             end
