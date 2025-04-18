@@ -27,10 +27,6 @@ function M.separator()
     return '/'
 end
 
-local function join_paths(...)
-    return (table.concat({ ... }, '/'):gsub('//+', '/'))
-end
-
 function M.exists(filename)
     vim.validate { filename = { filename, 'string' } }
     if filename == '' then
@@ -795,69 +791,15 @@ function M.dump_json(filename, data)
     return M.writefile(filename, json)
 end
 
--- NOTE: dir/parents where took from neovim fs.lua source code
-function M.dir(path, opts)
-    opts = opts or {}
-
-    vim.validate {
-        path = { path, { 'string' } },
-        depth = { opts.depth, { 'number' }, true },
-        skip = { opts.skip, { 'function' }, true },
-    }
-
-    if not opts.depth or opts.depth == 1 then
-        return coroutine.wrap(function()
-            do
-                local fs = vim.uv.fs_scandir(vim.fs.normalize(path))
-                while true do
-                    local name, t = vim.uv.fs_scandir_next(fs)
-                    if name == nil then
-                        break
-                    end
-                    t = t or vim.uv.fs_stat(vim.fs.joinpath(path, name)).type
-                    coroutine.yield(name, t)
-                end
-            end
-        end)
-    end
-
-    --- @async
+function M.parents(dirname)
+    vim.validate { dirname = { dirname, 'string' } }
+    dirname = M.realpath(dirname)
     return coroutine.wrap(function()
-        local dirs = { { path, 1 } }
-        while #dirs > 0 do
-            local dir0, level = unpack(table.remove(dirs, 1))
-            local dir = level == 1 and dir0 or join_paths(path, dir0)
-            local fs = vim.uv.fs_scandir(vim.fs.normalize(dir))
-            while fs do
-                local name, t = vim.uv.fs_scandir_next(fs)
-                t = t or vim.uv.fs_stat(vim.fs.joinpath(dir, name)).type
-                if not name then
-                    break
-                end
-                local f = level == 1 and name or join_paths(dir0, name)
-                coroutine.yield(f, t)
-                if
-                    opts.depth
-                    and level < opts.depth
-                    and t == 'directory'
-                    and (not opts.skip or opts.skip(f) ~= false)
-                then
-                    dirs[#dirs + 1] = { f, level + 1 }
-                end
-            end
-        end
-    end)
-end
-
-function M.parents(dir)
-    vim.validate { dir = { dir, 'string' } }
-    dir = M.realpath(dir)
-    return coroutine.wrap(function()
-        local parent = vim.fs.dirname(dir)
-        while parent ~= dir do
+        local parent = vim.fs.dirname(dirname)
+        while parent ~= dirname do
             coroutine.yield(parent)
-            dir = parent
-            parent = vim.fs.dirname(dir)
+            dirname = parent
+            parent = vim.fs.dirname(dirname)
         end
     end)
 end
@@ -975,16 +917,16 @@ function M.find_in_dir(args)
         callback = { args.callback, 'function', true },
     }
 
-    local dir
+    local path
     if args.dir and args.dir ~= '' then
-        dir = M.realpath(args.dir)
+        path = M.realpath(args.dir)
     else
-        dir = vim.api.nvim_buf_get_name(0)
+        path = vim.api.nvim_buf_get_name(0)
     end
 
     local cwd = vim.uv.cwd()
-    if dir ~= cwd then
-        dir = dir:gsub(vim.pesc(cwd) .. '/', ''):gsub('/.*', '')
+    if path ~= cwd then
+        path = path:gsub(vim.pesc(cwd) .. '/', ''):gsub('/.*', '')
     end
 
     local pattern = args.pattern
@@ -1000,7 +942,7 @@ function M.find_in_dir(args)
             filter = filter,
             opts = {
                 type = 'file',
-                path = dir,
+                path = path,
                 limit = args.limit,
             },
             cb = args.callback,
@@ -1012,7 +954,7 @@ function M.find_in_dir(args)
             target = pattern,
             opts = {
                 type = 'file',
-                path = dir,
+                path = path,
             },
         },
         functions = {

@@ -1,7 +1,7 @@
 local M = {}
 
 function M.get_hash(cmd, cwd)
-    local cwd = cwd or vim.fs.normalize(vim.uv.cwd())
+    cwd = cwd or vim.fs.normalize(vim.uv.cwd())
     local hash = vim.base64.encode(vim.json.encode { cmd = cmd, cwd = cwd })
     return hash
 end
