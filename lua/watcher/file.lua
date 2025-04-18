@@ -1,5 +1,4 @@
 local realpath = require('utils.files').realpath
-local normalize = require('utils.files').normalize
 
 local Watcher = {}
 Watcher.__index = Watcher
@@ -40,7 +39,7 @@ function Watcher:new(filename, autocmd, cb)
         cb = { cb, { 'function' }, true },
     }
 
-    filename = realpath(normalize(filename))
+    filename = realpath(vim.fs.normalize(filename))
 
     if not cb and type(autocmd) == 'function' then
         cb = { autocmd }

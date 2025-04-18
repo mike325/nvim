@@ -308,49 +308,6 @@ describe('Realpath', function()
     end)
 end)
 
-describe('Normalize', function()
-    local normalize = require('utils.files').normalize
-
-    it('HOME', function()
-        local homedir = vim.uv.os_homedir()
-        mini_test.expect.equality(normalize '~', forward_path(homedir))
-    end)
-
-    if is_windows then
-        it('Windows Path', function()
-            local windows_path = [[c:\Users]]
-
-            vim.go.shellslash = false
-            mini_test.expect.equality(normalize(windows_path), forward_path(windows_path))
-
-            vim.go.shellslash = true
-            mini_test.expect.equality(normalize(windows_path), forward_path(windows_path))
-        end)
-    end
-end)
-
-describe('Basename', function()
-    local basename = require('utils.files').basename
-
-    it('Default', function()
-        for _, path in ipairs(dirname_basename_paths) do
-            mini_test.expect.equality(basename(path), vim.fn.fnamemodify(path, ':t'))
-        end
-    end)
-
-    it('Init file', function()
-        local config_dir = vim.fn.stdpath 'config'
-        local init_file = config_dir .. '/init.lua'
-        mini_test.expect.equality('init.lua', basename(init_file))
-    end)
-
-    it('Filename', function()
-        mini_test.expect.equality('init.lua', basename 'init.lua')
-        mini_test.expect.equality('test', basename './test')
-        mini_test.expect.equality('test', basename './test')
-    end)
-end)
-
 describe('Extension', function()
     local extension = require('utils.files').extension
 
@@ -380,38 +337,6 @@ describe('Filename', function()
         mini_test.expect.equality('test', filename './test.c')
         mini_test.expect.equality('.bashrc', filename '.bashrc.sh')
         mini_test.expect.equality('.bashrc', filename '.bashrc')
-    end)
-end)
-
-describe('Dirname', function()
-    local dirname = require('utils.files').dirname
-
-    it('Getting dirname from directories and files', function()
-        for _, path in ipairs(dirname_basename_paths) do
-            mini_test.expect.equality(dirname(path), vim.fn.fnamemodify(path, ':h'))
-        end
-
-        local config_dir = forward_path(vim.fn.stdpath 'config')
-        local data_dir = forward_path(vim.fn.stdpath 'data')
-        local cache_dir = forward_path(vim.fn.stdpath 'cache')
-
-        local init_file = forward_path(config_dir .. '/init.lua')
-        -- local homedir = forward_path(vim.uv.os_homedir())
-
-        mini_test.expect.equality(config_dir, dirname(init_file))
-
-        mini_test.expect.equality(config_dir:gsub([[[/\]nvim.*]], ''), dirname(config_dir))
-        mini_test.expect.equality(data_dir:gsub([[[/\]nvim.*]], ''), dirname(data_dir))
-        mini_test.expect.equality(cache_dir:gsub([[[/\]nvim.*]], ''), dirname(cache_dir))
-
-        mini_test.expect.equality('~', dirname '~/.bashrc')
-        if not is_windows then
-            mini_test.expect.equality('/', dirname '/')
-            mini_test.expect.equality('/tmp', dirname '/tmp/test')
-        else
-            mini_test.expect.equality(forward_path 'c:\\', dirname 'c:\\')
-            mini_test.expect.equality(forward_path 'c:\\Temp', dirname 'c:\\Temp\\test')
-        end
     end)
 end)
 
@@ -531,26 +456,9 @@ if not is_windows then
     end)
 end
 
-describe('ls', function()
+describe('list directories', function()
+
     local homedir = vim.uv.os_homedir()
-
-    it("List directory's files/dirs", function()
-        local ls = require('utils.files').ls
-
-        local dirs = {
-            '.',
-            homedir,
-        }
-
-        for _, dir in ipairs(dirs) do
-            local files = {}
-            for filename, _ in vim.fs.dir(dir) do
-                table.insert(files, string.format('%s/%s', dir, filename))
-            end
-            mini_test.expect.equality(files, ls(dir))
-        end
-    end)
-
     it('Getting all files', function()
         local get_files = require('utils.files').get_files
 

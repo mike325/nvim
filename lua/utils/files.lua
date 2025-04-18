@@ -31,22 +31,12 @@ local function join_paths(...)
     return (table.concat({ ... }, '/'):gsub('//+', '/'))
 end
 
-function M.normalize(path)
-    vim.validate { path = { path, 'string' } }
-    assert(path ~= '', debug.traceback 'Empty path')
-    if path == '%' then
-        local cwd = ((vim.uv.cwd() .. '/'):gsub('\\', '/'):gsub('/+', '/'))
-        path = (vim.api.nvim_buf_get_name(0):gsub(vim.pesc(cwd), ''))
-    end
-    return vim.fs.normalize(path)
-end
-
 function M.exists(filename)
     vim.validate { filename = { filename, 'string' } }
     if filename == '' then
         return false
     end
-    local stat = vim.uv.fs_stat(M.normalize(filename))
+    local stat = vim.uv.fs_stat(vim.fs.normalize(filename))
     return stat and stat.type or false
 end
 
@@ -67,7 +57,7 @@ function M.mkdir(dirname, recurive)
     if M.is_dir(dirname) then
         return true
     end
-    dirname = M.normalize(dirname)
+    dirname = vim.fs.normalize(dirname)
     local ok, msg, err = vim.uv.fs_mkdir(dirname, tonumber('775', 8))
     if err == 'ENOENT' and recurive then
         local parent = M.mkdir(vim.fs.dirname(dirname), recurive)
@@ -93,8 +83,8 @@ function M.link(src, dest, sym, force)
         dest = vim.fs.basename(src)
     end
 
-    dest = M.normalize(dest)
-    src = M.normalize(src)
+    dest = vim.fs.normalize(dest)
+    src = vim.fs.normalize(src)
 
     assert(src ~= dest, debug.traceback 'Cannot link src to itself')
 
@@ -173,27 +163,16 @@ end
 function M.realpath(path)
     vim.validate { path = { path, 'string' } }
     assert(M.exists(path), debug.traceback(([[Path "%s" doesn't exists]]):format(path)))
-    return (vim.uv.fs_realpath(M.normalize(path)):gsub('\\', '/'))
-end
-
-function M.basename(file)
-    vim.validate { file = { file, 'string', true } }
-    if file == nil then
-        return nil
-    end
-    if is_windows and file:match '^%w:[\\/]?$' then
-        return ''
-    end
-    return file:match '[/\\]$' and '' or (file:match('[^\\/]*$'):gsub('\\', '/'))
+    return (vim.uv.fs_realpath(vim.fs.normalize(path)):gsub('\\', '/'))
 end
 
 function M.extension(path)
     vim.validate { path = { path, 'string' } }
     assert(path ~= '', debug.traceback 'Empty path')
     local extension = ''
-    path = M.normalize(path)
+    path = vim.fs.normalize(path)
     if not M.is_dir(path) then
-        local filename = M.basename(path)
+        local filename = vim.fs.basename(path)
         extension = filename and filename:match '^.+(%..+)$' or ''
     end
     return #extension >= 2 and extension:sub(2, #extension) or extension
@@ -204,25 +183,6 @@ function M.filename(path)
     local name = vim.fs.basename(path)
     local extension = M.extension(name)
     return extension ~= '' and (name:gsub('%.' .. extension .. '$', '')) or name
-end
-
-function M.dirname(file)
-    vim.validate { file = { file, 'string', true } }
-    if file == nil then
-        return nil
-    end
-    if is_windows and file:match '^%w:[\\/]?$' then
-        return (file:gsub('\\', '/'))
-    elseif not file:match '[\\/]' then
-        return '.'
-    elseif file == '/' or file:match '^/[^/]+$' then
-        return '/'
-    end
-    local dir = file:match '[/\\]$' and file:sub(1, #file - 1) or file:match '^([/\\]?.+)[/\\]'
-    if is_windows and dir:match '^%w:$' then
-        return dir .. '/'
-    end
-    return (dir:gsub('\\', '/'))
 end
 
 function M.is_parent(parent, child)
@@ -387,34 +347,27 @@ function M.chmod(path, mode, base)
     return ok or false
 end
 
-function M.ls(path, opts)
-    vim.validate {
-        path = { path, 'string' },
-        opts = { opts, 'table', true },
-    }
-    opts = opts or {}
+local function dir(path, opts, filter)
+    local iter = vim.iter(vim.fs.dir(path, opts))
+    if filter then
+        iter = iter:filter(filter)
+    end
 
-    local dir_it = vim.uv.fs_scandir(path)
-    local filename, ftype
-    local results = {}
-
-    repeat
-        filename, ftype = vim.uv.fs_scandir_next(dir_it)
-        ftype = ftype or vim.uv.fs_stat(vim.fs.joinpath(path, filename)).type
-        if filename and (not opts.type or opts.type == ftype) then
-            table.insert(results, path .. M.separator() .. filename)
-        end
-    until not filename
-
-    return results
+    return iter:map(function(f, _)
+        return vim.fs.joinpath(path, f)
+    end):totable()
 end
 
-function M.get_files(path)
-    return M.ls(path, { type = 'file' })
+function M.get_files(path, opts)
+    return dir(path, opts, function(_, t)
+        return t == 'file'
+    end)
 end
 
-function M.get_dirs(path)
-    return M.ls(path, { type = 'directory' })
+function M.get_dirs(path, opts)
+    return dir(path, opts, function(_, t)
+        return t == 'directory'
+    end)
 end
 
 local function copy_undofile(old_fname, new_fname)
@@ -440,8 +393,8 @@ end
 
 function M.copy(src, dest, force)
     vim.validate { force = { force, 'boolean', true } }
-    src = M.normalize(src)
-    dest = M.normalize(dest)
+    src = vim.fs.normalize(src)
+    dest = vim.fs.normalize(dest)
     dest = M.is_dir(dest) and dest .. '/' .. vim.fs.basename(src) or dest
 
     if not M.is_dir(src) and (not M.exists(dest) or force) then
@@ -462,8 +415,8 @@ end
 
 function M.rename(old, new, bang)
     local bufloaded = require('utils.buffers').bufloaded
-    new = M.normalize(new)
-    old = M.normalize(old)
+    new = vim.fs.normalize(new)
+    old = vim.fs.normalize(old)
 
     if not M.exists(new) or bang then
         local cursor_pos
@@ -555,7 +508,7 @@ function M.delete(target, bang)
         bang = false
     end
 
-    target = M.normalize(target)
+    target = vim.fs.normalize(target)
 
     if #target > 1 and target:sub(#target, #target) == '/' then
         target = target:sub(1, #target - 1)
@@ -900,11 +853,11 @@ function M.parents(dir)
     vim.validate { dir = { dir, 'string' } }
     dir = M.realpath(dir)
     return coroutine.wrap(function()
-        local parent = M.dirname(dir)
+        local parent = vim.fs.dirname(dir)
         while parent ~= dir do
             coroutine.yield(parent)
             dir = parent
-            parent = M.dirname(dir)
+            parent = vim.fs.dirname(dir)
         end
     end)
 end

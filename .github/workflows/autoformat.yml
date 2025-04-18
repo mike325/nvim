@@ -51,7 +51,7 @@ jobs:
     - name: Ruff
       run: |
         ruff format .
-        ruff check --fix .
+        # ruff check --fix .
     - uses: EndBug/add-and-commit@v4
       with:
         author_name: Autoformatter
