@@ -30,9 +30,9 @@ jobs:
         with:
           neovim: true
           version: stable
-      - name: Install dotfile
+      - name: Install dotfiles
         run: |
-          ./install.sh --verbose --neovim dotfiles
+          ./install.sh --verbose --neovim dotfiles --nolog
       - name: Test stable Neovim
         run: |
           export PATH="$HOME/.local/bin:$PATH"
