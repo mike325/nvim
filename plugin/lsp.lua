@@ -24,7 +24,8 @@ local servers = vim.iter(configs)
     end)
     :map(function(config)
         return (vim.fs.basename(config):gsub('%.lua$', ''))
-    end):totable()
+    end)
+    :totable()
 vim.lsp.enable(servers)
 
 local python_configs = vim.iter(configs)
@@ -34,7 +35,8 @@ local python_configs = vim.iter(configs)
     end)
     :map(function(config)
         return (vim.fs.basename(config):gsub('%.lua$', ''))
-    end):totable()
+    end)
+    :totable()
 
 for server in vim.iter(python_servers) do
     if vim.list_contains(python_configs, server) then

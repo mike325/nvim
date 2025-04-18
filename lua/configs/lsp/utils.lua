@@ -188,7 +188,7 @@ function M.switch_source_header_splitcmd(bufnr, splitcmd)
     end
 
     local params = vim.lsp.util.make_text_document_params(bufnr)
-    local client = vim.lsp.get_clients { name = 'clangd', bufnr = bufnr }[1]
+    local client = vim.lsp.get_clients({ name = 'clangd', bufnr = bufnr })[1]
     if not client then
         return false
     end
@@ -206,7 +206,7 @@ function M.symbol_info()
 
     local bufnr = vim.api.nvim_get_current_buf()
     local clangd_client = vim.lsp.get_clients({ bufnr = bufnr, name = 'clangd' })[1]
-    if not clangd_client or not clangd_client.supports_method(method_name)  then
+    if not clangd_client or not clangd_client.supports_method(method_name) then
         return vim.notify('Clangd client not found', vim.log.levels.ERROR)
     end
     local win = vim.api.nvim_get_current_win()

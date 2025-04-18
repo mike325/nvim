@@ -457,7 +457,6 @@ if not is_windows then
 end
 
 describe('list directories', function()
-
     local homedir = vim.uv.os_homedir()
     it('Getting all files', function()
         local get_files = require('utils.files').get_files
