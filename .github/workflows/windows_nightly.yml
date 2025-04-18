@@ -32,10 +32,10 @@ jobs:
         with:
           neovim: true
           version: nightly
-      - name: Install dotfile
+      - name: Install dotfiles
         shell: bash
         run: |
-          ./install.sh --verbose --neovim dotfiles
+          ./install.sh --verbose --neovim dotfiles --nolog
       - name: Test stable Neovim
         shell: powershell
         run: |
