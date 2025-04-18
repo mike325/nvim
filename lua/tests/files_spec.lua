@@ -8,29 +8,6 @@ local function forward_path(path)
     return path
 end
 
-local dirname_basename_paths = {
-    '~/repos/',
-    '~/repos',
-    '~/.bashrc',
-    './.bashrc',
-    '~/repos/foo.lua',
-    'foo.lua',
-    '.',
-    '..',
-    '../',
-    '~',
-    '/usr/bin',
-    '/usr/bin/gcc',
-    '/',
-    '/usr/',
-    '/usr',
-    'c:/usr',
-    'c:/',
-    'c:/usr/bin',
-    'c:/usr/bin/foo.lua',
-    'c:/usr/bin/foo/../',
-}
-
 -- TODO: Missing function tests
 -- copy
 -- parents iterator
