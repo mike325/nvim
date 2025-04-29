@@ -1,6 +1,7 @@
 return {
     {
         'nvim-telescope/telescope.nvim',
+        enabled = false,
         cond = function()
             return not vim.g.vscode
         end,
@@ -17,6 +18,7 @@ return {
     },
     {
         'nvim-telescope/telescope-fzf-native.nvim',
+        enabled = false,
         build = 'make',
         main = 'fzf_lib',
         module = true,

@@ -52,12 +52,6 @@ local simple_mini = {
     fuzzy = {},
     extra = {},
     visits = {},
-    jump2d = {
-        -- Module mappings. Use `''` (empty string) to disable one.
-        mappings = {
-            start_jumping = '',
-        },
-    },
     pairs = {
         mappings = {
             ['('] = { action = 'open', pair = '()', neigh_pattern = '[^\\].', register = { cr = false } },
@@ -539,36 +533,6 @@ if mini.map then
     end, { nargs = '?', complete = completions.toggle, desc = 'Open/Close mini.map' })
 end
 
-if mini.jump2d then
-    vim.keymap.set('n', '\\', function()
-        local ignore_case_single_char = {
-            spotter = function()
-                return {}
-            end,
-            allowed_lines = { blank = false, fold = false },
-        }
-        ignore_case_single_char.hooks = {
-            before_start = function()
-                vim.api.nvim_echo(
-                    { { '(mini.jum2d) ', 'DiagnosticSignWarn' }, { 'Enter a search character: ' } },
-                    true,
-                    {}
-                )
-                local char = vim.fn.getcharstr()
-                if char then
-                    if char:match '^[a-zA-Z]$' then
-                        ignore_case_single_char.spotter =
-                            mini.jump2d.gen_pattern_spotter(string.format('[%s%s]', char:lower(), char:upper()))
-                    else
-                        ignore_case_single_char.spotter = mini.jump2d.gen_pattern_spotter(vim.pesc(char))
-                    end
-                end
-            end,
-        }
-        mini.jump2d.start(ignore_case_single_char)
-    end, { nowait = true, silent = true })
-end
-
 mini.pick = vim.F.npcall(require, 'mini.pick')
 if mini.pick then
     local win_config = function()
@@ -598,7 +562,7 @@ if mini.pick then
     }
     vim.ui.select = mini.pick.ui_select
 
-    if vim.g.minimal then
+    if vim.g.minimal or not nvim.plugins['telescope.nvim'] then
         vim.keymap.set('n', '<leader><C-r>', function()
             mini.pick.builtin.resume()
         end, noremap)
@@ -768,6 +732,43 @@ end
 
 if vim.g.minimal or not nvim.plugins['nvim-cmp'] then
     load_simple_module('completion', {})
+end
+
+if not nvim.plugins['hop.nvim'] then
+    load_simple_module('jump2d', {
+        -- Module mappings. Use `''` (empty string) to disable one.
+        mappings = {
+            start_jumping = '',
+        },
+    })
+
+    vim.keymap.set('n', '\\', function()
+        local ignore_case_single_char = {
+            spotter = function()
+                return {}
+            end,
+            allowed_lines = { blank = false, fold = false },
+        }
+        ignore_case_single_char.hooks = {
+            before_start = function()
+                vim.api.nvim_echo(
+                    { { '(mini.jum2d) ', 'DiagnosticSignWarn' }, { 'Enter a search character: ' } },
+                    true,
+                    {}
+                )
+                local char = vim.fn.getcharstr()
+                if char then
+                    if char:match '^[a-zA-Z]$' then
+                        ignore_case_single_char.spotter =
+                            mini.jump2d.gen_pattern_spotter(string.format('[%s%s]', char:lower(), char:upper()))
+                    else
+                        ignore_case_single_char.spotter = mini.jump2d.gen_pattern_spotter(vim.pesc(char))
+                    end
+                end
+            end,
+        }
+        mini.jump2d.start(ignore_case_single_char)
+    end, { nowait = true, silent = true })
 end
 
 if vim.g.minimal then

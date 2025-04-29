@@ -9,32 +9,29 @@ local python_servers = {
     'jedi_language_server',
 }
 
-local function has_server(config)
-    local cmd = dofile(config).cmd
-    return vim.fn.executable(cmd[1]) == 1
+local function has_server(config_name)
+    local config = vim.lsp.config[config_name]
+    if config and config.cmd then
+        return vim.fn.executable(config.cmd[1]) == 1
+    end
+    return false
 end
 
 local lsp_configs = 'after/lsp'
-local configs = vim.api.nvim_get_runtime_file(('%s/*.lua'):format(lsp_configs), true)
+local configs = vim.iter(vim.api.nvim_get_runtime_file(('%s/*.lua'):format(lsp_configs), true)):map(function(config)
+    return (vim.fs.basename(config):gsub('%.lua$', ''))
+end)
 
-local servers = vim.iter(configs)
+local servers = configs
     :filter(function(config)
-        local fname = vim.fs.basename(config)
-        return not vim.list_contains(python_servers, (fname:gsub('%.lua$', ''))) and has_server(config)
-    end)
-    :map(function(config)
-        return (vim.fs.basename(config):gsub('%.lua$', ''))
+        return not vim.list_contains(python_servers, config) and has_server(config)
     end)
     :totable()
 vim.lsp.enable(servers)
 
-local python_configs = vim.iter(configs)
+local python_configs = configs
     :filter(function(config)
-        local fname = vim.fs.basename(config)
-        return vim.list_contains(python_servers, (fname:gsub('%.lua$', ''))) and has_server(config)
-    end)
-    :map(function(config)
-        return (vim.fs.basename(config):gsub('%.lua$', ''))
+        return vim.list_contains(python_servers, config) and has_server(config)
     end)
     :totable()
 
