@@ -70,7 +70,6 @@ vim.g.minimal = vim.env.VIM_MIN ~= nil or vim.g.minimal ~= nil
 vim.g.bare = vim.env.VIM_BARE ~= nil or vim.g.bare ~= nil or not vim.g.has_ui
 
 require 'globals'
-require 'utils.filetype_detect'
 
 -- NOTE: overload/replace vim.* functions
 require 'overloads.notify'
