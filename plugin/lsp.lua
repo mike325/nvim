@@ -17,6 +17,8 @@ local function has_server(config_name)
     return false
 end
 
+-- These are the configs I'm intersted in, they can be defined with a empty dict
+-- and resolved with vim.lsp.config
 local lsp_configs = 'after/lsp'
 local configs = vim.iter(vim.api.nvim_get_runtime_file(('%s/*.lua'):format(lsp_configs), true)):map(function(config)
     return (vim.fs.basename(config):gsub('%.lua$', ''))
