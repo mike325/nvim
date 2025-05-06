@@ -90,7 +90,7 @@ vim.opt.virtualedit = 'block'
 
 vim.opt.complete = { '.', 'w', 'b', 'u', 't' }
 vim.opt.completeopt = { 'menu', 'menuone', 'noselect', 'noinsert' }
--- vim.opt.tags = { '.git/tags', './tags;', 'tags' }
+vim.opt.tags = { '.git/tags', './tags;', 'tags' }
 vim.opt.display = { 'lastline', 'msgsep' }
 vim.opt.fileformats = { 'unix', 'dos' }
 
@@ -250,17 +250,25 @@ if nvim.has { 0, 9 } then
     vim.opt.splitkeep = 'screen'
 end
 
-vim.diagnostic.config {
+local diagnostics_defaults = {
     signs = true,
     underline = true,
     update_in_insert = false,
     severity_sort = true,
-    virtual_text = {
+}
+
+if nvim.has { 0, 11 } then
+    diagnostics_defaults.virtual_lines = true
+    diagnostics_defaults.virtual_text = false
+else
+    diagnostics_defaults.virtual_text = {
         spacing = 2,
         prefix = '❯',
         -- source = true,
-    },
-}
+    }
+end
+
+vim.diagnostic.config(diagnostics_defaults)
 
 local orig_signs_handler = vim.diagnostic.handlers.signs
 vim.diagnostic.handlers.signs = {
@@ -284,6 +292,7 @@ vim.diagnostic.handlers.signs = {
 vim.diagnostic.enable()
 vim.diagnostic.show()
 
+-- TODO: Deprecated, need to replace
 local sign_str = 'DiagnosticSign'
 for _, level in pairs { 'Error', 'Hint', 'Warn', 'Info' } do
     vim.fn.sign_define(

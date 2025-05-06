@@ -115,12 +115,18 @@ function M.link(src, dest, sym, force)
     return status or false
 end
 
+--- Check if exec is executable
+---@param exec string
+---@return boolean
 function M.executable(exec)
     vim.validate { exec = { exec, 'string' } }
     assert(exec ~= '', debug.traceback 'Empty executable string')
     return vim.fn.executable(exec) == 1
 end
 
+--- Return the executable's path
+---@param exec string
+---@return string
 function M.exepath(exec)
     vim.validate { exec = { exec, 'string' } }
     assert(exec ~= '', debug.traceback 'Empty executable string')
@@ -128,6 +134,9 @@ function M.exepath(exec)
     return path ~= '' and path or false
 end
 
+--- Check if path is absolute
+---@param path string
+---@return boolean
 function M.is_absolute(path)
     vim.validate { path = { path, 'string' } }
     assert(path ~= '', debug.traceback 'Empty path')
@@ -144,6 +153,9 @@ function M.is_absolute(path)
     return is_abs
 end
 
+--- Check if path is root, / in unix and [a-zA-Z]:[/\\] on windows
+---@param path string
+---@return boolean
 function M.is_root(path)
     vim.validate { path = { path, 'string' } }
     assert(path ~= '', debug.traceback 'Empty path')
@@ -156,12 +168,18 @@ function M.is_root(path)
     return root
 end
 
+--- Return the real path
+---@param path string
+---@return string
 function M.realpath(path)
     vim.validate { path = { path, 'string' } }
     assert(M.exists(path), debug.traceback(([[Path "%s" doesn't exists]]):format(path)))
     return (vim.uv.fs_realpath(vim.fs.normalize(path)):gsub('\\', '/'))
 end
 
+--- Get the file extension
+---@param path string
+---@return string
 function M.extension(path)
     vim.validate { path = { path, 'string' } }
     assert(path ~= '', debug.traceback 'Empty path')
@@ -174,6 +192,9 @@ function M.extension(path)
     return #extension >= 2 and extension:sub(2, #extension) or extension
 end
 
+--- Get the file name without the extension
+---@param path string
+---@return string
 function M.filename(path)
     vim.validate { path = { path, 'string' } }
     local name = vim.fs.basename(path)
@@ -181,6 +202,10 @@ function M.filename(path)
     return extension ~= '' and (name:gsub('%.' .. extension .. '$', '')) or name
 end
 
+--- Check if one path is located inside another
+---@param parent string
+---@param child string
+---@return boolean
 function M.is_parent(parent, child)
     vim.validate { parent = { parent, 'string' }, child = { child, 'string' } }
 
