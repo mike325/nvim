@@ -223,6 +223,11 @@ function M.is_parent(parent, child)
     return is_child
 end
 
+--- Open file and operate on callback
+---@param path string
+---@param flags string
+---@param callback fun(fd: integer)
+---@return boolean
 function M.openfile(path, flags, callback)
     vim.validate {
         path = { path, 'string' },
@@ -241,6 +246,11 @@ function M.openfile(path, flags, callback)
     return rst or ok
 end
 
+--- Open file and operate on callback
+---@param path string
+---@param data string|string[]
+---@param callback fun()?
+---@return boolean
 local function fs_write(path, data, append, callback)
     vim.validate {
         path = { path, 'string' },
@@ -287,15 +297,30 @@ local function fs_write(path, data, append, callback)
     end)
 end
 
+--- Write data to file, override/create file
+---@param path string
+---@param data string|string[]
+---@param callback fun()?
+---@return boolean
 function M.writefile(path, data, callback)
     return fs_write(path, data, false, callback)
 end
 
+--- Update file content, append data to the end
+---@param path string
+---@param data string|string[]
+---@param callback fun()?
+---@return boolean
 function M.updatefile(path, data, callback)
     assert(M.is_file(path), debug.traceback('Not a file: ' .. path))
     return fs_write(path, data, true, callback)
 end
 
+--- Read given file
+---@param path string
+---@param split boolean?
+---@param callback fun(data: string[])?
+---@return boolean|string|string[]
 function M.readfile(path, split, callback)
     vim.validate {
         path = { path, 'string' },
@@ -341,6 +366,11 @@ function M.readfile(path, split, callback)
     end)
 end
 
+--- Change file permissions
+---@param path string
+---@param mode string|number
+---@param base integer
+---@return boolean?
 function M.chmod(path, mode, base)
     if is_windows then
         return
@@ -361,7 +391,18 @@ function M.chmod(path, mode, base)
     }
     assert(path ~= '', debug.traceback 'Empty path')
     base = base == nil and 8 or base
-    local ok, msg, _ = vim.uv.fs_chmod(path, tonumber(mode, base))
+
+    ---@type number
+    local flags
+    if type(mode) == type(1) then
+        ---@cast mode number
+        flags = mode
+    else
+        ---@cast mode string
+        flags = tonumber(mode, base)
+    end
+
+    local ok, msg, _ = vim.uv.fs_chmod(path, flags)
     if not ok then
         vim.notify(msg, vim.log.levels.ERROR, { title = 'Chmod' })
     end
@@ -767,16 +808,23 @@ function M.clean_file()
     return true
 end
 
+--- Decode json data
+---@param data string|string[]
 function M.decode_json(data)
     vim.validate {
         data = { data, { 'string', 'table' } },
     }
     if type(data) == type {} then
+        ---@cast data string[]
         data = table.concat(data, '\n')
     end
+    ---@cast data string
     return vim.json.decode(data)
 end
 
+--- Encode json data
+---@param data table
+---@return string
 function M.encode_json(data)
     vim.validate {
         data = { data, 'table' },
@@ -786,6 +834,9 @@ function M.encode_json(data)
     return (json:gsub('\\/', '/'))
 end
 
+--- Read json file
+---@param filename string
+---@return table
 function M.read_json(filename)
     vim.validate {
         filename = { filename, 'string' },
@@ -798,6 +849,9 @@ function M.read_json(filename)
     return M.decode_json(M.readfile(filename, false))
 end
 
+--- Dump obj into json data
+---@param filename string
+---@param data string[]
 function M.dump_json(filename, data)
     vim.validate { filename = { filename, 'string' }, data = { data, 'table' } }
     assert(filename ~= '', debug.traceback 'Empty filename')
@@ -816,6 +870,8 @@ function M.dump_json(filename, data)
     return M.writefile(filename, json)
 end
 
+--- TODO
+---@param dirname string
 function M.parents(dirname)
     vim.validate { dirname = { dirname, 'string' } }
     dirname = M.realpath(dirname)
@@ -829,6 +885,8 @@ function M.parents(dirname)
     end)
 end
 
+--- TODO
+---@param filename string
 function M.find(filename, opts)
     vim.validate {
         filename = { filename, { 'function', 'string', 'table' } },
@@ -867,6 +925,8 @@ function M.find(filename, opts)
     return candidates
 end
 
+--- Check if prog is executable
+---@param filename string
 function M.is_executable(filename)
     vim.validate {
         filename = { filename, 'string' },
