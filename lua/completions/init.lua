@@ -88,6 +88,15 @@ completions = vim.tbl_extend('force', completions, {
         end
         return utils.general_completion(arglead, cmdline, cursorpos, jobs)
     end,
+    diagnostics_virtual_lines = function(arglead, cmdline, cursorpos)
+        local nvim = require 'nvim'
+
+        local options = { 'text' }
+        if nvim.has { 0, 11 } then
+            table.insert(options, 'lines')
+        end
+        return utils.general_completion(arglead, cmdline, cursorpos, options)
+    end,
     diagnostics_namespaces = function(arglead, cmdline, cursorpos)
         local namespaces = {}
         for _, ns in pairs(vim.diagnostic.get_namespaces()) do
