@@ -20,18 +20,19 @@ end
 -- These are the configs I'm intersted in, they can be defined with a empty dict
 -- and resolved with vim.lsp.config
 local lsp_configs = 'after/lsp'
+
 local configs = vim.iter(vim.api.nvim_get_runtime_file(('%s/*.lua'):format(lsp_configs), true)):map(function(config)
     return (vim.fs.basename(config):gsub('%.lua$', ''))
-end)
+end):totable()
 
-local servers = configs
+local servers = vim.iter(configs)
     :filter(function(config)
         return not vim.list_contains(python_servers, config) and has_server(config)
     end)
     :totable()
 vim.lsp.enable(servers)
 
-local python_configs = configs
+local python_configs = vim.iter(configs)
     :filter(function(config)
         return vim.list_contains(python_servers, config) and has_server(config)
     end)
