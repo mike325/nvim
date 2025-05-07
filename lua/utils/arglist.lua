@@ -14,7 +14,9 @@ function M.clear(all)
         end
     else
         -- NOTE: sessions may load invalid files in the arglist
-        for _, arg in ipairs(vim.fn.argv() --[[@as string[] ]]) do
+        for _, arg in
+            ipairs(vim.fn.argv() --[[@as string[] ]])
+        do
             if not require('utils.files').is_file(arg) then
                 vim.cmd.argdelete(arg)
             end
@@ -83,14 +85,15 @@ end
 --- Execute an ex cmd inside every element in the arglist
 ---@param cmd string
 function M.exec(cmd)
-    for _, filename in ipairs(vim.fn.argv() --[[@as string[] ]]) do
+    for _, filename in
+        ipairs(vim.fn.argv() --[[@as string[] ]])
+    do
         local buf = vim.fn.bufnr(filename)
         vim.api.nvim_buf_call(buf, function()
             vim.cmd(cmd)
         end)
     end
 end
-
 
 --- Edit an existing argument
 ---@param argument string?
