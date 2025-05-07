@@ -126,7 +126,7 @@ end
 
 --- Return the executable's path
 ---@param exec string
----@return string
+---@return string|boolean
 function M.exepath(exec)
     vim.validate { exec = { exec, 'string' } }
     assert(exec ~= '', debug.traceback 'Empty executable string')
@@ -141,7 +141,9 @@ function M.is_absolute(path)
     vim.validate { path = { path, 'string' } }
     assert(path ~= '', debug.traceback 'Empty path')
     if path:sub(1, 1) == '~' then
-        path = path:gsub('~', vim.uv.os_homedir())
+        local home = vim.uv.os_homedir()
+        ---@cast home string
+        path = path:gsub('~', home)
     end
 
     local is_abs = false
@@ -250,7 +252,7 @@ end
 ---@param path string
 ---@param data string|string[]
 ---@param callback fun()?
----@return boolean
+---@return boolean?
 local function fs_write(path, data, append, callback)
     vim.validate {
         path = { path, 'string' },
@@ -265,13 +267,17 @@ local function fs_write(path, data, append, callback)
         callback = { callback, { 'function', 'boolean' }, true },
     }
 
-    data = type(data) ~= type '' and table.concat(data, '\n') or data
+    if type(data) ~= type ''  then
+        ---@cast data string[]
+        data = table.concat(data, '\n')
+    end
+
     local flags = append and 'a+' or 'w+'
 
     if not callback then
         return M.openfile(path, flags, function(fd)
             local stat = vim.uv.fs_fstat(fd)
-            local offset = append and stat.size or 0
+            local offset = (append and stat) and stat.size or 0
             local ok, msg, _ = vim.uv.fs_write(fd, data, offset)
             if not ok then
                 vim.notify(msg, vim.log.levels.ERROR, { title = 'Write file' })
@@ -283,7 +289,7 @@ local function fs_write(path, data, append, callback)
         assert(not oerr, oerr)
         vim.uv.fs_fstat(fd, function(serr, stat)
             assert(not serr, serr)
-            local offset = append and stat.size or 0
+            local offset = (append and stat) and stat.size or 0
             vim.uv.fs_write(fd, data, offset, function(rerr)
                 assert(not rerr, rerr)
                 vim.uv.fs_close(fd, function(cerr)
@@ -301,7 +307,7 @@ end
 ---@param path string
 ---@param data string|string[]
 ---@param callback fun()?
----@return boolean
+---@return boolean?
 function M.writefile(path, data, callback)
     return fs_write(path, data, false, callback)
 end
@@ -310,7 +316,7 @@ end
 ---@param path string
 ---@param data string|string[]
 ---@param callback fun()?
----@return boolean
+---@return boolean?
 function M.updatefile(path, data, callback)
     assert(M.is_file(path), debug.traceback('Not a file: ' .. path))
     return fs_write(path, data, true, callback)
@@ -320,7 +326,7 @@ end
 ---@param path string
 ---@param split boolean?
 ---@param callback fun(data: string[])?
----@return boolean|string|string[]
+---@return boolean|string|string[]|nil
 function M.readfile(path, split, callback)
     vim.validate {
         path = { path, 'string' },
@@ -334,8 +340,10 @@ function M.readfile(path, split, callback)
     if not callback then
         return M.openfile(path, 'r', function(fd)
             local stat = assert(vim.uv.fs_fstat(fd))
+            ---@type string|string[]
             local data = assert(vim.uv.fs_read(fd, stat.size, 0))
             if split then
+                ---@cast data string
                 data = vim.split(data, '[\r]?\n')
                 -- NOTE: This seems to always read an extra linefeed so we remove it if it's empty
                 if data[#data] == '' then
@@ -349,7 +357,7 @@ function M.readfile(path, split, callback)
         assert(not oerr, oerr)
         vim.uv.fs_fstat(fd, function(serr, stat)
             assert(not serr, serr)
-            vim.uv.fs_read(fd, stat.size, 0, function(rerr, data)
+            vim.uv.fs_read(fd, stat and stat.size or 0, 0, function(rerr, data)
                 assert(not rerr, rerr)
                 vim.uv.fs_close(fd, function(cerr)
                     assert(not cerr, cerr)
@@ -409,6 +417,11 @@ function M.chmod(path, mode, base)
     return ok or false
 end
 
+--- Get files from the given path
+---@param path string
+---@param opts table
+---@param filter fun(name: string, ftype: string):boolean
+---@return string[]
 local function dir(path, opts, filter)
     local iter = vim.iter(vim.fs.dir(path, opts))
     if filter then
@@ -420,12 +433,20 @@ local function dir(path, opts, filter)
     end):totable()
 end
 
+--- Get files from the given path
+---@param path string
+---@param opts table
+---@return string[]
 function M.get_files(path, opts)
     return dir(path, opts, function(_, t)
         return t == 'file'
     end)
 end
 
+--- Get directories from the given path
+---@param path string
+---@param opts table
+---@return string[]
 function M.get_dirs(path, opts)
     return dir(path, opts, function(_, t)
         return t == 'directory'
@@ -539,7 +560,10 @@ function M.rename(old, new, bang)
         end
 
         if bufloaded(old) and M.is_file(new) then
-            vim.cmd.edit((new:gsub(vim.fs.normalize(vim.uv.cwd()), '')))
+            local cwd = vim.uv.cwd()
+
+            ---@cast cwd string
+            vim.cmd.edit((new:gsub(vim.fs.normalize(cwd), '')))
             if cursor_pos then
                 nvim.win.set_cursor(0, cursor_pos)
             end
@@ -728,6 +752,9 @@ function M.skeleton_filename(opts)
     end
 end
 
+--- Trim trailing whites
+--- @param buf integer
+--- @param range integer[]
 function M.trimwhites(buf, range)
     vim.validate {
         buf = { buf, 'number', true },
@@ -756,6 +783,10 @@ function M.trimwhites(buf, range)
     end
 end
 
+--- Remove garbage from buffer
+---  - trimwhites
+---  - convert tab to spaces if `expand`, spaces to tabs otherwise
+---  - exec retab
 function M.clean_file()
     if vim.b.editorconfig and vim.b.editorconfig.trim_trailing_whitespace ~= nil then
         return
@@ -810,6 +841,7 @@ end
 
 --- Decode json data
 ---@param data string|string[]
+---@return table
 function M.decode_json(data)
     vim.validate {
         data = { data, { 'string', 'table' } },
@@ -843,20 +875,28 @@ function M.read_json(filename)
     }
     assert(filename ~= '', debug.traceback 'Empty filename')
     if filename:sub(1, 1) == '~' then
-        filename = filename:gsub('~', vim.uv.os_homedir())
+        local home = vim.uv.os_homedir()
+        ---@cast home string
+        filename = filename:gsub('~', home)
     end
     assert(M.is_file(filename), debug.traceback('Not a file: ' .. filename))
-    return M.decode_json(M.readfile(filename, false))
+    local data = M.readfile(filename, false)
+
+    ---@cast data string
+    return M.decode_json(data)
 end
 
 --- Dump obj into json data
 ---@param filename string
 ---@param data string[]
+---@return boolean?
 function M.dump_json(filename, data)
     vim.validate { filename = { filename, 'string' }, data = { data, 'table' } }
     assert(filename ~= '', debug.traceback 'Empty filename')
     if filename:sub(1, 1) == '~' then
-        filename = filename:gsub('~', vim.uv.os_homedir())
+        local home = vim.uv.os_homedir()
+        ---@cast home string
+        filename = filename:gsub('~', home)
     end
 
     local json = M.encode_json(data)
@@ -886,7 +926,8 @@ function M.parents(dirname)
 end
 
 --- TODO
----@param filename string
+---@param filename string|string[]|fun(name: string)
+---@param opts table
 function M.find(filename, opts)
     vim.validate {
         filename = { filename, { 'function', 'string', 'table' } },
@@ -910,6 +951,7 @@ function M.find(filename, opts)
         if ftype == 'file' then
             if
                 (type(filename) == type '' and filename == fname)
+                ---@cast filename string[]
                 or (type(filename) == type {} and vim.list_contains(filename, fname))
                 or (type(filename) == 'function' and filename(fname))
             then
@@ -934,14 +976,21 @@ function M.is_executable(filename)
     return vim.uv.fs_access(vim.fs.normalize(filename), 'X')
 end
 
+
+--- Make given buffer file executable
+---@param buf string|integer|nil
 function M.chmod_exec(buf)
     vim.validate {
         buf = { buf, { 'number', 'string' }, true },
     }
+    ---@type string
     local filename
-    if type(buf) == type(0) or not buf then
-        filename = vim.api.nvim_buf_get_name(buf or 0)
+    buf = buf or 0
+    if type(buf) == type(0) then
+        ---@cast buf number
+        filename = vim.api.nvim_buf_get_name(buf)
     else
+        ---@cast buf string
         filename = buf
     end
     if filename ~= '' and M.is_file(filename) and not M.is_executable(filename) then
@@ -951,6 +1000,7 @@ function M.chmod_exec(buf)
     end
 end
 
+--- Make current buffer file executable if is a script like buffer
 function M.make_executable()
     local sys = require 'sys'
     if sys.name == 'windows' then
@@ -1011,6 +1061,7 @@ function M.find_in_dir(args)
 
     local cwd = vim.uv.cwd()
     if path ~= cwd then
+        ---@cast cwd string
         path = path:gsub(vim.pesc(cwd) .. '/', ''):gsub('/.*', '')
     end
 

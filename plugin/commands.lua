@@ -660,11 +660,11 @@ nvim.command.set('Marks2Arglist', function(opts)
     RELOAD('utils.marks').marks_to_arglist { clear = opts.bang }
 end, { bang = true, desc = 'Dump global marks files to the arglist' })
 
-nvim.command.set('Marks2Quickfix', function(opts)
+nvim.command.set('Marks2Quickfix', function(_)
     RELOAD('utils.marks').marks_to_quickfix()
 end, { bang = true, desc = 'Dump global marks files to the quickfix' })
 
-nvim.command.set('Marks2LocList', function(opts)
+nvim.command.set('Marks2LocList', function(_)
     RELOAD('utils.marks').marks_to_quickfix { win = 0 }
 end, { bang = true, desc = 'Dump global marks files to the loclist' })
 

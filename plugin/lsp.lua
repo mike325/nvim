@@ -1,4 +1,4 @@
-if not vim.version.ge(vim.version(), { 0, 11 }) then
+if vim.version.lt(vim.version(), { 0, 11 }) then
     return
 end
 
@@ -20,7 +20,6 @@ end
 -- These are the configs I'm intersted in, they can be defined with a empty dict
 -- and resolved with vim.lsp.config
 local lsp_configs = 'after/lsp'
-
 local configs = vim.iter(vim.api.nvim_get_runtime_file(('%s/*.lua'):format(lsp_configs), true))
     :map(function(config)
         return (vim.fs.basename(config):gsub('%.lua$', ''))
