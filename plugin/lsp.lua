@@ -21,9 +21,11 @@ end
 -- and resolved with vim.lsp.config
 local lsp_configs = 'after/lsp'
 
-local configs = vim.iter(vim.api.nvim_get_runtime_file(('%s/*.lua'):format(lsp_configs), true)):map(function(config)
-    return (vim.fs.basename(config):gsub('%.lua$', ''))
-end):totable()
+local configs = vim.iter(vim.api.nvim_get_runtime_file(('%s/*.lua'):format(lsp_configs), true))
+    :map(function(config)
+        return (vim.fs.basename(config):gsub('%.lua$', ''))
+    end)
+    :totable()
 
 local servers = vim.iter(configs)
     :filter(function(config)
