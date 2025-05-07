@@ -267,7 +267,7 @@ local function fs_write(path, data, append, callback)
         callback = { callback, { 'function', 'boolean' }, true },
     }
 
-    if type(data) ~= type ''  then
+    if type(data) ~= type '' then
         ---@cast data string[]
         data = table.concat(data, '\n')
     end
@@ -975,7 +975,6 @@ function M.is_executable(filename)
     }
     return vim.uv.fs_access(vim.fs.normalize(filename), 'X')
 end
-
 
 --- Make given buffer file executable
 ---@param buf string|integer|nil
