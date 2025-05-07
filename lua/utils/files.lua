@@ -378,7 +378,7 @@ end
 ---@param path string
 ---@param mode string|number
 ---@param base integer
----@return boolean?
+---@return boolean
 function M.chmod(path, mode, base)
     if is_windows then
         return
@@ -401,14 +401,8 @@ function M.chmod(path, mode, base)
     base = base == nil and 8 or base
 
     ---@type number
-    local flags
-    if type(mode) == type(1) then
-        ---@cast mode number
-        flags = mode
-    else
-        ---@cast mode string
-        flags = tonumber(mode, base)
-    end
+    ---@cast mode string
+    local flags = tonumber(mode, base)
 
     local ok, msg, _ = vim.uv.fs_chmod(path, flags)
     if not ok then
