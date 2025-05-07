@@ -138,8 +138,8 @@ local function rule_3_5(_, parent, old_state)
     local destructor = false
 
     local destructor_signature = '%s~%s%%s*%%('
-    local oper_signature = '%s%%s*&%%s*operator=%%(%s%%s*%s%s%%s+'
-    local constructor_signature = '%s%%s*%%(%s%%s*%s%s%%s+'
+    local oper_signature = '%s%%s*&%%s*operator=%%(%s%%s*%s%s'
+    local constructor_signature = '%s%%s*%%(%s%%s*%s%s'
 
     for _, method in ipairs(operators) do
         local signature = vim.trim(method[1])
@@ -229,7 +229,7 @@ local function rule_3_5(_, parent, old_state)
             end
             vim.list_extend(nodes, {
                 t { classname },
-                t { '(const ' },
+                t { '(' },
                 t { classname },
                 t { '&&)' },
                 get_choice(),
@@ -244,7 +244,7 @@ local function rule_3_5(_, parent, old_state)
             end
             vim.list_extend(nodes, {
                 t { classname },
-                t { '& operator=(const ' },
+                t { '& operator=(' },
                 t { classname },
                 t { '&&)' },
                 r(choice_nr),

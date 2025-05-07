@@ -98,16 +98,24 @@ local qf_funcs = {
     end,
 }
 
+--- Clear qf/loclist
+---@param win integer|boolean|nil
 function M.clear(win)
     qf_funcs.set_list({}, ' ', nil, win)
     qf_funcs.close(win)
 end
 
+--- Check if qf is open
+---@param win integer|boolean|nil
+---@return boolean
 function M.is_open(win)
     local qf_winid = qf_funcs.get_list({ winid = 0 }, win).winid
     return qf_winid > 0
 end
 
+--- Open qf/loclist
+---@param size integer?
+---@param win integer|boolean|nil
 function M.open(size, win)
     vim.validate {
         size = { size, 'number', true },
@@ -125,15 +133,30 @@ function M.open(size, win)
     -- vim.cmd.wincmd 'p'
 end
 
+--- Close qf/loclist
+---@param win integer|boolean|nil
 function M.close(win)
     vim.validate { win = { win, { 'number', 'boolean' }, true } }
     qf_funcs.close(win)
 end
 
+--- Get qf
+---@param win integer|boolean|nil
+---@return table
 function M.get_list(what, win)
     return qf_funcs.get_list(what, win)
 end
 
+--- Set qf/loclist
+---@param opts table
+---             - items: string[]|table
+---             - lines: string[]|nil
+---             - win: number|boolean|nil
+---             - action: string|nil
+---             - open: boolean|nil
+---             - jump: boolean|nil
+---             - efm: string[]|string|nil
+---@param win integer|boolean|nil
 function M.set_list(opts, win)
     vim.validate {
         opts = { opts, 'table' },
@@ -143,6 +166,7 @@ function M.set_list(opts, win)
         open = { opts.open, 'boolean', true },
         jump = { opts.jump, 'boolean', true },
         efm = { opts.efm, { 'string', 'table' }, true },
+        lines = { opts.lines, { 'table' }, true },
     }
 
     assert(not opts.lines, debug.traceback 'Cannot set lines using items')
@@ -228,6 +252,10 @@ function M.set_list(opts, win)
     end
 end
 
+--- Dump Qf/loclist or qf-like items to diagnostics namespace
+---@param ns string|integer|nil
+---@param win integer|boolean|nil
+---@param items table?
 function M.qf_to_diagnostic(ns, win, items)
     vim.validate {
         ns = { ns, { 'number', 'string' }, true },
@@ -263,6 +291,7 @@ function M.qf_to_diagnostic(ns, win, items)
         end
     end
 
+    --- @cast ns integer
     vim.diagnostic.reset(ns)
 
     if #qf.items > 0 then
@@ -275,7 +304,7 @@ function M.qf_to_diagnostic(ns, win, items)
         end)
 
         for buf, diagnostic in pairs(buf_diagnostics) do
-            local bufnr = tonumber(buf)
+            local bufnr = tonumber(buf) --- @cast bufnr integer
             if vim.api.nvim_buf_is_loaded(bufnr) then
                 vim.diagnostic.set(ns, bufnr, diagnostic)
             else
@@ -293,6 +322,10 @@ function M.qf_to_diagnostic(ns, win, items)
     end
 end
 
+--- Dump diagnostics into qf/loclist
+---@param diagnostics table
+---@param opts table?
+---@param win integer|boolean|nil
 function M.diagnostics_to_qf(diagnostics, opts, win)
     vim.validate {
         diagnostics = { diagnostics, 'table' },
@@ -309,10 +342,12 @@ function M.diagnostics_to_qf(diagnostics, opts, win)
         end
         vim.list_extend(opts.items, items)
     end
-    vim.api.nvim_win_set_buf(0, tonumber(vim.tbl_keys(diagnostics)[1]))
+
+    local bufnr = tonumber(vim.tbl_keys(diagnostics)[1]) --- @cast bufnr integer
+    vim.api.nvim_win_set_buf(0, bufnr)
     M.set_list(opts, win)
     if not M.is_open(win) then
-        M.open(win)
+        M.open(nil, win)
     end
 end
 

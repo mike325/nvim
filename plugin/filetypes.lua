@@ -66,5 +66,3 @@ vim.filetype.add {
         },
     },
 }
-
-return true

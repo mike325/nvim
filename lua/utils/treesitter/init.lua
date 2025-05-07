@@ -92,11 +92,11 @@ function M.is_in_node(node, range, buf)
     return false
 end
 
-function M.get_list_nodes(root_node, tsquery, text, buf)
+function M.get_list_nodes(root_node, tsquery, get_text, buf)
     vim.validate {
         root_node = { root_node, { 'userdata', 'table' } },
         tsquery = { tsquery, 'string' },
-        text = { text, 'boolean', true },
+        get_text = { get_text, 'boolean', true },
         buf = { buf, 'number', true },
     }
 
@@ -110,21 +110,29 @@ function M.get_list_nodes(root_node, tsquery, text, buf)
     local langtree = parser:language_for_range { root_node:range() }
     local ts_lang = langtree:lang()
 
-    -- DEPRECATED: vim.treesitter.(parse_query/query.parse_query/get_node_...) in 0.9
-    local parse_query = vim.treesitter.query.parse or vim.treesitter.query.parse_query
-    local get_node_text = vim.treesitter.get_node_text or vim.treesitter.query.get_node_text
-
     local nodes = {}
-    local query = parse_query(ts_lang, tsquery)
+    local query = vim.treesitter.query.parse(ts_lang, tsquery)
+
+    local function insert_node(node)
+        local lbegin, _, lend, _ = unpack(M.get_vim_range({ node:range() }, buf))
+        if get_text then
+            local node_text = vim.treesitter.get_node_text(node, buf)
+            table.insert(nodes, { node_text, lbegin, lend })
+        else
+            table.insert(nodes, node)
+        end
+    end
+
+    local function iter_nodes(match_nodes)
+        for _, node in pairs(match_nodes) do
+            insert_node(node)
+        end
+    end
+
+    local insert_nodes = nvim.has { 0, 11 } and iter_nodes or insert_node
     for _, match, _ in query:iter_matches(root_node, buf) do
-        for _, match_node in pairs(match) do
-            local lbegin, _, lend, _ = unpack(M.get_vim_range({ match_node:range() }, buf))
-            if text then
-                local name = get_node_text(match_node, buf)
-                table.insert(nodes, { name, lbegin, lend })
-            else
-                table.insert(nodes, match_node)
-            end
+        for _, match_nodes in pairs(match) do
+            insert_nodes(match_nodes)
         end
     end
 

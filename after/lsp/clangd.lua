@@ -59,7 +59,7 @@ return {
     --     end
     -- end,
     root_markers = root_markers,
-    on_init = function(client)
+    on_init = function(_)
         if require('utils.files').is_dir(pch_dir) then
             require('utils.files').mkdir(pch_dir, true)
         end

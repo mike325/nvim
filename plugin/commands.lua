@@ -336,6 +336,39 @@ nvim.command.set('Loc2Diag', function()
     RELOAD('utils.qf').qf_to_diagnostic(nil, true)
 end)
 
+nvim.command.set('VirtualLines', function(opts)
+    local action = opts.args:gsub('^%-+', '')
+
+    local options = {
+        virtual_text = not opts.bang,
+    }
+
+    if nvim.has { 0, 11 } then
+        options.virtual_lines = not opts.bang
+    end
+
+    if action == 'text' then
+        options.virtual_lines = nil
+        if not opts.bang then
+            options.virtual_text = {
+                spacing = 2,
+                prefix = '❯',
+            }
+        end
+    elseif action == 'lines' then
+        options.virtual_text = nil
+    elseif not opts.bang and nvim.has { 0, 11 } then
+        options.virtual_text = false
+    end
+
+    vim.diagnostic.config(options)
+end, {
+    nargs = '?',
+    bang = true,
+    desc = 'Toggle Virtual lines and virtual text',
+    complete = completions.diagnostics_virtual_lines,
+})
+
 nvim.command.set('Diagnostics', function(opts)
     local action = opts.fargs[1]:gsub('^%-+', '')
     local all_namespaces = vim.iter(vim.diagnostic.get_namespaces()):fold({}, function(diag_ns, ns)
@@ -627,11 +660,11 @@ nvim.command.set('Marks2Arglist', function(opts)
     RELOAD('utils.marks').marks_to_arglist { clear = opts.bang }
 end, { bang = true, desc = 'Dump global marks files to the arglist' })
 
-nvim.command.set('Marks2Quickfix', function(opts)
+nvim.command.set('Marks2Quickfix', function(_)
     RELOAD('utils.marks').marks_to_quickfix()
 end, { bang = true, desc = 'Dump global marks files to the quickfix' })
 
-nvim.command.set('Marks2LocList', function(opts)
+nvim.command.set('Marks2LocList', function(_)
     RELOAD('utils.marks').marks_to_quickfix { win = 0 }
 end, { bang = true, desc = 'Dump global marks files to the loclist' })
 
