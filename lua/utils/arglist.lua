@@ -1,5 +1,7 @@
 local M = {}
 
+--- Clear arglist
+---@param all boolean?
 function M.clear(all)
     vim.validate {
         all = { all, 'boolean', true },
@@ -12,7 +14,7 @@ function M.clear(all)
         end
     else
         -- NOTE: sessions may load invalid files in the arglist
-        for _, arg in ipairs(vim.fn.argv()) do
+        for _, arg in ipairs(vim.fn.argv() --[[@as string[] ]]) do
             if not require('utils.files').is_file(arg) then
                 vim.cmd.argdelete(arg)
             end
@@ -20,6 +22,9 @@ function M.clear(all)
     end
 end
 
+--- Add the given files/buffers to the arglist
+---@param files string|string[]|number|number[]
+---@param clear boolean?
 function M.add(files, clear)
     vim.validate {
         files = { files, { 'table', 'string', 'number' } },
@@ -38,8 +43,10 @@ function M.add(files, clear)
     -- end
 
     local cwd = vim.pesc(require('utils.files').getcwd()) .. '/'
+    ---@cast files table
     for _, filename in ipairs(files) do
         if type(filename) == type '' then
+            ---@cast filename string
             local buf = vim.fn.bufnr(filename)
             if filename == '%' then
                 filename = vim.fn.bufname(buf)
@@ -73,8 +80,10 @@ function M.add(files, clear)
     vim.cmd.argdedupe()
 end
 
+--- Execute an ex cmd inside every element in the arglist
+---@param cmd string
 function M.exec(cmd)
-    for _, filename in ipairs(vim.fn.argv()) do
+    for _, filename in ipairs(vim.fn.argv() --[[@as string[] ]]) do
         local buf = vim.fn.bufnr(filename)
         vim.api.nvim_buf_call(buf, function()
             vim.cmd(cmd)
@@ -82,17 +91,22 @@ function M.exec(cmd)
     end
 end
 
+
+--- Edit an existing argument
+---@param argument string?
 function M.edit(argument)
     vim.validate {
         argument = { argument, 'string', true },
     }
 
-    if #vim.fn.argv() == 0 then
+    ---@type string[]
+    local args = vim.fn.argv() --[[@as string[] ]]
+    if #args == 0 then
         return
     end
 
     if argument and argument ~= '' then
-        for idx, arg in ipairs(vim.fn.argv()) do
+        for idx, arg in ipairs(args) do
             if arg == argument then
                 vim.cmd.argument(idx)
                 break
@@ -100,7 +114,7 @@ function M.edit(argument)
         end
     else
         vim.ui.select(
-            vim.fn.argv(),
+            args,
             { prompt = 'Select Arg > ' },
             vim.schedule_wrap(function(choice, idx)
                 if choice and choice ~= '' then
