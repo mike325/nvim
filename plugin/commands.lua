@@ -1,31 +1,58 @@
 local sys = require 'sys'
 local nvim = require 'nvim'
-
 local executable = require('utils.files').executable
 local completions = RELOAD 'completions'
 
+--- @class Command.Opts
+--- @inlinedoc
+--- @field name (string) Command name
+--- @field args (string) The args passed to the command, if any
+--- @field fargs (string[]) The args split by unescaped whitespace
+---                         (when more than one argument is allowed), if any <f-args>
+--- @field bang (boolean?) "true" if the command was executed with a ! modifier <bang>
+--- @field line1 (number) The starting line of the command range <line1>
+--- @field line2 (number) The final line of the command range <line2>
+--- @field range (number) The number of items in the command range: 0, 1, or 2 <range>
+--- @field count (number) Any count supplied <count>
+--- @field reg (string) The optional register, if specified <reg>
+--- @field mods (string) Command modifiers, if any <mods>
+--- @field smods (table) Command modifiers in a structured format.
+
 if sys.name ~= 'windows' then
+    --- @param opts Command.Opts
     nvim.command.set('Chmod', function(opts)
-        RELOAD('mappings').chmod(opts)
+        local mode = opts.args
+        if not mode:match '^%d+$' then
+            vim.notify('Not a valid permissions mode: ' .. mode, vim.log.levels.ERROR, { title = 'Chmod' })
+            return
+        end
+
+        local utils = require 'utils.files'
+        local filename = vim.api.nvim_buf_get_name(0)
+        if utils.is_file(filename) then
+            utils.chmod(filename, mode)
+        end
     end, { nargs = 1, desc = 'Change the permission of the current buffer/file' })
 end
 
 nvim.command.set('ClearQf', function()
-    RELOAD('utils.qf').clear()
+    require('utils.qf').clear()
 end)
 
 nvim.command.set('ClearLoc', function()
-    RELOAD('utils.qf').clear(nvim.get_current_win())
+    require('utils.qf').clear(nvim.get_current_win())
 end)
 
+--- @param opts Command.Opts
 nvim.command.set('Terminal', function(opts)
-    RELOAD('mappings.commands').floating_terminal(opts)
+    require('mappings.commands').floating_terminal(opts)
 end, { nargs = '*', desc = 'Show big center floating terminal window' })
 
 nvim.command.set('MouseToggle', function()
-    RELOAD('mappings.commands').toggle_mouse()
+    require('mappings.commands').toggle_mouse()
 end, { desc = 'Enable/Disable Mouse support' })
 
+--- @param opts Command.Opts
 nvim.command.set('BufKill', function(opts)
     opts = opts or {}
     opts.rm_no_cwd = vim.list_contains(opts.fargs, '-cwd')
@@ -43,6 +70,7 @@ nvim.command.set('NumbersToggle', 'setlocal number! number?')
 nvim.command.set('SpellToggle', 'setlocal spell! spell?')
 nvim.command.set('WrapToggle', 'setlocal wrap! wrap?')
 
+--- @param opts Command.Opts
 nvim.command.set('Trim', function(opts)
     RELOAD('mappings').trim(opts)
 end, {
@@ -60,51 +88,63 @@ if executable 'gonvim' then
     )
 end
 
+--- @param opts Command.Opts
 nvim.command.set('FileType', function(opts)
     vim.bo.filetype = opts.args ~= '' and opts.args or 'text'
 end, { nargs = '?', complete = 'filetype', desc = 'Set filetype' })
 
+--- @param opts Command.Opts
 nvim.command.set('FileFormat', function(opts)
     vim.bo.filetype = opts.args ~= '' and opts.args or 'unix'
 end, { nargs = '?', complete = completions.fileformats, desc = 'Set file format' })
 
+--- @param opts Command.Opts
 nvim.command.set('SpellLang', function(opts)
     RELOAD('utils.functions').spelllangs(opts.args)
 end, { nargs = '?', complete = completions.spells, desc = 'Enable/Disable spelling' })
 
+--- @param opts Command.Opts
 nvim.command.set('Qopen', function(opts)
-    opts.size = tonumber(opts.args)
-    if opts.size then
-        opts.size = opts.size + 1
+    local size = tonumber(opts.args)
+    if size then
+        size = size + 1
     end
-    RELOAD('utils.qf').toggle(opts)
+    require('utils.qf').toggle { size = size }
 end, { nargs = '?', desc = 'Open quickfix' })
 
+--- @param opts Command.Opts
 nvim.command.set('MoveFile', function(opts)
     RELOAD('mappings').move_file(opts)
 end, { bang = true, nargs = 1, complete = 'file', desc = 'Move current file to another location' })
 
+--- @param opts Command.Opts
 nvim.command.set('RenameFile', function(opts)
-    RELOAD('mappings').rename_file(opts)
+    local filename = vim.api.nvim_buf_get_name(0)
+    local dirname = vim.fs.dirname(filename)
+    RELOAD('utils.files').rename(filename, vim.fs.joinpath(dirname, opts.args), opts.bang)
 end, { bang = true, nargs = 1, complete = 'file', desc = 'Rename current file to another location' })
 
+--- @param opts Command.Opts
 nvim.command.set('Mkdir', function(opts)
-    vim.fn.mkdir(vim.fn.fnameescape(opts.args), 'p')
-end, { nargs = 1, complete = 'dir', desc = 'mkdir wrapper' })
+    require('utils.files').mkdir(opts.args, opts.bang)
+end, { bang = true, nargs = 1, complete = 'dir', desc = 'mkdir wrapper' })
 
+--- @param opts Command.Opts
 nvim.command.set('RemoveFile', function(opts)
     local target = opts.args ~= '' and opts.args or vim.api.nvim_buf_get_name(0)
-    local utils = RELOAD 'utils.files'
+    local utils = require 'utils.files'
     utils.delete(utils.realpath(target), opts.bang)
 end, { bang = true, nargs = '?', complete = 'file', desc = 'Remove current file and close the window' })
 
+--- @param opts Command.Opts
 nvim.command.set('CopyFile', function(opts)
-    local utils = RELOAD 'utils.files'
+    local utils = require 'utils.files'
     local src = vim.api.nvim_buf_get_name(0)
     local dest = opts.fargs[1]
     utils.copy(src, dest, opts.bang)
 end, { bang = true, nargs = 1, complete = 'file', desc = 'Copy current file to another location' })
 
+--- @param opts Command.Opts
 nvim.command.set('Grep', function(opts)
     local search = opts.fargs[#opts.fargs]
     opts.fargs[#opts.fargs] = nil
@@ -119,6 +159,7 @@ nvim.command.set('Grep', function(opts)
     RELOAD('utils.async').grep { search = search, args = args }
 end, { nargs = '+', complete = 'file' })
 
+--- @param opts Command.Opts
 nvim.command.set('LGrep', function(opts)
     local search = opts.fargs[#opts.fargs]
     opts.fargs[#opts.fargs] = nil
@@ -154,19 +195,23 @@ local function find_files(opts, win)
     RELOAD('mappings').find(args)
 end
 
+--- @param opts Command.Opts
 nvim.command.set('CFind', function(opts)
     find_files(opts)
 end, { bang = true, nargs = '+', complete = 'file', desc = 'Async and recursive :find' })
 
+--- @param opts Command.Opts
 nvim.command.set('LFind', function(opts)
     find_files(opts, nvim.get_current_win())
 end, { bang = true, nargs = '+', complete = 'file', desc = 'Async and recursive :lfind' })
 
+--- @param opts Command.Opts
 nvim.command.set('Make', function(opts)
     RELOAD('mappings').async_makeprg(opts)
 end, { nargs = '*', desc = 'Async execution of current makeprg' })
 
 if executable 'scp' then
+    --- @param opts Command.Opts
     nvim.command.set('SendFile', function(opts)
         RELOAD('mappings').remote_file(opts.args, true)
     end, {
@@ -175,6 +220,7 @@ if executable 'scp' then
         desc = 'Send current file to a remote location',
     })
 
+    --- @param opts Command.Opts
     nvim.command.set('GetFile', function(opts)
         RELOAD('mappings').remote_file(opts.args, false)
     end, {
@@ -183,6 +229,7 @@ if executable 'scp' then
         desc = 'Get current file from a remote location',
     })
 
+    --- @param opts Command.Opts
     nvim.command.set('SCPEdit', function(opts)
         local args = {
             host = opts.fargs[1],
@@ -192,6 +239,7 @@ if executable 'scp' then
     end, { nargs = '*', desc = 'Edit remote file using scp', complete = completions.ssh_hosts_completion })
 end
 
+--- @param opts Command.Opts
 nvim.command.set('Scratch', function(opts)
     RELOAD('mappings').scratch_buffer(opts)
 end, {
@@ -205,11 +253,13 @@ nvim.command.set('ConcealLevel', function()
     vim.wo.conceallevel = conncall > 0 and 0 or 2
 end, { desc = 'Toggle conceal level between 0 and 2' })
 
+--- @param opts Command.Opts
 nvim.command.set('Messages', function(opts)
     RELOAD('mappings').messages(opts)
 end, { nargs = '?', complete = 'messages', desc = 'Populate quickfix with the :messages list' })
 
 if executable 'pre-commit' then
+    --- @param opts Command.Opts
     nvim.command.set('PreCommit', function(opts)
         RELOAD('mappings').precommit(opts)
     end, { bang = true, nargs = '*' })
@@ -220,20 +270,24 @@ nvim.command.set('Repl', function(opts)
 end, { nargs = '*', complete = 'filetype' })
 
 -- TODO: May need to add a check for "zoom" executable but this should work even inside WSL
+--- @param opts Command.Opts
 nvim.command.set('Zoom', function(opts)
     RELOAD('mappings').zoom_links(opts)
 end, { nargs = 1, complete = completions.zoom_links, desc = 'Open Zoom call in a specific room' })
 
+--- @param opts Command.Opts
 nvim.command.set('Edit', function(opts)
-    RELOAD('mappings').edit(opts)
+    RELOAD('mappings.commands').edit(opts)
 end, { nargs = '*', complete = 'file', desc = 'Open multiple files' })
 
+--- @param opts Command.Opts
 nvim.command.set('DiffFiles', function(opts)
     RELOAD('mappings').diff_files(opts)
 end, { nargs = '+', complete = 'file', desc = 'Open a new tab in diff mode with the given files' })
 
 -- NOTE: I should not need to create this function, but I couldn't find a way to override
 --       internal runtime compilers
+--- @param opts Command.Opts
 nvim.command.set('Compiler', function(opts)
     RELOAD('mappings').custom_compiler(opts)
 end, {
@@ -242,6 +296,7 @@ end, {
     desc = 'Set the given compiler with preference on the custom compilers located in the after directory',
 })
 
+--- @param opts Command.Opts
 nvim.command.set('Reloader', function(opts)
     local get_files = function(path)
         local files = {}
@@ -281,6 +336,7 @@ end, {
     complete = completions.reload_configs,
 })
 
+--- @param opts Command.Opts
 nvim.command.set('AutoFormat', function(opts)
     RELOAD('mappings').autoformat(opts)
 end, { nargs = '?', complete = completions.toggle, bang = true, desc = 'Toggle Autoformat autocmd' })
@@ -300,27 +356,33 @@ nvim.command.set('AlternateGrep', function()
     RELOAD('mappings').alternate_grep()
 end, { nargs = 0, desc = 'Change between git grep and the best available alternative' })
 
+--- @param opts Command.Opts
 nvim.command.set('Alternate', function(opts)
     RELOAD('mappings').alternate(opts)
 end, { nargs = 0, desc = 'Alternate between files', bang = true })
 
+--- @param opts Command.Opts
 nvim.command.set('A', function(opts)
     RELOAD('mappings').alternate(opts)
 end, { nargs = 0, desc = 'Alternate between files', bang = true })
 
+--- @param opts Command.Opts
 nvim.command.set('AlternateTest', function(opts)
     RELOAD('mappings').alternate_test(opts)
 end, { nargs = 0, desc = 'Alternate between source and test files', bang = true })
 
+--- @param opts Command.Opts
 nvim.command.set('T', function(opts)
     RELOAD('mappings').alternate_test(opts)
 end, { nargs = 0, desc = 'Alternate between source and test files', bang = true })
 
+--- @param opts Command.Opts
 nvim.command.set('NotificationServer', function(opts)
     opts.enable = opts.args == 'enable' or opts.args == ''
     RELOAD('servers.notifications').start_server(opts)
 end, { nargs = 1, complete = completions.toggle, bang = true })
 
+--- @param opts Command.Opts
 nvim.command.set('RemoveEmpty', function(opts)
     local removed = RELOAD('utils.buffers').remove_empty(opts)
     if removed > 0 then
@@ -336,6 +398,7 @@ nvim.command.set('Loc2Diag', function()
     RELOAD('utils.qf').qf_to_diagnostic(nil, true)
 end)
 
+--- @param opts Command.Opts
 nvim.command.set('VirtualLines', function(opts)
     local action = opts.args:gsub('^%-+', '')
 
@@ -369,6 +432,7 @@ end, {
     complete = completions.diagnostics_virtual_lines,
 })
 
+--- @param opts Command.Opts
 nvim.command.set('Diagnostics', function(opts)
     local action = opts.fargs[1]:gsub('^%-+', '')
     local all_namespaces = vim.iter(vim.diagnostic.get_namespaces()):fold({}, function(diag_ns, ns)
@@ -419,14 +483,17 @@ end, {
     complete = completions.diagnostics_completion,
 })
 
+--- @param opts Command.Opts
 nvim.command.set('KillJob', function(opts)
     RELOAD('mappings').kill_job(opts)
 end, { nargs = '?', bang = true, desc = 'Kill the selected job' })
 
+--- @param opts Command.Opts
 nvim.command.set('Progress', function(opts)
     RELOAD('mappings').show_job_progress(opts)
 end, { nargs = 1, desc = 'Show progress of the selected job', complete = completions.background_jobs })
 
+--- @param opts Command.Opts
 nvim.command.set('CLevel', function(opts)
     opts.level = opts.args
     RELOAD('utils.qf').filter_qf_diagnostics(opts)
@@ -437,6 +504,7 @@ end, {
     complete = completions.diagnostics_level,
 })
 
+--- @param opts Command.Opts
 nvim.command.set('LLevel', function(opts)
     opts.win = vim.api.nvim_get_current_win()
     opts.level = opts.args
@@ -449,6 +517,7 @@ end, {
 })
 
 if executable 'git' then
+    --- @param opts Command.Opts
     nvim.command.set('OpenChanges', function(opts)
         local action = 'open'
         local revision
@@ -477,6 +546,7 @@ if executable 'git' then
         desc = 'Open all modified files in the current git repository',
     })
 
+    --- @param opts Command.Opts
     nvim.command.set('OpenConflicts', function(opts)
         RELOAD('utils.buffers').open_conflicts(opts)
     end, {
@@ -508,6 +578,7 @@ nvim.command.set('Loc2Qf', function(_)
     qfutils.qf_loclist_switcher()
 end, { desc = "Move the current window's location list to the QF" })
 
+--- @param opts Command.Opts
 nvim.command.set('TrimWhites', function(opts)
     RELOAD('utils.files').trimwhites(nvim.get_current_buf(), { opts.line1 - 1, opts.line2 })
 end, { range = '%', desc = 'Alias to <,>s/\\s\\+$//g' })
@@ -519,11 +590,13 @@ nvim.command.set('ParseSSHConfig', function(_)
     end
 end, { desc = 'Parse SSH config' })
 
+--- @param opts Command.Opts
 nvim.command.set('VNC', function(opts)
     RELOAD('mappings').vnc(opts.args, { '-Quality=high' })
 end, { complete = completions.ssh_hosts_completion, nargs = 1, desc = 'Open a VNC connection to the given host' })
 
 if executable 'gh' then
+    --- @param opts Command.Opts
     nvim.command.set('PRCreate', function(opts)
         if #opts.fargs > 0 then
             opts.fargs = vim.list_extend({ '--reviewer' }, { table.concat(opts.fargs, ',') })
@@ -542,6 +615,7 @@ if executable 'gh' then
         desc = 'Open PR with the given reviewers defined in reviewers.json',
     })
 
+    --- @param opts Command.Opts
     nvim.command.set('PrOpen', function(opts)
         local gh = RELOAD 'utils.gh'
 
@@ -576,6 +650,7 @@ if executable 'gh' then
         desc = 'Open PR in the browser',
     })
 
+    --- @param opts Command.Opts
     nvim.command.set('PrReady', function(opts)
         local is_ready = true
         if opts.args == 'draft' then
@@ -591,6 +666,7 @@ if executable 'gh' then
         desc = 'Set PR to ready or to draft',
     })
 
+    --- @param opts Command.Opts
     nvim.command.set('EditReviewers', function(opts)
         local reviewers = { table.concat(opts.fargs, ',') }
         local action = opts.fargs[1]:gsub('^%-+', '')
@@ -609,14 +685,17 @@ if executable 'gh' then
     })
 end
 
+--- @param opts Command.Opts
 nvim.command.set('Argdo', function(opts)
     RELOAD('utils.arglist').exec(opts.args)
 end, { nargs = '+', desc = 'argdo but without the final Press enter message', complete = 'command' })
 
+--- @param opts Command.Opts
 nvim.command.set('Qf2Arglist', function(opts)
     RELOAD('utils.qf').qf_to_arglist { clear = opts.bang }
 end, { bang = true, desc = 'Dump qf files to the arglist' })
 
+--- @param opts Command.Opts
 nvim.command.set('Loc2Arglist', function(opts)
     RELOAD('utils.qf').qf_to_arglist { loc = true, clear = opts.bang }
 end, { bang = true, desc = 'Dump loclist files to the arglist' })
@@ -629,6 +708,7 @@ nvim.command.set('Arglist2Loc', function()
     RELOAD('utils.qf').dump_files(vim.fn.argv(), { win = 0 })
 end, { desc = 'Dump loclist files to the arglist' })
 
+--- @param opts Command.Opts
 nvim.command.set('ArgEdit', function(opts)
     RELOAD('utils.arglist').edit(opts.args)
 end, { nargs = '?', complete = completions.arglist, desc = 'Edit a file in the arglist' })
@@ -637,6 +717,7 @@ nvim.command.set('ArgClear', function(opts)
     RELOAD('utils.arglist').clear(opts.bang)
 end, { nargs = 0, bang = true, desc = 'Delete all or invalid arguments' })
 
+--- @param opts Command.Opts
 nvim.command.set('ArgAddBuf', function(opts)
     local argadd = RELOAD('utils.arglist').add
     local args = opts.fargs
@@ -656,6 +737,7 @@ nvim.command.set('ArgAddBuf', function(opts)
     argadd(args, opts.bang)
 end, { bang = true, nargs = '*', complete = completions.buflist, desc = 'Add buffers to the arglist' })
 
+--- @param opts Command.Opts
 nvim.command.set('Marks2Arglist', function(opts)
     RELOAD('utils.marks').marks_to_arglist { clear = opts.bang }
 end, { bang = true, desc = 'Dump global marks files to the arglist' })
@@ -668,6 +750,7 @@ nvim.command.set('Marks2LocList', function(_)
     RELOAD('utils.marks').marks_to_quickfix { win = 0 }
 end, { bang = true, desc = 'Dump global marks files to the loclist' })
 
+--- @param opts Command.Opts
 nvim.command.set('ClearMarks', function(opts)
     RELOAD('utils.marks').clear { force = opts.bang }
     if not opts.bang then
@@ -677,12 +760,14 @@ nvim.command.set('ClearMarks', function(opts)
     end
 end, { bang = true, desc = 'Remove global marks of inexistent files' })
 
+--- @param opts Command.Opts
 nvim.command.set('DumpMarks', function(opts)
     if RELOAD('utils.marks').dump_marks { file = opts.args } then
         vim.notify('Marks dumped to marks.json', vim.log.levels.INFO, { title = 'Marks' })
     end
 end, { nargs = '?', complete = 'file', desc = 'Dump global marks in a local json file' })
 
+--- @param opts Command.Opts
 nvim.command.set('LoadMarks', function(opts)
     if RELOAD('utils.marks').load_marks { file = opts.args } then
         vim.notify('Marks Loaded', vim.log.levels.INFO, { title = 'Marks' })
@@ -694,7 +779,7 @@ nvim.command.set('RemoveForeignMarks', function()
     local deleted_marks = 0
     local marks = RELOAD('utils.marks').get_global_marks()
     if next(marks) ~= nil then
-        local cwd = vim.pesc(vim.uv.cwd())
+        local cwd = vim.pesc(vim.uv.cwd() or '.')
         for letter, mark in pairs(marks) do
             local filename = (mark.filename:gsub(cwd, ''))
             if utils.is_file(filename) then
@@ -729,6 +814,7 @@ if not vim.g.bare then
     end, { nargs = 0, desc = 'Initial Neovim setup' })
 end
 
+--- @param opts Command.Opts
 nvim.command.set('RemoteTermdebug', function(opts)
     RELOAD('utils.debug').remote_attach_debugger { hostname = opts.args }
 end, {
@@ -801,6 +887,7 @@ then
     end, { desc = 'Disable/Enable Auto PlantUML render' })
 end
 
+--- @param opts Command.Opts
 nvim.command.set('EditPathScript', function(opts)
     local cmd_str = opts.args
     local cmd = vim.fn.exepath(cmd_str)
@@ -811,6 +898,7 @@ nvim.command.set('EditPathScript', function(opts)
     vim.cmd.edit(cmd)
 end, { nargs = 1, complete = 'shellcmd', desc = 'Open a script located somewhere in path' })
 
+--- @param opts Command.Opts
 nvim.command.set('LSPDumpConfig', function(opts)
     if #opts.fargs < 2 then
         vim.notify(

@@ -351,12 +351,18 @@ function M.diagnostics_to_qf(diagnostics, opts, win)
     end
 end
 
+--- Dump diagnostics into qf/loclist
+---@param opts table?
+---             - win: integer|boolean|nil
+---             - size: integer?
+---@param win integer|boolean|nil
 function M.toggle(opts, win)
+    opts = opts or {}
     vim.validate {
         opts = { opts, 'table', true },
-        win = { win, { 'number', 'boolean' }, true },
+        win = { opts.win or win, { 'number', 'boolean' }, true },
+        size = { opts.size, { 'number' }, true },
     }
-    opts = opts or {}
 
     vim.validate { win = { opts.win, 'number', true } }
     if not win and opts.win then

@@ -377,11 +377,11 @@ end
 --- Change file permissions
 ---@param path string
 ---@param mode string|number
----@param base integer
+---@param base integer?
 ---@return boolean
 function M.chmod(path, mode, base)
     if is_windows then
-        return
+        return false
     end
 
     vim.validate {
@@ -398,7 +398,7 @@ function M.chmod(path, mode, base)
         },
     }
     assert(path ~= '', debug.traceback 'Empty path')
-    base = base == nil and 8 or base
+    base = base or 8
 
     ---@type number
     ---@cast mode string
@@ -453,17 +453,12 @@ local function copy_undofile(old_fname, new_fname)
         new_fname = { new_fname, 'string' },
     }
 
+    ---@type boolean?
     local ok = false
     local old_undofile = vim.fn.undofile(old_fname)
     if M.is_file(old_undofile) then
         local new_undofile = vim.fn.undofile(new_fname)
-        vim.fn.mkdir(assert(vim.fs.dirname(new_undofile)), 'p')
-
-        if M.is_file(old_fname) then
-            ok = vim.uv.fs_copyfile(old_fname, new_fname, { excl = false })
-        else
-            ok = vim.uv.fs_rename(old_fname, new_fname)
-        end
+        ok = vim.uv.fs_copyfile(old_undofile, new_undofile, { excl = false })
     end
     return ok
 end

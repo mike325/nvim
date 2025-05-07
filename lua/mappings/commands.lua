@@ -3,6 +3,8 @@ local sys = require 'sys'
 
 local M = {}
 
+--- Open a terminal buffer in a floating window
+--- @param opts Command.Opts
 function M.floating_terminal(opts)
     local cmd = opts.args
     local shell
@@ -35,6 +37,7 @@ function M.floating_terminal(opts)
     end
 end
 
+--- Toggle mouse support
 function M.toggle_mouse()
     if vim.o.mouse == '' then
         vim.o.mouse = 'a'
@@ -44,5 +47,27 @@ function M.toggle_mouse()
         print 'Mouse Disabled'
     end
 end
+
+--- Wrapper around edit command to resolve globs and other goodies
+--- @param args Command.Opts
+-- TODO: Support line numbers
+function M.edit(args)
+    local utils = RELOAD 'utils.files'
+    local globs = args.fargs
+    local cwd = vim.pesc(vim.uv.cwd() .. '/')
+    for _, g in ipairs(globs) do
+        if utils.is_file(g) then
+            vim.cmd.edit((g:gsub(cwd, '')))
+        elseif g:match '%*' then
+            local files = vim.fn.glob(g, false, true, false)
+            for _, f in ipairs(files) do
+                if utils.is_file(f) then
+                    vim.cmd.edit((f:gsub(cwd, '')))
+                end
+            end
+        end
+    end
+end
+
 
 return M

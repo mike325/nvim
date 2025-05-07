@@ -87,22 +87,6 @@ function M.trim(opts)
     end
 end
 
-function M.chmod(opts)
-    local utils = RELOAD 'utils.files'
-    local is_file = utils.is_file
-
-    local mode = opts.args
-    if not mode:match '^%d+$' then
-        vim.notify('Not a valid permissions mode: ' .. mode, vim.log.levels.ERROR, { title = 'Chmod' })
-        return
-    end
-    local filename = vim.api.nvim_buf_get_name(0)
-    local chmod = utils.chmod
-    if is_file(filename) then
-        chmod(filename, mode)
-    end
-end
-
 function M.move_file(opts)
     local utils = RELOAD 'utils.files'
 
@@ -117,12 +101,6 @@ function M.move_file(opts)
         location = location .. '/' .. vim.fs.basename(filename)
     end
     utils.rename(filename, location, bang)
-end
-
-function M.rename_file(opts)
-    local filename = vim.api.nvim_buf_get_name(0)
-    local dirname = vim.fs.dirname(filename)
-    RELOAD('utils.files').rename(filename, dirname .. '/' .. opts.args, opts.bang)
 end
 
 function M.find(opts)
@@ -506,25 +484,6 @@ function M.zoom_links(opts)
         vim.ui.open(links[opts.args])
     else
         vim.notify('Missing Zoom link ' .. opts.args, vim.log.levels.ERROR, { title = 'Zoom' })
-    end
-end
-
-function M.edit(args)
-    local utils = RELOAD 'utils.files'
-
-    local globs = args.fargs
-    local cwd = vim.pesc(vim.uv.cwd() .. '/')
-    for _, g in ipairs(globs) do
-        if utils.is_file(g) then
-            vim.cmd.edit((g:gsub(cwd, '')))
-        elseif g:match '%*' then
-            local files = vim.fn.glob(g, false, true, false)
-            for _, f in ipairs(files) do
-                if utils.is_file(f) then
-                    vim.cmd.edit((f:gsub(cwd, '')))
-                end
-            end
-        end
     end
 end
 
