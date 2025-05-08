@@ -121,6 +121,19 @@ vim.api.nvim_create_autocmd({ 'BufNewFile', 'BufReadPre', 'BufEnter' }, {
     command = 'setlocal noswapfile nobackup noundofile',
 })
 
+vim.api.nvim_create_autocmd({ 'BufNewFile', 'BufReadPre' }, {
+    desc = 'Disable some options on bigfiles',
+    group = vim.api.nvim_create_augroup('BigFile', { clear = true }),
+    pattern = '*',
+    callback = function(args)
+        local buf = args.buf
+        local file = args.file or vim.api.nvim_buf_get_name(buf)
+        if vim.fn.getfsize(file) > (1024 * 1024) then -- 1MB
+            vim.bo.swapfile = false
+        end
+    end,
+})
+
 vim.api.nvim_create_autocmd({ 'InsertLeave', 'CompleteDone' }, {
     desc = 'Auto close completion window',
     group = vim.api.nvim_create_augroup('CloseMenu', { clear = true }),
