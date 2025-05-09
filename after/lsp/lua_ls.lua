@@ -115,6 +115,7 @@ return {
                     'RELOAD',
                     'PASTE',
                     'STORAGE',
+                    'ASYNC',
                     'use',
                     'use_rocks',
                     'describe',

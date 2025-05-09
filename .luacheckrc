@@ -20,6 +20,7 @@ read_globals = {
     "RELOAD",
     "PASTE",
     "STORAGE",
+    "ASYNC",
     "use",
     "use_rocks",
     "describe",

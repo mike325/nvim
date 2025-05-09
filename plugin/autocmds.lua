@@ -118,7 +118,7 @@ vim.api.nvim_create_autocmd({ 'BufNewFile', 'BufReadPre', 'BufEnter' }, {
     desc = 'Disable swap, backup and undofiles on all buffers under /tmp/*',
     group = vim.api.nvim_create_augroup('DisableTemps', { clear = true }),
     pattern = '/tmp/*',
-    command = 'setlocal noswapfile nobackup noundofile',
+    command = 'setlocal noswapfile noundofile',
 })
 
 vim.api.nvim_create_autocmd({ 'BufNewFile', 'BufReadPre' }, {
@@ -130,6 +130,7 @@ vim.api.nvim_create_autocmd({ 'BufNewFile', 'BufReadPre' }, {
         local file = args.file or vim.api.nvim_buf_get_name(buf)
         if vim.fn.getfsize(file) > (1024 * 1024) then -- 1MB
             vim.bo.swapfile = false
+            vim.b.bigfile = true
         end
     end,
 })
@@ -148,7 +149,14 @@ vim.api.nvim_create_autocmd({ 'BufReadPost' }, {
     group = vim.api.nvim_create_augroup('Indent', { clear = true }),
     pattern = '*',
     callback = function()
-        RELOAD('utils.buffers').detect_indent()
+        if not vim.b.bigfile then
+            RELOAD('utils.buffers').detect_indent()
+        else
+            -- vim.bo.expandtab = expandtab
+            vim.bo.tabstop = 4
+            vim.bo.softtabstop = -1
+            vim.bo.shiftwidth = 0
+        end
     end,
 })
 
@@ -498,7 +506,7 @@ if executable 'typos' then
             local buf = args.buf
             local filename = args.file
             local ft = vim.filetype.match { buf = buf, filename = filename } or vim.bo.filetype
-            if not blacklist[ft] and vim.bo.buftype == '' then
+            if not blacklist[ft] and vim.bo.buftype == '' and not vim.b.bigfile then
                 RELOAD('utils.functions').typos_check(buf)
             end
         end,

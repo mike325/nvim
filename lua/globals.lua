@@ -61,6 +61,24 @@ _G['PERF'] = function(msg, ...)
     return data
 end
 
+--- @class vim.Ringbuf
+--- @field clear  fun()
+--- @field push fun(item: any)
+--- @field pop  fun(): any?
+--- @field peek fun(): any?
+
+---@class Async
+---@field output vim.Ringbuf
+---@field jobs table<string, vim.SystemObj>
+
+---@type Async?
+if not ASYNC then
+    _G['ASYNC'] = {
+        output = vim.ringbuf(10),
+        jobs = {}
+    }
+end
+
 if not STORAGE then
     _G['STORAGE'] = {
         modern_git = -1,

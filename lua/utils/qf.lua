@@ -156,6 +156,8 @@ end
 ---             - open: boolean|nil
 ---             - jump: boolean|nil
 ---             - efm: string[]|string|nil
+---             - context: string[]|nil
+---             - title: string|nil
 ---@param win integer|boolean|nil
 function M.set_list(opts, win)
     vim.validate {
@@ -167,6 +169,8 @@ function M.set_list(opts, win)
         jump = { opts.jump, 'boolean', true },
         efm = { opts.efm, { 'string', 'table' }, true },
         lines = { opts.lines, { 'table' }, true },
+        context = { opts.context, { 'table' }, true },
+        title = { opts.title, { 'string' }, true },
     }
 
     assert(not opts.lines, debug.traceback 'Cannot set lines using items')

@@ -1,5 +1,9 @@
 local M = {}
 
+--- Get string repr of the given cmd
+---@param cmd string|string[]
+---@param cwd string?
+---@return string
 function M.get_hash(cmd, cwd)
     cwd = cwd or vim.fs.normalize(vim.uv.cwd())
     local hash = vim.base64.encode(vim.json.encode { cmd = cmd, cwd = cwd })
