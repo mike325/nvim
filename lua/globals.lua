@@ -75,7 +75,7 @@ end
 if not ASYNC then
     _G['ASYNC'] = {
         output = vim.ringbuf(10),
-        jobs = {}
+        jobs = {},
     }
 end
 
