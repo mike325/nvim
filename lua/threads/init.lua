@@ -34,8 +34,8 @@ function M.init(thread_args)
             }
         end
 
-        -- NOTE: this only spawns async jobs, which should be detach, sync jobs
-        --       does not work because `vim.wait` is not available on threads
+        -- NOTE: vim.system is partially supported on threads, `wait` and other features
+        --       are not available
         if not vim.system then
             local ok, system = pcall(require, 'vim._system')
             if ok then

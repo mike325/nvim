@@ -207,7 +207,7 @@ end, { bang = true, nargs = '+', complete = 'file', desc = 'Async and recursive 
 
 --- @param opts Command.Opts
 nvim.command.set('Make', function(opts)
-    RELOAD('mappings').async_makeprg(opts)
+    RELOAD('utils.async').makeprg { args = opts.fargs }
 end, { nargs = '*', desc = 'Async execution of current makeprg' })
 
 if executable 'scp' then
@@ -261,7 +261,34 @@ end, { nargs = '?', complete = 'messages', desc = 'Populate quickfix with the :m
 if executable 'pre-commit' then
     --- @param opts Command.Opts
     nvim.command.set('PreCommit', function(opts)
-        RELOAD('mappings').precommit(opts)
+        local efm = {
+            '%f:%l:%c: %t%n %m',
+            '%f:%l:%c:%t: %m',
+            '%f:%l:%c: %m',
+            '%f:%l: %trror: %m',
+            '%f:%l: %tarning: %m',
+            '%f:%l: %tote: %m',
+            '%f:%l:%m',
+            '%f: %trror: %m',
+            '%f: %tarning: %m',
+            '%f: %tote: %m',
+            '%f: Failed to json decode (%m: line %l column %c (char %*\\\\d))',
+            '%f: Failed to json decode (%m)',
+            '%E%f:%l:%c: fatal error: %m',
+            '%E%f:%l:%c: error: %m',
+            '%W%f:%l:%c: warning: %m',
+            'Diff in %f:',
+            '+++ %f',
+            'reformatted %f',
+        }
+
+        local args = opts.fargs
+        local cmd = { 'pre-commit' }
+        if opts.bang and #args == 0 then
+            args = { 'run', '--all' }
+        end
+        vim.list_extend(cmd, args)
+        require('async').qf_report_job(cmd, { open = true, jump = true, efm = efm })
     end, { bang = true, nargs = '*' })
 end
 

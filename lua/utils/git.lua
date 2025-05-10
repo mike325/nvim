@@ -220,17 +220,19 @@ local function exec_gitcmd(gitcmd, args, callbacks)
         return exec_sync_gitcmd(cmd, gitcmd)
     end
 
-    local git = RELOAD('jobs'):new {
-        cmd = cmd,
-        silent = true,
-        callbacks_on_success = function(job)
-            callbacks(job:output())
-        end,
-        callbacks_on_failure = function(job, _)
-            notify_error(gitcmd, job:output(), job.rc)
-        end,
-    }
-    git:start()
+    vim.system(
+        cmd,
+        { text = true },
+        vim.schedule_wrap(function(job)
+            if job.code == 0 and callbacks then
+                local output = vim.split(job.stdout, '\n', { trimempty = true })
+                callbacks(output)
+            elseif job.code ~= 0 then
+                local output = vim.split(job.stderr, '\n', { trimempty = true })
+                notify_error(gitcmd, output, job.code)
+            end
+        end)
+    )
 end
 
 function M.status(callback)

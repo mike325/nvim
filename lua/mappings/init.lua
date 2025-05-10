@@ -3,27 +3,6 @@ local nvim = require 'nvim'
 
 local M = {}
 
-M.precommit_efm = {
-    '%f:%l:%c: %t%n %m',
-    '%f:%l:%c:%t: %m',
-    '%f:%l:%c: %m',
-    '%f:%l: %trror: %m',
-    '%f:%l: %tarning: %m',
-    '%f:%l: %tote: %m',
-    '%f:%l:%m',
-    '%f: %trror: %m',
-    '%f: %tarning: %m',
-    '%f: %tote: %m',
-    '%f: Failed to json decode (%m: line %l column %c (char %*\\\\d))',
-    '%f: Failed to json decode (%m)',
-    '%E%f:%l:%c: fatal error: %m',
-    '%E%f:%l:%c: error: %m',
-    '%W%f:%l:%c: warning: %m',
-    'Diff in %f:',
-    '+++ %f',
-    'reformatted %f',
-}
-
 function M.bufkill(opts)
     opts = opts or {}
     local bang = opts.bang
@@ -125,26 +104,23 @@ function M.find(opts)
         if not args then
             args = { opts.target }
         end
-        local find = RELOAD('jobs'):new {
-            cmd = vim.list_extend(finder, args),
-            progress = false,
-            opts = { stdin = 'null' },
-            callbacks = function(job, rc)
-                if rc == 0 and opts.cb then
-                    opts.cb(vim.tbl_filter(function(v)
-                        return v ~= ''
-                    end, job:output()))
-                elseif rc ~= 0 then
-                    vim.notify('Error!\n' .. table.concat(job:output(), '\n'), vim.log.levels.ERROR, { title = 'Find' })
-                end
-            end,
-        }
-        find:start()
+
+        vim.list_extend(finder, args)
+        local find = vim.system(finder, { text = true }, function(job)
+            if job.code == 0 and opts.cb then
+                local output = vim.split(job.stdout, '\n', { trimempty = true })
+                opts.cb(output)
+            elseif job.code ~= 0 then
+                vim.notify('Error!\n' .. job.stdout, vim.log.levels.ERROR, { title = 'Find' })
+            end
+        end)
+
         if not opts.cb then
             local rc = find:wait()
-            return rc == 0 and vim.tbl_filter(function(v)
-                return v ~= ''
-            end, find:output()) or {}
+            if rc.code == 0 then
+                return vim.split(rc.stdout, '\n', { trimempty = true })
+            end
+            return {}
         end
     else
         local target = ''
@@ -201,35 +177,6 @@ function M.find(opts)
             return candidates
         end
     end
-end
-
-function M.async_makeprg(opts)
-    local args = opts.fargs
-    for idx, arg in ipairs(args) do
-        args[idx] = vim.fn.expand(arg)
-    end
-
-    local val = vim.F.npcall(nvim.buf.get_option, 0, 'makeprg')
-    local cmd = val or vim.o.makeprg
-
-    if cmd:sub(#cmd, #cmd) == '%' then
-        cmd = cmd:gsub('%%', vim.api.nvim_buf_get_name(0))
-    end
-
-    cmd = string.format('%s %s', cmd, table.concat(args, ' '))
-    local title = cmd:gsub('%s+.*', '')
-    local makeprg = RELOAD('jobs'):new {
-        cmd = cmd,
-        progress = false,
-        auto_close = true,
-        callbacks_on_success = function()
-            vim.cmd.checktime()
-        end,
-        callbacks_on_failure = function(_)
-            RELOAD('utils.qf').qf_to_diagnostic(title)
-        end,
-    }
-    makeprg:start()
 end
 
 -- TODO: Improve this with globs and pattern matching
@@ -422,31 +369,6 @@ function M.messages(opts)
             RELOAD('utils.qf').clear()
         end
     end
-end
-
-function M.precommit(opts)
-    local args = opts.fargs
-    local cmd = 'pre-commit'
-    if opts.bang and #args == 0 then
-        args = { 'run', '--all' }
-    end
-    local precommit = RELOAD('jobs'):new {
-        cmd = cmd,
-        args = args,
-        -- progress = true,
-        qf = {
-            efm = M.precommit_efm,
-            dump = false,
-            on_fail = {
-                dump = true,
-                jump = false,
-                open = true,
-            },
-            title = 'PreCommit',
-        },
-    }
-    precommit:start()
-    -- precommit:progress()
 end
 
 function M.repl(opts)
@@ -936,20 +858,10 @@ function M.vnc(hostname, opts)
     elseif executable 'vncviewer' then
         local args = { hostname }
         vim.list_extend(args, opts or {})
-        local vnc = RELOAD('jobs'):new {
-            cmd = 'vncviewer',
-            args = args,
-            qf = {
-                dump = false,
-                on_fail = {
-                    dump = true,
-                    jump = false,
-                    open = true,
-                },
-                title = 'VNC',
-            },
-        }
-        vnc:start()
+
+        local cmd = { 'vncviewer' }
+        vim.list_extend(cmd, args)
+        require('async').qf_report_job(cmd, { open = true })
     else
         vim.notify('Missing vncviewer executable', vim.log.levels.ERROR, { title = 'VNC' })
     end

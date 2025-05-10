@@ -167,7 +167,11 @@ if executable 'goimports' then
         group = import_fix,
         pattern = '*.go',
         callback = function(args)
-            RELOAD('utils.functions').autoformat('goimports', { '-w', args.file })
+            RELOAD('utils.async').formatprg {
+                cmd = { 'goimports', '-w', args.file },
+                first = 0,
+                last = -1,
+            }
         end,
     })
 end
@@ -178,9 +182,15 @@ if executable 'isort' then
         group = import_fix,
         pattern = '*.{py,ipy}',
         callback = function(args)
+            local cmd = { 'isort' }
             local format_args = RELOAD('filetypes.python').formatprg.isort
             table.insert(format_args, args.file)
-            RELOAD('utils.functions').autoformat('isort', format_args)
+            vim.list_extend(cmd, format_args)
+            RELOAD('utils.async').formatprg {
+                cmd = cmd,
+                first = 0,
+                last = -1,
+            }
         end,
     })
 end
@@ -531,13 +541,13 @@ vim.api.nvim_create_autocmd({ 'Filetype' }, {
         local exe = whitelist[ft]
         if vim.bo.buftype == '' and exe and executable(exe) then
             local real_ft = { bash = 'sh' }
-            RELOAD('utils.functions').lint_buffer(exe, { filetype = real_ft[ft] or ft, filename = filename })
+            RELOAD('utils.async').lint(exe, { filetype = real_ft[ft] or ft, filename = filename })
             vim.api.nvim_create_autocmd({ 'BufWritePost' }, {
                 desc = 'Lint code on save',
                 group = linters_au,
                 buffer = buf,
                 callback = function(_)
-                    RELOAD('utils.functions').lint_buffer(exe, { filetype = real_ft[ft] or ft, filename = filename })
+                    RELOAD('utils.async').lint(exe, { filetype = real_ft[ft] or ft, filename = filename })
                 end,
             })
         end
@@ -777,12 +787,7 @@ then
                 end
 
                 table.insert(cmd, filename)
-                local plantuml = RELOAD('jobs'):new {
-                    cmd = cmd,
-                    progress = false,
-                    autoclose = true,
-                }
-                plantuml:start()
+                require('async').qf_report_job(cmd)
                 vim.b[buf].auto_render_uml = true
             end
         end,
