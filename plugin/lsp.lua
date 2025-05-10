@@ -9,6 +9,9 @@ local python_servers = {
     'jedi_language_server',
 }
 
+--- Check if the server is available
+---@param config_name string
+---@return boolean
 local function has_server(config_name)
     local config = vim.lsp.config[config_name]
     if config and config.cmd then

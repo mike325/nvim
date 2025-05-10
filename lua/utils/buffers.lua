@@ -332,7 +332,6 @@ function M.format(opts)
 
     local ft = opts.ft or vim.bo.filetype
     local bufnr = vim.api.nvim_get_current_buf()
-    local external_formatprg = RELOAD('utils.functions').external_formatprg
     local utils = vim.F.npcall(RELOAD, 'filetypes.' .. ft)
 
     local view = vim.fn.winsaveview()
@@ -386,7 +385,7 @@ function M.format(opts)
                 first = nil
                 last = nil
             end
-            external_formatprg {
+            RELOAD('utils.async').formatprg {
                 cmd = M.replace_indent(cmd),
                 bufnr = bufnr,
                 efm = utils.formatprg[cmd[1]].efm,
@@ -394,28 +393,6 @@ function M.format(opts)
                 last = last,
             }
             return 0
-        end
-    end
-
-    return 1
-end
-
-function M.lint(opts)
-    opts = opts or {}
-
-    local ft = opts.ft or vim.bo.filetype
-    local bufnr = vim.api.nvim_get_current_buf()
-    local external_linterprg = RELOAD('utils.functions').external_linterprg
-    local utils = vim.F.npcall(RELOAD, 'filetypes.' .. ft)
-
-    if utils and utils.get_linter then
-        local cmd = utils.get_linter()
-        if cmd then
-            external_linterprg {
-                cmd = cmd,
-                bufnr = bufnr,
-                efm = utils.makeprg[cmd[1]].efm,
-            }
         end
     end
 

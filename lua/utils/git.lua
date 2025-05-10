@@ -220,17 +220,19 @@ local function exec_gitcmd(gitcmd, args, callbacks)
         return exec_sync_gitcmd(cmd, gitcmd)
     end
 
-    local git = RELOAD('jobs'):new {
-        cmd = cmd,
-        silent = true,
-        callbacks_on_success = function(job)
-            callbacks(job:output())
-        end,
-        callbacks_on_failure = function(job, _)
-            notify_error(gitcmd, job:output(), job.rc)
-        end,
-    }
-    git:start()
+    vim.system(
+        cmd,
+        { text = true },
+        vim.schedule_wrap(function(job)
+            if job.code == 0 and callbacks then
+                local output = vim.split(job.stdout, '\n', { trimempty = true })
+                callbacks(output)
+            elseif job.code ~= 0 then
+                local output = vim.split(job.stderr, '\n', { trimempty = true })
+                notify_error(gitcmd, output, job.code)
+            end
+        end)
+    )
 end
 
 function M.status(callback)
@@ -444,27 +446,24 @@ function M.get_git_info(path, callback)
         }
     end
 
-    local git = RELOAD('jobs'):new {
-        cmd = cmd,
-        opts = {
-            cwd = path,
-        },
-        silent = true,
-        callbacks_on_success = function(job)
-            if callback then
-                callback(parse_output(job:output()))
+    local git = vim.system(
+        cmd,
+        { text = true, cwd = path },
+        vim.schedule_wrap(function(job)
+            if job.code == 0 and callback then
+                local output = vim.split(job.stdout, '\n', { trimempty = true })
+                callback(parse_output(output))
+            elseif job.code ~= 0 then
+                local output = vim.split(job.stderr, '\n', { trimempty = true })
+                notify_error(gitcmd, output, job.code)
             end
-        end,
-        callbacks_on_failure = function(job)
-            notify_error(gitcmd, job:output(), job.rc)
-        end,
-    }
-
-    git:start()
+        end)
+    )
     if not callback then
-        git:wait()
-        if git.rc == 0 then
-            return parse_output(git:output())
+        local out = git:wait()
+        if out.code == 0 then
+            local output = vim.split(out.stdout, '\n', { trimempty = true })
+            return parse_output(output)
         end
         return false
     end
@@ -497,27 +496,24 @@ function M.get_git_dir(path, callback)
         return (git_dir:gsub('\\', '/'))
     end
 
-    local git = RELOAD('jobs'):new {
-        cmd = cmd,
-        opts = {
-            cwd = path,
-        },
-        silent = true,
-        callbacks_on_success = function(job)
-            if callback then
-                callback(parse_output(job:output()))
+    local git = vim.system(
+        cmd,
+        { text = true, cwd = path },
+        vim.schedule_wrap(function(job)
+            if job.code == 0 and callback then
+                local output = vim.split(job.stdout, '\n', { trimempty = true })
+                callback(parse_output(output))
+            elseif job.code ~= 0 then
+                local output = vim.split(job.stderr, '\n', { trimempty = true })
+                notify_error(gitcmd, output, job.code)
             end
-        end,
-        callbacks_on_failure = function(job)
-            notify_error(gitcmd, job:output(), job.rc)
-        end,
-    }
-
-    git:start()
+        end)
+    )
     if not callback then
-        git:wait()
-        if git.rc == 0 then
-            return parse_output(git:output())
+        local out = git:wait()
+        if out.code == 0 then
+            local output = vim.split(out.stdout, '\n', { trimempty = true })
+            return parse_output(output)
         end
         return false
     end

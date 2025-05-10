@@ -11,15 +11,16 @@ end
 local function async_insert_version(prg)
     local insert_row = RELOAD('storage.utils').insert_row
 
-    local versioner = RELOAD('jobs'):new {
-        cmd = prg .. ' --version',
-        silent = true,
-        callbacks_on_success = function(job)
-            local version = get_prg_version(table.concat(job:output(), ' '))
-            insert_row('versions', { name = prg, version = version })
+    local cmd = { prg, '--version' }
+    require('async').qf_report_job(cmd, {
+        open = true,
+        callbacks = function(out)
+            if out.code == 0 then
+                local version = get_prg_version(table.concat(out.stdout, ''))
+                insert_row('versions', { name = prg, version = version })
+            end
         end,
-    }
-    versioner:start()
+    })
 end
 
 local function sync_insert_version(prg)

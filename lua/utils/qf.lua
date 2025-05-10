@@ -227,6 +227,7 @@ function M.set_list(opts, win)
         opts.items = short_long_lines(items)
     elseif type(items[1]) == type '' then
         opts.lines = short_long_lines(require('utils.tables').clear_lst(items))
+        opts.items = nil
     else
         error(debug.traceback('Invalid items type: ' .. type(items[1])))
     end
@@ -399,7 +400,7 @@ function M.dump_files(buffers, opts, win)
 
     opts = opts or {}
 
-    vim.validate { win = { opts.win, 'number', true } }
+    vim.validate { win = { win, { 'number', 'boolean' }, true } }
     if not win and opts.win then
         win = opts.win
         opts.win = nil

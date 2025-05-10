@@ -39,18 +39,23 @@ local function exec_ghcmd(ghcmd, args, callbacks)
         return filter_empty(exec_sync_ghcmd(cmd, ghcmd))
     end
 
-    local gh = RELOAD('jobs'):new {
-        cmd = cmd,
-        silent = true,
-        callbacks_on_success = function(job)
-            callbacks(filter_empty(job:output()))
-        end,
-        callbacks_on_failure = function(_)
-            local title = 'GH' .. ghcmd:sub(1, 1):upper() .. ghcmd:sub(2, #ghcmd)
-            vim.notify('Failed to execute gh ' .. ghcmd, vim.log.levels.ERROR, { title = title })
-        end,
-    }
-    gh:start()
+    vim.system(
+        cmd,
+        { text = true },
+        vim.schedule_wrap(function(job)
+            if job.code == 0 and callbacks then
+                local output = vim.split(job.stdout, '\n', { trimempty = true })
+                callbacks(output)
+            elseif job.code ~= 0 then
+                local title = 'GH' .. ghcmd:sub(1, 1):upper() .. ghcmd:sub(2, #ghcmd)
+                vim.notify(
+                    string.format('Failed to execute gh %s\n%s', ghcmd, job.stderr),
+                    vim.log.levels.ERROR,
+                    { title = title }
+                )
+            end
+        end)
+    )
 end
 
 function M.get_pr_changes(opts, callback)

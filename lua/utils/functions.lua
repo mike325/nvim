@@ -7,151 +7,6 @@ local getcwd = require('utils.files').getcwd
 
 local M = {}
 
-function M.external_formatprg(args)
-    vim.validate {
-        args = { args, 'table' },
-        cmd = { args.cmd, 'table' },
-    }
-
-    local cmd = args.cmd
-    local bufnr = args.bufnr or vim.api.nvim_get_current_buf()
-
-    local buf_utils = RELOAD 'utils.buffers'
-
-    local first = args.first or (vim.v.lnum - 1)
-    local last = args.last or (first + vim.v.count)
-
-    local lines = vim.api.nvim_buf_get_lines(bufnr, first, last, false)
-    local indent_level = buf_utils.get_indent_block_level(lines)
-    local tmpfile = vim.fn.tempname()
-
-    require('utils.files').writefile(tmpfile, buf_utils.indent(lines, -indent_level))
-
-    table.insert(cmd, tmpfile)
-
-    local view = vim.fn.winsaveview()
-
-    local formatprg = RELOAD('jobs'):new {
-        cmd = cmd,
-        silent = true,
-        qf = {
-            dump = false,
-            on_fail = {
-                open = true,
-                jump = false,
-                dump = true,
-            },
-            loc = true,
-            win = vim.api.nvim_get_current_win(),
-            title = 'Format',
-            efm = args.efm,
-        },
-        callbacks_on_success = function(_)
-            local fmt_lines = require('utils.files').readfile(tmpfile)
-            fmt_lines = buf_utils.indent(fmt_lines, indent_level)
-            vim.api.nvim_buf_set_lines(bufnr, first, last, false, fmt_lines)
-            vim.fn.winrestview(view)
-        end,
-    }
-
-    formatprg:start()
-end
-
-function M.external_linterprg(args)
-    vim.validate {
-        args = { args, 'table' },
-        cmd = { args.cmd, 'table' },
-    }
-
-    local cmd = args.cmd
-    local bufnr = args.buffer or vim.api.nvim_get_current_buf()
-    local efm = args.efm
-    if not efm then
-        efm = vim.bo.efm ~= '' and vim.bo.efm or vim.go.efm
-    end
-    table.insert(cmd, vim.api.nvim_buf_get_name(bufnr))
-
-    local linter = RELOAD('jobs'):new {
-        cmd = cmd,
-        silent = true,
-        callbacks_on_failure = function(job, _)
-            local items = vim.fn.getqflist({ lines = job:output(), efm = efm }).items
-            RELOAD('utils.qf').qf_to_diagnostic(cmd[1], false, items)
-        end,
-    }
-
-    linter:start()
-end
-
-function M.async_execute(opts)
-    vim.validate {
-        opts = { opts, 'table' },
-        cmd = { opts.cmd, { 'table', 'string' } },
-    }
-
-    local cmd = opts.cmd
-    local args = opts.args
-
-    if opts.progress == nil then
-        opts.progress = true
-    end
-
-    local dump = opts.dump
-    if dump == nil then
-        dump = false
-    end
-
-    local script = RELOAD('jobs'):new {
-        cmd = cmd,
-        args = args,
-        silent = opts.silent,
-        progress = opts.progress,
-        verify_exec = opts.verify_exec,
-        parse_errors = opts.parse_errors,
-        opts = {
-            cwd = opts.cwd or require('utils.files').getcwd(),
-            on_stdout = opts.on_stdout,
-            on_stderr = opts.on_stderr,
-            on_exit = opts.on_exit,
-            pty = opts.pty,
-        },
-        qf = {
-            dump = dump,
-            open = dump,
-            on_fail = {
-                jump = true,
-                open = true,
-                dump = true,
-            },
-            efm = opts.efm,
-            title = opts.title or 'AsyncExecute',
-        },
-        callbacks = opts.callbacks,
-        callbacks_on_failure = opts.callbacks_on_failure,
-        callbacks_on_success = opts.callbacks_on_success,
-    }
-
-    if opts.auto_close or opts.autoclose then
-        script:callbacks_on_success(function(_)
-            if vim.t.progress_win and not vim.g.active_job then
-                nvim.win.close(vim.t.progress_win, true)
-            end
-        end)
-    end
-
-    if opts.pre_execute then
-        opts.pre_execute = vim.islist(opts.pre_execute) and opts.pre_execute or { opts.pre_execute }
-        for _, func in ipairs(opts.pre_execute) do
-            func()
-        end
-    end
-
-    script:start()
-    if opts.progress then
-        script:progress()
-    end
-end
-
 -- TODO: Improve python folding text
 function M.foldtext()
     local lines = vim.api.nvim_buf_get_lines(0, vim.v.foldstart, vim.v.foldend, false)
@@ -519,25 +374,6 @@ function M.python(version, args)
     vim.cmd { cmd = 'split', args = { 'term://' .. pyversion .. ' ' .. args }, mods = { split = split_type } }
 end
 
-function M.autoformat(cmd, args)
-    if vim.b.autoformat == false or vim.t.autoformat == false or vim.g.autoformat == false then
-        return
-    end
-
-    local view = vim.fn.winsaveview()
-    local formatter = RELOAD('jobs'):new {
-        cmd = cmd,
-        args = args,
-        silent = true,
-        callbacks_on_success = function()
-            vim.cmd.checktime()
-            vim.fn.winrestview(view)
-            -- vim.cmd.edit()
-        end,
-    }
-    formatter:start()
-end
-
 function M.scp_edit(opts)
     opts = opts or {}
     local host = opts.host
@@ -579,13 +415,16 @@ function M.scp_edit(opts)
                 hostname = RELOAD('utils.network').get_ssh_host(hostname)
             end
 
+            local ssh_cmd = {
+                'ssh',
+                '-p',
+                host_port or '22',
+                hostname,
+                'ls',
+                remote_path or '.',
+            }
             vim.ui.select(
-                vim.split(
-                    vim.system({ 'ssh', '-p', host_port or '22', hostname, 'ls', remote_path or '.' }, { text = true })
-                        :wait().stdout,
-                    '\n',
-                    { trimempty = true }
-                ),
+                vim.split(vim.system(ssh_cmd, { text = true }):wait().stdout, '\n', { trimempty = true }),
                 { prompt = 'Select File/Buffer attribute: ' },
                 vim.schedule_wrap(function(choice)
                     if not choice then
@@ -631,99 +470,14 @@ function M.typos_check(buf)
         bufname,
     }
 
-    local title = 'Typos'
-    local typos = RELOAD('jobs'):new {
-        cmd = cmd,
+    require('utils.async').makeprg {
+        makeprg = cmd,
+        notify = false,
         silent = true,
-        callbacks = function(job, rc)
-            local qf_utils = RELOAD 'utils.qf'
-            local output = RELOAD('utils.tables').remove_empty(job:output())
-            local diagnostic_ns_name = vim.api.nvim_create_namespace(title:lower())
-            if rc ~= 0 and #output > 0 then
-                local items = vim.fn.getqflist({ lines = output, efm = vim.go.efm }).items
-                qf_utils.qf_to_diagnostic(diagnostic_ns_name, 0, items)
-            elseif vim.api.nvim_buf_is_valid(buf) then
-                vim.diagnostic.reset(diagnostic_ns_name, buf)
-            end
-        end,
+        open = false,
+        jump = false,
+        win = true,
     }
-    typos:start()
-end
-
-function M.lint_buffer(linter, opts)
-    vim.validate {
-        linter = { linter, 'string' },
-        opts = { opts, 'table', true },
-    }
-
-    opts = opts or {}
-
-    local language = opts.language or opts.filetype or vim.bo.filetype
-    local buf = opts.buf or vim.api.nvim_get_current_buf()
-    local bufname = opts.bufname or opts.filename or vim.api.nvim_buf_get_name(buf)
-
-    local function get_args(configs, configflag, fallback_args)
-        if configs and configflag then
-            local config_files = vim.fs.find(configs, { upward = true, type = 'file' })
-            if config_files[1] then
-                return { configflag, config_files[1] }
-            end
-        elseif opts.global_config and is_file(opts.global_config) then
-            return { configflag, opts.global_config }
-        end
-
-        return fallback_args
-    end
-
-    local cmd = { linter }
-    if opts.subcmd or opts.subcommand then
-        table.insert(cmd, opts.subcmd or opts.subcommand)
-    end
-
-    local efm = opts.efm or opts.errorformat
-    if not efm then
-        efm = vim.go.efm
-    end
-
-    local args
-    local ft_linters = vim.F.npcall(RELOAD, 'filetypes.' .. language)
-    if ft_linters and ft_linters.makeprg then
-        local linter_data = ft_linters.makeprg[linter]
-        if linter_data then
-            args = linter_data
-            efm = opts.efm or opts.errorformat or linter_data.efm or linter_data.errorformat or efm
-        end
-    end
-
-    if type(efm) == type {} then
-        efm = table.concat(efm, '\n')
-    end
-
-    if opts.args then
-        args = type(opts.args) == type {} and opts.args or { opts.args }
-    end
-
-    local extra_args = get_args(opts.configs, opts.config_flag, args or {})
-    vim.list_extend(cmd, extra_args)
-    table.insert(cmd, bufname)
-
-    local title = require('utils.strings').capitalize(linter)
-    local linter_job = RELOAD('jobs'):new {
-        cmd = cmd,
-        silent = true,
-        callbacks = function(job, rc)
-            local qf_utils = RELOAD 'utils.qf'
-            local output = RELOAD('utils.tables').remove_empty(job:output())
-            local diagnostic_ns_name = vim.api.nvim_create_namespace(title:lower())
-            if rc ~= 0 and #output > 0 then
-                local items = vim.fn.getqflist({ lines = output, efm = efm }).items
-                qf_utils.qf_to_diagnostic(diagnostic_ns_name, 0, items)
-            elseif vim.api.nvim_buf_is_valid(buf) then
-                vim.diagnostic.reset(diagnostic_ns_name, buf)
-            end
-        end,
-    }
-    linter_job:start()
 end
 
 return M

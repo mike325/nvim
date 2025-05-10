@@ -57,18 +57,16 @@ function M.get_remote_processes(opts, cb)
     }
 
     if cb then
-        local get_processes = RELOAD('jobs'):new {
-            cmd = remote_cmd,
-            progress = false,
-            auto_close = true,
-            silent = true,
-            callbacks_on_success = function(job)
-                if cb then
-                    cb(parse_output(job:output()))
+        vim.system(
+            remote_cmd,
+            { text = true },
+            vim.schedule_wrap(function(job)
+                if job.code == 0 and cb then
+                    local output = vim.split(job.stdout, '\n', { trimempty = true })
+                    cb(parse_output(output))
                 end
-            end,
-        }
-        get_processes:start()
+            end)
+        )
         return
     end
     return parse_output(vim.fn.systemlist(remote_cmd))

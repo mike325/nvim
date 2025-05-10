@@ -92,7 +92,7 @@ return {
             },
             -- Make the server aware of Neovim runtime files
             workspace = {
-                checkThirdParty = false,
+                checkThirdParty = true,
                 library = {
                     vim.env.VIMRUNTIME,
                     -- Depending on the usage, you might want to add additional paths here.

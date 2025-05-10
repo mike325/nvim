@@ -10,21 +10,9 @@ function M.execute(args)
         args[idx] = vim.fn.expand(arg)
     end
 
-    local make = RELOAD('jobs'):new {
-        cmd = 'make',
-        args = args,
-        progress = true,
-        auto_close = true,
-        silent = false,
-        callbacks_on_success = function()
-            local ns = vim.api.nvim_create_namespace 'makefile'
-            vim.diagnostic.reset(ns)
-        end,
-        callbacks_on_failure = function()
-            RELOAD('utils.qf').qf_to_diagnostic 'makefile'
-        end,
-    }
-    make:start()
+    local cmd = { 'make' }
+    vim.list_extend(cmd, args)
+    require('async').qf_report_job(cmd, { open = true, jump = true })
 end
 
 function M.copy_template()

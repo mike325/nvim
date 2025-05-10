@@ -10,62 +10,7 @@ function M.get_hash(cmd, cwd)
     return hash
 end
 
-function M.exec(cmd, opts, args)
-    opts = opts or { text = true }
-
-    local hash = M.get_hash(cmd, opts.cwd)
-
-    if STORAGE.async[hash] and args.uniq ~= false then
-        local job = STORAGE.async[hash]
-        job:kill(7)
-        -- vim.api.nvim_create_augroup('Makeprg', { clear = true })
-    end
-
-    -- TODO: Wrap this functions using a function wrapper
-    local output = { stdout = '', stderr = '' }
-    local origin_stdout = opts.stdout
-
-    local function stdout(err, data)
-        if err == '' then
-            output.stdout = output.stdout .. data
-        end
-        if vim.is_callable(origin_stdout) then
-            origin_stdout(err, data)
-        end
-    end
-    if opts.stdout ~= false then
-        opts.stdout = vim.schedule_wrap(stdout)
-    end
-
-    local origin_stderr = opts.stderr
-    local function stderr(err, data)
-        if err == '' then
-            output.stderr = output.stderr .. data
-        end
-        if vim.is_callable(origin_stderr) then
-            origin_stderr(err, data)
-        end
-    end
-    if opts.stderr ~= false then
-        opts.stderr = vim.schedule_wrap(stderr)
-    end
-
-    local function on_exit(job)
-        job.stdout = job.stdout or output.stdout
-        job.stder = job.stderr or output.stderr
-
-        if args.on_exit then
-            args.on_exit(job)
-        end
-
-        STORAGE.async[hash] = nil
-    end
-
-    local job = vim.system(cmd, opts, vim.schedule_wrap(on_exit))
-    STORAGE.async[hash] = job
-    return job
-end
-
+--- @param opts Command.Opts
 local function get_grepprg(opts)
     local grepprg = vim.bo.grepprg ~= '' and vim.bo.grepprg or vim.o.grepprg
     grepprg = vim.split(grepprg, '%s+', { trimempty = true })
@@ -114,39 +59,206 @@ function M.grep(opts)
         win = opts.win or vim.api.nvim_get_current_win()
     end
 
+    local efm = vim.o.grepformat
     local cwd = opts.cwd or vim.fs.normalize(vim.uv.cwd())
-    local grep = RELOAD('jobs'):new {
-        cmd = cmd,
-        silent = true,
-        opts = {
-            cwd = cwd,
-            stdin = 'null',
-        },
-        qf = {
-            on_fail = {
-                open = true,
-                jump = false,
-            },
-            loc = use_loc,
-            win = win,
-            jump = true,
-            title = 'AsyncGrep',
-            efm = vim.opt.grepformat:get(),
-        },
+
+    vim.system(
+        cmd,
+        { text = true, cwd = cwd },
+        vim.schedule_wrap(function(out)
+            if out.code == 0 then
+                if out.stdout == '' and out.stderr == '' then
+                    vim.notify('No matching results ' .. search, vim.log.levels.WARN, { title = 'Grep' })
+                else
+                    local files = vim.split(out.stdout, '\n', { trimempty = true })
+                    require('utils.qf').set_list { items = files, win = win, efm = efm, jump = true }
+                end
+            elseif out.code ~= 0 then
+                if out.stdout == '' and out.stderr == '' then
+                    vim.notify('No matching results ' .. search, vim.log.levels.WARN, { title = 'Grep' })
+                else
+                    vim.notify(
+                        ('%s exited with code %s\n%s'):format(cmd[1], out.code, out.stderr),
+                        vim.log.levels.ERROR,
+                        { title = 'Grep' }
+                    )
+                end
+            end
+        end)
+    )
+end
+
+--- @class Make
+--- @field makeprg? string|string[]
+--- @field args? string[]
+--- @field efm? string|string[]
+--- @field open? boolean
+--- @field jump? boolean
+--- @field notify? boolean
+--- @field silent? boolean
+--- @field win? boolean|number
+
+--- @param opts Make?
+function M.makeprg(opts)
+    opts = opts or {}
+    local args = opts.args and vim.iter(opts.args):map(vim.fn.expand):totable() or {}
+
+    local makeprg = opts.makeprg
+    if not makeprg then
+        makeprg = vim.bo.makeprg
+        if makeprg == '' then
+            makeprg = vim.go.makeprg
+        end
+        makeprg = vim.split(makeprg, ' ', { trimempty = true })
+    end
+
+    ---@cast makeprg string[]
+    local cmd = vim.list_extend(makeprg, args)
+    cmd = vim.iter(cmd):map(vim.fn.expand):totable()
+    vim.list_extend(cmd, args)
+
+    local open = opts.open
+    if open == nil then
+        open = true
+    end
+
+    require('async').qf_report_job(cmd, {
+        open = open,
+        notify = opts.notify,
+        silent = opts.silent,
+        jump = opts.jump,
+        efm = opts.efm,
+        win = opts.win,
+    })
+end
+
+function M.lint(linter, opts)
+    vim.validate {
+        linter = { linter, 'string' },
+        opts = { opts, 'table', true },
     }
 
-    grep:add_callbacks(function(job, rc)
-        if rc == 0 and job:is_empty() then
-            vim.notify('No matching results ' .. search, vim.log.levels.WARN, { title = 'Grep' })
-        elseif rc ~= 0 then
-            if job:is_empty() then
-                vim.notify('No matching results ' .. search, vim.log.levels.WARN, { title = 'Grep' })
-            else
-                vim.notify(('%s exited with code %s'):format(cmd[1], rc), vim.log.levels.ERROR, { title = 'Grep' })
+    opts = opts or {}
+
+    local language = opts.language or opts.filetype or vim.bo.filetype
+    local buf = opts.buf or vim.api.nvim_get_current_buf()
+    local bufname = opts.bufname or opts.filename or vim.api.nvim_buf_get_name(buf)
+
+    local function get_args(configs, configflag, fallback_args)
+        if configs and configflag then
+            local config_files = vim.fs.find(configs, { upward = true, type = 'file' })
+            if config_files[1] then
+                return { configflag, config_files[1] }
             end
+        elseif opts.global_config and require('utils.files').is_file(opts.global_config) then
+            return { configflag, opts.global_config }
         end
-    end)
-    grep:start()
+
+        return fallback_args
+    end
+
+    ---@type string[]
+    local cmd = { linter }
+    if opts.subcmd or opts.subcommand then
+        table.insert(cmd, opts.subcmd or opts.subcommand)
+    end
+
+    ---@type string|string[]
+    local efm = opts.efm or opts.errorformat
+    if not efm then
+        efm = vim.go.efm
+    end
+
+    local args
+    local ft_linters = vim.F.npcall(RELOAD, 'filetypes.' .. language)
+    if ft_linters and ft_linters.makeprg then
+        local linter_data = ft_linters.makeprg[linter]
+        if linter_data then
+            args = linter_data
+            efm = opts.efm or opts.errorformat or linter_data.efm or linter_data.errorformat or efm
+        end
+    end
+
+    if type(efm) == type {} then
+        efm = table.concat(efm --[[@as string[] ]], '\n')
+    end
+
+    if opts.args then
+        args = type(opts.args) == type {} and opts.args or { opts.args }
+    end
+
+    local extra_args = get_args(opts.configs, opts.config_flag, args or {})
+    vim.list_extend(cmd, extra_args)
+    table.insert(cmd, bufname)
+
+    M.makeprg {
+        makeprg = cmd,
+        notify = false,
+        silent = true,
+        open = false,
+        jump = false,
+        win = true,
+        efm = efm,
+    }
+end
+
+function M.formatprg(args)
+    args = args or {}
+
+    vim.validate {
+        cmd = { args.cmd, 'table' },
+        bufnr = { args.bufnr, 'number', true },
+        first = { args.first, 'number', true },
+        last = { args.last, 'number', true },
+    }
+
+    local cmd = args.cmd
+    local bufnr = args.bufnr or vim.api.nvim_get_current_buf()
+
+    local buf_utils = RELOAD 'utils.buffers'
+
+    local first = args.first or (vim.v.lnum - 1)
+    local last = args.last or (first + vim.v.count)
+
+    local lines = vim.api.nvim_buf_get_lines(bufnr, first, last, false)
+    local indent_level = buf_utils.get_indent_block_level(lines)
+    local tmpfile = vim.fn.tempname()
+
+    require('utils.files').writefile(tmpfile, buf_utils.indent(lines, -indent_level))
+    table.insert(cmd, tmpfile)
+
+    local view = vim.fn.winsaveview()
+    local win = vim.api.nvim_get_current_win()
+
+    vim.system(
+        cmd,
+        { text = true },
+        vim.schedule_wrap(function(out)
+            if out.code == 0 then
+                local fmt_lines = require('utils.files').readfile(tmpfile)
+                fmt_lines = buf_utils.indent(fmt_lines, indent_level)
+                vim.api.nvim_buf_set_lines(bufnr, first, last, false, fmt_lines)
+                vim.fn.winrestview(view)
+            else
+                local output = out.stderr ~= '' and out.stderr or out.stdout
+                if output ~= '' then
+                    require('utils.qf').set_list {
+                        items = vim.split(output, '\n', { trimempty = true }),
+                        win = win,
+                        efm = args.efm,
+                        open = true,
+                        jump = false,
+                    }
+                else
+                    vim.notify(
+                        string.format('Failed to format buffer, code: %s', out.code),
+                        vim.log.levels.ERROR,
+                        { title = 'Formatter' }
+                    )
+                end
+            end
+        end)
+    )
 end
 
 return M
