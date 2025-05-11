@@ -69,4 +69,51 @@ function M.edit(args)
     end
 end
 
+function M.kill_job(pid)
+    local async_job
+
+    if not pid then
+        local hashes = {}
+        local cmds = {}
+        for hash, job in pairs(ASYNC.jobs) do
+            hashes[#hashes + 1] = hash
+            local cmd = vim.json.decode(vim.base64.decode(hash)).cmd
+            cmds[#cmds + 1] = ('%s: %s'):format(job.pid, table.concat(cmd, ' '))
+        end
+        if #cmds > 0 then
+            vim.ui.select(
+                cmds,
+                { prompt = 'Select a cmd:' },
+                vim.schedule_wrap(function(choice, idx)
+                    if choice then
+                        local hash = hashes[idx]
+                        async_job = ASYNC.jobs[hash]
+                        if async_job then
+                            async_job:kill(7)
+                        end
+                    end
+                end)
+            )
+            return
+        else
+            vim.notify('No jobs to kill', vim.log.levels.WARN, { title = 'KillJob' })
+        end
+    else
+        for _, job in pairs(ASYNC.jobs) do
+            if pid == job.pid then
+                async_job = job
+                break
+            end
+        end
+
+        if not async_job then
+            vim.notify('Could not find PID: ' .. pid, vim.log.levels.WARN, { title = 'KillJob' })
+        end
+    end
+
+    if async_job then
+        async_job:kill(7)
+    end
+end
+
 return M
