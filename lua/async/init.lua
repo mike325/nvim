@@ -36,6 +36,7 @@ local M = {}
 ---@field win (boolean|integer|nil) Use location list instead of quickfix
 ---@field buf (integer|nil) Buffer to set diagnostics
 ---@field efm (string|string[]|nil) efm to parse qf results
+---@field dump (boolean?) Dump results into the Quickfix/loclist, default: true
 ---@field opts (vim.SystemOpts?) Override default opts, default: {text = true}
 ---@field callbacks (fun(out: vim.SystemCompleted)|fun(out: vim.SystemCompleted)[]|nil)
 ---                 Callback executed after process qf default on_exit
@@ -106,8 +107,8 @@ local function process_exit(out, state_data, cmd, cwd, opts)
             elseif vim.api.nvim_buf_is_valid(opts.buf) then
                 vim.diagnostic.reset(ns, opts.buf)
             end
-            local qf = qf_utils.get_list({ context = 1 }, opts.win)
 
+            local qf = qf_utils.get_list({ context = 1 }, opts.win)
             if qf.context and type(qf.context) == type {} then
                 local qf_hash = require('utils.async').get_hash(qf.context.cmd, qf.context.cwd)
                 if qf_hash == hash then
@@ -136,8 +137,14 @@ local function process_exit(out, state_data, cmd, cwd, opts)
         if opts.append then
             qf_opts.action = 'a'
         end
-        qf_utils.set_list(qf_opts, opts.win)
-        qf_utils.qf_to_diagnostic(ns_name, opts.win)
+
+        if opts.dump then
+            qf_utils.set_list(qf_opts, opts.win)
+            qf_utils.qf_to_diagnostic(ns_name, opts.win)
+        else
+            local items = vim.fn.getqflist({ lines = lines, efm = opts.efm or vim.go.efm }).items
+            qf_utils.qf_to_diagnostic(ns_name, opts.win, items)
+        end
 
         if not opts.silent then
             vim.notify(string.format('cmd: %s failed', cmd_name), vim.log.levels.ERROR, { title = 'Async' })
@@ -166,7 +173,7 @@ end
 ---@param cmd string[]
 ---@param opts Report.Opts?
 ---@return vim.SystemObj
-function M.qf_report_job(cmd, opts)
+function M.report(cmd, opts)
     opts = opts or {}
 
     if opts.uniq == nil then
@@ -175,6 +182,10 @@ function M.qf_report_job(cmd, opts)
 
     if opts.notify == nil then
         opts.notify = true
+    end
+
+    if opts.dump == nil then
+        opts.dump = true
     end
 
     if opts.clear == nil then

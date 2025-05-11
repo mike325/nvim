@@ -12,7 +12,7 @@ function M.execute(args)
 
     local cmd = { 'make' }
     vim.list_extend(cmd, args)
-    require('async').qf_report_job(cmd, { open = true, jump = true })
+    require('async').report(cmd, { open = true, jump = true })
 end
 
 function M.copy_template()

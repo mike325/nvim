@@ -12,7 +12,7 @@ local function async_insert_version(prg)
     local insert_row = RELOAD('storage.utils').insert_row
 
     local cmd = { prg, '--version' }
-    require('async').qf_report_job(cmd, {
+    require('async').report(cmd, {
         open = true,
         callbacks = function(out)
             if out.code == 0 then

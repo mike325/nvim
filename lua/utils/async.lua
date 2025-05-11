@@ -96,6 +96,7 @@ end
 --- @field jump? boolean
 --- @field notify? boolean
 --- @field silent? boolean
+--- @field dump? boolean
 --- @field win? boolean|number
 
 --- @param opts Make?
@@ -122,13 +123,14 @@ function M.makeprg(opts)
         open = true
     end
 
-    require('async').qf_report_job(cmd, {
+    require('async').report(cmd, {
         open = open,
         notify = opts.notify,
         silent = opts.silent,
         jump = opts.jump,
         efm = opts.efm,
         win = opts.win,
+        dump = opts.dump,
     })
 end
 

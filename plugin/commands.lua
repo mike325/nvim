@@ -288,7 +288,7 @@ if executable 'pre-commit' then
             args = { 'run', '--all' }
         end
         vim.list_extend(cmd, args)
-        require('async').qf_report_job(cmd, { open = true, jump = true, efm = efm })
+        require('async').report(cmd, { open = true, jump = true, efm = efm })
     end, { bang = true, nargs = '*' })
 end
 

@@ -787,7 +787,7 @@ then
                 end
 
                 table.insert(cmd, filename)
-                require('async').qf_report_job(cmd)
+                require('async').report(cmd)
                 vim.b[buf].auto_render_uml = true
             end
         end,

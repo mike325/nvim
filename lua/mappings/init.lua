@@ -861,7 +861,7 @@ function M.vnc(hostname, opts)
 
         local cmd = { 'vncviewer' }
         vim.list_extend(cmd, args)
-        require('async').qf_report_job(cmd, { open = true })
+        require('async').report(cmd, { open = true })
     else
         vim.notify('Missing vncviewer executable', vim.log.levels.ERROR, { title = 'VNC' })
     end

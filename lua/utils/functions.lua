@@ -474,9 +474,7 @@ function M.typos_check(buf)
         makeprg = cmd,
         notify = false,
         silent = true,
-        open = false,
-        jump = false,
-        win = true,
+        dump = false,
     }
 end
 
