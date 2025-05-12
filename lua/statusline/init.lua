@@ -161,11 +161,11 @@ local M = {
             return vim.fn.argc() > 0
         end,
     },
-    jobs = {
+    tasks = {
         component = function()
             local procs = #vim.api.nvim_get_proc_children(vim.uv.os_getpid())
             if procs > 0 then
-                return ('%s: %s'):format('Jobs', procs)
+                return ('%s: %s'):format('Tasks', procs)
             end
             return ''
         end,

@@ -78,15 +78,13 @@ completions = vim.tbl_extend('force', completions, {
         end, vim.diagnostic.severity)
         return utils.general_completion(arglead, cmdline, cursorpos, severity_lst)
     end,
-    background_jobs = function(arglead, cmdline, cursorpos)
-        local jobs = {}
-        for id, job in pairs(STORAGE.jobs) do
-            -- NOTE: this gives very little context about the cmd arguments and what is running
-            -- We need a more unique identifier but also a descriptive enough one to know what's
-            -- executing
-            table.insert(jobs, id .. ':' .. job.exe)
+    background_tasks = function(arglead, cmdline, cursorpos)
+        local tasks = {}
+        for hash, task in pairs(ASYNC.tasks) do
+            local cmd = vim.json.decode(vim.base64.decode(hash)).cmd
+            tasks[#tasks + 1] = ('%s: %s'):format(task.pid, cmd[1])
         end
-        return utils.general_completion(arglead, cmdline, cursorpos, jobs)
+        return utils.general_completion(arglead, cmdline, cursorpos, tasks)
     end,
     diagnostics_virtual_lines = function(arglead, cmdline, cursorpos)
         local nvim = require 'nvim'

@@ -775,25 +775,25 @@ function M.alternate_test(opts)
     select_from_lst(candidates, 'Test: ')
 end
 
-function M.show_background_jobs()
-    if next(ASYNC.jobs) == nil then
+function M.show_background_tasks()
+    if next(ASYNC.tasks) == nil then
         return
     end
 
-    if vim.t.job_info and nvim.win.is_valid(vim.t.job_info) then
-        nvim.win.close(vim.t.job_info, true)
-        vim.t.job_info = nil
+    if vim.t.task_info and nvim.win.is_valid(vim.t.task_info) then
+        nvim.win.close(vim.t.task_info, true)
+        vim.t.task_info = nil
         return
     else
-        vim.t.job_info = RELOAD('utils.windows').lower_window()
+        vim.t.task_info = RELOAD('utils.windows').lower_window()
     end
 
-    -- TODO: Add auto update of the current jobs if the window stays open
-    local buf = nvim.win.get_buf(vim.t.job_info)
+    -- TODO: Add auto update of the current tasks if the window stays open
+    local buf = nvim.win.get_buf(vim.t.task_info)
     local lines = {}
-    for hash, job in pairs(ASYNC.jobs) do
+    for hash, task in pairs(ASYNC.tasks) do
         local cmd = vim.json.decode(vim.base64.decode(hash)).cmd
-        lines[#lines + 1] = ('%s: %s'):format(job.pid, table.concat(cmd, ' '))
+        lines[#lines + 1] = ('%s: %s'):format(task.pid, table.concat(cmd, ' '))
     end
     nvim.buf.set_lines(buf, 0, -1, false, lines)
 end

@@ -15,9 +15,9 @@ local M = {}
 --- @field is_closing fun(self: vim.SystemObj): boolean
 
 --- @class vim.SystemOpts
---- @field stdin? string|string[]|true
---- @field stdout? fun(err:string?, data: string?)|false
---- @field stderr? fun(err:string?, data: string?)|false
+--- @field stdin? string|string[]|boolean
+--- @field stdout? fun(err:string?, data: string?)|boolean
+--- @field stderr? fun(err:string?, data: string?)|boolean
 --- @field cwd? string
 --- @field env? table<string,string|number>
 --- @field clear_env? boolean
@@ -30,7 +30,7 @@ local M = {}
 ---@field silent (boolean?) Don't notify on fail, default: false
 ---@field clear (boolean?) Clear quickfix on success, default: true
 ---@field append (boolean?) Append errors to qf instead of overriding, default: false
----@field uniq (boolean?) Stop previous job before executing, default: true
+---@field uniq (boolean?) Stop previous task before executing, default: true
 ---@field open (boolean?) Open qf, default: false
 ---@field jump (boolean?) Jump to the first element, default: false
 ---@field win (boolean|integer|nil) Use location list instead of quickfix
@@ -53,7 +53,7 @@ local M = {}
 ---@param state string[]?
 ---@param output string[]?
 ---@param text boolean?
----@param cb fun(err:string?, data: string?)?
+---@param cb fun(err:string?, data: string?)|boolean|nil
 local function process_data(err, data, state, output, text, cb)
     if err then
         error(err)
@@ -71,12 +71,13 @@ local function process_data(err, data, state, output, text, cb)
         table.insert(output, data)
     end
 
-    if cb then
+    if vim.is_callable(cb) then
+        ---@cast cb fun(err:string?, data: string?)
         cb(err, data)
     end
 end
 
----Process async job exit
+---Process async task exit
 ---@param out vim.SystemCompleted
 ---@param state_data Data
 ---@param cmd string[]
@@ -96,7 +97,7 @@ local function process_exit(out, state_data, cmd, cwd, opts)
     }
 
     local hash = require('utils.async').get_hash(cmd, cwd)
-    ASYNC.jobs[hash] = nil
+    ASYNC.tasks[hash] = nil
 
     local cmd_name = vim.fs.basename(cmd[1])
     local ns_name = string.format('async.%s', cmd_name)
@@ -158,7 +159,7 @@ local function process_exit(out, state_data, cmd, cwd, opts)
         end
     end
 
-    -- NOTE: Don't process callbacks if the job was killed
+    -- NOTE: Don't process callbacks if the task was killed
     if opts.callbacks and out.signal ~= 7 then
         ---@type (fun(out: vim.SystemCompleted))[]
         local callbacks
@@ -206,8 +207,8 @@ function M.report(cmd, opts)
 
     ---@type vim.SystemOpts
     local user_opts = opts.opts or {}
-    local origin_stdout = user_opts.stdout ---@type fun(err:string?, data: string?)
-    local origin_stderr = user_opts.stderr ---@type fun(err:string?, data: string?)
+    local origin_stdout = user_opts.stdout ---@type fun(err:string?, data: string?)|boolean
+    local origin_stderr = user_opts.stderr ---@type fun(err:string?, data: string?)|boolean
     user_opts.stdout = nil
     user_opts.stderr = nil
 
@@ -236,8 +237,8 @@ function M.report(cmd, opts)
     local hash = require('utils.async').get_hash(cmd, obj_opts.cwd)
 
     ---@type vim.SystemObj?
-    if opts.uniq and ASYNC.jobs[hash] then
-        ASYNC.jobs[hash]:kill(7)
+    if opts.uniq and ASYNC.tasks[hash] then
+        ASYNC.tasks[hash]:kill(7)
     end
 
     -- TODO: Get the efm from the current buffer, the on_exit may be called on a different buffer
@@ -253,7 +254,7 @@ function M.report(cmd, opts)
         end)
     )
 
-    ASYNC.jobs[hash] = obj
+    ASYNC.tasks[hash] = obj
     return obj
 end
 

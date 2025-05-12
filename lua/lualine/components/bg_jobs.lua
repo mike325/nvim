@@ -6,13 +6,13 @@ local hl = require 'lualine.highlight'
 
 function M:init(options)
     M.super.init(self, options)
-    self.jobs_hl = hl.create_component_highlight_group({ fg = palette.peach }, 'jobs_hl', self.options)
+    self.tasks_hl = hl.create_component_highlight_group({ fg = palette.peach }, 'tasks_hl', self.options)
 end
 
 function M:update_status()
-    local text = statusline.jobs.component()
+    local text = statusline.tasks.component()
     if text ~= '' then
-        return ('%s%s'):format(hl.component_format_highlight(self.jobs_hl), text)
+        return ('%s%s'):format(hl.component_format_highlight(self.tasks_hl), text)
     end
     return ''
 end

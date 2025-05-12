@@ -69,13 +69,13 @@ end
 
 ---@class Async
 ---@field output vim.Ringbuf
----@field jobs table<string, vim.SystemObj>
+---@field tasks table<string, vim.SystemObj>
 
 ---@type Async?
 if not ASYNC and not vim.is_thread() then
     _G['ASYNC'] = {
         output = require('stack'):new(15),
-        jobs = {},
+        tasks = {},
     }
 end
 

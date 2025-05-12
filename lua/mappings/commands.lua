@@ -69,16 +69,16 @@ function M.edit(args)
     end
 end
 
-function M.kill_job(pid)
-    local async_job
+function M.kill_task(pid)
+    local async_task
 
     if not pid then
         local hashes = {}
         local cmds = {}
-        for hash, job in pairs(ASYNC.jobs) do
+        for hash, task in pairs(ASYNC.tasks) do
             hashes[#hashes + 1] = hash
             local cmd = vim.json.decode(vim.base64.decode(hash)).cmd
-            cmds[#cmds + 1] = ('%s: %s'):format(job.pid, table.concat(cmd, ' '))
+            cmds[#cmds + 1] = ('%s: %s'):format(task.pid, table.concat(cmd, ' '))
         end
         if #cmds > 0 then
             vim.ui.select(
@@ -87,32 +87,32 @@ function M.kill_job(pid)
                 vim.schedule_wrap(function(choice, idx)
                     if choice then
                         local hash = hashes[idx]
-                        async_job = ASYNC.jobs[hash]
-                        if async_job then
-                            async_job:kill(7)
+                        async_task = ASYNC.tasks[hash]
+                        if async_task then
+                            async_task:kill(7)
                         end
                     end
                 end)
             )
             return
         else
-            vim.notify('No jobs to kill', vim.log.levels.WARN, { title = 'KillJob' })
+            vim.notify('No tasks to kill', vim.log.levels.WARN, { title = 'Killtask' })
         end
     else
-        for _, job in pairs(ASYNC.jobs) do
-            if pid == job.pid then
-                async_job = job
+        for _, task in pairs(ASYNC.tasks) do
+            if pid == task.pid then
+                async_task = task
                 break
             end
         end
 
-        if not async_job then
-            vim.notify('Could not find PID: ' .. pid, vim.log.levels.WARN, { title = 'KillJob' })
+        if not async_task then
+            vim.notify('Could not find PID: ' .. pid, vim.log.levels.WARN, { title = 'Killtask' })
         end
     end
 
-    if async_job then
-        async_job:kill(7)
+    if async_task then
+        async_task:kill(7)
     end
 end
 

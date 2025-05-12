@@ -245,12 +245,12 @@ vim.keymap.set('n', '=d', function()
 end, { noremap = true, silent = true, desc = 'Show diagnostics under the cursor in a floating window' })
 
 vim.keymap.set('n', '=j', function(opts)
-    RELOAD('mappings').show_background_jobs(opts)
-end, { noremap = true, desc = 'Show current background running jobs' })
+    RELOAD('mappings').show_background_tasks(opts)
+end, { noremap = true, desc = 'Show current background running tasks' })
 
 vim.keymap.set('n', '=p', function()
     RELOAD('mappings').toggle_progress_win()
-end, { noremap = true, silent = true, desc = 'Show progress of the selected job' })
+end, { noremap = true, silent = true, desc = 'Show progress of the selected task' })
 
 vim.keymap.set('n', '<leader>c', function()
     local bufnr = vim.api.nvim_get_current_buf()

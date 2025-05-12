@@ -196,9 +196,9 @@ lualine.setup {
                 end,
             },
             {
-                'bg_jobs',
+                'bg_tasks',
                 on_click = function()
-                    RELOAD('mappings').show_background_jobs()
+                    RELOAD('mappings').show_background_tasks()
                 end,
             },
         },
