@@ -776,7 +776,7 @@ function M.alternate_test(opts)
 end
 
 function M.show_background_jobs()
-    if next(STORAGE.jobs) == nil then
+    if next(ASYNC.jobs) == nil then
         return
     end
 
@@ -791,9 +791,9 @@ function M.show_background_jobs()
     -- TODO: Add auto update of the current jobs if the window stays open
     local buf = nvim.win.get_buf(vim.t.job_info)
     local lines = {}
-    for id, job in pairs(STORAGE.jobs) do
-        local cmd = type(job._cmd) == type '' and job._cmd or table.concat(job._cmd, ' ')
-        table.insert(lines, ('%s: %s'):format(id, cmd))
+    for hash, job in pairs(ASYNC.jobs) do
+        local cmd = vim.json.decode(vim.base64.decode(hash)).cmd
+        lines[#lines + 1] = ('%s: %s'):format(job.pid, table.concat(cmd, ' '))
     end
     nvim.buf.set_lines(buf, 0, -1, false, lines)
 end
@@ -803,31 +803,6 @@ function M.show_job_progress(opts)
     if STORAGE.jobs[id] then
         local job = STORAGE.jobs[id]
         job:progress()
-    end
-end
-
-function M.vnc(hostname, opts)
-    vim.validate {
-        hostname = { hostname, 'string' },
-        opts = { opts, 'table', true },
-    }
-    local executable = RELOAD('utils.files').executable
-
-    local components = vim.split(hostname, ':')
-    hostname = RELOAD('utils.network').get_remote_host(components[1])
-    local port = components[2] or '1' -- '10'
-
-    if vim.env.SSH_CONNECTION then
-        RELOAD('utils.osc').send_osc1337('vnc', hostname .. ':' .. port)
-    elseif executable 'vncviewer' then
-        local args = { hostname }
-        vim.list_extend(args, opts or {})
-
-        local cmd = { 'vncviewer' }
-        vim.list_extend(cmd, args)
-        require('async').report(cmd, { open = true })
-    else
-        vim.notify('Missing vncviewer executable', vim.log.levels.ERROR, { title = 'VNC' })
     end
 end
 

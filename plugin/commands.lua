@@ -210,6 +210,53 @@ nvim.command.set('Make', function(opts)
     RELOAD('utils.async').makeprg { args = opts.fargs }
 end, { nargs = '*', desc = 'Async execution of current makeprg' })
 
+--- @param opts Command.Opts
+nvim.command.set('Exec', function(opts)
+    local cmd = opts.fargs
+    if opts.fargs[1] == '-shell' then
+        cmd = { vim.go.shell }
+        local flags = vim.split(vim.go.shellcmdflag, ' ', { trimempty = true })
+        vim.list_extend(cmd, flags)
+        table.insert(cmd, table.concat(vim.iter(opts.fargs):slice(2, #opts.fargs):totable(), ' '))
+    end
+
+    RELOAD('utils.async').makeprg {
+        makeprg = cmd,
+        notify = true,
+        open = true,
+        jump = false,
+    }
+end, { bang = true, nargs = '+', complete = 'shellcmdline', desc = 'Async execution of the given cmd' })
+
+nvim.command.set('DumpOutput', function(_)
+    if ASYNC.output:peek() then
+        local outputs = vim.iter(ASYNC.output()):totable()
+        local items = vim.iter(outputs)
+            :map(function(item)
+                return string.format('%s - %s', item.code, table.concat(item.cmd, ' '))
+            end)
+            :totable()
+        vim.ui.select(items, { prompt = 'Select output:' }, function(choice, idx)
+            if choice then
+                local output = outputs[idx].stdout ~= '' and outputs[idx].stdout or outputs[idx].stderr
+                local data = vim.iter(vim.split(output, '\n', { trimempty = true }))
+                    :filter(function(line)
+                        return not line:match '^%s*$'
+                    end)
+                    :map(function(line)
+                        return (line:gsub('\t', string.rep(' ', 4)))
+                    end)
+                    :totable()
+                if #data > 0 then
+                    require('utils.qf').set_list { items = data, open = true, jump = false }
+                else
+                    vim.notify('No data to dump', vim.log.levels.WARN, { title = 'Dump' })
+                end
+            end
+        end)
+    end
+end, { nargs = '*', desc = 'Dump the output of the last commands' })
+
 if executable 'scp' then
     --- @param opts Command.Opts
     nvim.command.set('SendFile', function(opts)
@@ -619,7 +666,7 @@ end, { desc = 'Parse SSH config' })
 
 --- @param opts Command.Opts
 nvim.command.set('VNC', function(opts)
-    RELOAD('mappings').vnc(opts.args, { '-Quality=high' })
+    RELOAD('mappings.commands').vnc(opts.args, { '-Quality=high' })
 end, { complete = completions.ssh_hosts_completion, nargs = 1, desc = 'Open a VNC connection to the given host' })
 
 if executable 'gh' then

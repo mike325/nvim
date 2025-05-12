@@ -72,9 +72,9 @@ end
 ---@field jobs table<string, vim.SystemObj>
 
 ---@type Async?
-if not ASYNC then
+if not ASYNC and not vim.is_thread() then
     _G['ASYNC'] = {
-        output = vim.ringbuf(10),
+        output = require('stack'):new(15),
         jobs = {},
     }
 end
