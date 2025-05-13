@@ -61,7 +61,7 @@ if vim.fn.has 'win32' == 1 then
     vim.go.shellxquote = ''
 
     vim.go.shellslash = true
-elseif vim.fs.basename(vim.go.shell) == 'tcsh' or vim.fs.basename(vim.go.shell) == 'csh' then
+elseif vim.fs.basename(vim.go.shell):match '^t?csh$' then
     local function executable(shell)
         return vim.fn.executable(shell) == 1
     end
