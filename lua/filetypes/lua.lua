@@ -17,7 +17,7 @@ local M = {
             '--ranges',
             efm = {
                 '%f:%l:%c-%k: (%t%n) %m',
-            }
+            },
         },
     },
     formatprg = {

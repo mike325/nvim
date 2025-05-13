@@ -13,7 +13,7 @@ local M = {
                 '%f:%l:%c: %tarning: %m. [SC%n]',
                 '%f:%l:%c: %tote: %m. [SC%n]',
                 '%f:%l:%c: %tint: %m. [SC%n]',
-            }
+            },
         },
     },
     formatprg = {
