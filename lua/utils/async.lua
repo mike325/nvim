@@ -182,7 +182,7 @@ function M.lint(linter, opts)
     end
 
     if type(efm) == type {} then
-        efm = table.concat(efm --[[@as string[] ]], '\n')
+        efm = table.concat(efm --[[@as string[] ]], ',')
     end
 
     if opts.args then

@@ -8,6 +8,12 @@ local M = {
             '-x',
             '-e',
             '1117',
+            efm = {
+                '%f:%l:%c: %trror: %m. [SC%n]',
+                '%f:%l:%c: %tarning: %m. [SC%n]',
+                '%f:%l:%c: %tote: %m. [SC%n]',
+                '%f:%l:%c: %tint: %m. [SC%n]',
+            }
         },
     },
     formatprg = {

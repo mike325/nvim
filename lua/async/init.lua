@@ -101,7 +101,7 @@ local function process_exit(out, state_data, cmd, cwd, opts)
 
     local cmd_name = vim.fs.basename(cmd[1])
     local ns_name = string.format('async.%s', cmd_name)
-    local qf_utils = require 'utils.qf'
+    local qf_utils = RELOAD 'utils.qf'
 
     if out.code == 0 then
         if opts.notify then

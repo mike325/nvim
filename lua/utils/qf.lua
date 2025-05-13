@@ -297,7 +297,15 @@ function M.qf_to_diagnostic(ns, win, items)
     end
 
     --- @cast ns integer
-    vim.diagnostic.reset(ns)
+    if not win then
+        vim.diagnostic.reset(ns)
+    else
+        if type(win) == type(true) then
+            win = vim.api.nvim_get_current_win()
+        end
+        local buf = vim.api.nvim_win_get_buf(win --[[@as integer]])
+        vim.diagnostic.reset(ns, buf)
+    end
 
     if #qf.items > 0 then
         local diagnostics = vim.diagnostic.fromqflist(qf.items)

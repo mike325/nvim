@@ -15,6 +15,9 @@ local M = {
             'plain',
             '--codes',
             '--ranges',
+            efm = {
+                '%f:%l:%c-%k: (%t%n) %m',
+            }
         },
     },
     formatprg = {
