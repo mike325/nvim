@@ -61,6 +61,7 @@ function M.get_remote_processes(opts, cb)
             remote_cmd,
             { text = true },
             vim.schedule_wrap(function(job)
+                require('utils.async').push_output(job, remote_cmd)
                 if job.code == 0 and cb then
                     local output = vim.split(job.stdout, '\n', { trimempty = true })
                     cb(parse_output(output))

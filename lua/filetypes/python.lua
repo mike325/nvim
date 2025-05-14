@@ -213,6 +213,7 @@ function M.setup()
         if pyprog then
             local cmd = vim.list_extend(pyprog, { '-c', 'import sys; print(",".join(sys.path))' })
             vim.system(cmd, { text = true }, function(job)
+                require('utils.async').push_output(job, cmd)
                 -- NOTE: output is an array of stdout lines, we must join the array in a str
                 --       split it into a single array
                 if job.code == 0 then

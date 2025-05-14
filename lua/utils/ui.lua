@@ -16,7 +16,7 @@ local M = {}
 local icons
 if not vim.env.NO_COOL_FONTS then
     icons = {
-        error = '×', -- ✗ -- 🞮  -- × --  -- ❌
+        error = '✗ ', -- ✗ -- 🞮  -- × --  -- ❌
         warn = ' ', -- 
         info = ' ',
         hint = '',

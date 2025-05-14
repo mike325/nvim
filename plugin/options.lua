@@ -250,7 +250,7 @@ if nvim.has { 0, 9 } then
     vim.opt.splitkeep = 'screen'
 end
 
-local diagnostics_defaults = {
+local diagnostics_config = {
     signs = true,
     underline = true,
     update_in_insert = false,
@@ -258,17 +258,36 @@ local diagnostics_defaults = {
 }
 
 if nvim.has { 0, 11 } then
-    diagnostics_defaults.virtual_lines = true
-    diagnostics_defaults.virtual_text = false
+    diagnostics_config.virtual_lines = true
+    diagnostics_config.virtual_text = false
+
+    diagnostics_config.signs = {
+        text = {
+            [vim.diagnostic.severity.ERROR] = require('utils.ui').get_icon('error'),
+            [vim.diagnostic.severity.WARN] = require('utils.ui').get_icon('warn'),
+            [vim.diagnostic.severity.INFO] = require('utils.ui').get_icon('info'),
+            [vim.diagnostic.severity.HINT] = require('utils.ui').get_icon('build'),
+        },
+    }
 else
-    diagnostics_defaults.virtual_text = {
+    diagnostics_config.virtual_text = {
         spacing = 2,
         prefix = '❯',
         -- source = true,
     }
+
+    -- TODO: Deprecated in v0.11
+    local sign_str = 'DiagnosticSign'
+    for _, level in pairs { 'Error', 'Hint', 'Warn', 'Info' } do
+        vim.fn.sign_define(
+            sign_str .. level,
+            { text = require('utils.ui').get_icon(level:lower()), texthl = sign_str .. level }
+        )
+    end
+
 end
 
-vim.diagnostic.config(diagnostics_defaults)
+vim.diagnostic.config(diagnostics_config)
 
 local orig_signs_handler = vim.diagnostic.handlers.signs
 vim.diagnostic.handlers.signs = {
@@ -280,7 +299,6 @@ vim.diagnostic.handlers.signs = {
                 max_severity_per_line[d.lnum] = d
             end
         end
-
         local filtered_diagnostics = vim.tbl_values(max_severity_per_line)
         orig_signs_handler.show(ns, bufnr, filtered_diagnostics, opts)
     end,
@@ -291,15 +309,6 @@ vim.diagnostic.handlers.signs = {
 
 vim.diagnostic.enable()
 vim.diagnostic.show()
-
--- TODO: Deprecated, need to replace
-local sign_str = 'DiagnosticSign'
-for _, level in pairs { 'Error', 'Hint', 'Warn', 'Info' } do
-    vim.fn.sign_define(
-        sign_str .. level,
-        { text = require('utils.ui').get_icon(level:lower()), texthl = sign_str .. level }
-    )
-end
 
 -- Debug config
 local termdebug_config = vim.g.termdebug_config or {}

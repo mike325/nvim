@@ -1,5 +1,21 @@
 local M = {}
 
+
+---Push output to the stack
+---@param out vim.SystemCompleted
+---@param cmd string[]
+---@param cwd string?
+function M.push_output(out, cmd, cwd)
+    ASYNC.output:push {
+        cmd = cmd,
+        cwd = cwd or vim.uv.cwd(),
+        code = out.code,
+        signal = out.signal,
+        stdout = out.stdout,
+        stderr = out.stderr,
+    }
+end
+
 --- Get string repr of the given cmd
 ---@param cmd string|string[]
 ---@param cwd string?
@@ -11,6 +27,7 @@ function M.get_hash(cmd, cwd)
 end
 
 --- @param opts Command.Opts
+--- @return string|string[]
 local function get_grepprg(opts)
     local grepprg = vim.bo.grepprg ~= '' and vim.bo.grepprg or vim.o.grepprg
     grepprg = vim.split(grepprg, '%s+', { trimempty = true })
@@ -48,7 +65,9 @@ function M.grep(opts)
     vim.validate { opts = { opts, 'table', true } }
 
     opts = opts or {}
-    local cmd = get_grepprg(opts)
+
+    ---@type string[]
+    local cmd = get_grepprg(opts) --[[@as string[] ]]
 
     local search = opts.search or vim.fn.expand '<cword>'
     nvim.reg['/'] = search
@@ -66,6 +85,7 @@ function M.grep(opts)
         cmd,
         { text = true, cwd = cwd },
         vim.schedule_wrap(function(out)
+            M.push_output(out, cmd, cwd)
             if out.code == 0 then
                 if out.stdout == '' and out.stderr == '' then
                     vim.notify('No matching results ' .. search, vim.log.levels.WARN, { title = 'Grep' })
@@ -236,6 +256,7 @@ function M.formatprg(args)
         cmd,
         { text = true },
         vim.schedule_wrap(function(out)
+            M.push_output(out, cmd)
             if out.code == 0 then
                 local fmt_lines = require('utils.files').readfile(tmpfile)
                 fmt_lines = buf_utils.indent(fmt_lines, indent_level)

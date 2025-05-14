@@ -106,14 +106,16 @@ function M.find(opts)
         end
 
         vim.list_extend(finder, args)
-        local find = vim.system(finder, { text = true }, function(job)
+        local find = vim.system(finder, { text = true }, vim.schedule_wrap(function(job)
+            require('utils.async').push_output(job, finder)
             if job.code == 0 and opts.cb then
                 local output = vim.split(job.stdout, '\n', { trimempty = true })
                 opts.cb(output)
             elseif job.code ~= 0 then
-                vim.notify('Error!\n' .. job.stdout, vim.log.levels.ERROR, { title = 'Find' })
+                local output = job.stdout ~= '' and job.stdout or job.stderr
+                vim.notify('Error!\n' .. output, vim.log.levels.ERROR, { title = 'Find' })
             end
-        end)
+        end))
 
         if not opts.cb then
             local rc = find:wait()

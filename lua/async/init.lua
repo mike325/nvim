@@ -87,15 +87,7 @@ local function process_exit(out, state_data, cmd, cwd, opts)
     out.stdout = out.stdout or table.concat(state_data.stdout, '')
     out.stderr = out.stderr or table.concat(state_data.stderr, '')
 
-    ASYNC.output:push {
-        cmd = cmd,
-        cwd = cwd,
-        code = out.code,
-        signal = out.signal,
-        stdout = out.stdout,
-        stderr = out.stderr,
-    }
-
+    require('utils.async').push_output(out, cmd, cwd)
     local hash = require('utils.async').get_hash(cmd, cwd)
     ASYNC.tasks[hash] = nil
 

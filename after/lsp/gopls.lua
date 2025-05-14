@@ -29,6 +29,7 @@ return {
         end
         local cmd = { 'go', 'env', 'GOMODCACHE' }
         vim.system(cmd, { text = true }, function(output)
+            require('utils.async').push_output(output, cmd)
             if output.code == 0 then
                 if output.stdout then
                     mod_cache = vim.trim(output.stdout)
