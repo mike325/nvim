@@ -263,10 +263,10 @@ if nvim.has { 0, 11 } then
 
     diagnostics_config.signs = {
         text = {
-            [vim.diagnostic.severity.ERROR] = require('utils.ui').get_icon('error'),
-            [vim.diagnostic.severity.WARN] = require('utils.ui').get_icon('warn'),
-            [vim.diagnostic.severity.INFO] = require('utils.ui').get_icon('info'),
-            [vim.diagnostic.severity.HINT] = require('utils.ui').get_icon('build'),
+            [vim.diagnostic.severity.ERROR] = require('utils.ui').get_icon 'error',
+            [vim.diagnostic.severity.WARN] = require('utils.ui').get_icon 'warn',
+            [vim.diagnostic.severity.INFO] = require('utils.ui').get_icon 'info',
+            [vim.diagnostic.severity.HINT] = require('utils.ui').get_icon 'build',
         },
     }
 else
@@ -284,7 +284,6 @@ else
             { text = require('utils.ui').get_icon(level:lower()), texthl = sign_str .. level }
         )
     end
-
 end
 
 vim.diagnostic.config(diagnostics_config)

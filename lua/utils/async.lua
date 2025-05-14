@@ -1,6 +1,5 @@
 local M = {}
 
-
 ---Push output to the stack
 ---@param out vim.SystemCompleted
 ---@param cmd string[]
