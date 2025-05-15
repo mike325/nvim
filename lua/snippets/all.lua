@@ -145,7 +145,7 @@ local general_snips = {
                 -- stylua: ignore
                 if require('sys').name ~= 'windows' then
                     local env_version = vim.version.parse(vim.fn.system('env --version'))
-                    if env_version >= vim.version.parse('8.30') then
+                    if vim.version.ge(env_version, {8, 30})  then
                         local env_path = require('utils.files').exepath('env')
                         return string.format('#!%s -S nvim -l', env_path)
                     end

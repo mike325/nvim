@@ -1,6 +1,6 @@
 local nvim = require 'nvim'
 
-if not nvim.plugins['nvim-lspconfig'] and vim.version.le(vim.version(), { 0, 10 }) then
+if not nvim.plugins['nvim-lspconfig'] and not nvim.has { 0, 11 } then
     -- TODO: Use new after/lsp/* config folder for old versions
     vim.api.nvim_create_autocmd('FileType', {
         desc = 'Basic LSP setup when lspconfig is not install',

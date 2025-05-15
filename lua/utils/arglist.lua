@@ -58,7 +58,7 @@ function M.add(files, clear)
                 if buf == -1 then
                     vim.cmd.badd(filename)
                 end
-                vim.cmd.argadd(filename)
+                vim.cmd.argadd(vim.fs.normalize(filename))
                 -- if label then
                 --     require('configs.mini.utils').add_file_to_label(label, filename)
                 -- end
@@ -69,7 +69,7 @@ function M.add(files, clear)
                 error(debug.traceback('Invalid bufnr: ' .. buf))
             end
             local bufname = vim.fn.bufname(buf)
-            vim.cmd.argadd((bufname:gsub('^' .. cwd, '')))
+            vim.cmd.argadd(vim.fs.normalize((bufname:gsub('^' .. cwd, ''))))
             -- if label then
             --     require('configs.mini.utils').add_file_to_label(label, bufname)
             -- end
