@@ -212,19 +212,23 @@ function M.setup()
 
         if pyprog then
             local cmd = vim.list_extend(pyprog, { '-c', 'import sys; print(",".join(sys.path))' })
-            vim.system(cmd, { text = true }, vim.schedule_wrap(function(job)
-                require('utils.async').push_output(job, cmd)
-                -- NOTE: output is an array of stdout lines, we must join the array in a str
-                --       split it into a single array
-                if job.code == 0 then
-                    local output = vim.split(job.stdout:gsub('\n', ''), ',')
-                    local path = vim.opt_local.path:get()
-                    if type(path) == type '' then
-                        path = vim.split(path, ',')
+            vim.system(
+                cmd,
+                { text = true },
+                vim.schedule_wrap(function(job)
+                    require('utils.async').push_output(job, cmd)
+                    -- NOTE: output is an array of stdout lines, we must join the array in a str
+                    --       split it into a single array
+                    if job.code == 0 then
+                        local output = vim.split(job.stdout:gsub('\n', ''), ',')
+                        local path = vim.opt_local.path:get()
+                        if type(path) == type '' then
+                            path = vim.split(path, ',')
+                        end
+                        update_buffer_path(merge_uniq_list(path, output))
                     end
-                    update_buffer_path(merge_uniq_list(path, output))
-                end
-            end))
+                end)
+            )
         elseif vim.env.PYTHONPATH then
             local paths = vim.split(vim.env.PYTHONPATH, iswin and ';' or ':')
             update_buffer_path(paths)
