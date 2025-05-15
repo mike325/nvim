@@ -95,6 +95,27 @@ function M.exec(cmd)
     end
 end
 
+--- Delete an agument or a list of arguments
+---@param args string|string[]
+function M.delete(args)
+    if type(args) == type '' then
+        args = {
+            args --[[@as string]],
+        }
+    end
+
+    local todelete = {}
+    vim.iter(args):map(vim.fs.normalize):each(function(arg)
+        local found = vim.iter(vim.fn.argv()):find(function(a)
+            return vim.fs.normalize(a) == arg
+        end)
+        if found then
+            table.insert(todelete, found)
+        end
+    end)
+    vim.iter(todelete):each(vim.cmd.argdelete)
+end
+
 --- Edit an existing argument
 ---@param argument string?
 function M.edit(argument)
