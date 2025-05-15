@@ -5,14 +5,17 @@ local M = {}
 ---@param cmd string[]
 ---@param cwd string?
 function M.push_output(out, cmd, cwd)
-    ASYNC.output:push {
-        cmd = cmd,
-        cwd = cwd or vim.uv.cwd(),
-        code = out.code,
-        signal = out.signal,
-        stdout = out.stdout,
-        stderr = out.stderr,
-    }
+    -- NOTE: don't push output of self cancel jobs
+    if out.signal ~= 7 then
+        ASYNC.output:push {
+            cmd = cmd,
+            cwd = cwd or vim.uv.cwd(),
+            code = out.code,
+            signal = out.signal,
+            stdout = out.stdout,
+            stderr = out.stderr,
+        }
+    end
 end
 
 --- Get string repr of the given cmd
