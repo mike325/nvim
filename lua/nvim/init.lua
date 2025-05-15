@@ -406,7 +406,7 @@ local nvim = {
     }, {
         __call = function(_, feature)
             if type(feature) == type {} then
-                vim.validate { version = { feature, vim.islist, 'a nvim version string to list' }, }
+                vim.validate { version = { feature, vim.islist, 'a nvim version string to list' } }
                 return vim.version.ge(vim.version(), feature)
             end
             return vim.api.nvim_call_function('has', { feature }) == 1
