@@ -523,8 +523,11 @@ function M.open_changes(opts)
                 zip = true,
                 ['7z'] = true,
                 gif = true,
+                gz = true,
+                tgz = true,
+                rscf = true,
                 docx = true,
-                xlsm = true,
+                xlsx = true,
             }
 
             files = vim.tbl_filter(function(filename)

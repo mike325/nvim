@@ -160,40 +160,39 @@ vim.api.nvim_create_autocmd({ 'BufReadPost' }, {
     end,
 })
 
-local import_fix = vim.api.nvim_create_augroup('ImportFix', { clear = true })
-if executable 'goimports' then
-    vim.api.nvim_create_autocmd({ 'BufWritePost' }, {
-        desc = 'Fix go imports after saving',
-        group = import_fix,
-        pattern = '*.go',
-        callback = function(args)
-            RELOAD('utils.async').formatprg {
-                cmd = { 'goimports', '-w', args.file },
-                first = 0,
-                last = -1,
-            }
-        end,
-    })
-end
-
-if executable 'isort' then
-    vim.api.nvim_create_autocmd({ 'BufWritePost' }, {
-        desc = 'Fix python imports before saving',
-        group = import_fix,
-        pattern = '*.{py,ipy}',
-        callback = function(args)
-            local cmd = { 'isort' }
-            local format_args = RELOAD('filetypes.python').formatprg.isort
-            table.insert(format_args, args.file)
-            vim.list_extend(cmd, format_args)
-            RELOAD('utils.async').formatprg {
-                cmd = cmd,
-                first = 0,
-                last = -1,
-            }
-        end,
-    })
-end
+-- local import_fix = vim.api.nvim_create_augroup('ImportFix', { clear = true })
+-- if executable 'goimports' then
+--     vim.api.nvim_create_autocmd({ 'BufWritePre' }, {
+--         desc = 'Fix go imports after saving',
+--         group = import_fix,
+--         pattern = '*.go',
+--         callback = function(args)
+--             RELOAD('utils.async').formatprg {
+--                 cmd = { 'goimports', '-w', args.file },
+--                 first = 0,
+--                 last = -1,
+--             }
+--         end,
+--     })
+-- end
+-- if executable 'isort' then
+--     vim.api.nvim_create_autocmd({ 'BufWritePre' }, {
+--         desc = 'Fix python imports before saving',
+--         group = import_fix,
+--         pattern = '*.{py,ipy}',
+--         callback = function(args)
+--             local cmd = { 'isort' }
+--             local format_args = RELOAD('filetypes.python').formatprg.isort
+--             table.insert(format_args, args.file)
+--             vim.list_extend(cmd, format_args)
+--             RELOAD('utils.async').formatprg {
+--                 cmd = cmd,
+--                 first = 0,
+--                 last = -1,
+--             }
+--         end,
+--     })
+-- end
 
 vim.api.nvim_create_autocmd('LspAttach', {
     desc = 'Setup LPS mappings and hint highlights',
@@ -800,12 +799,12 @@ vim.api.nvim_create_autocmd({ 'DirChanged', 'TabNewEntered', 'VimEnter' }, {
     group = project_config,
     pattern = '*',
     callback = function()
-        if not vim.t.project_read then
+        if vim.t.project_read == nil then
             local project = vim.fs.find({ '.project.lua', 'project.lua' }, { upward = true, type = 'file' })[1]
+            vim.t.project_read = project ~= nil
             if project then
                 vim.secure.read(project)
             end
-            vim.t.project_read = true
         end
     end,
 })
