@@ -559,7 +559,7 @@ end, {
 
 nvim.command.set('KillJob', function(_)
     -- local pid = opts.args ~= '' and opts.args or nil
-    RELOAD('mappings.commands').kill_job()
+    RELOAD('mappings.commands').kill_task()
 end, { nargs = '?', bang = true, desc = 'Kill the selected job' })
 
 --- @param opts Command.Opts
