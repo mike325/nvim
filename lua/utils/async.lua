@@ -124,7 +124,7 @@ end
 --- @param opts Make?
 function M.makeprg(opts)
     opts = opts or {}
-    local args = opts.args and vim.iter(opts.args):map(vim.fn.expand):totable() or {}
+    local args = opts.args or {}
 
     local makeprg = opts.makeprg
     if not makeprg then
@@ -221,6 +221,7 @@ function M.lint(linter, opts)
         silent = true,
         open = false,
         jump = false,
+        dump = false,
         win = true,
         efm = efm,
     }
