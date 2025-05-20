@@ -44,7 +44,7 @@ local function buf_search(client, bufnr)
 end
 
 local function buf_cancel_build(client, bufnr)
-    if vim.fn.has 'nvim-0.11' == 1 then
+    if nvim.has { 0, 11 } then
         return client:exec_cmd({
             title = 'cancel',
             command = 'texlab.cancelBuild',
@@ -70,7 +70,7 @@ local function command_factory(cmd)
         CancelBuild = 'texlab.cancelBuild',
     }
     return function(client, bufnr)
-        if vim.fn.has 'nvim-0.11' == 1 then
+        if nvim.has { 0, 11 } then
             return client:exec_cmd({
                 title = ('clean_%s'):format(cmd),
                 command = cmd_tbl[cmd],
@@ -127,7 +127,7 @@ local function buf_change_env(client, bufnr)
         return vim.notify('No environment name provided', vim.log.levels.WARN)
     end
     local pos = vim.api.nvim_win_get_cursor(0)
-    if vim.fn.has 'nvim-0.11' == 1 then
+    if nvim.has { 0, 11 } then
         return client:exec_cmd({
             title = 'change_environment',
             command = 'texlab.changeEnvironment',
