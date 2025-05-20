@@ -244,6 +244,24 @@ completions = vim.tbl_extend('force', completions, {
 
         return utils.general_completion(arglead, cmdline, cursorpos, servers)
     end,
+    lsp_clients = function(arglead, cmdline, cursorpos)
+        local cmd = get_cmd(cmdline)
+
+        local bufnr = not cmd[1]:match '!$' and vim.api.nvim_get_current_buf() or nil
+        local clients = vim.lsp.get_clients {
+            bufnr = bufnr,
+        }
+
+        if #clients > 0 then
+            local servers = vim.iter(clients)
+                :map(function(client)
+                    return string.format('%d:%s', client.id, client.name)
+                end)
+                :totable()
+            return utils.general_completion(arglead, cmdline, cursorpos, servers)
+        end
+        return utils.general_completion(arglead, cmdline, cursorpos, {})
+    end,
     local_labels = function(arglead, cmdline, cursorpos)
         local labels = require('configs.mini.utils').get_labels(false)
         return utils.general_completion(arglead, cmdline, cursorpos, labels)

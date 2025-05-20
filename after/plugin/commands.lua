@@ -29,3 +29,58 @@ end, {
     complete = 'file',
     desc = 'Open file in the default OS external program',
 })
+
+if not nvim.plugins['nvim-lspconfig'] then
+    local completions = RELOAD 'completions'
+
+    nvim.command.set('LSPInfo', function()
+        vim.cmd.checkhealth 'vim.lsp'
+    end, {
+        nargs = 0,
+        desc = 'Open LSP info',
+    })
+
+    nvim.command.set('LSPStop', function(opts)
+        local server = opts.args
+        if server ~= '' then
+            local id, name = server:match '^(%d):(.+)'
+            if tonumber(id) then
+                vim.notify(string.format('Stopping %s', name), vim.log.levels.INFO, { title = 'LSPStop' })
+                vim.lsp.stop_client(tonumber(id) --[[@as number]])
+            end
+        end
+    end, {
+        bang = true,
+        nargs = 1,
+        complete = completions.lsp_clients,
+        desc = 'Stop an active lsp server',
+    })
+
+    nvim.command.set('LSPRestart', function(opts)
+        local server = opts.args
+        if server ~= '' then
+            local id, name = server:match '^(%d):(.+)'
+            if tonumber(id) then
+                vim.notify(string.format('Restartting %s', name), vim.log.levels.INFO, { title = 'LSPStop' })
+                vim.lsp.stop_client(tonumber(id) --[[@as number]])
+                local config = vim.lsp.config[name]
+                if config then
+                    vim.defer_fn(function()
+                        vim.lsp.start(config)
+                    end, 1000)
+                else
+                    vim.notify(
+                        'Cannot restart ' .. name .. ', cannot retrieve config',
+                        vim.log.levels.ERROR,
+                        { title = 'LSPRestart' }
+                    )
+                end
+            end
+        end
+    end, {
+        bang = true,
+        nargs = 1,
+        complete = completions.lsp_clients,
+        desc = 'Restart an active lsp server',
+    })
+end
