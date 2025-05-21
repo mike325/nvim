@@ -25,14 +25,14 @@
 VERSION="0.1"
 AUTHOR=""
 
-VERBOSE=0
-QUIET=0
-PRINT_VERSION=0
-NOCOLOR=0
-NOLOG=0
-DRY_RUN=0
-WARN_COUNT=0
-ERR_COUNT=0
+VERBOSE=false
+QUIET=false
+PRINT_VERSION=false
+NOCOLOR=false
+NOLOG=false
+DRY_RUN=false
+WARN_COUNT=false
+ERR_COUNT=false
 # FROM_STDIN=()
 
 NAME="$0"
@@ -216,22 +216,22 @@ Usage:
         -v, --verbose   Enable debug messages
         -q, --quiet     Suppress all output but the errors
         -V, --version   Print script version and exits
-        -D, --dry-run       Enable dry run
+        -D, --dry-run   Enable dry run
         -h, --help      Display this help message
 EOF
 }
 
 function warn_msg() {
     local msg="$1"
-    if [[ $QUIET -eq 0 ]]; then
-        if [[ $NOCOLOR -eq 0 ]]; then
+    if [[ $QUIET == false ]]; then
+        if [[ $NOCOLOR == false ]]; then
             printf "${yellow}[!] Warning:${reset_color}\t %s\n" "$msg"
         else
             printf "[!] Warning:\t %s\n" "$msg"
         fi
     fi
     WARN_COUNT=$((WARN_COUNT + 1))
-    if [[ $NOLOG -eq 0 ]]; then
+    if [[ $NOLOG == false ]]; then
         printf "[!] Warning:\t %s\n" "$msg" >>"${LOG}"
     fi
     return 0
@@ -239,13 +239,13 @@ function warn_msg() {
 
 function error_msg() {
     local msg="$1"
-    if [[ $NOCOLOR -eq 0 ]]; then
+    if [[ $NOCOLOR == false ]]; then
         printf "${red}[X] Error:${reset_color}\t %s\n" "$msg" 1>&2
     else
         printf "[X] Error:\t %s\n" "$msg" 1>&2
     fi
     ERR_COUNT=$((ERR_COUNT + 1))
-    if [[ $NOLOG -eq 0 ]]; then
+    if [[ $NOLOG == false ]]; then
         printf "[X] Error:\t %s\n" "$msg" >>"${LOG}"
     fi
     return 0
@@ -253,14 +253,14 @@ function error_msg() {
 
 function status_msg() {
     local msg="$1"
-    if [[ $QUIET -eq 0 ]]; then
-        if [[ $NOCOLOR -eq 0 ]]; then
+    if [[ $QUIET == false ]]; then
+        if [[ $NOCOLOR == false ]]; then
             printf "${green}[*] Info:${reset_color}\t %s\n" "$msg"
         else
             printf "[*] Info:\t %s\n" "$msg"
         fi
     fi
-    if [[ $NOLOG -eq 0 ]]; then
+    if [[ $NOLOG == false ]]; then
         printf "[*] Info:\t\t %s\n" "$msg" >>"${LOG}"
     fi
     return 0
@@ -268,14 +268,14 @@ function status_msg() {
 
 function verbose_msg() {
     local msg="$1"
-    if [[ $VERBOSE -eq 1 ]]; then
-        if [[ $NOCOLOR -eq 0 ]]; then
+    if [[ $VERBOSE == true ]]; then
+        if [[ $NOCOLOR == false ]]; then
             printf "${purple}[+] Debug:${reset_color}\t %s\n" "$msg"
         else
             printf "[+] Debug:\t %s\n" "$msg"
         fi
     fi
-    if [[ $NOLOG -eq 0 ]]; then
+    if [[ $NOLOG == false ]]; then
         printf "[+] Debug:\t\t %s\n" "$msg" >>"${LOG}"
     fi
     return 0
@@ -305,11 +305,11 @@ function __parse_args() {
 }
 
 function initlog() {
-    if [[ $NOLOG -eq 0 ]]; then
+    if [[ $NOLOG == false ]]; then
         [[ -n $LOG ]] && rm -f "${LOG}" 2>/dev/null
         if ! touch "${LOG}" &>/dev/null; then
             error_msg "Fail to init log file"
-            NOLOG=1
+            NOLOG=true
             return 1
         fi
         if [[ -f "${SCRIPT_PATH}/shell/banner" ]]; then
@@ -324,7 +324,7 @@ function initlog() {
 }
 
 function exit_append() {
-    if [[ $NOLOG -eq 0 ]]; then
+    if [[ $NOLOG == false ]]; then
         if [[ $WARN_COUNT -gt 0 ]] || [[ $ERR_COUNT -gt 0 ]]; then
             printf "\n\n" >>"${LOG}"
         fi
@@ -341,7 +341,7 @@ function exit_append() {
 
 function raw_output() {
     local msg="echo \"$1\""
-    if [[ $NOLOG -eq 0 ]]; then
+    if [[ $NOLOG == false ]]; then
         msg="$msg | tee -a ${LOG}"
     fi
     if ! sh -c "$msg"; then
@@ -354,18 +354,18 @@ function shell_exec() {
     # TODO: Redirect stderr to stdout?  2>&1
     local cmd="$1"
     verbose_msg "cmd: $cmd"
-    if [[ $DRY_RUN -eq 1 ]]; then
+    if [[ $DRY_RUN == true ]]; then
         return 0
     fi
 
-    if [[ $VERBOSE -eq 1 ]]; then
-        if [[ $NOLOG -eq 0 ]]; then
+    if [[ $VERBOSE == true ]]; then
+        if [[ $NOLOG == false ]]; then
             cmd="$cmd | tee -a ${LOG}"
         fi
         if ! sh -c "$cmd"; then
             return 1
         fi
-    elif [[ $NOLOG -eq 0 ]]; then
+    elif [[ $NOLOG == false ]]; then
         if ! sh -c "$cmd >> ${LOG}"; then
             return 1
         fi
@@ -422,7 +422,7 @@ function download_asset() {
 
     if hash curl 2>/dev/null; then
         cmd='curl -L '
-        if [[ $VERBOSE -eq 0 ]]; then
+        if [[ $VERBOSE == false ]]; then
             cmd="$cmd -s "
         fi
         cmd="$cmd $url"
@@ -431,7 +431,7 @@ function download_asset() {
         fi
     else  # If not curl, wget is available since we checked with "has_fetcher"
         cmd='wget '
-        if [[ $VERBOSE -eq 0 ]]; then
+        if [[ $VERBOSE == false ]]; then
             cmd="$cmd -q "
         fi
         if [[ -n $dest ]]; then
@@ -457,27 +457,26 @@ function download_asset() {
 while [[ $# -gt 0 ]]; do
     key="$1"
     case "$key" in
-        # --log)
-        #     # In case log is disable by default
-        #     NOLOG=0
-        #     ;;
+        --log)
+            NOLOG=false
+            ;;
         --nolog)
-            NOLOG=1
+            NOLOG=true
             ;;
         --nocolor)
-            NOCOLOR=1
+            NOCOLOR=true
             ;;
         -v | --verbose)
-            VERBOSE=1
+            VERBOSE=true
             ;;
         -q | --quiet)
-            QUIET=1
+            QUIET=true
             ;;
         -V | --version)
-            PRINT_VERSION=1
+            PRINT_VERSION=true
             ;;
         -D | --dry-run)
-            DRY_RUN=1
+            DRY_RUN=true
             ;;
         -h | --help)
             help_user
@@ -500,10 +499,10 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ ! -t 1 ]]; then
-    NOCOLOR=1
+    NOCOLOR=true
 fi
 
-if [[ $PRINT_VERSION -eq 1 ]]; then
+if [[ $PRINT_VERSION == true ]]; then
     echo -e "\n$NAME version: ${VERSION}"
     exit 0
 fi
@@ -515,7 +514,7 @@ fi
 verbose_msg "Script version : ${VERSION}"
 verbose_msg "Date           : $(date)"
 verbose_msg "Log Disable    : ${NOLOG}"
-if [[ $NOLOG -eq 0 ]]; then
+if [[ $NOLOG == false ]]; then
     verbose_msg "Log location   : ${LOG}"
 fi
 verbose_msg "Current Shell  : ${CURRENT_SHELL}"
