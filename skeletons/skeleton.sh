@@ -30,6 +30,7 @@ QUIET=0
 PRINT_VERSION=0
 NOCOLOR=0
 NOLOG=0
+DRY_RUN=0
 WARN_COUNT=0
 ERR_COUNT=0
 # FROM_STDIN=()
@@ -215,6 +216,7 @@ Usage:
         -v, --verbose   Enable debug messages
         -q, --quiet     Suppress all output but the errors
         -V, --version   Print script version and exits
+        -D, --dry-run       Enable dry run
         -h, --help      Display this help message
 EOF
 }
@@ -352,6 +354,10 @@ function shell_exec() {
     # TODO: Redirect stderr to stdout?  2>&1
     local cmd="$1"
     verbose_msg "cmd: $cmd"
+    if [[ $DRY_RUN -eq 1 ]]; then
+        return 0
+    fi
+
     if [[ $VERBOSE -eq 1 ]]; then
         if [[ $NOLOG -eq 0 ]]; then
             cmd="$cmd | tee -a ${LOG}"
@@ -470,6 +476,9 @@ while [[ $# -gt 0 ]]; do
         -V | --version)
             PRINT_VERSION=1
             ;;
+        -D | --dry-run)
+            DRY_RUN=1
+            ;;
         -h | --help)
             help_user
             exit 0
@@ -513,6 +522,7 @@ verbose_msg "Current Shell  : ${CURRENT_SHELL}"
 verbose_msg "Platform       : ${SHELL_PLATFORM}"
 verbose_msg "Architecture   : ${ARCH}"
 verbose_msg "OS             : ${OS}"
+verbose_msg "DRY RUN        : ${DRY_RUN}"
 
 #######################################################################
 #                           CODE Goes Here                            #
