@@ -37,6 +37,7 @@ local M = {}
 ---@field buf (integer|nil) Buffer to set diagnostics
 ---@field efm (string|string[]|nil) efm to parse qf results
 ---@field dump (boolean?) Dump results into the Quickfix/loclist, default: true
+---@field progress (boolean?) Show task progress, default: false
 ---@field opts (vim.SystemOpts?) Override default opts, default: {text = true}
 ---@field callbacks (fun(out: vim.SystemCompleted)|fun(out: vim.SystemCompleted)[]|nil)
 ---                 Callback executed after process qf default on_exit
@@ -50,11 +51,12 @@ local M = {}
 ---Store data and execute callback
 ---@param err string
 ---@param data string
+---@param hash string
 ---@param state string[]?
 ---@param output string[]?
 ---@param text boolean?
 ---@param cb fun(err:string?, data: string?)|boolean|nil
-local function process_data(err, data, state, output, text, cb)
+local function process_data(err, data, hash, state, output, text, cb)
     if err then
         error(err)
     end
@@ -75,6 +77,11 @@ local function process_data(err, data, state, output, text, cb)
         ---@cast cb fun(err:string?, data: string?)
         cb(err, data)
     end
+
+    local current_task = require('utils.async').get_progress_task() or {}
+    if hash == current_task.hash then
+        -- TODO
+    end
 end
 
 ---Process async task exit
@@ -90,6 +97,7 @@ local function process_exit(out, state_data, cmd, cwd, opts)
     require('utils.async').push_output(out, cmd, cwd)
     local hash = require('utils.async').get_hash(cmd, cwd)
     ASYNC.tasks[hash] = nil
+    require('utils.async').remove_progress_task(hash)
 
     local cmd_name = vim.fs.basename(cmd[1])
     local ns_name = string.format('async.%s', cmd_name)
@@ -218,15 +226,15 @@ function M.report(cmd, opts)
         output = {},
     }
 
+    local hash = require('utils.async').get_hash(cmd, obj_opts.cwd)
+
     obj_opts.stdout = vim.schedule_wrap(function(err, data)
-        process_data(err, data, state_data.stdout, state_data.output, user_opts.text, origin_stdout)
+        process_data(err, data, hash, state_data.stdout, state_data.output, user_opts.text, origin_stdout)
     end)
 
     obj_opts.stderr = vim.schedule_wrap(function(err, data)
-        process_data(err, data, state_data.stderr, state_data.output, user_opts.text, origin_stderr)
+        process_data(err, data, hash, state_data.stderr, state_data.output, user_opts.text, origin_stderr)
     end)
-
-    local hash = require('utils.async').get_hash(cmd, obj_opts.cwd)
 
     ---@type vim.SystemObj?
     if opts.uniq and ASYNC.tasks[hash] then
@@ -247,6 +255,9 @@ function M.report(cmd, opts)
     )
 
     ASYNC.tasks[hash] = obj
+    if opts.progress then
+        require('utils.async').queue_progress_task(hash)
+    end
     return obj
 end
 

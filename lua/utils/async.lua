@@ -28,6 +28,32 @@ function M.get_hash(cmd, cwd)
     return hash
 end
 
+---Get active progress task
+---@param hash string
+function M.remove_progress_task(hash)
+    local idx, _ = vim.iter(ASYNC.progress):enumerate():find(function(_, task)
+        return hash == task.hash
+    end)
+    if idx then
+        return table.remove(ASYNC.progress, idx)
+    end
+end
+
+---Get active progress task
+---@param hash string
+function M.queue_progress_task(hash)
+    M.remove_progress_task(hash)
+    if not ASYNC.tasks[hash] then
+        return
+    end
+    table.insert(ASYNC.progress, 1, { hash = hash, task = ASYNC.tasks[hash] })
+end
+
+---Get active progress task
+function M.get_progress_task()
+    return ASYNC.progress[1]
+end
+
 --- @param opts Command.Opts
 --- @return string|string[]
 local function get_grepprg(opts)

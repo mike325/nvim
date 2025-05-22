@@ -10,13 +10,6 @@ local diagnostic_actions = {
     '-hide',
 }
 
---- Return a cmd separated by spaces
----@param cmdline string
----@return string[]
-local function get_cmd(cmdline)
-    return vim.iter(vim.split(cmdline, '%s+', { trimempty = true })):map(vim.trim):totable()
-end
-
 local completions = {}
 completions = vim.tbl_extend('force', completions, {
     ssh_hosts_completion = function(arglead, cmdline, cursorpos)
@@ -118,7 +111,7 @@ completions = vim.tbl_extend('force', completions, {
         return utils.general_completion(arglead, cmdline, cursorpos, vim.tbl_keys(levels))
     end,
     diagnostics_completion = function(arglead, cmdline, cursorpos)
-        local cmd = get_cmd(cmdline)
+        local cmd = utils.get_cmd(cmdline)
 
         if #cmd <= 1 or (#cmd == 2 and arglead:match '[%-%w]+$') then
             return completions.diagnostics_actions(arglead, cmdline, cursorpos)
@@ -162,7 +155,7 @@ completions = vim.tbl_extend('force', completions, {
         local reviewers = {}
         if require('utils.files').is_file 'reviewers.json' then
             reviewers = require('utils.files').read_json 'reviewers.json'
-            local cmd = get_cmd(cmdline)
+            local cmd = utils.get_cmd(cmdline)
 
             local tmp = {}
             for _, reviewer in ipairs(reviewers) do
@@ -176,7 +169,7 @@ completions = vim.tbl_extend('force', completions, {
         return utils.general_completion(arglead, cmdline, cursorpos, reviewers)
     end,
     gh_edit_reviewers = function(arglead, cmdline, cursorpos)
-        local cmd = get_cmd(cmdline)
+        local cmd = utils.get_cmd(cmdline)
 
         if #cmd == 1 or (#cmd == 2 and cmdline:sub(#cmdline, #cmdline) ~= ' ') then
             return utils.general_completion(arglead, cmdline, cursorpos, { '-add', '-remove' })
@@ -231,7 +224,7 @@ completions = vim.tbl_extend('force', completions, {
     lsp_configs = function(arglead, cmdline, cursorpos)
         local langservers = require 'configs.lsp.servers'
 
-        local cmd = get_cmd(cmdline)
+        local cmd = utils.get_cmd(cmdline)
         if #cmd == 1 or (#cmd == 2 and cmdline:sub(#cmdline, #cmdline) ~= ' ') then
             return utils.general_completion(arglead, cmdline, cursorpos, vim.tbl_keys(langservers))
         end
@@ -245,7 +238,7 @@ completions = vim.tbl_extend('force', completions, {
         return utils.general_completion(arglead, cmdline, cursorpos, servers)
     end,
     lsp_clients = function(arglead, cmdline, cursorpos)
-        local cmd = get_cmd(cmdline)
+        local cmd = utils.get_cmd(cmdline)
 
         local bufnr = not cmd[1]:match '!$' and vim.api.nvim_get_current_buf() or nil
         local clients = vim.lsp.get_clients {

@@ -58,4 +58,11 @@ function M.json_keys_completion(arglead, cmdline, cursorpos, filename, funcs)
     return M.general_completion(arglead, cmdline, cursorpos, keys)
 end
 
+--- Return a cmd separated by spaces
+---@param cmdline string
+---@return string[]
+function M.get_cmd(cmdline)
+    return vim.iter(vim.split(cmdline, '%s+', { trimempty = true })):map(vim.trim):totable()
+end
+
 return M

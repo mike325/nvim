@@ -76,6 +76,7 @@ if not ASYNC and (vim and not vim.is_thread()) then
     _G['ASYNC'] = {
         output = require('stack'):new(15),
         tasks = {},
+        progress = {},
     }
 end
 
