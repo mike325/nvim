@@ -34,24 +34,37 @@ function M.remove_progress_task(hash)
     local idx, _ = vim.iter(ASYNC.progress):enumerate():find(function(_, task)
         return hash == task.hash
     end)
-    if idx then
-        return table.remove(ASYNC.progress, idx)
-    end
-end
 
----Get active progress task
----@param hash string
-function M.queue_progress_task(hash)
-    M.remove_progress_task(hash)
-    if not ASYNC.tasks[hash] then
-        return
+    local task
+    if idx then
+        task = table.remove(ASYNC.progress, idx)
     end
-    table.insert(ASYNC.progress, 1, { hash = hash, task = ASYNC.tasks[hash] })
+
+    if #ASYNC.progress == 0 and vim.t.progress_win then
+        vim.api.nvim_win_close(vim.t.progress_win, false)
+    end
+
+    return task
 end
 
 ---Get active progress task
 function M.get_progress_task()
     return ASYNC.progress[1]
+end
+
+---Get active progress task
+---@param hash string
+function M.queue_progress_task(hash)
+    local current = M.get_progress_task() or {}
+    local task = M.remove_progress_task(hash)
+    if not ASYNC.tasks[hash] then
+        return
+    end
+
+    if current.hash ~= (task or {}).hash then
+        require('utils.windows').progress {}
+    end
+    table.insert(ASYNC.progress, 1, task or { hash = hash, task = ASYNC.tasks[hash] })
 end
 
 --- @param opts Command.Opts
@@ -145,6 +158,7 @@ end
 --- @field notify? boolean
 --- @field silent? boolean
 --- @field dump? boolean
+--- @field progress? boolean
 --- @field win? boolean|number
 
 --- @param opts Make?
@@ -179,6 +193,7 @@ function M.makeprg(opts)
         efm = opts.efm,
         win = opts.win,
         dump = opts.dump,
+        progress = opts.progress,
     })
 end
 

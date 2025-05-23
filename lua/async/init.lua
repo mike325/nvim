@@ -80,7 +80,7 @@ local function process_data(err, data, hash, state, output, text, cb)
 
     local current_task = require('utils.async').get_progress_task() or {}
     if hash == current_task.hash then
-        -- TODO
+        require('utils.windows').push_progress_data(state)
     end
 end
 

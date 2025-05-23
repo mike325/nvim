@@ -207,7 +207,7 @@ end, { bang = true, nargs = '+', complete = 'file', desc = 'Async and recursive 
 
 --- @param opts Command.Opts
 nvim.command.set('Make', function(opts)
-    RELOAD('utils.async').makeprg { args = opts.fargs }
+    RELOAD('utils.async').makeprg { args = opts.fargs, progress = true }
 end, { nargs = '*', desc = 'Async execution of current makeprg' })
 
 --- @param opts Command.Opts
@@ -335,7 +335,7 @@ if executable 'pre-commit' then
             args = { 'run', '--all' }
         end
         vim.list_extend(cmd, args)
-        require('async').report(cmd, { open = true, jump = true, efm = efm })
+        require('async').report(cmd, { open = true, jump = true, efm = efm, progress = true })
     end, { bang = true, nargs = '*' })
 end
 

@@ -113,10 +113,10 @@ function M.big_center(buffer)
     end
 end
 
-function M.progress(buffer, job)
+function M.progress(data, buffer)
     vim.validate {
+        data = { data, 'table' },
         buffer = { buffer, 'number', true },
-        job = { job, 'number', true },
     }
 
     local columns = vim.opt.columns:get()
@@ -159,15 +159,31 @@ function M.progress(buffer, job)
         nvim.win.set_buf(vim.t.progress_win, buffer)
     end
 
-    local job_obj = job and STORAGE.jobs[job] or STORAGE.jobs[vim.g.active_job]
-    if scratch and job_obj then
-        nvim.buf.set_lines(buffer, -2, -1, false, job_obj:output())
+    local data_lines = vim.iter(data)
+        :map(function(line)
+            return (line:gsub('\n', ''))
+        end)
+        :totable()
+    nvim.buf.set_lines(buffer, scratch and 0 or -1, -1, false, data_lines)
+    nvim.win.call(vim.t.progress_win, function()
+        vim.cmd.normal { bang = true, args = { 'G' } }
+    end)
+
+    return vim.t.progress_win
+end
+
+function M.push_progress_data(data)
+    data = data or {}
+    if not vim.t.progress_win then
+        M.progress(data)
+    else
+        local buf = vim.api.nvim_win_get_buf(vim.t.progress_win)
+        local line = data[#data] or ''
+        nvim.buf.set_lines(buf, -1, -1, false, { (line:gsub('\n', '')) })
         nvim.win.call(vim.t.progress_win, function()
             vim.cmd.normal { bang = true, args = { 'G' } }
         end)
     end
-
-    return vim.t.progress_win
 end
 
 function M.lower_window(buffer)
