@@ -103,6 +103,10 @@ function M.delete(bufnr, wipe)
 end
 
 function M.get_indent()
+    if vim.b.editorconfig and vim.b.editorconfig.indent_size then
+        return vim.b.editorconfig.indent_size
+    end
+
     local indent = vim.opt_local.softtabstop:get()
     if indent <= 0 then
         indent = vim.opt_local.shiftwidth:get()
@@ -336,8 +340,11 @@ function M.format(opts)
 
     local view = vim.fn.winsaveview()
 
+    ---@type integer?
     local first = vim.v.lnum
+    ---@type integer?
     local last = first + vim.v.count - 1
+    ---@type boolean?
     local whole_file = last - first == nvim.buf.line_count(bufnr) or opts.whole_file
 
     local clients = nvim.has { 0, 11 } and vim.lsp.get_clients { bufnr = bufnr } or vim.lsp.buf_get_clients(0)

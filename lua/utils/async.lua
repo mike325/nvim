@@ -290,6 +290,11 @@ function M.formatprg(args)
     local indent_level = buf_utils.get_indent_block_level(lines)
     local tmpfile = vim.fn.tempname()
 
+    local ft = vim.filetype.match { buf = bufnr }
+    if ft == 'robot' then
+        tmpfile = string.format('%s.robot', tmpfile)
+    end
+
     require('utils.files').writefile(tmpfile, buf_utils.indent(lines, -indent_level))
     table.insert(cmd, tmpfile)
 

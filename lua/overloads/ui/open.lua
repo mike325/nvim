@@ -71,6 +71,14 @@ vim.ui.open = (function(overridden)
             },
                 nil
         end
+        if vim.g.open_matchers then
+            for _, opener in pairs(vim.g.open_matchers) do
+                if opener.match(path) then
+                    path = opener.transform(path)
+                    break
+                end
+            end
+        end
         return overridden(path)
     end
 end)(vim.ui.open)
