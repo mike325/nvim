@@ -107,18 +107,17 @@ function M.get_indent()
         return vim.b.editorconfig.indent_size
     end
 
-    local indent = vim.opt_local.softtabstop:get()
+    local indent = vim.bo.softtabstop
     if indent <= 0 then
-        indent = vim.opt_local.shiftwidth:get()
+        indent = vim.bo.shiftwidth
         if indent == 0 then
-            indent = vim.opt_local.tabstop:get()
+            indent = vim.bo.tabstop
         end
     end
     return indent
 end
 
 function M.get_indent_block(lines)
-    vim.validate { lines = { lines, 'table' } }
     assert(vim.islist(lines), debug.traceback 'Lines must be an array')
 
     local indent_level
@@ -138,7 +137,6 @@ function M.get_indent_block(lines)
 end
 
 function M.get_indent_block_level(lines)
-    vim.validate { lines = { lines, 'table' } }
     assert(vim.islist(lines), debug.traceback 'Lines must be an array')
 
     local indent_level = M.get_indent_block(lines)
@@ -433,8 +431,8 @@ function M.setup(ft, opts)
 
         if utils.get_formatter then
             local formatter = utils.get_formatter()
-            if formatter and vim.opt_local.formatexpr:get() == '' then
-                vim.opt.formatexpr = "v:lua.RELOAD('utils.buffers').format( { 'ft': &l:filetype })"
+            if formatter and vim.bo.formatexpr == '' then
+                vim.bo.formatexpr = "v:lua.RELOAD('utils.buffers').format( { 'ft': &l:filetype })"
             end
             opts.formatexpr = nil
         end

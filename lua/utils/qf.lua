@@ -125,7 +125,7 @@ function M.open(size, win)
     if not size then
         -- TODO: should this count only valid entries?
         local elements = qf_funcs.get_list({ size = 0 }, win).size + 1
-        local lines = vim.opt_local.lines:get()
+        local lines = vim.o.lines
         size = math.min(math.floor(lines * 0.5), elements)
     end
 

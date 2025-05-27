@@ -76,8 +76,8 @@ function M.big_center(buffer)
         debug.traceback('Invalid buffer: ' .. vim.inspect(buffer))
     )
 
-    local columns = vim.opt.columns:get()
-    local lines = vim.opt.lines:get()
+    local columns = vim.o.columns
+    local lines = vim.o.lines
 
     local height_percentage = 10 / 100
     local width_percentage = 5 / 100
@@ -119,8 +119,8 @@ function M.progress(data, buffer)
         buffer = { buffer, 'number', true },
     }
 
-    local columns = vim.opt.columns:get()
-    local lines = vim.opt.lines:get()
+    local columns = vim.o.columns
+    local lines = vim.o.lines
 
     local scratch = false
     if not buffer then
@@ -191,8 +191,8 @@ function M.lower_window(buffer)
         buffer = { buffer, 'number', true },
     }
 
-    local columns = vim.opt.columns:get()
-    local lines = vim.opt.lines:get()
+    local columns = vim.o.columns
+    local lines = vim.o.lines
 
     local scratch = false
     if not buffer then
@@ -227,8 +227,8 @@ function M.cursor_window(buffer, auto_size)
         buffer = { buffer, 'number', true },
     }
 
-    -- local columns = vim.opt.columns:get()
-    -- local lines = vim.opt.lines:get()
+    -- local columns = vim.o.columns
+    -- local lines = vim.o.lines
 
     -- local current_win = vim.api.nvim_get_current_win()
     -- local current_buf = vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf())
@@ -283,8 +283,8 @@ function M.input(opts, on_confirm)
         on_confirm = { on_confirm, 'function' },
     }
 
-    -- local columns = vim.opt.columns:get()
-    -- local lines = vim.opt.lines:get()
+    -- local columns = vim.o.columns
+    -- local lines = vim.o.lines
     -- local current_win = vim.api.nvim_get_current_win()
     -- local current_buf = vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf())
 

@@ -3,13 +3,41 @@
 -- https://github.com/robocorp/robotframework-lsp
 --
 -- Language Server Protocol implementation for Robot Framework.
+
+local exclude = {
+    'xifs',
+    'xtst',
+    'xtestdoubles',
+    'xifs-global',
+    'clang',
+    'matlab_mcr',
+    'lxsr_glp_ls1046a',
+    'lxsr_glp_ppce6500',
+    'vxworks7',
+}
+
+exclude = vim.iter(exclude)
+    :map(function(dir)
+        return string.format('"**/%s/**"', dir)
+    end)
+    :totable()
+
 return {
     cmd = { 'robotframework_ls' },
     filetypes = { 'robot' },
     root_markers = { 'robotidy.toml', 'pyproject.toml', 'conda.yaml', 'robot.yaml', '.git' },
+    cmd_env = {
+        ROBOTFRAMEWORK_LS_WATCH_IMPL = 'fsnotify',
+        ROBOTFRAMEWORK_LS_IGNORE_DIRS = string.format('[%s]', table.concat(exclude, ',')),
+    },
     settings = {
         robot = {
-            -- pythonpath = M.pypath .. ':' .. bpath .. 'libraries:' .. bpath .. 'resources:',
+            python = {
+                env = {
+                    ROBOTFRAMEWORK_LS_WATCH_IMPL = 'fsnotify',
+                    ROBOTFRAMEWORK_LS_IGNORE_DIRS = string.format('[%s]', table.concat(exclude, ',')),
+                },
+            },
             lint = {
                 undefinedLibraries = false,
                 undefinedResources = false,

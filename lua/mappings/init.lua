@@ -388,7 +388,7 @@ function M.repl(opts)
         end
     end
 
-    local direction = vim.opt.splitbelow:get() and 'botright' or 'topleft'
+    local direction = vim.o.splitbelow and 'botright' or 'topleft'
     vim.cmd { cmd = 'new', range = { 20 }, mods = { split = direction } }
 
     local win = vim.api.nvim_get_current_win()
