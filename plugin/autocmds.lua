@@ -936,3 +936,48 @@ vim.api.nvim_create_autocmd({ 'QuickFixCmdPost' }, {
         vim.cmd.packadd 'cfilter'
     end,
 })
+
+vim.api.nvim_create_autocmd('LspTokenUpdate', {
+    callback = function(args)
+        local client = vim.lsp.get_client_by_id(args.data.client_id)
+        if not client or client.name ~= 'robotframework_ls' then
+            return
+        end
+        local token = args.data.token
+
+        local links = {
+            control = 'Conditional',
+            keywordNameCall = 'Function',
+            keywordNameDefinition = 'Constant',
+            parameterName = '@parameter',
+            testCaseName = 'Constant',
+            variable = '@lsp.type.variable',
+            --     "comment",
+            --     "header",
+            --     "setting",
+            --     "name",
+            --     "variableOperator",
+            --     "settingOperator",
+            --     "argumentValue",
+            --     "error",
+            --     "documentation",
+        }
+
+        -- tokenModifiers = {
+        --     "declaration",
+        --     "definition",
+        --     "readonly",
+        --     "static",
+        --     "deprecated",
+        --     "abstract",
+        --     "async",
+        --     "modification",
+        --     "documentation",
+        --     "defaultLibrary",
+        -- },
+
+        if links[token.type] and not token.modifiers.readonly then
+            vim.lsp.semantic_tokens.highlight_token(token, args.buf, args.data.client_id, links[token.type])
+        end
+    end,
+})

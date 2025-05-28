@@ -83,9 +83,7 @@ if not nvim.plugins['nvim-lspconfig'] then
     })
 
     nvim.command.set('LspLog', function()
-        ---@type string
-        local dirname = vim.fn.stdpath 'data' --[[@as string]]
-        vim.cmd.edit(vim.fs.joinpath(dirname, 'lsp.log'))
+        vim.cmd.edit(vim.lsp.get_log_path())
     end, {
         nargs = 0,
         desc = 'Open LSP log',
