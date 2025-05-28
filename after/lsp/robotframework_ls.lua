@@ -29,6 +29,7 @@ return {
     cmd_env = {
         ROBOTFRAMEWORK_LS_WATCH_IMPL = 'fsnotify',
         ROBOTFRAMEWORK_LS_IGNORE_DIRS = string.format('[%s]', table.concat(exclude, ',')),
+        PYHTONPATH = vim.env.PYTHONPATH,
     },
     settings = {
         robot = {
