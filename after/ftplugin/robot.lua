@@ -1,11 +1,13 @@
+local sys = require 'sys'
+local iswin = sys.name == 'windows'
+
 vim.bo.comments = ':#'
 vim.bo.commentstring = '# %s'
 
-local cwd = vim.pesc(vim.uv.cwd() .. '/')
-local basedir = vim.fs.dirname(vim.fs.dirname(vim.api.nvim_buf_get_name(0)))
+vim.opt_local.suffixesadd:prepend '.robot'
+vim.opt_local.suffixesadd:prepend '.py'
 
-basedir = (basedir:gsub(cwd, ''))
-basedir = basedir:gsub(vim.fs.basename(basedir) .. '$', 'resources')
-vim.opt_local.path:append(basedir)
+local paths = vim.split(vim.env.PYTHONPATH, iswin and ';' or ':')
+vim.opt_local.path:append(paths)
 
 vim.wo.spell = false
