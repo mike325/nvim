@@ -372,8 +372,13 @@ vim.api.nvim_create_autocmd('LspAttach', {
 
         local cmd_opts = { buffer = true }
 
-        -- TODO: Move this config to lsp/server.lua
-        if require('utils.files').executable 'stylua' and (client.name == 'sumneko_lua' or client.name == 'lua_ls') then
+        local blacklist_format = {
+            sumneko_lua = 'stylua',
+            lua_ls = 'stylua',
+            robotframework_ls = 'robotidy',
+        }
+
+        if blacklist_format[client.name] and executable(blacklist_format[client.name]) then
             client.server_capabilities.documentFormattingProvider = false
             client.server_capabilities.documentRangeFormattingProvider = false
         end
@@ -946,21 +951,21 @@ vim.api.nvim_create_autocmd('LspTokenUpdate', {
         local token = args.data.token
 
         local links = {
-            control = 'Conditional',
-            keywordNameCall = 'Function',
-            keywordNameDefinition = 'Constant',
-            parameterName = '@parameter',
-            testCaseName = 'Constant',
+            control = '@lsp.type.keyword', -- 'Conditional',
+            keywordNameCall = '@lsp.type.function', -- 'Function',
+            keywordNameDefinition = '@lsp.type.enumMember', -- 'Constant',
+            parameterName = '@lsp.type.parameter', -- '@parameter',
+            testCaseName = '@lsp.type.enumMember', -- 'Constant',
             variable = '@lsp.type.variable',
-            --     "comment",
-            --     "header",
-            --     "setting",
-            --     "name",
+            argumentValue = '@lsp.type.string', -- 'String',
+            setting = '@lsp.type.modifier', -- 'Keyword',
+            header = '@lsp.type.class', -- 'Special',
+            documentation = '@lsp.type.string', -- 'String',
+            comment = '@lsp.type.comment', -- 'String',
+            name = '@lsp.type.interface',
             --     "variableOperator",
             --     "settingOperator",
-            --     "argumentValue",
             --     "error",
-            --     "documentation",
         }
 
         -- tokenModifiers = {
