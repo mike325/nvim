@@ -61,7 +61,7 @@ function M.queue_progress_task(hash)
         return
     end
 
-    if current.hash ~= (task or {}).hash then
+    if not current.hash or current.hash ~= (task or {}).hash then
         require('utils.windows').progress {}
     end
     table.insert(ASYNC.progress, 1, task or { hash = hash, task = ASYNC.tasks[hash] })

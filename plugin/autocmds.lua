@@ -832,9 +832,6 @@ if executable 'git' then
         callback = function(data)
             -- TODO: should this be cache into a table?
             local cwd = vim.uv.cwd()
-            if data.event == 'VimEnter' then
-                vim.t.is_in_git = false
-            end
             if executable 'git' and require('utils.git').is_git_repo(cwd) then
                 vim.t.is_in_git = true
                 local is_git = not vim.t.lock_grep
@@ -856,6 +853,8 @@ if executable 'git' then
                         })
                     end
                 end)
+            else
+                vim.t.is_in_git = false
             end
         end,
     })

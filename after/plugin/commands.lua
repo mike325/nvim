@@ -38,7 +38,7 @@ if not nvim.plugins['nvim-lspconfig'] then
                 return true
             end
         end
-        vim.notify(string.format('Cannot stop server %s', server), vim.log.levels.ERROR)
+        vim.notify(string.format('Cannot stop server: "%s"', server), vim.log.levels.ERROR)
         return false
     end
 
@@ -59,21 +59,17 @@ if not nvim.plugins['nvim-lspconfig'] then
     --- @param opts Command.Opts
     nvim.command.set('LspRestart', function(opts)
         local server = opts.args
+        local id, name = server:match '^(%d):(.+)'
+        local config = vim.lsp.config[name]
+        if tonumber(id) then
+            config = vim.lsp.get_clients { id = tonumber(id) }
+        end
+
         vim.notify(string.format('Restartting %s', server), vim.log.levels.INFO, { title = 'LspRestart' })
         if stop_server(server) then
-            local _, name = server:match '^(%d):(.+)'
-            local config = vim.lsp.config[name]
-            if config then
-                vim.defer_fn(function()
-                    vim.lsp.start(config)
-                end, 1000)
-            else
-                vim.notify(
-                    'Cannot restart ' .. name .. ', cannot retrieve config',
-                    vim.log.levels.ERROR,
-                    { title = 'LSPRestart' }
-                )
-            end
+            vim.defer_fn(function()
+                vim.lsp.start(config, { bufnr = 0 })
+            end, 1000)
         end
     end, {
         bang = true,

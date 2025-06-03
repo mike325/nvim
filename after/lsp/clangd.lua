@@ -10,6 +10,7 @@
 --   ```
 -- - clangd relies on a [JSON compilation database](https://clang.llvm.org/docs/JSONCompilationDatabase.html)
 --   specified as compile_commands.json, see https://clangd.llvm.org/installation#compile_commandsjson
+
 local pch_dir = './.cache/clangd/pchs/'
 local root_markers = {
     '.clangd',
@@ -25,6 +26,7 @@ local root_markers = {
 
 local default_cmd = {
     'clangd',
+    '--enable-config',
     '--fallback-style=Google',
     '--clang-tidy',
     '--header-insertion=iwyu',

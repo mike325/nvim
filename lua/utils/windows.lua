@@ -159,7 +159,7 @@ function M.progress(data, buffer)
         nvim.win.set_buf(vim.t.progress_win, buffer)
     end
 
-    local data_lines = vim.iter(data)
+    local data_lines = vim.iter(data or {})
         :map(function(line)
             return (line:gsub('\n', ''))
         end)
@@ -174,15 +174,24 @@ end
 
 function M.push_progress_data(data)
     data = data or {}
-    if not vim.t.progress_win then
-        M.progress(data)
-    else
+    if vim.t.progress_win and vim.api.nvim_win_is_valid(vim.t.progress_win) then
         local buf = vim.api.nvim_win_get_buf(vim.t.progress_win)
-        local line = data[#data] or ''
-        nvim.buf.set_lines(buf, -1, -1, false, { (line:gsub('\n', '')) })
-        nvim.win.call(vim.t.progress_win, function()
-            vim.cmd.normal { bang = true, args = { 'G' } }
-        end)
+        local buf_lines = vim.api.nvim_buf_line_count(buf)
+
+        if buf_lines <= 1 or #data == 0 then
+            M.progress(data)
+        else
+            local lines = vim.iter(data)
+                :slice(buf_lines + 1, #data)
+                :map(function(line)
+                    return (line:gsub('\n', ''))
+                end)
+                :totable()
+            nvim.buf.set_lines(buf, -1, -1, false, lines)
+            nvim.win.call(vim.t.progress_win, function()
+                vim.cmd.normal { bang = true, args = { 'G' } }
+            end)
+        end
     end
 end
 

@@ -43,10 +43,10 @@ vim.g.ruby_recommended_style = 0
 vim.g.terminal_scrollback_buffer_size = 100000
 
 if nvim.has.option 'winbar' then
-    vim.opt.laststatus = 3
-    vim.opt.winbar = '%=%m %f'
+    vim.o.laststatus = 3
+    vim.o.winbar = '%=%m %f'
 else
-    vim.opt.laststatus = 2
+    vim.o.laststatus = 2
 end
 
 vim.opt.shada = { '!', '/1000', "'1000", '<1000', ':1000', 's10000', 'h' }
