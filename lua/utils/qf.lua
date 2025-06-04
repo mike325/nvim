@@ -525,6 +525,8 @@ function M.qf_loclist_switcher(opts)
 
     local qflist = M.get_list({ items = true, winid = true, title = true, context = true }, not loc and win or nil)
     if #qflist.items > 0 then
+        -- NOTE: Context cannot be a string
+        qflist.context = type(qflist.context) ~= type '' and qflist.context or nil
         local is_open = M.is_open(not loc and win or nil)
         M.set_list(qflist, loc and win or nil)
         M.clear(not loc and win or nil)
