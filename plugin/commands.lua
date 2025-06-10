@@ -226,7 +226,7 @@ nvim.command.set('Exec', function(opts)
         open = true,
         jump = false,
     }
-end, { bang = true, nargs = '+', complete = 'shellcmdline', desc = 'Async execution of the given cmd' })
+end, { bang = true, nargs = '+', complete = 'shellcmd', desc = 'Async execution of the given cmd' })
 
 nvim.command.set('DumpOutput', function(_)
     if ASYNC.output:peek() then

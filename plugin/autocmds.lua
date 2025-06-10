@@ -434,12 +434,6 @@ vim.api.nvim_create_autocmd('LspAttach', {
             'lua_ls',
             'sumneko_lua',
         }
-
-        if extra_lsps[client.name] then
-            local lsp_utils = RELOAD 'configs.lsp.utils'
-            lsp_utils.check_null_format(client)
-            lsp_utils.check_null_diagnostics(client)
-        end
     end,
 })
 

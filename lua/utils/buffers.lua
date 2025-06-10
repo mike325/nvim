@@ -338,44 +338,38 @@ function M.format(opts)
 
     local view = vim.fn.winsaveview()
 
-    ---@type integer?
+    ---@type integer
     local first = vim.v.lnum
-    ---@type integer?
+    ---@type integer
     local last = first + vim.v.count - 1
     ---@type boolean?
     local whole_file = last - first == nvim.buf.line_count(bufnr) or opts.whole_file
 
     local clients = nvim.has { 0, 11 } and vim.lsp.get_clients { bufnr = bufnr } or vim.lsp.buf_get_clients(0)
-    local is_null_ls_formatting_enabled = require('configs.lsp.utils').is_null_ls_formatting_enabled
-
     for _, client in pairs(clients) do
         if whole_file and client.server_capabilities.documentFormattingProvider then
-            if client.name ~= 'null-ls' or is_null_ls_formatting_enabled(bufnr) then
-                vim.lsp.buf.format {
-                    async = false,
-                    id = client.id,
-                }
-                if vim.bo.modified then
-                    vim.fn.winrestview(view)
-                    return 0
-                end
+            vim.lsp.buf.format {
+                async = false,
+                id = client.id,
+            }
+            if vim.bo.modified then
+                vim.fn.winrestview(view)
+                return 0
             end
         elseif client.server_capabilities.documentRangeFormattingProvider then
-            if client.name ~= 'null-ls' or is_null_ls_formatting_enabled(bufnr) then
-                -- #nvim.buf.get_lines(0, last, last + 1, false)[1]
-                local last_idx = vim.api.nvim_buf_get_lines(0, last, last + 1, false)[1]
-                vim.lsp.buf.format {
-                    async = false,
-                    id = client.id,
-                    range = {
-                        start = { first, 0 },
-                        ['end'] = { last, (last_idx and #last_idx or 0) },
-                    },
-                }
-                if vim.bo.modified then
-                    vim.fn.winrestview(view)
-                    return 0
-                end
+            -- #nvim.buf.get_lines(0, last, last + 1, false)[1]
+            local last_idx = vim.api.nvim_buf_get_lines(0, last, last + 1, false)[1]
+            vim.lsp.buf.format {
+                async = false,
+                id = client.id,
+                range = {
+                    start = { first, 0 },
+                    ['end'] = { last, (last_idx and #last_idx or 0) },
+                },
+            }
+            if vim.bo.modified then
+                vim.fn.winrestview(view)
+                return 0
             end
         end
     end
@@ -383,19 +377,12 @@ function M.format(opts)
     if utils and utils.get_formatter then
         local cmd = utils.get_formatter()
         if cmd then
-            if opts.whole_file then
-                first = 0
-                last = -1
-            else
-                first = nil
-                last = nil
-            end
             RELOAD('utils.async').formatprg {
                 cmd = M.replace_indent(cmd),
                 bufnr = bufnr,
                 efm = utils.formatprg[cmd[1]].efm,
-                first = first,
-                last = last,
+                first = opts.whole_file and 0 or nil,
+                last = opts.whole_file and -1 or nil,
             }
             return 0
         end
