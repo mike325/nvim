@@ -21,7 +21,6 @@ local configs = vim.iter(vim.api.nvim_get_runtime_file(('%s/*.lua'):format(lsp_c
     end)
     :totable()
 
-
 --- Check if the server is available
 ---@param config_name string
 ---@return boolean
