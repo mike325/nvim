@@ -652,6 +652,13 @@ function M.get_filecontent(filename, revision, callback)
         callback = { callback, 'function', true },
     }
 
+    local sys = require 'sys'
+
+    local cwd = vim.fs.normalize(vim.uv.cwd() or '.')
+    filename = vim.fs.normalize(filename)
+    cwd = sys.name == 'window' and string.format('%s:%s', (cwd:sub(1, 1):lower()), (cwd:sub(3))) or cwd
+    filename = (filename:gsub(string.format('^%s/', vim.pesc(cwd)), ''))
+
     if callback and type(revision) == type(callback) then
         error(debug.traceback 'Revision should be a string, cannot provide 2 callbacks')
     elseif type(revision) == 'function' then
