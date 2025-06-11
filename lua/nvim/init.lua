@@ -269,6 +269,20 @@ local function setup_mini(download)
             pcall(vim.cmd.packadd, { bang = false, args = { 'nvim-treesitter' } })
             pcall(require, 'configs.treesitter')
         end)
+
+        MiniDeps.later(function()
+            local host_plugins = require('plugins.host')
+            if host_plugins then
+                local plugins = vim.iter(host_plugins):fold({}, function(acc, plugin)
+                    local name = vim.fs.basename(plugin.dir)
+                    acc[name] = true
+                    return acc
+                end)
+                for plugin, _ in pairs(plugins) do
+                    pcall(vim.cmd.packadd, { bang = false, args = { plugin } })
+                end
+            end
+        end)
     end
     return vim.g.mini_setup
 end
