@@ -271,7 +271,7 @@ local function setup_mini(download)
         end)
 
         MiniDeps.later(function()
-            local host_plugins = require('plugins.host')
+            local host_plugins = require 'plugins.host'
             if host_plugins then
                 local plugins = vim.iter(host_plugins):fold({}, function(acc, plugin)
                     local name = vim.fs.basename(plugin.dir)
