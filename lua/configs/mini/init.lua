@@ -823,8 +823,8 @@ if vim.g.minimal then
                 vim.bo[rev_buf].filetype = vim.bo[buf].filetype
                 vim.api.nvim_open_win(rev_buf, false, { split = 'right', win = 0 })
 
-                vim.cmd.windo('diffthis')
-                vim.cmd.wincmd('h')
+                vim.cmd.windo 'diffthis'
+                vim.cmd.wincmd 'h'
             end)
         end, { bang = true, nargs = '?', complete = 'file' })
     end
