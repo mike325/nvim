@@ -39,7 +39,7 @@ local function has_server(configname)
         end
     end
     if config and config.cmd then
-        if type(config.cmd) == type{} then
+        if type(config.cmd) == type {} then
             return vim.fn.executable(config.cmd[1]) == 1
         else
             return vim.fn.executable(configname) == 1
