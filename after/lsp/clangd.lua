@@ -12,11 +12,13 @@
 --   specified as compile_commands.json, see https://clangd.llvm.org/installation#compile_commandsjson
 
 local pch_dir = './.cache/clangd/pchs/'
+local compile_db = 'compile_commands.json'
+
 local root_markers = {
     '.clangd',
     '.clang-tidy',
     '.clang-format',
-    'compile_commands.json',
+    compile_db,
     'compile_flags.txt',
     'configure.ac', -- AutoTools
     'Makefile',

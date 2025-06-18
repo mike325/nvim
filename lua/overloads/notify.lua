@@ -124,7 +124,8 @@ else
             stdio:close()
         elseif handle_type == 'file' then
             -- NOTE: Not using utils.files since they call notify for errors, making this recursive
-            local stdio = assert(vim.uv.fs_open(('/proc/%s/fd/%s'):format(vim.fn.getpid(), fd), 'a+', 438))
+            local pid = vim.uv.os_getpid()
+            local stdio = assert(vim.uv.fs_open(('/proc/%s/fd/%s'):format(pid, fd), 'a+', tonumber('666', 8)))
 
             local ok, err, _ = vim.uv.fs_write(stdio, output, 0)
             if not ok then

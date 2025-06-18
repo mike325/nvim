@@ -238,7 +238,7 @@ function M.openfile(path, flags, callback)
     }
     assert(path ~= '', debug.traceback 'Empty path')
 
-    local fd, msg, _ = vim.uv.fs_open(path, flags, 438)
+    local fd, msg, _ = vim.uv.fs_open(path, flags, tonumber('666', 8))
     if not fd then
         vim.notify(msg, vim.log.levels.ERROR, { title = 'OpenFile' })
         return false
@@ -285,7 +285,7 @@ local function fs_write(path, data, append, callback)
         end)
     end
 
-    vim.uv.fs_open(path, 'w+', 438, function(oerr, fd)
+    vim.uv.fs_open(path, 'w+', tonumber('666', 8), function(oerr, fd)
         assert(not oerr, oerr)
         vim.uv.fs_fstat(fd, function(serr, stat)
             assert(not serr, serr)
@@ -353,7 +353,7 @@ function M.readfile(path, split, callback)
             return data
         end)
     end
-    vim.uv.fs_open(path, 'r', 438, function(oerr, fd)
+    vim.uv.fs_open(path, 'r', tonumber('666', 8), function(oerr, fd)
         assert(not oerr, oerr)
         vim.uv.fs_fstat(fd, function(serr, stat)
             assert(not serr, serr)

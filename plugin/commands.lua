@@ -797,14 +797,18 @@ nvim.command.set('ArgAddBuf', function(opts)
     local args = opts.fargs
     if #args == 0 then
         table.insert(args, '%')
-    elseif #args == 1 and args[1] == '*' then
+    elseif #args == 1 and args[1]:match '%*' then
+        local pattern = vim.glob.to_lpeg(args[1])
         local cwd = vim.pesc(vim.uv.cwd() .. '/')
         local buffers = vim.iter(vim.api.nvim_list_bufs())
             :map(function(buf)
                 return (vim.api.nvim_buf_get_name(buf):gsub(cwd, ''))
             end)
             :filter(function(bufname)
-                return bufname ~= '' and not bufname:match '^%w+://' and not bufname:match '^Mini%w+:.*'
+                return bufname ~= ''
+                    and not bufname:match '^%w+://'
+                    and not bufname:match '^Mini%w+:.*'
+                    and vim.re.match(bufname, pattern)
             end)
         args = buffers:totable()
     end

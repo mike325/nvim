@@ -48,7 +48,7 @@ function M.delete(bufnr, wipe)
     local bufname = vim.api.nvim_buf_get_name(bufnr)
     local is_duplicated = false
     local is_wipe = vim.bo[bufnr].bufhidden == 'wipe'
-    local prev_buf = vim.fn.expand '#' ~= '' and vim.fn.bufnr(vim.fn.expand '#') or -1
+    local prev_buf = vim.fn.bufnr '#'
     prev_buf = prev_buf == bufnr and -1 or prev_buf
 
     if prev_buf == -1 then

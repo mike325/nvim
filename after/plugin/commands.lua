@@ -68,6 +68,7 @@ if not nvim.plugins['nvim-lspconfig'] then
         vim.notify(string.format('Restartting %s', server), vim.log.levels.INFO, { title = 'LspRestart' })
         if stop_server(server) then
             vim.defer_fn(function()
+                config.name = config.name or name
                 vim.lsp.start(config, { bufnr = 0 })
             end, 1000)
         end

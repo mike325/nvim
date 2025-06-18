@@ -238,7 +238,7 @@ function M.report(cmd, opts)
 
     ---@type vim.SystemObj?
     if opts.uniq and ASYNC.tasks[hash] then
-        ASYNC.tasks[hash]:kill(7)
+        ASYNC.tasks[hash]:kill(vim.uv.constants.SIGTERM)
     end
 
     -- TODO: Get the efm from the current buffer, the on_exit may be called on a different buffer
