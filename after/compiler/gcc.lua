@@ -1,2 +1,8 @@
-local set_compiler = RELOAD('utils.functions').set_compiler
-set_compiler('gcc', { language = 'cpp' })
+local name = 'gcc'
+local compiler = RELOAD('utils.functions').get_compiler(name, { language = 'cpp' })
+
+vim.cmd.CompilerSet('makeprg=' .. compiler.makeprg)
+if compiler.efm then
+    vim.bo.errorformat = compiler.efm
+end
+vim.b.current_compiler = name

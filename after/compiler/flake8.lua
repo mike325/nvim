@@ -1,7 +1,7 @@
-local set_compiler = RELOAD('utils.functions').set_compiler
 local sys = require 'sys'
 
-set_compiler('flake8', {
+local name = 'flake8'
+local compiler = RELOAD('utils.functions').get_compiler(name, {
     language = 'python',
     config_flag = '--config',
     configs = {
@@ -11,3 +11,9 @@ set_compiler('flake8', {
     },
     global_config = vim.fs.normalize(sys.name == 'windows' and '~/.flake8' or '~/.config/flake8'),
 })
+
+vim.cmd.CompilerSet('makeprg=' .. compiler.makeprg)
+if compiler.efm then
+    vim.bo.errorformat = compiler.efm
+end
+vim.b.current_compiler = name

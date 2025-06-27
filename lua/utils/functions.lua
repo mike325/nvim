@@ -21,7 +21,7 @@ function M.foldtext()
     )
 end
 
-function M.set_compiler(compiler, opts)
+function M.get_compiler(compiler, opts)
     vim.validate {
         compiler = { compiler, 'string' },
         opts = { opts, 'table', true },
@@ -33,23 +33,28 @@ function M.set_compiler(compiler, opts)
     local option = opts.option or 'makeprg'
 
     local function get_args(configs, configflag, fallback_args)
+        local config_cmd = {}
+        if opts.subcmd or opts.subcommand then
+            table.insert(config_cmd, opts.subcmd or opts.subcommand)
+        end
+
         if configs and configflag then
             local config_files = vim.fs.find(configs, { upward = true, type = 'file' })
             if config_files[1] then
-                return { configflag, config_files[1] }
+                vim.list_extend(config_cmd, { configflag, config_files[1] })
+                return config_cmd
             end
         elseif opts.global_config and is_file(opts.global_config) then
-            return { configflag, opts.global_config }
+            vim.list_extend(config_cmd, { configflag, opts.global_config })
+            return config_cmd
         end
 
         return fallback_args
     end
 
     local cmd = { compiler }
-    if opts.subcmd or opts.subcommand then
-        table.insert(cmd, opts.subcmd or opts.subcommand)
-    end
 
+    ---@type string
     local efm = opts.efm or opts.errorformat
     if not efm then
         efm = vim.go.efm
@@ -65,6 +70,8 @@ function M.set_compiler(compiler, opts)
         end
     end
 
+    efm = type(efm) == type {} and table.concat(efm --[[@as string[] ]], ',') or efm
+
     if opts.args then
         args = type(opts.args) == type {} and opts.args or { opts.args }
     end
@@ -72,27 +79,10 @@ function M.set_compiler(compiler, opts)
     local extra_args = get_args(opts.configs, opts.config_flag, args or {})
     vim.list_extend(cmd, extra_args)
 
-    local has_cmd = nvim.has.command 'CompilerSet'
-    if not has_cmd then
-        nvim.command.set('CompilerSet', function(command)
-            -- TODO: Migrate this into opt_local API
-            vim.cmd(('setlocal %s'):format(command.args))
-        end, { nargs = 1, buffer = true })
-    end
-
-    vim.cmd.CompilerSet('makeprg=' .. table.concat(replace_indent(cmd), '\\ '))
-
-    if efm then
-        efm = type(efm) == type {} and table.concat(efm, ',') or efm
-        -- TODO: fix this with non local options
-        vim.bo.efm = efm
-    end
-
-    vim.b.current_compiler = compiler
-
-    if not has_cmd then
-        nvim.command.del('CompilerSet', true)
-    end
+    return {
+        makeprg = table.concat(replace_indent(cmd), '\\ '),
+        efm = efm,
+    }
 end
 
 function M.load_module(name)

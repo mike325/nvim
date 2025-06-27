@@ -470,37 +470,6 @@ function M.toggle_diagnostics(ns, force)
     end
 end
 
-function M.custom_compiler(opts)
-    local compiler = opts.args
-    local base_path = 'after/compiler/'
-    local compilers = vim.tbl_map(vim.fs.basename, vim.api.nvim_get_runtime_file(base_path .. '*.lua', true))
-    local mapped = vim.tbl_map(function(c)
-        return (c:gsub('%.lua$', ''))
-    end, compilers)
-    if vim.list_contains(mapped, compiler) then
-        vim.cmd.runtime { bang = true, args = { base_path .. compiler .. '.lua' } }
-    else
-        local language = vim.bo.filetype
-        local has_compiler, compiler_data = pcall(RELOAD, 'filetypes.' .. language)
-
-        if has_compiler and (compiler_data.makeprg or compiler_data.formatprg) then
-            local set_compiler = RELOAD('utils.functions').set_compiler
-
-            if compiler_data.makeprg[compiler] then
-                set_compiler(compiler)
-            elseif compiler_data.formatprg[compiler] then
-                set_compiler(compiler, { option = 'formatprg' })
-            else
-                has_compiler = not has_compiler
-            end
-        end
-
-        if not has_compiler then
-            vim.cmd.compiler(compiler)
-        end
-    end
-end
-
 function M.autoformat(opts)
     if opts.args == 'enable' then
         vim.b.autoformat = true
