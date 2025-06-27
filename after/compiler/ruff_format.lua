@@ -1,7 +1,7 @@
-local set_compiler = RELOAD('utils.functions').set_compiler
-set_compiler('ruff', {
+local name = 'ruff'
+local compiler = RELOAD('utils.functions').get_compiler(name, {
     language = 'python',
-    -- subcommand = 'format',
+    subcommand = 'format',
     option = 'formatprg',
     config_flag = '--config',
     configs = {
@@ -10,3 +10,9 @@ set_compiler('ruff', {
         'pyproject.toml',
     },
 })
+
+vim.cmd.CompilerSet('makeprg=' .. compiler.makeprg)
+if compiler.efm then
+    vim.bo.errorformat = compiler.efm
+end
+vim.b.current_compiler = name

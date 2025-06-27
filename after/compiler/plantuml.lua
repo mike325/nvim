@@ -1,4 +1,3 @@
-local set_compiler = RELOAD('utils.functions').set_compiler
 local executable = require('utils.files').executable
 
 local cmd = {}
@@ -9,4 +8,10 @@ else
     table.insert(cmd, 'plantuml')
 end
 
-set_compiler(cmd, { language = 'plantuml' })
+local compiler = RELOAD('utils.functions').get_compiler(cmd, { language = 'plantuml' })
+
+vim.cmd.CompilerSet('makeprg=' .. compiler.makeprg)
+if compiler.efm then
+    vim.bo.errorformat = compiler.efm
+end
+vim.b.current_compiler = 'plantuml'

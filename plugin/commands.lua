@@ -60,7 +60,6 @@ nvim.command.set('BufKill', function(opts)
     RELOAD('mappings').bufkill(opts)
 end, { desc = 'Remove unloaded hidden buffers', bang = true, nargs = '*', complete = completions.bufkill_options })
 
-nvim.command.set('VerboseToggle', 'let &verbose=!&verbose | echo "Verbose " . &verbose')
 nvim.command.set('RelativeNumbersToggle', 'set relativenumber! relativenumber?')
 nvim.command.set('ModifiableToggle', 'setlocal modifiable! modifiable?')
 nvim.command.set('CursorLineToggle', 'setlocal cursorline! cursorline?')
@@ -69,6 +68,17 @@ nvim.command.set('HlSearchToggle', 'setlocal hlsearch! hlsearch?')
 nvim.command.set('NumbersToggle', 'setlocal number! number?')
 nvim.command.set('SpellToggle', 'setlocal spell! spell?')
 nvim.command.set('WrapToggle', 'setlocal wrap! wrap?')
+
+nvim.command.set('VerboseToggle', function(opts)
+    local val = opts.args ~= '' and tonumber(opts.args) or nil
+    if val then
+        vim.o.verbose = val
+    else
+        vim.o.verbose = vim.o.verbose > 0 and 0 or 1
+    end
+    vim.lsp.log.set_level(vim.o.verbose > 0 and vim.log.levels.INFO or vim.log.levels.WARN)
+    vim.print(' Verbose: ' .. (vim.o.verbose > 0 and 'true' or 'false'))
+end, { desc = 'Enable/Disable verbose output', nargs = '*' })
 
 --- @param opts Command.Opts
 nvim.command.set('Trim', function(opts)
@@ -358,17 +368,6 @@ end, { nargs = '*', complete = 'file', desc = 'Open multiple files' })
 nvim.command.set('DiffFiles', function(opts)
     RELOAD('mappings').diff_files(opts)
 end, { nargs = '+', complete = 'file', desc = 'Open a new tab in diff mode with the given files' })
-
--- NOTE: I should not need to create this function, but I couldn't find a way to override
---       internal runtime compilers
---- @param opts Command.Opts
-nvim.command.set('Compiler', function(opts)
-    RELOAD('mappings').custom_compiler(opts)
-end, {
-    nargs = 1,
-    complete = 'compiler',
-    desc = 'Set the given compiler with preference on the custom compilers located in the after directory',
-})
 
 --- @param opts Command.Opts
 nvim.command.set('Reloader', function(opts)

@@ -4,6 +4,8 @@ if not has_lsp_config then
     lsp_enable_group = vim.api.nvim_create_augroup('LspEnableConfig', { clear = true })
 end
 
+vim.lsp.log.set_level(vim.o.verbose > 0 and vim.log.levels.INFO or vim.log.levels.WARN)
+
 -- NOTE: Python server usage priority
 local python_servers = {
     'pylsp',
@@ -39,11 +41,13 @@ local function has_server(configname)
         end
     end
     if config and config.cmd then
+        local exe = configname
         if type(config.cmd) == type {} then
-            return vim.fn.executable(config.cmd[1]) == 1
-        else
-            return vim.fn.executable(configname) == 1
+            exe = config.cmd[1]
+        elseif vim.is_callable(config.cmd) then
+            exe = config.cmd({}, {}, true)[1]
         end
+        return vim.fn.executable(exe) == 1
     end
     return false
 end
