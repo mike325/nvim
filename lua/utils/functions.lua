@@ -71,9 +71,6 @@ function M.get_compiler(compiler, opts)
     end
 
     efm = type(efm) == type {} and table.concat(efm --[[@as string[] ]], ',') or efm
-    if efm then
-        efm = (efm:gsub(' ', '\\ '))
-    end
 
     if opts.args then
         args = type(opts.args) == type {} and opts.args or { opts.args }
