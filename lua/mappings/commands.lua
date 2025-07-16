@@ -69,8 +69,9 @@ function M.edit(args)
     end
 end
 
-function M.kill_task(pid, signal)
+function M.kill_task(pid, signal, force)
     local async_task
+    signal = signal or (force and vim.uv.constants.SIGKILL or vim.uv.constants.SIGTERM)
 
     if not pid then
         local hashes = {}
@@ -89,7 +90,7 @@ function M.kill_task(pid, signal)
                         local hash = hashes[idx]
                         async_task = ASYNC.tasks[hash]
                         if async_task then
-                            async_task:kill(signal or vim.uv.constants.SIGTERM)
+                            async_task:kill(signal)
                         end
                     end
                 end)
@@ -112,7 +113,7 @@ function M.kill_task(pid, signal)
     end
 
     if async_task then
-        async_task:kill(signal or vim.uv.constants.SIGTERM)
+        async_task:kill(signal)
     end
 end
 

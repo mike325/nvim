@@ -353,12 +353,13 @@ function raw_output() {
 function shell_exec() {
     # TODO: Redirect stderr to stdout?  2>&1
     local cmd="$1"
+    local verbose="${2:-$VERBOSE}"
     verbose_msg "cmd: $cmd"
     if [[ $DRY_RUN == true ]]; then
         return 0
     fi
 
-    if [[ $VERBOSE == true ]]; then
+    if [[ $verbose == true ]]; then
         if [[ $NOLOG == false ]]; then
             cmd="$cmd | tee -a ${LOG}"
         fi

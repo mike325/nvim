@@ -160,6 +160,8 @@ end
 --- @field dump? boolean
 --- @field progress? boolean
 --- @field win? boolean|number
+---@field callbacks (fun(out: vim.SystemCompleted)|fun(out: vim.SystemCompleted)[]|nil)
+---                 Callback executed after process qf default on_exit
 
 --- @param opts Make?
 function M.makeprg(opts)
@@ -185,7 +187,7 @@ function M.makeprg(opts)
         open = true
     end
 
-    require('async').report(cmd, {
+    RELOAD('async').report(cmd, {
         open = open,
         notify = opts.notify,
         silent = opts.silent,
@@ -194,6 +196,7 @@ function M.makeprg(opts)
         win = opts.win,
         dump = opts.dump,
         progress = opts.progress,
+        callbacks = opts.callbacks,
     })
 end
 

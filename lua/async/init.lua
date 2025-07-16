@@ -41,7 +41,6 @@ local M = {}
 ---@field opts (vim.SystemOpts?) Override default opts, default: {text = true}
 ---@field callbacks (fun(out: vim.SystemCompleted)|fun(out: vim.SystemCompleted)[]|nil)
 ---                 Callback executed after process qf default on_exit
--- TODO: Add progress support, and check populate on success
 
 ---@class Data
 ---@field stdout string[]
@@ -80,7 +79,12 @@ local function process_data(err, data, hash, state, output, text, cb)
 
     local current_task = require('utils.async').get_progress_task() or {}
     if hash == current_task.hash then
-        require('utils.windows').push_progress_data(state)
+        local lines = vim.iter(vim.split(table.concat(state, ''), '\n'))
+            :filter(function(l)
+                return not l:match '^%s*$'
+            end)
+            :totable()
+        require('utils.windows').push_progress_data(lines)
     end
 end
 
@@ -160,7 +164,7 @@ local function process_exit(out, state_data, cmd, cwd, opts)
     end
 
     -- NOTE: Don't process callbacks if the task was killed
-    if opts.callbacks and out.signal ~= 7 then
+    if opts.callbacks and (out.signal ~= 7 and out.signal ~= 9) then
         ---@type (fun(out: vim.SystemCompleted))[]
         local callbacks
         if vim.is_callable(opts.callbacks) then
@@ -243,7 +247,7 @@ function M.report(cmd, opts)
 
     -- TODO: Get the efm from the current buffer, the on_exit may be called on a different buffer
     if not opts.efm then
-        opts.efm = vim.bo.efm ~= '' and vim.bo.efm or vim.go.efm
+        opts.efm = vim.go.efm -- -- TODO: Check this?
     end
 
     local obj = vim.system(

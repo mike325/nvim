@@ -1,4 +1,5 @@
 local nvim = require 'nvim'
+local completions = RELOAD 'completions'
 
 -- TODO: Lazy check for mini
 local has_mini = nvim.plugins['mini.nvim'] ~= nil or (vim.g.minimal and vim.F.npcall(require, 'mini.git') ~= nil)
@@ -20,63 +21,62 @@ if not has_mini and not nvim.plugins['vim-fugitive'] then
     end, { bang = true, nargs = '?', complete = 'file' })
 end
 
-if not nvim.plugins['nvim-lspconfig'] then
-    local completions = RELOAD 'completions'
+local function stop_server(server)
+    if server ~= '' then
+        local id, _ = server:match '^(%d):(.+)'
+        if tonumber(id) then
+            vim.lsp.stop_client(tonumber(id) --[[@as number]])
+            return true
+        end
+    end
+    vim.notify(string.format('Cannot stop server: "%s"', server), vim.log.levels.ERROR)
+    return false
+end
 
+--- @param opts Command.Opts
+nvim.command.set('LspStop', function(opts)
+    local server = opts.args
+    if stop_server(server) then
+        local _, name = server:match '^(%d):(.+)'
+        vim.notify(string.format('%s stopped', name), vim.log.levels.INFO, { title = 'LspStop' })
+    end
+end, {
+    bang = true,
+    nargs = 1,
+    complete = completions.lsp_clients,
+    desc = 'Stop an active lsp server',
+})
+
+--- @param opts Command.Opts
+nvim.command.set('LspRestart', function(opts)
+    local server = opts.args
+    local id, name = server:match '^(%d):(.+)'
+    local config = vim.lsp.config[name]
+    if tonumber(id) then
+        config = vim.lsp.get_clients { id = tonumber(id) }
+    end
+
+    vim.notify(string.format('Restartting %s', server), vim.log.levels.INFO, { title = 'LspRestart' })
+    if stop_server(server) then
+        vim.defer_fn(function()
+            config.name = config.name or name
+            vim.lsp.start(config, { bufnr = 0 })
+        end, 1000)
+    end
+end, {
+    bang = true,
+    nargs = 1,
+    complete = completions.lsp_clients,
+    desc = 'Restart an active lsp server',
+})
+
+
+if not nvim.plugins['nvim-lspconfig'] then
     nvim.command.set('LspInfo', function()
         vim.cmd.checkhealth 'vim.lsp'
     end, {
         nargs = 0,
         desc = 'Open LSP info',
-    })
-
-    local function stop_server(server)
-        if server ~= '' then
-            local id, _ = server:match '^(%d):(.+)'
-            if tonumber(id) then
-                vim.lsp.stop_client(tonumber(id) --[[@as number]])
-                return true
-            end
-        end
-        vim.notify(string.format('Cannot stop server: "%s"', server), vim.log.levels.ERROR)
-        return false
-    end
-
-    --- @param opts Command.Opts
-    nvim.command.set('LspStop', function(opts)
-        local server = opts.args
-        if stop_server(server) then
-            local _, name = server:match '^(%d):(.+)'
-            vim.notify(string.format('%s stopped', name), vim.log.levels.INFO, { title = 'LspStop' })
-        end
-    end, {
-        bang = true,
-        nargs = 1,
-        complete = completions.lsp_clients,
-        desc = 'Stop an active lsp server',
-    })
-
-    --- @param opts Command.Opts
-    nvim.command.set('LspRestart', function(opts)
-        local server = opts.args
-        local id, name = server:match '^(%d):(.+)'
-        local config = vim.lsp.config[name]
-        if tonumber(id) then
-            config = vim.lsp.get_clients { id = tonumber(id) }
-        end
-
-        vim.notify(string.format('Restartting %s', server), vim.log.levels.INFO, { title = 'LspRestart' })
-        if stop_server(server) then
-            vim.defer_fn(function()
-                config.name = config.name or name
-                vim.lsp.start(config, { bufnr = 0 })
-            end, 1000)
-        end
-    end, {
-        bang = true,
-        nargs = 1,
-        complete = completions.lsp_clients,
-        desc = 'Restart an active lsp server',
     })
 
     nvim.command.set('LspLog', function()
