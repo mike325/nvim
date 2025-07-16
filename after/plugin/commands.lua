@@ -70,7 +70,6 @@ end, {
     desc = 'Restart an active lsp server',
 })
 
-
 if not nvim.plugins['nvim-lspconfig'] then
     nvim.command.set('LspInfo', function()
         vim.cmd.checkhealth 'vim.lsp'
