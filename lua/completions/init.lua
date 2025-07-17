@@ -213,10 +213,10 @@ completions = vim.tbl_extend('force', completions, {
     end,
     lsp_clients = function(arglead, cmdline, cursorpos)
         local servers = vim.iter(vim.lsp.get_clients())
-                :map(function(client)
-                    return string.format('%d:%s', client.id, client.name)
-                end)
-                :totable()
+            :map(function(client)
+                return string.format('%d:%s', client.id, client.name)
+            end)
+            :totable()
         return utils.general_completion(arglead, cmdline, cursorpos, servers)
     end,
     local_labels = function(arglead, cmdline, cursorpos)

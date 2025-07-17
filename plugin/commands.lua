@@ -793,19 +793,15 @@ nvim.command.set('Arglist2Loc', function()
     RELOAD('utils.qf').dump_files(vim.fn.argv(), { win = 0 })
 end, { desc = 'Dump loclist files to the arglist' })
 
-nvim.command.set(
-    'ArgEdit',
-    function(opts)
-        RELOAD('utils.arglist').edit(opts.args)
-    end,
-    {
-        nargs = '?',
-        complete = comp_utils.get_completion(function()
-            return vim.iter(vim.fn.argv()):map(vim.fs.basename):totable()
-        end),
-        desc = 'Edit a file in the arglist',
-    }
-)
+nvim.command.set('ArgEdit', function(opts)
+    RELOAD('utils.arglist').edit(opts.args)
+end, {
+    nargs = '?',
+    complete = comp_utils.get_completion(function()
+        return vim.iter(vim.fn.argv()):map(vim.fs.basename):totable()
+    end),
+    desc = 'Edit a file in the arglist',
+})
 
 nvim.command.set('ArgClear', function(opts)
     RELOAD('utils.arglist').clear(opts.bang)
