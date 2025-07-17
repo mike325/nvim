@@ -2,6 +2,7 @@ local sys = require 'sys'
 local nvim = require 'nvim'
 local executable = require('utils.files').executable
 local completions = RELOAD 'completions'
+local comp_utils = RELOAD 'completions.utils'
 
 --- @class Command.Opts
 --- @inlinedoc
@@ -58,7 +59,12 @@ nvim.command.set('BufKill', function(opts)
     opts.rm_no_cwd = vim.list_contains(opts.fargs, '-cwd')
     opts.rm_empty = vim.list_contains(opts.fargs, '-empty')
     RELOAD('mappings').bufkill(opts)
-end, { desc = 'Remove unloaded hidden buffers', bang = true, nargs = '*', complete = completions.bufkill_options })
+end, {
+    desc = 'Remove unloaded hidden buffers',
+    bang = true,
+    nargs = '*',
+    complete = comp_utils.get_completion { '-cwd', '-empty' },
+})
 
 nvim.command.set('RelativeNumbersToggle', 'set relativenumber! relativenumber?')
 nvim.command.set('ModifiableToggle', 'setlocal modifiable! modifiable?')
@@ -106,7 +112,11 @@ end, { nargs = '?', complete = 'filetype', desc = 'Set filetype' })
 --- @param opts Command.Opts
 nvim.command.set('FileFormat', function(opts)
     vim.bo.filetype = opts.args ~= '' and opts.args or 'unix'
-end, { nargs = '?', complete = completions.fileformats, desc = 'Set file format' })
+end, {
+    nargs = '?',
+    complete = comp_utils.get_completion(vim.split(vim.go.fileformats, ',')),
+    desc = 'Set file format',
+})
 
 --- @param opts Command.Opts
 nvim.command.set('SpellLang', function(opts)
@@ -590,6 +600,8 @@ end, {
 })
 
 if executable 'git' then
+    local qf_completion_items = { '-hunks', '-qf', '-open', '-background' }
+
     --- @param opts Command.Opts
     nvim.command.set('OpenChanges', function(opts)
         local action = 'open'
@@ -615,7 +627,7 @@ if executable 'git' then
     end, {
         bang = true,
         nargs = '*',
-        complete = completions.qf_file_options,
+        complete = comp_utils.get_completion(qf_completion_items),
         desc = 'Open all modified files in the current git repository',
     })
 
@@ -624,7 +636,7 @@ if executable 'git' then
         RELOAD('utils.buffers').open_conflicts(opts)
     end, {
         nargs = '?',
-        complete = completions.qf_file_options,
+        complete = comp_utils.get_completion(qf_completion_items),
         desc = 'Open conflict files in the current git repository',
     })
 end
@@ -781,10 +793,19 @@ nvim.command.set('Arglist2Loc', function()
     RELOAD('utils.qf').dump_files(vim.fn.argv(), { win = 0 })
 end, { desc = 'Dump loclist files to the arglist' })
 
---- @param opts Command.Opts
-nvim.command.set('ArgEdit', function(opts)
-    RELOAD('utils.arglist').edit(opts.args)
-end, { nargs = '?', complete = completions.arglist, desc = 'Edit a file in the arglist' })
+nvim.command.set(
+    'ArgEdit',
+    function(opts)
+        RELOAD('utils.arglist').edit(opts.args)
+    end,
+    {
+        nargs = '?',
+        complete = comp_utils.get_completion(function()
+            return vim.iter(vim.fn.argv()):map(vim.fs.basename):totable()
+        end),
+        desc = 'Edit a file in the arglist',
+    }
+)
 
 nvim.command.set('ArgClear', function(opts)
     RELOAD('utils.arglist').clear(opts.bang)

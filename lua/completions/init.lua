@@ -18,9 +18,6 @@ completions = vim.tbl_extend('force', completions, {
     oscyank = function(arglead, cmdline, cursorpos)
         return utils.general_completion(arglead, cmdline, cursorpos, { 'tmux', 'kitty', 'default' })
     end,
-    build_type = function(arglead, cmdline, cursorpos)
-        return utils.general_completion(arglead, cmdline, cursorpos, vim.tbl_keys(require 'filetypes.cpp.build_types'))
-    end,
     gitfiles_workspace = function(arglead, cmdline, cursorpos)
         local gitstatus = require('utils.git').status()
         local files = vim.tbl_keys(gitstatus.workspace)
@@ -35,9 +32,6 @@ completions = vim.tbl_extend('force', completions, {
     session_files = function(arglead, cmdline, cursorpos)
         local sessions = utils_io.get_files(require('sys').session)
         return utils.general_completion(arglead, cmdline, cursorpos, vim.tbl_map(vim.fs.basename, sessions))
-    end,
-    fileformats = function(arglead, cmdline, cursorpos)
-        return utils.general_completion(arglead, cmdline, cursorpos, { 'unix', 'dos' })
     end,
     spells = function(arglead, cmdline, cursorpos)
         local spells = utils_io.get_files(require('sys').base .. '/spell')
@@ -70,7 +64,9 @@ completions = vim.tbl_extend('force', completions, {
         local files = { 'all' }
         files = uniq(files, get_files 'plugin')
         files = uniq(files, get_files 'after/plugin')
-        return utils.general_completion(arglead, cmdline, cursorpos, files)
+
+        local comp_func = utils.get_completion(files)
+        return comp_func(arglead, cmdline, cursorpos, files)
     end,
     severity_list = function(arglead, cmdline, cursorpos)
         local severity_lst = vim.tbl_filter(function(s)
@@ -96,10 +92,11 @@ completions = vim.tbl_extend('force', completions, {
         return utils.general_completion(arglead, cmdline, cursorpos, options)
     end,
     diagnostics_namespaces = function(arglead, cmdline, cursorpos)
-        local namespaces = {}
-        for _, ns in pairs(vim.diagnostic.get_namespaces()) do
-            table.insert(namespaces, ns.name)
-        end
+        local namespaces = vim.iter(vim.diagnostic.get_namespaces())
+            :map(function(d)
+                return d.name
+            end)
+            :totable()
         return utils.general_nodash_completion(arglead, cmdline, cursorpos, namespaces)
     end,
     diagnostics_actions = function(arglead, cmdline, cursorpos)
@@ -120,25 +117,6 @@ completions = vim.tbl_extend('force', completions, {
             return completions.diagnostics_level(arglead, cmdline, cursorpos)
         end
         return completions.diagnostics_namespaces(arglead, cmdline, cursorpos)
-    end,
-    qf_file_options = function(arglead, cmdline, cursorpos)
-        local options = {
-            '-hunks',
-            '-qf',
-            '-open',
-            '-background',
-        }
-        return utils.general_completion(arglead, cmdline, cursorpos, options)
-    end,
-    bufkill_options = function(arglead, cmdline, cursorpos)
-        local options = {
-            '-cwd',
-            '-empty',
-        }
-        return utils.general_completion(arglead, cmdline, cursorpos, options)
-    end,
-    arglist = function(arglead, cmdline, cursorpos)
-        return utils.general_completion(arglead, cmdline, cursorpos, vim.fn.argv())
     end,
     buflist = function(arglead, cmdline, cursorpos)
         local cwd = vim.pesc(vim.uv.cwd() .. '/')
@@ -221,23 +199,25 @@ completions = vim.tbl_extend('force', completions, {
     namespaces = function(arglead, cmdline, cursorpos)
         return utils.general_completion(arglead, cmdline, cursorpos, vim.tbl_keys(vim.api.nvim_get_namespaces()))
     end,
+    lsp_configs = function(arglead, cmdline, cursorpos)
+        local configs = vim.api.nvim_get_runtime_file('after/lsp/*.lua', true)
+        local confignames = vim.iter(configs)
+            :map(vim.fs.basename)
+            :map(require('utils.files').filename)
+            :filter(function(configname)
+                local config = vim.lsp.config[configname]
+                return vim.list_contains(config.filetypes, vim.bo.filetype)
+            end)
+            :totable()
+        return utils.general_completion(arglead, cmdline, cursorpos, confignames)
+    end,
     lsp_clients = function(arglead, cmdline, cursorpos)
-        local cmd = utils.get_cmd(cmdline)
-
-        local bufnr = not cmd[1]:match '!$' and vim.api.nvim_get_current_buf() or nil
-        local clients = vim.lsp.get_clients {
-            bufnr = bufnr,
-        }
-
-        if #clients > 0 then
-            local servers = vim.iter(clients)
+        local servers = vim.iter(vim.lsp.get_clients())
                 :map(function(client)
                     return string.format('%d:%s', client.id, client.name)
                 end)
                 :totable()
-            return utils.general_completion(arglead, cmdline, cursorpos, servers)
-        end
-        return utils.general_completion(arglead, cmdline, cursorpos, {})
+        return utils.general_completion(arglead, cmdline, cursorpos, servers)
     end,
     local_labels = function(arglead, cmdline, cursorpos)
         local labels = require('configs.mini.utils').get_labels(false)

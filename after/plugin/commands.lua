@@ -1,5 +1,6 @@
 local nvim = require 'nvim'
 local completions = RELOAD 'completions'
+local comp_utils = RELOAD 'completions.utils'
 
 -- TODO: Lazy check for mini
 local has_mini = nvim.plugins['mini.nvim'] ~= nil or (vim.g.minimal and vim.F.npcall(require, 'mini.git') ~= nil)
@@ -21,11 +22,11 @@ if not has_mini and not nvim.plugins['vim-fugitive'] then
     end, { bang = true, nargs = '?', complete = 'file' })
 end
 
-local function stop_server(server)
+local function stop_server(server, force)
     if server ~= '' then
         local id, _ = server:match '^(%d):(.+)'
         if tonumber(id) then
-            vim.lsp.stop_client(tonumber(id) --[[@as number]])
+            vim.lsp.stop_client(tonumber(id) --[[@as number]], force)
             return true
         end
     end
@@ -33,10 +34,43 @@ local function stop_server(server)
     return false
 end
 
+if not nvim.plugins['nvim-lspconfig'] then
+    nvim.command.set('LspInfo', function()
+        vim.cmd.checkhealth 'vim.lsp'
+    end, {
+        nargs = 0,
+        desc = 'Open LSP info',
+    })
+
+    nvim.command.set('LspLog', function()
+        vim.cmd.edit(vim.lsp.get_log_path())
+    end, {
+        nargs = 0,
+        desc = 'Open LSP log',
+    })
+else
+    pcall(require, 'lspconfig')
+end
+
+--- @param opts Command.Opts
+nvim.command.set('LspStart', function(opts)
+    local name = opts.args
+    local config = vim.lsp.config[name]
+    vim.defer_fn(function()
+        config.name = config.name or name
+        vim.lsp.start(config, { bufnr = 0 })
+    end, 1000)
+end, {
+    bang = true,
+    nargs = 1,
+    complete = completions.lsp_configs,
+    desc = 'Start an lsp server in the current buffer',
+})
+
 --- @param opts Command.Opts
 nvim.command.set('LspStop', function(opts)
     local server = opts.args
-    if stop_server(server) then
+    if stop_server(server, opts.bang) then
         local _, name = server:match '^(%d):(.+)'
         vim.notify(string.format('%s stopped', name), vim.log.levels.INFO, { title = 'LspStop' })
     end
@@ -69,24 +103,6 @@ end, {
     complete = completions.lsp_clients,
     desc = 'Restart an active lsp server',
 })
-
-if not nvim.plugins['nvim-lspconfig'] then
-    nvim.command.set('LspInfo', function()
-        vim.cmd.checkhealth 'vim.lsp'
-    end, {
-        nargs = 0,
-        desc = 'Open LSP info',
-    })
-
-    nvim.command.set('LspLog', function()
-        vim.cmd.edit(vim.lsp.get_log_path())
-    end, {
-        nargs = 0,
-        desc = 'Open LSP log',
-    })
-else
-    pcall(require, 'lspconfig')
-end
 
 -- TODO: Add support to change between local and osc/remote open
 -- NOTE: Override Netrw command

@@ -5,7 +5,7 @@ local nvim = require 'nvim'
 -- local is_file = require('utils.files').is_file
 -- local realpath = require('utils.files').realpath
 -- local getcwd = require('utils.files').getcwd
-local completions = RELOAD 'completions'
+local comp_utils = RELOAD 'completions.utils'
 
 -- local compile_flags = STORAGE.compile_flags
 -- local compile_commands_dbs = STORAGE.compile_commands_dbs
@@ -36,7 +36,7 @@ end, {
     nargs = '*',
     force = true,
     buffer = true,
-    complete = completions.build_type,
+    complete = comp_utils.get_completion(vim.tbl_keys(require 'filetypes.cpp.build_types')),
     desc = 'Compile C/C++ project calling directly the compiler',
 })
 
@@ -66,7 +66,7 @@ end, {
     nargs = '*',
     force = true,
     buffer = true,
-    complete = completions.build_type,
+    complete = comp_utils.get_completion(vim.tbl_keys(require 'filetypes.cpp.build_types')),
     desc = 'Build C/C++ project using the projects build system',
 })
 
@@ -102,7 +102,7 @@ end, {
     nargs = '*',
     force = true,
     buffer = true,
-    complete = completions.build_type,
+    complete = comp_utils.get_completion(vim.tbl_keys(require 'filetypes.cpp.build_types')),
     desc = 'Build and Execute C/C++ project',
 })
 

@@ -4,6 +4,28 @@ if vim.F.npcall(require, 'mini.fuzzy') then
     require('mini.fuzzy').setup {}
 end
 
+--- Return a cmd separated by spaces
+---@param cmdline string
+---@return string[]
+function M.get_cmd(cmdline)
+    return vim.iter(vim.split(cmdline, '%s+', { trimempty = true })):map(vim.trim):totable()
+end
+
+--- Return a completion function
+---@param cmd string[]
+---@param options string[]
+---@return string[]
+local function get_available_flags(cmd, options)
+    return vim.iter(options)
+        :filter(function(opt)
+            return not vim.tbl_contains(cmd, opt)
+        end)
+        :totable()
+end
+
+---@param word string
+---@param candidates string[]
+---@return string[]
 local function filter(word, candidates)
     if word == '' then
         return candidates
@@ -21,13 +43,23 @@ local function filter(word, candidates)
     end, candidates) or {}
 end
 
-function M.general_completion(arglead, _, _, options)
+---@param arglead string
+---@param cmdline string
+---@param options string[]
+---@param smart boolean?
+---@return string[]
+function M.general_completion(arglead, cmdline, _, options, smart)
     local dashes
     if arglead:sub(1, 2) == '--' then
         dashes = '--'
     elseif arglead:sub(1, 1) == '-' then
         dashes = '-'
     end
+
+    if smart ~= false then
+        options = get_available_flags(M.get_cmd(cmdline), options --[[@as string[] ]])
+    end
+
     local results = filter((arglead:gsub('%-', '')):lower(), options)
     return vim.tbl_map(function(arg)
         if dashes and arg:sub(1, #dashes) ~= dashes then
@@ -37,25 +69,22 @@ function M.general_completion(arglead, _, _, options)
     end, results)
 end
 
-function M.general_nodash_completion(arglead, _, _, options)
+--- Return a completion function
+---@param arglead string
+---@param cmdline string
+---@param options string[]
+---@param smart boolean?
+---@return string[]
+function M.general_nodash_completion(arglead, cmdline, _, options, smart)
+    if smart ~= false then
+        options = get_available_flags(M.get_cmd(cmdline), options --[[@as string[] ]])
+    end
     return filter(arglead:lower(), options)
 end
 
 --- Return a completion function
----@param cmd string[]
----@param options string[]
----@return string[]
-local function get_available_flags(cmd, options)
-    return vim.iter(options)
-        :filter(function(opt)
-            return not vim.tbl_contains(cmd, opt)
-        end)
-        :totable()
-end
-
---- Return a completion function
----@param comp_func fun(arglead: string, cmdline: string, cursorpos: string, options: string[]):string[]
----@param options string[]|fun(cmd: string[]?):string[]
+---@param comp_func fun(arglead: string, cmdline: string, _: any, options: string[], smart: boolean?):string[]
+---@param options string[]|table<string, string[]>|fun(cmd: string[]?):string[]
 ---@param suboptions boolean|table<string, string[]|fun(cmd: string[]?):string[]>|nil
 ---@param smart boolean?
 local function get_completions_func(comp_func, options, suboptions, smart)
@@ -68,11 +97,14 @@ local function get_completions_func(comp_func, options, suboptions, smart)
         local cmd = M.get_cmd(cmdline)
 
         if vim.is_callable(options) then
-            options = options(cmd)
+            -- NOTE: Get flags from a generator
+            options = options()
         end
 
-        if smart then
-            options = get_available_flags(cmd, options --[[@as string[] ]])
+        if
+            type(options) == type {} and not vim.islist(options --[[@as table<string, any>]])
+        then
+            options = vim.tbl_keys(options --[[@as table<string, any>]])
         end
 
         if suboptions then
@@ -85,32 +117,26 @@ local function get_completions_func(comp_func, options, suboptions, smart)
                     or (arglead == '' and cmd[#cmd]:match(pattern))
                     or (arglead ~= '' and not arglead:match '^%-' and #cmd >= 2 and cmd[#cmd - 1]:match(pattern))
                 then
-                    if vim.is_callable(subopts) then
-                        subopts = subopts(cmd)
-                    end
-
-                    if smart then
-                        subopts = get_available_flags(cmd, subopts --[[@as string[] ]])
-                    end
-                    return comp_func(arglead, cmdline, cursorpos, subopts --[[@as string[] ]])
+                    local subflags = vim.is_callable(subopts) and subopts() or subopts --[[@as string[] ]]
+                    return comp_func(arglead, cmdline, cursorpos, subflags, smart)
                 end
             end
         end
 
-        return comp_func(arglead, cmdline, cursorpos, options --[[@as string[] ]])
+        return comp_func(arglead, cmdline, cursorpos, options --[[@as string[] ]], smart)
     end
 end
 
 --- Return a completion function
----@param options string[]|fun(cmd: string[]?):string[]
+---@param options string[]|table<string, string[]>|fun(cmd: string[]?):string[]
 ---@param suboptions boolean|table<string, string[]|fun(cmd: string[]?):string[]>|nil
 ---@param smart boolean?
 function M.get_completion(options, suboptions, smart)
     return get_completions_func(M.general_completion, options, suboptions, smart)
 end
 
---- Return a completion function
----@param options string[]|fun(cmd: string[]?):string[]
+--- Return a completion function without dashes
+---@param options string[]|table<string, string[]>|fun(cmd: string[]?):string[]
 ---@param suboptions boolean|table<string, string[]|fun(cmd: string[]?):string[]>|nil
 ---@param smart boolean?
 function M.get_nodash_completion(options, suboptions, smart)
@@ -132,13 +158,6 @@ function M.json_keys_completion(arglead, cmdline, cursorpos, filename, funcs)
         keys = vim.tbl_map(funcs.map, keys)
     end
     return M.general_completion(arglead, cmdline, cursorpos, keys)
-end
-
---- Return a cmd separated by spaces
----@param cmdline string
----@return string[]
-function M.get_cmd(cmdline)
-    return vim.iter(vim.split(cmdline, '%s+', { trimempty = true })):map(vim.trim):totable()
 end
 
 return M

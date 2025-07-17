@@ -1,5 +1,5 @@
 local nvim = require 'nvim'
-local completions = RELOAD 'completions'
+local comp_utils = RELOAD 'completions.utils'
 
 nvim.command.set('CMake', function(opts)
     RELOAD('filetypes.cmake.utils').execute(opts.fargs)
@@ -27,7 +27,7 @@ nvim.command.set('CMakeBuild', function(opts)
     RELOAD('filetypes.cmake.utils').build(cmake)
 end, {
     nargs = '?',
-    complete = completions.build_type,
+    complete = comp_utils.get_completion(vim.tbl_keys(require 'filetypes.cpp.build_types')),
     desc = 'Build current project with CMake',
 })
 
@@ -53,6 +53,6 @@ nvim.command.set('CMakeConfig', function(opts)
     RELOAD('filetypes.cmake.utils').config(cmake)
 end, {
     nargs = '?',
-    complete = completions.build_type,
+    complete = comp_utils.get_completion(vim.tbl_keys(require 'filetypes.cpp.build_types')),
     desc = 'Configure current project to build using CMake',
 })
