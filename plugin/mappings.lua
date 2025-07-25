@@ -21,6 +21,11 @@ set_abbr { mode = 'c', lhs = 'Qa1', rhs = 'qa!' }
 set_abbr { mode = 'c', lhs = 'Qa!', rhs = 'qa!' }
 set_abbr { mode = 'c', lhs = 'QA!', rhs = 'qa!' }
 
+vim.keymap.set('n', 'q<', '<cmd>colder<CR>', { noremap = true })
+vim.keymap.set('n', 'q>', '<cmd>cnewer<CR>', { noremap = true })
+vim.keymap.set('n', 'l<', '<cmd>lolder<CR>', { noremap = true })
+vim.keymap.set('n', 'l>', '<cmd>lnewer<CR>', { noremap = true })
+
 vim.keymap.set('c', '<C-n>', '<down>', { noremap = true })
 vim.keymap.set('c', '<C-p>', '<up>', { noremap = true })
 vim.keymap.set('c', '<C-k>', '<left>', { noremap = true })
@@ -175,6 +180,20 @@ vim.keymap.set(
     { noremap = true, silent = true, desc = 'Clear search and update diff' }
 )
 
+vim.keymap.set(
+    'n',
+    '<leader>T',
+    '<cmd>windo diffthis<CR>',
+    { noremap = true, silent = true, desc = 'Diff the current windows' }
+)
+
+vim.keymap.set(
+    'n',
+    '<leader>O',
+    '<cmd>windo diffoff<CR>',
+    { noremap = true, silent = true, desc = 'Disable Diff view' }
+)
+
 vim.keymap.set('n', '=q', function()
     RELOAD('utils.qf').toggle()
 end, { noremap = true, silent = true, desc = 'Toggle quickfix' })
@@ -234,6 +253,15 @@ end, { noremap = true, silent = true, desc = 'Format the current buffer with the
 vim.keymap.set('n', '=D', function()
     vim.diagnostic.setqflist()
     vim.cmd.wincmd 'J'
+end, { noremap = true, silent = true, desc = 'Toggle diagnostics in the quickfix' })
+
+vim.keymap.set('n', '=v', function()
+    local configs = vim.diagnostic.config() or {}
+    local force = false
+    if configs.virtual_lines or configs.virtual_text then
+        force = true
+    end
+    RELOAD('utils.diagnostics').toggle_virtual_lines(nil, force)
 end, { noremap = true, silent = true, desc = 'Toggle diagnostics in the quickfix' })
 
 vim.keymap.set('n', '=L', function()

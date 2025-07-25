@@ -319,7 +319,7 @@ local function setup_lazy(download)
                     -- reset = true,
                     -- paths = {},
                     disabled_plugins = {
-                        'gzip',
+                        -- 'gzip',
                         -- "matchit",
                         -- "matchparen",
                         -- "netrwPlugin",

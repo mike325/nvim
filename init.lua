@@ -22,7 +22,7 @@ end
 vim.g.has_ui = #vim.api.nvim_list_uis() > 0
 
 vim.g.loaded_2html_plugin = 1
-vim.g.loaded_gzip = 1
+-- vim.g.loaded_gzip = 1
 vim.g.loaded_rrhelper = 1
 vim.g.loaded_tarPlugin = 1
 vim.g.loaded_zipPlugin = 1

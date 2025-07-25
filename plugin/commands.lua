@@ -484,30 +484,7 @@ end)
 --- @param opts Command.Opts
 nvim.command.set('VirtualLines', function(opts)
     local action = opts.args:gsub('^%-+', '')
-
-    local options = {
-        virtual_text = not opts.bang,
-    }
-
-    if nvim.has { 0, 11 } then
-        options.virtual_lines = not opts.bang
-    end
-
-    if action == 'text' then
-        options.virtual_lines = nil
-        if not opts.bang then
-            options.virtual_text = {
-                spacing = 2,
-                prefix = '❯',
-            }
-        end
-    elseif action == 'lines' then
-        options.virtual_text = nil
-    elseif not opts.bang and nvim.has { 0, 11 } then
-        options.virtual_text = false
-    end
-
-    vim.diagnostic.config(options)
+    RELOAD('utils.diagnostics').toggle_virtual_lines(action, opts.bang)
 end, {
     nargs = '?',
     bang = true,
@@ -795,13 +772,7 @@ end, { desc = 'Dump loclist files to the arglist' })
 
 nvim.command.set('ArgEdit', function(opts)
     RELOAD('utils.arglist').edit(opts.args)
-end, {
-    nargs = '?',
-    complete = comp_utils.get_completion(function()
-        return vim.iter(vim.fn.argv()):map(vim.fs.basename):totable()
-    end),
-    desc = 'Edit a file in the arglist',
-})
+end, { nargs = '?', complete = comp_utils.get_completion(vim.fn.argv), desc = 'Edit a file in the arglist' })
 
 nvim.command.set('ArgClear', function(opts)
     RELOAD('utils.arglist').clear(opts.bang)
@@ -991,3 +962,22 @@ nvim.command.set('EditPathScript', function(opts)
     end
     vim.cmd.edit(cmd)
 end, { nargs = 1, complete = 'shellcmd', desc = 'Open a script located somewhere in path' })
+
+--- @param opts Command.Opts
+nvim.command.set('CreateRemoteTmux', function(opts)
+    local ssh_cmd = { 'ssh', '-Y', '-t' }
+
+    if opts.bang then
+        vim.list_extend(ssh_cmd, { '-o', 'StrictHostKeyChecking=no' })
+    end
+
+    table.insert(ssh_cmd, require('utils.network').get_ssh_host(opts.fargs[1]))
+    local tmux_session = opts.fargs[2] or 'main'
+    table.insert(ssh_cmd, string.format("'tmux attach -t %s || tmux new -s %s'", tmux_session, tmux_session))
+    RELOAD('utils.tmux').split_window(ssh_cmd)
+end, {
+    bang = true,
+    nargs = '+',
+    complete = completions.ssh_hosts_completion,
+    desc = 'Create a remote tmux session in the given host',
+})

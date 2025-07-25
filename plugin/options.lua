@@ -258,7 +258,7 @@ local diagnostics_config = {
 }
 
 if nvim.has { 0, 11 } then
-    diagnostics_config.virtual_lines = true
+    diagnostics_config.virtual_lines = false
     diagnostics_config.virtual_text = false
 
     diagnostics_config.signs = {

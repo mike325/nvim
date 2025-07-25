@@ -28,6 +28,7 @@ local languages = {
     'python',
     'rst',
     'rust',
+    'ssh_config',
     'todotxt',
     'toml',
     'yaml',
