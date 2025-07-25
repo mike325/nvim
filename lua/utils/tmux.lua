@@ -52,7 +52,7 @@ function M.split_window(cmd, cb)
             notify = true,
             open = false,
             jump = false,
-            callbacks = cb
+            callbacks = cb,
         }
     end
 
