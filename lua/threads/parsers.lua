@@ -130,6 +130,34 @@ function M.compiledb(thread_args, async)
     return rt
 end
 
+function M.ts_sshconfig()
+    local ssh_config = vim.fs.joinpath(vim.uv.os_homedir(), '.ssh', 'config')
+    local hosts_query = '(host_declaration) @host'
+    local hostnanme_query = '(host_declaration argument:(_) @hostname)'
+    local parameter_query = '(host_declaration (parameter argument:(_)) @host_param)'
+    local param_value_query = '(host_declaration (parameter argument:(_) @host_value))'
+
+    local ssh_hosts = {}
+
+    local hosts = RELOAD('utils.treesitter').list_buf_nodes(hosts_query, ssh_config, 'ssh_config')
+    for _, host in ipairs(hosts) do
+        local hostnames = RELOAD('utils.treesitter').list_buf_nodes(hostnanme_query, host[1], 'ssh_config')
+        for _, hostname in ipairs(hostnames) do
+            ssh_hosts[hostname[1]] = ssh_hosts[hostname[1]] or {}
+            local host_params = RELOAD('utils.treesitter').list_buf_nodes(parameter_query, host[1], 'ssh_config')
+            local host_values = RELOAD('utils.treesitter').list_buf_nodes(param_value_query, host[1], 'ssh_config')
+
+            for idx, host_param in ipairs(host_params) do
+                local value = host_values[idx][1]
+                local param = (host_param[1]:gsub('[%s=]+' .. vim.pesc(value), '')):lower()
+                ssh_hosts[hostname[1]][param] = value
+            end
+        end
+    end
+
+    return ssh_hosts
+end
+
 function M.sshconfig(_, async)
     require('threads').init()
 
@@ -139,8 +167,8 @@ function M.sshconfig(_, async)
     local hosts = {}
     local function get_host_attrs(host, line)
         hosts[host] = hosts[host] or { hostname = host } -- default hostname is the same host
-        local clean_line = vim.trim(line:gsub('[#;].+$', ''):gsub('%s+', ' '))
-        local assign = clean_line:find '%s'
+        local clean_line = vim.trim((line:gsub('[#;].+$', ''):gsub('%s+', ' ')))
+        local assign = clean_line:find '[%s=]'
         if assign then
             local attr = vim.trim(clean_line:sub(1, assign - 1)):lower()
             local value = vim.trim(clean_line:sub(assign + 1, #clean_line))
@@ -152,7 +180,7 @@ function M.sshconfig(_, async)
         local host = {}
         local data = utils.readfile(ssh_config, true)
         for _, line in pairs(data) do
-            if line ~= '' and line:match '^%s*[hH][oO][sS][tT]%s+[a-zA-Z0-9_-%.]+' then
+            if line ~= '' and (line:match '^%s*[hH][oO][sS][tT]%s+["a-zA-Z0-9_-%.]+' or line:match '^%s*[mM][aA][tT][cC][hH]%s+["a-zA-Z0-9_-%.]+') then
                 host = vim.iter(vim.split(line, '%s+', { trimempty = true })):skip(1):totable()
             elseif not line:match '^%s*$' and not line:match '^%s*[;#]' and host ~= '' then
                 vim.iter(host):each(function(h)

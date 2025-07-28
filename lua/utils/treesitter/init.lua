@@ -2,8 +2,38 @@ local nvim = require 'nvim'
 
 local M = {}
 
+local function get_buf(buf)
+    if not buf then
+        buf = vim.api.nvim_get_current_buf()
+    elseif type(buf) == type '' and require('utils.files').is_file(buf) then
+        buf = require('utils.files').readfile(buf, false)
+    end
+
+    return buf
+end
+
+function M.get_parser(buf, lang)
+    vim.validate {
+        buf = { buf, { 'number', 'string' }, true },
+        lang = { lang, 'string', true },
+    }
+
+    buf = get_buf(buf)
+    if type(buf) == type '' and not lang then
+        -- NOTE: Lang is needed to get a string parser
+        return nil
+    end
+
+    local ts_func = type(buf) == type(1) and vim.treesitter.get_parser or vim.treesitter.get_string_parser
+    local parser = vim.F.npcall(ts_func, buf, lang)
+    return parser
+end
+
 -- Copied from nvim-treesitter in ts_utils
 function M.get_vim_range(range, buf)
+    if type(buf) == type '' then
+        return range
+    end
     local srow, scol, erow, ecol = unpack(range)
     srow = srow + 1
     scol = scol + 1
@@ -92,19 +122,23 @@ function M.is_in_node(node, range, buf)
     return false
 end
 
-function M.get_list_nodes(root_node, tsquery, get_text, buf)
+function M.get_list_nodes(root_node, tsquery, get_text, buf, lang)
     vim.validate {
         root_node = { root_node, { 'userdata', 'table' } },
         tsquery = { tsquery, 'string' },
         get_text = { get_text, 'boolean', true },
-        buf = { buf, 'number', true },
+        buf = { buf, { 'number', 'string' }, true },
+        lang = { lang, 'string', true },
     }
 
-    buf = buf or vim.api.nvim_get_current_buf()
-
-    local parser = vim.F.npcall(vim.treesitter.get_parser, buf)
+    buf = get_buf(buf)
+    local parser = M.get_parser(buf, lang)
     if not parser then
         return {}
+    end
+
+    if not parser:is_valid() then
+        parser:parse(true)
     end
 
     local langtree = parser:language_for_range { root_node:range() }
@@ -139,32 +173,30 @@ function M.get_list_nodes(root_node, tsquery, get_text, buf)
     return nodes
 end
 
-function M.list_buf_nodes(tsquery, buf)
+function M.list_buf_nodes(tsquery, buf, lang)
     vim.validate {
         tsquery = { tsquery, 'string' },
-        buf = { buf, 'number', true },
+        buf = { buf, { 'number', 'string' }, true },
+        lang = { lang, 'string', true },
     }
 
-    buf = buf or vim.api.nvim_get_current_buf()
-
-    local parser = vim.F.npcall(vim.treesitter.get_parser, buf)
+    buf = get_buf(buf)
+    local parser = M.get_parser(buf, lang)
     if not parser then
         return {}
     end
 
-    local buf_lines = nvim.buf.line_count(buf)
-    local line = nvim.buf.get_lines(buf, buf_lines - 1, buf_lines, false)[1]
-
-    local langtree = parser:language_for_range { 0, 0, buf_lines, #line }
-
-    local results = {}
-    for _, tree in pairs(langtree:trees()) do
-        local root = tree:root()
-        if root then
-            results = vim.list_extend(results, M.get_list_nodes(root, tsquery, true, buf))
-        end
+    if not parser:is_valid() then
+        parser:parse(true)
     end
 
+    local results = {}
+    for _, tree in pairs(parser:trees()) do
+        local root = tree:root()
+        if root then
+            results = vim.list_extend(results, M.get_list_nodes(root, tsquery, true, buf, lang))
+        end
+    end
     return results
 end
 

@@ -27,6 +27,10 @@ function M.init(thread_args)
             vim.fs = require 'vim.fs'
         end
 
+        if not vim.iter then
+            vim.iter = require 'vim.iter'
+        end
+
         if not vim.base64 then
             vim.base64 = {
                 encode = require('utils.strings').base64_encode,
