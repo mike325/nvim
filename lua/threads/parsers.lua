@@ -180,7 +180,13 @@ function M.sshconfig(_, async)
         local host = {}
         local data = utils.readfile(ssh_config, true)
         for _, line in pairs(data) do
-            if line ~= '' and (line:match '^%s*[hH][oO][sS][tT]%s+["a-zA-Z0-9_-%.]+' or line:match '^%s*[mM][aA][tT][cC][hH]%s+["a-zA-Z0-9_-%.]+') then
+            if
+                line ~= ''
+                and (
+                    line:match '^%s*[hH][oO][sS][tT]%s+["a-zA-Z0-9_-%.]+'
+                    or line:match '^%s*[mM][aA][tT][cC][hH]%s+["a-zA-Z0-9_-%.]+'
+                )
+            then
                 host = vim.iter(vim.split(line, '%s+', { trimempty = true })):skip(1):totable()
             elseif not line:match '^%s*$' and not line:match '^%s*[;#]' and host ~= '' then
                 vim.iter(host):each(function(h)
