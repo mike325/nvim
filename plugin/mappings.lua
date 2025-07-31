@@ -23,8 +23,8 @@ set_abbr { mode = 'c', lhs = 'QA!', rhs = 'qa!' }
 
 vim.keymap.set('n', 'q<', '<cmd>colder<CR>', { noremap = true })
 vim.keymap.set('n', 'q>', '<cmd>cnewer<CR>', { noremap = true })
-vim.keymap.set('n', 'l<', '<cmd>lolder<CR>', { noremap = true })
-vim.keymap.set('n', 'l>', '<cmd>lnewer<CR>', { noremap = true })
+-- vim.keymap.set('n', '<l', '<cmd>lolder<CR>', { noremap = true })
+-- vim.keymap.set('n', '>l', '<cmd>lnewer<CR>', { noremap = true })
 
 vim.keymap.set('c', '<C-n>', '<down>', { noremap = true })
 vim.keymap.set('c', '<C-p>', '<up>', { noremap = true })
