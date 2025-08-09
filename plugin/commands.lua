@@ -245,6 +245,7 @@ nvim.command.set('Exec', function(opts)
         notify = true,
         open = true,
         jump = false,
+        progress = opts.bang,
     }
 end, { bang = true, nargs = '+', complete = 'shellcmd', desc = 'Async execution of the given cmd' })
 

@@ -336,7 +336,7 @@ if mini.visits then
 end
 
 if mini.sessions then
-    local sessions_dir = sys.session
+    local sessions_dir = sys.sessions
     if not is_dir(sessions_dir) then
         mkdir(sessions_dir)
     end

@@ -1062,7 +1062,7 @@ let s:dirpaths = {
     \ '/swap'     : 'directory',
     \ '/undo_vim' : 'undodir',
     \ '/cache'    : '',
-    \ '/sessions' : '',
+    \ '/sessions_vim' : '',
     \}
 
 " Better backup, swap and undos storage

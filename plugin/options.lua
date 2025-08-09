@@ -16,7 +16,7 @@ local dirpaths = {
     backup = 'backupdir',
     undo = 'undodir',
     cache = '',
-    session = '',
+    sessions = '',
 }
 
 for dirname, dir_setting in pairs(dirpaths) do

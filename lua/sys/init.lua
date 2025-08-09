@@ -1,7 +1,7 @@
 local config_dirs = {
     'backup',
     'undo',
-    'session',
+    'sessions',
 }
 
 local executable = function(exe)
