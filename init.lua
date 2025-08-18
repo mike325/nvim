@@ -79,10 +79,6 @@ vim.g.bare = vim.env.VIM_BARE ~= nil or vim.g.bare ~= nil or not vim.g.has_ui
 
 require 'globals'
 
--- NOTE: overload/replace vim.* functions
-require 'overloads.notify'
-require 'overloads.ui.open'
-
 if vim.g.has_ui then
     -- TODO: Add support for gum to ask for input/select items in CLI mode
     require 'overloads.ui.select'
@@ -113,3 +109,7 @@ else
         STORAGE.hosts[host] = attrs
     end
 end
+
+-- NOTE: overload/replace vim.* functions
+require 'overloads.ui.open'
+require 'overloads.notify'

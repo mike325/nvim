@@ -1,6 +1,5 @@
 local nvim = require 'nvim'
 local completions = RELOAD 'completions'
-local comp_utils = RELOAD 'completions.utils'
 
 -- TODO: Lazy check for mini
 local has_mini = nvim.plugins['mini.nvim'] ~= nil or (vim.g.minimal and vim.F.npcall(require, 'mini.git') ~= nil)

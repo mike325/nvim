@@ -78,7 +78,6 @@ return {
     },
     {
         'neovim/nvim-lspconfig',
-        lazy = true,
         -- enabled = false,
         -- priority = 100,
     },
