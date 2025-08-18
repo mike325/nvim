@@ -38,13 +38,13 @@ local root_markers = {
 }
 
 return {
-  cmd = { 'ccls' },
-  filetypes = { 'c', 'cpp', 'objc', 'objcpp', 'cuda' },
-  root_markers = root_markers,
-  offset_encoding = 'utf-32',
-  -- ccls does not support sending a null root directory
-  workspace_required = true,
-  on_attach = function(client, bufnr)
+    cmd = { 'ccls' },
+    filetypes = { 'c', 'cpp', 'objc', 'objcpp', 'cuda' },
+    root_markers = root_markers,
+    offset_encoding = 'utf-32',
+    -- ccls does not support sending a null root directory
+    workspace_required = true,
+    on_attach = function(client, bufnr)
         vim.api.nvim_buf_create_user_command(0, 'CCLSSwitch', function()
             require('configs.lsp.utils').switch_source_header_splitcmd(0, 'edit', 'ccls')
         end, { desc = 'Switch between source/header' })
@@ -56,5 +56,5 @@ return {
         vim.api.nvim_buf_create_user_command(0, 'CCLSSwitchSplit', function()
             require('configs.lsp.utils').switch_source_header_splitcmd(0, 'split', 'ccls')
         end, { desc = 'Switch between source/header' })
-  end,
+    end,
 }
