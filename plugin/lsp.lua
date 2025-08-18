@@ -14,6 +14,12 @@ local python_servers = {
     'jedi_language_server',
 }
 
+-- NOTE: C/C++ server usage priority
+local c_servers = {
+    'ccls',
+    'clangd',
+}
+
 -- These are the configs I'm intersted in, they can be defined with a empty dict
 -- and resolved with vim.lsp.config
 local configs = vim.api.nvim_get_runtime_file('after/lsp/*.lua', true)
@@ -83,23 +89,29 @@ local function enable_server(server)
     end
 end
 
+local function priority_enable(confignames, server_list)
+    local server_configs = vim.iter(confignames)
+        :filter(function(config)
+            return vim.list_contains(server_list, config) and has_server(config)
+        end)
+        :totable()
+
+    for server in vim.iter(server_list) do
+        if vim.list_contains(server_configs, server) then
+            enable_server(server)
+            break
+        end
+    end
+end
+
 local confignames = vim.iter(configs):map(vim.fs.basename):map(require('utils.files').filename):totable()
 
+local exclude_configs = vim.list_extend(vim.deepcopy(python_servers), c_servers)
 vim.iter(confignames)
     :filter(function(config)
-        return not vim.list_contains(python_servers, config) and has_server(config)
+        return not vim.list_contains(exclude_configs, config) and has_server(config)
     end)
     :each(enable_server)
 
-local python_configs = vim.iter(confignames)
-    :filter(function(config)
-        return vim.list_contains(python_servers, config) and has_server(config)
-    end)
-    :totable()
-
-for server in vim.iter(python_servers) do
-    if vim.list_contains(python_configs, server) then
-        enable_server(server)
-        break
-    end
-end
+priority_enable(confignames, python_servers)
+priority_enable(confignames, c_servers)

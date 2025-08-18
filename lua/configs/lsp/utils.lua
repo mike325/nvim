@@ -1,6 +1,7 @@
 local M = {}
 
-function M.switch_source_header_splitcmd(bufnr, splitcmd)
+function M.switch_source_header_splitcmd(bufnr, splitcmd, client_name)
+    client_name = client_name or 'clangd'
     local method_name = 'textDocument/switchSourceHeader'
     splitcmd = splitcmd or 'edit'
     bufnr = bufnr or vim.api.nvim_get_current_buf()
@@ -11,7 +12,7 @@ function M.switch_source_header_splitcmd(bufnr, splitcmd)
     end
 
     local params = vim.lsp.util.make_text_document_params(bufnr)
-    local client = vim.lsp.get_clients({ name = 'clangd', bufnr = bufnr })[1]
+    local client = vim.lsp.get_clients({ name = client_name, bufnr = bufnr })[1]
     if not client then
         return false
     end
