@@ -174,6 +174,27 @@ local function notify(msg, level, opts)
         -- NOTE: Make sure to use the correct level value if we get an integer
         level = vim.log.levels[level] or level
     end
+
+    if not vim.g.in_focus then
+        if require('sys').name == 'linux' then
+            local cmd = {
+                'notify-send',
+                '-u',
+                'critical',
+                '-a',
+                'neovim',
+            }
+            local icon = vim.api.nvim_get_runtime_file('neovim.ico', false)[1]
+            if icon then
+                vim.list_extend(cmd, { '-i', icon })
+            end
+
+            local title = (opts or {}).title or 'Neovim'
+            vim.list_extend(cmd, { title, msg })
+            vim.system(cmd, { text = true })
+        end
+    end
+
     notify_backend(msg, level, opts)
 end
 
