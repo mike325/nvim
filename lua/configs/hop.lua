@@ -5,7 +5,6 @@ if not hop then
 end
 
 hop.setup {}
-
 vim.keymap.set('n', [[\]], "<cmd>lua require'hop'.hint_char1()<CR>", { noremap = true })
 
 return true

@@ -41,7 +41,6 @@ NAME="${NAME##*-}"
 LOG="${NAME%%.*}.log"
 
 SCRIPT_PATH="$0"
-
 SCRIPT_PATH="${SCRIPT_PATH%/*}"
 
 OS='unknown'
@@ -328,7 +327,6 @@ function exit_append() {
         if [[ $WARN_COUNT -gt 0 ]] || [[ $ERR_COUNT -gt 0 ]]; then
             printf "\n\n" >>"${LOG}"
         fi
-
         if [[ $WARN_COUNT -gt 0 ]]; then
             printf "[*] Warnings:\t%s\n" "$WARN_COUNT" >>"${LOG}"
         fi

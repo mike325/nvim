@@ -413,7 +413,7 @@ end
 
 --- Get files from the given path
 ---@param path string
----@param opts table
+---@param opts table?
 ---@param filter fun(name: string, ftype: string):boolean
 ---@return string[]
 local function dir(path, opts, filter)
@@ -429,7 +429,7 @@ end
 
 --- Get files from the given path
 ---@param path string
----@param opts table
+---@param opts table?
 ---@return string[]
 function M.get_files(path, opts)
     return dir(path, opts, function(_, t)

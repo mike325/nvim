@@ -1,5 +1,4 @@
-local sys = require 'sys'
-local iswin = sys.name == 'windows'
+local iswin = require('sys').name == 'windows'
 
 vim.bo.comments = ':#'
 vim.bo.commentstring = '# %s'

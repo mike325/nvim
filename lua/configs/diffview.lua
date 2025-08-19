@@ -1,6 +1,6 @@
 local diffview = vim.F.npcall(require, 'diffview')
 
-if diffview == nil then
+if not diffview then
     return false
 end
 
@@ -20,3 +20,5 @@ diffview.setup {
         },
     },
 }
+
+return true

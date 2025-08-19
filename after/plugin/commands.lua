@@ -22,15 +22,10 @@ if not has_mini and not nvim.plugins['vim-fugitive'] then
 end
 
 local function stop_server(server, force)
-    if server ~= '' then
-        local id, _ = server:match '^(%d):(.+)'
-        if tonumber(id) then
-            vim.lsp.stop_client(tonumber(id) --[[@as number]], force)
-            return true
-        end
-    end
-    vim.notify(string.format('Cannot stop server: "%s"', server), vim.log.levels.ERROR)
-    return false
+    vim.iter(vim.lsp.get_clients { name = server }):map(function(client)
+        client:stop(force)
+    end)
+    return true
 end
 
 if not nvim.plugins['nvim-lspconfig'] then
@@ -70,8 +65,7 @@ end, {
 nvim.command.set('LspStop', function(opts)
     local server = opts.args
     if stop_server(server, opts.bang) then
-        local _, name = server:match '^(%d):(.+)'
-        vim.notify(string.format('%s stopped', name), vim.log.levels.INFO, { title = 'LspStop' })
+        vim.notify(string.format('%s stopped', server), vim.log.levels.INFO, { title = 'LspStop' })
     end
 end, {
     bang = true,
@@ -83,18 +77,9 @@ end, {
 --- @param opts Command.Opts
 nvim.command.set('LspRestart', function(opts)
     local server = opts.args
-    local id, name = server:match '^(%d):(.+)'
-    local config = vim.lsp.config[name]
-    if tonumber(id) then
-        config = vim.lsp.get_clients { id = tonumber(id) }
-    end
-
     vim.notify(string.format('Restartting %s', server), vim.log.levels.INFO, { title = 'LspRestart' })
     if stop_server(server) then
-        vim.defer_fn(function()
-            config.name = config.name or name
-            vim.lsp.start(config, { bufnr = 0 })
-        end, 1000)
+        vim.lsp.enable(server, true)
     end
 end, {
     bang = true,
@@ -106,9 +91,10 @@ end, {
 -- TODO: Add support to change between local and osc/remote open
 -- NOTE: Override Netrw command
 nvim.command.set('Open', function(opts)
-    vim.ui.open(opts.args)
+    local url = opts.args ~= '' and opts.args or vim.fn.expand '<cfile>'
+    vim.ui.open(url)
 end, {
-    nargs = 1,
+    nargs = '?',
     complete = 'file',
     desc = 'Open file in the default OS external program',
 })

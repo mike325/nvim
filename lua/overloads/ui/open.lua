@@ -59,26 +59,28 @@ if not vim.ui.open then
 end
 
 vim.ui.open = (function(overridden)
-    return function(path)
+    return function(path, opts)
         vim.validate { path = { path, 'string' } }
-        if path:match '^https?://.+' and vim.env.SSH_CONNECTION then
-            require('utils.osc').send_osc1337('open', '"' .. path .. '"')
-            return {
-                code = 0,
-                signal = 0,
-                stderr = '',
-                stdout = '',
-            },
-                nil
-        end
         if vim.g.open_matchers then
-            for _, opener in pairs(vim.g.open_matchers) do
-                if opener.match(path) then
-                    path = opener.transform(path)
-                    break
-                end
+            local _, opener = vim.iter(vim.g.open_matchers):find(function(_, opener)
+                return opener.match(path)
+            end)
+            if opener then
+                path = opener.transform(path)
             end
         end
-        return overridden(path)
+        if not opts then
+            if path:match '^https?://.+' and vim.env.SSH_CONNECTION then
+                require('utils.osc').send_osc1337('open', '"' .. path .. '"')
+                return {
+                    code = 0,
+                    signal = 0,
+                    stderr = '',
+                    stdout = '',
+                },
+                    nil
+            end
+        end
+        return overridden(path, opts)
     end
 end)(vim.ui.open)

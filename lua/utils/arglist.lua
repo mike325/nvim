@@ -14,9 +14,8 @@ function M.clear(all)
         end
     else
         -- NOTE: sessions may load invalid files in the arglist
-        for _, arg in
-            ipairs(vim.fn.argv() --[[@as string[] ]])
-        do
+        local args = vim.fn.argv() --[[@as string[] ]]
+        for arg in vim.iter(args) do
             if not require('utils.files').is_file(arg) then
                 vim.cmd.argdelete(arg)
             end
