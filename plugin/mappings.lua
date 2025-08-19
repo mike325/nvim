@@ -228,7 +228,10 @@ vim.keymap.set(
     { noremap = true, silent = true, desc = 'Grep search visual selection' }
 )
 vim.keymap.set('n', 'gss', function()
-    RELOAD('utils.async').grep()
+    local grepprg = vim.bo.grepprg ~= '' and vim.bo.grepprg or vim.o.grepprg
+    grepprg = vim.split(grepprg, '%s+', { trimempty = true })
+    local args = vim.list_extend(vim.list_slice(grepprg, 2, #grepprg), { vim.fn.expand '<cword>' })
+    RELOAD('utils.async').grep { args = args }
 end, { noremap = true, silent = true, desc = 'Grep search word under cursor' })
 
 if executable 'scp' then

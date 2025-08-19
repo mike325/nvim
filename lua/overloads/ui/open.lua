@@ -73,10 +73,19 @@ vim.ui.open = (function(overridden)
             if path:match '^https?://.+' and vim.env.SSH_CONNECTION then
                 require('utils.osc').send_osc1337('open', '"' .. path .. '"')
                 return {
-                    code = 0,
-                    signal = 0,
-                    stderr = '',
-                    stdout = '',
+                    cmd = {},
+                    pid = -1,
+                    wait = function()
+                        return {
+                            code = 0,
+                            signal = 0,
+                            stderr = '',
+                            stdout = '',
+                        }
+                    end,
+                    kill = function() end,
+                    write = function() end,
+                    is_closing = function() end,
                 },
                     nil
             end
