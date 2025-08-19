@@ -16,11 +16,11 @@ local python_servers = {
 
 -- NOTE: C/C++ server usage priority
 local c_servers = {
-    'ccls',
     'clangd',
+    'ccls',
 }
 
--- These are the configs I'm intersted in, they can be defined with a empty dict
+-- These are the configs I'm interested in, they can be defined with a empty dict
 -- and resolved with vim.lsp.config
 local configs = vim.api.nvim_get_runtime_file('after/lsp/*.lua', true)
 

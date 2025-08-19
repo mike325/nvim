@@ -28,8 +28,6 @@ local root_markers = {
 
 local default_cmd = {
     'clangd',
-    -- TODO: Move these to auto cmd
-    -- '--enable-config',
     '--fallback-style=Google',
     '--clang-tidy',
     '--header-insertion=iwyu',
@@ -65,12 +63,14 @@ return {
         local sysname = vim.uv.os_uname().sysname:lower()
         local global_config
         if sysname:match '^windows' then
-            global_config = vim.fs.normalize(vim.fs.joinpath(vim.env.USERPROFILE, 'AppData', 'Local', clangd_config))
+            global_config = vim.fs.joinpath(vim.env.USERPROFILE, 'AppData', 'Local', clangd_config)
         elseif sysname == 'linux' then
-            global_config = vim.fs.normalize(vim.fs.joinpath(xdg_config_home, clangd_config))
+            global_config = vim.fs.joinpath(xdg_config_home, clangd_config)
         else
-            global_config = vim.fs.normalize(vim.fs.joinpath(home, 'Library', 'Preferences', clangd_config))
+            global_config = vim.fs.joinpath(home, 'Library', 'Preferences', clangd_config)
         end
+
+        global_config = vim.fs.normalize(global_config)
 
         if vim.uv.fs_stat(global_config) or vim.fs.root(0, { '.clangd' }) then
             table.insert(cmd, '--enable-config')
