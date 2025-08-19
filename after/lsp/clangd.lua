@@ -124,12 +124,26 @@ return {
         'cuda',
         'proto',
     },
-    -- fix: add measured_position to KHWTUM::DataCache
-    -- init_options = {
-    --     usePlaceholders = true,
-    --     completeUnimported = true,
-    --     clangdFileStatus = true,
-    -- },
+    init_options = {
+        -- clangdFileStatus = true,
+        fallbackFlags = {
+            '-Wall',
+            '-Wextra',
+            '-Wshadow',
+            '-Wnon-virtual-dtor',
+            '-Wold-style-cast',
+            '-Wcast-align',
+            '-Wunused',
+            '-Woverloaded-virtual',
+            '-Wpedantic',
+            '-Wno-missing-prototypes',
+            '-Wconversion',
+            '-Wsign-conversion',
+            '-Wnull-dereference',
+            '-Wdouble-promotion',
+            '-Wformat=2',
+        },
+    },
     root_markers = root_markers,
     cmd_env = {
         TMPDIR = pch_dir,
