@@ -21,7 +21,7 @@ function M.grep(_, visual)
 
     local grepprg = vim.bo.grepprg ~= '' and vim.bo.grepprg or vim.o.grepprg
     grepprg = vim.split(grepprg, '%s+', { trimempty = true })
-    local args = vim.list_extend(vim.list_slice(grepprg, 2, #grepprg), {search})
+    local args = vim.list_extend(vim.list_slice(grepprg, 2, #grepprg), { search })
     require('utils.async').grep { args = args }
     vim.o.selection = select_save
 end

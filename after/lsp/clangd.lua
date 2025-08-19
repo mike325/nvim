@@ -102,14 +102,13 @@ return {
 
                 if require('utils.files').is_dir(vim.fs.joinpath(root_dir, '.vscode_clangd_setup')) then
                     table.insert(cmd, '--project-root=' .. vim.fs.joinpath(root_dir, '.vscode_clangd_setup'))
-                elseif vim.env.CLEARCASE_ROOT  then
+                elseif vim.env.CLEARCASE_ROOT then
                     table.insert(cmd, '--project-root=/vobs')
                 else
                     table.insert(cmd, '--project-root=' .. root_dir)
                 end
             end
         end
-
 
         if sysname == 'linux' then
             table.insert(cmd, '--malloc-trim')
