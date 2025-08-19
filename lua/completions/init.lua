@@ -32,12 +32,12 @@ completions = vim.tbl_extend('force', completions, {
     end,
     session_files = function(arglead, cmdline, cursorpos)
         local utils = require 'completions.utils'
-        local sessions = require'utils.files'.get_files(require('sys').sessions)
+        local sessions = require('utils.files').get_files(require('sys').sessions)
         return utils.general_completion(arglead, cmdline, cursorpos, vim.tbl_map(vim.fs.basename, sessions))
     end,
     spells = function(arglead, cmdline, cursorpos)
         local utils = require 'completions.utils'
-        local spells = require'utils.files'.get_files(require('sys').base .. '/spell')
+        local spells = require('utils.files').get_files(require('sys').base .. '/spell')
         spells = vim.tbl_map(function(spell)
             return (vim.fs.basename(spell):gsub('%..*', ''))
         end, spells)
