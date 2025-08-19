@@ -176,7 +176,9 @@ local function notify(msg, level, opts)
     end
 
     if not vim.g.in_focus then
-        if require('sys').name == 'linux' then
+        local sysname = require('sys').name
+        local executable = require('utils.files').executable
+        if sysname == 'linux' and executable 'notify-send' then
             local cmd = {
                 'notify-send',
                 '-u',
@@ -191,6 +193,16 @@ local function notify(msg, level, opts)
 
             local title = (opts or {}).title or 'Neovim'
             vim.list_extend(cmd, { title, msg })
+            vim.system(cmd, { text = true })
+        elseif sysname == 'osx' then
+            local cmd = { 'osascript', '-e', }
+
+            local display_cmd = { 'display', 'notification', }
+
+            local title = (opts or {}).title or 'Neovim'
+            vim.list_extend(display_cmd, { string.format('"%s"', msg), 'with title', string.format('"%s"', title) })
+
+            table.insert(cmd, table.concat(display_cmd, ' '))
             vim.system(cmd, { text = true })
         end
     end
