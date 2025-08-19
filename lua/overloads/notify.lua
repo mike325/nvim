@@ -195,9 +195,9 @@ local function notify(msg, level, opts)
             vim.list_extend(cmd, { title, msg })
             vim.system(cmd, { text = true })
         elseif sysname == 'osx' then
-            local cmd = { 'osascript', '-e', }
+            local cmd = { 'osascript', '-e' }
 
-            local display_cmd = { 'display', 'notification', }
+            local display_cmd = { 'display', 'notification' }
 
             local title = (opts or {}).title or 'Neovim'
             vim.list_extend(display_cmd, { string.format('"%s"', msg), 'with title', string.format('"%s"', title) })
