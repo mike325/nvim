@@ -67,37 +67,63 @@ function M.queue_progress_task(hash)
     table.insert(ASYNC.progress, 1, task or { hash = hash, task = ASYNC.tasks[hash] })
 end
 
---- @param opts Command.Opts
---- @return string|string[]
 local function get_grepprg(opts)
-    local grepprg = vim.bo.grepprg ~= '' and vim.bo.grepprg or vim.o.grepprg
-    grepprg = vim.split(grepprg, '%s+', { trimempty = true })
+    opts = opts or {}
 
+    ---@type string[]
+    local grepprg = vim.split(vim.bo.grepprg ~= '' and vim.bo.grepprg or vim.o.grepprg, '%s+', { trimempty = true })
+
+    ---@type string|string[]
     local cmd = opts.cmd or grepprg[1]
+
+    ---@type string[]
     local args = opts.args or {}
-    local search = opts.search or vim.fn.expand '<cword>'
 
     vim.validate {
         cmd = { cmd, 'string' },
         args = { args, 'table' },
-        search = { search, 'string' },
     }
 
-    if cmd == grepprg[1] and #args == 0 then
+    if cmd == grepprg[1] and #args == 1 then
         vim.list_extend(args, vim.list_slice(grepprg, 2, #grepprg))
     end
 
-    if type(cmd) ~= type {} then
-        cmd = { cmd }
+    cmd = type(cmd) == type '' and { cmd } or cmd
+
+    args = vim.iter(args)
+        :filter(function(arg)
+            return not arg:match '^%s*$'
+        end)
+        :totable()
+
+    local pathspec, search
+    if vim.iter(args):find '%' then
+        args = vim.iter(args)
+            :filter(function(arg)
+                return arg ~= '%'
+            end)
+            :totable()
+        search = args[#args]
+        pathspec = { vim.fn.expand '%' }
+    elseif vim.iter(args):find '##' then
+        args = vim.iter(args)
+            :filter(function(arg)
+                return arg ~= '##'
+            end)
+            :totable()
+        search = args[#args]
+        pathspec = vim.iter(vim.fn.argv()):filter(require('utils.files').is_file):totable()
+    else
+        search = vim.fn.expand '<cword>'
     end
-    args = vim.tbl_filter(function(k)
-        return not k:match '^%s*$'
-    end, args)
 
     vim.list_extend(cmd, args)
-    table.insert(cmd, search)
+    -- table.insert(cmd, search)
+    if pathspec then
+        vim.list_extend(cmd, pathspec)
+    end
 
-    return cmd
+    return cmd, search
 end
 
 function M.grep(opts)
@@ -108,9 +134,8 @@ function M.grep(opts)
     opts = opts or {}
 
     ---@type string[]
-    local cmd = get_grepprg(opts) --[[@as string[] ]]
-
-    local search = opts.search or vim.fn.expand '<cword>'
+    local cmd, search = get_grepprg(opts) --[[@as string[] ]]
+    search = search or vim.fn.expand '<cword>'
     nvim.reg['/'] = search
 
     local use_loc = opts.loc

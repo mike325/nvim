@@ -166,33 +166,18 @@ end, { bang = true, nargs = 1, complete = 'file', desc = 'Copy current file to a
 
 --- @param opts Command.Opts
 nvim.command.set('Grep', function(opts)
-    local search = opts.fargs[#opts.fargs]
-    opts.fargs[#opts.fargs] = nil
-
-    local args = opts.fargs
-    if #args > 0 then
-        local grepprg = vim.bo.grepprg ~= '' and vim.bo.grepprg or vim.o.grepprg
-        grepprg = vim.split(grepprg, '%s+', { trimempty = true })
-
-        vim.list_extend(args, vim.list_slice(grepprg, 2, #grepprg))
-    end
-    RELOAD('utils.async').grep { search = search, args = args }
+    local grepprg = vim.bo.grepprg ~= '' and vim.bo.grepprg or vim.o.grepprg
+    grepprg = vim.split(grepprg, '%s+', { trimempty = true })
+    local args = vim.list_extend(vim.list_slice(grepprg, 2, #grepprg), opts.fargs)
+    RELOAD('utils.async').grep { args = args }
 end, { nargs = '+', complete = 'file' })
 
 --- @param opts Command.Opts
 nvim.command.set('LGrep', function(opts)
-    local search = opts.fargs[#opts.fargs]
-    opts.fargs[#opts.fargs] = nil
-
-    local args = opts.fargs
-    if #args > 0 then
-        local grepprg = vim.bo.grepprg ~= '' and vim.bo.grepprg or vim.o.grepprg
-        grepprg = vim.split(grepprg, '%s+', { trimempty = true })
-
-        vim.list_extend(args, vim.list_slice(grepprg, 2, #grepprg))
-    end
-
-    RELOAD('utils.async').grep { loc = true, search = search, args = args }
+    local grepprg = vim.bo.grepprg ~= '' and vim.bo.grepprg or vim.o.grepprg
+    grepprg = vim.split(grepprg, '%s+', { trimempty = true })
+    local args = vim.list_extend(vim.list_slice(grepprg, 2, #grepprg), opts.fargs)
+    RELOAD('utils.async').grep { loc = true, args = args }
 end, { nargs = '+', complete = 'file' })
 
 local function find_files(opts, win)

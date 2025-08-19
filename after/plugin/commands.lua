@@ -22,7 +22,7 @@ if not has_mini and not nvim.plugins['vim-fugitive'] then
 end
 
 local function stop_server(server, force)
-    vim.iter(vim.lsp.get_clients { name = server }):map(function(client)
+    vim.iter(vim.lsp.get_clients { name = server }):each(function(client)
         client:stop(force)
     end)
     return true
