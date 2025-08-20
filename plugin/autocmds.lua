@@ -429,11 +429,6 @@ vim.api.nvim_create_autocmd('LspAttach', {
                 end
             end
         end
-
-        local extra_lsps = {
-            'lua_ls',
-            'sumneko_lua',
-        }
     end,
 })
 
