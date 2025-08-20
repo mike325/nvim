@@ -360,6 +360,7 @@ function shell_exec() {
     if [[ $verbose == true ]]; then
         if [[ $NOLOG == false ]]; then
             cmd="$cmd | tee -a ${LOG}"
+            cmd="$cmd; test \${PIPESTATUS[0]} -eq 0"
         fi
         if ! sh -c "$cmd"; then
             return 1
@@ -398,7 +399,6 @@ function has_fetcher() {
 }
 
 function download_asset() {
-
     if [[ $# -lt 2 ]]; then
         error_msg "Not enough args"
         return 1
