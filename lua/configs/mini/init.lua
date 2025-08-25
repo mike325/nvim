@@ -23,10 +23,10 @@ local function load_simple_module(plugin, config)
 end
 
 local diffopts = {}
-vim.tbl_map(function(opt)
+vim.iter(vim.split(vim.o.diffopt, ',')):each(function(opt)
     local k, v = unpack(vim.split(opt, ':'))
     diffopts[k] = v or true
-end, vim.split(vim.o.diffopt, ','))
+end)
 
 local censor_extmark_opts = function(_, match, _)
     local mask = string.rep('*', vim.fn.strchars(match))
@@ -363,7 +363,7 @@ if mini.sessions then
         else
             local sessions = require('utils.files').get_files(sessions_dir)
             vim.ui.select(
-                vim.tbl_map(vim.fs.basename, sessions),
+                vim.iter(sessions):map(vim.fs.basename):totable(),
                 { prompt = 'Select session file: ' },
                 vim.schedule_wrap(function(choice)
                     if choice then
@@ -390,7 +390,7 @@ if mini.sessions then
         if session == '' then
             local sessions = require('utils.files').get_files(sessions_dir)
             vim.ui.select(
-                vim.tbl_map(vim.fs.basename, sessions),
+                vim.iter(sessions):map(vim.fs.basename):totable(),
                 { prompt = 'Select session file: ' },
                 vim.schedule_wrap(function(choice)
                     if choice then
@@ -419,7 +419,7 @@ if mini.sessions then
         if session == '' then
             local sessions = require('utils.files').get_files(sessions_dir)
             vim.ui.select(
-                vim.tbl_map(vim.fs.basename, sessions),
+                vim.iter(sessions):map(vim.fs.basename):totable(),
                 { prompt = 'Select session file: ' },
                 vim.schedule_wrap(function(choice)
                     if choice then

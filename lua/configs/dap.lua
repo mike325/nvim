@@ -58,9 +58,10 @@ local function pythonPath()
 end
 
 local cppdbg
-local vscode_extensions_dir = sys.home .. '/.vscode/extensions'
+local vscode_extensions_dir = vim.fs.joinpath(vim.fs.normalize(vim.uv.os_homedir()), '.vscode/extensions')
 if utils.is_dir(vscode_extensions_dir) then
-    for _, ext_dir in ipairs(vim.tbl_map(vim.fs.basename, utils.get_dirs(vscode_extensions_dir))) do
+    local is_windows = require('sys').name == 'windows'
+    for ext_dir in vim.iter(utils.get_dirs(vscode_extensions_dir)):map(vim.fs.basename) do
         if ext_dir:match 'cpptools' then
             local debugger = 'OpenDebugAD7'
             if is_windows then

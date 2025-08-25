@@ -114,11 +114,10 @@ local function get_grepprg(opts)
         search = args[#args]
         pathspec = vim.iter(vim.fn.argv()):filter(require('utils.files').is_file):totable()
     else
-        search = vim.fn.expand '<cword>'
+        search = args[#args]:match '^%-' and vim.fn.expand '<cword>' or args[#args]
     end
 
     vim.list_extend(cmd, args)
-    -- table.insert(cmd, search)
     if pathspec then
         vim.list_extend(cmd, pathspec)
     end

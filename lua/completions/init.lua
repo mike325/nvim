@@ -33,14 +33,19 @@ completions = vim.tbl_extend('force', completions, {
     session_files = function(arglead, cmdline, cursorpos)
         local utils = require 'completions.utils'
         local sessions = require('utils.files').get_files(require('sys').sessions)
-        return utils.general_completion(arglead, cmdline, cursorpos, vim.tbl_map(vim.fs.basename, sessions))
+        return utils.general_completion(arglead, cmdline, cursorpos, vim.iter(sessions):map(vim.fs.basename):totable())
     end,
     spells = function(arglead, cmdline, cursorpos)
         local utils = require 'completions.utils'
-        local spells = require('utils.files').get_files(require('sys').base .. '/spell')
-        spells = vim.tbl_map(function(spell)
-            return (vim.fs.basename(spell):gsub('%..*', ''))
-        end, spells)
+        local spells = vim.iter(vim.api.nvim_get_runtime_file('spell/*.spl', true))
+            :map(vim.fs.basename)
+            :fold({}, function(acc, fname)
+                fname = (fname:gsub('%..*', ''));
+                if not vim.list_contains(acc, fname) then
+                    table.insert(acc, fname)
+                end
+                return acc
+            end)
         return utils.general_completion(arglead, cmdline, cursorpos, spells)
     end,
     zoom_links = function(arglead, cmdline, cursorpos)

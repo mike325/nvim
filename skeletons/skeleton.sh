@@ -210,13 +210,14 @@ Usage:
     $NAME [OPTIONAL]
 
     Optional Flags
-        --nolog         Disable log writing
-        --nocolor       Disable color output
-        -v, --verbose   Enable debug messages
-        -q, --quiet     Suppress all output but the errors
-        -V, --version   Print script version and exits
-        -D, --dry-run   Enable dry run
-        -h, --help      Display this help message
+        --log               Enable log writing
+        --nolog             Disable log writing
+        --nocolor           Disable color output
+        -v, --verbose       Enable debug messages
+        -q, --quiet         Suppress most output
+        -V, --version       Print script version and exits
+        --dry, --dry-run    Enable dry run
+        -h, --help          Display this help message
 EOF
 }
 
@@ -474,7 +475,7 @@ while [[ $# -gt 0 ]]; do
         -V | --version)
             PRINT_VERSION=true
             ;;
-        -D | --dry-run)
+        --dry |--dry-run | --dry_run | --dryrun)
             DRY_RUN=true
             ;;
         -h | --help)

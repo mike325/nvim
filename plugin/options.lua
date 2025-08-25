@@ -25,7 +25,7 @@ for dirname, dir_setting in pairs(dirpaths) do
         mkdir(config_dir)
     end
     if not isempty(dir_setting) then
-        vim.opt[dir_setting] = config_dir
+        vim.o[dir_setting] = config_dir
     end
 end
 

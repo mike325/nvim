@@ -850,9 +850,7 @@ function M.encode_json(data)
     vim.validate {
         data = { data, 'table' },
     }
-    local json = vim.json.encode(data)
-    -- NOTE: Remove this once json:new works and expose the internals of cjson
-    return (json:gsub('\\/', '/'))
+    return vim.json.encode(data, { escape_slash = false })
 end
 
 --- Read json file

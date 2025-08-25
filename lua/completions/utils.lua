@@ -61,12 +61,14 @@ function M.general_completion(arglead, cmdline, _, options, smart)
     end
 
     local results = filter((arglead:gsub('%-', '')):lower(), options)
-    return vim.tbl_map(function(arg)
-        if dashes and arg:sub(1, #dashes) ~= dashes then
-            return dashes .. arg
-        end
-        return arg
-    end, results)
+    return vim.iter(results)
+        :map(function(arg)
+            if dashes and arg:sub(1, #dashes) ~= dashes then
+                return dashes .. arg
+            end
+            return arg
+        end)
+        :totable()
 end
 
 --- Return a completion function
@@ -152,10 +154,10 @@ function M.json_keys_completion(arglead, cmdline, cursorpos, filename, funcs)
     end
     local keys = vim.tbl_keys(json)
     if funcs.filter then
-        keys = vim.tbl_filter(funcs.filter, keys)
+        keys = vim.iter(keys):filter(funcs.filter):totable()
     end
     if funcs.map then
-        keys = vim.tbl_map(funcs.map, keys)
+        keys = vim.iter(keys):filter(funcs.map):totable()
     end
     return M.general_completion(arglead, cmdline, cursorpos, keys)
 end

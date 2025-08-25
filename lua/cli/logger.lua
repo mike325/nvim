@@ -76,9 +76,11 @@ end
 for _, level in ipairs { 'debug', 'info', 'warn', 'error' } do
     local log_level = level:upper()
     Logger[level:lower()] = function(self, ...)
-        local messages = vim.tbl_map(function(msg)
-            return type(msg) == type '' and msg or vim.inspect(msg)
-        end, { ... })
+        local messages = vim.iter({ ... })
+            :map(function(msg)
+                return type(msg) == type '' and msg or vim.inspect(msg)
+            end)
+            :totable()
         local msg = table.concat(messages, ' ')
         if self._stdout_level > 0 then
             if self._stdout_level <= vim.lsp.log_levels[log_level] then
