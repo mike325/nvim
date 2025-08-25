@@ -475,7 +475,7 @@ while [[ $# -gt 0 ]]; do
         -V | --version)
             PRINT_VERSION=true
             ;;
-        --dry |--dry-run | --dry_run | --dryrun)
+        --dry | --dry-run | --dry_run | --dryrun)
             DRY_RUN=true
             ;;
         -h | --help)

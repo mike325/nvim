@@ -40,7 +40,7 @@ completions = vim.tbl_extend('force', completions, {
         local spells = vim.iter(vim.api.nvim_get_runtime_file('spell/*.spl', true))
             :map(vim.fs.basename)
             :fold({}, function(acc, fname)
-                fname = (fname:gsub('%..*', ''));
+                fname = (fname:gsub('%..*', ''))
                 if not vim.list_contains(acc, fname) then
                     table.insert(acc, fname)
                 end
