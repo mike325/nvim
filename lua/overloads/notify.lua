@@ -77,7 +77,15 @@ if vim.g.has_ui then
                 WARNING = hl_group.warn,
             }
 
-            vim.api.nvim_echo({ { notification, level and msg_hl[level] or msg_hl.INFO } }, true, {})
+            local echo_opts = {}
+            if level then
+                if msg_hl[level] and msg_hl[level] == hl_group.error then
+                    echo_opts.err = true
+                elseif msg_hl[level] and msg_hl[level] == hl_group.debug then
+                    echo_opts.verbose = true
+                end
+            end
+            vim.api.nvim_echo({ { notification, level and msg_hl[level] or msg_hl.INFO } }, true, echo_opts)
         end
     end
 else

@@ -1,12 +1,7 @@
-local nvim = require 'nvim'
-local executable = require('utils.files').executable
-
 local cmp = vim.F.npcall(require, 'cmp')
 if not cmp then
     return false
 end
-
-local orgmode = vim.F.npcall(require, 'orgmode')
 
 local lspkind = vim.F.npcall(require, 'lspkind')
 local format
@@ -31,9 +26,8 @@ if lspkind then
 end
 
 local custom_comparators = {}
-local underscore = vim.F.npcall(require, 'cmp-under-comparator')
--- local clangd = vim.F.npcall(require, 'clangd_extensions.cmp_scores'),
 
+local underscore = vim.F.npcall(require, 'cmp-under-comparator')
 if underscore then
     custom_comparators.underscore = underscore.under
 end
@@ -44,6 +38,9 @@ for _, comparator in pairs(custom_comparators) do
 end
 
 local function has_treesitter()
+    local nvim = require 'nvim'
+    local executable = require('utils.files').executable
+
     if nvim.has 'win32' or nvim.has 'win64' then
         return executable 'gcc'
     end
@@ -60,11 +57,12 @@ if has_treesitter() then
     table.insert(sources, { name = 'treesitter' })
 end
 
+local nvim = require 'nvim'
 if nvim.plugins.LuaSnip then
     table.insert(sources, { name = 'luasnip', option = { use_show_condition = false } })
 end
 
-if orgmode then
+if vim.F.npcall(require, 'orgmode') then
     table.insert(sources, { name = 'orgmode' })
 end
 

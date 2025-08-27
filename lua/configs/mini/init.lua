@@ -911,7 +911,7 @@ if vim.g.minimal then
                                 statusline.qf_counter.component(),
                                 statusline.loc_counter.component(),
                                 statusline.arglist.component(),
-                                statusline.tasks.component(),
+                                -- statusline.tasks.component(),
                             },
                         },
                         '%<', -- Mark general truncate point

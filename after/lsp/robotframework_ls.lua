@@ -14,6 +14,8 @@ local exclude = {
     'lxsr_glp_ls1046a',
     'lxsr_glp_ppce6500',
     'vxworks7',
+    '.vscode_clangd_setup',
+    '.vscode',
 }
 
 exclude = vim.iter(exclude)

@@ -126,41 +126,6 @@ vim.keymap.set('n', '<leader><leader>d', function()
     RELOAD('utils.buffers').delete(vim.api.nvim_get_current_buf(), true)
 end, { desc = 'Wipe current buffer without changing the window layout' })
 
-local mapping_pairs = {
-    arglist = '',
-    buflist = 'b',
-    quickfix = 'c',
-    loclist = 'l',
-}
-
-for postfix_map, prefix_cmd in pairs(mapping_pairs) do
-    local prefix = postfix_map:sub(1, 1)
-    vim.keymap.set(
-        'n',
-        '[' .. prefix:upper(),
-        ':<C-U>' .. prefix_cmd .. 'first<CR>zvzz',
-        { noremap = true, silent = true, desc = 'Go to the first element of the ' .. postfix_map }
-    )
-    vim.keymap.set(
-        'n',
-        ']' .. prefix:upper(),
-        ':<C-U>' .. prefix_cmd .. 'last<CR>zvzz',
-        { noremap = true, silent = true, desc = 'Go to the last element of the ' .. postfix_map }
-    )
-    vim.keymap.set(
-        'n',
-        '[' .. prefix,
-        ':<C-U>exe "".(v:count ? v:count : "")."' .. prefix_cmd .. 'previous"<CR>zvzz',
-        { noremap = true, silent = true, desc = 'Go to the prev element of the ' .. postfix_map }
-    )
-    vim.keymap.set(
-        'n',
-        ']' .. prefix,
-        ':<C-U>exe "".(v:count ? v:count : "")."' .. prefix_cmd .. 'next"<CR>zvzz',
-        { noremap = true, silent = true, desc = 'Go to the next element of the ' .. postfix_map }
-    )
-end
-
 vim.keymap.set(
     'n',
     ']<Space>',
@@ -178,20 +143,6 @@ vim.keymap.set(
     '<C-L>',
     '<cmd>nohlsearch|diffupdate<CR>',
     { noremap = true, silent = true, desc = 'Clear search and update diff' }
-)
-
-vim.keymap.set(
-    'n',
-    '<leader>T',
-    '<cmd>windo diffthis<CR>',
-    { noremap = true, silent = true, desc = 'Diff the current windows' }
-)
-
-vim.keymap.set(
-    'n',
-    '<leader>O',
-    '<cmd>windo diffoff<CR>',
-    { noremap = true, silent = true, desc = 'Disable Diff view' }
 )
 
 vim.keymap.set('n', '=q', function()
@@ -389,3 +340,70 @@ vim.keymap.set('n', '<F5>', function()
         end
     end
 end, { noremap = true, silent = true, desc = 'Start a Debug session' })
+
+local function toggle_option(option, postfix, cb)
+    postfix = (not postfix or postfix == '') and option:sub(1, 1) or postfix
+    local map_type = {
+        Enable = '[',
+        Disable = ']',
+        Toggle = '=',
+    }
+
+    for action, keymap in pairs(map_type) do
+        local desc = action
+        action = action:lower()
+        local rhs
+        if not cb then
+            local cmd = action == 'enable' and option or (action == 'disable' and 'no' .. option or option .. '!')
+            rhs = string.format('<cmd>set %s %s?<CR>', cmd, option)
+        else
+            rhs = function()
+                cb(action)
+            end
+        end
+        vim.keymap.set(
+            'n',
+            string.format('%so%s', keymap, postfix),
+            rhs,
+            { noremap = true, silent = true, desc = string.format('%s %s', desc, option) }
+        )
+    end
+end
+
+local options = {
+    cursorline = '',
+    hlsearch = '',
+    ignorecase = '',
+    list = '',
+    number = '',
+    relativenumber = '',
+    spell = '',
+    -- colorcolumn = 't',
+    cursorcolumn = 'u',
+    virtualedit = '',
+    wrap = '',
+    modifiable = '',
+    scrollbind = 'S',
+    readonly = 'R',
+}
+
+vim.iter(options):each(toggle_option)
+toggle_option('diff', nil, function(action)
+    local diffcmds = {
+        enable = 'diffthis',
+        disable = 'diffoff',
+    }
+    local cmd = diffcmds[action] or (vim.wo.diff and diffcmds.disable or diffcmds.enable)
+    local win = vim.api.nvim_get_current_win()
+    vim.cmd.windo(cmd)
+    vim.api.nvim_tabpage_set_win(0, win)
+end)
+
+toggle_option('background', nil, function(action)
+    local colors = {
+        enable = 'dark',
+        disable = 'light',
+    }
+    local background = colors[action] or (vim.go.background == 'dark' and colors.disable or colors.enable)
+    vim.go.background = background
+end)

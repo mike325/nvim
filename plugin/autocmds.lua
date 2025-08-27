@@ -221,19 +221,17 @@ vim.api.nvim_create_autocmd('LspAttach', {
         local has_telescope = nvim.plugins['telescope.nvim'] ~= nil
         local methods = vim.lsp.protocol.Methods
         local method_mappings = {
-            -- [methods.textDocument_declaration] = {
-            --     func = function()
-            --         vim.lsp.buf.declaration()
-            --     end,
-            --     keymap = 'gd',
-            --     command = 'Declaration',
-            -- },
+            [methods.textDocument_declaration] = {
+                func = function()
+                    vim.lsp.buf.declaration()
+                end,
+                command = 'Declaration',
+            },
             [methods.textDocument_implementation] = {
                 func = function()
                     vim.lsp.buf.implementation()
                 end,
-                keymap = 'gi',
-                command = 'Implementation',
+                command = 'Implementation', -- default keymap gri
             },
             [methods.textDocument_references] = {
                 func = function()
@@ -243,8 +241,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
                         vim.lsp.buf.references()
                     end
                 end,
-                keymap = 'gr',
-                command = 'References',
+                command = 'References', -- default keymap grr
             },
             [methods.textDocument_hover] = {
                 func = function()
@@ -256,22 +253,20 @@ vim.api.nvim_create_autocmd('LspAttach', {
                 func = function()
                     vim.lsp.buf.rename()
                 end,
-                keymap = '<leader>r',
-                command = 'Rename',
+                command = 'Rename', -- default keymap grn
             },
             [methods.textDocument_codeAction] = {
                 func = function()
                     vim.lsp.buf.code_action()
                 end,
-                keymap = 'ga',
-                command = 'CodeAction',
+                command = 'CodeAction', -- default keymap gra
             },
             [methods.textDocument_signatureHelp] = {
                 func = function()
                     vim.lsp.buf.signature_help()
                 end,
-                keymap = 'gh',
-                command = 'Signature',
+                keymap = 'grh',
+                command = 'Signature', -- default keymap C-s collide with custom tmux-leader
             },
             [methods.textDocument_definition] = {
                 func = function()
@@ -302,6 +297,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
                         vim.lsp.buf.workspace_symbol()
                     end
                 end,
+                keymap = '<leader>S',
                 command = 'WorkSymbols',
             },
             [methods.textDocument_typeDefinition] = {
@@ -365,7 +361,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
         --     vim.bo[bufnr].omnifunc = has_mini and 'v:lua.MiniCompletion.completefunc_lsp' or 'v:lua.vim.lsp.omnifunc'
         -- end
 
-        if client.supports_method(methods.textDocument_foldingRange) then
+        if client:supports_method(methods.textDocument_foldingRange) then
             vim.wo.foldmethod = 'expr'
             vim.wo.foldexpr = 'v:lua.vim.lsp.foldexpr()'
         end
@@ -388,7 +384,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
             client.server_capabilities.hoverProvider = false
         end
 
-        if nvim.has { 0, 10 } and client.supports_method(methods.textDocument_inlayHint) then
+        if nvim.has { 0, 10 } and client:supports_method(methods.textDocument_inlayHint) then
             -- Initial inlay hint display.
             vim.defer_fn(function()
                 local mode = vim.api.nvim_get_mode().mode
@@ -420,7 +416,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
         end
 
         for method, map in pairs(method_mappings) do
-            if client.supports_method(method) then
+            if client:supports_method(method) then
                 if map.keymap then
                     vim.keymap.set('n', map.keymap, map.func, { silent = true, buffer = bufnr, noremap = true })
                 end
@@ -553,7 +549,8 @@ vim.api.nvim_create_autocmd({ 'TextYankPost' }, {
     group = vim.api.nvim_create_augroup('HighlightYank', { clear = true }),
     pattern = '*',
     callback = function()
-        vim.highlight.on_yank { higroup = 'IncSearch', timeout = 1000 }
+        local on_yank = vim.hl and vim.hl.on_yank or vim.highlight.on_yank
+        on_yank { higroup = 'IncSearch', timeout = 1000 }
     end,
 })
 

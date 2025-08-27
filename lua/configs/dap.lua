@@ -1,6 +1,3 @@
-local nvim = require 'nvim'
-local sys = require 'sys'
-
 -- TODO:
 -- - Define all mappings when session start and remove them on session close
 -- - Add option to attach to process and to remote debug
@@ -9,10 +6,6 @@ local dap = vim.F.npcall(require, 'dap')
 if not dap then
     return false
 end
-
-local utils = RELOAD 'utils.files'
-local completions = RELOAD 'completions'
-local is_windows = sys.name == 'windows'
 
 local default_remote_nvim_port = 8086
 dap.adapters.nlua = function(callback, config)
@@ -24,10 +17,10 @@ dap.configurations.lua = {
         type = 'nlua',
         request = 'attach',
         name = 'Attach to running Neovim instance',
-        -- program = function() require('osv').launch({ port = 8086 }) end,
     },
 }
 
+local utils = RELOAD 'utils.files'
 local lldb = utils.exepath 'lldb-vscode'
 if not lldb then
     for version = 8, 30 do
@@ -86,7 +79,7 @@ end
 if lldb then
     dap.adapters.lldb = {
         type = 'executable',
-        command = is_windows and lldb:gsub('/', '\\') or lldb,
+        command = require('sys').name == 'windows' and lldb:gsub('/', '\\') or lldb,
         name = 'lldb',
     }
 end
@@ -252,6 +245,7 @@ dap.listeners.after.event_initialized['DapMappings'] = function()
         end
     end, { noremap = true, silent = true, desc = 'Set conditional breakpoint' })
     if vim.g.remote_nvim then
+        local nvim = require 'nvim'
         nvim.command.set('RunThis', function()
             require('osv').run_this()
         end)
@@ -288,11 +282,13 @@ dap.listeners.before.event_terminated['DapMappings'] = function()
     vim.keymap.del('n', '=B')
 
     if vim.g.remote_nvim then
+        local nvim = require 'nvim'
         nvim.command.del 'RunThis'
         -- vim.g.remote_nvim = nil
     end
 end
 
+local nvim = require 'nvim'
 nvim.command.set('Dap', function(opts)
     local subcmd = opts.args:gsub('^%-+', '')
 
@@ -314,6 +310,6 @@ nvim.command.set('Dap', function(opts)
     if cmd_func[subcmd] then
         cmd_func[subcmd]()
     end
-end, { desc = 'Manage DAP sessions', nargs = 1, complete = completions.dap_commands })
+end, { desc = 'Manage DAP sessions', nargs = 1, complete = require('completions').dap_commands })
 
 return true
