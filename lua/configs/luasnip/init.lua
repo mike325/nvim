@@ -23,10 +23,10 @@ ls.config.setup {
 -- TODO: Add file watcher to auto reload snippets on changes
 local function load_snippets(ft)
     local runtimepaths = {
-        ['lua/snippets/'] = {
+        ['lua/snippets'] = {
             default_priority = 1000,
         },
-        ['luasnippets/'] = {
+        ['luasnippets'] = {
             default_priority = 2000,
         },
     }
@@ -36,7 +36,7 @@ local function load_snippets(ft)
     ft = ft or vim.bo.filetype
 
     for runtimepath, opts in pairs(runtimepaths) do
-        for _, snips in ipairs(vim.api.nvim_get_runtime_file(runtimepath .. 'all.lua', true)) do
+        for _, snips in ipairs(vim.api.nvim_get_runtime_file(vim.fs.joinpath(runtimepath, 'all.lua'), true)) do
             ok, snip_msg = pcall(dofile, snips)
             if not ok then
                 goto fail
@@ -45,7 +45,7 @@ local function load_snippets(ft)
             ls.add_snippets('all', snip_msg, opts)
         end
 
-        for _, snips in ipairs(vim.api.nvim_get_runtime_file(runtimepath .. ft .. '.lua', true)) do
+        for _, snips in ipairs(vim.api.nvim_get_runtime_file(vim.fs.joinpath(runtimepath, ft .. '.lua'), true)) do
             ok, snip_msg = pcall(dofile, snips)
             if not ok then
                 goto fail

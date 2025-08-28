@@ -1,5 +1,4 @@
 -- TODO:
--- - Define all mappings when session start and remove them on session close
 -- - Add option to attach to process and to remote debug
 
 local dap = vim.F.npcall(require, 'dap')
@@ -21,10 +20,10 @@ dap.configurations.lua = {
 }
 
 local utils = RELOAD 'utils.files'
-local lldb = utils.exepath 'lldb-vscode'
+local lldb = utils.exepath 'lldb-dap'
 if not lldb then
     for version = 8, 30 do
-        lldb = utils.exepath('lldb-vscode-' .. tostring(version))
+        lldb = utils.exepath('lldb-dap-' .. tostring(version))
         if lldb then
             break
         end
@@ -40,18 +39,25 @@ local function pythonPath()
     local cwd = utils.getcwd()
 
     if vim.env.VIRTUAL_ENV then
-        return vim.env.VIRTUAL_ENV .. '/bin/python'
-    elseif utils.executable(cwd .. '/venv/bin/python') then
-        return cwd .. '/venv/bin/python'
-    elseif utils.executable(cwd .. '/.venv/bin/python') then
-        return cwd .. '/.venv/bin/python'
+        return vim.fs.joinpath(vim.env.VIRTUAL_ENV, 'bin', 'python')
+    else
+        local paths = {
+            'venv',
+            '.venv',
+        }
+        for path in vim.iter(paths) do
+            local exe = vim.fs.joinpath(cwd, path, 'bin', 'python')
+            if utils.executable(exe) then
+                return exe
+            end
+        end
     end
 
     return utils.exepath 'python3' or utils.exepath 'python'
 end
 
 local cppdbg
-local vscode_extensions_dir = vim.fs.joinpath(vim.fs.normalize(vim.uv.os_homedir()), '.vscode/extensions')
+local vscode_extensions_dir = vim.fs.joinpath(vim.fs.normalize(vim.uv.os_homedir()), '.vscode', 'extensions')
 if utils.is_dir(vscode_extensions_dir) then
     local is_windows = require('sys').name == 'windows'
     for ext_dir in vim.iter(utils.get_dirs(vscode_extensions_dir)):map(vim.fs.basename) do
@@ -61,7 +67,7 @@ if utils.is_dir(vscode_extensions_dir) then
                 debugger = debugger .. '.exe'
             end
 
-            cppdbg = ('%s/%s/debugAdapters/bin/%s'):format(vscode_extensions_dir, ext_dir, debugger)
+            cppdbg = vim.fs.joinpath(vscode_extensions_dir, ext_dir, 'debugAdapters', 'bin', debugger)
             if utils.is_file(cppdbg) then
                 if not is_windows and not utils.is_executable(cppdbg) then
                     utils.chmod_exec(cppdbg)

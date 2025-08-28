@@ -8,4 +8,4 @@ if #ls.get_snippets 'sh' == 0 then
 end
 
 ls.filetype_extend('bash', { 'sh' })
-return
+return {}
