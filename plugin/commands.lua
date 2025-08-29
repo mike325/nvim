@@ -267,35 +267,6 @@ nvim.command.set('DumpOutput', function(_)
     end
 end, { nargs = '*', desc = 'Dump the output of the last commands' })
 
-if executable 'scp' then
-    --- @param opts Command.Opts
-    nvim.command.set('SendFile', function(opts)
-        RELOAD('mappings').remote_file(opts.args, true)
-    end, {
-        nargs = '*',
-        complete = completions.ssh_hosts_completion,
-        desc = 'Send current file to a remote location',
-    })
-
-    --- @param opts Command.Opts
-    nvim.command.set('GetFile', function(opts)
-        RELOAD('mappings').remote_file(opts.args, false)
-    end, {
-        nargs = '*',
-        complete = completions.ssh_hosts_completion,
-        desc = 'Get current file from a remote location',
-    })
-
-    --- @param opts Command.Opts
-    nvim.command.set('SCPEdit', function(opts)
-        local args = {
-            host = opts.fargs[1],
-            filename = opts.fargs[2],
-        }
-        RELOAD('utils.functions').scp_edit(args)
-    end, { nargs = '*', desc = 'Edit remote file using scp', complete = completions.ssh_hosts_completion })
-end
-
 --- @param opts Command.Opts
 nvim.command.set('Scratch', function(opts)
     RELOAD('mappings').scratch_buffer(opts)
@@ -539,8 +510,8 @@ end, { nargs = '?', bang = true, desc = 'Kill the selected job' })
 
 --- @param opts Command.Opts
 nvim.command.set('Progress', function(opts)
-    RELOAD('mappings').show_job_progress(opts)
-end, { nargs = 1, desc = 'Show progress of the selected job', complete = completions.background_jobs })
+    RELOAD('mappings').show_task_progress(opts)
+end, { nargs = '?', desc = 'Show progress of the selected job', complete = completions.background_tasks })
 
 --- @param opts Command.Opts
 nvim.command.set('CLevel', function(opts)

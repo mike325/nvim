@@ -92,7 +92,7 @@ completions = vim.tbl_extend('force', completions, {
         local tasks = {}
         for hash, task in pairs(ASYNC.tasks) do
             local cmd = vim.json.decode(vim.base64.decode(hash)).cmd
-            tasks[#tasks + 1] = ('%s: %s'):format(task.pid, cmd[1])
+            tasks[#tasks + 1] = ('%s:%s'):format(task.pid, cmd[1])
         end
         return utils.general_completion(arglead, cmdline, cursorpos, tasks)
     end,

@@ -1,4 +1,3 @@
-local sys = require 'sys'
 local nvim = require 'nvim'
 
 local M = {}
@@ -183,137 +182,6 @@ function M.find(opts)
             return candidates
         end
     end
-end
-
--- TODO: Improve this with globs and pattern matching
-function M.convert_path(path, send, host)
-    local utils = RELOAD 'utils.files'
-
-    path = vim.fs.normalize(path)
-
-    local remote_path -- = './'
-    local hosts, paths, projects
-
-    local path_json = vim.fs.normalize '~/.config/remotes/paths.json'
-    if utils.is_file(path_json) then
-        local configs = utils.read_json(path_json) or {}
-        hosts = configs.hosts or {}
-        paths = hosts[host] or configs.paths or {}
-        projects = configs.projects or {}
-    else
-        paths = {}
-        projects = {}
-    end
-
-    local project = path:match 'projects/([%w%d%.-_]+)'
-    if not project then
-        for short, full in pairs(projects) do
-            if short ~= 'default' and path:match('/(' .. short .. ')[%w%d%.-_]*') then
-                project = full
-                break
-            end
-        end
-        if not project then
-            project = nvim.env.PROJECT or projects.default or 'mike'
-        end
-    end
-
-    for loc, remote in pairs(paths) do
-        if loc:match '%%PROJECT' then
-            loc = loc:gsub('%%PROJECT', project)
-        end
-        loc = vim.fs.normalize(loc)
-        if path:match('^' .. loc) then
-            local tail = path:gsub('^' .. loc, '')
-            if remote:match '%%PROJECT' then
-                remote = remote:gsub('%%PROJECT', project)
-            end
-            remote_path = remote .. '/' .. tail
-            break
-        end
-    end
-
-    if not remote_path then
-        remote_path = vim.fs.dirname(path):gsub(sys.home:gsub('\\', '/'), '.') .. '/'
-        if not send then
-            remote_path = remote_path .. vim.fs.basename(path)
-        end
-    end
-
-    return remote_path
-end
-
-function M.remote_cmd(host, send)
-    local utils = RELOAD 'utils.files'
-
-    local filename = vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf())
-    local forward_slash = sys.name == 'windows' and not vim.go.shellslash
-    if forward_slash then
-        filename = filename:gsub('\\', '/')
-    end
-    local virtual_filename
-
-    if filename:match '^%w+://' then
-        local prefix = filename:match '^%w+://'
-        filename = filename:gsub('^%w+://', '')
-        if prefix == 'fugitive://' then
-            filename = filename:gsub('%.git//?[%w%d]+//?', '')
-        end
-        virtual_filename = vim.fn.tempname()
-        if forward_slash then
-            virtual_filename = virtual_filename:gsub('\\', '/')
-        end
-    end
-
-    vim.validate {
-        filename = {
-            filename,
-            function(f)
-                return utils.is_file(f) or virtual_filename
-            end,
-            'a valid file',
-        },
-    }
-
-    if virtual_filename and send then
-        utils.writefile(virtual_filename, nvim.buf.get_lines(0, 0, -1, true))
-        -- else
-        --     filename = realpath(vim.fs.normalize(filename))
-        --     if forward_slash then
-        --         filename = filename:gsub('\\', '/')
-        --     end
-    end
-
-    local remote_path = ('%s:%s'):format(host, M.convert_path(filename, send, host))
-    local rcmd = [[scp -r "%s" "%s"]]
-    if send then
-        rcmd = rcmd:format(virtual_filename or filename, remote_path)
-    else
-        rcmd = rcmd:format(remote_path, virtual_filename or filename)
-    end
-    return rcmd
-end
-
-function M.remote_file(host, send)
-    host = RELOAD('utils.network').get_ssh_host(host)
-    if not host then
-        return
-    end
-
-    local cmd = M.remote_cmd(host, send)
-    local sync = RELOAD('jobs'):new {
-        cmd = cmd,
-        opts = {
-            pty = true,
-        },
-        callbacks_on_success = function(_)
-            vim.cmd.checktime()
-        end,
-        callbacks_on_failure = function(job)
-            vim.notify(table.concat(job:output(), '\n'), vim.log.levels.ERROR, { title = 'SyncFile' })
-        end,
-    }
-    sync:start()
 end
 
 function M.scratch_buffer(opts)
@@ -774,11 +642,43 @@ function M.show_background_tasks()
     nvim.buf.set_lines(buf, 0, -1, false, lines)
 end
 
-function M.show_job_progress(opts)
-    local id = tostring(opts.fargs[1]:match '^%d+')
-    if STORAGE.jobs[id] then
-        local job = STORAGE.jobs[id]
-        job:progress()
+function M.show_task_progress(opts)
+    if next(ASYNC.tasks) == nil then
+        return
+    end
+
+    local function show_task(pid)
+        pid = tonumber(pid)
+        local hash, _ = vim.iter(ASYNC.tasks):find(function(_, task)
+            return task.pid == pid
+        end)
+        if hash then
+            require('utils.async').queue_progress_task(hash)
+        else
+            vim.notify('Cannot find hash for PID: ' .. vim.inspect(pid), vim.log.levels.WARN)
+        end
+    end
+
+    if opts.args == '' then
+        local lines = {}
+        for hash, task in pairs(ASYNC.tasks) do
+            local cmd = vim.json.decode(vim.base64.decode(hash)).cmd
+            lines[#lines + 1] = ('%s: %s'):format(task.pid, table.concat(cmd, ' '))
+        end
+
+        vim.ui.select(
+            lines,
+            { prompt = 'Select Task: ' },
+            vim.schedule_wrap(function(choice)
+                if choice then
+                    local pid = vim.split(choice, ':')[1]
+                    show_task(pid)
+                end
+            end)
+        )
+    else
+        local pid = vim.split(opts.args, ':')[1]
+        show_task(pid)
     end
 end
 

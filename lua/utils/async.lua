@@ -5,7 +5,7 @@ local M = {}
 ---@param cmd string[]
 ---@param cwd string?
 function M.push_output(out, cmd, cwd)
-    -- NOTE: don't push output of self cancel jobs
+    -- NOTE: don't push output of self cancel tasks
     if out.signal ~= 7 and out.signal ~= 9 then
         ASYNC.output:push {
             cmd = cmd,
@@ -61,8 +61,8 @@ function M.queue_progress_task(hash)
         return
     end
 
-    if not current.hash or current.hash ~= (task or {}).hash then
-        require('utils.windows').progress(current and current.output or {})
+    if not current.hash or not vim.t.progress_win or current.hash ~= (task or {}).hash then
+        require('utils.windows').progress((task or current or {}).output or {})
     end
 
     table.insert(ASYNC.progress, 1, task or {
