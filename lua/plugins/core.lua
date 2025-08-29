@@ -39,6 +39,7 @@ return {
         'catppuccin/nvim',
         name = 'catppuccin',
         lazy = false,
+        tag = 'v1.11.0',
         cond = function()
             return not vim.g.vscode
         end,
