@@ -526,7 +526,8 @@ end
 
 function M.toggle_progress_win()
     if not vim.t.progress_win or not vim.api.nvim_win_is_valid(vim.t.progress_win) then
-        require('utils.windows').progress {}
+        local current = require('utils.async').get_progress_task()
+        require('utils.windows').progress(current and current.output or {})
     else
         vim.api.nvim_win_close(vim.t.progress_win, true)
     end

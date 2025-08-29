@@ -397,6 +397,7 @@ toggle_option('diff', nil, function(action)
     local win = vim.api.nvim_get_current_win()
     vim.cmd.windo(cmd)
     vim.api.nvim_tabpage_set_win(0, win)
+    vim.print(' ' .. cmd)
 end)
 
 toggle_option('background', nil, function(action)
@@ -406,4 +407,5 @@ toggle_option('background', nil, function(action)
     }
     local background = colors[action] or (vim.go.background == 'dark' and colors.disable or colors.enable)
     vim.go.background = background
+    vim.print(' ' .. background)
 end)

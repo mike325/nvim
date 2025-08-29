@@ -3,18 +3,12 @@
 --     use_rocks { 'luacheck', 'jsregexp', 'lua-yaml' }
 -- end
 return {
-    { 'folke/lazy.nvim', version = '*' },
     {
-        'catppuccin/nvim',
-        name = 'catppuccin',
-        lazy = false,
-        cond = function()
-            return not vim.g.vscode
-        end,
+        'folke/lazy.nvim',
+        version = '*',
         opts = {
-            flavour = 'mocha', -- latte, frappe, macchiato, mocha
             ui = { border = 'rounded' },
-            -- change_detection = { notify = false },
+            change_detection = { notify = false },
             -- dev = { path = vim.g.projects_dir },
             install = {
                 missing = false, -- Do not automatically install on startup.
@@ -39,29 +33,20 @@ return {
                     },
                 },
             },
-            integrations = {
-                cmp = true,
-                gitsigns = true,
-                nvimtree = false,
-                telescope = true,
-                notify = true,
-                mini = true,
-                hop = true,
-                dap = {
-                    enabled = true,
-                    enable_ui = true,
-                },
-                native_lsp = {
-                    enabled = true,
-                    underlines = {
-                        errors = { 'undercurl' },
-                    },
-                },
-                treesitter = true,
-                treesitter_context = true,
-                -- lsp_trouble = true,
-                vimwiki = true,
-            },
+        },
+    },
+    {
+        'catppuccin/nvim',
+        name = 'catppuccin',
+        lazy = false,
+        cond = function()
+            return not vim.g.vscode
+        end,
+        opts = {
+            flavour = 'mocha', -- latte, frappe, macchiato, mocha
+            compile_path = vim.fs.joinpath(vim.fn.stdpath 'cache', 'catppuccin'),
+            default_integrations = true,
+            auto_integrations = true,
         },
     },
     {

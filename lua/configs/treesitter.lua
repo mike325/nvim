@@ -77,6 +77,7 @@ treesitter.setup {
     },
     highlight = {
         enable = true,
+        additional_vim_regex_highlighting = false,
         disable = function(lang, buf)
             local disabled_langs = {
                 org = true,

@@ -529,9 +529,8 @@ end, {
     complete = completions.diagnostics_completion,
 })
 
-nvim.command.set('KillJob', function(_)
-    -- local pid = opts.args ~= '' and opts.args or nil
-    RELOAD('mappings.commands').kill_task()
+nvim.command.set('KillJob', function(opts)
+    RELOAD('mappings.commands').kill_task(nil, nil, opts.bang)
 end, { nargs = '?', bang = true, desc = 'Kill the selected job' })
 
 --- @param opts Command.Opts

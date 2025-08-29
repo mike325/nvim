@@ -271,6 +271,10 @@ local function setup_mini(download)
         end)
 
         MiniDeps.later(function()
+            pcall(vim.cmd.packadd, { bang = false, args = { 'vim-fugitive' } })
+        end)
+
+        MiniDeps.later(function()
             local host_plugins = require 'plugins.host'
             if host_plugins then
                 local plugins = vim.iter(host_plugins):fold({}, function(acc, plugin)
@@ -303,9 +307,8 @@ local function setup_lazy(download)
 
     if vim.g.lazy_setup then
         require('lazy').setup('plugins', {
-            flavour = 'mocha', -- latte, frappe, macchiato, mocha
             ui = { border = 'rounded' },
-            -- change_detection = { notify = false },
+            change_detection = { notify = false },
             -- dev = { path = vim.g.projects_dir },
             install = {
                 missing = false, -- Do not automatically install on startup.
@@ -329,29 +332,6 @@ local function setup_lazy(download)
                         'zipPlugin',
                     },
                 },
-            },
-            integrations = {
-                cmp = true,
-                gitsigns = true,
-                nvimtree = false,
-                telescope = true,
-                notify = true,
-                mini = true,
-                hop = true,
-                dap = {
-                    enabled = true,
-                    enable_ui = true,
-                },
-                native_lsp = {
-                    enabled = true,
-                    underlines = {
-                        errors = { 'undercurl' },
-                    },
-                },
-                treesitter = true,
-                treesitter_context = true,
-                -- lsp_trouble = true,
-                vimwiki = true,
             },
         })
     end

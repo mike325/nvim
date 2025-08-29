@@ -6,7 +6,7 @@ local M = {}
 ---@param cwd string?
 function M.push_output(out, cmd, cwd)
     -- NOTE: don't push output of self cancel jobs
-    if out.signal ~= 7 then
+    if out.signal ~= 7 and out.signal ~= 9 then
         ASYNC.output:push {
             cmd = cmd,
             cwd = cwd or vim.uv.cwd(),
@@ -64,7 +64,11 @@ function M.queue_progress_task(hash)
     if not current.hash or current.hash ~= (task or {}).hash then
         require('utils.windows').progress {}
     end
-    table.insert(ASYNC.progress, 1, task or { hash = hash, task = ASYNC.tasks[hash] })
+    table.insert(ASYNC.progress, 1, task or {
+        hash = hash,
+        task = ASYNC.tasks[hash],
+        output = {},
+    })
 end
 
 local function get_grepprg(opts)

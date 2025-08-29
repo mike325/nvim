@@ -742,6 +742,14 @@ if not nvim.plugins['hop.nvim'] then
         },
     })
 
+    vim.api.nvim_set_hl(0, 'MiniJump2dSpot', {
+        reverse = true,
+        sp = 'Red',
+        undercurl = true,
+        bold = true,
+        italic = true,
+    })
+
     vim.keymap.set('n', '\\', function()
         local ignore_case_single_char = {
             spotter = function()
@@ -758,11 +766,12 @@ if not nvim.plugins['hop.nvim'] then
                 )
                 local char = vim.fn.getcharstr()
                 if char then
+                    local jump2d = mini.jump2d
+                    local spotter = jump2d.gen_spotter and jump2d.gen_spotter.pattern or jump2d.gen_pattern_spotter
                     if char:match '^[a-zA-Z]$' then
-                        ignore_case_single_char.spotter =
-                            mini.jump2d.gen_pattern_spotter(string.format('[%s%s]', char:lower(), char:upper()))
+                        ignore_case_single_char.spotter = spotter(string.format('[%s%s]', char:lower(), char:upper()))
                     else
-                        ignore_case_single_char.spotter = mini.jump2d.gen_pattern_spotter(vim.pesc(char))
+                        ignore_case_single_char.spotter = spotter(vim.pesc(char))
                     end
                 end
             end,

@@ -84,6 +84,7 @@ local function process_data(err, data, hash, state, output, text, cb)
                 return not l:match '^%s*$'
             end)
             :totable()
+        current_task.output = lines
         require('utils.windows').push_progress_data(lines)
     end
 end
@@ -128,7 +129,7 @@ local function process_exit(out, state_data, cmd, cwd, opts)
                 end
             end
         end
-    elseif out.signal ~= 7 then
+    elseif out.signal ~= 7 and out.signal ~= 9 then
         local lines = vim.iter(vim.split(table.concat(state_data.output, ''), '\n'))
             :filter(function(l)
                 return not l:match '^%s*$'

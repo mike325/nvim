@@ -475,7 +475,7 @@ vim.api.nvim_create_autocmd('VimEnter', {
         if not vim.g.bare and not vim.g.minimal then
             pcall(vim.cmd.colorscheme, 'catppuccin')
         else
-            vim.cmd.colorscheme 'desert'
+            vim.cmd.colorscheme 'default'
         end
     end,
 })

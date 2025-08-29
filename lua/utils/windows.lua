@@ -1,5 +1,3 @@
-local nvim = require 'nvim'
-
 local M = {}
 
 local function autowipe(win, buffer)
@@ -156,7 +154,7 @@ function M.progress(data, buffer)
             autowipe(vim.t.progress_win, buffer)
         end
     else
-        nvim.win.set_buf(vim.t.progress_win, buffer)
+        vim.api.nvim_win_set_buf(vim.t.progress_win, buffer)
     end
 
     local data_lines = vim.iter(data or {})
@@ -164,8 +162,8 @@ function M.progress(data, buffer)
             return (line:gsub('\n', ''))
         end)
         :totable()
-    nvim.buf.set_lines(buffer, scratch and 0 or -1, -1, false, data_lines)
-    nvim.win.call(vim.t.progress_win, function()
+    vim.api.nvim_buf_set_lines(buffer, scratch and 0 or -1, -1, false, data_lines)
+    vim.api.nvim_win_call(vim.t.progress_win, function()
         vim.cmd.normal { bang = true, args = { 'G' } }
     end)
 
@@ -187,8 +185,8 @@ function M.push_progress_data(data)
                     return (line:gsub('\n', ''))
                 end)
                 :totable()
-            nvim.buf.set_lines(buf, -1, -1, false, lines)
-            nvim.win.call(vim.t.progress_win, function()
+            vim.api.nvim_buf_set_lines(buf, -1, -1, false, lines)
+            vim.api.nvim_win_call(vim.t.progress_win, function()
                 vim.cmd.normal { bang = true, args = { 'G' } }
             end)
         end

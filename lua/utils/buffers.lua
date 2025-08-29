@@ -568,9 +568,16 @@ function M.open_changes(opts)
                                     else
                                         content = get_content(filename)
                                     end
-                                    local revision_content = require('utils.git').get_filecontent(filename, 'HEAD')
-                                    local diffs = vim.diff(content, table.concat(revision_content, '\n'), diff_opts)
-                                    item.lnum = diffs[1] and diffs[1][1] or 1
+
+                                    local file_status = (status.stage[filename] or status.workspace[filename]).status
+                                    if file_status == 'added' then
+                                        item.lnum = 1
+                                        item.text = 'Added file'
+                                    else
+                                        local revision_content = require('utils.git').get_filecontent(filename, 'HEAD')
+                                        local diffs = vim.diff(content, table.concat(revision_content, '\n'), diff_opts)
+                                        item.lnum = diffs[1] and diffs[1][1] or 1
+                                    end
                                 else -- untracked
                                     item.text = 'Untracked file'
                                 end
