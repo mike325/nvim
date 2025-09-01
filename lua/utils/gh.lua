@@ -43,7 +43,7 @@ local function exec_ghcmd(ghcmd, args, callbacks)
         cmd,
         { text = true },
         vim.schedule_wrap(function(job)
-            require('utils.async').push_output(job, cmd)
+            require('async').push_output(job, cmd)
             if job.code == 0 and callbacks then
                 local output = vim.split(job.stdout, '\n', { trimempty = true })
                 callbacks(output)

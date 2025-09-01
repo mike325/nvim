@@ -109,7 +109,7 @@ function M.find(opts)
             finder,
             { text = true },
             vim.schedule_wrap(function(job)
-                require('utils.async').push_output(job, finder)
+                require('async').push_output(job, finder)
                 if job.code == 0 and opts.cb then
                     local output = vim.split(job.stdout, '\n', { trimempty = true })
                     opts.cb(output)
@@ -394,7 +394,7 @@ end
 
 function M.toggle_progress_win()
     if not vim.t.progress_win or not vim.api.nvim_win_is_valid(vim.t.progress_win) then
-        local current = require('utils.async').get_progress_task()
+        local current = require('async').get_progress_task()
         require('utils.windows').progress(current and current.output or {})
     else
         vim.api.nvim_win_close(vim.t.progress_win, true)

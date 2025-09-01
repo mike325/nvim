@@ -216,7 +216,7 @@ function M.setup()
                 cmd,
                 { text = true },
                 vim.schedule_wrap(function(job)
-                    require('utils.async').push_output(job, cmd)
+                    require('async').push_output(job, cmd)
                     -- NOTE: output is an array of stdout lines, we must join the array in a str
                     --       split it into a single array
                     if job.code == 0 then

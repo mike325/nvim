@@ -47,6 +47,78 @@ local M = {}
 ---@field stderr string[]
 ---@field output string[]
 
+--- Get string repr of the given cmd
+---@param cmd string|string[]
+---@param cwd string?
+---@return string
+function M.get_hash(cmd, cwd)
+    cwd = cwd or vim.fs.normalize(vim.uv.cwd())
+    local hash = vim.base64.encode(vim.json.encode { cmd = cmd, cwd = cwd })
+    return hash
+end
+
+---Push output to the stack
+---@param out vim.SystemCompleted
+---@param cmd string[]
+---@param cwd string?
+function M.push_output(out, cmd, cwd)
+    -- NOTE: don't push output of self cancel tasks
+    if out.signal ~= 7 and out.signal ~= 9 then
+        ASYNC.output:push {
+            cmd = cmd,
+            cwd = cwd or vim.uv.cwd(),
+            code = out.code,
+            signal = out.signal,
+            stdout = out.stdout,
+            stderr = out.stderr,
+        }
+    end
+end
+
+---Get active progress task
+function M.get_progress_task()
+    return ASYNC.progress[1]
+end
+
+---Get active progress task
+---@param hash string
+function M.remove_progress_task(hash)
+    local idx, _ = vim.iter(ASYNC.progress):enumerate():find(function(_, task)
+        return hash == task.hash
+    end)
+
+    local task
+    if idx then
+        task = table.remove(ASYNC.progress, idx)
+    end
+
+    if #ASYNC.progress == 0 and vim.t.progress_win then
+        vim.api.nvim_win_close(vim.t.progress_win, false)
+    end
+
+    return task
+end
+
+---Get active progress task
+---@param hash string
+function M.queue_progress_task(hash)
+    local current = M.get_progress_task() or {}
+    local task = M.remove_progress_task(hash)
+    if not ASYNC.tasks[hash] then
+        return
+    end
+
+    if not current.hash or not vim.t.progress_win or current.hash ~= (task or {}).hash then
+        require('utils.windows').progress((task or current or {}).output or {})
+    end
+
+    table.insert(ASYNC.progress, 1, task or {
+        hash = hash,
+        task = ASYNC.tasks[hash],
+        output = {},
+    })
+end
+
 ---Store data and execute callback
 ---@param err string
 ---@param data string
@@ -77,7 +149,7 @@ local function process_data(err, data, hash, state, output, text, cb)
         cb(err, data)
     end
 
-    local current_task = require('utils.async').get_progress_task() or {}
+    local current_task = M.get_progress_task() or {}
     if hash == current_task.hash then
         local lines = vim.iter(vim.split(table.concat(state, ''), '\n'))
             :filter(function(l)
@@ -99,10 +171,10 @@ local function process_exit(out, state_data, cmd, cwd, opts)
     out.stdout = out.stdout or table.concat(state_data.stdout, '')
     out.stderr = out.stderr or table.concat(state_data.stderr, '')
 
-    require('utils.async').push_output(out, cmd, cwd)
-    local hash = require('utils.async').get_hash(cmd, cwd)
+    M.push_output(out, cmd, cwd)
+    local hash = M.get_hash(cmd, cwd)
     ASYNC.tasks[hash] = nil
-    require('utils.async').remove_progress_task(hash)
+    M.remove_progress_task(hash)
 
     local cmd_name = vim.fs.basename(cmd[1])
     local ns_name = string.format('async.%s', cmd_name)
@@ -123,7 +195,7 @@ local function process_exit(out, state_data, cmd, cwd, opts)
 
             local qf = qf_utils.get_list({ context = 1 }, opts.win)
             if qf.context and type(qf.context) == type {} then
-                local qf_hash = require('utils.async').get_hash(qf.context.cmd, qf.context.cwd)
+                local qf_hash = M.get_hash(qf.context.cmd, qf.context.cwd)
                 if qf_hash == hash then
                     qf_utils.clear(opts.win)
                 end
@@ -231,7 +303,7 @@ function M.report(cmd, opts)
         output = {},
     }
 
-    local hash = require('utils.async').get_hash(cmd, obj_opts.cwd)
+    local hash = M.get_hash(cmd, obj_opts.cwd)
 
     obj_opts.stdout = vim.schedule_wrap(function(err, data)
         process_data(err, data, hash, state_data.stdout, state_data.output, user_opts.text, origin_stdout)
@@ -261,7 +333,7 @@ function M.report(cmd, opts)
 
     ASYNC.tasks[hash] = obj
     if opts.progress then
-        require('utils.async').queue_progress_task(hash)
+        M.queue_progress_task(hash)
     end
     return obj
 end

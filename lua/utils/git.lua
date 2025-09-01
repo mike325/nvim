@@ -224,7 +224,7 @@ local function exec_gitcmd(gitcmd, args, callbacks)
         cmd,
         { text = true },
         vim.schedule_wrap(function(job)
-            require('utils.async').push_output(job, cmd)
+            require('async').push_output(job, cmd)
             if job.code == 0 and callbacks then
                 local output = vim.split(job.stdout, '\n', { trimempty = true })
                 callbacks(output)
@@ -451,7 +451,7 @@ function M.get_git_info(path, callback)
         cmd,
         { text = true, cwd = path },
         vim.schedule_wrap(function(job)
-            require('utils.async').push_output(job, cmd, path)
+            require('async').push_output(job, cmd, path)
             if job.code == 0 and callback then
                 local output = vim.split(job.stdout, '\n', { trimempty = true })
                 callback(parse_output(output))
@@ -502,7 +502,7 @@ function M.get_git_dir(path, callback)
         cmd,
         { text = true, cwd = path },
         vim.schedule_wrap(function(job)
-            require('utils.async').push_output(job, cmd, path)
+            require('async').push_output(job, cmd, path)
             if job.code == 0 and callback then
                 local output = vim.split(job.stdout, '\n', { trimempty = true })
                 callback(parse_output(output))

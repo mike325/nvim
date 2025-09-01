@@ -1,77 +1,5 @@
 local M = {}
 
----Push output to the stack
----@param out vim.SystemCompleted
----@param cmd string[]
----@param cwd string?
-function M.push_output(out, cmd, cwd)
-    -- NOTE: don't push output of self cancel tasks
-    if out.signal ~= 7 and out.signal ~= 9 then
-        ASYNC.output:push {
-            cmd = cmd,
-            cwd = cwd or vim.uv.cwd(),
-            code = out.code,
-            signal = out.signal,
-            stdout = out.stdout,
-            stderr = out.stderr,
-        }
-    end
-end
-
---- Get string repr of the given cmd
----@param cmd string|string[]
----@param cwd string?
----@return string
-function M.get_hash(cmd, cwd)
-    cwd = cwd or vim.fs.normalize(vim.uv.cwd())
-    local hash = vim.base64.encode(vim.json.encode { cmd = cmd, cwd = cwd })
-    return hash
-end
-
----Get active progress task
----@param hash string
-function M.remove_progress_task(hash)
-    local idx, _ = vim.iter(ASYNC.progress):enumerate():find(function(_, task)
-        return hash == task.hash
-    end)
-
-    local task
-    if idx then
-        task = table.remove(ASYNC.progress, idx)
-    end
-
-    if #ASYNC.progress == 0 and vim.t.progress_win then
-        vim.api.nvim_win_close(vim.t.progress_win, false)
-    end
-
-    return task
-end
-
----Get active progress task
-function M.get_progress_task()
-    return ASYNC.progress[1]
-end
-
----Get active progress task
----@param hash string
-function M.queue_progress_task(hash)
-    local current = M.get_progress_task() or {}
-    local task = M.remove_progress_task(hash)
-    if not ASYNC.tasks[hash] then
-        return
-    end
-
-    if not current.hash or not vim.t.progress_win or current.hash ~= (task or {}).hash then
-        require('utils.windows').progress((task or current or {}).output or {})
-    end
-
-    table.insert(ASYNC.progress, 1, task or {
-        hash = hash,
-        task = ASYNC.tasks[hash],
-        output = {},
-    })
-end
-
 local function get_grepprg(opts)
     opts = opts or {}
 
@@ -155,7 +83,7 @@ function M.grep(opts)
         cmd,
         { text = true, cwd = cwd },
         vim.schedule_wrap(function(out)
-            M.push_output(out, cmd, cwd)
+            require('async').push_output(out, cmd, cwd)
             if out.code == 0 then
                 if out.stdout == '' and out.stderr == '' then
                     vim.notify('No matching results ' .. search, vim.log.levels.WARN, { title = 'Grep' })
@@ -337,7 +265,7 @@ function M.formatprg(args)
         cmd,
         { text = true },
         vim.schedule_wrap(function(out)
-            M.push_output(out, cmd)
+            require('async').push_output(out, cmd)
             if out.code == 0 then
                 local fmt_lines = require('utils.files').readfile(tmpfile)
                 fmt_lines = buf_utils.indent(fmt_lines, indent_level)
