@@ -130,7 +130,7 @@ function M.list_repo_pr(opts, callback)
         end
         table.insert(json_fields, fields)
     else
-        table.insert(json_fields, 'author,state,isDraft,number,title,url')
+        table.insert(json_fields, 'number,author,state,isDraft,title,url,baseRefName,headRefName')
     end
     args = vim.list_extend(args, json_fields)
 
@@ -152,7 +152,7 @@ function M.list_repo_pr(opts, callback)
         for filter, value in pairs(opts.filters) do
             vim.validate {
                 filter = { filter, 'string' },
-                value = { value, { 'string', 'number', 'bool' } },
+                value = { value, { 'string', 'number', 'boolean' } },
             }
             if filter_args[filter] then
                 table.insert(filters, '--' .. filter)

@@ -538,6 +538,72 @@ function M.get_branch(callback)
     end)
 end
 
+function M.get_branches(remote, callback)
+    vim.validate { remote = { remote, { 'string', 'boolean' }, true } }
+    vim.validate { callback = { callback, 'function', true } }
+
+    local gitcmd = 'for-each-ref'
+    local args = {
+        "--format='%(refname:short)'",
+    }
+
+    if not remote then
+        table.insert(args, 'refs/heads/')
+    elseif remote == true then
+        table.insert(args, 'refs/remotes/')
+    else
+        table.insert(args, 'refs/remotes/' .. remote)
+    end
+
+    local function filter_remote_name(branches)
+        return vim.iter(branches)
+            :map(function(branch)
+                return (branch:match "'(.*)'")
+            end)
+            :filter(function(branch)
+                if type(remote) == type '' then
+                    return branch ~= remote
+                elseif remote then
+                    return not branch:match '^[^/]+$'
+                end
+                return branch
+            end)
+            :totable()
+    end
+
+    if not callback then
+        return filter_remote_name(exec_gitcmd(gitcmd, args))
+    end
+
+    exec_gitcmd(gitcmd, {}, function(branches)
+        callback(filter_remote_name(branches))
+    end)
+end
+
+function M.get_remotes(callback)
+    vim.validate {
+        callback = { callback, 'function', true },
+    }
+
+    local gitcmd = 'remote'
+    local remotes = {}
+
+    if not callback then
+        for _, remote in ipairs(exec_gitcmd(gitcmd, {})) do
+            remotes[remote] = exec_gitcmd(gitcmd, { 'get-url', remote })[1]
+        end
+        return remotes
+    end
+
+    -- TODO: Add true async for all get-url calls
+    exec_gitcmd(gitcmd, {}, function(repo_remotes)
+        for _, remote in ipairs(repo_remotes) do
+            remotes[remote] = exec_gitcmd(gitcmd, { 'get-url', remote })[1]
+        end
+        callback(remotes)
+    end)
+end
+
 function M.get_remote(branch, callback)
     vim.validate {
         branch = { branch, { 'string', 'function' }, true },
@@ -621,30 +687,6 @@ function M.get_remote(branch, callback)
     end
 end
 
-function M.get_remotes(callback)
-    vim.validate {
-        callback = { callback, 'function', true },
-    }
-
-    local gitcmd = 'remote'
-    local remotes = {}
-
-    if not callback then
-        for _, remote in ipairs(exec_gitcmd(gitcmd, {})) do
-            remotes[remote] = exec_gitcmd(gitcmd, { 'get-url', remote })[1]
-        end
-        return remotes
-    end
-
-    -- TODO: Add true async for all get-url calls
-    exec_gitcmd(gitcmd, {}, function(repo_remotes)
-        for _, remote in ipairs(repo_remotes) do
-            remotes[remote] = exec_gitcmd(gitcmd, { 'get-url', remote })[1]
-        end
-        callback(remotes)
-    end)
-end
-
 function M.get_filecontent(filename, revision, callback)
     vim.validate {
         filename = { filename, 'string' },
@@ -700,23 +742,25 @@ M.exec = setmetatable({}, {
             end)
         end
 
+        local function exec_and_continue(args, callback)
+            vim.validate {
+                args = { args, { 'string', 'table' }, true },
+                callback = { callback, 'function', true },
+            }
+            if not callback then
+                exec_gitcmd(gitcmd, args)
+                return ''
+            end
+            exec_gitcmd(gitcmd, args, function(_)
+                callback()
+            end)
+        end
+
         local supported_cmds = {
             mv = return_first_line,
             add = return_first_line,
             restore = return_first_line,
-            rm = function(args, callback)
-                vim.validate {
-                    args = { args, { 'string', 'table' }, true },
-                    callback = { callback, 'function', true },
-                }
-                if not callback then
-                    exec_gitcmd(gitcmd, args)
-                    return ''
-                end
-                exec_gitcmd(gitcmd, args, function(_)
-                    callback()
-                end)
-            end,
+            rm = exec_and_continue,
             init = function(args, callback)
                 vim.validate {
                     args = { args, { 'string', 'table' }, true },

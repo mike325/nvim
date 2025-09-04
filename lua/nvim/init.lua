@@ -351,11 +351,7 @@ local nvim = {
                 return x
             end
 
-            local plugins = vim.F.npcall(vim.api.nvim_get_var, 'plugs') or {}
-            if plugins[k] then
-                mt[k] = plugins[k]
-                return plugins[k]
-            end
+            local plugins
 
             local lazy = vim.F.npcall(require, 'lazy')
             if lazy then
@@ -368,9 +364,16 @@ local nvim = {
                 end
             end
 
+            plugins = vim.F.npcall(vim.api.nvim_get_var, 'plugs') or {}
+            if plugins[k] then
+                mt[k] = plugins[k]
+                return plugins[k]
+            end
+
             if packer_plugins then
                 plugins = packer_plugins
                 if plugins[k] and plugins[k].loaded then
+                    mt[k] = plugins[k]
                     return plugins[k]
                 end
             end

@@ -355,12 +355,6 @@ vim.api.nvim_create_autocmd('LspAttach', {
             -- elseif client.name == 'pylyzer' then
         end
 
-        -- vim.bo[bufnr].omnifunc = 'v:lua.vim.lsp.omnifunc'
-        -- if vim.g.minimal or not nvim.plugins['nvim-cmp'] then
-        --     local has_mini = vim.F.npcall(require, 'mini.completion') ~= nil
-        --     vim.bo[bufnr].omnifunc = has_mini and 'v:lua.MiniCompletion.completefunc_lsp' or 'v:lua.vim.lsp.omnifunc'
-        -- end
-
         if client:supports_method(methods.textDocument_foldingRange) then
             vim.wo.foldmethod = 'expr'
             vim.wo.foldexpr = 'v:lua.vim.lsp.foldexpr()'
@@ -424,6 +418,20 @@ vim.api.nvim_create_autocmd('LspAttach', {
                     nvim.command.set(map.command, map.func, cmd_opts)
                 end
             end
+        end
+
+        local has_mini = nvim.plugins['mini.nvim'] ~= nil
+        if not has_mini then
+            vim.lsp.completion.enable(true, client.id, bufnr, {
+                autotrigger = true,
+                convert = function(item)
+                    return { abbr = (item.label:gsub('%b()', '')) }
+                end,
+            })
+
+            -- vim.keymap.set('i', '<c-space>', function()
+            --     vim.lsp.completion.get()
+            -- end)
         end
     end,
 })

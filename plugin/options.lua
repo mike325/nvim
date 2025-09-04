@@ -89,7 +89,14 @@ vim.opt.virtualedit = 'block'
 -- vim.opt.formatoptions = 'tcqrolnj'
 
 vim.opt.complete = { '.', 'w', 'b', 'u', 't' }
-vim.opt.completeopt = { 'menu', 'menuone', 'noselect', 'noinsert' }
+vim.opt.completeopt = {
+    'menu',
+    'menuone',
+    'noselect',
+    'noinsert',
+    'fuzzy',
+    'nosort',
+}
 vim.opt.tags = { '.git/tags', './tags;', 'tags' }
 vim.opt.display = { 'lastline', 'msgsep' }
 vim.opt.fileformats = { 'unix', 'dos' }
