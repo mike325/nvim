@@ -98,7 +98,7 @@ end, {
 
 if executable 'gonvim' then
     nvim.command.set(
-        'GonvimSettngs',
+        'GonvimSettings',
         "execute('edit ~/.gonvim/setting.toml')",
         { desc = "Shortcut to edit gonvim's setting.toml" }
     )
