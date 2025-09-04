@@ -599,7 +599,7 @@ if executable 'git' then
         RELOAD('utils.buffers').open_conflicts(opts)
     end, {
         nargs = '?',
-        complete = comp_utils.get_completion(vim.iter(qf_completion_items):filter('-branch'):totable()),
+        complete = comp_utils.get_completion(vim.iter(qf_completion_items):rskip(1):totable()),
         desc = 'Open conflict files in the current git repository',
     })
 end
