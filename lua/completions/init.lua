@@ -30,6 +30,16 @@ completions = vim.tbl_extend('force', completions, {
         local files = vim.tbl_keys(gitstatus.stage)
         return utils.general_completion(arglead, cmdline, cursorpos, files)
     end,
+    git_branches = function(arglead, cmdline, cursorpos)
+        local utils = require 'completions.utils'
+        local branches = require('utils.git').get_branches(true)
+        return utils.general_completion(arglead, cmdline, cursorpos, branches)
+    end,
+    git_local_branches = function(arglead, cmdline, cursorpos)
+        local utils = require 'completions.utils'
+        local branches = require('utils.git').get_branches(false)
+        return utils.general_completion(arglead, cmdline, cursorpos, branches)
+    end,
     session_files = function(arglead, cmdline, cursorpos)
         local utils = require 'completions.utils'
         local sessions = require('utils.files').get_files(require('sys').sessions)
@@ -154,17 +164,8 @@ completions = vim.tbl_extend('force', completions, {
         local reviewers = {}
         if require('utils.files').is_file 'reviewers.json' then
             reviewers = require('utils.files').read_json 'reviewers.json'
-            local cmd = utils.get_cmd(cmdline)
-
-            local tmp = {}
-            for _, reviewer in ipairs(reviewers) do
-                if not vim.list_contains(cmd, reviewer) then
-                    table.insert(tmp, reviewer)
-                end
-            end
-
-            reviewers = tmp
         end
+        table.insert(reviewers, '-push')
         return utils.general_completion(arglead, cmdline, cursorpos, reviewers)
     end,
     gh_edit_reviewers = function(arglead, cmdline, cursorpos)

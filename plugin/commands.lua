@@ -537,18 +537,36 @@ end, {
 })
 
 if executable 'git' then
-    local qf_completion_items = { '-hunks', '-qf', '-open', '-background' }
+    local qf_completion_items = { '-hunks', '-qf', '-open', '-background', '-branch' }
 
     --- @param opts Command.Opts
     nvim.command.set('OpenChanges', function(opts)
-        local action = 'open'
         local revision
-        for _, arg in ipairs(opts.fargs) do
-            if arg:match '^%-' then
-                action = (arg:gsub('^%-+', ''))
-            else
-                revision = arg
+
+        local args = opts.fargs
+        if vim.iter(args):find '-branch' then
+            for idx, arg in ipairs(args) do
+                if arg == '-branch' then
+                    if args[idx + 1] and not args[idx + 1]:match '^%-' then
+                        revision = args[idx + 1]
+                    end
+                    break
+                end
             end
+
+            args = vim.iter(args)
+                :filter(function(arg)
+                    if revision then
+                        return arg ~= '-branch' and arg ~= revision
+                    end
+                    return arg ~= '-branch'
+                end)
+                :totable()
+        end
+
+        local action = ((args[1] or ''):gsub('^%-+', ''))
+        if not action or action == '' then
+            action = 'open'
         end
 
         if opts.bang and (not revision or revision == '') then
@@ -560,11 +578,19 @@ if executable 'git' then
             revision = nil
         end
 
-        RELOAD('utils.buffers').open_changes { action = action, revision = revision, clear = true }
+        RELOAD('utils.buffers').open_changes {
+            action = action,
+            revision = revision,
+            clear = true,
+        }
     end, {
         bang = true,
         nargs = '*',
-        complete = comp_utils.get_completion(qf_completion_items),
+        complete = comp_utils.get_completion(qf_completion_items, {
+            branch = function(_)
+                return require('utils.git').get_branches(true)
+            end,
+        }),
         desc = 'Open all modified files in the current git repository',
     })
 
@@ -573,7 +599,7 @@ if executable 'git' then
         RELOAD('utils.buffers').open_conflicts(opts)
     end, {
         nargs = '?',
-        complete = comp_utils.get_completion(qf_completion_items),
+        complete = comp_utils.get_completion(vim.iter(qf_completion_items):filter('-branch'):totable()),
         desc = 'Open conflict files in the current git repository',
     })
 end
