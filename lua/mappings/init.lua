@@ -1,6 +1,34 @@
 local nvim = require 'nvim'
 
-local M = {}
+local M = {
+    precommit_efm = {
+        '%f:%l:%c: %trror: %m. [SC%n]',
+        '%f:%l:%c: %tarning: %m. [SC%n]',
+        '%f:%l:%c: %tote: %m. [SC%n]',
+        '%f:%l:%c: %tint: %m. [SC%n]',
+        '%f:%l:%c: %trror: %m',
+        '%f:%l:%c: %tarning: %m',
+        '%f:%l:%c: %tote: %m',
+        '%f:%l: %trror: %m',
+        '%f:%l: %tarning: %m',
+        '%f:%l: %tote: %m',
+        '%f:%l:%c: %t%n %m',
+        '%f:%l:%c:%t: %m',
+        '%f:%l:%c: %m',
+        '%f:%l:%m',
+        '%f: %trror: %m',
+        '%f: %tarning: %m',
+        '%f: %tote: %m',
+        '%f: Failed to json decode (%m: line %l column %c (char %*\\\\d))',
+        '%f: Failed to json decode (%m)',
+        '%E%f:%l:%c: fatal error: %m',
+        '%E%f:%l:%c: error: %m',
+        '%W%f:%l:%c: warning: %m',
+        'Diff in %f:',
+        '+++ %f',
+        'reformatted %f',
+    },
+}
 
 function M.bufkill(opts)
     opts = opts or {}

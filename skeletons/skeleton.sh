@@ -112,6 +112,7 @@ case "$SHELL_PLATFORM" in
 esac
 
 if ! hash is_windows 2>/dev/null; then
+    # shellcheck disable=SC2329
     function is_windows() {
         if [[ $SHELL_PLATFORM =~ (msys|cygwin|windows) ]]; then
             return 0
@@ -121,6 +122,7 @@ if ! hash is_windows 2>/dev/null; then
 fi
 
 if ! hash is_wls 2>/dev/null; then
+    # shellcheck disable=SC2329
     function is_wls() {
         if [[ "$(uname -r)" =~ Microsoft ]]; then
             return 0
@@ -139,6 +141,7 @@ if ! hash is_osx 2>/dev/null; then
 fi
 
 if ! hash is_root 2>/dev/null; then
+    # shellcheck disable=SC2329
     function is_root() {
         if ! is_windows && [[ $EUID -eq 0 ]]; then
             return 0
@@ -148,6 +151,7 @@ if ! hash is_root 2>/dev/null; then
 fi
 
 if ! hash has_sudo 2>/dev/null; then
+    # shellcheck disable=SC2329
     function has_sudo() {
         if ! is_windows && hash sudo 2>/dev/null && [[ "$(groups)" =~ sudo ]]; then
             return 0
@@ -157,6 +161,7 @@ if ! hash has_sudo 2>/dev/null; then
 fi
 
 if ! hash is_arm 2>/dev/null; then
+    # shellcheck disable=SC2329
     function is_arm() {
         local arch
         arch="$(uname -m)"
@@ -168,6 +173,7 @@ if ! hash is_arm 2>/dev/null; then
 fi
 
 if ! hash is_64bits 2>/dev/null; then
+    # shellcheck disable=SC2329
     function is_64bits() {
         local arch
         arch="$(uname -m)"
@@ -221,6 +227,7 @@ Usage:
 EOF
 }
 
+# shellcheck disable=SC2329
 function warn_msg() {
     local msg="$1"
     if [[ $QUIET == false ]]; then
@@ -251,6 +258,7 @@ function error_msg() {
     return 0
 }
 
+# shellcheck disable=SC2329
 function status_msg() {
     local msg="$1"
     if [[ $QUIET == false ]]; then
@@ -281,6 +289,7 @@ function verbose_msg() {
     return 0
 }
 
+# shellcheck disable=SC2329
 function __parse_args() {
     if [[ $# -lt 2 ]]; then
         error_msg "Internal error in __parse_args function trying to parse $1"
@@ -323,6 +332,7 @@ function initlog() {
     return 0
 }
 
+# shellcheck disable=SC2329
 function exit_append() {
     if [[ $NOLOG == false ]]; then
         if [[ $WARN_COUNT -gt 0 ]] || [[ $ERR_COUNT -gt 0 ]]; then
@@ -338,6 +348,7 @@ function exit_append() {
     return 0
 }
 
+# shellcheck disable=SC2329
 function raw_output() {
     local msg="echo \"$1\""
     if [[ $NOLOG == false ]]; then
@@ -349,6 +360,7 @@ function raw_output() {
     return 0
 }
 
+# shellcheck disable=SC2329
 function shell_exec() {
     # TODO: Redirect stderr to stdout?  2>&1
     local cmd="$1"
@@ -379,6 +391,7 @@ function shell_exec() {
 }
 
 # mapfile -t VAR < <(cmd)
+# shellcheck disable=SC2329
 function parse_cmd_output() {
     local cmd="$1"
     local exit_with_error=0
@@ -392,6 +405,7 @@ function parse_cmd_output() {
     return $exit_with_error
 }
 
+# shellcheck disable=SC2329
 function has_fetcher() {
     if hash curl 2>/dev/null || hash wget 2>/dev/null; then
         return 0
@@ -399,6 +413,7 @@ function has_fetcher() {
     return 1
 }
 
+# shellcheck disable=SC2329
 function download_asset() {
     if [[ $# -lt 2 ]]; then
         error_msg "Not enough args"

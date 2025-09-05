@@ -22,15 +22,22 @@
 #            `++:.                           `-/+/
 #            .`                                 `/
 
-VERBOSE=0
-NOCOLOR=0
-NOLOG=0
-WARN_COUNT=0
-ERR_COUNT=0
+VERSION="0.1"
+AUTHOR=""
+
+VERBOSE=false
+QUIET=false
+PRINT_VERSION=false
+NOCOLOR=false
+NOLOG=false
+DRY_RUN=false
+WARN_COUNT=false
+ERR_COUNT=false
 # FROM_STDIN=()
 
 NAME="$0"
 NAME="${NAME##*/}"
+NAME="${NAME##*-}"
 LOG="${NAME%%.*}.log"
 
 SCRIPT_PATH="$0"
@@ -47,6 +54,17 @@ else
     pushd "$SCRIPT_PATH" 1>/dev/null || exit 1
     SCRIPT_PATH="$(pwd -P)"
     popd 1>/dev/null || exit 1
+fi
+
+if [[ -n $ZSH_NAME ]]; then
+    CURRENT_SHELL="zsh"
+elif [[ -n $BASH ]]; then
+    CURRENT_SHELL="bash"
+else
+    # shellcheck disable=SC2009,SC2046
+    if [[ -z $CURRENT_SHELL ]]; then
+        CURRENT_SHELL="${SHELL##*/}"
+    fi
 fi
 
 if [ -z "$SHELL_PLATFORM" ]; then
@@ -70,10 +88,12 @@ case "$SHELL_PLATFORM" in
     linux)
         if [[ -f /etc/arch-release ]]; then
             OS='arch'
-        elif [[ "$(cat /etc/issue)" == Ubuntu* ]]; then
+        elif [[ -f /etc/redhat-release ]] && [[ "$(cat /etc/redhat-release)" == Red\ Hat* ]]; then
+            OS='redhat'
+        elif [[ -f /etc/issue ]] && [[ "$(cat /etc/issue)" == Ubuntu* ]]; then
             OS='ubuntu'
         elif [[ -f /etc/debian_version ]] || [[ "$(cat /etc/issue)" == Debian* ]]; then
-            if [[ $ARCH == *\ armv7* ]]; then # Raspberry pi 3 uses armv7 cpu
+            if [[ $ARCH =~ armv.* ]] || [[ $ARCH == aarch64 ]]; then
                 OS='raspbian'
             else
                 OS='debian'
@@ -92,6 +112,7 @@ case "$SHELL_PLATFORM" in
 esac
 
 if ! hash is_windows 2>/dev/null; then
+    # shellcheck disable=SC2329
     function is_windows() {
         if [[ $SHELL_PLATFORM =~ (msys|cygwin|windows) ]]; then
             return 0
@@ -101,6 +122,7 @@ if ! hash is_windows 2>/dev/null; then
 fi
 
 if ! hash is_wls 2>/dev/null; then
+    # shellcheck disable=SC2329
     function is_wls() {
         if [[ "$(uname -r)" =~ Microsoft ]]; then
             return 0
@@ -118,14 +140,48 @@ if ! hash is_osx 2>/dev/null; then
     }
 fi
 
-if [[ -n $ZSH_NAME ]]; then
-    CURRENT_SHELL="zsh"
-elif [[ -n $BASH ]]; then
-    CURRENT_SHELL="bash"
-else
-    if [[ -z $CURRENT_SHELL ]]; then
-        CURRENT_SHELL="${SHELL##*/}"
-    fi
+if ! hash is_root 2>/dev/null; then
+    # shellcheck disable=SC2329
+    function is_root() {
+        if ! is_windows && [[ $EUID -eq 0 ]]; then
+            return 0
+        fi
+        return 1
+    }
+fi
+
+if ! hash has_sudo 2>/dev/null; then
+    # shellcheck disable=SC2329
+    function has_sudo() {
+        if ! is_windows && hash sudo 2>/dev/null && [[ "$(groups)" =~ sudo ]]; then
+            return 0
+        fi
+        return 1
+    }
+fi
+
+if ! hash is_arm 2>/dev/null; then
+    # shellcheck disable=SC2329
+    function is_arm() {
+        local arch
+        arch="$(uname -m)"
+        if [[ $arch =~ ^arm ]] || [[ $arch =~ ^aarch ]]; then
+            return 0
+        fi
+        return 1
+    }
+fi
+
+if ! hash is_64bits 2>/dev/null; then
+    # shellcheck disable=SC2329
+    function is_64bits() {
+        local arch
+        arch="$(uname -m)"
+        if [[ $arch == 'x86_64' ]] || [[ $arch == 'arm64' ]]; then
+            return 0
+        fi
+        return 1
+    }
 fi
 
 # colors
@@ -160,99 +216,109 @@ Usage:
     $NAME [OPTIONAL]
 
     Optional Flags
-
-        --nolog         Disable log writing
-        --nocolor       Disable color output
-        -v, --verbose   Enable debug messages
-        -h, --help      Display this help message
+        --log               Enable log writing
+        --nolog             Disable log writing
+        --nocolor           Disable color output
+        -v, --verbose       Enable debug messages
+        -q, --quiet         Suppress most output
+        -V, --version       Print script version and exits
+        --dry, --dry-run    Enable dry run
+        -h, --help          Display this help message
 EOF
 }
 
+# shellcheck disable=SC2329
+function warn_msg() {
+    local msg="$1"
+    if [[ $QUIET == false ]]; then
+        if [[ $NOCOLOR == false ]]; then
+            printf "${yellow}[!] Warning:${reset_color}\t %s\n" "$msg"
+        else
+            printf "[!] Warning:\t %s\n" "$msg"
+        fi
+    fi
+    WARN_COUNT=$((WARN_COUNT + 1))
+    if [[ $NOLOG == false ]]; then
+        printf "[!] Warning:\t %s\n" "$msg" >>"${LOG}"
+    fi
+    return 0
+}
+
+function error_msg() {
+    local msg="$1"
+    if [[ $NOCOLOR == false ]]; then
+        printf "${red}[X] Error:${reset_color}\t %s\n" "$msg" 1>&2
+    else
+        printf "[X] Error:\t %s\n" "$msg" 1>&2
+    fi
+    ERR_COUNT=$((ERR_COUNT + 1))
+    if [[ $NOLOG == false ]]; then
+        printf "[X] Error:\t %s\n" "$msg" >>"${LOG}"
+    fi
+    return 0
+}
+
+# shellcheck disable=SC2329
+function status_msg() {
+    local msg="$1"
+    if [[ $QUIET == false ]]; then
+        if [[ $NOCOLOR == false ]]; then
+            printf "${green}[*] Info:${reset_color}\t %s\n" "$msg"
+        else
+            printf "[*] Info:\t %s\n" "$msg"
+        fi
+    fi
+    if [[ $NOLOG == false ]]; then
+        printf "[*] Info:\t\t %s\n" "$msg" >>"${LOG}"
+    fi
+    return 0
+}
+
+function verbose_msg() {
+    local msg="$1"
+    if [[ $VERBOSE == true ]]; then
+        if [[ $NOCOLOR == false ]]; then
+            printf "${purple}[+] Debug:${reset_color}\t %s\n" "$msg"
+        else
+            printf "[+] Debug:\t %s\n" "$msg"
+        fi
+    fi
+    if [[ $NOLOG == false ]]; then
+        printf "[+] Debug:\t\t %s\n" "$msg" >>"${LOG}"
+    fi
+    return 0
+}
+
+# shellcheck disable=SC2329
 function __parse_args() {
     if [[ $# -lt 2 ]]; then
         error_msg "Internal error in __parse_args function trying to parse $1"
         exit 1
     fi
 
-    local arg="$1"
-    local lint="$2"
+    local flag="$2"
+    local value="$1"
 
-    local pattern="^--${lint}=[a-zA-Z0-9.:@_/~-]+$"
+    local pattern="^--${flag}=[a-zA-Z0-9.:@_/~-]+$"
 
-    if [[ -n $3 ]]; then
-        local pattern="^--${lint}=$3$"
+    if [[ -n $3   ]]; then
+        local pattern="^--${flag}=$3$"
     fi
 
-    if [[ $arg =~ $pattern ]]; then
-        local left_side="${arg#*=}"
+    if [[ $value =~ $pattern ]]; then
+        local left_side="${value#*=}"
         echo "${left_side/#\~/$HOME}"
     else
-        echo "$arg"
+        echo "$value"
     fi
-}
-
-function warn_msg() {
-    local warn_message="$1"
-    if [[ $NOCOLOR -eq 0 ]]; then
-        printf "${yellow}[!] Warning:${reset_color}\t %s\n" "$warn_message"
-    else
-        printf "[!] Warning:\t %s\n" "$warn_message"
-    fi
-    WARN_COUNT=$((WARN_COUNT + 1))
-    if [[ $NOLOG -eq 0 ]]; then
-        printf "[!] Warning:\t %s\n" "$warn_message" >>"${LOG}"
-    fi
-    return 0
-}
-
-function error_msg() {
-    local error_message="$1"
-    if [[ $NOCOLOR -eq 0 ]]; then
-        printf "${red}[X] Error:${reset_color}\t %s\n" "$error_message" 1>&2
-    else
-        printf "[X] Error:\t %s\n" "$error_message" 1>&2
-    fi
-    ERR_COUNT=$((ERR_COUNT + 1))
-    if [[ $NOLOG -eq 0 ]]; then
-        printf "[X] Error:\t\t %s\n" "$error_message" >>"${LOG}"
-    fi
-    return 0
-}
-
-function status_msg() {
-    local status_message="$1"
-    if [[ $NOCOLOR -eq 0 ]]; then
-        printf "${green}[*] Info:${reset_color}\t %s\n" "$status_message"
-    else
-        printf "[*] Info:\t %s\n" "$status_message"
-    fi
-    if [[ $NOLOG -eq 0 ]]; then
-        printf "[*] Info:\t\t %s\n" "$status_message" >>"${LOG}"
-    fi
-    return 0
-}
-
-function verbose_msg() {
-    local debug_message="$1"
-    if [[ $VERBOSE -eq 1 ]]; then
-        if [[ $NOCOLOR -eq 0 ]]; then
-            printf "${purple}[+] Debug:${reset_color}\t %s\n" "$debug_message"
-        else
-            printf "[+] Debug:\t %s\n" "$debug_message"
-        fi
-    fi
-    if [[ $NOLOG -eq 0 ]]; then
-        printf "[+] Debug:\t\t %s\n" "$debug_message" >>"${LOG}"
-    fi
-    return 0
 }
 
 function initlog() {
-    if [[ $NOLOG -eq 0 ]]; then
-        rm -f "${LOG}" 2>/dev/null
+    if [[ $NOLOG == false ]]; then
+        [[ -n $LOG ]] && rm -f "${LOG}" 2>/dev/null
         if ! touch "${LOG}" &>/dev/null; then
             error_msg "Fail to init log file"
-            NOLOG=1
+            NOLOG=true
             return 1
         fi
         if [[ -f "${SCRIPT_PATH}/shell/banner" ]]; then
@@ -266,33 +332,166 @@ function initlog() {
     return 0
 }
 
+# shellcheck disable=SC2329
 function exit_append() {
-    if [[ $NOLOG -eq 0 ]]; then
+    if [[ $NOLOG == false ]]; then
         if [[ $WARN_COUNT -gt 0 ]] || [[ $ERR_COUNT -gt 0 ]]; then
             printf "\n\n" >>"${LOG}"
         fi
-
         if [[ $WARN_COUNT -gt 0 ]]; then
             printf "[*] Warnings:\t%s\n" "$WARN_COUNT" >>"${LOG}"
         fi
         if [[ $ERR_COUNT -gt 0 ]]; then
-            printf "[*] Errors:\t\t%s\n" "$ERR_COUNT" >>"${LOG}"
+            printf "[*] Errors:\t%s\n" "$ERR_COUNT" >>"${LOG}"
         fi
     fi
     return 0
 }
 
+# shellcheck disable=SC2329
+function raw_output() {
+    local msg="echo \"$1\""
+    if [[ $NOLOG == false ]]; then
+        msg="$msg | tee -a ${LOG}"
+    fi
+    if ! sh -c "$msg"; then
+        return 1
+    fi
+    return 0
+}
+
+# shellcheck disable=SC2329
+function shell_exec() {
+    # TODO: Redirect stderr to stdout?  2>&1
+    local cmd="$1"
+    local verbose="${2:-$VERBOSE}"
+    verbose_msg "cmd: $cmd"
+    if [[ $DRY_RUN == true ]]; then
+        return 0
+    fi
+
+    if [[ $verbose == true ]]; then
+        if [[ $NOLOG == false ]]; then
+            cmd="$cmd | tee -a ${LOG}"
+            cmd="$cmd; test \${PIPESTATUS[0]} -eq 0"
+        fi
+        if ! sh -c "$cmd"; then
+            return 1
+        fi
+    elif [[ $NOLOG == false ]]; then
+        if ! sh -c "$cmd >> ${LOG}"; then
+            return 1
+        fi
+    else
+        if ! sh -c "$cmd &>/dev/null"; then
+            return 1
+        fi
+    fi
+    return 0
+}
+
+# mapfile -t VAR < <(cmd)
+# shellcheck disable=SC2329
+function parse_cmd_output() {
+    local cmd="$1"
+    local exit_with_error=0
+
+    # TODO: Read cmd exit code
+    while IFS= read -r line; do
+        raw_output "$line"
+    done < <(sh -c "$cmd")
+
+    # shellcheck disable=SC2086
+    return $exit_with_error
+}
+
+# shellcheck disable=SC2329
+function has_fetcher() {
+    if hash curl 2>/dev/null || hash wget 2>/dev/null; then
+        return 0
+    fi
+    return 1
+}
+
+# shellcheck disable=SC2329
+function download_asset() {
+    if [[ $# -lt 2 ]]; then
+        error_msg "Not enough args"
+        return 1
+    fi
+
+    if ! has_fetcher; then
+        error_msg "This system has neither curl nor wget to download the asset $1"
+        return 2
+    fi
+
+    local asset="$1"
+    local url="$2"
+    local dest=""
+    if [[ -n $3 ]]; then
+        local dest="$3"
+    fi
+
+    local cmd=""
+    verbose_msg "Fetching $url"
+
+    if hash curl 2>/dev/null; then
+        cmd='curl -L '
+        if [[ $VERBOSE == false ]]; then
+            cmd="$cmd -s "
+        fi
+        cmd="$cmd $url"
+        if [[ -n $dest ]]; then
+            cmd="$cmd -o $dest"
+        fi
+    else  # If not curl, wget is available since we checked with "has_fetcher"
+        cmd='wget '
+        if [[ $VERBOSE == false ]]; then
+            cmd="$cmd -q "
+        fi
+        if [[ -n $dest ]]; then
+            cmd="$cmd -O $dest"
+        fi
+        cmd="$cmd $url"
+    fi
+
+    if [[ ! -d $dest ]] && [[ ! -f $dest ]]; then
+        verbose_msg "Downloading $asset"
+        if sh -c "$cmd"; then
+            return 0
+        else
+            error_msg "Failed to download $asset"
+            return 5
+        fi
+    else
+        warn_msg "$asset already exists in $dest, skipping download"
+        return 5
+    fi
+}
+
 while [[ $# -gt 0 ]]; do
     key="$1"
     case "$key" in
+        --log)
+            NOLOG=false
+            ;;
         --nolog)
-            NOLOG=1
+            NOLOG=true
             ;;
         --nocolor)
-            NOCOLOR=1
+            NOCOLOR=true
             ;;
         -v | --verbose)
-            VERBOSE=1
+            VERBOSE=true
+            ;;
+        -q | --quiet)
+            QUIET=true
+            ;;
+        -V | --version)
+            PRINT_VERSION=true
+            ;;
+        --dry | --dry-run | --dry_run | --dryrun)
+            DRY_RUN=true
             ;;
         -h | --help)
             help_user
@@ -314,12 +513,30 @@ while [[ $# -gt 0 ]]; do
     shift
 done
 
+if [[ ! -t 1 ]]; then
+    NOCOLOR=true
+fi
+
+if [[ $PRINT_VERSION == true ]]; then
+    echo -e "\n$NAME version: ${VERSION}"
+    exit 0
+fi
+
 initlog
+if [[ -n $AUTHOR ]]; then
+    verbose_msg "Author         : ${AUTHOR}"
+fi
+verbose_msg "Script version : ${VERSION}"
+verbose_msg "Date           : $(date)"
 verbose_msg "Log Disable   : ${NOLOG}"
+if [[ $NOLOG == false ]]; then
+    verbose_msg "Log location   : ${LOG}"
+fi
 verbose_msg "Current Shell : ${CURRENT_SHELL}"
 verbose_msg "Platform      : ${SHELL_PLATFORM}"
-verbose_msg "OS platform   : ${OS}"
 verbose_msg "Architecture  : ${ARCH}"
+verbose_msg "OS             : ${OS}"
+verbose_msg "DRY RUN        : ${DRY_RUN}"
 
 #######################################################################
 #                           CODE Goes Here                            #
@@ -341,10 +558,10 @@ else
     error_msg "Missing shellcheck, skipping Shell lint"
 fi
 
-if hash flake8 2>/dev/null; then
+if hash ruff 2>/dev/null; then
     status_msg "Running python check"
-    verbose_msg "flake8 version: $(flake8 --version)"
-    if ! fd -e py -X flake8 --max-line-length=120 --max-complexity=18; then
+    verbose_msg "Ruff version: $(flake8 version)"
+    if ! ruff check .; then
         error_msg "Failed python lint test"
         exit 3
     fi
