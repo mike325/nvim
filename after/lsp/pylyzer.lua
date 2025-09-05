@@ -7,11 +7,11 @@ return {
     cmd = { 'pylyzer', '--server' },
     filetypes = { 'python' },
     root_markers = {
+        'pyproject.toml',
         'setup.py',
-        'tox.ini',
+        'setup.cfg',
         'requirements.txt',
         'Pipfile',
-        'pyproject.toml',
         '.git',
     },
     settings = {

@@ -9,9 +9,11 @@ vim.lsp.log.set_level(vim.o.verbose > 0 and vim.log.levels.INFO or vim.log.level
 -- NOTE: Python server usage priority
 local python_servers = {
     'pylsp',
-    'pylyzer',
+    'ty',
+    'pyrefly',
     'basedpyright',
     'jedi_language_server',
+    'pylyzer',
 }
 
 -- NOTE: C/C++ server usage priority
