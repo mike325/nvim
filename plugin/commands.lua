@@ -517,7 +517,7 @@ end, {
 })
 
 if executable 'git' then
-    local qf_completion_items = { '-hunks', '-qf', '-open', '-background'}
+    local qf_completion_items = { '-hunks', '-qf', '-open', '-background' }
 
     --- @param opts Command.Opts
     nvim.command.set('OpenChanges', function(opts)
