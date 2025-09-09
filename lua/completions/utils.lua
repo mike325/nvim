@@ -123,6 +123,16 @@ local function get_completions_func(comp_func, options, suboptions, smart)
                     return comp_func(arglead, cmdline, cursorpos, subflags, smart)
                 end
             end
+
+            vim.list_extend(options --[[@as string[] ]], vim.tbl_keys(suboptions --[[@as table<string, any>]]))
+            local uniq = {}
+            options = vim.iter(options):fold({}, function(acc, opt)
+                if not uniq[opt] then
+                    uniq[opt] = true
+                    table.insert(acc, opt)
+                end
+                return acc
+            end)
         end
 
         return comp_func(arglead, cmdline, cursorpos, options --[[@as string[] ]], smart)

@@ -517,7 +517,7 @@ end, {
 })
 
 if executable 'git' then
-    local qf_completion_items = { '-hunks', '-qf', '-open', '-background', '-branch' }
+    local qf_completion_items = { '-hunks', '-qf', '-open', '-background'}
 
     --- @param opts Command.Opts
     nvim.command.set('OpenChanges', function(opts)
@@ -567,7 +567,7 @@ if executable 'git' then
         bang = true,
         nargs = '*',
         complete = comp_utils.get_completion(qf_completion_items, {
-            branch = function(_)
+            ['-branch'] = function(_)
                 return require('utils.git').get_branches(true)
             end,
         }),
@@ -579,7 +579,7 @@ if executable 'git' then
         RELOAD('utils.buffers').open_conflicts(opts)
     end, {
         nargs = '?',
-        complete = comp_utils.get_completion(vim.iter(qf_completion_items):rskip(1):totable()),
+        complete = comp_utils.get_completion(qf_completion_items),
         desc = 'Open conflict files in the current git repository',
     })
 end
