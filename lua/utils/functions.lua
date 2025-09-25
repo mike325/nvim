@@ -1,10 +1,3 @@
-local nvim = require 'nvim'
-
-local replace_indent = require('utils.buffers').replace_indent
-local executable = require('utils.files').executable
-local is_file = require('utils.files').is_file
-local getcwd = require('utils.files').getcwd
-
 local M = {}
 
 -- TODO: Improve python folding text
@@ -44,7 +37,7 @@ function M.get_compiler(compiler, opts)
                 vim.list_extend(config_cmd, { configflag, config_files[1] })
                 return config_cmd
             end
-        elseif opts.global_config and is_file(opts.global_config) then
+        elseif opts.global_config and require('utils.files').is_file(opts.global_config) then
             vim.list_extend(config_cmd, { configflag, opts.global_config })
             return config_cmd
         end
@@ -80,7 +73,7 @@ function M.get_compiler(compiler, opts)
     vim.list_extend(cmd, extra_args)
 
     return {
-        makeprg = table.concat(replace_indent(cmd), '\\ '),
+        makeprg = table.concat(require('utils.buffers').replace_indent(cmd), '\\ '),
         efm = efm,
     }
 end
@@ -102,7 +95,7 @@ function M.find_project_root(path)
         end
     end
 
-    return not root and getcwd() or vim.fs.dirname(root)
+    return not root and vim.uv.cwd() or vim.fs.dirname(root)
 end
 
 function M.ignores(tool, excludes, lst)
@@ -147,20 +140,11 @@ function M.ignores(tool, excludes, lst)
     end
 
     table.insert(ignores.find, [[\)]])
-
-    -- if is_file(sys.home .. '/.config/git/ignore') then
-    --     ignores.rg = ' --ignore-file '.. sys.home .. '/.config/git/ignore '
-    --     ignores.fd = ' --ignore-file '.. sys.home .. '/.config/git/ignore '
-    -- end
-
     return lst and ignores[tool] or table.concat(ignores[tool], ' ')
 end
 
 function M.grep(tool, attr, lst)
     local property = (attr and attr ~= '') and attr or 'grepprg'
-    local excludes = vim.split(vim.o.backupskip, ',+')
-
-    -- local modern_git = STORAGE.modern_git
 
     local greplist = {
         git = {
@@ -168,17 +152,15 @@ function M.grep(tool, attr, lst)
             grepformat = '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m',
         },
         rg = {
-            grepprg = 'rg -SHn --no-binary --trim --color=never --no-heading --column --no-search-zip --hidden '
-                .. M.ignores('rg', excludes)
-                .. ' ',
+            grepprg = 'rg -SHn --no-binary --trim --color=never --no-heading --column --no-search-zip --hidden ',
             grepformat = '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m',
         },
         ag = {
-            grepprg = 'ag -S --follow --nogroup --nocolor --hidden --vimgrep ' .. M.ignores('ag', excludes) .. ' ',
+            grepprg = 'ag -S --follow --nogroup --nocolor --hidden --vimgrep ',
             grepformat = '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m',
         },
         grep = {
-            grepprg = 'grep -RHiIn --color=never ' .. M.ignores('grep', excludes) .. ' ',
+            grepprg = 'grep -RHiIn --color=never ',
             grepformat = '%f:%l:%c:%m,%f:%l:%m,%f:%l%m,%f  %l%m',
         },
         findstr = {
@@ -188,7 +170,7 @@ function M.grep(tool, attr, lst)
     }
 
     local grep = lst and {} or ''
-    if executable(tool) and greplist[tool] ~= nil then
+    if require('utils.files').executable(tool) and greplist[tool] ~= nil then
         grep = greplist[tool][property]
         grep = lst and vim.split(grep, '%s+') or grep
     end
@@ -203,16 +185,15 @@ function M.grep(tool, attr, lst)
 end
 
 function M.filelist(tool, lst)
+    local executable = require('utils.files').executable
     local excludes = vim.split(vim.o.backupskip, ',+')
 
     -- TODO: find in windows works different
     local filetool = {
         git = 'git --no-pager ls-files -c --exclude-standard',
-        fd = 'fd --type=file --hidden --color=never ' .. M.ignores('fd', excludes) .. ' ',
-        rg = 'rg --no-binary --color=never --no-search-zip --hidden --trim --files '
-            .. M.ignores('rg', excludes)
-            .. ' ',
-        ag = 'ag -l --follow --nocolor --nogroup --hidden ' .. M.ignores('ag', excludes) .. '-g ""',
+        fd = 'fd --type=file --hidden --color=never ',
+        rg = 'rg --no-binary --color=never --no-search-zip --hidden --trim --files ',
+        ag = 'ag -l --follow --nocolor --nogroup --hidden -g ""',
         find = 'find . -type f ' .. M.ignores('find', excludes) .. " -iname '*' ",
     }
 
@@ -248,7 +229,7 @@ function M.select_filelist(is_git, lst)
         'find',
     }
 
-    if executable 'git' and is_git then
+    if require('utils.files').executable 'git' and is_git then
         filelist = M.filelist('git', lst)
     else
         for _, lister in pairs(utils) do
@@ -274,7 +255,7 @@ function M.select_grep(is_git, attr, lst)
         'findstr',
     }
 
-    if executable 'git' and is_git then
+    if require('utils.files').executable 'git' and is_git then
         grepprg = M.grep('git', property, lst)
     else
         for _, grep in pairs(utils) do
@@ -311,6 +292,7 @@ function M.set_abbrs(old_lang, new_lang)
     local abolish = RELOAD('configs.abolish').abolish
     local capitalize = require('utils.strings').capitalize
 
+    local nvim = require 'nvim'
     if nvim.has.cmd 'Abolish' then
         if abolish[old_lang] ~= nil then
             for base, _ in pairs(abolish[old_lang]) do

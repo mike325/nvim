@@ -32,8 +32,22 @@ return {
         cmd = { 'TSSecretary' },
         keys = { '<M-q>' },
         config = function()
-            local nvim = require 'nvim'
+            require('query-secretary').setup {
+                predicates = {
+                    'eq',
+                    'any-of',
+                    'contains',
+                    'match',
+                    'lua-match',
+                }, -- when press "p" (predicates)
 
+                -- default overrides
+                keymaps = {
+                    toggle_field_name = { 'n' },
+                },
+            }
+
+            local nvim = require 'nvim'
             vim.keymap.set('n', '<M-q>', function()
                 require('query-secretary').query_window_initiate()
             end, { desc = 'TS Query editing tool' })

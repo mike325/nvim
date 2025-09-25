@@ -1,86 +1,41 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
-    hooks:
-      - id: check-xml
-      - id: check-yaml
-      - id: check-toml
-      - id: check-json
-      - id: trailing-whitespace
-      - id: end-of-file-fixer
-      - id: check-added-large-files
-      - id: check-case-conflict
-      - id: detect-private-key
-      - id: check-docstring-first
-      - id: check-merge-conflict
-      - id: check-shebang-scripts-are-executable
-      - id: check-vcs-permalinks
-      - id: check-symlinks
-      - id: mixed-line-ending
-      # - id: pretty-format-json
-  - repo: https://github.com/jumanjihouse/pre-commit-hooks
-    rev: 3.0.0
-    hooks:
-      # TODO: Migrate some checks to python to make them "universal"
-      # - id: bundler-audit
-      # - id: check-mailmap   # Depends on sh, does not work in Powershell/Windows
-      - id: forbid-binary
-      # - id: forbid-space-in-indent
-      # - id: git-check       # Configure in .gitattributes, Depends on sh, does not work in Powershell/Windows
-      # - id: git-dirty       # Configure in .gitignore
-      # - id: markdownlint    # Configure in .mdlrc, depends on Ruby
-      # - id: protect-first-parent  # TODO: This fails in GH CI since Ubuntu 20.04 has an old Git version
-      # - id: require-ascii
-      # - id: script-must-have-extension
-      # - id: script-must-not-have-extension
-      # - id: shellcheck
-      # - id: shfmt
-  # TODO: Migrate this to local scripts
-  # - repo: https://github.com/Lucas-C/pre-commit-hooks
-  #   rev: v1.2.0
-  #   hooks:
-  #     - id: remove-crlf
-  #     - id: remove-tabs
-  #       exclude: |
-  #           (?x)^(
-  #               UltiSnips/.*|
-  #               Makefile.*|
-  #               \.git.*|
-  #               .*\.make|
-  #               .*\.go$
-  #           )$
-  #       # args: [ '--whitespaces-count', '2' ]  # defaults to: 4
-  - repo: https://github.com/sirosen/check-jsonschema
-    rev: 0.28.6
-    hooks:
-      - id: check-github-workflows
-      - id: check-github-actions
-      # - id: check-jsonschema
-      # - id: check-azure-pipelines
-      # - id: check-travis
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.5.0
-    hooks:
-       - id: ruff
-       - id: ruff-format
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.10.1
-    hooks:
-      - id: mypy
-  - repo: https://github.com/Vimjas/vint
-    rev: v0.4a3
-    hooks:
-      - id: vint
-        args: ['--enable-neovim', '-t', '-w']
-        exclude: |
-            (?x)^(
-                plug/.*|
-                ftdetect/.*
-            )$
   - repo: local
     hooks:
+      - id: trailing-whitespaces
+        name: Trailing whitespaces
+        description: Check for trailing whitespaces
+        language: pygrep
+        entry: "[ ]+$"
+        args: []
+        types: [text]
+      - id: check-yaml
+        name: check-yaml
+        description: Check yaml format
+        language: system
+        entry: check-yaml
+        types: [yaml]
+      - id: check-json
+        name: check-json
+        description: Check json format
+        language: system
+        entry: check-json
+        types: [json]
+      - id: ruff_check
+        name: ruff check
+        description: run linting for python files
+        language: system
+        entry: ruff
+        args: ['check', '--respect-gitignore', '--line-length=85']
+        types: [python]
+      - id: ruff_format
+        name: ruff format
+        description: run formatting for python files
+        language: system
+        entry: ruff
+        args: ['format', '--respect-gitignore', '--check', '--line-length=85']
+        types: [python]
       - id: shellcheck
         name: shellcheck
         description: Shell correctness
@@ -111,9 +66,6 @@ repos:
             )$
         types: [shell]
         language: system
-        # language: golang
-        # minimum_pre_commit_version: 2.4.0
-        # additional_dependencies: [mvdan.cc/sh/v3/cmd/shfmt@v3.3.1]
       - id: luacheck
         name: luacheck
         description: Lua check
@@ -129,6 +81,3 @@ repos:
         args: [--check, --verify]
         language: system
         types: [lua]
-      #   language: system
-      #   types: [python]
-      #   require_serial: true

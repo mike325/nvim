@@ -43,6 +43,10 @@ jobs:
           echo "$HOME/.local/bin" >> $GITHUB_PATH
           echo "$HOME/go/bin/" >> $GITHUB_PATH
 
+          python3 -m pip install --user uv
+          uv tool install --force ruff
+          uv tool install --force pre-commit-hooks
+
       - name: Fetch install script
         run: |
           wget https://raw.githubusercontent.com/mike325/dotfiles/master/install.sh
