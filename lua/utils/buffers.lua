@@ -497,7 +497,7 @@ function M.open_changes(opts)
     local revision = opts.revision
     local clear = opts.clear == nil and true or opts.clear
 
-    local function get_content(filename)
+    local function get_local_content(filename)
         local buf = vim.fn.bufnr(filename)
         if buf ~= -1 then
             return table.concat(vim.api.nvim_buf_get_lines(buf, 0, -1, false), '\n')
@@ -551,7 +551,7 @@ function M.open_changes(opts)
                         else
                             if status.conflict[filename] then
                                 item.text = 'Conflict file'
-                                local content = get_content(filename)
+                                local content = get_local_content(filename)
                                 for idx, line in ipairs(vim.split(content, '\n')) do
                                     if line:match '^<<<<<<<' then
                                         item.lnum = idx + 1
@@ -564,9 +564,10 @@ function M.open_changes(opts)
                                     item.text = is_staged and 'Staged file' or 'Modified file'
                                     local content
                                     if is_staged then
-                                        content = table.concat(require('utils.git').get_filecontent(filename), '\n')
+                                        local get_git_content = require('utils.git').get_content
+                                        content = table.concat(get_git_content { filename = filename }, '\n')
                                     else
-                                        content = get_content(filename)
+                                        content = get_local_content(filename)
                                     end
 
                                     local file_status = (status.stage[filename] or status.workspace[filename]).status
@@ -574,7 +575,10 @@ function M.open_changes(opts)
                                         item.lnum = 1
                                         item.text = 'Added file'
                                     else
-                                        local revision_content = require('utils.git').get_filecontent(filename, 'HEAD')
+                                        local revision_content = require('utils.git').get_content {
+                                            filename = filename,
+                                            revision = 'HEAD',
+                                        }
                                         local diffs = vim.diff(content, table.concat(revision_content, '\n'), diff_opts)
                                         item.lnum = diffs[1] and diffs[1][1] or 1
                                     end

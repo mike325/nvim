@@ -687,31 +687,33 @@ function M.get_remote(branch, callback)
     end
 end
 
-function M.get_filecontent(filename, revision, callback)
+function M.get_content(opts, callback)
     vim.validate {
-        filename = { filename, 'string' },
-        revision = { revision, { 'string', 'function' }, true },
+        opts = { opts, 'table' },
+        git_args = { (opts.filename or opts.revision or opts.object), 'string' },
+        filename = { opts.filename, 'string', true },
+        revision = { opts.revision or opts.object, 'string', true },
         callback = { callback, 'function', true },
     }
 
+    local filename = opts.filename
+    local revision = opts.revision or opts.object
+
     local sys = require 'sys'
 
-    local cwd = vim.fs.normalize(vim.uv.cwd() or '.')
-    filename = vim.fs.normalize(filename)
-    cwd = sys.name == 'window' and string.format('%s:%s', (cwd:sub(1, 1):lower()), (cwd:sub(3))) or cwd
-    filename = (filename:gsub(string.format('^%s/', vim.pesc(cwd)), ''))
+    local gitcmd = 'show'
+    local args
+    if filename then
+        local cwd = vim.fs.normalize(vim.uv.cwd() or '.')
+        cwd = sys.name == 'window' and string.format('%s:%s', (cwd:sub(1, 1):lower()), (cwd:sub(3))) or cwd
+        filename = vim.fs.normalize(filename)
+        filename = (filename:gsub(string.format('^%s/', vim.pesc(cwd)), ''))
 
-    if callback and type(revision) == type(callback) then
-        error(debug.traceback 'Revision should be a string, cannot provide 2 callbacks')
-    elseif type(revision) == 'function' then
-        callback = revision
-        revision = nil
+        args = { string.format('%s:%s', revision or '', filename) }
+    else
+        args = { revision }
     end
 
-    local file_rev = '%s:%s'
-
-    local gitcmd = 'show'
-    local args = { file_rev:format(revision or '', filename) }
     if not callback then
         return exec_gitcmd(gitcmd, args)
     end

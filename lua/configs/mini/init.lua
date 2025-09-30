@@ -820,7 +820,7 @@ if vim.g.minimal then
                 pos = vim.api.nvim_win_get_cursor(0)
             end
 
-            RELOAD('utils.git').get_filecontent(filename, nil, function(content)
+            RELOAD('utils.git').get_content({ filename = filename }, function(content)
                 vim.cmd.tabnew(filename)
                 if pos then
                     vim.api.nvim_win_set_cursor(0, pos)
