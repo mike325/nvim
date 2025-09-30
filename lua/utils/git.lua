@@ -729,7 +729,11 @@ M.exec = setmetatable({}, {
             gitcmd = { k, 'string' },
         }
 
-        local gitcmd = k
+        local alias = {
+            hash = 'hash-object',
+        }
+
+        local gitcmd = alias[k] or k
 
         local function return_first_line(args, callback)
             vim.validate {
@@ -763,6 +767,11 @@ M.exec = setmetatable({}, {
             add = return_first_line,
             restore = return_first_line,
             rm = exec_and_continue,
+            ['hash-object'] = function(args, callback)
+                args = args or {}
+                table.insert(args, 1, '-w')
+                return return_first_line(args, callback)
+            end,
             init = function(args, callback)
                 vim.validate {
                     args = { args, { 'string', 'table' }, true },
