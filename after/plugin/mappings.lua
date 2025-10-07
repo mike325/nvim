@@ -4,7 +4,7 @@ if not vim.keymap then
     vim.keymap = nvim.keymap
 end
 
-if not nvim.has { 0, 11 } then
+if vim.version.lt(vim.version(), { 0, 11 }) then
     local mapping_pairs = {
         arglist = '',
         tag = 't',

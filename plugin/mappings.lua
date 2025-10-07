@@ -315,7 +315,7 @@ vim.keymap.set('n', '=e', function()
     end
 end, { noremap = true, silent = true, desc = 'Fugitive Gedit shortcut' })
 
-if not nvim.has { 0, 10 } then
+if vim.version.lt(vim.version(), { 0, 10 }) then
     -- TODO: Make this accept movements and visual selections
     vim.keymap.set('n', 'gx', function()
         local cfile = vim.fn.expand '<cfile>'

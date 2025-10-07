@@ -16,6 +16,7 @@ local M = {
             '--codes',
             '--ranges',
             efm = {
+                '%f:%l:%c: (%t%n) %m',
                 '%f:%l:%c-%k: (%t%n) %m',
             },
         },

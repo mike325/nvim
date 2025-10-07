@@ -1,12 +1,10 @@
-local nvim = require 'nvim'
-
 local M = {}
 
 function M.toggle_virtual_lines(action, force)
     -- local action = opts.args:gsub('^%-+', '')
     local options = { virtual_text = not force }
 
-    if nvim.has { 0, 11 } then
+    if vim.version.ge(vim.version(), { 0, 11 }) then
         options.virtual_lines = not force
     end
 
@@ -20,7 +18,7 @@ function M.toggle_virtual_lines(action, force)
         end
     elseif action == 'lines' then
         options.virtual_text = nil
-    elseif not force and nvim.has { 0, 11 } then
+    elseif not force and vim.version.ge(vim.version(), { 0, 11 }) then
         options.virtual_text = false
     end
 

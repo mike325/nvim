@@ -8,7 +8,7 @@ if not nvim.plugins['nvim-treesitter'] then
         callback = function(args)
             local ft_mapping = {}
             local filetype = vim.bo[args.buf].filetype
-            if nvim.has { 0, 9 } then
+            if vim.version.ge(vim.version(), { 0, 9 }) then
                 ft_mapping.help = 'vimdoc'
             end
             vim.treesitter.start(args.buf, ft_mapping[filetype] or filetype)

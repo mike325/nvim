@@ -123,16 +123,6 @@ local simple_mini = {
             -- style = 'sign',
             signs = { add = '+', change = '~', delete = '-' },
         },
-        mappings = {
-            apply = 'gh',
-            reset = 'gH',
-            textobject = '',
-            -- TODO: Add support to jump to TS context
-            goto_first = '[C',
-            goto_last = ']C',
-            goto_prev = '[c',
-            goto_next = ']c',
-        },
         options = {
             algorithm = diffopts.algorithm or 'histogram',
             indent_heuristic = diffopts['indent-heuristic'],
@@ -146,7 +136,7 @@ local simple_mini = {
     },
 }
 
-if not nvim.has { 0, 10 } then
+if vim.version.lt(vim.version(), { 0, 10 }) then
     simple_mini.comment = {}
 end
 
@@ -793,21 +783,6 @@ if vim.g.minimal then
     end
 
     if mini.git then
-        nvim.command.set('Gwrite', function(opts)
-            local filename = (not opts.args or opts.args == '') and vim.api.nvim_buf_get_name(0) or opts.args
-            if filename == '' or filename:match '^%w+://' then
-                return
-            end
-
-            local cwd = vim.fs.normalize(vim.uv.cwd() or '.')
-            filename = vim.fs.normalize(filename)
-            cwd = sys.name == 'window' and string.format('%s:%s', (cwd:sub(1, 1):lower()), (cwd:sub(3))) or cwd
-            filename = (filename:gsub(string.format('^%s/', vim.pesc(cwd)), ''))
-
-            vim.cmd.write { filename, bang = opts.bang }
-            vim.cmd.Git { args = { 'add', filename } }
-        end, { bang = true, nargs = '?', complete = 'file' })
-
         nvim.command.set('Gvdiff', function(opts)
             local filename = (not opts.args or opts.args == '') and vim.api.nvim_buf_get_name(0) or opts.args
             if filename == '' or filename:match '^%w+://' then

@@ -146,7 +146,7 @@ if vim.bo.modifiable then
 end
 
 -- DEPRECATED: no longer available in 0.10
-if not nvim.has { 0, 10 } then
+if vim.version.lt(vim.version(), { 0, 10 }) then
     vim.opt.pastetoggle = '<f3>'
 end
 
@@ -168,7 +168,7 @@ vim.opt.diffopt:append {
     'algorithm:patience',
 }
 
-if nvim.has { 0, 9 } then
+if vim.version.ge(vim.version(), { 0, 9 }) then
     vim.opt.diffopt:append {
         'linematch:100',
     }
@@ -253,7 +253,7 @@ if executable 'nvr' then
     vim.env.snvr = 'nvr --servername ' .. vim.v.servername .. ' -cc split --remote-silent'
 end
 
-if nvim.has { 0, 9 } then
+if vim.version.ge(vim.version(), { 0, 9 }) then
     vim.opt.splitkeep = 'screen'
 end
 
@@ -264,7 +264,7 @@ local diagnostics_config = {
     severity_sort = true,
 }
 
-if nvim.has { 0, 11 } then
+if vim.version.ge(vim.version(), { 0, 11 }) then
     diagnostics_config.virtual_lines = false
     diagnostics_config.virtual_text = false
 

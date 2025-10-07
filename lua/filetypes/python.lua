@@ -7,7 +7,8 @@ local iswin = sys.name == 'windows'
 
 local plugins = require('nvim').plugins
 
-local line_length = '120'
+-- NOTE: Use Black standard
+local line_length = '88'
 local M = {
     formatprg = {
         black = {
@@ -20,7 +21,10 @@ local M = {
         },
         ruff = {
             'format',
-            '--line-length=' .. line_length,
+            '--preview',
+            efm = {
+                'Would reformat: %f',
+            },
         },
         autopep8 = {
             '-i',
@@ -58,7 +62,12 @@ local M = {
         ruff = {
             'check',
             '--respect-gitignore',
-            '--line-length=' .. line_length,
+            '--preview',
+            efm = {
+                '%f:%l:%c: %o%n %m',
+                -- '  --> %f:%l:%c',
+                '%f:%l:%c: %m',
+            },
         },
         flake8 = {
             '--max-line-length=' .. line_length,

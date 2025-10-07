@@ -163,7 +163,7 @@ function M.get_list_nodes(root_node, tsquery, get_text, buf, lang)
         end
     end
 
-    local insert_nodes = nvim.has { 0, 11 } and iter_nodes or insert_node
+    local insert_nodes = vim.version.ge(vim.version(), { 0, 11 }) and iter_nodes or insert_node
     for _, match, _ in query:iter_matches(root_node, buf) do
         for _, match_nodes in pairs(match) do
             insert_nodes(match_nodes)

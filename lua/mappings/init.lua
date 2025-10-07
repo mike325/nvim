@@ -14,6 +14,9 @@ local M = {
         '%f:%l: %tote: %m',
         '%f:%l:%c: %t%n %m',
         '%f:%l:%c:%t: %m',
+        '%f:%l:%c: (%t%n) %m',
+        '%f:%l:%c-%k: (%t%n) %m',
+        '%f:%l:%c: %o%n %m',
         '%f:%l:%c: %m',
         '%f:%l:%m',
         '%f: %trror: %m',
@@ -27,6 +30,9 @@ local M = {
         'Diff in %f:',
         '+++ %f',
         'reformatted %f',
+        'Would reformat: %f',
+        '%trror: cannot format %f: Cannot parse %l:c: %m',
+        '%trror: cannot format %f: %m',
     },
 }
 

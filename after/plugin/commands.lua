@@ -1,12 +1,7 @@
 local nvim = require 'nvim'
 local completions = RELOAD 'completions'
 
--- TODO: Lazy check for mini
-local has_mini = nvim.plugins['mini.nvim'] ~= nil or (vim.g.minimal and vim.F.npcall(require, 'mini.git') ~= nil)
-
-if not has_mini and not nvim.plugins['vim-fugitive'] then
-    nvim.command.set('Git', function(opts) end, { bang = true, nargs = '*' })
-
+if not nvim.plugins['vim-fugitive'] then
     nvim.command.set('Gwrite', function(opts)
         local filename = (not opts.args or opts.args == '') and vim.api.nvim_buf_get_name(0) or opts.args
         if filename == '' or filename:match '^%w+://' then

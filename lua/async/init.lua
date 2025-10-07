@@ -47,6 +47,17 @@ local M = {}
 ---@field stderr string[]
 ---@field output string[]
 
+--- Check if task was interrupted
+---@param signal number
+---@return boolean
+local function task_interrupted(signal)
+    return (
+        signal == vim.uv.constants.SIGINT
+        or signal == vim.uv.constants.SIGKILL
+        or signal == vim.uv.constants.SIGTERM
+    )
+end
+
 --- Get string repr of the given cmd
 ---@param cmd string|string[]
 ---@param cwd string?
@@ -63,7 +74,7 @@ end
 ---@param cwd string?
 function M.push_output(out, cmd, cwd)
     -- NOTE: don't push output of self cancel tasks
-    if out.signal ~= 7 and out.signal ~= 9 then
+    if not task_interrupted(out.signal) then
         ASYNC.output:push {
             cmd = cmd,
             cwd = cwd or vim.uv.cwd(),
@@ -201,7 +212,7 @@ local function process_exit(out, state_data, cmd, cwd, opts)
                 end
             end
         end
-    elseif out.signal ~= 7 and out.signal ~= 9 then
+    elseif not task_interrupted(out.signal) then
         local lines = vim.iter(vim.split(table.concat(state_data.output, ''), '\n'))
             :filter(function(l)
                 return not l:match '^%s*$'
@@ -236,8 +247,8 @@ local function process_exit(out, state_data, cmd, cwd, opts)
         end
     end
 
-    -- NOTE: Don't process callbacks if the task was killed
-    if opts.callbacks and (out.signal ~= 7 and out.signal ~= 9) then
+    -- NOTE: Don't process callbacks if the task was interrupted
+    if opts.callbacks and not task_interrupted(out.signal) then
         ---@type (fun(out: vim.SystemCompleted))[]
         local callbacks
         if vim.is_callable(opts.callbacks) then

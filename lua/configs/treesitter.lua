@@ -32,14 +32,7 @@ local languages = {
     'todotxt',
     'toml',
     'yaml',
-    -- Default languages
-    -- 'c',
-    -- 'lua',
-    -- 'markdown',
-    -- 'markdown_inline',
-    -- 'query',
-    -- 'vim',
-    -- 'vimdoc',
+    -- 'zig',
 }
 
 if nvim.executable 'tree-sitter' then

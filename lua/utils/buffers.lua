@@ -345,7 +345,8 @@ function M.format(opts)
     ---@type boolean?
     local whole_file = last - first == nvim.buf.line_count(bufnr) or opts.whole_file
 
-    local clients = nvim.has { 0, 11 } and vim.lsp.get_clients { bufnr = bufnr } or vim.lsp.buf_get_clients(0)
+    local clients = vim.version.ge(vim.version(), { 0, 11 }) and vim.lsp.get_clients { bufnr = bufnr }
+        or vim.lsp.buf_get_clients(bufnr)
     for _, client in pairs(clients) do
         if whole_file and client.server_capabilities.documentFormattingProvider then
             vim.lsp.buf.format {
