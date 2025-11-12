@@ -130,7 +130,11 @@ vim.api.nvim_create_autocmd({ 'BufNewFile', 'BufReadPre' }, {
         local file = args.file or vim.api.nvim_buf_get_name(buf)
         if vim.fn.getfsize(file) > (1024 * 1024) then -- 1MB
             vim.bo.swapfile = false
+            vim.undofile = false
             vim.b.bigfile = true
+            vim.b.minidiff_disable = true
+            vim.b.minigit_disable = true
+            vim.b.miniindentscope_disable = true
         end
     end,
 })
@@ -225,6 +229,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
                 func = function()
                     vim.lsp.buf.declaration()
                 end,
+                keymap = 'grd',
                 command = 'Declaration',
             },
             [methods.textDocument_implementation] = {
@@ -265,7 +270,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
                 func = function()
                     vim.lsp.buf.signature_help()
                 end,
-                keymap = 'grh',
+                keymap = 'grs',
                 command = 'Signature', -- default keymap C-s collide with custom tmux-leader
             },
             [methods.textDocument_definition] = {
@@ -311,6 +316,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
                     vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = bufnr }, { bufnr = bufnr })
                     vim.b.inlay_hints_enabled = vim.lsp.inlay_hint.is_enabled { bufnr = bufnr }
                 end,
+                keymap = 'grh',
                 command = 'InlayHintsToggle',
             },
             [methods.textDocument_formatting] = {

@@ -11,6 +11,8 @@ dap.adapters.nlua = function(callback, config)
     callback { type = 'server', host = config.host or '127.0.0.1', port = config.port or default_remote_nvim_port }
 end
 
+local utils = RELOAD 'utils.files'
+
 dap.configurations.lua = {
     {
         type = 'nlua',
@@ -18,17 +20,6 @@ dap.configurations.lua = {
         name = 'Attach to running Neovim instance',
     },
 }
-
-local utils = RELOAD 'utils.files'
-local lldb = utils.exepath 'lldb-dap'
-if not lldb then
-    for version = 8, 30 do
-        lldb = utils.exepath('lldb-dap-' .. tostring(version))
-        if lldb then
-            break
-        end
-    end
-end
 
 local function pythonPath()
     -- debugpy supports launching an application with a different interpreter
@@ -56,40 +47,6 @@ local function pythonPath()
     return utils.exepath 'python3' or utils.exepath 'python'
 end
 
-local cppdbg
-local vscode_extensions_dir = vim.fs.joinpath(vim.fs.normalize(vim.uv.os_homedir()), '.vscode', 'extensions')
-if utils.is_dir(vscode_extensions_dir) then
-    local is_windows = require('sys').name == 'windows'
-    for ext_dir in vim.iter(utils.get_dirs(vscode_extensions_dir)):map(vim.fs.basename) do
-        if ext_dir:match 'cpptools' then
-            local debugger = 'OpenDebugAD7'
-            if is_windows then
-                debugger = debugger .. '.exe'
-            end
-
-            cppdbg = vim.fs.joinpath(vscode_extensions_dir, ext_dir, 'debugAdapters', 'bin', debugger)
-            if utils.is_file(cppdbg) then
-                if not is_windows and not utils.is_executable(cppdbg) then
-                    utils.chmod_exec(cppdbg)
-                end
-                dap.adapters.cppdbg = {
-                    id = 'cppdbg',
-                    type = 'executable',
-                    command = is_windows and cppdbg:gsub('/', '\\') or cppdbg,
-                }
-            end
-        end
-    end
-end
-
-if lldb then
-    dap.adapters.lldb = {
-        type = 'executable',
-        command = require('sys').name == 'windows' and lldb:gsub('/', '\\') or lldb,
-        name = 'lldb',
-    }
-end
-
 if utils.executable 'python3' or utils.executable 'python' then
     dap.adapters.python = {
         type = 'executable',
@@ -111,9 +68,44 @@ if utils.executable 'python3' or utils.executable 'python' then
 end
 
 dap.configurations.cpp = {}
-if lldb then
+
+if utils.executable 'gdb' then
+    local out = vim.system({ 'gdb', '--version' }, { text = true }):wait()
+    if out.code == 0 then
+        local gdb_version = vim.version.parse(out.stdout, { strict = false })
+        if vim.version.gt(gdb_version, { 14, 1 }) then
+            dap.adapters.gdb = {
+                id = 'gdb',
+                type = 'executable',
+                command = 'gdb',
+                args = { '--quiet', '--interpreter=dap' },
+            }
+
+            table.insert(dap.configurations.cpp, {
+                name = 'Launch GDB',
+                type = 'gdb',
+                request = 'launch',
+                program = function()
+                    return vim.fn.input('Path to executable: ', '', 'file')
+                end,
+                cwd = '${workspaceFolder}',
+                stopOnEntry = true,
+                args = {},
+                runInTerminal = false,
+            })
+        end
+    end
+end
+
+if utils.executable 'lldb-dap' then
+    dap.adapters.lldb = {
+        type = 'executable',
+        command = 'lldb-dap',
+        name = 'lldb',
+    }
+
     table.insert(dap.configurations.cpp, {
-        name = 'Launch lldb-vscode',
+        name = 'Launch lldb-dap',
         type = 'lldb',
         request = 'launch',
         program = function()
@@ -126,19 +118,44 @@ if lldb then
     })
 end
 
-if cppdbg then
-    table.insert(dap.configurations.cpp, {
-        name = 'Launch cppdbg',
-        type = 'cppdbg',
-        request = 'launch',
-        program = function()
-            return vim.fn.input('Path to executable: ', '', 'file')
-        end,
-        cwd = '${workspaceFolder}',
-        stopOnEntry = true,
-        args = {},
-        runInTerminal = false,
-    })
+local cppdbg
+local vscode_extensions_dir = vim.fs.joinpath(vim.fs.normalize(vim.uv.os_homedir()), '.vscode', 'extensions')
+if utils.is_dir(vscode_extensions_dir) then
+    local is_windows = require('sys').name == 'windows'
+    for ext_dir in vim.iter(utils.get_dirs(vscode_extensions_dir)):map(vim.fs.basename) do
+        if ext_dir:match 'cpptools' then
+            local debugger = 'OpenDebugAD7'
+            if is_windows then
+                debugger = debugger .. '.exe'
+            end
+            cppdbg = vim.fs.joinpath(vscode_extensions_dir, ext_dir, 'debugAdapters', 'bin', debugger)
+            if utils.is_file(cppdbg) then
+                if not is_windows and not utils.is_executable(cppdbg) then
+                    utils.chmod_exec(cppdbg)
+                end
+                dap.adapters.cppdbg = {
+                    id = 'cppdbg',
+                    type = 'executable',
+                    command = vim.fs.normalize(cppdbg),
+                }
+            end
+        end
+    end
+
+    if cppdbg then
+        table.insert(dap.configurations.cpp, {
+            name = 'Launch cppdbg',
+            type = 'cppdbg',
+            request = 'launch',
+            program = function()
+                return vim.fn.input('Path to executable: ', '', 'file')
+            end,
+            cwd = '${workspaceFolder}',
+            stopOnEntry = true,
+            args = {},
+            runInTerminal = false,
+        })
+    end
 end
 
 if #dap.configurations.cpp == 0 then

@@ -648,9 +648,9 @@ if executable 'gh' then
         local gh = RELOAD 'utils.gh'
 
         local pr
-        if opts.args ~= '' then
+        if tonumber(opts.args) then
             pr = tonumber(opts.args)
-        elseif not opts.bang then
+        elseif not opts.bang and opts.args ~= 'current' then
             gh.list_repo_pr({}, function(list_pr)
                 local titles = vim.tbl_map(function(pull_request)
                     return pull_request.title
@@ -662,8 +662,10 @@ if executable 'gh' then
                         if choice ~= '' then
                             local pr_id = vim.tbl_filter(function(pull_request)
                                 return pull_request.title == choice
-                            end, list_pr)[1].number
-                            gh.open_pr(pr_id)
+                            end, list_pr)[1]
+                            if pr_id then
+                                gh.open_pr(pr_id.number)
+                            end
                         end
                     end)
                 )
@@ -673,7 +675,8 @@ if executable 'gh' then
 
         gh.open_pr(pr)
     end, {
-        nargs = 0,
+        nargs = '?',
+        complete = comp_utils.get_completion { 'current' },
         bang = true,
         desc = 'Open PR in the browser',
     })
