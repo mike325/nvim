@@ -67,7 +67,9 @@ local simple_mini = {
             ['`'] = { action = 'closeopen', pair = '``', neigh_pattern = '[^\\].', register = { cr = false } },
         },
     },
-    sessions = {},
+    sessions = {
+        directory = sys.sessions,
+    },
     map = {},
     align = {
         mappings = {
@@ -331,6 +333,19 @@ if mini.sessions then
         mkdir(sessions_dir)
     end
 
+    local function pick_session(cb)
+        local sessions = require('utils.files').get_files(sessions_dir)
+        vim.ui.select(
+            vim.iter(sessions):map(vim.fs.basename):totable(),
+            { prompt = 'Select session file: ' },
+            vim.schedule_wrap(function(choice)
+                if choice then
+                    cb(choice)
+                end
+            end)
+        )
+    end
+
     nvim.command.set('SessionSave', function(opts)
         local session = opts.args
         if session == '' then
@@ -351,17 +366,9 @@ if mini.sessions then
         elseif opts.bang then
             mini.sessions.read(mini.sessions.get_latest(), { force = false })
         else
-            local sessions = require('utils.files').get_files(sessions_dir)
-            vim.ui.select(
-                vim.iter(sessions):map(vim.fs.basename):totable(),
-                { prompt = 'Select session file: ' },
-                vim.schedule_wrap(function(choice)
-                    if choice then
-                        local session_name = choice
-                        mini.sessions.read(session_name, { force = false })
-                    end
-                end)
-            )
+            pick_session(function(session_name)
+                mini.sessions.read(session_name, { force = false })
+            end)
         end
     end, { bang = true, nargs = '?', complete = completions.session_files })
 
@@ -378,16 +385,7 @@ if mini.sessions then
         end
 
         if session == '' then
-            local sessions = require('utils.files').get_files(sessions_dir)
-            vim.ui.select(
-                vim.iter(sessions):map(vim.fs.basename):totable(),
-                { prompt = 'Select session file: ' },
-                vim.schedule_wrap(function(choice)
-                    if choice then
-                        edit_sessions_file(choice)
-                    end
-                end)
-            )
+            pick_session(edit_sessions_file)
         else
             edit_sessions_file(session)
         end
@@ -407,16 +405,7 @@ if mini.sessions then
         end
 
         if session == '' then
-            local sessions = require('utils.files').get_files(sessions_dir)
-            vim.ui.select(
-                vim.iter(sessions):map(vim.fs.basename):totable(),
-                { prompt = 'Select session file: ' },
-                vim.schedule_wrap(function(choice)
-                    if choice then
-                        delete_session(choice)
-                    end
-                end)
-            )
+            pick_session(delete_session)
         else
             delete_session(session)
         end

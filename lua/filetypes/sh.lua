@@ -11,8 +11,8 @@ local M = {
             efm = {
                 '%f:%l:%c: %trror: %m. [SC%n]',
                 '%f:%l:%c: %tarning: %m. [SC%n]',
-                '%f:%l:%c: %tote: %m. [SC%n]',
-                '%f:%l:%c: %tint: %m. [SC%n]',
+                '%f:%l:%c: %tote: %m [SC%n]',
+                '%f:%l:%c: %tint: %m [SC%n]',
             },
         },
     },

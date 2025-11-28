@@ -1,45 +1,33 @@
-local config_dirs = {
-    'backup',
-    'undo',
-    'sessions',
-}
-
 local executable = function(exe)
     return vim.fn.executable(exe) == 1
 end
 
 local filereadable = function(filename)
-    return vim.fn.executable(filename) == 1
-end
-
-local forward_slash = function(str)
-    return str:gsub('\\', '/')
+    return vim.uv.fs_stat(filename) ~= nil
 end
 
 local function system_name()
-    local name = jit.os:lower()
-    return name
+    return jit.os:lower()
 end
 
 local function homedir()
-    local home = vim.uv.os_homedir()
-    return forward_slash(home)
+    return vim.fs.normalize(vim.uv.os_homedir())
 end
 
 local function dirname()
-    return forward_slash(vim.fn.stdpath 'config')
+    return vim.fs.normalize(vim.fn.stdpath 'config')
 end
 
 local function cachedir()
-    return forward_slash(vim.fn.stdpath 'cache')
+    return vim.fs.normalize(vim.fn.stdpath 'cache')
 end
 
 local function datadir()
-    return forward_slash(vim.fn.stdpath 'data')
+    return vim.fs.normalize(vim.fn.stdpath 'data')
 end
 
 local function luajit_version()
-    return vim.split(jit.version, ' ')[2]
+    return jit and vim.split(jit.version, ' ')[2] or nil
 end
 
 local function version()
@@ -54,21 +42,23 @@ local function has_sqlite()
     local os_name = system_name()
     -- TODO: search for dll in windows, .so in unix
     if os_name == 'windows' then
-        local sqlite_path = forward_slash(cachedir() .. '/sqlite3.dll')
+        local sqlite_path = vim.fs.normalize(cachedir() .. '/sqlite3.dll')
         if filereadable(sqlite_path) then
             vim.g.sqlite_clib_path = sqlite_path
             return true
         end
         return false
     end
-    if filereadable(forward_slash(homedir() .. '/.local/lib/libsqlite.so')) then
-        vim.g.sqlite_clib_path = forward_slash(homedir() .. '/.local/lib/libsqlite.so')
+
+    local libsqlite = vim.fs.normalize(vim.fs.joinpath(homedir(), '.local', 'lib', 'libsqlite.so'))
+    if filereadable(libsqlite) then
+        vim.g.sqlite_clib_path = libsqlite
     end
     return executable 'sqlite3'
 end
 
 local function db_root_path()
-    local root = forward_slash(vim.fn.stdpath 'data' .. '/databases')
+    local root = vim.fs.normalize(vim.fs.joinpath(vim.fn.stdpath 'data', 'databases'))
     if vim.fn.isdirectory(root) ~= 1 then
         vim.fn.mkdir(root, 'p')
     end
@@ -96,9 +86,8 @@ function sys.tmp(filename)
     return tmpdir .. filename
 end
 
-for _, dir_name in ipairs(config_dirs) do
-    sys[dir_name] = sys.data .. '/' .. dir_name
+for directory in vim.iter { 'backup', 'undo', 'sessions' } do
+    sys[directory] = vim.fs.joinpath(sys.data, directory)
 end
-sys.swap = vim.fn.stdpath 'state' .. '/swap'
-
+sys.swap = vim.fs.joinpath(vim.fn.stdpath 'state', 'swap')
 return sys

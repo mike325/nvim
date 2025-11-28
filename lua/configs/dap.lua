@@ -50,8 +50,7 @@ end
 if utils.executable 'python3' or utils.executable 'python' then
     dap.adapters.python = {
         type = 'executable',
-        command = pythonPath(),
-        args = { '-m', 'debugpy.adapter' },
+        command = 'debugpy',
     }
 
     dap.configurations.python = {
@@ -311,14 +310,12 @@ dap.listeners.before.event_terminated['DapMappings'] = function()
     end
 end
 
-local nvim = require 'nvim'
-nvim.command.set('Dap', function(opts)
-    local subcmd = opts.args:gsub('^%-+', '')
-
+local function get_dap_cmds()
     local cmd_func = {
         stop = stop_debug_session,
         start = start_debug_session,
         continue = start_debug_session,
+        pause = dap.pause,
         restart = dap.restart,
         repl = dap.repl.toggle,
         breakpoint = dap.toggle_breakpoint,
@@ -330,9 +327,21 @@ nvim.command.set('Dap', function(opts)
         -- remote_run = require('utils.debug').remote_dap_run,
     }
 
+    return cmd_func
+end
+
+local nvim = require 'nvim'
+nvim.command.set('Dap', function(opts)
+    local subcmd = opts.args:gsub('^%-+', '')
+
+    local cmd_func = get_dap_cmds()
     if cmd_func[subcmd] then
         cmd_func[subcmd]()
     end
-end, { desc = 'Manage DAP sessions', nargs = 1, complete = require('completions').dap_commands })
+end, {
+    desc = 'Manage DAP sessions',
+    nargs = 1,
+    complete = require('completions.utils').get_completion(vim.tbl_keys(get_dap_cmds())),
+})
 
 return true
