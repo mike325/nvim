@@ -383,7 +383,6 @@ local options = {
     virtualedit = '',
     wrap = '',
     modifiable = '',
-    scrollbind = 'S',
     readonly = 'R',
 }
 
@@ -396,6 +395,18 @@ toggle_option('diff', nil, function(action)
     local cmd = diffcmds[action] or (vim.wo.diff and diffcmds.disable or diffcmds.enable)
     local win = vim.api.nvim_get_current_win()
     vim.cmd.windo(cmd)
+    vim.api.nvim_tabpage_set_win(0, win)
+    vim.print(' ' .. cmd)
+end)
+
+toggle_option('scrollbind', 'S', function(action)
+    local scrollbind = {
+        enable = 'scrollbind',
+        disable = 'noscrollbind',
+    }
+    local cmd = scrollbind[action] or (vim.wo.scrollbind and scrollbind.disable or scrollbind.enable)
+    local win = vim.api.nvim_get_current_win()
+    vim.cmd.windo(string.format('setlocal %s', cmd))
     vim.api.nvim_tabpage_set_win(0, win)
     vim.print(' ' .. cmd)
 end)
