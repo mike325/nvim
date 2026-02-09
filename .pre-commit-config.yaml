@@ -21,7 +21,7 @@ repos:
         description: run linting for python files
         language: system
         entry: ruff
-        args: ['check', '--respect-gitignore', '--output-format=concise']
+        args: ['check', '--respect-gitignore']
         types: [python]
       - id: ruff_format
         name: ruff format

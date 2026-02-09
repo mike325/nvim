@@ -63,9 +63,11 @@ local M = {
             'check',
             '--respect-gitignore',
             '--preview',
+            -- [concise, full, json, json-lines, junit, grouped, github, gitlab, pylint, rdjson, azure, sarif]
+            '--output-format=concise',
             efm = {
+                '%.%#> %f:%l:%c',
                 '%f:%l:%c: %o%n %m',
-                -- '  --> %f:%l:%c',
                 '%f:%l:%c: %m',
             },
         },
