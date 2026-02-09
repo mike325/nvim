@@ -574,7 +574,7 @@ function M.alternate(opts)
         end
 
         if #candidates > 0 then
-            alternates[buf] = require('utils.tables').uniq_unorder(candidates)
+            alternates[buf] = vim.list.unique(candidates)
             vim.g.alternates = alternates
         end
     else

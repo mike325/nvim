@@ -334,7 +334,7 @@ function M.modified_files(location, callback)
                 vim.list_extend(files, vim.tbl_keys(git_files))
             end
         end
-        return RELOAD('utils.tables').uniq_unorder(files)
+        return vim.list.unique(files)
     end
 
     if not callback then

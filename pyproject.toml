@@ -57,14 +57,18 @@ select = [
 ]
 
 ignore = [
-    "E203",  # Whitespace before :
-    "E226",  # Whitespace around operators
-    "E231",  # Missing whitespace after ,
-    "E261",  # 2 spaces before inline comment
-    "E262",  # Comments should start with #
-    "E265",  # Block comment should start with #
-    "E402",  # module level import not at top file
-    "UP006", # Use `list` instead of `List`
+    "E203",     # Whitespace before :
+    "E226",     # Whitespace around operators
+    "E231",     # Missing whitespace after ,
+    "E261",     # 2 spaces before inline comment
+    "E262",     # Comments should start with      #
+    "E265",     # Block comment should start with #
+    "E402",     # module level import not at top file
+    "ERA001",   # Comented code
+    "PLC0415",  # `import` should be at the top-level of a file
+    "PLW0602",  # Using global for but no assignment is done
+    "PLW0603",  # Using the global statement to update `_has_colors` is discouraged
+    # "UP006",  # Use `list` instead of `List`
 ]
 
 unfixable = []
@@ -73,7 +77,16 @@ unfixable = []
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
 [tool.ruff.lint.isort]
-section-order = ["future", "standard-library", "system-library", "third-party", "component", "first-party", "local-folder"]
+section-order = [
+    "future",
+    "standard-library",
+    "system-library",
+    "third-party",
+    "component",
+    "first-party",
+    "local-folder"
+]
+
 [tool.ruff.format]
 # Like Black, use double quotes for strings.
 quote-style = "double"

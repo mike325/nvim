@@ -10,7 +10,7 @@ import sys
 from collections import namedtuple
 from collections.abc import Sequence
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, TextIO, Union, cast
+from typing import Any, Optional, TextIO, Union, cast
 
 _header = """
                     -`
@@ -85,7 +85,7 @@ def color_str(msg: Any, color: str, bg: Optional[str] = None) -> str:
     return msg if isinstance(msg, str) else str(msg)
 
 
-def clear_list(str_list: List[str]) -> List[str]:
+def clear_list(str_list: list[str]) -> list[str]:
     tmp = []
     empty_str = re.compile(r"^\s*$")
     for i in str_list:
@@ -94,11 +94,11 @@ def clear_list(str_list: List[str]) -> List[str]:
     return tmp
 
 
-def uniq_list(duplicates: List[Any]) -> List[Any]:
+def uniq_list(duplicates: list[Any]) -> list[Any]:
     return list(set(duplicates))
 
 
-def merge_uniq(src: List[Any], dest: List[Any]) -> List[Any]:
+def merge_uniq(src: list[Any], dest: list[Any]) -> list[Any]:
     tmp_src = set(src)
     tmp_dest = set(dest)
     return list(tmp_src.union(tmp_dest))
@@ -109,8 +109,8 @@ class Job:
     """docstring for Job"""
 
     cmd: Sequence[str]
-    stdout: List[str] = field(init=False, repr=False)
-    stderr: List[str] = field(init=False, repr=False)
+    stdout: list[str] = field(init=False, repr=False)
+    stderr: list[str] = field(init=False, repr=False)
     pid: int = field(init=False)
     rc: int = field(init=False)
 
@@ -124,7 +124,7 @@ class Job:
     #     """
     #     self.cmd = cmd
 
-    def head(self, size: int = 10) -> List[str]:
+    def head(self, size: int = 10) -> list[str]:
         """Emulate head shell util
 
         Args:
@@ -137,7 +137,7 @@ class Job:
             raise Exception("Size cannot be less than 0")
         return self.stdout[0:size]
 
-    def tail(self, size: int = 10) -> List[str]:
+    def tail(self, size: int = 10) -> list[str]:
         """Emulate tail shell util
 
         Args:
@@ -178,7 +178,7 @@ class Job:
             stdout = cast(TextIO, process.stdout).readline()
             stderr = cast(TextIO, process.stderr).readline()
             # if (stdout == b"" and stderr == b"") and process.poll() is not None: # for python 3.6
-            if (stdout == "" and stderr == "") and process.poll() is not None:
+            if (not stdout and not stderr) and process.poll() is not None:
                 break
             elif stdout:
                 # stdout = stdout.rstrip().decode("utf-8") # python 3.6
@@ -250,7 +250,7 @@ def createLogger(
         class PrimitiveFormatter(logging.Formatter):
             """Logging colored formatter, adapted from https://stackoverflow.com/a/56944256/3638629"""
 
-            def __init__(self, fmt, log_colors: Optional[Dict[str, str]] = None):
+            def __init__(self, fmt, log_colors: Optional[dict[str, str]] = None):
                 global _has_colors
 
                 super().__init__()
@@ -311,7 +311,8 @@ def createLogger(
 
     logger.addHandler(stdout_handler)
 
-    if file_level > 0 and file_level < 100 and filename is not None:
+    MAX_LOGGING_LEVEL: int = 100
+    if file_level > 0 and file_level < MAX_LOGGING_LEVEL and filename is not None:
         with open(filename, "a") as log:
             log.write(_header)
             # log.write(f'\nDate: {datetime.datetime.date()}')
@@ -350,11 +351,11 @@ def _str_to_logging(level: Union[int, str]) -> int:
             level = abs(int(level) - 100)
         except Exception:
             level = cast(str, level).lower()
-            if level == "debug" or level == "verbose":
+            if level in {"debug", "verbose"}:
                 level = logging.DEBUG
             elif level == "info":
                 level = logging.INFO
-            elif level == "warn" or level == "warning":
+            elif level in {"warn", "warning"}:
                 level = logging.WARN
             elif level == "error":
                 level = logging.ERROR
@@ -374,19 +375,25 @@ def _parseArgs():
 
     """
 
+    MIN_NEG_LEN: int = 4
+
     class NegateAction(argparse.Action):
-        def __call__(self, parser, namespace, values, option_string=None):
-            if option_string is not None and len(option_string) < 4:
-                setattr(namespace, self.dest, True)
-            else:
-                setattr(namespace, self.dest, option_string[2:4] != "no")
+        def __call__(self, parser, namespace, values, option_string: Optional[str] = None):
+            if option_string is not None:
+                if len(option_string) < MIN_NEG_LEN:
+                    setattr(namespace, self.dest, True)
+                else:
+                    setattr(namespace, self.dest, option_string[2:MIN_NEG_LEN] != "no")
 
     class NegateActionWithArg(argparse.Action):
-        def __call__(self, parser, namespace, values, option_string=None):
-            if option_string is not None and len(option_string) < 4:
-                setattr(namespace, self.dest, True if values is None or values == "" else values)
-            elif option_string[2:4] == "no":
-                setattr(namespace, self.dest, False)
+        def __call__(self, parser, namespace, values, option_string: Optional[str] = None):
+            if option_string is not None:
+                if len(option_string) < MIN_NEG_LEN:
+                    setattr(namespace, self.dest, True if values is None or not values else values)
+                elif option_string[2:MIN_NEG_LEN] == "no":
+                    setattr(namespace, self.dest, False)
+                else:
+                    setattr(namespace, self.dest, values)
             else:
                 setattr(namespace, self.dest, values)
 
@@ -500,14 +507,14 @@ def main():
     try:
         pass
     except (Exception, KeyboardInterrupt) as e:
-        _log.exception(f"Halting due to {str(e.__class__.__name__)} exception")
+        _log.exception(f"Halting due to {e.__class__.__name__!s} exception")
         errors = 1
 
     return errors
 
 
 if __name__ == "__main__":
-    exit(main())
+    sys.exit(main())
 else:
     _log = createLogger(
         stdout_level=_str_to_logging("INFO"),

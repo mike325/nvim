@@ -10,12 +10,6 @@ repos:
         entry: "[ ]+$"
         args: []
         types: [text]
-      - id: check-yaml
-        name: check-yaml
-        description: Check yaml format
-        language: system
-        entry: check-yaml
-        types: [yaml]
       - id: check-json
         name: check-json
         description: Check json format
@@ -27,14 +21,14 @@ repos:
         description: run linting for python files
         language: system
         entry: ruff
-        args: ['check', '--respect-gitignore', '--line-length=85']
+        args: ['check', '--respect-gitignore', '--output-format=concise']
         types: [python]
       - id: ruff_format
         name: ruff format
         description: run formatting for python files
         language: system
         entry: ruff
-        args: ['format', '--respect-gitignore', '--check', '--line-length=85']
+        args: ['format', '--respect-gitignore', '--check']
         types: [python]
       - id: shellcheck
         name: shellcheck

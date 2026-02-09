@@ -22,7 +22,7 @@ completions = vim.tbl_extend('force', completions, {
         local gitstatus = require('utils.git').status()
         local files = vim.tbl_keys(gitstatus.workspace)
         vim.list_extend(files, gitstatus.untracked)
-        return utils.general_completion(arglead, cmdline, cursorpos, require('utils.tables').uniq_unorder(files))
+        return utils.general_completion(arglead, cmdline, cursorpos, vim.list.unique(files))
     end,
     gitfiles_stage = function(arglead, cmdline, cursorpos)
         local utils = require 'completions.utils'
