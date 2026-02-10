@@ -17,7 +17,7 @@ neogen.setup {
         },
         python = {
             template = {
-                annotation_convention = vim.g.python_annotation or 'google_docstrings',
+                annotation_convention = vim.g.python_annotation or 'reST',
             },
         },
     },

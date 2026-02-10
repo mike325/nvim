@@ -60,8 +60,14 @@ function M.get_linter()
         vim.list_extend(cmd, M.makeprg[cmd[1]])
     else
         local exe = {
-            sys.home .. '/.luarocks/bin/luacheck',
-            vim.fn.stdpath('cache'):gsub('\\', '/') .. '/packer_hererocks/' .. sys.luajit .. '/bin/luacheck',
+            vim.fs.joinpath(vim.uv.os_homedir(), '.luarocks', 'bin', 'luacheck'),
+            vim.fs.joinpath(
+                vim.fn.stdpath 'cache',
+                'packer_hererocks',
+                sys.luajit,
+                'bin',
+                'luacheck'
+            ),
         }
         for i = 1, #exe do
             if is_file(exe[i]) then

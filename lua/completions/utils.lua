@@ -36,11 +36,7 @@ local function filter(word, candidates)
         return (MiniFuzzy.filtersort(word, candidates))
     end
 
-    local split_components = require('utils.strings').split_components
-    local pattern = table.concat(split_components(word, '.'), '.*')
-    return vim.tbl_filter(function(candidate)
-        return candidate:lower():match(pattern) ~= nil
-    end, candidates) or {}
+    return vim.fn.matchfuzzy(candidates, word, { matchseq = true }) or {}
 end
 
 ---@param arglead string

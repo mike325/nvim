@@ -12,7 +12,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass, field
 from typing import Any, Optional, TextIO, Union, cast
 
-_header = """
+_header: str = """
                     -`
     ...            .o+`
  .+++s+   .h`.    `ooo/
@@ -86,7 +86,7 @@ def color_str(msg: Any, color: str, bg: Optional[str] = None) -> str:
 
 
 def clear_list(str_list: list[str]) -> list[str]:
-    tmp = []
+    tmp: list[str] = []
     empty_str = re.compile(r"^\s*$")
     for i in str_list:
         if i and not empty_str.match(i):
@@ -229,7 +229,7 @@ def createLogger(
         Logger with file and tty handlers
 
     """
-    global _has_colors
+    global _has_colors  # noqa: PLW0603
 
     _has_colors = color
 
@@ -241,7 +241,7 @@ def createLogger(
     ColorFormatter: Any = None
     Formatter: Any = None
     try:
-        from colorlog import ColoredFormatter
+        from colorlog import ColoredFormatter  # noqa: PLC0415
 
         Formatter = ColoredFormatter
         ColorFormatter = ColoredFormatter
@@ -250,15 +250,13 @@ def createLogger(
         class PrimitiveFormatter(logging.Formatter):
             """Logging colored formatter, adapted from https://stackoverflow.com/a/56944256/3638629"""
 
-            def __init__(self, fmt, log_colors: Optional[dict[str, str]] = None):
-                global _has_colors
-
+            def __init__(self, fmt: str, log_colors: Optional[dict[str, str]] = None):
                 super().__init__()
                 self.fmt = fmt
 
-                self.FORMATS = {}
+                self.FORMATS: dict[int, str] = {}
                 if _has_colors:
-                    log_colors = log_colors if log_colors is not None else {}
+                    log_colors: dict[str, str] = log_colors if log_colors is not None else {}
 
                     log_colors["DEBUG"] = log_colors.get("DEBUG", COLOR.magenta)
                     log_colors["INFO"] = log_colors.get("INFO", COLOR.green)
@@ -292,7 +290,7 @@ def createLogger(
 
     stdout_handler = logging.StreamHandler(sys.stdout)
     stdout_handler.setLevel(stdout_level)
-    logformat = "{color}%(levelname)-8s | %(message)s"
+    logformat = "{color}%(levelname)-8s | %(message)s"  # noqa: RUF027
     logformat = logformat.format(
         color="%(log_color)s" if has_color_formatter else "",
         # reset='%(reset)s' if has_color_formatter else '',
@@ -313,7 +311,7 @@ def createLogger(
 
     MAX_LOGGING_LEVEL: int = 100
     if file_level > 0 and file_level < MAX_LOGGING_LEVEL and filename is not None:
-        with open(filename, "a") as log:
+        with open(filename, "a", encoding="utf-8") as log:
             log.write(_header)
             # log.write(f'\nDate: {datetime.datetime.date()}')
             log.write(f"\nAuthor:   {__author__}\nVersion:  {__version__}\n\n")
@@ -379,7 +377,7 @@ def _parseArgs():
 
     class NegateAction(argparse.Action):
         def __call__(self, parser, namespace, values, option_string: Optional[str] = None):
-            if option_string is not None:
+            if option_string:
                 if len(option_string) < MIN_NEG_LEN:
                     setattr(namespace, self.dest, True)
                 else:
@@ -387,9 +385,13 @@ def _parseArgs():
 
     class NegateActionWithArg(argparse.Action):
         def __call__(self, parser, namespace, values, option_string: Optional[str] = None):
-            if option_string is not None:
+            if option_string:
                 if len(option_string) < MIN_NEG_LEN:
-                    setattr(namespace, self.dest, True if values is None or not values else values)
+                    setattr(
+                        namespace,
+                        self.dest,
+                        True if values is None or not values else values,
+                    )
                 elif option_string[2:MIN_NEG_LEN] == "no":
                     setattr(namespace, self.dest, False)
                 else:
@@ -475,7 +477,7 @@ def main():
         exit code, 0 in success any other integer in failure
 
     """
-    global _log, _has_colors
+    global _log, _has_colors  # noqa: PLW0603
 
     args = _parseArgs()
 
@@ -503,7 +505,7 @@ def main():
     # _log.warning('This is a WARNing message')
     # _log.error('This is a ERROR message')
 
-    errors = 0
+    errors: int = 0
     try:
         pass
     except (Exception, KeyboardInterrupt) as e:

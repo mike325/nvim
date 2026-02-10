@@ -370,9 +370,11 @@ nvim.command.set('Wall', function()
         return vim.bo[buf].modified and not vim.bo[buf].readonly
     end, vim.api.nvim_list_bufs())
     for _, buf in ipairs(modified) do
-        vim.api.nvim_buf_call(buf, function()
-            vim.cmd.update { mods = { noautocmd = true } }
-        end)
+        if vim.api.nvim_buf_get_name(buf) ~= '' then
+            vim.api.nvim_buf_call(buf, function()
+                vim.cmd.update { mods = { noautocmd = true } }
+            end)
+        end
     end
 end, { desc = 'Save all modified buffers' })
 

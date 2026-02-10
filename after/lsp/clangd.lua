@@ -37,6 +37,30 @@ local default_cmd = {
     '--pch-storage=disk',
 }
 
+local function get_log_level()
+    if vim.lsp.log.get_level() <= vim.log.levels.DEBUG then
+        return '--log=verbose'
+    elseif vim.lsp.log.get_level() < vim.log.levels.ERROR then
+        return '--log=info'
+    end
+    return '--log=error'
+end
+
+local function get_global_config()
+    local sysname = vim.uv.os_uname().sysname:lower()
+    local home = vim.uv.os_homedir()
+    local xdg_config_home = vim.env.XDG_CONFIG_HOME or vim.fs.joinpath(home, '.config')
+    local clangd_config = vim.fs.joinpath('clangd', 'clangd_config.yaml')
+
+    if sysname:match '^windows' then
+        return vim.fs.normalize(vim.fs.joinpath(vim.env.USERPROFILE, 'AppData', 'Local', clangd_config))
+    elseif sysname == 'linux' then
+        return vim.fs.normalize(vim.fs.joinpath(xdg_config_home, clangd_config))
+    end
+
+    return vim.fs.normalize(vim.fs.joinpath(home, 'Library', 'Preferences', clangd_config))
+end
+
 return {
     -- cmd = default_cmd,
     cmd = function(dispatchers, config, dummy)
@@ -48,71 +72,57 @@ return {
         local root_dir = vim.fs.root(0, root_markers) or vim.uv.cwd()
         root_dir = vim.fs.normalize(vim.uv.fs_realpath(root_dir))
 
-        if vim.lsp.log.get_level() <= vim.log.levels.DEBUG then
-            table.insert(cmd, '--log=verbose')
-        elseif vim.lsp.log.get_level() < vim.log.levels.ERROR then
-            table.insert(cmd, '--log=info')
-        else
-            table.insert(cmd, '--log=error')
-        end
+        table.insert(cmd, get_log_level())
 
-        local home = vim.uv.os_homedir()
-        local xdg_config_home = vim.env.XDG_CONFIG_HOME or vim.fs.joinpath(home, '.config')
-        local clangd_config = vim.fs.joinpath('clangd', 'clangd_config.yaml')
-
-        local sysname = vim.uv.os_uname().sysname:lower()
-        local global_config
-        if sysname:match '^windows' then
-            global_config = vim.fs.joinpath(vim.env.USERPROFILE, 'AppData', 'Local', clangd_config)
-        elseif sysname == 'linux' then
-            global_config = vim.fs.joinpath(xdg_config_home, clangd_config)
-        else
-            global_config = vim.fs.joinpath(home, 'Library', 'Preferences', clangd_config)
-        end
-
-        global_config = vim.fs.normalize(global_config)
-
-        if vim.uv.fs_stat(global_config) or vim.fs.root(0, { '.clangd' }) then
+        local global_config = get_global_config()
+        local local_config
+        if vim.uv.fs_stat(global_config)  then
             table.insert(cmd, '--enable-config')
         else
-            -- https://clangd.llvm.org/config.html
-            if not vim.uv.fs_stat(global_config) and not vim.fs.root(0, { '.clangd' }) then
-                local db_path = '--compile-commands-dir=%s'
-                if vim.env.CLEARCASE_ROOT and not vim.fs.root(0, { '.git' }) then
-                    root_dir = '/vobs/litho'
-                    table.insert(cmd, db_path:format(root_dir))
-                else
-                    -- NOTE: is this needed ?
-                    local db_loc = root_dir
-                    if vim.uv.fs_stat(vim.fs.joinpath(root_dir, 'build', compile_db)) then
-                        db_loc = vim.fs.joinpath(root_dir, 'build', compile_db)
-                    end
-                    table.insert(cmd, db_path:format(db_loc))
-                end
-            end
-
-            if vim.t.clangd_indexer or vim.g.clangd_indexer or vim.env.CLANGD_INDEXER then
-                if vim.t.clangd_indexer then
-                    table.insert(cmd, '--remote-index-address=' .. vim.t.clangd_indexer)
-                elseif vim.g.clangd_indexer then
-                    table.insert(cmd, '--remote-index-address=' .. vim.g.clangd_indexer)
-                elseif vim.env.CLANGD_INDEXER then
-                    table.insert(cmd, '--remote-index-address=' .. vim.env.CLANGD_INDEXER)
-                end
-
-                if require('utils.files').is_dir(vim.fs.joinpath(root_dir, '.vscode_clangd_setup')) then
-                    table.insert(cmd, '--project-root=' .. vim.fs.joinpath(root_dir, '.vscode_clangd_setup'))
-                elseif vim.env.CLEARCASE_ROOT then
-                    table.insert(cmd, '--project-root=/vobs')
-                else
-                    table.insert(cmd, '--project-root=' .. root_dir)
-                end
+            local_config = vim.fs.root(0, { '.clangd' })
+            if vim.uv.fs_stat(local_config or '') then
+                table.insert(cmd, '--enable-config')
             end
         end
 
-        if sysname == 'linux' then
-            table.insert(cmd, '--malloc-trim')
+        -- https://clangd.llvm.org/config.html
+        if not vim.uv.fs_stat(global_config) and not vim.uv.fs_stat(local_config or '') then
+            local db_path = '--compile-commands-dir=%s'
+            if vim.env.CLEARCASE_ROOT and not vim.fs.root(0, { '.git' }) then
+                root_dir = '/vobs/litho'
+                table.insert(cmd, db_path:format(root_dir))
+            else
+                -- NOTE: is this needed ?
+                local db_loc = root_dir
+                if vim.uv.fs_stat(vim.fs.joinpath(root_dir, 'build', compile_db)) then
+                    db_loc = vim.fs.joinpath(root_dir, 'build', compile_db)
+                end
+                table.insert(cmd, db_path:format(db_loc))
+            end
         end
+
+        if vim.t.clangd_indexer or vim.g.clangd_indexer or vim.env.CLANGD_INDEXER then
+            if vim.t.clangd_indexer then
+                table.insert(cmd, '--remote-index-address=' .. vim.t.clangd_indexer)
+            elseif vim.g.clangd_indexer then
+                table.insert(cmd, '--remote-index-address=' .. vim.g.clangd_indexer)
+            elseif vim.env.CLANGD_INDEXER then
+                table.insert(cmd, '--remote-index-address=' .. vim.env.CLANGD_INDEXER)
+            end
+
+            if require('utils.files').is_dir(vim.fs.joinpath(root_dir, '.vscode_clangd_setup')) then
+                table.insert(cmd, '--project-root=' .. vim.fs.joinpath(root_dir, '.vscode_clangd_setup'))
+            elseif vim.env.CLEARCASE_ROOT then
+                table.insert(cmd, '--project-root=/vobs')
+            else
+                table.insert(cmd, '--project-root=' .. root_dir)
+            end
+        end
+
+        -- local sysname = vim.uv.os_uname().sysname:lower()
+        -- if sysname == 'linux' then
+        --     table.insert(cmd, '--malloc-trim')
+        -- end
 
         return dummy and cmd or vim.lsp.rpc.start(cmd, dispatchers, config or { cwd = root_dir })
     end,

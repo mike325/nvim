@@ -5,8 +5,8 @@ return {
         'vimwiki/vimwiki',
         init = function()
             vim.g.vimwiki_list = {
-                { path = '~/notes/', syntax = 'markdown', ext = '.md' },
-                { path = '~/work/', syntax = 'markdown', ext = '.md' },
+                { path = '~/repos/notes/', syntax = 'markdown', ext = '.md' },
+                { path = '~/repos/work/', syntax = 'markdown', ext = '.md' },
             }
             vim.g.vimwiki_hl_headers = 1
             vim.g.vimwiki_hl_cb_checked = 2

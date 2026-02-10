@@ -6,8 +6,16 @@ readme = "README.md"
 authors = [{ name = "Foo", email = "EXAMPLE@gmail.com" }]
 license = { text = "MIT" }
 
+[tool.ty.environment]
+extra-paths = [
+]
+
+[tool.ty.terminal]
+output-format = "concise"
+
 [tool.ruff]
-target-version = "py38"
+target-version = "py39"
+output-format = "concise"
 line-length = 120
 indent-width = 4
 
@@ -53,22 +61,31 @@ select = [
     "UP",  # pyupgrade
     "B",   # flake8-bugbear
     "SIM", # flake8-simplify
-    "I",   # isort
+    #"I",   # isort
 ]
 
 ignore = [
+    # "E24",    # Tab after comma
+    # "E27",    # Tab before keyword
     "E203",     # Whitespace before :
     "E226",     # Whitespace around operators
+    # "E228",   # Missing whitespace around modulo
     "E231",     # Missing whitespace after ,
+    # "E251",   # Unexpected space around keyword parameter
     "E261",     # 2 spaces before inline comment
     "E262",     # Comments should start with      #
     "E265",     # Block comment should start with #
+    # "E302",   # Expected 2 lines between funcs/classes
     "E402",     # module level import not at top file
+    # "E501",   # line too long
+    # "E701",   # Multiple statements in one line colon
     "ERA001",   # Comented code
     "PLC0415",  # `import` should be at the top-level of a file
     "PLW0602",  # Using global for but no assignment is done
-    "PLW0603",  # Using the global statement to update `_has_colors` is discouraged
+    #"PLW0603", # Using the global statement to update is discouraged
     # "UP006",  # Use `list` instead of `List`
+    # "UP032",  # Use fstring instead of format
+    # "W391",   # Blank line and the EOF
 ]
 
 unfixable = []
@@ -76,16 +93,46 @@ unfixable = []
 # Allow unused variables when underscore-prefixed.
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+
+[tool.ruff.lint.mccabe]
+# Flag errors (`C901`) whenever the complexity level exceeds 20.
+max-complexity = 20
+
+[tool.ruff.lint.pycodestyle]
+max-line-length = 120
+
 [tool.ruff.lint.isort]
 section-order = [
     "future",
     "standard-library",
-    "system-library",
+    #"system-library",
     "third-party",
     "component",
     "first-party",
     "local-folder"
 ]
+
+#[tool.ruff.lint.isort.sections]
+#component = []
+#system-library = [
+#   "matplotlib",
+#   "numpy",
+#   "scipy",
+#   "pandas",
+#   "mock",
+#   "coverage",
+#   "tox",
+#   "pytest",
+#   "six",
+#   "pylint",
+#   "flake8",
+#   "requests",
+#   "libxml2",
+#   "dateutil",
+#   "robot",
+#]
 
 [tool.ruff.format]
 # Like Black, use double quotes for strings.
@@ -114,19 +161,9 @@ docstring-code-format = false
 # enabled.
 docstring-code-line-length = "dynamic"
 
-[tool.ruff.lint.per-file-ignores]
-"__init__.py" = ["F401"]
-
-[tool.ruff.lint.mccabe]
-# Flag errors (`C901`) whenever the complexity level exceeds 20.
-max-complexity = 20
-
-[tool.ruff.lint.pycodestyle]
-max-line-length = 120
-
 [tool.black]
 line-length = 120
-target-version = ['py38']
+target-version = ['py39']
 # include = '\.pyi?$'
 exclude = '''
     (
@@ -146,7 +183,7 @@ exclude = '''
 '''
 
 [tool.mypy]
-python_version = "3.8"
+python_version = "3.9"
 # sqlite_cache = true
 # check_untyped_defs = true
 # disallow_any_generics = true

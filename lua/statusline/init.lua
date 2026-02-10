@@ -113,8 +113,7 @@ local M = {
     },
     project_root = {
         component = function()
-            local cwd = getcwd():gsub('\\', '/')
-            return cwd:gsub(sys.home, '~')
+            return (vim.fn.fnamemodify(getcwd(), ':~'):gsub('\\', '/'))
         end,
     },
     spell = {

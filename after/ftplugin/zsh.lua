@@ -1,13 +1,14 @@
 local sys = require 'sys'
 
 local zfunction_dirs = {
-    sys.home .. '/.config/shell/zfunctions',
-    sys.home .. '/.zsh/zfunctions',
-    sys.home .. '/.zsh',
-    sys.home .. '/.config/shell',
+    vim.fs.joinpath(sys.home, '.config', 'shell'),
+    vim.fs.joinpath(sys.home, '.zsh'),
 }
 
 vim.opt_local.path:append(zfunction_dirs)
+vim.iter(zfunction_dirs):each(function(zdir)
+    vim.opt_local.path:append(vim.fs.joinpath(zdir, 'zfunctions'))
+end)
 vim.opt_local.path:append(vim.split(vim.env.PATH, ':', { trimempty = true }))
 
 local ft = vim.bo.filetype

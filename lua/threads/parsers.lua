@@ -162,7 +162,7 @@ function M.sshconfig(_, async)
     require('threads').init()
 
     local utils = require 'utils.files'
-    local ssh_config = vim.uv.os_homedir() .. '/.ssh/config'
+    local ssh_config = vim.fs.joinpath(vim.uv.os_homedir(), '.ssh', 'config')
 
     local hosts = {}
     local function get_host_attrs(host, line)

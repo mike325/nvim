@@ -53,7 +53,6 @@ vim.filetype.add {
         ['.*%.cppreference.com_.*%.txt'] = 'cpp',
         ['.*/zfunctions/.*'] = 'zsh',
         ['.*'] = {
-            priority = -math.huge,
             function(_, bufnr)
                 local shebang = vim.api.nvim_buf_get_lines(bufnr, 0, 1, false)[1]
                 if shebang then
@@ -64,6 +63,7 @@ vim.filetype.add {
                     end
                 end
             end,
+            { priority = -math.huge },
         },
     },
 }

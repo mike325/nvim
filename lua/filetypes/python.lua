@@ -230,7 +230,7 @@ function M.setup()
                     require('async').push_output(job, cmd)
                     -- NOTE: output is an array of stdout lines, we must join the array in a str
                     --       split it into a single array
-                    if job.code == 0 then
+                    if job.code == 0 and vim.api.nvim_buf_is_valid(buf) then
                         local output = vim.split(job.stdout:gsub('\n', ''), ',')
                         local path = vim.opt_local.path:get()
                         if type(path) == type '' then

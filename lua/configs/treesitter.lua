@@ -35,10 +35,10 @@ local languages = {
     -- 'zig',
 }
 
-if nvim.executable 'tree-sitter' then
-    table.insert(languages, 'latex')
-    table.insert(languages, 'bibtex')
-end
+-- if nvim.executable 'tree-sitter' then
+--     table.insert(languages, 'latex')
+--     table.insert(languages, 'bibtex')
+-- end
 
 local parsers = require 'nvim-treesitter.parsers'
 
@@ -55,7 +55,7 @@ if cpp_tools then
 end
 
 treesitter.setup {
-    ensure_installed = languages,
+    -- ensure_installed = languages,
     indent = {
         enable = true,
     },
