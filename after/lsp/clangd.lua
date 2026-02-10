@@ -76,7 +76,7 @@ return {
 
         local global_config = get_global_config()
         local local_config
-        if vim.uv.fs_stat(global_config)  then
+        if vim.uv.fs_stat(global_config) then
             table.insert(cmd, '--enable-config')
         else
             local_config = vim.fs.root(0, { '.clangd' })
