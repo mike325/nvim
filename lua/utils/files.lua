@@ -668,8 +668,8 @@ function M.skeleton_filename(opts)
         opts = { opts }
     end
 
-    local buf = vim.api.nvim_buf_get_name(0)
-    if buf == '' or M.is_file(buf) then
+    local bufname = vim.api.nvim_buf_get_name(0)
+    if bufname == '' or M.is_file(bufname) then
         return
     end
 
@@ -679,8 +679,8 @@ function M.skeleton_filename(opts)
     end
 
     local skeleton
-    local filename = vim.fs.basename '%'
-    local extension = M.extension '%'
+    local filename = vim.fs.basename(bufname)
+    local extension = M.extension(bufname)
     local skeletons_path = require('sys').base .. '/skeletons/'
     local template = #opts > 0 and opts[1] or ''
 

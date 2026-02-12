@@ -51,9 +51,9 @@ trap '{ exit_append; }' EXIT
 if hash realpath 2>/dev/null; then
     SCRIPT_PATH=$(realpath "$SCRIPT_PATH")
 else
-    pushd "$SCRIPT_PATH" 1>/dev/null  || exit 1
+    pushd "$SCRIPT_PATH" 1>/dev/null || exit 1
     SCRIPT_PATH="$(pwd -P)"
-    popd 1>/dev/null  || exit 1
+    popd 1>/dev/null || exit 1
 fi
 
 if [[ -n $ZSH_NAME ]]; then
@@ -72,13 +72,13 @@ if [ -z "$SHELL_PLATFORM" ]; then
         export SHELL_PLATFORM="$TRAVIS_OS_NAME"
     else
         case "$OSTYPE" in
-            *'linux'*)    export SHELL_PLATFORM='linux' ;;
-            *'darwin'*)   export SHELL_PLATFORM='osx' ;;
-            *'freebsd'*)  export SHELL_PLATFORM='bsd' ;;
-            *'cygwin'*)   export SHELL_PLATFORM='cygwin' ;;
-            *'msys'*)     export SHELL_PLATFORM='msys' ;;
-            *'windows'*)  export SHELL_PLATFORM='windows' ;;
-            *)            export SHELL_PLATFORM='unknown' ;;
+            *'linux'*) export SHELL_PLATFORM='linux' ;;
+            *'darwin'*) export SHELL_PLATFORM='osx' ;;
+            *'freebsd'*) export SHELL_PLATFORM='bsd' ;;
+            *'cygwin'*) export SHELL_PLATFORM='cygwin' ;;
+            *'msys'*) export SHELL_PLATFORM='msys' ;;
+            *'windows'*) export SHELL_PLATFORM='windows' ;;
+            *) export SHELL_PLATFORM='unknown' ;;
         esac
     fi
 fi
@@ -222,6 +222,7 @@ Usage:
         -v, --verbose       Enable debug messages
         -q, --quiet         Suppress most output
         -V, --version       Print script version and exits
+        --shell-completion  Output shell completion for bash or zsh
         --dry, --dry-run    Enable dry run
         -h, --help          Display this help message
 EOF
@@ -301,7 +302,7 @@ function __parse_args() {
 
     local pattern="^--${flag}=[a-zA-Z0-9.:@_/~-]+$"
 
-    if [[ -n $3   ]]; then
+    if [[ -n $3 ]]; then
         local pattern="^--${flag}=$3$"
     fi
 
@@ -444,7 +445,7 @@ function download_asset() {
         if [[ -n $dest ]]; then
             cmd="$cmd -o $dest"
         fi
-    else  # If not curl, wget is available since we checked with "has_fetcher"
+    else # If not curl, wget is available since we checked with "has_fetcher"
         cmd='wget '
         if [[ $VERBOSE == false ]]; then
             cmd="$cmd -q "
@@ -467,6 +468,59 @@ function download_asset() {
         warn_msg "$asset already exists in $dest, skipping download"
         return 5
     fi
+}
+
+function generate_completion() {
+    SCRIPT_NAME="${NAME%%.*}"
+    ARGS_NAME="$(echo "$SCRIPT_NAME" | tr '[:lower:]' '[:upper:]')"
+    cat <<EOF
+#!/usr/bin/env bash
+
+_${ARGS_NAME}_ARGS=(
+    "--log[Enable log writing]"
+    "--nolog[Disable log writing]"
+    "--nocolor[Disable color output]"
+    "-v[Enable debug messages]"
+    "--verbose[Enable debug messages]"
+    "-q[Suppress most output]"
+    "--quiet[Suppress most output]"
+    "-V[Print script version and exits]"
+    "--version[Print script version and exits]"
+    "--shell-completion[Output shell completion for bash or zsh]"
+    "--dry[Enable dry run]"
+    "--dry-run[Enable dry run]"
+    "-h[Display this help message]"
+    "--help[Display this help message]"
+)
+
+_bash_${SCRIPT_NAME}() {
+    local cur opts # prev
+    COMPREPLY=()
+    cur="\${COMP_WORDS[COMP_CWORD]}"
+    # prev="\${COMP_WORDS[COMP_CWORD - 1]}"
+
+    opts=()
+    for opt in "\${_${ARGS_NAME}_ARGS[@]}"; do
+        opts+=("\${opt%%\[*}")
+    done
+
+    if [[ \${cur} == -* ]]; then
+        # shellcheck disable=SC2207
+        COMPREPLY=(\$(compgen -W "\${opts[*]}" -- "\${cur}"))
+        return 0
+    fi
+}
+
+_zsh_${SCRIPT_NAME}() {
+    _arguments -C "\${_${ARGS_NAME}_ARGS[@]}" '*::args:->args'
+}
+
+if [[ -n \$ZSH_NAME ]]; then
+    compdef _zsh_${SCRIPT_NAME} ${SCRIPT_NAME}
+elif [[ -n \$BASH ]]; then
+    complete -F _bash_${SCRIPT_NAME} ${SCRIPT_NAME}
+fi
+EOF
 }
 
 while [[ $# -gt 0 ]]; do
@@ -492,6 +546,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         --dry | --dry-run | --dry_run | --dryrun)
             DRY_RUN=true
+            ;;
+        --shell-completion)
+            generate_completion
+            exit 0
             ;;
         -h | --help)
             help_user
