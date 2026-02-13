@@ -208,7 +208,29 @@ normal="\033[0m"
 # shellcheck disable=SC2034
 reset_color="\033[39m"
 
+declare -A _LONG_ARGS
+declare -A _SHORT_ARGS
+
+function set_args() {
+    _LONG_ARGS['log']="Enable log writing"
+    _LONG_ARGS['nolog']="Disable log writing"
+    _LONG_ARGS['nocolor']="Disable color output"
+    _LONG_ARGS['verbose']="Enable debug messages"
+    _SHORT_ARGS['v']="verbose"
+    _LONG_ARGS['quiet']="Suppress most output"
+    _SHORT_ARGS['q']="quiet"
+    _LONG_ARGS['version']="Print script version and exits"
+    _SHORT_ARGS['V']="version"
+    _LONG_ARGS['shell-completion']="Output shell completion for bash or zsh"
+    # _LONG_ARGS['dry']="Enable dry run"
+    _LONG_ARGS['dry-run']="Enable dry run"
+    _LONG_ARGS['help']="Display this help message"
+    _SHORT_ARGS['h']="help"
+}
+
 function help_user() {
+    set_args
+
     cat <<EOF
 Description
 
@@ -216,16 +238,20 @@ Usage:
     $NAME [OPTIONAL]
 
     Optional Flags
-        --log               Enable log writing
-        --nolog             Disable log writing
-        --nocolor           Disable color output
-        -v, --verbose       Enable debug messages
-        -q, --quiet         Suppress most output
-        -V, --version       Print script version and exits
-        --shell-completion  Output shell completion for bash or zsh
-        --dry, --dry-run    Enable dry run
-        -h, --help          Display this help message
 EOF
+
+    declare -A inverted
+    indent="        "
+    for arg in "${!_SHORT_ARGS[@]}"; do
+        long_arg="${_SHORT_ARGS[$arg]}"
+        inverted[$long_arg]="${arg}"
+        printf "%s%s, %-16s %s\n" "${indent}" "-${arg}" "--${long_arg}" "${_LONG_ARGS[$long_arg]}"
+    done
+    for arg in "${!_LONG_ARGS[@]}"; do
+        if [[ -z ${inverted[$arg]} ]]; then
+            printf "%s%-20s %s\n" "${indent}" "--${arg}" "${_LONG_ARGS[$arg]}"
+        fi
+    done
 }
 
 # shellcheck disable=SC2329
@@ -471,27 +497,25 @@ function download_asset() {
 }
 
 function generate_completion() {
+    set_args
+
     SCRIPT_NAME="${NAME%%.*}"
     ARGS_NAME="$(echo "$SCRIPT_NAME" | tr '[:lower:]' '[:upper:]')"
+
+    declare -a COMPLETION_ARGS
+    for arg in "${!_LONG_ARGS[@]}"; do
+        COMPLETION_ARGS+=("\"--${arg}[${_LONG_ARGS[$arg]}]\"")
+    done
+
+    for arg in "${!_SHORT_ARGS[@]}"; do
+        long_arg="${_SHORT_ARGS[$arg]}"
+        COMPLETION_ARGS+=("\"-${arg}[${_LONG_ARGS[$long_arg]}]\"")
+    done
+
     cat <<EOF
 #!/usr/bin/env bash
 
-_${ARGS_NAME}_ARGS=(
-    "--log[Enable log writing]"
-    "--nolog[Disable log writing]"
-    "--nocolor[Disable color output]"
-    "-v[Enable debug messages]"
-    "--verbose[Enable debug messages]"
-    "-q[Suppress most output]"
-    "--quiet[Suppress most output]"
-    "-V[Print script version and exits]"
-    "--version[Print script version and exits]"
-    "--shell-completion[Output shell completion for bash or zsh]"
-    "--dry[Enable dry run]"
-    "--dry-run[Enable dry run]"
-    "-h[Display this help message]"
-    "--help[Display this help message]"
-)
+_${ARGS_NAME}_ARGS=(${COMPLETION_ARGS[@]})
 
 _bash_${SCRIPT_NAME}() {
     local cur opts # prev
