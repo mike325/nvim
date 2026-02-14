@@ -212,19 +212,20 @@ declare -A _LONG_ARGS
 declare -A _SHORT_ARGS
 
 function set_args() {
-    _LONG_ARGS['log']="Enable log writing"
-    _LONG_ARGS['nolog']="Disable log writing"
-    _LONG_ARGS['nocolor']="Disable color output"
-    _LONG_ARGS['verbose']="Enable debug messages"
+    _LONG_ARGS['log']="[Enable log writing]"
+    _LONG_ARGS['nolog']="[Disable log writing]"
+    _LONG_ARGS['nocolor']="[Disable color output]"
+    _LONG_ARGS['verbose']="[Enable debug messages]"
     _SHORT_ARGS['v']="verbose"
-    _LONG_ARGS['quiet']="Suppress most output"
+    _LONG_ARGS['quiet']="[Suppress most output]"
     _SHORT_ARGS['q']="quiet"
-    _LONG_ARGS['version']="Print script version and exits"
+    _LONG_ARGS['version']="[Print script version and exits]"
     _SHORT_ARGS['V']="version"
-    _LONG_ARGS['shell-completion']="Output shell completion for bash or zsh"
+    _LONG_ARGS['shell-completion']="[Output shell completion for bash or zsh]"
     # _LONG_ARGS['dry']="Enable dry run"
-    _LONG_ARGS['dry-run']="Enable dry run"
-    _LONG_ARGS['help']="Display this help message"
+    _LONG_ARGS['dry-run']="[Enable dry run]"
+    _LONG_ARGS['help']="[Display this help message]"
+    # _LONG_ARGS['example']="[Extra Args example]:flags:->flags"
     _SHORT_ARGS['h']="help"
 }
 
@@ -245,11 +246,15 @@ EOF
     for arg in "${!_SHORT_ARGS[@]}"; do
         long_arg="${_SHORT_ARGS[$arg]}"
         inverted[$long_arg]="${arg}"
-        printf "%s%s, %-16s %s\n" "${indent}" "-${arg}" "--${long_arg}" "${_LONG_ARGS[$long_arg]}"
+        desc="${_LONG_ARGS[$long_arg]}"
+        desc="$(echo "$desc" | awk '{gsub("(\\].*|^\\[)", "", $0); print $0}')"
+        printf "%s%s, %-16s %s\n" "${indent}" "-${arg}" "--${long_arg}" "$desc"
     done
-    for arg in "${!_LONG_ARGS[@]}"; do
-        if [[ -z ${inverted[$arg]} ]]; then
-            printf "%s%-20s %s\n" "${indent}" "--${arg}" "${_LONG_ARGS[$arg]}"
+    for long_arg in "${!_LONG_ARGS[@]}"; do
+        if [[ -z ${inverted[$long_arg]} ]]; then
+            desc="${_LONG_ARGS[$long_arg]}"
+            desc="$(echo "$desc" | awk '{gsub("(\\].*|^\\[)", "", $0); print $0}')"
+            printf "%s%-20s %s\n" "${indent}" "--${long_arg}" "$desc"
         fi
     done
 }
@@ -504,12 +509,12 @@ function generate_completion() {
 
     declare -a COMPLETION_ARGS
     for arg in "${!_LONG_ARGS[@]}"; do
-        COMPLETION_ARGS+=("\"--${arg}[${_LONG_ARGS[$arg]}]\"")
+        COMPLETION_ARGS+=("'--${arg}${_LONG_ARGS[$arg]}'")
     done
 
     for arg in "${!_SHORT_ARGS[@]}"; do
         long_arg="${_SHORT_ARGS[$arg]}"
-        COMPLETION_ARGS+=("\"-${arg}[${_LONG_ARGS[$long_arg]}]\"")
+        COMPLETION_ARGS+=("'-${arg}${_LONG_ARGS[$long_arg]}'")
     done
 
     cat <<EOF
@@ -537,12 +542,17 @@ _bash_${SCRIPT_NAME}() {
 
 _zsh_${SCRIPT_NAME}() {
     _arguments -C "\${_${ARGS_NAME}_ARGS[@]}" '*::args:->args'
+    # case "\$state" in
+    #     flags)
+    #         _values 'flags' a b c d e
+    #         ;;
+    # esac
 }
 
 if [[ -n \$ZSH_NAME ]]; then
-    compdef _zsh_${SCRIPT_NAME} ${SCRIPT_NAME}
+    compdef _zsh_${SCRIPT_NAME} ${NAME}
 elif [[ -n \$BASH ]]; then
-    complete -F _bash_${SCRIPT_NAME} ${SCRIPT_NAME}
+    complete -F _bash_${SCRIPT_NAME} ${NAME}
 fi
 EOF
 }
