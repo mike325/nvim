@@ -38,6 +38,12 @@ function M.init(thread_args)
             }
         end
 
+        if not vim.list then
+            vim.list = {
+                unique = require('utils.tables').uniq_list,
+            }
+        end
+
         -- NOTE: vim.system is partially supported on threads, `wait` and other features
         --       are not available
         if not vim.system then

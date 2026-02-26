@@ -26,6 +26,7 @@ local fmt = require('luasnip.extras.fmt').fmt
 local utils = RELOAD 'configs.luasnip.utils'
 local saved_text = utils.saved_text
 local else_clause = utils.else_clause
+local disable_diagnostic = utils.disable_diagnostic
 -- local surround_with_func = utils.surround_with_func
 
 -- stylua: ignore
@@ -115,8 +116,8 @@ return {
         i(2, 'CONDITION'),
         i(3, ':'),
     })),
-    s('ign', fmt([[# shellcheck disable=SC{}]],{
-        i(1, 'RULE'),
+    s('ign', fmt([[# shellcheck disable={}]],{
+        d(1, disable_diagnostic, {}, { user_args = { { namespace = 'shellcheck' } } }),
     })),
     s('shellcheck', fmt([[# shellcheck disable=SC{}]],{
         i(1, 'RULE'),

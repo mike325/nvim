@@ -438,20 +438,16 @@ end, {
 --- @param opts Command.Opts
 nvim.command.set('Diagnostics', function(opts)
     local action = opts.fargs[1]:gsub('^%-+', '')
-    local all_namespaces = vim.iter(vim.diagnostic.get_namespaces()):fold({}, function(diag_ns, ns)
-        diag_ns[ns.name] = ns
-        diag_ns[ns.name].id = vim.api.nvim_create_namespace(ns.name)
-        return diag_ns
-    end)
 
-    local namespaces = vim.list_slice(opts.fargs, 2, #opts.fargs)
-    if #namespaces == 0 then
-        namespaces = vim.tbl_keys(all_namespaces)
+    local namespaces = RELOAD('utils.diagnostics').get_namespaces()
+    local namespaces_names = vim.list_slice(opts.fargs, 2, #opts.fargs)
+    if #namespaces_names == 0 then
+        namespaces_names = vim.tbl_keys(namespaces)
     end
 
     if action == 'dump' then
-        local severity = namespaces[1]
-        table.remove(namespaces, 1)
+        local severity = namespaces_names[1]
+        table.remove(namespaces_names, 1)
         if severity then
             if not vim.log.levels[severity] then
                 error(debug.traceback(string.format('Invalid severity: %s', vim.inspect(severity))))
@@ -470,8 +466,8 @@ nvim.command.set('Diagnostics', function(opts)
             error(debug.traceback(string.format('Invalid diagnostic action: %s', action)))
         end
         local buf = not opts.bang and vim.api.nvim_get_current_buf() or nil
-        for ns in vim.iter(namespaces) do
-            local ns_id = all_namespaces[ns].id
+        for ns in vim.iter(namespaces_names) do
+            local ns_id = namespaces[ns].id
             if action == 'enable' or action == 'disable' then
                 vim.diagnostic[action](buf, ns_id)
             else

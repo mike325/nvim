@@ -19,6 +19,12 @@ if not vim.base64 then
     }
 end
 
+if not vim.list then
+    vim.list = {
+        unique = require('utils.tables').uniq_list,
+    }
+end
+
 vim.g.has_ui = #vim.api.nvim_list_uis() > 0
 
 vim.g.loaded_2html_plugin = 1

@@ -26,6 +26,7 @@ local fmt = require('luasnip.extras.fmt').fmt
 local utils = RELOAD 'configs.luasnip.utils'
 local saved_text = utils.saved_text
 local else_clause = utils.else_clause
+local disable_diagnostic = utils.disable_diagnostic
 -- local surround_with_func = utils.surround_with_func
 
 local function python_class_init(args, snip, old_state, placeholder)
@@ -236,5 +237,12 @@ return {
     ]],{
         i(1, 'condition'),
         d(2, saved_text, {}, {user_args = {{text = 'pass', indent = true}}}),
+    })),
+    s('ign', fmt([[# noqa: {}]],{
+        i(1, 'RULE')
+        -- d(1, disable_diagnostic, {}, { user_args = { { namespace = 'Ruff' } } }),
+    })),
+    s('lign', fmt([[# pylint: disable={}]],{
+        d(1, disable_diagnostic, {}, { user_args = { { namespace = 'pylint' } } }),
     })),
 }

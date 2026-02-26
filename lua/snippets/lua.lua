@@ -27,6 +27,7 @@ local utils = RELOAD 'configs.luasnip.utils'
 local saved_text = utils.saved_text
 local else_clause = utils.else_clause
 local surround_with_func = utils.surround_with_func
+local disable_diagnostic = utils.disable_diagnostic
 
 local function rec_val()
     return sn(nil, {
@@ -193,6 +194,9 @@ return {
     })),
     s("ign", { t { "-- stylua: ignore" } }),
     s("sty", { t { "-- stylua: ignore" } }),
+    s('cign', fmt([[-- luacheck: ignore {}]],{
+        d(1, disable_diagnostic, {}, { user_args = { { namespace = 'luacheck' } } }),
+    })),
     s("val", {
         t({ "vim.validate {" }),
         t { '', "\t" }, i(1, 'arg'), t { " = { " }, r(1), t { ", " },

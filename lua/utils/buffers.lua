@@ -15,8 +15,9 @@ function M.last_position()
         qf = 1,
     }
 
-    if sc_mark[1] >= 1 and dc_mark[1] <= last_line and not black_list[filetype] then
-        nvim.win.set_cursor(0, dc_mark)
+    if not black_list[filetype] and sc_mark[1] >= 1 and sc_mark[1] <= last_line then
+        local current_line = vim.api.nvim_buf_get_lines(0, sc_mark[1], sc_mark[1] + 1, false)[1]
+        nvim.win.set_cursor(0, dc_mark[2] <= #current_line and dc_mark or sc_mark)
     end
 end
 

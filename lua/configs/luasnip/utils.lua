@@ -146,4 +146,37 @@ function M.add_statement_and_include(statement, include, include_type)
     return statement
 end
 
+function M.disable_diagnostic(args, snip, old_state, user_args)
+    local nodes = {}
+    old_state = old_state or {}
+    user_args = user_args or {}
+
+    local namespace = user_args.namespace
+    if namespace and type(namespace) ~= type(0) then
+        local ns = RELOAD('utils.diagnostics').get_namespace(namespace)
+        namespace = (ns or {}).id
+    end
+
+    local line = user_args.line or (vim.fn.line '.')
+    local buf = user_args.buf or vim.api.nvim_get_current_buf()
+    local diagnostics = vim.diagnostic.get(buf, { lnum = line, namespace = namespace })
+
+    local codes = {}
+    for _, diagnostic in ipairs(diagnostics) do
+        if diagnostic.code then
+            table.insert(codes, diagnostic.code)
+        end
+    end
+
+    if #codes > 0 then
+        local text = table.concat(codes, ',')
+        table.insert(nodes, t { text })
+    else
+        table.insert(nodes, i(1, 'RULE'))
+    end
+    local snip_node = sn(nil, nodes)
+    snip_node.old_state = old_state
+    return snip_node
+end
+
 return M
