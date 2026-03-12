@@ -4,21 +4,6 @@ local executable = require('utils.files').executable
 local completions = RELOAD 'completions'
 local comp_utils = RELOAD 'completions.utils'
 
---- @class Command.Opts
---- @inlinedoc
---- @field name (string) Command name
---- @field args (string) The args passed to the command, if any
---- @field fargs (string[]) The args split by unescaped whitespace
----                         (when more than one argument is allowed), if any <f-args>
---- @field bang (boolean?) "true" if the command was executed with a ! modifier <bang>
---- @field line1 (number) The starting line of the command range <line1>
---- @field line2 (number) The final line of the command range <line2>
---- @field range (number) The number of items in the command range: 0, 1, or 2 <range>
---- @field count (number) Any count supplied <count>
---- @field reg (string) The optional register, if specified <reg>
---- @field mods (string) Command modifiers, if any <mods>
---- @field smods (table) Command modifiers in a structured format.
-
 if sys.name ~= 'windows' then
     --- @param opts Command.Opts
     nvim.command.set('Chmod', function(opts)
@@ -287,17 +272,85 @@ nvim.command.set('Messages', function(opts)
 end, { nargs = '?', complete = 'messages', desc = 'Populate quickfix with the :messages list' })
 
 if executable 'pre-commit' then
+    local function get_ids(_)
+        local ids = {}
+        local precommit_config = vim.fs.find('.pre-commit-config.yaml', { upwards = true })[1]
+        if precommit_config then
+            ids = vim.iter(require('utils.files').readfile(precommit_config))
+                :filter(function(l)
+                    return l:match '^%s+%-%s+id:'
+                end)
+                :map(function(l)
+                    return l:match '^%s+%-%s+id:%s+(.+)'
+                end)
+                :totable()
+        end
+        return ids
+    end
+
     --- @param opts Command.Opts
     nvim.command.set('PreCommit', function(opts)
         local efm = RELOAD('mappings').precommit_efm
         local args = opts.fargs
         local cmd = { 'pre-commit' }
+        local env
         if opts.bang and #args == 0 then
             args = { 'run', '--all' }
+        else
+            if vim.iter(args):find '--skip' then
+                local idx_start = 0
+                for idx, arg in ipairs(args) do
+                    if arg == '--skip' then
+                        idx_start = idx + 1
+                        break
+                    end
+                end
+
+                local skip_ids = vim.list_slice(args, idx_start, #args)
+                for idx, arg in ipairs(skip_ids) do
+                    if arg:match '^%-' then
+                        skip_ids = vim.list_slice(args, idx_start, idx)
+                        break
+                    end
+                end
+
+                env = {
+                    SKIP = table.concat(skip_ids, ','),
+                }
+
+                args = vim.iter(args)
+                    :filter(function(arg)
+                        return arg ~= '--skip' and not vim.iter(skip_ids):find(arg)
+                    end)
+                    :totable()
+
+                if not vim.iter(args):find 'run' then
+                    vim.list_extend(args, { 'run', '--all' })
+                end
+            end
         end
         vim.list_extend(cmd, args)
-        require('async').report(cmd, { open = true, jump = true, efm = efm, progress = true })
-    end, { bang = true, nargs = '*' })
+        RELOAD('async').report(cmd, { open = true, jump = true, efm = efm, progress = true, opts = { env = env } })
+    end, {
+        bang = true,
+        nargs = '*',
+        complete = comp_utils.get_completion({
+            'autoupdate',
+            'clean',
+            'install',
+        }, {
+            ['run'] = function(_)
+                local ids = get_ids(_)
+                table.insert(ids, '--all')
+                table.insert(ids, '--verbose')
+                table.insert(ids, '--skip')
+                return ids
+            end,
+            ['--skip'] = function(_)
+                return get_ids(_)
+            end,
+        }, true),
+    })
 end
 
 nvim.command.set('Repl', function(opts)
@@ -760,8 +813,7 @@ nvim.command.set('ArgAddBuf', function(opts)
             end)
             :filter(function(bufname)
                 return bufname ~= ''
-                    and not bufname:match '^%w+://'
-                    and not bufname:match '^Mini%w+:.*'
+                    and not require('utils.buffers').is_virtual_buf(bufname)
                     and vim.re.match(bufname, pattern)
             end)
         args = buffers:totable()

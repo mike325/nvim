@@ -774,7 +774,7 @@ if vim.g.minimal then
     if mini.git then
         nvim.command.set('Gvdiff', function(opts)
             local filename = (not opts.args or opts.args == '') and vim.api.nvim_buf_get_name(0) or opts.args
-            if filename == '' or filename:match '^%w+://' then
+            if filename == '' or require('utils.buffers').is_virtual_buf(filename) then
                 return
             end
 

@@ -44,14 +44,13 @@ local function buf_search(client, bufnr)
 end
 
 local function buf_cancel_build(client, bufnr)
+    vim.notify('Cancelling TeX build', vim.log.levels.INFO)
+    local args = { command = 'texlab.cancelBuild' }
     if vim.version.ge(vim.version(), { 0, 11 }) then
-        return client:exec_cmd({
-            title = 'cancel',
-            command = 'texlab.cancelBuild',
-        }, { bufnr = bufnr })
+        args.title = 'Cancel'
+        return client:exec_cmd(args, { bufnr = bufnr })
     end
-    vim.lsp.buf.execute_command { command = 'texlab.cancelBuild' }
-    vim.notify('Build cancelled', vim.log.levels.INFO)
+    return vim.lsp.buf.execute_command(args)
 end
 
 local function dependency_graph(client)
@@ -69,13 +68,17 @@ local function command_factory(cmd)
         Artifacts = 'texlab.cleanArtifacts',
         CancelBuild = 'texlab.cancelBuild',
     }
+
     return function(client, bufnr)
+        local texlab_cmd = cmd_tbl[cmd]
+        local args = {
+            command = texlab_cmd,
+            arguments = { { uri = vim.uri_from_bufnr(bufnr) } },
+        }
+
         if vim.version.ge(vim.version(), { 0, 11 }) then
-            return client:exec_cmd({
-                title = ('clean_%s'):format(cmd),
-                command = cmd_tbl[cmd],
-                arguments = { { uri = vim.uri_from_bufnr(bufnr) } },
-            }, { bufnr = bufnr }, function(err, _)
+            args.title = ('clean_%s'):format(cmd)
+            return client:exec_cmd(args, { bufnr = bufnr }, function(err, _)
                 if err then
                     vim.notify(('Failed to clean %s files: %s'):format(cmd, err.message), vim.log.levels.ERROR)
                 else
@@ -84,11 +87,8 @@ local function command_factory(cmd)
             end)
         end
 
-        vim.lsp.buf.execute_command {
-            command = cmd_tbl[cmd],
-            arguments = { { uri = vim.uri_from_bufnr(bufnr) } },
-        }
-        vim.notify(('command %s executed successfully'):format(cmd_tbl[cmd]))
+        vim.lsp.buf.execute_command(args)
+        vim.notify(('command %s executed successfully'):format(texlab_cmd))
     end
 end
 
@@ -127,21 +127,8 @@ local function buf_change_env(client, bufnr)
         return vim.notify('No environment name provided', vim.log.levels.WARN)
     end
     local pos = vim.api.nvim_win_get_cursor(0)
-    if vim.version.ge(vim.version(), { 0, 11 }) then
-        return client:exec_cmd({
-            title = 'change_environment',
-            command = 'texlab.changeEnvironment',
-            arguments = {
-                {
-                    textDocument = { uri = vim.uri_from_bufnr(bufnr) },
-                    position = { line = pos[1] - 1, character = pos[2] },
-                    newName = tostring(new),
-                },
-            },
-        }, { bufnr = bufnr })
-    end
 
-    vim.lsp.buf.execute_command {
+    local args = {
         command = 'texlab.changeEnvironment',
         arguments = {
             {
@@ -151,6 +138,12 @@ local function buf_change_env(client, bufnr)
             },
         },
     }
+
+    if vim.version.ge(vim.version(), { 0, 11 }) then
+        args.title = 'change_environment'
+        return client:exec_cmd(args, { bufnr = bufnr })
+    end
+    vim.lsp.buf.execute_command(args)
 end
 
 ---@brief

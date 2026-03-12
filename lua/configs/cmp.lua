@@ -75,7 +75,7 @@ cmp.setup {
         }
         local ft = vim.bo.filetype
         if nvim.plugins.YouCompleteMe and vim.g.ycm_enabled then
-            vim.tbl_extend('force', blacklist, { python = true })
+            blacklist = vim.tbl_extend('force', blacklist, { python = true })
             local bufname = vim.api.nvim_buf_get_name(0)
             local ext = require('utils.files').extension
             if blacklist[ft] or (bufname ~= '' and ext(bufname) == 'py') then

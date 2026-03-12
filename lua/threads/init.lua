@@ -126,16 +126,10 @@ function M.add_thread_context(opts)
     local context = {}
 
     context.buf = context.buf or vim.api.nvim_get_current_buf()
-    context.bufname = context.bufname or vim.api.nvim_buf_get_name(context.buf)
-    local prefix = context.bufname:match '^(%w+)://'
-    if prefix then
-        context.bufname = context.bufname:gsub('^%w+://', '')
-        if prefix == 'fugitive' then
-            context.bufname = context.bufname:gsub('%.git//?[%w%d]+//?', '')
-        end
-    end
+    local bufname = context.bufname or vim.api.nvim_buf_get_name(context.buf)
+    context.buf_is_virtual = require('utils.buffers').is_virtual_buf(bufname) or vim.bo.buftype ~= '' or bufname == ''
+    context.bufname = require('utils.buffers').convert_virtual_fname(bufname)
     context.dirname = vim.fs.dirname(context.bufname)
-    context.buf_is_virtual = prefix ~= nil or vim.bo.buftype ~= '' or context.bufname == ''
     context.cwd = context.cwd or (vim.uv.cwd():gsub('\\', '/'))
 
     thread_opts.context = context

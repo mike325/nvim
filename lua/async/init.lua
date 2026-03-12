@@ -305,7 +305,7 @@ function M.report(cmd, opts)
         cwd = vim.fs.normalize(vim.uv.cwd()),
         text = true,
     }
-    vim.tbl_extend('force', obj_opts, user_opts)
+    obj_opts = vim.tbl_extend('force', obj_opts, user_opts)
 
     ---@type Data
     local state_data = { -- TODO: it may be good to use ringbuffer to limit the output

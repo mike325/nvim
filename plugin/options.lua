@@ -96,6 +96,7 @@ vim.opt.completeopt = {
     'noinsert',
     'fuzzy',
     'nosort',
+    'popup',
 }
 vim.opt.tags = { '.git/tags', './tags;', 'tags' }
 vim.opt.display = { 'lastline', 'msgsep' }

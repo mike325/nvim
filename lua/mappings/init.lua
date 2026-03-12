@@ -520,12 +520,7 @@ function M.alternate(opts)
     --     end
     -- end
 
-    local prefix = opts.buf:match '^%w+://'
-    opts.buf = opts.buf:gsub('^%w+://', '')
-    if prefix == 'fugitive://' then
-        opts.buf = opts.buf:gsub('%.git//?[%w%d]+//?', '')
-    end
-
+    opts.buf = require('utils.buffers').convert_virtual_fname(opts.buf)
     if require('utils.files').is_file(opts.buf) then
         opts.buf = vim.uv.fs_realpath(opts.buf)
     end
@@ -594,12 +589,7 @@ function M.alt_makefiles(opts)
         return
     end
 
-    local prefix = opts.buf:match '^%w+://'
-    opts.buf = opts.buf:gsub('^%w+://', '')
-    if prefix == 'fugitive://' then
-        opts.buf = opts.buf:gsub('%.git//?[%w%d]+//?', '')
-    end
-
+    opts.buf = require('utils.buffers').convert_virtual_fname(opts.buf)
     opts.basedir = vim.fs.dirname(opts.buf)
 
     local candidates
@@ -628,12 +618,7 @@ function M.alternate_test(opts)
         return
     end
 
-    local prefix = opts.buf:match '^%w+://'
-    opts.buf = opts.buf:gsub('^%w+://', '')
-    if prefix == 'fugitive://' then
-        opts.buf = opts.buf:gsub('%.git//?[%w%d]+//?', '')
-    end
-
+    opts.buf = require('utils.buffers').convert_virtual_fname(opts.buf)
     if require('utils.files').is_file(opts.buf) then
         opts.buf = vim.uv.fs_realpath(opts.buf)
     end

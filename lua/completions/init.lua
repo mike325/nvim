@@ -153,7 +153,7 @@ completions = vim.tbl_extend('force', completions, {
                 return (vim.api.nvim_buf_get_name(buf):gsub(cwd, ''))
             end)
             :filter(function(bufname)
-                return bufname ~= '' and not bufname:match '^%w+://' and not bufname:match '^Mini%w+:.*'
+                return bufname ~= '' and not require('utils.buffers').is_virtual_buf(bufname)
             end)
         return utils.general_completion(arglead, cmdline, cursorpos, buffers:totable())
     end,

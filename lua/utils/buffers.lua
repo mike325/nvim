@@ -16,8 +16,7 @@ function M.last_position()
     }
 
     if not black_list[filetype] and sc_mark[1] >= 1 and sc_mark[1] <= last_line then
-        local current_line = vim.api.nvim_buf_get_lines(0, sc_mark[1], sc_mark[1] + 1, false)[1]
-        nvim.win.set_cursor(0, dc_mark[2] <= #current_line and dc_mark or sc_mark)
+        pcall(nvim.win.set_cursor, 0, dc_mark)
     end
 end
 
@@ -330,6 +329,13 @@ function M.replace_indent(cmd)
     return cmd
 end
 
+local function get_clients(bufnr)
+    if vim.version.ge(vim.version(), { 0, 11 }) then
+        return vim.lsp.get_clients { bufnr = bufnr }
+    end
+    return vim.lsp.buf_get_clients(bufnr)
+end
+
 function M.format(opts)
     opts = opts or {}
 
@@ -337,7 +343,7 @@ function M.format(opts)
     local bufnr = vim.api.nvim_get_current_buf()
     local utils = vim.F.npcall(RELOAD, 'filetypes.' .. ft)
 
-    local view = vim.fn.winsaveview()
+    local view = vim.fn.winsaveview() --[[@as vim.fn.winrestview.dict]]
 
     ---@type integer
     local first = vim.v.lnum
@@ -346,8 +352,7 @@ function M.format(opts)
     ---@type boolean?
     local whole_file = last - first == nvim.buf.line_count(bufnr) or opts.whole_file
 
-    local clients = vim.version.ge(vim.version(), { 0, 11 }) and vim.lsp.get_clients { bufnr = bufnr }
-        or vim.lsp.buf_get_clients(bufnr)
+    local clients = get_clients(bufnr)
     for _, client in pairs(clients) do
         if whole_file and client.server_capabilities.documentFormattingProvider then
             vim.lsp.buf.format {
@@ -763,6 +768,29 @@ function M.get_comment(text, buf)
         end
     end
     return comment_str or comment
+end
+
+function M.is_virtual_buf(bufname)
+    return bufname:match '^(%w+)://' ~= nil or bufname:match '^(%w%w+):' ~= nil
+end
+
+function M.convert_virtual_fname(bufname)
+    if M.is_virtual_buf(bufname) then
+        local prefix = bufname:match '^(%w+)://' or bufname:match '^(%w%w+):'
+        if prefix == 'fugitive' then
+            if bufname:match '/%.git/worktrees/.+//[%w%d]+/' then
+                local gitdir_loc = string.format('%s/gitdir', bufname:match '^%w+://(.+/%.git/worktrees/.+)//')
+                local gitdir_ptr = vim.fs.dirname(vim.trim(require('utils.files').readfile(gitdir_loc, false)))
+                bufname = (bufname:gsub('.+/%.git/worktrees/.+//[%w%d]+/', gitdir_ptr .. '/'))
+            else
+                bufname = (bufname:gsub('/%.git//[%w%d]+/', '/'))
+            end
+        elseif prefix == 'gitsigns' then
+            bufname = (bufname:gsub('^gitsigns://.+/%.git/[a-zA-Z0-9~^]+:', ''))
+        end
+        bufname = (bufname:gsub('^%w+:/?/?', ''))
+    end
+    return bufname
 end
 
 return M

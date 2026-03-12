@@ -210,7 +210,7 @@ lualine.setup {
                 end,
                 fmt = function(name)
                     -- TODO: May add other patterns to avoid truncate other special names
-                    if not name:match '^%w+://' then
+                    if not require('utils.buffers').is_virtual_buf(name) then
                         return vim.fs.basename(name)
                     end
                     return name

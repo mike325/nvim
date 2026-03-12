@@ -45,7 +45,7 @@ telescope.setup {
         generic_sorter = not fzf and require('telescope.sorters').get_fzy_sorter or nil,
         -- shorten_path = true,
         winblend = 0,
-        set_env = { ['COLORTERM'] = 'truecolor' },
+        set_env = { COLORTERM = 'truecolor' },
         mappings = {
             i = {
                 ['<ESC>'] = actions.close,
