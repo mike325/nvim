@@ -777,11 +777,11 @@ end
 function M.convert_virtual_fname(bufname)
     if M.is_virtual_buf(bufname) then
         local prefix = bufname:match '^(%w+)://' or bufname:match '^(%w%w+):'
-        if prefix == 'fugitive' then
-            if bufname:match '/%.git/worktrees/.+//[%w%d]+/' then
-                local gitdir_loc = string.format('%s/gitdir', bufname:match '^%w+://(.+/%.git/worktrees/.+)//')
+        if prefix == 'fugitive' or prefix == 'diffview' then
+            if bufname:match '/%.git/worktrees/' then
+                local gitdir_loc = string.format('%s/gitdir', bufname:match '^%w+://(.+/%.git/worktrees/[^/]+)//?')
                 local gitdir_ptr = vim.fs.dirname(vim.trim(require('utils.files').readfile(gitdir_loc, false)))
-                bufname = (bufname:gsub('.+/%.git/worktrees/.+//[%w%d]+/', gitdir_ptr .. '/'))
+                bufname = (bufname:gsub('.+/%.git/worktrees/[^/]+//?[%w%d]+/', gitdir_ptr .. '/'))
             else
                 bufname = (bufname:gsub('/%.git//[%w%d]+/', '/'))
             end
