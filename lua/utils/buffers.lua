@@ -783,10 +783,10 @@ function M.convert_virtual_fname(bufname)
                 local gitdir_ptr = vim.fs.dirname(vim.trim(require('utils.files').readfile(gitdir_loc, false)))
                 bufname = (bufname:gsub('.+/%.git/worktrees/[^/]+//?[%w%d]+/', gitdir_ptr .. '/'))
             else
-                bufname = (bufname:gsub('/%.git//[%w%d]+/', '/'))
+                bufname = (bufname:gsub('/%.git//?[^/]+/', '/'))
             end
         elseif prefix == 'gitsigns' then
-            bufname = (bufname:gsub('^gitsigns://.+/%.git/[a-zA-Z0-9~^]+:', ''))
+            bufname = (bufname:gsub('^gitsigns://.+/%.git/[%w%d~^]+:', ''))
         end
         bufname = (bufname:gsub('^%w+:/?/?', ''))
     end

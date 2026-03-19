@@ -128,12 +128,13 @@ function M.progress(data, buffer)
 
     if not vim.t.progress_win then
         vim.t.progress_win = vim.api.nvim_open_win(buffer, false, {
+            title = 'Task Output',
             style = 'minimal',
             border = 'rounded',
-            relative = 'win',
+            relative = 'editor',
             anchor = 'SW',
-            row = lines - 5,
-            col = 2,
+            row = lines - 3,
+            col = 1,
             -- bufpos = {lines/2, 15},
             height = 15,
             width = columns - 5,
@@ -148,6 +149,20 @@ function M.progress(data, buffer)
             pattern = tostring(vim.t.progress_win),
             command = 'unlet t:progress_win',
             once = true,
+            nested = true,
+        })
+
+        vim.api.nvim_create_autocmd({ 'TabLeave' }, {
+            desc = 'Close progress window',
+            group = vim.api.nvim_create_augroup('AutoCloseWindow', { clear = false }),
+            pattern = '*',
+            callback = function()
+                if vim.t.progress_win then
+                    vim.api.nvim_win_close(vim.t.progress_win, true)
+                end
+            end,
+            once = true,
+            nested = true,
         })
 
         if scratch then
