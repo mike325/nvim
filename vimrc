@@ -1141,12 +1141,14 @@ if s:has_option('langnoremap')
 endif
 
 set nrformats=hex
-set shortmess=filnxtToOac
-
 if s:has_patch('7.4.1065')
     set nrformats+=bin
 endif
 
+set shortmess=filnxtToOa
+if v:version >= 704
+    set shortmess+=c
+endif
 if s:has_patch('7.4.1570')
     set shortmess+=F
 endif
@@ -1162,6 +1164,7 @@ endif
 " set nocompatible
 
 set ttyfast
+" set t_Co=255
 set t_vb= " ...disable the visual effect
 
 set autoindent
@@ -1260,8 +1263,13 @@ set copyindent
 set expandtab
 set shiftround
 set tabstop=4
-set shiftwidth=0
-set softtabstop=-1
+if v:version >= 704
+    set shiftwidth=0
+    set softtabstop=-1
+else
+    let &shiftwidth = &l:tabstop
+    let &softtabstop = &l:tabstop
+endif
 
 set shiftround     " Use multiple of shiftwidth when indenting with '<' and '>'
 
@@ -1897,7 +1905,10 @@ augroup end
 
 augroup CloseMenu
     autocmd!
-    autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
+    autocmd InsertLeave * if pumvisible() == 0 | pclose | endif
+    if s:has_autocmd('CompleteDone')
+        autocmd CompleteDone * if pumvisible() == 0 | pclose | endif
+    endif
 augroup end
 
 augroup SetFormatters
