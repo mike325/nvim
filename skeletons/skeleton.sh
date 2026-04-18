@@ -31,8 +31,8 @@ PRINT_VERSION=false
 NOCOLOR=false
 NOLOG=false
 DRY_RUN=false
-WARN_COUNT=false
-ERR_COUNT=false
+WARN_COUNT=0
+ERR_COUNT=0
 # FROM_STDIN=()
 
 NAME="$0"
