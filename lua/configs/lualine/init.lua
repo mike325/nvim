@@ -204,6 +204,33 @@ lualine.setup {
         },
         lualine_c = {
             {
+                function()
+                    return ' '
+                end,
+                color = function()
+                    local ok, status = pcall(require, 'sidekick.status')
+                    if ok then
+                        local sidekick_status = status.get()
+                        if sidekick_status then
+                            return sidekick_status.kind == 'Error' and 'DiagnosticError'
+                                or sidekick_status.busy and 'DiagnosticWarn'
+                                or 'Special'
+                        end
+                    end
+                    return 'Special'
+                end,
+                cond = function()
+                    local ok, status = pcall(require, 'sidekick.status')
+                    if ok then
+                        return status.get() ~= nil
+                    end
+
+                    local bufnr = vim.api.nvim_get_current_buf()
+                    local client = vim.lsp.get_clients({ bufnr = bufnr, name = 'copilot' })[1]
+                    return client ~= nil
+                end,
+            },
+            {
                 statusline.filename(),
                 color = function()
                     return vim.bo.modified and { fg = palette.peach } or nil

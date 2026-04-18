@@ -1,12 +1,24 @@
 local nvim = require 'nvim'
 
 if not nvim.plugins['nvim-treesitter'] then
+    local builtin = {
+        'c',
+        'lua',
+        'vim',
+        'vimdoc',
+        'help',
+        'query',
+        'markdown',
+    }
+
     vim.api.nvim_create_autocmd({ 'FileType' }, {
         desc = 'Basic TS setup when nvim-treesitter is not install',
         group = vim.api.nvim_create_augroup('TreesitterSetup', { clear = true }),
-        pattern = 'c,lua,vim,vimdoc,help,query,markdown',
+        pattern = table.concat(builtin, ','),
         callback = function(args)
-            local ft_mapping = {}
+            local ft_mapping = {
+                sh = 'bash',
+            }
             local filetype = vim.bo[args.buf].filetype
             if vim.version.ge(vim.version(), { 0, 9 }) then
                 ft_mapping.help = 'vimdoc'

@@ -1,7 +1,6 @@
 local sys = require 'sys'
 local nvim = require 'nvim'
 
-local executable = require('utils.files').executable
 local set_abbr = require('nvim.abbrs').set_abbr
 -- local completions = RELOAD 'completions'
 
@@ -184,21 +183,6 @@ vim.keymap.set('n', 'gss', function()
     local args = vim.list_extend(vim.list_slice(grepprg, 2, #grepprg), { vim.fn.expand '<cword>' })
     RELOAD('utils.async').grep { args = args }
 end, { noremap = true, silent = true, desc = 'Grep search word under cursor' })
-
-if executable 'scp' then
-    vim.keymap.set(
-        'n',
-        '<leader><leader>s',
-        '<cmd>SendFile<CR>',
-        { noremap = true, silent = true, desc = 'Send the current file to a remote host' }
-    )
-    vim.keymap.set(
-        'n',
-        '<leader><leader>g',
-        '<cmd>GetFile<CR>',
-        { noremap = true, silent = true, desc = 'Get the current equivalent file from a remote host' }
-    )
-end
 
 vim.keymap.set('n', '=F', function()
     RELOAD('utils.buffers').format { whole_file = true }

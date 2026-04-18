@@ -5,36 +5,6 @@ if not treesitter then
     return false
 end
 
-local languages = {
-    'bash',
-    'cmake',
-    'comment',
-    'cpp',
-    'dockerfile',
-    'editorconfig',
-    'git_config',
-    'git_rebase',
-    'gitattributes',
-    'gitcommit',
-    'gitignore',
-    'go',
-    'ini',
-    'java',
-    'json',
-    'jsonc',
-    'make',
-    'matlab',
-    'perl',
-    'python',
-    'rst',
-    'rust',
-    'ssh_config',
-    'todotxt',
-    'toml',
-    'yaml',
-    -- 'zig',
-}
-
 -- if nvim.executable 'tree-sitter' then
 --     table.insert(languages, 'latex')
 --     table.insert(languages, 'bibtex')
@@ -189,29 +159,6 @@ treesitter.setup {
             show_help = '?',
         },
     },
-    refactor = {
-        -- highlight_current_scope = { enable = true },
-        smart_rename = {
-            enable = true,
-            keymaps = {
-                smart_rename = '<A-r>',
-            },
-        },
-        highlight_definitions = {
-            enable = true,
-            -- disable = disable,
-        },
-        navigation = {
-            enable = true,
-            keymaps = {
-                goto_definition = '<leader><C-]>',
-                list_definitions = '<A-l>',
-                goto_next_usage = '<A-n>',
-                goto_previous_usage = '<A-N>',
-                -- list_definitions_toc = "<A-t>",
-            },
-        },
-    },
     markid = { enable = false },
     tree_docs = {
         enable = false,
@@ -232,16 +179,30 @@ treesitter.setup {
         --     },
         -- },
     },
+    -- refactor = {
+    --     -- highlight_current_scope = { enable = true },
+    --     smart_rename = {
+    --         enable = true,
+    --         keymaps = {
+    --             smart_rename = '<A-r>',
+    --         },
+    --     },
+    --     highlight_definitions = {
+    --         enable = true,
+    --         -- disable = disable,
+    --     },
+    --     navigation = {
+    --         enable = true,
+    --         keymaps = {
+    --             goto_definition = '<leader><C-]>',
+    --             list_definitions = '<A-l>',
+    --             goto_next_usage = '<A-n>',
+    --             goto_previous_usage = '<A-N>',
+    --             -- list_definitions_toc = "<A-t>",
+    --         },
+    --     },
+    -- },
 }
-
-local context = vim.F.npcall(require, 'treesitter-context')
-if context then
-    context.setup {
-        max_lines = 3,
-        multiline_threshold = 1,
-        min_window_height = 20,
-    }
-end
 
 local fts = {}
 for lang, opts in pairs(parsers.list) do
@@ -261,7 +222,7 @@ if #fts > 0 then
     vim.api.nvim_create_autocmd('FileType', {
         desc = 'Setup treesitter fold expression',
         group = vim.api.nvim_create_augroup('TreesitterFold', { clear = true }),
-        pattern = fts,
+        pattern = table.concat(fts, ','),
         command = 'setlocal foldmethod=expr foldexpr=v:lua.vim.treesitter.foldexpr()',
     })
 end

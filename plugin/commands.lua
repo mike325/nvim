@@ -197,13 +197,19 @@ end, { bang = true, nargs = '+', complete = 'file', desc = 'Async and recursive 
 
 --- @param opts Command.Opts
 nvim.command.set('Make', function(opts)
+    local makeprg
+    if opts.bang then
+        makeprg = { 'make' }
+    end
+
     RELOAD('utils.async').makeprg {
+        makeprg = makeprg,
         args = opts.fargs,
         notify = true,
         jump = false,
         progress = true,
     }
-end, { nargs = '*', desc = 'Async execution of current makeprg' })
+end, { nargs = '*', bang = true, desc = 'Async execution of current makeprg' })
 
 --- @param opts Command.Opts
 nvim.command.set('Exec', function(opts)

@@ -710,7 +710,11 @@ if mini.hipatterns then
 end
 
 if vim.g.minimal or not nvim.plugins['nvim-cmp'] then
-    load_simple_module('completion', {})
+    load_simple_module('completion', {
+        mappings = {
+            force_twostep = '',
+        },
+    })
 end
 
 if not nvim.plugins['hop.nvim'] then

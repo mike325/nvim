@@ -291,7 +291,6 @@ vim.api.nvim_create_autocmd('LspAttach', {
                         vim.lsp.buf.document_symbol {}
                     end
                 end,
-                keymap = '<leader>s',
                 command = 'DocSymbols',
             },
             [methods.workspace_symbol] = {
@@ -302,7 +301,6 @@ vim.api.nvim_create_autocmd('LspAttach', {
                         vim.lsp.buf.workspace_symbol()
                     end
                 end,
-                keymap = '<leader>S',
                 command = 'WorkSymbols',
             },
             [methods.textDocument_typeDefinition] = {
@@ -382,6 +380,13 @@ vim.api.nvim_create_autocmd('LspAttach', {
         -- NOTE: use HelpNeovim defined in after/ftplugin
         if vim.bo.filetype == 'lua' then
             client.server_capabilities.hoverProvider = false
+        end
+
+        if
+            vim.version.ge(vim.version(), { 0, 12 })
+            and client:supports_method(vim.lsp.protocol.Methods.textDocument_inlineCompletion, bufnr)
+        then
+            vim.lsp.inline_completion.enable(true, { bufnr = bufnr })
         end
 
         if vim.version.ge(vim.version(), { 0, 10 }) and client:supports_method(methods.textDocument_inlayHint) then

@@ -137,7 +137,6 @@ function M.makeprg(opts)
     ---@cast makeprg string[]
     local cmd = vim.list_extend(makeprg, args)
     cmd = vim.iter(cmd):map(vim.fn.expand):totable()
-    vim.list_extend(cmd, args)
 
     local open = opts.open
     if open == nil then
