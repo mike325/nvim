@@ -66,7 +66,7 @@ vim.keymap.set('n', '^', '0', { noremap = true })
 
 vim.keymap.set('n', 'gV', '`[v`]', { noremap = true })
 
-vim.keymap.set('t', '<ESC>', '<C-\\><C-n>', { noremap = true })
+vim.keymap.set('t', '<C-\\><C-\\>', '<C-\\><C-n>', { noremap = true })
 vim.keymap.set('n', '<BS>', '<C-o>', { noremap = true, silent = true })
 
 vim.keymap.set('n', 'n', function()
