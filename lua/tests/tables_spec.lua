@@ -297,3 +297,149 @@ describe('remove_empty', function()
         mini_test.expect.equality(remove_empty { '', 'test' }, { 'test' })
     end)
 end)
+
+describe('tbl_contains', function()
+    local tbl_contains = require('utils.tables').tbl_contains
+
+    it('in list', function()
+        mini_test.expect.equality(tbl_contains({ 'a', 'b', 'c' }, 'b'), true)
+        mini_test.expect.equality(tbl_contains({ 'a', 'b', 'c' }, 'd'), false)
+        mini_test.expect.equality(tbl_contains({}, 'a'), false)
+    end)
+
+    it('in table', function()
+        mini_test.expect.equality(tbl_contains({ a = 1, b = 2 }, 2), true)
+        mini_test.expect.equality(tbl_contains({ a = 1, b = 2 }, 3), false)
+    end)
+end)
+
+describe('list_contains', function()
+    local list_contains = require('utils.tables').list_contains
+
+    it('check items', function()
+        mini_test.expect.equality(list_contains({ 'a', 'b', 'c' }, 'a'), true)
+        mini_test.expect.equality(list_contains({ 'a', 'b', 'c' }, 'd'), false)
+        mini_test.expect.equality(list_contains({}, 'x'), false)
+    end)
+end)
+
+describe('islist', function()
+    local islist = require('utils.tables').islist
+
+    it('check array', function()
+        mini_test.expect.equality(islist { 1, 2, 3 }, true)
+        mini_test.expect.equality(islist {}, true)
+        mini_test.expect.equality(islist { a = 1, b = 2 }, false)
+        mini_test.expect.equality(islist 'string', false)
+        mini_test.expect.equality(islist(42), false)
+    end)
+end)
+
+describe('tbl_keys', function()
+    local tbl_keys = require('utils.tables').tbl_keys
+
+    it('get keys', function()
+        local keys = tbl_keys { a = 1, b = 2, c = 3 }
+        mini_test.expect.equality(#keys, 3)
+        mini_test.expect.equality(vim.list_contains(keys, 'a'), true)
+        mini_test.expect.equality(vim.list_contains(keys, 'b'), true)
+        mini_test.expect.equality(vim.list_contains(keys, 'c'), true)
+    end)
+
+    it('empty table', function()
+        mini_test.expect.equality(tbl_keys {}, {})
+    end)
+end)
+
+describe('tbl_values', function()
+    local tbl_values = require('utils.tables').tbl_values
+
+    it('get values', function()
+        local values = tbl_values { a = 1, b = 2, c = 3 }
+        mini_test.expect.equality(#values, 3)
+        mini_test.expect.equality(vim.list_contains(values, 1), true)
+        mini_test.expect.equality(vim.list_contains(values, 2), true)
+        mini_test.expect.equality(vim.list_contains(values, 3), true)
+    end)
+end)
+
+describe('tbl_filter', function()
+    local tbl_filter = require('utils.tables').tbl_filter
+
+    it('filter table', function()
+        local filtered = tbl_filter(function(v)
+            return v > 5
+        end, { a = 1, b = 10, c = 3, d = 7, e = 2 })
+        mini_test.expect.equality(filtered.a, nil)
+        mini_test.expect.equality(filtered.b, 10)
+        mini_test.expect.equality(filtered.d, 7)
+        mini_test.expect.equality(filtered.c, nil)
+    end)
+end)
+
+describe('tbl_map', function()
+    local tbl_map = require('utils.tables').tbl_map
+
+    it('map values', function()
+        local mapped = tbl_map(function(v)
+            return v * 2
+        end, { 1, 2, 3 })
+        mini_test.expect.equality(mapped[1], 2)
+        mini_test.expect.equality(mapped[2], 4)
+        mini_test.expect.equality(mapped[3], 6)
+    end)
+
+    it('map table', function()
+        local mapped = tbl_map(function(v)
+            return v .. '!'
+        end, { a = 'hello', b = 'world' })
+        mini_test.expect.equality(mapped.a, 'hello!')
+        mini_test.expect.equality(mapped.b, 'world!')
+    end)
+end)
+
+describe('list_extend', function()
+    local list_extend = require('utils.tables').list_extend
+
+    it('extend list', function()
+        local dest = { 1, 2, 3 }
+        local result = list_extend(dest, { 4, 5, 6 })
+        mini_test.expect.equality(result, { 1, 2, 3, 4, 5, 6 })
+        mini_test.expect.equality(dest, { 1, 2, 3, 4, 5, 6 })
+    end)
+
+    it('extend empty', function()
+        local dest = {}
+        local result = list_extend(dest, { 'a', 'b' })
+        mini_test.expect.equality(result, { 'a', 'b' })
+    end)
+end)
+
+describe('inspect', function()
+    local inspect = require('utils.tables').inspect
+
+    it('inspect primitives', function()
+        mini_test.expect.equality(inspect(42), 42)
+        mini_test.expect.equality(type(inspect 'hello'), 'string')
+        mini_test.expect.equality(inspect(true), true)
+    end)
+
+    it('inspect array', function()
+        local result = inspect { 1, 2, 3 }
+        mini_test.expect.equality(type(result), 'string')
+        mini_test.expect.equality(result:match '1', '1')
+        mini_test.expect.equality(result:match '2', '2')
+    end)
+
+    it('inspect table', function()
+        local result = inspect { a = 1, b = 'test' }
+        mini_test.expect.equality(type(result), 'string')
+        mini_test.expect.equality(result:match 'a', 'a')
+        mini_test.expect.equality(result:match 'test', 'test')
+    end)
+
+    it('inspect function', function()
+        local result = inspect(function() end)
+        mini_test.expect.equality(result, '<function>')
+    end)
+end)
