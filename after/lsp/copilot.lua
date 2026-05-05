@@ -79,12 +79,17 @@ local function sign_out(_, client)
     )
 end
 
+local cmd
+local copilot_lsp = 'copilot-language-server'
+if vim.fn.executable(copilot_lsp) == 0 and vim.fn.executable 'npx' == 1 then
+    cmd = { 'npx', '@github/' .. copilot_lsp, '--stdio' }
+else
+    cmd = { copilot_lsp, '--stdio' }
+end
+
 ---@type vim.lsp.Config
 return {
-    cmd = {
-        'copilot-language-server',
-        '--stdio',
-    },
+    cmd = cmd,
     root_markers = { '.git' },
     init_options = {
         editorInfo = {

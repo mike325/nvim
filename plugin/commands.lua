@@ -681,18 +681,32 @@ nvim.command.set('VNC', function(opts)
 end, { complete = completions.ssh_hosts_completion, nargs = 1, desc = 'Open a VNC connection to the given host' })
 
 if executable 'gh' then
-    --- @param opts Command.Opts
-    nvim.command.set('PRCreate', function(opts)
-        if #opts.fargs > 0 then
-            opts.fargs = vim.list_extend({ '--reviewer' }, { table.concat(opts.fargs, ',') })
+
+    local function pr_open(args)
+        if #args.fargs > 0 then
+            args.fargs = vim.list_extend({ '--reviewer' }, { table.concat(args.fargs, ',') })
         end
-        if not opts.bang then
-            table.insert(opts.fargs, '--draft')
+        if not args.bang then
+            table.insert(args.fargs, '--draft')
         end
-        opts.args = table.concat(opts.fargs, ' ')
-        RELOAD('utils.gh').create_pr({ args = opts.fargs }, function(_)
+        args.args = table.concat(args.fargs, ' ')
+        RELOAD('utils.gh').create_pr({ args = args.fargs }, function(_)
             vim.notify('PR created! ', vim.log.levels.INFO, { title = 'GH' })
         end)
+    end
+
+    --- @param opts Command.Opts
+    nvim.command.set('PRCreate', function(opts)
+        pr_open(opts)
+    end, {
+        nargs = '*',
+        complete = completions.reviewers,
+        bang = true,
+        desc = 'Open PR with the given reviewers defined in reviewers.json',
+    })
+
+    nvim.command.set('PROpen', function(opts)
+        pr_open(opts)
     end, {
         nargs = '*',
         complete = completions.reviewers,
@@ -701,7 +715,7 @@ if executable 'gh' then
     })
 
     --- @param opts Command.Opts
-    nvim.command.set('PrOpen', function(opts)
+    nvim.command.set('PRView', function(opts)
         local gh = RELOAD 'utils.gh'
 
         local pr

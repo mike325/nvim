@@ -104,6 +104,9 @@ if vim.g.has_ui then
 
     require('nvim').setup(false)
     vim.cmd.packadd { args = { 'matchit' }, bang = false }
+    if vim.version.ge(vim.version(), { 0, 12 }) then
+        vim.cmd.packadd { args = { 'nvim.undotree' }, bang = false }
+    end
 else
     -- TODO: This is a setup for script run using -l flag
     -- Missing things,

@@ -5,13 +5,32 @@ else
     compiler = vim.fn.executable 'gcc' == 1 or vim.fn.executable 'clang' == 1
 end
 
-local branch = 'main'
+local branch = 'master'
+
+local function get_missing_parsers()
+    local extensions = { windows = 'dll', unix = 'so' }
+    local ext = jit.os == 'Windows' and extensions.windows or extensions.unix
+    local parsers = {}
+    for parser in vim.iter(vim.api.nvim_get_runtime_file('parser/*.' .. ext, true)) do
+        local bs_parser = vim.fs.basename(parser):gsub('%.%w+$', '')
+        parsers[bs_parser] = true
+    end
+    local builtin = require('utils.treesitter').languages.builtin
+    local extra_langs = require('utils.treesitter').languages.extras
+    local ts_langs = vim.list_extend(vim.deepcopy(builtin), extra_langs)
+    return vim.iter(ts_langs)
+        :filter(function(lang)
+            return not parsers[lang]
+        end)
+        :totable()
+end
 
 return {
     {
         'nvim-treesitter/nvim-treesitter',
         build = ':TSUpdate',
         branch = branch,
+        cond = compiler ~= nil,
         config = function(plugin)
             if plugin.branch == 'master' then
                 require 'configs.treesitter'
@@ -21,68 +40,12 @@ return {
                     install_dir = vim.fn.stdpath 'state' .. '/parsers',
                 }
 
-                local languages = {
-                    'bash',
-                    'cmake',
-                    'comment',
-                    'cpp',
-                    'dockerfile',
-                    'editorconfig',
-                    'git_config',
-                    'git_rebase',
-                    'gitattributes',
-                    'gitcommit',
-                    'gitignore',
-                    'go',
-                    'ini',
-                    'java',
-                    'json',
-                    -- 'jsonc',
-                    'make',
-                    'matlab',
-                    'perl',
-                    'python',
-                    'rst',
-                    'rust',
-                    'ssh_config',
-                    'todotxt',
-                    'toml',
-                    'yaml',
-                    'zig',
-                }
-
-                require('nvim-treesitter').install(languages)
-
-                table.insert(languages, 'sh')
-                vim.api.nvim_create_autocmd({ 'FileType' }, {
-                    desc = 'Basic TS setup when nvim-treesitter is not install',
-                    group = vim.api.nvim_create_augroup('TreesitterSetup', { clear = true }),
-                    pattern = table.concat(languages, ','),
-                    callback = function(args)
-                        local ft_mapping = {
-                            sh = 'bash',
-                        }
-                        local filetype = vim.bo[args.buf].filetype
-                        if vim.version.ge(vim.version(), { 0, 9 }) then
-                            ft_mapping.help = 'vimdoc'
-                        end
-                        vim.treesitter.start(args.buf, ft_mapping[filetype] or filetype)
-                    end,
-                })
-
-                vim.api.nvim_create_autocmd('FileType', {
-                    desc = 'Setup treesitter fold expression',
-                    group = vim.api.nvim_create_augroup('TreesitterFold', { clear = true }),
-                    pattern = table.concat(languages, ','),
-                    callback = function()
-                        vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
-                        vim.wo.foldmethod = 'expr'
-                        vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
-                    end,
-                })
+                local install_langs = get_missing_parsers()
+                if #install_langs > 0 and vim.fn.executable 'tree-sitter' == 1 then
+                    require('nvim-treesitter').install(install_langs)
+                end
             end
         end,
-        cond = compiler ~= nil,
         -- lazy = false,
         -- priority = 1,
         event = 'FileType',

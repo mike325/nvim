@@ -1,6 +1,51 @@
 local nvim = require 'nvim'
 
-local M = {}
+local builtin = {
+    'c',
+    'lua',
+    'vim',
+    'vimdoc',
+    'help',
+    'query',
+    'markdown',
+}
+
+local languages = {
+    'bash',
+    'cmake',
+    'comment',
+    'cpp',
+    'dockerfile',
+    'editorconfig',
+    'git_config',
+    'git_rebase',
+    'gitattributes',
+    'gitcommit',
+    'gitignore',
+    'go',
+    'ini',
+    'java',
+    'json',
+    -- 'jsonc',
+    'make',
+    'matlab',
+    'perl',
+    'python',
+    'rst',
+    'rust',
+    'ssh_config',
+    'todotxt',
+    'toml',
+    'yaml',
+    -- 'zig',
+}
+
+local M = {
+    languages = {
+        builtin = builtin,
+        extras = languages,
+    },
+}
 
 local function get_buf(buf)
     if not buf then
@@ -27,6 +72,25 @@ function M.get_parser(buf, lang)
     local ts_func = type(buf) == type(1) and vim.treesitter.get_parser or vim.treesitter.get_string_parser
     local parser = vim.F.npcall(ts_func, buf, lang)
     return parser
+end
+
+function M.get_active_langs()
+    local extensions = { windows = 'dll', unix = 'so' }
+    local ext = jit.os == 'Windows' and extensions.windows or extensions.unix
+
+    local parsers = {}
+    for parser in vim.iter(vim.api.nvim_get_runtime_file('parser/*.' .. ext, true)) do
+        local bs_parser = vim.fs.basename(parser):gsub('%.%w+$', '')
+        parsers[bs_parser] = true
+    end
+
+    local ts_langs = vim.list_extend(vim.deepcopy(M.languages.builtin), M.languages.extras)
+    table.insert(ts_langs, 'sh')
+    return vim.iter(ts_langs)
+        :filter(function(lang)
+            return parsers[lang]
+        end)
+        :totable()
 end
 
 -- Copied from nvim-treesitter in ts_utils

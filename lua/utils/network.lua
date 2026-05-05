@@ -86,4 +86,28 @@ function M.get_remote_host(host, cb)
     return get_actual_hostname(host)
 end
 
+function M.get_proxy()
+    if vim.env.HTTP_PROXY then
+        return {
+            HTTP_PROXY = vim.env.HTTP_PROXY,
+            HTTPS_PROXY = vim.env.HTTPS_PROXY,
+            FTP_PROXY = vim.env.FTP_PROXY,
+            NO_PROXY = vim.env.NO_PROXY,
+        }
+    end
+    if vim.fn.executable 'secret-tool' == 1 then
+        local url = 'http://%s:%s@%s:80'
+        local user = vim.env.USER
+        local password = vim.system({ 'secret-tool', 'lookup', 'proxy', 'password' }):wait().stdout
+        local server = vim.system({ 'secret-tool', 'lookup', 'proxy', 'server' }):wait().stdout
+        return {
+            HTTP_PROXY = url:format(user, password, server),
+            HTTPS_PROXY = url:format(user, password, server),
+            FTP_PROXY = url:format(user, password, server),
+            NO_PROXY = 'localhost',
+        }
+    end
+    return nil
+end
+
 return M

@@ -390,13 +390,15 @@ vim.api.nvim_create_autocmd('LspAttach', {
         end
 
         if vim.version.ge(vim.version(), { 0, 10 }) and client:supports_method(methods.textDocument_inlayHint) then
-            -- Initial inlay hint display.
-            vim.defer_fn(function()
-                local mode = vim.api.nvim_get_mode().mode
-                vim.lsp.inlay_hint.enable(mode == 'n' or mode == 'v', { bufnr = bufnr })
-                vim.b.inlay_hints_enabled = vim.lsp.inlay_hint.is_enabled { bufnr = bufnr }
-            end, 500)
 
+            -- -- Initial inlay hint display.
+            -- vim.defer_fn(function()
+            --     local mode = vim.api.nvim_get_mode().mode
+            --     vim.lsp.inlay_hint.enable(mode == 'n' or mode == 'v', { bufnr = bufnr })
+            -- end, 500)
+
+            -- TODO(miochoa): Test enable on CursorHold?
+            vim.b.inlay_hints_enabled = false
             local inlay_hints_group = vim.api.nvim_create_augroup('InlayHintsToggle', { clear = true })
             vim.api.nvim_create_autocmd('InsertEnter', {
                 group = inlay_hints_group,
@@ -989,5 +991,25 @@ vim.api.nvim_create_autocmd('LspTokenUpdate', {
         if links[token.type] and not token.modifiers.readonly then
             vim.lsp.semantic_tokens.highlight_token(token, args.buf, args.data.client_id, links[token.type])
         end
+    end,
+})
+
+vim.api.nvim_create_autocmd({ 'FileType' }, {
+    desc = 'Basic TS setup when nvim-treesitter is not install',
+    group = vim.api.nvim_create_augroup('TreesitterSetup', { clear = true }),
+    pattern = table.concat(require('utils.treesitter').get_active_langs(), ','),
+    callback = function(args)
+        local ft_mapping = {
+            sh = 'bash',
+        }
+        local filetype = vim.bo[args.buf].filetype
+        if vim.version.ge(vim.version(), { 0, 9 }) then
+            ft_mapping.help = 'vimdoc'
+        end
+        vim.treesitter.start(args.buf, ft_mapping[filetype] or filetype)
+
+        vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+        vim.wo.foldmethod = 'expr'
+        vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
     end,
 })

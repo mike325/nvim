@@ -5,12 +5,15 @@ return {
     },
     {
         'folke/sidekick.nvim',
+        lazy = false,
+        -- enabled = false,
         opts = {
             -- add any options here
             cli = {
                 mux = {
                     backend = 'tmux',
-                    enabled = true,
+                    create = 'split', ---@type "terminal"|"window"|"split"
+                    enabled = false,
                 },
             },
         },
@@ -27,21 +30,25 @@ return {
                 desc = 'Goto/Apply Next Edit Suggestion',
             },
             {
-                '<leader>sr',
+                [[<leader>\t]],
+                function()
+                    local name
+                    if vim.fn.executable 'opencode' == 1 then
+                        name = 'opencode'
+                    end
+                    require('sidekick.cli').toggle { name = name, focus = true }
+                end,
+                desc = 'Sidekick Toggle CLI',
+            },
+            {
+                [[<leader>\r]],
                 function()
                     require('sidekick.nes').clear()
                 end,
                 desc = 'Clear NES suggestions',
             },
             {
-                '<leader>st',
-                function()
-                    require('sidekick.cli').toggle()
-                end,
-                desc = 'Sidekick Toggle CLI',
-            },
-            {
-                '<leader>ss',
+                [[<leader>\s]],
                 function()
                     require('sidekick.cli').send { msg = '{this}' }
                 end,

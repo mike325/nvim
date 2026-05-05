@@ -404,3 +404,9 @@ toggle_option('background', nil, function(action)
     vim.go.background = background
     vim.print(' ' .. background)
 end)
+
+if vim.version.ge(vim.version(), { 0, 12 }) then
+    vim.keymap.set('n', '=U', function()
+        vim.cmd.Undotree()
+    end, { noremap = true, silent = true, desc = 'Toggle undotree' })
+end
