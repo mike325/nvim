@@ -78,7 +78,12 @@ local function enable_server(server)
                 callback = function(args)
                     local root_dir = vim.uv.cwd()
                     if config.root_markers or config.root_dir then
-                        local markers = config.root_markers --[[@as string|string[]|nil ]] or config.root_dir --[[@as fun(name: string, path: string):boolean|nil]]
+                        local markers
+                        if config.root_markers then
+                            markers = config.root_markers --[[@as string|string[]|nil ]]
+                        else
+                            markers = config.root_dir --[[@as fun(name: string, path: string):boolean|nil]]
+                        end
                         root_dir = vim.fs.root(args.buf, markers)
                     end
                     config.name = server

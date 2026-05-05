@@ -241,7 +241,7 @@ def createLogger(
     ColorFormatter: Any = None
     Formatter: Any = None
     try:
-        from colorlog import ColoredFormatter  # noqa: PLC0415
+        from colorlog import ColoredFormatter
 
         Formatter = ColoredFormatter
         ColorFormatter = ColoredFormatter
@@ -290,7 +290,7 @@ def createLogger(
 
     stdout_handler = logging.StreamHandler(sys.stdout)
     stdout_handler.setLevel(stdout_level)
-    logformat = "{color}%(levelname)-8s | %(message)s"  # noqa: RUF027
+    logformat = "{color}%(levelname)-8s | %(message)s"
     logformat = logformat.format(
         color="%(log_color)s" if has_color_formatter else "",
         # reset='%(reset)s' if has_color_formatter else '',
