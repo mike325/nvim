@@ -390,7 +390,6 @@ vim.api.nvim_create_autocmd('LspAttach', {
         end
 
         if vim.version.ge(vim.version(), { 0, 10 }) and client:supports_method(methods.textDocument_inlayHint) then
-
             -- -- Initial inlay hint display.
             -- vim.defer_fn(function()
             --     local mode = vim.api.nvim_get_mode().mode

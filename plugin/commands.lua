@@ -681,7 +681,6 @@ nvim.command.set('VNC', function(opts)
 end, { complete = completions.ssh_hosts_completion, nargs = 1, desc = 'Open a VNC connection to the given host' })
 
 if executable 'gh' then
-
     local function pr_open(args)
         if #args.fargs > 0 then
             args.fargs = vim.list_extend({ '--reviewer' }, { table.concat(args.fargs, ',') })
