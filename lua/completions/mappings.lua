@@ -1,7 +1,3 @@
-local nvim = require 'nvim'
-
-local has_cmp = nvim.plugins['nvim-cmp']
-
 local M = {}
 
 local function has_words_before()
@@ -10,13 +6,10 @@ local function has_words_before()
 end
 
 function M.prev_item(fallback)
-    local cmp
-    if has_cmp then
-        cmp = vim.F.npcall(require, 'cmp')
-    end
+    local cmp = vim.F.npcall(require, 'blink.cmp')
 
-    if cmp and cmp.visible() then
-        cmp.select_prev_item()
+    if cmp and cmp.is_menu_visible() then
+        cmp.select_prev()
     elseif vim.fn.pumvisible() ~= 0 then
         vim.api.nvim_feedkeys(vim.keycode '<c-p>', 'n', false)
     else
@@ -40,13 +33,10 @@ function M.prev_item(fallback)
 end
 
 function M.next_item(fallback)
-    local cmp
-    if has_cmp then
-        cmp = vim.F.npcall(require, 'cmp')
-    end
+    local cmp = vim.F.npcall(require, 'blink.cmp')
 
-    if cmp and cmp.visible() then
-        cmp.select_next_item()
+    if cmp and cmp.is_menu_visible() then
+        cmp.select_next()
     elseif vim.fn.pumvisible() ~= 0 then
         vim.api.nvim_feedkeys(vim.keycode '<c-n>', 'n', false)
     else
@@ -62,9 +52,12 @@ function M.next_item(fallback)
         elseif pcall(require, 'neogen') and require('neogen').jumpable() then
             vim.api.nvim_feedkeys(vim.keycode "<cmd>lua require('neogen').jump_next()<CR>", 'n', false)
         elseif vim.version.ge(vim.version(), { 0, 12 }) and vim.lsp.inline_completion.get() then
+            if cmp and cmp.is_menu_visible() then
+                cmp.cancel()
+            end
             return
         elseif cmp and has_words_before() then
-            cmp.complete()
+            cmp.accept { force = true }
         elseif fallback then
             fallback()
         else
@@ -74,20 +67,21 @@ function M.next_item(fallback)
 end
 
 function M.enter_item(fallback)
-    local cmp
-    if has_cmp then
-        cmp = vim.F.npcall(require, 'cmp')
-    end
-
+    local cmp = vim.F.npcall(require, 'blink.cmp')
     local ls = vim.F.npcall(require, 'luasnip')
+
     if ls and ls.expandable() then
-        ls.expand()
-    elseif cmp and cmp.visible() then
-        if not cmp.get_selected_entry() then
-            cmp.close()
-        else
-            cmp.confirm { behavior = cmp.ConfirmBehavior.Replace, select = false }
+        if cmp and cmp.is_menu_visible() then
+            cmp.cancel()
         end
+        ls.expand()
+    elseif cmp and cmp.is_menu_visible() then
+        if not cmp.get_selected_item() then
+            cmp.cancel()
+        else
+            cmp.accept { force = true }
+        end
+        return
     elseif vim.fn.pumvisible() ~= 0 then
         local item_selected = vim.fn.complete_info()['selected'] ~= -1
         if item_selected then
@@ -110,16 +104,15 @@ end
 
 function M.close(fallback)
     local ls = vim.F.npcall(require, 'luasnip')
-
-    local cmp
-    if has_cmp then
-        cmp = vim.F.npcall(require, 'cmp')
-    end
+    local cmp = vim.F.npcall(require, 'blink.cmp')
 
     if ls and ls.choice_active() then
+        if cmp and cmp.is_menu_visible() then
+            cmp.cancel()
+        end
         ls.change_choice(1)
-    elseif cmp and cmp.visible() then
-        cmp.close()
+    elseif cmp and cmp.is_menu_visible() then
+        cmp.cancel()
     elseif vim.fn.pumvisible() ~= 0 then
         local item_selected = vim.fn.complete_info()['selected'] ~= -1
         if item_selected then

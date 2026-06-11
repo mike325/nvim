@@ -105,7 +105,8 @@ local M = {
     },
     formatprg = {
         ['clang-format'] = {
-            '--fallback-style=WebKit',
+            '-i',
+            '--fallback-style=Google',
             '--sort-includes',
         },
     },

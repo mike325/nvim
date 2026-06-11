@@ -709,11 +709,21 @@ if mini.hipatterns then
     end, { desc = 'Toggle Password Cloaking' })
 end
 
-if vim.g.minimal or not nvim.plugins['nvim-cmp'] then
+if vim.g.minimal or (not nvim.plugins['nvim-cmp'] and not nvim.plugins['blink.cmp']) then
+    local process_items = function(items, base)
+        local mini_completion = _G['MiniCompletion'] or require 'mini.completion'
+        return mini_completion.default_process_items(items, base, {
+            filtersort = 'fuzzy',
+            kind_priority = {
+                Snippet = -1,
+                Text = 99,
+            },
+        })
+    end
+
     load_simple_module('completion', {
-        mappings = {
-            force_twostep = '',
-        },
+        mappings = { force_twostep = '' },
+        lsp_completion = { process_items = process_items },
     })
 end
 
