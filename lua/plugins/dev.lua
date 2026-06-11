@@ -103,7 +103,7 @@ return {
             cmdline = {
                 keymap = {
                     preset = 'default',
-                    ['<CR>'] = { 'select_and_accept', 'fallback' },
+                    ['<CR>'] = { 'accept', 'fallback' },
                     ['<Tab>'] = { 'show_and_insert_or_accept_single', 'select_next' },
                     ['<S-Tab>'] = { 'show_and_insert_or_accept_single', 'select_prev' },
                     ['<C-n>'] = { 'select_next', 'fallback' },
@@ -115,7 +115,7 @@ return {
                     menu = { auto_show = true },
                     -- ghost_text = { enabled = true },
                     list = {
-                        selection = { preselect = true },
+                        selection = { preselect = false },
                     },
                 },
             },
