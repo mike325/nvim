@@ -96,20 +96,29 @@ return {
                 menu = {
                     border = 'single',
                 },
+                list = {
+                    selection = {
+                        preselect = false,
+                        -- auto_insert = true,
+                    },
+                },
                 ghost_text = { enabled = true },
                 documentation = { auto_show = true, window = { border = 'single' } },
             },
 
             cmdline = {
+                enabled = false,
                 keymap = {
-                    preset = 'default',
-                    ['<CR>'] = { 'accept', 'fallback' },
+                    preset = 'none',
+                    ['<CR>'] = { 'accept_and_enter', 'fallback' },
                     ['<Tab>'] = { 'show_and_insert_or_accept_single', 'select_next' },
                     ['<S-Tab>'] = { 'show_and_insert_or_accept_single', 'select_prev' },
                     ['<C-n>'] = { 'select_next', 'fallback' },
                     ['<C-p>'] = { 'select_prev', 'fallback' },
                     ['<C-y>'] = { 'select_and_accept', 'fallback' },
                     ['<C-e>'] = { 'cancel', 'fallback' },
+                    ['<UP>'] = false,
+                    ['<DOWN>'] = false,
                 },
                 completion = {
                     menu = { auto_show = true },

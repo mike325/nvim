@@ -69,6 +69,10 @@ function M.get_pr_changes(opts, callback)
     local ghcmd = 'pr'
     local args = { 'view', '--json', 'files,baseRefName' }
 
+    if opts and opts.pr then
+        table.insert(args, 2, opts.pr)
+    end
+
     local function format_output(output)
         local json = vim.json.decode(table.concat(output, '\n'))
         local data = {
@@ -92,24 +96,11 @@ function M.get_pr_changes(opts, callback)
 end
 
 function M.open_pr(pr)
-    vim.validate {
-        pr = { pr, 'number', true },
-    }
-
-    local ghcmd = 'pr'
-    local args = { 'view' }
-
-    if pr then
-        table.insert(args, pr)
-    end
-
-    vim.list_extend(args, { '--json', 'url' })
-
     local function open_url(output)
         local json = vim.json.decode(table.concat(output, '\n'))
         vim.ui.open(json.url)
     end
-    open_url(exec_ghcmd(ghcmd, args))
+    open_url(M.get_pr_info('url', pr))
 end
 
 function M.list_repo_pr(opts, callback)
@@ -275,6 +266,149 @@ function M.pr_ready(is_ready, callback)
 
     exec_ghcmd(ghcmd, args, function(output)
         callback(output)
+    end)
+end
+
+function M.pr_review(approve, pr, comment, callback)
+    vim.validate {
+        approve = { approve, 'boolean' },
+        pr = { pr, 'string', true },
+        comment = { comment, 'string', true },
+        callback = { callback, 'function', true },
+    }
+
+    local ghcmd = 'pr'
+    local args = { 'review' }
+    if pr then
+        table.insert(args, pr)
+    end
+
+    if approve then
+        table.insert(args, '--approve')
+    else
+        table.insert(args, '--request-changes')
+    end
+
+    if comment and comment ~= '' then
+        table.insert(args, '-b')
+        table.insert(args, comment)
+    end
+
+    if not callback then
+        return exec_ghcmd(ghcmd, args)
+    end
+    exec_ghcmd(ghcmd, args, function(output)
+        callback(output)
+    end)
+end
+
+function M.get_repo_info(attr, pr, callback)
+    vim.validate {
+        attr = { attr, 'string' },
+        pr = { pr, 'string', true },
+        callback = { callback, 'function', true },
+    }
+    local ghcmd = 'repo'
+    local args = { 'view', '--json', attr }
+    if pr then
+        table.insert(args, 2, pr)
+    end
+    if not callback then
+        return vim.json.decode(table.concat(exec_ghcmd(ghcmd, args), '\n'))
+    end
+    exec_ghcmd(ghcmd, args, function(output)
+        callback(vim.json.decode(table.concat(output, '\n')))
+    end)
+end
+
+function M.get_pr_info(attr, pr, callback)
+    vim.validate {
+        attr = { attr, 'string' },
+        pr = { pr, 'string', true },
+        callback = { callback, 'function', true },
+    }
+    local ghcmd = 'pr'
+    local args = { 'view', '--json', attr, '-q', '.' .. attr }
+    if pr then
+        table.insert(args, 2, pr)
+    end
+    if not callback then
+        return exec_ghcmd(ghcmd, args)
+    end
+    exec_ghcmd(ghcmd, args, function(output)
+        callback(output)
+    end)
+end
+
+function M.get_pr_base_branch(pr, callback)
+    if not callback then
+        return M.get_pr_info('baseRefName', pr)
+    end
+    M.get_pr_info('baseRefName', pr, function(output)
+        callback(output and output[1] or '')
+    end)
+end
+
+function M.get_pr_id(pr, callback)
+    if not callback then
+        return M.get_pr_info('id', pr)
+    end
+    M.get_pr_info('id', pr, function(output)
+        callback(output and output[1] or '')
+    end)
+end
+
+function M.get_pr_num(pr, callback)
+    if not callback then
+        return M.get_pr_info('number', pr)
+    end
+    M.get_pr_info('number', pr, function(output)
+        callback(output and output[1] or '')
+    end)
+end
+
+function M.pr_mark_view(opts, callback)
+    vim.validate {
+        opts = { opts, 'table' },
+        pr = { opts.pr, 'string', true },
+        filename = { opts.filename, 'string', true },
+        view = { opts.view, 'boolean', true },
+        callback = { callback, 'function', true },
+    }
+
+    local pr = opts.pr
+    local filename = opts.filename or vim.api.nvim_buf_get_name(0)
+    local cwd = vim.fs.normalize(vim.uv.cwd() or '.')
+    filename = require('utils.buffers').convert_virtual_fname(filename)
+    filename = vim.fs.normalize(filename)
+    filename = (filename:gsub(string.format('^%s/', vim.pesc(cwd)), ''))
+
+    local query = 'mutation($pr:ID!, $path:String!){ %s(input:{pullRequestId:$pr,path:$path}){clientMutationId} }'
+    if opts.view == false then
+        query = query:format 'unmarkFileAsViewed'
+    else
+        query = query:format 'markFileAsViewed'
+    end
+
+    local ghcmd = 'api'
+    local args = {
+        'graphql',
+        '-f',
+        'query=' .. query,
+        '-f',
+        'path=' .. filename,
+    }
+
+    if not callback then
+        local pr_id = M.get_pr_id(pr)
+        vim.list_extend(args, { '-f', 'pr=' .. pr_id })
+        return exec_ghcmd(ghcmd, args)
+    end
+    M.get_pr_id(pr, function(pr_id)
+        vim.list_extend(args, { '-f', 'pr=' .. pr_id })
+        exec_ghcmd(ghcmd, args, function(output)
+            callback(output)
+        end)
     end)
 end
 

@@ -1094,4 +1094,10 @@ function M.watch_config_file(fname)
     end
 end
 
+function M.remove_cwd_from_filepath(fname)
+    vim.validate { fname = { fname, 'string' } }
+    local cwd = vim.fs.normalize(vim.uv.cwd() or '.')
+    return (fname:gsub(string.format('^%s/', vim.pesc(cwd)), ''))
+end
+
 return M

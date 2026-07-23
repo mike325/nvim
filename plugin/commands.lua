@@ -680,112 +680,6 @@ nvim.command.set('VNC', function(opts)
     RELOAD('mappings.commands').vnc(opts.args, { '-Quality=high' })
 end, { complete = completions.ssh_hosts_completion, nargs = 1, desc = 'Open a VNC connection to the given host' })
 
-if executable 'gh' then
-    local function pr_open(args)
-        if #args.fargs > 0 then
-            args.fargs = vim.list_extend({ '--reviewer' }, { table.concat(args.fargs, ',') })
-        end
-        if not args.bang then
-            table.insert(args.fargs, '--draft')
-        end
-        args.args = table.concat(args.fargs, ' ')
-        RELOAD('utils.gh').create_pr({ args = args.fargs }, function(_)
-            vim.notify('PR created! ', vim.log.levels.INFO, { title = 'GH' })
-        end)
-    end
-
-    --- @param opts Command.Opts
-    nvim.command.set('PRCreate', function(opts)
-        pr_open(opts)
-    end, {
-        nargs = '*',
-        complete = completions.reviewers,
-        bang = true,
-        desc = 'Open PR with the given reviewers defined in reviewers.json',
-    })
-
-    nvim.command.set('PROpen', function(opts)
-        pr_open(opts)
-    end, {
-        nargs = '*',
-        complete = completions.reviewers,
-        bang = true,
-        desc = 'Open PR with the given reviewers defined in reviewers.json',
-    })
-
-    --- @param opts Command.Opts
-    nvim.command.set('PRView', function(opts)
-        local gh = RELOAD 'utils.gh'
-
-        local pr
-        if tonumber(opts.args) then
-            pr = tonumber(opts.args)
-        elseif not opts.bang and opts.args ~= 'current' then
-            gh.list_repo_pr({}, function(list_pr)
-                local titles = vim.tbl_map(function(pull_request)
-                    return pull_request.title
-                end, vim.deepcopy(list_pr))
-                vim.ui.select(
-                    titles,
-                    { prompt = 'Select PR: ' },
-                    vim.schedule_wrap(function(choice)
-                        if choice ~= '' then
-                            local pr_id = vim.tbl_filter(function(pull_request)
-                                return pull_request.title == choice
-                            end, list_pr)[1]
-                            if pr_id then
-                                gh.open_pr(pr_id.number)
-                            end
-                        end
-                    end)
-                )
-            end)
-            return
-        end
-
-        gh.open_pr(pr)
-    end, {
-        nargs = '?',
-        complete = comp_utils.get_completion { 'current' },
-        bang = true,
-        desc = 'Open PR in the browser',
-    })
-
-    --- @param opts Command.Opts
-    nvim.command.set('PrReady', function(opts)
-        local is_ready = true
-        if opts.args == 'draft' then
-            is_ready = false
-        end
-        RELOAD('utils.gh').pr_ready(is_ready, function(_)
-            local msg = ('PR move to %s'):format(opts.args == '' and 'ready' or opts.args)
-            vim.notify(msg, vim.log.levels.INFO, { title = 'GH' })
-        end)
-    end, {
-        nargs = '?',
-        complete = completions.gh_pr_ready,
-        desc = 'Set PR to ready or to draft',
-    })
-
-    --- @param opts Command.Opts
-    nvim.command.set('EditReviewers', function(opts)
-        local reviewers = { table.concat(opts.fargs, ',') }
-        local action = opts.fargs[1]:gsub('^%-+', '')
-        local command = action == 'add' and '--add-reviewer' or '--remove-reviewer'
-        opts.fargs = vim.list_extend({ command }, reviewers)
-        opts.args = table.concat(opts.fargs, ' ')
-        RELOAD('utils.gh').edit_pr({ args = opts.fargs }, function(_)
-            local msg = ('Reviewers %s were %s'):format(action .. 'ed', table.concat(reviewers, ''))
-            vim.notify(msg, vim.log.levels.INFO, { title = 'GH' })
-        end)
-    end, {
-        nargs = '+',
-        complete = completions.gh_edit_reviewers,
-        bang = true,
-        desc = 'Add/Remove reviewers defined in reviewers.json',
-    })
-end
-
 --- @param opts Command.Opts
 nvim.command.set('Argdo', function(opts)
     RELOAD('utils.arglist').exec(opts.args)
@@ -997,7 +891,7 @@ then
             local img = vim.fs.joinpath(dir, (basename:gsub('%.puml', '.png')))
             vim.ui.open(img)
         end
-    end, { desc = 'Disable/Enable Auto PlantUML render' })
+    end, { desc = 'Open generated UML with the same name' })
 end
 
 --- @param opts Command.Opts

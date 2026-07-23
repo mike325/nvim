@@ -7,6 +7,33 @@ local diagnostic_actions = {
     '-hide',
 }
 
+local function get_reviewers()
+    local reviewers = {}
+    if require('utils.files').is_file 'reviewers.json' then
+        reviewers = require('utils.files').read_json 'reviewers.json'
+    elseif require('utils.files').is_file '.github/teams.yml' then
+        reviewers = vim.iter(require('utils.files').readfile '.github/teams.yml')
+            :filter(function(l)
+                return l:match '^%s*%-%s+'
+            end)
+            :map(function(l)
+                return (vim.trim(l):match('@(%w+)', 1))
+            end)
+            :totable()
+    elseif require('utils.files').is_file '.github/CODEOWNERS' then
+        local data = require('utils.files').readfile('.github/CODEOWNERS', false)
+        reviewers = vim.iter(vim.split(data, '%s+'))
+            :filter(function(l)
+                return l:match '^@'
+            end)
+            :map(function(l)
+                return (l:match('@(%w+)', 1))
+            end)
+            :totable()
+    end
+    return reviewers
+end
+
 local completions = {}
 completions = vim.tbl_extend('force', completions, {
     ssh_hosts_completion = function(arglead, cmdline, cursorpos)
@@ -159,10 +186,7 @@ completions = vim.tbl_extend('force', completions, {
     end,
     reviewers = function(arglead, cmdline, cursorpos)
         local utils = require 'completions.utils'
-        local reviewers = {}
-        if require('utils.files').is_file 'reviewers.json' then
-            reviewers = require('utils.files').read_json 'reviewers.json'
-        end
+        local reviewers = get_reviewers()
         table.insert(reviewers, '-push')
         return utils.general_completion(arglead, cmdline, cursorpos, reviewers)
     end,
@@ -174,19 +198,15 @@ completions = vim.tbl_extend('force', completions, {
             return utils.general_completion(arglead, cmdline, cursorpos, { '-add', '-remove' })
         end
 
-        local reviewers = {}
-        if require('utils.files').is_file 'reviewers.json' then
-            reviewers = require('utils.files').read_json 'reviewers.json'
-
-            local tmp = {}
-            for _, reviewer in ipairs(reviewers) do
-                if not vim.list_contains(cmd, reviewer) then
-                    table.insert(tmp, reviewer)
-                end
+        local reviewers = get_reviewers()
+        local tmp = {}
+        for _, reviewer in ipairs(reviewers) do
+            if not vim.list_contains(cmd, reviewer) then
+                table.insert(tmp, reviewer)
             end
-
-            reviewers = tmp
         end
+        reviewers = tmp
+
         return utils.general_nodash_completion(arglead, cmdline, cursorpos, reviewers)
     end,
     gh_pr_ready = function(arglead, cmdline, cursorpos)

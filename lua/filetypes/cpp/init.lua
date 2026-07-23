@@ -34,6 +34,7 @@ local M = {
             '-Wnull-dereference',
             '-Wdouble-promotion',
             '-Wformat=2',
+            '-Wuninitialized',
         },
         ['g++'] = {
             '-std=c++20',
@@ -58,6 +59,7 @@ local M = {
             '-Wlogical-op',
             '-Wuseless-cast',
             '-Wformat=2',
+            '-Wuninitialized',
         },
         clang = {
             '-std=c11',
@@ -77,6 +79,7 @@ local M = {
             '-Wnull-dereference',
             '-Wdouble-promotion',
             '-Wformat=2',
+            '-Wuninitialized',
         },
         gcc = {
             '-std=c11',
@@ -101,6 +104,7 @@ local M = {
             '-Wlogical-op',
             '-Wuseless-cast',
             '-Wformat=2',
+            '-Wuninitialized',
         },
     },
     formatprg = {
