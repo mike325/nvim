@@ -142,6 +142,9 @@ lualine.setup {
                 end,
             },
             {
+                statusline.buf_view_status(),
+            },
+            {
                 statusline.session(),
                 cond = statusline.session.cond,
             },

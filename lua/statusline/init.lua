@@ -182,6 +182,14 @@ local M = {
             return ''
         end,
     },
+    buf_view_status = {
+        component = function()
+            if vim.b.buf_view_status then
+                return vim.b.buf_view_status:sub(1, 1)
+            end
+            return ''
+        end,
+    },
     mixindent = {
         component = function()
             local mix = vim.fn.search([[\v( \t|\t )]], 'nwc')

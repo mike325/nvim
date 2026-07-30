@@ -95,14 +95,6 @@ function M.get_pr_changes(opts, callback)
     end)
 end
 
-function M.open_pr(pr)
-    local function open_url(output)
-        local json = vim.json.decode(table.concat(output, '\n'))
-        vim.ui.open(json.url)
-    end
-    open_url(M.get_pr_info('url', pr))
-end
-
 function M.list_repo_pr(opts, callback)
     vim.validate {
         opts = { opts, 'table', true },
@@ -302,17 +294,17 @@ function M.pr_review(approve, pr, comment, callback)
     end)
 end
 
-function M.get_repo_info(attr, pr, callback)
+function M.get_repo_info(attr, callback)
     vim.validate {
-        attr = { attr, 'string' },
-        pr = { pr, 'string', true },
+        attr = { attr, { 'string', 'table' } },
         callback = { callback, 'function', true },
     }
+    if type(attr) == type {} then
+        attr = table.concat(attr, ',')
+    end
+
     local ghcmd = 'repo'
     local args = { 'view', '--json', attr }
-    if pr then
-        table.insert(args, 2, pr)
-    end
     if not callback then
         return vim.json.decode(table.concat(exec_ghcmd(ghcmd, args), '\n'))
     end
@@ -324,20 +316,24 @@ end
 function M.get_pr_info(attr, pr, callback)
     vim.validate {
         attr = { attr, 'string' },
-        pr = { pr, 'string', true },
+        pr = { pr, { 'string', 'number' }, true },
         callback = { callback, 'function', true },
     }
     local ghcmd = 'pr'
     local args = { 'view', '--json', attr, '-q', '.' .. attr }
     if pr then
-        table.insert(args, 2, pr)
+        table.insert(args, 2, tostring(pr))
     end
     if not callback then
-        return exec_ghcmd(ghcmd, args)
+        return exec_ghcmd(ghcmd, args)[1] or ''
     end
     exec_ghcmd(ghcmd, args, function(output)
-        callback(output)
+        callback(output and output[1] or '')
     end)
+end
+
+function M.open_pr(pr)
+    M.get_pr_info('url', pr, vim.ui.open)
 end
 
 function M.get_pr_base_branch(pr, callback)
@@ -345,7 +341,7 @@ function M.get_pr_base_branch(pr, callback)
         return M.get_pr_info('baseRefName', pr)
     end
     M.get_pr_info('baseRefName', pr, function(output)
-        callback(output and output[1] or '')
+        callback(output)
     end)
 end
 
@@ -354,7 +350,7 @@ function M.get_pr_id(pr, callback)
         return M.get_pr_info('id', pr)
     end
     M.get_pr_info('id', pr, function(output)
-        callback(output and output[1] or '')
+        callback(output)
     end)
 end
 
@@ -363,7 +359,7 @@ function M.get_pr_num(pr, callback)
         return M.get_pr_info('number', pr)
     end
     M.get_pr_info('number', pr, function(output)
-        callback(output and output[1] or '')
+        callback(output)
     end)
 end
 
@@ -410,6 +406,66 @@ function M.pr_mark_view(opts, callback)
             callback(output)
         end)
     end)
+end
+
+function M.get_view_files(pr, callback)
+    vim.validate {
+        pr = { pr, 'string', true },
+        callback = { callback, 'function', true },
+    }
+
+    -- luacheck: ignore 631
+    local query =
+        'query($owner:String!,$repo:String!,$pr:Int!){repository(owner:$owner,name:$repo){pullRequest(number:$pr){files(first:100){nodes{path viewerViewedState}}}}}'
+    local ghcmd = 'api'
+    local args = {
+        'graphql',
+        '-f',
+        'query=' .. query,
+    }
+
+    local function transform_output(output)
+        output = vim.json.decode(table.concat(output, '\n'))
+        local files = output.data.repository.pullRequest.files.nodes
+        local data = {}
+        for _, f in ipairs(files) do
+            data[f.path] = f.viewerViewedState
+        end
+        return data
+    end
+
+    if not callback then
+        pr = (tonumber(pr) and pr or M.get_pr_num(pr))
+        local repo = M.get_repo_info { 'owner', 'name' }
+        vim.list_extend(args, {
+            '-F',
+            'pr=' .. pr,
+            '-f',
+            'owner=' .. repo.owner.login,
+            '-f',
+            'repo=' .. repo.name,
+        })
+
+        return transform_output(exec_ghcmd(ghcmd, args))
+    end
+
+    local function get_repo_fields(pr_num)
+        vim.list_extend(args, { '-F', 'pr=' .. pr_num })
+        M.get_repo_info({ 'owner', 'name' }, function(repo)
+            vim.list_extend(args, { '-f', 'owner=' .. repo.owner.login, '-f', 'repo=' .. repo.name })
+            exec_ghcmd(ghcmd, args, function(output)
+                callback(transform_output(output))
+            end)
+        end)
+    end
+
+    if not pr or not tonumber(pr) then
+        M.get_pr_num(pr, function(pr_num)
+            get_repo_fields(pr_num)
+        end)
+    else
+        get_repo_fields(pr)
+    end
 end
 
 function M.get_repo_reviewers(callback)

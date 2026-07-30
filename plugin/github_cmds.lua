@@ -5,15 +5,14 @@ if executable 'gh' then
     local completions = require 'completions'
     local comp_utils = require 'completions.utils'
 
-    local function pr_create(args)
-        if #args.fargs > 0 then
-            args.fargs = vim.list_extend({ '--reviewer' }, { table.concat(args.fargs, ',') })
+    local function pr_create(args, ready)
+        if #args > 0 then
+            args = vim.list_extend({ '--reviewer' }, { table.concat(args, ',') })
         end
-        if not args.bang then
-            table.insert(args.fargs, '--draft')
+        if not ready then
+            table.insert(args, '--draft')
         end
-        args.args = table.concat(args.fargs, ' ')
-        require('utils.gh').create_pr({ args = args.fargs }, function(_)
+        require('utils.gh').create_pr({ args = args }, function(_)
             vim.notify('PR created! ', vim.log.levels.INFO, { title = 'GH' })
         end)
     end
@@ -65,7 +64,7 @@ if executable 'gh' then
         local subcmd = args[1]
 
         if subcmd == 'create' or subcmd == 'open' then
-            pr_create(vim.list_slice(args, 2))
+            pr_create(vim.list_slice(args, 2), opts.bang)
         elseif subcmd == 'ready' or subcmd == 'draft' then
             local is_ready = subcmd == 'ready'
             require('utils.gh').pr_ready(is_ready, function(_)
