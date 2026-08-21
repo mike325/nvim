@@ -33,7 +33,7 @@ return {
     cmd = {
         'ruff',
         'server',
-        '--preview',
+        -- '--preview',
         -- '--config',
         -- './ruff.toml',
     },

@@ -197,6 +197,9 @@ return {
     s('cign', fmt([[-- luacheck: ignore {}]],{
         d(1, disable_diagnostic, {}, { user_args = { { namespace = 'luacheck' } } }),
     })),
+    s('lign', fmt([[-- luacheck: ignore {}]],{
+        d(1, disable_diagnostic, {}, { user_args = { { namespace = 'luacheck' } } }),
+    })),
     s("val", {
         t({ "vim.validate {" }),
         t { '', "\t" }, i(1, 'arg'), t { " = { " }, r(1), t { ", " },

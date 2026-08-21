@@ -883,15 +883,19 @@ then
         )
     end, { desc = 'Disable/Enable Auto PlantUML render' })
 
-    nvim.command.set('OpenUML', function()
+    nvim.command.set('OpenUML', function(opts)
         local bufname = vim.api.nvim_buf_get_name(0)
         local basename = vim.fs.basename(bufname)
         if basename:match '%.puml' then
             local dir = vim.fs.dirname(bufname)
             local img = vim.fs.joinpath(dir, (basename:gsub('%.puml', '.png')))
-            vim.ui.open(img)
+            if opts.bang and not require('utils.files').is_file(img) then
+                require('utils.functions').render_uml(bufname)
+            else
+                vim.ui.open(img)
+            end
         end
-    end, { desc = 'Open generated UML with the same name' })
+    end, { bang = true, desc = 'Open generated UML with the same name' })
 end
 
 --- @param opts Command.Opts

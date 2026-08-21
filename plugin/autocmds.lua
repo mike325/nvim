@@ -781,24 +781,9 @@ then
         pattern = '*.{pu,uml,puml,iuml,plantuml}',
         callback = function(args)
             local buf = args.buf or 0
-
             if vim.b[buf].auto_render_uml or vim.b[buf].auto_render_uml == nil then
                 local filename = vim.api.nvim_buf_get_name(buf)
-
-                local cmd = {}
-                -- TODO: Search for the jar file in different locations
-                if
-                    executable 'java'
-                    and require('utils.files').is_file(vim.fn.stdpath 'state' .. '/utils/plantuml.jar')
-                then
-                    local jar_path = vim.fn.stdpath 'state' .. '/utils/plantuml.jar'
-                    vim.list_extend(cmd, { 'java', '-jar', jar_path })
-                else
-                    table.insert(cmd, 'plantuml')
-                end
-
-                table.insert(cmd, filename)
-                require('async').report(cmd)
+                require('utils.functions').render_uml(filename)
                 vim.b[buf].auto_render_uml = true
             end
         end,

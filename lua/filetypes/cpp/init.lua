@@ -272,9 +272,14 @@ function M.setup()
 
     local bufnum = nvim.get_current_buf()
 
+    local root_dir = '.'
+    if vim.env.CLEARCASE_ROOT then
+        root_dir = '/vobs/litho'
+    end
+
     -- TODO: Add support for other build commands like gradle
     if executable 'make' then
-        local makefile = vim.fs.find('Makefile', { upward = true, type = 'file' })[1]
+        local makefile = vim.fs.find('Makefile', { upward = true, type = 'file', path = root_dir })[1]
         if makefile then
             vim.b.makefile = makefile
             pcall(RELOAD, 'filetypes.make.mappings')
@@ -282,7 +287,7 @@ function M.setup()
     end
 
     if executable 'cmake' then
-        local cmake = vim.fs.find('CMakeLists.txt', { upward = true, type = 'file' })[1]
+        local cmake = vim.fs.find('CMakeLists.txt', { upward = true, type = 'file', path = root_dir })[1]
         if cmake then
             vim.b.cmakefile = cmake
             pcall(RELOAD, 'filetypes.cmake.mappings')
@@ -291,7 +296,7 @@ function M.setup()
 
     local flags_file = vim.fs.find(
         { 'compile_flags.txt', 'compile_commands.json' },
-        { upward = true, type = 'file', limit = math.huge }
+        { upward = true, type = 'file', limit = math.huge, path = root_dir }
     )
 
     if #flags_file > 0 then

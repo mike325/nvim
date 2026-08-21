@@ -1205,11 +1205,6 @@ if s:has_option('belloff')
     set belloff=all " Bells are annoying
 endif
 
-if s:has_patch('8.1.1902')
-    set completeopt+=popup
-    set completepopup=height:10,width:60,highlight:Pmenu,border:off
-endif
-
 " Don't use the system's clipboard whenever we run in SSH session or we don't have 'clipboard' option available
 " NOTE: Windows terminal doesn't have mouse support, so this wont have effect for vim/neovim TUI
 if empty($SSH_CONNECTION) && has('clipboard')
@@ -1242,6 +1237,13 @@ set completeopt-=preview
 if v:version > 704
     set completeopt+=noselect
     set completeopt+=noinsert
+endif
+
+if s:has_patch('8.1.1902') && !has('nvim')
+    set completeopt+=popup
+    set completepopup=height:10,width:60,highlight:Pmenu,border:off
+elseif has('nvim')
+    set completeopt=menu,menuone,noselect,noinsert,fuzzy,nosort,popup
 endif
 
 set lazyredraw " Don't draw when a macro is being executed
