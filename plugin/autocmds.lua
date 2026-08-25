@@ -944,8 +944,11 @@ vim.api.nvim_create_autocmd('LspTokenUpdate', {
         local links = {
             header = '@lsp.type.class', --                      Identifiers that declare or reference a class type
             comment = '@lsp.type.comment', --                   Tokens that represent a comment
+            -- luacheck: ignore 631
             -- @lsp.type.decorator                              Identifiers that declare or reference decorators and annotations
+            -- luacheck: ignore 631
             -- @lsp.type.enum                                   Identifiers that declare or reference an enumeration type
+            -- luacheck: ignore 631
             keywordNameDefinition = '@lsp.type.enumMember', --  Identifiers that declare or reference an enumeration property, constant, or member
             testCaseName = '@lsp.type.enumMember',
             -- @lsp.type.event                                  Identifiers that declare an event property
@@ -955,17 +958,22 @@ vim.api.nvim_create_autocmd('LspTokenUpdate', {
             -- @lsp.type.macro                                  Identifiers that declare a macro
             -- @lsp.type.method                                 Identifiers that declare a member function or method
             setting = '@lsp.type.modifier', --                  Tokens that represent a modifier
+            -- luacheck: ignore 631
             -- @lsp.type.namespace                              Identifiers that declare or reference a namespace, module, or package
             -- @lsp.type.number                                 Tokens that represent a number literal
             -- @lsp.type.operator                               Tokens that represent an operator
+            -- luacheck: ignore 631
             parameterName = '@lsp.type.parameter', --           Identifiers that declare or reference a function or method parameters
+            -- luacheck: ignore 631
             -- @lsp.type.property                               Identifiers that declare or reference a member property, member field, or member variable
             -- @lsp.type.regexp                                 Tokens that represent a regular expression literal
             argumentValue = '@lsp.type.string', --              Tokens that represent a string literal
             documentation = '@lsp.type.string',
             -- @lsp.type.struct                                 Identifiers that declare or reference a struct type
+            -- luacheck: ignore 631
             -- @lsp.type.type                                   Identifiers that declare or reference a type that is not covered above
             -- @lsp.type.typeParameter                          Identifiers that declare or reference a type parameter
+            -- luacheck: ignore 631
             variable = '@lsp.type.variable', --                 Identifiers that declare or reference a local or global variable
         }
 
@@ -1002,8 +1010,12 @@ vim.api.nvim_create_autocmd({ 'FileType' }, {
         end
         vim.treesitter.start(args.buf, ft_mapping[filetype] or filetype)
 
-        vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
         vim.wo.foldmethod = 'expr'
         vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+
+        if nvim.plugins['nvim-treesitter'] then
+            vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+            -- require 'configs.treesitter.textobjects'
+        end
     end,
 })

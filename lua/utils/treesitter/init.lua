@@ -5,7 +5,6 @@ local builtin = {
     'lua',
     'vim',
     'vimdoc',
-    'help',
     'query',
     'markdown',
 }

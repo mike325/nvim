@@ -5,7 +5,7 @@ else
     compiler = vim.fn.executable 'gcc' == 1 or vim.fn.executable 'clang' == 1
 end
 
-local branch = 'master'
+local branch = 'main'
 
 local function get_missing_parsers()
     local extensions = { windows = 'dll', unix = 'so' }
@@ -30,6 +30,7 @@ return {
         'nvim-treesitter/nvim-treesitter',
         build = ':TSUpdate',
         branch = branch,
+        enabled = true,
         cond = compiler ~= nil,
         config = function(plugin)
             if plugin.branch == 'master' then
@@ -50,17 +51,31 @@ return {
         -- priority = 1,
         event = 'FileType',
         dependencies = {
-            { 'nvim-treesitter/nvim-treesitter-textobjects', branch = branch },
             { 'nvim-treesitter/nvim-treesitter-refactor', enabled = branch ~= 'main' },
-        },
-    },
-    {
-        'nvim-treesitter/nvim-treesitter-context',
-        opts = {
-            enable = true,
-            max_lines = 3,
-            multiline_threshold = 1,
-            min_window_height = 20,
+            {
+                'nvim-treesitter/nvim-treesitter-textobjects',
+                branch = branch,
+                config = function(plugin)
+                    if plugin.branch == 'main' then
+                        require('nvim-treesitter-textobjects').setup {
+                            move = {
+                                -- whether to set jumps in the jumplist
+                                set_jumps = true,
+                            },
+                        }
+                        require 'configs.treesitter.textobjects'
+                    end
+                end,
+            },
+            {
+                'nvim-treesitter/nvim-treesitter-context',
+                opts = {
+                    enable = true,
+                    max_lines = 3,
+                    multiline_threshold = 1,
+                    min_window_height = 20,
+                },
+            },
         },
     },
     -- { 'David-Kunz/markid' },

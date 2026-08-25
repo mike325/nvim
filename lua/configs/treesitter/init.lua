@@ -11,6 +11,7 @@ end
 -- end
 
 local parsers = require 'nvim-treesitter.parsers'
+local ts_textobjects = require 'utils.treesitter.textobjects'
 
 local cpp_tools = vim.F.npcall(require, 'nt-cpp-tools')
 if cpp_tools then
@@ -70,75 +71,20 @@ treesitter.setup {
         select = {
             enable = true,
             lookahead = true,
-            keymaps = {
-                ['af'] = '@conditional.outer',
-                ['if'] = '@conditional.inner',
-                ['am'] = '@function.outer', -- Same as [m, ]m "method"
-                ['im'] = '@function.inner',
-                ['ak'] = '@class.outer',
-                ['ik'] = '@class.inner',
-                ['ia'] = '@parameter.inner',
-                ['aa'] = '@parameter.inner',
-                ['ir'] = '@loop.inner', -- "repeat" mnemonic
-                ['ar'] = '@loop.outer',
-                ['ac'] = '@comment.outer',
-                ['ic'] = '@comment.outer',
-            },
+            keymaps = ts_textobjects.select,
         },
         swap = {
             enable = true,
-            swap_next = {
-                -- ["<leader>k"] = "@class.outer",
-                -- ["<leader>f"] = "@loop.outer",
-                -- ["<leader>c"] = "@comment.outer",
-                ['<leader>f'] = '@conditional.outer',
-                ['<leader>a'] = '@parameter.inner',
-                ['<leader>m'] = '@function.outer',
-            },
-            swap_previous = {
-                -- ["<leader><leader>k"] = "@class.outer",
-                -- ["<leader><leader>f"] = "@loop.outer",
-                -- ["<leader><leader>c"] = "@comment.outer",
-                ['<leader><leader>f'] = '@conditional.outer',
-                ['<leader><leader>a'] = '@parameter.inner',
-                ['<leader><leader>m'] = '@function.outer',
-            },
+            swap_next = ts_textobjects.swap.swap_next,
+            swap_previous = ts_textobjects.swap.swap_previous,
         },
         move = {
             enable = true,
             set_jumps = true,
-            goto_previous_start = {
-                ['[f'] = '@conditional.outer',
-                ['[m'] = '@function.outer',
-                ['[k'] = '@class.outer',
-                ['[r'] = '@loop.outer',
-                -- ['[C'] = '@comment.outer',
-                -- ['[a'] = '@parameter.inner',
-            },
-            goto_next_start = {
-                [']f'] = '@conditional.outer',
-                [']m'] = '@function.outer',
-                [']k'] = '@class.outer',
-                [']r'] = '@loop.outer',
-                -- [']C'] = '@comment.outer',
-                -- [']a'] = '@parameter.inner',
-            },
-            goto_previous_end = {
-                ['[F'] = '@conditional.outer',
-                ['[M'] = '@function.outer',
-                [']K'] = '@class.outer',
-                ['[R'] = '@loop.outer',
-                -- ["[C"] = '@comment.outer',
-                -- ['[A'] = '@parameter.inner',
-            },
-            goto_next_end = {
-                [']F'] = '@conditional.outer',
-                [']M'] = '@function.outer',
-                ['[K'] = '@class.outer',
-                [']R'] = '@loop.outer',
-                -- ["]C"] =  '@comment.outer',
-                -- [']A'] = '@parameter.inner',
-            },
+            goto_previous_start = ts_textobjects.move.next.range_start,
+            goto_next_start = ts_textobjects.move.next.range_end,
+            goto_previous_end = ts_textobjects.move.previous.range_start,
+            goto_next_end = ts_textobjects.move.previous.range_end,
         },
     },
     playground = {
