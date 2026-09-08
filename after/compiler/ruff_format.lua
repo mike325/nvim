@@ -1,7 +1,6 @@
 local name = 'ruff'
 local compiler = RELOAD('utils.functions').get_compiler(name, {
     language = 'python',
-    subcommand = 'format',
     option = 'formatprg',
     config_flag = '--config',
     configs = {

@@ -103,7 +103,7 @@ function M.get_formatter(stdin)
     local cmd
 
     if executable 'ruff' then
-        cmd = { 'ruff', 'format' }
+        cmd = { 'ruff' }
         local config_file = RELOAD('utils.buffers').find_config {
             configs = {
                 'ruff.toml',
@@ -144,7 +144,7 @@ end
 function M.get_linter()
     local cmd
     if executable 'ruff' then
-        cmd = { 'ruff', 'check' }
+        cmd = { 'ruff' }
         local config_file = RELOAD('utils.buffers').find_config {
             configs = {
                 'ruff.toml',
