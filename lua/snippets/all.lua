@@ -25,11 +25,11 @@ local p = require('luasnip.extras').partial
 -- local events = require 'luasnip.util.events'
 -- local conds = require 'luasnip.extras.expand_conditions'
 
-local utils = RELOAD 'configs.luasnip.utils'
+local utils = require 'configs.luasnip.utils'
 
 -- local saved_text = utils.saved_text
 -- local surround_with_func = utils.surround_with_func
-local get_comment = RELOAD('utils.buffers').get_comment
+local get_comment = require('utils.buffers').get_comment
 local return_value = utils.return_value
 
 local function notes(_, _, old_state, user_args)
@@ -59,7 +59,7 @@ local function notes(_, _, old_state, user_args)
         interactive_node = interactive_node + 1
     end
 
-    local is_in_comment = RELOAD('utils.treesitter').is_in_node 'comment'
+    local is_in_comment = require('utils.treesitter').is_in_node 'comment'
     if not is_in_comment then
         local comment_str = (get_comment():gsub('%%s', ''))
         table.insert(nodes, t { comment_str })
@@ -121,7 +121,7 @@ local function license(_, _, user_args)
         markdown = 1,
     }
 
-    if ft == '' or plain_fts[ft] or RELOAD('utils.treesitter').is_in_node 'string' then
+    if ft == '' or plain_fts[ft] or require('utils.treesitter').is_in_node 'string' then
         return actual_license
     end
     return get_comment(actual_license)

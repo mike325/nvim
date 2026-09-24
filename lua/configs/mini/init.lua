@@ -4,7 +4,7 @@ local sys = require 'sys'
 local is_dir = require('utils.files').is_dir
 local is_file = require('utils.files').is_file
 local mkdir = require('utils.files').mkdir
-local completions = RELOAD 'completions'
+local completions = require 'completions'
 local noremap = { noremap = true, silent = true }
 
 local me = debug.getinfo(1, 'S')
@@ -161,7 +161,7 @@ if mini.visits then
             cwd = { cwd, 'string', true },
         }
 
-        local utils = RELOAD 'configs.mini.utils'
+        local utils = require 'configs.mini.utils'
         local sort = mini.visits.gen_sort.default { recency_weight = 0 }
         local select_opts = { sort = sort }
         label = label or utils.get_label()
@@ -179,7 +179,7 @@ if mini.visits then
             vim.t.label = label
             vim.notify('Label changed to: ' .. vim.t.label, vim.log.levels.INFO)
         else
-            local labels = RELOAD('configs.mini.utils').get_labels(false)
+            local labels = require('configs.mini.utils').get_labels(false)
             if #labels > 0 then
                 vim.ui.select(
                     labels,
@@ -218,7 +218,7 @@ if mini.visits then
                 return
             end
 
-            local utils = RELOAD 'configs.mini.utils'
+            local utils = require 'configs.mini.utils'
             local label = opts.args ~= '' and opts.args or utils.get_label()
             if not label or label == '' then
                 return
@@ -230,14 +230,14 @@ if mini.visits then
     )
 
     nvim.command.set('Label2Arglist', function(opts)
-        local utils = RELOAD 'configs.mini.utils'
+        local utils = require 'configs.mini.utils'
         local label = opts.args ~= '' and opts.args or utils.get_label()
         if not label or label == '' then
             return
         end
 
         local paths = utils.get_labeled_files(label, true)
-        RELOAD('utils.arglist').add(paths, opts.bang)
+        require('utils.arglist').add(paths, opts.bang)
     end, {
         bang = true,
         nargs = '?',
@@ -246,14 +246,14 @@ if mini.visits then
     })
 
     nvim.command.set('Label2Qf', function(opts)
-        local utils = RELOAD 'configs.mini.utils'
+        local utils = require 'configs.mini.utils'
         local label = opts.args ~= '' and opts.args or utils.get_label()
         if not label or label == '' then
             return
         end
 
         local paths = utils.get_labeled_files(label, true)
-        RELOAD('utils.qf').dump_files(paths, {
+        require('utils.qf').dump_files(paths, {
             open = true,
             jump = false,
             title = label,
@@ -270,7 +270,7 @@ if mini.visits then
     end, { nargs = 0, desc = 'Remove current label' })
 
     nvim.command.set('ClearLabel', function(opts)
-        local utils = RELOAD 'configs.mini.utils'
+        local utils = require 'configs.mini.utils'
         local label = opts.args ~= '' and opts.args or utils.get_label()
         if label then
             utils.clear_label(label, opts.bang)
@@ -283,7 +283,7 @@ if mini.visits then
     })
 
     vim.keymap.set('n', '<leader>\\', function(_)
-        local utils = RELOAD 'configs.mini.utils'
+        local utils = require 'configs.mini.utils'
         local label = utils.get_label()
         select_label(label, label and '' or vim.uv.cwd())
     end, { desc = 'Select a file from either session, tab or cwd label' })
@@ -293,7 +293,7 @@ if mini.visits then
     end, { desc = 'Select a file all recent paths' })
 
     vim.keymap.set('n', '<leader><leader>A', function(_)
-        local utils = RELOAD 'configs.mini.utils'
+        local utils = require 'configs.mini.utils'
         local label = utils.get_label()
         if label then
             utils.add_file_to_label(label, vim.api.nvim_get_current_buf())
@@ -301,7 +301,7 @@ if mini.visits then
     end, { desc = 'Add the current file to the active label' })
 
     vim.keymap.set('n', '<leader><leader>D', function(_)
-        local utils = RELOAD 'configs.mini.utils'
+        local utils = require 'configs.mini.utils'
         local label = utils.get_label()
         if label then
             mini.visits.remove_label(label, vim.api.nvim_buf_get_name(0))
@@ -317,7 +317,7 @@ if mini.visits then
                 gitcommit = true,
             }
             if vim.bo.modified and not blacklist[vim.bo.ft] and vim.bo.buftype == '' then
-                local utils = RELOAD 'configs.mini.utils'
+                local utils = require 'configs.mini.utils'
                 local label = utils.get_label()
                 if label then
                     utils.add_file_to_label(label, vim.api.nvim_get_current_buf())
@@ -558,7 +558,7 @@ if mini.pick then
                 rg = true,
                 git = true,
             }
-            local finder = RELOAD('utils.functions').select_filelist(is_git, true)
+            local finder = require('utils.functions').select_filelist(is_git, true)
             if fast_pickers[finder[1]] then
                 mini.pick.builtin.cli { command = finder }
             else
@@ -568,7 +568,7 @@ if mini.pick then
         end, noremap)
 
         vim.keymap.set('n', '<leader><C-p>', function()
-            local finder = RELOAD('utils.functions').select_filelist(false, true)
+            local finder = require('utils.functions').select_filelist(false, true)
             local fast_pickers = {
                 fd = true,
                 fdfind = true,
@@ -798,7 +798,7 @@ if vim.g.minimal then
                 pos = vim.api.nvim_win_get_cursor(0)
             end
 
-            RELOAD('utils.git').get_content({ filename = filename }, function(content)
+            require('utils.git').get_content({ filename = filename }, function(content)
                 vim.cmd.tabnew(filename)
                 if pos then
                     vim.api.nvim_win_set_cursor(0, pos)
@@ -851,13 +851,13 @@ if vim.g.minimal then
             highlighters['comment_' .. pattern] = {
                 pattern = {
                     function(buf_id)
-                        local get_comment = RELOAD('utils.buffers').get_comment
+                        local get_comment = require('utils.buffers').get_comment
                         return get_comment(('()%s%%%%(%%%%w+%%%%)():?'):format(pattern:upper()), buf_id)
                             :gsub('%s', '%%s*')
                             :gsub('%-', '%%-')
                     end,
                     function(buf_id)
-                        local get_comment = RELOAD('utils.buffers').get_comment
+                        local get_comment = require('utils.buffers').get_comment
                         return get_comment(('()%s():?'):format(pattern:upper()), buf_id)
                             :gsub('%s', '%%s*')
                             :gsub('%-', '%%-')

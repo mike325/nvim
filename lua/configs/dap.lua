@@ -11,7 +11,7 @@ dap.adapters.nlua = function(callback, config)
     callback { type = 'server', host = config.host or '127.0.0.1', port = config.port or default_remote_nvim_port }
 end
 
-local utils = RELOAD 'utils.files'
+local utils = require 'utils.files'
 
 dap.configurations.lua = {
     {
@@ -237,7 +237,7 @@ end
 
 local function list_breakpoints()
     dap.list_breakpoints()
-    RELOAD('utils.qf').open()
+    require('utils.qf').open()
 end
 
 dap.listeners.after.event_initialized['DapMappings'] = function()
@@ -323,7 +323,7 @@ local function get_dap_cmds()
         clear = dap.clear_breakpoints,
         run2cursor = dap.run_to_cursor,
         clear_virtual_text = clear_virtual_text,
-        remote_attach = RELOAD('utils.debug').remote_dap_attach,
+        remote_attach = require('utils.debug').remote_dap_attach,
         -- remote_run = require('utils.debug').remote_dap_run,
     }
 

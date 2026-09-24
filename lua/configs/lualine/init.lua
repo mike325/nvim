@@ -4,7 +4,7 @@ local get_separators = require('utils.ui').get_separators
 local palette = require('catppuccin.palettes').get_palette()
 
 -- TODO: Add support to live reload these functions
-local lualine = vim.F.npcall(RELOAD, 'lualine')
+local lualine = vim.F.npcall(require, 'lualine')
 if not lualine or vim.g.started_by_firenvim then
     return false
 end
@@ -156,14 +156,14 @@ lualine.setup {
                 'qf_counter',
                 cond = statusline.cond,
                 on_click = function()
-                    RELOAD('utils.qf').toggle()
+                    require('utils.qf').toggle()
                 end,
             },
             {
                 'loc_counter',
                 cond = statusline.loc_counter.cond,
                 on_click = function()
-                    RELOAD('utils.qf').toggle { win = vim.api.nvim_get_current_win() }
+                    require('utils.qf').toggle { win = vim.api.nvim_get_current_win() }
                 end,
             },
             {
@@ -201,7 +201,7 @@ lualine.setup {
             {
                 'bg_tasks',
                 on_click = function()
-                    RELOAD('mappings').show_background_tasks()
+                    require('mappings').show_background_tasks()
                 end,
             },
         },

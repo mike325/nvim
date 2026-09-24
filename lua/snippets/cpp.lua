@@ -27,16 +27,16 @@ if #ls.get_snippets 'c' == 0 then
     ls.add_snippets('c', require 'snippets.c')
 end
 
-local utils = RELOAD 'configs.luasnip.utils'
+local utils = require 'configs.luasnip.utils'
 local saved_text = utils.saved_text
 local add_statement_and_include = utils.add_statement_and_include
--- local get_comment = RELOAD('utils.buffers').get_comment
+-- local get_comment = require('utils.buffers').get_comment
 -- local surround_with_func = utils.surround_with_func
 
 ls.filetype_extend('cpp', { 'c' })
 
 local function smart_ptr(_, snip)
-    local cpp = RELOAD 'utils.treesitter.cpp'
+    local cpp = require 'utils.treesitter.cpp'
     local qt_ptr = snip.captures[1] == 'q'
     local is_uniq = snip.captures[2] == 'u'
 
@@ -56,7 +56,7 @@ local function smart_ptr(_, snip)
     return ptr
 end
 local function chrono_sleep(_, _, old_state)
-    local cpp = RELOAD 'utils.treesitter.cpp'
+    local cpp = require 'utils.treesitter.cpp'
     cpp.add_include('chrono', 'sys')
     cpp.add_include('thread', 'sys')
 
@@ -78,17 +78,17 @@ local function chrono_sleep(_, _, old_state)
 end
 
 local function get_move_copy_functions()
-    local class_node = RELOAD('utils.treesitter').get_current_class()
+    local class_node = require('utils.treesitter').get_current_class()
     if not class_node then
         vim.notify('Cursor is not inside a class', vim.log.levels.ERROR)
         return {}
     end
 
-    return RELOAD('utils.treesitter.cpp').get_class_operators(true)
+    return require('utils.treesitter.cpp').get_class_operators(true)
 end
 
 local function get_classname()
-    local class_node = RELOAD('utils.treesitter').get_current_class()
+    local class_node = require('utils.treesitter').get_current_class()
     if not class_node then
         vim.notify('Cursor is not inside a class', vim.log.levels.ERROR)
         return 'Class'

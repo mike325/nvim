@@ -189,7 +189,7 @@ local function process_exit(out, state_data, cmd, cwd, opts)
 
     local cmd_name = vim.fs.basename(cmd[1])
     local ns_name = string.format('async.%s', cmd_name)
-    local qf_utils = RELOAD 'utils.qf'
+    local qf_utils = require 'utils.qf'
 
     if out.code == 0 then
         if opts.notify then
@@ -253,7 +253,7 @@ local function process_exit(out, state_data, cmd, cwd, opts)
         local callbacks
         if vim.is_callable(opts.callbacks) then
             callbacks = {
-                opts.callbacks --[[@as fun(out: vim.SystemCompleted) ]],
+                opts.callbacks,--[[@as fun(out: vim.SystemCompleted) ]]
             }
         else
             callbacks = opts.callbacks --[[@as (fun(out: vim.SystemCompleted))[] ]]

@@ -1,5 +1,5 @@
 local nvim = require 'nvim'
-local completions = RELOAD 'completions'
+local completions = require 'completions'
 
 if not nvim.plugins['vim-fugitive'] then
     nvim.command.set('Gwrite', function(opts)

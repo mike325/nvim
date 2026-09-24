@@ -149,7 +149,32 @@ return {
             -- when the Rust fuzzy matcher is not available, by using `implementation = "prefer_rust"`
             --
             -- See the fuzzy documentation for more information
-            fuzzy = { implementation = 'prefer_rust_with_warning' },
+            fuzzy = {
+                sorts = {
+                    -- function(a, b)
+                    --     if (a.client_name == nil or b.client_name == nil) or (a.client_name == b.client_name) then
+                    --         return
+                    --     end
+                    --     return b.client_name == 'emmet_ls'
+                    -- end,
+
+                    -- (optionally) always prioritize exact matches
+                    'exact',
+                    -- pass a function for custom behavior
+                    -- function(a, b)
+                    --     if a.label:sub(1, 1) == '_' ~= a.label:sub(1, 1) == '_' then
+                    --         -- return true to sort `a` after `b`, and vice versa
+                    --         return not a.label:sub(1, 1) == '_'
+                    --     end
+                    --     -- nothing returned, fallback to the next sort
+                    -- end,
+
+                    'score',
+                    'sort_text',
+                    'label',
+                },
+                implementation = 'prefer_rust_with_warning',
+            },
         },
         opts_extend = { 'sources.default' },
     },

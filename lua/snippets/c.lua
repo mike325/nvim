@@ -23,9 +23,9 @@ local fmt = require('luasnip.extras.fmt').fmt
 -- local events = require 'luasnip.util.events'
 -- local conds = require 'luasnip.extras.expand_conditions'
 
-local utils = RELOAD 'configs.luasnip.utils'
+local utils = require 'configs.luasnip.utils'
 local saved_text = utils.saved_text
--- local get_comment = RELOAD('utils.buffers').get_comment
+-- local get_comment = require('utils.buffers').get_comment
 -- local surround_with_func = utils.surround_with_func
 
 -- stylua: ignore
@@ -49,7 +49,7 @@ local snippets = {
     })),
 }
 
-local clike = RELOAD 'snippets.c_like'
+local clike = require 'snippets.c_like'
 for _, csnip in ipairs(clike) do
     local has_snip = false
     for _, snip in ipairs(snippets) do

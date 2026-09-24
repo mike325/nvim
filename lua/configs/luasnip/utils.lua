@@ -46,7 +46,7 @@ function M.saved_text(args, snip, old_state, user_args)
             table.insert(nodes, t(node))
         end
     else
-        local text = user_args.text or RELOAD('utils.buffers').get_comment 'code'
+        local text = user_args.text or require('utils.buffers').get_comment 'code'
         if indent ~= '' then
             table.insert(nodes, t(indent))
         end
@@ -100,7 +100,7 @@ function M.else_clause(args, snip, old_state, placeholder)
     local nodes = {}
     local ft = vim.bo.filetype
 
-    local get_comment = RELOAD('utils.buffers').get_comment
+    local get_comment = require('utils.buffers').get_comment
 
     if snip.captures[1] == 'e' then
         if ft == 'lua' then
@@ -141,7 +141,7 @@ function M.add_statement_and_include(statement, include, include_type)
     include = include or statement
     include_type = include_type or 'sys'
 
-    local cpp = RELOAD 'utils.treesitter.cpp'
+    local cpp = require 'utils.treesitter.cpp'
     cpp.add_include(include, include_type)
     return statement
 end
@@ -153,7 +153,7 @@ function M.disable_diagnostic(args, snip, old_state, user_args)
 
     local namespace = user_args.namespace
     if namespace and type(namespace) ~= type(0) then
-        local ns = RELOAD('utils.diagnostics').get_namespace(namespace)
+        local ns = require('utils.diagnostics').get_namespace(namespace)
         namespace = (ns or {}).id
     end
 

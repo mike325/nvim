@@ -59,7 +59,7 @@ if executable 'gh' then
     end
 
     --- @param opts Command.Opts
-    nvim.command.set('PR', function(opts)
+    vim.api.nvim_create_user_command('PR', function(opts)
         local args = opts.fargs
         local subcmd = args[1]
 

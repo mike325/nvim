@@ -42,7 +42,7 @@ function M.bufkill(opts)
     local bang = opts.bang
     local removed = 0
     if opts.rm_empty then
-        removed = removed + RELOAD('utils.buffers').remove_empty(opts)
+        removed = removed + require('utils.buffers').remove_empty(opts)
     end
     for _, buf in pairs(nvim.list_bufs()) do
         local is_valid = nvim.buf.is_valid(buf)
@@ -101,7 +101,7 @@ function M.trim(opts)
 end
 
 function M.move_file(opts)
-    local utils = RELOAD 'utils.files'
+    local utils = require 'utils.files'
 
     local is_file = utils.is_file
     local is_dir = utils.is_dir
@@ -124,7 +124,7 @@ function M.find(opts)
         cb = { opts.cb, 'function', true },
     }
 
-    local finder = RELOAD('utils.functions').select_filelist(false, true)
+    local finder = require('utils.functions').select_filelist(false, true)
 
     local fast_finders = {
         fd = true,
@@ -178,7 +178,7 @@ function M.find(opts)
         end
         if opts.cb then
             -- NOTE: Fallback to native finder which works everywhere
-            RELOAD('threads.functions').async_find {
+            require('threads.functions').async_find {
                 target = target,
                 cb = function(data)
                     opts.cb(data)
@@ -265,7 +265,7 @@ function M.messages(opts)
         local efm = vim.opt_global.efm:get()
         table.insert(efm, 1, '%trror executing vim.schedule lua callback: %f:%l:%m')
 
-        RELOAD('utils.qf').set_list {
+        require('utils.qf').set_list {
             items = messages,
             title = 'Messages',
             open = true,
@@ -275,7 +275,7 @@ function M.messages(opts)
         vim.cmd.messages 'clear'
         local title = vim.fn.getqflist({ title = 1 }).title
         if title == 'Messages' then
-            RELOAD('utils.qf').clear()
+            require('utils.qf').clear()
         end
     end
 end
@@ -304,7 +304,7 @@ function M.repl(opts)
 end
 
 function M.zoom_links(opts)
-    local utils = RELOAD 'utils.files'
+    local utils = require 'utils.files'
 
     local links = {}
     if utils.is_file '~/.config/zoom/links.json' then
@@ -319,7 +319,7 @@ function M.zoom_links(opts)
 end
 
 function M.diff_files(args)
-    local utils = RELOAD 'utils.files'
+    local utils = require 'utils.files'
 
     local files = args.fargs
     if #files ~= 2 and #files ~= 3 then
@@ -514,7 +514,7 @@ function M.alternate(opts)
 
     -- local server = vim.lsp.get_clients({ name = 'clangd', bufnr = bufnr })[1]
     -- if server then
-    --     local found = RELOAD('configs.lsp.utils').switch_source_header_splitcmd(bufnr, 'edit')
+    --     local found = require('configs.lsp.utils').switch_source_header_splitcmd(bufnr, 'edit')
     --     if found then
     --         return
     --     end
@@ -563,7 +563,7 @@ function M.alternate(opts)
         end
 
         if #candidates == 0 then
-            local results = RELOAD('threads.related').alternate_src_header(RELOAD('threads').add_thread_context(opts))
+            local results = require('threads.related').alternate_src_header(require('threads').add_thread_context(opts))
             if results.candidates then
                 candidates = vim.list_extend(candidates, results.candidates)
             end
@@ -595,7 +595,7 @@ function M.alt_makefiles(opts)
     local candidates
     local makefiles = vim.g.makefiles or {}
     if not makefiles[opts.basedir] or opts.bang then
-        opts = RELOAD('threads.related').related_makefiles(opts)
+        opts = require('threads.related').related_makefiles(opts)
         candidates = opts.candidates or {}
         if #candidates > 0 then
             makefiles = vim.g.makefiles or {}
@@ -626,7 +626,7 @@ function M.alternate_test(opts)
     local candidates
     local alternates = vim.g.tests or {}
     if not alternates[opts.buf] or opts.bang then
-        opts = RELOAD('threads.related').alternate_test(RELOAD('threads').add_thread_context(opts))
+        opts = require('threads.related').alternate_test(require('threads').add_thread_context(opts))
         candidates = opts.candidates or {}
         if #candidates > 0 then
             alternates[opts.key] = candidates
@@ -649,7 +649,7 @@ function M.show_background_tasks()
         vim.t.task_info = nil
         return
     else
-        vim.t.task_info = RELOAD('utils.windows').lower_window()
+        vim.t.task_info = require('utils.windows').lower_window()
     end
 
     -- TODO: Add auto update of the current tasks if the window stays open

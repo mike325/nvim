@@ -9,7 +9,7 @@ if require('sys').name ~= 'windows' then
         group = make_executable,
         pattern = '*',
         callback = function()
-            RELOAD('utils.files').make_executable()
+            require('utils.files').make_executable()
         end,
     })
 
@@ -18,7 +18,7 @@ if require('sys').name ~= 'windows' then
         group = make_executable,
         pattern = 'python,lua,sh,bash,zsh,tcsh,csh,ruby,perl',
         callback = function()
-            RELOAD('utils.files').make_executable()
+            require('utils.files').make_executable()
         end,
     })
 end
@@ -39,7 +39,7 @@ vim.api.nvim_create_autocmd({ 'BufWritePre' }, {
     group = clean_file,
     pattern = '*',
     callback = function()
-        RELOAD('utils.files').clean_file()
+        require('utils.files').clean_file()
     end,
 })
 
@@ -62,7 +62,7 @@ vim.api.nvim_create_autocmd({ 'OptionSet' }, {
     desc = 'Set abbreviations',
     group = abbreviations,
     callback = function()
-        RELOAD('utils.functions').set_abbrs(vim.v.option_old, vim.v.option_new)
+        require('utils.functions').set_abbrs(vim.v.option_old, vim.v.option_new)
     end,
 })
 vim.api.nvim_create_autocmd({ 'VimEnter', 'BufReadPost' }, {
@@ -70,7 +70,7 @@ vim.api.nvim_create_autocmd({ 'VimEnter', 'BufReadPost' }, {
     desc = 'Set abbreviations',
     group = abbreviations,
     callback = function()
-        RELOAD('utils.functions').set_abbrs('', vim.bo.spelllang)
+        require('utils.functions').set_abbrs('', vim.bo.spelllang)
     end,
 })
 
@@ -86,7 +86,7 @@ vim.api.nvim_create_autocmd({ 'BufReadPost' }, {
     group = vim.api.nvim_create_augroup('LastEditPosition', { clear = true }),
     pattern = '*',
     callback = function()
-        RELOAD('utils.buffers').last_position()
+        require('utils.buffers').last_position()
     end,
 })
 
@@ -95,7 +95,7 @@ vim.api.nvim_create_autocmd({ 'BufNewFile' }, {
     group = vim.api.nvim_create_augroup('Skeletons', { clear = true }),
     pattern = '*',
     callback = function()
-        RELOAD('utils.files').skeleton_filename()
+        require('utils.files').skeleton_filename()
     end,
 })
 
@@ -154,7 +154,7 @@ vim.api.nvim_create_autocmd({ 'BufReadPost' }, {
     pattern = '*',
     callback = function()
         if not vim.b.bigfile then
-            RELOAD('utils.buffers').detect_indent()
+            require('utils.buffers').detect_indent()
         else
             -- vim.bo.expandtab = expandtab
             vim.bo.tabstop = 4
@@ -171,7 +171,7 @@ vim.api.nvim_create_autocmd({ 'BufReadPost' }, {
 --         group = import_fix,
 --         pattern = '*.go',
 --         callback = function(args)
---             RELOAD('utils.async').formatprg {
+--             require('utils.async').formatprg {
 --                 cmd = { 'goimports', '-w', args.file },
 --                 first = 0,
 --                 last = -1,
@@ -186,10 +186,10 @@ vim.api.nvim_create_autocmd({ 'BufReadPost' }, {
 --         pattern = '*.{py,ipy}',
 --         callback = function(args)
 --             local cmd = { 'isort' }
---             local format_args = RELOAD('filetypes.python').formatprg.isort
+--             local format_args = require('filetypes.python').formatprg.isort
 --             table.insert(format_args, args.file)
 --             vim.list_extend(cmd, format_args)
---             RELOAD('utils.async').formatprg {
+--             require('utils.async').formatprg {
 --                 cmd = cmd,
 --                 first = 0,
 --                 last = -1,
@@ -319,13 +319,13 @@ vim.api.nvim_create_autocmd('LspAttach', {
             },
             [methods.textDocument_formatting] = {
                 func = function()
-                    RELOAD('utils.buffers').format()
+                    require('utils.buffers').format()
                 end,
                 command = 'Format',
             },
             [methods.textDocument_rangeFormatting] = {
                 func = function()
-                    RELOAD('utils.buffers').format()
+                    require('utils.buffers').format()
                 end,
                 command = 'RangeFormat',
             },
@@ -456,28 +456,29 @@ vim.api.nvim_create_autocmd('FileType', {
         local bufname = vim.api.nvim_buf_get_name(0)
         -- NOTE: should this look in the local path instead of the whole directory?
         if bufname ~= '' and not vim.g.alternates[bufname] then
-            RELOAD('threads.related').async_lookup_alternate()
+            require('threads.related').async_lookup_alternate()
         end
     end,
 })
 
 vim.api.nvim_create_autocmd('WinClosed', {
-    desc = 'Wipe all help files once there are no more elp buffers assign to any window',
+    desc = 'Wipe all help files once there are no more help buffers assign to any window',
     group = vim.api.nvim_create_augroup('CleanHelps', { clear = true }),
     pattern = '*',
     callback = function(args)
-        if vim.bo[args.buf].filetype == 'help' then
+        local filetypes = { help = true, vimdoc = true }
+        if filetypes[vim.bo[args.buf].filetype] then
             local clean_helps = true
             for _, win in ipairs(vim.api.nvim_list_wins()) do
                 local buf = vim.api.nvim_win_get_buf(win)
-                if vim.bo[buf].filetype == 'help' and args.buf ~= buf then
+                if filetypes[vim.bo[args.buf].filetype] and args.buf ~= buf then
                     clean_helps = false
                     break
                 end
             end
             if clean_helps then
                 for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-                    if vim.bo[buf].filetype == 'help' then
+                    if filetypes[vim.bo[buf].filetype] and vim.api.nvim_buf_is_valid(buf) then
                         vim.api.nvim_buf_delete(buf, { force = true })
                     end
                 end
@@ -527,7 +528,7 @@ if executable 'typos' then
             local filename = args.file
             local ft = vim.filetype.match { buf = buf, filename = filename } or vim.bo.filetype
             if not blacklist[ft] and vim.bo.buftype == '' and not vim.b.bigfile then
-                RELOAD('utils.functions').typos_check(buf)
+                require('utils.functions').typos_check(buf)
             end
         end,
     })
@@ -551,13 +552,13 @@ vim.api.nvim_create_autocmd({ 'Filetype' }, {
         local exe = whitelist[ft]
         if vim.bo.buftype == '' and exe and executable(exe) then
             local real_ft = { bash = 'sh' }
-            RELOAD('utils.async').lint(exe, { filetype = real_ft[ft] or ft, filename = filename })
+            require('utils.async').lint(exe, { filetype = real_ft[ft] or ft, filename = filename })
             vim.api.nvim_create_autocmd({ 'BufWritePost' }, {
                 desc = 'Lint code on save',
                 group = linters_au,
                 buffer = buf,
                 callback = function(_)
-                    RELOAD('utils.async').lint(exe, { filetype = real_ft[ft] or ft, filename = filename })
+                    require('utils.async').lint(exe, { filetype = real_ft[ft] or ft, filename = filename })
                 end,
             })
         end
@@ -649,7 +650,7 @@ vim.api.nvim_create_autocmd({ 'User' }, {
         if not err or err == '' then
             -- NOTE: Could be that the file got removed or move, verify it does exist
             if require('utils.files').is_file(fname) then
-                RELOAD('threads.parse').ssh_hosts()
+                require('threads.parse').ssh_hosts()
             end
         else
             vim.notify(
@@ -678,7 +679,7 @@ vim.api.nvim_create_autocmd({ 'User' }, {
         if not err or err == '' then
             -- NOTE: Could be that the file got removed or move, verify it does exist
             if require('utils.files').is_file(fname) then
-                RELOAD('threads.parse').compile_flags { flags_file = fname }
+                require('threads.parse').compile_flags { flags_file = fname }
             end
         else
             vim.notify(
@@ -710,7 +711,7 @@ vim.api.nvim_create_autocmd({ 'User' }, {
         if fname and (not err or err == '') then
             -- NOTE: Could be that the file got removed or move, verify it does exist
             if require('utils.files').is_file(fname) then
-                RELOAD('mappings').reload_configs(fname)
+                require('mappings').reload_configs(fname)
             end
         else
             vim.notify(
@@ -743,7 +744,7 @@ vim.api.nvim_create_autocmd({ 'User' }, {
         }
 
         local flags_file = event.data.flags_file
-        local cpp = RELOAD 'filetypes.cpp'
+        local cpp = require 'filetypes.cpp'
         for _, buf in ipairs(vim.api.nvim_list_bufs()) do
             local bufname = vim.api.nvim_buf_get_name(buf)
             local ext = vim.fn.fnamemodify(bufname, ':e')
@@ -903,7 +904,7 @@ vim.api.nvim_create_autocmd({ 'SessionLoadPost' }, {
     pattern = '*',
     callback = function()
         if require('utils.files').is_file 'marks.json' then
-            RELOAD('utils.marks').load_marks()
+            require('utils.marks').load_marks()
         end
         if vim.fn.argc() > 0 and vim.v.this_session ~= '' then
             local session_name = vim.fs.basename(vim.v.this_session)
@@ -918,7 +919,7 @@ vim.api.nvim_create_autocmd({ 'SessionWritePost', 'VimLeavePre' }, {
     pattern = '*',
     callback = function(data)
         if data.event == 'SessionWritePost' or (data.event == 'VimLeavePre' and vim.v.this_session ~= '') then
-            RELOAD('utils.marks').dump_marks()
+            require('utils.marks').dump_marks()
         end
     end,
 })
@@ -1001,21 +1002,14 @@ vim.api.nvim_create_autocmd({ 'FileType' }, {
     group = vim.api.nvim_create_augroup('TreesitterSetup', { clear = true }),
     pattern = table.concat(require('utils.treesitter').get_active_langs(), ','),
     callback = function(args)
-        local ft_mapping = {
-            sh = 'bash',
-        }
+        local ft_mapping = { sh = 'bash', help = 'vimdoc' }
         local filetype = vim.bo[args.buf].filetype
-        if vim.version.ge(vim.version(), { 0, 9 }) then
-            ft_mapping.help = 'vimdoc'
-        end
         vim.treesitter.start(args.buf, ft_mapping[filetype] or filetype)
-
         vim.wo.foldmethod = 'expr'
         vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
-
-        if nvim.plugins['nvim-treesitter'] then
-            vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
-            -- require 'configs.treesitter.textobjects'
-        end
+        -- if nvim.plugins['nvim-treesitter'] then
+        --     vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+        --     -- require 'configs.treesitter.textobjects'
+        -- end
     end,
 })

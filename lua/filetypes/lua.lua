@@ -42,7 +42,7 @@ function M.get_formatter(_)
     local cmd
     if executable 'stylua' then
         cmd = { 'stylua' }
-        local config_file = RELOAD('utils.buffers').find_config { configs = { '.stylua.toml', 'stylua.toml' } }
+        local config_file = require('utils.buffers').find_config { configs = { '.stylua.toml', 'stylua.toml' } }
         if config_file then
             vim.list_extend(cmd, { '-f', config_file })
         else

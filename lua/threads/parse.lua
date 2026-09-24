@@ -1,10 +1,10 @@
 local M = {}
 
 function M.ssh_hosts(opts)
-    local parsers = RELOAD 'threads.parsers'
+    local parsers = require 'threads.parsers'
     local ssh_config = string.format('%s/.ssh/config', (vim.uv.os_homedir():gsub('\\', '/')))
     if require('utils.files').is_file(ssh_config) then
-        RELOAD('threads').queue_thread(parsers.sshconfig, function(hosts)
+        require('threads').queue_thread(parsers.sshconfig, function(hosts)
             for host, attrs in pairs(hosts) do
                 STORAGE.hosts[host] = attrs
             end
@@ -18,7 +18,7 @@ function M.compile_flags(opts)
         flags_file = { opts.flags_file, 'string' },
     }
 
-    local parsers = RELOAD 'threads.parsers'
+    local parsers = require 'threads.parsers'
     local parse_func = {
         ['compile_commands.json'] = parsers.compiledb,
         ['compile_flags.txt'] = parsers.compile_flags,
@@ -28,7 +28,7 @@ function M.compile_flags(opts)
     -- opts.flags = flags_type == 'compile_flags.txt' and STORAGE.compile_flags or STORAGE.compile_commands_dbs
 
     local thread_func = parse_func[flags_type]
-    RELOAD('threads').queue_thread(thread_func, function(results)
+    require('threads').queue_thread(thread_func, function(results)
         local ftype = vim.fs.basename(results.flags_file)
         if ftype == 'compile_flags.txt' then
             local flags_file = require('utils.files').realpath(results.flags_file)

@@ -9,7 +9,7 @@ local function get_prg_version(output)
 end
 
 local function async_insert_version(prg)
-    local insert_row = RELOAD('storage.utils').insert_row
+    local insert_row = require('storage.utils').insert_row
 
     local cmd = { prg, '--version' }
     require('async').report(cmd, {
@@ -24,7 +24,7 @@ local function async_insert_version(prg)
 end
 
 local function sync_insert_version(prg)
-    local insert_row = RELOAD('storage.utils').insert_row
+    local insert_row = require('storage.utils').insert_row
 
     local output = vim.fn.system(prg .. ' --version')
     return insert_row('versions', { name = prg, version = get_prg_version(output) })
@@ -113,7 +113,7 @@ function M.set_version(prg, version)
     if not version then
         async_insert_version(prg)
     else
-        local insert_row = RELOAD('storage.utils').insert_row
+        local insert_row = require('storage.utils').insert_row
         insert_row('versions', { name = prg, version = version })
     end
 end
@@ -152,9 +152,9 @@ function M.has_version(prg, target_version)
 end
 
 function M.setup()
-    local tbl_exists = RELOAD('storage.utils').tbl_exists 'versions'
+    local tbl_exists = require('storage.utils').tbl_exists 'versions'
     if not tbl_exists then
-        local create_tbl = RELOAD('storage.utils').create_tbl
+        local create_tbl = require('storage.utils').create_tbl
         create_tbl('versions', { name = { 'text', 'primary', 'key' }, version = { 'text' } })
         -- BUG: This creates a race condition and throw startup errors when sqlite is missing
         -- for _, prg in pairs { 'git', 'python3' } do

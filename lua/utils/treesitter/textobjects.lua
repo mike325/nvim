@@ -39,7 +39,7 @@ local M = {
                 ['[k'] = '@class.outer',
                 ['[r'] = '@loop.outer',
                 ['[C'] = '@comment.outer',
-                -- ['[a'] = '@parameter.inner',
+                ['[p'] = '@parameter.inner',
             },
             range_end = {
                 ['[F'] = '@conditional.outer',
@@ -47,7 +47,7 @@ local M = {
                 ['[K'] = '@class.outer',
                 ['[R'] = '@loop.outer',
                 -- ['[C'] = '@comment.outer',
-                -- ['[A'] = '@parameter.inner',
+                -- ['[p'] = '@parameter.inner',
             },
         },
         next = {
@@ -57,7 +57,7 @@ local M = {
                 [']k'] = '@class.outer',
                 [']r'] = '@loop.outer',
                 [']C'] = '@comment.outer',
-                -- [']a'] = '@parameter.inner',
+                [']p'] = '@parameter.inner',
             },
             range_end = {
                 [']F'] = '@conditional.outer',
@@ -65,7 +65,7 @@ local M = {
                 [']K'] = '@class.outer',
                 [']R'] = '@loop.outer',
                 -- [']C'] =  '@comment.outer',
-                -- [']A'] = '@parameter.inner',
+                -- [']p'] = '@parameter.inner',
             },
         },
     },

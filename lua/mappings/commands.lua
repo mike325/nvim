@@ -8,7 +8,7 @@ local M = {}
 function M.floating_terminal(opts)
     local cmd = opts.args
     local shell
-    local executable = RELOAD('utils.files').executable
+    local executable = require('utils.files').executable
 
     if cmd ~= '' then
         shell = cmd
@@ -25,7 +25,7 @@ function M.floating_terminal(opts)
         end
     end
 
-    local win = RELOAD('utils.windows').big_center()
+    local win = require('utils.windows').big_center()
 
     vim.wo[win].number = false
     vim.wo[win].relativenumber = false
@@ -52,7 +52,7 @@ end
 --- @param args Command.Opts
 -- TODO: Support line numbers
 function M.edit(args)
-    local utils = RELOAD 'utils.files'
+    local utils = require 'utils.files'
     local globs = args.fargs
     local cwd = vim.pesc(vim.uv.cwd() .. '/')
     for _, g in ipairs(globs) do

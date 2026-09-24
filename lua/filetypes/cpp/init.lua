@@ -253,7 +253,7 @@ function M.get_formatter(stdin)
     if executable 'clang-format' then
         cmd = { 'clang-format' }
         vim.list_extend(cmd, M.formatprg[cmd[1]])
-        local config_file = RELOAD('utils.buffers').find_config { configs = '.clang-format' }
+        local config_file = require('utils.buffers').find_config { configs = '.clang-format' }
         if config_file then
             table.insert(cmd, '--style=file')
         end
@@ -282,7 +282,7 @@ function M.setup()
         local makefile = vim.fs.find('Makefile', { upward = true, type = 'file', path = root_dir })[1]
         if makefile then
             vim.b.makefile = makefile
-            pcall(RELOAD, 'filetypes.make.mappings')
+            pcall(require, 'filetypes.make.mappings')
         end
     end
 
@@ -290,7 +290,7 @@ function M.setup()
         local cmake = vim.fs.find('CMakeLists.txt', { upward = true, type = 'file', path = root_dir })[1]
         if cmake then
             vim.b.cmakefile = cmake
-            pcall(RELOAD, 'filetypes.cmake.mappings')
+            pcall(require, 'filetypes.cmake.mappings')
         end
     end
 
@@ -312,7 +312,7 @@ function M.setup()
         local parsed_files = vim.g.parsed_flags or {}
 
         if not parsed_files[flags_file] then
-            RELOAD('threads.parse').compile_flags {
+            require('threads.parse').compile_flags {
                 root = vim.fs.dirname(flags_file),
                 flags_file = flags_file,
             }

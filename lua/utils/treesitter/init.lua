@@ -332,4 +332,20 @@ function M.has_ts(buf)
     return (pcall(vim.treesitter.get_parser, buf))
 end
 
+function M.get_missing_parsers()
+    local extensions = { windows = 'dll', unix = 'so' }
+    local ext = jit.os == 'Windows' and extensions.windows or extensions.unix
+    local parsers = {}
+    for parser in vim.iter(vim.api.nvim_get_runtime_file('parser/*.' .. ext, true)) do
+        local bs_parser = vim.fs.basename(parser):gsub('%.%w+$', '')
+        parsers[bs_parser] = true
+    end
+    local ts_langs = vim.list_extend(vim.deepcopy(M.languages.builtin), M.languages.extras)
+    return vim.iter(ts_langs)
+        :filter(function(lang)
+            return not parsers[lang]
+        end)
+        :totable()
+end
+
 return M

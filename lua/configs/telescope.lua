@@ -86,12 +86,12 @@ end, noremap)
 vim.keymap.set('n', '<C-p>', function()
     local is_git = vim.t.is_in_git
     builtin.find_files {
-        find_command = RELOAD('utils.functions').select_filelist(is_git, true),
+        find_command = require('utils.functions').select_filelist(is_git, true),
     }
 end, noremap)
 
 vim.keymap.set('n', '<leader><C-p>', function()
-    local finder = RELOAD('utils.functions').select_filelist(false, true)
+    local finder = require('utils.functions').select_filelist(false, true)
     if finder[1] == 'fd' or finder[1] == 'fdfind' or finder[1] == 'rg' then
         table.insert(finder, '-uuu')
         -- table.insert(finder, '-L')
@@ -118,7 +118,7 @@ end)
 nvim.command.set('NeovimConfig', function()
     builtin.find_files {
         cwd = sys.base,
-        find_command = RELOAD('utils.functions').select_filelist(false, true),
+        find_command = require('utils.functions').select_filelist(false, true),
     }
 end)
 
@@ -127,7 +127,7 @@ if require('utils.files').is_dir(host_plugins) then
     nvim.command.set('HostFiles', function()
         builtin.find_files {
             cwd = host_plugins,
-            find_command = RELOAD('utils.functions').select_filelist(false, true),
+            find_command = require('utils.functions').select_filelist(false, true),
         }
     end)
 end

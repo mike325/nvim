@@ -40,7 +40,7 @@ local function commit_summary(init)
     if vim.g.gitsigns_head then
         vim.g.branch = vim.g.gitsigns_head
     else
-        vim.g.branch = RELOAD('utils.git').status().branch
+        vim.g.branch = require('utils.git').status().branch
     end
 
     local feat_pattern = {

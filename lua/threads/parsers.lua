@@ -139,7 +139,7 @@ function M.ts_sshconfig()
 
     local ssh_hosts = {}
 
-    local hosts = RELOAD('utils.treesitter').list_buf_nodes(hosts_query, ssh_config, 'ssh_config')
+    local hosts = require('utils.treesitter').list_buf_nodes(hosts_query, ssh_config, 'ssh_config')
     for _, host in ipairs(hosts) do
         local hostnames = RELOAD('utils.treesitter').list_buf_nodes(hostnanme_query, host[1], 'ssh_config')
         for _, hostname in ipairs(hostnames) do

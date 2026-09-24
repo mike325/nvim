@@ -89,4 +89,25 @@ function M.get_args(compiler, bufnum, flags_location)
     return args or require('filetypes.cpp').makeprg[compiler] or {}
 end
 
+function M.execute(bin, args)
+    vim.validate {
+        bin = { args, 'table', true },
+        args = { args, 'table', true },
+    }
+
+    local cmd = { bin }
+    vim.list_extend(cmd, args)
+    require('async').report(cmd, { open = true, jump = true })
+end
+
+function M.build(args)
+    vim.validate {
+        args = { args, 'table', true },
+    }
+
+    local cmd = vim.split(vim.opt_local.makeprg:get(), ' ', { trimempty = true })
+    vim.list_extend(cmd, args or {})
+    require('async').report(cmd, { open = true, jump = true })
+end
+
 return M

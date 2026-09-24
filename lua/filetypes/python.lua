@@ -21,7 +21,7 @@ local M = {
         },
         ruff = {
             'format',
-            '--preview',
+            -- '--preview',
             efm = {
                 'Would reformat: %f',
             },
@@ -62,7 +62,7 @@ local M = {
         ruff = {
             'check',
             '--respect-gitignore',
-            '--preview',
+            -- '--preview',
             -- [concise, full, json, json-lines, junit, grouped, github, gitlab, pylint, rdjson, azure, sarif]
             '--output-format=concise',
             efm = {
@@ -104,7 +104,7 @@ function M.get_formatter(stdin)
 
     if executable 'ruff' then
         cmd = { 'ruff' }
-        local config_file = RELOAD('utils.buffers').find_config {
+        local config_file = require('utils.buffers').find_config {
             configs = {
                 'ruff.toml',
                 '.ruff.toml',
@@ -118,7 +118,7 @@ function M.get_formatter(stdin)
             vim.list_extend(cmd, M.makeprg[cmd[1]])
         end
     else
-        local config_file = RELOAD('utils.buffers').find_config { configs = 'pyproject.toml' }
+        local config_file = require('utils.buffers').find_config { configs = 'pyproject.toml' }
         if executable 'black' then
             cmd = { 'black' }
             if not config_file then
@@ -145,7 +145,7 @@ function M.get_linter()
     local cmd
     if executable 'ruff' then
         cmd = { 'ruff' }
-        local config_file = RELOAD('utils.buffers').find_config {
+        local config_file = require('utils.buffers').find_config {
             configs = {
                 'ruff.toml',
                 '.ruff.toml',
@@ -161,7 +161,7 @@ function M.get_linter()
     elseif executable 'flake8' then
         cmd = { 'flake8' }
         local global_config = vim.fs.normalize(iswin and '~/.flake8' or '~/.config/flake8')
-        local config_file = RELOAD('utils.buffers').find_config {
+        local config_file = require('utils.buffers').find_config {
             configs = {
                 'tox.ini',
                 '.flake8',

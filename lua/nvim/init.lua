@@ -267,7 +267,46 @@ local function setup_mini(download)
 
         MiniDeps.later(function()
             pcall(vim.cmd.packadd, { bang = false, args = { 'nvim-treesitter' } })
-            pcall(require, 'configs.treesitter')
+            require('nvim-treesitter').setup {
+                -- Directory to install parsers and queries to (prepended to `runtimepath` to have priority)
+                install_dir = vim.fn.stdpath 'state' .. '/parsers',
+            }
+            local install_langs = require('utils.treesitter').get_missing_parsers()
+            if #install_langs > 0 and vim.fn.executable 'tree-sitter' == 1 then
+                require('nvim-treesitter').install(install_langs)
+            end
+        end)
+
+        MiniDeps.later(function()
+            pcall(vim.cmd.packadd, { bang = false, args = { 'nvim-treesitter-textobjects' } })
+            require('nvim-treesitter-textobjects').setup {
+                move = {
+                    -- whether to set jumps in the jumplist
+                    set_jumps = true,
+                },
+                {
+                    select = {
+                        -- Automatically jump forward to textobj, similar to targets.vim
+                        lookahead = true,
+                        -- selection_modes = {
+                        --     ['@parameter.outer'] = 'v', -- charwise
+                        --     ['@function.outer'] = 'V', -- linewise
+                        --     ['@class.outer'] = '<c-v>', -- blockwise
+                        -- },
+                    },
+                    -- If you set this to `true` (default is `false`) then any textobject is
+                    -- extended to include preceding or succeeding whitespace. Succeeding
+                    -- whitespace has priority in order to act similarly to eg the built-in
+                    -- `ap`.
+                    --
+                    -- Can also be a function which gets passed a table with the keys
+                    -- * query_string: eg '@function.inner'
+                    -- * selection_mode: eg 'v'
+                    -- and should return true of false
+                    include_surrounding_whitespace = false,
+                },
+            }
+            require 'configs.treesitter.textobjects'
         end)
 
         MiniDeps.later(function()
@@ -631,7 +670,7 @@ setmetatable(nvim, {
             return mt[k]
         end
 
-        local x = vim.F.npcall(RELOAD, 'nvim.' .. k)
+        local x = vim.F.npcall(require, 'nvim.' .. k)
         if not x then
             x = vim.api['nvim_' .. k]
             if not x then
