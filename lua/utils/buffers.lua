@@ -261,7 +261,7 @@ function M.detect_indent(buf)
     --     end
     -- end
 
-    local ts_utils = RELOAD 'utils.treesitter'
+    local ts_utils = require 'utils.treesitter'
 
     local indent = vim.bo[buf].tabstop
     local expandtab = vim.bo[buf].expandtab
@@ -341,7 +341,7 @@ function M.format(opts)
 
     local ft = opts.ft or vim.bo.filetype
     local bufnr = vim.api.nvim_get_current_buf()
-    local utils = vim.F.npcall(RELOAD, 'filetypes.' .. ft)
+    local utils = vim.F.npcall(require, 'filetypes.' .. ft)
 
     local view = vim.fn.winsaveview() --[[@as vim.fn.winrestview.dict]]
 
@@ -384,7 +384,7 @@ function M.format(opts)
     if utils and utils.get_formatter then
         local cmd = utils.get_formatter()
         if cmd then
-            RELOAD('utils.async').formatprg {
+            require('utils.async').formatprg {
                 cmd = M.replace_indent(cmd),
                 bufnr = bufnr,
                 efm = utils.formatprg[cmd[1]].efm,
@@ -407,7 +407,7 @@ function M.setup(ft, opts)
         ft = 'cpp'
     end
 
-    local utils = vim.F.npcall(RELOAD, string.format('filetypes.%s', ft))
+    local utils = vim.F.npcall(require, string.format('filetypes.%s', ft))
     opts = opts or {}
     if utils then
         if utils.get_linter then
@@ -426,7 +426,7 @@ function M.setup(ft, opts)
         if utils.get_formatter then
             local formatter = utils.get_formatter()
             if formatter and vim.bo.formatexpr == '' then
-                vim.bo.formatexpr = "v:lua.RELOAD('utils.buffers').format( { 'ft': &l:filetype })"
+                vim.bo.formatexpr = "v:lua.require('utils.buffers').format( { 'ft': &l:filetype })"
             end
             opts.formatexpr = nil
         end
@@ -441,7 +441,7 @@ function M.setup(ft, opts)
     if #mappings > 0 then
         for _, fname in ipairs(mappings) do
             local module = fname:gsub('^.*/lua/', ''):gsub('%.lua$', ''):gsub('/', '.')
-            vim.F.npcall(RELOAD, module)
+            vim.F.npcall(require, module)
             require('utils.files').watch_config_file(fname)
         end
     end
@@ -540,7 +540,7 @@ function M.open_changes(opts)
                 vim.cmd.badd(filename)
                 files[idx] = filename
             end
-            local qfutils = RELOAD 'utils.qf'
+            local qfutils = require 'utils.qf'
 
             if action == 'qf' then
                 local diff_opts = { result_type = 'indices', algorithm = 'minimal' }
@@ -599,13 +599,13 @@ function M.open_changes(opts)
                     qfutils.set_list { items = items, title = 'OpenChanges', open = not qfutils.is_open() }
                 end)
             elseif action == 'hunks' then
-                RELOAD('threads').queue_thread(RELOAD('threads.git').get_hunks, function(hunks)
+                require('threads').queue_thread(require('threads.git').get_hunks, function(hunks)
                     if next(hunks) ~= nil then
                         qfutils.set_list { items = hunks.items, title = 'OpenChanges', open = not qfutils.is_open() }
                     end
                 end, { revision = revision, files = files })
             else
-                RELOAD('utils.arglist').add(files, clear)
+                require('utils.arglist').add(files, clear)
                 if action == 'open' or action == '' then
                     vim.api.nvim_win_set_buf(0, vim.fn.bufadd(files[1]))
                     -- else "background" does not :edit the first file
@@ -617,15 +617,15 @@ function M.open_changes(opts)
     end
 
     if revision then
-        RELOAD('utils.git').modified_files_from_base(revision, files_actions)
+        require('utils.git').modified_files_from_base(revision, files_actions)
     else
-        RELOAD('utils.git').modified_files(files_actions)
+        require('utils.git').modified_files(files_actions)
     end
 end
 
 function M.open_conflicts(opts)
     local action = (opts.args:gsub('^%-+', ''))
-    RELOAD('utils.git').status(function(status)
+    require('utils.git').status(function(status)
         if next(status.conflict) ~= nil then
             local conflicts = vim.tbl_keys(status.conflict)
             local cwd = vim.pesc(require('utils.files').getcwd()) .. '/'
@@ -635,7 +635,7 @@ function M.open_conflicts(opts)
                 vim.cmd.badd(filename)
                 conflicts[idx] = filename
             end
-            local qfutils = RELOAD 'utils.qf'
+            local qfutils = require 'utils.qf'
 
             local items = {}
             if action == 'qf' or action == 'hunks' then
@@ -656,7 +656,7 @@ function M.open_conflicts(opts)
                 end
                 qfutils.set_list { items = items, title = 'OpenConflicts', open = not qfutils.is_open() }
             else
-                RELOAD('utils.arglist').add(conflicts, true)
+                require('utils.arglist').add(conflicts, true)
                 if action == 'open' or action == '' then
                     vim.api.nvim_win_set_buf(0, vim.fn.bufadd(conflicts[1]))
                     -- else "background" does not :edit the first file

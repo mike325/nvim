@@ -504,7 +504,7 @@ function M.rename(old, new, bang)
             vim.cmd.bwipeout { args = { new }, bang = true }
         end
 
-        local git = RELOAD 'utils.git'
+        local git = require 'utils.git'
         local is_git = git.is_git_repo(vim.fs.dirname(old))
         local is_untracked = is_git and vim.list_contains(vim.tbl_map(M.realpath, git.status().untracked or {}), old)
 
@@ -606,7 +606,7 @@ function M.delete(target, bang)
         end
     end
 
-    local git = RELOAD 'utils.git'
+    local git = require 'utils.git'
     local is_git = git.is_git_repo(vim.fs.dirname(target))
     local is_untracked = is_git and vim.list_contains(vim.tbl_map(M.realpath, git.status().untracked or {}), target)
 
@@ -1059,7 +1059,7 @@ function M.find_in_dir(args)
     end
 
     if args.callback then
-        RELOAD('threads.functions').async_find {
+        require('threads.functions').async_find {
             target = pattern,
             filter = filter,
             opts = {
@@ -1071,7 +1071,7 @@ function M.find_in_dir(args)
         }
         return
     end
-    local results = RELOAD('threads.functions').find {
+    local results = require('threads.functions').find {
         args = {
             target = pattern,
             opts = {

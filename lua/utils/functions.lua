@@ -54,7 +54,7 @@ function M.get_compiler(compiler, opts)
     end
 
     local args
-    local ft_compilers = vim.F.npcall(RELOAD, 'filetypes.' .. language)
+    local ft_compilers = vim.F.npcall(require, 'filetypes.' .. language)
     if ft_compilers and ft_compilers[option] then
         local compiler_data = ft_compilers[option][compiler]
         if compiler_data then
@@ -289,7 +289,7 @@ function M.set_abbrs(old_lang, new_lang)
     if old_lang == new_lang or vim.bo.spelllang ~= new_lang then
         return
     end
-    local abolish = RELOAD('configs.abolish').abolish
+    local abolish = require('configs.abolish').abolish
     local capitalize = require('utils.strings').capitalize
 
     local nvim = require 'nvim'

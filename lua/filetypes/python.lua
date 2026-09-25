@@ -115,7 +115,7 @@ function M.get_formatter(stdin)
         if config_file then
             vim.list_extend(cmd, { '--config', config_file })
         else
-            vim.list_extend(cmd, M.makeprg[cmd[1]])
+            vim.list_extend(cmd, M.formatprg[cmd[1]])
         end
     else
         local config_file = require('utils.buffers').find_config { configs = 'pyproject.toml' }

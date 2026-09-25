@@ -71,7 +71,7 @@ function M.marks_to_quickfix(opts)
             }
             table.insert(items, item)
         end
-        RELOAD('utils.qf').set_list {
+        require('utils.qf').set_list {
             items = items,
             title = 'Marks',
             open = true,

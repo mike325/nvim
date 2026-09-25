@@ -46,7 +46,7 @@ function M.get_remote_processes(opts, cb)
         return processes
     end
 
-    host = RELOAD('utils.network').get_ssh_host(host)
+    host = require('utils.network').get_ssh_host(host)
     if not host then
         return
     end
@@ -79,7 +79,7 @@ function M.remote_attach_debugger(opts)
     }
     opts = opts or {}
 
-    local host = RELOAD('utils.network').get_ssh_host(opts.hostname)
+    local host = require('utils.network').get_ssh_host(opts.hostname)
     if not host then
         return
     end
@@ -117,7 +117,7 @@ function M.remote_dap_attach(host, pid, filemap, env)
         return false
     end
 
-    host = RELOAD('utils.network').get_ssh_host(host)
+    host = require('utils.network').get_ssh_host(host)
     if not host then
         return
     end

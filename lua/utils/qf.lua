@@ -559,7 +559,7 @@ function M.qf_to_arglist(opts)
             table.insert(files, buf)
         end
     end
-    RELOAD('utils.arglist').add(files, clear)
+    require('utils.arglist').add(files, clear)
 end
 
 return M

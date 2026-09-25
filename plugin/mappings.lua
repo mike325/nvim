@@ -1,8 +1,6 @@
 local sys = require 'sys'
 local nvim = require 'nvim'
-
 local set_abbr = require('nvim.abbrs').set_abbr
--- local completions = RELOAD 'completions'
 
 if not vim.g.mapleader then
     vim.g.mapleader = ' '

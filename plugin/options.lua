@@ -329,6 +329,6 @@ vim.api.nvim_set_hl(0, 'debugBreakpoint', { link = 'Error' })
 
 vim.o.jumpoptions = 'stack'
 
-vim.o.formatexpr = "v:lua.RELOAD('utils.buffers').format( { 'ft': &l:filetype })"
+vim.o.formatexpr = "v:lua.require('utils.buffers').format( { 'ft': &l:filetype })"
 
 require('utils.functions').set_grep(false, false)

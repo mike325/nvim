@@ -47,7 +47,7 @@ function M.split_window(cmd, cb)
         if cmd then
             table.insert(tmux_cmd, table.concat(cmd, ' '))
         end
-        RELOAD('utils.async').makeprg {
+        require('utils.async').makeprg {
             makeprg = tmux_cmd,
             notify = true,
             open = false,

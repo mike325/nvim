@@ -27,8 +27,9 @@ function M.add_include(module, module_type)
     ]]
 
     local buf = vim.api.nvim_get_current_buf()
-    local includes = RELOAD('utils.treesitter').list_buf_nodes(include_query, buf)
-    local modules = RELOAD('utils.treesitter').list_buf_nodes(module_type == 'sys' and system_query or local_query, buf)
+    local includes = require('utils.treesitter').list_buf_nodes(include_query, buf)
+    local query = module_type == 'sys' and system_query or local_query
+    local modules = require('utils.treesitter').list_buf_nodes(query, buf)
     if #includes > 0 then
         local has_module = false
         for _, include in ipairs(modules) do
@@ -53,7 +54,7 @@ function M.get_class_operators(text)
 
     local functions = {}
 
-    local ts_utils = RELOAD 'utils.treesitter'
+    local ts_utils = require 'utils.treesitter'
     local class_node = ts_utils.get_current_class()
     if not class_node then
         vim.notify('Cursor is not inside a class', vim.log.levels.ERROR)

@@ -141,11 +141,11 @@ function M.ts_sshconfig()
 
     local hosts = require('utils.treesitter').list_buf_nodes(hosts_query, ssh_config, 'ssh_config')
     for _, host in ipairs(hosts) do
-        local hostnames = RELOAD('utils.treesitter').list_buf_nodes(hostnanme_query, host[1], 'ssh_config')
+        local hostnames = require('utils.treesitter').list_buf_nodes(hostnanme_query, host[1], 'ssh_config')
         for _, hostname in ipairs(hostnames) do
             ssh_hosts[hostname[1]] = ssh_hosts[hostname[1]] or {}
-            local host_params = RELOAD('utils.treesitter').list_buf_nodes(parameter_query, host[1], 'ssh_config')
-            local host_values = RELOAD('utils.treesitter').list_buf_nodes(param_value_query, host[1], 'ssh_config')
+            local host_params = require('utils.treesitter').list_buf_nodes(parameter_query, host[1], 'ssh_config')
+            local host_values = require('utils.treesitter').list_buf_nodes(param_value_query, host[1], 'ssh_config')
 
             for idx, host_param in ipairs(host_params) do
                 local value = host_values[idx][1]

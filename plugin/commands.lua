@@ -1,8 +1,8 @@
 local sys = require 'sys'
 local nvim = require 'nvim'
 local executable = require('utils.files').executable
-local completions = RELOAD 'completions'
-local comp_utils = RELOAD 'completions.utils'
+local completions = require 'completions'
+local comp_utils = require 'completions.utils'
 
 if sys.name ~= 'windows' then
     --- @param opts Command.Opts

@@ -143,7 +143,7 @@ function M.makeprg(opts)
         open = true
     end
 
-    RELOAD('async').report(cmd, {
+    require('async').report(cmd, {
         open = open,
         notify = opts.notify,
         silent = opts.silent,
@@ -194,7 +194,7 @@ function M.lint(linter, opts)
     end
 
     local args
-    local ft_linters = vim.F.npcall(RELOAD, 'filetypes.' .. language)
+    local ft_linters = vim.F.npcall(require, 'filetypes.' .. language)
     if ft_linters and ft_linters.makeprg then
         local linter_data = ft_linters.makeprg[linter]
         if linter_data then
@@ -240,7 +240,7 @@ function M.formatprg(args)
     local cmd = args.cmd
     local bufnr = args.bufnr or vim.api.nvim_get_current_buf()
 
-    local buf_utils = RELOAD 'utils.buffers'
+    local buf_utils = require 'utils.buffers'
 
     local first = args.first or (vim.v.lnum - 1)
     local last = args.last or (first + vim.v.count)
