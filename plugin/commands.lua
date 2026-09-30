@@ -578,9 +578,18 @@ if executable 'git' then
 
     --- @param opts Command.Opts
     nvim.command.set('OpenChanges', function(opts)
-        local revision
-
         local args = opts.fargs
+
+        if vim.iter(args):find '-branch' and vim.iter(args):find '-pr' then
+            vim.notify(
+                'Cannot open revision and PR changes, options are mutually exclusive',
+                vim.log.levels.ERROR,
+                { title = 'OpenChanges' }
+            )
+            return
+        end
+
+        local revision
         if vim.iter(args):find '-branch' then
             for idx, arg in ipairs(args) do
                 if arg == '-branch' then
@@ -597,6 +606,14 @@ if executable 'git' then
                         return arg ~= '-branch' and arg ~= revision
                     end
                     return arg ~= '-branch'
+                end)
+                :totable()
+        elseif vim.iter(args):find '-pr' then
+            local base_branch = require('utils.gh').get_pr_changes().revision
+            revision = require('utils.git').get_remote(base_branch).remote
+            args = vim.iter(args)
+                :filter(function(arg)
+                    return arg ~= '-pr'
                 end)
                 :totable()
         end
@@ -623,7 +640,7 @@ if executable 'git' then
     end, {
         bang = true,
         nargs = '*',
-        complete = comp_utils.get_completion(qf_completion_items, {
+        complete = comp_utils.get_completion(vim.list_extend({ '-pr' }, qf_completion_items), {
             ['-branch'] = function(_)
                 return require('utils.git').get_branches(true)
             end,

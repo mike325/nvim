@@ -315,25 +315,32 @@ end
 
 function M.get_pr_info(attr, pr, callback)
     vim.validate {
-        attr = { attr, 'string' },
+        attr = { attr, { 'string', 'table' } },
         pr = { pr, { 'string', 'number' }, true },
         callback = { callback, 'function', true },
     }
+    if type(attr) == type {} then
+        attr = table.concat(attr, ',')
+    end
     local ghcmd = 'pr'
     local args = { 'view', '--json', attr, '-q', '.' .. attr }
     if pr then
         table.insert(args, 2, tostring(pr))
     end
     if not callback then
-        return exec_ghcmd(ghcmd, args)[1] or ''
+        return exec_ghcmd(ghcmd, args)
     end
     exec_ghcmd(ghcmd, args, function(output)
-        callback(output and output[1] or '')
+        callback(output)
     end)
 end
 
 function M.open_pr(pr)
-    M.get_pr_info('url', pr, vim.ui.open)
+    local function open_url(output)
+        local json = vim.json.decode(table.concat(output, '\n'))
+        vim.ui.open(json.url)
+    end
+    open_url(M.get_pr_info('url', pr))
 end
 
 function M.get_pr_base_branch(pr, callback)
