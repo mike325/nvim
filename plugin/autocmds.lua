@@ -998,10 +998,14 @@ vim.api.nvim_create_autocmd('LspTokenUpdate', {
 })
 
 local langs = require('utils.treesitter').languages
+local filetypes = vim.deepcopy(langs.builtin)
+if vim.fn.executable 'tree-sitter' == 1 and (vim.fn.executable 'gcc' == 1 or vim.fn.executable 'clang' == 1) then
+    filetypes = vim.list_extend(filetypes, langs.extras)
+end
 vim.api.nvim_create_autocmd({ 'FileType' }, {
     desc = 'Basic TS setup when nvim-treesitter is not install',
     group = vim.api.nvim_create_augroup('TreesitterSetup', { clear = true }),
-    pattern = table.concat(vim.list_extend(vim.deepcopy(langs.builtin), langs.extras), ','),
+    pattern = table.concat(filetypes, ','),
     callback = function(args)
         local ft_mapping = { sh = 'bash', help = 'vimdoc' }
         local filetype = vim.bo[args.buf].filetype

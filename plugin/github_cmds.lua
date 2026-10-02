@@ -97,12 +97,13 @@ if executable 'gh' then
     vim.api.nvim_create_user_command('PR', function(opts)
         local args = opts.fargs
         local subcmd = args[1]
+        local gh = require 'utils.gh'
 
         if subcmd == 'create' or subcmd == 'open' then
             pr_create(vim.list_slice(args, 2), opts.bang)
         elseif subcmd == 'ready' or subcmd == 'draft' then
             local is_ready = subcmd == 'ready'
-            require('utils.gh').pr_ready(is_ready, function(_)
+            gh.pr_ready(is_ready, function(_)
                 local msg = ('PR move to %s'):format(subcmd)
                 vim.notify(msg, vim.log.levels.INFO, { title = 'GH' })
             end)
@@ -111,13 +112,24 @@ if executable 'gh' then
         elseif subcmd == 'checkout' then
             pr_checkout(args[2])
         elseif subcmd == 'review' then
-            require('utils.git').get_remote(function(info)
-                require('utils.gh').get_pr_base_branch(nil, function(base)
-                    local remote = (info.remote:gsub('/.*', ''))
-                    vim.g.pr_base_branch = string.format('%s/%s', remote, base)
-                    vim.cmd.DiffviewOpen { args = { vim.g.pr_base_branch .. '...HEAD' } }
+            local function start_review()
+                require('utils.git').get_remote(function(info)
+                    gh.get_pr_base_branch(nil, function(base)
+                        local remote = (info.remote:gsub('/.*', ''))
+                        vim.g.pr_base_branch = string.format('%s/%s', remote, base)
+                        vim.cmd.DiffviewOpen { args = { vim.g.pr_base_branch .. '...HEAD' } }
+                    end)
                 end)
-            end)
+            end
+            if opts.bang then
+                select_pr(function(pr_id)
+                    gh.pr_checkout(pr_id, function()
+                        start_review()
+                    end)
+                end)
+            else
+                start_review()
+            end
         elseif subcmd == 'approve' or subcmd == 'disapprove' then
             if opts.bang then
                 pr_approve(subcmd == 'approve', nil)
@@ -133,7 +145,7 @@ if executable 'gh' then
             filename = require('utils.files').remove_cwd_from_filepath(
                 require('utils.buffers').convert_virtual_fname(filename)
             )
-            require('utils.gh').pr_mark_view({
+            gh.pr_mark_view({
                 filename = filename,
                 view = subcmd == 'markview',
             }, function(_)

@@ -4,6 +4,7 @@ if vim.fn.has 'win32' == 1 or vim.fn.has 'win64' == 1 then
 else
     compiler = vim.fn.executable 'gcc' == 1 or vim.fn.executable 'clang' == 1
 end
+compiler = compiler and vim.fn.executable 'tree-sitter' == 1
 
 local branch = 'main'
 
