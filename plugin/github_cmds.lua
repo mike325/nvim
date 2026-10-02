@@ -1,7 +1,6 @@
 local executable = require('utils.files').executable
 
 if executable 'gh' then
-    local nvim = require 'nvim'
     local completions = require 'completions'
     local comp_utils = require 'completions.utils'
 
@@ -17,35 +16,71 @@ if executable 'gh' then
         end)
     end
 
+    local function select_pr(callback)
+        local gh = require 'utils.gh'
+        gh.list_repo_pr({}, function(list_pr)
+            local titles = vim.tbl_map(function(pull_request)
+                return string.format(
+                    '[%s] %d: %s',
+                    pull_request.isDraft and 'Draft' or 'Ready',
+                    pull_request.number,
+                    pull_request.title
+                )
+            end, vim.deepcopy(list_pr))
+            vim.ui.select(
+                titles,
+                { prompt = 'Select PR: ' },
+                vim.schedule_wrap(function(choice)
+                    if choice ~= '' then
+                        local pr_id = vim.tbl_filter(function(pull_request)
+                            return string.format(
+                                '[%s] %d: %s',
+                                pull_request.isDraft and 'Draft' or 'Ready',
+                                pull_request.number,
+                                pull_request.title
+                            ) == choice
+                        end, list_pr)[1]
+                        if pr_id then
+                            callback(pr_id.number)
+                        end
+                    end
+                end)
+            )
+        end)
+    end
+
     local function pr_view(args, current)
         local gh = require 'utils.gh'
         local pr
         if tonumber(args) then
             pr = tonumber(args)
         elseif not current and args ~= 'current' then
-            gh.list_repo_pr({}, function(list_pr)
-                local titles = vim.tbl_map(function(pull_request)
-                    return pull_request.title
-                end, vim.deepcopy(list_pr))
-                vim.ui.select(
-                    titles,
-                    { prompt = 'Select PR: ' },
-                    vim.schedule_wrap(function(choice)
-                        if choice ~= '' then
-                            local pr_id = vim.tbl_filter(function(pull_request)
-                                return pull_request.title == choice
-                            end, list_pr)[1]
-                            if pr_id then
-                                gh.open_pr(pr_id.number)
-                            end
-                        end
-                    end)
-                )
-            end)
+            select_pr(gh.open_pr)
             return
         end
 
         gh.open_pr(pr)
+    end
+
+    local function pr_checkout(pr)
+        local gh = require 'utils.gh'
+        if not pr then
+            select_pr(gh.pr_checkout)
+            return
+        end
+
+        gh.list_repo_pr({}, function(list_pr)
+            local pr_id = vim.tbl_filter(function(pull_request)
+                return pull_request.number == tonumber(pr) or pull_request.title == pr
+            end, list_pr)[1]
+
+            if not pr_id then
+                vim.notify('PR not found: ' .. pr, vim.log.levels.ERROR, { title = 'GH' })
+                return
+            end
+
+            gh.pr_checkout(pr_id.number)
+        end)
     end
 
     local function pr_approve(is_approved, comment)
@@ -54,7 +89,7 @@ if executable 'gh' then
             msg = msg .. ' with comment: ' .. comment
         end
         require('utils.gh').pr_review(is_approved, nil, comment, function()
-            vim.print(msg)
+            vim.notify(msg, vim.log.levels.INFO, { title = 'GH' })
         end)
     end
 
@@ -73,11 +108,14 @@ if executable 'gh' then
             end)
         elseif subcmd == 'view' then
             pr_view(args[2], opts.bang)
+        elseif subcmd == 'checkout' then
+            pr_checkout(args[2])
         elseif subcmd == 'review' then
             require('utils.git').get_remote(function(info)
                 require('utils.gh').get_pr_base_branch(nil, function(base)
                     local remote = (info.remote:gsub('/.*', ''))
-                    vim.cmd.DiffviewOpen { args = { string.format('%s/%s...', remote, base) } }
+                    vim.g.pr_base_branch = string.format('%s/%s', remote, base)
+                    vim.cmd.DiffviewOpen { args = { vim.g.pr_base_branch .. '...HEAD' } }
                 end)
             end)
         elseif subcmd == 'approve' or subcmd == 'disapprove' then
@@ -108,6 +146,7 @@ if executable 'gh' then
         nargs = '+',
         bang = true,
         complete = comp_utils.get_completion({
+            'checkout',
             'review',
             'create',
             'ready',
@@ -126,7 +165,31 @@ if executable 'gh' then
     })
 
     --- @param opts Command.Opts
-    nvim.command.set('EditReviewers', function(opts)
+    vim.api.nvim_create_user_command('Comment', function(opts)
+        local filename = vim.api.nvim_buf_get_name(0)
+        filename = require('utils.buffers').convert_virtual_fname(filename)
+        filename = require('utils.files').remove_cwd_from_filepath(filename)
+
+        local range
+        if opts.range > 0 then
+            range = { opts.line1, opts.line2 }
+        end
+
+        local comment = vim.fn.input 'Add comment: '
+        if not comment or comment == '' then
+            return
+        end
+
+        require('utils.gh').add_file_comment(filename, comment, range, nil, function(_)
+            vim.notify(string.format('Comment added to %s', filename), vim.log.levels.INFO, { title = 'GH' })
+        end)
+    end, {
+        range = true,
+        desc = 'Add a PR review comment to the current file (optionally on a visual/line range)',
+    })
+
+    --- @param opts Command.Opts
+    vim.api.nvim_create_user_command('ReviewerEdit', function(opts)
         local reviewers = { table.concat(opts.fargs, ',') }
         local action = opts.fargs[1]:gsub('^%-+', '')
         local command = action == 'add' and '--add-reviewer' or '--remove-reviewer'

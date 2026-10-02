@@ -14,14 +14,18 @@ diffview.setup {
     },
     hooks = {
         view_closed = function(_)
-            for buf in vim.iter(vim.g.diffview_bufs or {}) do
+            for buf, _ in pairs(vim.g.diffview_bufs or {}) do
                 if vim.api.nvim_buf_is_valid(buf) and vim.b.buf_view_status then
                     vim.b.buf_view_status = nil
                 end
             end
             vim.g.diffview_bufs = nil
+            if vim.g.pr_base_branch then
+                vim.g.pr_base_branch = nil
+            end
         end,
         view_opened = function(_)
+            vim.t.files_status = {}
             require('utils.gh').get_view_files(nil, function(files)
                 vim.t.files_status = files
             end)
@@ -45,7 +49,6 @@ diffview.setup {
             ['<leader>q'] = function()
                 require('diffview.config').actions.close(true)
             end,
-            -- TODO: Add statusline indicator
             ['<leader>v'] = function()
                 local filename = vim.api.nvim_buf_get_name(0)
                 filename = require('utils.files').remove_cwd_from_filepath(

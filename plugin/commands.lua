@@ -609,7 +609,7 @@ if executable 'git' then
                 end)
                 :totable()
         elseif vim.iter(args):find '-pr' then
-            local base_branch = require('utils.gh').get_pr_changes().revision
+            local base_branch = require('utils.gh').get_pr_base_branch()
             revision = require('utils.git').get_remote(base_branch).remote
             args = vim.iter(args)
                 :filter(function(arg)

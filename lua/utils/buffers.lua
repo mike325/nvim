@@ -713,7 +713,11 @@ function M.find_config(opts)
         dirs = { opts.dirs, { 'string', 'table' }, true },
     }
 
-    local dirs = opts.dirs or { vim.fs.dirname(vim.api.nvim_buf_get_name(0)), require('utils.files').getcwd() }
+    local cwd = require('utils.files').getcwd()
+    local buf_dir = vim.fs.dirname(vim.api.nvim_buf_get_name(0))
+
+    -- TODO: need to optimize this
+    local dirs = opts.dirs or { cwd, buf_dir }
     if type(dirs) ~= type {} then
         dirs = { dirs }
     end
@@ -723,12 +727,27 @@ function M.find_config(opts)
         configs = { configs }
     end
 
-    local config_path
-    for _, cwd in ipairs(dirs) do
-        config_path = vim.fs.find(configs, { upward = true, type = 'file', path = cwd })[1]
-        if config_path then
-            config_path = require('utils.files').realpath(config_path)
-            break
+    local key_str = '%s:%s'
+    local cache_configs = vim.g.config_path or {}
+    local config_path = vim.iter(configs):find(function(config)
+        for dir in vim.iter(dirs) do
+            local config_key = key_str:format(dir, config)
+            if cache_configs[config_key] then
+                return cache_configs[config_key]
+            end
+        end
+    end)
+
+    if not config_path then
+        for dir in vim.iter(dirs) do
+            config_path = vim.fs.find(configs, { upward = true, type = 'file', path = dir })[1]
+            if config_path then
+                config_path = require('utils.files').realpath(config_path)
+                local config = vim.fs.basename(config_path)
+                cache_configs[key_str:format(dir, config)] = config_path
+                vim.g.config_path = cache_configs
+                break
+            end
         end
     end
     return config_path

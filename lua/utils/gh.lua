@@ -335,39 +335,131 @@ function M.get_pr_info(attr, pr, callback)
     end)
 end
 
-function M.open_pr(pr)
-    local function open_url(output)
-        local json = vim.json.decode(table.concat(output, '\n'))
-        vim.ui.open(json.url)
+function M.pr_checkout(pr, callback)
+    vim.validate {
+        pr = { pr, { 'string', 'number' } },
+        callback = { callback, 'function', true },
+    }
+    local ghcmd = 'pr'
+    local args = { 'checkout', tostring(pr) }
+    if not callback then
+        return exec_ghcmd(ghcmd, args)
     end
-    open_url(M.get_pr_info('url', pr))
+    exec_ghcmd(ghcmd, args, function(output)
+        callback(output)
+    end)
+end
+
+function M.open_pr(pr)
+    M.get_pr_info('url', pr, function(output)
+        vim.ui.open(output[1])
+    end)
 end
 
 function M.get_pr_base_branch(pr, callback)
     if not callback then
-        return M.get_pr_info('baseRefName', pr)
+        return M.get_pr_info('baseRefName', pr)[1]
     end
     M.get_pr_info('baseRefName', pr, function(output)
-        callback(output)
+        callback(output[1])
     end)
 end
 
 function M.get_pr_id(pr, callback)
     if not callback then
-        return M.get_pr_info('id', pr)
+        return M.get_pr_info('id', pr)[1]
     end
     M.get_pr_info('id', pr, function(output)
-        callback(output)
+        callback(output[1])
     end)
 end
 
 function M.get_pr_num(pr, callback)
     if not callback then
-        return M.get_pr_info('number', pr)
+        return M.get_pr_info('number', pr)[1]
     end
     M.get_pr_info('number', pr, function(output)
-        callback(output)
+        callback(output[1])
     end)
+end
+
+local function get_pr_head_sha(owner, repo, pr_num, callback)
+    local ghcmd = 'api'
+    local args = { string.format('repos/%s/%s/pulls/%s', owner, repo, pr_num), '-q', '.head.sha' }
+
+    if not callback then
+        return exec_ghcmd(ghcmd, args)[1]
+    end
+    exec_ghcmd(ghcmd, args, function(output)
+        callback(output[1])
+    end)
+end
+
+function M.add_file_comment(file, comment, range, pr, callback)
+    vim.validate {
+        file = { file, 'string' },
+        comment = { comment, 'string' },
+        range = { range, 'table', true },
+        pr = { pr, { 'string', 'number' }, true },
+        callback = { callback, 'function', true },
+    }
+
+    local cwd = vim.fs.normalize(vim.uv.cwd() or '.')
+    file = require('utils.buffers').convert_virtual_fname(file)
+    file = vim.fs.normalize(file)
+    file = (file:gsub(string.format('^%s/', vim.pesc(cwd)), ''))
+
+    local ghcmd = 'api'
+
+    local function build_args(owner, repo, pr_num, sha)
+        local args = {
+            string.format('repos/%s/%s/pulls/%s/comments', owner, repo, pr_num),
+            '-f',
+            'body=' .. comment,
+            '-f',
+            'commit_id=' .. sha,
+            '-f',
+            'path=' .. file,
+        }
+
+        if range then
+            local line_start = range[1]
+            local line_end = range[2] or line_start
+            vim.list_extend(args, { '-F', 'line=' .. line_end, '-f', 'side=RIGHT' })
+            if line_start ~= line_end then
+                vim.list_extend(args, { '-F', 'start_line=' .. line_start, '-f', 'start_side=RIGHT' })
+            end
+        else
+            vim.list_extend(args, { '-f', 'subject_type=file' })
+        end
+
+        return args
+    end
+
+    if not callback then
+        local repo = M.get_repo_info { 'owner', 'name' }
+        local pr_num = pr and (tonumber(pr) and tostring(pr) or M.get_pr_num(pr)) or M.get_pr_num()
+        local sha = get_pr_head_sha(repo.owner.login, repo.name, pr_num)
+        return exec_ghcmd(ghcmd, build_args(repo.owner.login, repo.name, pr_num, sha))
+    end
+
+    local function with_pr_num(pr_num)
+        M.get_repo_info({ 'owner', 'name' }, function(repo)
+            get_pr_head_sha(repo.owner.login, repo.name, pr_num, function(sha)
+                exec_ghcmd(ghcmd, build_args(repo.owner.login, repo.name, pr_num, sha), function(output)
+                    callback(output)
+                end)
+            end)
+        end)
+    end
+
+    if pr and tonumber(pr) then
+        with_pr_num(tostring(pr))
+    else
+        M.get_pr_num(pr, function(pr_num)
+            with_pr_num(pr_num)
+        end)
+    end
 end
 
 function M.pr_mark_view(opts, callback)
