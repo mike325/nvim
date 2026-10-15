@@ -423,6 +423,8 @@ function M.get_git_info(path, callback)
         '--is-inside-git-dir',
         '--is-bare-repository',
         '--is-inside-work-tree',
+        '--short',
+        'HEAD',
     }
 
     local cmd = { 'git' }
@@ -444,6 +446,7 @@ function M.get_git_info(path, callback)
             inside_git = info_values[3],
             is_bare = info_values[4],
             inside_worktree = info_values[5],
+            sha = info_values[6],
         }
     end
 

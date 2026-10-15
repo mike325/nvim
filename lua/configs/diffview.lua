@@ -26,9 +26,11 @@ diffview.setup {
         end,
         view_opened = function(_)
             vim.t.files_status = {}
-            require('utils.gh').get_view_files(nil, function(files)
-                vim.t.files_status = files
-            end)
+            if vim.g.pr_base_branch then
+                require('utils.gh').get_view_files(nil, function(files)
+                    vim.t.files_status = files
+                end)
+            end
         end,
         diff_buf_win_enter = function(bufnr, _, _)
             vim.t.files_status = vim.t.files_status or {}

@@ -383,16 +383,47 @@ function M.get_pr_num(pr, callback)
     end)
 end
 
-local function get_pr_head_sha(owner, repo, pr_num, callback)
+function M.get_pr_head_sha(owner, repo_name, pr_num, callback)
     local ghcmd = 'api'
-    local args = { string.format('repos/%s/%s/pulls/%s', owner, repo, pr_num), '-q', '.head.sha' }
 
     if not callback then
+        pr_num = pr_num and (tonumber(pr_num) and tostring(pr_num) or M.get_pr_num(pr_num)) or M.get_pr_num()
+        if not owner or not repo_name then
+            local repo = M.get_repo_info { 'owner', 'name' }
+            owner = repo.owner.login
+            repo_name = repo.name
+        end
+        local args = { string.format('repos/%s/%s/pulls/%s', owner, repo_name, pr_num), '-q', '.head.sha' }
         return exec_ghcmd(ghcmd, args)[1]
     end
-    exec_ghcmd(ghcmd, args, function(output)
-        callback(output[1])
-    end)
+
+    local function with_pr_num(pr)
+        if owner and repo_name then
+            local args = { string.format('repos/%s/%s/pulls/%s', owner, repo_name, pr), '-q', '.head.sha' }
+            exec_ghcmd(ghcmd, args, function(output)
+                callback(output[1])
+            end)
+        else
+            M.get_repo_info({ 'owner', 'name' }, function(repo)
+                local args = {
+                    string.format('repos/%s/%s/pulls/%s', repo.owner.login, repo.name, pr),
+                    '-q',
+                    '.head.sha',
+                }
+                exec_ghcmd(ghcmd, args, function(output)
+                    callback(output[1])
+                end)
+            end)
+        end
+    end
+
+    if pr_num and tonumber(pr_num) then
+        with_pr_num(tostring(pr_num))
+    else
+        M.get_pr_num(pr_num, function(pr)
+            with_pr_num(pr)
+        end)
+    end
 end
 
 function M.add_file_comment(file, comment, range, pr, callback)
@@ -439,13 +470,13 @@ function M.add_file_comment(file, comment, range, pr, callback)
     if not callback then
         local repo = M.get_repo_info { 'owner', 'name' }
         local pr_num = pr and (tonumber(pr) and tostring(pr) or M.get_pr_num(pr)) or M.get_pr_num()
-        local sha = get_pr_head_sha(repo.owner.login, repo.name, pr_num)
+        local sha = M.get_pr_head_sha(repo.owner.login, repo.name, pr_num)
         return exec_ghcmd(ghcmd, build_args(repo.owner.login, repo.name, pr_num, sha))
     end
 
     local function with_pr_num(pr_num)
         M.get_repo_info({ 'owner', 'name' }, function(repo)
-            get_pr_head_sha(repo.owner.login, repo.name, pr_num, function(sha)
+            M.get_pr_head_sha(repo.owner.login, repo.name, pr_num, function(sha)
                 exec_ghcmd(ghcmd, build_args(repo.owner.login, repo.name, pr_num, sha), function(output)
                     callback(output)
                 end)
@@ -478,7 +509,7 @@ function M.pr_mark_view(opts, callback)
     filename = vim.fs.normalize(filename)
     filename = (filename:gsub(string.format('^%s/', vim.pesc(cwd)), ''))
 
-    local query = 'mutation($pr:ID!, $path:String!){ %s(input:{pullRequestId:$pr,path:$path}){clientMutationId} }'
+    local query = 'mutation($pr:ID!,$path:String!){%s(input:{pullRequestId:$pr,path:$path}){clientMutationId}}'
     if opts.view == false then
         query = query:format 'unmarkFileAsViewed'
     else
@@ -514,8 +545,17 @@ function M.get_view_files(pr, callback)
     }
 
     -- luacheck: ignore 631
-    local query =
-        'query($owner:String!,$repo:String!,$pr:Int!){repository(owner:$owner,name:$repo){pullRequest(number:$pr){files(first:100){nodes{path viewerViewedState}}}}}'
+    local query = [[
+        query($owner:String!,$repo:String!,$pr:Int!){
+            repository(owner:$owner,name:$repo){
+                pullRequest(number:$pr){
+                    files(first:100){
+                        nodes{path viewerViewedState},
+                    },
+                },
+            },
+        }
+    ]]
     local ghcmd = 'api'
     local args = {
         'graphql',
@@ -564,6 +604,281 @@ function M.get_view_files(pr, callback)
         end)
     else
         get_repo_fields(pr)
+    end
+end
+
+function M.get_pr_comments(pr, callback)
+    vim.validate {
+        pr = { pr, { 'string', 'number' }, true },
+        callback = { callback, 'function', true },
+    }
+
+    local ghcmd = 'api'
+    local issue_fields = { 'author_association', 'body', 'created_at', 'id', 'reactions', 'type', 'updated_at' }
+
+    local function filter_fields(comment)
+        local filtered = {}
+        for _, field in ipairs(issue_fields) do
+            filtered[field] = comment[field]
+        end
+        filtered.type = 'issue'
+        return filtered
+    end
+
+    local function fetch_issue_comments(owner, repo, pr_num, cb)
+        local args = { string.format('repos/%s/%s/issues/%s/comments', owner, repo, pr_num) }
+        if not cb then
+            local json = vim.json.decode(table.concat(exec_ghcmd(ghcmd, args), '\n'))
+            return vim.tbl_map(filter_fields, json)
+        end
+        exec_ghcmd(ghcmd, args, function(output)
+            local json = vim.json.decode(table.concat(output, '\n'))
+            cb(vim.tbl_map(filter_fields, json))
+        end)
+    end
+
+    local function tag_review(comments_by_path)
+        local flat = {}
+        for _, comments in pairs(comments_by_path) do
+            for _, comment in ipairs(comments) do
+                comment.type = 'review'
+                table.insert(flat, comment)
+            end
+        end
+        return flat
+    end
+
+    if not callback then
+        local repo = M.get_repo_info { 'owner', 'name' }
+        local pr_num = pr and (tonumber(pr) and tostring(pr) or M.get_pr_num(pr)) or M.get_pr_num()
+        local comments = fetch_issue_comments(repo.owner.login, repo.name, pr_num)
+        local review_comments = tag_review(M.get_pr_inline_comments(pr_num))
+        return vim.list_extend(comments, review_comments)
+    end
+
+    local function with_pr_num(pr_num)
+        M.get_repo_info({ 'owner', 'name' }, function(repo)
+            fetch_issue_comments(repo.owner.login, repo.name, pr_num, function(comments)
+                M.get_pr_inline_comments(pr_num, nil, function(review_comments)
+                    callback(vim.list_extend(comments, tag_review(review_comments)))
+                end)
+            end)
+        end)
+    end
+
+    if pr and tonumber(pr) then
+        with_pr_num(tostring(pr))
+    else
+        M.get_pr_num(pr, function(pr_num)
+            with_pr_num(pr_num)
+        end)
+    end
+end
+
+--- Get inline PR review comments grouped by file
+---@param pr string|number|nil
+---@param opts table? { resolved: boolean?, path: string? }
+---@param callback function?
+---@return table<string, table[]> comments_by_path comments keyed by file path
+function M.get_pr_inline_comments(pr, opts, callback)
+    vim.validate {
+        pr = { pr, { 'string', 'number' }, true },
+        opts = { opts, 'table', true },
+        callback = { callback, 'function', true },
+    }
+    opts = opts or {}
+
+    local query = [[
+        query($owner:String!,$repo:String!,$pr:Int!){
+            repository(owner:$owner,name:$repo){
+                pullRequest(number:$pr){
+                    reviewThreads(first:100){
+                        nodes{id isResolved comments(first:100){
+                            nodes{
+                                id body path line originalLine startLine originalStartLine diffHunk url
+                                createdAt author{login}
+                            },
+                        }},
+                    },
+                },
+            },
+        }
+    ]]
+    local ghcmd = 'api'
+    local args = {
+        'graphql',
+        '-f',
+        'query=' .. query,
+    }
+
+    local function transform_output(output)
+        output = vim.json.decode(table.concat(output, '\n'), { luanil = { object = true, array = true } })
+        local threads = output.data.repository.pullRequest.reviewThreads.nodes
+        local comments = {}
+        for _, thread in ipairs(threads) do
+            for _, comment in ipairs(thread.comments.nodes) do
+                comment.isResolved = thread.isResolved
+                comment.threadId = thread.id
+                table.insert(comments, comment)
+            end
+        end
+        comments = vim.iter(comments)
+            :filter(function(comment)
+                return opts.resolved or not comment.isResolved
+            end)
+            :filter(function(comment)
+                return not opts.path or comment.path == opts.path
+            end)
+            :totable()
+
+        return vim.iter(comments):fold({}, function(groups, comment)
+            groups[comment.path] = groups[comment.path] or {}
+            table.insert(groups[comment.path], comment)
+            return groups
+        end)
+    end
+
+    if not callback then
+        pr = (tonumber(pr) and pr or M.get_pr_num(pr))
+        local repo = M.get_repo_info { 'owner', 'name' }
+        vim.list_extend(args, {
+            '-F',
+            'pr=' .. pr,
+            '-f',
+            'owner=' .. repo.owner.login,
+            '-f',
+            'repo=' .. repo.name,
+        })
+
+        return transform_output(exec_ghcmd(ghcmd, args))
+    end
+
+    local function get_repo_fields(pr_num)
+        vim.list_extend(args, { '-F', 'pr=' .. pr_num })
+        M.get_repo_info({ 'owner', 'name' }, function(repo)
+            vim.list_extend(args, { '-f', 'owner=' .. repo.owner.login, '-f', 'repo=' .. repo.name })
+            exec_ghcmd(ghcmd, args, function(output)
+                callback(transform_output(output))
+            end)
+        end)
+    end
+
+    if not pr or not tonumber(pr) then
+        M.get_pr_num(pr, function(pr_num)
+            get_repo_fields(pr_num)
+        end)
+    else
+        get_repo_fields(pr)
+    end
+end
+
+--- Resolve (close) a PR review thread
+---@param thread_id string
+---@param pr string|number|nil
+---@param opts table?
+---@param callback function?
+function M.resolve_comment_thread(thread_id, pr, opts, callback)
+    vim.validate {
+        thread_id = { thread_id, 'string' },
+        pr = { pr, { 'string', 'number' }, true },
+        opts = { opts, 'table', true },
+        callback = { callback, 'function', true },
+    }
+
+    local query = 'mutation($thread:ID!){resolveReviewThread(input:{threadId:$thread}){thread{id isResolved}}}'
+    local ghcmd = 'api'
+    local args = {
+        'graphql',
+        '-f',
+        'query=' .. query,
+        '-f',
+        'thread=' .. thread_id,
+    }
+
+    local function transform_output(output)
+        output = vim.json.decode(table.concat(output, '\n'))
+        return output.data.resolveReviewThread.thread
+    end
+
+    if not callback then
+        if not pr then
+            M.get_pr_num()
+        end
+        return transform_output(exec_ghcmd(ghcmd, args))
+    end
+
+    local function run()
+        exec_ghcmd(ghcmd, args, function(output)
+            callback(transform_output(output))
+        end)
+    end
+
+    if pr then
+        run()
+    else
+        M.get_pr_num(nil, function(_)
+            run()
+        end)
+    end
+end
+
+--- Add a reply comment to a PR review thread
+---@param thread_id string
+---@param comment string
+---@param pr string|number|nil
+---@param opts table?
+---@param callback function?
+function M.add_comment_thread(thread_id, comment, pr, opts, callback)
+    vim.validate {
+        thread_id = { thread_id, 'string' },
+        comment = { comment, 'string' },
+        pr = { pr, { 'string', 'number' }, true },
+        opts = { opts, 'table', true },
+        callback = { callback, 'function', true },
+    }
+
+    local query = [[
+        mutation($thread:ID!,$body:String!){
+            addPullRequestReviewThreadReply(input:{pullRequestReviewThreadId:$thread,body:$body}){
+                comment{id body url createdAt},
+            },
+        }
+    ]]
+    local ghcmd = 'api'
+    local args = {
+        'graphql',
+        '-f',
+        'query=' .. query,
+        '-f',
+        'thread=' .. thread_id,
+        '-f',
+        'body=' .. comment,
+    }
+
+    local function transform_output(output)
+        output = vim.json.decode(table.concat(output, '\n'))
+        return output.data.addPullRequestReviewThreadReply.comment
+    end
+
+    if not callback then
+        if not pr then
+            M.get_pr_num()
+        end
+        return transform_output(exec_ghcmd(ghcmd, args))
+    end
+
+    local function run()
+        exec_ghcmd(ghcmd, args, function(output)
+            callback(transform_output(output))
+        end)
+    end
+
+    if pr then
+        run()
+    else
+        M.get_pr_num(nil, function(_)
+            run()
+        end)
     end
 end
 

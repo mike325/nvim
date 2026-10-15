@@ -33,6 +33,17 @@ function M.get_namespaces()
     end)
 end
 
+function M.remove_diagnostic(ns, bufnr, filter)
+    vim.validate {
+        ns = { ns, 'number' },
+        bufnr = { bufnr, 'number', true },
+        filter = { filter, 'function' },
+    }
+    bufnr = bufnr or vim.api.nvim_get_current_buf()
+    local buf_diagnostics = vim.diagnostic.get(bufnr, { namespace = ns })
+    vim.diagnostic.set(ns, bufnr, vim.iter(buf_diagnostics):filter(filter):totable())
+end
+
 function M.get_namespace(ns)
     if type(ns) == type(1) then
         local namespace = vim.diagnostic.get_namespace(ns)

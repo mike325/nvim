@@ -168,6 +168,10 @@ function M.lint(linter, opts)
     local buf = opts.buf or vim.api.nvim_get_current_buf()
     local bufname = opts.bufname or opts.filename or vim.api.nvim_buf_get_name(buf)
 
+    if not require('utils.files').is_file(bufname) then
+        return
+    end
+
     local function get_args(configs, configflag, fallback_args)
         if configs and configflag then
             local config_files = vim.fs.find(configs, { upward = true, type = 'file' })

@@ -544,21 +544,21 @@ vim.api.nvim_create_autocmd({ 'Filetype' }, {
             bash = 'shellcheck',
             sh = 'shellcheck',
             fish = 'shellcheck',
-            lua = 'luacheck',
+            -- lua = 'luacheck',
         }
         local buf = ft_args.buf
         local filename = ft_args.file
         local ft = vim.filetype.match { buf = buf, filename = filename } or vim.bo.filetype
         local exe = whitelist[ft]
-        if vim.bo.buftype == '' and exe and executable(exe) then
+        if vim.bo.buftype == '' and exe and executable(exe)  then
             local real_ft = { bash = 'sh' }
-            require('utils.async').lint(exe, { filetype = real_ft[ft] or ft, filename = filename })
+            require('utils.async').lint(exe, {buf = buf, filetype = real_ft[ft] or ft, filename = filename })
             vim.api.nvim_create_autocmd({ 'BufWritePost' }, {
                 desc = 'Lint code on save',
                 group = linters_au,
                 buffer = buf,
                 callback = function(_)
-                    require('utils.async').lint(exe, { filetype = real_ft[ft] or ft, filename = filename })
+                    require('utils.async').lint(exe, { buf = buf, filetype = real_ft[ft] or ft, filename = filename })
                 end,
             })
         end

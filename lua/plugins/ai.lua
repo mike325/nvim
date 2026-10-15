@@ -15,6 +15,38 @@ return {
                     create = 'split', ---@type "terminal"|"window"|"split"
                     enabled = false,
                 },
+                -- context = {},
+                prompts = {
+                    -- luacheck: ignore 631
+                    committed_changes = 'Review the committed changes in this branch, use git log and patch to extract the changes, be as brief as possible',
+                    -- luacheck: ignore 631
+                    working_changes = 'Review the current git changes in this branch, use git diff to extract the changes, be as brief as possible',
+                    diagnostics = 'Fix the diagnostics in {file}\n{diagnostics}',
+                    document = 'Add documentation to {function|line}',
+                    explain = 'Explain {this}',
+                    -- simple context prompts
+                    buffers = '{buffers}',
+                    file = '{file}',
+                    line = '{line}',
+                    position = '{position}',
+                    quickfix = '{quickfix}',
+                    selection = '{selection}',
+                    ['function'] = '{function}',
+                    class = '{class}',
+                    -- custom function prompts
+                    arglist = function(ctx)
+                        local prompt = 'From these files:\n%s\n'
+                        local files = table.concat(
+                            vim.iter(vim.fn.argv())
+                                :map(function(item)
+                                    return '@' .. item
+                                end)
+                                :totable(),
+                            '\n'
+                        )
+                        return string.format(prompt, files)
+                    end,
+                },
             },
         },
         keys = {
