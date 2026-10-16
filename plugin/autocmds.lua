@@ -861,6 +861,11 @@ if executable 'git' then
                 local info = vim.t.git_info
                 info.branch = branch
                 vim.t.git_info = info
+                require('utils.git').exec.sha(function(sha)
+                    info = vim.t.git_info
+                    info.sha = sha
+                    vim.t.git_info = info
+                end)
             end)
         end,
     })

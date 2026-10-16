@@ -348,20 +348,8 @@ function M.diagnostics_to_qf(diagnostics, opts, win)
     opts = opts or {}
     opts.items = {}
     win = win or opts.win
-    for _, diagnostic in pairs(diagnostics) do
-        local items = vim.diagnostic.toqflist(diagnostic)
-        for idx, _ in ipairs(items) do
-            items[idx].valid = 1
-        end
-        vim.list_extend(opts.items, items)
-    end
-
-    local bufnr = tonumber(vim.tbl_keys(diagnostics)[1]) --- @cast bufnr integer
-    vim.api.nvim_win_set_buf(0, bufnr)
+    opts.items = vim.diagnostic.toqflist(diagnostics)
     M.set_list(opts, win)
-    if not M.is_open(win) then
-        M.open(nil, win)
-    end
 end
 
 --- Dump diagnostics into qf/loclist

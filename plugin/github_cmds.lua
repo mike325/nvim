@@ -104,62 +104,38 @@ local function pr_approve(is_approved, comment)
     end)
 end
 
-local function gh_show_inline_comments()
-    local files = require 'utils.files'
-    local tables = require 'utils.tables'
-    local qf = require 'utils.qf'
+local function gh_show_inline_comments(resolved)
     local gh = require 'utils.gh'
 
     local comments_ns = vim.api.nvim_create_namespace 'github_comments'
     vim.diagnostic.reset(comments_ns)
 
-    local cwd = files.getcwd()
+    local opts = {}
+    if resolved then
+        opts.resolved = true
+    end
 
-    gh.get_pr_inline_comments(nil, { resolved = true }, function(comments_by_path)
-        local buf_diagnostics = {}
+    gh.get_pr_inline_comments(nil, opts, function(pr_comments)
+        local diagnostics = {}
 
-        for path, comments in pairs(comments_by_path) do
-            comments = tables.tbl_filter(function(comment)
-                local line = comment.startLine or comment.originalStartLine or comment.line or comment.originalLine
-                if not line then
-                    return false
-                end
-                comment._line = line
-                return true
-            end, comments)
-
-            if #comments > 0 and files.is_file(cwd .. '/' .. path) then
-                local bufnr = vim.fn.bufadd(path)
-                if not vim.api.nvim_buf_is_loaded(bufnr) then
-                    vim.fn.bufload(bufnr)
-                end
-
-                local diagnostics = {}
-                for _, comment in ipairs(comments) do
-                    table.insert(diagnostics, {
-                        lnum = comment._line - 1,
-                        col = 0,
-                        severity = vim.diagnostic.severity.HINT,
-                        message = string.format('%s: %s', comment.author.login, comment.body),
-                        source = 'GitHub',
-                        user_data = {
-                            comment_id = comment.id,
-                            thread_id = comment.threadId,
-                        },
-                    })
-                end
-
-                vim.diagnostic.set(comments_ns, bufnr, diagnostics)
-                buf_diagnostics[tostring(bufnr)] = diagnostics
+        for path, comments in pairs(pr_comments) do
+            local bufnr = vim.fn.bufadd(path)
+            if not vim.api.nvim_buf_is_loaded(bufnr) then
+                vim.fn.bufload(bufnr)
             end
+            vim.list_extend(diagnostics, gh.set_comment_diagnostics(bufnr, comments))
         end
 
-        if next(buf_diagnostics) == nil then
+        if next(diagnostics) == nil then
             vim.notify('No inline comments found', vim.log.levels.INFO, { title = 'GH' })
             return
         end
 
-        qf.diagnostics_to_qf(buf_diagnostics, { title = 'GithubComments', jump = false })
+        require('utils.qf').diagnostics_to_qf(diagnostics, {
+            title = 'GithubComments',
+            jump = false,
+            open = false,
+        })
     end)
 end
 
@@ -223,7 +199,7 @@ vim.api.nvim_create_user_command('PR', function(opts)
             )
         end)
     elseif subcmd == 'comments' then
-        gh_show_inline_comments()
+        gh_show_inline_comments(opts.bang)
     end
 end, {
     nargs = '+',

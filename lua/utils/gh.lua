@@ -722,12 +722,18 @@ function M.get_pr_inline_comments(pr, opts, callback)
                 table.insert(comments, comment)
             end
         end
+
+        local filepath
+        if opts.path then
+            local io_utils = require 'utils.files'
+            filepath = io_utils.remove_cwd_from_filepath(require('utils.buffers').convert_virtual_fname(opts.path))
+        end
         comments = vim.iter(comments)
             :filter(function(comment)
                 return opts.resolved or not comment.isResolved
             end)
             :filter(function(comment)
-                return not opts.path or comment.path == opts.path
+                return not filepath or comment.path == filepath
             end)
             :totable()
 
@@ -947,6 +953,30 @@ function M.get_repo_reviewers(callback)
         local url = remotes.origin or next(remotes)
         parse_api_collaborators(url, callback)
     end)
+end
+
+function M.set_comment_diagnostics(bufnr, comments, reset)
+    local comments_ns = vim.api.nvim_create_namespace 'github_comments'
+    if reset then
+        vim.diagnostic.reset(comments_ns, bufnr)
+    end
+    local diagnostics = {}
+    for _, comment in ipairs(comments) do
+        local line = comment.startLine or comment.originalStartLine or comment.line or comment.originalLine or 1
+        table.insert(diagnostics, {
+            lnum = line - 1,
+            col = 0,
+            severity = vim.diagnostic.severity.HINT,
+            message = string.format('%s: %s', comment.author.login, comment.body),
+            source = 'GitHub',
+            user_data = {
+                comment_id = comment.id,
+                thread_id = comment.threadId,
+            },
+        })
+    end
+    vim.diagnostic.set(comments_ns, bufnr, diagnostics)
+    return diagnostics
 end
 
 return M

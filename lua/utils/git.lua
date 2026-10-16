@@ -775,6 +775,16 @@ M.exec = setmetatable({}, {
                 table.insert(args, 1, '-w')
                 return return_first_line(args, callback)
             end,
+            ['sha'] = function(callback)
+                gitcmd = 'rev-parse'
+                local args = { '--short', 'HEAD' }
+                if not callback then
+                    return exec_gitcmd(gitcmd, args)[1] or ''
+                end
+                exec_gitcmd(gitcmd, args, function(output)
+                    callback(output[1] or '')
+                end)
+            end,
             init = function(args, callback)
                 vim.validate {
                     args = { args, { 'string', 'table' }, true },
